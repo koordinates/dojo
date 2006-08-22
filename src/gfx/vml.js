@@ -177,10 +177,7 @@ dojo.lang.extend(
 		if(rawNode) {
 			if( rawNode.fill.type == "gradient" ) {
 				// a gradient object !
-				url = rawNode.fill.id;
-				// TODO: build the stops from the colors
-				fillStyle = {id:url, rawNode:rawNode.fill, gradient:{}, stops:null };
-				fillStyle.gradient['type'] = "gradient";
+                return new dojo.gfx.LinearGradient(rawNode.fill);
 			} else if( rawNode.fillcolor ) {
 				// a color object !
 				fillStyle = new dojo.graphics.color.Color(rawNode.fillcolor+"");
@@ -199,7 +196,9 @@ dojo.lang.extend(
 			strokeStyle.color.a = rawNode.stroke.opacity;
 			strokeStyle.cap = dojo.gfx.vml._reverseTranslateCap(rawNode.stroke.endcap);
 			strokeStyle.join = rawNode.stroke.joinstyle == "miter" ? rawNode.stroke.miterlimit : rawNode.stroke.joinstyle;
-		}
+		} else {
+            return null;
+        }
 		return strokeStyle;
 	},
 
@@ -690,27 +689,35 @@ dojo.lang.extend(dojo.gfx.vml.Gradient, {
                 // the first stop is the default color and color2
                 this.rawNode.color = stop.color.toHex();
                 this.rawNode.color2 = stop.color.toHex();
-                this.stops.push(stop);
             } else {
-                // check the stored stops, shall we use ordered array?\
+                // check the stored stops, shall we use ordered array?
                 // find minimum offset: color2
                 var found = true;
                 for( var i = 0; i< this.stops.length && found; i++ ) {
-                    if( stop.offset >= this.stops[i].offset ) found = false;
+                    if( parseFloat(stop.offset) >= parseFloat(this.stops[i].offset) ) found = false;
                 }
                 if(found) this.rawNode.color2 = stop.color.toHex();
                     
                 // find maximum offset: color
                 found = true;
                 for( var i = 0; i< this.stops.length && found; i++ ) {
-                    if( stop.offset <= this.stops[i].offset ) found = false;
+                    if( parseFloat(stop.offset) <= parseFloat(this.stops[i].offset) ) found = false;
                 }
                 if(found) this.rawNode.color = stop.color.toHex();
-                this.stops.push(stop);
             }
-                        
-			this.rawNode.colors += ", " + stop.offset + " " + stop.color
-			this.rawNode.on = "t";
+            this.stops.push(stop);
+            this.rawNode.colors = "";
+  
+            for( var i = 1; i< this.stops.length-2; i++ ) {
+                this.rawNode.colors += "" + this.stops[i].offset + " " + this.stops[i].color + ", ";
+            } 
+            if( this.stops.length -2 > 0 ) {
+			    this.rawNode.colors += this.stops[this.stops.length-2].offset + " " + this.stops[this.stops.length-2].color;
+            }
+            dojo.debug("colors = "+ this.rawNode.colors);
+            this.rawNode.type   = "gradient";
+            this.rawNode.method = "linear";
+			this.rawNode.on = true;
 		}
 		return this;
 	},
@@ -724,7 +731,7 @@ dojo.lang.extend(dojo.gfx.vml.Gradient, {
 			this.rawNode.setAttribute(it, this.gradient[it]);
 		}
 		this.rawNode.id = this.id;
-		this.rawNode.on = "t";
+		this.rawNode.on = true;
 		return this;
 	},
 	getId: function(){ return this.id; },
@@ -734,10 +741,27 @@ dojo.lang.extend(dojo.gfx.vml.Gradient, {
 dojo.declare("dojo.gfx.vml.LinearGradient", dojo.gfx.vml.Gradient, {
 	nodeType: "fill",
 	initializer: function( newGradient ) {
-		this.gradient = {  color:null, color2:null, type:"gradient" };
-		this.setGradient(newGradient);
-        this.rawNode.angle = dojo.math.radToDeg(Math.atan2(newGradient.y2-newGradient.y1, newGradient.x2-newGradient.x1));
-	}
+		this.gradient = {  type:"gradient", angle:0 };
+        if( newGradient.type == "gradient") {
+            this.attach(newGradient);
+        } else {  
+            angle = dojo.math.radToDeg(Math.atan2(newGradient.y2-newGradient.y1, newGradient.x2-newGradient.x1));
+            this.gradient.angle = angle;
+		    this.setGradient(newGradient);
+        }
+	},
+    attach: function(rawNode) {
+        this.rawNode = rawNode;
+        this.gradient["type"] = "gradient";
+        this.gradient["angle"] = this.rawNode.angle;
+        this.id = this.rawNode.id;
+
+        //stops
+        this.stops = new Array;
+        this.stops.push( {offset:0, color:new dojo.graphics.color.Color(rawNode.color2)} );
+        this.stops.push( {offset:1, color:new dojo.graphics.color.Color(rawNode.color)} );
+        return this;
+    }
 });
 
 dojo.declare("dojo.gfx.vml.RadialGradient", dojo.gfx.vml.Gradient, {

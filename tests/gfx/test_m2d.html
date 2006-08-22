@@ -35,7 +35,6 @@ dojo.event.connect(dojo, "loaded", function(){
 	a = dojo.gfx.multiply(dojo.gfx.rotateg(30), dojo.gfx.invert(dojo.gfx.rotateg(30)));
 	mdebug(a);
 	a = dojo.gfx.rotategAt(90, 10, 10);
-	//a = dojo.gfx.multiply(dojo.gfx.rotateg(90), dojo.gfx.translate(-10, -10));
 	mdebug(a);
 	var b = dojo.gfx.multiplyPoint(a, 10, 10);
 	pdebug(b);
@@ -50,6 +49,18 @@ dojo.event.connect(dojo, "loaded", function(){
 	a = dojo.gfx.multiply(dojo.gfx.invert(dojo.gfx.rotateg(45)), dojo.gfx.scale(2,1));
 	mdebug(a);
 	a = dojo.gfx.multiply(dojo.gfx.invert(dojo.gfx.rotateg(45)), dojo.gfx.scale(1,2));
+	mdebug(a);
+	a = dojo.gfx.multiply(dojo.gfx.rotategAt(45, 100, 100), dojo.gfx.scale(2));
+	mdebug(a);
+	a = dojo.gfx.multiply(dojo.gfx.scale(2), dojo.gfx.rotategAt(45, 100, 100));
+	mdebug(a);
+	a = dojo.gfx.multiply(dojo.gfx.rotateg(45), dojo.gfx.scale(2));
+	mdebug(a);
+	a = dojo.gfx.multiply(dojo.gfx.scale(2), dojo.gfx.rotateg(45));
+	mdebug(a);
+	a = dojo.gfx.multiply(dojo.gfx.rotategAt(45, 300, 200), dojo.gfx.translate(100, 100), dojo.gfx.scale(2,1));
+	mdebug(a);
+	a = dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.rotateg(45), dojo.gfx.scale(2,1));
 	mdebug(a);
 });
 
