@@ -24,6 +24,7 @@ dojo.widget.defineWidget(
 		this.minRows=0;
 		this.defaultDateFormat = "%D";
 		this.isInitialized=false;
+		this.alternateRows=false;
 
 		this.columns=[];
 		this.sortInformation=[{
