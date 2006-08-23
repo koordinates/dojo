@@ -279,6 +279,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 			if(!noPivot) {
 				this._addPivot(item);
 			}
+			this.length = this.selection.length;
 			return true;
 		}
 		return false;
@@ -293,9 +294,8 @@ dojo.lang.extend(dojo.selection.Selection, {
 			if(item == this.lastSelected) {
 				this.lastSelected = null;
 			}
-
 			this._removePivot(item);
-
+			this.length = this.selection.length;
 			return true;
 		}
 		return false;
