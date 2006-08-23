@@ -216,9 +216,10 @@ dojo.hostenv.getModuleSymbols = function(modulename) {
 	for(var i = syms.length - 1; i > 0; i--){
 		var parentModule = syms.slice(0, i).join(".");
 		var parentModulePath = this.getModulePrefix(parentModule);
-		if(parentModulePath != parentModule){
+		if (parentModulePath != parentModule){
 			syms.splice(0, i, parentModulePath);
-			break;
+		}else if(i==1){
+			syms[0] = "../" + syms[0];			
 		}
 	}
 	return syms;

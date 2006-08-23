@@ -82,7 +82,7 @@ dojo.registerNamespaceManifest = function(module, path, name, widgetModule, reso
 
 dojo.defineNamespace = function(objRoot, location, nsPrefix, resolver /*optional*/, widgetPackage /*optional*/){
 	dojo.deprecated("dojo.defineNamespace", " is replaced by other systems. See the Dojo Wiki <url pending>.", "0.5");
-	dojo.registerModule(objRoot, location, nsPrefix, widgetPackage, resolver);
+	dojo.registerNamespaceManifest(objRoot, location, nsPrefix, widgetPackage, resolver);
 }
 
 // namespace bookkeeping object
