@@ -103,8 +103,8 @@ build targets:
 		<script language="jython"><![CDATA[
 # make the python standard library available
 import sys
-sys.path.append("lib/pyLib.zip")
-sys.path.append(".")
+sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
+sys.path.append(project.resolveFile(".").getPath())
 import buildUtil
 
 buildUtil.buildTestFiles()
@@ -160,7 +160,7 @@ buildUtil.buildTestFiles()
 		<script language="jython"><![CDATA[
 import sys
 # make the python standard library avialable
-sys.path.append("lib/pyLib.zip")
+sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
 
 # import re
 
@@ -279,8 +279,8 @@ print "look ma! Jython!"
 		<script language="jython"><![CDATA[
 import sys
 # make the python standard library avialable
-sys.path.append("lib/pyLib.zip")
-sys.path.append(".")
+sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
+sys.path.append(project.resolveFile(".").getPath())
 
 # import re
 import os
@@ -524,17 +524,17 @@ ${profileDeps}
 		<script language="jython"><![CDATA[
 import sys
 # make the python standard library avialable
-sys.path.append("lib/pyLib.zip")
-sys.path.append(".")
+sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
+sys.path.append(project.resolveFile(".").getPath())
 
 # import re
 import os
 from buildUtil import *
 
 print "Setting version for Dojo to: " + dojo.getProperty("version")
-replaceVersion(dojo.getProperty("release_dir") + "/source.__package__.js", dojo.getProperty("version"))
+replaceVersion(project.resolveFile(dojo.getProperty("release_dir") + "/source.__package__.js").getPath(), dojo.getProperty("version"))
 print "Removing dojo.require calls in source.__package__.js."
-removeRequires(dojo.getProperty("release_dir") + "/source.__package__.js")
+removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__package__.js").getPath())
 ]]></script>
 
 		<antcall target="-preload-resources">
