@@ -1,6 +1,5 @@
 dojo.kwCompoundRequire({
 	common: [
-		"dojo.lang",
 		"dojo.lang.common",
 		"dojo.lang.assert",
 		"dojo.lang.array",
