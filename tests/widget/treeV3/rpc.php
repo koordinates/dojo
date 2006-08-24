@@ -1,8 +1,13 @@
 <?php
 
+// Request encoding/decoding skipped to make things simple
+
+// user should see progress indicator
+sleep(3);
+
+
 extract($_REQUEST);
 
-sleep(3);
 if ($action == 'getChildren') {
 ?>
 ([{title:"empty1",isFolder:true,objectId:"myobj"},{title:"empty2",isFolder:true,objectId:"myobj"},{title:"singleChild",children:[ {title:"leaf"}  ]}])
