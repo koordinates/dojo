@@ -605,9 +605,9 @@ dojo.gfx.vml.attachNode = function(node){
 		case "path":
 			s = new dojo.gfx.vml.Path();
 			break;
-		case "roundrect":
-			s = new dojo.gfx.vml.Rect(node);
-			break;
+//		case "roundrect":
+//			s = new dojo.gfx.vml.Rect(node);
+//			break;
 		case "roundrect":
 			s = new dojo.gfx.vml.Roundrect();
 			break;
@@ -620,7 +620,7 @@ dojo.gfx.vml.attachNode = function(node){
 		case "line":
 			s = new dojo.gfx.vml.Line();
 			break;
-		case "polyine":
+		case "polyline":
 			s = new dojo.gfx.vml.Polyline();
 			break;
 		case "polygon":
