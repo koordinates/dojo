@@ -140,7 +140,7 @@ dojo.lang.isObject = function(it){
 
 dojo.lang.isArray = function(it){
 	// summary:	Return true if it is an Array.
-	return (it instanceof Array || typeof it == "array");
+	return (it && it instanceof Array || typeof it == "array");
 }
 
 dojo.lang.isArrayLike = function(it){
