@@ -17,14 +17,14 @@ if ($action == 'getChildren') {
 
 if ($action == 'createChild') {
 ?>
-({title:"New node from server",objectId:666})
+dojo.debug("server gave new title");({title:"action successful: createChild",objectId:666})
 <?
 	return;
 }
 
 if ($action == 'editLabelSave') {
 ?>
-({title:"server replaced your title"})
+dojo.debug("server gave new title");({title:"action successful: editLabelSave"})
 <?
 return;
 }
