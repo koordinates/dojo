@@ -1,39 +1,38 @@
 dojo.provide("dojo.i18n.datetime");
 
 dojo.require("dojo.experimental");
-dojo.experimental("dojo.i18n.datetime");
 
 dojo.require("dojo.date");
+dojo.require("dojo.lang.array");
+dojo.require("dojo.lang.common");
 dojo.require("dojo.string.common");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.i18n.calendar", "gregorian");
+dojo.requireLocalization("dojo.i18n.calendar", "gregorian-extras");
 
 // Everything here assumes Gregorian calendars.  Other calendars will be implemented in separate modules.
 
-//Q: Do we need to support passing in custom formats?  maybe we can just use dojo.date.strftime for that purpose?
-//Q: Do we have to handle dates and times combined, or can we leave that to the caller?
-//Q: How do we pass in just a time to format?
-//Q: What's the right way to define whether we're formatting/parsing dates vs times? separate methods? option arg?
-
 /**
-* Method to Format and validate a given Date object.  Formatting patterns are implemented using the
-* syntax described at http://www.unicode.org/reports/tr35/#Date_Format_Patterns
+* Method to Format and validate a given Date object.  By default, formats both date and time.
+* Formatting patterns are implemented using the syntax described at
+* http://www.unicode.org/reports/tr35/#Date_Format_Patterns
 *
 * @param Date value
 *	The Date object to be formatted and validated.
-* @param String formatLength choice of long, short, medium or full
-* @param String locale the locale to determine formatting used.  By default, the locale defined by the
+* @param Object options
+*	String:selector choice of timeOnly,dateOnly (default: date and time)
+*	String:formatLength choice of long, short, medium or full (plus any custom additions).  Defaults to 'full'
+*	String:datePattern,String:timePattern override pattern with this string
+*	String:locale the locale to determine formatting used.  By default, the locale defined by the
 *   host environment: dojo.locale
 * @return String
-* 	the formatted date of type String if successful; ?? if an
-* 	invalid currency is provided or null if an unsupported locale value was provided.
+* 	the formatted date of type String if successful or null if unable to format
 **/
-dojo.i18n.datetime.format = function(value, formatLength, options, locale /*optional*/){
-	locale = dojo.normalizeLocale(locale);
-	var info = dojo.i18n.getLocalization("dojo.i18n.calendar", "gregorian", locale);
-	var pattern = info["dateFormat-"+formatLength];
+dojo.i18n.datetime.format = function(dateObject, options){
+	dojo.experimental("dojo.i18n.datetime");
 
-	function formatPattern(value, pattern) {
+	// Format a pattern without literals
+	function formatRawPattern(dateObject, pattern) {
 		return pattern.replace(/[a-zA-Z]+/g, function(match){
 			var s;
 			var c = match.charAt(0);
@@ -43,10 +42,10 @@ dojo.i18n.datetime.format = function(value, formatLength, options, locale /*opti
 			switch(c){
 				case 'G':
 					if(l>3){dojo.unimplemented("Era format not implemented");}
-					s = info.eras[value.getFullYear() < 0 ? 1 : 0];
+					s = info.eras[dateObject.getFullYear() < 0 ? 1 : 0];
 					break;
 				case 'y':
-					s = value.getFullYear();
+					s = dateObject.getFullYear();
 					switch(l){
 						case 1:
 							break;
@@ -59,7 +58,7 @@ dojo.i18n.datetime.format = function(value, formatLength, options, locale /*opti
 					break;
 				case 'Q':
 				case 'q':
-					var s = Math.ceil((value.getMonth()+1)/3);
+					var s = Math.ceil((dateObject.getMonth()+1)/3);
 					switch(l){
 						case 1: case 2:
 							pad = true;
@@ -71,7 +70,7 @@ dojo.i18n.datetime.format = function(value, formatLength, options, locale /*opti
 					break;
 				case 'M':
 				case 'L':
-					var m = value.getMonth();
+					var m = dateObject.getMonth();
 					var width;
 					switch(l){
 						case 1: case 2:
@@ -89,18 +88,18 @@ dojo.i18n.datetime.format = function(value, formatLength, options, locale /*opti
 					break;
 				case 'w':
 					var firstDay = 0;
-					s = dojo.date.getWeekOfYear(value, firstDay); pad = true;
+					s = dojo.date.getWeekOfYear(dateObject, firstDay); pad = true;
 					break;
 				case 'd':
-					s = value.getDate(); pad = true;
+					s = dateObject.getDate(); pad = true;
 					break;
 				case 'D':
-					s = dojo.date.getDayOfYear(value); pad = true;
+					s = dojo.date.getDayOfYear(dateObject); pad = true;
 					break;
 				case 'E':
 				case 'e':
 				case 'c':
-					var d = value.getDay();
+					var d = dateObject.getDay();
 					var width;
 					switch(l){
 						case 1: case 2:
@@ -120,29 +119,29 @@ dojo.i18n.datetime.format = function(value, formatLength, options, locale /*opti
 					}
 					break;
 				case 'a':
-					var timePeriod = (value.getHours() < 12) ? 'am' : 'pm';
+					var timePeriod = (dateObject.getHours() < 12) ? 'am' : 'pm';
 					s = info[timePeriod];
 					break;
 				case 'h':
 				case 'H':
 				case 'K':
 				case 'k':
-					var h = value.getHours();
+					var h = dateObject.getHours();
 					if((h>11)&&(c=='h' || c=='K')){h-=12;}
 					if(c=='h' || c=='k'){h++;}
 					s = h; pad = true;
 					break;
 				case 'm':
-					s = value.getMinutes(); pad = true;
+					s = dateObject.getMinutes(); pad = true;
 					break;
 				case 's':
-					s = value.getSeconds(); pad = true;
+					s = dateObject.getSeconds(); pad = true;
 					break;
 				case 'S':
-					s = Math.round(value.getMilliseconds() * Math.pow(10, l));
+					s = Math.round(dateObject.getMilliseconds() * Math.pow(10, l));
 					break;
 				case 'Z':
-					var offset = value.getTimezoneOffset();
+					var offset = dateObject.getTimezoneOffset();
 					var tz = [
 						(offset<=0 ? "+" : "-"),
 						dojo.string.pad(Math.floor(Math.abs(offset)/60), 2),
@@ -160,9 +159,9 @@ dojo.i18n.datetime.format = function(value, formatLength, options, locale /*opti
 				case 'F':
 				case 'g':
 				case 'A':
-				case 'z':
 				case 'v':
-					dojo.unimplemented("date format not implemented, pattern="+match);
+				case 'z':
+					dojo.debug(match+" modifier not yet implemented");
 					s = "?";
 					break;
 				default:
@@ -173,111 +172,126 @@ dojo.i18n.datetime.format = function(value, formatLength, options, locale /*opti
 		});
 	}
 
-	// Break up on single quotes, treat every other one as a literal, except '' which becomes '
-	var chunks = pattern.split('\'');
-	var format = true;
-	for (var i=0; i<chunks.length; i++){
-		if(!chunks[i]){chunks[i]='\'';}
-		else{
-			if(format){chunks[i]=formatPattern(value, chunks[i]);}
-			format = !format;
+	// Format a pattern with literals in it
+	function formatPattern(dateObject, pattern){
+		// Break up on single quotes, treat every other one as a literal, except '' which becomes '
+		var chunks = pattern.split('\'');
+		var format = true;
+		for (var i=0; i<chunks.length; i++){
+			if(!chunks[i]){chunks[i]='\'';}
+			else{
+				if(format){chunks[i]=formatRawPattern(dateObject, chunks[i]);}
+				format = !format;
+			}
 		}
+		return chunks.join("");
 	}
-	return chunks.join("");
+
+	locale = dojo.normalizeLocale(options.locale);
+	var formatLength = options.formatLength || 'full';
+	var info = dojo.i18n.datetime._getGregorianBundle(locale);
+	var str = [];
+	if (!options || options.selector == "dateOnly") {
+		var datePattern = options.datePattern || info["dateFormat-"+formatLength];
+		str.push(formatPattern(dateObject, datePattern));
+	}
+	if (!options || options.selector == "timeOnly") {
+		var timePattern = options.timePattern || info["timeFormat-"+formatLength];
+		str.push(formatPattern(dateObject, timePattern));
+	}
+	return str.join(" "); //TODO: parameterize
 };
 
-/**
-* Method to convert a properly formatted date to a primative Date object.
-*
-* @param String value
-*	The int string to be convertted
-* @param String formatLength choice of long, short, medium or full
-* @param String locale the locale to determine formatting used.  By default, the locale defined by the
-*   host environment: dojo.locale
-* @return Date
-* 	Returns a primative Date object, ?? if unable to convert to a number, or null if an unsupported locale is provided.
-**/
-dojo.i18n.datetime.parse = function(value, formatLength, locale /*optional*/){
-	locale = dojo.normalizeLocale(locale);
-	var info = dojo.i18n.getLocalization("dojo.i18n.calendar", "gregorian", locale);
-	var pattern = info["dateFormat-"+formatLength];
-	if(formatLength != 'short'){
-		dojo.unimplemented("dojo.i18n.datetime.parse format="+formatLength);
-	}
-	pattern.replace(/[a-zA-Z]+/g, function(match){
+dojo.i18n.datetime._buildDateTimeRE = function(pattern, elements) {
+	var str = pattern.replace(/[a-zA-Z]+/g, function(match){
 			var s;
 			var c = match.charAt(0);
 			var l = match.length;
 			switch(c){
 				case 'y':
+					s = "\\d" + ((l==2)?"{2}":"+");
 					break;
 				case 'M':
+					s = "\\d{2}"; //TODO make sure it conforms to month range...
 					break;
 				case 'd':
+					s = "\\d{2}"; //TODO
 					break;
-				case 'h':
-				case 'H':
-				case 'K':
-				case 'k':
+				case 'h': case 'H': case 'K': case 'k':
+					s = "\\d{2}"; //TODO
 					break;
 				case 'm':
-					break;
 				case 's':
+					s = "\\d{2}"; //TODO
 					break;
 				case 'S':
+					s = "\\d+"; //TODO
 					break;
 				case 'a':
+					s = info.am + "|" + info.pm;
 					break;
 				default:
-					dojo.unimplemented("date format not implemented, pattern="+match);
+					dojo.unimplemented("parse of date format, pattern="+pattern);
 			}
+			s = "("+s+")";
+			if(elements){ elements.push(match); }
+			return s;
 	});
-	//escape special regexp chars
-	//create regexp
+	//TODO: escape special regexp chars
+	//TODO: make whitespace flexible?
+	return new RegExp("^" + str + "$");
 };
-
+	
 /**
-  Validates whether a string represents a valid date. 
+* Method to convert a properly formatted date to a primative Date object.
+*
+* @param String value
+*	The int string to be convertted
+* @param Object options
+*	String:selector choice of timeOnly,dateOnly (default: date and time)
+*	String:formatLength choice of long, short, medium or full (plus any custom additions).  Defaults to 'full'
+*	String:datePattern,String:timePattern override pattern with this string
+*	String:locale the locale to determine formatting used.  By default, the locale defined by the
+*   host environment: dojo.locale
+* @return Date
+* 	Returns a primitive Date object or null if unable to convert to a Date
+**/
+dojo.i18n.datetime.parse = function(value, options){
+	dojo.experimental("dojo.i18n.datetime");
+	//TODO: this is still quite rough - it only implements a small portion of the parsing algorithm needed,
+	// and doesn't provide much flexibility.
+	locale = dojo.normalizeLocale(options.locale);
+	var info = dojo.i18n.datetime._getGregorianBundle(locale);
+	var formatLength = options.formatLength || 'full';
+	if (options.selector != 'dateOnly'){ dojo.unimplemented("can only parse dates at this time"); }
+	var pattern = options.datePattern || info["dateFormat-"+formatLength];
+	var elements = [];
+	var dateRE = dojo.i18n.datetime._buildDateTimeRE(pattern, elements);
 
-  @param value  A string
-  @param formatLength choice of long, short, medium or full
-  @param locale the locale to determine formatting used.  By default, the locale defined by the
-    host environment: dojo.locale
-  @return true or false.
-*/
-dojo.i18n.datetime.isDate = function(value, formatLength, locale /*optional*/){
-	locale = dojo.normalizeLocale(locale);
-	dojo.unimplemented("dojo.i18n.datetime.isDate");
+	var match = dateRE.exec(value);
+	var result = new Date();
+	result.setHours(0,0,0,0);
+	for(var i=1; i<match.length; i++){
+		var e=elements[i-1];
+		var l=e.length;
+		var v=match[i];
+		switch(e.charAt(0)){
+			case 'd':
+				result.setDate(v);
+				break;
+			case 'M':
+				result.setMonth(v-1);
+				break;
+			case 'y':
+				var century = Math.floor(result.getFullYear()/100)*100;
+				result.setFullYear(century+Number(v));
+				break;
+			default:
+				dojo.unimplemented("incomplete parse algorithm");
+		}
+	}
+	return result;
 };
-
-/**
-  Validates whether a string represents a valid time. 
-
-  @param value  A string
-  @param formatLength choice of long, short, medium or full
-  @param locale the locale to determine formatting used.  By default, the locale defined by the
-    host environment: dojo.locale
-  @return true or false.
-*/
-dojo.i18n.datetime.isTime = function(value, formatLength, locale /*optional*/){
-	locale = dojo.normalizeLocale(locale);
-	dojo.unimplemented("dojo.i18n.datetime.isTime");
-};
-
-/**
-  Validates whether a string represents a valid date and time. 
-
-  @param value  A string
-  @param formatLength choice of long, short, medium or full
-  @param locale the locale to determine formatting used.  By default, the locale defined by the
-    host environment: dojo.locale
-  @return true or false.
-*/
-dojo.i18n.datetime.isDateTime = function(value, formatLength, locale /*optional*/){
-	locale = dojo.normalizeLocale(locale);
-	dojo.unimplemented("dojo.i18n.datetime.isDateTime");
-};
-
 
 //TODO: try to common strftime and format code somehow?
 
@@ -285,13 +299,15 @@ dojo.i18n.datetime.isDateTime = function(value, formatLength, locale /*optional*
 // see <http://www.opengroup.org/onlinepubs/007908799/xsh/strftime.html>
 dojo.i18n.datetime.strftime = function (dateObject, format) {
 
+	dojo.experimental("dojo.i18n.datetime");
+
 	// zero pad
 	var padChar = null;
-	function _ (s, n) {
-		return dojo.string.pad(s, n, padChar);
+	function _(s, n) {
+		return dojo.string.pad(s, n || 2, padChar || "0");
 	}
-	
-	var info = dojo.i18n.getLocalization("dojo.i18n.calendar", "gregorian");
+
+	var info = dojo.i18n.datetime._getGregorianBundle();
 
 	function $ (property) {
 		switch (property) {
@@ -310,7 +326,6 @@ dojo.i18n.datetime.strftime = function (dateObject, format) {
 				
 			case "c": // preferred date and time representation for the current
 				      // locale
-//				return dateObject.toLocaleString(); // perhaps better to use established format rather than rely on browser-specific behavior?
 				return dojo.i18n.datetime.format(dateObject, "full");				
 
 			case "C": // century number (the year divided by 100 and truncated
@@ -340,6 +355,7 @@ dojo.i18n.datetime.strftime = function (dateObject, format) {
 				      // (see %V).  This has the same format and value as %Y,
 				      // except that if the ISO week number belongs to the
 				      // previous or next year, that year is used instead.
+				dojo.unimplemented("unimplemented modifier 'G'");
 				break;
 			
 			case "F": // same as %Y-%m-%d
@@ -410,11 +426,11 @@ dojo.i18n.datetime.strftime = function (dateObject, format) {
 
 			case "x": // preferred date representation for the current locale
 				      // without the time
-				break;
+				return dojo.i18n.datetime.format(dateObject, 'short'); //TODO: which format should be used?
 
 			case "X": // preferred date representation for the current locale
 				      // without the time
-				break;
+				return dojo.i18n.datetime.format(dateObject, 'full'); //TODO: which format should be used?
 
 			case "y": // year as a decimal number without a century (range 00 to
 				      // 99)
@@ -427,7 +443,7 @@ dojo.i18n.datetime.strftime = function (dateObject, format) {
 				var timezoneOffset = dateObject.getTimezoneOffset();
 				return (timezoneOffset > 0 ? "-" : "+") + 
 					_(Math.floor(Math.abs(timezoneOffset)/60)) + ":" +
-					_(Math.abs(timezoneOffset)% 60);
+					_(Math.abs(timezoneOffset)%(60));
 				
 			case "Z": // time zone or name or abbreviation
 				return dojo.date.getTimezoneName(dateObject); //TODO
@@ -462,9 +478,9 @@ dojo.i18n.datetime.strftime = function (dateObject, format) {
 		// toggle case if a flag is set
 		var property = $(format.charAt(index++));
 		if (switchCase == "upper" ||
-			(switchCase == "swap" && /[a-z]/.test(property))) {
+			(switchCase == "swap" && (/[a-z]/.test(property)))) {
 			property = property.toUpperCase();
-		} else if (switchCase == "swap" && !/[a-z]/.test(property)) {
+		} else if (switchCase == "swap" && !(/[a-z]/.test(property))) {
 			property = property.toLowerCase();
 		}
 		switchCase = null;
@@ -484,13 +500,33 @@ dojo.i18n.datetime.getNames = function(item, type, use, locale){
 // locale (optional)
 // returns an array
 	var label;
-	var lookup = dojo.i18n.getLocalization("dojo.i18n.calendar", "gregorian", locale);
+	var lookup = dojo.i18n.datetime._getGregorianBundle(locale);
 	var props = [item, use, type];
 	if (use == 'standAlone') {
 		label = lookup[props.join('-')];
 	}
 	props[1] = 'format';
 	return label || lookup[props.join('-')];	
+};
+
+dojo.i18n.datetime._formatsBundles = [];
+dojo.i18n.datetime.addCustomFormats = function(packageName, bundleName){
+// The user may add custom localized formats where the bundle has properties following the
+// same naming convention used by dojo for the CLDR data: dateFormat-xxxx / timeFormat-xxxx
+// The pattern string should match the format used by the CLDR.  See dojo.i18n.datetime.format for details.
+// The resources must be loaded by dojo.requireLocalization() prior to use
+	dojo.i18n.datetime._formatsBundles.push({pkg:packageName,name:bundleName});
+};
+dojo.i18n.datetime.addCustomFormats("dojo.i18n.calendar","gregorian");
+dojo.i18n.datetime.addCustomFormats("dojo.i18n.calendar","gregorian-extras");
+
+dojo.i18n.datetime._getGregorianBundle = function(locale){
+	var gregorian = {};
+	dojo.lang.forEach(dojo.i18n.datetime._formatsBundles, function(desc){
+		var bundle = dojo.i18n.getLocalization(desc.pkg, desc.name, locale);
+		gregorian = dojo.lang.mixin(gregorian, bundle);
+	}, this);
+	return gregorian;
 };
 
 // Convenience methods
