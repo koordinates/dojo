@@ -109,7 +109,6 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	isTree: true,
 	
-	objectId: "",
 
 	createNode: function(data) {
 			
