@@ -164,9 +164,6 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		
 		var params = {
 			node: this.getInfo(node),
-			// useful for createAndEdit, because server does not know
-			// about node yet
-			parent: this.getInfo(node.parent),
 			tree: this.getInfo(node.tree),
 			newContent: newContent
 		}
@@ -232,8 +229,17 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		}
 		
 		if (save) {
-			// this deferred has new information from server
-			deferred = this.editLabelSave(this.editor.node, this.editor.getContents(), sync);
+			if (node.isPhantom) {
+				deferred = this.sendCreateChildRequest(
+					node.parent,
+					node.getParentIndex(),
+					{title:this.editor.getContents()},
+					sync
+				);
+			} else {				
+				// this deferred has new information from server
+				deferred = this.editLabelSave(node, this.editor.getContents(), sync);
+			}
 		}
 		
 		deferred.addCallback(function(server_data) {			
@@ -361,14 +367,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	// -----------------------------------------------------------------------------
 	//                             Create node stuff
 	// -----------------------------------------------------------------------------
-
-
-	doCreateChild: function(parent, index, data, sync){		
-		
-		if (dojo.lang.isUndefined(data.title)) {
-			data.title = parent.tree.defaultChildTitle;
-		}
-			
+	sendCreateChildRequest: function(parent, index, data, sync) {
 		var params = {
 			tree: this.getInfo(parent.tree),
 			parent: this.getInfo(parent),
@@ -382,12 +381,24 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 			params: params
 		});
 		
+		return deferred;
+	},
+		
+
+	doCreateChild: function(parent, index, data, sync){		
+		
+		if (dojo.lang.isUndefined(data.title)) {
+			data.title = parent.tree.defaultChildTitle;
+		}
+
+		var deferred = this.sendCreateChildRequest(parent,index,data,sync);
+		
 		var _this = this;
 		var args = arguments;
 		
 		
 		deferred.addCallback(function(server_data) {
-			dojo.lang.mixin(data, server_data); // add my data as less priority
+			dojo.lang.mixin(server_data, data); // add my data as less priority
 			//dojo.debug("Create ");
 			//dojo.debug(server_data);
 			return dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(_this,parent,index,server_data);
