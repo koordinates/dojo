@@ -1,4 +1,5 @@
 dojo.provide("dojo.html.style");
+dojo.require("dojo.uri.Uri");
 
 /**
  * Returns the string value of the list of CSS classes currently assigned
