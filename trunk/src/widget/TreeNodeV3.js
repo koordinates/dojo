@@ -206,9 +206,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			objectId: this.objectId,
 			index: this.getParentIndex()
 		}
-		if (this.isPhantom) {
-			info.isPhantom = true;
-		}
 
 		return info;
 	},

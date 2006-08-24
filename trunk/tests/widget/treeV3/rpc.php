@@ -1,4 +1,5 @@
 <?php
+exit;
 extract($_REQUEST);
 
 sleep(3);
