@@ -181,7 +181,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	isTreeNode: true,
 
-	objectId: "", // the widget represents an object
 	
 	object: {},
 
@@ -206,6 +205,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			widgetId: this.widgetId,
 			objectId: this.objectId,
 			index: this.getParentIndex()
+		}
+		if (this.isPhantom) {
+			info.isPhantom = true;
 		}
 
 		return info;

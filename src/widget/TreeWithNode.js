@@ -20,6 +20,7 @@ dojo.widget.TreeWithNode = {
 	state: "UNCHECKED",  // after creation will change to loadStates: "loaded/loading/unchecked"
 
 
+	objectId: "", // the widget represents an object
 
 
 	// I need this to parse children
