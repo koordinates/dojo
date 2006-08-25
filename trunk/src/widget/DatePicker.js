@@ -25,6 +25,28 @@ dojo.widget.defineWidget(
 	"dojo.widget.DatePicker",
 	dojo.widget.HtmlWidget,
 	function() {
+		// summary:
+		// 		Base class for a stand-alone DatePicker widget
+		// 		that makes it  easy to select a date, or switch by month and/or year.
+		// description:
+		// 		A stand-alone DatePicker widget that makes it 
+		// 		easy to select a date, or increment by week, month, and/or year.
+		// 		It is designed to be used on its own, or inside of other widgets to 
+		//		create drop down DatePickers or other similar combination widgets.
+		//		To get a sense of what month to highlight, we basically initialize on
+		//		the first Saturday of each month, since that will be either the first 
+		// 		of two or the second of three months being partially displayed, and 
+		//		then work forwards and backwards from that point. Currently, we assume 
+		//		that dates are stored in the `RFC 3339`_ format 
+		//		(2005-06-30T08:05:00-07:00), because Dylan finds it to be most human 
+		//		readable and easy to parse.  Extension of this to support other date 
+		//		formats, such as those found in dojo.date, would be a welcome 
+		//		contribution.
+		// usage:
+		//		var datePicker = dojo.widget.createWidget("DatePicker", {},  
+		//		dojo.byId("datePickerNode"));
+		//
+		//		<div dojoType="DatePicker"></div>
 		// today's date, JS Date object
 		this.today = "";
 		// selected date, JS Date object
@@ -40,6 +62,8 @@ dojo.widget.defineWidget(
 		dayWidth: 'narrow',
 
 		classNames: {
+			// summary:
+			// 		stores a list of class names that may be overriden
 			previous: "previousMonth",
 			current: "currentMonth",
 			next: "nextMonth",
@@ -55,6 +79,13 @@ dojo.widget.defineWidget(
 			this.initUI();
 		},
 		initData: function() {
+			// summary:
+			//	Initialize the date data for the date picker
+			// description:
+			//	Initializes the date data for the DatePicker widget instance.  For
+			//	example, if there is not already a value for storedDate, it is 
+			//	populated with today's date from the client.
+			
 			this.today = new Date();
 			if(this.storedDate && (this.storedDate.split("-").length > 2)) {
 				this.date = dojo.widget.DatePicker.util.fromRfcDate(this.storedDate);
