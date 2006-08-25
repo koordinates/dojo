@@ -37,10 +37,13 @@ dojo.declare("dojo.widget.Editor2Plugin.FindCommand", dojo.widget.Editor2DialogC
 });
 
 dojo.widget.Editor2Manager.registerCommand("Find", new dojo.widget.Editor2Plugin.FindCommand('find', 
-		{href: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/find.html"), 
+		{contentFile: "dojo.widget.Editor2Plugin.FindReplaceDialog", 
+			contentClass: "Editor2FindDialog",
 			title: "Find", width: "350px", height: "150px", modal: false}));
 dojo.widget.Editor2Manager.registerCommand("Replace", new dojo.widget.Editor2DialogCommand('replace', 
-		{href: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/replace.html"), 
+		{contentFile: "dojo.widget.Editor2Plugin.FindReplaceDialog", 
+			contentClass: "Editor2ReplaceDialog",
+			href: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/replace.html"), 
 			title: "Replace", width: "350px", height: "200px", modal: false}));
 
 dojo.widget.Editor2Plugin.FindReplace = function(name){
