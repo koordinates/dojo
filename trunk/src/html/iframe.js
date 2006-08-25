@@ -76,7 +76,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	size: function(node) {
 		if(!this.iframe) { return; }
 
-		var coords = dojo.html.toCoordinateObject(node, true);
+		var coords = dojo.html.toCoordinateObject(node, true, dojo.html.boxSizing.BORDER_BOX);
 
 		with(this.iframe.style){
 			width = coords.width + "px";
