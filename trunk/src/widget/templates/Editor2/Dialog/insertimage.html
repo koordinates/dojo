@@ -1,173 +1,114 @@
-<script>
-_container_.addOnLoad(function(){
-	if(!_container_.refreshOnShow){
-		dojo.event.connect(_container_, "show", this, "init");
-	}
-	this.init();
-});
-
-this.editableAttributes = ['src', 'alt', 'width', 'height', 'hspace', 'vspace', 'border', 'align'];
-
-this.init = function(){
-	var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-	this.imageNode = dojo.withGlobal(curInst.window, "getSelectedElement", dojo.html.selection);
-	if(!this.imageNode){
-		this.imageNode = dojo.withGlobal(curInst.window, "getAncestorElement", dojo.html.selection, ['img']);
-	}
-	var imageAttributes = {};
-	this.extraAttribText = "";
-	if(this.imageNode){
-		var attrs = this.imageNode.attributes;
-		for(var i=0; i<attrs.length; i++) {
-			if(dojo.lang.find(this.editableAttributes, attrs[i].name.toLowerCase())>-1){
-				imageAttributes[attrs[i].name] = attrs[i].value;
-			}else{
-				this.extraAttribText += attrs[i].name + '="'+attrs[i].value+'" ';
-			}
-		}
-	}
-	for(var i in this.editableAttributes){
-		name = this.editableAttributes[i];
-		dojo.byId("dojo_insertimage_"+name).value = (imageAttributes[name] == undefined) ? "" : imageAttributes[name] ;
-	}
-};
-
-this.ok = function(){
-	var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-	var insertcmd = dojo.widget.Editor2Manager.getCommand('inserthtml');
-	var option = 0;
-
-	var attstr='';
-	for(var i in this.editableAttributes){
-		name = this.editableAttributes[i];
-		var value = dojo.byId("dojo_insertimage_"+name).value;
-		if(value.length > 0){
-			attstr += name + '="'+value+'" ';
-		}
-	}
-	if(this.imageNode){
-		dojo.withGlobal(curInst.window, "selectElement", dojo.html.selection, [this.imageNode]);
-	}
-	insertcmd.execute('<img '+attstr+this.extraAttribText+'/>');
-	_container_.hide();
-};
-
-this.cancel = function(){
-	_container_.hide();
-};
-
-</script>
 <table cellspacing="1" cellpadding="1" border="0" width="100%" height="100%">
-			<tr>
-				<td>
-					<table cellspacing="0" cellpadding="0" width="100%" border="0">
-						<tr>
-							<td width="100%">
-								<span>URL</span>
-							</td>
-							<td style="display: none" nowrap="nowrap" rowspan="2">
-								<!--input id="btnBrowse" onclick="BrowseServer();" type="button" value="Browse Server"/-->
-							</td>
-						</tr>
-						<tr>
-							<td valign="top">
-								<input id="dojo_insertimage_src" style="width: 100%" type="text" />
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<span>Alternative Text</span><br />
-					<input id="dojo_insertimage_alt" style="width: 100%" type="text" /><br />
-				</td>
-			</tr>
-			<tr>
-				<td valign="top">
-					<table><tr><td>
-								<table cellspacing="0" cellpadding="0" border="0">
-									<tr>
-										<td nowrap="nowrap">
-											<span>Width</span>&nbsp;</td>
-										<td>
-											<input type="text" size="3" id="dojo_insertimage_width" /></td>
+	<tr>
+		<td>
+			<table cellspacing="0" cellpadding="0" width="100%" border="0">
+				<tr>
+					<td width="100%">
+						<span>URL</span>
+					</td>
+					<td style="display: none" nowrap="nowrap" rowspan="2">
+						<!--input id="btnBrowse" onclick="BrowseServer();" type="button" value="Browse Server"/-->
+					</td>
+				</tr>
+				<tr>
+					<td valign="top">
+						<input dojoAttachPoint="image_src" style="width: 100%" type="text" />
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<span>Alternative Text</span><br />
+			<input dojoAttachPoint="image_alt" style="width: 100%" type="text" /><br />
+		</td>
+	</tr>
+	<tr>
+		<td valign="top">
+			<table><tr><td>
+						<table cellspacing="0" cellpadding="0" border="0">
+							<tr>
+								<td nowrap="nowrap">
+									<span>Width</span>&nbsp;</td>
+								<td>
+									<input type="text" size="3" dojoAttachPoint="image_width" /></td>
 
-										<td rowspan="2">
-											<!--div id="btnLockSizes" class="BtnLocked" onmouseover="this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' ) + ' BtnOver';"
-												onmouseout="this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' );" title="Lock Sizes"
-												onclick="SwitchLock(this);">
-											</div-->
-										</td>
-										<td rowspan="2">
-											<!--div id="btnResetSize" class="BtnReset" onmouseover="this.className='BtnReset BtnOver';"
-												onmouseout="this.className='BtnReset';" title="Reset Size" onclick="ResetSizes();">
-											</div-->
-										</td>
-									</tr>
+								<td rowspan="2">
+									<!--div id="btnLockSizes" class="BtnLocked" onmouseover="this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' ) + ' BtnOver';"
+										onmouseout="this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' );" title="Lock Sizes"
+										onclick="SwitchLock(this);">
+									</div-->
+								</td>
+								<td rowspan="2">
+									<!--div id="btnResetSize" class="BtnReset" onmouseover="this.className='BtnReset BtnOver';"
+										onmouseout="this.className='BtnReset';" title="Reset Size" onclick="ResetSizes();">
+									</div-->
+								</td>
+							</tr>
 
-									<tr>
-										<td nowrap="nowrap">
-											<span>Height</span>&nbsp;</td>
-										<td>
-											<input type="text" size="3" id="dojo_insertimage_height" /></td>
-									</tr>
-								</table>
-							</td><td>
+							<tr>
+								<td nowrap="nowrap">
+									<span>Height</span>&nbsp;</td>
+								<td>
+									<input type="text" size="3" dojoAttachPoint="image_height" /></td>
+							</tr>
+						</table>
+					</td><td>
 
-								<table cellspacing="0" cellpadding="0" border="0">
-									<tr>
+						<table cellspacing="0" cellpadding="0" border="0">
+							<tr>
 
-										<td nowrap="nowrap">
-											<span >HSpace</span>&nbsp;</td>
-										<td>
-											<input type="text" size="2" id="dojo_insertimage_hspace"/></td>
-									</tr>
-									<tr>
-										<td nowrap="nowrap">
-											<span >VSpace</span>&nbsp;</td>
+								<td nowrap="nowrap">
+									<span >HSpace</span>&nbsp;</td>
+								<td>
+									<input type="text" size="2" dojoAttachPoint="image_hspace"/></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap">
+									<span >VSpace</span>&nbsp;</td>
 
-										<td>
-											<input type="text" size="2" id="dojo_insertimage_vspace" /></td>
-									</tr>
-								</table>
-							</td></tr>
-							<tr><td colspan="2">
-								<table cellspacing="0" cellpadding="0" border="0">
-									<tr>
-										<td nowrap="nowrap">
-											<span>Border</span>&nbsp;</td>
-										<td>
-											<input type="text" size="2" value="" id="dojo_insertimage_border" /></td>
-										<td>&nbsp;&nbsp;&nbsp;</td>
-										<td nowrap="nowrap">
-											<span >Align</span>&nbsp;</td>
-										<td>
-											<select id="dojo_insertimage_align">
+								<td>
+									<input type="text" size="2" dojoAttachPoint="image_vspace" /></td>
+							</tr>
+						</table>
+					</td></tr>
+					<tr><td colspan="2">
+						<table cellspacing="0" cellpadding="0" border="0">
+							<tr>
+								<td nowrap="nowrap">
+									<span>Border</span>&nbsp;</td>
+								<td>
+									<input type="text" size="2" value="" dojoAttachPoint="image_border" /></td>
+								<td>&nbsp;&nbsp;&nbsp;</td>
+								<td nowrap="nowrap">
+									<span >Align</span>&nbsp;</td>
+								<td>
+									<select dojoAttachPoint="image_align">
 
-												<option value="" selected="selected"></option>
-												<option value="left">Left</option>
-												<option value="absBottom">Abs Bottom</option>
-												<option value="absMiddle">Abs Middle</option>
-												<option value="baseline">Baseline</option>
-												<option value="bottom">Bottom</option>
+										<option value="" selected="selected"></option>
+										<option value="left">Left</option>
+										<option value="absBottom">Abs Bottom</option>
+										<option value="absMiddle">Abs Middle</option>
+										<option value="baseline">Baseline</option>
+										<option value="bottom">Bottom</option>
 
-												<option value="middle">Middle</option>
-												<option value="right">Right</option>
-												<option value="textTop">Text Top</option>
-												<option value="top">Top</option>
-											</select>
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr></table>
-				</td>
-			</tr>
-			<tr><td>
-				<table><tr>
-				<td><button dojoType='Button' onClick='scriptScope.ok();'>Ok</button></td>
-				<td><button dojoType='Button' onClick='scriptScope.cancel();'>Cancel</button></td>
+										<option value="middle">Middle</option>
+										<option value="right">Right</option>
+										<option value="textTop">Text Top</option>
+										<option value="top">Top</option>
+									</select>
+								</td>
+							</tr>
+						</table>
+					</td>
 				</tr></table>
-			</td></tr>
-		</table>
+		</td>
+	</tr>
+	<tr><td>
+		<table><tr>
+		<td><button dojoType='Button' dojoAttachChildEvent='onClick:ok'>OK</button></td>
+		<td><button dojoType='Button' dojoAttachChildEvent='onClick:cancel'>Cancel</button></td>
+		</tr></table>
+	</td></tr>
+</table>

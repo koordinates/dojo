@@ -162,9 +162,6 @@ dojo.declare("dojo.widget.Editor2ToolbarButton", null,{
 		this.unhighlightToolbarItem();
 	},
 	destroy: function(){
-//		dojo.event.disconnect(this._domNode, 'onclick', this, 'onClick');
-//		dojo.event.disconnect(this._domNode, 'onmouseover', this, 'onMouseOver');
-//		dojo.event.disconnect(this._domNode, 'onmouseout', this, 'onMouseOut');
 		this._domNode = null;
 		delete this._command;
 		this._parentToolbar = null;

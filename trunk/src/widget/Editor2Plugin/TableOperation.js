@@ -39,7 +39,6 @@ dojo.widget.Editor2Plugin.TableOperation = {
 				curInst.execCommand("inserthtml", " "); //Moz does not like an empty string, so a space here instead
 			}
 		},
-		//default implemetation always returns Enabled
 		getState: function(){
 			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 			var table = dojo.withGlobal(curInst.window, "hasAncestorElement", dojo.html.selection, ['table']);
@@ -65,8 +64,10 @@ dojo.widget.Editor2Plugin.TableOperation = {
 
 //register commands: inserttable, deletetable
 dojo.widget.Editor2Manager.registerCommand("inserttable", new dojo.widget.Editor2DialogCommand('inserttable', 
-		{href: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/inserttable.html"), 
-				title: "Insert/Edit Table", width: "400px", height: "270px"}));
+		{contentFile: "dojo.widget.Editor2Plugin.InsertTableDialog", 
+			contentClass: "Editor2InsertTableDialog",
+			title: "Insert/Edit Table", width: "450px", height: "250px"}));
+
 dojo.widget.Editor2Manager.registerCommand("deletetable", dojo.widget.Editor2Plugin.TableOperation.deleteTableCommand);
 
 //register inserttable as toolbar item

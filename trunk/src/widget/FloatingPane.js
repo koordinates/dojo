@@ -18,9 +18,9 @@ dojo.require("dojo.dnd.HtmlDragMoveSource");
 dojo.require("dojo.dnd.HtmlDragMoveObject");
 dojo.require("dojo.widget.ResizeHandle");
 
-dojo.widget.defineWidget(
-	"dojo.widget.FloatingPane",
-	dojo.widget.ContentPane,
+dojo.declare(
+	"dojo.widget.FloatingPaneBase",
+	null,
 	{
 		// Constructor arguments
 		title: '',
@@ -44,7 +44,7 @@ dojo.widget.defineWidget(
 
 		drag: null,
 
-		fillInTemplate: function(args, frag){
+		fillInFloatingPaneTemplate: function(args, frag){
 			// Copy style info from input node to output node
 			var source = this.getFragNodeRef(frag);
 			dojo.html.copyStyle(this.domNode, source);
@@ -114,8 +114,6 @@ dojo.widget.defineWidget(
 	
 			// counteract body.appendChild above
 			dojo.body().removeChild(this.domNode);
-	
-			dojo.widget.FloatingPane.superclass.fillInTemplate.call(this, args, frag);
 		},
 	
 		postCreate: function(){
@@ -124,8 +122,6 @@ dojo.widget.defineWidget(
 			} else {
 				dojo.addOnLoad(this, "setInitialWindowState");
 			}
-			// make preload work
-			dojo.widget.FloatingPane.superclass.postCreate.apply(this, arguments);
 		},
 	
 		maximizeWindow: function(evt) {
@@ -290,14 +286,12 @@ dojo.widget.defineWidget(
 			}
 			taskbar.addChild(this);
 		},
-	
-		show: function(){
-			dojo.widget.FloatingPane.superclass.show.apply(this, arguments);
+
+		showFloatingPane: function(){
 			this.bringToTop();
 		},
-	
-		onShow: function(){
-			dojo.widget.FloatingPane.superclass.onShow.call(this);
+
+		onFloatingPaneShow: function(){
 			var mb = dojo.html.getMarginBox(this.domNode);
 			this.resizeTo(mb.width, mb.height);
 		},
@@ -329,6 +323,28 @@ dojo.widget.defineWidget(
 		}
 	}
 );
+
+dojo.widget.defineWidget(
+	"dojo.widget.FloatingPane",
+	[dojo.widget.ContentPane, dojo.widget.FloatingPaneBase], 
+{
+	fillInTemplate: function(args, frag){	
+		this.fillInFloatingPaneTemplate(args, frag);
+		dojo.widget.FloatingPane.superclass.fillInTemplate.call(this, args, frag);
+	},
+	postCreate: function(){
+		dojo.widget.FloatingPaneBase.prototype.postCreate.apply(this, arguments);
+		dojo.widget.FloatingPane.superclass.postCreate.apply(this, arguments);
+	},
+	show: function(){
+		dojo.widget.FloatingPane.superclass.show.apply(this, arguments);
+		this.showFloatingPane();
+	},
+	onShow: function(){
+		dojo.widget.FloatingPane.superclass.onShow.call(this);
+		this.onFloatingPaneShow();
+	}
+});
 
 dojo.require("dojo.widget.Dialog");
 dojo.widget.defineWidget(

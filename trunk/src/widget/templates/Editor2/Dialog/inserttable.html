@@ -1,145 +1,4 @@
-<script>
-_container_.addOnLoad(function(){
-	if(!_container_.refreshOnShow){
-		dojo.event.connect(_container_, "show", this, "init");
-	}
-	this.init();
-});
-
-this.editableAttributes = ['summery', 'height', 'cellspacing', 'cellpadding', 'border', 'align'];
-
-this.init = function(){
-	var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-	this.tableNode = dojo.withGlobal(curInst.window, "getSelectedElement", dojo.html.selection);
-	if(!this.tableNode || this.tableNode.tagName.toLowerCase() != 'table'){
-		this.tableNode = dojo.withGlobal(curInst.window, "getAncestorElement", dojo.html.selection, ['table']);
-	}
-
-	var tableAttributes = {};
-	this.extraAttribText = "";
-	if(this.tableNode){
-		dojo.byId("dojo_inserttable_rows").value = this.tableNode.rows.length;
-		dojo.byId("dojo_inserttable_rows").disabled = true;
-		dojo.byId("dojo_inserttable_cols").value = this.tableNode.rows[0].cells.length;
-		dojo.byId("dojo_inserttable_cols").disabled = true;
-
-		if (this.tableNode.caption){
-			dojo.byId("dojo_inserttable_caption").value = this.tableNode.caption.innerHTML;
-		}else{
-			dojo.byId("dojo_inserttable_caption").value = "";
-		}
-
-		var width = this.tableNode.style.width || this.tableNode.width;
-		if(width){
-			dojo.byId("dojo_inserttable_width").value = parseInt(width);
-			if (width.indexOf('%') > -1){
-				dojo.byId("dojo_inserttable_widthtype").value = "percent";
-			}else{
-				dojo.byId("dojo_inserttable_widthtype").value = "pixels";
-			}
-		}else{
-			dojo.byId("dojo_inserttable_width").value = "100";
-		}
-
-		var height = this.tableNode.style.height || this.tableNode.height;
-		if(height){
-			dojo.byId("dojo_inserttable_height").value = parseInt(width);
-		}else{
-			dojo.byId("dojo_inserttable_height").value = "";
-		}
-
-		var attrs = this.tableNode.attributes;
-		for(var i=0; i<attrs.length; i++) {
-			if(dojo.lang.find(this.editableAttributes, attrs[i].name.toLowerCase())>-1){
-				tableAttributes[attrs[i].name] = attrs[i].value;
-			}else{
-				this.extraAttribText += attrs[i].name + '="'+attrs[i].value+'" ';
-			}
-		}
-	}else{
-		dojo.byId("dojo_inserttable_rows").value = 3;
-		dojo.byId("dojo_inserttable_rows").disabled = false;
-		dojo.byId("dojo_inserttable_cols").value = 2;
-		dojo.byId("dojo_inserttable_cols").disabled = false;
-		dojo.byId("dojo_inserttable_width").value = 100;
-		dojo.byId("dojo_inserttable_widthtype").value = "percent";
-		dojo.byId("dojo_inserttable_height").value = "";
-	}
-
-	for(var i in this.editableAttributes){
-		name = this.editableAttributes[i];
-		dojo.byId("dojo_inserttable_"+name).value = (tableAttributes[name] == undefined) ? "" : tableAttributes[name];
-		if(name == 'height' && tableAttributes[name] != undefined){
-			dojo.byId("dojo_inserttable_"+name).value = tableAttributes[name];
-		}
-	}
-};
-
-this.ok = function(){
-	var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-	var args = {};
-
-	args['rows'] = dojo.byId("dojo_inserttable_rows").value;
-	args['cols'] = dojo.byId("dojo_inserttable_cols").value;
-	args['caption'] = dojo.byId("dojo_inserttable_caption").value;
-	args["tableattrs"] = "";
-	if(dojo.byId("dojo_inserttable_widthtype").value == "percent"){
-		args["tableattrs"] += 'width="'+dojo.byId("dojo_inserttable_width").value +'%" ';
-	}else{
-		args["tableattrs"] += 'width="'+dojo.byId("dojo_inserttable_width").value +'px" ';
-	}
-	for(var i in this.editableAttributes){
-		var name = this.editableAttributes[i];
-		var value = dojo.byId("dojo_inserttable_"+name).value;
-		if(value.length > 0){
-			args["tableattrs"] += name + '="'+value+'" ';
-		}
-	}
-
-	if(!args["tableattrs"]){
-		args["tableattrs"] = "";
-	}
-
-	//show the border in IE by applying a custom class
-	if(dojo.render.html.ie && !dojo.byId("dojo_inserttable_border").value){
-		args["tableattrs"] += 'class="dojoShowIETableBorders" ';
-	}
-
-	var html = "<table "+args["tableattrs"]+">";
-	if(args['caption']){
-		html += "<caption>"+args["caption"]+"</caption>";
-	}
-	var outertbody = "<tbody>";
-	if(this.tableNode){
-		//retain the content
-		var tbody = this.tableNode.getElementsByTagName("tbody")[0];
-		outertbody = tbody.outerHTML;
-		if(!outertbody){
-			var cnode = tbody.cloneNode(true);
-			var tmpnode = tbody.ownerDocument.createElement("div");
-			tmpnode.appendChild(cnode);
-			outertbody = tmpnode.innerHTML;
-		}
-		//TODO: save current selection and restore it later
-		dojo.withGlobal(curInst.window, "selectElement", dojo.html.selection, [this.tableNode]);
-	}else{
-		var cols = "<tr>";
-		for (var i = 0; i < +args.cols; i++) { cols += "<td></td>"; }
-		cols += "</tr>";
-		for (var i = 0; i < args.rows; i++) { outertbody += cols; }
-		outertbody += "</tbody>";
-	}
-	html += outertbody+"</table>";
-	curInst.execCommand("inserthtml", html);
-
-	_container_.hide();
-};
-
-this.cancel = function(){
-	_container_.hide();
-};
-
-</script>
+<div>
 <table cellSpacing="1" cellPadding="1" width="100%" border="0">
 	<tr>
 		<td valign="top">
@@ -147,11 +6,11 @@ this.cancel = function(){
 				<tr>
 
 					<td><span>Rows</span>:</td>
-					<td>&nbsp;<input id="dojo_inserttable_rows" type="text" maxLength="3" size="2" value="3"></td>
+					<td>&nbsp;<input dojoAttachPoint="table_rows" type="text" maxLength="3" size="2" value="3"></td>
 				</tr>
 				<tr>
 					<td><span>Columns</span>:</td>
-					<td>&nbsp;<input id="dojo_inserttable_cols" type="text" maxLength="2" size="2" value="2"></td>
+					<td>&nbsp;<input dojoAttachPoint="table_cols" type="text" maxLength="2" size="2" value="2"></td>
 				</tr>
 
 				<tr>
@@ -160,12 +19,12 @@ this.cancel = function(){
 				</tr>
 				<tr>
 					<td><span>Border size</span>:</td>
-					<td>&nbsp;<INPUT id="dojo_inserttable_border" type="text" maxLength="2" size="2" value="1"></td>
+					<td>&nbsp;<INPUT dojoAttachPoint="table_border" type="text" maxLength="2" size="2" value="1"></td>
 				</tr>
 
 				<tr>
 					<td><span>Alignment</span>:</td>
-					<td>&nbsp;<select id="dojo_inserttable_align">
+					<td>&nbsp;<select dojoAttachPoint="table_align">
 							<option value="" selected>&lt;Not set&gt;</option>
 							<option value="left">Left</option>
 							<option value="center">Center</option>
@@ -179,8 +38,8 @@ this.cancel = function(){
 			<table cellSpacing="0" cellPadding="0" border="0">
 				<tr>
 					<td><span>Width</span>:</td>
-					<td>&nbsp;<input id="dojo_inserttable_width" type="text" maxLength="4" size="3"></td>
-					<td>&nbsp;<select id="dojo_inserttable_widthtype">
+					<td>&nbsp;<input dojoAttachPoint="table_width" type="text" maxLength="4" size="3"></td>
+					<td>&nbsp;<select dojoAttachPoint="table_widthtype">
 							<option value="percent" selected>percent</option>
 							<option value="pixels">pixels</option>
 						</select></td>
@@ -188,7 +47,7 @@ this.cancel = function(){
 				</tr>
 				<tr>
 					<td><span>Height</span>:</td>
-					<td>&nbsp;<INPUT id="dojo_inserttable_height" type="text" maxLength="4" size="3"></td>
+					<td>&nbsp;<INPUT dojoAttachPoint="table_height" type="text" maxLength="4" size="3"></td>
 					<td>&nbsp;<span>pixels</span></td>
 				</tr>
 				<tr>
@@ -198,13 +57,13 @@ this.cancel = function(){
 				</tr>
 				<tr>
 					<td nowrap><span>Cell spacing</span>:</td>
-					<td>&nbsp;<input id="dojo_inserttable_cellspacing" type="text" maxLength="2" size="2" value="1"></td>
+					<td>&nbsp;<input dojoAttachPoint="table_cellspacing" type="text" maxLength="2" size="2" value="1"></td>
 					<td>&nbsp;</td>
 
 				</tr>
 				<tr>
 					<td nowrap><span>Cell padding</span>:</td>
-					<td>&nbsp;<input id="dojo_inserttable_cellpadding" type="text" maxLength="2" size="2" value="1"></td>
+					<td>&nbsp;<input dojoAttachPoint="table_cellpadding" type="text" maxLength="2" size="2" value="1"></td>
 					<td>&nbsp;</td>
 				</tr>
 			</table>
@@ -216,16 +75,17 @@ this.cancel = function(){
 		<td nowrap><span>Caption</span>:</td>
 		<td>&nbsp;</td>
 		<td width="100%" nowrap>&nbsp;
-			<input id="dojo_inserttable_caption" type="text" style="WIDTH: 90%"></td>
+			<input dojoAttachPoint="table_caption" type="text" style="WIDTH: 90%"></td>
 	</tr>
 	<tr>
 		<td nowrap><span>Summary</span>:</td>
 		<td>&nbsp;</td>
 		<td width="100%" nowrap>&nbsp;
-			<input id="dojo_inserttable_summery" type="text" style="WIDTH: 90%"></td>
+			<input dojoAttachPoint="table_summery" type="text" style="WIDTH: 90%"></td>
 	</tr>
 </table>
 <table><tr>
-<td><button dojoType='Button' onClick='scriptScope.ok();'>Ok</button></td>
-<td><button dojoType='Button' onClick='scriptScope.cancel();'>Cancel</button></td>
+<td><button dojoType='Button' dojoAttachChildEvent='onClick:ok'>Ok</button></td>
+<td><button dojoType='Button' dojoAttachChildEvent='onClick:cancel'>Cancel</button></td>
 </tr></table>
+</div>

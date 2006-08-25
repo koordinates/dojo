@@ -64,12 +64,14 @@ dojo.widget.Editor2Manager = {
 			//dialog command
 			case 'createlink':
 				oCommand = new dojo.widget.Editor2DialogCommand(name, 
-						{href: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/createlink.html"), 
+						{contentFile: "dojo.widget.Editor2Plugin.CreateLinkDialog", 
+							contentClass: "Editor2CreateLinkDialog",
 							title: "Insert/Edit Link", width: "300px", height: "200px"});
 				break;
 			case 'insertimage':
 				oCommand = new dojo.widget.Editor2DialogCommand(name, 
-						{href: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/insertimage.html"), 
+						{contentFile: "dojo.widget.Editor2Plugin.InsertImageDialog", 
+							contentClass: "Editor2InsertImageDialog",
 							title: "Insert/Edit Image", width: "400px", height: "270px"});
 				break;
 			// By default we assume that it is a builtin simple command.
@@ -183,7 +185,7 @@ dojo.lang.declare("dojo.widget.Editor2FormatBlockCommand", dojo.widget.Editor2Br
 dojo.require("dojo.widget.FloatingPane");
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2Dialog",
-	[dojo.widget.FloatingPane, dojo.widget.ModalDialogBase],
+	[dojo.widget.HtmlWidget, dojo.widget.FloatingPaneBase, dojo.widget.ModalDialogBase],
 	{
 		modal: true,
 		templatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorDialog.html"),
@@ -196,7 +198,22 @@ dojo.widget.defineWidget(
 		windowState: "minimized",
 		displayCloseAction: true,
 
+		contentFile: "",
+		contentClass: "",
+
+		fillInTemplate: function(args, frag){	
+			this.fillInFloatingPaneTemplate(args, frag);
+			dojo.widget.Editor2Dialog.superclass.fillInTemplate.call(this, args, frag);
+		},
 		postCreate: function(){
+			if(this.contentFile){
+				dojo.require(this.contentFile);
+			}
+			if(this.contentClass){
+				this.contentWidget = dojo.widget.createWidget(this.contentClass, {parent: this});
+				this.containerNode.appendChild(this.contentWidget.domNode);
+				dojo.event.connect(this, "destroy", this.contentWidget, "destroy");
+			}
 			if(this.modal){
 				dojo.widget.ModalDialogBase.prototype.postCreate.call(this);
 			}else{
@@ -204,8 +221,8 @@ dojo.widget.defineWidget(
 					zIndex = 999;
 					display = "none";
 				}
-//				dojo.body().appendChild(this.domNode);
 			}
+			dojo.widget.FloatingPaneBase.prototype.postCreate.apply(this, arguments);
 			dojo.widget.Editor2Dialog.superclass.postCreate.call(this);
 			if(this.width && this.height){
 				with(this.domNode.style){
@@ -215,6 +232,7 @@ dojo.widget.defineWidget(
 			}
 		},
 		show: function(){
+			this.showFloatingPane();
 			dojo.widget.Editor2Dialog.superclass.show.apply(this, arguments);
 			if(this.modal){
 				this.showModalDialog();
@@ -224,6 +242,10 @@ dojo.widget.defineWidget(
 				//place the background div under this modal pane
 				this.shared.bg.style.zIndex = this.domNode.style.zIndex-1;
 			}
+		},
+		onShow: function(){
+			dojo.widget.Editor2Dialog.superclass.onShow.call(this);
+			this.onFloatingPaneShow();
 		},
 		closeWindow: function(){
 			this.hide();
@@ -238,6 +260,67 @@ dojo.widget.defineWidget(
 	}
 );
 
+dojo.widget.defineWidget(
+	"dojo.widget.Editor2DialogContent",
+	dojo.widget.HtmlWidget,
+{
+	buildRendering: function(args, frag){
+		dojo.widget.Editor2DialogContent.superclass.buildRendering.apply(this, arguments);
+		var parser = new dojo.xml.Parse();
+
+		var frag = parser.parseElement(this.domNode, null, true);
+		// createSubComponents not createComponents because frag has already been created
+		dojo.widget.getParser().createSubComponents(frag, this);
+
+		//connect event to this widget/attach dom node
+		for(var i = 0; i < this.children.length; i++){
+			var widget = this.children[i];
+			if(widget.extraArgs['dojoattachchildevent']){
+				var evts = widget.extraArgs['dojoattachchildevent'].split(";");
+				for(var j=0; j<evts.length; j++){
+					var thisFunc = null;
+					var tevt = dojo.string.trim(evts[j]);
+					if(tevt.indexOf(":") >= 0){
+						// oh, if only JS had tuple assignment
+						var funcNameArr = tevt.split(":");
+						tevt = dojo.string.trim(funcNameArr[0]);
+						thisFunc = dojo.string.trim(funcNameArr[1]);
+					}
+					if(!thisFunc){
+						thisFunc = tevt;
+					}
+					if(dojo.lang.isFunction(widget[tevt])){
+						dojo.event.connect(widget, tevt, this, thisFunc);
+					}else{
+						alert(tevt+" is not a function in widget "+widget);
+					}
+				}
+			}
+			if(widget.extraArgs['dojoattachchildpoint']){
+				//don't attach widget.domNode here, as we do not know which
+				//dom node we should connect to (in checkbox widget case, 
+				//it is inputNode). So we make the widget itself available
+				this[widget.extraArgs['dojoattachchildpoint']] = widget;
+			}
+		}
+	},
+	postCreate: function(){
+		dojo.event.connect("around", this.parent, "show", this, "initConent");
+		dojo.widget.Editor2DialogContent.superclass.postCreate.apply(this, arguments);
+	},
+	initConent: function(mi){
+		if(this.loadContent()){
+			mi.proceed();
+		}
+	},
+	loadContent:function(){
+		return true;
+	},
+	cancel: function(){
+		this.parent.hide();
+	}
+});
+
 dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2BrowserCommand, 
 	function(name, dialogParas){
 		this.dialogParas = dialogParas;
@@ -245,8 +328,8 @@ dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2Browser
 {
 	execute: function(){
 		if(!this.dialog){
-			if(!this.dialogParas.href){
-				alert("Href should be set for dojo.widget.Editor2DialogCommand.dialogParas!");
+			if(!this.dialogParas.contentFile || !this.dialogParas.contentClass){
+				alert("contentFile and contentClass should be set for dojo.widget.Editor2DialogCommand.dialogParas!");
 				return;
 			}
 			this.dialog = dojo.widget.createWidget("Editor2Dialog", this.dialogParas);
