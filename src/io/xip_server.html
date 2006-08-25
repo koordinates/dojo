@@ -1,7 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!--
+	/*
+		Copyright (c) 2004-2006, The Dojo Foundation
+		All Rights Reserved.
+	
+		Licensed under the Academic Free License version 2.1 or above OR the
+		modified BSD license. For more information on Dojo licensing, see:
+	
+			http://dojotoolkit.org/community/licensing.shtml
+	*/
+	Pieces taken from Dojo source to make this file stand-alone
+-->
+<html>
 <head>
 	<title></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
@@ -44,14 +53,56 @@
 	code to communicate back to the xip client frame.
 	*/
 	djConfig = {
-		parseWidgets: false
+		parseWidgets: false,
+		baseScriptUri: "./"
 	}
 	// -->
 	</script>
-	<script type="text/javascript" src="../../dojo.js"></script>
 	<script type="text/javascript">
-	// <!--
-	dojo.require("dojo.io.*");
+		dojo = {};
+		dojo.hostenv = {};
+		// These are in order of decreasing likelihood; this will change in time.
+		dojo.hostenv._XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
+		
+		dojo.hostenv.getXmlhttpObject = function(){
+				var http = null;
+			var last_e = null;
+			try{ http = new XMLHttpRequest(); }catch(e){}
+				if(!http){
+				for(var i=0; i<3; ++i){
+					var progid = dojo.hostenv._XMLHTTP_PROGIDS[i];
+					try{
+						http = new ActiveXObject(progid);
+					}catch(e){
+						last_e = e;
+					}
+		
+					if(http){
+						dojo.hostenv._XMLHTTP_PROGIDS = [progid];  // so faster next time
+						break;
+					}
+				}
+		
+				/*if(http && !http.toString) {
+					http.toString = function() { "[object XMLHttpRequest]"; }
+				}*/
+			}
+		
+			if(!http){
+				throw "xip_server.html: XMLHTTP not available: " + last_e;
+			}
+		
+			return http;
+		}
+
+		dojo.setHeaders = function(http, headers){
+			if(headers) {
+				for(var header in headers) {
+					var headerValue = headers[header];
+					http.setRequestHeader(header, headerValue);
+				}
+			}
+		}
 
 	//Choosing 1024 as an arbitrary limit for the URL sizes.
 	//Anecdotal info seems to indicate this is safe to use in all
@@ -171,15 +222,49 @@
 		}
 	}
 
-	function sendXhr(){
-		//Decode data and pull off the fields that are sent by
-		//dojo.io.XhrIframeProxy.clientFrameLoaded()
-		/*
-		requestHeaders: reqHeaders.join("\r\n"),
-			method: facade.method,
-			uri: facade.uri,
-			data: facade._bodyData
+	function xhrDone(xhr){
+		/* Need to pull off and return the following data:
+			- responseHeaders
+			- status
+			- statusText
+			- responseText
 		*/
+		var response = {};
+	
+		if(typeof(xhr.getAllResponseHeaders) != "undefined"){
+			var allHeaders = xhr.getAllResponseHeaders();
+			if(allHeaders){
+				response.responseHeaders = allHeaders;
+			}
+		}
+		
+		if(xhr.status == 0 || xhr.status){
+			response.status = xhr.status;
+		}
+		
+		if(xhr.statusText){
+			response.statusText = xhr.statusText;
+		}
+		
+		if(xhr.responseText){
+			response.responseText = xhr.responseText;
+		}
+	
+		//Build a string of the response object.
+		var result = "";
+		var isFirst = true;
+		for (var param in response){
+			if(isFirst){
+				isFirst = false;
+			}else{
+				result += "&";
+			}
+			result += param + "=" + encodeURIComponent(response[param]);
+		}
+		sendResponse(result);
+	}
+
+	function sendXhr(){
 		var request = {};
 		var nvPairs = xipRequestMessage.split("&");
 		var i = 0;
@@ -206,55 +291,40 @@
 		}
 		
 		if(isAllowedRequest(request)){
-			var kwArgs = {
-				url: request.uri,
-				handle: function(type, data, xhr, args){
-					/* Need to pull off and return the following data:
-						- responseHeaders
-						- status
-						- statusText
-						- responseText
-					*/
-					var response = {};
-					
-					if(typeof(xhr.getAllResponseHeaders) != "undefined"){
-						var allHeaders = xhr.getAllResponseHeaders();
-						if(allHeaders){
-							response.responseHeaders = allHeaders;
-						}
-					}
-					
-					if(xhr.status == 0 || xhr.status){
-						response.status = xhr.status;
-					}
-					
-					if(xhr.statusText){
-						response.statusText = xhr.statusText;
-					}
-					
-					if(data){
-						response.responseText = data;
-					}
-
-					sendResponse(dojo.io.argsFromMap(response, "utf8"));
-				}
-			};
-
-			if(request.method){
-				kwArgs.method = request.method;
-			}
-			if(request.requestHeaders){
-				kwArgs.headers = request.requestHeaders;
-			}
-			if(request.data){
-				kwArgs.postContent = request.data;
-			}
+		
+			//The request is allowed, so set up the XHR object.
+			var xhr = dojo.hostenv.getXmlhttpObject();
 			
-			dojo.io.bind(kwArgs);
+			//Start timer to look for readyState.
+			var xhrIntervalId = setInterval(function(){
+			
+				if(xhr.readyState == 4){
+					clearInterval(xhrIntervalId);
+					xhrDone(xhr);
+				}
+			}, 10);
+
+			//Actually start up the XHR request.
+			xhr.open(request.method, request.uri, true);
+			dojo.setHeaders(xhr, request.requestHeaders);
+			
+			var content = "";
+			if(request.data){
+				content = request.data;
+			}
+
+			try{
+				xhr.send(content);
+			}catch(e){
+				if(typeof xhr.abort == "function"){
+					xhr.abort();
+					xhrDone({status: 404, statusText: "xip_server.html error: " + e});
+				}
+			}
 		}
 	}
 
-	dojo.addOnLoad(xipServerLoaded);
+	window.onload = xipServerLoaded;
 	// -->
 	</script>
 </head>

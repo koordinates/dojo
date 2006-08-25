@@ -7,6 +7,7 @@ dojo.experimental("dojo.io.XhrIframeProxy");
 dojo.require("dojo.io.IframeIO");
 dojo.require("dojo.html.iframe");
 dojo.require("dojo.dom");
+dojo.require("dojo.uri.Uri");
 
 /*
 TODO: This page might generate a "loading unsecure items on a secure page"
@@ -17,6 +18,8 @@ setting a src on the iframe element.
 */
 
 dojo.io.XhrIframeProxy = new function(){
+	this.xipClientUrl = dojo.uri.dojoUri("src/io/xip_client.html");
+
 	this._state = {};
 	this._stateIdCounter = 0;
 
@@ -29,7 +32,7 @@ dojo.io.XhrIframeProxy = new function(){
 			stateId: stateId,
 			clientFrame: dojo.io.createIFrame(stateId,
 				"dojo.io.XhrIframeProxy.clientFrameLoaded('" + stateId + "');",
-				dojo.uri.dojoUri("src/io/xip_client.html"))
+				this.xipClientUrl)
 		};
 	}
 	
