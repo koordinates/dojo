@@ -253,7 +253,7 @@ dojo.widget.getDojoEventsFromStr = function(str){
 	var ret = [];
 	var lem = {};
 	for(var x=0; x<evts.length; x++){
-		if(evts[x].legth < 1){ continue; }
+		if(evts[x].length < 1){ continue; }
 		var cm = evts[x].replace(/\s/, "");
 		cm = (cm.slice(0, cm.length-1));
 		if(!lem[cm]){
