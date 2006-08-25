@@ -327,7 +327,7 @@ dojo.html.getElementBox = function(node, type){
 }
 // in: coordinate array [x,y,w,h] or dom node
 // return: coordinate object
-dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, includeScroll) {
+dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, includeScroll, boxtype) {
 	if(coords instanceof Array || typeof coords == "array"){
 		dojo.deprecated("dojo.html.toCoordinateArray", "use dojo.html.toCoordinateObject({left: , top: , width: , height: }) instead", "0.5");
 		// coords is already an array (of format [x,y,w,h]), just return it
@@ -352,7 +352,7 @@ dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, in
 	}else{
 		// coords is an dom object (or dom object id); return it's coordinates
 		var node = dojo.byId(coords);
-		var pos = dojo.html.abs(node, includeScroll);
+		var pos = dojo.html.abs(node, includeScroll, boxtype);
 		var marginbox = dojo.html.getMarginBox(node);
 		var ret = {
 			left: pos.left,
