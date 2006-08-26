@@ -110,6 +110,7 @@ dojo.declare("dojo.widget.Editor2Plugin.AlwaysShowToolbar", null,
 				position = "";
 				top = "";
 				zIndex = "";
+				display = "";
 			}
 			if(isIE){
 				tdn.style.left = "";
