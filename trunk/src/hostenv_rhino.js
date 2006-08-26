@@ -12,6 +12,10 @@ var loadClass; var print; var load; var quit; var version; var Packages; var jav
 // TODO: not sure what we gain from the next line, anyone?
 //if (typeof loadClass == 'undefined') { dojo.raise("attempt to use Rhino host environment when no 'loadClass' global"); }
 
+dojo.hostenv.println=function(line){
+	print(line);
+}
+
 dojo.locale = dojo.locale || java.util.Locale.getDefault().toString().replace('_','-').toLowerCase();
 dojo.render.name = dojo.hostenv.name_ = 'rhino';
 dojo.hostenv.getVersion = function() {return version();};
@@ -45,7 +49,6 @@ dojo.hostenv.loadUri = function(uri, cb){
 	}
 }
 
-dojo.hostenv.println = print;
 dojo.hostenv.exit = function(exitcode){ 
 	quit(exitcode);
 }

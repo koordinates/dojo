@@ -184,7 +184,7 @@ dojo.validate.isNumberFormat = function(value, flags) {
 
 			// dependant/conditional fields are required if the target field is present and not blank.
 			// At present only textbox, password, and textarea fields are supported.
-			dependancies:	{
+			dependencies:	{
 				cc_exp: "cc_no",	
 				cc_type: "cc_no",	
 			},
