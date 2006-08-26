@@ -515,9 +515,9 @@ dojo.widget.defineWidget(
 		var x = e.pageX, y = e.pageY;
 
 		var win = dojo.html.getElementWindow(e.target);
-		var iframe = win.frameElement;
+		var iframe = win._frameElement || win.frameElement;
 		if(iframe){
-			var cood = dojo.html.getAbsolutePosition(iframe, true);
+			var cood = dojo.html.abs(iframe, true);
 			x += cood.x - dojo.withGlobal(win, dojo.html.getScroll).left;
 			y += cood.y - dojo.withGlobal(win, dojo.html.getScroll).top;
 		}
