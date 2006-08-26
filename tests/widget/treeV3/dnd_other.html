@@ -1,8 +1,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<title>Drag non-tree source to tree</title>
+</html>
 
-<title>Dojo Button Widget Test</title>
-
+<body>
 <script type="text/javascript">
 	var djConfig = {isDebug: true, debugAtAllCosts: true };
 </script>
@@ -44,13 +46,17 @@
 			// its result will be inserted
 			source.getTreeNode = makeTransformer(elem);
 			
-			// this will happen with source object after it is dropped		
-			source.onDrop = function() { dojo.html.removeNode(this.domNode) }
+			// this will happen with source object after it is dropped					
+			source.onDrop = function() { 
+				dojo.html.removeNode(this.domNode) 
+			}
 		}
 
 	});
 
 </script>
+
+<h3>Drag list member to tree</h3>
 
 <ul id="dragList1">
 	<li>list 1 item 1 
@@ -83,4 +89,5 @@
 	<div dojoType="TreeNodeV3" title="Empty Folder" isFolder="true" widgetId="Item 3"></div>
 	<div dojoType="TreeNodeV3" title="Item 4" widgetId="Item 4"></div>
 </div>
-
+</body>
+</html>
