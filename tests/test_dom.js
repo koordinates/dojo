@@ -9,18 +9,11 @@ function test_dom_sanityCheck(){
 	jum.assertEquals("test1", 3, td.childNodes.length);
 }
 
-function test_dom_getUniqueId(){
-    // something in bootstrap needs to fix the fact that we expliciet set the
-    // dojo._currentDocument here, this shouldn't be needed
-    // test_bootstrap.js#test_dojo_doc tests the case that this is a workaround for
-    var _oldDoc = dojo.doc();
-    dojo._currentDocument = document;    
+function test_dom_getUniqueId(){ 
 	var td = document.createElement("div");
 	td.setAttribute("id", "dj_unique_1");    
     document.body.appendChild(td);
 	jum.assertEquals("test40", "dj_unique_2", dojo.dom.getUniqueId());
-	// remove this when thing mentioned abover is fixed
-	dojo._currentDocument = _oldDoc;
 }
 
 function test_dom_getFirstChildElement(){
