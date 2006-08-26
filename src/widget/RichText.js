@@ -679,6 +679,9 @@ dojo.widget.defineWidget(
 				this.editNode = this.document.body;
 				this.domNode.style.height = this.height ? this.height : this.minHeight;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
+				//pretend the object as an iframe, so that the context menu for the
+				//editor can be placed correctly when shown
+				this.window._frameElement = this.object;
 			}else if (this.iframe && !dojo.render.html.ie){
 				this.editNode = this.document.body;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
@@ -1617,6 +1620,15 @@ dojo.widget.defineWidget(
 			// FIXME: is this always the right thing to do?
 			delete this.editNode;
 
+			if(this.window._frameElement){
+				this.window._frameElement = null;
+			}
+
+			this.window = null;
+			this.document = null;
+			this.editNode = null;
+			this.object = null;
+
 			return changed;
 		},
 
@@ -1631,10 +1643,7 @@ dojo.widget.defineWidget(
 				this.disconnect(this._connected[0],
 					this._connected[1], this._connected[2]);
 			}
-			this.window = null;
-			this.document = null;
-			this.editNode = null;
-			this.object = null;
+
 			dojo.widget.RichText.superclass.destroy.call(this);
 		},
 
