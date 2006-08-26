@@ -22,7 +22,6 @@ dojo.hostenv.getVersion = function() {return version();};
 
 // see comments in spidermonkey loadUri
 dojo.hostenv.loadUri = function(uri, cb){
-	dojo.debug("uri: "+uri);
 	try{
 		var local = (new java.io.File(uri)).exists();
 		if(!local){
@@ -40,8 +39,6 @@ dojo.hostenv.loadUri = function(uri, cb){
 		}else{
 			var ok = load(uri);
 		}
-		// dojo.debug(typeof ok);
-		dojo.debug("rhino load('", uri, "') returned. Ok: ", ok);
 		return 1;
 	}catch(e){
 		dojo.debug("rhino load('", uri, "') failed. Exception: "+e);
