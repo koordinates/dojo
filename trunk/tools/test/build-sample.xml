@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- 
+    Copyright (c) 2004-2006 The Dojo Foundation, Licensed under the Academic
+    Free License version 2.1 or BSD licenses
+-->
+
+<project name="dojo-ant-task" default="test" basedir=".">
+
+    <description>
+        Shows example of using the dojo ant testing task. You must compile and build
+        the ant testing tool by running the dist-jar task on the main build.xml before
+        trying to run this example.
+    </description>
+    
+    <!-- Defines the dojo test task. -->
+    <taskdef name="dojo-test" 
+        classname="org.dojotoolkit.ant.DojoTestTask" 
+        classpath="dist/ant-dojotest.jar" />
+    
+    <!-- Runs the dojo testing task. -->
+    <target name="test">
+        <dojo-test dojosrc="../../" testsrc="test/test-data/tests"/>
+    </target>
+    
+</project>
