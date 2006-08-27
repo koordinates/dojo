@@ -142,18 +142,79 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 		var baseNode = (x == -1) ? rootNode : nodes[x];
 		// FIXME: is this going to have capitalization problems?  Could use getAttribute(name, 0); to get attributes case-insensitve
 		var attachPoint = [];
-		for(var y=0; y<this.attachProperties.length; y++){
-			var tmpAttachPoint = baseNode.getAttribute(this.attachProperties[y]);
-			if(tmpAttachPoint){
-				attachPoint = tmpAttachPoint.split(";");
-				for(var z=0; z<attachPoint.length; z++){
-					if(dojo.lang.isArray(targetObj[attachPoint[z]])){
-						targetObj[attachPoint[z]].push(baseNode);
-					}else{
-						targetObj[attachPoint[z]]=baseNode;
+		if(!targetObj.enableSubWidgets || !baseNode.getAttribute('dojoType')){
+			for(var y=0; y<this.attachProperties.length; y++){
+				var tmpAttachPoint = baseNode.getAttribute(this.attachProperties[y]);
+				if(tmpAttachPoint){
+					attachPoint = tmpAttachPoint.split(";");
+					for(var z=0; z<attachPoint.length; z++){
+						if(dojo.lang.isArray(targetObj[attachPoint[z]])){
+							targetObj[attachPoint[z]].push(baseNode);
+						}else{
+							targetObj[attachPoint[z]]=baseNode;
+						}
+					}
+					break;
+				}
+			}
+
+			var attachEvent = baseNode.getAttribute(this.eventAttachProperty);
+			if(attachEvent){
+				// NOTE: we want to support attributes that have the form
+				// "domEvent: nativeEvent; ..."
+				var evts = attachEvent.split(";");
+				for(var y=0; y<evts.length; y++){
+					if((!evts[y])||(!evts[y].length)){ continue; }
+					var thisFunc = null;
+					var tevt = trim(evts[y]);
+					if(evts[y].indexOf(":") >= 0){
+						// oh, if only JS had tuple assignment
+						var funcNameArr = tevt.split(":");
+						tevt = trim(funcNameArr[0]);
+						thisFunc = trim(funcNameArr[1]);
+					}
+					if(!thisFunc){
+						thisFunc = tevt;
+					}
+	
+					var tf = function(){ 
+						var ntf = new String(thisFunc);
+						return function(evt){
+							if(_this[ntf]){
+								_this[ntf](dojo.event.browser.fixEvent(evt, this));
+							}
+						};
+					}();
+					dojo.event.browser.addListener(baseNode, tevt, tf, false, true);
+					// dojo.event.browser.addListener(baseNode, tevt, dojo.lang.hitch(_this, thisFunc));
+				}
+			}
+	
+			for(var y=0; y<events.length; y++){
+				//alert(events[x]);
+				var evtVal = baseNode.getAttribute(events[y]);
+				if((evtVal)&&(evtVal.length)){
+					var thisFunc = null;
+					var domEvt = events[y].substr(4); // clober the "dojo" prefix
+					thisFunc = trim(evtVal);
+					var funcs = [thisFunc];
+					if(thisFunc.indexOf(";")>=0){
+						funcs = dojo.lang.map(thisFunc.split(";"), trim);
+					}
+					for(var z=0; z<funcs.length; z++){
+						if(!funcs[z].length){ continue; }
+						var tf = function(){ 
+							var ntf = new String(funcs[z]);
+							return function(evt){
+								if(_this[ntf]){
+									_this[ntf](dojo.event.browser.fixEvent(evt, this));
+								}
+							}
+						}();
+						dojo.event.browser.addListener(baseNode, domEvt, tf, false, true);
+						// dojo.event.browser.addListener(baseNode, domEvt, dojo.lang.hitch(_this, funcs[z]));
 					}
 				}
-				break;
 			}
 		}
 		// continue;
@@ -178,65 +239,6 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 				}
 			}
 		}, this);
-
-		var attachEvent = baseNode.getAttribute(this.eventAttachProperty);
-		if(attachEvent){
-			// NOTE: we want to support attributes that have the form
-			// "domEvent: nativeEvent; ..."
-			var evts = attachEvent.split(";");
-			for(var y=0; y<evts.length; y++){
-				if((!evts[y])||(!evts[y].length)){ continue; }
-				var thisFunc = null;
-				var tevt = trim(evts[y]);
-				if(evts[y].indexOf(":") >= 0){
-					// oh, if only JS had tuple assignment
-					var funcNameArr = tevt.split(":");
-					tevt = trim(funcNameArr[0]);
-					thisFunc = trim(funcNameArr[1]);
-				}
-				if(!thisFunc){
-					thisFunc = tevt;
-				}
-
-				var tf = function(){ 
-					var ntf = new String(thisFunc);
-					return function(evt){
-						if(_this[ntf]){
-							_this[ntf](dojo.event.browser.fixEvent(evt, this));
-						}
-					};
-				}();
-				dojo.event.browser.addListener(baseNode, tevt, tf, false, true);
-				// dojo.event.browser.addListener(baseNode, tevt, dojo.lang.hitch(_this, thisFunc));
-			}
-		}
-
-		for(var y=0; y<events.length; y++){
-			//alert(events[x]);
-			var evtVal = baseNode.getAttribute(events[y]);
-			if((evtVal)&&(evtVal.length)){
-				var thisFunc = null;
-				var domEvt = events[y].substr(4); // clober the "dojo" prefix
-				thisFunc = trim(evtVal);
-				var funcs = [thisFunc];
-				if(thisFunc.indexOf(";")>=0){
-					funcs = dojo.lang.map(thisFunc.split(";"), trim);
-				}
-				for(var z=0; z<funcs.length; z++){
-					if(!funcs[z].length){ continue; }
-					var tf = function(){ 
-						var ntf = new String(funcs[z]);
-						return function(evt){
-							if(_this[ntf]){
-								_this[ntf](dojo.event.browser.fixEvent(evt, this));
-							}
-						}
-					}();
-					dojo.event.browser.addListener(baseNode, domEvt, tf, false, true);
-					// dojo.event.browser.addListener(baseNode, domEvt, dojo.lang.hitch(_this, funcs[z]));
-				}
-			}
-		}
 
 		var onBuild = baseNode.getAttribute(this.onBuildProperty);
 		if(onBuild){
@@ -286,6 +288,8 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget,
 	preventClobber: false,
 	domNode: null, // this is our visible representation of the widget!
 	containerNode: null, // holds child elements
+
+	enableSubWidgets: false, //by default, widgets defined in templates are ignored
 
 	// Process the given child widget, inserting it's dom node as a child of our dom node
 	// FIXME: should we support addition at an index in the children arr and
@@ -487,6 +491,46 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget,
 											// will handle population of data
 											// from properties, remote data
 											// sets, etc.
+
+		if(this.enableSubWidgets){
+			var parser = new dojo.xml.Parse();
+	
+			var frag = parser.parseElement(this.domNode, null, true);
+			// createSubComponents not createComponents because frag has already been created
+			dojo.widget.getParser().createSubComponents(frag, this);
+	
+			//connect event to this widget/attach dom node
+			for(var i = 0; i < this.children.length; i++){
+				var widget = this.children[i];
+				if(widget.extraArgs['dojoattachevent']){
+					var evts = widget.extraArgs['dojoattachevent'].split(";");
+					for(var j=0; j<evts.length; j++){
+						var thisFunc = null;
+						var tevt = dojo.string.trim(evts[j]);
+						if(tevt.indexOf(":") >= 0){
+							// oh, if only JS had tuple assignment
+							var funcNameArr = tevt.split(":");
+							tevt = dojo.string.trim(funcNameArr[0]);
+							thisFunc = dojo.string.trim(funcNameArr[1]);
+						}
+						if(!thisFunc){
+							thisFunc = tevt;
+						}
+						if(dojo.lang.isFunction(widget[tevt])){
+							dojo.event.connect(widget, tevt, this, thisFunc);
+						}else{
+							alert(tevt+" is not a function in widget "+widget);
+						}
+					}
+				}
+				if(widget.extraArgs['dojoattachpoint']){
+					//don't attach widget.domNode here, as we do not know which
+					//dom node we should connect to (in checkbox widget case, 
+					//it is inputNode). So we make the widget itself available
+					this[widget.extraArgs['dojoattachpoint']] = widget;
+				}
+			}
+		}
 	},
 
 	buildFromTemplate: function(args, frag){
