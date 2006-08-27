@@ -209,11 +209,6 @@ dojo.widget.defineWidget(
 			if(this.contentFile){
 				dojo.require(this.contentFile);
 			}
-			if(this.contentClass){
-				this.contentWidget = dojo.widget.createWidget(this.contentClass, {parent: this});
-				this.containerNode.appendChild(this.contentWidget.domNode);
-				dojo.event.connect(this, "destroy", this.contentWidget, "destroy");
-			}
 			if(this.modal){
 				dojo.widget.ModalDialogBase.prototype.postCreate.call(this);
 			}else{
@@ -231,7 +226,26 @@ dojo.widget.defineWidget(
 				}
 			}
 		},
+		createContent: function(){
+			if(!this.contentWidget && this.contentClass){
+				this.contentWidget = dojo.widget.createWidget(this.contentClass, {parent: this});
+				this.containerNode.appendChild(this.contentWidget.domNode);
+				dojo.event.connect(this, "destroy", this.contentWidget, "destroy");
+			}
+		},
 		show: function(){
+			if(!this.contentWidget){
+				//buggy IE: if the dialog is hidden, the button widgets
+				//in the dialog can not be shown, so show it temporary (as the
+				//dialog may decide not to show it in loadContent() later)
+				dojo.widget.Editor2Dialog.superclass.show.apply(this, arguments);
+				this.createContent();
+				dojo.widget.Editor2Dialog.superclass.hide.call(this);
+			}
+
+			if(!this.contentWidget || !this.contentWidget.loadContent()){
+				return;
+			}
 			this.showFloatingPane();
 			dojo.widget.Editor2Dialog.superclass.show.apply(this, arguments);
 			if(this.modal){
@@ -264,55 +278,8 @@ dojo.widget.defineWidget(
 	"dojo.widget.Editor2DialogContent",
 	dojo.widget.HtmlWidget,
 {
-	buildRendering: function(args, frag){
-		dojo.widget.Editor2DialogContent.superclass.buildRendering.apply(this, arguments);
-		var parser = new dojo.xml.Parse();
+	enableSubWidgets: true,
 
-		var frag = parser.parseElement(this.domNode, null, true);
-		// createSubComponents not createComponents because frag has already been created
-		dojo.widget.getParser().createSubComponents(frag, this);
-
-		//connect event to this widget/attach dom node
-		for(var i = 0; i < this.children.length; i++){
-			var widget = this.children[i];
-			if(widget.extraArgs['dojoattachchildevent']){
-				var evts = widget.extraArgs['dojoattachchildevent'].split(";");
-				for(var j=0; j<evts.length; j++){
-					var thisFunc = null;
-					var tevt = dojo.string.trim(evts[j]);
-					if(tevt.indexOf(":") >= 0){
-						// oh, if only JS had tuple assignment
-						var funcNameArr = tevt.split(":");
-						tevt = dojo.string.trim(funcNameArr[0]);
-						thisFunc = dojo.string.trim(funcNameArr[1]);
-					}
-					if(!thisFunc){
-						thisFunc = tevt;
-					}
-					if(dojo.lang.isFunction(widget[tevt])){
-						dojo.event.connect(widget, tevt, this, thisFunc);
-					}else{
-						alert(tevt+" is not a function in widget "+widget);
-					}
-				}
-			}
-			if(widget.extraArgs['dojoattachchildpoint']){
-				//don't attach widget.domNode here, as we do not know which
-				//dom node we should connect to (in checkbox widget case, 
-				//it is inputNode). So we make the widget itself available
-				this[widget.extraArgs['dojoattachchildpoint']] = widget;
-			}
-		}
-	},
-	postCreate: function(){
-		dojo.event.connect("around", this.parent, "show", this, "initConent");
-		dojo.widget.Editor2DialogContent.superclass.postCreate.apply(this, arguments);
-	},
-	initConent: function(mi){
-		if(this.loadContent()){
-			mi.proceed();
-		}
-	},
 	loadContent:function(){
 		return true;
 	},
@@ -374,7 +341,7 @@ dojo.widget.defineWidget(
 		plugins: "",
 
 		editorOnLoad: function(){
-			dojo.profile.start("dojo.widget.Editor2::editorOnLoad");
+//			dojo.profile.start("dojo.widget.Editor2::editorOnLoad");
 
 			dojo.event.topic.publish("dojo.widget.Editor2::preLoadingToolbar", this);
 			if(this.toolbarAlwaysVisible){
@@ -408,7 +375,7 @@ dojo.widget.defineWidget(
 			dojo.event.topic.subscribe("Editor2.clobberFocus", this, "setBlur");
 
 			dojo.event.topic.publish("dojo.widget.Editor2::onLoad", this);
-			dojo.profile.end("dojo.widget.Editor2::editorOnLoad");
+//			dojo.profile.end("dojo.widget.Editor2::editorOnLoad");
 		},
 
 		//event for plugins to use
@@ -577,9 +544,6 @@ dojo.widget.defineWidget(
 				delete this.loadedPlugins[index];
 			}
 			this._htmlEditNode = null;
-			this.document = null;
-			this.window = null;
-			this.object = null;
 			dojo.widget.Editor2.superclass.destroy.call(this);
 		},
 
