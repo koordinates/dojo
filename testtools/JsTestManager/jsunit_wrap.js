@@ -970,7 +970,7 @@ jum.init = function(scopeobj) { jum_choose_tests(scopeobj); this.inited_ = true;
 
 /** By default match as 'test_' + groupname + '_' + testname */
 //:CLIVAR RegExp TEST_FUNCTION_REGEXP
-jum.TEST_FUNCTION_REGEXP = /^test_([^_]+)_([^_]+)$/;
+jum.TEST_FUNCTION_REGEXP = /^test(_([^_]+)){2,}$/;
 
 jum.DEFAULT_GROUPNAME = 'all';
 
