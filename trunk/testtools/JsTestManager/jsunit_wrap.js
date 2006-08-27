@@ -944,11 +944,20 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
 	 }catch(e){
          threw = true;
          if(e instanceof JUMAssertFailure) {
-            jum.report_(prefix + 'FAILED' + suffix + ': ' + e.message);
+         	var str='';
+         	if(e["fileName"]){str+=e.fileName+':';}
+			if (e["lineNumber"]){str+=e.lineNumber+' ';}
+			str+=e.message;
+            jum.report_(prefix + 'FAILED' + suffix + ': ' + str);
             ++this.failed_count_;
          }else{
-	     jum.report_(prefix + 'ERROR' + suffix + ' toString: ' + e.toString() + ' message: ' + e.message + 
-			 (typeof e.description != 'undefined' ? ' description: ' + e.description : ''));
+         	var str='';
+         	if(e["fileName"]){str+=e.fileName+':';}
+			if (e["lineNumber"]){str+=e.lineNumber+' ';}
+			str+=e.message;
+	     	jum.report_(prefix + 'ERROR' + suffix + ' toString: ' + e.toString() + ' message: ' + e.message + 
+			 (typeof e.description != 'undefined' ? ' description: ' + e.description : '')
+			 + str);
 
 		 // FIXME: this shouldn't be necessaray, but seems to be in rhino to get any reasonable info
 		 for(var x in e){

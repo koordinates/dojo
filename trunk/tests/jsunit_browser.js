@@ -16,7 +16,11 @@ var jum = {
 		try {
 			_jum.assertTrue.apply(_jum, arguments);
 		} catch(e) {
-			jum.debug(e.message);
+			var str='';
+			if(e["fileName"]){str+=e.fileName+':';}
+			if (e["lineNumber"]){str+=e.lineNumber+' ';}
+			str+=e.message;
+			jum.debug(str);
 		}
 	},
 
@@ -24,7 +28,11 @@ var jum = {
 		try {
 			_jum.assertFalse.apply(_jum, arguments);
 		} catch(e) {
-			jum.debug(e.message);
+			var str='';
+			if(e["fileName"]){str+=e.fileName+':';}
+			if (e["lineNumber"]){str+=e.lineNumber+' ';}
+			str+=e.message;
+			jum.debug(str);
 		}
 	},
 
@@ -32,7 +40,11 @@ var jum = {
 		try {
 			_jum.assertEquals.apply(_jum, arguments);
 		} catch(e) {
-			jum.debug(e.message);
+			var str='';
+			if(e["fileName"]){str+=e.fileName+':';}
+			if (e["lineNumber"]){str+=e.lineNumber+' ';}
+			str+=e.message;
+			jum.debug(str);
 		}
 	}
 };
