@@ -26,7 +26,7 @@ Here are some checkboxes.  Try clicking, and hovering:
 	<input type="checkbox" name="cb0" id="cb0" />
 		<label for="cb0">Vanilla (non-dojo) checkbox (for comparison purposes)</label>
 	<br>
-	<input type="checkbox" name="cb1" id="cb1" dojoType="Checkbox">
+	<input type="checkbox" name="cb1" widgetId="cb1" dojoType="Checkbox">
 		<label for="cb1">normal checkbox</label>
 	<br>
 	<input type="checkbox" name="cb2" id="cb2" dojoType="Checkbox" checked="checked"/>
@@ -45,6 +45,12 @@ Here are some checkboxes.  Try clicking, and hovering:
 <p>HTML after</p>
 <p>HTML after</p>
 <p>HTML after</p>
+<h3>Instantiation from Script:</h3>
+<div id="checkboxContainer"></div><label for="checkboxContainer">test</label>
+<script type="text/javascript">
+	var params = {};
+	var widget = dojo.widget.createWidget("Checkbox", params, document.getElementById("checkboxContainer"));
+</script>
 
 </body>
 </html>
