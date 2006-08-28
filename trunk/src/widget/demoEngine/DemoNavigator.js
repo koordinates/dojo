@@ -5,7 +5,7 @@ dojo.require("dojo.widget.Button");
 dojo.require("dojo.widget.demoEngine.DemoItem");
 dojo.require("dojo.io.*");
 dojo.require("dojo.lfx.*");
-dojo.require("dojo.lang.Common");
+dojo.require("dojo.lang.common");
 
 dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator", 
 	dojo.widget.HtmlWidget, 
