@@ -186,7 +186,7 @@ dojo.widget.defineWidget(
 				var html = this._preFilterContent(dojo.string.trim(this.domNode.innerHTML));
 				if(html == ""){ html = "&nbsp;"; }
 			}
-			
+
 			var content = dojo.html.getContentBox(this.domNode);
 			this._oldHeight = content.height;
 			this._oldWidth = content.width;
@@ -231,8 +231,11 @@ dojo.widget.defineWidget(
 			// so for now IE is our only hero
 			//if (typeof document.body.contentEditable != "undefined") {
 			if (this.useActiveX && h.ie) { // active-x
-				this._drawObject(html);
-				// dojo.debug(this.object.document);
+				var self = this;
+				//if call _drawObject directly here, textarea replacement
+				//won't work: no content is shown. However, add a delay
+				//can workaround  this. No clue why.
+				setTimeout(function(){self._drawObject(html);}, 0);
 			} else if (h.ie) { // contentEditable, easy
 				this.iframe = dojo.doc().createElement( 'iframe' ) ;
 				this.iframe.src = 'javascript:void(0)';
@@ -295,7 +298,7 @@ dojo.widget.defineWidget(
 						dojo.withGlobal(this.window, "selectElement", dojo.html.selection, [node.firstChild]);
 						var nativename = node.tagName.toLowerCase();
 						this._local2NativeFormatNames[nativename] = this.queryCommandValue("formatblock");
-						dojo.debug([nativename,this._local2NativeFormatNames[nativename]]);
+//						dojo.debug([nativename,this._local2NativeFormatNames[nativename]]);
 						this._native2LocalFormatNames[this._local2NativeFormatNames[nativename]] = nativename;
 						node = node.nextSibling;
 					}
@@ -591,6 +594,7 @@ dojo.widget.defineWidget(
 					}
 				}
 			}
+			return "";
 		},
 
 		/** Draws an active x object, used by IE */
