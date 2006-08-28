@@ -200,17 +200,19 @@ dojo.i18n.datetime.format = function(/*Date*/dateObject, /*Object?*/options){
 		return chunks.join("");
 	}
 
+	options = options || {};
+
 	locale = dojo.normalizeLocale(options.locale);
 	var formatLength = options.formatLength || 'full';
 	var info = dojo.i18n.datetime._getGregorianBundle(locale);
 	var str = [];
-	if (!options || options.selector == "dateOnly") {
+	if (options.selector != "timeOnly") {
 		var datePattern = options.datePattern || info["dateFormat-"+formatLength];
-		str.push(formatPattern(dateObject, datePattern));
+		if(datePattern){str.push(formatPattern(dateObject, datePattern));}
 	}
-	if (!options || options.selector == "timeOnly") {
+	if (options.selector != "dateOnly") {
 		var timePattern = options.timePattern || info["timeFormat-"+formatLength];
-		str.push(formatPattern(dateObject, timePattern));
+		if(timePattern){str.push(formatPattern(dateObject, timePattern));}
 	}
 	var result = str.join(" "); //TODO: use locale-specific pattern to assemble date + time
 	return result; /*String*/
