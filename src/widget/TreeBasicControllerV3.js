@@ -104,10 +104,250 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		//dojo.profile.end("onTreeChange");
 	},
 	
+	_getNextSibling: function(nodeWidget) {
+		var parent = nodeWidget.parent;
+		var children = parent.children;
+		for (var i=0; i < (children.length-1); i++) {
+			if (children[i] == nodeWidget) { return children[i+1]; }
+		}
+		return null;
+	},
+
+	_getPreviousSibling: function(nodeWidget) {
+		var parent = nodeWidget.parent;
+		var children = parent.children;
+		for (var i=children.length-1; i > 0; i--) {
+			if (children[i] == nodeWidget) { return children[i-1]; }
+		}
+		return null;
+	},
+
+	// down arrow
+	_focusNextVisible: function(treeWidget, nodeWidget) {
+		var returnWidget = null;
+		try {
+			// if this is an expanded folder, get the first child
+			if (nodeWidget.isFolder && nodeWidget.isExpanded && nodeWidget.children && nodeWidget.children.length > 0) {
+				returnWidget = nodeWidget;
+				nodeWidget = nodeWidget.children[0];
+			} else {
+				// find a parent node with a sibling
+				while (nodeWidget.isTreeNode) {
+					returnWidget = nodeWidget;
+					var nextSibling = this._getNextSibling(nodeWidget);
+					if (nextSibling) {
+						nodeWidget = nextSibling;
+						break;
+					}
+					nodeWidget = nodeWidget.parent;
+				}
+			}
+			if (nodeWidget && nodeWidget.isTreeNode) {
+				returnWidget = nodeWidget;
+			}
+		} catch(e) {}
+		if (returnWidget && returnWidget.isTreeNode) {
+			this._focusLabel(treeWidget, returnWidget);
+			return returnWidget;
+		}
+		return null;
+	},
+	
+	// up arrow
+	_focusPreviousVisible: function(treeWidget, nodeWidget) {
+		var returnWidget = null;
+		try {
+			returnWidget = nodeWidget;
+			// if younger siblings
+			var previousSibling = this._getPreviousSibling(nodeWidget);
+			if (previousSibling) {
+				nodeWidget = previousSibling;
+				// if the previous nodeWidget is expanded, dive in deep
+				while (nodeWidget.isFolder && nodeWidget.isExpanded && nodeWidget.children && nodeWidget.children.length > 0) {
+					returnWidget = nodeWidget;
+					// move to the last child
+					nodeWidget = nodeWidget.children[nodeWidget.children.length-1];
+				}
+			} else {
+				// if this is the first child, return the parent
+				nodeWidget = nodeWidget.parent;
+			}
+			if (nodeWidget && nodeWidget.isTreeNode) {
+				returnWidget = nodeWidget;
+			}
+		} catch(e) {}
+		if (returnWidget && returnWidget.isTreeNode) {
+			this._focusLabel(treeWidget, returnWidget);
+			return returnWidget;
+		}
+		return null;
+	},
+	
+	// right arrow
+	_focusZoomIn: function(treeWidget, nodeWidget) {
+		var returnWidget = null;
+		try {
+			returnWidget = nodeWidget;
+			// if not expanded, expand, else move to 1st child
+			if (nodeWidget.isFolder && !nodeWidget.isExpanded) {
+				this.expand(nodeWidget);
+			}else if (nodeWidget.children && nodeWidget.children.length > 0) {
+				nodeWidget = nodeWidget.children[0];
+			}
+			if (nodeWidget && nodeWidget.isTreeNode) {
+				returnWidget = nodeWidget;
+			}
+		} catch(e) {}
+		if (returnWidget && returnWidget.isTreeNode) {
+			this._focusLabel(treeWidget, returnWidget);
+			return returnWidget;
+		}
+		return null;
+	},
+	
+	// left arrow
+	_focusZoomOut: function(treeWidget, nodeWidget) {
+		var returnWidget = null;
+		try {
+			returnWidget = nodeWidget;
+			// if not expanded, expand, else move to 1st child
+			if (nodeWidget.isFolder && nodeWidget.isExpanded) {
+				this.collapse(nodeWidget);
+			} else {
+				 nodeWidget = nodeWidget.parent;
+			}
+			if (nodeWidget && nodeWidget.isTreeNode) {
+				returnWidget = nodeWidget;
+			}
+		} catch(e) {}
+		if (returnWidget && returnWidget.isTreeNode) {
+			this._focusLabel(treeWidget, returnWidget);
+			return returnWidget;
+		}
+		return null;
+	},
+	
+	onFocusNode: function(e) {
+		var labelNode = e.target;
+		if (labelNode) {
+			dojo.html.addClass(labelNode, "TreeLabelFocused");
+			dojo.event.browser.stopEvent(e);
+		}
+	},
+	
+	onBlurNode: function(e) {
+		var labelNode = e.target;
+		if (labelNode) {
+			labelNode.setAttribute("tabIndex", "-1");
+			dojo.html.removeClass(labelNode, "TreeLabelFocused");
+			dojo.event.browser.stopEvent(e);
+			var nodeWidget = this.getWidgetByNode(labelNode);
+			var treeWidget = nodeWidget._treeWidget;
+			if (!treeWidget || !treeWidget.isTree) { return; }
+			// this could have been set to -1 by the shift+TAB processing
+			treeWidget.domNode.setAttribute("tabIndex", "0");
+		}
+	},
+	
+	_focusLabel: function(treeWidget, nodeWidget) {
+		try {
+			if (treeWidget && nodeWidget && nodeWidget.labelNode) {
+				var lastFocused = treeWidget.lastFocused;
+				var labelNode;
+				if (lastFocused && lastFocused.labelNode) {
+					labelNode = lastFocused.labelNode;
+					// help Opera out with blur events
+					dojo.event.disconnect(labelNode, "onblur", this, "onBlurNode");
+					labelNode.setAttribute("tabIndex", "-1");
+					dojo.html.removeClass(labelNode, "TreeLabelFocused");
+				}
+				// set tabIndex so that the tab key can find this node
+				labelNode = nodeWidget.labelNode;
+				labelNode.setAttribute("tabIndex", "0");
+				nodeWidget._treeWidget = treeWidget;
+				treeWidget.lastFocused = nodeWidget;
+				// add an outline - this helps opera a lot
+				dojo.html.addClass(labelNode, "TreeLabelFocused");
+				dojo.event.connectOnce(labelNode, "onblur", this, "onBlurNode");
+				// prevent the domNode from seeing the focus event
+				dojo.event.connectOnce(labelNode, "onfocus", this, "onFocusNode");
+				// set focus so that the label wil be voiced using screen readers
+				labelNode.focus();
+			}
+		} catch(e) {}
+	},
+	
+	onKey: function(e) {
+		if (!e.key || e.ctrkKey || e.altKey) { return; }
+		// pretend the key was directed toward the current focused node (helps opera out)
+		var treeWidget = this.getWidgetByNode(e.currentTarget);
+		if (!treeWidget || !treeWidget.isTree) { return; }
+		if (treeWidget.lastFocused && treeWidget.lastFocused.labelNode) {
+			nodeWidget = treeWidget.lastFocused;
+		} else {
+			nodeWidget = this.getWidgetByNode(e.target);
+		}
+		if (!nodeWidget || !nodeWidget.isTreeNode) { return; }
+		switch(e.key) {
+			case e.KEY_TAB:
+				if (e.shiftKey) {
+					// we're moving backwards so don't tab to the domNode
+					// it'll be added back in onBlurNode
+					treeWidget.domNode.setAttribute("tabIndex", "-1");
+				}
+				break;
+			case e.KEY_RIGHT_ARROW:
+				this._focusZoomIn(treeWidget, nodeWidget);
+				dojo.event.browser.stopEvent(e);
+				break;
+			case e.KEY_LEFT_ARROW:
+				this._focusZoomOut(treeWidget, nodeWidget);
+				dojo.event.browser.stopEvent(e);
+				break;
+			case e.KEY_UP_ARROW:
+				this._focusPreviousVisible(treeWidget, nodeWidget);
+				dojo.event.browser.stopEvent(e);
+				break;
+			case e.KEY_DOWN_ARROW:
+				this._focusNextVisible(treeWidget, nodeWidget);
+				dojo.event.browser.stopEvent(e);
+				break;
+		}
+	},
+	
+	onClick: function(e) {
+		// default click handler just sets the focus
+		var treeWidget = this.getWidgetByNode(e.currentTarget);
+		if (!treeWidget || !treeWidget.isTree) { return; }
+		var nodeWidget = this.getWidgetByNode(e.target);
+		if (!nodeWidget || !nodeWidget.isTreeNode) { return; }
+		this._focusLabel(treeWidget, nodeWidget);
+	},
+	
+	onFocusTree: function(e) {
+		if (!e.currentTarget) { return; }
+		try {
+			var treeWidget = this.getWidgetByNode(e.currentTarget);
+			if (!treeWidget || !treeWidget.isTree) { return; }
+			// on first focus, choose the root node
+			var nodeWidget = this.getWidgetByNode(treeWidget.domNode.firstChild);
+			if (nodeWidget && nodeWidget.isTreeNode) {
+				if (treeWidget.lastFocused && treeWidget.lastFocused.isTreeNode) { // onClick could have chosen a non-root node
+					nodeWidget = treeWidget.lastFocused;
+				}
+				this._focusLabel(treeWidget, nodeWidget);
+			}
+		}
+		catch(e) {}
+	},
 
 	// perform actions-initializers for tree
 	onAfterTreeCreate: function(message) {
 		var tree = message.source;
+		dojo.event.browser.addListener(tree.domNode, "onKey", dojo.lang.hitch(this, this.onKey));
+		dojo.event.browser.addListener(tree.domNode, "onclick", dojo.lang.hitch(this, this.onClick));
+		dojo.event.browser.addListener(tree.domNode, "onfocus", dojo.lang.hitch(this, this.onFocusTree));
+		tree.domNode.setAttribute("tabIndex", "0");
 		if (tree.expandLevel) {								
 			this.expandToLevel(tree, tree.expandLevel)
 		}
@@ -173,14 +413,17 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		return iterator.start(nodeOrTree.isTreeNode);
 	},
 	
-	
 
 	getWidgetByNode: function(node) {
 		var widgetId;
-		while (! (widgetId = node.widgetId) ) {
-			node = node.parentNode;
+		var newNode = node;
+		while (! (widgetId = newNode.widgetId) ) {
+			newNode = newNode.parentNode;
+			if (newNode == null) { break; }
 		}
-		return dojo.widget.byId(widgetId);
+		if (widgetId) { return dojo.widget.byId(widgetId); }
+		else if (node == null) { return null; }
+		else{ return dojo.widget.manager.byNode(node); }
 	},
 
 	onExpandClick: function(e){
@@ -263,9 +506,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		this.editor.close(save);
 
 		if (save) {
-			
 			var data = {title:editorTitle};
-			
 			dojo.lang.mixin(data, server_data);
 			
 			
