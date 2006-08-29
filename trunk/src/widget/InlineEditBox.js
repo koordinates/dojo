@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.InlineEditBox");
 
 dojo.require("dojo.widget.*");
+dojo.require("dojo.event");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.graphics.color");
 dojo.require("dojo.string");
@@ -55,9 +56,13 @@ dojo.widget.defineWidget(
 
 	mouseover: function(e){
 		if(!this.editing){
-			dojo.html.addClass(this.editable, "editableRegion");
-			if(this.mode == "textarea"){
-				dojo.html.addClass(this.editable, "editableTextareaRegion");
+			if (!this.isEnabled){
+				dojo.html.addClass(this.editable, "disabledEditableRegion");
+			} else {
+				dojo.html.addClass(this.editable, "editableRegion");
+				if(this.mode == "textarea"){
+					dojo.html.addClass(this.editable, "editableTextareaRegion");
+				}
 			}
 		}
 	},
@@ -66,13 +71,14 @@ dojo.widget.defineWidget(
 		if(!this.editing){
 			dojo.html.removeClass(this.editable, "editableRegion");
 			dojo.html.removeClass(this.editable, "editableTextareaRegion");
+			dojo.html.removeClass(this.editable, "disabledEditableRegion");
 		}
 	},
 
 	// When user clicks the text, then start editing.
 	// Hide the text and display the form instead.
 	beginEdit: function(e){
-		if(this.editing){ return; }
+		if(this.editing || !this.isEnabled){ return; }
 		this.mouseout();
 		this.editing = true;
 
@@ -134,7 +140,7 @@ dojo.widget.defineWidget(
 		}
 		this.doFade = false;
 	},
-
+	
 	setText: function(txt){
 		// sets the text without informing the server
 		var tt = dojo.string.trim(txt);
@@ -157,5 +163,24 @@ dojo.widget.defineWidget(
 			(dojo.string.trim(ee.value) != "")){
 			this.submitButton.disabled = false;
 		}
+	},
+	
+	disable: function(){
+		this.finishEdit();
+		this.submitButton.disabled = true;
+		this.cancelButton.disabled = true;
+		var ee = this[this.mode.toLowerCase()];
+		ee.disabled = true;
+		
+		dojo.widget.Widget.prototype.disable.call(this);
+	},
+	
+	enable: function(){
+		this.checkForValueChange();
+		this.cancelButton.disabled = false;
+		var ee = this[this.mode.toLowerCase()];
+		ee.disabled = false;
+		
+		dojo.widget.Widget.prototype.enable.call(this);
 	}
 });
