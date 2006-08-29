@@ -89,12 +89,12 @@ dojo.widget.onBuildProperty = "dojoOnBuild";
 dojo.widget.waiNames  = ["waiRole", "waiState"];
 dojo.widget.wai = {
 	waiRole: { 	name: "waiRole", 
-				namespace: "http://www.w3.org/TR/xhtml2", 
+				"namespace": "http://www.w3.org/TR/xhtml2", 
 				alias: "x2",
 				prefix: "wairole:"
 	},
 	waiState: { name: "waiState", 
-				namespace: "http://www.w3.org/2005/07/aaa" , 
+				"namespace": "http://www.w3.org/2005/07/aaa", 
 				alias: "aaa",
 				prefix: ""
 	},
@@ -102,7 +102,7 @@ dojo.widget.wai = {
 		if(dojo.render.html.ie){
 			node.setAttribute(this[ns].alias+":"+ attr, this[ns].prefix+value);
 		}else{
-			node.setAttributeNS(this[ns].namespace, attr, this[ns].prefix+value);
+			node.setAttributeNS(this[ns]["namespace"], attr, this[ns].prefix+value);
 		}
 	},
 
@@ -110,7 +110,7 @@ dojo.widget.wai = {
 		if(dojo.render.html.ie){
 			 return node.getAttribute(this[ns].alias+":"+attr);
 		}else{
-			return node.getAttributeNS(this[ns].namespace, attr);
+			return node.getAttributeNS(this[ns]["namespace"], attr);
 		}
 	}
 };
