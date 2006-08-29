@@ -189,6 +189,15 @@ dojo.date.timezones = ["International Date Line West", "Bering Standard Time",
 	"Line Islands Time (Kribati)"];
 */
 
+//TO BE REMOVED in 0.5
+dojo.date.months = ["January", "February", "March", "April", "May", "June",
+	"July", "August", "September", "October", "November", "December"];
+dojo.date.shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "June",
+	"July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+dojo.date.days = ["Sunday", "Monday", "Tuesday", "Wednesday",
+	"Thursday", "Friday", "Saturday"];
+dojo.date.shortDays = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
+
 dojo.date.getDaysInMonth = function (dateObject) {
 	var month = dateObject.getMonth();
 	var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -210,19 +219,23 @@ dojo.date.isLeapYear = function (dateObject) {
 
 
 dojo.date.getDayName = function (dateObject) {
-	return dojo.deprecated("dojo.date.getDayName", "Use dojo.i18n.datetime.getDayName instead", "0.5");
+	dojo.deprecated("dojo.date.getDayName", "Use dojo.i18n.datetime.getDayName instead", "0.5");
+	return dojo.date.days[dateObject.getDay()];
 }
 
 dojo.date.getDayShortName = function (dateObject) {
-	return dojo.deprecated("dojo.date.getDayShortName", "Use dojo.i18n.datetime.getDayShortName instead", "0.5");
+	dojo.deprecated("dojo.date.getDayShortName", "Use dojo.i18n.datetime.getDayShortName instead", "0.5");
+	return dojo.date.shortDays[dateObject.getDay()];
 }
 
 dojo.date.getMonthName = function (dateObject) {
-	return dojo.deprecated("dojo.date.getMonthName", "Use dojo.i18n.datetime.getMonthName instead", "0.5");
+	dojo.deprecated("dojo.date.getMonthName", "Use dojo.i18n.datetime.getMonthName instead", "0.5");
+	return dojo.date.months[dateObject.getMonth()];
 }
 
 dojo.date.getMonthShortName = function (dateObject) {
-	return dojo.deprecated("dojo.date.getMonthShortName", "Use dojo.i18n.datetime.getMonthShortName instead", "0.5");
+	dojo.deprecated("dojo.date.getMonthShortName", "Use dojo.i18n.datetime.getMonthShortName instead", "0.5");
+	return dojo.date.shortMonths[dateObject.getMonth()];
 }
 
 
