@@ -44,8 +44,8 @@ dojo.widget.defineWidget(
 		// which hide it and display the editor
 		this.editable = this.getFragNodeRef(frag);
 		dojo.html.insertAfter(this.editable, this.form);
-		dojo.event.connect(this.editable, "onmouseover", this, "mouseover");
-		dojo.event.connect(this.editable, "onmouseout", this, "mouseout");
+		dojo.event.connect(this.editable, "onmouseover", this, "onMouseOver");
+		dojo.event.connect(this.editable, "onmouseout", this, "onMouseOut");
 		dojo.event.connect(this.editable, "onclick", this, "beginEdit");
 
 		this.textValue = dojo.string.trim(this.editable.innerHTML);
@@ -53,11 +53,11 @@ dojo.widget.defineWidget(
 			this.editable.innerHTML = this.defaultText;
 		}		
 	},
-
-	mouseover: function(e){
+	
+	onMouseOver: function(){
 		if(!this.editing){
 			if (!this.isEnabled){
-				dojo.html.addClass(this.editable, "disabledEditableRegion");
+				dojo.html.addClass(this.editable, "editableRegionDisabled");
 			} else {
 				dojo.html.addClass(this.editable, "editableRegion");
 				if(this.mode == "textarea"){
@@ -65,14 +65,27 @@ dojo.widget.defineWidget(
 				}
 			}
 		}
+		
+		this.mouseover();
 	},
-
-	mouseout: function(e){
+	
+	mouseover: function(e){
+		// TODO: How do we deprecate a function without going into overkill with debug statements?
+		// dojo.deprecated("onMouseOver should be used instead of mouseover to listen for mouse events");
+	},
+	
+	onMouseOut: function(){
 		if(!this.editing){
 			dojo.html.removeClass(this.editable, "editableRegion");
 			dojo.html.removeClass(this.editable, "editableTextareaRegion");
-			dojo.html.removeClass(this.editable, "disabledEditableRegion");
+			dojo.html.removeClass(this.editable, "editableRegionDisabled");
 		}
+		
+		this.mouseout();
+	},
+	
+	mouseout: function(e){
+		// dojo.deprecated("onMouseOut should be used instead of mouseout to listen for mouse events");
 	},
 
 	// When user clicks the text, then start editing.
@@ -166,7 +179,6 @@ dojo.widget.defineWidget(
 	},
 	
 	disable: function(){
-		this.finishEdit();
 		this.submitButton.disabled = true;
 		this.cancelButton.disabled = true;
 		var ee = this[this.mode.toLowerCase()];

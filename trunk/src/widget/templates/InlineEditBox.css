@@ -4,7 +4,7 @@
 	display : none;
 }
 
-.disabledEditableRegion {
+.editableRegionDisabled {
 	cursor : pointer;
 	_cursor : hand;
 }
