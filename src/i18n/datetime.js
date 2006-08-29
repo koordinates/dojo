@@ -202,7 +202,7 @@ dojo.i18n.datetime.format = function(/*Date*/dateObject, /*Object?*/options){
 
 	options = options || {};
 
-	locale = dojo.normalizeLocale(options.locale);
+	var locale = dojo.normalizeLocale(options.locale);
 	var formatLength = options.formatLength || 'full';
 	var info = dojo.i18n.datetime._getGregorianBundle(locale);
 	var str = [];
@@ -286,7 +286,7 @@ dojo.i18n.datetime.parse = function(/*String*/value, /*Object?*/options){
 	dojo.experimental("dojo.i18n.datetime");
 	//TODO: this is still quite rough - it only implements a small portion of the parsing algorithm needed,
 	// and doesn't provide much flexibility in matching.
-	locale = dojo.normalizeLocale(options.locale);
+	var locale = dojo.normalizeLocale(options.locale);
 	var info = dojo.i18n.datetime._getGregorianBundle(locale);
 	var formatLength = options.formatLength || 'full';
 	if (options.selector != 'dateOnly'){ dojo.unimplemented("can only parse dates at this time"); }
@@ -521,6 +521,16 @@ dojo.i18n.datetime.strftime = function (/*Date*/dateObject, /*String*/format) {
 	string += format.substring(i);
 	
 	return string;
+};
+
+dojo.i18n.datetime.getFirstDayOfWeek = function(/*String?*/locale){
+// summary:
+//		Returns a zero-based index for first day of the week, as used by the local (Gregorian) calendar.
+//		e.g. Sunday (returns 0), or Monday (returns 1)
+	locale = dojo.normalizeLocale(locale);
+	// FIXME: put this in resources, or see if it can be pulled from the CLDR, perhaps?
+	var variants = locale.split("-");
+	return (variants[1] == "no" || variants[1] == "fi" || variants[1] == "se") ? 1 : 0; // Just a few for testing, for now
 };
 
 dojo.i18n.datetime.getNames = function(/*String*/item, /*String*/type, /*String?*/use, /*String?*/locale){
