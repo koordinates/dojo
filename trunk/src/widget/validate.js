@@ -87,8 +87,7 @@ dojo.widget.defineWidget(
 			if ( localProperties["class"] ) { 
 				this.className = localProperties["class"];
 			}
-		},
-	
+		}
 	}
 );
 
