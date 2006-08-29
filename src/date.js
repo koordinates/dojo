@@ -188,14 +188,6 @@ dojo.date.timezones = ["International Date Line West", "Bering Standard Time",
 	"Chatham Standard Time (New Zealand)", "Phoenix Islands Time (Kribati)",
 	"Line Islands Time (Kribati)"];
 */
-dojo.date.months = ["January", "February", "March", "April", "May", "June",
-	"July", "August", "September", "October", "November", "December"];
-dojo.date.shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "June",
-	"July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-dojo.date.days = ["Sunday", "Monday", "Tuesday", "Wednesday",
-	"Thursday", "Friday", "Saturday"];
-dojo.date.shortDays = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
-
 
 dojo.date.getDaysInMonth = function (dateObject) {
 	var month = dateObject.getMonth();
@@ -218,24 +210,20 @@ dojo.date.isLeapYear = function (dateObject) {
 
 
 dojo.date.getDayName = function (dateObject) {
-	return dojo.date.days[dateObject.getDay()];
+	return dojo.deprecated("dojo.date.getDayName", "Use dojo.i18n.datetime.getDayName instead", "0.5");
 }
 
 dojo.date.getDayShortName = function (dateObject) {
-	return dojo.date.shortDays[dateObject.getDay()];
+	return dojo.deprecated("dojo.date.getDayShortName", "Use dojo.i18n.datetime.getDayShortName instead", "0.5");
 }
 
-
-
-
 dojo.date.getMonthName = function (dateObject) {
-	return dojo.date.months[dateObject.getMonth()];
+	return dojo.deprecated("dojo.date.getMonthName", "Use dojo.i18n.datetime.getMonthName instead", "0.5");
 }
 
 dojo.date.getMonthShortName = function (dateObject) {
-	return dojo.date.shortMonths[dateObject.getMonth()];
+	return dojo.deprecated("dojo.date.getMonthShortName", "Use dojo.i18n.datetime.getMonthShortName instead", "0.5");
 }
-
 
 
 
@@ -253,18 +241,18 @@ dojo.date.getTimezoneName = function (dateObject) {
 	// we don't know so return it formatted as "+HH:MM"
 	function $ (s) { s = String(s); while (s.length < 2) { s = "0" + s; } return s; }
 	return (timezoneOffset < 0 ? "-" : "+") + $(Math.floor(Math.abs(
-		timezoneOffset)/60)) + ":" + $(Math.abs(timezoneOffset)%60);
+		timezoneOffset)/60)) + ":" + $(Math.abs(timezoneOffset)%(60));
 }
 
 
 
-
+//FIXME: not localized
 dojo.date.getOrdinal = function (dateObject) {
 	var date = dateObject.getDate();
 
-	if (date%100 != 11 && date%10 == 1) { return "st"; }
-	else if (date%100 != 12 && date%10 == 2) { return "nd"; }
-	else if (date%100 != 13 && date%10 == 3) { return "rd"; }
+	if (date%100 != 11 && date%(10) == 1) { return "st"; }
+	else if (date%100 != 12 && date%(10) == 2) { return "nd"; }
+	else if (date%100 != 13 && date%(10) == 3) { return "rd"; }
 	else { return "th"; }
 }
 
@@ -560,6 +548,7 @@ dojo.date.add=function(/* Date */ d, /* dojo.date.dateParts */ unit, /* int */ a
  * - "Yesterday"
  * - "2 days ago"
  */
+//FIXME: not localized
 dojo.date.toRelativeString = function(date) {
 	var now = new Date();
 	var diff = (now - date) / 1000;
