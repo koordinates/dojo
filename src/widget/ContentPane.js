@@ -71,8 +71,6 @@ dojo.widget.defineWidget(
 				this._runHandler();
 			} else if ( this.href != "" ) {
 				this._downloadExternalContent(this.href, this.cacheContent && !this.refreshOnShow);
-			}else{
-				this.isLoaded=true;
 			}
 		},
 		
