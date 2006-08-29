@@ -4,6 +4,11 @@
 	display : none;
 }
 
+.disabledEditableRegion {
+	cursor : pointer;
+	_cursor : hand;
+}
+
 .editableRegion {
 	background-color : #ffc !important;
 	cursor : pointer;
