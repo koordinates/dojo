@@ -30,11 +30,13 @@ public class DojoTest {
 	public static final String ARG_DOJO_DIR = "dojodir";
 	public static final String ARG_TEST_DIR = "testdir";
 	public static final String ARG_TEST_FILES = "testfiles";
+	public static final String ARG_USE_LOCAL = "uselocal";
 	
 	private String[] _testFiles;
 	private File _dojoDir;
 	private File _outputDir;
 	private File _testDir;
+	private boolean _useLocal;
 	
 	/**
 	 * Default constructor.
@@ -81,6 +83,16 @@ public class DojoTest {
 	public void setTestDir(File testDir)
 	{
 		_testDir = testDir;
+	}
+	
+	/**
+	 * Sets whether or not to force loading dojo test files from 
+	 * a static local path or not.
+	 * @param value
+	 */
+	public void setUseLocal(boolean value)
+	{
+		_useLocal = value;
 	}
 	
 	/**
@@ -196,6 +208,10 @@ public class DojoTest {
 	 */
 	public void execute()
 	{
+		if (_useLocal) {
+			System.out.println("Using local dojo test infrastructure.");
+		}
+		
 		Context cx = Context.enter();
 		cx.setOptimizationLevel(-1);
 		cx.setGeneratingDebug(true);
@@ -211,7 +227,14 @@ public class DojoTest {
 					"djConfig"
 			);
 			
-			String path = path(_outputDir.getAbsolutePath() + File.separatorChar);
+			String domPath, jumPath, setupPath = null;
+			if (_useLocal) {
+				domPath = path(_dojoDir.getAbsolutePath() + File.separatorChar + "testtools/JsFakeDom/");
+				jumPath = path(_dojoDir.getAbsolutePath() + File.separatorChar + "testtools/JsTestManager/");
+				setupPath = path(_dojoDir.getAbsolutePath() + File.separatorChar + "tests/");
+			} else {
+				domPath=jumPath=setupPath=path(_outputDir.getAbsolutePath() + File.separatorChar);
+			}
 			
 			execString(cx, global, 
 					"load('" + path(_dojoDir.getAbsolutePath() + File.separatorChar) + "dojo.js');",
@@ -225,17 +248,17 @@ public class DojoTest {
 			);
 			
 			execString(cx, global, 
-					"load('" + path + "prologue.js');",
+					"load('" + setupPath + "prologue.js');",
 					"prologue.js"
 			);
 			
 			execString(cx, global, 
-					"load('" + path + "BUFakeDom.js');",
+					"load('" + domPath + "BUFakeDom.js');",
 					"BUFakeDom.js"
 			);
 			
 			execString(cx, global, 
-					"load('" + path + "jsunit_wrap.js');",
+					"load('" + jumPath + "jsunit_wrap.js');",
 					"jsunit_wrap.js"
 			);
 			
@@ -247,7 +270,7 @@ public class DojoTest {
 			}
 			
 			execString(cx, global, 
-					"load('" + path + "epilogue.js');",
+					"load('" + setupPath + "epilogue.js');",
 					"epilogue.js"
 			);
 			
@@ -274,6 +297,7 @@ public class DojoTest {
 	void execString(Context cx, Global global, String str, String file)
 	{
 		try {
+			
 			Object result = cx.compileString(
 					str,
 					file, 1 , null
@@ -300,6 +324,7 @@ public class DojoTest {
 		System.out.println("Usage: DojoTest "
 				+ DojoTest.ARG_DOJO_DIR + " <dojo path> "
 				+ DojoTest.ARG_OUTPUT_DIR + " <output path> "
+				+ DojoTest.ARG_USE_LOCAL + " <whether or not to force using local dojo test resources if detected>"
 				+ DojoTest.ARG_TEST_DIR + " <test dir path> "
 				+ DojoTest.ARG_TEST_FILES + " <list of space seperated test file paths> ");
 	}
@@ -313,13 +338,13 @@ public class DojoTest {
 		DojoTest test = new DojoTest();
 		
 		// validate arguments
-		if (args == null || args.length < 8) {
+		if (args == null || args.length < 10) {
 			test.printUsage();
 			System.exit(-1);
 		}
 		
 		// grab initial configuration
-		for (int i=0; i < 6; i++) {
+		for (int i=0; i < 8; i++) {
 			if (DojoTest.ARG_DOJO_DIR.equals(args[i])) {
 				test.setDojoDir(new File(args[i + 1]));
 				i++;
@@ -337,10 +362,16 @@ public class DojoTest {
 				i++;
 				continue;
 			}
+			
+			if (DojoTest.ARG_USE_LOCAL.equals(args[i])) {
+				test.setUseLocal(Boolean.valueOf(args[i + 1]));
+				i++;
+				continue;
+			}
 		}
 		
-		String[] testFiles = new String[args.length - 7];
-		System.arraycopy(args, 7, testFiles, 0, testFiles.length);
+		String[] testFiles = new String[args.length - 9];
+		System.arraycopy(args, 9, testFiles, 0, testFiles.length);
 		test.setTestFiles(testFiles);
 		
 		test.execute();

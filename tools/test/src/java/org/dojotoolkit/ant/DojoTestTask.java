@@ -42,14 +42,12 @@ public class DojoTestTask extends Task {
 	private String _testSrc;
 	// The directory any tempory output is written to, goes to java.io.tmpdir by default
 	private String _outputTargetDir;
+	// Whether or not local dojo src detected 
+	private boolean _localDetected;
 	
 	private File _dojoDir;
 	private File _testDir;
 	private File _outputDir;
-	
-	public void setDojoSrc(String dojosrc) { _dojoSrc = dojosrc; }
-	public void setTestSrc(String testsrc) { _testSrc = testsrc; }
-	public void setOutputDir(String outputdir) { _outputTargetDir = outputdir; }
 	
 	/**
 	 * Validates that required parameters are set.
@@ -57,15 +55,20 @@ public class DojoTestTask extends Task {
 	 */
 	void validate()
 	{
-		if (_dojoSrc == null) throw new BuildException("dojosrc not set");
-		if (_testSrc == null) throw new BuildException("testsrc not set");
+		if (_dojoSrc == null) 
+			throw new BuildException("dojosrc not set");
+		if (_testSrc == null) 
+			throw new BuildException("testsrc not set");
 		
 		_dojoDir = getProject().resolveFile(_dojoSrc);
 		_testDir = getProject().resolveFile(_testSrc);
 		
 		// output defaults to system tmp dir if not set
-		if (_outputTargetDir != null) _outputDir = getProject().resolveFile(_outputTargetDir);
-		else _outputDir = new File(System.getProperty("java.io.tmpdir"));
+		if (_outputTargetDir != null) {
+			_outputDir = getProject().resolveFile(_outputTargetDir);
+		} else {
+			_outputDir = new File(System.getProperty("java.io.tmpdir"));
+		}
 	}
 	
 	/**
@@ -76,7 +79,7 @@ public class DojoTestTask extends Task {
 	String[] getTestFiles()
 	{
 		FileSet fs = new FileSet();
-		fs.setIncludes("**/test*.js");
+		fs.setIncludes("**/test*.js"); // TODO: Use file sets so these names aren't hard coded
 		fs.setFollowSymlinks(true);
 		fs.setDir(_testDir);
 		
@@ -117,18 +120,20 @@ public class DojoTestTask extends Task {
 	void checkFile(String fileName, String localPath)
 	throws IOException
 	{
-		File file = new File(_outputDir.getAbsolutePath() + "/" + fileName);
-		if (file.exists()) 
+		if (_localDetected)
 			return;
 		
 		if (localPath != null) {
-			
 			File local = getProject().resolveFile(localPath + "/" + fileName);
 			if (local.exists()) {
-				getProject().copyFile(local, file);
+				_localDetected=true;
 				return;
 			}
 		}
+		
+		File file = new File(_outputDir.getAbsolutePath() + "/" + fileName);
+		if (file.exists()) 
+			return;
 		
 		byte[] data = new byte[3000];
 		BufferedInputStream bi = 
@@ -177,6 +182,8 @@ public class DojoTestTask extends Task {
 		cmd.createArgument().setFile(_outputDir);
 		cmd.createArgument().setValue(DojoTest.ARG_TEST_DIR);
 		cmd.createArgument().setFile(_testDir);
+		cmd.createArgument().setValue(DojoTest.ARG_USE_LOCAL);
+		cmd.createArgument().setValue(String.valueOf(_localDetected));
 		
 		cmd.createArgument().setValue(DojoTest.ARG_TEST_FILES);
 		for (int i=0; i < tests.length; i++) 
@@ -195,6 +202,21 @@ public class DojoTestTask extends Task {
 		} catch (IOException e) {
 			throw new BuildException("Process fork failed.", e, getLocation());
 		}
+	}
+	
+	public void setDojoSrc(String dojosrc) 
+	{ 
+		_dojoSrc = dojosrc; 
+	}
+	
+	public void setTestSrc(String testsrc) 
+	{ 
+		_testSrc = testsrc; 
+	}
+	
+	public void setOutputDir(String outputdir) 
+	{ 
+		_outputTargetDir = outputdir; 
 	}
 	
 	/**

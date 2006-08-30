@@ -4,7 +4,7 @@
     Free License version 2.1 or BSD licenses
 -->
 
-<project name="dojo-ant-task" default="test" basedir=".">
+<project name="dojo-ant-task" default="test" basedir="../../">
 
     <description>
         Shows example of using the dojo ant testing task. You must compile and build
@@ -15,11 +15,15 @@
     <!-- Defines the dojo test task. -->
     <taskdef name="dojo-test" 
         classname="org.dojotoolkit.ant.DojoTestTask" 
-        classpath="dist/ant-dojotest.jar" />
+        classpath="tools/test/dist/ant-dojotest.jar" />
     
     <!-- Runs the dojo testing task. -->
     <target name="test">
-        <dojo-test dojosrc="../../" testsrc="test/test-data/tests"/>
+        <dojo-test dojosrc="." testsrc="tests"/>
+    </target>
+    
+    <target name="test-jum">
+        <dojo-test dojosrc="." testsrc="testtools" />
     </target>
     
 </project>
