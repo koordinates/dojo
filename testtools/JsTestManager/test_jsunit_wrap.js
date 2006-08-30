@@ -26,7 +26,7 @@ function test_JsUnitWrap_continueAsync() {
 }
 
 function test_continueAsync(){
-	dojo.log.debug("continueAsync called!");
+	dojo.debug("continueAsync called!");
 	jum.assertTrue("woohooo!", true);
 }
 
