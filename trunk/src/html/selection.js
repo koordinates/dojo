@@ -115,7 +115,7 @@ dojo.html.isSelectionCollapsed = function(){
 		if(dojo.lang.isString(selection)){ // Safari
 			return selection == "";
 		}else{ // Mozilla/W3
-			return selection.isCollapsed;
+			return selection.isCollapsed || selection.toString() == "";
 		}
 	}
 }
