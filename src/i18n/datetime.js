@@ -609,6 +609,7 @@ dojo.i18n.datetime.getFirstDayOfWeek = function(/*String?*/locale){
 	};
 
 	locale = dojo.normalizeLocale(locale);
-	var variants = locale.split("-");
-	return firstDay[variants[1]]|| 1;
+	var country = locale.split("-")[1];
+	var dow = firstDay[country];
+	return (typeof dow == 'undefined') ? 1 : dow;
 };
