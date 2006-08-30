@@ -422,7 +422,7 @@ function jum_has_settimeout() {
 * calls timeout_handler and then throws an exception (if timeout_handler does not).
 */
 function jum_wait(description, attempt_handler, timeout_handler, total_millis, interval_millis, remaining_millis) {
-  //bu_alert('(jsunit_wrap.js) in jum_wait for "' + description + '", remaining_millis=' + remaining_millis + ' arguments.length=' + arguments.length);
+  bu_alert('(jsunit_wrap.js) in jum_wait for "' + description + '", remaining_millis=' + remaining_millis + ' arguments.length=' + arguments.length);
   if (typeof total_millis == 'undefined') total_millis = jum.DEFAULT_TIMEOUT_MILLIS;
   if (typeof interval_millis == 'undefined') interval_millis = 1000;
   if (typeof remaining_millis == 'undefined') remaining_millis = total_millis;
@@ -567,7 +567,7 @@ JUM.prototype.waitAll = function(funcname, funcobj, timeout_millis) {
     funcobj();
     return true;
   }
-  //bu_alert('(jsunit_wrap.js) in waitAll(' + funcname + ')');
+  bu_alert('(jsunit_wrap.js) in waitAll(' + funcname + ')');
   if (typeof timeout_millis == 'undefined') timeout_millis = jum.DEFAULT_TIMEOUT_MILLIS;
   var this_ = this;
   return jum_wait('call function ' + funcname,
@@ -778,7 +778,7 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
   jum.name = 'mda';
   jum.debug = function(line){
     if(jum.verbose){
-        jum.my_output_('DEBUG', line);
+    	jum.my_output_('DEBUG', line);
     }
   };
   jum.info = function(line){
@@ -792,12 +792,12 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
   jum.assertFalse = jum_assertFalse;
   // not wrapped because native one does the right thing and wants to show types.
   jum.assertEquals = jum_assertEquals;
-  jum.isFailureException = function(e) {return (e instanceof JUMAssertFailure)}
+  jum.isFailureException = function(e) {return (e instanceof JUMAssertFailure)};
 
-  jum.areTestsChosen = function() {return !!jum.alltests_;}
+  jum.areTestsChosen = function() {return !!jum.alltests_;};
   jum.getChosenTestGroupName = function() {return null};
   jum.setTests = function(alltests) {jum.alltests_ = alltests};
-
+  
   jum.runAll = function() {
     this.initCounts_();
 
