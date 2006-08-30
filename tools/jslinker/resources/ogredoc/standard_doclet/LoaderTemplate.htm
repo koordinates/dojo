@@ -1,0 +1,191 @@
+<HTML>
+<head>
+<title><!-- @ProjectTokensBlock@ -->@ProjectName@<!-- @/ProjectTokensBlock@ -->: @LoaderCompositeName@</title>
+<style type="text/css">
+<!--
+-->
+</style>
+
+<link rel="stylesheet" href="ogredoc.css" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF">
+<table id=navBar>
+  <tr> 
+    <td>
+      <p> 
+        <!-- @NavigationBlock@ -->
+        <a href="@NavigationElementLink@" id=titlePath>@NavigationElementName@</a>. 
+        <!-- @/NavigationBlock@ -->
+        <a href="javascript:void 0;" id=titleName>@LoaderShortName@</a></p>
+      </td>
+    <td align="right"> &nbsp;&nbsp;&nbsp;<a href="overview.htm" class="navItem">Main</a><span class="navSeparator"> 
+      &#149; </span><a href="overview-nodes.htm" class="navItem">Nodes</a><span class="navSeparator">
+	  &#149; </span><a href="overview-extensions.htm" class="navItem">Extensions</a><span class="navSeparator"> 
+      &#149; </span><a href="overview-classes.htm" class="navItem">Classes</a><span class="navSeparator">
+      &#149; </span><a href="overview-loaders.htm" class="navItem">Loaders</a><span class="navSeparator"> 
+      &#149; </span><a href="index-1.htm" class="navItem">Index</a><span class="navSeparator">
+	  &#149; </span><a href="help-doc.htm" class="navItem">Help</a> 
+    </td>
+  </tr>
+</table>
+<div id=mainComment>@LoaderComment@</div>
+<table class=layoutTable>
+  <!-- @EnclosingLoadersBlock@ -->
+  <tr> 
+    <td class="tagCell" nowrap><span class="tagLabel">Loaders</span></td>
+	<td><!-- @CarEnclosingLoaderBlock@ --><a href="@LoaderLink@">@LoaderShortName@</a><!-- @/CarEnclosingLoaderBlock@ --><!-- @CdrEnclosingLoaderBlock@ -->, <a href="@LoaderLink@">@LoaderShortName@</a><!-- @/CdrEnclosingLoaderBlock@ --></td>
+  </tr>
+  <!-- @/EnclosingLoadersBlock@ -->
+  <!-- @SourceFileBlock@ -->
+  <tr> 
+    <td class="tagCell" nowrap><span class="tagLabel">Source file</span></td>
+    <td>@SourceFile@</td>
+  </tr>
+  <!-- @/SourceFileBlock@ -->
+  <!-- @CommonTokensBlock@ -->
+  <!-- @DeprecatedBlock@ -->
+  <tr> 
+    <td class="tagCell" nowrap><span class="deprecatedLabel">Deprecated</span></td>
+    <td> 
+      <p>@Deprecated@<br>
+        </p>
+    </td>
+  </tr>
+  <!-- @/DeprecatedBlock@ -->
+  <!-- @SeeAlsoBlock@ -->
+  <tr> 
+    <td class="tagCell" nowrap><span class="tagLabel">See also</span></td>
+    <td> @SeeAlso@
+      <br>
+      </td>
+  </tr>
+  <!-- @/SeeAlsoBlock@ -->
+  <!-- @WorksOnBlock@ -->
+  <tr> 
+    <td class="tagCell" nowrap><span class="tagLabel">Works on</span></td>
+    <td> 
+      <p>@WorksOn@<br>
+        </p>
+    </td>
+  </tr>
+  <!-- @/WorksOnBlock@ -->
+  <!-- @AuthorBlock@ -->
+  <tr> 
+    <td class="tagCell" nowrap><span class="tagLabel">Author</span></td>
+    <td> @Author@ <br>
+      </td>
+  </tr>
+  <!-- @/AuthorBlock@ -->
+  <!-- @SinceBlock@ -->
+  <tr> 
+    <td class="tagCell" nowrap><span class="tagLabel">Since</span></td>
+    <td> @Since@ <br>
+      </td>
+  </tr>
+  <!-- @/SinceBlock@ -->
+  <!-- @InhouseBlock@ -->
+  <tr> 
+    <td class="tagCell" nowrap><span class="tagLabel">In house</span></td>
+    <td>@Inhouse@ <br>
+      </td>
+  </tr>
+  <!-- @/InhouseBlock@ -->
+  <!-- @/CommonTokensBlock@ -->
+</table>
+<h2>Loads</h2>
+<table class=layoutTable>
+  <!-- @CarNodesBlock@ -->
+  <tr> 
+    <td class="nodeSummaryHeading" colspan="2">Nodes</td>
+  </tr>
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@NodeLink@" class="nodeSummaryLabel">@NodeCompositeName@</a></td>
+    <td>@NodeDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CarNodesBlock@ -->
+  <!-- @CdrNodesBlock@ -->
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@NodeLink@" class="nodeSummaryLabel">@NodeCompositeName@</a></td>
+    <td>@NodeDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CdrNodesBlock@ -->
+  <!-- @CarClassesBlock@ -->
+  <tr> 
+    <td class="nodeSummaryHeading" colspan="2">Classes</td>
+  </tr>
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@ClassLink@" class="nodeSummaryLabel">@ClassCompositeName@</a></td>
+    <td>@ClassDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CarClassesBlock@ -->
+  <!-- @CdrClassesBlock@ -->
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@ClassLink@" class="nodeSummaryLabel">@ClassCompositeName@</a></td>
+    <td>@ClassDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CdrClassesBlock@ -->
+  <!-- @CarExtensionsBlock@ -->
+  <tr> 
+    <td class="nodeSummaryHeading" colspan="2">Extensions</td>
+  </tr>
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@ExtLink@" class="nodeSummaryLabel">@ExtCompositeName@</a></td>
+    <td>@ExtDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CarExtensionsBlock@ -->
+  <!-- @CdrExtensionsBlock@ -->
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@ExtLink@" class="nodeSummaryLabel">@ExtCompositeName@</a></td>
+    <td>@ExtDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CdrExtensionsBlock@ -->
+  <!-- @CarAttributesBlock@ -->
+  <tr> 
+    <td class="nodeSummaryHeading" colspan="2">Separated Attributes</td>
+  </tr>
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@ContainerLink@#@AttributeName@" class="nodeSummaryLabel">@ContainerCompositeName@.@AttributeName@</a></td>
+    <td>@AttributeDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CarAttributesBlock@ -->
+  <!-- @CdrAttributesBlock@ -->
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@ContainerLink@#@AttributeName@" class="nodeSummaryLabel">@ContainerCompositeName@.@AttributeName@</a></td>
+    <td>@AttributeDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CdrAttributesBlock@ -->
+  <!-- @CarMethodsBlock@ -->
+  <tr> 
+    <td class="nodeSummaryHeading" colspan="2">Separated Methods</td>
+  </tr>
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@ContainerLink@#@MethodName@" class="nodeSummaryLabel">@ContainerCompositeName@.@MethodName@</a></td>
+    <td>@MethodDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CarMethodsBlock@ -->
+  <!-- @CdrMethodsBlock@ -->
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@ContainerLink@#@MethodName@" class="nodeSummaryLabel">@ContainerCompositeName@.@MethodName@</a></td>
+    <td>@MethodDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CdrMethodsBlock@ -->
+  <!-- @CarLoadersBlock@ -->
+  <tr> 
+    <td class="nodeSummaryHeading" colspan="2">Loaders</td>
+  </tr>
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@LoaderLink@" class="nodeSummaryLabel">@LoaderCompositeName@</a></td>
+    <td>@LoaderDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CarLoadersBlock@ -->
+  <!-- @CdrLoadersBlock@ -->
+  <tr> 
+    <td class="propertyCell" nowrap><a href="@LoaderLink@" class="nodeSummaryLabel">@LoaderCompositeName@</a></td>
+    <td>@LoaderDescriptionFirstSentence@</td>
+  </tr>
+  <!-- @/CdrLoadersBlock@ -->
+</table>
+
+</HTML>
+

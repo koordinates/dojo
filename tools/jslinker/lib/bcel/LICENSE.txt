@@ -1,0 +1,5 @@
+BCEL is an Apache Project:
+http://jakarta.apache.org/bcel/
+
+It is distributed under the Apache License Version 2.0:
+http://jakarta.apache.org/bcel/license.html
