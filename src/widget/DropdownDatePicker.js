@@ -6,18 +6,26 @@ dojo.require("dojo.widget.DatePicker");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.*");
 
+dojo.require("dojo.i18n.common");
+dojo.requireLocalization("dojo.widget", "DropdownDatePicker");
+
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownDatePicker",
 	dojo.widget.DropdownContainer,
 	{
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/dateIcon.gif"),
-		iconAlt: "Select a Date",
 		zIndex: "10",
 		datePicker: null,
 		
 		dateFormat: "%m/%d/%Y",
 		date: null,
-		
+
+		postMixInProperties: function(localProperties, frag) {
+			dojo.widget.DropdownDatePicker.superclass.postMixInProperties.apply(this, arguments);
+			var messages = dojo.i18n.getLocalization("dojo.widget", "DropdownDatePicker", this.lang);
+			this.iconAlt = messages.selectDate;
+		},
+
 		fillInTemplate: function(args, frag){
 			dojo.widget.DropdownDatePicker.superclass.fillInTemplate.call(this, args, frag);
 			var source = this.getFragNodeRef(frag);
