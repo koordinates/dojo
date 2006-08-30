@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.HashMap;
 
 /**
  * Core class for running dojo based tests within 
@@ -212,13 +213,14 @@ public class DojoTest {
 			System.out.println("Using local dojo test infrastructure.");
 		}
 		
+		DojoDebugger debugger = new DojoDebugger();
 		Context cx = Context.enter();
 		cx.setOptimizationLevel(-1);
 		cx.setGeneratingDebug(true);
 		cx.setGeneratingSource(true);
+		cx.setDebugger(debugger, new HashMap());
 		try {
 			Global global = new Global(cx);
-			
 			execString(cx, global, 
 					"djConfig = { \n" + 
 					"	baseRelativePath: \"" + path(_dojoDir.getAbsolutePath() + File.separatorChar) +"\",\n" + 
@@ -297,7 +299,6 @@ public class DojoTest {
 	void execString(Context cx, Global global, String str, String file)
 	{
 		try {
-			
 			Object result = cx.compileString(
 					str,
 					file, 1 , null
