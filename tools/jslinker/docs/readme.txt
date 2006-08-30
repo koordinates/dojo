@@ -192,7 +192,7 @@ This is a list of JavaScript Linker tasks that will supported in future releases
 
    1. Download JSL from the SVN Repository:
 
-              svn co http://svn.dojotoolkit.org/dojo/trunk/tests/jslinker
+              svn co http://svn.dojotoolkit.org/dojo/trunk/tools/jslinker
 
    2. Edit the included build.properties and set the location for the
       *ANT_HOME* property
