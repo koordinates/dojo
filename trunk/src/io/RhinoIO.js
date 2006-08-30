@@ -1,6 +1,7 @@
 dojo.provide("dojo.io.RhinoIO");
 
 dojo.require("dojo.io");
+dojo.require("dojo.lang.func");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.string.extras");
 
@@ -14,21 +15,14 @@ dojo.io.RhinoHTTPTransport = new function(){
 				["text/plain", "text/html", "text/javascript", "text/json"])){
 				return false;
 			}
-
-			// Only for sync requests!  Async is possible but that would require
-			// messing about with threads which I am not terribly interested in
-			// doing at this juncture.
-			if(!req.sync){
-				return false;
-			}
-
+			
 			// We only handle http requests!  Unfortunately, because the method is 
 			// protected, I can't directly create a java.net.HttpURLConnection, so
 			// this is the only way to test.
 			if(req.url.substr(0, 7) != "http://"){
 				return false;
 			}
-
+			
 			return true;
 		}
 
@@ -70,29 +64,29 @@ dojo.io.RhinoHTTPTransport = new function(){
 
 			req.load("load", ret, req);
 		}
-
-		this.bind = function(req){
+		
+		function connect(req){
 			var content = req.content || {};
 			var query;
-
+	
 			if (req.sendTransport){
 				content["dojo.transport"] = "rhinohttp";
 			}
-
+	
 			if(req.postContent){
 				query = req.postContent;
 			}else{
 				query = dojo.io.argsFromMap(content, req.encoding);
 			}
-
+	
 			var url_text = req.url;
 			if(req.method.toLowerCase() == "get" && query != ""){
 				url_text = url_text + "?" + query;
 			}
-
+			
 			var url  = new java.net.URL(url_text);
 			var conn = url.openConnection();
-
+			
 			//
 			// configure the connection
 			//
@@ -127,7 +121,17 @@ dojo.io.RhinoHTTPTransport = new function(){
 			// perform the load
 			doLoad(req, conn);
 		}
+		
+		this.bind = function(req){
+			var async = req["sync"] ? false : true;
+			if (async){
+				setTimeout(dojo.lang.hitch(this, function(){
+					connect(req);
+				}), 1);
+			} else {
+				connect(req);
+			}
+		}
 
 		dojo.io.transports.addTransport("RhinoHTTPTransport");
 }
-

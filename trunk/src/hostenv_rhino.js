@@ -1,16 +1,12 @@
 /*
 * Rhino host environment
 */
-
 // make jsc shut up (so we can use jsc for sanity checking) 
 /*@cc_on
 @if (@_jscript_version >= 7)
 var loadClass; var print; var load; var quit; var version; var Packages; var java;
 @end
 @*/
-
-// TODO: not sure what we gain from the next line, anyone?
-//if (typeof loadClass == 'undefined') { dojo.raise("attempt to use Rhino host environment when no 'loadClass' global"); }
 
 dojo.hostenv.println=function(line){
 	print(line);
@@ -41,7 +37,7 @@ dojo.hostenv.loadUri = function(uri, cb){
 		}
 		return 1;
 	}catch(e){
-		dojo.debug("rhino load('", uri, "') failed. Exception: "+e);
+		dojo.debug("rhino load('", uri, "') failed. Exception: " + e);
 		return 0;
 	}
 }
@@ -144,7 +140,6 @@ function dj_rhino_current_script_via_eval_exception() {
 // reading a file from disk in Java is a humiliating experience by any measure.
 // Lets avoid that and just get the freaking text
 function readText(path, encoding){
-// if(typeof readFile == 'function'){readFile(path, encoding);}
 	encoding = encoding || "utf-8";
 	// NOTE: we intentionally avoid handling exceptions, since the caller will
 	// want to know
@@ -154,7 +149,6 @@ function readText(path, encoding){
 }
 
 function readUri(uri, encoding){
-// if(typeof readUrl == 'function'){readUrl(path, encoding);}
 	var conn = (new java.net.URL(uri)).openConnection();
 	encoding = encoding || conn.getContentEncoding() || "utf-8";
 	var is = conn.getInputStream();
@@ -184,7 +178,7 @@ if(!djConfig.libraryScriptUri.length){
 		// otherwise just fake it
 		if(djConfig["isDebug"]){
 			print("\n");
-			print("we have no idea where Dojo is located from.");
+			print("we have no idea where Dojo is located.");
 			print("Please try loading rhino in a non-interpreted mode or set a");
 			print("\n\tdjConfig.libraryScriptUri\n");
 			print("Setting the dojo path to './'");
@@ -201,3 +195,29 @@ dojo.doc = function(){
 	//		return the document object associated with the dojo.global()
 	return document;
 }
+
+/**
+ * provides threading support
+ */
+function setTimeout(func, delay){
+	var def={
+		sleepTime:delay,
+		hasSlept:false,
+		
+		run:function(){
+			if (!this.hasSlept){
+				this.hasSlept=true;
+				java.lang.Thread.currentThread().sleep(this.sleepTime);
+			}
+			try {
+				func();
+			} catch(e){dojo.log.exception("Error running setTimeout thread:", e);}
+		}
+	};
+	
+	var runnable=new java.lang.Runnable(def);
+	var thread=new java.lang.Thread(runnable);
+	thread.start();
+}
+
+dojo.require("dojo.logging.Logger");
