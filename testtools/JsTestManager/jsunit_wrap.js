@@ -730,9 +730,8 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
     if(!(this instanceof JUMAssertFailure)){
     	return new JUMAssertFailure(msg);
     }
-    // Error.call(this, msg);
     this.isJumError = 1;
-    this.message = (new String(msg)) || ''; 
+    this.message = (new String(msg)) || '';
     return this; // silence warnings
   }
   JUMAssertFailure.prototype = new Error();

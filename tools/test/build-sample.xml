@@ -17,11 +17,12 @@
         classname="org.dojotoolkit.ant.DojoTestTask" 
         classpath="tools/test/dist/ant-dojotest.jar" />
     
-    <!-- Runs the dojo testing task. -->
+    <!-- Runs the dojo testing task on the dojo core set of tests. -->
     <target name="test">
         <dojo-test dojosrc="." testsrc="tests"/>
     </target>
     
+    <!-- Runs the jum unit tests. (ie tests for JUM ) -->
     <target name="test-jum">
         <dojo-test dojosrc="." testsrc="testtools" />
     </target>

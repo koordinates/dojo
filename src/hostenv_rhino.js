@@ -129,13 +129,12 @@ function dj_rhino_current_script_via_eval_exception() {
     // try{throw Error("whatever");} catch(e) {exc = e;}
     // 'SyntaxError: identifier is a reserved word'
     // try {eval ("static in return")} catch(e) { exc = e; }
-    print("got exception: '" + exc + "'");
-    print("exc.stack=" + (typeof exc.stack));
-    var sn = exc.getSourceName();
+   // print("got exception: '" + exc + "' type=" + (typeof exc));
+    // print("exc.stack=" + (typeof exc.stack));
+    var sn = exc.rhinoException.getSourceName();
     print("SourceName=" + sn);
     return sn;
-} 
-*/
+}*/
 
 // reading a file from disk in Java is a humiliating experience by any measure.
 // Lets avoid that and just get the freaking text
