@@ -391,6 +391,20 @@
 					required="true" 
 					invalidMessage="Invalid US Phone Number." />
 			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> Regular Expression </span>
+				<span class="noticeMessage">RegexpTextbox class, 
+					Attributes: {required: true, trim: true} </span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="phone" class="medium" value="someTestString"
+					dojoType="RegexpTextbox"
+                    regexp="^[\w]+$"
+					required="true" 
+                    invalidMessage="Invalid Non-Space Text." />
+			</div>
+
 			<div class="formQuestion">
 				<span class="emphasise"> Password </span>
 				<span class="noticeMessage">(just a test that type attribute is obeyed) </span>
