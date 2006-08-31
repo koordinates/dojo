@@ -5,13 +5,13 @@
 */
 
 /* font definitions */
-body{ font:80% Helvetica, Arial, sans-serif; }
+body{ font:85% Helvetica, Arial, sans-serif; }
 div, p, span, td, li { font: 1em Helvetica, Arial, sans-serif; }
 h1, h2, h3, h4, h5, h6 { font-family: Georgia,Times,serif; }
 
 /* margin and padding defaults */
 body{ padding:0; margin:0; }
-p { margin:0.5em 0;}
+p { margin:1em 0; line-height:135%;}
 h1, h2, h3, h4, h5, h6 { margin:0; margin-top:1em; }
 
 /* list defaults */
