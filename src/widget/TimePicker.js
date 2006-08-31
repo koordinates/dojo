@@ -2,7 +2,7 @@ dojo.provide("dojo.widget.TimePicker");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
-dojo.require("dojo.date.common");
+dojo.require("dojo.date.format");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 

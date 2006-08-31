@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.SortableTable");
 
 dojo.require("dojo.lang.common");
-dojo.require("dojo.date.common");
+dojo.require("dojo.date.format");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.html.util");
