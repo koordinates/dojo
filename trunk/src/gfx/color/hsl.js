@@ -1,13 +1,13 @@
-dojo.provide("dojo.graphics.color.hsl");
+dojo.provide("dojo.gfx.color.hsl");
 dojo.require("dojo.lang.array");
 
-dojo.lang.extend(dojo.graphics.color.Color, {
+dojo.lang.extend(dojo.gfx.color.Color, {
 	toHsl: function() {
-		return dojo.graphics.color.rgb2hsl(this.toRgb());
+		return dojo.gfx.color.rgb2hsl(this.toRgb());
 	}
 });
 
-dojo.graphics.color.rgb2hsl = function(r, g, b){
+dojo.gfx.color.rgb2hsl = function(r, g, b){
 	if (dojo.lang.isArray(r)) {
 		b = r[2] || 0;
 		g = r[1] || 0;
@@ -59,7 +59,7 @@ dojo.graphics.color.rgb2hsl = function(r, g, b){
 	return [h, s, l];
 }
 
-dojo.graphics.color.hsl2rgb = function(h, s, l){
+dojo.gfx.color.hsl2rgb = function(h, s, l){
 	if (dojo.lang.isArray(h)) {
 		l = h[2] || 0;
 		s = h[1] || 0;
@@ -118,12 +118,12 @@ dojo.graphics.color.hsl2rgb = function(h, s, l){
 	return [r, g, b];
 }
 
-dojo.graphics.color.hsl2hex = function(h, s, l){
-	var rgb = dojo.graphics.color.hsl2rgb(h, s, l);
-	return dojo.graphics.color.rgb2hex(rgb[0], rgb[1], rgb[2]);
+dojo.gfx.color.hsl2hex = function(h, s, l){
+	var rgb = dojo.gfx.color.hsl2rgb(h, s, l);
+	return dojo.gfx.color.rgb2hex(rgb[0], rgb[1], rgb[2]);
 }
 
-dojo.graphics.color.hex2hsl = function(hex){
-	var rgb = dojo.graphics.color.hex2rgb(hex);
-	return dojo.graphics.color.rgb2hsl(rgb[0], rgb[1], rgb[2]);
+dojo.gfx.color.hex2hsl = function(hex){
+	var rgb = dojo.gfx.color.hex2rgb(hex);
+	return dojo.gfx.color.rgb2hsl(rgb[0], rgb[1], rgb[2]);
 }
