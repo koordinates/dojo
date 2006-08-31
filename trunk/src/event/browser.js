@@ -34,13 +34,15 @@ dojo._ie_clobber = new function(){
 		var basis = {};
 		for(var i = na.length-1; i>=0; i=i-1){
 			var el = na[i];
-			if(el["__clobberAttrs__"]){
-				for(var j=0; j<el.__clobberAttrs__.length; j++){
-					nukeProp(el, el.__clobberAttrs__[j]);
+			try{
+				if(el && el["__clobberAttrs__"]){
+					for(var j=0; j<el.__clobberAttrs__.length; j++){
+						nukeProp(el, el.__clobberAttrs__[j]);
+					}
+					nukeProp(el, "__clobberAttrs__");
+					nukeProp(el, "__doClobber__");
 				}
-				nukeProp(el, "__clobberAttrs__");
-				nukeProp(el, "__doClobber__");
-			}
+			}catch(e){ /* squelch! */};
 		}
 		na = null;
 	}
