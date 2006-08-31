@@ -39,7 +39,7 @@ dojo.widget.defineWidget(
 		_content: "",
 		
 		/* set height to fix the editor at a specific height, with scrolling */
-		height: null,
+		height: "",
 
 		/** The minimum height that the editor should have */
 		minHeight: "1em",
