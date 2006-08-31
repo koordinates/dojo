@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.SortableTable");
 
 dojo.require("dojo.lang.common");
-dojo.require("dojo.date");
+dojo.require("dojo.date.common");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.html.util");
@@ -392,7 +392,7 @@ dojo.widget.defineWidget(
 					if(this.columns[j].getType()==Date){
 						var format=this.defaultDateFormat;
 						if(this.columns[j].format) format=this.columns[j].format;
-						cell.appendChild(document.createTextNode(dojo.date.format(data[i][this.columns[j].getField()], format)));
+						cell.appendChild(document.createTextNode(dojo.date.strftime(data[i][this.columns[j].getField()], format)));
 					}else{
 						cell.appendChild(document.createTextNode(data[i][this.columns[j].getField()]));
 					}

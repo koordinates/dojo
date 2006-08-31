@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.FilteringTable");
 
-dojo.require("dojo.date");
+dojo.require("dojo.date.common");
 dojo.require("dojo.data.SimpleStore");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.util");
@@ -623,7 +623,7 @@ dojo.widget.defineWidget(
 					if(meta.format){
 						format = meta.format;
 					}
-					cell.innerHTML = dojo.date.format(val, format);
+					cell.innerHTML = dojo.date.strftime(val, format);
 				} else {
 					cell.innerHTML = val;
 				}

@@ -1,12 +1,13 @@
 dojo.provide("dojo.widget.DatePicker");
 dojo.provide("dojo.widget.DatePicker.util");
-dojo.require("dojo.date");
+dojo.require("dojo.date.common");
+dojo.require("dojo.date.format");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
-dojo.require("dojo.i18n.datetime");
+dojo.require("dojo.lang.array");
 
 /*
 	Some assumptions:
@@ -107,7 +108,7 @@ dojo.widget.defineWidget(
 		},
 
 		initUI: function() {
-			var dayLabels = dojo.i18n.datetime.getNames('days', this.dayWidth, 'standAlone', this.lang);
+			var dayLabels = dojo.date.getNames('days', this.dayWidth, 'standAlone', this.lang);
 			var dayLabelNodes = this.dayLabelsRow.getElementsByTagName("td");
 			for(var i=0; i<7; i++) {
 				dayLabelNodes.item(i).innerHTML = dayLabels[i];
@@ -320,13 +321,14 @@ dojo.widget.defineWidget(
 		},
 
 		setMonthLabel: function(monthIndex) {
-			this.monthLabelNode.innerHTML = dojo.i18n.datetime.getNames('months', 'wide', 'standAlone', this.lang)[monthIndex];
+			this.monthLabelNode.innerHTML = dojo.date.getNames('months', 'wide', 'standAlone', this.lang)[monthIndex];
 		},
 
 		setYearLabels: function(year) {
-			this.previousYearLabelNode.innerHTML = year - 1;
-			this.currentYearLabelNode.innerHTML = year;
-			this.nextYearLabelNode.innerHTML = year + 1;
+			var y = year - 1;
+			dojo.lang.forEach(["previousYearLabelNode", "currentYearLabelNode", "nextYearLabelNode"], function(node){
+				this[node].innerHTML = y++; /*ticket #1206: dojo.date.format(new Date(y++, 0), {formatLength:'yearOnly', locale:this.lang});*/
+			}, this);
 		},
 		
 		getDateClassName: function(date, monthState) {
@@ -376,7 +378,7 @@ dojo.widget.DatePicker.util = new function() {
 			jsDate = new Date();
 		}
 		// because this is a date picker and not a time picker, we don't return a time
-		return dojo.date.format(jsDate, "%Y-%m-%d");
+		return dojo.date.strftime(jsDate, "%Y-%m-%d");
 	}
 	
 	this.fromRfcDate = function(rfcDate) {

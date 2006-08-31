@@ -39,7 +39,7 @@ dojo.widget.defineWidget(
 			if(this.date){
 				dateProps["date"] = this.date;
 				dateProps["storedDate"] = dojo.widget.DatePicker.util.toRfcDate(this.date);
-				this.inputNode.value = dojo.date.format(this.date, this.dateFormat);
+				this.inputNode.value = dojo.date.strftime(this.date, this.dateFormat);
 			}
 			this.datePicker = dojo.widget.createWidget("DatePicker", dateProps, dpNode);
 			dojo.event.connect(this.datePicker, "onSetDate", this, "onSetDate");

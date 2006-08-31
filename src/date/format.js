@@ -1,8 +1,8 @@
-dojo.provide("dojo.i18n.datetime");
+dojo.provide("dojo.date.format");
 
 dojo.require("dojo.experimental");
 
-dojo.require("dojo.date");
+dojo.require("dojo.date.common");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.string.common");
@@ -16,7 +16,7 @@ dojo.requireLocalization("dojo.i18n.calendar", "gregorian-extras");
 //NOTE: Everything in this module assumes Gregorian calendars.
 // Other calendars will be implemented in separate modules.
 
-dojo.i18n.datetime.format = function(/*Date*/dateObject, /*Object?*/options){
+dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 //
 // summary:
 //		Format a Date object as a String, using locale-specific settings.
@@ -42,7 +42,11 @@ dojo.i18n.datetime.format = function(/*Date*/dateObject, /*Object?*/options){
 //		datePattern,timePattern- override pattern with this string
 //		locale- override the locale used to determine formatting rules
 //
-	dojo.experimental("dojo.i18n.datetime");
+
+	if(typeof options == "string"){
+		dojo.deprecated("dojo.date.format", "To format dates with POSIX-style strings, please use dojo.date.strftime instead", "0.5");
+		return dojo.date.strftime(dateObject, options);
+	}
 
 	// Format a pattern without literals
 	function formatRawPattern(dateObject, pattern) {
@@ -204,7 +208,7 @@ dojo.i18n.datetime.format = function(/*Date*/dateObject, /*Object?*/options){
 
 	var locale = dojo.normalizeLocale(options.locale);
 	var formatLength = options.formatLength || 'full';
-	var info = dojo.i18n.datetime._getGregorianBundle(locale);
+	var info = dojo.date._getGregorianBundle(locale);
 	var str = [];
 	if (options.selector != "timeOnly") {
 		var datePattern = options.datePattern || info["dateFormat-"+formatLength];
@@ -218,7 +222,7 @@ dojo.i18n.datetime.format = function(/*Date*/dateObject, /*Object?*/options){
 	return result; /*String*/
 };
 
-dojo.i18n.datetime._buildDateTimeRE = function(pattern, elements) {
+dojo.date._buildDateTimeRE = function(pattern, elements) {
 	var str = pattern.replace(/[a-zA-Z]+/g, function(match){
 			var s;
 			var c = match.charAt(0);
@@ -258,7 +262,7 @@ dojo.i18n.datetime._buildDateTimeRE = function(pattern, elements) {
 	return new RegExp("^" + str + "$");
 };
 
-dojo.i18n.datetime.parse = function(/*String*/value, /*Object?*/options){
+dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //
 // summary:
 //		Convert a properly formatted string to a primitive Date object,
@@ -283,16 +287,16 @@ dojo.i18n.datetime.parse = function(/*String*/value, /*Object?*/options){
 //		datePattern,timePattern- override pattern with this string
 //		locale- override the locale used to determine formatting rules
 //
-	dojo.experimental("dojo.i18n.datetime");
+	dojo.experimental("dojo.date.parse");
 	//TODO: this is still quite rough - it only implements a small portion of the parsing algorithm needed,
 	// and doesn't provide much flexibility in matching.
 	var locale = dojo.normalizeLocale(options.locale);
-	var info = dojo.i18n.datetime._getGregorianBundle(locale);
+	var info = dojo.date._getGregorianBundle(locale);
 	var formatLength = options.formatLength || 'full';
 	if (options.selector != 'dateOnly'){ dojo.unimplemented("can only parse dates at this time"); }
 	var pattern = options.datePattern || info["dateFormat-"+formatLength];
 	var elements = [];
-	var dateRE = dojo.i18n.datetime._buildDateTimeRE(pattern, elements);
+	var dateRE = dojo.date._buildDateTimeRE(pattern, elements);
 
 	var match = dateRE.exec(value);
 	var result = new Date();
@@ -321,7 +325,7 @@ dojo.i18n.datetime.parse = function(/*String*/value, /*Object?*/options){
 
 //TODO: try to common strftime and format code somehow?
 
-dojo.i18n.datetime.strftime = function (/*Date*/dateObject, /*String*/format) {
+dojo.date.strftime = function (/*Date*/dateObject, /*String*/format) {
 //
 // summary:
 //		Formats the date object using the specifications of the POSIX strftime function
@@ -329,34 +333,32 @@ dojo.i18n.datetime.strftime = function (/*Date*/dateObject, /*String*/format) {
 // description:
 //		see <http://www.opengroup.org/onlinepubs/007908799/xsh/strftime.html>
 
-	dojo.experimental("dojo.i18n.datetime");
-
 	// zero pad
 	var padChar = null;
 	function _(s, n) {
 		return dojo.string.pad(s, n || 2, padChar || "0");
 	}
 
-	var info = dojo.i18n.datetime._getGregorianBundle();
+	var info = dojo.date._getGregorianBundle();
 
 	function $ (property) {
 		switch (property) {
 			case "a": // abbreviated weekday name according to the current locale
-				return dojo.i18n.datetime.getDayShortName(dateObject);
+				return dojo.date.getDayShortName(dateObject);
 
 			case "A": // full weekday name according to the current locale
-				return dojo.i18n.datetime.getDayName(dateObject);
+				return dojo.date.getDayName(dateObject);
 
 			case "b":
 			case "h": // abbreviated month name according to the current locale
-				return dojo.i18n.datetime.getMonthShortName(dateObject);
+				return dojo.date.getMonthShortName(dateObject);
 				
 			case "B": // full month name according to the current locale
-				return dojo.i18n.datetime.getMonthName(dateObject);
+				return dojo.date.getMonthName(dateObject);
 				
 			case "c": // preferred date and time representation for the current
 				      // locale
-				return dojo.i18n.datetime.format(dateObject, "full");				
+				return dojo.date.format(dateObject, "full");				
 
 			case "C": // century number (the year divided by 100 and truncated
 				      // to an integer, range 00 to 99)
@@ -456,11 +458,11 @@ dojo.i18n.datetime.strftime = function (/*Date*/dateObject, /*String*/format) {
 
 			case "x": // preferred date representation for the current locale
 				      // without the time
-				return dojo.i18n.datetime.format(dateObject, 'short'); //TODO: which format should be used?
+				return dojo.date.format(dateObject, 'short'); //TODO: which format should be used?
 
 			case "X": // preferred date representation for the current locale
 				      // without the time
-				return dojo.i18n.datetime.format(dateObject, 'full'); //TODO: which format should be used?
+				return dojo.date.format(dateObject, 'full'); //TODO: which format should be used?
 
 			case "y": // year as a decimal number without a century (range 00 to
 				      // 99)
@@ -523,7 +525,38 @@ dojo.i18n.datetime.strftime = function (/*Date*/dateObject, /*String*/format) {
 	return string;
 };
 
-dojo.i18n.datetime.getNames = function(/*String*/item, /*String*/type, /*String?*/use, /*String?*/locale){
+(function(){
+var _customFormats = [];
+dojo.date.addCustomFormats = function(packageName, bundleName){
+//
+// summary:
+//		Add a reference to a bundle containing localized custom formats to be
+//		used by date/time formatting and parsing routines.
+//
+// description:
+//		The user may add custom localized formats where the bundle has properties following the
+//		same naming convention used by dojo for the CLDR data: dateFormat-xxxx / timeFormat-xxxx
+//		The pattern string should match the format used by the CLDR.
+//		See dojo.date.format for details.
+//		The resources must be loaded by dojo.requireLocalization() prior to use
+
+	_customFormats.push({pkg:packageName,name:bundleName});
+};
+
+dojo.date._getGregorianBundle = function(locale){
+	var gregorian = {};
+	dojo.lang.forEach(_customFormats, function(desc){
+		var bundle = dojo.i18n.getLocalization(desc.pkg, desc.name, locale);
+		gregorian = dojo.lang.mixin(gregorian, bundle);
+	}, this);
+	return gregorian;
+};
+})();
+
+dojo.date.addCustomFormats("dojo.i18n.calendar","gregorian");
+dojo.date.addCustomFormats("dojo.i18n.calendar","gregorian-extras");
+
+dojo.date.getNames = function(/*String*/item, /*String*/type, /*String?*/use, /*String?*/locale){
 //
 // summary:
 //		Used to get localized strings for day or month names.
@@ -534,7 +567,7 @@ dojo.i18n.datetime.getNames = function(/*String*/item, /*String*/type, /*String?
 // locale: override locale used to find the names
 
 	var label;
-	var lookup = dojo.i18n.datetime._getGregorianBundle(locale);
+	var lookup = dojo.date._getGregorianBundle(locale);
 	var props = [item, use, type];
 	if (use == 'standAlone') {
 		label = lookup[props.join('-')];
@@ -543,55 +576,27 @@ dojo.i18n.datetime.getNames = function(/*String*/item, /*String*/type, /*String?
 	return label || lookup[props.join('-')]; /*Array*/
 };
 
-dojo.i18n.datetime._formatsBundles = [];
-dojo.i18n.datetime.addCustomFormats = function(packageName, bundleName){
-//
-// summary:
-//		Add a reference to a bundle containing localized custom formats to be
-//		used by date/time formatting and parsing routines.
-//
-// description:
-//		The user may add custom localized formats where the bundle has properties following the
-//		same naming convention used by dojo for the CLDR data: dateFormat-xxxx / timeFormat-xxxx
-//		The pattern string should match the format used by the CLDR.
-//		See dojo.i18n.datetime.format for details.
-//		The resources must be loaded by dojo.requireLocalization() prior to use
-
-	dojo.i18n.datetime._formatsBundles.push({pkg:packageName,name:bundleName});
-};
-dojo.i18n.datetime.addCustomFormats("dojo.i18n.calendar","gregorian");
-dojo.i18n.datetime.addCustomFormats("dojo.i18n.calendar","gregorian-extras");
-
-dojo.i18n.datetime._getGregorianBundle = function(locale){
-	var gregorian = {};
-	dojo.lang.forEach(dojo.i18n.datetime._formatsBundles, function(desc){
-		var bundle = dojo.i18n.getLocalization(desc.pkg, desc.name, locale);
-		gregorian = dojo.lang.mixin(gregorian, bundle);
-	}, this);
-	return gregorian;
-};
-
 // Convenience methods
 
-dojo.i18n.datetime.getDayName = function(/*Date*/dateObject, /*String?*/locale){
-	return dojo.i18n.datetime.getNames('days', 'wide', 'format', locale)[dateObject.getDay()]; /*String*/
+dojo.date.getDayName = function(/*Date*/dateObject, /*String?*/locale){
+	return dojo.date.getNames('days', 'wide', 'format', locale)[dateObject.getDay()]; /*String*/
 };
 
-dojo.i18n.datetime.getDayShortName = function(/*Date*/dateObject, /*String?*/locale){
-	return dojo.i18n.datetime.getNames('days', 'abbr', 'format', locale)[dateObject.getDay()]; /*String*/
+dojo.date.getDayShortName = function(/*Date*/dateObject, /*String?*/locale){
+	return dojo.date.getNames('days', 'abbr', 'format', locale)[dateObject.getDay()]; /*String*/
 };
 
-dojo.i18n.datetime.getMonthName = function(/*Date*/dateObject, /*String?*/locale){
-	return dojo.i18n.datetime.getNames('months', 'wide', 'format', locale)[dateObject.getMonth()]; /*String*/
+dojo.date.getMonthName = function(/*Date*/dateObject, /*String?*/locale){
+	return dojo.date.getNames('months', 'wide', 'format', locale)[dateObject.getMonth()]; /*String*/
 };
 
-dojo.i18n.datetime.getMonthShortName = function(/*Date*/dateObject, /*String?*/locale){
-	return dojo.i18n.datetime.getNames('months', 'abbr', 'format', locale)[dateObject.getMonth()]; /*String*/
+dojo.date.getMonthShortName = function(/*Date*/dateObject, /*String?*/locale){
+	return dojo.date.getNames('months', 'abbr', 'format', locale)[dateObject.getMonth()]; /*String*/
 };
 
 // Supplemental
 
-dojo.i18n.datetime.getFirstDayOfWeek = function(/*String?*/locale){
+dojo.date.getFirstDayOfWeek = function(/*String?*/locale){
 // summary:
 //		Returns a zero-based index for first day of the week, as used by the local (Gregorian) calendar.
 //		e.g. Sunday (returns 0), or Monday (returns 1)
