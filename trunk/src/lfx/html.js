@@ -1,5 +1,6 @@
 dojo.provide("dojo.lfx.html");
 
+dojo.require("dojo.gfx.color");
 dojo.require("dojo.lfx.Animation");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.html.display");
@@ -103,7 +104,7 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 			if(dojo.lang.isArray(prop.start)){
 				// don't loop through the arrays
 				this.diffs[i] = null;
-			}else if(prop.start instanceof dojo.graphics.color.Color){
+			}else if(prop.start instanceof dojo.gfx.color.Color){
 				// save these so we don't have to call toRgb() every getValue() call
 				prop.startRgb = prop.start.toRgb();
 				prop.endRgb = prop.end.toRgb();
@@ -118,7 +119,7 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 				var value = null;
 				if(dojo.lang.isArray(prop.start)){
 					// FIXME: what to do here?
-				}else if(prop.start instanceof dojo.graphics.color.Color){
+				}else if(prop.start instanceof dojo.gfx.color.Color){
 					value = (prop.units||"rgb") + "(";
 					for(var j = 0 ; j < prop.startRgb.length ; j++){
 						value += Math.round(((prop.endRgb[j] - prop.startRgb[j]) * n) + prop.startRgb[j]) + (j < prop.startRgb.length - 1 ? "," : "");
@@ -539,8 +540,8 @@ dojo.lfx.html.highlight = function(nodes, startColor, duration, easing, callback
 		var wasTransparent = (bg == "transparent" || bg == "rgba(0, 0, 0, 0)");
 		while(color.length > 3) { color.pop(); }
 
-		var rgb = new dojo.graphics.color.Color(startColor);
-		var endRgb = new dojo.graphics.color.Color(color);
+		var rgb = new dojo.gfx.color.Color(startColor);
+		var endRgb = new dojo.gfx.color.Color(color);
 
 		var anim = dojo.lfx.propertyAnimation(node, 
 			{ "background-color": { start: rgb, end: endRgb } }, 
@@ -577,8 +578,8 @@ dojo.lfx.html.unhighlight = function(nodes, endColor, duration, easing, callback
 	var anims = [];
 
 	dojo.lang.forEach(nodes, function(node){
-		var color = new dojo.graphics.color.Color(dojo.html.getBackgroundColor(node));
-		var rgb = new dojo.graphics.color.Color(endColor);
+		var color = new dojo.gfx.color.Color(dojo.html.getBackgroundColor(node));
+		var rgb = new dojo.gfx.color.Color(endColor);
 
 		var bgImage = dojo.html.getStyle(node, "background-image");
 		

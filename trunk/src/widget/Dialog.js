@@ -3,7 +3,7 @@ dojo.provide("dojo.widget.Dialog");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.event.*");
-dojo.require("dojo.graphics.color");
+dojo.require("dojo.gfx.color");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.html.display");
 dojo.require("dojo.html.iframe");
@@ -97,9 +97,9 @@ dojo.declare(
 
 		setBackgroundColor: function(color) {
 			if(arguments.length >= 3) {
-				color = new dojo.graphics.color.Color(arguments[0], arguments[1], arguments[2]);
+				color = new dojo.gfx.color.Color(arguments[0], arguments[1], arguments[2]);
 			} else {
-				color = new dojo.graphics.color.Color(color);
+				color = new dojo.gfx.color.Color(color);
 			}
 			this.shared.bg.style.backgroundColor = color.toString();
 			return this.bgColor = color;

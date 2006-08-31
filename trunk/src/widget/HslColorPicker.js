@@ -5,8 +5,8 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.HslColorPicker");
 dojo.require("dojo.math");
 dojo.require("dojo.svg");
-dojo.require("dojo.graphics.color");
-dojo.require("dojo.graphics.color.hsl");
+dojo.require("dojo.gfx.color");
+dojo.require("dojo.gfx.color.hsl");
 
 dojo.widget.defineWidget(
 	"dojo.widget.svg.HslColorPicker",
@@ -29,7 +29,7 @@ dojo.widget.defineWidget(
 		this.leftGradientColorNode = this.hueNode.ownerDocument.getElementById("leftGradientColor");
 		this.rightGradientColorNode = this.hueNode.ownerDocument.getElementById("rightGradientColor");
 		this.hueNode.setAttributeNS(dojo.dom.xmlns.xlink, "href", dojo.uri.dojoUri("src/widget/templates/images/hue.png"));
-		var hsl = dojo.graphics.color.hex2hsl(this.storedColor);
+		var hsl = dojo.gfx.color.hex2hsl(this.storedColor);
 		this.hue = hsl[0];
 		this.saturation = hsl[1];
 		this.light = hsl[2];
@@ -38,12 +38,12 @@ dojo.widget.defineWidget(
 		//this.setSaturationLightSlider();
 	},
 	setSaturationStopColors: function() {
-		//this.leftGradientStopColor = "rgb(" + dojo.graphics.color.hsl2rgb(this.hue, 20, 50).join(", ") + ")";
-		//this.rightGradientStopColor = "rgb(" + dojo.graphics.color.hsl2rgb(this.hue, 100, 50).join(", ") + ")";
-		//this.leftGradientStopColor = dojo.graphics.color.hsl2hex(this.hue, 20, 50);
-		//this.rightGradientStopColor = dojo.graphics.color.hsl2hex(this.hue, 100, 50);
-		this.leftGradientStopColor = dojo.graphics.color.rgb2hex(this.hsl2rgb(this.hue, 0, 50));
-		this.rightGradientStopColor = dojo.graphics.color.rgb2hex(this.hsl2rgb(this.hue, 100, 50));
+		//this.leftGradientStopColor = "rgb(" + dojo.gfx.color.hsl2rgb(this.hue, 20, 50).join(", ") + ")";
+		//this.rightGradientStopColor = "rgb(" + dojo.gfx.color.hsl2rgb(this.hue, 100, 50).join(", ") + ")";
+		//this.leftGradientStopColor = dojo.gfx.color.hsl2hex(this.hue, 20, 50);
+		//this.rightGradientStopColor = dojo.gfx.color.hsl2hex(this.hue, 100, 50);
+		this.leftGradientStopColor = dojo.gfx.color.rgb2hex(this.hsl2rgb(this.hue, 0, 50));
+		this.rightGradientStopColor = dojo.gfx.color.rgb2hex(this.hsl2rgb(this.hue, 100, 50));
 		this.leftGradientColorNode.setAttributeNS(null,'stop-color',this.leftGradientStopColor);
 		this.rightGradientColorNode.setAttributeNS(null,'stop-color',this.rightGradientStopColor);
 	},
@@ -67,7 +67,7 @@ dojo.widget.defineWidget(
 		var yPosition = parseInt(evt.clientY) - parseInt(evt.target.getAttribute("y"));
 		this.setHue( 360 - parseInt(yPosition*(360/parseInt(this.height))) );
 		this.setSaturationStopColors();
-		this.setStoredColor(dojo.graphics.color.hsl2hex(this.hue, this.saturation, this.light));
+		this.setStoredColor(dojo.gfx.color.hsl2hex(this.hue, this.saturation, this.light));
 	},
 	onHueDrag: function(evt) {
 		// TODO
@@ -80,7 +80,7 @@ dojo.widget.defineWidget(
 		var saturation = parseInt(parseInt(xPosition)*(101/106));
 		var light = parseInt(parseInt(yPosition)*(101/106));
 		this.setSaturationLight(saturation, light);
-		this.setStoredColor(dojo.graphics.color.hsl2hex(this.hue, this.saturation, this.light));
+		this.setStoredColor(dojo.gfx.color.hsl2hex(this.hue, this.saturation, this.light));
 	},
 	onSaturationLightDrag: function(evt) {
 		// TODO
@@ -94,7 +94,7 @@ dojo.widget.defineWidget(
 	},
 	hsl2rgb: function(hue, saturation, light)
 	{
-		// hsl2rgb in dojo.graphics.color did not behave hte way I expected, so 
+		// hsl2rgb in dojo.gfx.color did not behave hte way I expected, so 
 		// I'm using some old code I wrote until I figure out what the issue is
 		// first, check to see if saturation = 0
 		function rgb(q1,q2,hue) {

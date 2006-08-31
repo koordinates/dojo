@@ -5,6 +5,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.display");
+dojo.require("dojo.gfx.color");
 
 /*
  *	The following script is derived (with permission) from curvyCorners,
@@ -96,7 +97,7 @@ dojo.widget.defineWidget(
 		// DEBUG ME?
 
 		//dojo.debug(this.rgb2Hex(boxColour));
-		var test  = new dojo.graphics.color.Color(boxColour);
+		var test  = new dojo.gfx.color.Color(boxColour);
 		//dojo.debug(test.toHex()); 
 
 		this.boxColour       = ((boxColour != "" && boxColour != "transparent")? ((boxColour.substr(0, 3) == "rgb")? this.rgb2Hex(boxColour) : boxColour) : "#ffffff");
@@ -316,7 +317,7 @@ dojo.widget.defineWidget(
 												this.drawPixel(intx, inty, this.borderColour, 100, 1, newCorner, -1, this.settings[cc].radius);
 											}
 										} else {
-											var pixelcolour = dojo.graphics.color.blend(this.boxColour, this.borderColour, this.pixelFraction(intx, inty, borderRadius));
+											var pixelcolour = dojo.gfx.color.blend(this.boxColour, this.borderColour, this.pixelFraction(intx, inty, borderRadius));
 											this.drawPixel(intx, inty, pixelcolour, 100, 1, newCorner, 0, this.settings[cc].radius);
 										}
 									}

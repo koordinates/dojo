@@ -5,7 +5,7 @@ dojo.require("dojo.widget.Chart");
 dojo.require("dojo.math");
 dojo.require("dojo.html");
 dojo.require("dojo.svg");
-dojo.require("dojo.graphics.color");
+dojo.require("dojo.gfx.color");
 
 dojo.widget.defineWidget(
 	"dojo.widget.svg.Chart",
