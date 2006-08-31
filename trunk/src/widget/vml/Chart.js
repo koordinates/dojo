@@ -9,7 +9,7 @@ dojo.require("dojo.gfx.color");
 
 dojo.widget.defineWidget(
 	"dojo.widget.vml.Chart",
-	[dojo.widget.Chart, dojo.widget.HtmlWidget],
+	[dojo.widget.HtmlWidget, dojo.widget.Chart],
 {
 	//	widget props
 	templatePath:null,
@@ -70,7 +70,161 @@ dojo.widget.defineWidget(
 	initialize:function(){
 		//	parse the data first.
 		this.parseData();
-	
+
+//////////////		
+		//	begin by grabbing the table, and reading it in.
+		var table=this.domNode.getElementsByTagName("table")[0];
+		if (!table) return;
+		
+		var bRangeX=false;
+		var bRangeY=false;
+		
+		//	properties off the table
+		if (table.getAttribute("width")) this.properties.width=table.getAttribute("width");
+		if (table.getAttribute("height")) this.properties.height=table.getAttribute("height");
+		if (table.getAttribute("plotType")) this.properties.plotType=table.getAttribute("plotType");
+		if (table.getAttribute("padding")){
+			if (table.getAttribute("padding").indexOf(",") > -1)
+				var p=table.getAttribute("padding").split(","); 
+			else var p=table.getAttribute("padding").split(" ");
+			if (p.length==1){
+				var pad=parseFloat(p[0]);
+				this.properties.padding.top=pad;
+				this.properties.padding.right=pad;
+				this.properties.padding.bottom=pad;
+				this.properties.padding.left=pad;
+			} else if(p.length==2){
+				var padV=parseFloat(p[0]);
+				var padH=parseFloat(p[1]);
+				this.properties.padding.top=padV;
+				this.properties.padding.right=padH;
+				this.properties.padding.bottom=padV;
+				this.properties.padding.left=padH;
+			} else if(p.length==4){
+				this.properties.padding.top=parseFloat(p[0]);
+				this.properties.padding.right=parseFloat(p[1]);
+				this.properties.padding.bottom=parseFloat(p[2]);
+				this.properties.padding.left=parseFloat(p[3]);
+			}
+		}
+		if (table.getAttribute("rangeX")){
+			var p=table.getAttribute("rangeX");
+			if (p.indexOf(",")>-1) p=p.split(",");
+			else p=p.split(" ");
+			this.properties.axes.x.range.min=parseFloat(p[0]);
+			this.properties.axes.x.range.max=parseFloat(p[1]);
+			bRangeX=true;
+		}
+		if (table.getAttribute("rangeY")){
+			var p=table.getAttribute("rangeY");
+			if (p.indexOf(",")>-1) p=p.split(",");
+			else p=p.split(" ");
+			this.properties.axes.y.range.min=parseFloat(p[0]);
+			this.properties.axes.y.range.max=parseFloat(p[1]);
+			bRangeY=true;
+		}
+
+		var thead=table.getElementsByTagName("thead")[0];
+		var tbody=table.getElementsByTagName("tbody")[0];
+		if(!(thead&&tbody)) dojo.raise("dojo.widget.Chart: supplied table must define a head and a body.");
+
+		//	set up the series.
+		var columns=thead.getElementsByTagName("tr")[0].getElementsByTagName("th");	//	should be <tr><..>
+		
+		//	assume column 0 == X
+		for (var i=1; i<columns.length; i++){
+			var key="column"+i;
+			var label=columns[i].innerHTML;
+			var plotType=columns[i].getAttribute("plotType")||"line";
+			var color=columns[i].getAttribute("color");
+			var ds=new dojo.widget.Chart.DataSeries(key,label,plotType,color);
+			this.series.push(ds);
+		}
+
+		//	ok, get the values.
+		var rows=tbody.getElementsByTagName("tr");
+		var xMin=Number.MAX_VALUE,xMax=Number.MIN_VALUE;
+		var yMin=Number.MAX_VALUE,yMax=Number.MIN_VALUE;
+		var ignore = [
+			"accesskey","align","bgcolor","class",
+			"colspan","height","id","nowrap",
+			"rowspan","style","tabindex","title",
+			"valign","width"
+		];
+
+		for(var i=0; i<rows.length; i++){
+			var row=rows[i];
+			var cells=row.getElementsByTagName("td");
+			var x=Number.MIN_VALUE;
+			for (var j=0; j<cells.length; j++){
+				if (j==0){
+					x=parseFloat(cells[j].innerHTML);
+					xMin=Math.min(xMin, x);
+					xMax=Math.max(xMax, x);
+				} else {
+					var ds=this.series[j-1];
+					var y=parseFloat(cells[j].innerHTML);
+					yMin=Math.min(yMin,y);
+					yMax=Math.max(yMax,y);
+					var o={x:x, value:y};
+					var attrs=cells[j].attributes;
+					for(var k=0; k<attrs.length; k++){
+						var attr=attrs.item(k);
+						var bIgnore=false;
+						for (var l=0; l<ignore.length; l++){
+							if (attr.nodeName.toLowerCase()==ignore[l]){
+								bIgnore=true;
+								break;
+							}
+						}
+						if(!bIgnore) o[attr.nodeName]=attr.nodeValue;
+					}
+					ds.add(o);
+				}
+			}
+		}
+
+		//	fix the axes
+		if(!bRangeX){
+			this.properties.axes.x.range={min:xMin, max:xMax};
+		}
+		if(!bRangeY){
+			this.properties.axes.y.range={min:yMin, max:yMax};
+		}
+
+		//	where to plot the axes
+		if (table.getAttribute("axisAt")){
+			var p=table.getAttribute("axisAt");
+			if (p.indexOf(",")>-1) p=p.split(",");
+			else p=p.split(" ");
+			
+			//	x axis
+			if (!isNaN(parseFloat(p[0]))){
+				this.properties.axes.x.plotAt=parseFloat(p[0]);
+			} else if (p[0].toLowerCase()=="ymin"){
+				this.properties.axes.x.plotAt=this.properties.axes.y.range.min;
+			} else if (p[0].toLowerCase()=="ymax"){
+				this.properties.axes.x.plotAt=this.properties.axes.y.range.max;
+			}
+
+			// y axis
+			if (!isNaN(parseFloat(p[1]))){
+				this.properties.axes.y.plotAt=parseFloat(p[1]);
+			} else if (p[1].toLowerCase()=="xmin"){
+				this.properties.axes.y.plotAt=this.properties.axes.x.range.min;
+			} else if (p[1].toLowerCase()=="xmax"){
+				this.properties.axes.y.plotAt=this.properties.axes.x.range.max;
+			}
+		} else {
+			this.properties.axes.x.plotAt=this.properties.axes.y.range.min;
+			this.properties.axes.y.plotAt=this.properties.axes.x.range.min;
+		}
+
+		//	table values should be populated, now pop it off.
+		this.domNode.removeChild(table);
+///////////
+
+
 		// render the body of the chart, not the chart data.
 		if(this.vectorNode){ this.destroy(); }
 		this.vectorNode=document.createElement("div");
@@ -92,54 +246,21 @@ dojo.widget.defineWidget(
 		this.vectorNode.appendChild(this.plotArea);
 		
 		this.dataGroup=document.createElement("div");
-		this.dataGroup.style.position="relative";
+		this.dataGroup.style.position="absolute";
+		this.dataGroup.setAttribute("title", "Data Group");
+		this.dataGroup.style.top="0px";
+		this.dataGroup.style.left="0px";
+		this.dataGroup.style.width=plotWidth+"px";
+		this.dataGroup.style.height=plotHeight+"px";
 		this.plotArea.appendChild(this.dataGroup);
 
-		//	clipping rects, what a fucking pain.
-		var bg=this.domNode.style.backgroundColor;
-		var r=document.createElement("v:rect");
-		r.setAttribute("fillcolor", bg);
-		r.setAttribute("stroked", "false");
-		r.style.position="absolute";
-		r.style.top=(-1*this.properties.padding.top)-1+"px";
-		r.style.left=(-1*this.properties.padding.left)+"px";
-		r.style.width=(this.properties.width-3)+"px";
-		r.style.height=(this.properties.padding.top)-2+"px";
-		this.vectorNode.appendChild(r);
-
-		r=document.createElement("v:rect");
-		r.setAttribute("fillcolor", bg);
-		r.setAttribute("stroked", "false");
-		r.style.position="absolute";
-		r.style.top=plotHeight-2+"px";
-		r.style.left=(-1*this.properties.padding.left)+"px";
-		r.style.width=(this.properties.width-3)+"px";
-		r.style.height=(this.properties.padding.bottom)-2+"px"; // fixme: check this.
-		this.vectorNode.appendChild(r);
-
-		r=document.createElement("v:rect");
-		r.setAttribute("fillcolor", bg);
-		r.setAttribute("stroked", "false");
-		r.style.position="absolute";
-		r.style.top="-2px";
-		r.style.left=(-1*this.properties.padding.left)+"px";
-		r.style.width=(this.properties.padding.left-1)+"px";
-		r.style.height=plotHeight+"px";
-		this.vectorNode.appendChild(r);
-		
-		r=document.createElement("v:rect");
-		r.setAttribute("fillcolor", bg);
-		r.setAttribute("stroked", "false");
-		r.style.position="absolute";
-		r.style.top="-2px";
-		r.style.right=(-1*this.properties.padding.right)+1+"px";
-		r.style.width=(this.properties.padding.right-1)+"px";
-		r.style.height=plotHeight+"px";
-		this.vectorNode.appendChild(r);
-		//	end clipping rects.  god that sucks, i wish VML had clipping outside of that crap vmlframe...
-
 		this.axisGroup=document.createElement("div");
-		this.axisGroup.style.position="relative";
+		this.axisGroup.style.position="absolute";
+		this.axisGroup.setAttribute("title", "Axis Group");
+		this.axisGroup.style.top="0px";
+		this.axisGroup.style.left="0px";
+		this.axisGroup.style.width=plotWidth+"px";
+		this.axisGroup.style.height=plotHeight+"px";
 		this.plotArea.appendChild(this.axisGroup);
 
 		var stroke=1;
@@ -147,9 +268,11 @@ dojo.widget.defineWidget(
 		//	x axis
 		var line=document.createElement("v:line");
 		var y=dojo.widget.vml.Chart.Plotter.getY(this.properties.axes.x.plotAt, this);
-		line.setAttribute("from", this.properties.padding.left-stroke + "," + y);
-		line.setAttribute("to", plotWidth + "," + y);
+		line.setAttribute("from", "0px,"+y+"px");
+		line.setAttribute("to", plotWidth+"px,"+y+"px");
 		line.style.position="absolute";
+		line.style.top="0px";
+		line.style.left="0px";
 		line.style.antialias="false";
 		line.setAttribute("strokecolor", "#666");
 		line.setAttribute("strokeweight", stroke*2+"px");
@@ -157,10 +280,12 @@ dojo.widget.defineWidget(
 
 		//	y axis
 		var line=document.createElement("v:line");
-		var y=dojo.widget.vml.Chart.Plotter.getX(this.properties.axes.y.plotAt, this);
-		line.setAttribute("from", y+","+this.properties.padding.top);
-		line.setAttribute("to", y+","+this.properties.height-this.properties.padding.bottom);
+		var x=dojo.widget.vml.Chart.Plotter.getX(this.properties.axes.y.plotAt, this);
+		line.setAttribute("from", x+"px,0px");
+		line.setAttribute("to", x+"px,"+plotHeight+"px");
 		line.style.position="absolute";
+		line.style.top="0px";
+		line.style.left="0px";
 		line.style.antialias="false";
 		line.setAttribute("strokecolor", "#666");
 		line.setAttribute("strokeweight", stroke*2+"px");
@@ -243,8 +368,8 @@ dojo.widget.vml.Chart.Plotter=new function(){
 		var ofst=0-min;
 		min+=ofst; max+=ofst; v+=ofst;
 
-		var xmin=chart.properties.padding.left;
-		var xmax=chart.properties.width-chart.properties.padding.right;
+		var xmin = 0;
+		var xmax=chart.properties.width-chart.properties.padding.left-chart.properties.padding.right;
 		var x=(v*((xmax-xmin)/max))+xmin;
 		return x;
 	};
@@ -256,8 +381,8 @@ dojo.widget.vml.Chart.Plotter=new function(){
 		if(min<0)ofst+=Math.abs(min);
 		min+=ofst; max+=ofst; v+=ofst;
 		
-		var ymin=chart.properties.height-chart.properties.padding.bottom;
-		var ymax=chart.properties.padding.top;
+		var ymin=chart.properties.height-chart.properties.padding.top-chart.properties.padding.bottom;
+		var ymax = 0;
 		var y=(((ymin-ymax)/(max-min))*(max-v))+ymax;
 		return y;
 	};
@@ -279,6 +404,9 @@ dojo.widget.vml.Chart.Plotter=new function(){
 	plotters[types.Bar]=function(series, chart){
 		var space=1;
 		var lastW = 0;
+		var ys = [];
+		var yAxis=_this.getY(chart.properties.axes.x.plotAt, chart);
+		var yA = yAxis;
 		for (var i=0; i<series.values.length; i++){
 			var x=_this.getX(series.values[i].x, chart);
 			var w;
@@ -290,24 +418,29 @@ dojo.widget.vml.Chart.Plotter=new function(){
 			}
 			x-=(w/2);
 
-			var yA=_this.getY(chart.properties.axes.x.plotAt, chart);
 			var y=_this.getY(series.values[i].value, chart);
 			var h=Math.abs(yA-y);
-			if (parseFloat(series.values[i].value)<chart.properties.axes.x.plotAt){
-				var oy=yA;
-				yA=y;
-				y=oy;
+			if (parseFloat(series.values[i].value) < chart.properties.axes.x.plotAt){
+				y=yA;
 			}
 
 			var bar=document.createElement("v:rect");
 			bar.style.position="absolute";
-			bar.style.top=x+"px";
-			bar.style.left=y+"px";
+			bar.style.top=y+"px";
+			bar.style.left=x+"px";
 			bar.style.width=w+"px";
 			bar.style.height=h+"px";
+			bar.setAttribute("supposedToBe", "top/left/width/height: " 
+				+ Math.round(y) + "/"
+				+ Math.round(x) + "/"
+				+ Math.round(w) + "/"
+				+ Math.round(h)
+			);
 			bar.setAttribute("fillColor", series.color);
-			bar.setAttribute("title", series.label + ": " + series.values[i].value);
-			bar.setAttribute("coordsize", chart.properties.width + "," + chart.properties.height);
+			bar.setAttribute("stroked", "false");
+			bar.style.antialias="false";
+			bar.setAttribute("title", series.label + " (" + i + "): " + series.values[i].value);
+		// bar.setAttribute("coordsize", chart.properties.width + "," + chart.properties.height);
 			var fill=document.createElement("v:fill");
 			fill.setAttribute("opacity", "0.9");
 			bar.appendChild(fill);
