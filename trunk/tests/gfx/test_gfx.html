@@ -139,8 +139,8 @@ dojo.addOnLoad(function()
               // our surface is created from scratch
               // our template rectangle
               // red rectangle with the event handler and blue rounded thick border
-              var red_rect = surface.createRect().setRect(rect).setFill( new dojo.graphics.color.Color([255, 0, 0, 0.5])).
-              setStroke({color: new dojo.graphics.color.Color("blue"), width: 10, join: "round" }).
+              var red_rect = surface.createRect().setRect(rect).setFill( new dojo.gfx.color.Color([255, 0, 0, 0.5])).
+              setStroke({color: new dojo.gfx.color.Color("blue"), width: 10, join: "round" }).
               // move
               setTransform({ dx: 100, dy: 100 });
               dojo.event.connect(red_rect.getNode(), "onclick", function(){ alert("red"); });
@@ -149,7 +149,7 @@ dojo.addOnLoad(function()
    addTest('straight_rect', function(testName){
               surface = getTestSurface(testName, 'translucent rect with straight stroke');
               // blue rectangle
-              var blue_rect = surface.createRect(rect).setFill(new dojo.graphics.color.Color([0, 255, 0, 0.5])).
+              var blue_rect = surface.createRect(rect).setFill(new dojo.gfx.color.Color([0, 255, 0, 0.5])).
               // move
               setTransform({ dx: 100, dy: 100 });
               var width = rect.width;
@@ -163,56 +163,56 @@ dojo.addOnLoad(function()
               surface = getTestSurface(testName, 'all matrix operations, check debug output for more details');
               // anonymous blue rectangle
               group = surface.createGroup();
-              var blue_rect = group.createRect(rect).setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
+              var blue_rect = group.createRect(rect).setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
               applyTransform( dojo.gfx.identity );
               dojo.debug( "blue_rect: rect with identity" );
 
               group.createRect(rect).
-              setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.graphics.color.Color([0, 255, 0, 0.5])).
+              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
+              setFill(new dojo.gfx.color.Color([0, 255, 0, 0.5])).
               applyTransform( dojo.gfx.translate({x:30, y:40}) );
               dojo.debug( "lime_rect: translate(30,40) " );
 
               group.createRect(rect).
-              setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.graphics.color.Color([255, 0, 0, 0.5])).
+              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
+              setFill(new dojo.gfx.color.Color([255, 0, 0, 0.5])).
               applyTransform( dojo.gfx.rotateg(30) );
               dojo.debug( "red_rect: rotate 30 degree counterclockwise " );
 
               group.createRect(rect).
-              setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.graphics.color.Color([0, 255, 255, 0.5])).
+              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
+              setFill(new dojo.gfx.color.Color([0, 255, 255, 0.5])).
               applyTransform( dojo.gfx.scale({x:1.5, y:0.5}) ).
               applyTransform( dojo.gfx.translate({x:-40, y:220}) );
               dojo.debug( "lightblue_rect: scale(1.5, 0.5)" );
 
               group.createRect(rect).
-              setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.graphics.color.Color([255, 0, 255, 0.5])).
+              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
+              setFill(new dojo.gfx.color.Color([255, 0, 255, 0.5])).
               applyTransform( dojo.gfx.flipX );
               dojo.debug( "pink_rect: flipX" );
 
               group.createRect(rect).
-              setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.graphics.color.Color([255, 255, 0, 0.5])).
+              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
+              setFill(new dojo.gfx.color.Color([255, 255, 0, 0.5])).
               applyTransform( dojo.gfx.flipY );
               dojo.debug( "yellow_rect: flipY" );
 
               group.createRect(rect).
-              setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.graphics.color.Color([128, 0, 128, 0.5])).
+              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
+              setFill(new dojo.gfx.color.Color([128, 0, 128, 0.5])).
               applyTransform( dojo.gfx.flipXY );
               dojo.debug( "purple_rect: flipXY" );
 
               group.createRect(rect).
-              setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.graphics.color.Color([255, 128, 0, 0.5])).
+              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
+              setFill(new dojo.gfx.color.Color([255, 128, 0, 0.5])).
               applyTransform( dojo.gfx.skewXg(15) );
               dojo.debug( "purple_rect: skewXg 15 degree" );
 
               group.createRect(rect).
-              setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.graphics.color.Color([0, 0, 0, 0.5])).
+              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
+              setFill(new dojo.gfx.color.Color([0, 0, 0, 0.5])).
               applyTransform( dojo.gfx.skewYg(50) );
               dojo.debug( "black_rect: skewXg 50 degree" );
 
@@ -233,8 +233,8 @@ dojo.addOnLoad(function()
               var red_rect = surface.createRect().setRect(rect).
                 setRect({ width:75 }).
                 setTransform({ dx:  50, dy:  50, xx:1, xy:0.5, yx:0.7, yy:1.1 }).
-                setFill(new dojo.graphics.color.Color([255, 0, 0, 0.5])).
-                setStroke({ color: new dojo.graphics.color.Color("blue"), width: 1 });
+                setFill(new dojo.gfx.color.Color([255, 0, 0, 0.5])).
+                setStroke({ color: new dojo.gfx.color.Color("blue"), width: 1 });
 
               dojo.debug("attaching !");
               // now attach it!
@@ -256,7 +256,7 @@ dojo.addOnLoad(function()
               surface = getTestSurface(testName, '30 degree CCW rotated blue translucent rectangle');
               dojo.debug( 'rotated_rect' );
               // anonymous 30 degree CCW rotated green rectangle
-              surface.createRect().setRect(rect).setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
+              surface.createRect().setRect(rect).setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
               // rotate it around its center and move to (100, 100)
               setTransform(dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.rotategAt(45, 0, 0)));
            });
@@ -264,15 +264,15 @@ dojo.addOnLoad(function()
    addTest('skew_rect', function(testName){
               surface = getTestSurface(testName, 'skewed rects' );
               // anonymous red rectangle
-              surface.createRect().setRect(rect).setFill(new dojo.graphics.color.Color([255, 0, 0, 0.5])).
+              surface.createRect().setRect(rect).setFill(new dojo.gfx.color.Color([255, 0, 0, 0.5])).
               // skew it around LB point -30d, rotate it around LB point 30d, and move it to (100, 100)
               setTransform(dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.rotategAt(30, 0, 100), dojo.gfx.skewXgAt(-30, 0, 100)));
               // anonymous blue rectangle
-              surface.createRect().setRect(rect).setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
+              surface.createRect().setRect(rect).setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
               // skew it around LB point -30d, and move it to (100, 100)
               setTransform(dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.skewXgAt(-30, 0, 100)));
               // anonymous yellow rectangle
-              surface.createRect().setRect(rect).setFill(new dojo.graphics.color.Color([255, 255, 0, 0.25])).
+              surface.createRect().setRect(rect).setFill(new dojo.gfx.color.Color([255, 255, 0, 0.25])).
               // move it to (100, 100)
               setTransform(dojo.gfx.translate(100, 100));
            });
@@ -281,7 +281,7 @@ dojo.addOnLoad(function()
    addTest('circle', function(testName){
               surface = getTestSurface(testName, 'translucent green circle');
               var circle = { cx: 130, cy: 130, r: 50};
-              surface.createCircle(circle).setFill(new dojo.graphics.color.Color([0, 255, 0, 0.5])).
+              surface.createCircle(circle).setFill(new dojo.gfx.color.Color([0, 255, 0, 0.5])).
               setTransform({ dx:20, dy: 20 });
            });
 
@@ -290,8 +290,8 @@ dojo.addOnLoad(function()
               surface = getTestSurface(testName, 'straight red line');
               var line = { x1: 20, y1: 20, x2: 100, y2: 120 };
               surface.createLine(line).
-                setFill(new dojo.graphics.color.Color([255, 0, 0, 0.5])).
-              setStroke({ color: new dojo.graphics.color.Color("red"), width: 1 }).
+                setFill(new dojo.gfx.color.Color([255, 0, 0, 0.5])).
+              setStroke({ color: new dojo.gfx.color.Color("red"), width: 1 }).
               setTransform({ dx:70, dy: 100 });
            });
 
@@ -299,7 +299,7 @@ dojo.addOnLoad(function()
    addTest('ellipse', function(testName){
               surface = getTestSurface(testName, 'translucent cyan ellipse');
               var ellipse = { cx: 50, cy: 80, rx: 50, ry: 80 };
-              surface.createEllipse(ellipse).setFill(new dojo.graphics.color.Color([0, 255, 255, 0.5])).
+              surface.createEllipse(ellipse).setFill(new dojo.gfx.color.Color([0, 255, 255, 0.5])).
               setTransform({ dx:30, dy: 70 });
            });
 
@@ -308,8 +308,8 @@ dojo.addOnLoad(function()
               surface = getTestSurface(testName, 'unfilled open polyline');
               var points = { points: [ {x: 10, y: 20}, {x: 40, y: 70}, {x: 120, y: 50}, {x: 90, y: 90} ] };
               surface.createPolyline().setPolyline(points).
-              setFill(new dojo.graphics.color.Color('none')).
-              setStroke({ color: new dojo.graphics.color.Color("blue"), width: 1 }).
+              setFill(new dojo.gfx.color.Color('none')).
+              setStroke({ color: new dojo.gfx.color.Color("blue"), width: 1 }).
               setTransform({ dx: 15, dy: 0 });
            });
 
@@ -318,7 +318,7 @@ dojo.addOnLoad(function()
               surface = getTestSurface(testName, 'filled polygon');
               var points2 = { points: [ {x: 100, y: 0}, {x: 200, y: 40}, {x: 180, y: 150}, {x: 60, y: 170}, {x: 20, y: 100} ] };
               surface.createPolygon().setPolygon(points2).
-              setFill(new dojo.graphics.color.Color([0, 128, 255, 0.6])).
+              setFill(new dojo.gfx.color.Color([0, 128, 255, 0.6])).
               setTransform({ dx:30, dy: 20 });
            });
 
@@ -330,13 +330,13 @@ dojo.addOnLoad(function()
               setCoordination("absolute").lineTo(180, 100).
               setCoordination("relative").vLineTo(-30).lineTo(-30, -50).
               closePath().
-              setStroke({ color: new dojo.graphics.color.Color("red"), width: 1 }).
-              setFill(new dojo.graphics.color.Color("none")).
+              setStroke({ color: new dojo.gfx.color.Color("red"), width: 1 }).
+              setFill(new dojo.gfx.color.Color("none")).
               setTransform({ dx: 10, dy: 18 });
               
               //surface.createPath().setPath( {path:"M10,20 L80,150 h40 L180,100 v-30 l-30,-50 z"} ).
               //setFill("none").
-              //setStroke({ color: new dojo.graphics.color.Color("blue"), width: 1 }).
+              //setStroke({ color: new dojo.gfx.color.Color("blue"), width: 1 }).
               //setTransform({ dx: 50, dy: 78 });
 
            });
@@ -349,13 +349,13 @@ dojo.addOnLoad(function()
               setCoordination("relative").lineTo(0, -30).lineTo(-30, -50).
               curveTo(10, -80, -150, -10, -90, -10).
               closePath().
-              setStroke({ color: new dojo.graphics.color.Color("red"), width: 1 }).
-              setFill(new dojo.graphics.color.Color("none")).
+              setStroke({ color: new dojo.gfx.color.Color("red"), width: 1 }).
+              setFill(new dojo.gfx.color.Color("none")).
               setTransform({ dx: 10, dy: 58 });
               
               surface.createPath().setPath( {path:"M10,20 L80,150 l40,0 L180,100 l0,-30 l-30,-50 c10,-80 -150,-10 -90,-10 z"}).
-              setFill(new dojo.graphics.color.Color("none")).
-              setStroke({ color: new dojo.graphics.color.Color("blue"), width: 1 }).
+              setFill(new dojo.gfx.color.Color("none")).
+              setStroke({ color: new dojo.gfx.color.Color("blue"), width: 1 }).
               setTransform({ dx: 50, dy: 78 });
            });
 
@@ -366,8 +366,8 @@ dojo.addOnLoad(function()
               arcTo(0, 150, 100, 50, 1, 150, 50).
               setCoordination("relative").
               arcTo(-50, 0, 50, -100, 1, -50, -50).
-                setFill(new dojo.graphics.color.Color("none")).
-              setStroke({ color: new dojo.graphics.color.Color("red"), width: 1 }).
+                setFill(new dojo.gfx.color.Color("none")).
+              setStroke({ color: new dojo.gfx.color.Color("red"), width: 1 }).
               setTransform({ dx:70, dy: 100 });
            });
 
@@ -375,8 +375,8 @@ dojo.addOnLoad(function()
    addTest('curveTo', function(testName) {
               surface = getTestSurface(testName, 'curveTo, smoothCurveTo');
               surface.createPath().moveTo(10, 20).curveTo(50, 50, 50, 100, 150, 100).smoothCurveTo(300, 300, 200, 200).
-              setStroke({ color: new dojo.graphics.color.Color("green"), width: 1 }).
-              setFill(new dojo.graphics.color.Color("none")).
+              setStroke({ color: new dojo.gfx.color.Color("green"), width: 1 }).
+              setFill(new dojo.gfx.color.Color("none")).
               setTransform({ dx: 10, dy: 30 });
            });
  
@@ -388,8 +388,8 @@ dojo.addOnLoad(function()
               smoothCurveTo(150, 200, 50, 100).
               setCoordination("absolute").
               smoothCurveTo(50, 100, 10, 230).
-              setStroke({ color: new dojo.graphics.color.Color("green"), width: 1 }).
-              setFill(new dojo.graphics.color.Color("none")).
+              setStroke({ color: new dojo.gfx.color.Color("green"), width: 1 }).
+              setFill(new dojo.gfx.color.Color("none")).
               setTransform({ dx: 10, dy: 30 });
            });
 
@@ -398,8 +398,8 @@ dojo.addOnLoad(function()
               surface = getTestSurface(testName, 'qbcurveTo, smoothQBCurveTo' );
               surface.createPath().moveTo(10, 15).qbCurveTo(50, 50, 100, 100).
               smoothQBCurveTo(150, 20).
-              setStroke({ color: new dojo.graphics.color.Color("green"), width: 1 }).
-              setFill(new dojo.graphics.color.Color("none")).
+              setStroke({ color: new dojo.gfx.color.Color("green"), width: 1 }).
+              setFill(new dojo.gfx.color.Color("none")).
               setTransform({ dx: 10, dy: 30 });
            });
 
@@ -410,8 +410,8 @@ dojo.addOnLoad(function()
               smoothQBCurveTo(50, -80).
               setCoordination("absolute").
               smoothQBCurveTo(200, 80).
-              setStroke({ color: new dojo.graphics.color.Color("green"), width: 1 }).
-              setFill(new dojo.graphics.color.Color("none")).
+              setStroke({ color: new dojo.gfx.color.Color("green"), width: 1 }).
+              setFill(new dojo.gfx.color.Color("none")).
               setTransform({ dx: 10, dy: 30 });
            });
 
@@ -420,8 +420,8 @@ dojo.addOnLoad(function()
               surface = getTestSurface(testName, 'linear gradient fill');
               // this is an example to split the linearGradient from setFill:
               var lg = new dojo.gfx.LinearGradient({x1:0, y1:0, x2:75, y2:50} ).
-                addStop({ offset:"5%", color:new dojo.graphics.color.Color("#F60") }).
-                addStop({ offset:"95%", color:new dojo.graphics.color.Color("#FF6") });
+                addStop({ offset:"5%", color:new dojo.gfx.color.Color("#F60") }).
+                addStop({ offset:"95%", color:new dojo.gfx.color.Color("#FF6") });
 
               surface.createRect(rect).setFill(lg).
                 setTransform({dx: 40, dy: 100});
@@ -433,9 +433,9 @@ dojo.addOnLoad(function()
               // this is a total inline implementation compared with previous one.
               surface.createRect(rect).setFill(
                 new dojo.gfx.RadialGradient( {cx:150, cy:100, r:100, fx:200, fy:100, gradientUnits:"userSpaceOnUse" }).
-                addStop({ offset:"0%", color:new dojo.graphics.color.Color("red") }).
-                addStop({ offset:"50%", color:new dojo.graphics.color.Color("blue") }).
-                addStop({ offset:"100%", color:new dojo.graphics.color.Color("red") })
+                addStop({ offset:"0%", color:new dojo.gfx.color.Color("red") }).
+                addStop({ offset:"50%", color:new dojo.gfx.color.Color("blue") }).
+                addStop({ offset:"100%", color:new dojo.gfx.color.Color("red") })
               ).
               setRect( {width:200, height:100}).
               setTransform({dx: 40, dy: 30});
@@ -446,10 +446,10 @@ dojo.addOnLoad(function()
               surface = getTestSurface(testName, 'pattern fill');
               pat = new dojo.gfx.Pattern( {x:0, y:0, width:40, height:40, patternUnits:"userSpaceOnUse", viewBox:[0, 0, 10, 10] });
               pat.createRect().setRect({width:25, height:20}).
-                setFill(new dojo.graphics.color.Color("red"));
+                setFill(new dojo.gfx.color.Color("red"));
 
               surface.createRect(rect).setFill(pat).
-              setStroke({ color: new dojo.graphics.color.Color("blue"), width: 2}).
+              setStroke({ color: new dojo.gfx.color.Color("blue"), width: 2}).
               setTransform({dx: 40, dy: 30});
            });
    
@@ -457,9 +457,9 @@ dojo.addOnLoad(function()
               surface = getTestSurface(testName, 'attach gradient fill');
               // this is an example to split the linearGradient from setFill:
               var lg = new dojo.gfx.LinearGradient({x1:0, y1:0, x2:75, y2:50} ).
-                addStop({ offset:"5%", color:new dojo.graphics.color.Color("#F60") }).
-                addStop({ offset:"55%", color:new dojo.graphics.color.Color("#FAF") }).
-                addStop({ offset:"95%", color:new dojo.graphics.color.Color("#FF6") });
+                addStop({ offset:"5%", color:new dojo.gfx.color.Color("#F60") }).
+                addStop({ offset:"55%", color:new dojo.gfx.color.Color("#FAF") }).
+                addStop({ offset:"95%", color:new dojo.gfx.color.Color("#FF6") });
 
               lgr = surface.createRect(rect).setFill(lg).
                 setTransform({dx: 40, dy: 100});
