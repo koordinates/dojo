@@ -1,10 +1,7 @@
 dojo.provide("dojo.widget.Editor2Plugin.ContextMenu");
 
 dojo.event.topic.subscribe("dojo.widget.Editor2::onLoad", function(editor){
-//	if(editor.useContextMenu){
-//alert("dojo.widget.Editor2::editorOnLoad");
-		var p = new dojo.widget.Editor2Plugin.ContextMenu(editor);
-//	}
+	var p = new dojo.widget.Editor2Plugin.ContextMenu(editor);
 });
 dojo.widget.Editor2Plugin.ContextMenuManager = {
 	menuGroups: ['Generic', 'Link', 'Anchor', 'Image', 'List', 'Table'],

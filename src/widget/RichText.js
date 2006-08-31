@@ -140,19 +140,22 @@ dojo.widget.defineWidget(
 				if(html == ""){ html = "&nbsp;"; }
 				this.domNode = dojo.doc().createElement("div");
 				var tmpFunc = dojo.lang.hitch(this, function(){
-					with(this.textarea.style){
-						display = "block";
-						position = "absolute";
-						width = "1px";
-						height = "1px";
-						border = margin = padding = "0px";
-						// border = "3px solid black";
-						left = top = "-50px";
-						// visiblity = "hidden";
-						if(h.ie){
-							overflow = "hidden";
-						}
-					}
+					this.textarea.style.display="none";
+					//Why move it out of screen rather than set display to none?
+					//tested display="none" under IE 6, FF 1.5 and Opera 9, no problem
+//					with(this.textarea.style){
+//						display = "block";
+//						position = "absolute";
+//						width = "1px";
+//						height = "1px";
+//						border = margin = padding = "0px";
+//						// border = "3px solid black";
+//						left = top = "-50px";
+//						// visiblity = "hidden";
+//						if(h.ie){
+//							overflow = "hidden";
+//						}
+//					}
 				});
 				if(h.ie){ 
 					setTimeout(tmpFunc, 10); 
@@ -1599,7 +1602,15 @@ dojo.widget.defineWidget(
 				// FIXME: should keep iframe around for later re-use
 				delete this.iframe;
 			}
-			this.domNode.innerHTML = "";
+
+			if(this.textarea){
+				this.textarea.style.display="";
+
+				this.domNode.parentNode.removeChild(this.domNode);
+				this.domNode = this.textarea;
+			}else{
+				this.domNode.innerHTML = "";
+			}
 
 			if(save){
 				// kill listeners on the saved content
@@ -1630,7 +1641,6 @@ dojo.widget.defineWidget(
 
 			this.window = null;
 			this.document = null;
-			this.editNode = null;
 			this.object = null;
 
 			return changed;
