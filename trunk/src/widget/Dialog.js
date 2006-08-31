@@ -158,6 +158,16 @@ dojo.declare(
 			this.showBackground();
 		},
 
+		// Called when the browser window's size is changed
+		checkSize: function() {
+			if(this.isShowing()){
+				this.sizeBackground();
+				this.placeModalDialog();
+				this.domNode.style.display="block";
+				this.onResized();
+			}
+		},
+
 		//call this function in hide() of subclass
 		hideModalDialog: function(){
 			// workaround for FF focus going into outer space
@@ -271,16 +281,6 @@ dojo.widget.defineWidget(
 		onScroll: function(){
 			this.placeModalDialog();
 			this.domNode.style.display = "block";
-		},
-
-		// Called when the browser window's size is changed
-		checkSize: function() {
-			if(this.isShowing()){
-				this.sizeBackground();
-				this.placeModalDialog();
-				this.domNode.style.display="block";
-				this.onResized();
-			}
 		},
 		
 		killEvent: function(evt){
