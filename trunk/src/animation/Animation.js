@@ -5,6 +5,8 @@ dojo.require("dojo.lang.func");
 dojo.require("dojo.math");
 dojo.require("dojo.math.curves");
 
+dojo.deprecated("dojo.animation.Animation is slated for removal in 0.5; use dojo.lfx.* instead.", "0.5");
+
 /*
 Animation package based off of Dan Pupius' work on Animations:
 http://pupius.co.uk/js/Toolkit.Drawing.js

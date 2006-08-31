@@ -2,6 +2,8 @@ dojo.provide("dojo.animation.AnimationSequence");
 dojo.require("dojo.animation.AnimationEvent");
 dojo.require("dojo.animation.Animation");
 
+dojo.deprecated("dojo.animation.AnimationSequence is slated for removal in 0.5; use dojo.lfx.* instead.", "0.5");
+
 dojo.animation.AnimationSequence = function(/*int?*/ repeatCount){
 	// summary: Sequence of Animations, played one after the other.
 	// repeatCount: Number of times to repeat the entire sequence.  Default is 0 (play once only).

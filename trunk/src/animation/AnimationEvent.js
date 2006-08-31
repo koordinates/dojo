@@ -1,6 +1,8 @@
 dojo.provide("dojo.animation.AnimationEvent");
 dojo.require("dojo.lang.common");
 
+dojo.deprecated("dojo.animation.AnimationEvent is slated for removal in 0.5; use dojo.lfx.* instead.", "0.5");
+
 dojo.animation.AnimationEvent = function(
 				/*dojo.animation.Animation*/ animation, 
 				/*String*/type, 
