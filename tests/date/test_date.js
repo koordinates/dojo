@@ -1,4 +1,4 @@
-dojo.require("dojo.date");
+dojo.require("dojo.date.common");
 
 /* Supplementary Date Functions
  *******************************/
