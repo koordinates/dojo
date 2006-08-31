@@ -2,7 +2,7 @@ dojo.provide("dojo.widget.ResizeHandle");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.html.layout");
-dojo.require("dojo.event");
+dojo.require("dojo.event.*");
 
 dojo.widget.defineWidget(
 	"dojo.widget.ResizeHandle",

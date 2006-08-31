@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.InlineEditBox");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.event");
+dojo.require("dojo.event.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.graphics.color");
 dojo.require("dojo.string");

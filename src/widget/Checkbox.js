@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.Checkbox");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.event");
+dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
 
 dojo.widget.defineWidget(

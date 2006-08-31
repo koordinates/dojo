@@ -1,8 +1,7 @@
 //	Copyright (c) 2004 Friendster Inc., Licensed under the Academic Free
 //	License version 2.0 or later 
 
-dojo.require("dojo.event");
-dojo.require("dojo.event.BrowserEvent");
+dojo.require("dojo.event.*");
 dojo.require("dojo.io.BrowserIO");
 
 dojo.provide("dojo.io.RepubsubIO");
