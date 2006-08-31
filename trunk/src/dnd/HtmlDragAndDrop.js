@@ -13,7 +13,7 @@ dojo.require("dojo.html.selection");
 dojo.require("dojo.html.iframe");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lfx.*");
-dojo.require("dojo.event");
+dojo.require("dojo.event.*");
 
 dojo.declare("dojo.dnd.HtmlDragSource", dojo.dnd.DragSource, {
 	dragClass: "", // CSS classname(s) applied to node when it is being dragged

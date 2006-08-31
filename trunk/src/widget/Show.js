@@ -3,7 +3,7 @@ dojo.provide("dojo.widget.Show");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.uri.Uri");
-dojo.require("dojo.event");
+dojo.require("dojo.event.*");
 dojo.require("dojo.animation.Animation");
 dojo.require("dojo.math.curves");
 dojo.require("dojo.lang.common");

@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.SlideShow");
 
-dojo.require("dojo.event");
+dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.html.display");

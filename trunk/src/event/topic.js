@@ -1,4 +1,4 @@
-dojo.require("dojo.event");
+dojo.require("dojo.event.common");
 dojo.provide("dojo.event.topic");
 
 dojo.event.topic = new function(){
