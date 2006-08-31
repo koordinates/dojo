@@ -618,3 +618,72 @@ dojo.date.getFirstDayOfWeek = function(/*String?*/locale){
 	var dow = firstDay[country];
 	return (typeof dow == 'undefined') ? 1 : dow;
 };
+
+
+/**
+ *
+ * Returns a string of the date relative to the current date.
+ *
+ * @param date The date object
+ *
+ * Example returns:
+ * - "1 minute ago"
+ * - "4 minutes ago"
+ * - "Yesterday"
+ * - "2 days ago"
+ */
+//FIXME: not localized
+dojo.date.toRelativeString = function(date) {
+	var now = new Date();
+	var diff = (now - date) / 1000;
+	var end = " ago";
+	var future = false;
+	if(diff < 0) {
+		future = true;
+		end = " from now";
+		diff = -diff;
+	}
+
+	if(diff < 60) {
+		diff = Math.round(diff);
+		return diff + " second" + (diff == 1 ? "" : "s") + end;
+	}
+	if(diff < 60*60) {
+		diff = Math.round(diff/60);
+		return diff + " minute" + (diff == 1 ? "" : "s") + end;
+	}
+	if(diff < 60*60*24) {
+		diff = Math.round(diff/3600);
+		return diff + " hour" + (diff == 1 ? "" : "s") + end;
+	}
+	if(diff < 60*60*24*7) {
+		diff = Math.round(diff/(3600*24));
+		if(diff == 1) {
+			return future ? "Tomorrow" : "Yesterday";
+		} else {
+			return diff + " days" + end;
+		}
+	}
+	return dojo.date.toShortDateString(date);
+}
+
+//FIXME: SQL methods can probably be moved to a different module without i18n deps
+
+/**
+ * Convert a Date to a SQL string, optionally ignoring the HH:MM:SS portion of the Date
+ */
+dojo.date.toSql = function(date, noTime) {
+	return dojo.date.strftime(date, "%F" + !noTime ? " %T" : "");
+}
+
+/**
+ * Convert a SQL date string to a JavaScript Date object
+ */
+dojo.date.fromSql = function(sqlDate) {
+	var parts = sqlDate.split(/[\- :]/g);
+	while(parts.length < 6) {
+		parts.push(0);
+	}
+	return new Date(parts[0], (parseInt(parts[1],10)-1), parts[2], parts[3], parts[4], parts[5]);
+}
+

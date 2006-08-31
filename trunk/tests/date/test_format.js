@@ -32,3 +32,7 @@ function test_date_parse() {
 	var tzOffset = new Date().getTimezoneOffset()*60*1000;
 	jum.assertEquals("parse_test1", "1155283200000", dojo.date.parse("08/11/06", {formatLength:'short',selector:'dateOnly', locale:'en-us'}).getTime()+tzOffset);
 }
+
+function test_date_sql() {
+	jum.assertEquals("date.fromSql test", new Date("5/1/2006").valueOf(), dojo.date.fromSql("2006-05-01 00:00:00").valueOf());
+}
