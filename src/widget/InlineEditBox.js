@@ -3,7 +3,7 @@ dojo.provide("dojo.widget.InlineEditBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.lfx.*");
-dojo.require("dojo.graphics.color");
+dojo.require("dojo.gfx.color");
 dojo.require("dojo.string");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
@@ -149,7 +149,7 @@ dojo.widget.defineWidget(
 	finishEdit: function(e){
 		if(!this.cancelEdit(e)){ return; }
 		if(this.doFade) {
-			dojo.lfx.highlight(this.editable, dojo.graphics.color.hex2rgb("#ffc"), 700).play(300);
+			dojo.lfx.highlight(this.editable, dojo.gfx.color.hex2rgb("#ffc"), 700).play(300);
 		}
 		this.doFade = false;
 	},

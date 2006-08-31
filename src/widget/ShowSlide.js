@@ -7,7 +7,7 @@ dojo.require("dojo.lfx.html");
 dojo.require("dojo.html.display");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.animation.Animation");
-dojo.require("dojo.graphics.color");
+dojo.require("dojo.gfx.color");
 
 dojo.widget.defineWidget(
 	"dojo.widget.ShowSlide",
@@ -153,8 +153,8 @@ dojo.widget.defineWidget(
 				}else if(action.action == "wipe"){
 					dojo.lfx.html.wipeIn(component, duration).play();
 				}else if(action.action == "color"){
-					var from = new dojo.graphics.color.Color(action.from).toRgb();
-					var to = new dojo.graphics.color.Color(action.to).toRgb();
+					var from = new dojo.gfx.color.Color(action.from).toRgb();
+					var to = new dojo.gfx.color.Color(action.to).toRgb();
 					var anim = new dojo.animation.Animation(new dojo.math.curves.Line(from, to), duration, 0);
 					var node = component;
 					dojo.event.connect(anim, "onAnimate", function(e) {

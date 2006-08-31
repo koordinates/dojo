@@ -1,7 +1,7 @@
 dojo.require("dojo.html.style");
 dojo.provide("dojo.html.color");
 
-dojo.require("dojo.graphics.color");
+dojo.require("dojo.gfx.color");
 dojo.require("dojo.lang.common");
 
 dojo.html.getBackgroundColor = function(node){
@@ -17,7 +17,7 @@ dojo.html.getBackgroundColor = function(node){
 	if(color == "transparent"){
 		color = [255, 255, 255, 0];
 	}else{
-		color = dojo.graphics.color.extractRGB(color);
+		color = dojo.gfx.color.extractRGB(color);
 	}
 	return color;
 }

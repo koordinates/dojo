@@ -3,8 +3,8 @@ dojo.provide("dojo.widget.Chart.PlotTypes");
 dojo.provide("dojo.widget.Chart.DataSeries");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.graphics.color");
-dojo.require("dojo.graphics.color.hsl");
+dojo.require("dojo.gfx.color");
+dojo.require("dojo.gfx.color.hsl");
 dojo.widget.tags.addParseTreeHandler("dojo:chart");
 
 // Base class for svg and vml implementations of Chart
@@ -25,9 +25,9 @@ dojo.declare(
 		var steps = Math.round(330/this.series.length);
 
 		for(var i=0; i<this.series.length; i++){
-			var c=dojo.graphics.color.hsl2rgb(hue,sat,lum);
+			var c=dojo.gfx.color.hsl2rgb(hue,sat,lum);
 			if(!this.series[i].color){
-				this.series[i].color = dojo.graphics.color.rgb2hex(c[0],c[1],c[2]);
+				this.series[i].color = dojo.gfx.color.rgb2hex(c[0],c[1],c[2]);
 			}
 			hue += steps;
 		}

@@ -1,8 +1,9 @@
+dojo.provide("dojo.gfx.vml");
+
 dojo.require('dojo.dom');
 dojo.require("dojo.lang.declare");
-dojo.require("dojo.graphics.color");
+dojo.require("dojo.gfx.color");
 dojo.require('dojo.string.*');
-dojo.provide("dojo.gfx.vml");
 
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.gfx.vml");
@@ -105,7 +106,7 @@ dojo.lang.extend(
 			this.fillStyle = fill;
 			this.rawNode.appendChild( fill.getRawNode() );
 			return this;
-		} else if( fill instanceof dojo.graphics.color.Color) {
+		} else if( fill instanceof dojo.gfx.color.Color) {
 			// color object
 			this.fillStyle = fill;
 			this.rawNode.filled = "true";
@@ -183,7 +184,7 @@ dojo.lang.extend(
                 return new dojo.gfx.LinearGradient(rawNode.fill);
 			} else if( rawNode.fillcolor ) {
 				// a color object !
-				fillStyle = new dojo.graphics.color.Color(rawNode.fillcolor+"");
+				fillStyle = new dojo.gfx.color.Color(rawNode.fillcolor+"");
 				fillStyle.a = rawNode.fill.opacity;
 			}
 		}
@@ -193,7 +194,7 @@ dojo.lang.extend(
 	attachStroke: function(rawNode) {
 		strokeStyle = {color:null, widht:1, cap:"butt", join:4};
 		if(rawNode && rawNode.stroked) {
-			strokeStyle.color = new dojo.graphics.color.Color(rawNode.strokecolor.value);
+			strokeStyle.color = new dojo.gfx.color.Color(rawNode.strokecolor.value);
             dojo.debug("We are expecting an .75pt here, instead of strokeweight = " + rawNode.strokeweight );
 			strokeStyle.width = dojo.gfx.vml.normalizedLength(rawNode.strokeweight+"");
 			strokeStyle.color.a = rawNode.stroke.opacity;
@@ -761,8 +762,8 @@ dojo.declare("dojo.gfx.vml.LinearGradient", dojo.gfx.vml.Gradient, {
 
         //stops
         this.stops = new Array;
-        this.stops.push( {offset:0, color:new dojo.graphics.color.Color(rawNode.color2)} );
-        this.stops.push( {offset:1, color:new dojo.graphics.color.Color(rawNode.color)} );
+        this.stops.push( {offset:0, color:new dojo.gfx.color.Color(rawNode.color2)} );
+        this.stops.push( {offset:1, color:new dojo.gfx.color.Color(rawNode.color)} );
         return this;
     }
 });

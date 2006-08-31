@@ -1,7 +1,8 @@
-dojo.require("dojo.lang.declare");
-dojo.require("dojo.graphics.color");
-dojo.require("dojo.svg");
 dojo.provide("dojo.gfx.svg");
+
+dojo.require("dojo.lang.declare");
+dojo.require("dojo.svg");
+dojo.require("dojo.gfx.color");
 
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.gfx.svg");
@@ -80,7 +81,7 @@ dojo.lang.extend(dojo.gfx.svg.Shape, {
 			defs.appendChild( fill.getRawNode() );
 			this.rawNode.setAttribute("fill", "url(#" + fill.getId() +")");
 			return this;
-		} else if( fill instanceof dojo.graphics.color.Color) {
+		} else if( fill instanceof dojo.gfx.color.Color) {
 			// color object
 			this.fillStyle = fill;
 			this.rawNode.setAttribute("fill", "rgb("+fill.r+","+fill.g+","+fill.b+")");
@@ -148,7 +149,7 @@ dojo.lang.extend(dojo.gfx.svg.Shape, {
 						}
 					}
 				}
-			} else if( color = new dojo.graphics.color.Color(fill) ) {
+			} else if( color = new dojo.gfx.color.Color(fill) ) {
 				// a color object !
 				fillStyle = color;
 				fo = rawNode.getAttribute("fill-opacity");
@@ -163,7 +164,7 @@ dojo.lang.extend(dojo.gfx.svg.Shape, {
 		if(rawNode) {
 			stroke = rawNode.getAttribute("stroke");
             if( stroke == null ) return null;
-			color = new dojo.graphics.color.Color(stroke);
+			color = new dojo.gfx.color.Color(stroke);
 			if( color ) {
 				// a color object !
 				strokeStyle.color = color;
@@ -573,7 +574,7 @@ dojo.lang.extend(dojo.gfx.svg.Gradient, {
         for( var i = 0; i< stops.length; i++ ) {
             var stop = {};
             stop["offset"] = stops[i].getAttribute("offset");
-            stop["color"] = new dojo.graphics.color.Color( stops[i].getAttribute("stop-color") );
+            stop["color"] = new dojo.gfx.color.Color( stops[i].getAttribute("stop-color") );
             this.stops.push( stop );
         }
 
