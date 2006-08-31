@@ -1,10 +1,10 @@
 dojo.provide("dojo.widget.MonthlyCalendar");
-dojo.require("dojo.date");
+dojo.require("dojo.date.common");
+dojo.require("dojo.date.format");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.DatePicker");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.*");
-dojo.require("dojo.i18n.datetime");
 
 dojo.widget.defineWidget(
 	"dojo.widget.MonthlyCalendar",
@@ -47,7 +47,7 @@ dojo.widget.defineWidget(
 	},
 
 	initUI: function() {
-		var dayLabels = dojo.i18n.datetime.getNames('days', this.dayWidth, 'standAlone', this.lang);
+		var dayLabels = dojo.date.getNames('days', this.dayWidth, 'standAlone', this.lang);
 		var dayLabelNodes = this.dayLabelsRow.getElementsByTagName("td");
 		for(var i=0; i<7; i++) {
 			dayLabelNodes.item(i).innerHTML = dayLabels[i];
@@ -129,9 +129,7 @@ dojo.widget.defineWidget(
 });
 
 dojo.widget.MonthlyCalendar.util= new function() {
-//	this.months = dojo.date.months;
-//	this.weekdays = dojo.date.days;
-	
+
 	this.toRfcDate = function(jsDate) {
 		if(!jsDate) {
 			jsDate = this.today;

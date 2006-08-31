@@ -1,4 +1,4 @@
-dojo.provide("dojo.date");
+dojo.provide("dojo.date.common");
 
 
 /* Supplementary Date Functions
@@ -189,15 +189,6 @@ dojo.date.timezones = ["International Date Line West", "Bering Standard Time",
 	"Line Islands Time (Kribati)"];
 */
 
-//TO BE REMOVED in 0.5
-dojo.date.months = ["January", "February", "March", "April", "May", "June",
-	"July", "August", "September", "October", "November", "December"];
-dojo.date.shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "June",
-	"July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-dojo.date.days = ["Sunday", "Monday", "Tuesday", "Wednesday",
-	"Thursday", "Friday", "Saturday"];
-dojo.date.shortDays = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
-
 dojo.date.getDaysInMonth = function (dateObject) {
 	var month = dateObject.getMonth();
 	var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -215,30 +206,6 @@ dojo.date.isLeapYear = function (dateObject) {
 	var year = dateObject.getFullYear();
 	return (year%400 == 0) ? true : (year%100 == 0) ? false : (year%4 == 0) ? true : false;
 }
-
-
-
-dojo.date.getDayName = function (dateObject) {
-	dojo.deprecated("dojo.date.getDayName", "Use dojo.i18n.datetime.getDayName instead", "0.5");
-	return dojo.date.days[dateObject.getDay()];
-}
-
-dojo.date.getDayShortName = function (dateObject) {
-	dojo.deprecated("dojo.date.getDayShortName", "Use dojo.i18n.datetime.getDayShortName instead", "0.5");
-	return dojo.date.shortDays[dateObject.getDay()];
-}
-
-dojo.date.getMonthName = function (dateObject) {
-	dojo.deprecated("dojo.date.getMonthName", "Use dojo.i18n.datetime.getMonthName instead", "0.5");
-	return dojo.date.months[dateObject.getMonth()];
-}
-
-dojo.date.getMonthShortName = function (dateObject) {
-	dojo.deprecated("dojo.date.getMonthShortName", "Use dojo.i18n.datetime.getMonthShortName instead", "0.5");
-	return dojo.date.shortMonths[dateObject.getMonth()];
-}
-
-
 
 dojo.date.getTimezoneName = function (dateObject) {
 	// need to negate timezones to get it right 
@@ -274,9 +241,11 @@ dojo.date.getOrdinal = function (dateObject) {
 /* Date Formatter Functions
  ***************************/
 
+//NOTE: Use of dojo.date.format for posix-style formatting was deprecated.  Please use dojo.date.strftime instead.
+
 // POSIX strftime
 // see <http://www.opengroup.org/onlinepubs/007908799/xsh/strftime.html>
-dojo.date.format = dojo.date.strftime = function (dateObject, format) {
+dojo.date.strftime = function (dateObject, format) {
 
 	// zero pad
 	var padChar = null;

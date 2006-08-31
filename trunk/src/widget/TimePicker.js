@@ -2,7 +2,7 @@ dojo.provide("dojo.widget.TimePicker");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
-dojo.require("dojo.date");
+dojo.require("dojo.date.common");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 
@@ -22,15 +22,15 @@ dojo.widget.defineWidget(
 		this.currentTime = {};
 		this.classNames = {
 			selectedTime: "selectedItem"
-		}
-		this.any = "any"
+		};
+		this.any = "any";
 		// dom node indecies for selected hour, minute, amPm, and "any time option"
 		this.selectedTime = {
 			hour: "",
 			minute: "",
 			amPm: "",
 			anyTime: false
-		}
+		};
 
 		// minutes are ordered as follows: ["12", "6", "1", "7", "2", "8", "3", "9", "4", "10", "5", "11"]
 		this.hourIndexMap = ["", 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11, 0];
@@ -225,7 +225,7 @@ dojo.widget.defineWidget(
 	},
 
 	onClick: function(evt) {
-		dojo.event.browser.stopEvent(evt)
+		dojo.event.browser.stopEvent(evt);
 	},
 
 	onSetTime: function() {
@@ -260,7 +260,7 @@ dojo.widget.TimePicker.util = new function() {
 		if(!jsDate) {
 			jsDate = new Date();
 		}
-		return dojo.date.format(jsDate, "%Y-%m-%dT%H:%M:00%z");
+		return dojo.date.strftime(jsDate, "%Y-%m-%dT%H:%M:00%z");
 	}
 
 	this.fromRfcDateTime = function(rfcDate, useDefaultMinutes, isAnyTime) {
