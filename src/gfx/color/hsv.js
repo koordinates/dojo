@@ -1,14 +1,14 @@
-dojo.provide("dojo.graphics.color.hsv");
+dojo.provide("dojo.gfx.color.hsv");
 dojo.require("dojo.lang.array");
 
-dojo.lang.extend(dojo.graphics.color.Color, {
+dojo.lang.extend(dojo.gfx.color.Color, {
 	toHsv: function() {
-		return dojo.graphics.color.rgb2hsv(this.toRgb());
+		return dojo.gfx.color.rgb2hsv(this.toRgb());
 	}
 
 });
 
-dojo.graphics.color.rgb2hsv = function(r, g, b){
+dojo.gfx.color.rgb2hsv = function(r, g, b){
 	if (dojo.lang.isArray(r)) {
 		b = r[2] || 0;
 		g = r[1] || 0;
@@ -67,7 +67,7 @@ dojo.graphics.color.rgb2hsv = function(r, g, b){
 	return [h, s, v];
 }
 
-dojo.graphics.color.hsv2rgb = function(h, s, v){
+dojo.gfx.color.hsv2rgb = function(h, s, v){
 	if (dojo.lang.isArray(h)) {
 		v = h[2] || 0;
 		s = h[1] || 0;
