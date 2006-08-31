@@ -11,7 +11,6 @@ dojo.declare("dojo.widget.Editor2Plugin.AlwaysShowToolbar", null,
 	function(editor){
 		this.editor = editor;
 		this.editor.registerLoadedPlugin(this);
-		dojo.event.connect(this.editor, "destroy", this, "destroy");
 		this.setup();
 	},
 	{
@@ -27,6 +26,8 @@ dojo.declare("dojo.widget.Editor2Plugin.AlwaysShowToolbar", null,
 			tdn.tbBgIframe.onResized();
 		}
 		this.scrollInterval = setInterval(dojo.lang.hitch(this, "globalOnScrollHandler"), 100);
+
+		dojo.event.connect("before", this.editor.toolbarWidget, "destroy", this, "destroy");
 	},
 
 	globalOnScrollHandler: function(){
@@ -123,11 +124,11 @@ dojo.declare("dojo.widget.Editor2Plugin.AlwaysShowToolbar", null,
 	},
 
 	destroy: function(){
+//		alert("destroy alwaysshow "+this.editor.toolbarWidget);
 		this._handleScroll = false;
 		clearInterval(this.scrollInterval);
 		this.editor.unregisterLoadedPlugin(this);
-		// var src = document["documentElement"]||window;
-		// dojo.event.disconnect(src, "onscroll", this, "globalOnScrollHandler");
+
 		if(dojo.render.html.ie){
 			dojo.html.removeClass(this.editor.toolbarWidget.domNode, "IEFixedToolbar");
 		}

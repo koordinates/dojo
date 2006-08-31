@@ -350,18 +350,17 @@ dojo.widget.defineWidget(
 
 			var toolbars = dojo.widget.byType("Editor2Toolbar");
 			if((!toolbars.length)||(!this.shareToolbar)){
-				var tbOpts = {};
-				tbOpts.templatePath = dojo.uri.dojoUri(this.toolbarTemplatePath);
-				if(this.toolbarTemplateCssPath){
-					tbOpts.templateCssPath = this.toolbarTemplateCssPath;
-				}
 				if(this.toolbarWidget){
 					this.toolbarWidget.show();
 				}else{
-					this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", 
-											tbOpts, this.domNode, "before");
+					var tbOpts = {};
+					tbOpts.templatePath = dojo.uri.dojoUri(this.toolbarTemplatePath);
+					if(this.toolbarTemplateCssPath){
+						tbOpts.templateCssPath = this.toolbarTemplateCssPath;
+					}
+					this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", tbOpts, this.domNode, "before");
+
 					dojo.event.connect(this, "close", this.toolbarWidget, "hide");
-					dojo.event.connect(this, "destroy", this.toolbarWidget, "destroy");
 				}
 
 				this.toolbarLoaded();
@@ -381,6 +380,7 @@ dojo.widget.defineWidget(
 		//event for plugins to use
 		toolbarLoaded: function(){},
 
+		//TODO: provide a query mechanism about loaded plugins?
 		registerLoadedPlugin: function(/*Object*/obj){
 			if(!this.loadedPlugins){
 				this.loadedPlugins = [];
@@ -396,6 +396,7 @@ dojo.widget.defineWidget(
 			}
 			dojo.debug("dojo.widget.Editor2.unregisterLoadedPlugin: unknow plugin object: "+obj);
 		},
+
 		//override the default one to provide extra commands
 		execCommand: function(command, argument){
 			switch(command.toLowerCase()){
@@ -537,13 +538,12 @@ dojo.widget.defineWidget(
 			this.toolbarWidget.update();
 		},
 
-		destroy: function(){
-			//clean all loaded plugins
-			for(var index in this.loadedPlugins){
-				this.loadedPlugins[index].destroy();
-				delete this.loadedPlugins[index];
-			}
+		destroy: function(finalize){
 			this._htmlEditNode = null;
+			dojo.event.disconnect(this, "close", this.toolbarWidget, "hide");
+			if(!finalize){
+				this.toolbarWidget.destroy();
+			}
 			dojo.widget.Editor2.superclass.destroy.call(this);
 		},
 

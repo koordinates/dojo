@@ -15,13 +15,13 @@ dojo.declare("dojo.widget.Editor2Plugin.ToolbarDndSupport", null,{
 	initializer: function(editor){
 		this.editor = editor;
 		dojo.event.connect(this.editor, "toolbarLoaded", this, "setup");
-		dojo.event.connect(this.editor, "destroy", this, "destroy");
 		this.editor.registerLoadedPlugin(this);
 	},
 
 	setup: function(){
 		dojo.event.disconnect(this.editor, "toolbarLoaded", this, "setup");
 		var tbw = this.editor.toolbarWidget;
+		dojo.event.connect("before", tbw, "destroy", this, "destroy");
 
 		var nodes = dojo.html.getElementsByClass(this.lookForClass, tbw.domNode, null, dojo.html.classMatchType.ContainsAny);
 		if(!nodes){
