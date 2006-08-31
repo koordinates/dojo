@@ -4,6 +4,9 @@ dojo.require("dojo.graphics.color");
 dojo.require('dojo.string.*');
 dojo.provide("dojo.gfx.vml");
 
+dojo.require("dojo.experimental");
+dojo.experimental("dojo.gfx.vml");
+
 dojo.gfx.vml.xmlns = "urn:schemas-microsoft-com:vml";
 
 // generic environment setup function;
