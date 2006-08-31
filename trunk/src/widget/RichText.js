@@ -140,22 +140,18 @@ dojo.widget.defineWidget(
 				if(html == ""){ html = "&nbsp;"; }
 				this.domNode = dojo.doc().createElement("div");
 				var tmpFunc = dojo.lang.hitch(this, function(){
-					this.textarea.style.display="none";
-					//Why move it out of screen rather than set display to none?
-					//tested display="none" under IE 6, FF 1.5 and Opera 9, no problem
-//					with(this.textarea.style){
-//						display = "block";
-//						position = "absolute";
-//						width = "1px";
-//						height = "1px";
-//						border = margin = padding = "0px";
-//						// border = "3px solid black";
-//						left = top = "-50px";
-//						// visiblity = "hidden";
-//						if(h.ie){
-//							overflow = "hidden";
-//						}
-//					}
+					//some browsers refuse to submit display=none textarea, so 
+					//move the textarea out of screen instead
+					with(this.textarea.style){
+						display = "block";
+						position = "absolute";
+						left = top = "-1000px";
+
+						if(h.ie){ //nasty IE bug: abnormal formatting if overflow is not hidden
+							this.__overflow = overflow;
+							overflow = "hidden";
+						}
+					}
 				});
 				if(h.ie){ 
 					setTimeout(tmpFunc, 10); 
@@ -1604,7 +1600,14 @@ dojo.widget.defineWidget(
 			}
 
 			if(this.textarea){
-				this.textarea.style.display="";
+				with(this.textarea.style){
+					position = "";
+					left = top = "";
+					if(dojo.render.html.ie){
+						overflow = this.__overflow;
+						this.__overflow = null;
+					}
+				}
 
 				this.domNode.parentNode.removeChild(this.domNode);
 				this.domNode = this.textarea;
