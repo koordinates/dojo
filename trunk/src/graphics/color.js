@@ -1,14 +1,8 @@
 dojo.provide("dojo.graphics.color");
 dojo.require("dojo.gfx.color");
 
-dojo.graphics.color.Color = function(){
-	dojo.deprecated("dojo.graphics.color.Color is now dojo.gfx.color.Color.", "0.5");
-	dojo.gfx.color.Color.apply(this, arguments);
-};
-dojo.graphics.color.Color.fromArray = function(arr){
-	dojo.deprecated("dojo.graphics.color.Color.fromArray is now dojo.gfx.color.Color.fromArray", "0.5");
-	return new dojo.gfx.color.Color(arr[0], arr[1], arr[2], arr[3]);
-}
+dojo.deprecated("dojo.graphics.color.Color is now dojo.gfx.color.Color.", "0.5");
+dojo.graphics.color.Color = dojo.gfx.color.Color;
 
 dojo.graphics.color.named = dojo.gfx.color.named;
 dojo.graphics.color.blend = function(a, b, weight) {

@@ -3,6 +3,9 @@ dojo.require("dojo.graphics.color");
 dojo.require("dojo.svg");
 dojo.provide("dojo.gfx.svg");
 
+dojo.require("dojo.experimental");
+dojo.experimental("dojo.gfx.svg");
+
 // generic environment setup function;
 // currently a stub
 dojo.gfx.svg.init = function() {

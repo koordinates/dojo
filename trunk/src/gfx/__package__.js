@@ -4,11 +4,7 @@ dojo.provide("dojo.gfx.*");
 dojo.requireIf(dojo.render.svg.capable, "dojo.gfx.svg");
 dojo.requireIf(!dojo.render.svg.capable && dojo.render.vml.capable, "dojo.gfx.vml");
 
-dojo.require("dojo.experimental");
-dojo.experimental("dojo.gfx.*");
-
 dojo.gfx.defaultRenderer.init();
-
 dojo.gfx.normalizeParameters = function (existed, update) {
     if(update) {
         for(x in existed) {
