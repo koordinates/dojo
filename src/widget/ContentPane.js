@@ -38,6 +38,7 @@ dojo.widget.defineWidget(
 		refreshOnShow: false,	// use with cacheContent: false
 		handler: "", // generate pane content from a java function
 		executeScripts: false,	// if true scripts in content will be evaled after content is innerHTML'ed
+		loadingMessage: "Loading...",
 
 		postCreate: function(args, frag, parentComp){
 			if (this.handler!==""){
@@ -95,7 +96,7 @@ dojo.widget.defineWidget(
 	
 		_downloadExternalContent: function(url, useCache) {
 			this.abort();
-			this._handleDefaults("Loading...", "onDownloadStart");
+			this._handleDefaults(this.loadingMessage, "onDownloadStart");
 			var self = this;
 			this._ioBindObj = dojo.io.bind(
 				this._cacheSetting({
