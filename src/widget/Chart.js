@@ -17,7 +17,6 @@ dojo.declare(
 {
 	isContainer: false,
 
-	// FIXME: why is this a mixin method?
 	assignColors: function(){
 		var hue=30;
 		var sat=120;
@@ -50,7 +49,6 @@ dojo.declare(
 	"dojo.widget.Chart.DataSeries",
 	null,
 	function(key, label, plotType, color){
-		// FIXME: why the hell are plot types specified neumerically? What is this? C?
 		this.id = "DataSeries"+dojo.widget.Chart.DataSeries.count++;
 		this.key = key;
 		this.label = label||this.id;
