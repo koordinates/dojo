@@ -1,6 +1,6 @@
 dojo.provide("dojo.namespace");
 
-dojo.namespace = {
+dojo["namespace"] = {
 	dojo: "dojo",
 	namespaces: {},
 	failed: {},
@@ -8,7 +8,7 @@ dojo.namespace = {
 	loaded: {},
 	register: function(name, module, resolver /*optional*/, noOverride) {
 		if((!noOverride)&&(!this.namespaces[name])){
-			this.namespaces[name] = new dojo.namespace.Namespace(name, module, resolver);
+			this.namespaces[name] = new dojo["namespace"].Namespace(name, module, resolver);
 		}
 	},
 	allow: function(name) {
@@ -65,11 +65,11 @@ dojo.namespace = {
 }
 
 dojo.registerNamespace = function(name, module, resolver /*optional*/){
-	dojo.namespace.register.apply(dojo.namespace, arguments);
+	dojo["namespace"].register.apply(dojo["namespace"], arguments);
 }
 
 dojo.registerNamespaceResolver = function(name, resolver){
-	var n = dojo.namespace.namespaces[name];
+	var n = dojo["namespace"].namespaces[name];
 	if(n){
 		n.resolver = resolver;
 	}
@@ -87,18 +87,18 @@ dojo.defineNamespace = function(objRoot, location, nsPrefix, resolver /*optional
 
 // namespace bookkeeping object
 
-dojo.namespace.Namespace = function(name, module, resolver){
+dojo["namespace"].Namespace = function(name, module, resolver){
 	this.name = name;
 	this.module = module;
 	this.resolver = resolver;
 }
 
-dojo.namespace.Namespace.prototype._loaded = {};
-dojo.namespace.Namespace.prototype._failed = {};
+dojo["namespace"].Namespace.prototype._loaded = {};
+dojo["namespace"].Namespace.prototype._failed = {};
 
 // map component with 'name' and 'domain' to a module via 
 // namespace resolver, if specified
-dojo.namespace.Namespace.prototype.resolve = function(name, domain, omit_module_check){
+dojo["namespace"].Namespace.prototype.resolve = function(name, domain, omit_module_check){
 	if(!this.resolver){return false;}
 	var fullName = this.resolver(name,domain);
 	//only load a widget once. This is a quicker check than dojo.require does

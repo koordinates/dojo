@@ -288,7 +288,7 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 			nodeRef: placeKeeperNode,
 			fastMixIn: true
 		};
-		props.namespace = ns;
+		props["namespace"] = ns;
 		return dojo.widget.getParser().createComponentFromScript(placeKeeperNode, name, props, ns);
 	}
 

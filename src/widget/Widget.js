@@ -38,10 +38,10 @@ dojo.declare("dojo.widget.Widget", null,
 	widgetId: "",
 	widgetType: "Widget", // used for building generic widgets
 
-	namespace: "dojo", //defaults to 'dojo'
+	"namespace": "dojo", //defaults to 'dojo'.  "namespace" is a reserved word in JavaScript
 
 	getNamespacedType: function() {
-		return (this.namespace ? this.namespace + ":" + this.widgetType : this.widgetType).toLowerCase();
+		return (this["namespace"] ? this["namespace"] + ":" + this.widgetType : this.widgetType).toLowerCase();
 	},
 	
 	toString: function() {
@@ -88,10 +88,10 @@ dojo.declare("dojo.widget.Widget", null,
 		}
 	},
 
-	create: function(args, fragment, parentComp, namespace){
+	create: function(args, fragment, parentComp, ns){
 		//dojo.profile.start(this.widgetType + " create");
-		if(namespace){
-			this.namespace = namespace;
+		if(ns){
+			this["namespace"] = ns;
 		}
 		// dojo.debug(this.widgetType, "create");
 		//dojo.profile.start(this.widgetType + " satisfyPropertySets");
@@ -144,7 +144,7 @@ dojo.declare("dojo.widget.Widget", null,
 		var widget;
 		var i=0;
 		while(this.children.length > i){
-			var widget = this.children[i];
+			widget = this.children[i];
 			if (widget instanceof dojo.widget.Widget) { // find first widget
 				this.removeChild(widget);
 				widget.destroy();
@@ -491,11 +491,10 @@ dojo.declare("dojo.widget.Widget", null,
  
 		var idx = this.getParentIndex();
  
-		if (idx == this.parent.children.length-1) return null; // last node
-		if (idx < 0) return null; // not found
+		if (idx == this.parent.children.length-1){return null;} // last node
+		if (idx < 0){return null;} // not found
  
-		return this.parent.children[idx+1];
- 
+		return this.parent.children[idx+1]; 
 	}
 });
 
@@ -558,8 +557,8 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	
 	// FIXME: we don't seem to be doing anything with this!
 	// var propertySets = parser.getPropertySets(frag);
-	var localProperties = localProps || parser.parseProperties(frag[frag.namespace+":"+stype]);
-	var twidget = dojo.widget.manager.getImplementation(stype,null,null,frag.namespace);
+	var localProperties = localProps || parser.parseProperties(frag[frag["namespace"]+":"+stype]);
+	var twidget = dojo.widget.manager.getImplementation(stype,null,null,frag["namespace"]);
 	if(!twidget){
 		throw new Error('cannot find "' + type + '" widget');
 	}else if (!twidget.create){
@@ -567,7 +566,7 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	}
 	localProperties["dojoinsertionindex"] = insertionIndex;
 	// FIXME: we lose no less than 5ms in construction!
-	var ret = twidget.create(localProperties, frag, parentComp, frag.namespace);
+	var ret = twidget.create(localProperties, frag, parentComp, frag["namespace"]);
 	// dojo.profile.end("buildWidgetFromParseTree");
 	return ret;
 }

@@ -237,11 +237,11 @@ dojo.widget.manager = new function(){
 		}
 
 		// lookup namespace
-		var nsObj = dojo.namespace.get(ns);
+		var nsObj = dojo["namespace"].get(ns);
 		if(!nsObj){
 			// default to <ns>.widget by convention
 			dojo.namespace.register(ns, ns + '.widget');
-			nsObj = dojo.namespace.get(ns);
+			nsObj = dojo["namespace"].get(ns);
 		}
 		
 		// allow the namespace to resolve the widget module
@@ -252,7 +252,7 @@ dojo.widget.manager = new function(){
 		if(impl){return(imps[lowerCaseWidgetName] = impl)};
 
 		// try to load a manifest to resolve this implemenation
-		nsObj = dojo.namespace.require(ns);
+		nsObj = dojo["namespace"].require(ns);
 		if((nsObj)&&(nsObj.resolver)){
 			nsObj.resolve(widgetName);
 			impl = findImplementation(lowerCaseWidgetName, nsObj.module);
