@@ -134,9 +134,9 @@ dojo.xml.Parse = function(){
 		var pos = tagName.indexOf(":");
 		if(pos>0){
 			var ns = tagName.substring(0,pos);
-			parsedNodeSet.namespace = ns;
+			parsedNodeSet["namespace"] = ns;
 			// honor user namespace filters
-			if((dojo.namespace)&&(!dojo.namespace.allow(ns))){process=false;}
+			if((dojo["namespace"])&&(!dojo["namespace"].allow(ns))){process=false;}
 		}
 
 		if(process){
@@ -153,7 +153,7 @@ dojo.xml.Parse = function(){
 			parsedNodeSet[tagName].nodeRef = node;
 			parsedNodeSet.tagName = tagName;
 			parsedNodeSet.index = thisIdx||0;
-			//dojo.debug("parseElement: set the element tagName = "+parsedNodeSet.tagName+" and namespace to "+parsedNodeSet.namespace);
+			//dojo.debug("parseElement: set the element tagName = "+parsedNodeSet.tagName+" and namespace to "+parsedNodeSet["namespace"]);
 		}
 
 		var count = 0;

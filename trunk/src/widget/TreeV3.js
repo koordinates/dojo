@@ -120,7 +120,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		} else if (this.defaultChildWidget.prototype.createSimple) {			
 			return this.defaultChildWidget.prototype.createSimple(data);					
 		} else {
-			var ns = this.defaultChildWidget.prototype.namespace; 
+			var ns = this.defaultChildWidget.prototype["namespace"]; 
 			var wt = this.defaultChildWidget.prototype.widgetType; 
 
 			return dojo.widget.createWidget(ns + ":" + wt, data); 
