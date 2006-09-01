@@ -3,8 +3,6 @@ dojo.provide("dojo.widget.vml.Chart");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Chart");
 dojo.require("dojo.math");
-dojo.require("dojo.html");
-//dojo.require("dojo.vml");
 dojo.require("dojo.gfx.color");
 
 dojo.widget.defineWidget(
@@ -243,6 +241,7 @@ dojo.widget.defineWidget(
 		this.plotArea.style.left=(this.properties.padding.left-1)+"px";
 		this.plotArea.style.width=plotWidth+"px";
 		this.plotArea.style.height=plotHeight+"px";
+		this.plotArea.style.clip="rect(0 "+plotWidth+" "+plotHeight+" 0)";
 		this.vectorNode.appendChild(this.plotArea);
 		
 		this.dataGroup=document.createElement("div");
