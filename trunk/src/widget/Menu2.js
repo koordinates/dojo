@@ -787,16 +787,20 @@ dojo.widget.PopupManager = new function(){
 	this.registerAllWindows = function(targetWindow){
 		//starting from window.top, clicking everywhere in this page 
 		//should close popup menus
-		if(!targetWindow)  targetWindow = dojo.html.getDocumentWindow(window.top.document); //see comment below
+		if(!targetWindow) { //see comment below
+			targetWindow = dojo.html.getDocumentWindow(window.top.document);
+		}
 
 		this.registerWin(targetWindow);
 
 		for (var i = 0; i < targetWindow.frames.length; i++){
-			//do not remove  dojo.html.getDocumentWindow, see comment in it
-			var win = dojo.html.getDocumentWindow(targetWindow.frames[i].document);
-			if(win){
-				this.registerAllWindows(win);
-			}
+			try{
+				//do not remove  dojo.html.getDocumentWindow, see comment in it
+				var win = dojo.html.getDocumentWindow(targetWindow.frames[i].document);
+				if(win){
+					this.registerAllWindows(win);
+				}
+			}catch(e){ /* squelch error for cross domain iframes */ }
 		}
 	};
 	
