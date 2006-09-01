@@ -18,7 +18,7 @@ dojo.inherits(dojo.storage.browser.FlashStorageProvider, dojo.storage);
 
 // instance methods and properties
 dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
-	namespace: "default",
+	"namespace": "default",
 	initialized: false,
 	_available: null,
 	_statusHandler: null,
@@ -46,8 +46,8 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 		return this._available;
 	},
 	
-	setNamespace: function(namespace){
-		this.namespace = namespace;
+	setNamespace: function(ns){
+		this["namespace"] = ns;
 	},
 
 	put: function(key, value, resultsHandler){
@@ -65,7 +65,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 			value = dojo.json.serialize(value);
 		}
 		
-		dojo.flash.comm.put(key, value, this.namespace);
+		dojo.flash.comm.put(key, value, this["namespace"]);
 	},
 
 	get: function(key){
@@ -73,7 +73,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 			dojo.raise("Invalid key given: " + key);
 		}
 		
-		var results = dojo.flash.comm.get(key, this.namespace);
+		var results = dojo.flash.comm.get(key, this["namespace"]);
 
 		if(results == ""){
 			return null;
@@ -93,20 +93,18 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	},
 
 	getKeys: function(){
-		var results = dojo.flash.comm.getKeys(this.namespace);
+		var results = dojo.flash.comm.getKeys(this["namespace"]);
 		
 		if(results == ""){
-			return new Array();
+			return [];
 		}
 
 		// the results are returned comma seperated; split them
-		results = results.split(",");
-		
-		return results;
+		return results.split(",");
 	},
 
 	clear: function(){
-		dojo.flash.comm.clear(this.namespace);
+		dojo.flash.comm.clear(this["namespace"]);
 	},
 	
 	remove: function(key){

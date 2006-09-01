@@ -44,7 +44,7 @@ dojo.declare("dojo.storage", null, {
 		applications want access to the storage system from the same domain but
 		want different storage silos. 
 	*/
-	namespace: "dojoStorage",
+	"namespace": "dojoStorage",
 	
 	/**  
 		If a function is assigned to this property, then when the settings
@@ -216,10 +216,10 @@ dojo.storage.manager = new function(){
 	this.currentProvider = null;
 	this.available = false;
 	this.initialized = false;
-	this.providers = new Array();
+	this.providers = [];
 	
 	// TODO: Provide a way for applications to override the default namespace
-	this.namespace = "dojo.storage";
+	this["namespace"] = "dojo.storage";
 	
 	this.initialize = function(){
 		// summary: 
