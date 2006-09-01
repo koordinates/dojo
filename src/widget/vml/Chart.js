@@ -491,7 +491,7 @@ dojo.widget.vml.Chart.Plotter=new function(){
 		chart.dataGroup.appendChild(line);
 	};
 	plotters[types.Scatter]=function(series, chart){
-		var r=8;
+		var r=6;
 		for (var i=0; i<series.values.length; i++){
 			var x=_this.getX(series.values[i].x, chart);
 			var y=_this.getY(series.values[i].value, chart);
@@ -530,17 +530,30 @@ dojo.widget.vml.Chart.Plotter=new function(){
 		for (var i=0; i<series.values.length; i++){
 			var size = series.values[i].size;
 			if (isNaN(parseFloat(size))) size=minR;
-			var mod=(parseFloat(size)*factor)/2;
+
+			var radius=(parseFloat(size)*factor)/2;
+			var diameter=radius * 2;
+			var cx=_this.getX(series.values[i].x, chart);
+			var cy=_this.getY(series.values[i].value, chart);
+
+			var top=cy-radius;
+			var left=cx-radius;
 
 			var point=document.createElement("v:oval");
-			point.setAttribute("strokecolor", series.color);
 			point.setAttribute("fillcolor", series.color);
 			point.setAttribute("title", series.label + ": " + series.values[i].value + " (" + size + ")");
+			point.setAttribute("stroked", "false");
 			point.style.position="absolute";
-			point.style.top=(_this.getY(series.values[i].value, chart)-mod) + "px";
-			point.style.left=(_this.getX(series.values[i].x, chart)-mod) + "px";
-			point.style.width=mod+"px";
-			point.style.height=mod+"px";
+			
+			point.style.top=top+"px";
+			point.style.left=left+"px";
+			point.style.width=diameter+"px";
+			point.style.height=diameter+"px";
+
+			var fill=document.createElement("v:fill");
+			fill.setAttribute("opacity", "0.8");
+			point.appendChild(fill);
+			
 			chart.dataGroup.appendChild(point);
 		}
 	};
