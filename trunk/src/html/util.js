@@ -34,6 +34,11 @@ dojo.html.getDocumentWindow = function(doc){
 		may be only copies). 
 		*/
 		doc.parentWindow.execScript("document._parentWindow = window;", "Javascript");
+		//to prevent memory leak, unset it after use
+		//another possibility is to add an onUnload handler which seems overkill to me (liucougar)
+		var win = doc._parentWindow;
+		doc._parentWindow = null;
+		return win;
 	}
 
 	return doc._parentWindow || doc.parentWindow || doc.defaultView;
