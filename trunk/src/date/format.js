@@ -296,6 +296,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 	if (options.selector != 'dateOnly'){ dojo.unimplemented("can only parse dates at this time"); }
 	var pattern = options.datePattern || info["dateFormat-"+formatLength];
 	var elements = [];
+//TODO: break up literal strings
 	var dateRE = dojo.date._buildDateTimeRE(pattern, elements);
 
 	var match = dateRE.exec(value);
@@ -325,7 +326,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 
 //TODO: try to common strftime and format code somehow?
 
-dojo.date.strftime = function (/*Date*/dateObject, /*String*/format) {
+dojo.date.strftime = function (/*Date*/dateObject, /*String*/format, /*String?*/locale) {
 //
 // summary:
 //		Formats the date object using the specifications of the POSIX strftime function
@@ -339,26 +340,26 @@ dojo.date.strftime = function (/*Date*/dateObject, /*String*/format) {
 		return dojo.string.pad(s, n || 2, padChar || "0");
 	}
 
-	var info = dojo.date._getGregorianBundle();
+	var info = dojo.date._getGregorianBundle(locale);
 
 	function $ (property) {
 		switch (property) {
 			case "a": // abbreviated weekday name according to the current locale
-				return dojo.date.getDayShortName(dateObject);
+				return dojo.date.getDayShortName(dateObject, locale);
 
 			case "A": // full weekday name according to the current locale
-				return dojo.date.getDayName(dateObject);
+				return dojo.date.getDayName(dateObject, locale);
 
 			case "b":
 			case "h": // abbreviated month name according to the current locale
-				return dojo.date.getMonthShortName(dateObject);
+				return dojo.date.getMonthShortName(dateObject, locale);
 				
 			case "B": // full month name according to the current locale
-				return dojo.date.getMonthName(dateObject);
+				return dojo.date.getMonthName(dateObject, locale);
 				
 			case "c": // preferred date and time representation for the current
 				      // locale
-				return dojo.date.format(dateObject, "full");				
+				return dojo.date.format(dateObject, {locale: locale});
 
 			case "C": // century number (the year divided by 100 and truncated
 				      // to an integer, range 00 to 99)
@@ -458,11 +459,11 @@ dojo.date.strftime = function (/*Date*/dateObject, /*String*/format) {
 
 			case "x": // preferred date representation for the current locale
 				      // without the time
-				return dojo.date.format(dateObject, 'short'); //TODO: which format should be used?
+				return dojo.date.format(dateObject, {selector:'dateOnly', locale:locale});
 
-			case "X": // preferred date representation for the current locale
-				      // without the time
-				return dojo.date.format(dateObject, 'full'); //TODO: which format should be used?
+			case "X": // preferred time representation for the current locale
+				      // without the date
+				return dojo.date.format(dateObject, {selector:'timeOnly', locale:locale});
 
 			case "y": // year as a decimal number without a century (range 00 to
 				      // 99)
