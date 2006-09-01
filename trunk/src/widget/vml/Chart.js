@@ -468,23 +468,24 @@ dojo.widget.vml.Chart.Plotter=new function(){
 
 		var path = [];
 		for (var i=0; i<series.values.length; i++){
-			var x = _this.getX(series.values[i].x, chart)
-			var y = _this.getY(series.values[i].value, chart);
+			var x = Math.round(_this.getX(series.values[i].x, chart));
+			var y = Math.round(_this.getY(series.values[i].value, chart));
 
 			if (i==0){
 				path.push("m");
 				path.push(x+","+y);
 			}else{
-				var lastx=_this.getX(series.values[i-1].x, chart);
-				var lasty=_this.getY(series.values[i-1].value, chart);
+				var lastx=Math.round(_this.getX(series.values[i-1].x, chart));
+				var lasty=Math.round(_this.getY(series.values[i-1].value, chart));
 				var dx=x-lastx;
+				var dy=y-lasty;
 				
-				path.push("v");
-				var cx=x-(tension-1)*(dx/tension);
-				path.push(cx+",0");
-				cx=x-(dx/tension);
-				path.push(cx+","+y-lasty);
-				path.push(dx, y-lasty);
+				path.push("c");
+				var cx=Math.round((x-(tension-1)*(dx/tension)));
+				path.push(cx+","+lasty);
+				cx=Math.round((x-(dx/tension)));
+				path.push(cx+","+y);
+				path.push(x+","+y);
 			}
 		}
 		line.setAttribute("path", path.join(" ")+" e");
@@ -508,7 +509,7 @@ dojo.widget.vml.Chart.Plotter=new function(){
 			point.style.width=r+"px";
 			point.style.height=r+"px";
 			var fill=document.createElement("v:fill");
-			fill.setAttribute("opacity", "0.5");
+			fill.setAttribute("opacity", "0.6");
 			point.appendChild(fill);
 			chart.dataGroup.appendChild(point);
 		}
