@@ -13,7 +13,7 @@
 
 <script>
 	dojo.require('dojo.namespace');
-	dojo.defineNamespace("myown", "../myown", "myown"); // Get exception here if debugAtAllCosts set to true - see above.
+	dojo.registerNamespace("myown", "myown");      // Get exception here if debugAtAllCosts set to true - see above.
 
 	// declaring a custom button widget that overrides a single function
 	dojo.require('dojo.widget.Button');

@@ -1,0 +1,95 @@
+<html xmlns:dojo xmlns:myown>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true};
+</script>
+<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+
+<script>
+	dojo.require('dojo.namespace');
+	dojo.require('dojo.widget.HtmlWidget');
+	dojo.require("dojo.widget.TabContainer");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.registerNamespace("myown", "myown");      // Get exception here if debugAtAllCosts set to true
+</script>
+</head>
+<body>
+
+	<!-- xmp is a very special element type - browser ignores all markup until it reaches /xmp tag -->
+	<!-- You might want to use a plain javascript string instead -->
+	<xmp id="TestTemplate" style="display:none">
+		<div>
+			<div dojoAttachPoint="tabContainer" dojoType="dojo:TabContainer" doLayout="false">
+				<div dojoAttachPoint="contentPane1" dojoType="dojo:ContentPane" label="pane 1">
+					Pane 1
+					<div dojoAttachPoint="testElement"></div>
+				</div>
+				<div dojoAttachPoint="contentPane2" dojoType="dojo:ContentPane" label="pane 2">
+					Pane 2
+				</div>
+			</div>
+		</div>
+	</xmp>
+
+	<!-- Declared in BODY so can refer to XMP elements. -->
+	<script>
+		dojo.widget.defineWidget('myown.Test', dojo.widget.HtmlWidget, {
+			enableSubWidgets: true,
+
+			templateString: dojo.byId('TestTemplate').textContent || dojo.byId('TestTemplate').innerText,
+
+			tabContainer: null,
+			contentPane1: null,
+			contentPane2: null,
+			testElement: null,
+
+			checkSubWidgets: function() {
+				var strs = [];
+
+				if (!this.tabContainer) {
+					strs.push('tabContainer missing');
+				} else if (this.tabContainer.constructor != dojo.widget.TabContainer) {
+					strs.push('tabContainer is not a TabContainer');
+				}
+
+				if (!this.contentPane1) {
+					strs.push('contentPane1 missing');
+				} else if (this.tabContainer.constructor != dojo.widget.ContentPane) {
+					strs.push('contentPane1 is not a ContentPane');
+				}
+
+				if (!this.contentPane2) {
+					strs.push('contentPane2 missing');
+				} else if (this.tabContainer.constructor != dojo.widget.ContentPane) {
+					strs.push('contentPane2 is not a ContentPane');
+				}
+
+				if (!this.testElement) {
+					strs.push('testElement missing');
+				} else if (this.testElement.tagName != 'DIV') {
+					strs.push('testElement is not a DIV');
+				}
+
+				alert(strs.join('\n'));
+			}
+
+		});
+
+		function checkSubWidgets() {
+			var testWidget = dojo.widget.byId('testWidget');
+			if (!testWidget) {
+				alert('testWidget not created');
+			} else {
+				testWidget.checkSubWidgets();
+			}
+		}
+	</script>
+
+	<!-- can use widget immediately in markup - no parsing occurs until document loaded and scripts run -->
+	<myown:Test widgetId="testWidget"></myown:Test>
+
+	<button onClick="checkSubWidgets()">checkSubWidgets()</button>
+
+</body>
+</html>

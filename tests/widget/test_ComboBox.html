@@ -173,6 +173,8 @@ also: adding a simple combo box to test IE bleed through problem:
 <li>Try repeatably droppingdown and closing the dropdown. Shouldnt get hung [sometimes flicks closed just after opening due to timers, but not a biggie]</li>
 <li>Check that default selection of the text makes sense. e.g. text is selected after picking an item, on tabbing in to text input etc)</li>
 <li>Check that dropdown is smooth [looks uggy on second keypress in FF - hides then shows]</li>
+<li>Clear the field. Type in A and then tab *very quickly* and see if the results make sense (the dropdown is on a timer - searchTimer)</li>
+<li>Clear the field and enter an invalid entry and tab out e.g. Qualude. Does that make sense given the combobox setup options?</li>
 <li>(Add any other tests here)</li>
 </ol>
 <!-- maintain state of combo box if user presses back/forward button -->
