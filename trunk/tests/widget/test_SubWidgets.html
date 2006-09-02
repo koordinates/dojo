@@ -11,6 +11,7 @@
 	dojo.require('dojo.widget.HtmlWidget');
 	dojo.require("dojo.widget.TabContainer");
 	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.Button");
 	dojo.registerNamespace("myown", "myown");      // Get exception here if debugAtAllCosts set to true
 </script>
 </head>
@@ -104,7 +105,7 @@
 		Pane 3
 	</div>
 </myown:Test1>
-
+^ Pane 3 ooops - In code how to set test1Widget.containerNode = test1Widget.tabContainer.containerNode <em>before</em> child nodes are added? Cannot do automagically because widget template may have multiple containers. Same issue with ButtonA missing below.
 
 <script>
 	function doTest1() {
@@ -113,7 +114,7 @@
 		if (!test1Widget) {
 			strs.push('test1Widget not created');
 		} else {
-			strs.concat(test1Widget.testSubWidgets1());
+			strs = strs.concat(test1Widget.testSubWidgets1());
 		}
 
 		var contentPane3 = dojo.widget.byId("contentPane3");
@@ -156,7 +157,7 @@
 
 	function doTest2() {
 		var test2Widget = dojo.widget.createWidget('myown:Test2');
-		alert('Something should have failed... ' + test2Widget);
+		alert('This alert shouldnt show?' + test2Widget);
 	}
 </script>
 <br>
@@ -175,7 +176,10 @@ This test is recursive and hangs the browser or maybe even cause your PC problem
 <xmp id="Test3Template" style="display:none">
 	<div>
 		<div dojoAttachPoint="test1widget" dojoType="myown:Test1">
+			<div dojoAttachPoint="buttonwidgetA" dojoType="dojo:Button">button A</div>
+			<div dojoAttachPoint="testElement3"></div>
 		</div>
+		<dojo:Button dojoAttachPoint="buttonwidgetB">button B</dojo:Button>
 	</div>
 </xmp>
 
@@ -186,7 +190,13 @@ This test is recursive and hangs the browser or maybe even cause your PC problem
 
 		templateString: dojo.byId('Test3Template').textContent || dojo.byId('Test3Template').innerText,
 
+		// should be set
 		test1widget: null,
+		buttonwidgetA: null,
+		buttonwidgetB: null,
+		testElement3: null,
+
+		// should not be set
 		tabContainer: null,
 		contentPane1: null,
 		testElement: null,
@@ -198,6 +208,22 @@ This test is recursive and hangs the browser or maybe even cause your PC problem
 				strs.push('this.test1widget missing');
 			} else if (this.test1widget.constructor != myown.Test1) {
 				strs.push('this.test1widget is not a myown:Test1');
+			}
+
+			if (!this.buttonwidgetA) {
+				strs.push('this.buttonwidgetA missing');
+			} else if (this.buttonwidgetA.constructor != dojo.widget.Button) {
+				strs.push('this.buttonwidgetA is not a Button');
+			}
+
+			if (!this.buttonwidgetB) {
+				strs.push('this.buttonwidgetB missing');
+			} else if (this.buttonwidgetB.constructor != dojo.widget.Button) {
+				strs.push('this.buttonwidgetB is not a Button');
+			}
+
+			if (!this.testElement3) {
+				strs.push('this.testElement3 missing');
 			}
 
 			if (this.tabContainer) {
@@ -231,7 +257,7 @@ This test is recursive and hangs the browser or maybe even cause your PC problem
 		if (!test3Widget) {
 			strs.push('test3Widget not created');
 		} else {
-			strs.concat(test3Widget.testSubWidgets3());
+			strs = strs.concat(test3Widget.testSubWidgets3());
 		}
 
  		if(strs.length == 0){
