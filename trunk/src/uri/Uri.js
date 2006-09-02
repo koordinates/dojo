@@ -5,17 +5,20 @@ dojo.uri = new function() {
 		// returns a Uri object resolved relative to the dojo root
 		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri(), uri);
 	}
-
-	//returns a URI of a widget in a namespace, for example dojo.uri.nsUri("dojo","Editor"), or dojo.uri.nsUri("customNS","someWidget")
-	this.nsUri = function(ns,uri){
-		var loc = dojo.hostenv.getModulePrefix(ns);
-		if(!loc){
-			return null;
-		}
-		if(loc.lastIndexOf("/") != loc.length - 1){
-			loc += "/";
-		}
+	
+	// returns a Uri object relative to a (top-level) module
+	// for example dojo.uri.moduleUri("dojo","Editor"), or dojo.uri.moduleUri("acme","someWidget")
+	this.moduleUri = function(module, uri){
+		var loc = dojo.hostenv.getModulePrefix(module);
+		if(!loc){return null;}
+		if(loc.lastIndexOf("/") != loc.length-1){loc += "/";}
 		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri()+loc,uri);
+	}
+
+	this.nsUri = function(ns,uri){
+		// by convention a namespace matches a top-level module, but strictly speaking Dojo namespaces are a widget concept
+		dojo.deprecated("dojo.uri.nsUri", "replaced by dojo.uri.moduleUri", "0.4");
+		return dojo.uri.moduleUri(ns,uri);
 	}
 
 	this.Uri = function (/*uri1, uri2, [...]*/) {
@@ -79,7 +82,7 @@ dojo.uri = new function() {
 
 		// break the uri into its main components
 		var regexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$";
-	    var r = this.uri.match(new RegExp(regexp));
+	  var r = this.uri.match(new RegExp(regexp));
 
 		this.scheme = r[2] || (r[1] ? "" : null);
 		this.authority = r[4] || (r[3] ? "" : null);
