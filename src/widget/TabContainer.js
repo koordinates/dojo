@@ -39,15 +39,12 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.HtmlWidget, {
 		}
 
 		if (this.closeButton=="pane") {
-			var div = document.createElement("div");
-			dojo.html.addClass(div, "dojoTabPanePaneClose");
-			dojo.event.connect(div, "onclick", dojo.lang.hitch(this, 
+			var img = this._setupCloseButton("pane");
+			this.dojoTabLabels.appendChild(img);
+			dojo.event.connect(img, "onclick", dojo.lang.hitch(this, 
 					function(){ this._runOnCloseTab(this.selectedTabWidget); }
 				)
 			);
-			dojo.event.connect(div, "onmouseover", function(){ dojo.html.addClass(div, "dojoTabPanePaneCloseHover"); });
-			dojo.event.connect(div, "onmouseout", function(){ dojo.html.removeClass(div, "dojoTabPanePaneCloseHover"); });
-			this.dojoTabLabels.appendChild(div);
 		}
 
 		if(!this.doLayout){
@@ -94,17 +91,13 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.HtmlWidget, {
 		dojo.html.disableSelection(titleSpan); 
 		
 		if(this.closeButton=="tab" || tab.tabCloseButton){
-			var img = document.createElement("span");
-			dojo.html.addClass(img, "dojoTabPaneTabClose");
-			dojo.event.connect(img, "onclick", dojo.lang.hitch(this, 
-					function(evt){ 
-						this._runOnCloseTab(tab); dojo.event.browser.stopEvent(evt);
-					}
+			var closeButton = this._setupCloseButton("tab");
+			innerDiv.appendChild(closeButton);
+			dojo.event.connect(closeButton, "onclick", dojo.lang.hitch(this, 
+				function(evt){ 
+					this._runOnCloseTab(tab); dojo.event.browser.stopEvent(evt);}
 				)
 			);
-			dojo.event.connect(img, "onmouseover", function(){ dojo.html.addClass(img,"dojoTabPaneTabCloseHover"); });
-			dojo.event.connect(img, "onmouseout", function(){ dojo.html.removeClass(img,"dojoTabPaneTabCloseHover"); });
-			innerDiv.appendChild(img);
 		}
 		tab.div.appendChild(innerDiv);
 		tab.div.tabTitle=titleSpan;
@@ -202,6 +195,24 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.HtmlWidget, {
 		this._showTab(tab, _noRefresh);
 	},
 
+	_setupCloseButton: function(type){
+		var prefix = "";
+		var elemType = "div";
+		if (type == "pane"){
+			prefix = "dojoTabPanePane";
+		}else if (type == "tab"){
+			elemType = "span";
+			prefix = "dojoTabPaneTab";
+		}
+		//else bad type - create a div but styles will be invalid
+		var div = document.createElement(elemType);
+		dojo.html.addClass(div, prefix + "Close " + prefix + "CloseImage");
+		dojo.event.connect(div, "onmouseover", function(){ dojo.html.addClass(div, prefix + "CloseHover"); });
+		dojo.event.connect(div, "onmouseout", function(){ dojo.html.removeClass(div, prefix + "CloseHover"); });
+		
+		return div;
+	},
+	
 	tabNavigation: function(evt, tab){
 		if( (evt.keyCode == evt.KEY_RIGHT_ARROW)||
 			(evt.keyCode == evt.KEY_LEFT_ARROW) ){
@@ -231,6 +242,11 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.HtmlWidget, {
 			this.selectTab(this.selectedTabWidget);
 			dojo.event.browser.stopEvent(e);
 			this.selectedTabWidget.div.tabTitle.focus();
+		}else if(e.keyCode == e.KEY_DELETE && e.altKey){
+			if (this.closeButton == "tab" || this.closeButton == "pane" || this.selectedTabWidget.tabCloseButton){
+				this._runOnCloseTab(this.selectedTabWidget);
+				dojo.event.browser.stopEvent(e);
+			}
 		}
 	},
 
@@ -295,3 +311,27 @@ dojo.lang.extend(dojo.widget.Widget, {
 	selected: false,	// is this tab currently selected?
 	tabCloseButton: false
 });
+
+dojo.widget.defineWidget(
+	"dojo.widget.a11y.TabContainer",
+	dojo.widget.TabContainer,
+	{
+		templateCssPath: dojo.uri.dojoUri("src/widget/templates/TabContainerA11y.css"),
+		imgPath: dojo.uri.dojoUri("src/widget/templates/images/tab_close.gif"),
+		
+		_setupCloseButton: function(type){ 
+			var typeClass="";
+			if (type == "pane"){
+				typeClass = "dojoTabPanePaneClose";
+			}else if(type == "tab"){
+				typeClass = "dojoTabPaneTabClose";
+			}
+			var img = document.createElement("img");
+			dojo.html.addClass(img, typeClass);
+			img.src = this.imgPath;
+			img.alt = "[x]";
+						
+			return img;
+		}
+	}
+);

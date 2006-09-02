@@ -1,12 +1,9 @@
 .dojoHtmlCheckbox {
 	border: 0px;
-	text-decoration: none;
-
 	width: 20px;
 	height: 20px;
 	display: -moz-inline-box;
 	display: inline-block;
-
 	margin-right: 5px;
 }
 
@@ -22,9 +19,9 @@
 .dojoHtmlCheckboxDisabledOff {
 	background: url(check.gif) -60px 0px;
 }
-.dojoHtmlCheckboxOn:hover {
+.dojoHtmlCheckboxOnHover {
 	background: url(check.gif) -80px 0px;
 }
-.dojoHtmlCheckboxOff:hover {
+.dojoHtmlCheckboxOffHover {
 	background: url(check.gif) -100px 0px;
 }

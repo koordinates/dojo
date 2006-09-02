@@ -33,7 +33,6 @@
 	float : left;
 	padding-left : 9px;
 	border-bottom : 1px solid #6290d2;
-	background : url(images/tab_left.gif) no-repeat left top;
 	cursor: pointer;
 	white-space: nowrap;
 	z-index: 3;
@@ -42,7 +41,6 @@
 .dojoTabPaneTab div {
 	display : block;
 	padding : 4px 15px 4px 6px;
-	background : url(images/tab_top_right.gif) no-repeat right top;
 	color : #333;
 	font-size : 90%;
 }
@@ -56,11 +54,9 @@
 	font-size : small;
 }
 .dojoTabPanePaneCloseImage {
-	background : url(images/tab_close.gif) no-repeat right top;
 }
 
 .dojoTabPanePaneCloseHover {
-	background-image : url(images/tab_close_h.gif);
 }
 
 .dojoTabPaneTabClose {
@@ -74,11 +70,9 @@
 }
 
 .dojoTabPaneTabCloseImage {
-	background : url(images/tab_close.gif) no-repeat right top;
 }
 
 .dojoTabPaneTabCloseHover {
-	background-image : url(images/tab_close_h.gif);
 }
 
 .dojoTabPaneTab.current {
@@ -112,21 +106,17 @@
 .dojoTabLabels-bottom .dojoTabPaneTab {
 	border-top :  1px solid #6290d2;
 	border-bottom : 0;
-	background : url(images/tab_bot_left.gif) no-repeat left bottom;
 }
 
 .dojoTabLabels-bottom .dojoTabPaneTab div {
-	background : url(images/tab_bot_right.gif) no-repeat right bottom;
 }
 
 .dojoTabLabels-bottom .dojoTabPaneTab.current {
 	border-top : 0;
-	background : url(images/tab_bot_left_curr.gif) no-repeat left bottom;
 }
 
 .dojoTabLabels-bottom .dojoTabPaneTab.current div {
 	padding-top : 4px;
-	background : url(images/tab_bot_right_curr.gif) no-repeat right bottom;
 }
 
 /* right-h tabs */
@@ -144,7 +134,6 @@
 	padding-left : 0;
 	border-left :  1px solid #6290d2;
 	border-bottom : 0;
-	background : url(images/tab_bot_right.gif) no-repeat right bottom;
 	float : none;
 }
 
@@ -172,14 +161,12 @@
 	border-right :  1px solid #6290d2;
 	border-bottom : 0;
 	float : none;
-	background : url(images/tab_top_left.gif) no-repeat left top;
 }
 
 .dojoTabLabels-left-h .dojoTabPaneTab.current {
 	border-right : 0;
 	border-bottom :  1px solid #6290d2;
 	padding-bottom : 0;
-	background : url(images/tab_top_left.gif) no-repeat 0 -150px;
 }
 
 .dojoTabLabels-left-h .dojoTabPaneTab div {
