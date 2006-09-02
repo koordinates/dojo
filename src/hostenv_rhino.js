@@ -210,7 +210,7 @@ function setTimeout(func, delay){
 			}
 			try {
 				func();
-			} catch(e){dojo.log.exception("Error running setTimeout thread:", e);}
+			} catch(e){dojo.debug("Error running setTimeout thread:" + e);}
 		}
 	};
 	
@@ -219,4 +219,4 @@ function setTimeout(func, delay){
 	thread.start();
 }
 
-dojo.require("dojo.logging.Logger");
+// dojo.require("dojo.logging.Logger");
