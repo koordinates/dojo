@@ -279,39 +279,101 @@ dojo.date.compare=function(/* Date */ dateA, /* Date */ dateB, /* int */ options
 dojo.date.dateParts={ 
 	//	summary
 	//	constants for use in dojo.date.add
-	YEAR:0, MONTH:1, DAY:2, HOUR:3, MINUTE:4, SECOND:5, MILLISECOND:6 
+	YEAR:0, MONTH:1, DAY:2, HOUR:3, MINUTE:4, SECOND:5, MILLISECOND:6, QUARTER:7, WEEK:8, WEEKDAY:9
 };
-dojo.date.add=function(/* Date */ d, /* dojo.date.dateParts */ unit, /* int */ amount){
-	var n=(amount)?amount:1;
-	var v;
-	switch(unit){
-		case dojo.date.dateParts.YEAR:{
-			v=new Date(d.getFullYear()+n, d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+
+dojo.date.add = function(/* Date */ dt, /* dojo.date.dateParts */ interv, /* int */ incr){
+	if(typeof dt == 'number'){dt = new Date(dt);} // Allow timestamps
+	incr = incr || 1;
+
+	function fixOvershoot() {
+		if (ret.getDate() < dt.getDate()) {
+			ret.setDate(0);
+		}
+	}
+	
+	var ret = new Date(dt);
+
+	switch(interv) {
+		case dojo.date.dateParts.YEAR:
+			ret.setFullYear(dt.getFullYear()+incr);
+			// Keep increment/decrement from 2/29 out of March
+			fixOvershoot();
 			break;
-		}
-		case dojo.date.dateParts.MONTH:{
-			v=new Date(d.getFullYear(), d.getMonth()+n, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+		case dojo.date.dateParts.QUARTER:
+			// Naive quarter is just three months
+			incr*=3;
+			// fallthrough...
+		case dojo.date.dateParts.MONTH:
+			ret.setMonth(dt.getMonth()+incr);
+			// Reset to last day of month if you overshoot
+			fixOvershoot();
 			break;
-		}
-		case dojo.date.dateParts.HOUR:{
-			v=new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours()+n, d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+		case dojo.date.dateParts.WEEK:
+			incr*=7;
+			// fallthrough...
+		case dojo.date.dateParts.DAY:
+			ret.setDate(dt.getDate() + incr);
 			break;
-		}
-		case dojo.date.dateParts.MINUTE:{
-			v=new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes()+n, d.getSeconds(), d.getMilliseconds());
+		case dojo.date.dateParts.WEEKDAY:
+			//FIXME: assumes Saturday/Sunday weekend, but even this is not fixed.  There are CLDR entries to localize this.
+			var dat = dt.getDate();
+			var weeks = 0;
+			var days = 0;
+			var strt = 0;
+			var trgt = 0;
+			var adj = 0;
+			// Divide the increment time span into weekspans plus leftover days
+			// e.g., 8 days is one 5-day weekspan / and two leftover days
+			// Can't have zero leftover days, so numbers divisible by 5 get
+			// a days value of 5, and the remaining days make up the number of weeks
+			var mod = incr % 5;
+			if (mod == 0) {
+				days = (incr > 0) ? 5 : -5;
+				weeks = (incr > 0) ? ((incr-5)/5) : ((incr+5)/5);
+			}
+			else {
+				days = mod;
+				weeks = parseInt(incr/5);
+			}
+			// Get weekday value for orig date param
+			strt = dt.getDay();
+			// Orig date is Sat / positive incrementer
+			// Jump over Sun
+			if (strt == 6 && incr > 0) {
+				adj = 1;
+			}
+			// Orig date is Sun / negative incrementer
+			// Jump back over Sat
+			else if (strt == 0 && incr < 0) {
+				adj = -1;
+			}
+			// Get weekday val for the new date
+			trgt = (strt + days);
+			// New date is on Sat or Sun
+			if (trgt == 0 || trgt == 6) {
+				adj = (incr > 0) ? 2 : -2;
+			}
+			// Increment by number of weeks plus leftover days plus
+			// weekend adjustments
+			ret.setDate(dat + (7*weeks) + days + adj);
 			break;
-		}
-		case dojo.date.dateParts.SECOND:{
-			v=new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()+n, d.getMilliseconds());
+		case dojo.date.dateParts.HOUR:
+			ret.setHours(ret.getHours()+incr);
 			break;
-		}
-		case dojo.date.dateParts.MILLISECOND:{
-			v=new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds()+n);
+		case dojo.date.dateParts.MINUTE:
+			ret.setMinutes(ret.getMinutes()+incr);
 			break;
-		}
-		default:{
-			v=new Date(d.getFullYear(), d.getMonth(), d.getDate()+n, d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
-		}
-	};
-	return v;	//	Date
+		case dojo.date.dateParts.SECOND:
+			ret.setSeconds(ret.getSeconds()+incr);
+			break;
+		case dojo.date.dateParts.MILLISECOND:
+			ret.setMilliseconds(ret.getMilliseconds()+incr);
+			break;
+		default:
+			// Do nothing
+			break;
+	}
+
+	return ret; // Date
 };

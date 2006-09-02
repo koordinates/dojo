@@ -247,11 +247,187 @@ function test_date_compare(){
 }
 
 function test_date_add(){
-	var d=new Date(2005,10,1,12,0,0,0);
-	jum.assertEquals("add_test1", new Date(2006,10,1,12,0,0,0), dojo.date.add(d, dojo.date.dateParts.YEAR));
-	jum.assertEquals("add_test2", new Date(2005,9,1,12,0,0,0), dojo.date.add(d, dojo.date.dateParts.MONTH, -1));
-	jum.assertEquals("add_test3", new Date(2005,10,5,12,0,0,0), dojo.date.add(d, dojo.date.dateParts.DAY, 4));
-	jum.assertEquals("add_test4", new Date(2005,10,1,10,0,0,0), dojo.date.add(d, dojo.date.dateParts.HOUR, -2));
-	jum.assertEquals("add_test5", new Date(2005,10,1,12,10,0,0), dojo.date.add(d, dojo.date.dateParts.MINUTE, 10));
-	jum.assertEquals("add_test6", new Date(2005,10,1,11,59,25,0), dojo.date.add(d, dojo.date.dateParts.SECOND, -35));
+	var interv = ''; // Interval (e.g., year, month)
+	var dtA = null; // Date to increment
+	var dtB = null; // Expected result date
+	
+	interv = dojo.date.dateParts.YEAR;
+	dtA = new Date(2005, 11, 27);
+	dtB = new Date(2006, 11, 27);
+	jum.assertEquals("add_test1", dtB, dojo.date.add(dtA, interv, 1));
+	
+	dtA = new Date(2000, 1, 29);
+	dtB = new Date(2001, 1, 28);
+	jum.assertEquals("add_test2", dtB, dojo.date.add(dtA, interv, 1));
+	
+	dtA = new Date(2000, 1, 29);
+	dtB = new Date(2005, 1, 28);
+	jum.assertEquals("add_test3", dtB, dojo.date.add(dtA, interv, 5));
+	
+	dtA = new Date(1900, 11, 31);
+	dtB = new Date(1930, 11, 31);
+	jum.assertEquals("add_test4", dtB, dojo.date.add(dtA, interv, 30));
+	
+	dtA = new Date(1995, 11, 31);
+	dtB = new Date(2030, 11, 31);
+	jum.assertEquals("add_test5", dtB, dojo.date.add(dtA, interv, 35));
+
+	interv = dojo.date.dateParts.QUARTER;
+	dtA = new Date(2000, 0, 1);
+	dtB = new Date(2000, 3, 1);
+	jum.assertEquals("add_test6", dtB, dojo.date.add(dtA, interv, 1));
+	
+	dtA = new Date(2000, 1, 29);
+	dtB = new Date(2000, 7, 29);
+	jum.assertEquals("add_test7", dtB, dojo.date.add(dtA, interv, 2));
+	
+	dtA = new Date(2000, 1, 29);
+	dtB = new Date(2001, 1, 28);
+	jum.assertEquals("add_test8", dtB, dojo.date.add(dtA, interv, 4));
+	
+	interv = dojo.date.dateParts.MONTH;
+	dtA = new Date(2000, 0, 1);
+	dtB = new Date(2000, 1, 1);
+	jum.assertEquals("add_test9", dtB, dojo.date.add(dtA, interv, 1));
+	
+	dtA = new Date(2000, 0, 31);
+	dtB = new Date(2000, 1, 29);
+	jum.assertEquals("add_test10", dtB, dojo.date.add(dtA, interv, 1));
+	
+	dtA = new Date(2000, 1, 29);
+	dtB = new Date(2001, 1, 28);
+	jum.assertEquals("add_test11", dtB, dojo.date.add(dtA, interv, 12));
+	
+	interv = dojo.date.dateParts.WEEK;
+	dtA = new Date(2000, 0, 1);
+	dtB = new Date(2000, 0, 8);
+	jum.assertEquals("add_test12", dtB, dojo.date.add(dtA, interv, 1));
+
+	var interv = dojo.date.dateParts.DAY;
+	dtA = new Date(2000, 0, 1);
+	dtB = new Date(2000, 0, 2);
+	jum.assertEquals("add_test13", dtB, dojo.date.add(dtA, interv, 1));
+	
+	dtA = new Date(2001, 0, 1);
+	dtB = new Date(2002, 0, 1);
+	jum.assertEquals("add_test14", dtB, dojo.date.add(dtA, interv, 365));
+	
+	dtA = new Date(2000, 0, 1);
+	dtB = new Date(2001, 0, 1);
+	jum.assertEquals("add_test15", dtB, dojo.date.add(dtA, interv, 366));
+	
+	dtA = new Date(2000, 1, 28);
+	dtB = new Date(2000, 1, 29);
+	jum.assertEquals("add_test16", dtB, dojo.date.add(dtA, interv, 1));
+	
+	dtA = new Date(2001, 1, 28);
+	dtB = new Date(2001, 2, 1);
+	jum.assertEquals("add_test17", dtB, dojo.date.add(dtA, interv, 1));
+	
+	dtA = new Date(2000, 2, 1);
+	dtB = new Date(2000, 1, 29);
+	jum.assertEquals("add_test18", dtB, dojo.date.add(dtA, interv, -1));
+	
+	dtA = new Date(2001, 2, 1);
+	dtB = new Date(2001, 1, 28);
+	jum.assertEquals("add_test19", dtB, dojo.date.add(dtA, interv, -1));
+	
+	dtA = new Date(2000, 0, 1);
+	dtB = new Date(1999, 11, 31);
+	jum.assertEquals("add_test20", dtB, dojo.date.add(dtA, interv, -1));
+	
+	interv = dojo.date.dateParts.WEEKDAY;
+	// Sat, Jan 1
+	dtA = new Date(2000, 0, 1);
+	// Should be Mon, Jan 3
+	dtB = new Date(2000, 0, 3);
+	jum.assertEquals("add_test21", dtB, dojo.date.add(dtA, interv, 1));
+	
+	// Sun, Jan 2
+	dtA = new Date(2000, 0, 2);
+	// Should be Mon, Jan 3
+	dtB = new Date(2000, 0, 3);
+	jum.assertEquals("add_test22", dtB, dojo.date.add(dtA, interv, 1));
+	
+	// Sun, Jan 2
+	dtA = new Date(2000, 0, 2);
+	// Should be Fri, Jan 7
+	dtB = new Date(2000, 0, 7);
+	jum.assertEquals("add_test23", dtB, dojo.date.add(dtA, interv, 5));
+	
+	// Sun, Jan 2
+	dtA = new Date(2000, 0, 2);
+	// Should be Mon, Jan 10
+	dtB = new Date(2000, 0, 10);
+	jum.assertEquals("add_test24", dtB, dojo.date.add(dtA, interv, 6));
+	
+	// Mon, Jan 3
+	dtA = new Date(2000, 0, 3);
+	// Should be Mon, Jan 17
+	dtB = new Date(2000, 0, 17);
+	jum.assertEquals("add_test25", dtB, dojo.date.add(dtA, interv, 10));
+	
+	// Sat, Jan 8
+	dtA = new Date(2000, 0, 8);
+	// Should be Mon, Jan 3
+	dtB = new Date(2000, 0, 3);
+	jum.assertEquals("add_test25", dtB, dojo.date.add(dtA, interv, -5));
+	
+	// Sun, Jan 9
+	dtA = new Date(2000, 0, 9);
+	// Should be Wed, Jan 5
+	dtB = new Date(2000, 0, 5);
+	jum.assertEquals("add_test26", dtB, dojo.date.add(dtA, interv, -3));
+	
+	// Sun, Jan 23
+	dtA = new Date(2000, 0, 23);
+	// Should be Fri, Jan 7
+	dtB = new Date(2000, 0, 7);
+	jum.assertEquals("add_test27", dtB, dojo.date.add(dtA, interv, -11));
+	
+	interv = dojo.date.dateParts.HOUR;
+	dtA = new Date(2000, 0, 1, 11);
+	dtB = new Date(2000, 0, 1, 12);
+	jum.assertEquals("add_test28", dtB, dojo.date.add(dtA, interv, 1));
+
+	dtA = new Date(2001, 9, 28, 0);
+	dtB = new Date(2001, 9, 28, 1);
+	jum.assertEquals("add_test29", dtB, dojo.date.add(dtA, interv, 1));
+
+	dtA = new Date(2001, 9, 28, 23);
+	dtB = new Date(2001, 9, 29, 0);
+	jum.assertEquals("add_test30", dtB, dojo.date.add(dtA, interv, 1));
+
+	dtA = new Date(2001, 11, 31, 23);
+	dtB = new Date(2002, 0, 1, 0);
+	jum.assertEquals("add_test31", dtB, dojo.date.add(dtA, interv, 1));
+
+	interv = dojo.date.dateParts.MINUTE;
+	dtA = new Date(2000, 11, 31, 23, 59);
+	dtB = new Date(2001, 0, 1, 0, 0);
+	jum.assertEquals("add_test32", dtB, dojo.date.add(dtA, interv, 1));
+
+	dtA = new Date(2000, 11, 27, 12, 02);
+	dtB = new Date(2000, 11, 27, 13, 02);
+	jum.assertEquals("add_test33", dtB, dojo.date.add(dtA, interv, 60));
+	
+	interv = dojo.date.dateParts.SECOND;
+	dtA = new Date(2000, 11, 31, 23, 59, 59);
+	dtB = new Date(2001, 0, 1, 0, 0, 0);
+	jum.assertEquals("add_test34", dtB, dojo.date.add(dtA, interv, 1));
+
+	dtA = new Date(2000, 11, 27, 8, 10, 59);
+	dtB = new Date(2000, 11, 27, 8, 11, 59);
+	jum.assertEquals("add_test35", dtB, dojo.date.add(dtA, interv, 60));
+	
+	// Test environment JS Date doesn't support millisec?
+	//interv = dojo.date.dateParts.MILLISECOND;
+	//
+	//dtA = new Date(2000, 11, 31, 23, 59, 59, 999);
+	//dtB = new Date(2001, 0, 1, 0, 0, 0, 0);
+	//jum.assertEquals("add_test36", dtB, dojo.date.add(dtA, interv, 1));
+	//
+	//dtA = new Date(2000, 11, 27, 8, 10, 53, 2);
+	//dtB = new Date(2000, 11, 27, 8, 10, 54, 2);
+	//jum.assertEquals("add_test37", dtB, dojo.date.add(dtA, interv, 1000));
 }
