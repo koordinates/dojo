@@ -79,7 +79,7 @@ dojo.widget.defineWidget(
 			//Add a new button 
 
 			// Create label
-			div = document.createElement("div");
+			var div = document.createElement("div");
 			dojo.html.addClass(div, this.labelClass);
 			var innerDiv = document.createElement("div");
 
