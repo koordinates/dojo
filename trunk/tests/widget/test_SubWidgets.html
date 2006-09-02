@@ -16,80 +16,237 @@
 </head>
 <body>
 
-	<!-- xmp is a very special element type - browser ignores all markup until it reaches /xmp tag -->
-	<!-- You might want to use a plain javascript string instead -->
-	<xmp id="TestTemplate" style="display:none">
-		<div>
-			<div dojoAttachPoint="tabContainer" dojoType="dojo:TabContainer" doLayout="false">
-				<div dojoAttachPoint="contentPane1" dojoType="dojo:ContentPane" label="pane 1">
-					Pane 1
-					<div dojoAttachPoint="testElement"></div>
-				</div>
-				<div dojoAttachPoint="contentPane2" dojoType="dojo:ContentPane" label="pane 2">
-					Pane 2
-				</div>
+<!-- TEST 1 -->
+
+<!-- xmp is a very special element type - browser ignores all markup until it reaches /xmp tag -->
+<!-- You might want to use a plain javascript string instead -->
+<xmp id="Test1Template" style="display:none">
+	<div>
+		<div dojoAttachPoint="tabContainer" dojoType="dojo:TabContainer" doLayout="false">
+			<div dojoAttachPoint="contentPane1" dojoType="dojo:ContentPane" label="pane 1">
+				Pane 1
+				<div dojoAttachPoint="testElement"></div>
+			</div>
+			<div dojoAttachPoint="contentPane2" dojoType="dojo:ContentPane" label="pane 2">
+				Pane 2
 			</div>
 		</div>
-	</xmp>
+	</div>
+</xmp>
 
-	<!-- Declared in BODY so can refer to XMP elements. -->
-	<script>
-		dojo.widget.defineWidget('myown.Test', dojo.widget.HtmlWidget, {
-			enableSubWidgets: true,
+<!-- Declared in BODY so can refer to XMP elements. -->
+<script>
+	dojo.widget.defineWidget('myown.Test1', dojo.widget.HtmlWidget, {
+		enableSubWidgets: true,
+		isContainer: true,
 
-			templateString: dojo.byId('TestTemplate').textContent || dojo.byId('TestTemplate').innerText,
+		templateString: dojo.byId('Test1Template').textContent || dojo.byId('Test1Template').innerText,
 
-			tabContainer: null,
-			contentPane1: null,
-			contentPane2: null,
-			testElement: null,
+		tabContainer: null,
+		contentPane1: null,
+		contentPane2: null,
+		contentPane3: null,
+		testElement: null,
 
-			checkSubWidgets: function() {
-				var strs = [];
+		
 
-				if (!this.tabContainer) {
-					strs.push('tabContainer missing');
-				} else if (this.tabContainer.constructor != dojo.widget.TabContainer) {
-					strs.push('tabContainer is not a TabContainer');
-				}
+		testSubWidgets1: function() {
+			var strs = [];
 
-				if (!this.contentPane1) {
-					strs.push('contentPane1 missing');
-				} else if (this.tabContainer.constructor != dojo.widget.ContentPane) {
-					strs.push('contentPane1 is not a ContentPane');
-				}
-
-				if (!this.contentPane2) {
-					strs.push('contentPane2 missing');
-				} else if (this.tabContainer.constructor != dojo.widget.ContentPane) {
-					strs.push('contentPane2 is not a ContentPane');
-				}
-
-				if (!this.testElement) {
-					strs.push('testElement missing');
-				} else if (this.testElement.tagName != 'DIV') {
-					strs.push('testElement is not a DIV');
-				}
-
-				alert(strs.join('\n'));
-			}
-
-		});
-
-		function checkSubWidgets() {
-			var testWidget = dojo.widget.byId('testWidget');
-			if (!testWidget) {
-				alert('testWidget not created');
+			if (!this.tabContainer) {
+				strs.push('tabContainer missing');
+			} else if (this.tabContainer.constructor != dojo.widget.TabContainer) {
+				strs.push('tabContainer is not a TabContainer');
 			} else {
-				testWidget.checkSubWidgets();
+				if (this.tabContainer.contentPane1) {
+					strs.push('this.tabContainer.contentPane1 exists and it shouldnt');
+				}
+				if (this.tabContainer.contentPane3) {
+					strs.push('this.tabContainer.contentPane3 exists and it shouldnt?');
+				}
 			}
+
+			if (!this.contentPane1) {
+				strs.push('this.contentPane1 missing');
+			} else if (this.contentPane1.constructor != dojo.widget.ContentPane) {
+				strs.push('this.contentPane1 is not a ContentPane');
+			} else if (!this.contentPane1._processedSubWidgets){
+				strs.push('this.contentPane1._processedSubWidgets should be set!');
+			}
+
+			if (!this.contentPane2) {
+				strs.push('this.contentPane2 missing');
+			} else if (this.contentPane2.constructor != dojo.widget.ContentPane) {
+				strs.push('this.contentPane2 is not a ContentPane');
+			} else if (!this.contentPane2._processedSubWidgets){
+				strs.push('this.contentPane2._processedSubWidgets should be set!');
+			}
+
+			if (this.contentPane3) {
+				strs.push('this.contentPane3 exists and it shouldnt');
+			}
+
+			if (!this.testElement) {
+				strs.push('testElement missing');
+			} else if (this.testElement.tagName != 'DIV') {
+				strs.push('testElement is not a DIV');
+			}
+
+			return strs;
 		}
-	</script>
+	});
+</script>
 
-	<!-- can use widget immediately in markup - no parsing occurs until document loaded and scripts run -->
-	<myown:Test widgetId="testWidget"></myown:Test>
 
-	<button onClick="checkSubWidgets()">checkSubWidgets()</button>
+<!-- can use widget immediately in markup - no parsing occurs until document loaded and scripts run -->
+<myown:Test1 widgetId="test1Widget">
+	<div id="contentPane3" dojoAttachPoint="contentPane3" dojoType="dojo:ContentPane" label="pane 3">
+		Pane 3
+	</div>
+</myown:Test1>
+
+
+<script>
+	function doTest1() {
+		var strs = [];
+		var test1Widget = dojo.widget.byId('test1Widget');
+		if (!test1Widget) {
+			strs.push('test1Widget not created');
+		} else {
+			strs.concat(test1Widget.testSubWidgets1());
+		}
+
+		var contentPane3 = dojo.widget.byId("contentPane3");
+		if (!contentPane3) {
+			strs.push('contentPane3 missing');
+		} else if (contentPane3.constructor != dojo.widget.ContentPane) {
+			strs.push('contentPane3 is not a ContentPane');
+		} else if (contentPane3._processedSubWidgets){
+			strs.push('contentPane3._processedSubWidgets should NOT be set!');
+		}
+
+ 		if(strs.length == 0){
+			strs.push('all tests are passed!');
+		}
+
+		alert(strs.join('\n'));
+
+	}
+</script>
+<br>
+<button onClick="doTest1()">Run test 1</button>
+<hr>
+
+
+
+
+<!-- TEST 2 -->
+
+<xmp id="Test2Template" style="display:none">
+	<div>
+		<div dojoType="myown:Test2"></div>
+	</div>
+</xmp>
+<script>
+	dojo.widget.defineWidget('myown.Test2', dojo.widget.HtmlWidget, {
+		enableSubWidgets: true,
+		isContainer: true,
+		templateString: dojo.byId('Test2Template').textContent || dojo.byId('Test2Template').innerText
+	});
+
+	function doTest2() {
+		var test2Widget = dojo.widget.createWidget('myown:Test2');
+		alert('Something should have failed... ' + test2Widget);
+	}
+</script>
+<br>
+<br>
+<br>
+<br>
+This test is recursive and hangs the browser or maybe even cause your PC problems:<br>
+<button onClick="doTest2()">Run test 2</button>
+<hr>
+
+
+
+
+<!-- TEST 3 -->
+
+<xmp id="Test3Template" style="display:none">
+	<div>
+		<div dojoAttachPoint="test1widget" dojoType="myown:Test1">
+		</div>
+	</div>
+</xmp>
+
+<script>
+	dojo.widget.defineWidget('myown.Test3', dojo.widget.HtmlWidget, {
+		enableSubWidgets: true,
+		isContainer: true,
+
+		templateString: dojo.byId('Test3Template').textContent || dojo.byId('Test3Template').innerText,
+
+		test1widget: null,
+		tabContainer: null,
+		contentPane1: null,
+		testElement: null,
+
+		testSubWidgets3: function() {
+			var strs = [];
+
+			if (!this.test1widget) {
+				strs.push('this.test1widget missing');
+			} else if (this.test1widget.constructor != myown.Test1) {
+				strs.push('this.test1widget is not a myown:Test1');
+			}
+
+			if (this.tabContainer) {
+				strs.push('this.tabContainer exists and it shouldnt');
+			}
+
+			if (this.contentPane1) {
+				strs.push('this.contentPane1 exists and it shouldnt');
+			}
+
+			if (this.testElement) {
+				strs.push('this.testElement exists and it shouldnt');
+			}
+
+			return strs;
+		}
+	});
+</script>
+
+<br>
+<br>
+<br>
+<br>
+<myown:Test3 widgetId="test3Widget">
+</myown:Test3>
+
+<script>
+	function doTest3() {
+		var strs = [];
+		var test3Widget = dojo.widget.byId('test3Widget');
+		if (!test3Widget) {
+			strs.push('test3Widget not created');
+		} else {
+			strs.concat(test3Widget.testSubWidgets3());
+		}
+
+ 		if(strs.length == 0){
+			strs.push('all tests are passed!');
+		}
+
+		alert(strs.join('\n'));
+
+	}
+</script>
+<br>
+<button onClick="doTest3()">Run test 3</button>
+<br>
+<hr>
+
 
 </body>
 </html>
