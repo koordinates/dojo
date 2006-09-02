@@ -1,6 +1,5 @@
-<a class='dojoHtmlCheckbox' tabIndex="${this.tabIndex}" href="#" ${this.disabledStr}
-	dojoAttachEvent="onClick;keyPress" waiRole="checkbox">
-	<input type="checkbox" name="${this.name}" checked="${this.checked}" style="display: none"
+<span class='dojoHtmlCheckbox' tabIndex="${this.tabIndex}"  dojoAttachEvent="mouseOver; mouseOut; onKey; onClick: _onClick;" waiRole="checkbox">
+	<input type="checkbox" name="${this.name}" id="${this.id}" style="display: none" ${this.checkedStr}
 		dojoAttachPoint="inputNode">
 	&nbsp;
-</a>
+</span>

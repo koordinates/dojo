@@ -8,6 +8,7 @@ dojo.require("dojo.lang.declare");
 dojo.require("dojo.namespace");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.event.*");
+dojo.require("dojo.a11y");
 
 dojo.declare("dojo.widget.Widget", null,
 	function(){
@@ -737,6 +738,8 @@ dojo.widget.buildWidgetFromParseTree = function(/*String*/				type,
 
 	// summary: creates a tree of widgets from the data structure produced by the first-pass parser (frag)
 	
+	// test for accessibility mode 
+	dojo.a11y.setAccessibleMode();
 	//dojo.profile.start("buildWidgetFromParseTree");
 	// FIXME: for codepath from createComponentFromScript, we are now splitting a path 
 	// that we already split and then joined
