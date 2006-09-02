@@ -8,9 +8,10 @@
       isDebug: true
    };
 </script>
-   <script type="text/javascript" src="../../dojo.js"></script>
-   <script type="text/javascript" src="../../src/gfx/vml.js"></script>
-   <script type="text/javascript">
+<script type="text/javascript" src="../../dojo.js"></script>
+<!--<script type="text/javascript" src="../../src/gfx/vml.js"></script>-->
+<!--<script type="text/javascript" src="../../src/gfx/svg.js"></script>-->
+<script type="text/javascript">
 
 dojo.require("dojo.gfx.*");
 dojo.require("dojo.event.*");
@@ -90,11 +91,10 @@ function getTestSurface(testName, testDescription, width, height)
    gTestContainer.appendChild(descRow);
 
    // see if there's a reference image available
-   var g = dojo.gfx.defaultRenderer;	// should select SVG/VML automatically
    // our surface is created from scratch
    //testSurfaceHolder.width = width + "px";
    //testSurfaceHolder.height = height + "px";
-   var surface = g.createSurface(testHolder, width, height);
+   var surface = dojo.gfx.createSurface(testHolder, width, height);
    return surface;
 }
 
@@ -131,386 +131,358 @@ var runTest = djConfig.isDebug ? runTest_debug : runTest_nodebug;
 
 dojo.addOnLoad(function() 
 {
-   gTestContainer = dojo.byId('testcontainer');
-   var rect = { x: 0, y: 0, width: 100, height: 100 };
+	gTestContainer = dojo.byId('testcontainer');
+	var rect = { x: 0, y: 0, width: 100, height: 100 };
 
-   addTest('rect', function(testName){
-              var surface = getTestSurface(testName, 'translucent rect with rounded stroke');
-              // our surface is created from scratch
-              // our template rectangle
-              // red rectangle with the event handler and blue rounded thick border
-              var red_rect = surface.createRect().setRect(rect).setFill( new dojo.gfx.color.Color([255, 0, 0, 0.5])).
-              setStroke({color: new dojo.gfx.color.Color("blue"), width: 10, join: "round" }).
-              // move
-              setTransform({ dx: 100, dy: 100 });
-              dojo.event.connect(red_rect.getNode(), "onclick", function(){ alert("red"); });
-           });
+	addTest('rect', function(testName){
+		var surface = getTestSurface(testName, 'translucent rect with rounded stroke');
+		var red_rect = surface.createRect(rect);
+			red_rect.setFill([255, 0, 0, 0.5]);
+			red_rect.setStroke({color: "blue", width: 10, join: "round" });
+			red_rect.setTransform({ dx: 100, dy: 100 })
+			;
+		dojo.event.connect(red_rect.getNode(), "onclick", function(){ alert("red"); });
+	});
 
-   addTest('straight_rect', function(testName){
-              surface = getTestSurface(testName, 'translucent rect with straight stroke');
-              // blue rectangle
-              var blue_rect = surface.createRect(rect).setFill(new dojo.gfx.color.Color([0, 255, 0, 0.5])).
-              // move
-              setTransform({ dx: 100, dy: 100 });
-              var width = rect.width;
-              dojo.event.connect( blue_rect.getNode(), "onclick", function(){
-                                     width += 20;
-                                     blue_rect.setRect({ width: width });
-                                  });
-           });
+	addTest('straight_rect', function(testName){
+		var surface = getTestSurface(testName, 'translucent rect with no stroke');
+		var blue_rect = surface.createRect(rect).setFill([0, 255, 0, 0.5]).setTransform({ dx: 100, dy: 100 });
+		dojo.event.connect( blue_rect.getNode(), "onclick", function(){ blue_rect.setShape({width: blue_rect.getShape().width + 20}); });
+	});
 
-   addTest('matrix_rect', function(testName){
-              surface = getTestSurface(testName, 'all matrix operations, check debug output for more details');
-              // anonymous blue rectangle
-              group = surface.createGroup();
-              var blue_rect = group.createRect(rect).setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
-              applyTransform( dojo.gfx.identity );
-              dojo.debug( "blue_rect: rect with identity" );
+	addTest('rotated_rect', function(testName){
+		var surface = getTestSurface(testName, '30 degree CCW rotated blue translucent rectangle');
+		dojo.debug('rotated_rect');
+		// anonymous 30 degree CCW rotated green rectangle
+		surface.createRect(rect)
+			.setFill([0, 0, 255, 0.5])
+			// rotate it around its center and move to (100, 100)
+			.setTransform(dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.rotategAt(30, 0, 0)))
+			;
+	});
 
-              group.createRect(rect).
-              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.gfx.color.Color([0, 255, 0, 0.5])).
-              applyTransform( dojo.gfx.translate({x:30, y:40}) );
-              dojo.debug( "lime_rect: translate(30,40) " );
+	addTest('skew_rect', function(testName){
+		var surface = getTestSurface(testName, 'skewed rects' );
+		// anonymous red rectangle
+		surface.createRect(rect).setFill(new dojo.gfx.color.Color([255, 0, 0, 0.5]))
+			// skew it around LB point -30d, rotate it around LB point 30d, and move it to (100, 100)
+			.setTransform(dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.rotategAt(30, 0, 100), dojo.gfx.skewXgAt(-30, 0, 100)));
+		// anonymous blue rectangle
+		surface.createRect(rect).setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5]))
+			// skew it around LB point -30d, and move it to (100, 100)
+			.setTransform(dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.skewXgAt(-30, 0, 100)));
+		// anonymous yellow rectangle
+		surface.createRect(rect).setFill(new dojo.gfx.color.Color([255, 255, 0, 0.25]))
+			// move it to (100, 100)
+			.setTransform(dojo.gfx.translate(100, 100));
+	});
 
-              group.createRect(rect).
-              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.gfx.color.Color([255, 0, 0, 0.5])).
-              applyTransform( dojo.gfx.rotateg(30) );
-              dojo.debug( "red_rect: rotate 30 degree counterclockwise " );
+	addTest('matrix_rect', function(testName){
+		var surface = getTestSurface(testName, 'all matrix operations, check debug output for more details');
 
-              group.createRect(rect).
-              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.gfx.color.Color([0, 255, 255, 0.5])).
-              applyTransform( dojo.gfx.scale({x:1.5, y:0.5}) ).
-              applyTransform( dojo.gfx.translate({x:-40, y:220}) );
-              dojo.debug( "lightblue_rect: scale(1.5, 0.5)" );
+		var group = surface.createGroup();
+		
+		var blue_rect = group.createRect(rect).setFill([0, 0, 255, 0.5]).applyTransform(dojo.gfx.identity);
+		dojo.debug( "blue_rect: rect with identity" );
 
-              group.createRect(rect).
-              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.gfx.color.Color([255, 0, 255, 0.5])).
-              applyTransform( dojo.gfx.flipX );
-              dojo.debug( "pink_rect: flipX" );
+		group.createRect(rect).setFill([0, 255, 0, 0.5]).applyTransform(dojo.gfx.translate(30, 40));
+		dojo.debug( "lime_rect: translate(30,40) " );
+		
+		group.createRect(rect).setFill([255, 0, 0, 0.5]).applyTransform(dojo.gfx.rotateg(30));
+		dojo.debug( "red_rect: rotate 30 degree counterclockwise " );
 
-              group.createRect(rect).
-              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.gfx.color.Color([255, 255, 0, 0.5])).
-              applyTransform( dojo.gfx.flipY );
-              dojo.debug( "yellow_rect: flipY" );
+		group.createRect(rect).setFill([0, 255, 255, 0.5])
+			.applyTransform(dojo.gfx.scale({x:1.5, y:0.5}))
+			.applyTransform(dojo.gfx.translate(-40, 220))
+			;
+		dojo.debug( "lightblue_rect: scale(1.5, 0.5)" );
 
-              group.createRect(rect).
-              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.gfx.color.Color([128, 0, 128, 0.5])).
-              applyTransform( dojo.gfx.flipXY );
-              dojo.debug( "purple_rect: flipXY" );
+		group.createRect(rect).setFill([0, 0, 255, 0.5]).setFill([255, 0, 255, 0.5]).applyTransform(dojo.gfx.flipX);
+		dojo.debug( "pink_rect: flipX" );
 
-              group.createRect(rect).
-              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.gfx.color.Color([255, 128, 0, 0.5])).
-              applyTransform( dojo.gfx.skewXg(15) );
-              dojo.debug( "purple_rect: skewXg 15 degree" );
+		group.createRect(rect).setFill([0, 0, 255, 0.5]).setFill([255, 255, 0, 0.5]).applyTransform(dojo.gfx.flipY);
+		dojo.debug( "yellow_rect: flipY" );
 
-              group.createRect(rect).
-              setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
-              setFill(new dojo.gfx.color.Color([0, 0, 0, 0.5])).
-              applyTransform( dojo.gfx.skewYg(50) );
-              dojo.debug( "black_rect: skewXg 50 degree" );
+		group.createRect(rect).setFill([0, 0, 255, 0.5]).setFill([128, 0, 128, 0.5]).applyTransform(dojo.gfx.flipXY);
+		dojo.debug( "purple_rect: flipXY" );
 
-              // move
-              group.setTransform({ dx: 100, dy: 100 }).
-              applyTransform( dojo.gfx.rotateg(30) );
+		group.createRect(rect).setFill([0, 0, 255, 0.5]).setFill([255, 128, 0, 0.5]).applyTransform(dojo.gfx.skewXg(15));
+		dojo.debug( "purple_rect: skewXg 15 degree" );
 
-              var width = rect.width;
-              dojo.event.connect( blue_rect.getNode(), "onclick", function(){
-                                     width += 20;
-                                     blue_rect.setRect({ width: width });
-                                  });
-           });
+		group.createRect(rect).setFill([0, 0, 255, 0.5]).setFill([0, 0, 0, 0.5]).applyTransform(dojo.gfx.skewYg(50));
+		dojo.debug( "black_rect: skewXg 50 degree" );
+
+		// move
+		group
+			.setTransform({ xx: 1.5, yy: 0.5, dx: 100, dy: 100 })
+			.applyTransform( dojo.gfx.rotateg(30) )
+			;
+	});
 
    
-   addTest('attach', function(testName){
-              var surface = getTestSurface(testName, 'Attach to existed shape');
-              var red_rect = surface.createRect().setRect(rect).
-                setRect({ width:75 }).
-                setTransform({ dx:  50, dy:  50, xx:1, xy:0.5, yx:0.7, yy:1.1 }).
-                setFill(new dojo.gfx.color.Color([255, 0, 0, 0.5])).
-                setStroke({ color: new dojo.gfx.color.Color("blue"), width: 1 });
+	addTest('attach', function(testName){
+		var surface = getTestSurface(testName, 'Attach to existed shape');
+		var red_rect = surface.createRect(rect)
+			.setShape({ width: 75 })
+			.setFill([255, 0, 0, 0.5])
+			.setStroke({ color: "blue", width: 1 })
+			.setTransform({ dx: 50, dy: 50, xx: 1, xy: 0.5, yx: 0.7, yy: 1.1 })
+			;
 
-              dojo.debug("attaching !");
-              // now attach it!
-              var ar = dojo.gfx.attachNode(red_rect.rawNode);
-              dojo.lang.assert( ar.rawNode == red_rect.rawNode );
+		dojo.debug("attaching !");
+		// now attach it!
+		var ar = dojo.gfx.attachNode(red_rect.rawNode);
+		dojo.lang.assert( ar.rawNode == red_rect.rawNode );
 
-              // FIXME: more generic method to compare two dictionary?
-              dojo.debug("attach shape: ");
-              isEqual(ar.shape, red_rect.shape, "rect.shape");
-              dojo.debug("attach matrix: ");
-              isEqual(ar.matrix, red_rect.matrix, "rect.matrix");
-              dojo.debug("attach strokeStyle: ");
-              isEqual(ar.strokeStyle, red_rect.strokeStyle, "rect.strokeStyle");
-              dojo.debug("attach fillStyle: ");
-              isEqual(ar.fillStyle, red_rect.fillStyle, "rect.fillStyle");
-           });
-   
-   addTest('rotated_rect', function(testName){
-              surface = getTestSurface(testName, '30 degree CCW rotated blue translucent rectangle');
-              dojo.debug( 'rotated_rect' );
-              // anonymous 30 degree CCW rotated green rectangle
-              surface.createRect().setRect(rect).setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
-              // rotate it around its center and move to (100, 100)
-              setTransform(dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.rotategAt(45, 0, 0)));
-           });
+		// FIXME: more generic method to compare two dictionary?
+		dojo.debug("attach shape: ");
+		isEqual(ar.shape, red_rect.shape, "rect.shape");
+		dojo.debug("attach matrix: ");
+		isEqual(ar.matrix, red_rect.matrix, "rect.matrix");
+		dojo.debug("attach strokeStyle: ");
+		isEqual(ar.strokeStyle, red_rect.strokeStyle, "rect.strokeStyle");
+		dojo.debug("attach fillStyle: ");
+		isEqual(ar.fillStyle, red_rect.fillStyle, "rect.fillStyle");
+	});
 
-   addTest('skew_rect', function(testName){
-              surface = getTestSurface(testName, 'skewed rects' );
-              // anonymous red rectangle
-              surface.createRect().setRect(rect).setFill(new dojo.gfx.color.Color([255, 0, 0, 0.5])).
-              // skew it around LB point -30d, rotate it around LB point 30d, and move it to (100, 100)
-              setTransform(dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.rotategAt(30, 0, 100), dojo.gfx.skewXgAt(-30, 0, 100)));
-              // anonymous blue rectangle
-              surface.createRect().setRect(rect).setFill(new dojo.gfx.color.Color([0, 0, 255, 0.5])).
-              // skew it around LB point -30d, and move it to (100, 100)
-              setTransform(dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.skewXgAt(-30, 0, 100)));
-              // anonymous yellow rectangle
-              surface.createRect().setRect(rect).setFill(new dojo.gfx.color.Color([255, 255, 0, 0.25])).
-              // move it to (100, 100)
-              setTransform(dojo.gfx.translate(100, 100));
-           });
+	// test circle
+	addTest('circle', function(testName){
+		surface = getTestSurface(testName, 'translucent green circle');
+		var circle = { cx: 130, cy: 130, r: 50 };
+		surface.createCircle(circle).setFill([0, 255, 0, 0.5]).setTransform({ dx: 20, dy: 20 });
+	});
 
-   // test circle
-   addTest('circle', function(testName){
-              surface = getTestSurface(testName, 'translucent green circle');
-              var circle = { cx: 130, cy: 130, r: 50};
-              surface.createCircle(circle).setFill(new dojo.gfx.color.Color([0, 255, 0, 0.5])).
-              setTransform({ dx:20, dy: 20 });
-           });
+	// test line
+	addTest('line', function(testName){
+		surface = getTestSurface(testName, 'straight red line');
+		var line = { x1: 20, y1: 20, x2: 100, y2: 120 };
+		surface.createLine(line).setFill([255, 0, 0, 0.5]).setStroke({color: "red", width: 1}).setTransform({ dx:70, dy: 100 });
+	});
 
-   // test line
-   addTest('line', function(testName){
-              surface = getTestSurface(testName, 'straight red line');
-              var line = { x1: 20, y1: 20, x2: 100, y2: 120 };
-              surface.createLine(line).
-                setFill(new dojo.gfx.color.Color([255, 0, 0, 0.5])).
-              setStroke({ color: new dojo.gfx.color.Color("red"), width: 1 }).
-              setTransform({ dx:70, dy: 100 });
-           });
+	// test ellipse 
+	addTest('ellipse', function(testName){
+		surface = getTestSurface(testName, 'translucent cyan ellipse');
+		var ellipse = { cx: 50, cy: 80, rx: 50, ry: 80 };
+		surface.createEllipse(ellipse).setFill([0, 255, 255, 0.5]).setTransform({ dx: 30, dy: 70 });
+	});
 
-   // test ellipse 
-   addTest('ellipse', function(testName){
-              surface = getTestSurface(testName, 'translucent cyan ellipse');
-              var ellipse = { cx: 50, cy: 80, rx: 50, ry: 80 };
-              surface.createEllipse(ellipse).setFill(new dojo.gfx.color.Color([0, 255, 255, 0.5])).
-              setTransform({ dx:30, dy: 70 });
-           });
+	// test polyline
+	addTest('polyline', function(testName){
+		surface = getTestSurface(testName, 'unfilled open polyline');
+		var points = [ {x: 10, y: 20}, {x: 40, y: 70}, {x: 120, y: 50}, {x: 90, y: 90} ];
+		surface.createPolyline(points).setFill(null).setStroke({ color: "blue", width: 1 }).setTransform({ dx: 15, dy: 0 });
+	});
 
-   // test polyline
-   addTest('polyline', function(testName){
-              surface = getTestSurface(testName, 'unfilled open polyline');
-              var points = { points: [ {x: 10, y: 20}, {x: 40, y: 70}, {x: 120, y: 50}, {x: 90, y: 90} ] };
-              surface.createPolyline().setPolyline(points).
-              setFill(new dojo.gfx.color.Color('none')).
-              setStroke({ color: new dojo.gfx.color.Color("blue"), width: 1 }).
-              setTransform({ dx: 15, dy: 0 });
-           });
+	// test polygon
+	addTest('polygon', function(testName){
+		surface = getTestSurface(testName, 'filled polygon');
+		var points2 = [{x: 100, y: 0}, {x: 200, y: 40}, {x: 180, y: 150}, {x: 60, y: 170}, {x: 20, y: 100}];
+		surface.createPolyline(points2).setFill([0, 128, 255, 0.6]).setTransform({dx:30, dy: 20});
+	});
 
-   // test polygon
-   addTest('polygon', function(testName){
-              surface = getTestSurface(testName, 'filled polygon');
-              var points2 = { points: [ {x: 100, y: 0}, {x: 200, y: 40}, {x: 180, y: 150}, {x: 60, y: 170}, {x: 20, y: 100} ] };
-              surface.createPolygon().setPolygon(points2).
-              setFill(new dojo.gfx.color.Color([0, 128, 255, 0.6])).
-              setTransform({ dx:30, dy: 20 });
-           });
+	// test path: lineTo, moveTo, closePath
+	addTest('lineTo', function(testName){
+		surface = getTestSurface(testName, 'lineTo, moveTo, closePath');
+		surface.createPath()
+			.moveTo(10, 20).lineTo(80, 150)
+			.setAbsoluteMode(false).hLineTo(40)
+			.setAbsoluteMode(true).lineTo(180, 100)
+			.setAbsoluteMode(false).vLineTo(-30).lineTo(-30, -50)
+			.closePath()
+			.setStroke({ color: "red", width: 1 })
+			.setFill(null)
+			.setTransform({ dx: 10, dy: 18 })
+			;
+	});
 
-   // test path: lineTo, moveTo, closePath
-   addTest('lineTo', function(testName){
-              surface = getTestSurface(testName, 'lineTo, moveTo, closePath');
-              surface.createPath().moveTo(10, 20).lineTo(80, 150).
-              setCoordination("relative").hLineTo(40).
-              setCoordination("absolute").lineTo(180, 100).
-              setCoordination("relative").vLineTo(-30).lineTo(-30, -50).
-              closePath().
-              setStroke({ color: new dojo.gfx.color.Color("red"), width: 1 }).
-              setFill(new dojo.gfx.color.Color("none")).
-              setTransform({ dx: 10, dy: 18 });
-              
-              //surface.createPath().setPath( {path:"M10,20 L80,150 h40 L180,100 v-30 l-30,-50 z"} ).
-              //setFill("none").
-              //setStroke({ color: new dojo.gfx.color.Color("blue"), width: 1 }).
-              //setTransform({ dx: 50, dy: 78 });
+	addTest('setPath', function(testName){
+		surface = getTestSurface(testName, 'setPath example with lineTo moveTo');
+		surface.createPath()
+			.moveTo(10, 20).lineTo(80, 150)
+			.setAbsoluteMode(false).lineTo(40,0)
+			.setAbsoluteMode(true).lineTo(180, 100)
+			.setAbsoluteMode(false).lineTo(0, -30).lineTo(-30, -50)
+			.curveTo(10, -80, -150, -10, -90, -10)
+			.closePath()
+			.setStroke({ color: "red", width: 1 })
+			.setFill(null)
+			.setTransform({ dx: 10, dy: 58 })
+			;
 
-           });
+		surface.createPath({ path: "M10,20 L80,150 l40,0 L180,100 l0,-30 l-30,-50 c10,-80 -150,-10 -90,-10 z" })
+			.setFill(null)
+			.setStroke({ color: "blue", width: 1 })
+			.setTransform({ dx: 50, dy: 78 })
+			;
+	});
 
-   addTest('setPath', function(testName){
-              surface = getTestSurface(testName, 'setPath example with lineTo moveTo');
-              surface.createPath().moveTo(10, 20).lineTo(80, 150).
-              setCoordination("relative").lineTo(40,0).
-              setCoordination("absolute").lineTo(180, 100).
-              setCoordination("relative").lineTo(0, -30).lineTo(-30, -50).
-              curveTo(10, -80, -150, -10, -90, -10).
-              closePath().
-              setStroke({ color: new dojo.gfx.color.Color("red"), width: 1 }).
-              setFill(new dojo.gfx.color.Color("none")).
-              setTransform({ dx: 10, dy: 58 });
-              
-              surface.createPath().setPath( {path:"M10,20 L80,150 l40,0 L180,100 l0,-30 l-30,-50 c10,-80 -150,-10 -90,-10 z"}).
-              setFill(new dojo.gfx.color.Color("none")).
-              setStroke({ color: new dojo.gfx.color.Color("blue"), width: 1 }).
-              setTransform({ dx: 50, dy: 78 });
-           });
+	// test arcTo 
+	addTest('arcTo', function(testName){
+		surface = getTestSurface(testName, 'arcTo test');
+		surface.createPath()
+			.moveTo(10, 10).lineTo(50,50)
+			.arcTo(0, 150, 100, 50, 1, 150, 50)
+			.setAbsoluteMode(false).arcTo(-50, 0, 50, -100, 1, -50, -50)
+			.setFill(null)
+			.setStroke({ color: "red", width: 1 })
+			.setTransform({ dx: 70, dy: 100 })
+			;
+	});
 
-   // test arcTo 
-   addTest('arcTo', function(testName){
-              surface = getTestSurface(testName, 'arcTo test');
-              surface.createPath().moveTo(10, 10).lineTo(50,50).
-              arcTo(0, 150, 100, 50, 1, 150, 50).
-              setCoordination("relative").
-              arcTo(-50, 0, 50, -100, 1, -50, -50).
-                setFill(new dojo.gfx.color.Color("none")).
-              setStroke({ color: new dojo.gfx.color.Color("red"), width: 1 }).
-              setTransform({ dx:70, dy: 100 });
-           });
+	// test path: curveTo, smoothCurveTo
+	addTest('curveTo', function(testName) {
+		surface = getTestSurface(testName, 'curveTo, smoothCurveTo');
+		surface.createPath()
+			.moveTo(10, 20).curveTo(50, 50, 50, 100, 150, 100).smoothCurveTo(300, 300, 200, 200)
+			.setStroke({ color: "green", width: 1 }).setFill(null).setTransform({ dx: 10, dy: 30 })
+			;
+	});
 
-   // test path: curveTo, smoothCurveTo
-   addTest('curveTo', function(testName) {
-              surface = getTestSurface(testName, 'curveTo, smoothCurveTo');
-              surface.createPath().moveTo(10, 20).curveTo(50, 50, 50, 100, 150, 100).smoothCurveTo(300, 300, 200, 200).
-              setStroke({ color: new dojo.gfx.color.Color("green"), width: 1 }).
-              setFill(new dojo.gfx.color.Color("none")).
-              setTransform({ dx: 10, dy: 30 });
-           });
- 
-   // test path: curveTo, smoothCurveTo with relative.
-   addTest('curveTo2', function(testName) {
-              surface = getTestSurface(testName, 'curveTo, smoothCurveTo with relative coordination');
-              surface.createPath().moveTo(10, 20).curveTo(50, 50, 50, 100, 150, 100).
-              setCoordination("relative").
-              smoothCurveTo(150, 200, 50, 100).
-              setCoordination("absolute").
-              smoothCurveTo(50, 100, 10, 230).
-              setStroke({ color: new dojo.gfx.color.Color("green"), width: 1 }).
-              setFill(new dojo.gfx.color.Color("none")).
-              setTransform({ dx: 10, dy: 30 });
-           });
+	// test path: curveTo, smoothCurveTo with relative.
+	addTest('curveTo2', function(testName) {
+		surface = getTestSurface(testName, 'curveTo, smoothCurveTo with relative coordination');
+		surface.createPath()
+			.moveTo(10, 20).curveTo(50, 50, 50, 100, 150, 100)
+			.setAbsoluteMode(false).smoothCurveTo(150, 200, 50, 100)
+			.setAbsoluteMode(true).smoothCurveTo(50, 100, 10, 230)
+			.setStroke({ color: "green", width: 1 }).setFill(null).setTransform({ dx: 10, dy: 30 })
+			;
+	});
 
-   // test path: curveTo, smoothCurveTo with relative.
-   addTest('qbCurveTo', function(testName) {
-              surface = getTestSurface(testName, 'qbcurveTo, smoothQBCurveTo' );
-              surface.createPath().moveTo(10, 15).qbCurveTo(50, 50, 100, 100).
-              smoothQBCurveTo(150, 20).
-              setStroke({ color: new dojo.gfx.color.Color("green"), width: 1 }).
-              setFill(new dojo.gfx.color.Color("none")).
-              setTransform({ dx: 10, dy: 30 });
-           });
+	// test path: curveTo, smoothCurveTo with relative.
+	addTest('qbCurveTo', function(testName) {
+		surface = getTestSurface(testName, 'qbcurveTo, smoothQBCurveTo' );
+		surface.createPath()
+			.moveTo(10, 15).qbCurveTo(50, 50, 100, 100).smoothQBCurveTo(150, 20)
+			.setStroke({ color: "green", width: 1 }).setFill(null).setTransform({ dx: 10, dy: 30 })
+			;
+	});
 
-   addTest('qbCurveTo2', function(testName) {
-              surface = getTestSurface(testName, 'qbcurveTo, smoothQBCurveTo with relative' );
-              surface.createPath().moveTo(10, 20).qbCurveTo(50, 50, 100, 100).
-              setCoordination("relative").
-              smoothQBCurveTo(50, -80).
-              setCoordination("absolute").
-              smoothQBCurveTo(200, 80).
-              setStroke({ color: new dojo.gfx.color.Color("green"), width: 1 }).
-              setFill(new dojo.gfx.color.Color("none")).
-              setTransform({ dx: 10, dy: 30 });
-           });
+	addTest('qbCurveTo2', function(testName) {
+		surface = getTestSurface(testName, 'qbcurveTo, smoothQBCurveTo with relative' );
+		surface.createPath()
+			.moveTo(10, 20).qbCurveTo(50, 50, 100, 100)
+			.setAbsoluteMode(false).smoothQBCurveTo(50, -80)
+			.setAbsoluteMode(true).smoothQBCurveTo(200, 80)
+			.setStroke({ color: "green", width: 1 }).setFill(null).setTransform({ dx: 10, dy: 30 })
+			;
+	});
 
-   // test defines, linearGradient
-   addTest('linearGradient', function(testName) {
-              surface = getTestSurface(testName, 'linear gradient fill');
-              // this is an example to split the linearGradient from setFill:
-              var lg = new dojo.gfx.LinearGradient({x1:0, y1:0, x2:75, y2:50} ).
-                addStop({ offset:"5%", color:new dojo.gfx.color.Color("#F60") }).
-                addStop({ offset:"95%", color:new dojo.gfx.color.Color("#FF6") });
+	// test defines, linearGradient
+	addTest('linearGradient', function(testName) {
+		surface = getTestSurface(testName, 'linear gradient fill');
+		// this is an example to split the linearGradient from setFill:
+		var lg = {
+			type: "linear",
+			x1: 0, y1: 0, x2: 75, y2: 50,
+			colors: [
+				{ offset: 0, color: "#F60" },
+				{ offset: 1, color: "#FF6" }
+			]
+		};
+		surface.createRect(rect).setFill(lg).setTransform({ dx: 40, dy: 100 });
+	});
 
-              surface.createRect(rect).setFill(lg).
-                setTransform({dx: 40, dy: 100});
-           });
+	// TODO: test radialGradient
+	addTest('radialGradient', function(testName) {
+		var surface = getTestSurface(testName, 'radial gradient fill');
+		// this is a total inline implementation compared with previous one.
+		var rg = {
+			type: "radial",
+			cx: 100, cy: 100, r: 100,
+			colors: [
+				{ offset:   0, color: "red" },
+				{ offset: 0.5, color: "green" },
+				{ offset:   1, color: "blue" }
+			]
+		};
+		
+		surface.createCircle({cx: 100, cy: 100, r: 100})
+			.setStroke({})
+			.setFill(rg)
+			.setTransform({dx: 40, dy: 30})
+			;
+//		surface.createRect(rect)
+//			.setShape({width: 200})
+//			.setStroke({})
+//			.setFill(rg)
+//			.setTransform({dx: 40, dy: 30})
+//			;
+	});
 
-   // test radialGradient
-   addTest('radialGradient', function(testName) {
-              surface = getTestSurface(testName, 'radial gradient fill');
-              // this is a total inline implementation compared with previous one.
-              surface.createRect(rect).setFill(
-                new dojo.gfx.RadialGradient( {cx:150, cy:100, r:100, fx:200, fy:100, gradientUnits:"userSpaceOnUse" }).
-                addStop({ offset:"0%", color:new dojo.gfx.color.Color("red") }).
-                addStop({ offset:"50%", color:new dojo.gfx.color.Color("blue") }).
-                addStop({ offset:"100%", color:new dojo.gfx.color.Color("red") })
-              ).
-              setRect( {width:200, height:100}).
-              setTransform({dx: 40, dy: 30});
-           });
+	// TODO: test defines,pattern, path
+	addTest('pattern', function(testName) {
+		var surface = getTestSurface(testName, 'pattern fill');
+		var pat = new dojo.gfx.Pattern( {x:0, y:0, width:40, height:40, patternUnits:"userSpaceOnUse", viewBox:[0, 0, 10, 10] });
+		pat.createRect().setRect({width:25, height:20}).
+		setFill(new dojo.gfx.color.Color("red"));
+		surface.createRect(rect).setFill(pat).
+		setStroke({ color: new dojo.gfx.color.Color("blue"), width: 2}).
+		setTransform({dx: 40, dy: 30});
+	});
 
-   // test defines,pattern, path
-   addTest('pattern', function(testName) {
-              surface = getTestSurface(testName, 'pattern fill');
-              pat = new dojo.gfx.Pattern( {x:0, y:0, width:40, height:40, patternUnits:"userSpaceOnUse", viewBox:[0, 0, 10, 10] });
-              pat.createRect().setRect({width:25, height:20}).
-                setFill(new dojo.gfx.color.Color("red"));
+	addTest('attach_gradient', function(testName) {
+		var surface = getTestSurface(testName, 'attach gradient fill');
+		// this is an example to split the linearGradient from setFill:
+		var lg = {
+			type: "linear",
+			x1: 0, y1: 0, x2: 75, y2: 50,
+			colors: [
+				{ offset:   0, color: "#F60" },
+				{ offset: 0.5, color: "#FAF" },
+				{ offset:   1, color: "#FF6" }
+			]
+		};
 
-              surface.createRect(rect).setFill(pat).
-              setStroke({ color: new dojo.gfx.color.Color("blue"), width: 2}).
-              setTransform({dx: 40, dy: 30});
-           });
-   
-   addTest('attach_gradient', function(testName) {
-              surface = getTestSurface(testName, 'attach gradient fill');
-              // this is an example to split the linearGradient from setFill:
-              var lg = new dojo.gfx.LinearGradient({x1:0, y1:0, x2:75, y2:50} ).
-                addStop({ offset:"5%", color:new dojo.gfx.color.Color("#F60") }).
-                addStop({ offset:"55%", color:new dojo.gfx.color.Color("#FAF") }).
-                addStop({ offset:"95%", color:new dojo.gfx.color.Color("#FF6") });
+		var lgr = surface.createRect(rect).setFill(lg).setTransform({ dx: 40, dy: 100 });
 
-              lgr = surface.createRect(rect).setFill(lg).
-                setTransform({dx: 40, dy: 100});
+		var ar = dojo.gfx.attachNode(lgr.rawNode);
+		// FIXME: more generic method to compare two dictionary?
+		dojo.debug("attach_gradient!");
 
-              var ar = dojo.gfx.attachNode(lgr.rawNode);
-              // FIXME: more generic method to compare two dictionary?
-              dojo.debug("attach_gradient!");
-              
-              dojo.debug("attach shape: ");
-              isEqual(lgr.shape, ar.shape, "rect.shape");
-              dojo.debug("attach matrix: ");
-              isEqual(lgr.matrix, ar.matrix, "rect.matrix");
-              dojo.debug("attach strokeStyle: ");
-              isEqual(lgr.strokeStyle, ar.strokeStyle, "rect.strokeStyle");
-              dojo.debug("attach fillStyle: ");
-              isEqual(lgr.fillStyle.gradient, ar.fillStyle.gradient, "rect.fillStyle.gradient");
-              isEqual(lgr.fillStyle.id, ar.fillStyle.id, "rect.fillStyle.id");
-           });
-   
-var gTestsToRun = [
-   'rect',
-   'straight_rect',
-   'rotated_rect',
-   'skew_rect',
-   'matrix_rect', 
-   'attach',
-   'attach_gradient',
-   'circle',
-   'arcTo',
-   'line',
-   'ellipse',
-   'polyline',
-   'polygon',
-   'lineTo',
-   'setPath',
-   'curveTo',
-   'curveTo2',
-   'qbCurveTo',
-   'qbCurveTo2',
-   'linearGradient',
-   'radialGradient'
-   //'pattern'
-];
+		dojo.debug("attach shape: ");
+		isEqual(lgr.shape, ar.shape, "rect.shape");
+		dojo.debug("attach matrix: ");
+		isEqual(lgr.matrix, ar.matrix, "rect.matrix");
+		dojo.debug("attach strokeStyle: ");
+		isEqual(lgr.strokeStyle, ar.strokeStyle, "rect.strokeStyle");
+		dojo.debug("attach fillStyle: ");
+		isEqual(lgr.fillStyle.gradient, ar.fillStyle.gradient, "rect.fillStyle.gradient");
+		//isEqual(lgr.fillStyle.id, ar.fillStyle.id, "rect.fillStyle.id");
+	});
 
-   for (var i = 0; i < gTestsToRun.length; ++i) {
-      var testName = gTestsToRun[i];
-      var err = runTest(testName);
-      if (err) {
-         getTestSurface(testName, testName + ' FAILED (' + err + ')');
-      }
-   }
+	var gTestsToRun = [
+		'rect',
+		'straight_rect',
+		'rotated_rect',
+		'skew_rect',
+		'matrix_rect', 
+		'attach',
+		'attach_gradient',
+		'circle',
+		'arcTo',
+		'line',
+		'ellipse',
+		'polyline',
+		'polygon',
+		'lineTo',
+		'setPath',
+		'curveTo',
+		'curveTo2',
+		//'qbCurveTo',
+		//'qbCurveTo2',
+		'linearGradient',
+		'radialGradient'
+		//'pattern'
+	];
+
+	for (var i = 0; i < gTestsToRun.length; ++i) {
+		var testName = gTestsToRun[i];
+		var err = runTest(testName);
+		if (err) {
+			getTestSurface(testName, testName + ' FAILED (' + err + ')');
+		}
+	}
 
 }); // end onload
 </script>
