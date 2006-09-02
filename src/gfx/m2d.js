@@ -1,6 +1,7 @@
-﻿dojo.require("dojo.lang.common");
+﻿dojo.provide("dojo.gfx.m2d");
+
+dojo.require("dojo.lang.common");
 dojo.require("dojo.math.*");
-dojo.provide("dojo.gfx.m2d");
 
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.gfx.m2d");
@@ -42,6 +43,13 @@ dojo.mixin(dojo.gfx, {
 		return (matrix instanceof dojo.gfx.Matrix2D) ? matrix : new dojo.gfx.Matrix2D(matrix);
 	},
 	// common operations
+	cloneMatrix: function(matrix){
+		var obj = new dojo.gfx.Matrix2D();
+		for(var i in matrix){
+			if(typeof(matrix[i]) == "number" && typeof(obj[i]) == "number" && obj[i] != matrix[i]) obj[i] = matrix[i];
+		}
+		return obj;
+	},
 	invert: function(matrix){
 		var m = this.normalizeMatrix(matrix);
 		var D = m.xx * m.yy - m.xy * m.yx;
@@ -56,7 +64,7 @@ dojo.mixin(dojo.gfx, {
 		if(typeof a == "number" && typeof b == "number") return this._multiplyPoint(m, a, b);
 		return this._multiplyPoint(m, a.x, a.y);
 	},
-	multiply: function(matrix, a, b){
+	multiply: function(matrix){
 		var m = this.normalizeMatrix(matrix);
 		// combine matrices
 		for(var i = 1; i < arguments.length; ++i){
@@ -73,9 +81,6 @@ dojo.mixin(dojo.gfx, {
 		return m;
 	},
 	// high level operations
-	_negatePoint: function(point){
-		return {x: -point.x, y: -point.y};
-	},
 	_sandwich: function(m, x, y){
 		return this.multiply(this.translate(x, y), m, this.translate(-x, -y));
 	},

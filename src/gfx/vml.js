@@ -1,91 +1,47 @@
 dojo.provide("dojo.gfx.vml");
 
-dojo.require('dojo.dom');
+dojo.require("dojo.dom");
+dojo.require("dojo.math");
 dojo.require("dojo.lang.declare");
+dojo.require("dojo.lang.extras");
+dojo.require("dojo.string.*");
+
 dojo.require("dojo.gfx.color");
-dojo.require('dojo.string.*');
+dojo.require("dojo.gfx.common");
 
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.gfx.vml");
 
 dojo.gfx.vml.xmlns = "urn:schemas-microsoft-com:vml";
 
-// generic environment setup function;
-// currently a stub
-dojo.gfx.vml.init = function() {
-};
-
-dojo.gfx.vml._capTranslation = { butt: 'flat' };
-dojo.gfx.vml._translateCap = function(capSpec) {
-   var spec = dojo.gfx.vml._capTranslation[capSpec];
-   return spec ? spec : capSpec;
-};
-
-dojo.gfx.vml._reverseCapTranslation = { flat: 'butt' };
-dojo.gfx.vml._reverseTranslateCap = function(capSpec) {
-   var spec = dojo.gfx.vml._reverseCapTranslation[capSpec];
-   return spec ? spec : capSpec;
-};
-
-dojo.gfx.vml.parseFloat = function(num) {
-    suffix = num.indexOf("f");
-    if(suffix == -1) {
-        return parseFloat(num);
-    } else {
-        return parseFloat(num.slice(0, suffix)) / 65536;
-    }
+dojo.gfx.vml._parseFloat = function(str) {
+	return str.match(/^\d+f$/i) ? parseInt(str) / 65536 : parseFloat(str);
 };
 
 dojo.gfx.vml.normalizedLength = function(len) {
-    // FIXME: why 1pt = 0.75px ?
-    suffix = len.indexOf("pt");
-    if(suffix != -1) {
-        return parseFloat(len.slice(0,suffix))/ 0.75;
-    } else {
-        return parseFloat(len);
-    }
-};
-        
-// this is a Shape object, which knows how to apply graphical attributes and a transformation
-dojo.gfx.vml.Shape = function(){
-	// NOTE: constructor --- used to initialiaze every instance
-
-	// underlying VML node
-	this.rawNode = null;
-	
-	// transformation matrix
-	this.matrix  = null;
-
-	// graphical attributes
-	this.fillStyle   = null;
-	this.strokeStyle = null;
+	// FIXME: why 1pt = 0.75px ?
+	return len.indexOf("pt") >= 0 ? parseFloat(len) / 0.75 : parseFloat(len);
 };
 
-
-dojo.lang.extend(
-   dojo.gfx.vml.Shape, 
-   {
-	  // NOTE: a list of shared methods and constants in the object notation
-	  nodeType: null,
-	  
-	// set a stroke style
+dojo.lang.extend(dojo.gfx.Shape, {
 	setStroke: function(stroke){
-		// normalized LineStroke object (will be in renderer-independent part of code)
 		if(!stroke){
+			// don't stroke
 			this.strokeStyle = null;
 			this.rawNode.stroked = false;
-			return;
+			return this;
 		}
-		this.strokeStyle = { color:null, width:1, cap:"butt", join:4 };
-		dojo.gfx.normalizeParameters(this.strokeStyle, stroke);
+		// normalize the stroke
+		this.strokeStyle = dojo.gfx.makeParameters(dojo.gfx.defaultStroke, stroke);
+		this.strokeStyle.color = dojo.gfx.normalizeColor(this.strokeStyle.color);
 		// generate attributes
 		var s = this.strokeStyle;
 		this.rawNode.stroked = true;
-		this.rawNode.strokecolor = "rgb("+s.color.r+","+s.color.g+","+s.color.b+")";
-		this.rawNode.strokeweight = s.width + "px";
-		if (this.rawNode.stroke) {
+		this.rawNode.strokecolor = s.color.toCss();
+		this.rawNode.strokeweight = s.width + "px";	// TODO: should we assume that the width is always in pixels?
+		if(this.rawNode.stroke) {
 			this.rawNode.stroke.opacity = s.color.a;
-			this.rawNode.stroke.endcap = dojo.gfx.vml._translateCap(s.cap);
+			this.rawNode.stroke.endcap = this._translate(this._capMap, s.cap);
 			if(typeof(s.join) == "number") {
 				this.rawNode.stroke.joinstyle = "miter";
 				this.rawNode.stroke.miterlimit = s.join;
@@ -93,83 +49,104 @@ dojo.lang.extend(
 				this.rawNode.stroke.joinstyle = s.join;
 				// this.rawNode.stroke.miterlimit = s.width;
 			}
-			// dojo.debug('miterlimit: ' + this.rawNode.stroke.miterlimit);
-			// dojo.debug('joinstyle: ' + this.rawNode.stroke.joinstyle);
 		}
-		// support for chaining
 		return this;
 	},
 	
-	// set a fill style
+	_capMap: { butt: 'flat' },
+	_capMapReversed: { flat: 'butt' },
+	
+	_translate: function(dict, value) {
+		return (value in dict) ? dict[value] : value;
+	},
+	
 	setFill: function(fill){
-		if( fill instanceof dojo.gfx.Gradient ) {
-			this.fillStyle = fill;
-			this.rawNode.appendChild( fill.getRawNode() );
-			return this;
-		} else if( fill instanceof dojo.gfx.color.Color) {
-			// color object
-			this.fillStyle = fill;
-			this.rawNode.filled = "true";
-			this.rawNode.fillcolor = fill.toHex();
-			this.rawNode.fill.opacity = fill.a;
-		} else {
+		if(!fill){
+			// don't fill
 			this.fillStyle = null;
 			this.rawNode.filled = false;
+			return this;
 		}
-	   // support for chaining
-	   return this;
+		if(typeof(fill) == "object" && "type" in fill){
+			// gradient
+			switch(fill.type){
+				case "linear":
+					// set a fill
+					var f = dojo.gfx.makeParameters(dojo.gfx.defaultLinearGradient, fill);
+					this.fillStyle = f;
+					var s = "";
+					for(var i = 0; i < f.colors.length; ++i){
+						f.colors[i].color = dojo.gfx.normalizeColor(f.colors[i].color);
+						s += f.colors[i].offset.toFixed(8) + " " + f.colors[i].color.toHex() + ";";
+					}
+					this.rawNode.fill.colors.value = s;
+					this.rawNode.fill.method = "sigma";
+					this.rawNode.fill.type = "gradient";
+					this.rawNode.fill.angle = (dojo.math.radToDeg(Math.atan2(f.x2 - f.x1, f.y2 - f.y1)) + 180) % 360;
+					this.rawNode.fill.on = true;
+					break;
+				case "radial":
+					// set a fill
+					var f = dojo.gfx.makeParameters(dojo.gfx.defaultRadialGradient, fill);
+					this.fillStyle = f;
+					var w = parseFloat(this.rawNode.style.width);
+					var h = parseFloat(this.rawNode.style.height);
+					var c = isNaN(w) ? 1 : 2 * f.r / w;
+					var i = f.colors.length - 1;
+					f.colors[i].color = dojo.gfx.normalizeColor(f.colors[i].color);
+					var s = "0 " + f.colors[i].color.toHex();
+					for(; i >= 0; --i){
+						f.colors[i].color = dojo.gfx.normalizeColor(f.colors[i].color);
+						s += (1 - c * f.colors[i].offset).toFixed(8) + " " + f.colors[i].color.toHex() + ";";
+					}
+					this.rawNode.fill.colors.value = s;
+					this.rawNode.fill.method = "sigma";
+					this.rawNode.fill.type = "gradientradial";
+					if(isNaN(w) || isNaN(h)){
+						this.rawNode.fill.focusposition = "0.5 0.5";
+					}else{
+						this.rawNode.fill.focusposition = (f.cx / w).toFixed(8) + " " + (f.cy / h).toFixed(8);
+					}
+					this.rawNode.fill.focussize = "0 0";
+					this.rawNode.fill.on = true;
+					break;
+			}
+			this.rawNode.fill.opacity = 1;
+			return this;
+		}
+		// color object
+		this.fillStyle = dojo.gfx.normalizeColor(fill);
+		this.rawNode.fillcolor = this.fillStyle.toHex();
+		this.rawNode.fill.opacity = this.fillStyle.a;
+		this.rawNode.filled = true;
+		return this;
 	},
-	// set an absolute transformation matrix
-	setTransform: function(matrix){
-		// generate the attribute
-		this.matrix = matrix ? dojo.gfx.normalizeMatrix(matrix) : dojo.gfx.identity;
+
+	_applyTransform: function() {
+		var matrix = this._getRealMatrix();
+		if(!matrix) return this;
 		var skew = this.rawNode.skew;
-		var mt = this.matrix.xx + ", " + this.matrix.xy + 
-			", " + this.matrix.yx + ", " + this.matrix.yy +
-			", 0, 0";
-		var offset = this.matrix.dx + "px, " + this.matrix.dy + "px";
+		skew.on = false;
+		var mt = matrix.xx.toFixed(8) + " " + matrix.xy.toFixed(8) + " " + 
+			matrix.yx.toFixed(8) + " " + matrix.yy.toFixed(8) + " 0 0";
+		var offset = Math.floor(matrix.dx).toFixed() + "px " + Math.floor(matrix.dy).toFixed() + "px";
 		var l = parseFloat(this.rawNode.style.left);
-		var w = parseFloat(this.rawNode.style.width);
 		var t = parseFloat(this.rawNode.style.top);
+		var w = parseFloat(this.rawNode.style.width);
 		var h = parseFloat(this.rawNode.style.height);
 		if(isNaN(l)) l = 0;
-		if(isNaN(w)) w = 1;
 		if(isNaN(t)) t = 0;
+		if(isNaN(w)) w = 1;
 		if(isNaN(h)) h = 1;
-		var origin = (-l / w - 0.5) + ", " + (-t / h - 0.5);
-		//dojo.debug( "VML: mt = " + mt + "; offset = " + offset + "; origin = " + origin );
+		var origin = (-l / w - 0.5).toFixed(8) + " " + (-t / h - 0.5).toFixed(8);
 		skew.matrix =  mt;
 		skew.origin = origin;
 		skew.offset = offset;
 		skew.on = true;
-		// dojo.debug( "VML: skew : matrix = " + skew.matrix + " offset = " + skew.offset );
-		// support for chaining
-		return this;
-	},
-
-	// apply-right a transformation matrix
-	applyTransform: function(matrix){
-		return this.setTransform(dojo.gfx.multiply(this.matrix, matrix));
-	},
-
-	// apply-left a transformation matrix
-	applyLeftTransform: function(matrix){
-		return this.setTransform(dojo.gfx.multiply(matrix, this.matrix));
-	},
-
-
-	setShape: function(newShape){
-		dojo.gfx.normalizeParameters(this.shape, newShape);
-		// generate attributes
-		for(it in this.shape) {
-			this.rawNode.setAttribute(it, this.shape[it]);
-		}
-		// support for chaining
 		return this;
 	},
 
 	setRawNode: function(rawNode){
-		rawNode.arcsize = 0;
 		rawNode.stroked = false;
 		rawNode.filled  = false;
 		this.rawNode = rawNode;
@@ -177,12 +154,35 @@ dojo.lang.extend(
 
 	// Attach family
 	attachFill: function(rawNode){
-		fillStyle = null;
+		var fillStyle = null;
 		if(rawNode) {
-			if( rawNode.fill.type == "gradient" ) {
-				// a gradient object !
-                return new dojo.gfx.LinearGradient(rawNode.fill);
-			} else if( rawNode.fillcolor ) {
+			if(rawNode.fill.on && rawNode.fill.type == "gradient"){
+				var fillStyle = dojo.lang.shallowCopy(dojo.gfx.defaultLinearGradient, true);
+				var rad = dojo.math.degToRad(rawNode.fill.angle);
+				fillStyle.x2 = Math.cos(rad);
+				fillStyle.y2 = Math.sin(rad);
+				fillStyle.colors = [];
+				var stops = rawNode.fill.colors.value.split(";");
+				for(var i = 0; i < stops.length; ++i){
+					var t = stops[i].match(/\S+/g);
+					if(!t || t.length != 2) continue;
+					fillStyle.colors.push({offset: dojo.gfx.vml._parseFloat(t[0]), color: new dojo.gfx.color.Color(t[1])});
+				}
+			}else if(rawNode.fill.on && rawNode.fill.type == "gradientradial"){
+				var fillStyle = dojo.lang.shallowCopy(dojo.gfx.defaultRadialGradient, true);
+				var w = parseFloat(rawNode.style.width);
+				var h = parseFloat(rawNode.style.height);
+				fillStyle.cx = isNaN(w) ? 0 : rawNode.fill.focusposition.x * w;
+				fillStyle.cy = isNaN(h) ? 0 : rawNode.fill.focusposition.y * h;
+				fillStyle.r  = isNaN(w) ? 1 : w / 2;
+				fillStyle.colors = [];
+				var stops = rawNode.fill.colors.value.split(";");
+				for(var i = stops.length - 1; i >= 0; --i){
+					var t = stops[i].match(/\S+/g);
+					if(!t || t.length != 2) continue;
+					fillStyle.colors.push({offset: dojo.gfx.vml._parseFloat(t[0]), color: new dojo.gfx.color.Color(t[1])});
+				}
+			}else if(rawNode.fillcolor){
 				// a color object !
 				fillStyle = new dojo.gfx.color.Color(rawNode.fillcolor+"");
 				fillStyle.a = rawNode.fill.opacity;
@@ -192,130 +192,250 @@ dojo.lang.extend(
 	},
 
 	attachStroke: function(rawNode) {
-		strokeStyle = {color:null, widht:1, cap:"butt", join:4};
-		if(rawNode && rawNode.stroked) {
+		var strokeStyle = dojo.lang.shallowCopy(dojo.gfx.defaultStroke, true);
+		if(rawNode && rawNode.stroked){
 			strokeStyle.color = new dojo.gfx.color.Color(rawNode.strokecolor.value);
-            dojo.debug("We are expecting an .75pt here, instead of strokeweight = " + rawNode.strokeweight );
+			dojo.debug("We are expecting an .75pt here, instead of strokeweight = " + rawNode.strokeweight );
 			strokeStyle.width = dojo.gfx.vml.normalizedLength(rawNode.strokeweight+"");
 			strokeStyle.color.a = rawNode.stroke.opacity;
-			strokeStyle.cap = dojo.gfx.vml._reverseTranslateCap(rawNode.stroke.endcap);
+			strokeStyle.cap = this._translate(this._capMapReversed, rawNode.stroke.endcap);
 			strokeStyle.join = rawNode.stroke.joinstyle == "miter" ? rawNode.stroke.miterlimit : rawNode.stroke.joinstyle;
-		} else {
-            return null;
-        }
+		}else{
+			return null;
+		}
 		return strokeStyle;
 	},
 
 	attachTransform: function(rawNode) {
-		matrix = null;
-		if(rawNode) {
-			// FIXME: check whether skew.on returns boolean or string
-			on = rawNode.skew.on; 
-			if( on ) {
-				// FIXME: check the type of matrix!
-				ts = rawNode.skew.matrix + ",foo"; 
-				ts = ts.split(",");
-				matrix = 
-                    { xx: dojo.gfx.vml.parseFloat(ts[0]), 
-                      xy: dojo.gfx.vml.parseFloat(ts[1]), 
-                      yx: dojo.gfx.vml.parseFloat(ts[2]), 
-                      yy: dojo.gfx.vml.parseFloat(ts[3]), 
-                      dx: 0,
-                      dy: 0 };
-
-				ts = rawNode.skew.offset+",foo";
-				ts = ts.split(",")
-				matrix.dx = dojo.gfx.vml.normalizedLength(ts[0]);
-				matrix.dy = dojo.gfx.vml.normalizedLength(ts[1]);
-			}
+		var matrix = {};
+		if(rawNode){
+			var s = rawNode.skew;
+			matrix.xx = s.matrix.xtox;
+			matrix.xy = s.matrix.xtoy;
+			matrix.yx = s.matrix.ytox;
+			matrix.yy = s.matrix.ytoy;
+			// TODO: transform from pt to px
+			matrix.dx = s.offset.x / 0.75;
+			matrix.dy = s.offset.y / 0.75;
 		}
-		return matrix;
+		return dojo.gfx.normalizeMatrix(matrix);
 	},
 
 	attach: function(rawNode){
-		if(rawNode) {
+		if(rawNode){
 			this.rawNode = rawNode;
 			this.shape = this.attachShape(rawNode);
 			this.fillStyle = this.attachFill(rawNode);
 			this.strokeStyle = this.attachStroke(rawNode);
 			this.matrix = this.attachTransform(rawNode);
 		}
-	},
-	
-	// trivial getters
-	getNode:      function(){ return this.rawNode; },
-	getTransform: function(){ return this.matrix; },
-	getFill:      function(){ return this.fillStyle; },
-	getStroke:    function(){ return this.strokeStyle; },
-	getShape:     function(){ return this.shape; }
-});
-
-dojo.declare("dojo.gfx.vml.Group", dojo.gfx.vml.Shape, {
-	nodeType: 'g',
-	shape: null,
-	setTransform: function(matrix) {
-		this.matrix = matrix ? dojo.gfx.normalizeMatrix(matrix) : dojo.gfx.identity;
-		dojo.debug("rotation for group is not implemented!");
-		this.rawNode.coordorigin = this.matrix.dx + " " + this,matrix.dy;
-		return this;
 	}
 });
 
-dojo.declare("dojo.gfx.vml.Path", dojo.gfx.vml.Shape, {
-	nodeType: 'shape',
-	initializer: function() {
-		this.shape = { path:"", coordination:"absolute" };
-		this.lastPos = {x:0, y:0 };
-		this.lastControl = {x:0, y:0 };
-		this.lastAction = "";
-        this.pathMap = [ 
-            // since some tokens are used in both vml and svg, the pathMap order MATTERS
-            // lineTo
-            {vml:"r", svg:"l"}, {vml:"l",svg:"L"}, 
-            // moveTo
-            {vml:"t", svg:"m"}, {vml:"m", svg:"M"}, 
-            // curveTo
-            {vml:"v", svg:"c"}, {vml:"c", svg:"C"}, 
-            // closePath
-            {vml:"x", svg:"z"}
-        ];
+dojo.declare("dojo.gfx.Group", dojo.gfx.VirtualGroup, {
+	_processNewObject: function(shape){
+		this.add(shape);
+	},
+	attach: function(rawNode){
+		if(rawNode){
+			this.rawNode = rawNode;
+			this.shape = null;
+			this.fillStyle = null;
+			this.strokeStyle = null;
+			this.matrix = null;
+		}
+	}
+});
+dojo.gfx.Group.nodeType = "group";
+
+var zIndex = {
+	moveToFront: function(){
+		this.rawNode.parentNode.appendChild(this.rawNode);
+		return this;
+	},
+	moveToBack: function(){
+		this.rawNode.parentNode.insertBefore(this.rawNode, this.rawNode.parentNode.firstChild);
+		return this;
+	}
+};
+dojo.lang.extend(dojo.gfx.Shape, zIndex);
+dojo.lang.extend(dojo.gfx.Group, zIndex);
+delete zIndex;
+
+dojo.declare("dojo.gfx.Rect", dojo.gfx.Shape, {
+	initializer: function(rawNode) {
+		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultRect, true);
+		this.attach(rawNode);
 	},
 	setShape: function(newShape){
-		// FIXME: accept a string as well as a Path object
-		// After setPath, could we add more actions here ?
-		dojo.gfx.normalizeParameters(this.shape, newShape);
-		this.setCoordination(this.shape.coordination);
+		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.rawNode.style.left   = this.shape.x.toFixed();
+		this.rawNode.style.top    = this.shape.y.toFixed();
+		this.rawNode.style.width  = this.shape.width.toFixed();
+		this.rawNode.style.height = this.shape.height.toFixed();
+		return this.setTransform(this.matrix);
+	},
+	setRawNode: function(rawNode){
+		rawNode.arcsize = 0;
+		return this.inherited("setRawNode", [rawNode] );
+	},
+	attachShape: function(rawNode){
+		return dojo.gfx.makeParameters(dojo.gfx.defaultRect, {
+			x: parseInt(rawNode.style.left),
+			y: parseInt(rawNode.style.top),
+			width:  parseInt(rawNode.style.width),
+			height: parseInt(rawNode.style.height)
+		});
+	}
+});
+dojo.gfx.Rect.nodeType = "roundrect"; // use a roundrect so the stroke join type is respected
 
-		// TODO: this is quick-n-dirty approach, digg into VML coordination.
-		this.rawNode.style.position = "absolute";
-		this.rawNode.style.width = 300;
-		this.rawNode.style.height = 300;
-		this.rawNode.path.v = this.shape.path + ' e';
+dojo.declare("dojo.gfx.Ellipse", dojo.gfx.Shape, {
+	initializer: function(rawNode) {
+		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultEllipse, true);
+		this.attach(rawNode);
+	},
+	setShape: function(newShape){
+		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.rawNode.style.left   = (this.shape.cx - this.shape.rx).toFixed();
+		this.rawNode.style.top    = (this.shape.cy - this.shape.ry).toFixed();
+		this.rawNode.style.width  = (this.shape.rx * 2).toFixed();
+		this.rawNode.style.height = (this.shape.ry * 2).toFixed();
+		return this.setTransform(this.matrix);
+	},
+	attachShape: function(rawNode){
+		var rx = parseInt(rawNode.style.width ) / 2;
+		var ry = parseInt(rawNode.style.height) / 2;
+		return dojo.gfx.makeParameters(dojo.gfx.defaultEllipse, {
+			cx: parseInt(rawNode.style.left) + rx,
+			cy: parseInt(rawNode.style.top ) + ry,
+			rx: rx,
+			ry: ry
+		});
+	}
+});
+dojo.gfx.Ellipse.nodeType = "oval";
+
+dojo.declare("dojo.gfx.Circle", dojo.gfx.Shape, {
+	initializer: function(rawNode) {
+		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultCircle, true);
+		this.attach(rawNode);
+	},
+	setShape: function(newShape){
+		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.rawNode.style.left   = (this.shape.cx - this.shape.r).toFixed();
+		this.rawNode.style.top    = (this.shape.cy - this.shape.r).toFixed();
+		this.rawNode.style.width  = (this.shape.r * 2).toFixed();
+		this.rawNode.style.height = (this.shape.r * 2).toFixed();
 		return this;
 	},
-	setCoordination: function(cor) {
-		this.shape.coordination = (cor == "relative") ? "relative" : "absolute";
+	attachShape: function(rawNode){
+		var r = parseInt(rawNode.style.width) / 2;
+		return dojo.gfx.makeParameters(dojo.gfx.defaultCircle, {
+			cx: parseInt(rawNode.style.left) + r,
+			cy: parseInt(rawNode.style.top)  + r,
+			r:  r
+		});
+	}
+});
+dojo.gfx.Circle.nodeType = "oval";
+
+dojo.declare("dojo.gfx.Line", dojo.gfx.Shape, {
+	initializer: function(rawNode) {
+		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultLine, true);
+		this.attach(rawNode);
+	},
+	setShape: function(newShape){
+		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.rawNode.from = this.shape.x1.toFixed() + "," + this.shape.y1.toFixed();
+		this.rawNode.to   = this.shape.x2.toFixed() + "," + this.shape.y2.toFixed();
 		return this;
 	},
-	getCoordination: function() {
-		return this.shape.coordination;
+	attachShape: function(rawNode){
+		return dojo.gfx.makeParameters(dojo.gfx.defaultLine, {
+			x1: this.rawNode.from.x,
+			y1: this.rawNode.from.y,
+			x2: this.rawNode.to.x,
+			y2: this.rawNode.to.y
+		});
+	}
+});
+dojo.gfx.Line.nodeType = "line";
+
+dojo.declare("dojo.gfx.Polyline", dojo.gfx.Shape, {
+	initializer: function(rawNode) {
+		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPolyline, true);
+		this.attach(rawNode);
 	},
-	// Drawing actions
-	drawTo: function(action, raction, args) {
-		this.shape.path += ( this.shape.coordination == "absolute" ) ? action : raction;
-		for( i = 0; i< args.length; i++ ) {
-			this.shape.path += args[i] + " ";
+	setShape: function(points, closed){
+		if(points && points instanceof Array){
+			this.shape = dojo.gfx.makeParameters(this.shape, { points: points });
+			if(closed && this.shape.points.length) this.shape.points.push(this.shape.points[0]);
+		}else{
+			this.shape = dojo.gfx.makeParameters(this.shape, points);
 		}
-        dojo.debug( 'action = ' + action + ' path = ' + this.shape.path  + ' pos =(' + this.lastPos.x + ',' + this.lastPos.y + ')' );
+		attr = "";
+		for(var i = 0; i< this.shape.points.length; ++i){
+			attr += this.shape.points[i].x.toFixed(8) + " " + this.shape.points[i].y.toFixed(8) + " ";
+		}
+		this.rawNode.points.value = attr;
+		return this.setTransform(this.matrix);
+	},
+	attachShape: function(rawNode){
+		var shape = dojo.lang.shallowCopy(dojo.gfx.defaultPolyline, true);
+		var points = rawNode.points.value.match(/\d+/g);
+		if(points){
+			for(var i = 0; i < points.length; i += 2){
+				shape.points.push({ x: parseFloat(points[i]), y: parseFloat(points[i + 1]) });
+			}
+		}
+		return shape;
+	}
+});
+dojo.gfx.Polyline.nodeType = "polyline";
+
+dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
+	_pathVmlToSvgMap: { r: "l", l: "L", t: "m", m: "M", v: "c", c: "C", x: "z" },
+	_pathSvgToVmlMap: { l: "r", L: "l", m: "t", M: "m", c: "v", C: "c", z: "x" },
+	
+	initializer: function(rawNode) {
+		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPath, true);
+		this.lastPos = { x: 0, y: 0 };
+		this.lastControl = { x: 0, y: 0 };
+		this.lastAction = "";
+		this.attach(rawNode);
+	},
+	setShape: function(newShape){
+		this.shape = dojo.gfx.makeParameters(this.shape, typeof(newShape) == "string" ? { path: newShape } : newShape);
+		this.setAbsoluteMode(this.shape.absolute);
+		var path = this.shape.path;
+		for(var i in this._pathSvgToVmlMap){
+			path = path.replace( new RegExp(i, 'g'),  this._pathSvgToVmlMap[i] );
+		}
+		this.rawNode.path.v = path + " e";
+		return this.setTransform(this.matrix);
+	},
+	setAbsoluteMode: function(mode) {
+		this.shape.absolute = typeof(mode) == "string" ? (mode == "absolute") : mode;
+		return this;
+	},
+	getAbsoluteMode: function() {
+		return this.shape.absolute;
+	},
+	_drawTo: function(action, raction, args){
+		this.shape.path += (this.shape.absolute ? action : raction);
+		for(var i = 0; i < args.length; ++i){
+			this.shape.path += " " + args[i].toFixed();
+		}
 		this.lastAction = action; 
 		this.setShape();
 		return this;
 	},
-	update : function(x, y, x2, y2)  {
-		if( this.shape.coordination == "absolute" ) {
+	_update: function(x, y, x2, y2){
+		if(this.shape.absolute){
 			this.lastPos.x = x;
 			this.lastPos.y = y;
-			if( x2 && y2 ) {
+			if(typeof(y2) != "undefined"){
 				this.lastControl.x = x2;
 				this.lastControl.y = y2;
 			} else {
@@ -323,7 +443,7 @@ dojo.declare("dojo.gfx.vml.Path", dojo.gfx.vml.Shape, {
 				this.lastControl.y = this.lastPos.y;
 			}
 		} else {
-			if( x2 && y2 ) {
+			if(typeof(y2) != "undefined"){
 				this.lastControl.x = this.lastPos.x + x2;
 				this.lastControl.y = this.lastPos.y + y2;
 			} else {
@@ -334,471 +454,188 @@ dojo.declare("dojo.gfx.vml.Path", dojo.gfx.vml.Shape, {
 			this.lastPos.y += y;
 		}
 	},
-	
-	mirror : function(action) {
-		if( action != this.lastAction ) {
-			return {x:lastPos.x, y:lastPos.y};
+	_mirror: function(action){
+		if(action != this.lastAction){
+			return { x: lastPos.x, y: lastPos.y };
 		}
 		x1 = 2* this.lastPos.x - this.lastControl.x;
 		y1 = 2* this.lastPos.y - this.lastControl.y;
-		if( this.shape.coordination == "relative" ) {
+		if(!this.shape.absolute){
 			x1 -= this.lastPos.x;
 			y1 -= this.lastPos.y;
 		}
-		return {x:x1, y:y1};
+		return { x: x1, y: y1 };
 	},
-
 	closePath: function() {
-		return this.drawTo("x", "x", []);
+		return this._drawTo("z", "z", []);
 	},
-	moveTo: function(x, y) {
-		this.update( x, y );
-		return this.drawTo("m", "t", [x,y]);
+	moveTo: function(x, y){
+		this._update(x, y);
+		return this._drawTo("M", "m", [x,y]);
 	},
-	lineTo: function(x, y) {
-		this.update( x, y );
-		return this.drawTo("l", "r", [x,y]);
+	lineTo: function(x, y){
+		this._update(x, y);
+		return this._drawTo("L", "l", [x,y]);
 	},
-	hLineTo: function(x) {
-		y = ( this.shape.coordination == "absolute" ) ? this.lastPos.y : 0;
+	hLineTo: function(x){
+		y = this.shape.absolute ? this.lastPos.y : 0;
 		return this.lineTo(x, y);
 	},
-	vLineTo: function(y) {
-		x = ( this.shape.coordination == "absolute" ) ? this.lastPos.x : 0;
+	vLineTo: function(y){
+		x = this.shape.absolute ? this.lastPos.x : 0;
 		return this.lineTo(x, y);
 	},
-	curveTo: function(x1, y1, x2, y2, x, y) {
-		this.update(x, y, x2, y2);
-		return this.drawTo("c", "v", [x1, y1, x2, y2, x, y]);
+	curveTo: function(x1, y1, x2, y2, x, y){
+		this._update(x, y, x2, y2);
+		return this._drawTo("C", "c", [x1, y1, x2, y2, x, y]);
 	},
-	smoothCurveTo: function(x2, y2, x, y) {
-		pos = this.mirror("c");
+	smoothCurveTo: function(x2, y2, x, y){
+		pos = this._mirror("C");
 		x1 = pos.x;
 		y1 = pos.y;
 		return this.curveTo(x1, y1, x2, y2, x, y);
 	},
-
-	qbCurveTo: function(x1, y1, x, y) {
-		this.update(x, y, x1, y1);
-		return this.drawTo("qb", "qb", [x1, y1, x, y]);
+	// TODO: fix qbCurveTo, smoothQBCurveTo, arcTo
+	qbCurveTo: function(x1, y1, x, y){
+		this._update(x, y, x1, y1);
+		return this._drawTo("qb", "qb", [x1, y1, x, y]);
 	},
-	smoothQBCurveTo: function(x, y) {
+	smoothQBCurveTo: function(x, y){
 		pos = this.mirror("qb");
 		x1 = pos.x;
 		y1 = pos.y;
 		return this.qbCurveTo(x1, y1, x, y);
 	},
-    arcTo: function(top, right, bottom, left, isCCW, x, y) {
-        // save the value, not reference
-        var lastPos = {x: this.lastPos.x, y:this.lastPos.y};
-        dojo.debug( "lastPos in arcTo = " + lastPos.x + "," + lastPos.y );
-        dojo.debug( "this.lastPos in arcTo = " + this.lastPos.x + "," + this.lastPos.y );
-        dojo.debug( "arcTo coordination = " + this.shape.coordination );
-		if (this.shape.coordination == "relative") {
-            // translate to absolute value first
-            top += this.lastPos.y;
-            right += this.lastPos.x;
-            bottom += this.lastPos.y;
-            left += this.lastPos.x;
-            x += this.lastPos.x;
-            y += this.lastPos.y;
-        } 
-        this.update(x, y);
-        dojo.debug( "lastPos in arcTo = " + lastPos.x + "," + lastPos.y );
-        dojo.debug( "this.lastPos in arcTo = " + this.lastPos.x + "," + this.lastPos.y );
+	arcTo: function(top, right, bottom, left, isCCW, x, y){
+		// save the value, not reference
+		var lastPos = { x: this.lastPos.x, y: this.lastPos.y };
+		dojo.debug( "lastPos in arcTo = " + lastPos.x + "," + lastPos.y );
+		dojo.debug( "this.lastPos in arcTo = " + this.lastPos.x + "," + this.lastPos.y );
+		dojo.debug( "arcTo coordination = " + this.shape.coordination );
+		if(!this.shape.absolute){
+			// translate to absolute value first
+			top += this.lastPos.y;
+			right += this.lastPos.x;
+			bottom += this.lastPos.y;
+			left += this.lastPos.x;
+			x += this.lastPos.x;
+			y += this.lastPos.y;
+		} 
+		this._update(x, y);
+		dojo.debug( "lastPos in arcTo = " + lastPos.x + "," + lastPos.y );
+		dojo.debug( "this.lastPos in arcTo = " + this.lastPos.x + "," + this.lastPos.y );
 
-        if(isCCW) {
-            return this.drawTo( "ar", "ar", [left, top, right, bottom, lastPos.x, lastPos.y, x, y] );
-        } else {
-            return this.drawTo( "wt", "wt", [left, top, right, bottom, lastPos.x, lastPos.y, x, y] );
-        }
-    },
-
-	setPath: function(shape) { 
-        var path = shape.path;
-        for(var i = 0; i< this.pathMap.length; i++ ) {
-            dojo.debug( "substitute " + this.pathMap[i].svg + " to " + this.pathMap[i].vml );
-            path = path.replace( new RegExp(this.pathMap[i].svg, 'g'),  this.pathMap[i].vml );
-            dojo.debug( "path = " + path );
-        }
-        return this.setShape({path:path});
-    }, 
-	getPath: function(){ return this.getShape(); }
-});
-
-dojo.declare("dojo.gfx.vml.Rect", dojo.gfx.vml.Shape, {
-	nodeType: 'roundrect', // Use a roundrect so the stroke join type is respected
-	initializer: function(rawNode) {
-		this.shape = { x:0, y:0, width:100, height:100 };
-		this.attach(rawNode);
-	},
-	setShape: function(newShape){
-		dojo.gfx.normalizeParameters(this.shape, newShape);
-		// generate attributes
-		// more professional practice ?
-		this.rawNode.style.position = "absolute";
-		this.rawNode.style.width = this.shape.width;
-		this.rawNode.style.height = this.shape.height;
-		this.rawNode.style.left = this.shape.x;
-		this.rawNode.style.top = this.shape.y;
-		return this;
-	},
-	setRawNode: function(rawNode){
-		// FIXME: call the super class setRawNode, how ?
-		rawNode.arcsize = 0;
-        this.inherited("setRawNode", [rawNode] );
-	},
-	attachShape: function(rawNode){
-		return { x: rawNode.style.left.replace(/px/,"")-0,
-				 y: rawNode.style.top.replace(/px/,"")-0,
-				 width: rawNode.style.width.replace(/px/,"")-0,
-				 height: rawNode.style.height.replace(/px/,"")-0
-			   };
-	},
-
-	setRect: function(shape){ return this.setShape(shape); },
-	getRect: function(){ return this.getShape(); }
-});
-
-dojo.declare(
-   'dojo.gfx.vml.Roundrect', dojo.gfx.vml.Rect, {
-	  nodeType: 'roundrect'
-   });
-
-dojo.declare("dojo.gfx.vml.Circle", dojo.gfx.vml.Shape, {
-	nodeType: 'oval',
-	initializer: function() {
-		this.shape = { cx:0, cy:0, r:100 };
-	},
-	setShape: function(newShape){
-		dojo.gfx.normalizeParameters(this.shape, newShape);
-		// generate attributes
-	   this.rawNode.style.x = this.shape.cx - this.shape.r;
-	   this.rawNode.style.y = this.shape.cy - this.shape.r;
-	   this.rawNode.style.width = this.shape.r * 2;
-	   this.rawNode.style.height = this.shape.r * 2;
-		return this;
-	},
-	setCircle: function(shape){ return this.setShape(shape); },
-	getCircle: function(){ return this.getShape(); }
-});
-
-dojo.declare("dojo.gfx.vml.Ellipse", dojo.gfx.vml.Shape, {
-	nodeType: 'oval',
-	initializer: function() {
-		this.shape = { rx:100, cx:100, ry:80, cy:80 };
-	},
-	setShape: function(newShape){
-		dojo.gfx.normalizeParameters(this.shape, newShape);
-		// generate attributes
-	   this.rawNode.style.width = this.shape.rx * 2;
-	   this.rawNode.style.height = this.shape.ry * 2;
-	   this.rawNode.style.left = this.shape.cx - this.shape.rx;
-	   this.rawNode.style.top = this.shape.cy - this.shape.ry;
-		return this;
-	},
-	setEllipse: function(shape){ return this.setShape(shape); },
-	getEllipse: function(){ return this.getShape(); }
-});
-
-dojo.declare("dojo.gfx.vml.Line", dojo.gfx.vml.Shape, {
-	nodeType: 'line',
-	initializer: function() {
-		this.shape = { x1:0, y1:0, x2:50, y2:50 };
-	},
-	setShape: function(newShape){
-		dojo.gfx.normalizeParameters(this.shape, newShape);
-		// generate attributes
-	   this.rawNode.from = this.shape.x1 + "," + this.shape.y1;
-	   this.rawNode.to = this.shape.x2 + "," + this.shape.y2;
-
-		return this;
-	},
-	setLine: function(shape){ return this.setShape(shape); },
-	getLine: function(){ return this.getShape(); }
-});
-
-dojo.declare("dojo.gfx.vml.Polyline", dojo.gfx.vml.Shape, {
-	nodeType: 'polyline',
-	initializer: function() {
-		this.shape = { points:null };
-	},
-	setShape: function(points){
-		dojo.gfx.normalizeParameters(this.shape, points);
-		// generate attributes
-		attr = "";
-		for( i = 0; i< this.shape.points.length; i++ ) {
-			attr += this.shape.points[i].x + " " + this.shape.points[i].y + " ";
+		if(isCCW){
+			return this._drawTo( "ar", "ar", [left, top, right, bottom, lastPos.x, lastPos.y, x, y] );
+		} else {
+			return this._drawTo( "wt", "wt", [left, top, right, bottom, lastPos.x, lastPos.y, x, y] );
 		}
-		this.rawNode.points.value = attr;
-	   return this;
-	},
-	setPolyline: function(shape){ return this.setShape(shape); },
-	getPolyline: function(){ return this.getShape(); }
+	}
 });
-
-dojo.declare("dojo.gfx.vml.Polygon", dojo.gfx.vml.Shape, {
-	nodeType: 'polyline',
-	initializer: function() {
-		this.shape = { points:null };
-	},
-	setShape: function(points){
-		dojo.gfx.normalizeParameters(this.shape, points);
-		// generate attributes
-		attr = "";
-		for( i = 0; i< this.shape.points.length; i++ ) {
-			attr += this.shape.points[i].x + " " + this.shape.points[i].y + " ";
-		}
-		attr += this.shape.points[0].x + " " + this.shape.points[0].y + " ";
-
-		this.rawNode.points.value = attr;
-		return this;
-	},
-	setPolygon: function(shape){ return this.setShape(shape); },
-	getPolygon: function(){ return this.getShape(); }
-});
-
-var metacreator = {
-   createObject: function(shape, rawShape) {
-	  if(!this.rawNode) return null;
-	  var n = document.createElement('v:' + shape.nodeType);
-	  shape.setRawNode(n);
-	  this.rawNode.appendChild(n);
-	  if(rawShape) shape.setShape(rawShape);
-	  return shape;
-   }
-};
+dojo.gfx.Path.nodeType = "shape";
 
 var creators = {
-	// creators
-	createPath: function(path){
-		return this.createObject(new dojo.gfx.vml.Path(), path);
-	},
 	createRect: function(rect){
-		return this.createObject(new dojo.gfx.vml.Rect(), rect);
-	},
-	createRoundrect: function(roundrect){
-		return this.createObject(new dojo.gfx.vml.Roundrect(), roundrect);
-	},
-	createCircle: function(circle){
-		return this.createObject(new dojo.gfx.vml.Circle(), circle);
+		return this.createObject(dojo.gfx.Rect, rect);
 	},
 	createEllipse: function(ellipse){
-		return this.createObject(new dojo.gfx.vml.Ellipse(), ellipse);
+		return this.createObject(dojo.gfx.Ellipse, ellipse);
+	},
+	createCircle: function(circle){
+		return this.createObject(dojo.gfx.Circle, circle);
 	},
 	createLine: function(line){
-		return this.createObject(new dojo.gfx.vml.Line(), line);
+		return this.createObject(dojo.gfx.Line, line);
 	},
 	createPolyline: function(points){
-		return this.createObject(new dojo.gfx.vml.Polyline(), points);
+		return this.createObject(dojo.gfx.Polyline, points, true);
 	},
-	createPolygon: function(points){
-		return this.createObject(new dojo.gfx.vml.Polygon(), points);
+	createPath: function(path){
+		return this.createObject(dojo.gfx.Path, path, true);
 	},
-	createGroup: function(){
-		return this.createObject(new dojo.gfx.vml.Group());
+	createGroup: function(path){
+		return this.createObject(dojo.gfx.Group, null, true);
+	},
+	createObject: function(shapeType, rawShape, overrideSize) {
+		if(!this.rawNode) return null;
+		var shape = new shapeType();
+		var node = document.createElement('v:' + shapeType.nodeType);
+		shape.setRawNode(node);
+		this.rawNode.appendChild(node);
+		if(overrideSize) this._overrideSize(node);
+		shape.setShape(rawShape);
+		this._processNewObject(shape);
+		return shape;
+	},
+	_overrideSize: function(node){
+		node.style.width  = this.rawNode.style.width;
+		node.style.height = this.rawNode.style.height;
+		node.coordsize = parseFloat(node.style.width) + " " + parseFloat(node.style.height);
 	}
 };
 
+dojo.lang.extend(dojo.gfx.Group, creators);
+dojo.lang.extend(dojo.gfx.Surface, creators);
 
-// Misc utility functions
-dojo.gfx.vml.attachNode = function(node){
+delete creators;
+
+dojo.gfx.attachNode = function(node){
 	if(!node) return null;
 	var s = null;
 	switch(node.tagName.toLowerCase()){
-		case "path":
-			s = new dojo.gfx.vml.Path();
+		case dojo.gfx.Rect.nodeType:
+			s = new dojo.gfx.Rect();
 			break;
-//		case "roundrect":
-//			s = new dojo.gfx.vml.Rect(node);
-//			break;
-		case "roundrect":
-			s = new dojo.gfx.vml.Roundrect();
+		case dojo.gfx.Ellipse.nodeType:
+			s = new dojo.gfx.Ellipse();
 			break;
-		case "circle":
-			s = new dojo.gfx.vml.Circle();
+		case dojo.gfx.Polyline.nodeType:
+			s = new dojo.gfx.Polyline();
 			break;
-		case "ellipse":
-			s = new dojo.gfx.vml.Ellipse();
+		case dojo.gfx.Path.nodeType:
+			s = new dojo.gfx.Path();
 			break;
-		case "line":
-			s = new dojo.gfx.vml.Line();
+		case dojo.gfx.Circle.nodeType:
+			s = new dojo.gfx.Circle();
 			break;
-		case "polyline":
-			s = new dojo.gfx.vml.Polyline();
-			break;
-		case "polygon":
-			s = new dojo.gfx.vml.Polygon();
+		case dojo.gfx.Line.nodeType:
+			s = new dojo.gfx.Line();
 			break;
 		default:
 			dojo.debug("FATAL ERROR! tagName = " + rawNode.tagName);
 	}
-	s.rawNode = node;
+	s.attach(node);
 	return s;
 };
 
-// this is a Surface object
-dojo.gfx.vml.Surface = function(){
-	// underlying VML node
-	this.rawNode = null;
-};
-
-dojo.lang.extend(dojo.gfx.vml.Surface, {
-	// trivial setters/getters
+dojo.lang.extend(dojo.gfx.Surface, {
 	setDimensions: function(width, height){
 		if(!this.rawNode) return this;
-	   s.rawNode.style.width = width;
-	   s.rawNode.style.height = height;
-		// support for chaining
+		this.rawNode.style.width = width;
+		this.rawNode.style.height = height;
 		return this;
 	},
 	getDimensions: function(){
-		return this.rawNode ?
-			{ width: this.rawNode.style.width, height: this.rawNode.style.height } : 
-			null;
+		return this.rawNode ? { width: this.rawNode.style.width, height: this.rawNode.style.height } : null;
+	},
+	_processNewObject: function(shape){
+		// nothing
 	}
 });
 
-dojo.gfx.vml.createSurface = function(parentNode, width, height){
-   var s = new dojo.gfx.vml.Surface();
-   // TODO: Do we really need a v:group wrapper ?
+dojo.gfx.createSurface = function(parentNode, width, height){
+   var s = new dojo.gfx.Surface();
    s.rawNode = document.createElement("v:group");
-   s.rawNode.style.width = width + "px";
+   s.rawNode.style.width  = width  + "px";
    s.rawNode.style.height = height + "px";
    s.rawNode.coordsize = width + " " + height;
-   s.rawNode.coordorigin = "0, 0";
+   s.rawNode.coordorigin = "0 0";
    parentNode.appendChild(s.rawNode);
    return s;
 };
 
-dojo.gfx.vml.attachSurface = function(node){
-	var s = new dojo.gfx.vml.Surface();
+dojo.gfx.attachSurface = function(node){
+	var s = new dojo.gfx.Surface();
 	s.rawNode = node;
 	return s;
 };
-
-// Gradient and pattern
-dojo.gfx.vml.Gradient = function(){
-	this.rawNode = null;
-	this.gradient = null;
-	this.id = "";
-    this.stops = null;
-};
-
-dojo.lang.extend(dojo.gfx.vml.Gradient, {
-	addStop: function(stop){
-		if(stop){
-            if( !this.stops ) {
-                this.stops = new Array;
-                // the first stop is the default color and color2
-                this.rawNode.color = stop.color.toHex();
-                this.rawNode.color2 = stop.color.toHex();
-            } else {
-                // check the stored stops, shall we use ordered array?
-                // find minimum offset: color2
-                var found = true;
-                for( var i = 0; i< this.stops.length && found; i++ ) {
-                    if( parseFloat(stop.offset) >= parseFloat(this.stops[i].offset) ) found = false;
-                }
-                if(found) this.rawNode.color2 = stop.color.toHex();
-                    
-                // find maximum offset: color
-                found = true;
-                for( var i = 0; i< this.stops.length && found; i++ ) {
-                    if( parseFloat(stop.offset) <= parseFloat(this.stops[i].offset) ) found = false;
-                }
-                if(found) this.rawNode.color = stop.color.toHex();
-            }
-            this.stops.push(stop);
-            this.rawNode.colors = "";
-  
-            for( var i = 1; i< this.stops.length-2; i++ ) {
-                this.rawNode.colors += "" + this.stops[i].offset + " " + this.stops[i].color + ", ";
-            } 
-            if( this.stops.length -2 > 0 ) {
-			    this.rawNode.colors += this.stops[this.stops.length-2].offset + " " + this.stops[this.stops.length-2].color;
-            }
-            dojo.debug("colors = "+ this.rawNode.colors);
-            this.rawNode.type   = "gradient";
-            this.rawNode.method = "linear";
-			this.rawNode.on = true;
-		}
-		return this;
-	},
-	setGradient: function(newGradient){
-		dojo.gfx.normalizeParameters(this.gradient, newGradient );
-		// FIXME: find a real guid() !
-		this.id = dojo.gfx.guid();
-		this.rawNode = document.createElement("v:" + this.nodeType);
-
-		for(it in this.gradient) {
-			this.rawNode.setAttribute(it, this.gradient[it]);
-		}
-		this.rawNode.id = this.id;
-		this.rawNode.on = true;
-		return this;
-	},
-	getId: function(){ return this.id; },
-	getRawNode: function(){  return this.rawNode; }
-});
-
-dojo.declare("dojo.gfx.vml.LinearGradient", dojo.gfx.vml.Gradient, {
-	nodeType: "fill",
-	initializer: function( newGradient ) {
-		this.gradient = {  type:"gradient", angle:0 };
-        if( newGradient.type == "gradient") {
-            this.attach(newGradient);
-        } else {  
-            angle = dojo.math.radToDeg(Math.atan2(newGradient.y2-newGradient.y1, newGradient.x2-newGradient.x1));
-            this.gradient.angle = angle;
-		    this.setGradient(newGradient);
-        }
-	},
-    attach: function(rawNode) {
-        this.rawNode = rawNode;
-        this.gradient["type"] = "gradient";
-        this.gradient["angle"] = this.rawNode.angle;
-        this.id = this.rawNode.id;
-
-        //stops
-        this.stops = new Array;
-        this.stops.push( {offset:0, color:new dojo.gfx.color.Color(rawNode.color2)} );
-        this.stops.push( {offset:1, color:new dojo.gfx.color.Color(rawNode.color)} );
-        return this;
-    }
-});
-
-dojo.declare("dojo.gfx.vml.RadialGradient", dojo.gfx.vml.Gradient, {
-	nodeType: "fill",
-	initializer: function(newGradient) {
-		this.gradient = { cx:"50%", cy:"50%", r:"50%", fx:"0%", fy:"0%", type:"gradientradial", color:"red", color2:"blue" };
-		this.setGradient(newGradient);
-	}
-});
-
-dojo.declare("dojo.gfx.vml.Pattern", dojo.gfx.vml.Gradient, {
-	nodeType: "pattern",
-	addStop: null,
-	initializer: function( newGradient ) {
-		this.gradient = { x:0, y:0, width:100, height:100, patternUnits:"userSpaceOnUse"};
-		this.setGradient(newGradient);
-	}
-});
-
-
-dojo.lang.extend(dojo.gfx.vml.Group, metacreator);
-dojo.lang.extend(dojo.gfx.vml.Group, creators);
-
-dojo.lang.extend(dojo.gfx.vml.Surface, metacreator);
-dojo.lang.extend(dojo.gfx.vml.Surface, creators);
-
-delete metacreator ;
-delete creators ;
-
-// TODO: use dojo.gfx directly instead of dojo.gfx.svg
-dojo.gfx.defaultRenderer = dojo.gfx.vml;
-dojo.gfx.Gradient = dojo.gfx.vml.Gradient;
-dojo.gfx.LinearGradient = dojo.gfx.vml.LinearGradient;
-dojo.gfx.RadialGradient = dojo.gfx.vml.RadialGradient;
-dojo.gfx.Pattern = dojo.gfx.vml.Pattern;
-dojo.gfx.attachNode = dojo.gfx.vml.attachNode;
