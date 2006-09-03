@@ -2,6 +2,7 @@ dojo.provide("dojo.iCalendar");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.text.textDirectory");
 dojo.require("dojo.date.common");
+dojo.require("dojo.date.serialize");
 
 
 dojo.iCalendar.fromText =  function (/* string */text) {

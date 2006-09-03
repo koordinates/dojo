@@ -489,8 +489,8 @@ dojo.date.strftime = function (/*Date*/dateObject, /*String*/format, /*String?*/
 				var timezoneOffset = dateObject.getTimezoneOffset();
 				return (timezoneOffset > 0 ? "-" : "+") + 
 					_(Math.floor(Math.abs(timezoneOffset)/60)) + ":" +
-					_(Math.abs(timezoneOffset)%(60));
-				
+					_(Math.abs(timezoneOffset)%60);
+
 			case "Z": // time zone or name or abbreviation
 				return dojo.date.getTimezoneName(dateObject); //TODO
 			
