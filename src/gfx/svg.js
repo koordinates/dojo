@@ -159,6 +159,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		var fillStyle = null;
 		if(rawNode){
 			var fill = rawNode.getAttribute("fill");
+			if(fill == "none") return null;
 			if(fill && fill.match(/^url\(#.+\)$/)){
 				var gradient = document.getElementById(fill.slice(5, -1));
 				switch(gradient.tagName.toLowerCase()){
@@ -200,7 +201,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	attachStroke: function(rawNode) {
 		if(!rawNode) return null;
 		var stroke = rawNode.getAttribute("stroke");
-        if(stroke == null) return null;
+        if(stroke == null || stroke == "none") return null;
 		var strokeStyle = dojo.lang.shallowCopy(dojo.gfx.defaultStroke, true);
 		var color = new dojo.gfx.color.Color(stroke);
 		if(color){
