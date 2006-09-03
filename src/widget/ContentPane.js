@@ -102,20 +102,22 @@ dojo.widget.defineWidget(
 				this._cacheSetting({
 					url: url,
 					mimetype: "text/html",
-					load: function(type, data, xhr){
-						self.onDownloadEnd.call(self, url, data);
-					},
-					error: function(type, err, xhr){
-						// XHR insnt a normal JS object, IE doesnt have prototype on XHR so we cant extend it or shallowCopy it
-						var e = {
-							responseText: xhr.responseText,
-							status: xhr.status,
-							statusText: xhr.statusText,
-							responseHeaders: xhr.getAllResponseHeaders(),
-							_text: "Error loading '" + url + "' (" + xhr.status + " "+  xhr.statusText + ")"
-						};
-						self._handleDefaults.call(self, e, "onDownloadError");
-						self.onLoad();
+					handler: function(type, data, xhr){
+						delete self._ioBindObj; // makes sure abort doesnt clear cache
+						if(type=="load"){
+							self.onDownloadEnd.call(self, url, data);
+						}else{
+							// XHR insnt a normal JS object, IE doesnt have prototype on XHR so we cant extend it or shallowCopy it
+							var e = {
+								responseText: xhr.responseText,
+								status: xhr.status,
+								statusText: xhr.statusText,
+								responseHeaders: xhr.getAllResponseHeaders(),
+								_text: "Error loading '" + url + "' (" + xhr.status + " "+  xhr.statusText + ")"
+							};
+							self._handleDefaults.call(self, e, "onDownloadError");
+							self.onLoad();
+						}
 					}
 				}, useCache)
 			);
@@ -433,7 +435,7 @@ dojo.widget.defineWidget(
 			}else{
 				// need to run splitAndFixPaths? ie. manually setting content
 				// adjustPaths is taken care of inside splitAndFixPaths
-				if(!data.xml){ 
+				if(typeof data.xml != "string"){ 
 					this.href = ""; // so we can refresh safely
 					data = this.splitAndFixPaths(data); 
 				}
