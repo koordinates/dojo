@@ -268,7 +268,8 @@ dojo.widget.TimePicker.util = new function() {
 		if(!jsDate) {
 			jsDate = new Date();
 		}
-		return dojo.date.strftime(jsDate, "%Y-%m-%dT%H:%M:00%z");
+		jsDate.setSeconds(0);
+		return dojo.date.strftime(jsDate, "%Y-%m-%dT%H:%M:00%z"); //FIXME: use dojo.date.toRfc3339 instead
 	}
 
 	this.fromRfcDateTime = function(rfcDate, useDefaultMinutes, isAnyTime) {

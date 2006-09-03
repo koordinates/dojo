@@ -51,114 +51,6 @@ dojo.date.getIsoWeekOfYear = function (dateObject, firstDay) {
 }
 
 
-
-
-/* ISO 8601 Functions
- *********************/
-
-dojo.date.setIso8601 = function (dateObject, string){
-	var comps = (string.indexOf("T") == -1) ? string.split(" ") : string.split("T");
-	dojo.date.setIso8601Date(dateObject, comps[0]);
-	if (comps.length == 2) { dojo.date.setIso8601Time(dateObject, comps[1]); }
-	return dateObject;
-}
-
-dojo.date.fromIso8601 = function (string) {
-	return dojo.date.setIso8601(new Date(0, 0), string);
-}
-
-
-
-
-dojo.date.setIso8601Date = function (dateObject, string) {
-	var regexp = "^([0-9]{4})((-?([0-9]{2})(-?([0-9]{2}))?)|" +
-			"(-?([0-9]{3}))|(-?W([0-9]{2})(-?([1-7]))?))?$";
-	var d = string.match(new RegExp(regexp));
-	if(!d) {
-		dojo.debug("invalid date string: " + string);
-		return false;
-	}
-	var year = d[1];
-	var month = d[4];
-	var date = d[6];
-	var dayofyear = d[8];
-	var week = d[10];
-	var dayofweek = (d[12]) ? d[12] : 1;
-
-	dateObject.setYear(year);
-	
-	if (dayofyear) { dojo.date.setDayOfYear(dateObject, Number(dayofyear)); }
-	else if (week) {
-		dateObject.setMonth(0);
-		dateObject.setDate(1);
-		var gd = dateObject.getDay();
-		var day =  (gd) ? gd : 7;
-		var offset = Number(dayofweek) + (7 * Number(week));
-		
-		if (day <= 4) { dateObject.setDate(offset + 1 - day); }
-		else { dateObject.setDate(offset + 8 - day); }
-	} else {
-		if (month) { 
-			dateObject.setDate(1);
-			dateObject.setMonth(month - 1); 
-		}
-		if (date) { dateObject.setDate(date); }
-	}
-	
-	return dateObject;
-}
-
-dojo.date.fromIso8601Date = function (string) {
-	return dojo.date.setIso8601Date(new Date(0, 0), string);
-}
-
-
-
-
-dojo.date.setIso8601Time = function (dateObject, string) {
-	// first strip timezone info from the end
-	var timezone = "Z|(([-+])([0-9]{2})(:?([0-9]{2}))?)$";
-	var d = string.match(new RegExp(timezone));
-
-	var offset = 0; // local time if no tz info
-	if (d) {
-		if (d[0] != 'Z') {
-			offset = (Number(d[3]) * 60) + Number(d[5]);
-			offset *= ((d[2] == '-') ? 1 : -1);
-		}
-		offset -= dateObject.getTimezoneOffset();
-		string = string.substr(0, string.length - d[0].length);
-	}
-
-	// then work out the time
-	var regexp = "^([0-9]{2})(:?([0-9]{2})(:?([0-9]{2})(\.([0-9]+))?)?)?$";
-	var d = string.match(new RegExp(regexp));
-	if(!d) {
-		dojo.debug("invalid time string: " + string);
-		return false;
-	}
-	var hours = d[1];
-	var mins = Number((d[3]) ? d[3] : 0);
-	var secs = (d[5]) ? d[5] : 0;
-	var ms = d[7] ? (Number("0." + d[7]) * 1000) : 0;
-
-	dateObject.setHours(hours);
-	dateObject.setMinutes(mins);
-	dateObject.setSeconds(secs);
-	dateObject.setMilliseconds(ms);
-
-	if (offset != 0) {
-		dateObject.setTime(dateObject.getTime() + offset * 60000);
-	}	
-	return dateObject;
-}
-
-dojo.date.fromIso8601Time = function (string) {
-	return dojo.date.setIso8601Time(new Date(0, 0), string);
-}
-
-
-
 /* Informational Functions
  **************************/
 
@@ -392,7 +284,8 @@ dojo.date.add = function(/* Date */ dt, /* dojo.date.dateParts */ interv, /* int
 
 dojo.date.diff = function(/* Date */ dtA, /* Date */ dtB, /* dojo.date.dateParts */ interv) {
 //	summary:
-//		Find the difference between two dates
+//		Get the difference in a specific unit of time (e.g., number of months, weeks,
+//		days, etc.) between two dates.
 //
 //	dtA:
 //		A Javascript Date object
