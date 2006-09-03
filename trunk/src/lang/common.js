@@ -216,7 +216,7 @@ dojo.lang.isUndefined = function(it){
 	//
 	// recommendation: Use typeof foo == "undefined" when possible
 
-	return ((it == undefined)&&(typeof it == "undefined"));
+	return ((typeof(it) == "undefined")&&(it == undefined));
 }
 
 // end Crockford functions
