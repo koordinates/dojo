@@ -283,8 +283,20 @@ dojo.date.dateParts={
 };
 
 dojo.date.add = function(/* Date */ dt, /* dojo.date.dateParts */ interv, /* int */ incr){
+//	summary:
+//		Add to a Date in intervals of different size, from milliseconds to years
+//
+//	dt:
+//		A Javascript Date object to start with
+//
+//	interv:
+//		A constant representing the interval, e.g. YEAR, MONTH, DAY.  See dojo.date.dateParts.
+//
+//	incr:
+//		How much to add to the date
+
 	if(typeof dt == 'number'){dt = new Date(dt);} // Allow timestamps
-	incr = incr || 1;
+//FIXME: what's the reason behind this?	incr = incr || 1;
 
 	function fixOvershoot() {
 		if (ret.getDate() < dt.getDate()) {
@@ -376,4 +388,162 @@ dojo.date.add = function(/* Date */ dt, /* dojo.date.dateParts */ interv, /* int
 	}
 
 	return ret; // Date
+};
+
+dojo.date.diff = function(/* Date */ dtA, /* Date */ dtB, /* dojo.date.dateParts */ interv) {
+//	summary:
+//		Find the difference between two dates
+//
+//	dtA:
+//		A Javascript Date object
+//
+//	dtB:
+//		A Javascript Date object
+//
+//	interv:
+//		A constant representing the interval, e.g. YEAR, MONTH, DAY.  See dojo.date.dateParts.
+
+	// Accept timestamp input
+	if(typeof dtA == 'number'){dtA = new Date(dtA);}
+	if(typeof dtB == 'number'){dtB = new Date(dtB);}
+	var yeaDiff = dtB.getFullYear() - dtA.getFullYear();
+	var monDiff = (dtB.getMonth() - dtA.getMonth()) + (yeaDiff * 12);
+	var msDiff = dtB.getTime() - dtA.getTime(); // Millisecs
+	var secDiff = msDiff/1000;
+	var minDiff = secDiff/60;
+	var houDiff = minDiff/60;
+	var dayDiff = houDiff/24;
+	var weeDiff = dayDiff/7;
+	var ret = 0; // Integer return value
+
+	switch(interv) {
+		case dojo.date.dateParts.YEAR:
+			ret = yeaDiff;
+			break;
+		case dojo.date.dateParts.QUARTER:
+			var mA = dtA.getMonth();
+			var mB = dtB.getMonth();
+			// Figure out which quarter the months are in
+			var qA = Math.floor(mA/3) + 1;
+			var qB = Math.floor(mB/3) + 1;
+			// Add quarters for any year difference between the dates
+			qB += (yeaDiff * 4);
+			ret = qB - qA;
+			break;
+		case dojo.date.dateParts.MONTH:
+			ret = monDiff;
+			break;
+		case dojo.date.dateParts.WEEK:
+			// Truncate instead of rounding
+			// Don't use Math.floor -- value may be negative
+			ret = parseInt(weeDiff);
+			break;
+		case dojo.date.dateParts.DAY:
+			ret = dayDiff;
+			break;
+		case dojo.date.dateParts.WEEKDAY:
+			var days = Math.round(dayDiff);
+			var weeks = parseInt(days/7);
+			var mod = days % 7;
+			
+			// Even number of weeks
+			if (mod == 0) {
+				days = weeks*5;
+			}
+			// Weeks plus spare change (< 7 days)
+			else {
+				var adj = 0;
+				var aDay = dtA.getDay();
+				var bDay = dtB.getDay();
+
+				weeks = parseInt(days/7);
+				mod = days % 7;
+				// Mark the date advanced by the number of
+				// round weeks (may be zero)
+				var dtMark = new Date(dtA);
+				dtMark.setDate(dtMark.getDate()+(weeks*7));
+				var dayMark = dtMark.getDay();
+				// Spare change days -- 6 or less
+				// ----------
+				// Positive diff
+				if (dayDiff > 0) {
+					switch (true) {
+						// Range starts on Sat
+						case aDay == 6:
+							adj = -1;
+							break;
+						// Range starts on Sun
+						case aDay == 0:
+							adj = 0;
+							break;
+						// Range ends on Sat
+						case bDay == 6:
+							adj = -1;
+							break;
+						// Range ends on Sun
+						case bDay == 0:
+							adj = -2;
+							break;
+						// Range contains weekend
+						case (dayMark + mod) > 5:
+							adj = -2;
+							break;
+						default:
+							// Do nothing
+							break;
+					}
+				}
+				// Negative diff
+				else if (dayDiff < 0) {
+					switch (true) {
+						// Range starts on Sat
+						case aDay == 6:
+							adj = 0;
+							break;
+						// Range starts on Sun
+						case aDay == 0:
+							adj = 1;
+							break;
+						// Range ends on Sat
+						case bDay == 6:
+							adj = 2;
+							break;
+						// Range ends on Sun
+						case bDay == 0:
+							adj = 1;
+							break;
+						// Range contains weekend
+						case (dayMark + mod) < 0:
+							adj = 2;
+							break;
+						default:
+							// Do nothing
+							break;
+					}
+				}
+				days += adj;
+				days -= (weeks*2);
+			}
+			ret = days;
+			
+			break;
+		case dojo.date.dateParts.HOUR:
+			ret = houDiff;
+			break;
+		case dojo.date.dateParts.MINUTE:
+			ret = minDiff;
+			break;
+		case dojo.date.dateParts.SECOND:
+			ret = secDiff;
+			break;
+		case dojo.date.dateParts.MILLISECOND:
+			ret = msDiff;
+			break;
+		default:
+			// Do nothing
+			break;
+	}
+
+	// Round for fractional values and DST leaps
+	return Math.round(ret); // Number (integer)
 };
