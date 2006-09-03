@@ -14,12 +14,8 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		if(!stroke){
 			// don't stroke
 			this.strokeStyle = null;
-			this.rawNode.removeAttribute("stroke");
-			this.rawNode.removeAttribute("stroke-opacity");
-			this.rawNode.removeAttribute("stroke-width");
-			this.rawNode.removeAttribute("stroke-linecap");
-			this.rawNode.removeAttribute("stroke-linejoin");
-			this.rawNode.removeAttribute("stroke-miterlimit");
+			this.rawNode.setAttribute("stroke", "none");
+			this.rawNode.setAttribute("stroke-opacity", 0);
 			return this;
 		}
 		// normalize the stroke
@@ -46,8 +42,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		if(!fill){
 			// don't fill
 			this.fillStyle = null;
-			this.rawNode.removeAttribute("fill");
-			//this.rawNode.removeAttribute("fill-opacity");
+			this.rawNode.setAttribute("fill", "none");
 			this.rawNode.setAttribute("fill-opacity", 0);
 			return this;
 		}
@@ -131,10 +126,15 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	},
 
 	setRawNode: function(rawNode){
-		// no fill by default
-		rawNode.removeAttribute("fill");
-		//rawNode.removeAttribute("fill-opacity");
+		// no fill & stroke by default
+		rawNode.setAttribute("fill", "none");
 		rawNode.setAttribute("fill-opacity", 0);
+		rawNode.setAttribute("stroke", "none");
+		rawNode.setAttribute("stroke-opacity", 0);
+		rawNode.setAttribute("stroke-width", 1);
+		rawNode.setAttribute("stroke-linecap", "butt");
+		rawNode.setAttribute("stroke-linejoin", "miter");
+		rawNode.setAttribute("stroke-miterlimit", 4);
 		this.rawNode = rawNode;
 	},
 
