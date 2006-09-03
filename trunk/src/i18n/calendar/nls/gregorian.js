@@ -19,5 +19,17 @@
 
 	am: 'AM',
 	pm: 'PM',
-	eras: ['BCE','CE']
+	eras: ['BCE','CE'],
+
+	'field-era': "Era",
+	'field-year': "Year",
+	'field-month': "Month",
+	'field-week': "Week",
+	'field-day': "Day",
+	'field-weekday': "Day of the Week",
+	'field-dayperiod': "Dayperiod",
+	'field-hour': "Hour",
+	'field-minute': "Minute",
+	'field-second': "Second",
+	'field-zone': "Zone"	
 })

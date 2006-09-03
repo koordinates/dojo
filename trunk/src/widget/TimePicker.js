@@ -6,6 +6,9 @@ dojo.require("dojo.date.format");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 
+dojo.requireLocalization("dojo.i18n.calendar", "gregorian");
+dojo.requireLocalization("dojo.widget", "TimePicker");
+
 dojo.widget.defineWidget(
 	"dojo.widget.TimePicker",
 	dojo.widget.HtmlWidget,
@@ -23,7 +26,7 @@ dojo.widget.defineWidget(
 		this.classNames = {
 			selectedTime: "selectedItem"
 		};
-		this.any = "any";
+		this.any = "any"; //FIXME: never used?
 		// dom node indecies for selected hour, minute, amPm, and "any time option"
 		this.selectedTime = {
 			hour: "",
@@ -45,6 +48,12 @@ dojo.widget.defineWidget(
 	fillInTemplate: function(){
 		this.initData();
 		this.initUI();
+	},
+
+	postMixInProperties: function(localProperties, frag) {
+		dojo.widget.TimePicker.superclass.postMixInProperties.apply(this, arguments);
+		this.calendar = dojo.i18n.getLocalization("dojo.i18n.calendar", "gregorian", this.lang); // "am","pm"
+		this.widgetStrings = dojo.i18n.getLocalization("dojo.widget", "TimePicker", this.lang); // "any"
 	},
 
 	initData: function() {
@@ -192,21 +201,20 @@ dojo.widget.defineWidget(
 	},
 
 	setSelectedAmPm: function(evt) {
-		if(evt && evt.target) {
-			if(evt.target.nodeType == dojo.dom.ELEMENT_NODE) {
-				var eventTarget = evt.target;
-			} else {
-				var eventTarget = evt.target.parentNode;
+		var eventTarget = evt.target;
+		if(evt && eventTarget) {
+			if(eventTarget.nodeType != dojo.dom.ELEMENT_NODE) {
+				eventTarget = eventTarget.parentNode;
 			}
 			dojo.event.browser.stopEvent(evt);
+			this.selectedTime.amPm = eventTarget.id;
 			dojo.html.setClass(eventTarget, this.classNames.selectedTime);
-			this.selectedTime["amPm"] = eventTarget.innerHTML;
 		} else {
 			evt = evt ? 0 : 1;
 			var amPmNodes = this.amPmContainerNode.getElementsByTagName("td");
 			if(amPmNodes.item(evt)) {
+				this.selectedTime.amPm = amPmNodes.item(evt).id;
 				dojo.html.setClass(amPmNodes.item(evt), this.classNames.selectedTime);
-				this.selectedTime["amPm"] = amPmNodes.item(evt).innerHTML;
 			}
 		}
 	},

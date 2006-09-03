@@ -3,8 +3,8 @@
 		<thead>
 			<tr>
 				<td class="timeCorner cornerTopLeft" valign="top">&nbsp;</td>
-				<td class="timeLabelContainer hourSelector">Hour</td>
-				<td class="timeLabelContainer minutesHeading">Minute</td>
+				<td class="timeLabelContainer hourSelector">${this.calendar.field-hour}</td>
+				<td class="timeLabelContainer minutesHeading">${this.calendar.field-minute}</td>
 				<td class="timeCorner cornerTopRight" valign="top">&nbsp;</td>
 			</tr>
 		</thead>
@@ -80,8 +80,8 @@
 						<tbody dojoAttachPoint="amPmContainerNode" 
 							dojoAttachEvent="onClick: onSetSelectedAmPm;">
 							<tr>
-								<td>AM</td>
-								<td>PM</td>
+								<td id="am">${this.calendar.am}</td>
+								<td id="pm">${this.calendar.pm}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -89,7 +89,7 @@
 				<td class="timeOptions">
 					<div dojoAttachPoint="anyTimeContainerNode" 
 						dojoAttachEvent="onClick: onSetSelectedAnyTime;" 
-						class="anyTimeContainer">any</div>
+						class="anyTimeContainer">${this.widgetStrings.any}</div>
 				</td>
 				<td class="cornerBottomRight">&nbsp;</td>
 			</tr>
