@@ -256,6 +256,10 @@ function test_date_add(){
 	dtB = new Date(2006, 11, 27);
 	jum.assertEquals("add_test1", dtB, dojo.date.add(dtA, interv, 1));
 	
+	dtA = new Date(2005, 11, 27);
+	dtB = new Date(2004, 11, 27);
+	jum.assertEquals("add_test1a", dtB, dojo.date.add(dtA, interv, -1));
+	
 	dtA = new Date(2000, 1, 29);
 	dtB = new Date(2001, 1, 28);
 	jum.assertEquals("add_test2", dtB, dojo.date.add(dtA, interv, 1));
@@ -430,4 +434,183 @@ function test_date_add(){
 	//dtA = new Date(2000, 11, 27, 8, 10, 53, 2);
 	//dtB = new Date(2000, 11, 27, 8, 10, 54, 2);
 	//jum.assertEquals("add_test37", dtB, dojo.date.add(dtA, interv, 1000));
+}
+
+
+function test_date_diff() {
+	var dtA = null; // First date to compare
+	var dtB = null; // Second date to compare
+	var interv = ''; // Interval to compare on (e.g., year, month)
+	
+	interv = dojo.date.dateParts.YEAR;
+	dtA = new Date(2005, 11, 27);
+	dtB = new Date(2006, 11, 27);
+	jum.assertEquals("diff_test1", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2000, 11, 31);
+	dtB = new Date(2001, 0, 1);
+	jum.assertEquals("diff_test2", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	interv = dojo.date.dateParts.QUARTER;
+	dtA = new Date(2000, 1, 29);
+	dtB = new Date(2001, 2, 1);
+	jum.assertEquals("diff_test3", 4, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2000, 11, 1);
+	dtB = new Date(2001, 0, 1);
+	jum.assertEquals("diff_test4", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	interv = dojo.date.dateParts.MONTH;
+	dtA = new Date(2000, 1, 29);
+	dtB = new Date(2001, 2, 1);
+	jum.assertEquals("diff_test5", 13, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2000, 11, 1);
+	dtB = new Date(2001, 0, 1);
+	jum.assertEquals("diff_test6", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	interv = dojo.date.dateParts.WEEK;
+	dtA = new Date(2000, 1, 1);
+	dtB = new Date(2000, 1, 8);
+	jum.assertEquals("diff_test7", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2000, 1, 28);
+	dtB = new Date(2000, 2, 6);
+	jum.assertEquals("diff_test8", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2000, 2, 6);
+	dtB = new Date(2000, 1, 28);
+	jum.assertEquals("diff_test9", -1, dojo.date.diff(dtA, dtB, interv));
+	
+	interv = dojo.date.dateParts.DAY;
+	dtA = new Date(2000, 1, 29);
+	dtB = new Date(2000, 2, 1);
+	jum.assertEquals("diff_test10", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2000, 11, 31);
+	dtB = new Date(2001, 0, 1);
+	jum.assertEquals("diff_test11", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	// DST leap -- check for rounding err
+	// This is dependent on US calendar, but
+	// shouldn't break in other locales
+	dtA = new Date(2005, 3, 3);
+	dtB = new Date(2005, 3, 4);
+	jum.assertEquals("diff_test12", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	interv = dojo.date.dateParts.WEEKDAY;
+	dtA = new Date(2006, 7, 3);
+	dtB = new Date(2006, 7, 11);
+	jum.assertEquals("diff_test13", 6, dojo.date.diff(dtA, dtB, interv));
+	
+	// Positive diffs
+	dtA = new Date(2006, 7, 4);
+	dtB = new Date(2006, 7, 11);
+	jum.assertEquals("diff_test14", 5, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 5);
+	dtB = new Date(2006, 7, 11);
+	jum.assertEquals("diff_test15", 5, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 6);
+	dtB = new Date(2006, 7, 11);
+	jum.assertEquals("diff_test16", 5, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 7);
+	dtB = new Date(2006, 7, 11);
+	jum.assertEquals("diff_test17", 4, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 7);
+	dtB = new Date(2006, 7, 13);
+	jum.assertEquals("diff_test18", 4, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 7);
+	dtB = new Date(2006, 7, 14);
+	jum.assertEquals("diff_test19", 5, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 7);
+	dtB = new Date(2006, 7, 15);
+	jum.assertEquals("diff_test20", 6, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 7);
+	dtB = new Date(2006, 7, 28);
+	jum.assertEquals("diff_test21", 15, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 2, 2);
+	dtB = new Date(2006, 2, 28);
+	jum.assertEquals("diff_test22", 18, dojo.date.diff(dtA, dtB, interv));
+	
+	// Negative diffs
+	dtA = new Date(2006, 7, 11);
+	dtB = new Date(2006, 7, 4);
+	jum.assertEquals("diff_test23", -5, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 11);
+	dtB = new Date(2006, 7, 5);
+	jum.assertEquals("diff_test24", -4, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 11);
+	dtB = new Date(2006, 7, 6);
+	jum.assertEquals("diff_test25", -4, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 11);
+	dtB = new Date(2006, 7, 7);
+	jum.assertEquals("diff_test26", -4, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 13);
+	dtB = new Date(2006, 7, 7);
+	jum.assertEquals("diff_test27", -5, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 14);
+	dtB = new Date(2006, 7, 7);
+	jum.assertEquals("diff_test28", -5, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 15);
+	dtB = new Date(2006, 7, 7);
+	jum.assertEquals("diff_test29", -6, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 7, 28);
+	dtB = new Date(2006, 7, 7);
+	jum.assertEquals("diff_test30", -15, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2006, 2, 28);
+	dtB = new Date(2006, 2, 2);
+	jum.assertEquals("diff_test31", -18, dojo.date.diff(dtA, dtB, interv));
+
+	// Two days on the same weekend -- no weekday diff
+	dtA = new Date(2006, 7, 5);
+	dtB = new Date(2006, 7, 6);
+	jum.assertEquals("diff_test32", 0, dojo.date.diff(dtA, dtB, interv));
+	
+	interv = dojo.date.dateParts.HOUR;
+	dtA = new Date(2000, 11, 31, 23);
+	dtB = new Date(2001, 0, 1, 0);
+	jum.assertEquals("diff_test33", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2000, 11, 31, 12);
+	dtB = new Date(2001, 0, 1, 0);
+	jum.assertEquals("diff_test34", 12, dojo.date.diff(dtA, dtB, interv));
+	
+	interv = dojo.date.dateParts.MINUTE;
+	dtA = new Date(2000, 11, 31, 23, 59);
+	dtB = new Date(2001, 0, 1, 0, 0);
+	jum.assertEquals("diff_test35", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2000, 1, 28, 23, 59);
+	dtB = new Date(2000, 1, 29, 0, 0);
+	jum.assertEquals("diff_test36", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	interv = dojo.date.dateParts.SECOND;
+	dtA = new Date(2000, 11, 31, 23, 59, 59);
+	dtB = new Date(2001, 0, 1, 0, 0, 0);
+	jum.assertEquals("diff_test37", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	interv = dojo.date.dateParts.MILLISECOND;
+	dtA = new Date(2000, 11, 31, 23, 59, 59, 999);
+	dtB = new Date(2001, 0, 1, 0, 0, 0, 0);
+	jum.assertEquals("diff_test38", 1, dojo.date.diff(dtA, dtB, interv));
+	
+	dtA = new Date(2000, 11, 31, 23, 59, 59, 0);
+	dtB = new Date(2001, 0, 1, 0, 0, 0, 0);
+	jum.assertEquals("diff_test39", 1000, dojo.date.diff(dtA, dtB, interv));
 }
