@@ -150,7 +150,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	setShape: function(newShape){
 		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
 		for(var i in this.shape){
-			this.rawNode.setAttribute(i, this.shape[i]);
+			if(i != "type") this.rawNode.setAttribute(i, this.shape[i]);
 		}
 		return this;
 	},
@@ -317,7 +317,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
 		this.attach(rawNode);
 	},
 	setShape: function(newShape){
-		this.shape = dojo.gfx.makeParameters(this.shape, typeof(newShape) == "string" ? { path: newShape } : newShape);
+		this.shape = dojo.gfx.makeParameters(this.shape, typeof(newShape) == "string" ? {path: newShape} : newShape);
 		this.setAbsoluteMode(this.shape.absolute);
 		this.rawNode.setAttribute("d", this.shape.path);
 		return this;
@@ -402,7 +402,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
 		// start point
 		var alpha = Math.atan2(v/ry, u/rx);
 		// end point
-		var beta = Math.atan2( (y-cy)/ry, (x-cx)/rx );
+		var beta = Math.atan2((y-cy)/ry, (x-cx)/rx);
 
 		var theta = isCCW ? beta - alpha : alpha - beta;
 		if(theta < 0) theta += 2*Math.pi;

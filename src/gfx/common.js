@@ -14,11 +14,11 @@ dojo.lang.mixin(dojo.gfx, {
 	defaultCircle:   {type: "circle",   cx: 0, cy: 0, r: 100},
 	defaultLine:     {type: "line",     x1: 0, y1: 0, x2: 100, y2: 100},
 
-	defaultStroke: { color: "black", width: 1, cap: "butt", join: 4 },
-	defaultLinearGradient: { type: "linear", x1: 0, y1: 0, x2: 100, y2: 100, 
-		colors: [{ offset: 0, color: "black" }, { offset: 1, color: "white" }] },
-	defaultRadialGradient: { type: "radial", cx: 0, cy: 0, r: 100, 
-		colors: [{ offset: 0, color: "black" }, { offset: 1, color: "white" }] },
+	defaultStroke: {color: "black", width: 1, cap: "butt", join: 4},
+	defaultLinearGradient: {type: "linear", x1: 0, y1: 0, x2: 100, y2: 100, 
+		colors: [{offset: 0, color: "black"}, {offset: 1, color: "white"}]},
+	defaultRadialGradient: {type: "radial", cx: 0, cy: 0, r: 100, 
+		colors: [{offset: 0, color: "black"}, {offset: 1, color: "white"}]},
 		
 	normalizeColor: function(color){
 		return (color instanceof dojo.gfx.color.Color) ? color : new dojo.gfx.color.Color(color);
@@ -78,8 +78,8 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	setFill:   function(fill)  { return this; },	// ignore
 	
 	// z-index
-	moveToFront: function(){ return this; },
-	moveToBack:  function(){ return this; },
+	moveToFront: function(){ return this; },		// ignore
+	moveToBack:  function(){ return this; },		// ignore
 
 	// apply transformations
 	setTransform: function(matrix){
