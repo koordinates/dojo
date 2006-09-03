@@ -809,12 +809,12 @@ dojo.widget.defineWidget(
 /* Icon
  *********/
 // arguments can be IMG nodes, Image() instances or URLs -- enabled is the only one required
-dojo.widget.Icon = function(enabled, disabled, hover, selected){
+dojo.widget.Icon = function(enabled, disabled, hovered, selected){
 	if(!arguments.length){
 		// FIXME: should this be dojo.raise?
 		throw new Error("Icon must have at least an enabled state");
 	}
-	var states = ["enabled", "disabled", "hover", "selected"];
+	var states = ["enabled", "disabled", "hovered", "selected"];
 	var currentState = "enabled";
 	var domNode = document.createElement("img");
 
@@ -823,7 +823,15 @@ dojo.widget.Icon = function(enabled, disabled, hover, selected){
 		if(dojo.lang.inArray(value, states)){
 			if(this[value]){
 				currentState = value;
-				domNode.setAttribute("src", this[currentState].src);
+				var img = this[currentState];
+				if ((dojo.render.html.ie55 || dojo.render.html.ie60) && img.src && img.src.match(/[.]png$/i) ) {
+					domNode.width = img.width||img.offsetWidth;
+					domNode.height = img.height||img.offsetHeight;
+					domNode.setAttribute("src", dojo.uri.dojoUri("src/widget/templates/images/blank.gif").uri);
+					domNode.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+img.src+"',sizingMethod='image')";
+				} else {
+					domNode.setAttribute("src", img.src);
+				}
 			}
 		}else{
 			throw new Error("Invalid state set on Icon (state: " + value + ")");
@@ -852,7 +860,7 @@ dojo.widget.Icon = function(enabled, disabled, hover, selected){
 
 	this.enable = function(){ this.setState("enabled"); }
 	this.disable = function(){ this.setState("disabled"); }
-	this.hover = function(){ this.setState("hover"); }
+	this.hover = function(){ this.setState("hovered"); }
 	this.select = function(){ this.setState("selected"); }
 
 	this.getSize = function(){
