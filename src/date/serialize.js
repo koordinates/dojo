@@ -129,7 +129,7 @@ dojo.date.toRfc3339 = function(/*Date?*/dateObject, /*String?*/selector) {
 	var _ = dojo.string.pad;
 	var formattedDate = [];
 	if (selector != "dateOnly"){
-		var date = [_(dateObject.getFullYear(),4), _(dateObject.getMonth(),2), _(dateObject.getDate(),2)].join('-');
+		var date = [_(dateObject.getFullYear(),4), _(dateObject.getMonth()+1,2), _(dateObject.getDate(),2)].join('-');
 		formattedDate.push(date);
 	}
 	if (selector != "timeOnly"){
