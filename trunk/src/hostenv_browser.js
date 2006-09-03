@@ -310,10 +310,15 @@ function dj_load_init(){
 	}
 }
 
-// Mozilla exposes the event we could use
-if (document.addEventListener) {
-   document.addEventListener("DOMContentLoaded", dj_load_init, null);
+//	TODO: Double check to make sure that the three cases cover all supported browsers.
+// Mozilla and Opera 9 expose the event we could use
+if(document.addEventListener) {
+	document.addEventListener("DOMContentLoaded", dj_load_init, null);
+
+	//	mainly for Opera 8.5, won't be fired if DOMContentLoaded fired already.
+	document.addEventListener("load", dj_load_init, null);
 }
+
 // for Internet Explorer. readyState will not be achieved on init call, but dojo doesn't need it
 //	however, we'll include it because we don't know if there are other functions added that might.
 /*@cc_on @*/
@@ -334,9 +339,6 @@ if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
         }
     }, 10);
 }
-
-// default for other browsers
-dj_addNodeEvtHdlr(window, "load", dj_load_init);
 //	end DOMContentLoaded
 
 dj_addNodeEvtHdlr(window, "unload", function(){
