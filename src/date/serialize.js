@@ -127,18 +127,20 @@ dojo.date.toRfc3339 = function(/*Date?*/dateObject, /*String?*/selector) {
 	}
 
 	var _ = dojo.string.pad;
-	var formattedDate = "";
+	var formattedDate = [];
 	if (selector != "dateOnly"){
-		formattedDate = [_(dateObject.getFullYear(),4), _(dateObject.getMonth(),2), _(dateObject.getDate(),2)].join('-');
+		var date = [_(dateObject.getFullYear(),4), _(dateObject.getMonth(),2), _(dateObject.getDate(),2)].join('-');
+		formattedDate.push(date);
 	}
 	if (selector != "timeOnly"){
-		formattedDate += [_(dateObject.getHours(),2), _(dateObject.getMinutes(),2), _(dateObject.getSeconds(),2)].join(':');
+		var time = [_(dateObject.getHours(),2), _(dateObject.getMinutes(),2), _(dateObject.getSeconds(),2)].join(':');
 		var timezoneOffset = dateObject.getTimezoneOffset();
-		formattedDate += (timezoneOffset > 0 ? "-" : "+") + 
+		time += (timezoneOffset > 0 ? "-" : "+") + 
 					_(Math.floor(Math.abs(timezoneOffset)/60),2) + ":" +
 					_(Math.abs(timezoneOffset)%60,2);
+		formattedDate.push(time);
 	}
-	return formattedDate; // String
+	return formattedDate.join('T'); // String
 };
 
 dojo.date.fromRfc3339 = function(/*String*/rfcDate) {
