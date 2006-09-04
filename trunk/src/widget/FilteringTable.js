@@ -159,10 +159,10 @@ dojo.widget.defineWidget(
 		this.onDataSelect(obj);
 	},
 	selectByValue: function(/*string*/ val){
-		this.select(this.getDataByKey(val));
+		this.select(this.store.getDataByKey(val));
 	},
 	selectByIndex: function(/*number*/ idx){
-		this.select(this.getDataByIndex(idx));
+		this.select(this.store.getDataByIndex(idx));
 	},
 	selectByRow: function(/*HTMLTableRow*/ row){
 		this.select(this.getDataByRow(row));
@@ -180,10 +180,10 @@ dojo.widget.defineWidget(
 		this.onDataToggle(obj);
 	},
 	toggleSelectionByValue: function(/*string*/val){
-		this.toggleSelection(this.getDataByKey(val));
+		this.toggleSelection(this.store.getDataByKey(val));
 	},
 	toggleSelectionByIndex: function(/*number*/idx){
-		this.toggleSelection(this.getDataByIndex(idx));
+		this.toggleSelection(this.store.getDataByIndex(idx));
 	},
 	toggleSelectionByRow: function(/*HTMLTableRow*/row){
 		this.toggleSelection(this.getDataByRow(row));
