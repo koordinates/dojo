@@ -1,11 +1,9 @@
 dojo.provide("dojo.widget.Chart");
-dojo.provide("dojo.widget.Chart.PlotTypes");
 dojo.provide("dojo.widget.Chart.DataSeries");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.gfx.color.hsl");
-dojo.widget.tags.addParseTreeHandler("dojo:chart");
 
 // Base class for svg and vml implementations of Chart
 dojo.declare(
@@ -33,13 +31,6 @@ dojo.declare(
 	}
 });
 
-dojo.widget.Chart.PlotTypes = {
-	Bar:"bar",
-	Line:"line",
-	Scatter:"scatter",
-	Bubble:"bubble"
-};
-
 /*
  *	Every chart has a set of data series; this is the series.  Note that each
  *	member of value is an object and in the minimum has 2 properties: .x and
@@ -52,7 +43,7 @@ dojo.declare(
 		this.id = "DataSeries"+dojo.widget.Chart.DataSeries.count++;
 		this.key = key;
 		this.label = label||this.id;
-		this.plotType = plotType||0;
+		this.plotType = plotType||"line";	//	let line be the default.
 		this.color = color;
 		this.values = [];
 	},
