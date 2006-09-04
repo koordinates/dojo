@@ -631,7 +631,7 @@ dojo.gfx.createSurface = function(parentNode, width, height){
    s.rawNode.style.height = height + "px";
    s.rawNode.coordsize = width + " " + height;
    s.rawNode.coordorigin = "0 0";
-   parentNode.appendChild(s.rawNode);
+   dojo.byId(parentNode).appendChild(s.rawNode);
    return s;
 };
 

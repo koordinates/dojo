@@ -498,7 +498,7 @@ dojo.gfx.createSurface = function(parentNode, width, height){
 	s.rawNode.setAttribute("width",  width);
 	s.rawNode.setAttribute("height", height);
 	s.createObject(dojo.gfx.svg.Defines);
-	parentNode.appendChild(s.rawNode);
+	dojo.byId(parentNode).appendChild(s.rawNode);
 	return s;
 };
 
