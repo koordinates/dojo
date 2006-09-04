@@ -165,10 +165,10 @@ dojo.data.SimpleStore = function(/* array? */jsonArray){
 				break;
 			}
 		}
+		this.onRemoveData(o);
 		if(idx>-1){
 			data.splice(idx,1);
 		}
-		this.onRemoveData(o);
 	};
 	this.removeDataByKey = function(/*string*/key){
 		//	summary
