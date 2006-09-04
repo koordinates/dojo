@@ -15,9 +15,7 @@
 		dojo.hostenv.writeIncludes();
 
 		//	a simple filtering function
-		var showAlert=0;
 		function dateFilter(dt){
-			if(showAlert++ < 2) alert(typeof(dt));
 			return (dt > new Date('6/1/2004') && dt < new Date('2/1/2006'));
 		}
 		function nameFilter(name){
@@ -52,8 +50,8 @@
 		var theJSONData=[];
 		var names=["William Smith", "Davy Jones", "Lucinda Williams", "Robert Appleton", "Wilma Flintstone", "Charo", "Fluufy the Lamb" ];
 		var dates=["1/1/2004","12/15/2001","4/15/2000","1/1/2006","6/21/2005","9/18/2004"];
-		var outer=5;
-		var inner=5;
+		var outer=10;
+		var inner=10;
 		for(var i=0; i<outer; i++){
 			for(var j=0; j<inner; j++){
 				var o ={

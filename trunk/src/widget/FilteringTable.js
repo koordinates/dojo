@@ -544,7 +544,11 @@ dojo.widget.defineWidget(
 			var b=true;
 			var row=rows[i];
 			for(var j=0; j<this.columns.length; j++){
-				if(!this.columns[j].filterFunction(this.store.getField(this.getDataByRow(row), this.columns[j].getField()))){
+				var value = this.store.getField(this.getDataByRow(row), this.columns[j].getField());
+				if(this.columns[j].getType() == Date && value != null && !value.getYear){
+					value = new Date(value);
+				}
+				if(!this.columns[j].filterFunction(value)){
 					b=false;
 					break;
 				}
