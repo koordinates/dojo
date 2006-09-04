@@ -23,7 +23,7 @@ makeShapes = function(){
 	var r1 = g1.createRect({ x: 200, y: 200 })
 				.setFill("green")
 				.setStroke({})
-				//.setTransform(dojo.gfx.rotategAt(45, 250, 250))
+				//.setTransform(dojo.gfx.matrix.rotategAt(45, 250, 250))
 				;
 	var r2 = surface.createRect().setStroke({})
 				.setFill({ type: "linear", to: { x: 50, y: 100 },
@@ -32,13 +32,13 @@ makeShapes = function(){
 				;
 	var r3 = surface.createRect().setStroke({})
 				.setFill({ type: "linear" })
-				//.setTransform(dojo.gfx.rotategAt(45, 250, 250))
+				//.setTransform(dojo.gfx.matrix.rotategAt(45, 250, 250))
 				;
 	var r4 = g1.createRect({})
 				.setFill("blue")
 				//.setStroke({})
-				//.setTransform(dojo.gfx.rotategAt(45, 350, 250))
-				.setTransform(dojo.gfx.multiply(dojo.gfx.rotategAt(30, 350, 250), { dx: 300, dy: 200 }))
+				//.setTransform(dojo.gfx.matrix.rotategAt(45, 350, 250))
+				.setTransform([dojo.gfx.matrix.rotategAt(30, 350, 250), { dx: 300, dy: 200 }])
 				;
 	var p1 = g1.createPath()
 				.setStroke({})
@@ -47,7 +47,7 @@ makeShapes = function(){
 				.lineTo( 400, 300 )
 				.lineTo( 300, 400 )
 				.curveTo( 400, 300, 400, 200, 300, 100 )
-				//.setTransform(dojo.gfx.rotategAt(45, 250, 250))
+				//.setTransform(dojo.gfx.matrix.rotategAt(45, 250, 250))
 				.setTransform({})
 				;
 	var p2 = g1.createPath(p1.getShape())
@@ -57,7 +57,7 @@ makeShapes = function(){
 				//.lineTo( 400, 300 )
 				//.lineTo( 300, 400 )
 				//.curveTo( 400, 300, 400, 200, 300, 100 )
-				//.setTransform(dojo.gfx.rotategAt(180, 250, 250))
+				//.setTransform(dojo.gfx.matrix.rotategAt(180, 250, 250))
 				.setTransform({ dx: 100 })
 				;
 	var p3 = g1.createPath()
@@ -68,14 +68,14 @@ makeShapes = function(){
 				.lineTo (    0,  100 )
 				.lineTo ( -100,  100 )
 				.curveTo(  100, -100, 100, -200, 0, -300 )
-				//.setTransform(dojo.gfx.rotategAt(-135, 250, 250))
-				.setTransform(dojo.gfx.rotategAt(180, 250, 250))
+				//.setTransform(dojo.gfx.matrix.rotategAt(-135, 250, 250))
+				.setTransform(dojo.gfx.matrix.rotategAt(180, 250, 250))
 				;
 	//g1.setTransform({ dx: 100 });
 	g1.moveToFront();
-	g1.setTransform(dojo.gfx.rotategAt(15, 250, 250));
-	//g1.setTransform(dojo.gfx.multiply(dojo.gfx.rotategAt(45, 250, 250), dojo.gfx.scaleAt(0.5, 250, 250)));
-	//g1.setTransform(dojo.gfx.multiply(dojo.gfx.scaleAt(2, 1, 250, 250), dojo.gfx.rotategAt(45, 250, 250)));
+	g1.setTransform(dojo.gfx.matrix.rotategAt(15, 250, 250));
+	//g1.setTransform([dojo.gfx.matrix.rotategAt(45, 250, 250), dojo.gfx.matrix.scaleAt(0.5, 250, 250)]);
+	//g1.setTransform([dojo.gfx.matrix.scaleAt(2, 1, 250, 250), dojo.gfx.matrix.rotategAt(45, 250, 250)]);
 };
 
 dojo.addOnLoad(makeShapes);

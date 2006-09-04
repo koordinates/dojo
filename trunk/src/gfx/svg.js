@@ -223,7 +223,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			matrix = rawNode.getAttribute("transform");
 			if(matrix.match(/^matrix\(.+\)$/)){
 				var t = matrix.slice(7, -1).split(",");
-				matrix = dojo.gfx.normalizeMatrix({
+				matrix = dojo.gfx.matrix.normalize({
 					xx: parseFloat(t[0]), xy: parseFloat(t[2]), 
 					yx: parseFloat(t[1]), yy: parseFloat(t[3]), 
 					dx: parseFloat(t[4]), dy: parseFloat(t[5])

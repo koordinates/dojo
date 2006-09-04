@@ -1,76 +1,92 @@
-﻿dojo.provide("dojo.gfx.m2d");
+﻿dojo.provide("dojo.gfx.matrix");
 
 dojo.require("dojo.lang.common");
 dojo.require("dojo.math.*");
 
-dojo.require("dojo.experimental");
-dojo.experimental("dojo.gfx.m2d");
-
-dojo.gfx.Matrix2D = function() {
-	if(arguments.length == 1 && arguments[0]){
-		dojo.mixin(this, arguments[0]);
+dojo.gfx.matrix.Matrix2D = function(arg){
+	if(arg){
+		if(arg instanceof Array){
+			if(arg.length > 0){
+				var m = dojo.gfx.matrix.normalize(arg[0]);
+				// combine matrices
+				for(var i = 1; i < arg.length; ++i){
+					var l = m;
+					var r = dojo.gfx.matrix.normalize(arg[i]);
+					m = new dojo.gfx.matrix.Matrix2D();
+					m.xx = l.xx * r.xx + l.xy * r.yx;
+					m.xy = l.xx * r.xy + l.xy * r.yy;
+					m.yx = l.yx * r.xx + l.yy * r.yx;
+					m.yy = l.yx * r.xy + l.yy * r.yy;
+					m.dx = l.xx * r.dx + l.xy * r.dy + l.dx;
+					m.dy = l.yx * r.dx + l.yy * r.dy + l.dy;
+				}
+				dojo.mixin(this, m);
+			}
+		}else{
+			dojo.mixin(this, arg);
+		}
 	}
 };
 
-dojo.extend(dojo.gfx.Matrix2D, {xx: 1, xy: 0, yx: 0, yy: 1, dx: 0, dy: 0});
+dojo.extend(dojo.gfx.matrix.Matrix2D, {xx: 1, xy: 0, yx: 0, yy: 1, dx: 0, dy: 0});
 
-dojo.mixin(dojo.gfx, {
+dojo.mixin(dojo.gfx.matrix, {
 	// matrix constants
-	identity: new dojo.gfx.Matrix2D(),
-	flipX:    new dojo.gfx.Matrix2D({xx: -1}),
-	flipY:    new dojo.gfx.Matrix2D({yy: -1}),
-	flipXY:   new dojo.gfx.Matrix2D({xx: -1, yy: -1}),
+	identity: new dojo.gfx.matrix.Matrix2D(),
+	flipX:    new dojo.gfx.matrix.Matrix2D({xx: -1}),
+	flipY:    new dojo.gfx.matrix.Matrix2D({yy: -1}),
+	flipXY:   new dojo.gfx.matrix.Matrix2D({xx: -1, yy: -1}),
 	// matrix creators
 	translate: function(a, b){
-		return arguments.length > 1 ? new dojo.gfx.Matrix2D({dx: a, dy: b}) : new dojo.gfx.Matrix2D({dx: a.x, dy: a.y});
+		return arguments.length > 1 ? new dojo.gfx.matrix.Matrix2D({dx: a, dy: b}) : new dojo.gfx.matrix.Matrix2D({dx: a.x, dy: a.y});
 	},
 	scale: function(a, b){
-		return arguments.length > 1 ? new dojo.gfx.Matrix2D({xx: a, yy: b}) :
-			   typeof a == "number" ? new dojo.gfx.Matrix2D({xx: a, yy: a}) : new dojo.gfx.Matrix2D({xx: a.x, yy: a.y});
+		return arguments.length > 1 ? new dojo.gfx.matrix.Matrix2D({xx: a, yy: b}) :
+			   typeof a == "number" ? new dojo.gfx.matrix.Matrix2D({xx: a, yy: a}) : new dojo.gfx.matrix.Matrix2D({xx: a.x, yy: a.y});
 	},
 	rotate: function(angle){
 		var c = Math.cos(angle);
 		var s = Math.sin(angle);
-		return new dojo.gfx.Matrix2D({xx: c, xy: s, yx: -s, yy: c});
+		return new dojo.gfx.matrix.Matrix2D({xx: c, xy: s, yx: -s, yy: c});
 	},
 	rotateg: function(degree){ return this.rotate(dojo.math.degToRad(degree)); },
-	skewX:   function(angle) { return new dojo.gfx.Matrix2D({xy: Math.tan(angle)}); },
+	skewX:   function(angle) { return new dojo.gfx.matrix.Matrix2D({xy: Math.tan(angle)}); },
 	skewXg:  function(degree){ return this.skewX(dojo.math.degToRad(degree)); },
-	skewY:   function(angle) { return new dojo.gfx.Matrix2D({yx: -Math.tan(angle)}); },
+	skewY:   function(angle) { return new dojo.gfx.matrix.Matrix2D({yx: -Math.tan(angle)}); },
 	skewYg:  function(degree){ return this.skewY(dojo.math.degToRad(degree)); },
 	// ensure matrix 2D conformance
-	normalizeMatrix: function(matrix){
-		return (matrix instanceof dojo.gfx.Matrix2D) ? matrix : new dojo.gfx.Matrix2D(matrix);
+	normalize: function(matrix){
+		return (matrix instanceof dojo.gfx.matrix.Matrix2D) ? matrix : new dojo.gfx.matrix.Matrix2D(matrix);
 	},
 	// common operations
-	cloneMatrix: function(matrix){
-		var obj = new dojo.gfx.Matrix2D();
+	clone: function(matrix){
+		var obj = new dojo.gfx.matrix.Matrix2D();
 		for(var i in matrix){
 			if(typeof(matrix[i]) == "number" && typeof(obj[i]) == "number" && obj[i] != matrix[i]) obj[i] = matrix[i];
 		}
 		return obj;
 	},
 	invert: function(matrix){
-		var m = this.normalizeMatrix(matrix);
+		var m = this.normalize(matrix);
 		var D = m.xx * m.yy - m.xy * m.yx;
-		return new dojo.gfx.Matrix2D({xx: m.yy/D, xy: -m.xy/D, yx: -m.yx/D, yy: m.xx/D, 
+		return new dojo.gfx.matrix.Matrix2D({xx: m.yy/D, xy: -m.xy/D, yx: -m.yx/D, yy: m.xx/D, 
 			dx: (m.yx * m.dy - m.yy * m.dx) / D, dy: (m.xy * m.dx - m.xx * m.dy) / D});
 	},
 	_multiplyPoint: function(m, x, y){
 		return {x: m.xx * x + m.xy * y + m.dx, y: m.yx * x + m.yy * y + m.dy};
 	},
 	multiplyPoint: function(matrix, a, b){
-		var m = this.normalizeMatrix(matrix);
+		var m = this.normalize(matrix);
 		if(typeof a == "number" && typeof b == "number") return this._multiplyPoint(m, a, b);
 		return this._multiplyPoint(m, a.x, a.y);
 	},
 	multiply: function(matrix){
-		var m = this.normalizeMatrix(matrix);
+		var m = this.normalize(matrix);
 		// combine matrices
 		for(var i = 1; i < arguments.length; ++i){
 			var l = m;
-			var r = this.normalizeMatrix(arguments[i]);
-			m = new dojo.gfx.Matrix2D();
+			var r = this.normalize(arguments[i]);
+			m = new dojo.gfx.matrix.Matrix2D();
 			m.xx = l.xx * r.xx + l.xy * r.yx;
 			m.xy = l.xx * r.xy + l.xy * r.yy;
 			m.yx = l.yx * r.xx + l.yy * r.yx;
