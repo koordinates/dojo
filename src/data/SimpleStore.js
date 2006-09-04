@@ -39,7 +39,7 @@ dojo.data.SimpleStore = function(/* array? */jsonArray){
 		//	Get an array of source objects.
 		var arr = [];
 		for(var i=0; i<data.length; i++){
-			arr.push(data[i]);
+			arr.push(data[i].src);
 		}
 		return arr;	//	array
 	};
