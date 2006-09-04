@@ -529,12 +529,16 @@ dojo.widget.defineWidget(
 		var rows=this.domNode.tBodies[0].rows;
 		for(var i=0; i<rows.length; i++){
 			rows[i].style.display="";
+			if(this.alternateRows){
+				dojo.html[((i % 2 == 1)?"addClass":"removeClass")](rows[i], this.rowAlternateClass);
+			}
 		}
 		this.onFilter();
 	},
 	applyFilters: function(){
 		//	summary
 		//	apply all filters to the table.
+		var alt=0;
 		var rows=this.domNode.tBodies[0].rows;
 		for(var i=0; i<rows.length; i++){
 			var b=true;
@@ -546,6 +550,9 @@ dojo.widget.defineWidget(
 				}
 			}
 			row.style.display=(b?"":"none");
+			if(b && this.alternateRows){
+				dojo.html[((alt++ % 2 == 1)?"addClass":"removeClass")](row, this.rowAlternateClass);
+			}
 		}
 		this.onFilter();
 	},

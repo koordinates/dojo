@@ -15,21 +15,29 @@
 		dojo.hostenv.writeIncludes();
 
 		//	a simple filtering function
+		var showAlert=0;
 		function dateFilter(dt){
+			if(showAlert++ < 2) alert(typeof(dt));
 			return (dt > new Date('6/1/2004') && dt < new Date('2/1/2006'));
 		}
 		function nameFilter(name){
 			return (name.charAt(0) >= 'M' && name.charAt(0) <= 'Z');
 		}
+		function accountFilter(num){
+			return (num < 4);
+		}
 
-		function applyDateModified(){
-			dojo.widget.byId("parsedFromHtml").setFilter("DateModified", dateFilter);
+		function applyDate(key){
+			dojo.widget.byId(key).setFilter("DateAdded", dateFilter);
 		}
-		function applyName(){
-			dojo.widget.byId("parsedFromHtml").setFilter("Name", nameFilter);
+		function applyName(key){
+			dojo.widget.byId(key).setFilter("Name", nameFilter);
 		}
-		function clearFilters(){
-			dojo.widget.byId("parsedFromHtml").clearFilters();
+		function applyAccounts(key){
+			dojo.widget.byId(key).setFilter("getAccounts().length", accountFilter);
+		}
+		function clearFilters(key){
+			dojo.widget.byId(key).clearFilters();
 		}
 
 		var getAccounts=function(){
@@ -44,14 +52,14 @@
 		var theJSONData=[];
 		var names=["William Smith", "Davy Jones", "Lucinda Williams", "Robert Appleton", "Wilma Flintstone", "Charo", "Fluufy the Lamb" ];
 		var dates=["1/1/2004","12/15/2001","4/15/2000","1/1/2006","6/21/2005","9/18/2004"];
-		var outer=20;
-		var inner=10;
+		var outer=5;
+		var inner=5;
 		for(var i=0; i<outer; i++){
 			for(var j=0; j<inner; j++){
 				var o ={
 					Id:(i*outer)+j,
-					name:names[i%names.length],
-					dateAdded:dates[j%dates.length],
+					Name:names[i%names.length],
+					DateAdded:dates[j%dates.length],
 					accounts:[],
 					description:{ 
 						html:'<p>testing the description...</p>',
@@ -174,9 +182,9 @@
 		<div style="font-size:0.85em;">Change the value of Adam's Label (html allowed):</div>
 		<textarea id="updateTestInput" value="" onchange="updateCell(this);"></textarea>
 		<div style=font-size:0.85em;">
-			<input type="button" value="Show only DateModified between 6/1/2004 and 2/1/2006" onclick="applyDateModified();" /> 
-			<input type="button" value="Show only names between M and Z" onclick="applyName();" /> 
-			<input type="button" value="Clear Filters" onclick="clearFilters();" />
+			<input type="button" value="Show only DateModified between 6/1/2004 and 2/1/2006" onclick="applyDate('parsedFromHtml');" /> 
+			<input type="button" value="Show only names between M and Z" onclick="applyName('parsedFromHtml');" /> 
+			<input type="button" value="Clear Filters" onclick="clearFilters('parsedFromHtml');" />
 		</div> 
 	</div>
 	<table dojoType="filteringTable" id="parsedFromHtml" 
@@ -221,13 +229,19 @@
 	</table>
 	<h2>Filtering Table, populated from JSON data</h2>
 	<input type="button" value="Click to populate using JSON data" onclick="populateTable();" />
+	<div style=font-size:0.65em;">
+		<input type="button" value="Show only DateAdded between 6/1/2004 and 2/1/2006" onclick="applyDate('fromJSONData');" /> 
+		<input type="button" value="Show only names between M and Z" onclick="applyName('fromJSONData');" /> 
+		<input type="button" value="Show only # accounts less than 4" onclick="applyAccounts('fromJSONData');" /> 
+		<input type="button" value="Clear Filters" onclick="clearFilters('fromJSONData');" />
+	</div> 
 	<table dojoType="filteringTable" id="fromJSONData" 
 		multiple="true" alternateRows="true"
 		cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
 	<thead>
 		<tr>
-			<th field="name" dataType="String">Name</th>
-			<th field="dateAdded" dataType="Date" align="center">Date Added</th>
+			<th field="Name" dataType="String">Name</th>
+			<th field="DateAdded" dataType="Date" align="center">Date Added</th>
 			<th field="getAccounts().length" dataType="Number" align="center"># of accounts</th>
 			<th field="getDescription().getHtml()" dataType="html">Description</th>
 		</tr>
