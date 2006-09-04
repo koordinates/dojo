@@ -513,7 +513,7 @@ dojo.widget.defineWidget(
 		}
 		this.applyFilters();
 	}, 
-	clearFilterByIndex: function(/* string */field){
+	clearFilterByIndex: function(/* number */idx){
 		//	summary
 		//	clear a filtering function on the passed column index.
 		this.columns[idx].filterFunction=this._defaultFilter;
