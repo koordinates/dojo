@@ -1,7 +1,7 @@
 dojo.kwCompoundRequire({
 	common: [
 		"dojo.gfx.color",
-		"dojo.gfx.m2d",
+		"dojo.gfx.matrix",
 		"dojo.gfx.common"
 	]
 });

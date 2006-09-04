@@ -218,7 +218,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			matrix.dx = s.offset.x / 0.75;
 			matrix.dy = s.offset.y / 0.75;
 		}
-		return dojo.gfx.normalizeMatrix(matrix);
+		return dojo.gfx.matrix.normalize(matrix);
 	},
 
 	attach: function(rawNode){

@@ -83,21 +83,21 @@ dojo.lang.extend(dojo.gfx.Shape, {
 
 	// apply transformations
 	setTransform: function(matrix){
-		this.matrix = dojo.gfx.cloneMatrix(matrix ? dojo.gfx.normalizeMatrix(matrix) : dojo.gfx.identity, true);
+		this.matrix = dojo.gfx.matrix.clone(matrix ? dojo.gfx.matrix.normalize(matrix) : dojo.gfx.identity, true);
 		return this._applyTransform();
 	},
 	
 	// apply left & right transformation
 	applyRightTransform: function(matrix){
-		return matrix ? this.setTransform(dojo.gfx.multiply(this.matrix, matrix)) : this;
+		return matrix ? this.setTransform([this.matrix, matrix]) : this;
 	},
 	applyLeftTransform: function(matrix){
-		return matrix ? this.setTransform(dojo.gfx.multiply(matrix, this.matrix)) : this;
+		return matrix ? this.setTransform([matrix, this.matrix]) : this;
 	},
 
 	// a shortcut for apply-right
 	applyTransform: function(matrix){
-		return matrix ? this.setTransform(dojo.gfx.multiply(this.matrix, matrix)) : this;
+		return matrix ? this.setTransform([this.matrix, matrix]) : this;
 	},
 	
 	// virtual group methods
@@ -112,11 +112,11 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		return this._updateParentMatrix(matrix);
 	},
 	_updateParentMatrix: function(matrix){
-		this.parentMatrix = matrix ? dojo.gfx.cloneMatrix(matrix) : null;
+		this.parentMatrix = matrix ? dojo.gfx.matrix.clone(matrix) : null;
 		return this._applyTransform();
 	},
 	_getRealMatrix: function(){
-		return this.parentMatrix ? dojo.gfx.multiply(this.parentMatrix, this.matrix) : this.matrix;
+		return this.parentMatrix ? new dojo.gfx.matrix.Matrix2D([this.parentMatrix, this.matrix]) : this.matrix;
 	}
 });
 
