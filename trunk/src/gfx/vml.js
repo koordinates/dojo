@@ -613,6 +613,7 @@ dojo.lang.extend(dojo.gfx.Surface, {
 		if(!this.rawNode) return this;
 		this.rawNode.style.width = width;
 		this.rawNode.style.height = height;
+		this.rawNode.coordsize = width + " " + height;
 		return this;
 	},
 	getDimensions: function(){
