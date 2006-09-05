@@ -126,23 +126,33 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		var matrix = this._getRealMatrix();
 		if(!matrix) return this;
 		var skew = this.rawNode.skew;
-		skew.on = false;
-		var mt = matrix.xx.toFixed(8) + " " + matrix.xy.toFixed(8) + " " + 
-			matrix.yx.toFixed(8) + " " + matrix.yy.toFixed(8) + " 0 0";
-		var offset = Math.floor(matrix.dx).toFixed() + "px " + Math.floor(matrix.dy).toFixed() + "px";
-		var l = parseFloat(this.rawNode.style.left);
-		var t = parseFloat(this.rawNode.style.top);
-		var w = parseFloat(this.rawNode.style.width);
-		var h = parseFloat(this.rawNode.style.height);
-		if(isNaN(l)) l = 0;
-		if(isNaN(t)) t = 0;
-		if(isNaN(w)) w = 1;
-		if(isNaN(h)) h = 1;
-		var origin = (-l / w - 0.5).toFixed(8) + " " + (-t / h - 0.5).toFixed(8);
-		skew.matrix =  mt;
-		skew.origin = origin;
-		skew.offset = offset;
-		skew.on = true;
+		if(typeof(skew) == "undefined"){
+			for(var i = 0; i < this.rawNode.childNodes.length; ++i){
+				if(this.rawNode.childNodes[i].tagName == "skew"){
+					skew = this.rawNode.childNodes[i];
+					break;
+				}
+			}
+		}
+		if(skew){
+			skew.on = false;
+			var mt = matrix.xx.toFixed(8) + " " + matrix.xy.toFixed(8) + " " + 
+				matrix.yx.toFixed(8) + " " + matrix.yy.toFixed(8) + " 0 0";
+			var offset = Math.floor(matrix.dx).toFixed() + "px " + Math.floor(matrix.dy).toFixed() + "px";
+			var l = parseFloat(this.rawNode.style.left);
+			var t = parseFloat(this.rawNode.style.top);
+			var w = parseFloat(this.rawNode.style.width);
+			var h = parseFloat(this.rawNode.style.height);
+			if(isNaN(l)) l = 0;
+			if(isNaN(t)) t = 0;
+			if(isNaN(w)) w = 1;
+			if(isNaN(h)) h = 1;
+			var origin = (-l / w - 0.5).toFixed(8) + " " + (-t / h - 0.5).toFixed(8);
+			skew.matrix =  mt;
+			skew.origin = origin;
+			skew.offset = offset;
+			skew.on = true;
+		}
 		return this;
 	},
 
@@ -233,9 +243,6 @@ dojo.lang.extend(dojo.gfx.Shape, {
 });
 
 dojo.declare("dojo.gfx.Group", dojo.gfx.VirtualGroup, {
-	_processNewObject: function(shape){
-		this.add(shape);
-	},
 	attach: function(rawNode){
 		if(rawNode){
 			this.rawNode = rawNode;
@@ -244,6 +251,22 @@ dojo.declare("dojo.gfx.Group", dojo.gfx.VirtualGroup, {
 			this.strokeStyle = null;
 			this.matrix = null;
 		}
+	},
+	add: function(shape){
+		if(this != shape.getParent()){
+			this.rawNode.appendChild(shape.rawNode);
+			this.inherited("add", [shape]);
+		}
+		return this;
+	},
+	remove: function(shape, silently){
+		if(this == shape.getParent()){
+			if(this.rawNode == shape.rawNode.parentNode){
+				this.rawNode.removeChild(shape.rawNode);
+			}
+			this.inherited("remove", [shape, silently]);
+		}
+		return this;
 	}
 });
 dojo.gfx.Group.nodeType = "group";
@@ -568,7 +591,7 @@ var creators = {
 		this.rawNode.appendChild(node);
 		if(overrideSize) this._overrideSize(node);
 		shape.setShape(rawShape);
-		this._processNewObject(shape);
+		this.add(shape);
 		return shape;
 	},
 	_overrideSize: function(node){
@@ -623,8 +646,26 @@ dojo.lang.extend(dojo.gfx.Surface, {
 	getDimensions: function(){
 		return this.rawNode ? { width: this.rawNode.style.width, height: this.rawNode.style.height } : null;
 	},
-	_processNewObject: function(shape){
-		// nothing
+	// group control
+	add: function(shape){
+		var oldParent = shape.getParent();
+		if(this != oldParent){
+			this.rawNode.appendChild(shape.rawNode);
+			if(oldParent){
+				oldParent.remove(shape, true);
+			}
+			shape._setParent(this, null);
+		}
+		return this;
+	},
+	remove: function(shape, silently){
+		if(this == shape.getParent()){
+			if(this.rawNode == shape.rawNode.parentNode){
+				this.rawNode.removeChild(shape.rawNode);
+			}
+			shape._setParent(null, null);
+		}
+		return this;
 	}
 });
 
