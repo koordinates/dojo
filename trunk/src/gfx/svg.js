@@ -518,8 +518,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
 });
 dojo.gfx.Path.nodeType = "path";
 
-// FIXME: why the hell is this global!?!!
-var creators = {
+dojo.gfx._creators = {
 	// creators
 	createPath: function(path){
 		return this.createObject(dojo.gfx.Path, path);
@@ -637,10 +636,10 @@ dojo.gfx.attachSurface = function(node){
 	return s;
 };
 
-dojo.lang.extend(dojo.gfx.Group, creators);
-dojo.lang.extend(dojo.gfx.Surface, creators);
+dojo.lang.extend(dojo.gfx.Group, dojo.gfx._creators);
+dojo.lang.extend(dojo.gfx.Surface, dojo.gfx._creators);
 
-delete creators;
+delete dojo.gfx._creators;
 
 // Gradient and pattern
 dojo.gfx.svg.Defines = function(){

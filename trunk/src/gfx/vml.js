@@ -648,7 +648,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
 });
 dojo.gfx.Path.nodeType = "shape";
 
-var creators = {
+dojo.gfx._creators = {
 	createRect: function(rect){
 		return this.createObject(dojo.gfx.Rect, rect);
 	},
@@ -688,10 +688,10 @@ var creators = {
 	}
 };
 
-dojo.lang.extend(dojo.gfx.Group, creators);
-dojo.lang.extend(dojo.gfx.Surface, creators);
+dojo.lang.extend(dojo.gfx.Group, dojo.gfx._creators);
+dojo.lang.extend(dojo.gfx.Surface, dojo.gfx._creators);
 
-delete creators;
+delete dojo.gfx._creators;
 
 dojo.gfx.attachNode = function(node){
 	if(!node) return null;
