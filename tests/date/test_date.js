@@ -4,11 +4,12 @@ dojo.require("dojo.date.common");
  *******************************/
 
 function test_date_setDayOfYear () {
-	//dojo.date.setDayOfYear(new Date(2006,2,1), 23);
+	jum.assertEquals("getDayOfYear_test1", 23, dojo.date.setDayOfYear(new Date(2006,0,1), 23).getDate());
 }
 
 function test_date_getDayOfYear () {
-	//dojo.date.getDayOfYear(new Date(2006,0,1));
+	jum.assertEquals("getDayOfYear_test1", 1, dojo.date.getDayOfYear(new Date(2006,0,1)));
+	jum.assertEquals("getDayOfYear_test2", 32, dojo.date.getDayOfYear(new Date(2006,1,1)));
 }
 
 
