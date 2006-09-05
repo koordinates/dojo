@@ -153,14 +153,13 @@ dojo.widget.defineWidget(
 				}else if(action.action == "wipe"){
 					dojo.lfx.html.wipeIn(component, duration).play();
 				}else if(action.action == "color"){
-					var from = new dojo.gfx.color.Color(action.from).toRgb();
-					var to = new dojo.gfx.color.Color(action.to).toRgb();
-					var anim = new dojo.animation.Animation(new dojo.math.curves.Line(from, to), duration, 0);
-					var node = component;
-					dojo.event.connect(anim, "onAnimate", function(e) {
-						node.style.color = "rgb(" + e.coordsAsInts().join(",") + ")";
-					});
-					anim.play(true);
+					var cc = dojo.gfx.color.Color;
+					dojo.lfx.propertyAnimation([component], { 
+						"color": {
+							start: new cc(action.from),
+							end: new cc(action.to)
+						}
+					}, duration).play(true);
 				}else if(action.action == "bgcolor"){
 					dojo.lfx.html.unhighlight(component, action.to, duration).play();
 				}else if(action.action == "remove"){
