@@ -467,9 +467,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
 			// draw the Pi/4 arc
 			Ps = arcQuadricPI(angle, isCCW);
 			// curveTo( Q1, Q2, P2 )
-			this.curveTo(Ps[1].x.toFixed(8), Ps[1].y.toFixed(8), 
-				Ps[3].x.toFixed(8), Ps[3].y.toFixed(8), 
-				Ps[2].x.toFixed(8), Ps[2].y.toFixed(8) );
+			this.curveTo(Ps[1].x, Ps[1].y, Ps[3].x, Ps[3].y, Ps[2].x, Ps[2].y);
 			angle += offsetAngle;
 		}
 
@@ -477,9 +475,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
 		offsetAngle = theta % (Math.PI / 4);
 		dojo.debug("offsetAngle=" + offsetAngle);
 		Ps = arcToAngle(angle, offsetAngle, isCCW);
-		return this.curveTo(Ps[1].x.toFixed(8), Ps[1].y.toFixed(8), 
-			Ps[3].x.toFixed(8), Ps[3].y.toFixed(8), 
-			Ps[2].x.toFixed(8), Ps[2].y.toFixed(8) );
+		return this.curveTo(Ps[1].x, Ps[1].y, Ps[3].x, Ps[3].y, Ps[2].x, Ps[2].y);
 	},
 	arcTo: function(endAngle, cx, cy, rx, ry, xRotate, isCCW) {
 		var x = this.lastPos.x - cx;
