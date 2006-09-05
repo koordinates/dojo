@@ -75,14 +75,14 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		return this;
 	},
 	
-	_setGradient: function(f, nodeType){
+	_setGradient: function(/*Object*/f, /*String*/nodeType){
 		var def_elems = this.rawNode.parentNode.getElementsByTagName("defs");
-		if(def_elems.length == 0) return this;
+		if(def_elems.length == 0){ return this; }
 		this.fillStyle = f;
 		var defs = def_elems[0];
 		var gradient = this.rawNode.getAttribute("fill");
 		if(gradient && gradient.match(/^url\(#.+\)$/)){
-			gradient = document.getElementById(gradient.slice(5, -1));
+			gradient = dojo.byId(gradient.slice(5, -1));
 			if(gradient.tagName.toLowerCase() != nodeType.toLowerCase()){
 				var id = gradient.id;
 				gradient.parentNode.removeChild(gradient);
@@ -150,7 +150,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	setShape: function(newShape){
 		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
 		for(var i in this.shape){
-			if(i != "type") this.rawNode.setAttribute(i, this.shape[i]);
+			if(i != "type"){ this.rawNode.setAttribute(i, this.shape[i]); }
 		}
 		return this;
 	},
@@ -159,9 +159,9 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		var fillStyle = null;
 		if(rawNode){
 			var fill = rawNode.getAttribute("fill");
-			if(fill == "none") return null;
+			if(fill == "none"){ return; }
 			if(fill && fill.match(/^url\(#.+\)$/)){
-				var gradient = document.getElementById(fill.slice(5, -1));
+				var gradient = dojo.byId(fill.slice(5, -1));
 				switch(gradient.tagName.toLowerCase()){
 					case "lineargradient":
 						fillStyle = this._getGradient(dojo.gfx.defaultLinearGradient, gradient);
@@ -198,8 +198,8 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		return fillStyle;
 	},
 
-	attachStroke: function(rawNode) {
-		if(!rawNode) return null;
+	attachStroke: function(rawNode){
+		if(!rawNode){ return; }
 		var stroke = rawNode.getAttribute("stroke");
         if(stroke == null || stroke == "none") return null;
 		var strokeStyle = dojo.lang.shallowCopy(dojo.gfx.defaultStroke, true);
@@ -217,9 +217,9 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		return strokeStyle;
 	},
 
-	attachTransform: function(rawNode) {
+	attachTransform: function(rawNode){
 		var matrix = null;
-		if(rawNode) {
+		if(rawNode){
 			matrix = rawNode.getAttribute("transform");
 			if(matrix.match(/^matrix\(.+\)$/)){
 				var t = matrix.slice(7, -1).split(",");
@@ -294,7 +294,9 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.Shape, {
 	setShape: function(points){
 		if(points && points instanceof Array){
 			this.shape = dojo.gfx.makeParameters(this.shape, { points: points });
-			if(closed && this.shape.points.length) this.shape.points.push(this.shape.points[0]);
+			if(closed && this.shape.points.length){ 
+				this.shape.points.push(this.shape.points[0]);
+			}
 		}else{
 			this.shape = dojo.gfx.makeParameters(this.shape, points);
 		}
@@ -403,7 +405,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
 		var beta = Math.atan2((y-cy)/ry, (x-cx)/rx);
 
 		var theta = isCCW ? beta - alpha : alpha - beta;
-		if(theta < 0) theta += 2*Math.pi;
+		if(theta < 0){ theta += 2*Math.pi; }
 		
 		var largearc = theta > Math.pi/2 ? 1 : 0;
 		
@@ -412,6 +414,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
 });
 dojo.gfx.Path.nodeType = "path";
 
+// FIXME: why the hell is this global!?!!
 var creators = {
 	// creators
 	createPath: function(path){
@@ -435,8 +438,12 @@ var creators = {
 	createGroup: function(){
 		return this.createObject(dojo.gfx.Group);
 	},
-	createObject: function(shapeType, rawShape) {
-		if(!this.rawNode) return null;
+	createObject: function(/*Function*/shapeType, /*Object*/rawShape){
+		// summary: creates an instance of the passed shapeType class
+		// shapeType: a class constructor to create an instance of
+		// rawShape: properties to be passed in to the classes "setShape" method
+
+		if(!this.rawNode){ return null; }
 		var shape = new shapeType();
 		var node = document.createElementNS(dojo.svg.xmlns.svg, shapeType.nodeType); 
 		shape.setRawNode(node);
@@ -492,14 +499,16 @@ dojo.gfx.attachNode = function(node){
 };
 
 dojo.lang.extend(dojo.gfx.Surface, {
-	setDimensions: function(width, height){
-		if(!this.rawNode) return this;
+	setDimensions: function(/*String*/width, /*String*/height){
+		// summary: sets the width and height of the rawNode
+		if(!this.rawNode){ return this; }
 		this.rawNode.setAttribute("width",  width);
 		this.rawNode.setAttribute("height", height);
-		return this;
+		return this; // dojo.gfx.Surface
 	},
 	getDimensions: function(){
-		return this.rawNode ? {width: this.rawNode.getAttribute("width"), height: this.rawNode.getAttribute("height")} : null;
+		// summary: returns an object with properties "width" and "height"
+		return this.rawNode ? {width: this.rawNode.getAttribute("width"), height: this.rawNode.getAttribute("height")} : null; // Object
 	}
 });
 
