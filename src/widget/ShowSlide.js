@@ -42,35 +42,44 @@ dojo.widget.defineWidget(
 	noClick: false,
 	templatePath: dojo.uri.dojoUri("src/widget/templates/ShowSlide.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/ShowSlide.css"),
-	fillInTemplate: function(){
+	postCreate: function(){
 		this.htmlTitle.innerHTML = this.title;
 
+		var actions = this.getChildrenOfType("ShowAction", false);
+		var atypes = {};
+		dojo.lang.forEach(actions, function(act){ atypes[act.on] = true; });
+
 		this._components = {};
-		var nodes = this.containerNode.all ? this.containerNode.all : this.containerNode.getElementsByTagName('*');
-		for(var i = 0, node; node = nodes[i]; i++){
+		var cn = this.containerNode;
+		var nodes = dojo.render.html.ie ? cn.all : cn.getElementsByTagName('*');
+		dojo.lang.forEach(nodes, function(node){
 			var as = node.getAttribute("as");
 			if(as){
 				if(!this._components[as]){
 					this._components[as] = [];
 				}
 				this._components[as].push(node);
-			}
-		}
-	},
-	postCreate: function(){
-		this._actions = [];
-		for(var i = 0, child; child = this.children[i]; i++){
-			if(child.widgetType == "ShowAction"){
-				this._actions.push(child);
-				var components = this._components[child.on];
-				for(var j = 0, component; component = components[j]; j++){
-					if(child.action && child.action != "remove"){
-						this.hideComponent(component);
-					}
+				if(!atypes[as]){
+					var tmpAction = dojo.widget.createWidget("ShowAction", { on: as });
+					this.addChild(tmpAction);
+					atypes[as] = true;
 				}
 			}
-		}
+		}, this);
+
+		this._actions = [];
+		actions = this.getChildrenOfType("ShowAction", false);
+		dojo.lang.forEach(actions, function(child){
+			this._actions.push(child);
+			var components = this._components[child.on];
+			for(var j = 0, component; component = components[j]; j++){
+				if(child.action && child.action != "remove"){
+					this.hideComponent(component);
+				}
+			}
+		}, this);
 	},
+
 	previousAction: function(/*Event?*/ event){
 		if(!this.parent.stopEvent(event)){
 			return false;
@@ -153,13 +162,14 @@ dojo.widget.defineWidget(
 				}else if(action.action == "wipe"){
 					dojo.lfx.html.wipeIn(component, duration).play();
 				}else if(action.action == "color"){
-					var cc = dojo.gfx.color.Color;
-					dojo.lfx.propertyAnimation([component], { 
-						"color": {
-							start: new cc(action.from),
-							end: new cc(action.to)
-						}
-					}, duration).play(true);
+					var from = new dojo.gfx.color.Color(action.from).toRgb();
+					var to = new dojo.gfx.color.Color(action.to).toRgb();
+					var anim = new dojo.animation.Animation(new dojo.math.curves.Line(from, to), duration, 0);
+					var node = component;
+					dojo.event.connect(anim, "onAnimate", function(e) {
+						node.style.color = "rgb(" + e.coordsAsInts().join(",") + ")";
+					});
+					anim.play(true);
 				}else if(action.action == "bgcolor"){
 					dojo.lfx.html.unhighlight(component, action.to, duration).play();
 				}else if(action.action == "remove"){
