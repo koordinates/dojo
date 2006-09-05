@@ -7,7 +7,7 @@ dojo.requireLocalization("dojo.i18n.calendar","gregorian","ja-jp");
 dojo.require("dojo.date.format");
 
 function test_date_format() {
-	var date = new Date(2006, 7, 11, 0, 55, 12, 3456);
+	var date = new Date(2006, 7, 11, 0, 55, 12, 345);
 
 	jum.assertEquals("format_test1", "Friday, August 11, 2006", dojo.date.format(date, {formatLength:'full',selector:'dateOnly', locale:'en-us'}));
 	jum.assertEquals("format_test2", "vendredi 11 ao\xFBt 2006", dojo.date.format(date, {formatLength:'full',selector:'dateOnly', locale:'fr-fr'}));
@@ -18,6 +18,13 @@ function test_date_format() {
 	jum.assertEquals("format_test6", "11/08/06", dojo.date.format(date, {formatLength:'short',selector:'dateOnly', locale:'fr-fr'}));
 	jum.assertEquals("format_test7", "11.08.06", dojo.date.format(date, {formatLength:'short',selector:'dateOnly', locale:'de-at'}));
 	jum.assertEquals("format_test8", "06/08/11", dojo.date.format(date, {formatLength:'short',selector:'dateOnly', locale:'ja-jp'}));
+
+	jum.assertEquals("format_test9", "12:55 AM", dojo.date.format(date, {formatLength:'short',selector:'timeOnly', locale:'en-us'}));
+	jum.assertEquals("format_test10", "12:55:12", dojo.date.format(date, {timePattern:'h:m:s',selector:'timeOnly'}));
+	jum.assertEquals("format_test11", "12:55:12.35", dojo.date.format(date, {timePattern:'h:m:s.SS',selector:'timeOnly'}));
+	jum.assertEquals("format_test12", "24:55:12.35", dojo.date.format(date, {timePattern:'k:m:s.SS',selector:'timeOnly'}));
+	jum.assertEquals("format_test13", "0:55:12.35", dojo.date.format(date, {timePattern:'H:m:s.SS',selector:'timeOnly'}));
+	jum.assertEquals("format_test14", "0:55:12.35", dojo.date.format(date, {timePattern:'K:m:s.SS',selector:'timeOnly'}));
 }
 
 function test_date_strftime() {

@@ -150,9 +150,22 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 				case 'K':
 				case 'k':
 					var h = dateObject.getHours();
-					if((h>11)&&(c=='h' || c=='K')){h-=12;}
-					if(c=='h' || c=='k'){h++;}
-					s = h; pad = true;
+					// strange choices in the date format make it impossible to write this succinctly
+					switch (c) {
+						case 'h': // 1-12
+							s = (h % 12) || 12;
+							break;
+						case 'H': // 0-23
+							s = h;
+							break;
+						case 'K': // 0-11
+							s = (h % 12);
+							break;
+						case 'k': // 1-24
+							s = h || 24;
+							break;
+					}
+					pad = true;
 					break;
 				case 'm':
 					s = dateObject.getMinutes(); pad = true;
@@ -161,7 +174,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 					s = dateObject.getSeconds(); pad = true;
 					break;
 				case 'S':
-					s = Math.round(dateObject.getMilliseconds() * Math.pow(10, l));
+					s = Math.round(dateObject.getMilliseconds() * Math.pow(10, l-3));
 					break;
 				case 'Z':
 					var offset = dateObject.getTimezoneOffset();
