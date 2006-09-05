@@ -6,8 +6,8 @@ dojo.widget.defineWidget(
 	dojo.widget.HtmlWidget,
 {
 	on: "",
-	action: "",
-	duration: 0,
+	action: "fade",
+	duration: 350,
 	from: "",
 	to: "",
 	auto: "false"
