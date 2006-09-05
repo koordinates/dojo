@@ -4,19 +4,18 @@ dojo.provide("dojo.date.common");
 /* Supplementary Date Functions
  *******************************/
 
-dojo.date.setDayOfYear = function (dateObject, dayofyear) {
+dojo.date.setDayOfYear = function(/*Date*/dateObject, /*Number*/dayOfYear) {
 	dateObject.setMonth(0);
-	dateObject.setDate(dayofyear);
-	return dateObject;
+	dateObject.setDate(dayOfYear);
+	return dateObject; // Date
 }
 
-dojo.date.getDayOfYear = function (dateObject) {
-	var firstDayOfYear = new Date(dateObject.getFullYear(), 0, 1);
+dojo.date.getDayOfYear = function(/*Date*/dateObject) {
+	var fullYear = dateObject.getFullYear();
+	var lastDayOfPrevYear = new Date(fullYear-1, 11, 31);
 	return Math.floor((dateObject.getTime() -
-		firstDayOfYear.getTime()) / 86400000);
+		lastDayOfPrevYear.getTime()) / 86400000); // Number
 }
-
-
 
 
 dojo.date.setWeekOfYear = function (dateObject, week, firstDay) {
