@@ -7,9 +7,9 @@ dojo.require("dojo.string.common");
 
 dojo.date.setIso8601 = function (dateObject, formattedString){
 	var comps = (formattedString.indexOf("T") == -1) ? formattedString.split(" ") : formattedString.split("T");
-	dojo.date.setIso8601Date(dateObject, comps[0]);
-	if (comps.length == 2) { dojo.date.setIso8601Time(dateObject, comps[1]); }
-	return dateObject;
+	dateObject = dojo.date.setIso8601Date(dateObject, comps[0]);
+	if (comps.length == 2) { dateObject = dojo.date.setIso8601Time(dateObject, comps[1]); }
+	return dateObject; /* Date or null */
 };
 
 dojo.date.fromIso8601 = function (formattedString) {
@@ -23,7 +23,7 @@ dojo.date.setIso8601Date = function (dateObject, formattedString) {
 	var d = formattedString.match(new RegExp(regexp));
 	if(!d) {
 		dojo.debug("invalid date string: " + formattedString);
-		return false;
+		return null;
 	}
 	var year = d[1];
 	var month = d[4];
@@ -32,7 +32,7 @@ dojo.date.setIso8601Date = function (dateObject, formattedString) {
 	var week = d[10];
 	var dayofweek = (d[12]) ? d[12] : 1;
 
-	dateObject.setYear(year);
+	dateObject.setFullYear(year);
 	
 	if (dayofyear) { 
 		dateObject.setMonth(0);
@@ -85,7 +85,7 @@ dojo.date.setIso8601Time = function (dateObject, formattedString) {
 	d = formattedString.match(new RegExp(regexp));
 	if(!d) {
 		dojo.debug("invalid time string: " + formattedString);
-		return false;
+		return null;
 	}
 	var hours = d[1];
 	var mins = Number((d[3]) ? d[3] : 0);
@@ -122,6 +122,7 @@ dojo.date.toRfc3339 = function(/*Date?*/dateObject, /*String?*/selector) {
 //		"dateOnly" or "timeOnly" to format selected portions of the Date object.
 //		Date and time will be formatted by default.
 
+//FIXME: tolerate Number, string input?
 	if(!dateObject) {
 		dateObject = new Date();
 	}
@@ -157,6 +158,5 @@ dojo.date.fromRfc3339 = function(/*String*/rfcDate) {
 		rfcDate = rfcDate.replace("Tany","");
 	}
 	var dateObject = new Date();
-	dojo.date.setIso8601(dateObject, rfcDate);
-	return dateObject; // Date
+	return dojo.date.setIso8601(dateObject, rfcDate); // Date or null
 };
