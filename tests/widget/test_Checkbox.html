@@ -15,6 +15,16 @@
 	dojo.require("dojo.widget.Checkbox");
 
 </script>
+<script>
+function outputValues(form){
+	for(var i=0;i<form.elements.length;i++){
+		var e = form.elements[i];
+		dojo.debug("submit: name="+e.name+" id="+e.id+" value="+e.value);
+	}
+	return false;
+}
+
+</script>
 </head>
 <body style="padding: 50px;">
 
@@ -23,10 +33,11 @@ Here are some checkboxes.  Try clicking, and hovering:
 </p>
 
 <p>
+<form onSubmit="return outputValues(this);">
 	<input type="checkbox" name="cb0" id="cb0" />
 		<label for="cb0">Vanilla (non-dojo) checkbox (for comparison purposes)</label>
 	<br>
-	<input type="checkbox" name="cb1" widgetId="cb1" dojoType="Checkbox">
+	<input type="checkbox" name="cb1" widgetId="cb1" value="foo" dojoType="Checkbox">
 		<label for="cb1">normal checkbox</label>
 	<br>
 	<input type="checkbox" name="cb2" id="cb2" dojoType="Checkbox" checked="checked"/>
@@ -41,6 +52,8 @@ Here are some checkboxes.  Try clicking, and hovering:
 	<input type="checkbox" name="cb5" id="cb5" />
 		<label for="cb5">Vanilla (non-dojo) checkbox (for comparison purposes)</label>
 	<br>
+	<input type="submit" />
+</form>
 </p>
 <p>HTML after</p>
 <p>HTML after</p>
