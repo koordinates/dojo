@@ -295,8 +295,8 @@ dojo.declare("dojo.gfx.Rect", dojo.gfx.Shape, {
 		with(this.rawNode.style){
 			left   = ts.x.toFixed();
 			top    = ts.y.toFixed();
-			width  = (ts.width.indexOf("%") >= 0 ) ? ts.width : ts.width.toFixed();
-			height = (ts.height.indexOf("%") >= 0 ) ? ts.height : ts.height.toFixed();
+			width  = (typeof(ts.width) == "string" && ts.width.indexOf("%") >= 0 ) ? ts.width : ts.width.toFixed();
+			height = (typeof(ts.width) == "string" && ts.height.indexOf("%") >= 0 ) ? ts.height : ts.height.toFixed();
 		}
 		return this.setTransform(this.matrix);
 	},
@@ -532,6 +532,93 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
 		x1 = pos.x;
 		y1 = pos.y;
 		return this.qbCurveTo(x1, y1, x, y);
+	},
+	arcTo2: function(endAngle, cx, cy, rx, ry, xRotate, isCCW){
+		var x = this.lastPos.x - cx;
+		var y = this.lastPos.y - cy;
+		var startAngle = Math.atan2(-y, x) - xRotate;
+
+		//TODO: add relative support!
+
+		// TODO: refactor me here!
+		var theta = isCCW ? endAngle - startAngle : startAngle - endAngle;
+		if(theta < 0){ theta += 2 * Math.PI; }
+		dojo.debug("theta =" + theta);
+
+		var arcToAngle = function(startAngle, angle, isCCW){
+			var endAngle = isCCW ? startAngle + angle : startAngle - angle;
+			// start, control point 1, control point 2, end point
+			var P1, Q1, P2, Q2;
+			// theta 0, theta 1 stand for P1, P2
+			var t1, t2;
+			var temp = null;
+			dojo.debug("startAngle=" + startAngle);
+			t1 = Math.atan2(Math.sin(startAngle) / ry, Math.cos(startAngle) / rx );
+			t2 = Math.atan2(Math.sin(endAngle) / ry, Math.cos(endAngle) / rx );
+			dojo.debug("t1="+t1+" t2="+t2);
+
+			var E = function(theta){
+				return dojo.gfx.matrix.multiplyPoint(
+					[ 
+						dojo.gfx.matrix.translate(cx, cy),
+						dojo.gfx.matrix.rotate(xRotate),
+						dojo.gfx.matrix.scale(rx, ry)
+					],
+					Math.cos(theta), 
+					-Math.sin(theta)
+				);
+			};
+
+			var E_prime = function(theta){
+				return dojo.gfx.matrix.multiplyPoint(
+					[
+						dojo.gfx.matrix.rotate(xRotate),
+						dojo.gfx.matrix.scale(rx, ry)
+					], 
+					-Math.sin(theta),
+					-Math.cos(theta)
+				);
+			};
+
+			var alpha = Math.sin(t2 - t1)* (Math.sqrt(4 + 3 * Math.pow(Math.tan((t2 - t1) / 2), 2)) - 1) / 3;
+			dojo.debug("alpha=" + alpha);
+
+			P1 = E(t1);
+			Q1 = dojo.gfx.matrix.multiplyPoint(dojo.gfx.matrix.scale(alpha), E_prime(t1));
+			dojo.debug("Q1=" + Q1.x + "," + Q1.y);
+			Q1 = {x: P1.x + Q1.x, y: P1.y + Q1.y};
+			dojo.debug("Q1=" + Q1.x + "," + Q1.y);
+			P2 = E(t2);
+			Q2 = dojo.gfx.matrix.multiplyPoint(dojo.gfx.matrix.scale(-alpha), E_prime(t2));
+			Q2 = {x: P2.x + Q2.x, y: P2.y + Q2.y};
+
+			dojo.debug("P1=" + P1.x + "," + P1.y);
+			dojo.debug("Q1=" + Q1.x + "," + Q1.y);
+			dojo.debug("P2=" + P2.x + "," + P2.y);
+			dojo.debug("Q2=" + Q2.x + "," + Q2.y);
+			return [P1, Q1, P2, Q2];
+		};
+
+		var arcQuadricPI= function(startAngle, isCCW){
+			return arcToAngle(startAngle, Math.PI/4, isCCW); 
+		};
+
+		var angle = startAngle;
+		var offsetAngle = isCCW ? Math.PI / 4 : -Math.PI / 4;
+		var Ps = null;
+		for(var i = 0; i< Math.floor(theta / (Math.PI / 4)); i++){
+			// draw the Pi/4 arc
+			Ps = arcQuadricPI(angle, isCCW);
+			// curveTo( Q1, Q2, P2 )
+			this.curveTo(Ps[1].x, Ps[1].y, Ps[3].x, Ps[3].y, Ps[2].x, Ps[2].y);
+			angle += offsetAngle;
+		}
+
+		// draw the rest
+		offsetAngle = theta % (Math.PI / 4);
+		dojo.debug("offsetAngle=" + offsetAngle);
+		Ps = arcToAngle(angle, offsetAngle, isCCW);
+		return this.curveTo(Ps[1].x, Ps[1].y, Ps[3].x, Ps[3].y, Ps[2].x, Ps[2].y);
 	},
 	arcTo: function(top, right, bottom, left, isCCW, x, y){
 		// save the value, not reference
