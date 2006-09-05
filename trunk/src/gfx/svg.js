@@ -23,16 +23,17 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		this.strokeStyle.color = dojo.gfx.normalizeColor(this.strokeStyle.color);
 		// generate attributes
 		var s = this.strokeStyle;
+		var rn = this.rawNode;
 		if(s){
-			this.rawNode.setAttribute("stroke", s.color.toCss());
-			this.rawNode.setAttribute("stroke-opacity", s.color.a);
-			this.rawNode.setAttribute("stroke-width",   s.width);
-			this.rawNode.setAttribute("stroke-linecap", s.cap);
+			rn.setAttribute("stroke", s.color.toCss());
+			rn.setAttribute("stroke-opacity", s.color.a);
+			rn.setAttribute("stroke-width",   s.width);
+			rn.setAttribute("stroke-linecap", s.cap);
 			if(typeof(s.join) == "number"){
-				this.rawNode.setAttribute("stroke-linejoin",   "miter");
-				this.rawNode.setAttribute("stroke-miterlimit", s.join);
+				rn.setAttribute("stroke-linejoin",   "miter");
+				rn.setAttribute("stroke-miterlimit", s.join);
 			}else{
-				this.rawNode.setAttribute("stroke-linejoin",   s.join);
+				rn.setAttribute("stroke-linejoin",   s.join);
 			}
 		}
 		return this;
@@ -52,17 +53,16 @@ dojo.lang.extend(dojo.gfx.Shape, {
 				case "linear":
 					var f = dojo.gfx.makeParameters(dojo.gfx.defaultLinearGradient, fill);
 					var gradient = this._setGradient(f, "linearGradient");
-					gradient.setAttribute("x1", f.x1.toFixed(8));
-					gradient.setAttribute("y1", f.y1.toFixed(8));
-					gradient.setAttribute("x2", f.x2.toFixed(8));
-					gradient.setAttribute("y2", f.y2.toFixed(8));
+					dojo.lang.forEach(["x1", "y1", "x2", "y2"], function(x){
+						gradient.setAttribute(x, f[x].toFixed(8));
+					});
 					break;
 				case "radial":
 					var f = dojo.gfx.makeParameters(dojo.gfx.defaultRadialGradient, fill);
 					var gradient = this._setGradient(f, "radialGradient");
-					gradient.setAttribute("cx", f.cx.toFixed(8));
-					gradient.setAttribute("cy", f.cy.toFixed(8));
-					gradient.setAttribute("r",  f.r .toFixed(8));
+					dojo.lang.forEach(["cx", "cy", "r"], function(x){
+						gradient.setAttribute(x, f[x].toFixed(8));
+					});
 					break;
 			}
 			return this;
@@ -91,7 +91,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 				defs.appendChild(gradient);
 			}else{
 				while(gradient.childNodes.length){
-					gradient.removeChild(gradient.childNodes.lastChild);
+					gradient.removeChild(gradient.lastChild);
 				}
 			}
 		}else{
@@ -115,10 +115,11 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	_applyTransform: function() {
 		var matrix = this._getRealMatrix();
 		if(matrix){
+			var tm = this.matrix;
 			this.rawNode.setAttribute("transform", "matrix(" +
-				this.matrix.xx.toFixed(8) + "," + this.matrix.yx.toFixed(8) + "," +
-				this.matrix.xy.toFixed(8) + "," + this.matrix.yy.toFixed(8) + "," +
-				this.matrix.dx.toFixed(8) + "," + this.matrix.dy.toFixed(8) + ")");
+				tm.xx.toFixed(8) + "," + tm.yx.toFixed(8) + "," +
+				tm.xy.toFixed(8) + "," + tm.yy.toFixed(8) + "," +
+				tm.dx.toFixed(8) + "," + tm.dy.toFixed(8) + ")");
 		}else{
 			this.rawNode.removeAttribute("transform");
 		}
@@ -126,15 +127,20 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	},
 
 	setRawNode: function(rawNode){
+		// summary:
+		//		assigns and clears the underlying node that will represent this
+		//		shape. Once set, transforms, gradients, etc, can be applied.
 		// no fill & stroke by default
-		rawNode.setAttribute("fill", "none");
-		rawNode.setAttribute("fill-opacity", 0);
-		rawNode.setAttribute("stroke", "none");
-		rawNode.setAttribute("stroke-opacity", 0);
-		rawNode.setAttribute("stroke-width", 1);
-		rawNode.setAttribute("stroke-linecap", "butt");
-		rawNode.setAttribute("stroke-linejoin", "miter");
-		rawNode.setAttribute("stroke-miterlimit", 4);
+		with(rawNode){
+			setAttribute("fill", "none");
+			setAttribute("fill-opacity", 0);
+			setAttribute("stroke", "none");
+			setAttribute("stroke-opacity", 0);
+			setAttribute("stroke-width", 1);
+			setAttribute("stroke-linecap", "butt");
+			setAttribute("stroke-linejoin", "miter");
+			setAttribute("stroke-miterlimit", 4);
+		}
 		this.rawNode = rawNode;
 	},
 
@@ -165,13 +171,15 @@ dojo.lang.extend(dojo.gfx.Shape, {
 				switch(gradient.tagName.toLowerCase()){
 					case "lineargradient":
 						fillStyle = this._getGradient(dojo.gfx.defaultLinearGradient, gradient);
-						fillStyle.x1 = gradient.getAttribute("x1");
-						fillStyle.y1 = gradient.getAttribute("y1");
-						fillStyle.x2 = gradient.getAttribute("x2");
-						fillStyle.y2 = gradient.getAttribute("y2");
+						dojo.lang.forEach(["x1", "y1", "x2", "y2"], function(x){
+							fillStyle[x] = gradient.getAttribute(x);
+						});
 						break;
 					case "radialgradient":
 						fillStyle = this._getGradient(dojo.gfx.defaultRadialGradient, gradient);
+						dojo.lang.forEach(["cx", "cy", "r"], function(x){
+							fillStyle[x] = gradient.getAttribute(x);
+						});
 						fillStyle.cx = gradient.getAttribute("cx");
 						fillStyle.cy = gradient.getAttribute("cy");
 						fillStyle.r  = gradient.getAttribute("r");
