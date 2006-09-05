@@ -17,6 +17,7 @@ dojo.widget.defineWidget(
 		checked: "",
 		tabIndex: "",
 		id: "",
+		value: "on",
 
 		postMixInProperties: function(){
 			// set the variables referenced by the template
@@ -30,8 +31,10 @@ dojo.widget.defineWidget(
 			// output valid checked and disabled attributes
 			this.disabledStr = this.disabled ? "disabled=\"disabled\"" : "";
 			this.checkedStr = this.checked ? "checked=\"checked\"" : "";
-			
+
 			// set tabIndex="0" because if tabIndex=="" user won't be able to tab to the field
+
+
 			if(!this.disabled && this.tabIndex==""){ this.tabIndex="0"; }
 		},
 
