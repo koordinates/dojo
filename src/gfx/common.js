@@ -38,7 +38,9 @@ dojo.lang.mixin(dojo.gfx, {
 		if(!update) return dojo.lang.shallowCopy(defaults, true);
 		var result = {};
 		for(var i in defaults){
-			if(!(i in result)) result[i] = dojo.lang.shallowCopy((i in update) ? update[i] : defaults[i], true);
+			if(!(i in result)){
+				result[i] = dojo.lang.shallowCopy((i in update) ? update[i] : defaults[i], true);
+			}
 		}
 		return result;
 	},
