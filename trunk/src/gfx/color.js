@@ -9,23 +9,24 @@ dojo.require("dojo.lang.array");
 // takes an r, g, b, a(lpha) value, [r, g, b, a] array, "rgb(...)" string, hex string (#aaa, #aaaaaa, aaaaaaa)
 dojo.gfx.color.Color = function(r, g, b, a) {
 	// dojo.debug("r:", r[0], "g:", r[1], "b:", r[2]);
-	if(dojo.lang.isArray(r)) {
+	if(dojo.lang.isArray(r)){
 		this.r = r[0];
 		this.g = r[1];
 		this.b = r[2];
 		this.a = r[3]||1.0;
-	} else if(dojo.lang.isString(r)) {
+	}else if(dojo.lang.isString(r)){
 		var rgb = dojo.gfx.color.extractRGB(r);
 		this.r = rgb[0];
 		this.g = rgb[1];
 		this.b = rgb[2];
 		this.a = g||1.0;
-	} else if(r instanceof dojo.gfx.color.Color) {
+	}else if(r instanceof dojo.gfx.color.Color){
+		// why does this create a new instance if we were passed one?
 		this.r = r.r;
 		this.b = r.b;
 		this.g = r.g;
 		this.a = r.a;
-	} else {
+	}else{
 		this.r = r;
 		this.g = g;
 		this.b = b;
@@ -57,8 +58,16 @@ dojo.extend(dojo.gfx.color.Color, {
 	toString: function() {
 		return this.toHex(); // decent default?
 	},
-	blend: function(color, weight) {
-		return dojo.gfx.color.blend(this.toRgb(), new dojo.gfx.color.Color(color).toRgb(), weight);
+	blend: function(color, weight){
+		var rgb = null;
+		if(dojo.lang.isArray(color)){
+			rgb = color;
+		}else if(color instanceof dojo.gfx.color.Color){
+			rgb = color.toRgb();
+		}else{
+			rgb = new dojo.gfx.color.Color(color).toRgb();
+		}
+		return dojo.gfx.color.blend(this.toRgb(), rgb, weight);
 	}
 });
 
@@ -73,16 +82,23 @@ dojo.gfx.color.named = {
 	silver:     [192,192,192]
 };
 
-// blend colors a and b (both as RGB array or hex strings) with weight from -1 to +1, 0 being a 50/50 blend
-dojo.gfx.color.blend = function(a, b, weight) {
-	if(typeof a == "string") { return dojo.gfx.color.blendHex(a, b, weight); }
-	if(!weight) { weight = 0; }
-	else if(weight > 1) { weight = 1; }
-	else if(weight < -1) { weight = -1; }
-	var c = new Array(3);
-	for(var i = 0; i < 3; i++) {
+dojo.gfx.color.blend = function(a, b, weight){
+	// summary: 
+	//		blend colors a and b (both as RGB array or hex strings) with weight
+	//		from -1 to +1, 0 being a 50/50 blend
+	if(typeof a == "string"){
+		return dojo.gfx.color.blendHex(a, b, weight);
+	}
+	if(!weight){
+		weight = 0;
+	}
+
+	weight = Math.min(Math.max(-1, weight), 1);
+	
+	var c = [];
+	for(var i = 0; i < 3; i++){
 		var half = Math.abs(a[i] - b[i])/2;
-		c[i] = Math.floor(Math.min(a[i], b[i]) + half + (half * weight));
+		c.push(Math.floor(Math.min(a[i], b[i]) + half + (half * weight)));
 	}
 	return c;
 }
