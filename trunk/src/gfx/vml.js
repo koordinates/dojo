@@ -268,11 +268,13 @@ dojo.declare("dojo.gfx.Rect", dojo.gfx.Shape, {
 		this.attach(rawNode);
 	},
 	setShape: function(newShape){
-		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
-		this.rawNode.style.left   = this.shape.x.toFixed();
-		this.rawNode.style.top    = this.shape.y.toFixed();
-		this.rawNode.style.width  = this.shape.width.toFixed();
-		this.rawNode.style.height = this.shape.height.toFixed();
+		var ts = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		with(this.rawNode.style){
+			left   = ts.x.toFixed();
+			top    = ts.y.toFixed();
+			width  = (ts.width.indexOf("%") >= 0 ) ? ts.width : ts.width.toFixed();
+			height = (ts.height.indexOf("%") >= 0 ) ? ts.height : ts.height.toFixed();
+		}
 		return this.setTransform(this.matrix);
 	},
 	setRawNode: function(rawNode){
@@ -296,11 +298,13 @@ dojo.declare("dojo.gfx.Ellipse", dojo.gfx.Shape, {
 		this.attach(rawNode);
 	},
 	setShape: function(newShape){
-		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
-		this.rawNode.style.left   = (this.shape.cx - this.shape.rx).toFixed();
-		this.rawNode.style.top    = (this.shape.cy - this.shape.ry).toFixed();
-		this.rawNode.style.width  = (this.shape.rx * 2).toFixed();
-		this.rawNode.style.height = (this.shape.ry * 2).toFixed();
+		var ts = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		with(this.rawNode.style){
+			left   = (ts.cx - ts.rx).toFixed();
+			top    = (ts.cy - ts.ry).toFixed();
+			width  = (ts.rx * 2).toFixed();
+			height = (ts.ry * 2).toFixed();
+		}
 		return this.setTransform(this.matrix);
 	},
 	attachShape: function(rawNode){
@@ -627,9 +631,9 @@ dojo.lang.extend(dojo.gfx.Surface, {
 dojo.gfx.createSurface = function(parentNode, width, height){
    var s = new dojo.gfx.Surface();
    s.rawNode = document.createElement("v:group");
-   s.rawNode.style.width  = width  + "px";
-   s.rawNode.style.height = height + "px";
-   s.rawNode.coordsize = width + " " + height;
+   s.rawNode.style.width  = (width) ? (width + "px") : "100%";
+   s.rawNode.style.height = (height) ? (height + "px") : "100%";
+   s.rawNode.coordsize = (width && height) ? (width + " " + height) : "100% 100%";
    s.rawNode.coordorigin = "0 0";
    dojo.byId(parentNode).appendChild(s.rawNode);
    return s;
