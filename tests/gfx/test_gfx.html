@@ -318,14 +318,38 @@ dojo.addOnLoad(function()
 
 	// test arcTo 
 	addTest('arcTo', function(testName){
-		var surface = getTestSurface(testName, 'arcTo test');
-		surface.createPath()
-			.moveTo(10, 10).lineTo(50,50)
-			.arcTo(0, 150, 100, 50, 1, 150, 50)
-			.setAbsoluteMode(false).arcTo(-50, 0, 50, -100, 1, -50, -50)
+		var surface = getTestSurface(testName, 'arcTo: from 0 to 360 degree, w/ 30 degree of x axis rotation, rendered with different color');
+        var startPoint = dojo.gfx.matrix.multiplyPoint(
+            dojo.gfx.matrix.rotateg(30), 100, 0);
+		var re = surface.createPath()
+			.moveTo(startPoint.x, startPoint.y)
+			.arcTo(dojo.math.degToRad(90), 0, 0, 100, 60, dojo.math.degToRad(30), 1)
 			.setFill(null)
 			.setStroke({ color: "red", width: 1 })
-			.setTransform({ dx: 70, dy: 100 })
+			.setTransform({ dx: 150, dy: 100 })
+			;
+		var ge = surface.createPath()
+			.moveTo(re.lastPos.x, re.lastPos.y)
+			.arcTo(dojo.math.degToRad(360), 0, 0, 100, 60, dojo.math.degToRad(30), 1)
+			.setFill(null)
+			.setStroke({ color: "green", width: 1 })
+			.setTransform({ dx: 150, dy: 100 })
+			;
+
+		var re2 = surface.createPath()
+			.moveTo(startPoint.x, startPoint.y)
+			.arcTo2(dojo.math.degToRad(90), 0, 0, 100, 60, dojo.math.degToRad(30), 1)
+			.setFill(null)
+			.setStroke({ color: "red", width: 1 })
+			.setTransform({ dx: 180, dy: 150 })
+			;
+        dojo.debug("moving to " + re2.lastPos.x + "," + re2.lastPos.y );
+		var ge2 = surface.createPath()
+			.moveTo(re2.lastPos.x, re2.lastPos.y)
+			.arcTo2(dojo.math.degToRad(360), 0, 0, 100, 60, dojo.math.degToRad(30), 1)
+			.setFill(null)
+			.setStroke({ color: "green", width: 1 })
+			.setTransform({ dx: 180, dy: 150 })
 			;
 	});
 
@@ -460,7 +484,7 @@ dojo.addOnLoad(function()
 		'attach',
 		'attach_gradient',
 		'circle',
-		'arcTo',
+//		'arcTo',
 		'line',
 		'ellipse',
 		'polyline',
