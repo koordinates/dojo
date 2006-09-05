@@ -250,9 +250,6 @@ dojo.lang.extend(dojo.gfx.Shape, {
 dojo.declare("dojo.gfx.Group", dojo.gfx.Shape, {
 	setRawNode: function(rawNode){
 		this.rawNode = rawNode;
-	},
-	_processNewObject: function(shape){
-		// nothing
 	}
 });
 dojo.gfx.Group.nodeType = "g";
@@ -445,8 +442,25 @@ var creators = {
 		shape.setRawNode(node);
 		this.rawNode.appendChild(node);
 		shape.setShape(rawShape);
-		this._processNewObject(shape);
+		this.add(shape);
 		return shape;
+	},
+	// group control
+	add: function(shape){
+		var oldParent = shape.getParent();
+		if(oldParent){
+			oldParent.remove(shape, true);
+		}
+		shape._setParent(this, null);
+		this.rawNode.appendChild(shape.rawNode);
+		return this;
+	},
+	remove: function(shape, silently){
+		if(this.rawNode == shape.rawNode.parentNode){
+			this.rawNode.removeChild(shape.rawNode);
+		}
+		shape._setParent(null, null);
+		return this;
 	}
 };
 
@@ -486,9 +500,6 @@ dojo.lang.extend(dojo.gfx.Surface, {
 	},
 	getDimensions: function(){
 		return this.rawNode ? {width: this.rawNode.getAttribute("width"), height: this.rawNode.getAttribute("height")} : null;
-	},
-	_processNewObject: function(shape){
-		// nothing
 	}
 });
 
@@ -497,7 +508,12 @@ dojo.gfx.createSurface = function(parentNode, width, height){
 	s.rawNode = document.createElementNS(dojo.svg.xmlns.svg, "svg");
 	s.rawNode.setAttribute("width",  width);
 	s.rawNode.setAttribute("height", height);
-	s.createObject(dojo.gfx.svg.Defines);
+
+	var defs = new dojo.gfx.svg.Defines();
+	var node = document.createElementNS(dojo.svg.xmlns.svg, dojo.gfx.svg.Defines.nodeType); 
+	defs.setRawNode(node);
+	s.rawNode.appendChild(node);
+	
 	dojo.byId(parentNode).appendChild(s.rawNode);
 	return s;
 };
@@ -508,6 +524,11 @@ dojo.gfx.attachSurface = function(node){
 	return s;
 };
 
+dojo.lang.extend(dojo.gfx.Group, creators);
+dojo.lang.extend(dojo.gfx.Surface, creators);
+
+delete creators;
+
 // Gradient and pattern
 dojo.gfx.svg.Defines = function(){
 	this.rawNode = null;
@@ -515,9 +536,6 @@ dojo.gfx.svg.Defines = function(){
 dojo.lang.extend(dojo.gfx.svg.Defines, {
 	setRawNode: function(rawNode){
 		this.rawNode = rawNode;
-	},
-	setShape: function(shape){
-		// nothing
 	}
 });
 dojo.gfx.svg.Defines.nodeType = "defs";
@@ -609,13 +627,7 @@ dojo.declare("dojo.gfx.svg.Pattern", dojo.gfx.svg.Gradient, {
 });
 */
 
-
-dojo.lang.extend(dojo.gfx.Group, creators);
-dojo.lang.extend(dojo.gfx.Surface, creators);
-
 /*
 dojo.lang.extend(dojo.gfx.svg.Pattern, metacreator);
 dojo.lang.extend(dojo.gfx.svg.Pattern, creators);
 */
-
-delete creators;
