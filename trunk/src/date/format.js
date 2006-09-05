@@ -431,6 +431,16 @@ dojo.date.strftime = function (/*Date*/dateObject, /*String*/format, /*String?*/
 			case "j": // day of the year as a decimal number (range 001 to 366)
 				return _(dojo.date.getDayOfYear(dateObject), 3);
 				
+			case "k": // Hour as a decimal number using a 24-hour clock (range
+					  // 0 to 23 (space-padded))
+				if (padChar == null) { padChar = " " };
+				return _(dateObject.getHours());
+
+			case "l": // Hour as a decimal number using a 12-hour clock (range
+					  // 1 to 12 (space-padded))
+				if (padChar == null) { padChar = " " };
+				return _(dateObject.getHours() % 12 || 12);
+			
 			case "m": // month as a decimal number (range 01 to 12)
 				return _(dateObject.getMonth() + 1);
 				
@@ -514,7 +524,9 @@ dojo.date.strftime = function (/*Date*/dateObject, /*String*/format, /*String?*/
 
 	// parse the formatting string and construct the resulting string
 	var string = "";
-	var i = 0, index = 0, switchCase;
+	var i = 0;
+	var index = 0;
+	var switchCase = null;
 	while ((index = format.indexOf("%", i)) != -1) {
 		string += format.substring(i, index++);
 		
@@ -526,8 +538,10 @@ dojo.date.strftime = function (/*Date*/dateObject, /*String*/format, /*String?*/
 				padChar = ""; break;
 			case "0": // Pad a numeric result string with zeros.
 				padChar = "0"; break;
-			case "^": // Convert characters in result string to upper case.
+			case "^": // Convert characters in result string to uppercase.
 				switchCase = "upper"; break;
+			case "*": // Convert characters in result string to lowercase
+				switchCase = "lower"; break;
 			case "#": // Swap the case of the result string.
 				switchCase = "swap"; break;
 			default: // no modifier flag so decrement the index
@@ -536,11 +550,28 @@ dojo.date.strftime = function (/*Date*/dateObject, /*String*/format, /*String?*/
 
 		// toggle case if a flag is set
 		var property = $(format.charAt(index++));
-		if (switchCase == "upper" ||
-			(switchCase == "swap" && (/[a-z]/.test(property)))) {
+		switch (switchCase) {
+			case "upper":
 			property = property.toUpperCase();
-		} else if (switchCase == "swap" && !(/[a-z]/.test(property))) {
+				break;
+			case "lower":
 			property = property.toLowerCase();
+				break;
+			case "swap": // Upper to lower, and versey-vicea
+				var compareString = property.toLowerCase();
+				var swapString = '';
+				var j = 0;
+				var ch = '';
+				while (j < property.length) {
+					ch = property.charAt(j);
+					swapString += (ch == compareString.charAt(j)) ?
+						ch.toUpperCase() : ch.toLowerCase();
+					j++;
+				}
+				property = swapString;
+				break;
+			default:
+				break;
 		}
 		switchCase = null;
 		
