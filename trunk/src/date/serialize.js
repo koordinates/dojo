@@ -129,11 +129,11 @@ dojo.date.toRfc3339 = function(/*Date?*/dateObject, /*String?*/selector) {
 
 	var _ = dojo.string.pad;
 	var formattedDate = [];
-	if (selector != "dateOnly"){
+	if (selector != "timeOnly"){
 		var date = [_(dateObject.getFullYear(),4), _(dateObject.getMonth()+1,2), _(dateObject.getDate(),2)].join('-');
 		formattedDate.push(date);
 	}
-	if (selector != "timeOnly"){
+	if (selector != "dateOnly"){
 		var time = [_(dateObject.getHours(),2), _(dateObject.getMinutes(),2), _(dateObject.getSeconds(),2)].join(':');
 		var timezoneOffset = dateObject.getTimezoneOffset();
 		time += (timezoneOffset > 0 ? "-" : "+") + 
