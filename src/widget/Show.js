@@ -4,7 +4,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.uri.Uri");
 dojo.require("dojo.event.*");
-dojo.require("dojo.animation.Animation");
+dojo.require("dojo.lfx.*");
 dojo.require("dojo.math.curves");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.func");
@@ -30,7 +30,7 @@ dojo.widget.defineWidget(
 	templatePath: dojo.uri.dojoUri("src/widget/templates/Show.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Show.css"),
 	fillInTemplate: function(args, frag){
-		if (args.debugPane) {
+		if(args.debugPane){
 			var dp = this.debugPane = dojo.widget.byId(args.debugPane);
 			dp.hide();
 			dojo.event.connect(dp, "closeWindow", dojo.lang.hitch(this, function(){ this.debugPane = false; }));
@@ -70,9 +70,25 @@ dojo.widget.defineWidget(
 
 		dojo.body().style.display = "block";
 		this.resizeWindow();
-		this.gotoSlide(0);
+
+		this.gotoSlide(0, true);
+
+		// check to see if we're initialized from a particular slide
+		dojo.addOnLoad(dojo.lang.hitch(this, 
+			function(){
+				var th = window.location.hash;
+				if(th.length){
+					var parts = (""+window.location).split(this.widgetId+"_SlideNo_");
+					if(parts.length > 1){
+						setTimeout(dojo.lang.hitch(this, function(){
+							this.gotoSlide(parseInt(parts[1]), true);
+						}), 300);
+					}
+				}
+			})
+		);
 	},
-	gotoSlide: function(/*int*/ slide){
+	gotoSlide: function(/*int*/ slide, /*Boolean*/preventSetHash){
 		if(slide == this._slide){
 			return;
 		}
@@ -102,11 +118,16 @@ dojo.widget.defineWidget(
 		if(this._slide != -1){
 			while(this._slides[this._slide].previousAction()){}
 		}
+
+		if(!preventSetHash){
+			window.location.href = "#"+this.widgetId+"_SlideNo_"+slide;
+		}
 		
 		this._slide = slide;
 		this.select.selectedIndex = slide;
 		while(this.contentNode.hasChildNodes()){ this.contentNode.removeChild(this.contentNode.firstChild); }
 		this.contentNode.appendChild(this._slides[slide].domNode);
+	
 	},
 	gotoSlideByEvent: function(/*Event*/ event){
 		var node = event.target;
@@ -194,15 +215,10 @@ dojo.widget.defineWidget(
 	},
 	popUpNav: function(){
 		if(!this.inNav){
-			dojo.widget.Show.node = this.nav;
-			var anim = new dojo.animation.Animation(new dojo.math.curves.Line([5], [30]), 250, -1);
-			dojo.event.connect(anim, "onAnimate", function(e) {
-				dojo.widget.Show.node.style.height = e.x + "px";
-			});
-			dojo.event.connect(anim, "onEnd", function(e) {
-				dojo.widget.Show.node.style.height = e.x + "px";
-			});
-			anim.play(true);
+			// dojo.widget.Show.node = this.nav;
+			dojo.lfx.propertyAnimation(this.nav, {
+				"height": { start: 5, end: 30 }
+			}, 250).play();
 		}
 		clearTimeout(this.inNav);
 		this.inNav = setTimeout(dojo.lang.hitch(this, "hideNav"), 2000);
@@ -210,16 +226,10 @@ dojo.widget.defineWidget(
 	hideNav: function(){
 		clearTimeout(this.inNav);
 		this.inNav = false;
-
-		dojo.widget.Show.node = this.nav;
-		var anim = new dojo.animation.Animation(new dojo.math.curves.Line([30], [5]), 250, 1);
-		dojo.event.connect(anim, "onAnimate", function(e) {
-			dojo.widget.Show.node.style.height = e.x + "px";
-		});
-		dojo.event.connect(anim, "onEnd", function(e) {
-			dojo.widget.Show.node.style.height = e.x + "px";
-		});
-		anim.play(true);
+		// dojo.widget.Show.node = this.nav;
+		dojo.lfx.propertyAnimation(this.nav, {
+			"height": { start: 30, end: 5 }
+		}, 250).play();
 	},
 	resizeWindow: function(/*Event*/ ev){
 		dojo.body().style.height = "auto";
