@@ -485,7 +485,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		}
 		//dojo.debug(this.parent.children.length);
 		//dojo.debug(this.parent.children[this.parent.children.length-1]);
-		if (this.isLastNode()) {
+		if (this.isLastChild()) {
 			//dojo.debug("Checked last node for "+this);
 			//dojo.debug("Parent last is "+this.parent.children[this.parent.children.length-1]);
 			//dojo.debug("last node => add isTreeLast for "+this);

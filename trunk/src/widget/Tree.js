@@ -372,7 +372,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 		// Use-case:
 		// a child was moved down under the last node so last node should be updated
 		var prevSibling = child.getPreviousSibling();
-		if (child.isLastNode() && prevSibling) {
+		if (child.isLastChild() && prevSibling) {
 			prevSibling.updateExpandGridColumn();
 		}
 
