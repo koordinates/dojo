@@ -85,7 +85,7 @@ dojo.widget.TreeDemo = {
 		dojo.event.topic.subscribe('treeContextMenuUp/engage',
 			function (menuItem) {
                 var node = menuItem.getTreeNode();
-                if (node.isFirstNode()) return;
+                if (node.isFirstChild()) return;
                 _t.reportIfDefered(controller.move(node, node.parent, node.getParentIndex()-1));
             }
 		);
@@ -94,7 +94,7 @@ dojo.widget.TreeDemo = {
 		dojo.event.topic.subscribe('treeContextMenuDown/engage',
 			function (menuItem) {
                 var node = menuItem.getTreeNode();
-                if (node.isLastNode()) return;
+                if (node.isLastChild()) return;
                 _t.reportIfDefered(controller.move(node, node.parent, node.getParentIndex()+1));
             }
 		);

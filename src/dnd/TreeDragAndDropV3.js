@@ -273,14 +273,14 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 				position = "before";
 				// if children are expanded then I ignore understrike, cause it is confusing with firstChild
 				// but for last nodes I put understrike there
-			} else if (p<=0.66 || this.treeNode.isExpanded && this.treeNode.children.length && !this.treeNode.isLastNode()) {
+			} else if (p<=0.66 || this.treeNode.isExpanded && this.treeNode.children.length && !this.treeNode.isLastChild()) {
 				position = "onto";
 			} else {
 				position = "after";
 			}
 		} else if (DndMode & dojo.widget.TreeV3.prototype.DndModes.BETWEEN) {
 			//dojo.debug("BETWEEN");
-			if (p<=0.5 || this.treeNode.isExpanded && this.treeNode.children.length && !this.treeNode.isLastNode()) {
+			if (p<=0.5 || this.treeNode.isExpanded && this.treeNode.children.length && !this.treeNode.isLastChild()) {
 				position = "before";
 			} else {
 				position = "after";

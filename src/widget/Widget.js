@@ -312,12 +312,11 @@ dojo.declare("dojo.widget.Widget", null,
 	},
 
 
-	// FIXME: do "isFirstNode" and "isLastNode" even make sense?
-	isFirstNode: function(){
+	isFirstChild: function(){
 		return this === this.parent.children[0]; // Boolean
 	},
 
-	isLastNode: function() {
+	isLastChild: function() {
 		return this === this.parent.children[this.parent.children.length-1]; // Boolean
 	},
 

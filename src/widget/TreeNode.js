@@ -85,11 +85,11 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	domNodeInitialized: false,  // domnode is initialized with icons etc
 
 
-	isFirstNode: function() {
+	isFirstChild: function() {
 		return this.getParentIndex() == 0 ? true: false;
 	},
 
-	isLastNode: function() {
+	isLastChild: function() {
 		return this.getParentIndex() == this.parent.children.length-1 ? true : false;
 	},
 
@@ -310,12 +310,12 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 
 		if (this.tree.showGrid){
 			if (this.depth){
-				this.setGridImage(-2, this.isLastNode() ? this.tree.gridIconSrcL : this.tree.gridIconSrcT);
+				this.setGridImage(-2, this.isLastChild() ? this.tree.gridIconSrcL : this.tree.gridIconSrcT);
 			}else{
-				if (this.isFirstNode()){
-					this.setGridImage(-2, this.isLastNode() ? this.tree.gridIconSrcX : this.tree.gridIconSrcY);
+				if (this.isFirstChild()){
+					this.setGridImage(-2, this.isLastChild() ? this.tree.gridIconSrcX : this.tree.gridIconSrcY);
 				}else{
-					this.setGridImage(-2, this.isLastNode() ? this.tree.gridIconSrcL : this.tree.gridIconSrcT);
+					this.setGridImage(-2, this.isLastChild() ? this.tree.gridIconSrcL : this.tree.gridIconSrcT);
 				}
 			}
 		}else{
@@ -350,7 +350,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 			//dojo.debug("Parent "+parent);
 
 			var idx = this.imgs.length-(3+i);
-			var img = (this.tree.showGrid && !parent.isLastNode()) ? this.tree.gridIconSrcV : this.tree.blankIconSrc;
+			var img = (this.tree.showGrid && !parent.isLastChild()) ? this.tree.gridIconSrcV : this.tree.blankIconSrc;
 
 			//dojo.debug("Image "+img+" for "+idx);
 
@@ -365,7 +365,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 
 		var _this = this;
 
-		var icon = this.isLastNode() ? this.tree.blankIconSrc : this.tree.gridIconSrcV;
+		var icon = this.isLastChild() ? this.tree.blankIconSrc : this.tree.gridIconSrcV;
 
 		dojo.lang.forEach(_this.getDescendants(),
 			function(node) { node.setGridImage(_this.depth, icon); }
