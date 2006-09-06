@@ -3,6 +3,8 @@ dojo.provide("dojo.widget.TreeSelector");
 
 dojo.require("dojo.widget.HtmlWidget");
 
+dojo.deprecated("dojo.widget.TreeSelector", "use TreeV3 and TreeSelectorV3 instead", "0.5");
+
 
 dojo.widget.tags.addParseTreeHandler("dojo:TreeSelector");
 

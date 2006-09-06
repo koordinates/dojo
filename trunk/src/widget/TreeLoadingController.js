@@ -6,6 +6,8 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.json")
 dojo.require("dojo.io.*");
 
+dojo.deprecated("dojo.widget.TreeLoadingController", "use TreeV3 and TreeLoadingControllerV3 instead", "0.5");
+
 
 dojo.widget.tags.addParseTreeHandler("dojo:TreeLoadingController");
 

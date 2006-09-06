@@ -7,6 +7,8 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.Menu2");
 
+dojo.deprecated("dojo.widget.TreeContextMenu", "use TreeV3 and TreeContextMenuV3 instead", "0.5");
+
 
 dojo.widget.tags.addParseTreeHandler("dojo:TreeContextMenu");
 dojo.widget.tags.addParseTreeHandler("dojo:TreeMenuItem");
