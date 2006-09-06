@@ -18,6 +18,7 @@ dojo.require("dojo.widget.TreeNode");
 dojo.require("dojo.html.common");
 dojo.require("dojo.html.selection");
 
+dojo.deprecated("dojo.widget.Tree", "use TreeV3 instead", "0.5");
 
 
 // make it a tag
