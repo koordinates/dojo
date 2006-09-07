@@ -33,13 +33,6 @@
 			var mp = this.modulePrefixes_;
 			return Boolean((mp[module])&&(mp[module]["name"]));
 		},
-		
-		hasRegisteredModulePrefix: function(module){
-			if((this.modulePrefixes_[module])&&(this.modulePrefixes_[module]["name"])){
-				return true;
-			}
-			return false;
-		},
 
 		getModulePrefix: function(module){
 			var mp = this.modulePrefixes_;
@@ -218,19 +211,18 @@ dojo.hostenv.callLoaded = function(){
 	}
 }
 
-dojo.hostenv.getModuleSymbols = function(modulename) {
+dojo.hostenv.getModuleSymbols = function(modulename){
 	var syms = modulename.split(".");
-	for(var i = syms.length - 1; i > 0; i--){
+	for(var i = syms.length; i>0; i--){
 		var parentModule = syms.slice(0, i).join(".");
-		var parentModulePath = this.getModulePrefix(parentModule);
-		if (parentModulePath != parentModule){
-			syms.splice(0, i, parentModulePath);
-		}else if(i==1){
-			if(this.hasRegisteredModulePrefix(parentModule)){
+		if ((i==1) && (!this.moduleHasPrefix(parentModule))){		
+			//Support default module directory (sibling of dojo)
+			syms[0] = "../" + syms[0];
+		}else{
+			var parentModulePath = this.getModulePrefix(parentModule);
+			if(parentModulePath != parentModule){
+				syms.splice(0, i, parentModulePath);
 				break;
-			}else{
-				//Support default module directory (sibling of dojo)
-				syms[0] = "../" + syms[0];
 			}
 		}
 	}
