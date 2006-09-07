@@ -43,8 +43,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 	
 	
-	labelStyle: "",
-	contentStyle: "",
+	labelClass: "",
+	contentClass: "",
 
 	expandNode: null,
 	labelNode: null,
@@ -146,28 +146,16 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		this.contentNode = this.domNode.childNodes[1];
 		this.labelNode = this.contentNode.firstChild;
 		
-		if (this.labelStyle) {
-			dojo.html.setStyleText(this.labelNode, this.labelStyle);
+		if (this.labelClass) {
+			dojo.html.addClass(this.labelNode, this.labelClass);
 		}
 		
-		if (this.contentStyle) {
-			dojo.html.setStyleText(this.contentNode, this.contentStyle);
+		if (this.contentClass) {
+			dojo.html.addClass(this.contentNode, this.contentClass);
 		}
-
-
-		/*
-		this.domNode = this.tree.nodeTemplate.cloneNode(false);
-		this.expandNode = this.tree.expandNodeTemplate.cloneNode(false);
-		this.labelNode = this.tree.labelNodeTemplate.cloneNode(false);
-		this.contentNode = this.tree.contentNodeTemplate.cloneNode(false);
 		
-		this.domNode.appendChild(this.expandNode);
-		this.domNode.appendChild(this.contentNode);
-		this.contentNode.appendChild(this.labelNode);
-		*/
 		
 		//dojo.profile.end("buildRendering - cloneNode");
-		
 		
 		
 		this.domNode.widgetId = this.widgetId;

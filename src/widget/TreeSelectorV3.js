@@ -130,11 +130,20 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 			}
 			
 			var _this = this;
-			dojo.lang.forEach(this.selectedNodes, function(selectedNode) {
+			var i=0;
+			var selectedNode;
+			while(this.selectedNodes.length > i) {
+				selectedNode = this.selectedNodes[i];
 				if (selectedNode !== node) {
+					//dojo.debug("Deselect "+selectedNode);
 					_this.deselect(selectedNode);
+					continue;
 				}
-			});
+			
+				i++; // skip the doubleclicked node
+			}
+		
+			
 			dojo.event.topic.publish(this.eventNames.dblselect, { node: node });
 			return;
 		}
@@ -222,7 +231,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		}
 		
 		//dojo.debug("deselect "+node);
-		
+		//dojo.debug((new Error()).stack);
 		
 		this.selectedNodes.splice(index, 1);
 		dojo.event.topic.publish(this.eventNames.deselect, {node: node} );

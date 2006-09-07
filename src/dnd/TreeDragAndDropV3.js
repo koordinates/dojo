@@ -369,16 +369,26 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 			}
 			
 			if (result instanceof dojo.Deferred) {
-				// return error status
-				//TODO: need handle errors somehow
-				//result.addErrback(function(r) { dojo.debugShallow(r); });
-				return (!result.fired) ? true : false;
+				// this Deferred is always sync
+				var isSuccess = result.fired == 0;
+				if (!isSuccess) {
+					_this.handleDropError(source, targetParent, targetIndex, result);
+				}
+				
+				return isSuccess;				
+				
 			} else {
 				return result;
 			}
 		}
 		
 		return handler;
+	},
+	
+	
+	handleDropError: function(source, parent, index, result) {
+		dojo.debug("TreeDropTargetV3.handleDropError: DND error occured");
+		dojo.debugShallow(result);
 	}
 
 
