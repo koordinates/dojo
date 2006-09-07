@@ -92,13 +92,17 @@ dojo.gfx.color.blend = function(a, b, weight){
 	if(!weight){
 		weight = 0;
 	}
-
 	weight = Math.min(Math.max(-1, weight), 1);
+
+	// alex: this interface blows.
+	// map -1 to 1 to the range 0 to 1
+	weight = ((weight + 1)/2);
 	
 	var c = [];
-	for(var i = 0; i < 3; i++){
-		var half = Math.abs(a[i] - b[i])/2;
-		c.push(Math.floor(Math.min(a[i], b[i]) + half + (half * weight)));
+
+	// var stop = (1000*weight);
+	for(var x = 0; x < 3; x++){
+		c[x] = parseInt( b[x] + ( (a[x] - b[x]) * weight) );
 	}
 	return c;
 }
