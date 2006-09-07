@@ -34,6 +34,13 @@
 			return Boolean((mp[module])&&(mp[module]["name"]));
 		},
 		
+		hasRegisteredModulePrefix: function(module){
+			if((this.modulePrefixes_[module])&&(this.modulePrefixes_[module]["name"])){
+				return true;
+			}
+			return false;
+		},
+
 		getModulePrefix: function(module){
 			var mp = this.modulePrefixes_;
 			if((mp[module])&&(mp[module]["name"])){
@@ -219,7 +226,12 @@ dojo.hostenv.getModuleSymbols = function(modulename) {
 		if (parentModulePath != parentModule){
 			syms.splice(0, i, parentModulePath);
 		}else if(i==1){
-			syms[0] = "../" + syms[0];			
+			if(this.hasRegisteredModulePrefix(parentModule)){
+				break;
+			}else{
+				//Support default module directory (sibling of dojo)
+				syms[0] = "../" + syms[0];
+			}
 		}
 	}
 	return syms;
