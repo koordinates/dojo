@@ -3,7 +3,7 @@ dojo.require("dojo.Deferred");
 dojo.provide("dojo.DeferredList");
 
 
-dojo.DeferredList = function (list, /* optional */fireOnOneCallback, fireOnOneErrback, consumeErrors, canceller) {
+dojo.DeferredList = function (list, /*bool?*/ fireOnOneCallback, /*bool?*/ fireOnOneErrback, /*bool?*/ consumeErrors, /*Function?*/ canceller) {
     this.list = list;
     this.resultList = new Array(this.list.length);
 
