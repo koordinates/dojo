@@ -173,7 +173,7 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll, bo
 }
 
 dojo.html.isPositionAbsolute = function(node){
-	return (dojo.html.getComputedStyle(node, 'position') == 'absolute')
+	return (dojo.html.getComputedStyle(node, 'position') == 'absolute');
 }
 
 dojo.html._sumPixelValues = function(node, selectors, autoIsZero){
@@ -274,11 +274,11 @@ dojo.html.setContentBox = function(node, args){
 	var isbb = dojo.html.isBorderBox(node);
 	var padborder = (isbb ? dojo.html.getPadBorder(node) : { width: 0, height: 0});
 	var ret = {};
-	if(typeof args.width != undefined){
+	if(typeof args.width != "undefined"){
 		width = args.width + padborder.width;
 		ret.width = dojo.html.setPositivePixelValue(node, "width", width);
 	}
-	if(typeof args.height != undefined){
+	if(typeof args.height != "undefined"){
 		height = args.height + padborder.height;
 		ret.height = dojo.html.setPositivePixelValue(node, "height", height);
 	}
@@ -298,12 +298,12 @@ dojo.html.setMarginBox = function(node, args){
 	var padborder = (!isbb ? dojo.html.getPadBorder(node) : { width: 0, height: 0 });
 	var margin = dojo.html.getMargin(node);
 	var ret = {};
-	if(typeof args.width != undefined){
+	if(typeof args.width != "undefined"){
 		width = args.width - padborder.width;
 		width -= margin.width;
 		ret.width = dojo.html.setPositivePixelValue(node, "width", width);
 	}
-	if(typeof args.height != undefined){
+	if(typeof args.height != "undefined"){
 		height = args.height - padborder.height;
 		height -= margin.height;
 		ret.height = dojo.html.setPositivePixelValue(node, "height", height);
