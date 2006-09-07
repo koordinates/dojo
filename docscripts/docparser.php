@@ -94,10 +94,10 @@ foreach ($files as $file) {
       }
       if (!$name instanceof DojoString) continue;
       if (!is_string($superclass)) continue;
-      $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_']['meta']['summary'] = '';
+      $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['summary'] = '';
       if ($superclass != "null" && $superclass != "false" && $superclass != "undefined") {
-        $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_']['meta']['inherits'][] = $superclass;
-        $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_']['meta']['this_inherits'][] = $superclass;
+        $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['inherits'][] = $superclass;
+        $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['this_inherits'][] = $superclass;
       }
       if ($props instanceof DojoObject) {
         $keys = $props->getKeys();
@@ -113,7 +113,7 @@ foreach ($files as $file) {
             rolloutFunction($output, $package, $function);
           }
           else {
-            $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_']['meta']['protovariables'][$key] = "";
+            $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['protovariables'][$key] = "";
           }
         }
       }
@@ -121,12 +121,12 @@ foreach ($files as $file) {
       if ($init instanceof DojoFunctionDeclare) {
         $parameters = $init->getParameters();
         foreach ($parameters as $parameter) {
-          $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_']['meta']['parameters'][$parameter->getValue()]['type'] = $parameter->getType();
+          $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['parameters'][$parameter->getValue()]['type'] = $parameter->getType();
         }
       }
     }
     
-    // Handle method declarations
+    // Handle function declarations
     $declarations = $package->getFunctionDeclarations();
     foreach ($declarations as $declaration) {
       rolloutFunction($output, $package, $declaration);
@@ -141,7 +141,7 @@ foreach ($files as $file) {
         $superclass = $superclass->getValue();
       }
       if (is_string($subclass) && is_string($superclass)) {
-        $output[$package->getPackageName()]['meta']['methods'][$subclass]['_']['meta']['inherits'][] = $superclass;
+        $output[$package->getPackageName()]['meta']['functions'][$subclass]['_']['meta']['inherits'][] = $superclass;
       }
     }
 
@@ -168,10 +168,10 @@ foreach ($files as $file) {
             }
             else {
 							if ($call_name == 'dojo.lang.mixin') {
-              	$output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['variables'][$key] = "";
+              	$output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['variables'][$key] = "";
 							}
 							else {
-              	$output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['protovariables'][$key] = "";
+              	$output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['protovariables'][$key] = "";
 							}
             }
           }
@@ -179,14 +179,14 @@ foreach ($files as $file) {
         elseif (is_string($object) && is_string($properties)) {
           // Note: inherits expects to be reading from prototype values
           if ($call_name == 'dojo.lang.extend' && strpos($properties, '.prototype') !== false) {
-            $output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['inherits'][] = str_replace('.prototype', '', $properties);
+            $output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['inherits'][] = str_replace('.prototype', '', $properties);
           }
           elseif ($call_name == 'dojo.lang.extend' && strpos($properties, 'new ') !== false) {
-            $output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['inherits'][] = str_replace('new ', '', $properties);
-            $output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['this_inherits'][] = str_replace('new ', '', $properties);
+            $output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['inherits'][] = str_replace('new ', '', $properties);
+            $output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['this_inherits'][] = str_replace('new ', '', $properties);
           }
           else {
-            $output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['object_inherits'][] = $properties;
+            $output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['object_inherits'][] = $properties;
           }
         }
       }
@@ -194,8 +194,8 @@ foreach ($files as $file) {
     
     if ($output[$package->getPackageName()]) {
 			$output['function_names'][$package->getPackageName()] = array();
-			if (!empty($output[$package->getPackageName()]['meta']['methods'])) {
-      	$output['function_names'][$package->getPackageName()] = array_values(array_keys($output[$package->getPackageName()]['meta']['methods']));
+			if (!empty($output[$package->getPackageName()]['meta']['functions'])) {
+      	$output['function_names'][$package->getPackageName()] = array_values(array_keys($output[$package->getPackageName()]['meta']['functions']));
 			}
     }
   }
@@ -234,8 +234,8 @@ foreach ($wiki_files as $wiki_file) {
 		$name = $xpath->query("//*[@name = 'DocFnForm/name']")->item(0)->textContent;
 		$returns = $xpath->query("//*[@name = 'DocFnForm/returns']")->item(0)->textContent;
 		
-		$output[$require]['meta']['methods'][$name]['_']['meta']['description'] = $main_text;
-		$output[$require]['meta']['methods'][$name]['_']['meta']['returns']['descriptionscription'] = $returns;
+		$output[$require]['meta']['functions'][$name]['_']['meta']['description'] = $main_text;
+		$output[$require]['meta']['functions'][$name]['_']['meta']['returns']['descriptionscription'] = $returns;
 
 		unset($require);
 		unset($name);
@@ -246,7 +246,7 @@ foreach ($wiki_files as $wiki_file) {
 		$parameter = $xpath->query("//*[@name = 'DocParamForm/name']")->item(0)->textContent;
 		$description = $xpath->query("//*[@name = 'DocParamForm/desc']")->item(0)->textContent;
 		
-		$output[$require]['meta']['methods'][$name]['_']['meta']['parameters'][$parameter]['description'] = $description;
+		$output[$require]['meta']['functions'][$name]['_']['meta']['parameters'][$parameter]['description'] = $description;
 		
 		unset($require);
 		unset($name);
