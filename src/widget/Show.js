@@ -122,12 +122,16 @@ dojo.widget.defineWidget(
 		if(!preventSetHash){
 			window.location.href = "#"+this.widgetId+"_SlideNo_"+slide;
 		}
+		if(this._slides[this._slide]){
+			this._slides[this._slide].hide();
+		}
 		
 		this._slide = slide;
 		this.select.selectedIndex = slide;
-		while(this.contentNode.hasChildNodes()){ this.contentNode.removeChild(this.contentNode.firstChild); }
-		this.contentNode.appendChild(this._slides[slide].domNode);
-	
+		var cn = this.contentNode;
+		while(cn.firstChild){ cn.removeChild(cn.firstChild); }
+		cn.appendChild(this._slides[slide].domNode);
+		this._slides[slide].show();
 	},
 	gotoSlideByEvent: function(/*Event*/ event){
 		var node = event.target;
