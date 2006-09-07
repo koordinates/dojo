@@ -10,14 +10,15 @@ dojo.require("dojo.widget.Dialog");
 dojo.require("dojo.html.common");
 dojo.require("dojo.html.display");
 
+dojo.widget.DocPane = function(){
+	dojo.event.topic.subscribe("/docs/function/results", this, "onDocResults");
+	dojo.event.topic.subscribe("/docs/package/results", this, "onPkgResults");
+	dojo.event.topic.subscribe("/docs/function/detail", this, "onDocSelectFunction");
+}
+
 dojo.widget.defineWidget(
 	"dojo.widget.DocPane",
 	dojo.widget.HtmlWidget,
-	function(){
-		dojo.event.topic.subscribe("/docs/function/results", this, "onDocResults");
-		dojo.event.topic.subscribe("/docs/package/results", this, "onPkgResults");
-		dojo.event.topic.subscribe("/docs/function/detail", this, "onDocSelectFunction");
-	},
 	{
 		// Template parameters
 		dialog: null,
@@ -69,7 +70,6 @@ dojo.widget.defineWidget(
 		templatePath: dojo.uri.dojoUri("src/widget/templates/DocPane.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/DocPane.css"),
 		isContainer: true,
-
 		fillInTemplate: function(){
 			this.requires = dojo.html.removeNode(this.requires);
 			this.rRow.style.display = "none";
@@ -230,7 +230,7 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		onPkgResults: function(/*Object*/ results){
+		onPkgResult: function(/*Object*/ results){
 			if(this.pkgEditor){
 				this.pkgEditor.close(true);
 				dojo.debug(this.pkgDescription);
@@ -326,28 +326,28 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		onDocResults: function(message){
-			var results = message.docResults;
+		onDocResults: function(fns){
+			dojo.debug("onDocResults(): called");
 
-			if(results.length == 1){
-				dojo.event.topic.publish("/docs/function/select", results[0]);
+			if(fns.length == 1){
+				dojo.event.topic.publish("/docs/function/select", fns[0]);
 				return;
 			}
 
 			dojo.html.removeChildren(this.domNode);
 
-			this.count.innerHTML = results.length;
+			this.count.innerHTML = fns.length;
 			var appends = [];
-			for(var i = 0, row; row = results[i]; i++){
-				this.fnLink.innerHTML = row.name;
-				this.fnLink.href = "#" + row.name;
-				if(row.id){
-					this.fnLink.href = this.fnLink.href + "," + row.id;	
+			for(var i = 0, fn; fn = fns[i]; i++){
+				this.fnLink.innerHTML = fn.name;
+				this.fnLink.href = "#" + fn.name;
+				if(fn.id){
+					this.fnLink.href = this.fnLink.href + "," + fn.id;	
 				}
 				this.summary.parentNode.style.display = "none";
-				if(row.summary){
+				if(fn.summary){
 					this.summary.parentNode.style.display = "inline";				
-					this.summary.innerHTML = row.summary;
+					this.summary.innerHTML = fn.summary;
 				}
 				appends.push(this.rowParent.appendChild(this.rowSave.cloneNode(true)));
 			}
@@ -361,7 +361,7 @@ dojo.widget.defineWidget(
 			this.domNode.appendChild(this.resultSave.cloneNode(true));
 			var as = this.domNode.getElementsByTagName("a");
 			for(var i = 0, a; a = as[i]; i++){
-				dojo.event.connect(a, "onclick", makeSelect(results[i]));
+				dojo.event.connect(a, "onclick", makeSelect(fns[i]));
 			}
 
 			for(var i = 0, append; append = appends[i]; i++){
