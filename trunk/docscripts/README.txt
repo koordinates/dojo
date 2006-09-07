@@ -66,15 +66,12 @@ The topic registry
 "/docs/function/results":
 	publisher: dojo.docs
 	subscriber: any widget or code that wishes to see the results of current doc searches
-	message: {
-		selectKey: id of the docSearch request,
-		methods: [{
-			pkg: string with the package (require statement) containing the function
+	message: [{
+			package: string with the package (require statement) containing the function
 			name: string with name of function,
 			id: the polymorphic id of the function (may be blank if the default),
 			summary: string containing one line summary of the function,
-		}]
-	}
+	}]
 
 "/docs/function/detail":
 	publisher: dojo.docs
@@ -140,15 +137,21 @@ In all of the following examples, a key with "" around it means that it is a tex
 
 This is the full Object structure. *asterisks* indicate that the following is in that file. _underscores_ indicate that the following are skipped on the file system.
 
-*function_names*,
+*function_names*: {
+	package: {
+		[
+			function
+		]
+	}
+},
 package: {
 	_meta_: {
 		*description*: "description", (from comment block)
-		_methods_: {
+		_functions_: {
 			name: {
 				id: {
 					_meta_: {
-						summary: "summary", (Actually saved in the package-level *meta.json*)
+						summary: "summary", (Actually saved in the package-level *meta*)
 						*description*: "description",
 						*src*: "source code"
 					},
@@ -178,7 +181,7 @@ package: {
 			}
 		}
 	},
-	*meta.json*: {
+	*meta*: {
 		description: "description", (from wiki, only in local version)
 		variables: [
 			variable: "description", (in local version)

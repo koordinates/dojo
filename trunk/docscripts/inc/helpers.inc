@@ -15,14 +15,19 @@ function writeToDisk($output, $dir, $format = 'json', $environment = 'remote') {
 	if ($format == 'json' && $environment == 'local') {
 		$json = new Services_JSON();
 		$merged = array();
+    if (isset($output['function_names'])) {
+      $data = $json->encode($output['function_names']);
+      file_put_contents($dir . '/function_names', $data);
+			unset($output['function_names']);
+    }
 		foreach ($output as $package_name => $package) {
 			$merged_name = $package_name;
 			if (strpos($merged_name, '.')) {
 				$merged_parts = explode('.', $merged_name);
 				$merged_name = $merged_parts[0] . '.' . $merged_parts[1];
 				unset($merged_parts);
-				$merged[$merged_name][$package_name] = $package;
 			}
+			$merged[$merged_name][$package_name] = $package;
 		}
 		foreach ($merged as $merged_name => $package) {
 			$data = $json->encode($package);
@@ -37,64 +42,63 @@ function writeToDisk($output, $dir, $format = 'json', $environment = 'remote') {
 	}
 	else if ($format == 'json' && $environment == 'remote') {
 	  $json = new Services_JSON();
+    if (isset($output['function_names'])) {
+      $data = $json->encode($output['function_names']);
+      file_put_contents($dir . '/function_names', $data);
+			unset($output['function_names']);
+    }
 	  foreach ($output as $package_name => $package) {
-	    if ($package_name == 'function_names') {
-	      $data = $json->encode($package);
-	      file_put_contents($dir . '/function_names', $data);
-	    }
-	    else {
-	      if (!file_exists($dir . '/' . $package_name)) {
-	        mkdir($dir . '/' . $package_name);
-					chmod($dir . '/' . $package_name, 0777);
-	      }
-				if (isset($package['meta'])) {
-					$meta = array();
-					foreach ($package['meta'] as $key => $value) {
-						if ($key != 'methods') {
-							$meta[$key] = $value;
-							unset($package['meta'][$key]);
-						}
+      if (!file_exists($dir . '/' . $package_name)) {
+        mkdir($dir . '/' . $package_name);
+				chmod($dir . '/' . $package_name, 0777);
+      }
+			if (isset($package['meta'])) {
+				$meta = array();
+				foreach ($package['meta'] as $key => $value) {
+					if ($key != 'functions') {
+						$meta[$key] = $value;
+						unset($package['meta'][$key]);
 					}
+				}
 
-					if (isset($package['meta']['methods'])) {
-						ksort($package['meta']['methods']);
+				if (isset($package['meta']['functions'])) {
+					ksort($package['meta']['functions']);
 
-			      foreach ($package['meta']['methods'] as $function_name => $function) {
-		          if (!file_exists($dir . '/' . $package_name . '/' . $function_name)) {
-		            mkdir($dir . '/' . $package_name . '/' . $function_name);
-		          }
-		          foreach ($function as $polymorphic_id => $polymorphism) {
-								if (isset($polymorphism['meta'])) {
-									if (!file_exists($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id)) {
-		                mkdir($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id);
-		              }
-			            foreach ($polymorphism['meta'] as $type => $data) {
-										if (empty($data)) {
-											continue;
-										}
-
-										if ($type == 'summary') {
-											$meta['methods'][$function_name][$polymorphic_id]['meta']['summary'] = $data;
-											unset($polymorphism['meta'][$type]);
-										}
-										else if ($type == 'description' || $type == 'src') {
-											file_put_contents($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id . '/' . $type, $data);
-											unset($polymorphism['meta'][$type]);
-										}
-			            }
-									if (!empty($polymorphism['meta'])) {
-		                $data = $json->encode($polymorphism['meta']);
-		              	file_put_contents($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id . '/meta', $data);
+		      foreach ($package['meta']['functions'] as $function_name => $function) {
+	          if (!file_exists($dir . '/' . $package_name . '/' . $function_name)) {
+	            mkdir($dir . '/' . $package_name . '/' . $function_name);
+	          }
+	          foreach ($function as $polymorphic_id => $polymorphism) {
+							if (isset($polymorphism['meta'])) {
+								if (!file_exists($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id)) {
+	                mkdir($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id);
+	              }
+		            foreach ($polymorphism['meta'] as $type => $data) {
+									if (empty($data)) {
+										continue;
 									}
+
+									if ($type == 'summary') {
+										$meta['functions'][$function_name][$polymorphic_id]['meta']['summary'] = $data;
+										unset($polymorphism['meta'][$type]);
+									}
+									else if ($type == 'description' || $type == 'src') {
+										file_put_contents($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id . '/' . $type, $data);
+										unset($polymorphism['meta'][$type]);
+									}
+		            }
+								if (!empty($polymorphism['meta'])) {
+	                $data = $json->encode($polymorphism['meta']);
+	              	file_put_contents($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id . '/meta', $data);
 								}
-		          }
-		        }
-					}
-					
-					$data = $json->encode($meta);
-					file_put_contents($dir . '/' . $package_name . '/meta', $data);
-	      }
-	    }
+							}
+	          }
+	        }
+				}
+				
+				$data = $json->encode($meta);
+				file_put_contents($dir . '/' . $package_name . '/meta', $data);
+      }
 	  }
 	}
 }
@@ -160,10 +164,10 @@ function rolloutFunction(&$output, $package, $declaration) {
     $masquerading_as_function = $declaration->getThis();
   }
   
-  $output[$package->getPackageName()]['meta']['methods'][$function_name]['_']['meta']['summary'] = '';
+  $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['summary'] = '';
   $parameters = $declaration->getParameters();
   foreach ($parameters as $parameter) {
-    $output[$package->getPackageName()]['meta']['methods'][$function_name]['_']['meta']['parameters'][$parameter->getValue()]['type'] = $parameter->getType();
+    $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['parameters'][$parameter->getValue()]['type'] = $parameter->getType();
   }
   
   $declaration->addBlockCommentKey('summary');
@@ -176,41 +180,41 @@ function rolloutFunction(&$output, $package, $declaration) {
   $comment_keys = $declaration->getBlockCommentKeys();
   foreach ($comment_keys as $key) {
     if ($key == 'summary') {
-      $output[$package->getPackageName()]['meta']['methods'][$function_name]['_']['meta']['summary'] = $declaration->getBlockComment($key);
+      $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['summary'] = $declaration->getBlockComment($key);
     }
     elseif ($key == 'description') {
-      $output[$package->getPackageName()]['meta']['methods'][$function_name]['_']['meta']['description'] = $declaration->getBlockComment($key);
+      $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['description'] = $declaration->getBlockComment($key);
     }
   }
   
-  $output[$package->getPackageName()]['meta']['methods'][$function_name]['_']['meta']['src'] = $declaration->getSource();
+  $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['src'] = $declaration->getSource();
   
   $this_variables = $declaration->getThisVariableNames();
   foreach ($this_variables as $this_variable) {
     if (isset($output[$package->getPackageName()][$masquerading_as_function]['_']['meta']['this_variables'])) {
-      if (!in_array($this_variable, $output[$package->getPackageName()]['meta']['methods'][$masquerading_as_function]['_']['meta']['this_variables'])) {
-        $output[$package->getPackageName()]['meta']['methods'][$masquerading_as_function]['_']['meta']['this_variables'][] = $this_variable;
+      if (!in_array($this_variable, $output[$package->getPackageName()]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'])) {
+        $output[$package->getPackageName()]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'][] = $this_variable;
       }
     }
     else {
-      $output[$package->getPackageName()]['meta']['methods'][$masquerading_as_function]['_']['meta']['this_variables'][] = $this_variable;
+      $output[$package->getPackageName()]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'][] = $this_variable;
     }
   }
   
   $returns = array_unique($declaration->getReturnComments());
   if (count($returns) == 1) {
-    $output[$package->getPackageName()]['meta']['methods'][$function_name]['_']['meta']['returns'] = $returns[0];
+    $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['returns'] = $returns[0];
   }
   elseif ($returns) {
-    $output[$package->getPackageName()]['meta']['methods'][$function_name]['_']['meta']['returns'] = 'mixed';
+    $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['returns'] = 'mixed';
   }
   
   if ($calls = $declaration->getThisInheritanceCalls()) {
-    $output[$package->getPackageName()]['meta']['methods'][$function_name]['_']['meta']['this_inherits'] = $calls;
+    $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['this_inherits'] = $calls;
   }
   
   if ($declaration->isThis()) {
-    $output[$package->getPackageName()]['meta']['methods'][$function_name]['_']['meta']['this'] = $declaration->getThis();
+    $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['this'] = $declaration->getThis();
   }
 }
 
