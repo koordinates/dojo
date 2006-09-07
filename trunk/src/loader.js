@@ -31,12 +31,12 @@
 	
 		moduleHasPrefix: function(module){
 			var mp = this.modulePrefixes_;
-			return Boolean((mp[module])&&(mp[module]["name"]));
+			return Boolean((mp[module])&&(mp[module]["value"]));
 		},
 
 		getModulePrefix: function(module){
 			var mp = this.modulePrefixes_;
-			if((mp[module])&&(mp[module]["name"])){
+			if((mp[module])&&(mp[module]["value"])){
 				return mp[module].value;
 			}
 			return module;
