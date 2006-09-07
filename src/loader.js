@@ -213,7 +213,7 @@ dojo.hostenv.callLoaded = function(){
 
 dojo.hostenv.getModuleSymbols = function(modulename){
 	var syms = modulename.split(".");
-	for(var i = syms.length; i>0; i--){
+	for(var i = syms.length - 1; i>0; i--){
 		var parentModule = syms.slice(0, i).join(".");
 		if ((i==1) && (!this.moduleHasPrefix(parentModule))){		
 			//Support default module directory (sibling of dojo)
