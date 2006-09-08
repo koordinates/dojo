@@ -93,7 +93,7 @@ dojo.declare(
 		var parentPopup = null;
 		this.isTopLevel = true;
 		while(parent){
-			if(parent !== this && (parent instanceof dojo.widget.PopupContainer || parent.applyPopupBasicStyle != undefined)){
+			if(parent !== this && (parent.setOpenedSubpopup != undefined && parent.applyPopupBasicStyle != undefined)){
 				parentPopup = parent;
 				this.isTopLevel = false;
 				parentPopup.setOpenedSubpopup(this);
@@ -803,9 +803,27 @@ dojo.widget.PopupManager = new function(){
 			}catch(e){ /* squelch error for cross domain iframes */ }
 		}
 	};
-	
+
+	this.unRegisterWin = function(win){
+		if(win.__PopupManagerRegistered)
+		{
+			dojo.event.disconnect(win.document, 'onmousedown', this, 'onClick');
+			dojo.event.disconnect(win, "onscroll", this, "onClick");
+			dojo.event.disconnect(win.document, this._keyEventName, this, 'onKeyPress');
+			win.__PopupManagerRegistered = false;
+		}
+	};
+
+	this.unRegisterAllWindows = function(){
+		for(var i=0;i<this.registeredWindows.length;++i){
+			this.unRegisterWin(this.registeredWindows[i]);
+		}
+		this.registeredWindows = [];
+	};
+
 	dojo.addOnLoad(this, "registerAllWindows");
-	
+	dojo.addOnUnload(this, "unRegisterAllWindows");
+
 	this.closed = function(menu){
 		if (this.currentMenu == menu){
 			this.currentMenu = null;
