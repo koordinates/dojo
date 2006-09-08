@@ -1,5 +1,5 @@
 dojo.provide("dojo.undo.browser");
-dojo.require("dojo.io");
+dojo.require("dojo.io.common");
 
 try{
 	if((!djConfig["preventBackButtonFix"])&&(!dojo.hostenv.post_load_)){
