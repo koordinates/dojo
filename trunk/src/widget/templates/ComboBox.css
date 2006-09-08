@@ -6,11 +6,11 @@
 	display: inline;	/* for IE and safari */
 }
 
-.b_gecko .dojoComboBox {
+.dj_gecko .dojoComboBox {
 	display: -moz-inline-box;
 }
 
-.b_opera .dojoComboBox {
+.dj_opera .dojoComboBox {
 	display: inline-table;
 }
 
