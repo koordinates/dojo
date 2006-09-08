@@ -8,9 +8,9 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
-dojo.require("dojo.html.shadow");
 dojo.require("dojo.html.iframe");
 dojo.require("dojo.html.selection");
+dojo.require("dojo.lfx.shadow");
 dojo.require("dojo.widget.html.layout");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.dnd.HtmlDragMove");
@@ -102,7 +102,7 @@ dojo.declare(
 	
 			// add a drop shadow
 			if(this.hasShadow){
-				this.shadow=new dojo.html.shadow(this.domNode);
+				this.shadow=new dojo.lfx.shadow(this.domNode);
 			}
 	
 			// Prevent IE bleed-through problem
