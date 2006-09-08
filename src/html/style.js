@@ -479,23 +479,23 @@ dojo.html.getPreferredStyleSheet = function(){
 
 //	Modified version of Morris' CSS hack.
 dojo.html.applyBrowserClass = function(/* HTMLElement */node){
-	with (dojo.render.html) {
-		var classes = {
-			b_ie: ie,
-			b_ie55: ie55,
-			b_ie6: ie60,
-			b_ie7: ie70,
-			b_iequirks: ie && quirks,
-			b_opera: opera,
-			b_khtml: khtml,
-			b_safari: safari,
-			b_gecko: mozilla
-		}; // no dojo unsupported browsers
-	}
+	var drh=dojo.render.html;
+	var classes = {
+		dj_ie: drh.ie,
+		dj_ie55: drh.ie55,
+		dj_ie6: drh.ie60,
+		dj_ie7: drh.ie70,
+		dj_iequirks: drh.ie && drh.quirks,
+		dj_opera: drh.opera,
+		dj_opera8: drh.opera && (Math.floor(dojo.render.version)==8),
+		dj_opera9: drh.opera && (Math.floor(dojo.render.version)==9),
+		dj_khtml: drh.khtml,
+		dj_safari: drh.safari,
+		dj_gecko: drh.mozilla
+	}; // no dojo unsupported browsers
 	for(var p in classes){
 		if(classes[p]){
 			dojo.html.addClass(node, p);
-			return;
 		}
 	}
 };
