@@ -1,5 +1,6 @@
 dojo.provide("dojo.gfx.color.hsv");
 dojo.require("dojo.lang.array");
+dojo.require("dojo.math");
 
 dojo.lang.extend(dojo.gfx.color.Color, {
 	toHsv: function() {
@@ -67,25 +68,51 @@ dojo.gfx.color.rgb2hsv = function(r, g, b){
 	return [h, s, v];
 }
 
-dojo.gfx.color.hsv2rgb = function(h, s, v){
+// Based on C Code in "Computer Graphics -- Principles and Practice,"
+// Foley et al, 1996, p. 593.
+//
+// H = 0.0 to 360.0 (corresponding to 0..360 degrees around hexcone) 0 for S = 0
+// S = 0.0 (shade of gray) to 1.0 (pure color)
+// V = 0.0 (black) to 1.0 (white)
+dojo.gfx.color.hsv2rgb = function(/* int || Array */h, /* int */s, /* int */v, /* Object? */options){
+	//	summary
+	//	converts an HSV value set to RGB, ranges depending on optional options object.
+	//	patch for options by Matthew Eernisse 	
 	if (dojo.lang.isArray(h)) {
 		v = h[2] || 0;
 		s = h[1] || 0;
 		h = h[0] || 0;
+		if(arguments[1]) options = s;
 	}
 
-	h = (h / 255) * 360;
+	var opt = {
+		inputRange:  (options && options.inputRange)  ? options.inputRange : [255, 255, 255],
+		outputRange: (options && options.outputRange) ? options.outputRange : 255
+	};
+
+    switch(opt.inputRange[0]) { 
+		// 0.0-1.0 
+		case 1: h = h * 360; break; 
+		// 0-100 
+		case 100: h = (h / 100) * 360; break; 
+		// 0-360 
+		case 360: h = h; break; 
+		// 0-255 
+		default: h = (h / 255) * 360; 
+	} 
 	if (h == 360){ h = 0;}
 
-	s = s / 255;
-	v = v / 255;
+	//	no need to alter if inputRange[1] = 1
+	switch(opt.inputRange[1]){
+		case 100: s /= 100; break;
+		case 255: s /= 255;
+	}
 
-	// Based on C Code in "Computer Graphics -- Principles and Practice,"
-	// Foley et al, 1996, p. 593.
-	//
-	// H = 0.0 to 360.0 (corresponding to 0..360 degrees around hexcone) 0 for S = 0
-	// S = 0.0 (shade of gray) to 1.0 (pure color)
-	// V = 0.0 (black) to 1.0 (white)
+	//	no need to alter if inputRange[1] = 1
+	switch(opt.inputRange[2]){
+		case 100: v /= 100; break;
+		case 255: v /= 255;
+	}
 
 	var r = null;
 	var g = null;
@@ -117,9 +144,22 @@ dojo.gfx.color.hsv2rgb = function(h, s, v){
 		}
 	}
 
-	r = Math.ceil(r * 255);
-	g = Math.ceil(g * 255);
-	b = Math.ceil(b * 255);
+	switch(opt.outputRange){
+		case 1:
+			r = dojo.math.round(r, 2);
+			g = dojo.math.round(g, 2);
+			b = dojo.math.round(b, 2);
+			break;
+		case 100:
+			r = Math.ceil(r * 100);
+			g = Math.ceil(g * 100);
+			b = Math.ceil(b * 100);
+			break;
+		default:
+			r = Math.ceil(r * 255);
+			g = Math.ceil(g * 255);
+			b = Math.ceil(b * 255);
+	}
 
 	return [r, g, b];
 }
