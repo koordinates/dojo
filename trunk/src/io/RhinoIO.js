@@ -1,6 +1,6 @@
 dojo.provide("dojo.io.RhinoIO");
 
-dojo.require("dojo.io");
+dojo.require("dojo.io.common");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.string.extras");

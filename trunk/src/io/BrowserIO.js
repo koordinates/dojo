@@ -1,6 +1,6 @@
 dojo.provide("dojo.io.BrowserIO");
 
-dojo.require("dojo.io");
+dojo.require("dojo.io.common");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.string.extras");
