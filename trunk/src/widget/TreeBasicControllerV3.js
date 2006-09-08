@@ -28,9 +28,20 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, dojo.widget.TreeCommon.proto
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	widgetType: "TreeBasicControllerV3",
 
+	/**
+	 * TreeCommon.listenTree will attach listeners to these events
+	 *
+	 * The logic behind the naming:
+	 * 1. (after|before)
+	 * 2. if an event refers to tree, then add "Tree"
+	 * 3. add action
+	 */
 	listenTreeEvents: ["afterChangeTree","afterTreeCreate", "beforeTreeDestroy","afterSetFolder","afterUnsetFolder"],
+	
+	
 	listenNodeFilter: function(elem) { return elem.isFolder && elem instanceof dojo.widget.Widget},
 
+	
 	editor: null,
 
 	listenNode: function(node) {
@@ -104,6 +115,11 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		//dojo.profile.end("onTreeChange");
 	},
 	
+	/**
+	 * FIXME: these functions must
+	 * 1) use getParentIndex()
+	 * 2) move them to node, it's model's job to get next sibling
+	 */
 	_getNextSibling: function(nodeWidget) {
 		var parent = nodeWidget.parent;
 		var children = parent.children;
