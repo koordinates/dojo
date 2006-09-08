@@ -26,6 +26,7 @@ dojo.widget.defineWidget(
 		width2height: 1.0/3.0,
 	
 		// attach points
+		buttonNode: null,
 		containerNode: null,
 		leftImage: null,
 		centerImage: null,
@@ -76,8 +77,12 @@ dojo.widget.defineWidget(
 
 			if ( this.disabled ) {
 				dojo.html.prependClass(this.domNode, "dojoButtonDisabled");
+				this.domNode.removeAttribute("tabIndex");
+				dojo.widget.wai.setAttr(this.domNode, "waiState", "disabled", true);
 			} else {
 				dojo.html.removeClass(this.domNode, "dojoButtonDisabled");
+				this.domNode.setAttribute("tabIndex", "0");
+				dojo.widget.wai.setAttr(this.domNode, "waiState", "disabled", false);
 			}
 				
 			this.domNode.style.height=this.height + "px";
@@ -86,32 +91,65 @@ dojo.widget.defineWidget(
 	
 		onMouseOver: function(e){
 			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.domNode, "dojoButtonHover");
+			dojo.html.prependClass(this.buttonNode, "dojoButtonHover");
 			this._setImage(this.activeImg);
 		},
 	
 		onMouseDown: function(e){
 			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.domNode, "dojoButtonDepressed");
-			dojo.html.removeClass(this.domNode, "dojoButtonHover");
+			dojo.html.prependClass(this.buttonNode, "dojoButtonDepressed");
+			dojo.html.removeClass(this.buttonNode, "dojoButtonHover");
 			this._setImage(this.pressedImg);
 		},
 		onMouseUp: function(e){
 			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.domNode, "dojoButtonHover");
-			dojo.html.removeClass(this.domNode, "dojoButtonDepressed");
+			dojo.html.prependClass(this.buttonNode, "dojoButtonHover");
+			dojo.html.removeClass(this.buttonNode, "dojoButtonDepressed");
 			this._setImage(this.activeImg);
 		},
 	
 		onMouseOut: function(e){
 			if( this.disabled ){ return; }
-			if( e.toElement && dojo.html.isDescendantOf(e.toElement, this.domNode) ){
+			if( e.toElement && dojo.html.isDescendantOf(e.toElement, this.buttonNode) ){
 				return; // Ignore IE mouseOut events that dont actually leave button - Prevents hover image flicker in IE
 			}
-			dojo.html.removeClass(this.domNode, "dojoButtonHover");
+			dojo.html.removeClass(this.buttonNode, "dojoButtonHover");
 			this._setImage(this.inactiveImg);
 		},
+
+		onKey: function(e){
+			if (!e.key) { return; }
+			var menu = dojo.widget.getWidgetById(this.menuId);
+			if (e.key == e.KEY_ENTER || e.key == " "){
+				this.onMouseDown(e);
+				this.buttonClick(e);
+				dojo.lang.setTimeout(this, "onMouseUp", 75, e);
+				e.preventDefault();
+				e.stopPropagation();
+			}
+			if(menu && menu.isShowingNow && e.key == e.KEY_DOWN_ARROW){
+				// disconnect onBlur when focus moves into menu
+				dojo.event.disconnect(this.domNode, "onblur", this, "onBlur");
+				// allow event to propagate to menu
+			}
+		},
+
+		onFocus: function(e){
+			var menu = dojo.widget.getWidgetById(this.menuId);
+			if (menu ){
+				dojo.event.connectOnce(this.domNode, "onblur", this, "onBlur");
+			}
+		},
+
+		onBlur: function(e){
+			var menu = dojo.widget.getWidgetById(this.menuId);
+			if ( !menu ) { return; }
 	
+			if ( menu.close && menu.isShowingNow ){
+				menu.close();
+			}
+		},
+
 		buttonClick: function(e){
 			if( !this.disabled ) { this.onClick(e); }
 		},
@@ -125,9 +163,8 @@ dojo.widget.defineWidget(
 		},
 		
 		_toggleMenu: function(menuId){
-			var menu = dojo.widget.getWidgetById(menuId);
+			var menu = dojo.widget.getWidgetById(menuId); 
 			if ( !menu ) { return; }
-	
 			if ( menu.open && !menu.isShowingNow) {
 				var pos = dojo.html.getAbsolutePosition(this.domNode, false);
 				menu.open(pos.x, pos.y+this.height, this);
@@ -167,6 +204,8 @@ dojo.widget.defineWidget(
 	
 			this.arrow = document.createElement("img");
 			dojo.html.setClass(this.arrow, "downArrow");
+
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "haspopup", this.menuId);
 		},
 
 		sizeMyselfHelper: function(){
@@ -192,7 +231,6 @@ dojo.widget.defineWidget(
 		templatePath: dojo.uri.dojoUri("src/widget/templates/ComboButtonTemplate.html"),
 	
 		// attach points
-		leftPart: null,
 		rightPart: null,
 		arrowBackgroundImage: null,
 	
@@ -204,17 +242,27 @@ dojo.widget.defineWidget(
 			var mb = dojo.html.getMarginBox(this.containerNode);
 			this.height = mb.height;
 			this.containerWidth = mb.width;
+
 			var endWidth= this.height/3;
+
+			if(this.disabled){
+				dojo.widget.wai.setAttr(this.domNode, "waiState", "disabled", true);
+				this.domNode.removeAttribute("tabIndex");
+			}
+			else {
+				dojo.widget.wai.setAttr(this.domNode, "waiState", "disabled", false);
+				this.domNode.setAttribute("tabIndex", "0");
+			}
 	
 			// left part
 			this.leftImage.height = this.rightImage.height = this.centerImage.height = 
 				this.arrowBackgroundImage.height = this.height;
 			this.leftImage.width = endWidth+1;
 			this.centerImage.width = this.containerWidth;
-			this.leftPart.style.height = this.height + "px";
-			this.leftPart.style.width = endWidth + this.containerWidth + "px";
-			this._setImageL(this.disabled ? this.disabledImg : this.inactiveImg);
-	
+			this.buttonNode.style.height = this.height + "px";
+			this.buttonNode.style.width = endWidth + this.containerWidth + "px";
+			this._setImage(this.disabled ? this.disabledImg : this.inactiveImg);
+
 			// right part
 			this.arrowBackgroundImage.width=this.arrowWidth;
 			this.rightImage.width = endWidth+1;
@@ -228,39 +276,7 @@ dojo.widget.defineWidget(
 			this.domNode.style.width= totalWidth + "px";
 		},
 	
-		/** functions on left part of button**/
-		leftOver: function(e){
-			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.leftPart, "dojoButtonHover");
-			this._setImageL(this.activeImg);
-		},
-	
-		leftDown: function(e){
-			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.leftPart, "dojoButtonDepressed");
-			dojo.html.removeClass(this.leftPart, "dojoButtonHover");
-			this._setImageL(this.pressedImg);
-		},
-		leftUp: function(e){
-			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.leftPart, "dojoButtonHover");
-			dojo.html.removeClass(this.leftPart, "dojoButtonDepressed");
-			this._setImageL(this.activeImg);
-		},
-	
-		leftOut: function(e){
-			if( this.disabled ){ return; }
-			dojo.html.removeClass(this.leftPart, "dojoButtonHover");
-			this._setImageL(this.inactiveImg);
-		},
-	
-		leftClick: function(e){
-			if ( !this.disabled ) {
-				this.onClick(e);
-			}
-		},
-	
-		_setImageL: function(prefix){
+		_setImage: function(prefix){
 			this.leftImage.src=dojo.uri.dojoUri(prefix + "l.gif");
 			this.centerImage.src=dojo.uri.dojoUri(prefix + "c.gif");
 		},
@@ -290,7 +306,7 @@ dojo.widget.defineWidget(
 			dojo.html.removeClass(this.rightPart, "dojoButtonHover");
 			this._setImageR(this.inactiveImg);
 		},
-	
+
 		rightClick: function(e){
 			if( this.disabled ){ return; }
 			this._toggleMenu(this.menuId);
@@ -299,5 +315,29 @@ dojo.widget.defineWidget(
 		_setImageR: function(prefix){
 			this.arrowBackgroundImage.src=dojo.uri.dojoUri(prefix + "c.gif");
 			this.rightImage.src=dojo.uri.dojoUri(prefix + "r.gif");
+		},
+
+		/*** keyboard functions ***/
+		
+		onKey: function(e){
+			if (!e.key) { return; }
+			var menu = dojo.widget.getWidgetById(this.menuId);
+			if(e.key== e.KEY_ENTER || e.key == " "){
+				this.onMouseDown(e);
+				this.buttonClick(e);
+				dojo.lang.setTimeout(this, "onMouseUp", 75, e);
+				e.preventDefault();
+				e.stopPropagation();
+			} else if (e.key == e.KEY_DOWN_ARROW && e.altKey){
+				this.rightDown(e);
+				this.rightClick(e);
+				dojo.lang.setTimeout(this, "rightUp", 75, e);
+				e.preventDefault();
+				e.stopPropagation();
+			} else if(menu && menu.isShowingNow && e.key == e.KEY_DOWN_ARROW){
+				// disconnect onBlur when focus moves into menu
+				dojo.event.disconnect(this.domNode, "onblur", this, "onBlur");
+				// allow event to propagate to menu
+			}
 		}
 	});
