@@ -545,6 +545,9 @@ dojo.widget.defineWidget(
 		},
 
 		fillInTemplate: function(args, frag){
+			// For inlining a table we need browser specific CSS
+			dojo.html.applyBrowserClass(this.domNode);
+
 			// FIXME: need to get/assign DOM node names for form participation here.
 			this.comboBoxValue.name = this.name;
 			this.comboBoxSelectionValue.name = this.name+"_selected";

@@ -3,10 +3,7 @@
 	border: 1px solid #afafaf;
 	padding: 0px;
 	line-height: 0px;
-}
-
-.b_ie .dojoComboBox,  .b_safari .dojoComboBox {
-	display: inline;
+	display: inline;	/* for IE and safari */
 }
 
 .b_gecko .dojoComboBox {
