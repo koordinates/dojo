@@ -560,6 +560,14 @@ dojo.widget.defineWidget(
 			this.setFocus();
 		},
 
+		//overload to support source editing mode
+		getEditorContent: function(){
+			if(this._inSourceMode){
+				this.replaceEditorContent(this._htmlEditNode.value);
+			}
+			return dojo.widget.Editor2.superclass.getEditorContent.call(this);
+		},
+
 		_save: function(e){
 			// FIXME: how should this behave when there's a larger form in play?
 			if(!this.isClosed){
