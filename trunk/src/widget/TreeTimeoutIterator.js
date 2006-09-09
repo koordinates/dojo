@@ -21,20 +21,21 @@ dojo.require("dojo.widget.TreeCommon");
  *
  * TODO: it should work only sync-way to solve CPU-hungry tasks 
  */
-dojo.widget.TreeTimeoutIterator = function(elem, callFunc, callObj) {
+ dojo.declare(
+ 	"dojo.widget.TreeTimeoutIterator",
+ 	null,
+ 	
+function(elem, callFunc, callObj) {
 	var _this = this;
 	
 	this.currentParent = elem;
 	
 	this.callFunc = callFunc;
 	this.callObj = callObj ? callObj: this;
-	this.stack = [];
-		
-}
+	this.stack = [];	
+},
 
-
-dojo.lang.extend(dojo.widget.TreeTimeoutIterator, {
-
+{
 	// public
 	maxStackDepth: Number.POSITIVE_INFINITY,
 	
@@ -155,7 +156,5 @@ dojo.lang.extend(dojo.widget.TreeTimeoutIterator, {
 		this.currentParent = nextParent;
 		this.currentIndex = nextIndex;
 	}
-		
-
 
 });

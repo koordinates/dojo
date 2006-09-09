@@ -4,27 +4,16 @@ dojo.provide("dojo.widget.TreeSelectorV3");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TreeCommon");
 
-
-dojo.widget.tags.addParseTreeHandler("dojo:TreeSelectorV3");
-
-
-dojo.widget.TreeSelectorV3 = function() {
-	dojo.widget.HtmlWidget.call(this);
-
-	this.eventNames = {};
-
-	this.listenedTrees = {};
-	this.selectedNodes = [];
-		
-}
-
-dojo.inherits(dojo.widget.TreeSelectorV3, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.TreeSelectorV3, dojo.widget.TreeCommon.prototype);
-
-// TODO: add multiselect
-dojo.lang.extend(dojo.widget.TreeSelectorV3, {
-	widgetType: "TreeSelectorV3",
+dojo.widget.defineWidget(
+	"dojo.widget.TreeSelectorV3",
+	[dojo.widget.HtmlWidget, dojo.widget.TreeCommon],
+	function() {
+		this.eventNames = {};
+		this.listenedTrees = {};
+		this.selectedNodes = [];		
+	},
+{
+	// TODO: add multiselect
 
 	listenTreeEvents: ["afterAddChild","afterCollapse","afterTreeChange", "afterDetach", "beforeTreeDestroy"],
 	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},	
