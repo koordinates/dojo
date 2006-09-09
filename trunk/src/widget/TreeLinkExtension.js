@@ -4,26 +4,18 @@ dojo.provide("dojo.widget.TreeLinkExtension");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TreeExtension");
 
-dojo.widget.tags.addParseTreeHandler("dojo:TreeLinkExtension");
+dojo.widget.defineWidget(
+	"dojo.widget.TreeLinkExtension",
+	dojo.widget.TreeExtension,
+	function() {
+		this.params = {};
+	},
+{
+	/**
+	 * can only listen, no unlisten
+	 */
 
-
-dojo.widget.TreeLinkExtension = function() {
-	dojo.widget.TreeExtension.call(this);
-	
-	this.params = {}
-}
-
-dojo.inherits(dojo.widget.TreeLinkExtension, dojo.widget.TreeExtension);
-
-
-/**
- * can only listen, no unlisten
- */
-dojo.lang.extend(dojo.widget.TreeLinkExtension, {
-	widgetType: "TreeLinkExtension",
-	
-	listenTreeEvents: ["afterChangeTree"],
-	
+	listenTreeEvents: ["afterChangeTree"],	
 
 	listenTree: function(tree) {
 		
@@ -66,7 +58,6 @@ dojo.lang.extend(dojo.widget.TreeLinkExtension, {
 			node.labelNode.setAttribute(key, node.object[key]);
 		}
 	}
-	
 
 
 });
