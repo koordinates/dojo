@@ -334,9 +334,9 @@ dojo.widget.defineWidget(
 
 		toolbarWidget: null,
 		scrollInterval: null,
-		toolbarTemplatePath: "src/widget/templates/EditorToolbarOneline.html",
-//		toolbarTemplatePath: "src/widget/templates/Editor2/EditorToolbarFCKStyle.html",
-//		toolbarTemplateCssPath: "src/widget/templates/Editor2/FCKDefault/EditorToolbarFCKStyle.css",
+		toolbarTemplatePath: dojo.uri.dojoUri("src/widget/templates/EditorToolbarOneline.html"),
+//		toolbarTemplatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorToolbarFCKStyle.html"),
+//		toolbarTemplateCssPath: dojo.uri.dojoUri("src/widget/templates/Editor2/FCKDefault/EditorToolbarFCKStyle.css"),
 
 		plugins: "",
 
@@ -352,18 +352,20 @@ dojo.widget.defineWidget(
 			if((!toolbars.length)||(!this.shareToolbar)){
 				if(this.toolbarWidget){
 					this.toolbarWidget.show();
+					//re-add the toolbar to the new domNode (caused by open() on another element)
+					dojo.html.insertBefore(this.toolbarWidget.domNode, this.domNode.firstChild);
 				}else{
 					var tbOpts = {};
-					tbOpts.templatePath = dojo.uri.dojoUri(this.toolbarTemplatePath);
+					tbOpts.templatePath = this.toolbarTemplatePath;
 					if(this.toolbarTemplateCssPath){
 						tbOpts.templateCssPath = this.toolbarTemplateCssPath;
 					}
-					this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", tbOpts, this.domNode, "before");
+					this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", tbOpts, this.domNode.firstChild, "before");
 
 					dojo.event.connect(this, "close", this.toolbarWidget, "hide");
-				}
 
-				this.toolbarLoaded();
+					this.toolbarLoaded();
+				}
 			}else{
 				// FIXME: 	selecting in one shared toolbar doesn't clobber
 				// 			selection in the others. This is problematic.
@@ -397,7 +399,7 @@ dojo.widget.defineWidget(
 			dojo.debug("dojo.widget.Editor2.unregisterLoadedPlugin: unknow plugin object: "+obj);
 		},
 
-		//override the default one to provide extra commands
+		//overload the default one to provide extra commands
 		execCommand: function(command, argument){
 			switch(command.toLowerCase()){
 				case 'htmltoggle':
@@ -448,22 +450,18 @@ dojo.widget.defineWidget(
 
 					if(!this._htmlEditNode){
 						this._htmlEditNode = dojo.doc().createElement("textarea");
-						dojo.html.insertBefore(this._htmlEditNode, this.domNode);
+						dojo.html.insertAfter(this._htmlEditNode, this.editorObject);
 					}
 					this._htmlEditNode.style.display = "";
 					this._htmlEditNode.style.width = "100%";
 					this._htmlEditNode.style.height = dojo.html.getBorderBox(this.editNode).height+"px";
 					this._htmlEditNode.value = this.editNode.innerHTML;
 
-					with(this.domNode.style){
-						if(this.object){
-							//activeX object doesn't like to be hidden, so move it outside of screen instead
-							position = "absolute";
-							left = "-2000px";
-							top = "-2000px";
-						}else{
-							display = "none";
-						}
+					//activeX object (IE) doesn't like to be hidden, so move it outside of screen instead
+					with(this.editorObject.style){
+						position = "absolute";
+						left = "-2000px";
+						top = "-2000px";
 					}
 				}else{
 					this._inSourceMode = false;
@@ -472,14 +470,10 @@ dojo.widget.defineWidget(
 					//when toggling, an error would occur, so unfocus it
 					this._htmlEditNode.blur();
 
-					with(this.domNode.style){
-						if(this.object){
-							position = "";
-							left = "";
-							top = "";
-						}else{
-							display = "";
-						}
+					with(this.editorObject.style){
+						position = "";
+						left = "";
+						top = "";
 					}
 
 					dojo.lang.setTimeout(this, "replaceEditorContent", 1, this._htmlEditNode.value);
