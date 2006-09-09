@@ -26,6 +26,7 @@
 	background-repeat: no-repeat;
 	width: 16px;
 	height: 16px;
+	padding-right: 3px;
 }
 
 .dojoMenuItem2Label {
@@ -42,6 +43,7 @@
 .dojoMenuItem2Accel {
 	position: relative;
 	vertical-align: middle;
+	padding-left: 3px;
 }
 
 .dojoMenuItem2Disabled .dojoMenuItem2Label,
@@ -56,6 +58,7 @@
 	background-image: url(images/submenu_off.gif);
 	width: 5px;
 	height: 9px;
+	padding-left: 3px;
 }
 .dojoMenuItem2Hover .dojoMenuItem2Submenu {
 	background-image: url(images/submenu_on.gif);
