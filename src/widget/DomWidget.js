@@ -417,7 +417,6 @@ dojo.declare("dojo.widget.DomWidget",
 			//		has the same meaning as in dojo.dom.insertAtPosition()
 			// ref: a node to place the widget relative to
 			// insertIndex: DOM index, same meaning as in dojo.dom.insertAtIndex()
-
 			if((!this.containerNode)&&(!overrideContainerNode)){
 				this.containerNode = this.domNode;
 			}
@@ -465,7 +464,15 @@ dojo.declare("dojo.widget.DomWidget",
 
 			var idx = -1;
 			for(var i=0; i<this.children.length; i++){
-				if (this.children[i].dojoInsertionIndex < insertionIndex){
+
+				//This appears to fix an out of order issue in the case of mixed
+				//markup and programmatically added children.  Previously, if a child
+				//existed from markup, and another child was addChild()d without specifying
+				//any additional parameters, it would end up first in the list, when in fact
+				//it should be after.  I can't see cases where this would break things, but
+				//I could see no other obvious solution. -dustin
+
+				if (this.children[i].dojoInsertionIndex <= insertionIndex){
 					idx = i;
 				}
 			}
