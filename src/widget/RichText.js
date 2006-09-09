@@ -197,7 +197,10 @@ dojo.widget.defineWidget(
 			while (this.domNode.hasChildNodes()) {
 				this.savedContent.appendChild(this.domNode.firstChild);
 			}
-			
+
+			this.editingArea = dojo.doc().createElement("div");
+			this.domNode.appendChild(this.editingArea);
+
 			// If we're a list item we have to put in a blank line to force the
 			// bullet to nicely align at the top of text
 			if(	(this.domNode["nodeName"])&&
@@ -233,23 +236,24 @@ dojo.widget.defineWidget(
 				var self = this;
 				//if call _drawObject directly here, textarea replacement
 				//won't work: no content is shown. However, add a delay
-				//can workaround  this. No clue why.
+				//can workaround this. No clue why.
 				setTimeout(function(){self._drawObject(html);}, 0);
 			} else if (h.ie) { // contentEditable, easy
 				this.iframe = dojo.doc().createElement( 'iframe' ) ;
 				this.iframe.src = 'javascript:void(0)';
+				this.editorObject = this.iframe;
 				with(this.iframe.style){
 					border = '0';
 					width = "100%";
 				}
 				this.iframe.frameBorder = 0;
-				this.domNode.appendChild(this.iframe)
+				this.editingArea.appendChild(this.iframe)
 				this.window = this.iframe.contentWindow;
 				this.document = this.window.document;
 				this.document.open();
-				this.document.write("<html><head></head><body style='margin: 0; padding: 0;border: 0; overflow: hidden;'></body></html>");
+				this.document.write("<html><head></head><body style='margin: 0; padding: 0;border: 0; overflow: hidden;'><div></div></body></html>");
 				this.document.close();
-				this.editNode = this.document.body;//document.createElement("div");
+				this.editNode = this.document.body.firstChild;//document.createElement("div");
 				this.editNode.contentEditable = true;
 				with (this.iframe.style) {
 					if(h.ie70){
@@ -318,6 +322,7 @@ dojo.widget.defineWidget(
 				this.onLoad();
 			} else { // designMode in iframe
 				this._drawIframe(html);
+				this.editorObject = this.iframe;
 			}
 
 			// TODO: this is a guess at the default line-height, kinda works
@@ -475,8 +480,8 @@ dojo.widget.defineWidget(
 
 			// show existing content behind iframe for now
 			tmpContent.style.position = "absolute";
-			this.domNode.appendChild(tmpContent);
-			this.domNode.appendChild(this.iframe);
+			this.editingArea.appendChild(tmpContent);
+			this.editingArea.appendChild(this.iframe);
 
 			var _iframeInitialized = false;
 
@@ -607,7 +612,8 @@ dojo.widget.defineWidget(
 				Scrollbars = this.height ? true : false;
 				Appearance = this._activeX.appearance.flat;
 			}
-			this.domNode.appendChild(this.object);
+			this.editorObject = this.object;
+			this.editingArea.appendChild(this.object);
 
 			this.object.attachEvent("DocumentComplete", dojo.lang.hitch(this, "onLoad"));
 			//DisplayChanged is fired too often even no change is made, so we ignore it
@@ -626,7 +632,7 @@ dojo.widget.defineWidget(
 				(this.height ? '' : '    body,  { overflow: hidden; }') +
 				'</style>' +
 				//'<base href="' + dojo.global().location + '">' +
-				'<body>' + html + '</body></html>';
+				'<body><div>' + html + '<div></body></html>';
 
 			this._cacheLocalBlockFormatNames();
 		},
@@ -679,8 +685,8 @@ dojo.widget.defineWidget(
 			if (this.object){
 				this.document = this.object.DOM;
 				this.window = this.document.parentWindow;
-				this.editNode = this.document.body;
-				this.domNode.style.height = this.height ? this.height : this.minHeight;
+				this.editNode = this.document.body.firstChild;
+				this.editingArea.style.height = this.height ? this.height : this.minHeight;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
 				//pretend the object as an iframe, so that the context menu for the
 				//editor can be placed correctly when shown
@@ -912,7 +918,7 @@ dojo.widget.defineWidget(
 		},
 		
 		focus: function () {
-			if(this.iframe) { this.window.focus(); }
+			if(this.iframe && !dojo.render.html.ie) { this.window.focus(); }
 			else if(this.object) { this.document.focus(); }
 			// editNode may be hidden in display:none div, lets just punt in this case
 			else if(this.editNode && dojo.lang.isFunction(this.editNode.focus)) { this.editNode.focus(); }
@@ -1479,47 +1485,20 @@ dojo.widget.defineWidget(
 		_updateHeight: function(){
 			if(!this.isLoaded){ return; }
 			if(this.height){ return; }
-			if(this.iframe){
-				/*
-				if(!this.dojo.body()["offsetHeight"]){
-					return;
-				}
-				*/
-				// The height includes the padding, borders and margins so these
-				// need to be added on
-				var heights = ["margin-top", "margin-bottom",
-					"padding-bottom", "padding-top",
-					"border-width-bottom", "border-width-top"];
-				for(var i = 0, chromeheight = 0; i < heights.length; i++){
-					var height = dojo.html.getStyle(this.iframe, heights[i]);
-					// Safari doesn't have all the heights so we have to test
-					if(height){
-						chromeheight += Number(height.replace(/[^0-9]/g, ""));
-					}
-				}
 
-				if(this.document.body["offsetHeight"]){
-					this._lastHeight = Math.max(this.document.body.scrollHeight, this.document.body.offsetHeight) + chromeheight;
-					if(dojo.render.html.ie){
-						this.iframe.style.height  = this._lastHeight + "px";
-					}else{
-						this.iframe.height = this._lastHeight + "px";
-					}
-					this.window.scrollTo(0, 0);
-				}
-			}else if(this.object){
-				var height = dojo.html.getBorderBox(this.editNode).height;
-				//height maybe zero in some cases even though the content is not empty,
-				//we try the height of body instead
-				if(!height){
-					height = dojo.html.getBorderBox(this.document.body).height;
-				}
-				if(height == 0){
-					dojo.debug("Can not figure out the height of the editing area!");
-					return; //prevent setting height to 0
-				}
-				this.object.style.height = height+"px";
+			var height = dojo.html.getBorderBox(this.editNode).height;
+			//height maybe zero in some cases even though the content is not empty,
+			//we try the height of body instead
+			if(!height){
+				height = dojo.html.getBorderBox(this.document.body).height;
 			}
+			if(height == 0){
+				dojo.debug("Can not figure out the height of the editing area!");
+				return; //prevent setting height to 0
+			}
+			this._lastHeight = height;
+			this.editorObject.style.height = this._lastHeight + "px";
+			this.window.scrollTo(0, 0);
 		},
 		
 		/**
@@ -1645,6 +1624,8 @@ dojo.widget.defineWidget(
 			this.window = null;
 			this.document = null;
 			this.object = null;
+			this.editingArea = null;
+			this.editorObject = null;
 
 			return changed;
 		},

@@ -36,7 +36,7 @@ dojo.declare("dojo.widget.Editor2Plugin.AlwaysShowToolbar", null,
 		var dh = dojo.html;
 		var tdn = this.editor.toolbarWidget.domNode;
 		var db = dojo.body();
-		var totalHeight = dh.getMarginBox(tdn).height;
+
 		if(!this._scrollSetUp){
 			this._scrollSetUp = true;
 			var editorWidth =  dh.getMarginBox(this.editor.domNode).width; 
@@ -56,35 +56,22 @@ dojo.declare("dojo.widget.Editor2Plugin.AlwaysShowToolbar", null,
 		if(scrollPos > this._scrollThreshold){
 			// dojo.debug(scrollPos);
 			if(!this._fixEnabled){
-				this.editor.domNode.style.marginTop = totalHeight+"px";
-				//remember the size of the toolbar, otherwise it may shrink or expend when floating
 				var tdnbox = dojo.html.getMarginBox(tdn);
+				this.editor.editorObject.style.marginTop = tdnbox.height+"px";
+
 				if(isIE){
 					// FIXME: should we just use setBehvior() here instead?
 					tdn.style.left = dojo.html.abs(tdn, dojo.html.boxSizing.MARGIN_BOX).x;
-
-					if(!this.editor.toolbarWidget.spaceTaker){
-						this.editor.toolbarWidget.spaceTaker = dojo.doc().createElement('div');
-						var spaceTaker = this.editor.toolbarWidget.spaceTaker;
-						with(this.editor.toolbarWidget.spaceTaker.style){
-							width = tdnbox.width;
-							height = tdnbox.height;
-						}
-						spaceTaker.style.display = "none";
-						dojo.html.insertBefore(spaceTaker, tdn);
-					}
 					dojo.body().appendChild(tdn);
 
 					dojo.html.addClass(tdn, "IEFixedToolbar");
-//					if(this.object){
-//						dojo.html.addClass(tdn.tbBgIframe, "IEFixedToolbar");
-//					}
 				}else{
 					with(tdn.style){
 						position = "fixed";
 						top = "0px";
 					}
 				}
+
 				tdn.style.width = tdnbox.width + "px";
 				tdn.style.zIndex = 1000;
 				this._fixEnabled = true;
@@ -98,7 +85,7 @@ dojo.declare("dojo.widget.Editor2Plugin.AlwaysShowToolbar", null,
 			// position of the bottom-most editor instance.
 			if(!dojo.render.html.safari){
 				// safari reports a bunch of things incorrectly here
-				var eHeight = (this.height) ? parseInt(this.editor.height) : ((this.editor.object) ? dojo.html.getBorderBox(this.editor.editNode).height : this.editor._lastHeight);
+				var eHeight = (this.height) ? parseInt(this.editor.height) : this.editor._lastHeight;
 				if(scrollPos > (this._scrollThreshold+eHeight)){
 					tdn.style.display = "none";
 				}else{
@@ -106,7 +93,7 @@ dojo.declare("dojo.widget.Editor2Plugin.AlwaysShowToolbar", null,
 				}
 			}
 		}else if(this._fixEnabled){
-			this.editor.domNode.style.marginTop = null;
+			(this.editor.object || this.editor.iframe).style.marginTop = null;
 			with(tdn.style){
 				position = "";
 				top = "";
@@ -116,7 +103,7 @@ dojo.declare("dojo.widget.Editor2Plugin.AlwaysShowToolbar", null,
 			if(isIE){
 				tdn.style.left = "";
 				dojo.html.removeClass(tdn, "IEFixedToolbar");
-				dojo.html.insertBefore(tdn, this.editor._htmlEditNode||this.editor.domNode);
+				dojo.html.insertBefore(tdn, this.editor.object||this.editor.iframe);
 			}
 			tdn.style.width = "";
 			this._fixEnabled = false;
@@ -124,7 +111,6 @@ dojo.declare("dojo.widget.Editor2Plugin.AlwaysShowToolbar", null,
 	},
 
 	destroy: function(){
-//		alert("destroy alwaysshow "+this.editor.toolbarWidget);
 		this._handleScroll = false;
 		clearInterval(this.scrollInterval);
 		this.editor.unregisterLoadedPlugin(this);
