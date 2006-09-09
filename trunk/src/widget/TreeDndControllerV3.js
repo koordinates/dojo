@@ -1,28 +1,17 @@
 
 dojo.provide("dojo.widget.TreeDndControllerV3");
 
-
 dojo.require("dojo.dnd.TreeDragAndDropV3");
 	
-dojo.widget.tags.addParseTreeHandler("dojo:TreeDndControllerV3");
-
-
-dojo.widget.TreeDndControllerV3 = function() {
-	this.dragSources = {};
-
-	this.dropTargets = {};
-	
-	this.listenedTrees = {};
-}
-
-dojo.inherits(dojo.widget.TreeDndControllerV3, dojo.widget.HtmlWidget);
-
-
-dojo.lang.extend(dojo.widget.TreeDndControllerV3, dojo.widget.TreeCommon.prototype);
-
-dojo.lang.extend(dojo.widget.TreeDndControllerV3, {
-	widgetType: "TreeDndControllerV3",
-	
+dojo.widget.defineWidget(
+	"dojo.widget.TreeDndControllerV3",
+	[dojo.widget.HtmlWidget, dojo.widget.TreeCommon],
+	function() {
+		this.dragSources = {};
+		this.dropTargets = {};
+		this.listenedTrees = {};
+	},
+{
 	listenTreeEvents: ["afterChangeTree","beforeTreeDestroy", "afterAddChild"],
 	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget}, 
 	
@@ -134,9 +123,5 @@ dojo.lang.extend(dojo.widget.TreeDndControllerV3, {
 			delete this.dropTargets[node.widgetId];
 		}
 	}
-
-
-
-
 
 });

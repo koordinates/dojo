@@ -5,26 +5,15 @@ dojo.require( "dojo.widget.HtmlWidget" );
 dojo.require( "dojo.widget.TreeExtension" );
 
 // selector extension to emphase node
-
-
-dojo.widget.tags.addParseTreeHandler( "dojo:TreeDisableWrapExtension" );
-
-
-dojo.widget.TreeDisableWrapExtension = function() {
-	dojo.widget.TreeExtension.call( this );	
-}
-
-dojo.inherits( dojo.widget.TreeDisableWrapExtension, dojo.widget.TreeExtension );
-
-/**
- * can't unlisten
- */
-dojo.lang.extend( dojo.widget.TreeDisableWrapExtension, {
-	widgetType: "TreeDisableWrapExtension",
-	
+dojo.widget.defineWidget(
+	"dojo.widget.TreeDisableWrapExtension",
+	dojo.widget.TreeExtension,
+{
+	/**
+	 * can't unlisten
+	 */
 	templateCssPath: dojo.uri.dojoUri( "src/widget/templates/TreeDisableWrap.css" ),
-	
-	
+		
 	listenTree: function(tree) {
 		
 		var wrappingDiv = document.createElement( "div" );

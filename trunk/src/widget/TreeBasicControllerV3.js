@@ -8,25 +8,15 @@ dojo.require("dojo.widget.TreeCommon");
 dojo.require("dojo.widget.TreeNodeV3");
 dojo.require("dojo.widget.TreeV3");
 
-
-dojo.widget.tags.addParseTreeHandler("dojo:TreeBasicControllerV3");
-
-
-dojo.widget.TreeBasicControllerV3 = function() {
-	dojo.widget.HtmlWidget.call(this);
-	
-	this.listenedTrees = {};
-}
-
-dojo.inherits(dojo.widget.TreeBasicControllerV3, dojo.widget.HtmlWidget);
-
-
-dojo.lang.extend(dojo.widget.TreeBasicControllerV3, dojo.widget.TreeCommon.prototype);
-
-// TODO: do something with addChild / setChild, so that RpcController become able
-// to hook on this and report to server
-dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
-	widgetType: "TreeBasicControllerV3",
+dojo.widget.defineWidget(
+	"dojo.widget.TreeBasicControllerV3",
+	[dojo.widget.HtmlWidget, dojo.widget.TreeCommon],
+	function(){
+		this.listenedTrees = {};
+	},
+{
+	// TODO: do something with addChild / setChild, so that RpcController become able
+	// to hook on this and report to server
 
 	/**
 	 * TreeCommon.listenTree will attach listeners to these events
