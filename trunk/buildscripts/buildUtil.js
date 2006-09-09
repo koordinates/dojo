@@ -1,7 +1,7 @@
 var buildUtil = {};
 buildUtil.getDependencyList = function(dependencies, hostenvType) {
-
-	djConfig = {
+	
+	var djConfig = {
 		baseRelativePath: "../"
 		// ,isDebug: true
 	};
@@ -81,9 +81,9 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	}
 	
 	// over-write dj_eval to prevent actual loading of subsequent files
-	old_eval = dj_eval;
+	var old_eval = dj_eval;
 	dj_eval = function(){ return true; }
-	old_load = load;
+	var old_load = load;
 	load = function(uri){
 		try{
 			var text = removeComments(readText(uri));
@@ -95,6 +95,7 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 			eval(delayRequires.join(";"));
 		}catch(e){ 
 			print("load exception for: " + uri + ", exception: " + e);
+			quit(-1);
 		}
 		return true;
 	}
