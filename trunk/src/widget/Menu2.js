@@ -1,8 +1,4 @@
-dojo.provide("dojo.widget.PopupContainer");
 dojo.provide("dojo.widget.Menu2");
-dojo.provide("dojo.widget.PopupMenu2");
-dojo.provide("dojo.widget.MenuItem2");
-dojo.provide("dojo.widget.MenuBar2");
 
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.layout");
@@ -26,7 +22,7 @@ dojo.declare(
 	},
 {
 	isContainer: true,
-	templateString: '<div dojoAttachPoint="containerNode" style="display:none;position:absolute;" class="dojoPopupContainer" tabindex="-1"></div>',
+	templateString: '<div dojoAttachPoint="containerNode" style="display:none;position:absolute;" class="dojoPopupContainer" ></div>',
 	snarfChildDomOutput: true,
 
 	isShowingNow: false,
@@ -36,6 +32,7 @@ dojo.declare(
 	beginZIndex: 1000,
 
 	parentPopup: null,
+	parent: null, // parent Widget
 	popupIndex: 0,
 
 	aroundBox: dojo.html.boxSizing.BORDER_BOX, //by default, popup around the BORDER box of the aroundNode in open()
@@ -72,6 +69,9 @@ dojo.declare(
 			this.queueOnAnimationFinish.push(this.open, arguments);
 			return;
 		}
+
+		// save this so that the focus can be returned
+		this.parent = parent;
 
 		var around = false, node, aroundOrient;
 		if(typeof x == 'object'){
@@ -173,6 +173,10 @@ dojo.declare(
 			dojo.widget.PopupManager.closed(this);
 		}
 		this.isShowingNow = false;
+		// return focus to the widget that opened the menu
+		try {
+			this.parent.domNode.focus();
+		} catch(e) {}
 	},
 
 	closeAll: function(){
@@ -392,39 +396,29 @@ dojo.widget.defineWidget(
 	//return true to stop the event being processed by the
 	//parent popupmenu
 	processKey: function(evt){
-		if(evt.ctrlKey || evt.altKey){ return false; }
+		if(evt.ctrlKey || evt.altKey || !evt.key){ return false; }
 
-		var keyCode = evt.keyCode;
 		var rval = false;
-		var k = dojo.event.browser.keys;
-
-		// mozilla quirk 
-		// space has no keyCode in mozilla
-		var keyCode = evt.keyCode;
-		if(keyCode==0 && evt.charCode==k.KEY_SPACE){
-			keyCode = k.KEY_SPACE;
-		}
-
-		switch(keyCode){
- 			case k.KEY_DOWN_ARROW:
+		switch(evt.key){
+ 			case evt.KEY_DOWN_ARROW:
 				rval = this.moveToNext(evt);
 				break;
-			case k.KEY_UP_ARROW:
+			case evt.KEY_UP_ARROW:
 				rval = this.moveToPrevious(evt);
 				break;
-			case k.KEY_RIGHT_ARROW:
+			case evt.KEY_RIGHT_ARROW:
 				rval = this.moveToChildMenu(evt);
 				break;
-			case k.KEY_LEFT_ARROW:
+			case evt.KEY_LEFT_ARROW:
 				rval = this.moveToParentMenu(evt);
 				break;
-			case k.KEY_SPACE: //fall through
-			case k.KEY_ENTER:
+			case " ": //fall through
+			case evt.KEY_ENTER: 
 				if(rval = this.selectCurrentItem(evt)){
 					break;
 				}
 				//fall through
-			case k.KEY_ESCAPE:
+			case evt.KEY_ESCAPE:
 				dojo.widget.PopupManager.currentMenu.close();
 				rval = true;
 				break;
@@ -464,6 +458,11 @@ dojo.widget.defineWidget(
 			}
 			item.onHover();
 			dojo.html.scrollIntoView(item.domNode);
+			// navigate into the item table and select the first caption tag
+			try {
+				var node = dojo.html.getElementsByClass("dojoMenuItem2Label", item.domNode)[0];
+				node.focus();
+			} catch(e) { }
 		}
 	},
 
@@ -540,9 +539,9 @@ dojo.widget.defineWidget(
 	// Make 4 columns
 	//   icon, label, accelerator-key, and right-arrow indicating sub-menu
 	templateString:
-		 '<tr class="dojoMenuItem2" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick;">'
+		 '<tr class="dojoMenuItem2" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick; onKey:onKey;">'
 		+'<td><div class="${this.iconClass}" style="${this.iconStyle}"></div></td>'
-		+'<td class="dojoMenuItem2Label">${this.caption}</td>'
+		+'<td tabIndex="-1" class="dojoMenuItem2Label">${this.caption}</td>'
 		+'<td class="dojoMenuItem2Accel">${this.accelKey}</td>'
 		+'<td><div class="dojoMenuItem2Submenu" style="display:${this.arrowDisplay};"></div></td>'
 		+'</tr>',
@@ -761,17 +760,12 @@ dojo.widget.PopupManager = new function(){
 	this.focusNode = null;
 	this.registeredWindows = [];
 
-	//In Opera, only onkeypress works, while in IE, only onkeydown works
-	//In Moz, both work. so use onkeydown in IE, otherwise use onkeypress 
-	//for keyevents (FIXME: safari/konqueror?)
-	this._keyEventName = dojo.doc().createEvent ? "onkeypress" : "onkeydown";
-
 	this.registerWin = function(win){
 		if(!win.__PopupManagerRegistered)
 		{
 			dojo.event.connect(win.document, 'onmousedown', this, 'onClick');
 			dojo.event.connect(win, "onscroll", this, "onClick");
-			dojo.event.connect(win.document, this._keyEventName, this, 'onKeyPress');
+			dojo.event.connect(win.document, "onkey", this, 'onKey');
 			win.__PopupManagerRegistered = true;
 			this.registeredWindows.push(win);
 		}
