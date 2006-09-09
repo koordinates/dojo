@@ -3,7 +3,7 @@
 <!-- 
 	Copyright (c) 2004-2006 The Dojo Foundation, Licensed under the Academic
 	Free License version 2.1 or BSD licenses
---> 
+-->
 <!--
 	TODO: 
 		- single-file builds
@@ -38,7 +38,8 @@
 	<property name="website_dir" value="${docs_dir}/website"/>
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
 	<property name="profile" value=""/>
-	<property name="locales" value="en-us,hi,nl,ja-jp"/> <!-- FIXME: where should this list come from? -->
+	<property name="locales" value="en-us,hi,nl,ja-jp"/>
+	<!-- FIXME: where should this list come from? -->
 
 	<loadfile property="copyright" srcFile="./copyright.txt"/>
 	<loadfile property="build_notice" srcFile="./build_notice.txt"/>
@@ -89,39 +90,14 @@ build targets:
 	</target>
 	<!-- end help task -->
 
+	<!-- Defines the dojo test task. -->
+	<taskdef name="dojo-test" classname="org.dojotoolkit.ant.DojoTestTask" classpath="lib/ant-dojotest.jar" />
+
 	<!-- test task -->
 	<target name="test"
 		depends="-fix-config"
 		description="builds and runs unit tests for Dojo under Rhino and JUM">
-		<!-- clobber the tests directory and rebuild it -->
-		<!-- copy over the contents of the old test directory -->
-		<!--
-		<delete dir="${release_dir}/tests"/>
-		<mkdir dir="${release_dir}/tests" />
-		-->
-
-		<script language="jython"><![CDATA[
-# make the python standard library available
-import sys
-sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
-sys.path.append(project.resolveFile(".").getPath())
-import buildUtil
-
-buildUtil.buildTestFiles()
-
-# print "#################### testRunner.js ####################",
-# for line in file("../testRunner.js"):
-# 	print line,
-# print "################## end testRunner.js ##################\n"
-]]></script>
-		<!-- <java jar="${user.home}/.ant/lib/js.jar" fork="true"> -->
-		<java jar="./lib/custom_rhino.jar" fork="true">
-			<!-- FIXME: should this be in the release/ dir somewhere? -->
-			<arg value="../testRunner.js" />
-		</java>
-		<!--
-		<delete file="../testRunner.js" />
-		-->
+		<dojo-test dojosrc="../" testsrc="../tests"/>
 	</target>
 	<!-- end test task -->
 
@@ -129,7 +105,8 @@ buildUtil.buildTestFiles()
 	<target name="testScripting"
 		depends="-fix-config"
 		description="runs minimal test on our BSF+JS+Jython integration">
-		<script language="javascript"><![CDATA[
+		<script language="javascript">
+			<![CDATA[
 			function print(){
 				var args = [];
 				for(var x=0; x<arguments.length; x++){
@@ -156,8 +133,10 @@ buildUtil.buildTestFiles()
 			
 			print("foo");
 			echo("JavaScript (Rhino) integration is working!", testScripting);
-		]]></script>
-		<script language="jython"><![CDATA[
+		]]>
+		</script>
+		<script language="jython">
+			<![CDATA[
 import sys
 # make the python standard library avialable
 sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
@@ -169,7 +148,8 @@ testScripting.addTask(echo)
 echo.setMessage("Jython integration is working!");
 
 print "look ma! Jython!"
-]]></script>
+]]>
+		</script>
 	</target>
 	<!-- end testScripting task -->
 
@@ -276,7 +256,8 @@ print "look ma! Jython!"
 		<delete dir="${release_docs_dir}"/>
 		<mkdir dir="${release_docs_dir}" />
 		<mkdir dir="${release_docs_dir}/requirements" />
-		<script language="jython"><![CDATA[
+		<script language="jython">
+			<![CDATA[
 import sys
 # make the python standard library avialable
 sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
@@ -290,7 +271,8 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 				dojo.getProperty("release_docs_dir"),
 				dojo.getProperty("rest_style_sheet"),
 				dojo.getProperty("rest_files"))
-]]></script>
+]]>
+		</script>
 
 		<!-- fix body tags -->
 		<replaceregexp match="^&lt;body&gt;$" byline="true" 
@@ -349,8 +331,10 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		<replace dir="${release_dir}/${project}/${nodocs}">
 			<include name="**/*.js"/>
 			<replacetoken>NWNEWLINEHERE</replacetoken>
-			<replacevalue><![CDATA[
-]]></replacevalue>
+			<replacevalue>
+				<![CDATA[
+]]>
+			</replacevalue>
 		</replace>
 
 		<!-- add copyright notice -->
@@ -424,7 +408,8 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		<!-- 
 			FIXME: this is just a stub! need to fill it in! 
 		-->
-		<script language="javascript"><![CDATA[
+		<script language="javascript">
+			<![CDATA[
 			var pf = dojo.getProperty("profileFile");
 			if((!pf)||(pf=="null")||(pf=="")){
 				// echo("profile: "+dojo.getProperty("profile"), compress);
@@ -435,18 +420,24 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 					dojo.setNewProperty("profileFile", "getDependencyList.js");
 				}
 			}			
-		]]></script>
+		]]>
+		</script>
 
 		<!-- FIXME: need to actually get a list of js files to be processed  -->
-		<java jar="./lib/js.jar" fork="true" outputproperty="concatFilesProp" errorproperty="concatFilesError">
-			<arg value="${profileFile}" />
+		
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" outputproperty="concatFilesProp" 
+			logError="true">
+			<arg line="-strict" />
+			<arg line="-f ${profileFile}" />
 			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
-		<script language="javascript"><![CDATA[
+		<script language="javascript">
+			<![CDATA[
 			var currentTask = dojo.getTargets().get("-set-profile-deps");
 			var files = dojo.getProperty("concatFilesProp");
 			dojo.setNewProperty("profileDeps", files);
-		]]></script>
+		]]>
+		</script>
 
 	</target>
 	<!-- end -set-profile-deps task -->
@@ -461,7 +452,8 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 	<!-- list-profile-sizes task -->
 	<target name="list-profile-sizes" depends="-fix-config, -set-profile-deps"
 		description="lists out the contents of the file dependencies">
-		<script language="javascript"><![CDATA[
+		<script language="javascript">
+			<![CDATA[
 			function echo(msg){
 				var echo = dojo.createTask("echo");
 				echo.setMessage(msg);
@@ -486,7 +478,7 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 	<target name="compress" depends="-fix-config, list-profile-deps"
 		description="runs compression code over release JS files">
 		<echo>profileFile: ${profileFile}</echo>
-		
+
 		<!-- Create the release dir if it doesn't exist. -->
 		<mkdir dir="${release_dir}"/>
 		<!-- write the list of files included to the release directory -->
@@ -499,7 +491,7 @@ ${profileDeps}
 
 		<!-- now write 'em all to a single file -->
 		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/source.__package__.js">
-		<!--
+			<!--
 		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/dojo.js">
 		-->
 			<filelist 
@@ -519,9 +511,10 @@ ${profileDeps}
 			byline="true" flags="g" file="${release_dir}/source.__package__.js">
 			<substitution expression=""/>
 		</replaceregexp>
- 
+
 		<!-- Set the version number -->
-		<script language="jython"><![CDATA[
+		<script language="jython">
+			<![CDATA[
 import sys
 # make the python standard library avialable
 sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
@@ -535,7 +528,8 @@ print "Setting version for Dojo to: " + dojo.getProperty("version")
 replaceVersion(project.resolveFile(dojo.getProperty("release_dir") + "/source.__package__.js").getPath(), dojo.getProperty("version"))
 print "Removing dojo.require calls in source.__package__.js."
 removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__package__.js").getPath())
-]]></script>
+]]>
+		</script>
 
 		<antcall target="-preload-resources">
 			<param name="srcFile" value="${release_dir}/source.__package__.js" />
@@ -581,21 +575,22 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 		<!-- we copy over iframe_history.html here just in case this is a truly
 		stand-alone build that isn't being kicked off via release -->
 		<copy file="../iframe_history.html" todir="${release_dir}/" />
-		
+
 		<!-- copy our dojo.storage and dojo.flash SWFs -->
 		<copy todir="${release_dir}/" preservelastmodified="true">
 			<fileset dir="${root}/">
 				<include name="**/*.swf" />
 			</fileset>
 		</copy>
-		
+
 	</target>
 	<!-- end compress task -->
 
 	<target name="-rhino-compress"
 		unless="nostrip">
 		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}.uncompressed.js" />
-		<java jar="./lib/custom_rhino.jar" fork="true" output="${dstFile}">
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" output="${dstFile}">
+			<arg line="-strict" />
 			<arg line="-opt -1"/>
 			<arg value="-c" />
 			<arg value="${srcFile}" />
@@ -617,7 +612,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			</filterchain>
 		</copy>
 		<!--FIXME: dir=.. is kludgey. Having trouble bootstrapping without it -->
-		<java jar="./lib/js.jar" fork="true" dir=".." outputProperty="generatedLocales" errorProperty="flattenErrors">
+		<java jar="./lib/js.jar" failonerror="true" fork="true" dir=".." outputProperty="generatedLocales" errorProperty="flattenErrors">
 			<arg value="./buildscripts/flattenResources.js" />
 			<arg value="./buildscripts/${release_dir}/localizations.tmp.js" />
 			<arg value="./buildscripts/${release_dir}/nls" />
@@ -638,7 +633,8 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 	<!-- intern-strings task -->
 	<target name="intern-strings" depends="-fix-config"
 		description="pulls template paths specified in prototypes into templateStrings which can be used to speed up widget construction">
-		<script language="jython"><![CDATA[
+		<script language="jython">
+			<![CDATA[
 import sys
 # make the python standard library avialable
 sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
@@ -650,16 +646,17 @@ from buildUtil import *
 
 print "Interning strings for directory: " + dojo.getProperty("release_dir")
 internTemplateStrings(dojo.getProperty("dojoLoader"), project.resolveFile(dojo.getProperty("release_dir")).getPath())
-]]></script>
+]]>
+		</script>
 	</target>
 	<!-- end intern-strings task -->
 
 	<!-- release task -->
 	<target name="release" depends="-fix-config"
 		description="builds a release">
-		
+
 		<echo message="Using version number: ${version} for the release."/>
-		
+
 		<antcall target="clean" />
 		<!--
 		<antcall target="src" />
@@ -679,7 +676,7 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), project.resolveFile(dojo.g
 				<exclude name="**/.svn*" />
 			</fileset>
 		</copy>
-		
+
 		<copy todir="${release_dir}/tests" includeEmptyDirs="false" preservelastmodified="true">
 			<fileset dir="${root}/tests">
 				<include name="**" />
@@ -694,7 +691,8 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), project.resolveFile(dojo.g
 			entire release task to fail if mtasc is not
 			available - make mtasc optional.
 		-->
-		<script language="javascript"><![CDATA[
+		<script language="javascript">
+			<![CDATA[
 			function echo(msg){
 				var echo = dojo.createTask("echo");
 				echo.setMessage(msg);
@@ -714,8 +712,9 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), project.resolveFile(dojo.g
 				echo("WARNING: buildDojoFlash and buildDojoStorage could not run.");
 				echo("Please download and install mtasc from http://www.mtasc.org and place it in your path.");
 			}
-		]]></script>
-		
+		]]>
+		</script>
+
 		<antcall target="-docs-and-tests" />
 		<antcall target="compress" />
 		<!-- <antcall target="intern-strings" /> -->
@@ -725,14 +724,14 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), project.resolveFile(dojo.g
 			<equals arg1="xdomain" arg2="${dojoLoader}"/>
 		</condition>
 		<antcall target="xdgenRelease"/>
-		
+
 		<copy overwrite="true" file="../iframe_history.html" todir="${release_dir}/"  preservelastmodified="true" />
 
 		<copy file="${root}/LICENSE" todir="${release_dir}/"  preservelastmodified="true" />
 		<copy file="${root}/README" todir="${release_dir}/"  preservelastmodified="true" />
 	</target>
 	<!-- end release task -->
-	
+
 	<target name="-docs-and-tests"
 		unless="docless"
 		description="builds docs, copies in tests, and constructs API outlines">
@@ -762,46 +761,47 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), project.resolveFile(dojo.g
 		<delete file="${root}/release/${project}_${version}.tar"/>
 	</target>
 	<!-- end tar task -->
-	
+
 	<!-- buildDojoFlash task -->
 	<target name="buildDojoFlash"
-					description="builds the Dojo Flash package and its testing files">	
+					description="builds the Dojo Flash package and its testing files">
 		<antcall target="buildFlash">
 			<param name="dojo.flash.file" value="${root}/tests/flash/HelloWorld.as"/>
 		</antcall>
-		
+
 		<antcall target="buildFlash">
 			<param name="dojo.flash.file" value="${root}/tests/flash/UnitTestsComm.as"/>
 		</antcall>
-		
+
 		<move todir="${root}/tests/flash/resources">
-	    <fileset dir="${root}/tests/flash/">
-	      <include name="*.swf"/>
-	    </fileset>
-  	</move>
+			<fileset dir="${root}/tests/flash/">
+				<include name="*.swf"/>
+			</fileset>
+		</move>
 	</target>
 	<!-- end buildDojoFlash task -->
-	
+
 	<!-- buildDojoStorage task -->
 	<target name="buildDojoStorage"
-					description="builds the Dojo Storage package">	
+					description="builds the Dojo Storage package">
 		<antcall target="buildFlash">
 			<param name="dojo.flash.file" value="${root}/${src}/storage/Storage.as"/>
 		</antcall>
-		
+
 		<move todir="${root}">
-	    <fileset dir="${root}/${src}/storage/">
-	      <include name="*.swf"/>
-	    </fileset>
-  	</move>
+			<fileset dir="${root}/${src}/storage/">
+				<include name="*.swf"/>
+			</fileset>
+		</move>
 	</target>
 	<!-- end buildDojoStorage task -->
-	
+
 	<!-- buildFlash task -->
 	<target name="buildFlash"
 					description="builds Flash ActionScript class to use dojo.flash.comm">
 		<!-- extract the ActionScript class name and path -->
-		<script language="javascript"><![CDATA[
+		<script language="javascript">
+			<![CDATA[
 			var flashFile = dojo.getProperty("dojo.flash.file");
 			
 			var matches = flashFile.match(/([A-Za-z0-9_]*)\.as$/);
@@ -812,47 +812,48 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), project.resolveFile(dojo.g
 			var endCut = new String(flashFile).length - flashFileName.length;
 			var flashPath = flashFile.substring(0, endCut);
 			dojo.setNewProperty("flashPath", flashPath);
-		]]></script>
-		
+		]]>
+		</script>
+
 		<!-- generate the Flash 6 SWF -->
 		<echo message="Flash 6: Compiling ${dojo.flash.file}..."/>
-		
+
 		<exec executable="mtasc">
 			<arg value="-version"/>
 			<arg value="6"/>
-			
+
 			<arg value="-cp"/>
 			<arg value="${root}/${src}/flash/flash6"/>
-			
+
 			<arg value="-swf"/>
 			<arg value="${flashPath}/${flashClass}_version6.swf"/>
-			
+
 			<arg value="-main"/>
-			
+
 			<arg value="-header"/>
 			<arg value="215:138:10"/>
-			
+
 			<arg value="${dojo.flash.file}"/>
 		</exec>
-		
+
 		<!-- generate the Flash 8 SWF -->
 		<echo message="Flash 8: Compiling ${dojo.flash.file}..."/>
-		
+
 		<exec executable="mtasc">
 			<arg value="-version"/>
 			<arg value="8"/>
-			
+
 			<arg value="-cp"/>
 			<arg value="${root}/${src}/flash/flash8"/>
-			
+
 			<arg value="-swf"/>
 			<arg value="${flashPath}/${flashClass}_version8.swf"/>
-			
+
 			<arg value="-main"/>
-			
+
 			<arg value="-header"/>
 			<arg value="215:138:10"/>
-			
+
 			<arg value="${dojo.flash.file}"/>
 		</exec>
 	</target>
@@ -862,7 +863,7 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), project.resolveFile(dojo.g
 	<target name="xdgenRelease" if="xdgenRun">
 		<antcall target="xdgen">
 			<param name="xdgenDir" value="${release_dir}/src" />
-		</antcall>		
+		</antcall>
 	</target>
 	<!-- end xdgenRelease task -->
 
@@ -876,7 +877,7 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), project.resolveFile(dojo.g
 		<mkdir dir="${xdgen.build}"/>
 
 		<!-- Compile xdgen if it hasn't been compiled yet -->
-		<javac srcdir="${xdgen.src}" destdir="${xdgen.build}" debug="true">
+		<javac srcdir="${xdgen.src}" failonerror="true" destdir="${xdgen.build}" debug="true">
 			<classpath>
 				<fileset dir="${xdgen.basedir}/lib">
 					<include name="**/*.jar"/>
