@@ -156,14 +156,17 @@ dojo.declare(
 		}
 	},
 
-	close: function(){
+	close: function(force){
+		if(force){
+			this.domNode.style.display="none";
+		}
 		// If we are in the process of opening the menu and we are asked to close it
 		if(this.animationInProgress){
 			this.queueOnAnimationFinish.push(this.close, []);
 			return;
 		}
 
-		this.closeSubpopup();
+		this.closeSubpopup(force);
 		this.hide();
 		if(this.bgIframe){
 			this.bgIframe.hide();
@@ -179,11 +182,11 @@ dojo.declare(
 		} catch(e) {}
 	},
 
-	closeAll: function(){
+	closeAll: function(force){
 		if (this.parentPopup){
-			this.parentPopup.closeAll();
+			this.parentPopup.closeAll(force);
 		}else{
-			this.close();
+			this.close(force);
 		}
 	},
 
@@ -192,10 +195,10 @@ dojo.declare(
 		this.currentSubpopup = popup;
 	},
 
-	closeSubpopup: function() {
+	closeSubpopup: function(force) {
 		if(this.currentSubpopup == null){ return; }
 		
-		this.currentSubpopup.close();
+		this.currentSubpopup.close(force);
 		this.currentSubpopup = null;
 	},
 
@@ -469,9 +472,9 @@ dojo.widget.defineWidget(
 	// User defined function to handle clicks on an item
 	onItemClick: function(item) {},
 
-	close: function(){
+	close: function(force){
 		if(this.animationInProgress){
-			dojo.widget.PopupMenu2.superclass.close.call(this);
+			dojo.widget.PopupMenu2.superclass.close.apply(this, arguments);
 			return;
 		}
 
@@ -479,18 +482,18 @@ dojo.widget.defineWidget(
 			this._highlighted_option.onUnhover();
 		}
 
-		dojo.widget.PopupMenu2.superclass.close.call(this);
+		dojo.widget.PopupMenu2.superclass.close.apply(this, arguments);
 	},
 
 	//overwrite the default one
-	closeSubpopup: function(){
+	closeSubpopup: function(force){
 		if (this.currentSubpopup == null){ return; }
 
-		this.currentSubpopup.close();
+		this.currentSubpopup.close(force);
 		this.currentSubpopup = null;
 
 		this.currentSubmenuTrigger.is_open = false;
-		this.currentSubmenuTrigger.closedSubmenu();
+		this.currentSubmenuTrigger.closedSubmenu(force);
 		this.currentSubmenuTrigger = null;
 	},
 
@@ -642,12 +645,9 @@ dojo.widget.defineWidget(
 			}
 			displayingSubMenu = true;
 		}else{
-			this.parent.closeAll();
-		}
-
-		// for some browsers the onMouseOut doesn't get called (?), so call it manually
-		if(!displayingSubMenu){ //only onUnhover when no submenu is available
-			this.onUnhover();
+			// for some browsers the onMouseOut doesn't get called (?), so call it manually
+			this.onUnhover(); //only onUnhover when no submenu is available
+			this.parent.closeAll(true);
 		}
 
 		// user defined handler for click
@@ -995,12 +995,12 @@ dojo.widget.defineWidget(
 
 	templateString: '<div class="dojoMenuBar2"><table class="dojoMenuBar2Client"><tr dojoAttachPoint="containerNode"></tr></table></div>',
 
-	close: function(){
+	close: function(force){
 		if(this._highlighted_option){
 			this._highlighted_option.onUnhover();
 		}
 
-		this.closeSubpopup();
+		this.closeSubpopup(force);
 	},
 
 	processKey: function(evt){
