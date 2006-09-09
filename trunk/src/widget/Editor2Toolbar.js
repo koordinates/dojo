@@ -526,11 +526,6 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		// event signals
-		wikiwordClick: function(){ },
-//		insertimageClick: function(){ },
-		saveClick: function(){ },
-
 		update: function(){
 			for(var cmd in this.items){
 				this.items[cmd].refreshState();
