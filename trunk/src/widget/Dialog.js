@@ -119,18 +119,19 @@ dojo.declare(
 		sizeBackground: function() {
 			if(this.bgOpacity > 0) {
 				var viewport = dojo.html.getViewport();
-				var h = Math.max(
-					dojo.doc().documentElement.scrollHeight || dojo.body().scrollHeight,
-					viewport.height);
+				var h = viewport.height;
 				var w = viewport.width;
 				this.shared.bg.style.width = w + "px";
 				this.shared.bg.style.height = h + "px";
+				// process twice since the scroll bar may have been removed
+				// by the previous resizing
+				var viewport = dojo.html.getViewport();
+				if (viewport.width != w) { this.shared.bg.style.width = viewport.width + "px"; }
+				if (viewport.height != h) { this.shared.bg.style.height = viewport.height + "px"; }
 			}
-			this.shared.bgIframe.onResized();
 		},
 
 		showBackground: function() {
-			this.sizeBackground();
 			if(this.bgOpacity > 0) {
 				this.shared.bg.style.display = "block";
 			}
@@ -156,16 +157,6 @@ dojo.declare(
 		showModalDialog: function() {
 			this.setBackgroundOpacity();
 			this.showBackground();
-		},
-
-		// Called when the browser window's size is changed
-		checkSize: function() {
-			if(this.isShowing()){
-				this.sizeBackground();
-				this.placeModalDialog();
-				this.domNode.style.display="block";
-				this.onResized();
-			}
 		},
 
 		//call this function in hide() of subclass
@@ -279,14 +270,19 @@ dojo.widget.defineWidget(
 		},
 
 		onScroll: function(){
+			var scroll_offset = dojo.html.getScroll().offset;
+			this.shared.bg.style.top = scroll_offset.y + "px";
+			this.shared.bg.style.left = scroll_offset.x + "px";
 			this.placeModalDialog();
-			this.domNode.style.display = "block";
 		},
-		
-		killEvent: function(evt){
-			evt.preventDefault();
-			evt.stopPropagation();
-		}
 
+		// Called when the browser window's size is changed
+		checkSize: function() {
+			if(this.isShowing()){
+				this.sizeBackground();
+				this.placeModalDialog();
+				this.onResized();
+			}
+		}
 	}
 );
