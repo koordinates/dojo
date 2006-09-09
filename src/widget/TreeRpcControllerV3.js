@@ -1,26 +1,17 @@
 
 dojo.provide("dojo.widget.TreeRpcControllerV3");
 
-
-
 dojo.require("dojo.event.*");
 dojo.require("dojo.json")
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.TreeLoadingControllerV3");
 
-dojo.widget.tags.addParseTreeHandler("dojo:TreeRpcControllerV3");
-
-dojo.widget.TreeRpcControllerV3 = function(){
-	dojo.widget.TreeLoadingControllerV3.call(this);
-}
-
-dojo.inherits(dojo.widget.TreeRpcControllerV3, dojo.widget.TreeLoadingControllerV3);
-
-
-// TODO: do something with addChild / setChild, so that RpcController become able
-// to hook on this and report to server
-dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
-	widgetType: "TreeRpcControllerV3",
+dojo.widget.defineWidget(
+	"dojo.widget.TreeRpcControllerV3",
+	dojo.widget.TreeLoadingControllerV3,
+{
+	// TODO: do something with addChild / setChild, so that RpcController become able
+	// to hook on this and report to server
 
 	extraRpcOnEdit: false,
 				
@@ -68,12 +59,9 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 
 		
 		return deferred;
-	}
-});
+	},
 
-
-// -------------- detach
-dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
+	// -------------- detach
 	
 	prepareDetach: function(node, sync) {
 		var deferred = this.startProcessing(node);		
@@ -83,7 +71,6 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	finalizeDetach: function(node) {
 		this.finishProcessing(node);
 	},
-		
 
 	doDetach: function(node, sync){
 
@@ -110,12 +97,10 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 						
 		return deferred;
 
-	}
-});
+	},
 
-	
-// -------------------------- Inline edit node ---------------------	
-dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
+	// -------------------------- Inline edit node ---------------------	
+
 	/**
 	 * send edit start request if needed
 	 * useful for server-side locking 
@@ -186,7 +171,6 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		return deferred;
 	},
 	
-	
 	editLabelStart: function(node, sync) {		
 		if (!this.canEditLabel(node)) {
 			return false;
@@ -215,8 +199,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		return deferred;
 	
 	},
-	
-	
+
 	editLabelFinish: function(save, sync) {
 		var _this = this;
 		
@@ -314,13 +297,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		
 		return deferred;
 	
-	}
-	
-	
-
-});
-
-dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
+	},
 
 	prepareDestroy: function(node, sync) {
 		//dojo.debug(node);
@@ -358,11 +335,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 						
 		return deferred;
 
-	}
-});
-	
-
-dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
+	},
 
 	// -----------------------------------------------------------------------------
 	//                             Create node stuff
@@ -436,6 +409,6 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 						
 		return deferred;	
 	}
-	
+
 	
 });
