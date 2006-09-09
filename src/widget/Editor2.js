@@ -309,15 +309,6 @@ dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2Browser
 	}
 });
 
-//uncomment these plugins to enable them
-//dojo.require("dojo.widget.Editor2Plugin.FindReplace");
-
-//ContextMenu plugin should come before all other plugins which support
-//contextmenu, otherwise the menu for that plugin won't be shown
-dojo.require("dojo.widget.Editor2Plugin.ContextMenu");
-//dojo.require("dojo.widget.Editor2Plugin.TableOperation");
-//dojo.require("dojo.widget.Editor2Plugin.ToolbarDndSupport");
-
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2",
 	dojo.widget.RichText,
@@ -441,8 +432,6 @@ dojo.widget.defineWidget(
 		},
 
 		clobberFocus: function(){},
-		save: function(){ dojo.debug("Editor2.save"); },
-		insertImage: function(){ dojo.debug("Editor2.insertImage"); },
 		toggleHtmlEditing: function(){
 			if(this===dojo.widget.Editor2Manager.getCurrentInstance()){
 				if(!this._inSourceMode){
@@ -591,3 +580,19 @@ dojo.widget.defineWidget(
 	},
 	"html"
 );
+
+//uncomment these plugins to enable them
+//these plugins should be included *after* Editor2 is required
+//dojo.require("dojo.widget.Editor2Plugin.FindReplace");
+
+//ContextMenu plugin should come before all other plugins which support
+//contextmenu, otherwise the menu for that plugin won't be shown
+dojo.require("dojo.widget.Editor2Plugin.ContextMenu");
+//dojo.require("dojo.widget.Editor2Plugin.TableOperation");
+//dojo.require("dojo.widget.Editor2Plugin.ToolbarDndSupport");
+
+//use this plugin to have the old save/insertImage stub called when the
+//corresponding button is clicked.
+//Attention: this plugin overwrites the new builtin insertImage dialog
+//see comments in the plugin file
+//dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands");
