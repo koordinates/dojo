@@ -158,6 +158,8 @@ dojo.lang.isArrayLike = function(it){
 dojo.lang.isFunction = function(it){
 	// summary:	Return true if it is a Function.
 	if(!it){ return false; }
+	// webkit treats NodeList as a function, which is bad
+	if(it.toString().indexOf("NodeList")!=-1) { return false; }
 	return (it instanceof Function || typeof it == "function");
 }
 
