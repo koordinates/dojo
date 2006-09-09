@@ -218,5 +218,3 @@ function setTimeout(func, delay){
 	var thread=new java.lang.Thread(runnable);
 	thread.start();
 }
-
-// dojo.require("dojo.logging.Logger");
