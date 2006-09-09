@@ -113,6 +113,11 @@
 	color:#6782a8 !important;
 }
 
+.disabledItem {
+	background-color:#ccc !important;
+	color:#000 !important;
+}
+
 .yearLabel .selectedYear {
 	padding:0.2em;
 	background-color:#9ec3fb !important;
