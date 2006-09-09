@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd"> 
 <html>
 <head>
@@ -6,7 +6,6 @@
 
 <script type="text/javascript">
 	var djConfig = {isDebug: true,
-//	debugAtAllCosts: true,
 					extraLocale: ['en-us', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx']
 	};
 </script>
@@ -14,13 +13,40 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.DatePicker");
-	dojo.hostenv.writeIncludes();
 </script>
 </head>
 <body>
 <p>A calendar in your locale, or the closest thing to it we currently provide</p>
 <div dojoType="datepicker"></div>
 
+<p>Same as above, but Friday is the first day of the week. WOOHOO!</p>
+<div dojoType="datepicker" weekStartsOn="5"></div>
+
+<p>Same as first, but with only 3 weeks displayed</p>
+<div dojoType="datepicker" displayWeeks="3" weekStartsOn="0"></div>
+
+<p>Same as first, with startDate of 10 September 2006</p>
+<div dojoType="datepicker" startDate="2006-09-10"></div>
+
+<p>Same as first, with endDate of 10 September 2006</p>
+<div dojoType="datepicker" endDate="2006-09-10"></div>
+
+<p>Same as first, with startDate of 1 January 2006 and endDate of 31 December 2006</p>
+<div dojoType="datepicker" startDate="2006-01-01" endDate="2006-12-31"></div>
+
+<p>Same as first, with startDate of 10 September 2006 and endDate of 24 September 2006 (note how the controls<br/>
+ are disabled). This is considered a static display, because the range of startDate and endDate is less than the displayWeeks.</p>
+<div dojoType="datepicker" startDate="2006-09-10" endDate="2006-09-24"></div>
+
+<p>Same as first, with startDate of 23 September 2006 and endDate of 10 October 2006 (note where the calendar<br/>
+display starts since the range overlaps the end of a month and the beginning of a month and how the controls are disabled).<br/>
+ This is considered a static display, because the range of startDate and endDate is less than the displayWeeks.</p>
+<div dojoType="datepicker" startDate="2006-09-23" endDate="2006-10-05"></div>
+
+<p>Same as first with staticDisplay=true and a storedDate of 25 December 05</p>
+<div dojoType="datepicker" staticDisplay="true" storedDate="2005-12-25"></div>
+
+<p>now on to the locale stuff...</p>
 <p>en-us locale</p>
 <div lang="en-us" dojoType="datepicker"></div>
 <p>nl-nl locale</p>
@@ -37,7 +63,7 @@
 <div lang="sv-se" dojoType="datepicker"></div>
 <p>xx locale</p>
 <div lang="xx" dojoType="datepicker"></div>
+<p><span style="text-decoration: line-through; color: #FF0000;">still doesn't</span> <b>now we</b> take into account localizations for first day of week...</p>
 
-<p>still doesn't take into account localizations for first day of week...</p>
 </body>
 </html>
