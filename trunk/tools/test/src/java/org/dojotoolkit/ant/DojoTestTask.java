@@ -124,7 +124,7 @@ public class DojoTestTask extends Task {
 			return;
 		
 		if (localPath != null) {
-			File local = getProject().resolveFile(localPath + "/" + fileName);
+			File local = getProject().resolveFile(_dojoDir + "/" + localPath + "/" + fileName);
 			if (local.exists()) {
 				_localDetected=true;
 				return;

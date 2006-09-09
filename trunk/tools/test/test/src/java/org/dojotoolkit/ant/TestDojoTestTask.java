@@ -68,7 +68,7 @@ public class TestDojoTestTask {
 				"load(\"" + basePath + "/tests/prologue.js\", \n" + 
 				"	\"" + basePath + "/testtools/JsFakeDom/BUFakeDom.js\", \n" + 
 				"	\"" + basePath + "/testtools/JsTestManager/jsunit_wrap.js\");\n" + 
-				"load(\"" + basePath + "/tests/test_date.js\");\n" + 
+				"load(\"" + basePath + "/tests/date/test_date.js\");\n" + 
 				"load(\"" + basePath + "/tests/test_dom.js\");" +
 				"load(\"" + basePath + "/tests/epilogue.js\");\n" + 
 				"jum.init();\n" + 
