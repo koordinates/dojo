@@ -6,21 +6,13 @@ dojo.require("dojo.widget.TreeExtension");
 
 // selector extension to emphase node
 
-
-dojo.widget.tags.addParseTreeHandler("dojo:TreeDocIconExtension");
-
-
-dojo.widget.TreeDocIconExtension = function() {
-	dojo.widget.TreeExtension.call(this);	
-}
-
-dojo.inherits(dojo.widget.TreeDocIconExtension, dojo.widget.TreeExtension);
-
-/**
- * can't unlisten
- */
-dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
-	widgetType: "TreeDocIconExtension",
+dojo.widget.defineWidget(
+	"dojo.widget.TreeDocIconExtension",
+	[dojo.widget.TreeExtension],
+{
+	/**
+	 * can't unlisten
+	 */
 	
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeDocIcon.css"),
 

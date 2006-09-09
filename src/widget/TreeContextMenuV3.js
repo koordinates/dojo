@@ -1,36 +1,18 @@
-
-
 dojo.provide("dojo.widget.TreeContextMenuV3");
-dojo.provide("dojo.widget.TreeMenuItemV3");
 
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
+dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Menu2");
 dojo.require("dojo.widget.TreeCommon");
 
-
-dojo.widget.tags.addParseTreeHandler("dojo:TreeContextMenuV3");
-dojo.widget.tags.addParseTreeHandler("dojo:TreeMenuItemV3");
-
-
-dojo.widget.TreeContextMenuV3 = function() {
-	dojo.widget.PopupMenu2.call(this);
-
-	this.listenedTrees = {};
-
-}
-
-
-dojo.inherits(dojo.widget.TreeContextMenuV3, dojo.widget.PopupMenu2);
-
-
-dojo.lang.extend(dojo.widget.TreeContextMenuV3, dojo.widget.TreeCommon.prototype);
-
-
-dojo.lang.extend(dojo.widget.TreeContextMenuV3, {
-
-	widgetType: "TreeContextMenuV3",
-
+dojo.widget.defineWidget(
+	"dojo.widget.TreeContextMenuV3",
+	[dojo.widget.PopupMenu2, dojo.widget.TreeCommon],
+	function() {
+		this.listenedTrees = {};
+	},
+{
 	open: function(x, y, parentMenu, explodeSrc){
 
 		var result = dojo.widget.PopupMenu2.prototype.open.apply(this, arguments);
@@ -75,32 +57,16 @@ dojo.lang.extend(dojo.widget.TreeContextMenuV3, {
 	unlistenNode: function(node) {
 		this.unBindDomNode(node.labelNode);
 	}
-
-
-
 });
 
 
-
-
-
-
-dojo.widget.TreeMenuItemV3 = function() {
-	dojo.widget.MenuItem2.call(this);
-	
-	this.treeActions = [];
-
-}
-
-
-dojo.inherits(dojo.widget.TreeMenuItemV3, dojo.widget.MenuItem2);
-
-dojo.lang.extend(dojo.widget.TreeMenuItemV3, dojo.widget.TreeCommon.prototype);
-
-dojo.lang.extend(dojo.widget.TreeMenuItemV3, {
-
-	widgetType: "TreeMenuItemV3",
-
+dojo.widget.defineWidget(
+	"dojo.widget.TreeMenuItemV3",
+	[dojo.widget.MenuItem2, dojo.widget.TreeCommon],
+	function() {
+		this.treeActions = [];
+	},
+{
 	// treeActions menu item performs following actions (to be checked for permissions)
 	treeActions: "",
 
@@ -143,7 +109,4 @@ dojo.lang.extend(dojo.widget.TreeMenuItemV3, {
 	toString: function() {
 		return "["+this.widgetType+" node "+this.getTreeNode()+"]";
 	}
-
 });
-
-

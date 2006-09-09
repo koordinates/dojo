@@ -2,12 +2,10 @@
 dojo.provide("dojo.widget.TreeCommon");
 dojo.require("dojo.widget.*"); // for dojo.widget.manager
 
-dojo.widget.TreeCommon = function() {	
-}
-
-dojo.lang.extend(dojo.widget.TreeCommon, {
-	
-	
+dojo.declare(
+	"dojo.widget.TreeCommon",
+	null,
+{
 	listenTreeEvents: [],
 	listenedTrees: {},
 	
@@ -111,11 +109,5 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 				}
 			});
 		}
-    }	
-	
-	
-		
-		
-	
-	
+    }
 });
