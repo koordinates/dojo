@@ -220,7 +220,8 @@ public class DojoTest {
 		cx.setGeneratingSource(true);
 		cx.setDebugger(debugger, new HashMap());
 		try {
-			Global global = new Global(cx);
+			Global global = new Global();
+            global.init(new DojoContextFactory());
 			execString(cx, global, 
 					"djConfig = { \n" + 
 					"	baseRelativePath: \"" + path(_dojoDir.getAbsolutePath() + File.separatorChar) +"\",\n" + 
