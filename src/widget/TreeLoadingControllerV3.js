@@ -8,54 +8,52 @@ dojo.require("dojo.io.*");
 dojo.require("dojo.Deferred");
 dojo.require("dojo.DeferredList");
 
-dojo.widget.tags.addParseTreeHandler("dojo:TreeLoadingControllerV3");
+dojo.declare(
+	"dojo.Error",
+	Error,
+	function(message, extra) {
+		this.message = message;
+		this.extra = extra;
+		this.stack = (new Error()).stack;	
+	}
+);
 
-dojo.Error = function(message, extra) {
-	this.message = message;
-	this.extra = extra;
-	this.stack = (new Error()).stack;	
-}
+dojo.declare(
+	"dojo.CommunicationError",
+	dojo.Error,
+	function() {
+		this.name="CommunicationError";
+	}
+);
 
-dojo.Error.prototype = new Error();
+dojo.declare(
+	"dojo.LockedError",
+	dojo.Error,
+	function() {
+		this.name="LockedError";
+	}
+);
 
-dojo.CommunicationError = function() {
-	dojo.Error.apply(this, arguments);
-	this.name="CommunicationError"
-}
-dojo.inherits(dojo.CommunicationError, dojo.Error);
+dojo.declare(
+	"dojo.FormatError",
+	dojo.Error,
+	function() {
+		this.name="FormatError";
+	}
+);
 
+dojo.declare(
+	"dojo.RpcError",
+	dojo.Error,
+	function() {
+		this.name="RpcError";
+	}
+);
 
-dojo.LockedError = function() {
-	dojo.Error.apply(this, arguments);
-	this.name="LockedError"
-}
-dojo.inherits(dojo.LockedError, dojo.Error);
-
-dojo.FormatError = function() {
-	dojo.Error.apply(this, arguments);
-	this.name="FormatError"
-}
-dojo.inherits(dojo.FormatError, dojo.Error);
-
-
-dojo.RpcError = function() {
-	dojo.Error.apply(this, arguments);
-	this.name="RpcError"
-}
-dojo.inherits(dojo.RpcError, dojo.Error);
-
-
-
-dojo.widget.TreeLoadingControllerV3 = function() {
-	dojo.widget.TreeBasicControllerV3.call(this);
-}
-
-dojo.inherits(dojo.widget.TreeLoadingControllerV3, dojo.widget.TreeBasicControllerV3);
-
-dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
-	widgetType: "TreeLoadingControllerV3",
-	
-	
+dojo.widget.defineWidget(
+	"dojo.widget.TreeLoadingControllerV3",
+	dojo.widget.TreeBasicControllerV3,
+{	
 	RpcUrl: "",
 
 	RpcActionParam: "action", // used for GET for RpcUrl
@@ -405,16 +403,10 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		
 		
 		return this.loadRemote(nodeOrTree, sync);
-	}
-		
-		
-	
-});
+	},
 
+	// ----------------- move -----------------
 
-// ----------------- move -----------------
-dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
-	
 	prepareMove: function(child, newParent, index, sync) {
 		var deferred = this.startProcessing(newParent);
 		deferred.addCallback(dojo.lang.hitch(this, function() {
@@ -425,14 +417,9 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	
 	finalizeMove: function(child, newParent) {
 		this.finishProcessing(newParent);
-	}
-		
-	
-});
+	},
 
-// -------------------- createChild ------------
-dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {	
-	
+	// -------------------- createChild ------------
 
 	prepareCreateChild: function(parent, index, data, sync) {
 		var deferred = this.startProcessing(parent);
@@ -445,12 +432,9 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	
 	finalizeCreateChild: function(parent) {
 		this.finishProcessing(parent);
-	}
+	},
 
-});
-
-// ---------------- clone ---------------
-dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {	
+	// ---------------- clone ---------------
 	
 	prepareClone: function(child, newParent, index, deep, sync) {
 		var deferred = this.startProcessing(child, newParent);

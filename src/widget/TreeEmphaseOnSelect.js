@@ -7,21 +7,13 @@ dojo.require("dojo.html.selection");
 
 // selector extension to emphase node
 
-
-dojo.widget.tags.addParseTreeHandler("dojo:TreeEmphaseOnSelect");
-
-
-dojo.widget.TreeEmphaseOnSelect = function() {
-	dojo.widget.HtmlWidget.call(this);
-	this.saveSelected = {}
-}
-
-dojo.inherits(dojo.widget.TreeEmphaseOnSelect, dojo.widget.HtmlWidget);
-
-
-dojo.lang.extend(dojo.widget.TreeEmphaseOnSelect, {
-	widgetType: "TreeEmphaseOnSelect",
-	
+dojo.widget.defineWidget(
+	"dojo.widget.TreeEmphaseOnSelect",
+	dojo.widget.HtmlWidget,
+	function() {
+		this.saveSelected = {}
+	},
+{
 	selector: "",
 	
 	initialize: function() {
