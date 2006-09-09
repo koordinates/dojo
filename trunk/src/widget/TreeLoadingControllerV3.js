@@ -399,11 +399,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},
 	
 	refresh: function(nodeOrTree, sync) {
-		dojo.lang.forEach(nodeOrTree.children, function(child) {
-			if (child instanceof dojo.widget.Widget) {
-				child.destroy();
-			}
-		});
+		nodeOrTree.destroyChildren();
 		
 		nodeOrTree.state == nodeOrTree.loadStates.UNCHECKED;
 		
