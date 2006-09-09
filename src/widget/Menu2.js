@@ -803,7 +803,7 @@ dojo.widget.PopupManager = new function(){
 		{
 			dojo.event.disconnect(win.document, 'onmousedown', this, 'onClick');
 			dojo.event.disconnect(win, "onscroll", this, "onClick");
-			dojo.event.disconnect(win.document, this._keyEventName, this, 'onKeyPress');
+			dojo.event.disconnect(win.document, "onkey", this, 'onKey');
 			win.__PopupManagerRegistered = false;
 		}
 	};
@@ -842,7 +842,7 @@ dojo.widget.PopupManager = new function(){
 		this.currentFocusMenu = menu;
 	};
 
-	this.onKeyPress = function(e){
+	this.onKey = function(e){
 		if(!this.currentMenu || !this.currentMenu.isShowingNow){ return; }
 
 		var m = this.currentFocusMenu;
