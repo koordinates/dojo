@@ -60,7 +60,7 @@ dojo.widget.Parse = function(fragment){
 				}
 			}
 		}catch(e){
-			dojo.debug("dojo.widget.Parse: error:", e);
+			dojo.debug("dojo.widget.Parse: error:" + e);
 			// throw e;
 			// IE is such a bitch sometimes
 		}
