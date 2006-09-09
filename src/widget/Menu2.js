@@ -37,6 +37,8 @@ dojo.declare(
 
 	aroundBox: dojo.html.boxSizing.BORDER_BOX, //by default, popup around the BORDER box of the aroundNode in open()
 
+	openedForWindow: null, //in which window, the open() is triggered
+
 	processKey: function(evt){
 		return false;
 	},
@@ -110,6 +112,14 @@ dojo.declare(
 			dojo.widget.PopupManager.opened(this, button);
 		}
 
+		//Store the current selection and restore it before the action for a menu item
+		//is executed. This is required as clicking on an menu item deselects current selection
+		if(this.isTopLevel && !dojo.withGlobal(this.openedForWindow||dojo.global(), dojo.html.selection.isCollapsed)){
+			this._bookmark = dojo.withGlobal(this.openedForWindow||dojo.global(), dojo.html.selection.getBookmark);
+		}else{
+			this._bookmark = null;
+		}
+
 		//convert explodeSrc from format [x, y] to 
 		//{left: x, top: y, width: 0, height: 0} which is the new
 		//format required by dojo.html.toCoordinateObject
@@ -160,6 +170,7 @@ dojo.declare(
 		if(force){
 			this.domNode.style.display="none";
 		}
+
 		// If we are in the process of opening the menu and we are asked to close it
 		if(this.animationInProgress){
 			this.queueOnAnimationFinish.push(this.close, []);
@@ -180,6 +191,16 @@ dojo.declare(
 		try {
 			this.parent.domNode.focus();
 		} catch(e) {}
+
+		//do not need to restore if current selection is not empty
+		//(use keyboard to select a menu item)
+		if(this._bookmark && dojo.withGlobal(this.openedForWindow||dojo.global(), dojo.html.selection.isCollapsed)){
+			if(this.openedForWindow){
+				this.openedForWindow.focus()
+			}
+			dojo.withGlobal(this.openedForWindow||dojo.global(), "moveToBookmark", dojo.html.selection, [this._bookmark]);
+		}
+		this._bookmark = null;
 	},
 
 	closeAll: function(force){
@@ -514,6 +535,11 @@ dojo.widget.defineWidget(
 
 	onOpen: function(e){
 		this.openEvent = e;
+		if(e["target"]){
+			this.openedForWindow = dojo.html.getElementWindow(e.target);
+		}else{
+			this.openedForWindow = null;
+		}
 		var x = e.pageX, y = e.pageY;
 
 		var win = dojo.html.getElementWindow(e.target);

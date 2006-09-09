@@ -106,18 +106,8 @@ dojo.html.selectInputText = function(element){
 
 
 dojo.html.isSelectionCollapsed = function(){
-	var _window = dojo.global();
-	var _document = dojo.doc();
-	if(_document["selection"]){ // IE
-		return _document.selection.createRange().text == "";
-	}else if(_window["getSelection"]){
-		var selection = _window.getSelection();
-		if(dojo.lang.isString(selection)){ // Safari
-			return selection == "";
-		}else{ // Mozilla/W3
-			return selection.isCollapsed || selection.toString() == "";
-		}
-	}
+	dojo.deprecated("dojo.html.isSelectionCollapsed", "replaced by dojo.html.selection.isCollapsed", 0.5);
+	return dojo.html.selection.isCollapsed();
 }
 
 dojo.lang.mixin(dojo.html.selection, {
@@ -141,6 +131,21 @@ dojo.lang.mixin(dojo.html.selection, {
 				}
 			}
 			return stype;
+		}
+	},
+	isCollapsed: function() {
+		// summary: return whether the current selection is empty
+		var _window = dojo.global();
+		var _document = dojo.doc();
+		if(_document["selection"]){ // IE
+			return _document.selection.createRange().text == "";
+		}else if(_window["getSelection"]){
+			var selection = _window.getSelection();
+			if(dojo.lang.isString(selection)){ // Safari
+				return selection == "";
+			}else{ // Mozilla/W3
+				return selection.isCollapsed || selection.toString() == "";
+			}
 		}
 	},
 	getSelectedElement: function() {
@@ -284,9 +289,48 @@ dojo.lang.mixin(dojo.html.selection, {
 			}
 		}
 	},
+	getBookmark: function(){
+		// summary: Retrieves a bookmark that can be used with moveToBookmark to return to the same range
+		var bookmark;
+		var _document = dojo.doc();
+		if(_document["selection"]){ // IE
+			var range = _document.selection.createRange();
+			bookmark = range.getBookmark();
+		}else{
+			var selection;
+			try {selection = dojo.global().getSelection();}
+			catch (e) {}
+			if(selection){
+				var range = selection.getRangeAt(0);
+				bookmark = range.cloneRange();
+			}else{
+				dojo.debug("No idea how to store the current selection for this browser!");
+			}
+		}
+		return bookmark;
+	},
+	moveToBookmark: function(bookmark){
+		// summary: Moves current selection to a bookmark
+		var _document = dojo.doc();
+		if(_document["selection"]){ // IE
+			var range = _document.selection.createRange();
+			 range.moveToBookmark(bookmark);
+			 range.select();
+		}else{ //Moz/W3C
+			var selection;
+			try {selection = dojo.global().getSelection();}
+			catch (e) {}
+			if(selection && selection['removeAllRanges']){
+				selection.removeAllRanges() ;
+				selection.addRange(bookmark) ;
+			}else{
+				dojo.debug("No idea how to restore selection for this browser!");
+			}
+		}
+	},
 	collapse: function(beginning) {
-		// summary: clear selection
-		if(dojo.global().getSelection){
+		// summary: clear current selection
+		if(dojo.global()['getSelection']){
 			var selection = dojo.global().getSelection();
 			if(selection.removeAllRanges){ // Mozilla
 				if(beginning){
@@ -295,7 +339,8 @@ dojo.lang.mixin(dojo.html.selection, {
 					selection.collapseToEnd();
 				}
 			}else{ // Safari
-				// not a great deal we can do
+				// pulled from WebCore/ecma/kjs_window.cpp, line 2536
+				 dojo.global().getSelection().collapse(beginning);
 			}
 		}else if(dojo.doc().selection){ // IE
 			var range = dojo.doc().selection.createRange();
@@ -304,7 +349,7 @@ dojo.lang.mixin(dojo.html.selection, {
 		}
 	},
 	remove: function() {
-		// summary: delete selection
+		// summary: delete current selection
 		if(dojo.doc().selection) { //IE
 			var selection = dojo.doc().selection;
 
