@@ -3,6 +3,8 @@
  * - test, bug fix, more features :)
 */
 dojo.provide("dojo.widget.Editor2");
+dojo.provide("dojo.widget.Editor2Manager");
+
 dojo.require("dojo.io.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
@@ -595,4 +597,4 @@ dojo.require("dojo.widget.Editor2Plugin.ContextMenu");
 //corresponding button is clicked.
 //Attention: this plugin overwrites the new builtin insertImage dialog
 //see comments in the plugin file
-//dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands");
+dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands");
