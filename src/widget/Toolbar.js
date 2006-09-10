@@ -820,7 +820,7 @@ dojo.widget.Icon = function(enabled, disabled, hovered, selected){
 
 	this.getState = function(){ return currentState; }
 	this.setState = function(value){
-		if(dojo.lang.inArray(value, states)){
+		if(dojo.lang.inArray(states, value)){
 			if(this[value]){
 				currentState = value;
 				var img = this[currentState];
