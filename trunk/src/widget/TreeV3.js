@@ -10,7 +10,6 @@
  */
 dojo.provide("dojo.widget.TreeV3");
 
-
 dojo.require("dojo.widget.TreeWithNode");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
@@ -18,32 +17,20 @@ dojo.require("dojo.io.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TreeNodeV3");
 
-
-
-// make it a tag
-dojo.widget.tags.addParseTreeHandler("dojo:TreeV3");
-
-
-dojo.widget.TreeV3 = function() {
-	dojo.widget.HtmlWidget.call(this);
-
-	this.eventNames = {};
-	
-	this.DndAcceptTypes = [];
-	this.actionsDisabled = [];
-	
-	this.listeners = [];
-	
-	this.tree = this;
-
-}
-dojo.inherits(dojo.widget.TreeV3, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.TreeV3, dojo.widget.TreeWithNode);
-
-dojo.lang.extend(dojo.widget.TreeV3, {
-	widgetType: "TreeV3",
-
+dojo.widget.defineWidget(
+	"dojo.widget.TreeV3",
+	[dojo.widget.HtmlWidget, dojo.widget.TreeWithNode],
+	function() {
+		this.eventNames = {};
+		
+		this.DndAcceptTypes = [];
+		this.actionsDisabled = [];
+		
+		this.listeners = [];
+		
+		this.tree = this;
+	},
+{
 	DndMode: "",
 
 	/**
@@ -341,9 +328,4 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		return "["+this.widgetType+" ID:"+this.widgetId	+"]"
 	}
 
-
-
 });
-
-
-

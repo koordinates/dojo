@@ -1,9 +1,11 @@
 
 dojo.provide("dojo.widget.TreeWithNode");
 
-
-dojo.widget.TreeWithNode = {
-	
+dojo.declare(
+	"dojo.widget.TreeWithNode",
+	null,
+	function(){ },
+{
 	/*
 	 * dynamic loading-related stuff. 
 	 * When an empty folder node appears, it is "UNCHECKED" first,
@@ -243,7 +245,4 @@ dojo.widget.TreeWithNode = {
 				
 	}
 	
-	
-	
-	
-}
+});

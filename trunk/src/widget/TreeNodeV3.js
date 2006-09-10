@@ -5,31 +5,14 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.TreeWithNode");
 
-
-// make it a tag
-dojo.widget.tags.addParseTreeHandler("dojo:TreeNodeV3");
-
-
-// # //////////
-
-dojo.widget.TreeNodeV3 = function() {
-	
-	dojo.widget.HtmlWidget.call(this);
-
-	this.actionsDisabled = [];
-}
-
-dojo.inherits(dojo.widget.TreeNodeV3, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.TreeNodeV3, dojo.widget.TreeWithNode);
-
-
-dojo.lang.extend(dojo.widget.TreeNodeV3, {
-	widgetType: "TreeNodeV3",
-
-
+dojo.widget.defineWidget(
+	"dojo.widget.TreeNodeV3",
+	[dojo.widget.HtmlWidget, dojo.widget.TreeWithNode],
+	function() {
+		this.actionsDisabled = [];
+	},
+{
 	tryLazyInit: true,
-
 
 	/*
 	 * Basic actions one can perform on nodes and, some(addchild) on trees
@@ -719,7 +702,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	toString: function() {
 		return '['+this.widgetType+', '+this.title+']';
 	}
-
 
 
 });
