@@ -37,15 +37,17 @@ dojo.io.ScriptSrcTransport = new function(){
 			if(currentState.isDone){
 				doneCount++;
 				delete this._state[param];
-			}else{
+			}else if(!currentState.isFinishing){
 				var listener = currentState.kwArgs;
 				try{
 					if(currentState.checkString && eval("typeof(" + currentState.checkString + ") != 'undefined'")){
+						currentState.isFinishing = true;
 						this._finish(currentState, "load");
 						doneCount++;
 						delete this._state[param];
 					}else if(listener.timeoutSeconds && listener.timeout){
 						if(currentState.startTime + (listener.timeoutSeconds * 1000) < (new Date()).getTime()){
+							currentState.isFinishing = true;
 							this._finish(currentState, "timeout");
 							doneCount++;
 							delete this._state[param];
@@ -58,12 +60,13 @@ dojo.io.ScriptSrcTransport = new function(){
 						doneCount++;
 					}
 				}catch(e){
+					currentState.isFinishing = true;
 					this._finish(currentState, "error", {status: this.DsrStatusCodes.Error, response: e});
 				}
 			}
 		}
 	
-		if(doneCount == totalCount){
+		if(doneCount >= totalCount){
 			clearInterval(this.inFlightTimer);
 			this.inFlightTimer = null;
 		}
@@ -168,7 +171,8 @@ dojo.io.ScriptSrcTransport = new function(){
 			"url": url,
 			"query": query,
 			"kwArgs": kwArgs,
-			"startTime": (new Date()).getTime()
+			"startTime": (new Date()).getTime(),
+			"isFinishing": false
 		};
 
 		if(!url){
