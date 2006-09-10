@@ -96,11 +96,23 @@
 	background-color:#6782a8 !important;
 }
 
+.previousMonthDisabled {
+	background-color:#a4a5a6 !important;
+	cursor:default !important
+}
 .currentMonth {
 }
 
+.currentMonthDisabled {
+	background-color:#bbbbbc !important;
+	cursor:default !important
+}
 .nextMonth {
 	background-color:#6782a8 !important;
+}
+.nextMonthDisabled {
+	background-color:#a4a5a6 !important;
+	cursor:default !important;
 }
 
 .currentDate {
@@ -111,11 +123,6 @@
 .selectedItem {
 	background-color:#fff !important;
 	color:#6782a8 !important;
-}
-
-.disabledItem {
-	background-color:#ccc !important;
-	color:#000 !important;
 }
 
 .yearLabel .selectedYear {

@@ -38,7 +38,7 @@ dojo.widget.defineWidget(
 			var dateProps = { widgetContainerId: this.widgetId };
 			if(this.date){
 				dateProps["date"] = this.date;
-				dateProps["storedDate"] = dojo.widget.DatePicker.util.toRfcDate(this.date);
+				dateProps["selectedDate"] = dojo.date.toRfc3339(this.date);
 				this.inputNode.value = dojo.date.strftime(this.date, this.dateFormat);
 			}
 			this.datePicker = dojo.widget.createWidget("DatePicker", dateProps, dpNode);
@@ -53,11 +53,8 @@ dojo.widget.defineWidget(
 		},
 		
 		onInputChange: function(){
-			var tmp = new Date(this.inputNode.value);
-			this.datePicker.date = tmp;
-			this.datePicker.setDate(dojo.widget.DatePicker.util.toRfcDate(tmp));
-			this.datePicker.initData();
-			this.datePicker.initUI();
+			this.datePicker.date = new Date(this.inputNode.value);
+			this.datePicker.setDate(this.datePicker.date);
 		}
 	}
 );
