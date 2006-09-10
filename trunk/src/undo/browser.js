@@ -33,11 +33,12 @@ if(dojo.render.html.opera){
  *	server to test in that browser.
  *  IE 6.0:
  *	same behavior as IE 5.5 SP2
- * Firefox 1.0:
+ * Firefox 1.0+:
  *	the back button will return us to the previous hash on the same
  *	page, thereby not requiring an iframe hack, although we do then
  *	need to run a timer to detect inter-page movement.
  */
+
 dojo.undo.browser = {
 	initialHref: window.location.href,
 	initialHash: window.location.hash,
@@ -55,7 +56,7 @@ dojo.undo.browser = {
 	 * dojo.addOnLoad().
 	 */
 	setInitialState: function(args){
-		this.initialState = {"url": this.initialHref, "kwArgs": args, "urlHash": this.initialHash};
+		this.initialState = this._createState(this.initialHref, args, this.initialHash);
 	},
 
 	//FIXME: Would like to support arbitrary back/forward jumps. Have to rework iframeLoaded among other things.
@@ -84,7 +85,13 @@ dojo.undo.browser = {
 	 * });
 	 */
 	addToHistory: function(args){
+		//If addToHistory is called, then that means we prune the
+		//forward stack -- the user went back, then wanted to
+		//start a new forward path.
+		this.forwardStack = []; 
+
 		var hash = null;
+		var url = null;
 		if(!this.historyIframe){
 			this.historyIframe = window.frames["djhistory"];
 		}
@@ -93,18 +100,31 @@ dojo.undo.browser = {
 			dojo.body().appendChild(this.bookmarkAnchor);
 			this.bookmarkAnchor.style.display = "none";
 		}
-		if((!args["changeUrl"])||(dojo.render.html.ie)){
-			var url = dojo.hostenv.getBaseScriptUri()+"iframe_history.html?"+(new Date()).getTime();
-			this.moveForward = true;
-			dojo.io.setIFrameSrc(this.historyIframe, url, false);
-		}
 		if(args["changeUrl"]){
-			this.changingUrl = true;
 			hash = "#"+ ((args["changeUrl"]!==true) ? args["changeUrl"] : (new Date()).getTime());
+			
+			//If the current hash matches the new one, just replace the history object with
+			//this new one. It doesn't make sense to track different state objects for the same
+			//logical URL. This matches the browser behavior of only putting in one history
+			//item no matter how many times you click on the same #hash link, at least in Firefox
+			//and Safari, and there is no reliable way in those browsers to know if a #hash link
+			//has been clicked on multiple times. So making this the standard behavior in all browsers
+			//so that dojo.undo.browser's behavior is the same in all browsers.
+			if(this.historyStack.length == 0 && this.initialState.urlHash == hash){
+				this.initialState = this._createState(url, args, hash);
+				return;
+			}else if(this.historyStack.length > 0 && this.historyStack[this.historyStack.length - 1].urlHash == hash){
+				this.historyStack[this.historyStack.length - 1] = this._createState(url, args, hash);
+				return;
+			}
+
+			this.changingUrl = true;
 			setTimeout("window.location.href = '"+hash+"'; dojo.undo.browser.changingUrl = false;", 1);
 			this.bookmarkAnchor.href = hash;
 			
 			if(dojo.render.html.ie){
+				url = this._loadIframeHistory();
+
 				var oldCB = args["back"]||args["backButton"]||args["handle"];
 
 				//The function takes handleName as a parameter, in case the
@@ -127,10 +147,6 @@ dojo.undo.browser = {
 					args.handle = tcb;
 				}
 		
-				//If addToHistory is called, then that means we prune the
-				//forward stack -- the user went back, then wanted to
-				//start a new forward path.
-				this.forwardStack = []; 
 				var oldFW = args["forward"]||args["forwardButton"]||args["handle"];
 		
 				//The function takes handleName as a parameter, in case the
@@ -161,9 +177,11 @@ dojo.undo.browser = {
 					this.locationTimer = setInterval("dojo.undo.browser.checkLocation();", 200);
 				}
 			}
+		}else{
+			url = this._loadIframeHistory();
 		}
 
-		this.historyStack.push({"url": url, "kwArgs": args, "urlHash": hash});
+		this.historyStack.push(this._createState(url, args, hash));
 	},
 
 	checkLocation: function(){
@@ -177,6 +195,7 @@ dojo.undo.browser = {
 				this.handleBackButton();
 				return;
 			}
+			
 			// first check to see if we could have gone forward. We always halt on
 			// a no-hash item.
 			if(this.forwardStack.length > 0){
@@ -257,6 +276,10 @@ dojo.undo.browser = {
 		this.historyStack.push(last);
 	},
 
+	_createState: function(url, args, hash){
+		return {"url": url, "kwArgs": args, "urlHash": hash};	
+	},
+
 	_getUrlQuery: function(url){
 		var segments = url.split("?");
 		if (segments.length < 2){
@@ -265,5 +288,12 @@ dojo.undo.browser = {
 		else{
 			return segments[1];
 		}
+	},
+	
+	_loadIframeHistory: function(){
+		var url = dojo.hostenv.getBaseScriptUri()+"iframe_history.html?"+(new Date()).getTime();
+		this.moveForward = true;
+		dojo.io.setIFrameSrc(this.historyIframe, url, false);	
+		return url;
 	}
 }
