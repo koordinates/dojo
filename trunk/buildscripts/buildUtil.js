@@ -1,9 +1,8 @@
 var buildUtil = {};
 buildUtil.getDependencyList = function(dependencies, hostenvType) {
-	
-	var djConfig = {
+	djConfig = {
 		baseRelativePath: "../"
-		// ,isDebug: true
+		// isDebug: true
 	};
 	
 	if(!dependencies){
@@ -22,7 +21,7 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	if(!dojoLoader || dojoLoader=="null" || dojoLoader==""){
 		dojoLoader = "default";
 	}
-	var dj_global = {};
+	dj_global = {};
 	
 	load("../src/bootstrap1.js");
 	load("../src/loader.js");
@@ -37,7 +36,6 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	
 	if(dojoLoader == "default"){
 		dojo.hostenv.loadedUris.push("../src/loader.js");
-	
 	}else if(dojoLoader=="xdomain"){
 		dojo.hostenv.loadedUris.push("../src/loader.js");
 		dojo.hostenv.loadedUris.push("../src/loader_xd.js");
@@ -136,7 +134,6 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 			if(dep.indexOf("(") != -1){
 				dep = dojo.hostenv.getDepsForEval(dep)[0];
 			}
-	
 			//Don't process loader_xd.js since it has some regexps 
 			//and mentions of dojo.require/provide, which will cause 
 			//havoc in the dojo.hostenv.loadModule() method.
@@ -144,7 +141,8 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 				dojo.hostenv.loadModule(dep, null, true);
 			}
 		}catch(e){
-			print(e);
+			print("Error loading module!" + e);
+			quit(-1);
 		}
 	}
 	
