@@ -557,7 +557,8 @@ dojo.widget.defineWidget(
 				this.replaceEditorContent(this._htmlEditNode.value);
 			}
 			return dojo.widget.Editor2.superclass.getEditorContent.call(this);
-		},
+		}// FIXME: probably not needed any more with new design, but need to verify
+		/*,
 
 		_save: function(e){
 			// FIXME: how should this behave when there's a larger form in play?
@@ -578,7 +579,7 @@ dojo.widget.defineWidget(
 					this.close(e.getName().toLowerCase() == "save");
 				}
 			}
-		}
+		}*/
 	},
 	"html"
 );
