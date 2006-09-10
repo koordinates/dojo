@@ -347,7 +347,7 @@ dojo.html.removeCssRule = function(index){
 		dojo.debug("no stylesheet defined for removing rules");
 		return false;
 	}
-	if(dojo.html.render.ie){
+	if(dojo.render.html.ie){
 		if(!index){
 			index = dojo.html.styleSheet.rules.length;
 			dojo.html.styleSheet.removeRule(index);
@@ -432,11 +432,28 @@ dojo.html.insertCssText = function(cssStr, doc, URI){
 // 	it has .dojoFoo { background-image: url(images/bar.png);} 
 //	then uri should point to dojoroot/src/widget/templates/
 dojo.html.fixPathsInCssText = function(cssStr, URI){
+
+	function iefixPathsInCssText() {
+		var regexIe = /AlphaImageLoader\(src\=['"]([\t\s\w()\/.\\'"-:#=&?]*)['"]/;
+		while(match = regexIe.exec(cssStr)){
+			url = match[1].replace(regexTrim, "$2");
+			if(!regexProtocol.exec(url)){
+				url = (new dojo.uri.Uri(URI, url).toString());
+			}
+			str += cssStr.substring(0, match.index) + "AlphaImageLoader(src='" + url + "'";
+			cssStr = cssStr.substr(match.index + match[0].length);
+		}
+		return str + cssStr;
+	}
+
 	if(!cssStr || !URI){ return; }
 	var match, str = "", url = "";
 	var regex = /url\(\s*([\t\s\w()\/.\\'"-:#=&?]+)\s*\)/;
 	var regexProtocol = /(file|https?|ftps?):\/\//;
 	var regexTrim = /^[\s]*(['"]?)([\w()\/.\\'"-:#=&?]*)\1[\s]*?$/;
+	if (dojo.render.html.ie55 || dojo.render.html.ie60) {
+		cssStr = iefixPathsInCssText();
+	}
 	while(match = regex.exec(cssStr)){
 		url = match[1].replace(regexTrim, "$2");
 		if(!regexProtocol.exec(url)){
