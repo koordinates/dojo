@@ -285,9 +285,9 @@ dojo.addOnLoad(function()
 		var surface = getTestSurface(testName, 'lineTo, moveTo, closePath');
 		surface.createPath()
 			.moveTo(10, 20).lineTo(80, 150)
-			.setAbsoluteMode(false).hLineTo(40)
+			.setAbsoluteMode(false).lineTo(40, 0)
 			.setAbsoluteMode(true).lineTo(180, 100)
-			.setAbsoluteMode(false).vLineTo(-30).lineTo(-30, -50)
+			.setAbsoluteMode(false).lineTo(0, -30).lineTo(-30, -50)
 			.closePath()
 			.setStroke({ color: "red", width: 1 })
 			.setFill(null)
@@ -319,38 +319,31 @@ dojo.addOnLoad(function()
 	// test arcTo 
 	addTest('arcTo', function(testName){
 		var surface = getTestSurface(testName, 'arcTo: from 0 to 360 degree, w/ 30 degree of x axis rotation, rendered with different color');
-        var startPoint = dojo.gfx.matrix.multiplyPoint(
-            dojo.gfx.matrix.rotateg(30), 100, 0);
-		var re = surface.createPath()
+        var startPoint = dojo.gfx.matrix.multiplyPoint(dojo.gfx.matrix.rotateg(30), 100, 0);
+        var g1 = surface.createGroup();
+		var re1 = g1.createPath()
 			.moveTo(startPoint.x, startPoint.y)
-			.arcTo(dojo.math.degToRad(90), 0, 0, 100, 60, dojo.math.degToRad(30), 1)
-			.setFill(null)
-			.setStroke({ color: "red", width: 1 })
-			.setTransform({ dx: 150, dy: 100 })
+			.arcTo(dojo.math.degToRad(90), 0, 0, 100, 60, dojo.math.degToRad(30), true)
+			.setStroke({color: "red"})
 			;
-		var ge = surface.createPath()
-			.moveTo(re.lastPos.x, re.lastPos.y)
-			.arcTo(dojo.math.degToRad(360), 0, 0, 100, 60, dojo.math.degToRad(30), 1)
-			.setFill(null)
-			.setStroke({ color: "green", width: 1 })
-			.setTransform({ dx: 150, dy: 100 })
+		var ge1 = g1.createPath()
+			.moveTo(re1.lastPos.x, re1.lastPos.y)
+			.arcTo(dojo.math.degToRad(360), 0, 0, 100, 60, dojo.math.degToRad(30), true)
+			.setStroke({color: "green"})
 			;
-
-		var re2 = surface.createPath()
+		g1.setTransform({dx: 150, dy: 100});
+        var g2 = surface.createGroup();
+		var re2 = g2.createPath()
 			.moveTo(startPoint.x, startPoint.y)
-			.arcTo2(dojo.math.degToRad(90), 0, 0, 100, 60, dojo.math.degToRad(30), 1)
-			.setFill(null)
-			.setStroke({ color: "red", width: 1 })
-			.setTransform({ dx: 180, dy: 150 })
+			.arcTo(dojo.math.degToRad(90), 0, 0, 100, 60, dojo.math.degToRad(30), false)
+			.setStroke({color: "red"})
 			;
-        dojo.debug("moving to " + re2.lastPos.x + "," + re2.lastPos.y );
-		var ge2 = surface.createPath()
+		var ge2 = g2.createPath()
 			.moveTo(re2.lastPos.x, re2.lastPos.y)
-			.arcTo2(dojo.math.degToRad(360), 0, 0, 100, 60, dojo.math.degToRad(30), 1)
-			.setFill(null)
-			.setStroke({ color: "green", width: 1 })
-			.setTransform({ dx: 180, dy: 150 })
+			.arcTo(dojo.math.degToRad(360), 0, 0, 100, 60, dojo.math.degToRad(30), false)
+			.setStroke({color: "green"})
 			;
+		g2.setTransform({dx: 180, dy: 130});
 	});
 
 	// test path: curveTo, smoothCurveTo
