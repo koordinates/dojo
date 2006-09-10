@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.Tooltip");
 dojo.require("dojo.widget.ContentPane");
-dojo.require("dojo.widget.Menu2");
+dojo.require("dojo.widget.Menu2");			// for PopupContainerBase
 dojo.require("dojo.uri.Uri");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
@@ -22,16 +22,14 @@ dojo.widget.defineWidget(
 
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/TooltipTemplate.css"),
 
-		connectNode: null,
-
 		fillInTemplate: function(args, frag){
 			if(this.caption != ""){
 				this.domNode.appendChild(document.createTextNode(this.caption));
 			}
-			this.connectNode = dojo.byId(this.connectId);
+			this._connectNode = dojo.byId(this.connectId);
 			dojo.widget.Tooltip.superclass.fillInTemplate.call(this, args, frag);
 
-			this.addOnLoad(this, "_LoadedContent");
+			this.addOnLoad(this, "_loadedContent");
 			dojo.html.addClass(this.domNode, "dojoTooltip");
 
 			//copy style from input node to output node
@@ -43,72 +41,86 @@ dojo.widget.defineWidget(
 		},
 
 		postCreate: function(args, frag){
-			dojo.event.connect(this.connectNode, "onmouseover", this, "onMouseOver");
+			dojo.event.connect(this._connectNode, "onmouseover", this, "onMouseOver");
 			dojo.widget.Tooltip.superclass.postCreate.call(this, args, frag);
 		},
 
-		onMouseOver: function(e) {
-			this.mouse = {x: e.pageX, y: e.pageY};
+		onMouseOver: function(e){
+			this._mouse = {x: e.pageX, y: e.pageY};
+			this._onHover(e);
+		},
 
-			if(!this.showTimer){
-				this.showTimer = setTimeout(dojo.lang.hitch(this, "open"), this.showDelay);
+		onMouseMove: function(e) {
+			this._mouse = {x: e.pageX, y: e.pageY};
+
+			if(dojo.html.overElement(this._connectNode, e) || dojo.html.overElement(this.domNode, e)){
+				this._onHover(e);
+			} else {
+				// mouse has been moved off the element/tooltip
+				// note: can't use onMouseOut to detect this because the "explode" effect causes
+				// spurious onMouseOut events (due to interference from outline), w/out corresponding onMouseOver
+				this._onUnHover(e);
+			}
+		},
+
+		_onHover: function(e) {
+			if(this._hover){ return; }
+			this._hover=true;
+
+			// If the tooltip has been scheduled to be erased, cancel that timer
+			// since we are hovering over element/tooltip again
+			if(this._hideTimer) {
+				clearTimeout(this._hideTimer);
+				delete this._hideTimer;
+			}
+			if(!this._showTimer){
+				this._showTimer = setTimeout(dojo.lang.hitch(this, "open"), this.showDelay);
 				dojo.event.connect(document.documentElement, "onmousemove", this, "onMouseMove");
 			}
 		},
 
-		onMouseMove: function(e) {
-			this.mouse = {x: e.pageX, y: e.pageY};
+		_onUnHover: function(e){
+			if(!this._hover){ return; }
+			this._hover=false;
 
-			if(dojo.html.overElement(this.connectNode, e) || dojo.html.overElement(this.domNode, e)){
-				// If the tooltip has been scheduled to be erased, cancel that timer
-				// since we are hovering over element/tooltip again
-				if(this.hideTimer) {
-					clearTimeout(this.hideTimer);
-					delete this.hideTimer;
-				}
-			} else {
-				// mouse has been moved off the element/tooltip
-				// note: can't use onMouseOut to detect this because the "explode" effect causes
-				// spurious onMouseOut/onMouseOver events (due to interference from outline)
-				if(this.showTimer){
-					clearTimeout(this.showTimer);
-					delete this.showTimer;
-				}
-				if(this.isShowingNow && !this.hideTimer){
-					this.hideTimer = setTimeout(dojo.lang.hitch(this, "close"), this.hideDelay);
-				}
+			if(this._showTimer){
+				clearTimeout(this._showTimer);
+				delete this._showTimer;
+			}
+			if(this.isShowingNow && !this._hideTimer){
+				this._hideTimer = setTimeout(dojo.lang.hitch(this, "close"), this.hideDelay);
 			}
 		},
 
 		open: function() {
 			if (this.isShowingNow) { return; }
 
-			dojo.widget.PopupContainerBase.prototype.open.call(this, this.mouse.x, this.mouse.y, null, [this.mouse.x, this.mouse.y], "TL,TR,BL,BR", [10,15]);
+			dojo.widget.PopupContainerBase.prototype.open.call(this, this._mouse.x, this._mouse.y, null, [this._mouse.x, this._mouse.y], "TL,TR,BL,BR", [10,15]);
 		},
 
 		close: function() {
 			if (this.isShowingNow) {
-				if ( this.showTimer ) {
-					clearTimeout(this.showTimer);
-					delete this.showTimer;
+				if ( this._showTimer ) {
+					clearTimeout(this._showTimer);
+					delete this._showTimer;
 				}
-				if ( this.hideTimer ) {
-					clearTimeout(this.hideTimer);
-					delete this.hideTimer;
+				if ( this._hideTimer ) {
+					clearTimeout(this._hideTimer);
+					delete this._hideTimer;
 				}
 				dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
 				dojo.widget.PopupContainerBase.prototype.close.call(this);
 			}
 		},
 
-		position: function(){
-			this.move(this.mouse.x, this.mouse.y, [10,15], "TL,TR,BL,BR");
+		_position: function(){
+			this.move(this._mouse.x, this._mouse.y, [10,15], "TL,TR,BL,BR");
 		},
 
-		_LoadedContent: function(){
+		_loadedContent: function(){
 			if(this.isShowingNow){
 				// the tooltip has changed size due to downloaded contents, so reposition it
-				this.position();
+				this._position();
 			}
 		},
 
