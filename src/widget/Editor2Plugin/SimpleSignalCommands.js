@@ -15,7 +15,7 @@
 
 dojo.provide("dojo.widget.Editor2Plugin.SimpleSignalCommands");
 
-dojo.require("dojo.widget.Editor");
+dojo.require("dojo.widget.Editor2");
 
 dojo.declare("dojo.widget.Editor2Plugin.SimpleSignalCommand", dojo.widget.Editor2Command, 
 	function(name){
