@@ -25,7 +25,7 @@ dojo.widget.Editor2ToolbarItemManager = {
 		}
 	},
 	removeHandler: function(func){
-		for(i in this._registeredItemHandlers){
+		for(var i in this._registeredItemHandlers){
 			if(func === this._registeredItemHandlers[i]){
 				delete this._registeredItemHandlers[i];
 				return;
@@ -41,7 +41,7 @@ dojo.widget.Editor2ToolbarItemManager = {
 	getToolbarItem: function(name){
 		var item;
 		name = name.toLowerCase();
-		for(i in this._registeredItemHandlers){
+		for(var i in this._registeredItemHandlers){
 			item = this._registeredItemHandlers[i](name);
 			if(item){
 				break;
