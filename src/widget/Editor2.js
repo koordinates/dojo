@@ -583,18 +583,17 @@ dojo.widget.defineWidget(
 	"html"
 );
 
-//uncomment these plugins to enable them
-//these plugins should be included *after* Editor2 is required
-//dojo.require("dojo.widget.Editor2Plugin.FindReplace");
-
 //ContextMenu plugin should come before all other plugins which support
 //contextmenu, otherwise the menu for that plugin won't be shown
 dojo.require("dojo.widget.Editor2Plugin.ContextMenu");
-//dojo.require("dojo.widget.Editor2Plugin.TableOperation");
-//dojo.require("dojo.widget.Editor2Plugin.ToolbarDndSupport");
 
+// plugins are available using dojo's require syntax:
+// dojo.widget.Editor2Plugin.FindReplace
+//dojo.widget.Editor2Plugin.TableOperation
+//dojo.widget.Editor2Plugin.ToolbarDndSupport
+//dojo.widget.Editor2Plugin.ContextMenu
 //use this plugin to have the old save/insertImage stub called when the
 //corresponding button is clicked.
 //Attention: this plugin overwrites the new builtin insertImage dialog
 //see comments in the plugin file
-dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands");
+//dojo.widget.Editor2Plugin.SimpleSignalCommands
