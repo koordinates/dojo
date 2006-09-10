@@ -421,38 +421,30 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.Shape, {
 });
 dojo.gfx.Polyline.nodeType = "polyline";
 
-dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
+dojo.gfx.Path._calcArc = function(alpha){
+	var cosa  = Math.cos(alpha);
+	var sina  = Math.sin(alpha);
+	// return a start point, 1st and 2nd control points, and an end point
+	var p2 = {x: cosa + (4 / 3) * (1 - cosa), y: sina - (4 / 3) * cosa * (1 - cosa) / sina};
+	return {
+		s:  {x: cosa, y: sina},
+		c1: p2,
+		c2: {x: p2.x, y: -p2.y},
+		e:  {x: cosa, y: -sina}
+	};
+};
+
+dojo.lang.extend(dojo.gfx.Path, {
 	_pathVmlToSvgMap: { r: "l", l: "L", t: "m", m: "M", v: "c", c: "C", x: "z" },
 	_pathSvgToVmlMap: { l: "r", L: "l", m: "t", M: "m", c: "v", C: "c", z: "x" },
-	
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPath, true);
-		this.lastPos = { x: 0, y: 0 };
-		this.lastControl = { x: 0, y: 0 };
+	_extraInit: function(rawNode) {
+		this.lastControl = {x: 0, y: 0};
 		this.lastAction = "";
-		this.attach(rawNode);
 	},
-	setShape: function(newShape){
-		this.shape = dojo.gfx.makeParameters(this.shape, typeof(newShape) == "string" ? { path: newShape } : newShape);
-		this.setAbsoluteMode(this.shape.absolute);
-		var path = this.shape.path;
-		for(var i in this._pathSvgToVmlMap){
-			path = path.replace( new RegExp(i, 'g'),  this._pathSvgToVmlMap[i] );
-		}
-		this.rawNode.path.v = path + " e";
-		return this.setTransform(this.matrix);
-	},
-	setAbsoluteMode: function(mode) {
-		this.shape.absolute = typeof(mode) == "string" ? (mode == "absolute") : mode;
-		return this;
-	},
-	getAbsoluteMode: function() {
-		return this.shape.absolute;
-	},
-	_drawTo: function(action, raction, args){
-		this.shape.path += (this.shape.absolute ? action : raction);
+	_drawTo: function(action, args){
+		this.shape.path += this.shape.absolute ? action.toUpperCase() : action.toLowerCase();
 		for(var i = 0; i < args.length; ++i){
-			this.shape.path += " " + args[i].toFixed();
+			this.shape.path += args[i].toFixed() + " ";
 		}
 		this.lastAction = action; 
 		this.setShape();
@@ -460,8 +452,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
 	},
 	_update: function(x, y, x2, y2){
 		if(this.shape.absolute){
-			this.lastPos.x = x;
-			this.lastPos.y = y;
+			this.lastPos = {x: x, y: y};
 			if(typeof(y2) != "undefined"){
 				this.lastControl.x = x2;
 				this.lastControl.y = y2;
@@ -481,169 +472,84 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
 			this.lastPos.y += y;
 		}
 	},
+	setShape: function(newShape){
+		this.shape = dojo.gfx.makeParameters(this.shape, typeof(newShape) == "string" ? { path: newShape } : newShape);
+		this.setAbsoluteMode(this.shape.absolute);
+		// convert SVG path to VML path
+		var path = this.shape.path;
+		for(var i in this._pathSvgToVmlMap){
+			path = path.replace( new RegExp(i, 'g'),  this._pathSvgToVmlMap[i] );
+		}
+		this.rawNode.path.v = path + " e";
+		return this.setTransform(this.matrix);
+	},
 	_mirror: function(action){
 		if(action != this.lastAction){
-			return { x: lastPos.x, y: lastPos.y };
+			return {x: this.lastPos.x, y: this.lastPos.y};
 		}
-		x1 = 2* this.lastPos.x - this.lastControl.x;
-		y1 = 2* this.lastPos.y - this.lastControl.y;
+		var x1 = 2 * this.lastPos.x - this.lastControl.x;
+		var y1 = 2 * this.lastPos.y - this.lastControl.y;
 		if(!this.shape.absolute){
 			x1 -= this.lastPos.x;
 			y1 -= this.lastPos.y;
 		}
-		return { x: x1, y: y1 };
-	},
-	closePath: function() {
-		return this._drawTo("z", "z", []);
-	},
-	moveTo: function(x, y){
-		this._update(x, y);
-		return this._drawTo("M", "m", [x,y]);
-	},
-	lineTo: function(x, y){
-		this._update(x, y);
-		return this._drawTo("L", "l", [x,y]);
-	},
-	hLineTo: function(x){
-		y = this.shape.absolute ? this.lastPos.y : 0;
-		return this.lineTo(x, y);
-	},
-	vLineTo: function(y){
-		x = this.shape.absolute ? this.lastPos.x : 0;
-		return this.lineTo(x, y);
-	},
-	curveTo: function(x1, y1, x2, y2, x, y){
-		this._update(x, y, x2, y2);
-		return this._drawTo("C", "c", [x1, y1, x2, y2, x, y]);
+		return {x: x1, y: y1};
 	},
 	smoothCurveTo: function(x2, y2, x, y){
-		pos = this._mirror("C");
-		x1 = pos.x;
-		y1 = pos.y;
+		var pos = this._mirror("c");
+		var x1 = pos.x;
+		var y1 = pos.y;
 		return this.curveTo(x1, y1, x2, y2, x, y);
 	},
-	// TODO: fix qbCurveTo, smoothQBCurveTo, arcTo
-	qbCurveTo: function(x1, y1, x, y){
-		this._update(x, y, x1, y1);
-		return this._drawTo("qb", "qb", [x1, y1, x, y]);
-	},
-	smoothQBCurveTo: function(x, y){
-		pos = this.mirror("qb");
-		x1 = pos.x;
-		y1 = pos.y;
-		return this.qbCurveTo(x1, y1, x, y);
-	},
-	arcTo2: function(endAngle, cx, cy, rx, ry, xRotate, isCCW){
-		var x = this.lastPos.x - cx;
-		var y = this.lastPos.y - cy;
-		var startAngle = Math.atan2(-y, x) - xRotate;
-
-		//TODO: add relative support!
-
-		// TODO: refactor me here!
+	_PI4: Math.PI / 4,
+	_curvePI4: dojo.gfx.Path._calcArc(Math.PI / 8),
+	arcTo: function(endAngle, cx, cy, rx, ry, xRotate, isCCW){
+		// start of our arc
+		var startAngle = Math.atan2(cy - this.lastPos.y, this.lastPos.x - cx) - xRotate;
+		// size of our arc in radians
 		var theta = isCCW ? endAngle - startAngle : startAngle - endAngle;
-		if(theta < 0){ theta += 2 * Math.PI; }
-		dojo.debug("theta =" + theta);
-
-		var arcToAngle = function(startAngle, angle, isCCW){
-			var endAngle = isCCW ? startAngle + angle : startAngle - angle;
-			// start, control point 1, control point 2, end point
-			var P1, Q1, P2, Q2;
-			// theta 0, theta 1 stand for P1, P2
-			var t1, t2;
-			var temp = null;
-			dojo.debug("startAngle=" + startAngle);
-			t1 = Math.atan2(Math.sin(startAngle) / ry, Math.cos(startAngle) / rx );
-			t2 = Math.atan2(Math.sin(endAngle) / ry, Math.cos(endAngle) / rx );
-			dojo.debug("t1="+t1+" t2="+t2);
-
-			var E = function(theta){
-				return dojo.gfx.matrix.multiplyPoint(
-					[ 
-						dojo.gfx.matrix.translate(cx, cy),
-						dojo.gfx.matrix.rotate(xRotate),
-						dojo.gfx.matrix.scale(rx, ry)
-					],
-					Math.cos(theta), 
-					-Math.sin(theta)
-				);
-			};
-
-			var E_prime = function(theta){
-				return dojo.gfx.matrix.multiplyPoint(
-					[
-						dojo.gfx.matrix.rotate(xRotate),
-						dojo.gfx.matrix.scale(rx, ry)
-					], 
-					-Math.sin(theta),
-					-Math.cos(theta)
-				);
-			};
-
-			var alpha = Math.sin(t2 - t1)* (Math.sqrt(4 + 3 * Math.pow(Math.tan((t2 - t1) / 2), 2)) - 1) / 3;
-			dojo.debug("alpha=" + alpha);
-
-			P1 = E(t1);
-			Q1 = dojo.gfx.matrix.multiplyPoint(dojo.gfx.matrix.scale(alpha), E_prime(t1));
-			dojo.debug("Q1=" + Q1.x + "," + Q1.y);
-			Q1 = {x: P1.x + Q1.x, y: P1.y + Q1.y};
-			dojo.debug("Q1=" + Q1.x + "," + Q1.y);
-			P2 = E(t2);
-			Q2 = dojo.gfx.matrix.multiplyPoint(dojo.gfx.matrix.scale(-alpha), E_prime(t2));
-			Q2 = {x: P2.x + Q2.x, y: P2.y + Q2.y};
-
-			dojo.debug("P1=" + P1.x + "," + P1.y);
-			dojo.debug("Q1=" + Q1.x + "," + Q1.y);
-			dojo.debug("P2=" + P2.x + "," + P2.y);
-			dojo.debug("Q2=" + Q2.x + "," + Q2.y);
-			return [P1, Q1, P2, Q2];
-		};
-
-		var arcQuadricPI= function(startAngle, isCCW){
-			return arcToAngle(startAngle, Math.PI/4, isCCW); 
-		};
-
-		var angle = startAngle;
-		var offsetAngle = isCCW ? Math.PI / 4 : -Math.PI / 4;
-		var Ps = null;
-		for(var i = 0; i< Math.floor(theta / (Math.PI / 4)); i++){
-			// draw the Pi/4 arc
-			Ps = arcQuadricPI(angle, isCCW);
-			// curveTo( Q1, Q2, P2 )
-			this.curveTo(Ps[1].x, Ps[1].y, Ps[3].x, Ps[3].y, Ps[2].x, Ps[2].y);
-			angle += offsetAngle;
+		if(theta < 0){
+			theta += this._2PI;
+		}else if(theta > this._2PI){
+			theta = this._2PI;
 		}
-
-		// draw the rest
-		offsetAngle = theta % (Math.PI / 4);
-		dojo.debug("offsetAngle=" + offsetAngle);
-		Ps = arcToAngle(angle, offsetAngle, isCCW);
-		return this.curveTo(Ps[1].x, Ps[1].y, Ps[3].x, Ps[3].y, Ps[2].x, Ps[2].y);
-	},
-	arcTo: function(top, right, bottom, left, isCCW, x, y){
-		// save the value, not reference
-		var lastPos = { x: this.lastPos.x, y: this.lastPos.y };
-		dojo.debug( "lastPos in arcTo = " + lastPos.x + "," + lastPos.y );
-		dojo.debug( "this.lastPos in arcTo = " + this.lastPos.x + "," + this.lastPos.y );
-		dojo.debug( "arcTo coordination = " + this.shape.coordination );
-		if(!this.shape.absolute){
-			// translate to absolute value first
-			top += this.lastPos.y;
-			right += this.lastPos.x;
-			bottom += this.lastPos.y;
-			left += this.lastPos.x;
-			x += this.lastPos.x;
-			y += this.lastPos.y;
-		} 
-		this._update(x, y);
-		dojo.debug( "lastPos in arcTo = " + lastPos.x + "," + lastPos.y );
-		dojo.debug( "this.lastPos in arcTo = " + this.lastPos.x + "," + this.lastPos.y );
-
-		if(isCCW){
-			return this._drawTo( "ar", "ar", [left, top, right, bottom, lastPos.x, lastPos.y, x, y] );
-		} else {
-			return this._drawTo( "wt", "wt", [left, top, right, bottom, lastPos.x, lastPos.y, x, y] );
+		// calculate our elliptic transformation
+		var elliptic_transform;
+		with(dojo.gfx.matrix){
+			elliptic_transform = normalize([
+				translate(cx, cy),
+				rotate(xRotate),
+				scale(rx, ry)
+			]);
+		};
+		// draw curve chunks
+		var alpha = this._PI4 / 2;
+		var curve = this._curvePI4;
+		var step  = isCCW ? alpha : -alpha;
+		for(var angle = theta; angle > 0; angle -= this._PI4){
+			if(angle < this._PI4){
+				alpha = angle / 2;
+				curve = dojo.gfx.Path._calcArc(alpha);
+				step  = isCCW ? alpha : -alpha;
+			}
+			var c1, c2, e;
+			with(dojo.gfx.matrix){
+				var m = normalize([elliptic_transform, rotate(startAngle + step)]);
+				if(isCCW){
+					c1 = multiplyPoint(m, curve.c1);
+					c2 = multiplyPoint(m, curve.c2);
+					e  = multiplyPoint(m, curve.e );
+				}else{
+					c1 = multiplyPoint(m, curve.c2);
+					c2 = multiplyPoint(m, curve.c1);
+					e  = multiplyPoint(m, curve.s );
+				}
+			};
+			// draw the curve
+			this.curveTo(c1.x, c1.y, c2.x, c2.y, e.x, e.y);
+			startAngle += 2 * step;
 		}
+		return this;
 	}
 });
 dojo.gfx.Path.nodeType = "shape";
@@ -662,7 +568,7 @@ dojo.gfx._creators = {
 		return this.createObject(dojo.gfx.Line, line);
 	},
 	createPolyline: function(points){
-		return this.createObject(dojo.gfx.Polyline, points, true);
+		return this.createObject(dojo.gfx.Polyline, points);
 	},
 	createPath: function(path){
 		return this.createObject(dojo.gfx.Path, path, true);

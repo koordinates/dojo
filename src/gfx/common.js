@@ -45,8 +45,8 @@ dojo.lang.mixin(dojo.gfx, {
 		return result;
 	},
 
-	GUID: 1,
-	guid: function(){ return dojo.gfx.GUID++; }
+	_GUID: 1,
+	guid: function(){ return "dj_gfx_guid_" + dojo.gfx._GUID++; }
 });
 
 // this is a Shape object, which knows how to apply graphical attributes and a transformation
@@ -123,7 +123,9 @@ dojo.lang.extend(dojo.gfx.Shape, {
 });
 
 dojo.declare("dojo.gfx.VirtualGroup", dojo.gfx.Shape, {
-	children: [],
+	initializer: function() {
+		this.children = [];
+	},
 	
 	// group management
 	add: function(shape){
@@ -165,3 +167,40 @@ dojo.gfx.Surface = function(){
 	// underlying node
 	this.rawNode = null;
 };
+
+// this is a Path shape
+dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
+	initializer: function(rawNode) {
+		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPath, true);
+		this.lastPos = {x: 0, y: 0};
+		this._extraInit(rawNode);
+		this.attach(rawNode);
+	},
+	setAbsoluteMode: function(mode){
+		this.shape.absolute = typeof(mode) == "string" ? (mode == "absolute") : mode;
+		return this;
+	},
+	getAbsoluteMode: function(){
+		return this.shape.absolute;
+	},
+	closePath: function(){
+		return this._drawTo("z", []);
+	},
+	moveTo: function(x, y){
+		this._update(x, y);
+		return this._drawTo("m", [x, y]);
+	},
+	lineTo: function(x, y){
+		this._update(x, y);
+		return this._drawTo("l", [x, y]);
+	},
+	curveTo: function(x1, y1, x2, y2, x, y){
+		this._update(x, y, x2, y2);
+		return this._drawTo("c", [x1, y1, x2, y2, x, y]);
+	},
+	_2PI: Math.PI * 2,
+	// these are meant to be overridden in derived classes
+	_extraInit: function(rawNode) {},
+	_drawTo: function(action) { return this; },
+	_update: function(x, y, x2, y2) {}
+});
