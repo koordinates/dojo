@@ -32,7 +32,7 @@ dojo.extend(dojo.lfx.shadow, {
 	_makePiece: function(name, vertAttach, vertCoord, horzAttach, horzCoord, sizing){
 		var img;
 		var url = this.shadowPng + name.toUpperCase() + ".png";
-		if(dojo.render.html.ie){
+		if(dojo.render.html.ie55 || dojo.render.html.ie60){
 			img=dojo.doc().createElement("div");
 			img.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+url+"'"+
 			(sizing?", sizingMethod='"+sizing+"'":"") + ")";
