@@ -323,14 +323,12 @@ if(document.addEventListener) {
 //	however, we'll include it because we don't know if there are other functions added that might.
 //	Note that this has changed because the build process strips all comments--including conditional
 //		ones.
-if(dojo.render.html.ie && dojo.render.os.win){
-    document.write("<scr"+"ipt id=__ie_onload defer src=javascript:void(0)><\/scr"+"ipt>");
-    var script = document.getElementById("__ie_onload");
-    script.onreadystatechange = function() {
-        if (this.readyState == "complete") {
-            dj_load_init(); // call the onload handler
-        }
-    };
+if(document.attachEvent){
+	document.attachEvent("onreadystatechange", function(e){
+		if(document.readyState == "complete"){
+			dj_load_init();
+		}
+	});
 }
 
 if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
