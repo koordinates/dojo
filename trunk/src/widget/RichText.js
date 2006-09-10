@@ -139,6 +139,7 @@ dojo.widget.defineWidget(
 				var html = dojo.string.trim(this.textarea.value);
 				if(html == ""){ html = "&nbsp;"; }
 				this.domNode = dojo.doc().createElement("div");
+				dojo.html.copyStyle(this.domNode, this.textarea);
 				var tmpFunc = dojo.lang.hitch(this, function(){
 					//some browsers refuse to submit display=none textarea, so 
 					//move the textarea out of screen instead
