@@ -4,11 +4,10 @@
  */
 dojo.provide("dojo.widget.TreeControllerExtension");
 
-
-dojo.widget.TreeControllerExtension = function() { }
-
-dojo.lang.extend(dojo.widget.TreeControllerExtension, {
-
+dojo.declare(
+	"dojo.widget.TreeControllerExtension",
+	null,
+{
 	saveExpandedIndices: function(node, field) {
 		var obj = {};
 
