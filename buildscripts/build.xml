@@ -410,6 +410,11 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		-->
 		<script language="javascript">
 			<![CDATA[
+			function echo(msg){
+							var echo = dojo.createTask("echo");
+							echo.setMessage(msg);
+							echo.execute();
+						}
 			var pf = dojo.getProperty("profileFile");
 			if((!pf)||(pf=="null")||(pf=="")){
 				// echo("profile: "+dojo.getProperty("profile"), compress);
@@ -425,9 +430,9 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 		<!-- FIXME: need to actually get a list of js files to be processed  -->
 		
-		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" outputproperty="concatFilesProp" 
-			logError="true">
-			<arg line="-strict" />
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" 
+			outputproperty="concatFilesProp" logError="true">
+			<!-- <arg line="-strict" /> -->
 			<arg line="-f ${profileFile}" />
 			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
@@ -438,7 +443,6 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 			dojo.setNewProperty("profileDeps", files);
 		]]>
 		</script>
-
 	</target>
 	<!-- end -set-profile-deps task -->
 
