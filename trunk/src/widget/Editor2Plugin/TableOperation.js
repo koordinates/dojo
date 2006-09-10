@@ -1,5 +1,7 @@
 dojo.provide("dojo.widget.Editor2Plugin.TableOperation");
 
+dojo.require("dojo.widget.Editor2");
+
 //subscribe to dojo.widget.RichText::init, not onLoad because after onLoad
 //the stylesheets for the editing areas are already applied and the prefilters
 //are executed, so we have to insert our own trick before that point 
