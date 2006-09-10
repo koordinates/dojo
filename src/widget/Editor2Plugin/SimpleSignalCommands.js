@@ -10,10 +10,12 @@
  */
 
 //uncomment this line to add save only (do not overwrite the new built-in insertImage dialog
-//this line should present before dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands")
+//this line should present before require dojo.widget.Editor2Plugin.SimpleSignalCommands
 //dojo.widget.Editor2Plugin['SimpleSignalCommands'] = {signals: ['save']};
 
 dojo.provide("dojo.widget.Editor2Plugin.SimpleSignalCommands");
+
+dojo.require("dojo.widget.Editor2Manager");
 
 dojo.declare("dojo.widget.Editor2Plugin.SimpleSignalCommand", dojo.widget.Editor2Command, 
 	function(name){
