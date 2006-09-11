@@ -432,7 +432,7 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		
 		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" 
 			outputproperty="concatFilesProp" logError="true">
-			<!-- <arg line="-strict" /> -->
+			<arg line="-opt -1"/>
 			<arg line="-f ${profileFile}" />
 			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
