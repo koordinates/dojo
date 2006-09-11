@@ -64,22 +64,22 @@ Buttons can do an action, display a menu, or both:
 </p>
 <div class="box">
 	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
-		<img src="images/plus.gif"> Create
+		<img src="images/plus.gif" width="16" height="16"> Create
 	</button>
 	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
-		<img src="images/plus.gif"><br>Create
+		<img src="images/plus.gif" width="16" height="16"><br>Create
 	</button>
 	<button dojoType="DropDownButton" menuId='editMenu'>
-		<img src="images/note.gif"> Edit
+		<img src="images/note.gif" width="20" height="20"> Edit
 	</button>
 	<button dojoType="DropDownButton" menuId='editMenu'>
-		<img src="images/note.gif"><br>Edit
+		<img src="images/note.gif" width="20" height="20"><br>Edit
 	</button>
 	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");'>
-		<img src="images/note.gif"> Save
+		<img src="images/note.gif" width="20" height="20"> Save
 	</button>
 	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");'>
-		<img src="images/note.gif"><br>Save
+		<img src="images/note.gif" width="20" height="20"><br>Save
 	</button>
 </div>
 <br clear=both>
@@ -89,20 +89,20 @@ Buttons can do an action, display a menu, or both:
 These buttons size to their content (just like &lt;button&gt;).</p>
 <div class="box">
 	<button dojoType="Button" onclick='dojo.debug("big");'>
-			<img src="images/flatScreen.gif">
+			<img src="images/flatScreen.gif" width="32" height="32">
 		<span style="font-size:xx-large">big</span>
 	</button>
 	<button id="smallButton1" dojoType="Button" onclick='dojo.debug("small");'>
-		<img src="images/arrowSmall.gif">
+		<img src="images/arrowSmall.gif" width="15" height="5">
 		<span style="font-size:x-small">small</span>
 	</button>
 	<button dojoType="Button" onclick='dojo.debug("long");'>
-		<img src="images/tube.gif" height=16>
+		<img src="images/tube.gif" width="150" height="16">
 		long
 	</button>
 	<button dojoType="Button" onclick='dojo.debug("tall");' width2height="0.1">
 	   <div>
-		<img src="images/tubeTall.gif" height=75px width=35px><br>
+		<img src="images/tubeTall.gif" height="75" width="35"><br>
 		<span style="font-size:medium">tall</span>
 	   </div>
 	</button>
@@ -144,10 +144,10 @@ Here's an example:</p>
 </div>
 <div class="box" style="display:none;" id="hiddenNode">
 	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
-		<img src="images/plus.gif"> Create
+		<img src="images/plus.gif" width="16" height="16"> Create
 	</button>
 	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
-		<img src="images/plus.gif"> Create
+		<img src="images/plus.gif" width="16" height="16"> Create
 	</button>
 </div>
 <div style="clear: both;"></div>
@@ -173,9 +173,9 @@ Here's an example:</p>
 		forEachButton(function(widget){ widget.setDisabled(disabled); });
 		dojo.byId("toggle").innerHTML= disabled ? "Enable all" : "Disable all";
 	}
-	var captions=["<img src='images/note.gif'>All", "<i>work</i>", "and", "no", "<h1>play</h1>",
+	var captions=["<img src='images/note.gif' width='20' height='20'>All", "<i>work</i>", "and", "no", "<h1>play</h1>",
 				 "<span style='color: red'>makes</span>", "Jack", "<h3>a</h3>", "dull",
-				 "<img src='images/plus.gif'>boy"];
+				 "<img src='images/plus.gif' width='16' height='16'>boy"];
 	var idx=0;
 	function changeCaptions(){	
 		forEachButton(function(widget){ widget.setCaption( captions[idx++ % captions.length]); });
