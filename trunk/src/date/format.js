@@ -282,7 +282,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 				result.setMonth(v-1);
 				break;
 			case 'y':
-				var century = Math.floor(result.getFullYear()/100)*100;
+				var century = (l == 2) ? Math.floor(result.getFullYear()/100)*100 : 0;
 				result.setFullYear(century+Number(v));
 				break;
 			default:
@@ -320,13 +320,13 @@ function _buildDateTimeRE(groups, pattern) {
 		var l = match.length;
 		switch(c){
 			case 'y':
-				s = "\\d" + ((l==2)?"{2}":"+");
+				s = "\\d" + ((l==2)?"{2,4}":"+");
 				break;
 			case 'M':
-				s = "\\d{2}"; //TODO make sure it conforms to month range...
+				s = "\\d{1,2}"; //TODO make sure it conforms to month range...
 				break;
 			case 'd':
-				s = "\\d{2}"; //TODO
+				s = "\\d{1,2}"; //TODO
 				break;
 			case 'h': case 'H': case 'K': case 'k':
 				s = "\\d{2}"; //TODO
@@ -614,6 +614,7 @@ dojo.date._getGregorianBundle = function(locale){
 dojo.date.addCustomFormats("dojo.i18n.calendar","gregorian");
 dojo.date.addCustomFormats("dojo.i18n.calendar","gregorian-extras");
 
+//FIXME: return by value, not reference
 dojo.date.getNames = function(/*String*/item, /*String*/type, /*String?*/use, /*String?*/locale){
 //
 // summary:
