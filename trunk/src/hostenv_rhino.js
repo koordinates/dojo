@@ -25,7 +25,6 @@ dojo.hostenv.loadUri = function(uri, cb){
 				// try it as a file first, URL second
 				(new java.net.URL(uri)).openStream();
 			}catch(e){
-				dojo.debug(uri+" does not exist");
 				return 0;
 			}
 		}
