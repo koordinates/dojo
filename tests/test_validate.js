@@ -306,8 +306,8 @@ function test_validate_us_isCurrency(){
 function test_validate_isGermanCurrency(){
 	jum.assertTrue("test1", dojo.validate.isGermanCurrency('1.000 \u20AC'));
 	jum.assertTrue("test2", dojo.validate.isGermanCurrency('1.000,25 \u20AC'));
-//	jum.assertTrue("test3", dojo.validate.isGermanCurrency('+1.000.000 \u20AC'));
-//	jum.assertTrue("test4", dojo.validate.isGermanCurrency('-10.000.000 \u20AC'));
+	jum.assertTrue("test3", dojo.validate.isGermanCurrency('+1.000.000 \u20AC'));
+	jum.assertTrue("test4", dojo.validate.isGermanCurrency('-10.000.000 \u20AC'));
 	jum.assertTrue("test5", dojo.validate.isGermanCurrency('100.000.000 \u20AC'));
 	jum.assertFalse("test6", dojo.validate.isGermanCurrency('1000,25 \u20AC'));
 	jum.assertFalse("test8", dojo.validate.isGermanCurrency('1.000,25'));
