@@ -88,7 +88,7 @@ dojo.html.overElement = function(element, e){
 
 	with(dojo.html){
 		var bb = getBorderBox(element);
-		var absolute = getAbsolutePosition(element, true);
+		var absolute = getAbsolutePosition(element, true, dojo.html.boxSizing.BORDER_BOX);
 		var top = absolute.y;
 		var bottom = top + bb.height;
 		var left = absolute.x;
