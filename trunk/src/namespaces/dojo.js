@@ -28,6 +28,7 @@ dojo.require("dojo.namespace");
 			"docpane": "dojo.widget.DocPane",
 			"dropdownbutton": "dojo.widget.Button",
 			"dropdowndatepicker": "dojo.widget.DropdownDatePicker",
+			"dropdowntimepicker": "dojo.widget.DropdownTimePicker",
 			"editor2": "dojo.widget.Editor2",
 			"editor2toolbar": "dojo.widget.Editor2Toolbar",
 			"editor": "dojo.widget.Editor",

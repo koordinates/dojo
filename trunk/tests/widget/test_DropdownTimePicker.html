@@ -1,0 +1,35 @@
+<html>
+<head>
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<!--
+<script type="text/javascript" src="../../src/widget/TimePicker.js"></script>
+<script type="text/javascript" src="../../src/widget/DropdownTimePicker.js"></script>
+-->
+<script type="text/javascript">
+dojo.require("dojo.widget.DropdownTimePicker");
+</script>
+<style>
+html, body { width: 100%; height: 100%; }
+</style>
+<title>DropdownTimePicker tests</title>
+</head>
+<body>
+<h1>DropdownTimePicker tests</h1>
+<p>
+Here are some time pickers positioned statically.
+Drop down should appear below the input box.
+</p>
+
+<!--
+Wipe:
+	<div dojoType="dropdowntimepicker" storedTime="12:00" containerToggle="wipe"></div>
+-->
+Explode:
+	<div dojoType="dropdowntimepicker" storedtime="11:00" containerToggle="explode"></div>
+Fade:
+	<div dojoType="dropdowntimepicker" storedtime="10:00" containerToggle="fade"></div>
+Nothing:
+	<div dojoType="dropdowntimepicker" storedtime="9:00"></div>
+</body>
+</html>
