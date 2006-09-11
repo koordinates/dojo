@@ -26,8 +26,8 @@ function test_lang_assertType() {
 	dojo.lang.assertType({foo: "bar"}, Object);
 	dojo.lang.assertType(new Date(), Date);
 	dojo.lang.assertType(new Error(), Error);
-	dojo.lang.assertType([6, 8], ["array", "optional"]);
-	dojo.lang.assertType(null, ["array", "optional"]);
+	dojo.lang.assertType([6, 8], "array", {optional: true});
+	dojo.lang.assertType(null, "array", {optional: true});
 
 	var caught430 = false;
 	try {
