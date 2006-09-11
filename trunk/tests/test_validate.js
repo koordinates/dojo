@@ -265,9 +265,9 @@ function test_validate_isRealNumber(){
 
 function test_validate_isCurrency(){
 	// Austria
-	jum.assertTrue("test1", dojo.validate.isCurrency('� 123.456.789,00',  {separator: ".", decimal: ",", symbol:"�"} ));
+	jum.assertTrue("test1", dojo.validate.isCurrency('\u20AC 123.456.789,00',  {separator: ".", decimal: ",", symbol:"\u20AC"} ));
 	// Germany
-	jum.assertTrue("test2", dojo.validate.isCurrency('123.456.789,00 �',  {separator: ".", decimal: ",", symbol:"�", placement:"after"} ));
+	jum.assertTrue("test2", dojo.validate.isCurrency('123.456.789,00 \u20AC',  {separator: ".", decimal: ",", symbol:"\u20AC", placement:"after"} ));
 	// Switzerland
 	jum.assertTrue("test3", dojo.validate.isCurrency("SFr. 123'456'789.00",  {separator: "'", symbol:"SFr."} ));
 	// Estonia
@@ -279,7 +279,7 @@ function test_validate_isCurrency(){
 	// Indoneasia
 	jum.assertTrue("test7", dojo.validate.isCurrency('Rp123.456.789', {separator:".", cents: false, symbol:"Rp"} ));
 	// Japan
-	jum.assertTrue("test8", dojo.validate.isCurrency('�123,456,789', {cents: false, symbol:"�"} ));
+	jum.assertTrue("test8", dojo.validate.isCurrency('\u00a5123,456,789', {cents: false, symbol:"\u00a5"} ));
 	// Kazakh
 	jum.assertTrue("test9", dojo.validate.isCurrency('-T123 456 789-00', {separator:" ", decimal: "-", symbol:"T"} ));
 	// Peru
@@ -296,32 +296,31 @@ function test_validate_us_isCurrency(){
 	jum.assertTrue("test7", dojo.validate.us.isCurrency('$1000.25', {separator: ""}));
 	jum.assertFalse("test8", dojo.validate.us.isCurrency('1,000.25', {}));
 	jum.assertTrue("test9", dojo.validate.us.isCurrency('1,000.25', {symbol: ["", "$"]}));
-	jum.assertFalse("test10", dojo.validate.us.isCurrency('1,000.25', {symbol: ["�", "$"]}));
+	jum.assertFalse("test10", dojo.validate.us.isCurrency('1,000.25', {symbol: ["?", "$"]})); //FIXME
 	jum.assertTrue("test11", dojo.validate.us.isCurrency('1000.25', {symbol: "", separator: ""}));
 	jum.assertFalse("test12", dojo.validate.us.isCurrency('$1,000.25', {cents: false}));
 	jum.assertFalse("test13", dojo.validate.us.isCurrency('$1,000.25', {signed: true}));
 	jum.assertFalse("test14", dojo.validate.us.isCurrency('-$1,000.25', {signed: false}));
 }
 
-function test_validate_de_isCurrency(){
-	jum.assertTrue("test1", dojo.validate.de.isCurrency('1.000 �'));
-	jum.assertTrue("test2", dojo.validate.de.isCurrency('1.000,25 �'));
-	jum.assertTrue("test3", dojo.validate.de.isCurrency('+1.000.000 �'));
-	jum.assertTrue("test4", dojo.validate.de.isCurrency('-10.000.000 �'));
-	jum.assertTrue("test5", dojo.validate.de.isCurrency('100.000.000 �'));
-	jum.assertFalse("test6", dojo.validate.de.isCurrency('1000,25 �'));
-	jum.assertFalse("test8", dojo.validate.de.isCurrency('1.000,25'));
+function test_validate_isGermanCurrency(){
+	jum.assertTrue("test1", dojo.validate.isGermanCurrency('1.000 \u20AC'));
+	jum.assertTrue("test2", dojo.validate.isGermanCurrency('1.000,25 \u20AC'));
+//	jum.assertTrue("test3", dojo.validate.isGermanCurrency('+1.000.000 \u20AC'));
+//	jum.assertTrue("test4", dojo.validate.isGermanCurrency('-10.000.000 \u20AC'));
+	jum.assertTrue("test5", dojo.validate.isGermanCurrency('100.000.000 \u20AC'));
+	jum.assertFalse("test6", dojo.validate.isGermanCurrency('1000,25 \u20AC'));
+	jum.assertFalse("test8", dojo.validate.isGermanCurrency('1.000,25'));
 }
 
-function test_validate_jp_isCurrency(){
-	jum.assertTrue("test1", dojo.validate.jp.isCurrency('�1,000'));
-	jum.assertFalse("test2", dojo.validate.jp.isCurrency('�1,000.25'));
-	jum.assertTrue("test3", dojo.validate.jp.isCurrency('+�1,000,000'));
-	jum.assertTrue("test4", dojo.validate.jp.isCurrency('- �10,000,000'));
-	jum.assertTrue("test5", dojo.validate.jp.isCurrency('�100,000,000'));
-	jum.assertFalse("test6", dojo.validate.jp.isCurrency('�1000'));
+function test_validate_isJapaneseCurrency(){
+	jum.assertTrue("test1", dojo.validate.isJapaneseCurrency('\u00a51,000'));
+	jum.assertFalse("test2", dojo.validate.isJapaneseCurrency('\u00a51,000.25'));
+	jum.assertTrue("test3", dojo.validate.isJapaneseCurrency('+\u00a51,000,000'));
+	jum.assertTrue("test4", dojo.validate.isJapaneseCurrency('- \u00a510,000,000'));
+	jum.assertTrue("test5", dojo.validate.isJapaneseCurrency('\u00a5100,000,000'));
+	jum.assertFalse("test6", dojo.validate.isJapaneseCurrency('\u00a51000'));
 }
-
 function test_validate_datetime_isValidTime(){
 	jum.assertTrue("test1", dojo.validate.isValidTime('5:15:05 pm'));
 	jum.assertTrue("test2", dojo.validate.isValidTime('5:15:05 p.m.', {pmSymbol: "P.M."} ));
@@ -334,7 +333,7 @@ function test_validate_datetime_isValidTime(){
 	jum.assertFalse("test9", dojo.validate.isValidTime('17:1:30', {format: "H:mm:ss"} ) );
 	jum.assertFalse("test10", dojo.validate.isValidTime('17:01:30', {format: "H:m:ss"} ) );
 	// Greek
-	jum.assertTrue("test11", dojo.validate.isValidTime('5:01:30 ��', {amSymbol: "p�", pmSymbol: "��"} ) );
+	jum.assertTrue("test11", dojo.validate.isValidTime('5:01:30 ��', {amSymbol: "p�", pmSymbol: "��"} ) ); //FIXME and use \u escapes to avoid encoding problems
 	// Italian
 	jum.assertTrue("test12", dojo.validate.isValidTime('17.01.30', {format: "H.mm.ss"} ) );
 	// Mexico

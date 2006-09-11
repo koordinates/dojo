@@ -9,7 +9,7 @@ dojo.require("dojo.validate.common");
 */
 dojo.validate.isGermanCurrency = function(value) {
 	var flags = {
-		symbol: "�",
+		symbol: "\u20AC",
 		placement: "after",
 		decimal: ",",
 		separator: "."
