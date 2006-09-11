@@ -18,20 +18,20 @@ function test_lang_assert() {
 }
 
 function test_lang_assertType() {
-	dojo.lang.assertType("foo", String, "410");
-	dojo.lang.assertType(12345, Number, "411");
-	dojo.lang.assertType(false, Boolean, "412");
-	dojo.lang.assertType([6, 8], Array, "413");
-	dojo.lang.assertType(dojo.lang.assertType, Function, "414");
-	dojo.lang.assertType({foo: "bar"}, Object, "415");
-	dojo.lang.assertType(new Date(), Date, "416");
-	dojo.lang.assertType(new Error(), Error, "417");
-	dojo.lang.assertType([6, 8], ["array", "optional"], "418");
-	dojo.lang.assertType(null, ["array", "optional"], "419");
+	dojo.lang.assertType("foo", String);
+	dojo.lang.assertType(12345, Number);
+	dojo.lang.assertType(false, Boolean);
+	dojo.lang.assertType([6, 8], Array);
+	dojo.lang.assertType(dojo.lang.assertType, Function);
+	dojo.lang.assertType({foo: "bar"}, Object);
+	dojo.lang.assertType(new Date(), Date);
+	dojo.lang.assertType(new Error(), Error);
+	dojo.lang.assertType([6, 8], ["array", "optional"]);
+	dojo.lang.assertType(null, ["array", "optional"]);
 
 	var caught430 = false;
 	try {
-		dojo.lang.assertType(12345, Boolean, "430");
+		dojo.lang.assertType(12345, Boolean);
 	} catch (e) {
 		caught430 = true;
 	}
@@ -39,7 +39,7 @@ function test_lang_assertType() {
 
 	var caught431 = false;
 	try {
-		dojo.lang.assertType("foo", [Number, Boolean, Object], "431");
+		dojo.lang.assertType("foo", [Number, Boolean, Object]);
 	} catch (e) {
 		caught431 = true;
 	}
