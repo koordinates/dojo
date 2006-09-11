@@ -150,7 +150,7 @@ function test_data_provider_json_sample3() {
 	showQueryResultSet(queryResultSet);
 }
 
-function test_data_provider_json_file() {
+function BROKEN_test_data_provider_json_file() {
 	var dataProvider = new dojo.data.provider.FlatFile({url: "states_with_keywords.json"});
 	var queryResultSet = dataProvider.fetchResultSet();
 	showQueryResultSet(queryResultSet);
@@ -160,13 +160,13 @@ function test_data_provider_json_file() {
 	showQueryResultSet(queryResultSet);
 }
 
-function test_data_provider_csv_file() {
+function BROKEN_test_data_provider_csv_file() {
 	var dataProvider = new dojo.data.provider.FlatFile({url: "movies.csv"});
 	var queryResultSet = dataProvider.fetchResultSet();
 	showQueryResultSet(queryResultSet);
 }
 
-function test_data_provider_delicious() {
+function BROKEN_test_data_provider_delicious() {
 	/*
 	var scriptElement = document.createElement('script');
 	scriptElement.type = 'text/javascript';
@@ -178,7 +178,6 @@ function test_data_provider_delicious() {
 	var queryResultSet = dataProvider.fetchResultSet();
 	showQueryResultSet(queryResultSet);
 }
-
 
 function NOTYET_test_data_item() {
 	jum.assertTrue('600', true);
