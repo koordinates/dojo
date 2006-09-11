@@ -23,7 +23,6 @@ dojo.declare(
 {
 	isContainer: true,
 	templateString: '<div dojoAttachPoint="containerNode" style="display:none;position:absolute;" class="dojoPopupContainer" ></div>',
-	snarfChildDomOutput: true,
 
 	isShowingNow: false,
 
@@ -286,6 +285,7 @@ dojo.widget.defineWidget(
 {
 	templateCssString: "",
 	currentSubmenuTrigger: null,
+	snarfChildDomOutput: true,
 
 	eventNaming: "default",
 
