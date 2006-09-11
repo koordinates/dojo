@@ -16,7 +16,6 @@ dojo.require("dojo.namespace");
 			"button": "dojo.widget.Button",
 			"chart": "dojo.widget.Chart",
 			"checkbox": "dojo.widget.Checkbox",
-			"civicrmdatepicker": "dojo.widget.CiviCrmDatePicker",
 			"colorpalette": "dojo.widget.ColorPalette",
 			"combobox": "dojo.widget.ComboBox",
 			"combobutton": "dojo.widget.Button",
