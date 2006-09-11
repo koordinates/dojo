@@ -28,6 +28,68 @@ dojo.declare(
 			}
 			hue += steps;
 		}
+	},
+	parseData: function(table){
+		var thead=table.getElementsByTagName("thead")[0];
+		var tbody=table.getElementsByTagName("tbody")[0];
+		if(!(thead&&tbody)) dojo.raise("dojo.widget.Chart: supplied table must define a head and a body.");
+
+		//	set up the series.
+		var columns=thead.getElementsByTagName("tr")[0].getElementsByTagName("th");	//	should be <tr><..>
+		
+		//	assume column 0 == X
+		for (var i=1; i<columns.length; i++){
+			var key="column"+i;
+			var label=columns[i].innerHTML;
+			var plotType=columns[i].getAttribute("plotType")||"line";
+			var color=columns[i].getAttribute("color");
+			var ds=new dojo.widget.Chart.DataSeries(key,label,plotType,color);
+			this.series.push(ds);
+		}
+
+		//	ok, get the values.
+		var rows=tbody.rows;
+		var xMin=Number.MAX_VALUE,xMax=Number.MIN_VALUE;
+		var yMin=Number.MAX_VALUE,yMax=Number.MIN_VALUE;
+		var ignore = [
+			"accesskey","align","bgcolor","class",
+			"colspan","height","id","nowrap",
+			"rowspan","style","tabindex","title",
+			"valign","width"
+		];
+
+		for(var i=0; i<rows.length; i++){
+			var row=rows[i];
+			var cells=row.cells;
+			var x=Number.MIN_VALUE;
+			for (var j=0; j<cells.length; j++){
+				if (j==0){
+					x=parseFloat(cells[j].innerHTML);
+					xMin=Math.min(xMin, x);
+					xMax=Math.max(xMax, x);
+				} else {
+					var ds=this.series[j-1];
+					var y=parseFloat(cells[j].innerHTML);
+					yMin=Math.min(yMin,y);
+					yMax=Math.max(yMax,y);
+					var o={x:x, value:y};
+					var attrs=cells[j].attributes;
+					for(var k=0; k<attrs.length; k++){
+						var attr=attrs.item(k);
+						var bIgnore=false;
+						for (var l=0; l<ignore.length; l++){
+							if (attr.nodeName.toLowerCase()==ignore[l]){
+								bIgnore=true;
+								break;
+							}
+						}
+						if(!bIgnore) o[attr.nodeName]=attr.nodeValue;
+					}
+					ds.add(o);
+				}
+			}
+		}
+		return { x:{ min:xMin, max:xMax}, y:{ min:yMin, max:yMax} };
 	}
 });
 

@@ -60,72 +60,6 @@ dojo.widget.defineWidget(
 		};
 	},
 	{
-		fillInTemplate:function(args,frag){
-			this.init();
-			this.render();
-		},
-		parseData:function(/* HTMLTable */table){
-			var thead=table.getElementsByTagName("thead")[0];
-			var tbody=table.getElementsByTagName("tbody")[0];
-			if(!(thead&&tbody)) dojo.raise("dojo.widget.Chart: supplied table must define a head and a body.");
-
-			//	set up the series.
-			var columns=thead.getElementsByTagName("tr")[0].getElementsByTagName("th");	//	should be <tr><..>
-			
-			//	assume column 0 == X
-			for (var i=1; i<columns.length; i++){
-				var key="column"+i;
-				var label=columns[i].innerHTML;
-				var plotType=columns[i].getAttribute("plotType")||"line";
-				var color=columns[i].getAttribute("color");
-				var ds=new dojo.widget.Chart.DataSeries(key,label,plotType,color);
-				this.series.push(ds);
-			}
-
-			//	ok, get the values.
-			var rows=tbody.getElementsByTagName("tr");
-			var xMin=Number.MAX_VALUE,xMax=Number.MIN_VALUE;
-			var yMin=Number.MAX_VALUE,yMax=Number.MIN_VALUE;
-			var ignore = [
-				"accesskey","align","bgcolor","class",
-				"colspan","height","id","nowrap",
-				"rowspan","style","tabindex","title",
-				"valign","width"
-			];
-
-			for(var i=0; i<rows.length; i++){
-				var row=rows[i];
-				var cells=row.getElementsByTagName("td");
-				var x=Number.MIN_VALUE;
-				for (var j=0; j<cells.length; j++){
-					if (j==0){
-						x=parseFloat(cells[j].innerHTML);
-						xMin=Math.min(xMin, x);
-						xMax=Math.max(xMax, x);
-					} else {
-						var ds=this.series[j-1];
-						var y=parseFloat(cells[j].innerHTML);
-						yMin=Math.min(yMin,y);
-						yMax=Math.max(yMax,y);
-						var o={x:x, value:y};
-						var attrs=cells[j].attributes;
-						for(var k=0; k<attrs.length; k++){
-							var attr=attrs.item(k);
-							var bIgnore=false;
-							for (var l=0; l<ignore.length; l++){
-								if (attr.nodeName.toLowerCase()==ignore[l]){
-									bIgnore=true;
-									break;
-								}
-							}
-							if(!bIgnore) o[attr.nodeName]=attr.nodeValue;
-						}
-						ds.add(o);
-					}
-				}
-			}
-			return { x:{ min:xMin, max:xMax}, y:{ min:yMin, max:yMax} };
-		},
 		parseProperties:function(/* HTMLElement */node){
 			//	summary
 			//	Parse the properties off the main tag
@@ -223,6 +157,10 @@ dojo.widget.defineWidget(
 		drawPlotArea:function(){
 			//	set up the clip path for the plot area.
 			dojo.svg.g.suspend();		
+			if(this.plotArea){
+				this.plotArea.parentNode.removeChild(this.plotArea);
+				this.plotArea=null;
+			}
 			var defs = document.createElementNS(dojo.svg.xmlns.svg, "defs");
 			var clip = document.createElementNS(dojo.svg.xmlns.svg, "clipPath");
 			clip.setAttribute("id","plotClip"+this.widgetId);
@@ -250,6 +188,10 @@ dojo.widget.defineWidget(
 		drawDataGroup:function(){
 			//	data group
 			dojo.svg.g.suspend();		
+			if(this.dataGroup){
+				this.dataGroup.parentNode.removeChild(this.dataGroup);
+				this.dataGroup=null;
+			}
 			this.dataGroup = document.createElementNS(dojo.svg.xmlns.svg, "g");
 			this.dataGroup.setAttribute("style","clip-path:url(#plotClip"+this.widgetId+");");
 			this.plotArea.appendChild(this.dataGroup);
@@ -257,6 +199,10 @@ dojo.widget.defineWidget(
 		},
 		drawAxes:function(){
 			dojo.svg.g.suspend();		
+			if(this.axisGroup){
+				this.axisGroup.parentNode.removeChild(this.axisGroup);
+				this.axisGroup=null;
+			}
 			//	axis group
 			this.axisGroup = document.createElementNS(dojo.svg.xmlns.svg, "g");
 			this.plotArea.appendChild(this.axisGroup);
@@ -317,27 +263,6 @@ dojo.widget.defineWidget(
 		},
 
 		init:function(){
-			//	begin by grabbing the table, and reading it in.
-			var table=this.domNode.getElementsByTagName("table")[0];
-			if (!table) return;
-			
-			var ranges=this.parseProperties(table);
-			var bRangeX=ranges.rangeX;
-			var bRangeY=ranges.rangeY;
-			
-			//	fix the axes
-			var axisValues = this.parseData(table);
-			if(!bRangeX){
-				this.properties.axes.x.range={min:axisValues.x.min, max:axisValues.x.max};
-			}
-			if(!bRangeY){
-				this.properties.axes.y.range={min:axisValues.y.min, max:axisValues.y.max};
-			}
-			this.setAxesPlot(table);
-
-			//	table values should be populated, now pop it off.
-			this.domNode.removeChild(table);
-
 			//	get the width and the height.
 			if(!this.properties.width || !this.properties.height){
 				var box=dojo.html.getContentBox(this.domNode);
@@ -382,6 +307,31 @@ dojo.widget.defineWidget(
 				dojo.widget.svg.Chart.Plotter.plot(this.series[i], this);
 			}
 			dojo.svg.g.resume();
+		},
+		postCreate:function(){
+			//	begin by grabbing the table, and reading it in.
+			var table=this.domNode.getElementsByTagName("table")[0];
+			if (table){
+				var ranges=this.parseProperties(table);
+				var bRangeX=false;
+				var bRangeY=false;
+			
+				//	fix the axes
+				var axisValues = this.parseData(table);
+				if(!bRangeX){
+					this.properties.axes.x.range={min:axisValues.x.min, max:axisValues.x.max};
+				}
+				if(!bRangeY){
+					this.properties.axes.y.range={min:axisValues.y.min, max:axisValues.y.max};
+				}
+				this.setAxesPlot(table);
+
+				//	table values should be populated, now pop it off.
+				this.domNode.removeChild(table);
+			}
+			if(this.series.length>0){
+				this.render();
+			}
 		}
 	}
 );
