@@ -618,7 +618,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 		<!--FIXME: dir=.. is kludgey. Having trouble bootstrapping without it -->
 		<java jar="./lib/custom_rhino.jar" failonerror="true" logError="true"
 			fork="true" dir=".." >
-			<arg line="-f ./buildscripts/flattenResources.js" />
+			<arg line="-f ./buildscripts/flattenResources.js './buildscripts/${release_dir}/localizations.tmp.js'" />
 			<arg line="./buildscripts/${release_dir}/localizations.tmp.js" />
 			<arg line="./buildscripts/${release_dir}/nls" />
 			<arg line="${buildPrefix}" />

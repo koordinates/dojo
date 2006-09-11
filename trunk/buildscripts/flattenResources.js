@@ -46,6 +46,7 @@ var locale, entry, bundle;
 
 for (var i = 0; i < djLoadedBundles.length; i++){
 	entry = djLoadedBundles[i];
+	print("looking for entry modulename " + entry.modulename);
 	bundle = dojo.hostenv.findModule(entry.modulename)._nls[entry.bundlename];
 	for (locale in bundle){
 		if (!djBundlesByLocale[locale]){djBundlesByLocale[locale]=[];}
