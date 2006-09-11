@@ -14,6 +14,9 @@
 	function showTestMessage(){
 		dojo.event.topic.publish("testMessageTopic", "This is a message! It's kind of long to show message wrapping.");
 	}
+	function showAnotherMessage(){
+		dojo.event.topic.publish("testMessageTopic", {message: "This is another message!", type: "WARNING", delay: 500});
+	}
 	dojo.addOnLoad(function(){
 		toast = dojo.widget.byId("toast");
 	});
@@ -22,7 +25,7 @@
 <body>
 <div dojoType="toaster" id="toast" positionDirection="br-left" showDelay="4000" messageTopic="testMessageTopic"></div>
 <div dojoType="toaster" id="toast2" positionDirection="bl-up" messageTopic="testMessageTopic"></div>
-<button type="submit" onclick="showTestMessage();">Click to show message</button>
+<button type="submit" onclick="showTestMessage();">Click to show message</button><button type="submit" onclick="showAnotherMessage();">Click to show another message</button>
 <p>
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
 semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
