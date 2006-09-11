@@ -286,11 +286,14 @@ function dj_addNodeEvtHdlr(node, evtName, fp, capture){
 }
 
 //	BEGIN DOMContentLoaded, from Dean Edwards (http://dean.edwards.name/weblog/2006/06/again/)
-function dj_load_init(){
+function dj_load_init(e){
 	// allow multiple calls, only first one will take effect
-	if(arguments.callee.initialized){ return; }
+	// A bug in khtml calls events callbacks for document for event which isnt supported
+	// for example a created contextmenu event calls DOMContentLoaded, workaround
+	var type = (e && e.type) ? e.type.toLowerCase() : "load";
+	if(arguments.callee.initialized || (type!="domcontentloaded" && type!="load")){ return; }
 	arguments.callee.initialized = true;
-	if(_timer){
+	if(typeof(_timer) != 'undefined'){
 		clearInterval(_timer);
 		delete _timer;
 	}
