@@ -28,6 +28,7 @@ dojo.widget.defineWidget(
 			ERROR: "ERROR",
 			FATAL: "FATAL"
 		},
+		defaultType: "MESSAGE",
 
 		// css classes
 		clipCssClass: "dojoToasterClip",
@@ -53,14 +54,23 @@ dojo.widget.defineWidget(
 			dojo.html.addClass(this.containerNode, this.containerCssClass);
 			dojo.html.setClass(this.contentNode, this.contentCssClass);
 			if(this.messageTopic){
-				dojo.event.topic.subscribe(this.messageTopic, this, "setContent");
+				dojo.event.topic.subscribe(this.messageTopic, this, "handleMessage");
 			}
 			if(!this.positionDirection || !dojo.lang.inArray(this.positionDirectionTypes, this.positionDirection)){
 				this.positionDirection = this.positionDirectionTypes.BRU;
 			}
 		},
 
-		setContent: function(msg, messageType){
+		handleMessage: function(msg){
+			if(dojo.lang.isString(msg)){
+				this.setContent(msg);
+			}else{
+				this.setContent(msg["message"], msg["type"], msg["delay"]);
+			}
+		},
+
+		setContent: function(msg, messageType, delay){
+			var delay = delay||this.showDelay;
 			// sync animations so there are no ghosted fades and such
 			if(this.slideAnim && this.slideAnim.status() == "playing"){
 				dojo.lang.setTimeout(50, dojo.lang.hitch(this, function(){
@@ -155,7 +165,7 @@ dojo.widget.defineWidget(
 							dojo.lang.hitch(this, function(evt){
 								this.hide();
 							})).play();
-					}), this.showDelay);
+					}), delay);
 				})).play();
 		},
 
