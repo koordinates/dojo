@@ -47,7 +47,14 @@ dojo.widget.defineWidget(
 
 		onMouseOver: function(e){
 			this._mouse = {x: e.pageX, y: e.pageY};
-			this._onHover(e);
+
+			// Start tracking mouse movements, so we know when to cancel timers or erase the tooltip
+			if(!this._tracking){
+				dojo.event.connect(document.documentElement, "onmousemove", this, "onMouseMove");
+				this.tracking=true;
+			}
+
+			this._onHover(e);			
 		},
 
 		onMouseMove: function(e) {
@@ -73,9 +80,10 @@ dojo.widget.defineWidget(
 				clearTimeout(this._hideTimer);
 				delete this._hideTimer;
 			}
-			if(!this._showTimer){
+			
+			// If tooltip not showing yet then set a timer to show it shortly
+			if(!this.isShowingNow && !this._showTimer){
 				this._showTimer = setTimeout(dojo.lang.hitch(this, "open"), this.showDelay);
-				dojo.event.connect(document.documentElement, "onmousemove", this, "onMouseMove");
 			}
 		},
 
@@ -89,6 +97,13 @@ dojo.widget.defineWidget(
 			}
 			if(this.isShowingNow && !this._hideTimer){
 				this._hideTimer = setTimeout(dojo.lang.hitch(this, "close"), this.hideDelay);
+			}
+			
+			// If we aren't showing the tooltip, then we can stop tracking the mouse now;
+			// otherwise must track the mouse until tooltip disappears
+			if(!this.isShowingNow){
+				dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
+				this._tracking=false;
 			}
 		},
 
@@ -109,6 +124,7 @@ dojo.widget.defineWidget(
 					delete this._hideTimer;
 				}
 				dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
+				this._tracking=false;
 				dojo.widget.PopupContainerBase.prototype.close.call(this);
 			}
 		},
