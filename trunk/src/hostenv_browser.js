@@ -326,7 +326,7 @@ if(document.addEventListener) {
 //	however, we'll include it because we don't know if there are other functions added that might.
 //	Note that this has changed because the build process strips all comments--including conditional
 //		ones.
-if(document.attachEvent){
+if(dojo.render.html.ie && dojo.render.os.win){
 	document.attachEvent("onreadystatechange", function(e){
 		if(document.readyState == "complete"){
 			dj_load_init();
