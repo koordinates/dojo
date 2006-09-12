@@ -1,4 +1,5 @@
 
+dojo.require("dojo.lang.declare");
 dojo.provide("dojo.widget.TreeWithNode");
 
 dojo.declare(
