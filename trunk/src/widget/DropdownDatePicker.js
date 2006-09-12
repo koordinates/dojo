@@ -53,7 +53,7 @@ dojo.widget.defineWidget(
 
 			var dateProps = { widgetContainerId: this.widgetId };
 			if(this.date){
-				dateProps.selectedDate = dojo.date.toRfc3339(this.date, 'dateOnly');
+				dateProps.date = this.date;
 			}
 			this.datePicker = dojo.widget.createWidget("DatePicker", dateProps, dpNode);
 			dojo.event.connect(this.datePicker, "onSetDate", this, "onSetDate");
