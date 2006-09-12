@@ -87,13 +87,12 @@ dojo.widget.defineWidget(
 		templatePath:  dojo.uri.dojoUri("src/widget/templates/DatePicker.html"),
 		templateCssPath:  dojo.uri.dojoUri("src/widget/templates/DatePicker.css"),
 
-//TODO: should this go in postMixInProperties instead?
-		fillInTemplate: function(){
+		postMixInProperties: function(){
+			dojo.widget.DatePicker.superclass.postMixInProperties.apply(this, arguments);
 			if(this.storedDate){
 				dojo.deprecated("dojo.widget.DatePicker", "use date instead of 'storedDate'", "0.5");
 				this.date=this.storedDate;
 			}
-			this.weekTemplate = dojo.dom.removeNode(this.calendarWeekTemplate);
 			this.startDate = dojo.date.fromRfc3339(this.startDate);
 			this.endDate = dojo.date.fromRfc3339(this.endDate);
 			this.startDate.setHours(0,0,0,0); //adjust startDate to be exactly midnight
@@ -101,18 +100,7 @@ dojo.widget.defineWidget(
 			if(!this.weekStartsOn){
 				this.weekStartsOn=dojo.date.getFirstDayOfWeek(this.lang);
 			}
-			this._initData();
-		},
-//TODO: can _initData simply become fillInTemplate?
-		_initData: function() {
-			/*
-			summary: 
-		 	      Initialize the date data for the date picker 
-		 	 description: 
-		 	      Initializes the date data for the DatePicker widget instance.  For 
-		 	      example, if there is not already a value for date, it is  
-		 	      populated with today's date from the client. 
-			*/
+
 			this.today = new Date();
 			if(!this.date){this.date = new Date();}
 			else if(this.date && (typeof this.date=="string") && (this.date.split("-").length > 2)) {
@@ -126,17 +114,24 @@ dojo.widget.defineWidget(
 			if(this.date>this.endDate){
 				this.date = this.endDate;
 			}
-			this.setDate(this.date);
-			this.dayLabels = dojo.lang.unnest(dojo.date.getNames('days', this.dayWidth, 'standAlone', this.lang)); //if we dont use unnest, we risk modifying the dayLabels array inside of dojo.date and screwing up other calendars on the page
+		},
+
+		fillInTemplate: function() {
+			dojo.widget.DatePicker.superclass.fillInTemplate.apply(this, arguments);
+			this.weekTemplate = dojo.dom.removeNode(this.calendarWeekTemplate);
+			this.setDate(this.date); // triggers UI initialization
+
+			// Insert localized day names in the template
+			var dayLabels = dojo.lang.unnest(dojo.date.getNames('days', this.dayWidth, 'standAlone', this.lang)); //if we dont use unnest, we risk modifying the dayLabels array inside of dojo.date and screwing up other calendars on the page
 			if(this.weekStartsOn > 0){
 				//adjust dayLabels for different first day of week. ie: Monday or Thursday instead of Sunday
 				for(var i=0;i<this.weekStartsOn;i++){
-					this.dayLabels.push(this.dayLabels.shift());
+					dayLabels.push(dayLabels.shift());
 				}
 			}
 			var dayLabelNodes = this.dayLabelsRow.getElementsByTagName("td");
- 			for(var i=0; i<7; i++) {
-				dayLabelNodes.item(i).innerHTML = this.dayLabels[i];
+ 			for(i=0; i<7; i++) {
+				dayLabelNodes.item(i).innerHTML = dayLabels[i];
 			}
 		},
 		
@@ -144,13 +139,16 @@ dojo.widget.defineWidget(
 			//return current date in RFC 3339 format
 			return dojo.date.toRfc3339(this.date); /*String*/
 		},
+
 		getDate: function() {
 			return this.date; /*Date*/
 		},
+
 		setValue: function(rfcDate/*String*/) {
 			//stores date and updates UI
 			this.setDate(rfcDate);
 		},			
+
 		setDate: function(dateObj /*Date|String*/) {
 			if(typeof dateObj=="string"){
 				this.date = dojo.date.fromRfc3339(dateObj);
@@ -159,6 +157,7 @@ dojo.widget.defineWidget(
 			}
 			this._preInitUI(this.date,false,true);
 		},
+
 		_preInitUI: function(dateObj,initFirst,initUI) {
 			//initFirst is to tell _initFirstDay if you want first day of the displayed calendar, or first day of the week for dateObj
 			//initUI tells preInitUI to go ahead and run initUI if set to true
@@ -178,6 +177,7 @@ dojo.widget.defineWidget(
 				this._initUI();
 			}
 		},
+
 		_initUI: function() {
 			dojo.dom.removeChildren(this.calendarDatesContainerNode);
 			var curClass;
