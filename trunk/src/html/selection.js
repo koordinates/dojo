@@ -8,12 +8,13 @@ dojo.require("dojo.lang.common");
  * type of selection
 **/
 dojo.html.selectionType = {
-	NONE : 0,
-	TEXT : 1,
-	CONTROL : 2
+	NONE : 0, //selection is empty
+	TEXT : 1, //selection contains text (may also contains CONTROL objects)
+	CONTROL : 2 //only one element is selected (such as img, table etc)
 };
 
 dojo.html.clearSelection = function(){
+	// summary: deselect the current selection to make it empty
 	var _window = dojo.global();
 	var _document = dojo.doc();
 	try{
@@ -38,7 +39,8 @@ dojo.html.clearSelection = function(){
 	}
 }
 
-dojo.html.disableSelection = function(element){
+dojo.html.disableSelection = function(/*DomNode*/element){
+	// summary: disable selection on a node
 	element = dojo.byId(element)||dojo.body();
 	var h = dojo.render.html;
 	
@@ -54,7 +56,8 @@ dojo.html.disableSelection = function(element){
 	return true;
 }
 
-dojo.html.enableSelection = function(element){
+dojo.html.enableSelection = function(/*DomNode*/element){
+	// summary: enable selection on a node
 	element = dojo.byId(element)||dojo.body();
 	
 	var h = dojo.render.html;
@@ -70,24 +73,12 @@ dojo.html.enableSelection = function(element){
 	return true;
 }
 
-dojo.html.selectElement = function(element){
-	var _window = dojo.global();
-	var _document = dojo.doc();
-	element = dojo.byId(element);
-	if(_document.selection && dojo.body().createTextRange){ // IE
-		var range = dojo.body().createTextRange();
-		range.moveToElementText(element);
-		range.select();
-	}else if(_window["getSelection"]){
-		var selection = _window.getSelection();
-		// FIXME: does this work on Safari?
-		if(selection["selectAllChildren"]){ // Mozilla
-			selection.selectAllChildren(element);
-		}
-	}
+dojo.html.selectElement = function(/*DomNode*/element){
+	dojo.deprecated("dojo.html.selectElement", "replaced by dojo.html.selection.selectElementChildren", 0.5);
 }
 
-dojo.html.selectInputText = function(element){
+dojo.html.selectInputText = function(/*DomNode*/element){
+	// summary: select all the text in an input element
 	var _window = dojo.global();
 	var _document = dojo.doc();
 	element = dojo.byId(element);
@@ -222,10 +213,12 @@ dojo.lang.mixin(dojo.html.selection, {
 			return null;
 		}
 	},
-	hasAncestorElement: function(tagName /* ... */){
+	hasAncestorElement: function(/*String*/tagName /* ... */){
+		// summary: 
+		// 		Check whether current selection has a  parent element which is of type tagName (or one of the other specified tagName)
 		return (dojo.html.selection.getAncestorElement.apply(this, arguments) != null);
 	},
-	getAncestorElement: function(tagName /* ... */){
+	getAncestorElement: function(/*String*/tagName /* ... */){
 		// summary:
 		//		Return the parent element of the current selection which is of type tagName (or one of the other specified tagName)
 		var node = dojo.html.selection.getSelectedElement() || dojo.html.selection.getParentElement();
@@ -238,7 +231,7 @@ dojo.lang.mixin(dojo.html.selection, {
 		return null;
 	},
 	//modified from dojo.html.isTag to take an array as second parameter
-	isTag: function(node, tags) {
+	isTag: function(/*DomNode*/node, /*Array*/tags) {
 		if(node && node.tagName) {
 			for (var i=0; i<tags.length; i++){
 				if (node.tagName.toLowerCase()==String(tags[i]).toLowerCase()){
@@ -248,8 +241,8 @@ dojo.lang.mixin(dojo.html.selection, {
 		}
 		return "";
 	},
-	selectElement: function(element) {
-		// summary: clear previous selection and select element
+	selectElement: function(/*DomNode*/element) {
+		// summary: clear previous selection and select element (including all its children)
 		var _window = dojo.global();
 		var _document = dojo.doc();
 		element = dojo.byId(element);
@@ -272,8 +265,8 @@ dojo.lang.mixin(dojo.html.selection, {
 			}
 		}
 	},
-	selectElementChildren: function(element){
-		// summary: clear previous selection and select the content of the node
+	selectElementChildren: function(/*DomNode*/element){
+		// summary: clear previous selection and select the content of the node (excluding the node itself)
 		var _window = dojo.global();
 		var _document = dojo.doc();
 		element = dojo.byId(element);
@@ -309,8 +302,9 @@ dojo.lang.mixin(dojo.html.selection, {
 		}
 		return bookmark;
 	},
-	moveToBookmark: function(bookmark){
+	moveToBookmark: function(/*Object*/bookmark){
 		// summary: Moves current selection to a bookmark
+		// bookmark: this should be a returned object from dojo.html.selection.getBookmark()
 		var _document = dojo.doc();
 		if(_document["selection"]){ // IE
 			var range = _document.selection.createRange();
@@ -328,7 +322,7 @@ dojo.lang.mixin(dojo.html.selection, {
 			}
 		}
 	},
-	collapse: function(beginning) {
+	collapse: function(/*Boolean*/beginning) {
 		// summary: clear current selection
 		if(dojo.global()['getSelection']){
 			var selection = dojo.global().getSelection();
