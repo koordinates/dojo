@@ -72,17 +72,6 @@ dojo.widget.defineWidget(
 		dayLabels: [], 
 		weekTemplate: null,
 
-		initializer: function() {
-			// today's date, JS Date object
-			this.today = "";
-			// selected date, JS Date object
-			this.date = "";
-			// date currently selected in the UI, stored in year, month, date in the format that will be actually displayed
-			this.currentDate = {};
-			// stored in year, month, date in the format that will be actually displayed
-			this.firstDay = {};
-		},
-
 		dayWidth: 'narrow',
 		classNames: {
 		// summary:
@@ -99,8 +88,9 @@ dojo.widget.defineWidget(
 		templatePath:  dojo.uri.dojoUri("src/widget/templates/DatePicker.html"),
 		templateCssPath:  dojo.uri.dojoUri("src/widget/templates/DatePicker.css"),
 
+//TODO: should this go in postMixInProperties instead?
 		fillInTemplate: function(){
-			dojo.widget.DatePicker.call(this);
+			dojo.widget.DatePicker.call(this); //TODO: is this necessary?
 			if(this.storedDate!=""){
 				dojo.deprecated("dojo.widget.DatePicker.storedDate", "storedDate was renamed selectedDate to make its purpose better understood", "0.5");
 				this.selectedDate=this.storedDate;
@@ -115,6 +105,7 @@ dojo.widget.defineWidget(
 			}
 			this._initData();
 		},
+//TODO: can _initData simply become fillInTemplate?
 		_initData: function() {
 			/*
 			summary: 
@@ -140,7 +131,7 @@ dojo.widget.defineWidget(
 			this.dayLabels = dojo.lang.unnest(dojo.date.getNames('days', this.dayWidth, 'standAlone', this.lang)); //if we dont use unnest, we risk modifying the dayLabels array inside of dojo.date and screwing up other calendars on the page
 			if(this.weekStartsOn > 0){
 				//adjust dayLabels for different first day of week. ie: Monday or Thursday instead of Sunday
-				for(i=0;i<this.weekStartsOn;i++){
+				for(var i=0;i<this.weekStartsOn;i++){
 					this.dayLabels.push(this.dayLabels.shift());
 				}
 			}
@@ -162,11 +153,12 @@ dojo.widget.defineWidget(
 			this.setDate(rfcDate);
 		},			
 		setDate: function(rfcDate) {
+			var d;
 			if(typeof(rfcDate)=="string"){
-				var d = dojo.date.fromRfc3339(rfcDate);
+				d = dojo.date.fromRfc3339(rfcDate);
 			}else{
-				var d = new Date(rfcDate);
-				var rfcDate = dojo.date.toRfc3339(rfcDate,'dateOnly');
+				d = new Date(rfcDate);
+				rfcDate = dojo.date.toRfc3339(rfcDate,'dateOnly');
 			}
 			this.selectedDate = rfcDate;
 			this._preInitUI(d,false,true);
@@ -174,9 +166,9 @@ dojo.widget.defineWidget(
 		_preInitUI: function(dateObj,initFirst,initUI) {
 			//initFirst is to tell _initFirstDay if you want first day of the displayed calendar, or first day of the week for dateObj
 			//initUI tells preInitUI to go ahead and run initUI if set to true
-			d = new Date(dateObj);
-			this.date = new Date(d);
-			var tempFirstDay = this._initFirstDay(d,initFirst);
+			this.date = new Date(dateObj);
+			var tempFirstDay = this._initFirstDay(dateObj,initFirst);
+			this.firstDay={};
 			this.firstDay.year = tempFirstDay.year;
 			this.firstDay.month = tempFirstDay.month;
 			this.firstDay.date = tempFirstDay.date;
@@ -189,11 +181,13 @@ dojo.widget.defineWidget(
 			this.selectedIsUsed = false;
 			this.currentIsUsed = false;
 			var currentClassName = "";
-			var nextDate = new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date, 8);
-			var previousDate = new Date();
+			var nextDate = new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date);
+			nextDate.setHours(8); //Q: why 8?
 			var tmpMonth = nextDate.getMonth();
 			this.curMonth = new Date(nextDate);
-			this.curMonth.setDate(nextDate.getDate()+parseInt((((this.displayWeeks!="") ? (this.displayWeeks*7) : dojo.date.getDaysInMonth(nextDate))/2)));
+			this.curMonth.setDate(nextDate.getDate() + Math.floor(
+				(((this.displayWeeks!="") ? this.displayWeeks*7 : dojo.date.getDaysInMonth(nextDate))/2)));
+			var curClass;
 			if(tmpMonth == this.curMonth.getMonth()) {
 				this.curMonth = new Date(nextDate);
 				curClass = "current";
@@ -201,25 +195,22 @@ dojo.widget.defineWidget(
 				curClass = "previous";
 			}
 			this.curMonth.setDate(1);
-			// FIXME: following is always true even if adjust weeks is fales
 			if(this.displayWeeks=="" || this.adjustWeeks){
 				this.adjustWeeks = true;
-				var tmpDate = new Date(this.date);
-				tmpDate.setDate(1);
 				this.displayWeeks = Math.ceil((dojo.date.getDaysInMonth(this.curMonth) + this._getAdjustedDay(this.curMonth))/7);
 			}
 			var days = this.displayWeeks*7; //init total days to display
 			for(var i=0;i<this.displayWeeks;i++){
 				this.calendarDatesContainerNode.appendChild(this.weekTemplate.cloneNode(true));
 			}
-			if(this._daysBetween(this.startDate,this.endDate) < days){
+			if(dojo.date.diff(this.startDate,this.endDate, dojo.date.dateParts.DAY) < days){
 				this.staticDisplay = true;
-				if(this._daysBetween(nextDate,this.endDate) > days){
-					var tmpNext = new Date(nextDate);
+				if(dojo.date.diff(nextDate,this.endDate, dojo.date.dateParts.DAY) > days){
 					this._preInitUI(this.startDate,true,false);
-					var nextDate = new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date, 8);
+					var nextDate = new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date);
+					nextDate.setHours(8);
 				}
-				var tmpMonth = nextDate.getMonth();
+				tmpMonth = nextDate.getMonth();
 				this.curMonth = new Date(nextDate);
 				this.curMonth.setDate(nextDate.getDate()+parseInt((dojo.date.getDaysInMonth(nextDate)/2)));
 				if(tmpMonth == this.curMonth.getMonth()) {
@@ -259,10 +250,10 @@ dojo.widget.defineWidget(
 				if(nextDate.getMonth() != tmpMonth){
 					switch(curClass){
 						case "previous":
-							var curClass = "current";
+							curClass = "current";
 							break;
 						case "current":
-							var curClass = "next";
+							curClass = "next";
 							break;
 					}
 				}
@@ -279,16 +270,16 @@ dojo.widget.defineWidget(
 			switch(evt.target) {
 				case this.increaseWeekNode.getElementsByTagName("img").item(0): 
 				case this.increaseWeekNode:
-					tmpDate = dojo.date.add(new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date), dojo.date.dateParts.WEEK,1)
+					var tmpDate = dojo.date.add(new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date), dojo.date.dateParts.WEEK,1);
 					if(tmpDate < this.endDate){
-						d = dojo.date.add(d,dojo.date.dateParts.WEEK,1);
+						d = dojo.date.add(d, dojo.date.dateParts.WEEK, 1);
 					}
 					break;
 				case this.decreaseWeekNode.getElementsByTagName("img").item(0):
 				case this.decreaseWeekNode:
 					var tmpDate = new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date);
 					if(tmpDate >= this.startDate){
-						d = dojo.date.add(d,dojo.date.dateParts.WEEK,-1);
+						d = dojo.date.add(d,dojo.date.dateParts.WEEK, -1);
 					}
 					break;
 			}
@@ -407,7 +398,7 @@ dojo.widget.defineWidget(
 		},
 	
 		onClick: function(evt) {
-			dojo.event.browser.stopEvent(evt)
+			dojo.event.browser.stopEvent(evt);
 		},
 		
 		onSetDate: function(evt) {
@@ -440,7 +431,7 @@ dojo.widget.defineWidget(
 			}
 			this.setDate(new Date(year, month, eventTarget.innerHTML));
 		},
-		_initFirstDay: function(dateObj,bool) {
+		_initFirstDay: function(dateObj,bool){
 			//bool is false for first day of month, true for first day of week adjusted by startOfWeek
 			var d = new Date(dateObj);
 			d.setDate((bool) ? d.getDate() : 1);
@@ -456,9 +447,6 @@ dojo.widget.defineWidget(
 				}
 			}
 			return days[dateObj.getDay()];
-		},
-		_daysBetween: function(dA, dB){
-			return dojo.date.diff(dA, dB, dojo.date.dateParts.DAY)
 		}
 	}
 );
