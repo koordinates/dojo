@@ -51,6 +51,7 @@ dojo.require("dojo.namespace");
 			"menubar2": "dojo.widget.Menu2",
 			"menubaritem2": "dojo.widget.Menu2",
 			"monthlyCalendar": "dojo.widget.MonthlyCalendar",
+			"radiogroup": "dojo.widget.RadioGroup",
 			"richtext": "dojo.widget.RichText",
 			"remotetabcontroller": "dojo.widget.RemoteTabController",
 			"resizehandle": "dojo.widget.ResizeHandle",
