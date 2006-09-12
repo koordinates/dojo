@@ -87,6 +87,17 @@ dojo.widget.defineWidget(
 			this.onSetSelectedAnyTime();
 		}
 	},
+	
+	setTime: function(date) {
+		if(date) {
+			this.selectedTime.anyTime = false;
+			this.setDateTime(dojo.date.toRfc3339(date));
+		} else {
+			this.selectedTime.anyTime = true;
+		}
+		this.initData();
+		this.initUI();
+	},
 
 	setDateTime: function(rfcDate) {
 		this.storedTime = rfcDate;
