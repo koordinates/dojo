@@ -55,6 +55,18 @@ dojo.widget.defineWidget(
 		onInputChange: function(){
 			this.datePicker.date = new Date(this.inputNode.value);
 			this.datePicker.setDate(this.datePicker.date);
+		},
+		
+		enable: function() {
+			this.inputNode.disabled = false;
+			this.datePicker.enable();
+			this.inherited("enable", []);
+		},
+		
+		disable: function() {
+			this.inputNode.disabled = true;
+			this.datePicker.disable();
+			this.inherited("disable", []);
 		}
 	}
 );

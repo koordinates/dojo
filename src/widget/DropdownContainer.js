@@ -46,6 +46,7 @@ dojo.widget.defineWidget(
 		},
 
 		onIconClick: function(evt){
+			if(!this.isEnabled) return;
 			if(!this.popup.isShowingNow){
 				this.popup.open(this.inputNode, this, this.buttonNode);
 			}else{
