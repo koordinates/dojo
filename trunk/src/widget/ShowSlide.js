@@ -98,12 +98,17 @@ dojo.widget.defineWidget(
 		while(action.on == on){
 			var components = this._components[on];
 			for(var i = 0, component; component = components[i]; i++){
-				if(action.action == "remove"){
+				if(
+					(action.action == "remove")||
+					(action.action == "fadeout")||
+					(action.action == "wipeout")
+				){
 					if(component.style.display == "none"){
 						component.style.display = "";
 						component.style.visibility = "visible";
 						var exits = true;
 					}
+					dojo.html.setOpacity(component, 1);
 				}else if(action.action){
 					this.hideComponent(component);
 				}
