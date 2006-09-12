@@ -167,6 +167,11 @@ dojo.widget.defineWidget(
 	selectByRow: function(/*HTMLTableRow*/ row){
 		this.select(this.getDataByRow(row));
 	},
+	selectAll: function(){
+		this.store.forEach(function(element){
+			element.isSelected = true;
+		});
+	},
 	onDataSelect: function(/* object */obj){ },
 
 	toggleSelection: function(/*object*/obj){
@@ -187,6 +192,11 @@ dojo.widget.defineWidget(
 	},
 	toggleSelectionByRow: function(/*HTMLTableRow*/row){
 		this.toggleSelection(this.getDataByRow(row));
+	},
+	toggleAll: function(){
+		this.store.forEach(function(element){
+			element.isSelected = !element.isSelected;
+		});
 	},
 	onDataToggle: function(/* object */obj){ },
 
