@@ -81,17 +81,18 @@ dojo.xml.Parse = function(){
 			return djt.toLowerCase();
 		}
 		// <tag dojo:type="type"> => dojo:type
-		if((node.getAttributeNS)&&(node.getAttributeNS(dojo.dom.dojoml,"type"))){
-			return "dojo:" + node.getAttributeNS(dojo.dom.dojoml,"type").toLowerCase();
+		djt = node.getAttributeNS && node.getAttributeNS(dojo.dom.dojoml,"type");
+		if(djt){
+			return "dojo:" + djt.toLowerCase();
 		}
 		// <tag dojo:type="type"> => dojo:type
 		try{
 			// FIXME: IE really really doesn't like this, so we squelch errors for it
-			djt = node.getAttribute("dojo:type").toLowerCase();
+			djt = node.getAttribute("dojo:type");
 		}catch(e){ 
 			// FIXME: log?  
 		}
-		if(djt){ return "dojo:"+djt; }
+		if(djt){ return "dojo:"+djt.toLowerCase(); }
 		// <tag class="classa dojo-type classb"> => dojo:type	
 		if(!dj_global["djConfig"] || !djConfig["ignoreClassNames"]){ 
 			// FIXME: should we make this optionally enabled via djConfig?
@@ -100,8 +101,8 @@ dojo.xml.Parse = function(){
 			// breaks firefox 1.5's svg widgets
 			if(classes && classes.indexOf && classes.indexOf("dojo-") != -1){
 		    var aclasses = classes.split(" ");
-		    for(var x=0, c; x<aclasses.length; x++){
-	        if (aclasses[x].slice(0, 5) == "dojo-") {
+		    for(var x=0, c=aclasses.length; x<c; x++){
+	        if(aclasses[x].slice(0, 5) == "dojo-"){
             return "dojo:"+aclasses[x].substr(5).toLowerCase(); 
 					}
 				}
