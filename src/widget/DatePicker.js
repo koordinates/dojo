@@ -60,12 +60,11 @@ dojo.widget.defineWidget(
 		endDate: "2941-10-12",
 		//adjusts the first day of the week 0==Sunday..6==Saturday
 		weekStartsOn: "",
-		//current date selected by DatePicker in rfc 3339 date format "YYYY-mm-dd"
-		selectedDate: "",
-		storedDate: "", //deprecated use selectedDate instead
+		//current date selected by DatePicker in rfc 3339 date format "YYYY-mm-dd" -- once initialized, this.date will be a date Object
+		date: "",
+		storedDate: "", //deprecated use date instead
 		//if startDate and endDate are less than 42 days apart, we disabled incremental controls -- you can set this by default, in cases where you want a date in a specific month only.
 		staticDisplay: false,
-		//end configurable options
 		
 		//date Object for the 1st of the current month
 		curMonth: "",
@@ -90,17 +89,16 @@ dojo.widget.defineWidget(
 
 //TODO: should this go in postMixInProperties instead?
 		fillInTemplate: function(){
-			dojo.widget.DatePicker.call(this); //TODO: is this necessary?
-			if(this.storedDate!=""){
-				dojo.deprecated("dojo.widget.DatePicker.storedDate", "storedDate was renamed selectedDate to make its purpose better understood", "0.5");
-				this.selectedDate=this.storedDate;
+			if(this.storedDate){
+				dojo.deprecated("dojo.widget.DatePicker", "use date instead of 'storedDate'", "0.5");
+				this.date=this.storedDate;
 			}
 			this.weekTemplate = dojo.dom.removeNode(this.calendarWeekTemplate);
 			this.startDate = dojo.date.fromRfc3339(this.startDate);
 			this.endDate = dojo.date.fromRfc3339(this.endDate);
 			this.startDate.setHours(0,0,0,0); //adjust startDate to be exactly midnight
 			this.endDate.setHours(24,0,0,-1); //adjusting endDate to be a fraction of a second before  midnight
-			if(this.weekStartsOn==""){
+			if(!this.weekStartsOn){
 				this.weekStartsOn=dojo.date.getFirstDayOfWeek(this.lang);
 			}
 			this._initData();
@@ -112,14 +110,15 @@ dojo.widget.defineWidget(
 		 	      Initialize the date data for the date picker 
 		 	 description: 
 		 	      Initializes the date data for the DatePicker widget instance.  For 
-		 	      example, if there is not already a value for selectedDate, it is  
+		 	      example, if there is not already a value for date, it is  
 		 	      populated with today's date from the client. 
 			*/
 			this.today = new Date();
-			if(this.selectedDate && (this.selectedDate.split("-").length > 2)) {
-				this.date = dojo.date.fromRfc3339(this.selectedDate);
+			if(!this.date){this.date = new Date();}
+			else if(this.date && (typeof this.date=="string") && (this.date.split("-").length > 2)) {
+				this.date = dojo.date.fromRfc3339(this.date);
 			} else {
-				this.date = new Date(this.today);
+				this.date = new Date(this.date);
 			}
 			if(this.date<this.startDate){
 				this.date = this.startDate;
@@ -142,55 +141,53 @@ dojo.widget.defineWidget(
 		},
 		
 		getValue: function() {
-			return this.getDate();
+			//return current date in RFC 3339 format
+			return dojo.date.toRfc3339(this.date); /*String*/
 		},
 		getDate: function() {
-			//return current selectedDate in RFC 3339 format
-			return this.selectedDate;
+			return this.date; /*Date*/
 		},
-		setValue: function(rfcDate) {
+		setValue: function(rfcDate/*String*/) {
 			//stores date and updates UI
 			this.setDate(rfcDate);
 		},			
-		setDate: function(rfcDate) {
-			var d;
-			if(typeof(rfcDate)=="string"){
-				d = dojo.date.fromRfc3339(rfcDate);
+		setDate: function(dateObj /*Date|String*/) {
+			if(typeof dateObj=="string"){
+				this.date = dojo.date.fromRfc3339(dateObj);
 			}else{
-				d = new Date(rfcDate);
-				rfcDate = dojo.date.toRfc3339(rfcDate,'dateOnly');
+				this.date = new Date(dateObj);
 			}
-			this.selectedDate = rfcDate;
-			this._preInitUI(d,false,true);
+			this._preInitUI(this.date,false,true);
 		},
 		_preInitUI: function(dateObj,initFirst,initUI) {
 			//initFirst is to tell _initFirstDay if you want first day of the displayed calendar, or first day of the week for dateObj
 			//initUI tells preInitUI to go ahead and run initUI if set to true
-			this.date = new Date(dateObj);
 			this.firstDay = this._initFirstDay(dateObj,initFirst);
+			this.selectedIsUsed = false;
+			this.currentIsUsed = false;
+			var nextDate = new Date(this.firstDay);
+			var tmpMonth = nextDate.getMonth();
+			this.curMonth = new Date(nextDate);
+			this.curMonth.setDate(nextDate.getDate()+
+				Math.floor((this.displayWeeks!="" ? this.displayWeeks*7 : dojo.date.getDaysInMonth(nextDate))/2));
+			if(tmpMonth == this.curMonth.getMonth()) {
+				this.curMonth = new Date(nextDate);
+			}
+			this.curMonth.setDate(1);
 			if(initUI){
 				this._initUI();
 			}
 		},
 		_initUI: function() {
 			dojo.dom.removeChildren(this.calendarDatesContainerNode);
-			this.selectedIsUsed = false;
-			this.currentIsUsed = false;
+			var curClass;
 			var currentClassName = "";
 			var nextDate = new Date(this.firstDay);
-			nextDate.setHours(8); //Q: why 8?
-			var tmpMonth = nextDate.getMonth();
-			this.curMonth = new Date(nextDate);
-			this.curMonth.setDate(nextDate.getDate()+
-				Math.floor((this.displayWeeks!="" ? this.displayWeeks*7 : dojo.date.getDaysInMonth(nextDate))/2));
-			var curClass;
-			if(tmpMonth == this.curMonth.getMonth()) {
-				this.curMonth = new Date(nextDate);
+			if(nextDate.getMonth() == this.curMonth.getMonth()) {
 				curClass = "current";
 			}else{
 				curClass = "previous";
 			}
-			this.curMonth.setDate(1);
 			if(this.displayWeeks=="" || this.adjustWeeks){
 				this.adjustWeeks = true;
 				this.displayWeeks = Math.ceil((dojo.date.getDaysInMonth(this.curMonth) + this._getAdjustedDay(this.curMonth))/7);
@@ -204,11 +201,10 @@ dojo.widget.defineWidget(
 				if(dojo.date.diff(nextDate,this.endDate, dojo.date.dateParts.DAY) > days){
 					this._preInitUI(this.startDate,true,false);
 					nextDate = new Date(this.firstDay);
-					nextDate.setHours(8);
 				}
 				tmpMonth = nextDate.getMonth();
 				this.curMonth = new Date(nextDate);
-				this.curMonth.setDate(nextDate.getDate()+parseInt((dojo.date.getDaysInMonth(nextDate)/2)));
+				this.curMonth.setDate(nextDate.getDate() + Math.floor((dojo.date.getDaysInMonth(nextDate)/2)));
 				if(tmpMonth == this.curMonth.getMonth()) {
 					this.curMonth = new Date(nextDate);
 					curClass = "current";
@@ -374,11 +370,11 @@ dojo.widget.defineWidget(
 			var currentClassName = this.classNames[monthState];
 			if ((!this.selectedIsUsed) && (date.getDate() == this.date.getDate()) && (date.getMonth() == this.date.getMonth()) && (date.getFullYear() == this.date.getFullYear())) {
 				currentClassName = this.classNames.selectedDate + " " + currentClassName;
-				this.selectedIsUsed = 1;
+				this.selectedIsUsed = true;
 			}
 			if((!this.currentIsUsed) && (date.getDate() == this.today.getDate()) && (date.getMonth() == this.today.getMonth()) && (date.getFullYear() == this.today.getFullYear())) {
 				currentClassName = currentClassName + " "  + this.classNames.currentDate;
-				this.currentIsUsed = 1;
+				this.currentIsUsed = true;
 			}
 			return currentClassName;
 		},
@@ -391,8 +387,8 @@ dojo.widget.defineWidget(
 			var eventTarget = evt.target;
 			if(eventTarget.nodeType != dojo.dom.ELEMENT_NODE){eventTarget = eventTarget.parentNode;}
 			dojo.event.browser.stopEvent(evt);
-			this.selectedIsUsed = 0;
-			this.todayIsUsed = 0;
+			this.selectedIsUsed = false;
+			this.todayIsUsed = false;
 			var month = this.curMonth.getMonth();
 			var year = this.curMonth.getFullYear();
 			if(dojo.html.hasClass(eventTarget, this.classNames["disabledPrevious"])||dojo.html.hasClass(eventTarget, this.classNames["disabledCurrent"])||dojo.html.hasClass(eventTarget, this.classNames["disabledNext"])){
