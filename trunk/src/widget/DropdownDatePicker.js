@@ -51,11 +51,8 @@ dojo.widget.defineWidget(
 			var dpNode = document.createElement("div");
 			this.containerNode.appendChild(dpNode);
 
-			var dateProps = { widgetContainerId: this.widgetId };
-			if(this.date){
-				dateProps.date = this.date;
-			}
-			this.datePicker = dojo.widget.createWidget("DatePicker", dateProps, dpNode);
+			this.datePicker = dojo.widget.createWidget("DatePicker",
+				{ widgetContainerId: this.widgetId, lang: this.lang, date: this.date }, dpNode);
 			dojo.event.connect(this.datePicker, "onSetDate", this, "onSetDate");
 			if(this.date){
 				this.onSetDate();
