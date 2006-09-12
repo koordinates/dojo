@@ -79,10 +79,12 @@ dojo.gfx.color.hsv2rgb = function(/* int || Array */h, /* int */s, /* int */v, /
 	//	converts an HSV value set to RGB, ranges depending on optional options object.
 	//	patch for options by Matthew Eernisse 	
 	if (dojo.lang.isArray(h)) {
+		if(s){
+			options = s;
+		}
 		v = h[2] || 0;
 		s = h[1] || 0;
 		h = h[0] || 0;
-		if(arguments[1]) options = s;
 	}
 
 	var opt = {
