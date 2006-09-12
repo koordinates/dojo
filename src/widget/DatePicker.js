@@ -181,8 +181,8 @@ dojo.widget.defineWidget(
 			nextDate.setHours(8); //Q: why 8?
 			var tmpMonth = nextDate.getMonth();
 			this.curMonth = new Date(nextDate);
-			this.curMonth.setDate(nextDate.getDate() + Math.floor(
-				(((this.displayWeeks!="") ? this.displayWeeks*7 : dojo.date.getDaysInMonth(nextDate))/2)));
+			this.curMonth.setDate(nextDate.getDate()+
+				Math.floor((this.displayWeeks!="" ? this.displayWeeks*7 : dojo.date.getDaysInMonth(nextDate))/2));
 			var curClass;
 			if(tmpMonth == this.curMonth.getMonth()) {
 				this.curMonth = new Date(nextDate);
@@ -247,9 +247,9 @@ dojo.widget.defineWidget(
 			}
 		},
 		
-		incrementDate: function(date, bool) {
-			// bool: true to increase, false to decrease
-			return dojo.date.add(date,dojo.date.dateParts.DAY,((bool) ? 1: -1));
+		incrementDate: function(date, incr) {
+			// incr: true to increase, false to decrease
+			return dojo.date.add(date,dojo.date.dateParts.DAY, incr ? 1:-1);
 		},
 		
 		incrementWeek: function(evt) {
@@ -257,7 +257,7 @@ dojo.widget.defineWidget(
 			switch(evt.target) {
 				case this.increaseWeekNode.getElementsByTagName("img").item(0): 
 				case this.increaseWeekNode:
-					var tmpDate = dojo.date.add(d, dojo.date.dateParts.WEEK,1);
+					var tmpDate = dojo.date.add(d, dojo.date.dateParts.WEEK, 1);
 					if(tmpDate < this.endDate){
 						d = dojo.date.add(d, dojo.date.dateParts.WEEK, 1);
 					}
@@ -278,7 +278,7 @@ dojo.widget.defineWidget(
 			switch(evt.currentTarget) {
 				case this.increaseMonthNode.getElementsByTagName("img").item(0):
 				case this.increaseMonthNode:
-					tmpDate = dojo.date.add(tmpDate, dojo.date.dateParts.DAY, (this.displayWeeks*7));
+					tmpDate = dojo.date.add(tmpDate, dojo.date.dateParts.DAY, this.displayWeeks*7);
 					if(tmpDate < this.endDate){
 						d = dojo.date.add(d, dojo.date.dateParts.MONTH, 1);
 					}else{
@@ -414,10 +414,10 @@ dojo.widget.defineWidget(
 			}
 			this.setDate(new Date(year, month, eventTarget.innerHTML));
 		},
-		_initFirstDay: function(dateObj, bool){
-			//bool is false for first day of month, true for first day of week adjusted by startOfWeek
+		_initFirstDay: function(dateObj, adj){
+			//adj is false for first day of month, true for first day of week adjusted by startOfWeek
 			var d = new Date(dateObj);
-			d.setDate(bool ? d.getDate() : 1);
+			if(!adj){d.setDate(1);}
 			d.setDate(d.getDate()-this._getAdjustedDay(d,this.weekStartsOn));
 			return d;
 		},
