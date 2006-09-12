@@ -1,8 +1,7 @@
 dojo.provide("dojo.date.format");
 
 dojo.require("dojo.date.common");
-dojo.require("dojo.date.supplemental
-");
+dojo.require("dojo.date.supplemental");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.func");

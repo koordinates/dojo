@@ -40,10 +40,6 @@ dojo.date.getWeekend = function(/*String?*/locale){
 		eg:6,il:6,sy:6
 	};
 
-
-
-
-
 	locale = dojo.normalizeLocale(locale);
 	var country = locale.split("-")[1];
 	var start = weekendStart[country];
