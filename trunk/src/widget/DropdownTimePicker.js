@@ -30,7 +30,7 @@ dojo.widget.defineWidget(
 			dojo.widget.DropdownTimePicker.superclass.fillInTemplate.call(this, args, frag);
 			var source = this.getFragNodeRef(frag);
 
-			if(args.storedTime){ this.time = new Date("2005-01-01T" + args.storedTime); }
+			if(args.storedTime){ this.time = "2005-01-01T" + args.storedTime; }
 			
 			var dpNode = document.createElement("div");
 			this.containerNode.appendChild(dpNode);
@@ -38,11 +38,12 @@ dojo.widget.defineWidget(
 			var timeProps = { widgetContainerId: this.widgetId };
 			this.timePicker = dojo.widget.createWidget("TimePicker", timeProps, dpNode);
 			dojo.event.connect(this.timePicker, "onSetTime", this, "onSetTime");
+			dojo.event.connect(this.inputNode,  "onchange",  this, "onInputChange");
 			this.containerNode.style.zIndex = this.zIndex;
 			this.containerNode.style.backgroundColor = "transparent";
 			if(args.storedtime){
 				this.timePicker.selectedTime.anyTime = false;
-				this.timePicker.setDateTime("2005-01-01T" + args.storedtime);
+				this.timePicker.setDateTime(new Date(args.storedtime));
 				this.timePicker.initData();
 				this.timePicker.initUI();
 				this.onSetTime();
@@ -59,6 +60,18 @@ dojo.widget.defineWidget(
 			this.timePicker.setDateTime(this.timePicker.time);
 			this.timePicker.initData();
 			this.timePicker.initUI();
+		},
+		
+		enable: function() {
+			this.inputNode.disabled = false;
+			this.timePicker.enable();
+			this.inherited("enable", []);
+		},
+		
+		disable: function() {
+			this.inputNode.disabled = true;
+			this.timePicker.disable();
+			this.inherited("disable", []);
 		}
 	}
 );
