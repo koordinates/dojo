@@ -167,11 +167,7 @@ dojo.widget.defineWidget(
 			//initFirst is to tell _initFirstDay if you want first day of the displayed calendar, or first day of the week for dateObj
 			//initUI tells preInitUI to go ahead and run initUI if set to true
 			this.date = new Date(dateObj);
-			var tempFirstDay = this._initFirstDay(dateObj,initFirst);
-			this.firstDay={};
-			this.firstDay.year = tempFirstDay.year;
-			this.firstDay.month = tempFirstDay.month;
-			this.firstDay.date = tempFirstDay.date;
+			this.firstDay = this._initFirstDay(dateObj,initFirst);
 			if(initUI){
 				this._initUI();
 			}
@@ -181,7 +177,7 @@ dojo.widget.defineWidget(
 			this.selectedIsUsed = false;
 			this.currentIsUsed = false;
 			var currentClassName = "";
-			var nextDate = new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date);
+			var nextDate = new Date(this.firstDay);
 			nextDate.setHours(8); //Q: why 8?
 			var tmpMonth = nextDate.getMonth();
 			this.curMonth = new Date(nextDate);
@@ -207,7 +203,7 @@ dojo.widget.defineWidget(
 				this.staticDisplay = true;
 				if(dojo.date.diff(nextDate,this.endDate, dojo.date.dateParts.DAY) > days){
 					this._preInitUI(this.startDate,true,false);
-					var nextDate = new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date);
+					nextDate = new Date(this.firstDay);
 					nextDate.setHours(8);
 				}
 				tmpMonth = nextDate.getMonth();
@@ -231,21 +227,12 @@ dojo.widget.defineWidget(
 				currentCalendarNode = calendarNodes.item(i);
 				currentCalendarNode.innerHTML = nextDate.getDate();
 				tmpMonth = nextDate.getMonth();
+				var mappedClass = curClass;
 				if(nextDate < this.startDate || nextDate > this.endDate){
-					switch(curClass) {
-						case "previous":
-							dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "disabledPrevious"));
-							break;
-						case "current":
-							dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "disabledCurrent"));
-							break;
-						case "next": 
-							dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "disabledNext"));
-							break;
-					}
-				}else{
-					dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, curClass));
+					var classMap={previous:"disabledPrevious",current:"disabledCurrent",next:"disabledNext"};
+					mappedClass=classMap[curClass];
 				}
+				dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, mappedClass));
 				nextDate = this.incrementDate(nextDate, true);
 				if(nextDate.getMonth() != tmpMonth){
 					switch(curClass){
@@ -266,20 +253,19 @@ dojo.widget.defineWidget(
 		},
 		
 		incrementWeek: function(evt) {
-			var d = new Date(this.firstDay.year,this.firstDay.month,this.firstDay.date);
+			var d = new Date(this.firstDay);
 			switch(evt.target) {
 				case this.increaseWeekNode.getElementsByTagName("img").item(0): 
 				case this.increaseWeekNode:
-					var tmpDate = dojo.date.add(new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date), dojo.date.dateParts.WEEK,1);
+					var tmpDate = dojo.date.add(d, dojo.date.dateParts.WEEK,1);
 					if(tmpDate < this.endDate){
 						d = dojo.date.add(d, dojo.date.dateParts.WEEK, 1);
 					}
 					break;
 				case this.decreaseWeekNode.getElementsByTagName("img").item(0):
 				case this.decreaseWeekNode:
-					var tmpDate = new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date);
-					if(tmpDate >= this.startDate){
-						d = dojo.date.add(d,dojo.date.dateParts.WEEK, -1);
+					if(d >= this.startDate){
+						d = dojo.date.add(d, dojo.date.dateParts.WEEK, -1);
 					}
 					break;
 			}
@@ -288,7 +274,7 @@ dojo.widget.defineWidget(
 	
 		incrementMonth: function(evt) {
 			var d = new Date(this.curMonth);
-			var tmpDate = new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date);
+			var tmpDate = new Date(this.firstDay);
 			switch(evt.currentTarget) {
 				case this.increaseMonthNode.getElementsByTagName("img").item(0):
 				case this.increaseMonthNode:
@@ -318,7 +304,7 @@ dojo.widget.defineWidget(
 	
 		incrementYear: function(evt) {
 			var year = this.curMonth.getFullYear();
-			var tmpDate = new Date(this.firstDay.year, this.firstDay.month, this.firstDay.date);
+			var tmpDate = new Date(this.firstDay);
 			switch(evt.target) {
 				case this.nextYearLabelNode:
 					tmpDate = dojo.date.add(tmpDate, dojo.date.dateParts.YEAR, 1);
@@ -402,11 +388,8 @@ dojo.widget.defineWidget(
 		},
 		
 		onSetDate: function(evt) {
-			if(evt.target.nodeType == dojo.dom.ELEMENT_NODE) {
-				var eventTarget = evt.target;
-			} else {
-				var eventTarget = evt.target.parentNode;
-			}
+			var eventTarget = evt.target;
+			if(eventTarget.nodeType != dojo.dom.ELEMENT_NODE){eventTarget = eventTarget.parentNode;}
 			dojo.event.browser.stopEvent(evt);
 			this.selectedIsUsed = 0;
 			this.todayIsUsed = 0;
@@ -431,12 +414,12 @@ dojo.widget.defineWidget(
 			}
 			this.setDate(new Date(year, month, eventTarget.innerHTML));
 		},
-		_initFirstDay: function(dateObj,bool){
+		_initFirstDay: function(dateObj, bool){
 			//bool is false for first day of month, true for first day of week adjusted by startOfWeek
 			var d = new Date(dateObj);
-			d.setDate((bool) ? d.getDate() : 1);
+			d.setDate(bool ? d.getDate() : 1);
 			d.setDate(d.getDate()-this._getAdjustedDay(d,this.weekStartsOn));
-			return {year: d.getFullYear(), month: d.getMonth(), date: d.getDate()};
+			return d;
 		},
 		_getAdjustedDay: function(dateObj){
 			//this function is used to adjust date.getDay() values to the new values based on the current first day of the week value
@@ -450,4 +433,3 @@ dojo.widget.defineWidget(
 		}
 	}
 );
-
