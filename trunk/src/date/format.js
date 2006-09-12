@@ -1,7 +1,5 @@
 dojo.provide("dojo.date.format");
 
-dojo.require("dojo.experimental");
-
 dojo.require("dojo.date.common");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.common");
@@ -201,7 +199,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 					s = "?";
 					break;
 				default:
-					dojo.raise("invalid format: "+pattern);
+					dojo.raise("dojo.date.parse: invalid format: "+pattern);
 			}
 			if(pad){ s = dojo.string.pad(s, l); }
 			return s;
@@ -244,7 +242,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //		http://www.unicode.org/reports/tr35/#Date_Format_Patterns
 //
 // value:
-//		The int string to be convertted
+//		The int string to be converted
 //
 // options: object {selector: string, formatLength: string, datePattern: string, timePattern: string, locale: string}
 //		selector- choice of timeOnly,dateOnly (default: date and time)
@@ -252,7 +250,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //		datePattern,timePattern- override pattern with this string
 //		locale- override the locale used to determine formatting rules
 //
-	dojo.experimental("dojo.date.parse");
+
 	//TODO: this is still quite rough - it only implements a small portion of the parsing algorithm needed,
 	// and doesn't provide much flexibility in matching.
 	var locale = dojo.normalizeLocale(options.locale);
@@ -268,6 +266,8 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 	var dateRE = new RegExp("^" + dateREString + "$");
 
 	var match = dateRE.exec(value);
+	if(!match){return null;} /* null */
+
 	var result = new Date();
 	result.setHours(0,0,0,0);
 	for(var i=1; i<match.length; i++){
@@ -303,7 +303,7 @@ function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
 	var chunks = pattern.split('\'');
 	var literal = false;
 	for(var i=0; i<chunks.length; i++){
-		if(!chunks[i]){chunks[i]='\'';}
+		if(!chunks[i]){chunks[i]='\'';} //FIXME
 		else{
 			chunks[i]=(literal ? applyLiteral : applyPattern)(chunks[i]);
 			literal = !literal;
