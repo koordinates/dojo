@@ -869,6 +869,7 @@ dojo.widget.PopupManager = new function(){
 	};
 
 	this.onKey = function(e){
+		if (!e.key) { return; }
 		if(!this.currentMenu || !this.currentMenu.isShowingNow){ return; }
 
 		var m = this.currentFocusMenu;
@@ -1019,7 +1020,7 @@ dojo.widget.defineWidget(
 {
 	menuOverlap: 2,
 
-	templateString: '<div class="dojoMenuBar2"><table class="dojoMenuBar2Client"><tr dojoAttachPoint="containerNode"></tr></table></div>',
+	templateString: '<div class="dojoMenuBar2" tabIndex="0"><table class="dojoMenuBar2Client"><tr dojoAttachPoint="containerNode"></tr></table></div>',
 
 	close: function(force){
 		if(this._highlighted_option){
@@ -1032,25 +1033,24 @@ dojo.widget.defineWidget(
 	processKey: function(evt){
 		if(evt.ctrlKey || evt.altKey){ return false; }
 
-		var keyCode = evt.keyCode;
+		if (!dojo.html.hasClass(evt.target,"dojoMenuBar2")) { return false; }
 		var rval = false;
-		var k = dojo.event.browser.keys;
 
-		switch(keyCode){
- 			case k.KEY_DOWN_ARROW:
+		switch(evt.key){
+ 			case evt.KEY_DOWN_ARROW:
 				rval = this.moveToChildMenu(evt);
 				break;
-			case k.KEY_UP_ARROW:
+			case evt.KEY_UP_ARROW:
 				rval = this.moveToParentMenu(evt);
 				break;
-			case k.KEY_RIGHT_ARROW:
+			case evt.KEY_RIGHT_ARROW:
 				rval = this.moveToNext(evt);
 				break;
-			case k.KEY_LEFT_ARROW:
+			case evt.KEY_LEFT_ARROW:
 				rval = this.moveToPrevious(evt);
 				break;
 			default:
-				rval = this.inherited("processKey", evt);
+				rval = this.inherited("processKey", [evt]);
 				break;
 		}
 
