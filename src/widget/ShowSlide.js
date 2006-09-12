@@ -73,7 +73,11 @@ dojo.widget.defineWidget(
 			this._actions.push(child);
 			var components = this._components[child.on];
 			for(var j = 0, component; component = components[j]; j++){
-				if(child.action && child.action != "remove"){
+				if(child["action"] && (
+					(child.action != "remove")&&
+					(child.action != "fadeout")&&
+					(child.action != "wipeout")
+				) ){
 					this.hideComponent(component);
 				}
 			}
@@ -144,24 +148,29 @@ dojo.widget.defineWidget(
 		if(!action){
 			return false;
 		}
+		var tmpAction = action["action"];
 		
 		var components = this._components[action.on];
 		for(var i = 0, component; component = components[i]; i++){
-			if(action.action){
+			if(tmpAction){
 				var duration = action.duration || 1000;
-				if(action.action == "fade"){
+				if((tmpAction == "fade")||(tmpAction == "fadeIn")){
 					dojo.html.setOpacity(component, 0);
-					dojo.lfx.html.fadeIn(component, duration).play(true);
-				}else if(action.action == "fly"){
+					dojo.lfx.html.fadeShow(component, duration).play(true);
+				}else if(tmpAction == "fadeout"){
+					dojo.lfx.html.fadeHide(component, duration).play(true);
+				}else if(tmpAction == "fly"){
 					var width = dojo.html.getMarginBox(component).width;
 					var position = dojo.html.getAbsolutePosition(component);
 					// alert(position);
 					component.style.position = "relative";
 					component.style.left = -(width + position.x) + "px";
 					dojo.lfx.html.slideBy(component, { top: 0, left: (width + position.x)}, duration, -1, this.callWith).play(true);
-				}else if(action.action == "wipe"){
+				}else if((tmpAction == "wipe")||(tmpAction == "wipein")){
 					dojo.lfx.html.wipeIn(component, duration).play();
-				}else if(action.action == "color"){
+				}else if(tmpAction == "wipeout"){
+					dojo.lfx.html.wipeOut(component, duration).play();
+				}else if(tmpAction == "color"){
 					var from = new dojo.gfx.color.Color(action.from).toRgb();
 					var to = new dojo.gfx.color.Color(action.to).toRgb();
 					var anim = new dojo.animation.Animation(new dojo.math.curves.Line(from, to), duration, 0);
@@ -170,9 +179,9 @@ dojo.widget.defineWidget(
 						node.style.color = "rgb(" + e.coordsAsInts().join(",") + ")";
 					});
 					anim.play(true);
-				}else if(action.action == "bgcolor"){
+				}else if(tmpAction == "bgcolor"){
 					dojo.lfx.html.unhighlight(component, action.to, duration).play();
-				}else if(action.action == "remove"){
+				}else if(tmpAction == "remove"){
 					component.style.display = "none";
 				}
 				component.style.visibility = "visible";
