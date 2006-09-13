@@ -230,6 +230,8 @@ dojo.widget.defineWidget(
 
 	initialize: function(args){
 		
+		this.domNode.widgetId = this.widgetId;
+		
 		for(var i=0; i<this.actionsDisabled.length;i++) {
 			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
 		}
