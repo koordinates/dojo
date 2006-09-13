@@ -61,6 +61,7 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 			top = f.top+"px";
 			bottom = "auto";
 			right = "auto";
+			overflow = "visible";	// necessary on FF for getMarginBox() calls below to work correctly
 		}
 		dojo.html.addClass(elm, "dojoAlign" + dojo.string.capitalize(pos));
 
