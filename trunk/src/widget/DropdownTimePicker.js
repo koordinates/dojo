@@ -30,8 +30,6 @@ dojo.widget.defineWidget(
 			dojo.widget.DropdownTimePicker.superclass.fillInTemplate.call(this, args, frag);
 			var source = this.getFragNodeRef(frag);
 
-			if(args.storedTime){ this.time = "2005-01-01T" + args.storedTime; }
-			
 			var dpNode = document.createElement("div");
 			this.containerNode.appendChild(dpNode);
 			
@@ -43,7 +41,7 @@ dojo.widget.defineWidget(
 			this.containerNode.style.backgroundColor = "transparent";
 			if(args.storedtime){
 				this.timePicker.selectedTime.anyTime = false;
-				this.timePicker.setDateTime(new Date(args.storedtime));
+				this.timePicker.setDateTime("2005-01-01T" + args.storedtime);
 				this.timePicker.initData();
 				this.timePicker.initUI();
 				this.onSetTime();
