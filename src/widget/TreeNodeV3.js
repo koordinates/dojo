@@ -613,6 +613,7 @@ dojo.widget.defineWidget(
 	
 	
 	expand: function(){
+        		
 		if (this.isExpanded) return;
 
 
@@ -642,32 +643,19 @@ dojo.widget.defineWidget(
 		this.showChildren();
 		
 		//dojo.profile.end("expand - showChildren "+this);
-		
-		
-		//dojo.profile.start("expand - viewSetExpand "+this);
-				
-		//dojo.profile.end("expand - viewSetExpand "+this);
-
-		//dojo.profile.start("expand - event "+this);
-
-		
-		//dojo.profile.end("expand - event "+this);
+						
 		
 		//dojo.profile.end("expand "+this);
 	},
 
 
 	collapse: function(){
-		
-				
+						
 		if (!this.isExpanded) return;
-
 		
 		this.isExpanded = false;
 		
 		this.hideChildren();
-		
-		
 	},
 
 
@@ -679,13 +667,25 @@ dojo.widget.defineWidget(
 
 
 	showChildren: function(){
+		//dojo.profile.start("showChildren"+this);
+        
 		this.tree.toggleObj.show(
 			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onShowChildren")
 		);
+        
+		//dojo.profile.end("showChildren"+this);
 	},
-	
+	 
+    
+    
 	onShowChildren: function() {
-		this.onShow();
+        
+		//dojo.profile.start("onShowChildren"+this);
+        
+        this.onShow();
+        
+		//dojo.profile.end("onShowChildren"+this);
+        
 		dojo.event.topic.publish(this.tree.eventNames.afterExpand, {source: this} );		
 	},
 	
