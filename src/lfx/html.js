@@ -260,9 +260,13 @@ dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
 	dojo.lang.forEach(nodes, function(node){
 		var oprop = { overflow: null };
 		
+		// for FF, the node has to be rendered before node.scrollHeight has a value
+		node.style.visibility = "hidden";
+		node.style.display = "block";
+
 		var anim = dojo.lfx.propertyAnimation(node,
 			{	"height": {
-					start: 0,
+					start: 1, // 0 causes IE to display the whole panel
 					end: function(){ return node.scrollHeight; } 
 				}
 			}, 
@@ -276,7 +280,7 @@ dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
 					overflow = "hidden";
 				}
 				visibility = "visible";
-				height = "0px";
+				height = "1px"; // 0 causes IE to display the whole panel
 			}
 			dojo.html.show(node);
 		});
@@ -305,7 +309,7 @@ dojo.lfx.html.wipeOut = function(nodes, duration, easing, callback){
 		var anim = dojo.lfx.propertyAnimation(node,
 			{	"height": {
 					start: function(){ return dojo.html.getContentBox(node).height; },
-					end: 0
+					end: 1 // 0 causes IE to display the whole panel
 				} 
 			},
 			duration,
