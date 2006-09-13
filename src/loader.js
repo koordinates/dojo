@@ -109,7 +109,7 @@ dojo.hostenv.loadUri = function(uri, cb /*optional*/){
 		return 1;
 	}
 	var contents = this.getText(uri, null, true);
-	if(contents == null){ return 0; }
+	if(contents == null || contents == ""){ return 0; }
 	this.loadedUris[uri] = true;
 	if(cb){ contents = '('+contents+')'; }
 	var value = dj_eval(contents);
