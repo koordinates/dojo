@@ -12,6 +12,8 @@ dojo.provide("dojo.crypto.Blowfish");
  *	2005-12-08
  */
 dojo.crypto.Blowfish = new function(){
+	//	summary
+	//	Object for doing Blowfish encryption/decryption.
 	var POW2=Math.pow(2,2);
 	var POW3=Math.pow(2,3);
 	var POW4=Math.pow(2,4);
@@ -346,27 +348,31 @@ dojo.crypto.Blowfish = new function(){
 //	PUBLIC FUNCTIONS
 //	0.2: Only supporting ECB mode for now.
 ////////////////////////////////////////////////////////////////////////////
-	this.getIV=function(outputType){
+	this.getIV=function(/* dojo.crypto.outputTypes? */ outputType){
+		//	summary
+		//	returns the initialization vector in the output format specified by outputType
 		var out=outputType||dojo.crypto.outputTypes.Base64;
 		switch(out){
 			case dojo.crypto.outputTypes.Hex:{
 				var s=[];
 				for(var i=0; i<iv.length; i++)
 					s.push((iv[i]).toString(16));
-				return s.join("");
+				return s.join("");		//	string
 			}
 			case dojo.crypto.outputTypes.String:{
-				return iv.join("");
+				return iv.join("");		//	string
 			}
 			case dojo.crypto.outputTypes.Raw:{
-				return iv;
+				return iv;				//	array
 			}
 			default:{
-				return toBase64(iv);
+				return toBase64(iv); 	//	 string
 			}
 		}
 	};
-	this.setIV=function(data, inputType){
+	this.setIV=function(/* string */data, /* dojo.crypto.outputTypes? */inputType){
+		//	summary
+		//	sets the initialization vector to data (as interpreted as inputType)
 		var ip=inputType||dojo.crypto.outputTypes.Base64;
 		var ba=null;
 		switch(ip){
@@ -400,7 +406,9 @@ dojo.crypto.Blowfish = new function(){
 		iv.left=ba[0]*POW24|ba[1]*POW16|ba[2]*POW8|ba[3];
 		iv.right=ba[4]*POW24|ba[5]*POW16|ba[6]*POW8|ba[7];
 	}
-	this.encrypt = function(plaintext, key, ao){
+	this.encrypt = function(/* string */plaintext, /* string */key, /* object? */ao){
+		//	summary
+		//	encrypts plaintext using key; allows user to specify output type and cipher mode via keyword object "ao"
 		var out=dojo.crypto.outputTypes.Base64;
 		var mode=dojo.crypto.cipherModes.EBC;
 		if (ao){
@@ -454,21 +462,23 @@ dojo.crypto.Blowfish = new function(){
 				var s=[];
 				for(var i=0; i<cipher.length; i++)
 					s.push((cipher[i]).toString(16));
-				return s.join("");
+				return s.join("");	//	string
 			}
 			case dojo.crypto.outputTypes.String:{
-				return cipher.join("");
+				return cipher.join("");	//	string
 			}
 			case dojo.crypto.outputTypes.Raw:{
-				return cipher;
+				return cipher;	//	array
 			}
 			default:{
-				return toBase64(cipher);
+				return toBase64(cipher);	//	string
 			}
 		}
 	};
 
-	this.decrypt = function(ciphertext, key, ao){
+	this.decrypt = function(/* string */ciphertext, /* string */key, /* object? */ao){
+		//	summary
+		//	decrypts ciphertext using key; allows specification of how ciphertext is encoded via ao.
 		var ip=dojo.crypto.outputTypes.Base64;
 		var mode=dojo.crypto.cipherModes.EBC;
 		if (ao){
@@ -549,7 +559,7 @@ dojo.crypto.Blowfish = new function(){
 		//	convert to string
 		for(var i=0; i<pt.length; i++)
 			pt[i]=String.fromCharCode(pt[i]);
-		return pt.join("");
+		return pt.join("");		//	string
 	};
 
 	this.setIV("0000000000000000", dojo.crypto.outputTypes.Hex);
