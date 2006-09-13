@@ -668,6 +668,7 @@ dojo.widget.defineWidget (
 		flip: false,
 
 		postMixInProperties: function(){
+			dojo.widget.SliderHorizontal.superclass.postMixInProperties.apply(this, arguments);
 			if (!isNaN(parseFloat(this.initialValue))) {
 				this.initialValueX = parseFloat(this.initialValue);
 			}
@@ -732,6 +733,7 @@ dojo.widget.defineWidget (
 		flip: false,
 
 		postMixInProperties: function(){
+			dojo.widget.SliderVertical.superclass.postMixInProperties.apply(this, arguments);
 			if (!isNaN(parseFloat(this.initialValue))) {
 				this.initialValueY = parseFloat(this.initialValue);
 			}
