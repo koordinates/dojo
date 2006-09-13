@@ -301,6 +301,8 @@ dojo.widget.defineWidget(
 	},
 
 	onTreeClick: function(e){
+		//dojo.profile.start("onTreeClick");
+		
 		var domElement = e.target;
 		
 		// find node
@@ -320,15 +322,21 @@ dojo.widget.defineWidget(
 		
 		this._focusLabel(node);
 		
+		//dojo.profile.end("onTreeClick");
 		
 	},
 	
 	processExpandClick: function(node){
+		
+		//dojo.profile.start("processExpandClick");
+		
 		if (node.isExpanded){
 			this.collapse(node);
 		} else {
 			this.expand(node);
 		}
+		
+		//dojo.profile.end("processExpandClick");
 	},
 		
 	
@@ -409,11 +417,18 @@ dojo.widget.defineWidget(
 	 * callout activated even if node is expanded already
 	 */
 	expand: function(node) {
+		
+		//dojo.profile.start("expand");
+		
 		//dojo.debug("Expand "+node);
 		
 		if (node.isFolder) {
+			
 			node.expand(); // skip trees or non-folders
 		}
+		
+		
+		//dojo.profile.end("expand");
 				
 	},
 

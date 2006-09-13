@@ -244,6 +244,18 @@ dojo.declare(
 		// delete from widget list that are notified on resize etc (no parent)
 		delete dojo.widget.manager.topWidgets[child.widgetId];
 				
-	}
+	},
+	
+	 /**
+     * does not inform children about resize (skips onShow),
+     * because on large trees that's slow
+     */
+    onShow: function() {        
+        this.animationInProgress=false;
+    },
+    
+    onHide: function() {        
+        this.animationInProgress=false;
+    }
 	
 });
