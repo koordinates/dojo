@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.Checkbox");
 
 dojo.require("dojo.widget.*");
+dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
 
@@ -20,6 +21,7 @@ dojo.widget.defineWidget(
 		value: "on",
 
 		postMixInProperties: function(){
+			dojo.widget.Checkbox.superclass.postMixInProperties.apply(this, arguments);
 			// set the variables referenced by the template
 			// valid HTML 4.01 and XHTML use disabled="disabled" - convert to boolean 
 			//NOTE: this doesn't catch disabled with no value if FF
