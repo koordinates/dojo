@@ -62,7 +62,7 @@ dojo.widget.defineWidget(
 		for(var i = 0, child; child = this.children[i]; i++){
 			if(child.widgetType == "ShowSlide"){
 				this._slides.push(child);
-				this.option.text = child.title;
+				this.option.text = child.title+" ("+(i+1)+")";
 				this.option.parentNode.insertBefore(this.option.cloneNode(true), this.option);
 			}
 		}
