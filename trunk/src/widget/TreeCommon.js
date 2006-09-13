@@ -79,10 +79,15 @@ dojo.declare(
 		}
 		
 		if (!domElement) {
-			dojo.raise("domElement2TreeNode couldnt detect widget");
+			return null;
 		}
 		
-		return dojo.widget.byId(domElement.widgetId);
+		var widget = dojo.widget.byId(domElement.widgetId);
+		if (!widget.isTreeNode) {
+			return null;
+		}
+		
+		return widget;
 	},
 	
 	/**
@@ -100,7 +105,7 @@ dojo.declare(
 		}
 		
 		
-		var stack = [elem]
+		var stack = [elem];
 		while (elem = stack.pop()) {
 			dojo.lang.forEach(elem.children, function(elem) {
 				if (filter.call(_this, elem)) {		

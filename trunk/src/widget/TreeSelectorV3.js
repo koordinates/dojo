@@ -15,8 +15,7 @@ dojo.widget.defineWidget(
 {
 	// TODO: add multiselect
 
-	listenTreeEvents: ["afterAddChild","afterCollapse","afterTreeChange", "afterDetach", "beforeTreeDestroy"],
-	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},	
+	listenTreeEvents: ["afterTreeCreate","afterCollapse","afterTreeChange", "afterDetach", "beforeTreeDestroy"],
 	
 	allowedMulti: true,
 	
@@ -24,11 +23,31 @@ dojo.widget.defineWidget(
 		select : "select",
 		destroy : "destroy",
 		deselect : "deselect",
-		listenNode: "listenNode",
-		unlistenNode: "unlistenNode",
 		dblselect: "dblselect" // select already selected node.. Edit or whatever
 	},
 
+	onAfterTreeCreate: function(message) {
+		var tree = message.source;
+		dojo.event.browser.addListener(tree.domNode, "onclick", dojo.lang.hitch(this, this.onTreeClick));
+		dojo.event.browser.addListener(tree.domNode, "ondblclick", dojo.lang.hitch(this, this.onTreeDblClick));
+		dojo.event.browser.addListener(tree.domNode, "onKey", dojo.lang.hitch(this, this.onKey));
+		
+	},
+	
+	
+	onKey: function(e) {
+		if (!e.key || e.ctrkKey || e.altKey) { return; }
+		
+		switch(e.key) {
+			case e.KEY_ENTER:
+				var node = this.domElement2TreeNode(e.target);
+				if (node) {
+					this.processNode(node, e);
+				}
+		
+		}
+	},
+		
 	initialize: function(args) {
 
 		for(name in this.eventNamesDefault) {
@@ -36,53 +55,12 @@ dojo.widget.defineWidget(
 				this.eventNames[name] = this.widgetId+"/"+this.eventNamesDefault[name];
 			}
 		}
-		
-		this.onLabelClickHandler =  dojo.lang.hitch(this, this.onLabelClick);
-		this.onLabelDblClickHandler =  dojo.lang.hitch(this, this.onLabelDblClick);
-		
+				
 	},
-
-
-	listenNode: function(node) {		
-		if (node.actionIsDisabled(node.actions.SELECT)) {
-			return;
-		}
-		
-		//dojo.debug((new Error()).stack)
-		//	dojo.debug("listen "+node);
-		dojo.event.browser.addListener(node.labelNode, "onclick", this.onLabelClickHandler);
-		if (dojo.render.html.ie) {
-			dojo.event.browser.addListener(node.labelNode, "ondblclick", this.onLabelDblClickHandler);
-		}
-		dojo.event.topic.publish(this.eventNames.listenNode, { node: node });
-			
-	},
-	
-	unlistenNode: function(node) {
-		if (node.actionIsDisabled(node.actions.SELECT)) {
-			return;
-		}
-		
-		//dojo.debug("unlisten "+node);
-		
-		dojo.event.browser.removeListener(node.labelNode, "onclick", this.onLabelClickHandler);
-		if (dojo.render.html.ie) {
-			dojo.event.browser.removeListener(node.labelNode, "ondblclick", this.onLabelDblClickHandler);
-		}
-		dojo.event.topic.publish(this.eventNames.unlistenNode, { node: node });
-	},
-
-
-	onAfterAddChild: function(message) {
-		//dojo.debug("add child!");
-		this.listenNode(message.child);
-	},
-	
 
 	onBeforeTreeDestroy: function(message) {
 		this.unlistenTree(message.source);
 	},
-
 
 	// deselect node if ancestor is collapsed
 	onAfterCollapse: function(message) {		
@@ -90,22 +68,35 @@ dojo.widget.defineWidget(
 	},
 
 	// IE will throw select -> dblselect. Need to transform to select->select
-	onLabelDblClick: function(event) {
-		this.onLabelClick(event);			
+	onTreeDblClick: function(event) {
+		this.onTreeClick(event);			
 	},		
 		
 	checkSpecialEvent: function(event) {		
 		return event.shiftKey || event.ctrlKey;
 	},
-		
+	
+	
+	onTreeClick: function(event) {
+		var node = this.domElement2TreeNode(event.target);
+		if (node) {
+			this.processNode(node, event);
+		}
+	},
+	
+	
 	/**
 	 * press on selected with ctrl => deselect it
 	 * press on selected w/o ctrl => dblselect it and deselect all other
 	 *
 	 * press on unselected with ctrl => add it to selection
+	 *
+	 * event may be both mouse & keyboard enter
 	 */
-	onLabelClick: function(event) {		
-		var node = this.domElement2TreeNode(event.target);
+	processNode: function(node, event) {		
+		if (node.actionIsDisabled(node.actions.SELECT)) {
+			return;
+		}
 		
 		//dojo.debug("click "+node+ "special "+this.checkSpecialEvent(event));
 		//dojo.html.setClass(event.target, "TreeLabel TreeNodeEmphased");
@@ -173,19 +164,12 @@ dojo.widget.defineWidget(
 		
 		
 		if (!message.newTree || !this.listenedTrees[message.newTree.widgetId]) {
-			// moving from our trfee to new one
+			// moving from our trfee to new one that we don't listen
 			
 			if (this.selectedNode && message.node.children) {
 				this.deselectIfAncestorMatch(message.node);
-			}
+			}						
 			
-			this.processDescendants(message.node, this.listenNodeFilter, this.unlistenNode);					
-			
-		}
-		if (!message.oldTree || !this.listenedTrees[message.oldTree.widgetId]) {
-			//dojo.debugShallow("listen! "+this.listenedTrees);
-			// moving from old tree to our tree
-			this.processDescendants(message.node, this.listenNodeFilter, this.listenNode);			
 		}
 		
 		

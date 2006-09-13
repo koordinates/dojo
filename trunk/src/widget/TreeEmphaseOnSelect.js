@@ -20,8 +20,6 @@ dojo.widget.defineWidget(
 		this.selector = dojo.widget.byId(this.selector);
 		
 		dojo.event.topic.subscribe(this.selector.eventNames.select, this, "onSelect");
-		//dojo.event.topic.subscribe(this.selector.eventNames.listenNode, this, "onDeselect");
-		//dojo.event.topic.subscribe(this.selector.eventNames.unlistenNode, this, "onDeselect");
 		dojo.event.topic.subscribe(this.selector.eventNames.deselect, this, "onDeselect");	
 	},
 

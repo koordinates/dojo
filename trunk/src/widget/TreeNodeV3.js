@@ -528,6 +528,14 @@ dojo.widget.defineWidget(
 		dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode).replace(reg,'') + ' '+clazz);		
 	},
 		
+	viewUnfocus: function() {
+		dojo.html.removeClass(this.labelNode, this.tree.classPrefix+"LabelFocused");
+	},
+	
+	viewFocus: function() {
+		dojo.html.addClass(this.labelNode, this.tree.classPrefix+"LabelFocused");
+	},
+	
 	
 	
 // ================================ detach from parent ===================================
