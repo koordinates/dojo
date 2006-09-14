@@ -6,7 +6,7 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.html.display");
 dojo.require("dojo.widget.RichText");
-dojo.require("dojo.widget.Menu2");
+dojo.require("dojo.widget.PopupContainer");
 dojo.require("dojo.widget.ColorPalette");
 
 dojo.widget.Editor2ToolbarItemManager = {

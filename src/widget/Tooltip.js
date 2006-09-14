@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.Tooltip");
 dojo.require("dojo.widget.ContentPane");
-dojo.require("dojo.widget.Menu2");			// for PopupContainerBase
+dojo.require("dojo.widget.PopupContainer");
 dojo.require("dojo.uri.Uri");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
