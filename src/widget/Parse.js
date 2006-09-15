@@ -60,8 +60,8 @@ dojo.widget.Parse = function(fragment){
 				}
 			}
 		}catch(e){
-			dojo.debug("dojo.widget.Parse: error:" + e);
-			// throw e;
+		//	dojo.debug("dojo.widget.Parse: error:" + e);
+			 throw e;
 			// IE is such a bitch sometimes
 		}
 		// if there's a sub-frag, build widgets from that too
