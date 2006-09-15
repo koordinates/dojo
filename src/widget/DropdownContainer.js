@@ -32,7 +32,7 @@ dojo.widget.defineWidget(
 		fillInTemplate: function(args, frag){
 			var source = this.getFragNodeRef(frag);
 
-			this.popup = dojo.widget.createWidget("PopupContainer", {toggle: this.containerToggle});
+			this.popup = dojo.widget.createWidget("PopupContainer", {toggle: this.containerToggle, toggleDuration: this.containerToggleDuration});
 
 			this.containerNode = this.popup.domNode;
 
@@ -55,7 +55,9 @@ dojo.widget.defineWidget(
 		},
 
 		hideContainer: function(){
-			this.popup.close();
+			if(this.popup.isShowingNow){
+				this.popup.close();
+			}
 		},
 
 		onInputChange: function(){}
