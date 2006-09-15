@@ -186,7 +186,7 @@ dojo.lang.extend(dojo.lfx.Animation, {
 	_startRepeatCount: 0,
 
 	// public methods
-	play: function(/*int?*/ delay, /*gotoStart?*/){
+	play: function(/*int?*/ delay, /*bool?*/ gotoStart){
 		if(gotoStart){
 			clearTimeout(this._timer);
 			this._active = false;
@@ -240,7 +240,7 @@ dojo.lang.extend(dojo.lfx.Animation, {
 		return this; // dojo.lfx.Animation
 	},
 
-	gotoPercent: function(/*Decimal*/pct, /*bool?*/andPlay){
+	gotoPercent: function(/*Decimal*/ pct, /*bool?*/ andPlay){
 		clearTimeout(this._timer);
 		this._active = true;
 		this._paused = true;
