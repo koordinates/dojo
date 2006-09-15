@@ -299,18 +299,18 @@ dojo.widget.defineWidget(
 	
 	},
 
-	prepareDestroy: function(node, sync) {
+	prepareDestroyChild: function(node, sync) {
 		//dojo.debug(node);
 		var deferred = this.startProcessing(node);		
 		return deferred;
 	},
 	
-	finalizeDestroy: function(node) {
+	finalizeDestroyChild: function(node) {
 		this.finishProcessing(node);
 	},
 		
 
-	doDestroy: function(node, sync){
+	doDestroyChild: function(node, sync){
 
 		
 		var params = {
@@ -319,7 +319,7 @@ dojo.widget.defineWidget(
 		}
 
 		var deferred = this.runRpc({
-			url: this.getRpcUrl('destroy'),
+			url: this.getRpcUrl('destroyChild'),
 			sync: sync,
 			params: params			
 		});
@@ -329,7 +329,7 @@ dojo.widget.defineWidget(
 		var args = arguments;
 		
 		deferred.addCallback(function() {			
-			dojo.widget.TreeBasicControllerV3.prototype.doDestroy.apply(_this,args);
+			dojo.widget.TreeBasicControllerV3.prototype.doDestroyChild.apply(_this,args);
 		});
 		
 						

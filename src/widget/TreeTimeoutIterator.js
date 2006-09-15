@@ -56,17 +56,13 @@ function(elem, callFunc, callObj) {
 	
 	
 	setMaxLevel: function(level) {
-		if (level<1) {
-			dojo.raise("setMaxLevel: level="+level+" should be >=1");
-		}
-		
 		this.maxStackDepth = level-2;
 	},
 	
 	forward: function(timeout) {
 		var _this = this;
 		
-		if (this.timeout) {
+		if (this.timeout) { // if timeout required between forwards
 			// tid will be assigned at the end of outer func execution
 			var tid = setTimeout(function() {_this.processNext(); clearTimeout(tid); }, _this.timeout);
 		} else {
@@ -75,10 +71,10 @@ function(elem, callFunc, callObj) {
 	},
 	
 	start: function(processFirst) {
-		if (processFirst) {
+		if (processFirst) {			
 			return this.callFunc.call(this.callObj, this.currentParent, this);			
 		}
-		
+				
 		return this.processNext();
 	},
 	
@@ -97,6 +93,9 @@ function(elem, callFunc, callObj) {
 		
 		var next;
 			
+		if (this.maxStackDepth == -2) {   
+			return; // process only first cause level=0, do not process children
+		}
 		
 		while (true) {
 			var children = this.currentParent.children;

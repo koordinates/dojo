@@ -15,13 +15,13 @@ dojo.widget.defineWidget(
 {
 	// TODO: add multiselect
 
-	listenTreeEvents: ["afterTreeCreate","afterCollapse","afterTreeChange", "afterDetach", "beforeTreeDestroy"],
+	listenTreeEvents: ["afterTreeCreate","afterCollapse","afterChangeTree", "afterDetach", "beforeTreeDestroy"],
+	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},	
 	
 	allowedMulti: true,
 	
 	eventNamesDefault: {
 		select : "select",
-		destroy : "destroy",
 		deselect : "deselect",
 		dblselect: "dblselect" // select already selected node.. Edit or whatever
 	},
@@ -29,7 +29,9 @@ dojo.widget.defineWidget(
 	onAfterTreeCreate: function(message) {
 		var tree = message.source;
 		dojo.event.browser.addListener(tree.domNode, "onclick", dojo.lang.hitch(this, this.onTreeClick));
-		dojo.event.browser.addListener(tree.domNode, "ondblclick", dojo.lang.hitch(this, this.onTreeDblClick));
+		if (dojo.render.html.ie) {
+			dojo.event.browser.addListener(tree.domNode, "ondblclick", dojo.lang.hitch(this, this.onTreeDblClick));
+		}
 		dojo.event.browser.addListener(tree.domNode, "onKey", dojo.lang.hitch(this, this.onKey));
 		
 	},
@@ -47,6 +49,28 @@ dojo.widget.defineWidget(
 		
 		}
 	},
+	
+	
+		
+	onAfterChangeTree: function(message) {
+		
+		if (!message.oldTree && message.node.selected) {
+			this.select(message.node);
+		}
+		
+		if (!message.newTree || !this.listenedTrees[message.newTree.widgetId]) {
+			// moving from our trfee to new one that we don't listen
+			
+			if (this.selectedNode && message.node.children) {
+				this.deselectIfAncestorMatch(message.node);
+			}						
+			
+		}
+		
+		
+	},
+		
+		
 		
 	initialize: function(args) {
 
@@ -160,20 +184,6 @@ dojo.widget.defineWidget(
 	},
 	
 			
-	onAfterChangeTree: function(message) {
-		
-		
-		if (!message.newTree || !this.listenedTrees[message.newTree.widgetId]) {
-			// moving from our trfee to new one that we don't listen
-			
-			if (this.selectedNode && message.node.children) {
-				this.deselectIfAncestorMatch(message.node);
-			}						
-			
-		}
-		
-		
-	},
 
 
 	onAfterDetach: function(message) {

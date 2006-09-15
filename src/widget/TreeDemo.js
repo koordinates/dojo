@@ -67,7 +67,7 @@ dojo.widget.TreeDemo = {
 			function (menuItem) { 
 				var node = menuItem.getTreeNode();
 				//if (confirm("Delete node with descendants: "+node.title.replace(/(<([^>]+)>)/ig," ") +" ?")) {
-				_t.reportIfDefered(controller.destroy(node)); 
+				_t.reportIfDefered(controller.destroyChild(node)); 
 				
 			}
 		);

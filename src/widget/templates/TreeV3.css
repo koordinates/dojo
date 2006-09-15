@@ -88,3 +88,8 @@ so I have to remove TreeExpand and process this one specifically
 .TreeLabelFocused {
       outline: 1px invert dotted;
 }
+
+
+.TreeDragObjectDragClass {
+	z-index: -9999;
+}

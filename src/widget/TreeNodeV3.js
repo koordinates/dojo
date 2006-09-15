@@ -34,6 +34,7 @@ dojo.widget.defineWidget(
 		
 		
 	nodeType: "",
+    selected: false,
 	
 	getNodeType: function() {
 		return this.nodeType;
@@ -109,7 +110,7 @@ dojo.widget.defineWidget(
 	 * get information from args & parent, then build rendering
 	 */
 	buildRendering: function(args, fragment, parent) {
-		
+		//dojo.debug("Build for "+args.toSource());
 		
 		if (args.tree) {
 			this.tree = dojo.lang.isString(args.tree) ? dojo.widget.manager.getWidgetById(args.tree) : args.tree;			
