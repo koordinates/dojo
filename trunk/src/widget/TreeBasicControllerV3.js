@@ -29,7 +29,8 @@ dojo.widget.defineWidget(
 	 * 2. if an event refers to tree, then add "Tree"
 	 * 3. add action
 	 */
-	listenTreeEvents: ["afterChangeTree", "afterTreeCreate", "beforeTreeDestroy"],
+	listenTreeEvents: ["afterSetFolder", "afterTreeCreate", "beforeTreeDestroy"],
+	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},	
 		
 		
 	editor: null,
@@ -41,7 +42,6 @@ dojo.widget.defineWidget(
 			this.editor.controller = this;
 		}
 		
-		this.onExpandClickHandler =  dojo.lang.hitch(this, this.onExpandClick)
 	},
 		
 	
@@ -49,24 +49,21 @@ dojo.widget.defineWidget(
 		return elem.getInfo();
 	},
 
-	onAfterChangeTree: function(message) {
-		//dojo.debugShallow(message);
+	onAfterSetFolder: function(message) {
 		
 		//dojo.profile.start("onTreeChange");
         
-        // process only new node
-		if (message.oldTree) return;        
-		
-		if (message.node.expandLevel > 0) {
-			this.expandToLevel(message.node, message.node.expandLevel);				
+		if (message.source.expandLevel > 0) {
+			this.expandToLevel(message.source, message.source.expandLevel);				
 		}
-		if (message.node.loadLevel > 0) {
-			this.loadToLevel(message.node, message.node.loadLevel);				
+		if (message.source.loadLevel > 0) {
+			this.loadToLevel(message.source, message.source.loadLevel);				
 		}
 			
 		
 		//dojo.profile.end("onTreeChange");
 	},
+	
 	
 
 
@@ -377,13 +374,14 @@ dojo.widget.defineWidget(
 	expandToLevel: function(nodeOrTree, level) {
 		dojo.require("dojo.widget.TreeTimeoutIterator");
 		
+		var _this = this;
 		var filterFunc = function(elem) {
 			var res = elem.isFolder || elem.children && elem.children.length;
 			//dojo.debug("Filter "+elem+ " result:"+res);
 			return res;
 		};
-		var callFunc = function(node, iterator) {
-			 this.expand(node, true);
+		var callFunc = function(node, iterator) {			
+			 _this.expand(node, true);
 			 iterator.forward();
 		}
 			
@@ -423,7 +421,7 @@ dojo.widget.defineWidget(
 		
 		//dojo.profile.start("expand");
 		
-		//dojo.debug("Expand "+node);
+		//dojo.debug("Expand "+node.isFolder);
 		
 		if (node.isFolder) {
 			
@@ -656,7 +654,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 // =============================== destroy ============================
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
-	canDestroy: function(child) {
+	canDestroyChild: function(child) {
 		
 		if (child.parent && !this.canDetach(child)) {
 			return false;
@@ -665,14 +663,14 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 
 
-	destroy: function(node) {
+	destroyChild: function(node) {
 		return this.runStages(
-			this.canDestroy, this.prepareDestroy, this.doDestroy, this.finalizeDestroy, this.exposeDestroy, arguments
+			this.canDestroyChild, this.prepareDestroyChild, this.doDestroyChild, this.finalizeDestroyChild, this.exposeDestroyChild, arguments
 		);			
 	},
 
 
-	doDestroy: function(node) {
+	doDestroyChild: function(node) {
 		node.destroy();
 	}
 	

@@ -12,6 +12,7 @@
 
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
 	dojo.hostenv.writeIncludes();
 
 
@@ -50,7 +51,17 @@
 
 	function kill(id) {
 		dojo.debug("RUN DESTROY...");
-		dojo.widget.byId(id).destroy();
+		var widget = dojo.widget.byId(id);
+        if (widget.isTreeNode) {
+            var controller = dojo.widget.byId('controller');
+            if (!controller) {
+                dojo.debug("No controller to destroy");
+                return;
+            }
+            controller.destroyChild(widget);
+        } else {
+            widget.destroy();
+        }
 		dojo.debug("...DONE DESTROY");
 	}
 
@@ -77,21 +88,23 @@
 
 <h2>Destroy Tree</h2>
 
+<div dojoType="TreeBasicControllerV3" id="controller"></div>
 
 
-<div dojoType="TreeV3" id="tree">
-	<div dojoType="TreeNodeV3" title="Item 1" widgetId="node1">
+<div dojoType="TreeV3" id="tree" listeners="controller">
+	<div dojoType="TreeNodeV3" title="Item 1" id="node1">
 		<div dojoType="TreeNodeV3" title="Item 1.1" ></div>
 	</div>
 	<div dojoType="TreeNodeV3" title="Item 2" ></div>
 </div>
 
-
+<p>
 <input type=button onClick="test('node1'); this.parentNode.removeChild(this)" value="Destroy firstNode"/>
-
+<br/>
 <input type=button onClick="test('tree'); this.parentNode.removeChild(this)" value="Destroy tree"/>
-
-
+<br/>
+<input type=button onClick="test('controller'); this.parentNode.removeChild(this)" value="Destroy controller"/>
+<br/>
 
 </body>
 </html>
