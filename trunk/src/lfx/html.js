@@ -7,7 +7,7 @@ dojo.require("dojo.html.display");
 dojo.require("dojo.html.color");
 dojo.require("dojo.html.layout");
 
-dojo.lfx.html._byId = function(nodes){
+dojo.lfx.html._byId = function(/*Array*/ nodes){
 	if(!nodes){ return []; }
 	if(dojo.lang.isArrayLike(nodes)){
 		if(!nodes.alreadyChecked){
@@ -16,15 +16,17 @@ dojo.lfx.html._byId = function(nodes){
 				n.push(dojo.byId(node));
 			});
 			n.alreadyChecked = true;
-			return n;
+			return n; // Array
 		}else{
-			return nodes;
+			return nodes; // Array
 		}
 	}else{
+		/* nodes: DOMNode
+		   pId: d */
 		var n = [];
 		n.push(dojo.byId(nodes));
 		n.alreadyChecked = true;
-		return n;
+		return n; // Array
 	}
 }
 
@@ -157,10 +159,10 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 		}
 	}
 	
-	return anim;
+	return anim; // dojo.lfx.Animation
 }
 
-dojo.lfx.html._makeFadeable = function(nodes){
+dojo.lfx.html._makeFadeable = function(/*Array*/ nodes){
 	var makeFade = function(node){
 		if(dojo.render.html.ie){
 			// only set the zoom if the "tickle" value would be the same as the
@@ -184,11 +186,14 @@ dojo.lfx.html._makeFadeable = function(nodes){
 	if(dojo.lang.isArrayLike(nodes)){
 		dojo.lang.forEach(nodes, makeFade);
 	}else{
+		/* nodes: DOMNode
+		   pId: d */
 		makeFade(nodes);
 	}
 }
 
-dojo.lfx.html.fade = function(nodes, values, duration, easing, callback){
+dojo.lfx.html.fade = function(/*Array*/ nodes, /*Object*/values, /*Decimal?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// values: object { start: Decimal?, end: Decimal? }
 	nodes = dojo.lfx.html._byId(nodes);
 	var props = { property: "opacity" };
 	if(!dj_undef("start", values)){
@@ -211,7 +216,7 @@ dojo.lfx.html.fade = function(nodes, values, duration, easing, callback){
 		anim.connect("onEnd", function(){ callback(nodes, anim); });
 	}
 
-	return anim;
+	return anim; // dojo.lfx.Animation
 }
 
 dojo.lfx.html.fadeIn = function(nodes, duration, easing, callback){
@@ -253,7 +258,7 @@ dojo.lfx.html.fadeHide = function(nodes, duration, easing, callback){
 	return anim;
 }
 
-dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
+dojo.lfx.html.wipeIn = function(/*Array*/ nodes, /*Decimal?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 
@@ -297,10 +302,10 @@ dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
 		anims.push(anim);
 	});
 	
-	return dojo.lfx.combine(anims); 
+	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
-dojo.lfx.html.wipeOut = function(nodes, duration, easing, callback){
+dojo.lfx.html.wipeOut = function(/*Array*/ nodes, /*Decimal?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 	
@@ -338,15 +343,18 @@ dojo.lfx.html.wipeOut = function(nodes, duration, easing, callback){
 		anims.push(anim);
 	});
 
-	return dojo.lfx.combine(anims); 
+	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
-dojo.lfx.html.slideTo = function(nodes, coords, duration, easing, callback){
+dojo.lfx.html.slideTo = function(/*Array*/ nodes, /*Object*/ coords, /*Decimal?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// coords: object { top: Decimal?, left: Decimal? }
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 	var compute = dojo.html.getComputedStyle;
 	
 	if(dojo.lang.isArray(coords)){
+		/* coords: Array
+		   pId: a */
 		dojo.deprecated('dojo.lfx.html.slideTo(node, array)', 'use dojo.lfx.html.slideTo(node, {top: value, left: value});', '0.5');
 		coords = { top: coords[0], left: coords[1] };
 	}
@@ -387,15 +395,18 @@ dojo.lfx.html.slideTo = function(nodes, coords, duration, easing, callback){
 		anims.push(anim);
 	});
 	
-	return dojo.lfx.combine(anims); 
+	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
-dojo.lfx.html.slideBy = function(nodes, coords, duration, easing, callback){
+dojo.lfx.html.slideBy = function(/*Array*/ nodes, /*Object*/ coords, /*Decimal?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// coords: object { top: Decimal?, left: Decimal? }
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 	var compute = dojo.html.getComputedStyle;
 
 	if(dojo.lang.isArray(coords)){
+		/* coords: Array
+		   pId: a */
 		dojo.deprecated('dojo.lfx.html.slideBy(node, array)', 'use dojo.lfx.html.slideBy(node, {top: value, left: value});', '0.5');
 		coords = { top: coords[0], left: coords[1] };
 	}
@@ -436,7 +447,7 @@ dojo.lfx.html.slideBy = function(nodes, coords, duration, easing, callback){
 		anims.push(anim);
 	});
 
-	return dojo.lfx.combine(anims); 
+	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
 dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
