@@ -278,10 +278,8 @@ dojo.widget.defineWidget(
 			}
 			if(dojo.html.hasAttribute(cells[i], "dataType")){
 				var sortType = dojo.html.getAttribute(cells[i],"dataType");
-				//	FIXME: switch this to let sorting happen based on dojo.html.renderedTextContent
 				if(sortType.toLowerCase()=="html" || sortType.toLowerCase()=="markup"){
 					o.sortType = "__markup__";	//	always convert to "__markup__"
-				//	o.noSort = true;
 				}else{
 					var type = this.getTypeFromString(sortType);
 					if(type){
@@ -330,58 +328,26 @@ dojo.widget.defineWidget(
 	parseData: function(/* HTMLTableBody */body){
 		//	summary
 		//	Parse HTML data into native JSON structure for the store.
-		var rows = body.rows;
-		if(rows.length == 0 && this.columns.length == 0) return;	//	there's no data, ignore me.
+		if(body.rows.length == 0 && this.columns.length == 0){
+			return;	//	there's no data, ignore me.
+		}
 
 		//	create a data constructor based on what we've got for the fields.
 		var self=this;
-		var ctor=function(row){
-			var obj = {};
-			for(var i=0; i<self.columns.length; i++){
-				var o = obj;
-				var data = row.cells[i].innerHTML;
-				var p = self.columns[i].getField();
-				if(p.indexOf(".") > -1){
-					p = p.split(".");
-					while(p.length>1){
-						var pr = p.shift();
-						o[pr] = {};
-						o = o[pr];
-					}
-					p = p[0];
-				}
-
-				if(self.columns[i].sortType=="__markup__") o[p] = String(data);
-				else{
-					var type = self.columns[i].getType();
-					if(data){
-						o[p] = new type(data);
-					} else {
-						o[p] = new type();
-					}
-				}
+		this["__selected__"] = [];
+		var arr = this.store.getFromHtml(this.columns, body, function(obj, row){
+			obj[self.valueField] = dojo.html.getAttribute(row, "value");
+			if(dojo.html.getAttribute(row, "selected")=="true"){
+				self["__selected__"].push(obj);
 			}
-			return obj;
-		};
-
-		//	we have initialization data, let's parse it.
-		var arr=[];
-		var selected=[];
-		for(var i=0; i<rows.length; i++){
-			var row = rows[i];
-			var o = ctor(row);	// yay.  magic.  love.  sigh.
-			o[this.valueField] = dojo.html.getAttribute(row,"value");
-			if(dojo.html.getAttribute(row,"selected")=="true"){
-				selected.push(o);
-			}
-			arr.push(o);
-		}
+		});
 		this.store.setData(arr);
-		
-		for(var i=0; i<selected.length; i++){
-			this.select(selected[i]);
+		for(var i=0; i<this["__selected__"].length; i++){
+			this.select(this["__selected__"][i]);
 		}
 		this.renderSelections();
+
+		delete this["__selected__"];
 
 		//	say that we are already initialized so that we don't kill anything
 		this.isInitialized=true;
@@ -578,11 +544,14 @@ dojo.widget.defineWidget(
 		var self=this;
 		var sortFunctions=[];	//	our function stack.
 	
-		function createSortFunction(field, dir){
+		function createSortFunction(fieldIndex, dir){
+			var meta=self.columns[fieldIndex];
+			var field=meta.getField();
 			return function(rowA, rowB){
 				if(dojo.html.hasAttribute(rowA,"emptyRow") || dojo.html.hasAttribute(rowB,"emptyRow")){
 					return -1;
 				}
+				//	TODO: check for markup and compare by rendered text.
 				var a = self.store.getField(self.getDataByRow(rowA), field);
 				var b = self.store.getField(self.getDataByRow(rowB), field);
 				var ret = 0;
@@ -595,9 +564,10 @@ dojo.widget.defineWidget(
 		var current=0;
 		var max = Math.min(info.length, this.maxSortable, this.columns.length);
 		while(current < max){
-			var field = this.columns[info[current].index].getField();
 			var direction = (info[current].direction == 0) ? 1 : -1;
-			sortFunctions.push(createSortFunction(field, direction));
+			sortFunctions.push(
+				createSortFunction(info[current].index, direction)
+			);
 			current++;
 		}
 
