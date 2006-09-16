@@ -207,6 +207,49 @@ dojo.extend(dojo.collections.Store, {
 		}
 		return o; // object
 	},
+	getFromHtml:function(/* array */meta, /* HTMLTableBody */body, /* function? */fnMod){
+		//	summary
+		//	Parse HTML data into native JSON structure for the store.
+		var rows = body.rows;
+
+		//	create a data constructor.
+		var ctor=function(row){
+			var obj = {};
+			for(var i=0; i<meta.length; i++){
+				var o = obj;
+				var data = row.cells[i].innerHTML;
+				var p = meta[i].getField();
+				if(p.indexOf(".") > -1){
+					p = p.split(".");
+					while(p.length>1){
+						var pr = p.shift();
+						o[pr] = {};
+						o = o[pr];
+					}
+					p = p[0];
+				}
+
+				var type = meta[i].getType();
+				if(data){
+					o[p] = new type(data);
+				} else {
+					o[p] = new type();
+				}
+			}
+			return obj;
+		};
+
+		//	we have initialization data, let's parse it.
+		var arr=[];
+		for(var i=0; i<rows.length; i++){
+			var o = ctor(rows[i]);
+			if(fnMod){
+				fnMod(o, rows[i]);	//	apply any modifiers.
+			}
+			arr.push(o);
+		}
+		return arr;	//	array
+	},
 	onSetData:function(){ },
 	onClearData:function(){ },
 	onAddData:function(obj){ },
