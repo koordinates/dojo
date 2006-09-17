@@ -71,7 +71,6 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			// gradient
 			switch(fill.type){
 				case "linear":
-					// set a fill
 					var f = dojo.gfx.makeParameters(dojo.gfx.defaultLinearGradient, fill);
 					this.fillStyle = f;
 					var s = "";
@@ -79,14 +78,14 @@ dojo.lang.extend(dojo.gfx.Shape, {
 						f.colors[i].color = dojo.gfx.normalizeColor(f.colors[i].color);
 						s += f.colors[i].offset.toFixed(8) + " " + f.colors[i].color.toHex() + ";";
 					}
-					this.rawNode.fill.colors.value = s;
-					this.rawNode.fill.method = "sigma";
-					this.rawNode.fill.type = "gradient";
-					this.rawNode.fill.angle = (dojo.math.radToDeg(Math.atan2(f.x2 - f.x1, f.y2 - f.y1)) + 180) % 360;
-					this.rawNode.fill.on = true;
+					var fo = this.rawNode.fill;
+					fo.colors.value = s;
+					fo.method = "sigma";
+					fo.type = "gradient";
+					fo.angle = (dojo.math.radToDeg(Math.atan2(f.x2 - f.x1, f.y2 - f.y1)) + 180) % 360;
+					fo.on = true;
 					break;
 				case "radial":
-					// set a fill
 					var f = dojo.gfx.makeParameters(dojo.gfx.defaultRadialGradient, fill);
 					this.fillStyle = f;
 					var w = parseFloat(this.rawNode.style.width);
@@ -99,16 +98,35 @@ dojo.lang.extend(dojo.gfx.Shape, {
 						f.colors[i].color = dojo.gfx.normalizeColor(f.colors[i].color);
 						s += (1 - c * f.colors[i].offset).toFixed(8) + " " + f.colors[i].color.toHex() + ";";
 					}
-					this.rawNode.fill.colors.value = s;
-					this.rawNode.fill.method = "sigma";
-					this.rawNode.fill.type = "gradientradial";
+					var fo = this.rawNode.fill;
+					fo.colors.value = s;
+					fo.method = "sigma";
+					fo.type = "gradientradial";
 					if(isNaN(w) || isNaN(h)){
-						this.rawNode.fill.focusposition = "0.5 0.5";
+						fo.focusposition = "0.5 0.5";
 					}else{
-						this.rawNode.fill.focusposition = (f.cx / w).toFixed(8) + " " + (f.cy / h).toFixed(8);
+						fo.focusposition = (f.cx / w).toFixed(8) + " " + (f.cy / h).toFixed(8);
 					}
-					this.rawNode.fill.focussize = "0 0";
-					this.rawNode.fill.on = true;
+					fo.focussize = "0 0";
+					fo.on = true;
+					break;
+				case "pattern":
+					var f = dojo.gfx.makeParameters(dojo.gfx.defaultPattern, fill);
+					this.fillStyle = f;
+					var fo = this.rawNode.fill;
+					fo.type = "tile";
+					fo.src = f.src;
+					if(f.width && f.height){
+						// in points
+						fo.size.x = 0.75 * f.width;
+						fo.size.y = 0.75 * f.height;
+					}
+					fo.alignShape = false;
+					fo.position.x = 0;
+					fo.position.y = 0;
+					fo.origin.x = f.width  ? f.x / f.width  : 0;
+					fo.origin.y = f.height ? f.y / f.height : 0;
+					fo.on = true;
 					break;
 			}
 			this.rawNode.fill.opacity = 1;
@@ -163,44 +181,6 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	},
 
 	// Attach family
-	attachFill: function(rawNode){
-		var fillStyle = null;
-		if(rawNode) {
-			if(rawNode.fill.on && rawNode.fill.type == "gradient"){
-				var fillStyle = dojo.lang.shallowCopy(dojo.gfx.defaultLinearGradient, true);
-				var rad = dojo.math.degToRad(rawNode.fill.angle);
-				fillStyle.x2 = Math.cos(rad);
-				fillStyle.y2 = Math.sin(rad);
-				fillStyle.colors = [];
-				var stops = rawNode.fill.colors.value.split(";");
-				for(var i = 0; i < stops.length; ++i){
-					var t = stops[i].match(/\S+/g);
-					if(!t || t.length != 2) continue;
-					fillStyle.colors.push({offset: dojo.gfx.vml._parseFloat(t[0]), color: new dojo.gfx.color.Color(t[1])});
-				}
-			}else if(rawNode.fill.on && rawNode.fill.type == "gradientradial"){
-				var fillStyle = dojo.lang.shallowCopy(dojo.gfx.defaultRadialGradient, true);
-				var w = parseFloat(rawNode.style.width);
-				var h = parseFloat(rawNode.style.height);
-				fillStyle.cx = isNaN(w) ? 0 : rawNode.fill.focusposition.x * w;
-				fillStyle.cy = isNaN(h) ? 0 : rawNode.fill.focusposition.y * h;
-				fillStyle.r  = isNaN(w) ? 1 : w / 2;
-				fillStyle.colors = [];
-				var stops = rawNode.fill.colors.value.split(";");
-				for(var i = stops.length - 1; i >= 0; --i){
-					var t = stops[i].match(/\S+/g);
-					if(!t || t.length != 2) continue;
-					fillStyle.colors.push({offset: dojo.gfx.vml._parseFloat(t[0]), color: new dojo.gfx.color.Color(t[1])});
-				}
-			}else if(rawNode.fillcolor){
-				// a color object !
-				fillStyle = new dojo.gfx.color.Color(rawNode.fillcolor+"");
-				fillStyle.a = rawNode.fill.opacity;
-			}
-		}
-		return fillStyle;
-	},
-
 	attachStroke: function(rawNode) {
 		var strokeStyle = dojo.lang.shallowCopy(dojo.gfx.defaultStroke, true);
 		if(rawNode && rawNode.stroked){
@@ -214,6 +194,52 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			return null;
 		}
 		return strokeStyle;
+	},
+
+	attachFill: function(rawNode){
+		var fillStyle = null;
+		var fo = rawNode.fill;
+		if(rawNode) {
+			if(fo.on && fo.type == "gradient"){
+				var fillStyle = dojo.lang.shallowCopy(dojo.gfx.defaultLinearGradient, true);
+				var rad = dojo.math.degToRad(fo.angle);
+				fillStyle.x2 = Math.cos(rad);
+				fillStyle.y2 = Math.sin(rad);
+				fillStyle.colors = [];
+				var stops = fo.colors.value.split(";");
+				for(var i = 0; i < stops.length; ++i){
+					var t = stops[i].match(/\S+/g);
+					if(!t || t.length != 2) continue;
+					fillStyle.colors.push({offset: dojo.gfx.vml._parseFloat(t[0]), color: new dojo.gfx.color.Color(t[1])});
+				}
+			}else if(fo.on && fo.type == "gradientradial"){
+				var fillStyle = dojo.lang.shallowCopy(dojo.gfx.defaultRadialGradient, true);
+				var w = parseFloat(rawNode.style.width);
+				var h = parseFloat(rawNode.style.height);
+				fillStyle.cx = isNaN(w) ? 0 : fo.focusposition.x * w;
+				fillStyle.cy = isNaN(h) ? 0 : fo.focusposition.y * h;
+				fillStyle.r  = isNaN(w) ? 1 : w / 2;
+				fillStyle.colors = [];
+				var stops = fo.colors.value.split(";");
+				for(var i = stops.length - 1; i >= 0; --i){
+					var t = stops[i].match(/\S+/g);
+					if(!t || t.length != 2) continue;
+					fillStyle.colors.push({offset: dojo.gfx.vml._parseFloat(t[0]), color: new dojo.gfx.color.Color(t[1])});
+				}
+			}else if(fo.on && fo.type == "tile"){
+				var fillStyle = dojo.lang.shallowCopy(dojo.gfx.defaultPattern, true);
+				fillStyle.width  = fo.size.x / 0.75; // from pt
+				fillStyle.height = fo.size.y / 0.75; // from pt
+				fillStyle.x = fo.origin.x * fillStyle.width;
+				fillStyle.y = fo.origin.y * fillStyle.height;
+				fillStyle.src = fo.src;
+			}else if(rawNode.fillcolor){
+				// a color object !
+				fillStyle = new dojo.gfx.color.Color(rawNode.fillcolor+"");
+				fillStyle.a = fo.opacity;
+			}
+		}
+		return fillStyle;
 	},
 
 	attachTransform: function(rawNode) {
@@ -295,21 +321,19 @@ dojo.declare("dojo.gfx.Rect", dojo.gfx.Shape, {
 		with(this.rawNode.style){
 			left   = ts.x.toFixed();
 			top    = ts.y.toFixed();
-			width  = (typeof(ts.width) == "string" && ts.width.indexOf("%") >= 0 ) ? ts.width : ts.width.toFixed();
-			height = (typeof(ts.width) == "string" && ts.height.indexOf("%") >= 0 ) ? ts.height : ts.height.toFixed();
+			width  = (typeof(ts.width) == "string" && ts.width.indexOf("%") >= 0)  ? ts.width  : ts.width.toFixed();
+			height = (typeof(ts.width) == "string" && ts.height.indexOf("%") >= 0) ? ts.height : ts.height.toFixed();
 		}
+		this.rawNode.arcSize = Math.min(1, (2 * ts.r / Math.min(parseFloat(ts.width), parseFloat(ts.height)))).toFixed(8);
 		return this.setTransform(this.matrix);
-	},
-	setRawNode: function(rawNode){
-		rawNode.arcsize = 0;
-		return this.inherited("setRawNode", [rawNode] );
 	},
 	attachShape: function(rawNode){
 		return dojo.gfx.makeParameters(dojo.gfx.defaultRect, {
 			x: parseInt(rawNode.style.left),
 			y: parseInt(rawNode.style.top),
 			width:  parseInt(rawNode.style.width),
-			height: parseInt(rawNode.style.height)
+			height: parseInt(rawNode.style.height),
+			r: (typeof(rawNode.arcSize) == "string" && rawNode.arcSize.indexOf("%") >= 0) ? parseFloat(rawNode.arcSize) / 100 : parseFloat(rawNode.arcSize)
 		});
 	}
 });
@@ -554,6 +578,63 @@ dojo.lang.extend(dojo.gfx.Path, {
 });
 dojo.gfx.Path.nodeType = "shape";
 
+dojo.declare("dojo.gfx.Image", dojo.gfx.Shape, {
+	initializer: function(rawNode) {
+		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultImage, true);
+		this.attach(rawNode);
+	},
+	getEventSource: function() {
+		return this.rawNode ? this.rawNode.firstChild : null;
+	},
+	setShape: function(newShape){
+		var ts = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+        this.rawNode.firstChild.src = ts.src;
+        if(ts.width || ts.height){
+			with(this.rawNode.firstChild.style){
+				width  = ts.width;
+				height = ts.height;
+			}
+        }
+		return this.setTransform(this.matrix);
+	},
+	setStroke: function() { return this; },
+	setFill:   function() { return this; },
+	attachShape: function(rawNode){
+		var shape = dojo.lang.shallowCopy(dojo.gfx.defaultImage, true);
+		shape.src = rawNode.firstChild.src;
+		return shape;
+	},
+	attachStroke: function(rawNode){ return null; },
+	attachFill:   function(rawNode){ return null; },
+	attachTransform: function(rawNode) {
+		var matrix = {};
+		if(rawNode){
+			var m = rawNode.filters["DXImageTransform.Microsoft.Matrix"];
+			matrix.xx = m.M11;
+			matrix.xy = m.M12;
+			matrix.yx = m.M21;
+			matrix.yy = m.M22;
+			matrix.dx = m.Dx;
+			matrix.dy = m.Dy;
+		}
+		return dojo.gfx.matrix.normalize(matrix);
+	},
+	_applyTransform: function() {
+		var matrix = this._getRealMatrix();
+		if(!matrix) return this;
+		with(this.rawNode.filters["DXImageTransform.Microsoft.Matrix"]){
+			M11 = matrix.xx;
+			M12 = matrix.xy;
+			M21 = matrix.yx;
+			M22 = matrix.yy;
+			Dx  = matrix.dx;
+			Dy  = matrix.dy;
+		}
+		return this;
+	}
+});
+dojo.gfx.Image.nodeType = "image";
+
 dojo.gfx._creators = {
 	createRect: function(rect){
 		return this.createObject(dojo.gfx.Rect, rect);
@@ -575,6 +656,22 @@ dojo.gfx._creators = {
 	},
 	createGroup: function(path){
 		return this.createObject(dojo.gfx.Group, null, true);
+	},
+	createImage: function(image){
+		if(!this.rawNode) return null;
+		var shape = new dojo.gfx.Image();
+		var node = document.createElement('div');
+		node.style.position = "absolute";
+		node.style.width  = this.rawNode.style.width;
+		node.style.height = this.rawNode.style.height;
+		node.style.filter = "progid:DXImageTransform.Microsoft.Matrix(M11=1, M12=0, M21=0, M22=1, Dx=0, Dy=0)";
+		var img  = document.createElement('img');
+		node.appendChild(img);
+		shape.setRawNode(node);
+		this.rawNode.appendChild(node);
+		shape.setShape(image);
+		this.add(shape);
+		return shape;
 	},
 	createObject: function(shapeType, rawShape, overrideSize) {
 		if(!this.rawNode) return null;
@@ -621,8 +718,11 @@ dojo.gfx.attachNode = function(node){
 		case dojo.gfx.Line.nodeType:
 			s = new dojo.gfx.Line();
 			break;
+		case dojo.gfx.Image.nodeType:
+			s = new dojo.gfx.Image();
+			break;
 		default:
-			dojo.debug("FATAL ERROR! tagName = " + rawNode.tagName);
+			dojo.debug("FATAL ERROR! tagName = " + node.tagName);
 	}
 	s.attach(node);
 	return s;

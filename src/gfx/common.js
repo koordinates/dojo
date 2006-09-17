@@ -9,17 +9,19 @@ dojo.require("dojo.lang.extras");
 dojo.lang.mixin(dojo.gfx, {
 	defaultPath:     {type: "path",     path: "", absolute: true},
 	defaultPolyline: {type: "polyline", points: []},
-	defaultRect:     {type: "rect",     x: 0, y: 0, width: 100, height: 100},
+	defaultRect:     {type: "rect",     x: 0, y: 0, width: 100, height: 100, r: 0},
 	defaultEllipse:  {type: "ellipse",  cx: 0, cy: 0, rx: 100, ry: 200},
 	defaultCircle:   {type: "circle",   cx: 0, cy: 0, r: 100},
 	defaultLine:     {type: "line",     x1: 0, y1: 0, x2: 100, y2: 100},
+	defaultImage:    {type: "image",    width: 0, height: 0, src: ""},
 
 	defaultStroke: {color: "black", width: 1, cap: "butt", join: 4},
 	defaultLinearGradient: {type: "linear", x1: 0, y1: 0, x2: 100, y2: 100, 
 		colors: [{offset: 0, color: "black"}, {offset: 1, color: "white"}]},
 	defaultRadialGradient: {type: "radial", cx: 0, cy: 0, r: 100, 
 		colors: [{offset: 0, color: "black"}, {offset: 1, color: "white"}]},
-		
+	defaultPattern: {type: "pattern", x: 0, y: 0, width: 0, height: 0, src: ""},
+
 	normalizeColor: function(color){
 		return (color instanceof dojo.gfx.color.Color) ? color : new dojo.gfx.color.Color(color);
 	},
@@ -73,6 +75,8 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	getFill:      function(){ return this.fillStyle; },
 	getStroke:    function(){ return this.strokeStyle; },
 	getParent:    function(){ return this.parent; },
+	
+	getEventSource: function(){ return this.rawNode; },
 	
 	// empty settings
 	setShape:  function(shape) { return this; },	// ignore
@@ -167,6 +171,10 @@ dojo.gfx.Surface = function(){
 	// underlying node
 	this.rawNode = null;
 };
+
+dojo.lang.extend(dojo.gfx.Surface, {
+	getEventSource: function(){ return this.rawNode; }
+});
 
 // this is a Path shape
 dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {

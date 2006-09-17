@@ -52,16 +52,23 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			switch(fill.type){
 				case "linear":
 					var f = dojo.gfx.makeParameters(dojo.gfx.defaultLinearGradient, fill);
-					var gradient = this._setGradient(f, "linearGradient");
+					var gradient = this._setFillObject(f, "linearGradient");
 					dojo.lang.forEach(["x1", "y1", "x2", "y2"], function(x){
 						gradient.setAttribute(x, f[x].toFixed(8));
 					});
 					break;
 				case "radial":
 					var f = dojo.gfx.makeParameters(dojo.gfx.defaultRadialGradient, fill);
-					var gradient = this._setGradient(f, "radialGradient");
+					var gradient = this._setFillObject(f, "radialGradient");
 					dojo.lang.forEach(["cx", "cy", "r"], function(x){
 						gradient.setAttribute(x, f[x].toFixed(8));
+					});
+					break;
+				case "pattern":
+					var f = dojo.gfx.makeParameters(dojo.gfx.defaultPattern, fill);
+					var pattern = this._setFillObject(f, "pattern");
+					dojo.lang.forEach(["x", "y", "width", "height"], function(x){
+						pattern.setAttribute(x, f[x].toFixed(8));
 					});
 					break;
 			}
@@ -75,41 +82,52 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		return this;
 	},
 	
-	_setGradient: function(/*Object*/f, /*String*/nodeType){
+	_setFillObject: function(/*Object*/f, /*String*/nodeType){
 		var def_elems = this.rawNode.parentNode.getElementsByTagName("defs");
 		if(def_elems.length == 0){ return this; }
 		this.fillStyle = f;
 		var defs = def_elems[0];
-		var gradient = this.rawNode.getAttribute("fill");
-		if(gradient && gradient.match(/^url\(#.+\)$/)){
-			gradient = dojo.byId(gradient.slice(5, -1));
-			if(gradient.tagName.toLowerCase() != nodeType.toLowerCase()){
-				var id = gradient.id;
-				gradient.parentNode.removeChild(gradient);
-				gradient = document.createElementNS(dojo.svg.xmlns.svg, nodeType);
-				gradient.setAttribute("id", id);
-				defs.appendChild(gradient);
+		var fill = this.rawNode.getAttribute("fill");
+		if(fill && fill.match(/^url\(#.+\)$/)){
+			fill = dojo.byId(fill.slice(5, -1));
+			if(fill.tagName.toLowerCase() != nodeType.toLowerCase()){
+				var id = fill.id;
+				fill.parentNode.removeChild(fill);
+				fill = document.createElementNS(dojo.svg.xmlns.svg, nodeType);
+				fill.setAttribute("id", id);
+				defs.appendChild(fill);
 			}else{
-				while(gradient.childNodes.length){
-					gradient.removeChild(gradient.lastChild);
+				while(fill.childNodes.length){
+					fill.removeChild(fill.lastChild);
 				}
 			}
 		}else{
-			gradient = document.createElementNS(dojo.svg.xmlns.svg, nodeType);
-			gradient.setAttribute("id", dojo.gfx.guid());
-			defs.appendChild(gradient);
+			fill = document.createElementNS(dojo.svg.xmlns.svg, nodeType);
+			fill.setAttribute("id", dojo.gfx.guid());
+			defs.appendChild(fill);
 		}
-		gradient.setAttribute("gradientUnits", "userSpaceOnUse");
-		for(var i = 0; i < f.colors.length; ++i){
-			f.colors[i].color = dojo.gfx.normalizeColor(f.colors[i].color);
-			var t = document.createElementNS(dojo.svg.xmlns.svg, "stop");
-			t.setAttribute("offset",     f.colors[i].offset.toFixed(8));
-			t.setAttribute("stop-color", f.colors[i].color.toCss());
-			gradient.appendChild(t);
+		if(nodeType == "pattern"){
+			fill.setAttribute("patternUnits", "userSpaceOnUse");
+			var img = document.createElementNS(dojo.svg.xmlns.svg, "image");
+			img.setAttribute("x", 0);
+			img.setAttribute("y", 0);
+			img.setAttribute("width",  f.width .toFixed(8));
+			img.setAttribute("height", f.height.toFixed(8));
+			img.setAttributeNS(dojo.svg.xmlns.xlink, "href", f.src);
+			fill.appendChild(img);
+		}else{
+			fill.setAttribute("gradientUnits", "userSpaceOnUse");
+			for(var i = 0; i < f.colors.length; ++i){
+				f.colors[i].color = dojo.gfx.normalizeColor(f.colors[i].color);
+				var t = document.createElementNS(dojo.svg.xmlns.svg, "stop");
+				t.setAttribute("offset",     f.colors[i].offset.toFixed(8));
+				t.setAttribute("stop-color", f.colors[i].color.toCss());
+				fill.appendChild(t);
+			}
 		}
-		this.rawNode.setAttribute("fill", "url(#" + gradient.getAttribute("id") +")");
+		this.rawNode.setAttribute("fill", "url(#" + fill.getAttribute("id") +")");
 		this.rawNode.removeAttribute("fill-opacity");
-		return gradient;
+		return fill;
 	},
 	
 	_applyTransform: function() {
@@ -184,6 +202,13 @@ dojo.lang.extend(dojo.gfx.Shape, {
 						fillStyle.cy = gradient.getAttribute("cy");
 						fillStyle.r  = gradient.getAttribute("r");
 						break;
+					case "pattern":
+						fillStyle = dojo.lang.shallowCopy(dojo.gfx.defaultPattern, true);
+						dojo.lang.forEach(["x", "y", "width", "height"], function(x){
+							fillStyle[x] = gradient.getAttribute(x);
+						});
+						fillStyle.src = gradient.firstChild.getAttributeNS(dojo.svg.xmlns.xlink, "href");
+						break;
 				}
 			}else{
 				fillStyle = new dojo.gfx.color.Color(fill);
@@ -209,7 +234,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	attachStroke: function(rawNode){
 		if(!rawNode){ return; }
 		var stroke = rawNode.getAttribute("stroke");
-        if(stroke == null || stroke == "none") return null;
+		if(stroke == null || stroke == "none") return null;
 		var strokeStyle = dojo.lang.shallowCopy(dojo.gfx.defaultStroke, true);
 		var color = new dojo.gfx.color.Color(stroke);
 		if(color){
@@ -240,6 +265,17 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		}
 		return matrix;
 	},
+	
+	attachShape: function(rawNode){
+		var shape = null;
+		if(rawNode){
+			shape = dojo.lang.shallowCopy(this.shape, true);
+			for(var i in shape) {
+				shape[i] = rawNode.getAttribute(i);
+			}
+		}
+		return shape;
+	},
 
 	attach: function(rawNode){
 		if(rawNode) {
@@ -247,10 +283,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			this.fillStyle = this.attachFill(rawNode);
 			this.strokeStyle = this.attachStroke(rawNode);
 			this.matrix = this.attachTransform(rawNode);
-			// shape-specific attributes.
-			for(var i in this.shape) {
-				this.shape[i] = rawNode.getAttribute(i);
-			}
+			this.shape = this.attachShape(rawNode);
 		}
 	}
 });
@@ -266,6 +299,23 @@ dojo.declare("dojo.gfx.Rect", dojo.gfx.Shape, {
 	initializer: function(rawNode) {
 		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultRect, true);
 		this.attach(rawNode);
+	},
+	setShape: function(newShape){
+		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		for(var i in this.shape){
+			if(i != "type" && i != "r"){ this.rawNode.setAttribute(i, this.shape[i]); }
+		}
+		this.rawNode.setAttribute("rx", this.shape.r);
+		this.rawNode.setAttribute("ry", this.shape.r);
+		return this;
+	},
+	attachShape: function(rawNode){
+		var shape = null;
+		if(rawNode){
+			shape = this.inherited("attach", [rawNode]);
+			shape.r = Math.min(rawNode.getAttribute("rx"), rawNode.getAttribute("ry"));
+		}
+		return shape;
 	}
 });
 dojo.gfx.Rect.nodeType = "rect";
@@ -381,6 +431,26 @@ dojo.lang.extend(dojo.gfx.Path, {
 });
 dojo.gfx.Path.nodeType = "path";
 
+dojo.declare("dojo.gfx.Image", dojo.gfx.Shape, {
+	initializer: function(rawNode) {
+		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultImage, true);
+		this.attach(rawNode);
+	},
+	setShape: function(newShape){
+		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		for(var i in this.shape){
+			if(i != "type" && i != "src"){ this.rawNode.setAttribute(i, this.shape[i]); }
+		}
+		this.rawNode.setAttributeNS(dojo.svg.xmlns.xlink, "href", this.shape.src);
+		return this;
+	},
+	setStroke: function() { return this; },
+	setFill:   function() { return this; },
+	attachStroke: function(rawNode){ return null; },
+	attachFill:   function(rawNode){ return null; }
+});
+dojo.gfx.Image.nodeType = "image";
+
 dojo.gfx._creators = {
 	// creators
 	createPath: function(path){
@@ -400,6 +470,9 @@ dojo.gfx._creators = {
 	},
 	createPolyline: function(points){
 		return this.createObject(dojo.gfx.Polyline, points);
+	},
+	createImage: function(image){
+		return this.createObject(dojo.gfx.Image, image);
 	},
 	createGroup: function(){
 		return this.createObject(dojo.gfx.Group);
@@ -459,6 +532,11 @@ dojo.gfx.attachNode = function(node){
 		case dojo.gfx.Line.nodeType:
 			s = new dojo.gfx.Line();
 			break;
+		case dojo.gfx.Image.nodeType:
+			s = new dojo.gfx.Image();
+			break;
+		default:
+			dojo.debug("FATAL ERROR! tagName = " + node.tagName);
 	}
 	s.attach(node);
 	return s;
@@ -514,95 +592,3 @@ dojo.lang.extend(dojo.gfx.svg.Defines, {
 	}
 });
 dojo.gfx.svg.Defines.nodeType = "defs";
-
-// TODO: finish recycling the pattern gradient code listed below
-/*
-dojo.gfx.svg.Gradient = function(){
-	this.rawNode = null;
-	this.gradient = null;
-	this.id = "";
-	this.stops = null;
-};
-
-dojo.lang.extend(dojo.gfx.svg.Gradient, {
-	addStop: function(stop){
-		if(stop){
-			if(! this.stops ) this.stops = new Array;
-			this.stops.push(stop);
-
-			var n = document.createElementNS(dojo.svg.xmlns.svg, "stop");
-			n.setAttribute("offset", stop.offset);
-			n.setAttribute("stop-color", stop.color.toCss());
-			this.rawNode.appendChild(n);
-		}
-		return this;
-	},
-	setGradient: function(newGradient){
-		dojo.gfx.normalizeParameters(this.gradient, newGradient );
-		// FIXME: find a real guid() !
-		this.id = dojo.gfx.guid();
-		this.rawNode = document.createElementNS(dojo.svg.xmlns.svg, this.nodeType);
-
-		for(it in this.gradient) {
-			this.rawNode.setAttribute(it, this.gradient[it]);
-		}
-		this.rawNode.setAttribute("id", this.id);
-		return this;
-	},
-    attach: function(rawNode) {
-        this.rawNode = rawNode;
-		for(it in this.gradient) {
-			this.gradient[it] = this.rawNode.getAttribute(it); 
-		}
-        this.id = this.rawNode.getAttribute("id"); 
-
-        //stops
-        var stops = rawNode.getElementsByTagName("stop");
-        this.stops = new Array;
-        for( var i = 0; i< stops.length; i++ ) {
-            var stop = {};
-            stop["offset"] = stops[i].getAttribute("offset");
-            stop["color"] = new dojo.gfx.color.Color( stops[i].getAttribute("stop-color") );
-            this.stops.push( stop );
-        }
-
-        return this;
-    },
-	getId: function(){ return this.id; },
-	getRawNode: function(){  return this.rawNode; }
-});
-
-dojo.declare("dojo.gfx.svg.LinearGradient", dojo.gfx.svg.Gradient, {
-	nodeType: "linearGradient",
-	initializer: function( newGradient ) {
-		this.gradient = { x1:"0%", y1:"0%", x2:"100%", y2:"0%", gradientUnits:"userSpaceOnUse"};
-        if( newGradient.getElementsByTagName != undefined ) {
-            this.attach(newGradient);
-        } else {  
-		    this.setGradient(newGradient);
-        }
-	}
-});
-
-dojo.declare("dojo.gfx.svg.RadialGradient", dojo.gfx.svg.Gradient, {
-	nodeType: "radialGradient",
-	initializer: function( newGradient ) {
-		this.gradient = { cx:"50%", cy:"50%", r:"50%", fx:"0%", fy:"0%", gradientUnits:"userSpaceOnUse"};
-		this.setGradient(newGradient);
-	}
-});
-
-dojo.declare("dojo.gfx.svg.Pattern", dojo.gfx.svg.Gradient, {
-	nodeType: "pattern",
-	addStop: null,
-	initializer: function( newGradient ) {
-		this.gradient = { x:0, y:0, width:100, height:100, patternUnits:"userSpaceOnUse"};
-		this.setGradient(newGradient);
-	}
-});
-*/
-
-/*
-dojo.lang.extend(dojo.gfx.svg.Pattern, metacreator);
-dojo.lang.extend(dojo.gfx.svg.Pattern, creators);
-*/
