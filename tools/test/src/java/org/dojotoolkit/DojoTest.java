@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.CookieHandler;
 import java.util.HashMap;
 
 /**
@@ -212,6 +213,9 @@ public class DojoTest {
 		if (_useLocal) {
 			System.out.println("Using local dojo test infrastructure.");
 		}
+		
+		// to handle session cookies
+		CookieHandler.setDefault(new ListCookieHandler());
 		
 		DojoDebugger debugger = new DojoDebugger();
 		Context cx = Context.enter();
