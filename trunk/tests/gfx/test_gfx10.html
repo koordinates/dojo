@@ -7,6 +7,7 @@
 <!--<script type="text/javascript" src="../../src/gfx/vml.js"></script>-->
 <!--<script type="text/javascript" src="../../src/gfx/svg.js"></script>-->
 <script type="text/javascript">
+dojo.require("dojo.event.*");
 dojo.require("dojo.gfx.*");
 
 var image = null;
@@ -14,6 +15,7 @@ var image = null;
 makeShapes = function(){
 	var surface = dojo.gfx.createSurface("test", 800, 600);
     image = surface.createImage({width: 319, height: 95, src: "http://dojotoolkit.org/img/header-downloads.png"});
+    dojo.event.connect(image.getEventSource(), "onclick", function(){ alert("You didn't expect a download, did you?"); });
 };
 
 transformImage = function(){
