@@ -243,13 +243,14 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //		http://www.unicode.org/reports/tr35/#Date_Format_Patterns
 //
 // value:
-//		The int string to be converted
+//		A string representation of a date
 //
-// options: object {selector: string, formatLength: string, datePattern: string, timePattern: string, locale: string}
+// options: object {selector: string, formatLength: string, datePattern: string, timePattern: string, locale: string, strict: boolean}
 //		selector- choice of timeOnly,dateOnly (default: date and time)
 //		formatLength- choice of long, short, medium or full (plus any custom additions).  Defaults to 'full'
 //		datePattern,timePattern- override pattern with this string
 //		locale- override the locale used to determine formatting rules
+//		strict- strict parsing, off by default
 //
 
 	//TODO: this is still quite rough - it only implements a small portion of the parsing algorithm needed,
@@ -267,10 +268,9 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 	var dateRE = new RegExp("^" + dateREString + "$");
 
 	var match = dateRE.exec(value);
-	if(!match){return null;} /* null */
+	if(!match){return null;} // null
 
-	var result = new Date();
-	result.setHours(0,0,0,0);
+	var result = new Date(1972,0);
 	for(var i=1; i<match.length; i++){
 		var grp=groups[i-1];
 		var l=grp.length;
@@ -283,14 +283,21 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 				result.setMonth(v-1);
 				break;
 			case 'y':
-				var century = (l == 2) ? Math.floor(result.getFullYear()/100)*100 : 0;
+				var century = 0;
+				if(l == 2){
+					if(v<100){
+						century = Math.floor(result.getFullYear()/100)*100;
+					} else if(options.strict){
+						return null; // null
+					}
+				}
 				result.setFullYear(century+Number(v));
 				break;
 			default:
 				dojo.unimplemented("incomplete parse algorithm");
 		}
 	}
-	return result /*Date*/;
+	return result; // Date
 };
 
 function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
