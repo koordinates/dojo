@@ -7,7 +7,7 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.date.format");
 dojo.require("dojo.date.serialize");
-
+dojo.require("dojo.string.common");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.widget", "DropdownDatePicker");
 
@@ -80,18 +80,23 @@ dojo.widget.defineWidget(
 				dojo.deprecated("dojo.widget.DropdownDatePicker",
 				"Cannot parse user input.  Must use displayFormat attribute instead of dateFormat.  See dojo.date.format for specification.", "0.5");
 			}else{
-				var inputDate = dojo.date.parse(this.inputNode.value,
-						{formatLength:this.formatLength, datePattern:this.displayFormat, selector:'dateOnly', locale:this.lang});			
-				if(inputDate){
-					this.datePicker.setDate(inputDate);
-					this._synchValueNode();
+				var input = dojo.string.trim(this.inputNode.value);
+				if(input){
+					var inputDate = dojo.date.parse(input,
+							{formatLength:this.formatLength, datePattern:this.displayFormat, selector:'dateOnly', locale:this.lang});			
+					if(inputDate){
+						this.datePicker.setDate(inputDate);
+						this._synchValueNode();
+					}
+				} else {
+					this.valueNode.value = input;
 				}
 			}
 			// If the date entered didn't parse, reset to the old date.  KISS, for now.
 			//TODO: usability?  should we provide more feedback somehow? an error notice?
 			// seems redundant to do this if the parse failed, but at least until we have validation,
 			// this will fix up the display of entries like 01/32/2006
-			this.onSetDate();
+			if(input){ this.onSetDate(); }
 		},
 
 		_synchValueNode: function(){
