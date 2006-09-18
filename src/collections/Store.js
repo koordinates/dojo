@@ -230,10 +230,14 @@ dojo.extend(dojo.collections.Store, {
 				}
 
 				var type = meta[i].getType();
-				if(data){
-					o[p] = new type(data);
+				if(type == String){
+					o[p] = data;
 				} else {
-					o[p] = new type();
+					if(data){
+						o[p] = new type(data);
+					} else {
+						o[p] = new type();
+					}
 				}
 			}
 			return obj;

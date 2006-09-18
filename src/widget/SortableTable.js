@@ -137,7 +137,10 @@ dojo.widget.defineWidget(
 					o[this.columns[i].getField()]=cells[i].innerHTML;
 				}else{
 					var text=dojo.html.renderedTextContent(cells[i]);
-					var val=new (this.columns[i].getType())(text);
+					var val=text;
+					if (this.columns[i].getType() != String){
+						var val=new (this.columns[i].getType())(text);
+					}
 					o[this.columns[i].getField()]=val;
 				}
 			}
@@ -254,10 +257,14 @@ dojo.widget.defineWidget(
 						var type=this.columns[j].getType();
 						var val=data[i][field];
 						var t=this.columns[j].sortType.toLowerCase();
-						if(val!=null){
-							o[field]=new type(val);
-						}else{
-							o[field]=new type();	//	let it use the default.
+						if(type == String) {
+							o[field]=val;
+						} else {
+							if(val!=null){
+								o[field]=new type(val);
+							}else{
+								o[field]=new type();	//	let it use the default.
+							}
 						}
 					}
 				}
@@ -290,8 +297,15 @@ dojo.widget.defineWidget(
 					}else{
 						var type=this.columns[j].getType();
 						var val=dojo.html.renderedTextContent(cells[j]); //	should be the same index as the column.
-						if (val!=null) o[field]=new type(val);
-						else o[field]=new type();	//	let it use the default.
+						if(type == String){
+							o[field]=val;
+						} else {
+							if (val!=null){
+								o[field]=new type(val);
+							} else {
+								o[field]=new type();	//	let it use the default.
+							}
+						}
 					}
 				}
 				if(dojo.html.hasAttribute(rows[i],"value")&&!o[this.valueField]){
