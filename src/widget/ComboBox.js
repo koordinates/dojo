@@ -225,7 +225,6 @@ dojo.widget.defineWidget(
 
 		// HTML specific stuff
 		autoComplete: true,
-		formInputName: "",
 		name: "", // clone in the name from the DOM node
 		textInputNode: null,
 		comboBoxValue: null,
@@ -548,11 +547,11 @@ dojo.widget.defineWidget(
 			// For inlining a table we need browser specific CSS
 			dojo.html.applyBrowserClass(this.domNode);
 
-			// FIXME: need to get/assign DOM node names for form participation here.
-			this.comboBoxValue.name = this.name;
+			var source = this.getFragNodeRef(frag); 
+			if (! this.name && source.name){ this.name = source.name; } 
+			this.comboBoxValue.name = this.name; 
 			this.comboBoxSelectionValue.name = this.name+"_selected";
 
-			var source = this.getFragNodeRef(frag);
 			dojo.html.copyStyle(this.textInputNode, source);
 
 			var dpClass;
