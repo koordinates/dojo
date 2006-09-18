@@ -13,6 +13,7 @@ dojo.widget.defineWidget(
 	dojo.widget.HtmlWidget,
 	{
 		inputWidth: "7em",
+		id: "",
 		inputId: "",
 		inputName: "",
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/combo_box_arrow.png"),
@@ -37,7 +38,7 @@ dojo.widget.defineWidget(
 			this.containerNode = this.popup.domNode;
 
 			this.domNode.appendChild(this.popup.domNode);
-
+			if(this.id) { this.domNode.id = this.id; }
 			if(this.inputId){ this.inputNode.id = this.inputId; }
 			if(this.inputName){ this.inputNode.name = this.inputName; }
 			this.inputNode.style.width = this.inputWidth;
