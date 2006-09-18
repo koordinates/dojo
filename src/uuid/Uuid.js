@@ -1,37 +1,31 @@
 dojo.provide("dojo.uuid.Uuid");
-dojo.require("dojo.lang.*");
+dojo.require("dojo.lang.common");
+dojo.require("dojo.lang.assert");
 
-// -------------------------------------------------------------------
-// Constructor
-// -------------------------------------------------------------------
-/**
- * The Uuid class offers methods for inspecting existing UUIDs.
- *
- * Examples:
- * <pre>
- *   var uuid;
- *   uuid = new dojo.uuid.Uuid("3b12f1df-5232-4804-897e-917bf397618a");
- *   uuid = new dojo.uuid.Uuid(); // "00000000-0000-0000-0000-000000000000"
- *   uuid = new dojo.uuid.Uuid(dojo.uuid.RandomGenerator);
- *   uuid = new dojo.uuid.Uuid(dojo.uuid.TimeBasedGenerator);
- *
- *   dojo.uuid.Uuid.setGenerator(dojo.uuid.RandomGenerator);
- *   uuid = new dojo.uuid.Uuid();
- *   dojo.lang.assert(!uuid.isEqual(dojo.uuid.Uuid.NIL_UUID));
- * </pre>
- *
- * @scope	public instance constructor
- * @param	uuidString	A 36-character string that conforms to the UUID spec.
- * @param	generator	A UUID generator, such as dojo.uuid.TimeBasedGenerator.
- */
 dojo.uuid.Uuid = function(input) {
+	// Summary: 
+	//   This is the constructor for the Uuid class.  The Uuid class offers 
+	//   methods for inspecting existing UUIDs.
+	// Examples:
+	//   var uuid;
+	//   uuid = new dojo.uuid.Uuid("3b12f1df-5232-4804-897e-917bf397618a");
+	//   uuid = new dojo.uuid.Uuid(); // "00000000-0000-0000-0000-000000000000"
+	//   uuid = new dojo.uuid.Uuid(dojo.uuid.RandomGenerator);
+	//   uuid = new dojo.uuid.Uuid(dojo.uuid.TimeBasedGenerator);
+	//   dojo.uuid.Uuid.setGenerator(dojo.uuid.RandomGenerator);
+	//   uuid = new dojo.uuid.Uuid();
+	//   dojo.lang.assert(!uuid.isEqual(dojo.uuid.Uuid.NIL_UUID));
 	this._uuidString = dojo.uuid.Uuid.NIL_UUID;
 	if (input) {
 		if (dojo.lang.isString(input)) {
+			// input: string? A 36-character string that conforms to the UUID spec.
+			// pId: string
 			this._uuidString = input.toLowerCase();
 			dojo.lang.assert(this.isValid());
 		} else {
 			if (dojo.lang.isObject(input) && input.generate) {
+				// input: generator A UUID generator, such as dojo.uuid.TimeBasedGenerator.
+				// pId: generator
 				var generator = input;
 				this._uuidString = generator.generate();
 				dojo.lang.assert(this.isValid());
@@ -67,85 +61,64 @@ dojo.uuid.Uuid.Variant = {
 	UNKNOWN: "111" };
 dojo.uuid.Uuid.HEX_RADIX = 16;
 
-// -------------------------------------------------------------------
-// Public class methods
-// -------------------------------------------------------------------
-/**
- * Given two UUIDs to compare, this method returns 0, 1, or -1.
- * This method is designed to be used by sorting routines, like
- * the JavaScript built-in Array sort() method.
- * This implementation is intended to match the sample 
- * implementation in IETF RFC 4122: 
- * http://www.ietf.org/rfc/rfc4122.txt
- * 
- * Example:
- * <pre>
- *   var generator = dojo.uuid.TimeBasedGenerator;
- *   var a = new dojo.uuid.Uuid(generator);
- *   var b = new dojo.uuid.Uuid(generator);
- *   var c = new dojo.uuid.Uuid(generator);
- *   var array = new Array(a, b, c);
- *   array.sort(dojo.uuid.Uuid.compare);
- * </pre>
- *
- * @param	uuidOne	A dojo.uuid.Uuid instance, or a string representing a UUID.
- * @param	uuidTwo	A dojo.uuid.Uuid instance, or a string representing a UUID.
- * @return   Returns either 0, 1, or -1.
- */
-dojo.uuid.Uuid.compare = function(uuidOne, uuidTwo) {
+dojo.uuid.Uuid.compare = function(/* dojo.uuid.Uuid */ uuidOne, /* dojo.uuid.Uuid */ uuidTwo) {
+	// Summary: 
+	//   Given two UUIDs to compare, this method returns 0, 1, or -1.
+	// uuidOne: dojo.uuid.Uuid Any object that has toString() method that returns a 36-character string that conforms to the UUID spec.
+	// uuidTwo: dojo.uuid.Uuid Any object that has toString() method that returns a 36-character string that conforms to the UUID spec.
+	// Description:
+	//   This method is designed to be used by sorting routines, like the
+	//   JavaScript built-in Array sort() method. This implementation is 
+	//   intended to match the sample implementation in IETF RFC 4122:
+	//   http://www.ietf.org/rfc/rfc4122.txt
+	// Examples:
+	//   var uuid;
+	//   var generator = dojo.uuid.TimeBasedGenerator;
+	//   var a = new dojo.uuid.Uuid(generator);
+	//   var b = new dojo.uuid.Uuid(generator);
+	//   var c = new dojo.uuid.Uuid(generator);
+	//   var array = new Array(a, b, c);
+	//   array.sort(dojo.uuid.Uuid.compare);
 	var uuidStringOne = uuidOne.toString();
 	var uuidStringTwo = uuidTwo.toString();
-	if (uuidStringOne > uuidStringTwo) return 1;
-	if (uuidStringOne < uuidStringTwo) return -1;
-	return 0;
+	if (uuidStringOne > uuidStringTwo) return 1;   // integer
+	if (uuidStringOne < uuidStringTwo) return -1;  // integer
+	return 0; // integer (either 0, 1, or -1)
 };
 
-/**
- * Sets the default generator, which will be used by the 
- * "new dojo.uuid.Uuid()" constructor if no parameters
- * are passed in.
- *
- * @param	generator	A UUID generator, such as dojo.uuid.TimeBasedGenerator.
- * @return   Returns true or false. True if this UUID is equal to the otherUuid.
- */
-dojo.uuid.Uuid.setGenerator = function(generator) {
+dojo.uuid.Uuid.setGenerator = function(/* generator? */ generator) {
+	// Summary: 
+	//   Sets the default generator, which will be used by the 
+	//   "new dojo.uuid.Uuid()" constructor if no parameters
+	//   are passed in.
+	// generator: generator A UUID generator, such as dojo.uuid.TimeBasedGenerator.
 	dojo.lang.assert(!generator || (dojo.lang.isObject(generator) && generator.generate));
 	dojo.uuid.Uuid._ourGenerator = generator;
 };
 
-/**
- * Returns the default generator.  See setGenerator().
- *
- * @return   A UUID generator, such as dojo.uuid.TimeBasedGenerator.
- */
-dojo.uuid.Uuid.getGenerator = function(generator) {
-	return dojo.uuid.Uuid._ourGenerator;
+dojo.uuid.Uuid.getGenerator = function() {
+	// Summary: 
+	//   Returns the default generator.  See setGenerator().
+	return dojo.uuid.Uuid._ourGenerator; // generator A UUID generator, such as dojo.uuid.TimeBasedGenerator.
 };
 
-// -------------------------------------------------------------------
-// Public instance methods
-// -------------------------------------------------------------------
-/**
- * Returns a 36-character string representing the UUID, such 
- * as "3b12f1df-5232-4804-897e-917bf397618a".
- * 
- * Examples:
- * <pre>
- *   var uuid = new dojo.uuid.Uuid(dojo.uuid.TimeBasedGenerator);
- *   var s;
- *   s = uuid.toString();       //  eb529fec-6498-11d7-b236-000629ba5445
- *   s = uuid.toString('{}');   // {eb529fec-6498-11d7-b236-000629ba5445}
- *   s = uuid.toString('()');   // (eb529fec-6498-11d7-b236-000629ba5445)
- *   s = uuid.toString('""');   // "eb529fec-6498-11d7-b236-000629ba5445"
- *   s = uuid.toString("''");   // 'eb529fec-6498-11d7-b236-000629ba5445'
- *   s = uuid.toString('!-');   //  eb529fec649811d7b236000629ba5445
- *   s = uuid.toString('urn');  //  urn:uuid:eb529fec-6498-11d7-b236-000629ba5445
- * </pre>
- *
- * @param	uuidOne	A dojo.uuid.Uuid instance, or a string representing a UUID.
- * @return   Returns a standard 36-character UUID string, or something similar. 
- */
-dojo.uuid.Uuid.prototype.toString = function(format) {
+dojo.uuid.Uuid.prototype.toString = function(/* string? */format) {
+	// Summary: 
+	//   By default this method returns a standard 36-character string representing 
+	//   the UUID, such as "3b12f1df-5232-4804-897e-917bf397618a".  You can also
+	//   pass in an optional format specifier to request the output in any of
+	//   a half dozen slight variations.
+	// format: string One of these strings: '{}', '()', '""', "''", 'urn', '!-'
+	// Examples:
+	//   var uuid = new dojo.uuid.Uuid(dojo.uuid.TimeBasedGenerator);
+	//   var s;
+	//   s = uuid.toString();       //  eb529fec-6498-11d7-b236-000629ba5445
+	//   s = uuid.toString('{}');   // {eb529fec-6498-11d7-b236-000629ba5445}
+	//   s = uuid.toString('()');   // (eb529fec-6498-11d7-b236-000629ba5445)
+	//   s = uuid.toString('""');   // "eb529fec-6498-11d7-b236-000629ba5445"
+	//   s = uuid.toString("''");   // 'eb529fec-6498-11d7-b236-000629ba5445'
+	//   s = uuid.toString('!-');   //  eb529fec649811d7b236000629ba5445
+	//   s = uuid.toString('urn');  //  urn:uuid:eb529fec-6498-11d7-b236-000629ba5445
 	if (format) {
 		switch (format) {
 			case '{}':
@@ -171,40 +144,30 @@ dojo.uuid.Uuid.prototype.toString = function(format) {
 				dojo.lang.assert(false, "The toString() method of dojo.uuid.Uuid was passed a bogus format.");
 		}
 	} else {
-		return this._uuidString;
+		return this._uuidString; // string
 	}
 };
 
-/**
- * Compares this UUID to another UUID, and returns 0, 1, or -1.
- * This implementation is intended to match the sample 
- * implementation in IETF RFC 4122: 
- * http://www.ietf.org/rfc/rfc4122.txt
- *
- * @param	otherUuid	A dojo.uuid.Uuid instance, or a string representing a UUID.
- * @return   Returns either 0, 1, or -1.
- */
-dojo.uuid.Uuid.prototype.compare = function(otherUuid) {
-	return dojo.uuid.Uuid.compare(this, otherUuid);
+dojo.uuid.Uuid.prototype.compare = function(/* dojo.uuid.Uuid */ otherUuid) {
+	// Summary: 
+	//   Compares this UUID to another UUID, and returns 0, 1, or -1.
+	// otherUuid: dojo.uuid.Uuid Any object that has toString() method that returns a 36-character string that conforms to the UUID spec.
+	// Description:
+	//   This implementation is intended to match the sample implementation
+	//   in IETF RFC 4122: http://www.ietf.org/rfc/rfc4122.txt
+	return dojo.uuid.Uuid.compare(this, otherUuid); // integer (either 0, 1, or -1)
 };
 
-/**
- * Returns true if this UUID is equal to the otherUuid, or
- * false otherwise.
- *
- * @param	otherUuid	A dojo.uuid.Uuid instance, or a string representing a UUID.
- * @return   Returns true or false. True if this UUID is equal to the otherUuid.
- */
-dojo.uuid.Uuid.prototype.isEqual = function(otherUuid) {
-	return (this.compare(otherUuid) == 0);
+dojo.uuid.Uuid.prototype.isEqual = function(/* dojo.uuid.Uuid */ otherUuid) {
+	// Summary: 
+	//   Returns true if this UUID is equal to the otherUuid, or false otherwise.
+	// otherUuid: dojo.uuid.Uuid Any object that has toString() method that returns a 36-character string that conforms to the UUID spec.
+	return (this.compare(otherUuid) == 0); // boolean
 };
 
-/**
- * Returns true if the UUID was initialized with a valid value.
- *
- * @return   True if the UUID is valid, or false if it is not.
- */
 dojo.uuid.Uuid.prototype.isValid = function() {
+	// Summary: 
+	//   Returns true if the UUID was initialized with a valid value.
 	try {
 		dojo.lang.assertType(this._uuidString, String);
 		dojo.lang.assert(this._uuidString.length == 36);
@@ -221,24 +184,21 @@ dojo.uuid.Uuid.prototype.isValid = function() {
 			var integer = parseInt(part, dojo.uuid.Uuid.HEX_RADIX);
 			dojo.lang.assert(isFinite(integer));
 		}
-		return true;
+		return true; // boolean
 	} catch (e) {
-		return false;
+		return false; // boolean
 	}
 };
 
-/**
- * Returns a variant code that indicates what type of UUID this is.
- * For example:
- * <pre>
- *   var uuid = new dojo.uuid.Uuid("3b12f1df-5232-4804-897e-917bf397618a");
- *   var variant = uuid.getVariant();
- *   dojo.lang.assert(variant == dojo.uuid.Uuid.Variant.DCE);
- * </pre>
- *
- * @return   Returns one of the enumarted dojo.uuid.Uuid.Variant values.
- */
 dojo.uuid.Uuid.prototype.getVariant = function() {
+	// Summary: 
+	//   Returns a variant code that indicates what type of UUID this is.
+	//   Returns one of the enumerated dojo.uuid.Uuid.Variant values.
+	// Example: 
+	//   var uuid = new dojo.uuid.Uuid("3b12f1df-5232-4804-897e-917bf397618a");
+	//   var variant = uuid.getVariant();
+	//   dojo.lang.assert(variant == dojo.uuid.Uuid.Variant.DCE);
+	// Example: 
 	// "3b12f1df-5232-4804-897e-917bf397618a"
 	//                     ^
 	//                     |
@@ -274,22 +234,19 @@ dojo.uuid.Uuid.prototype.getVariant = function() {
 		dojo.uuid.Uuid._ourVariantLookupTable = lookupTable;
 	}
 
-	return dojo.uuid.Uuid._ourVariantLookupTable[variantNumber];
+	return dojo.uuid.Uuid._ourVariantLookupTable[variantNumber]; // dojo.uuid.Uuid.Variant
 };
 
-/**
- * Returns a version number that indicates what type of UUID this is.
- * For example:
- * <pre>
- *   var uuid = new dojo.uuid.Uuid("b4308fb0-86cd-11da-a72b-0800200c9a66");
- *   var version = uuid.getVersion();
- *   dojo.lang.assert(version == dojo.uuid.Uuid.Version.TIME_BASED);
- * </pre>
- *
- * @return   Returns one of the enumerated dojo.uuid.Uuid.Version values.
- * @throws   Throws an Error if this is not a DCE Variant UUID.
- */
 dojo.uuid.Uuid.prototype.getVersion = function() {
+	// Summary: 
+	//   Returns a version number that indicates what type of UUID this is.
+	//   Returns one of the enumerated dojo.uuid.Uuid.Version values.
+	// Example: 
+	//   var uuid = new dojo.uuid.Uuid("b4308fb0-86cd-11da-a72b-0800200c9a66");
+	//   var version = uuid.getVersion();
+	//   dojo.lang.assert(version == dojo.uuid.Uuid.Version.TIME_BASED);
+	// Exceptions: 
+	//   Throws an Error if this is not a DCE Variant UUID.
 	if (!this._versionNumber) {
 		var errorMessage = "Called getVersion() on a dojo.uuid.Uuid that was not a DCE Variant UUID.";
 		dojo.lang.assert(this.getVariant() == dojo.uuid.Uuid.Variant.DCE, errorMessage);
@@ -301,19 +258,18 @@ dojo.uuid.Uuid.prototype.getVersion = function() {
 		var versionCharacter = this._uuidString.charAt(14);
 		this._versionNumber = parseInt(versionCharacter, dojo.uuid.Uuid.HEX_RADIX);
 	}
-	return this._versionNumber;
+	return this._versionNumber; // dojo.uuid.Uuid.Version
 };
 
-/**
- * If this is a version 1 UUID (a time-based UUID), this method returns a 
- * 12-character string with the "node" or "pseudonode" portion of the UUID, 
- * which is the rightmost 12 characters.  
- * Throws an Error if this is not a version 1 UUID.
- *
- * @return   Returns a 12-character string, which will look something like "917bf397618a".
- * @throws   Throws an Error if this is not a version 1 UUID.
- */
 dojo.uuid.Uuid.prototype.getNode = function() {
+	// Summary: 
+	//   If this is a version 1 UUID (a time-based UUID), getNode() returns a 
+	//   12-character string with the "node" or "pseudonode" portion of the UUID, 
+	//   which is the rightmost 12 characters.  
+	// Return:
+	//   Returns a 12-character string, which will look something like "917bf397618a".
+	// Exceptions: 
+	//   Throws an Error if this is not a version 1 UUID.
 	if (!this._nodeString) {
 		var errorMessage = "Called getNode() on a dojo.uuid.Uuid that was not a TIME_BASED UUID.";
 		dojo.lang.assert(this.getVersion() == dojo.uuid.Uuid.Version.TIME_BASED, errorMessage);
@@ -321,30 +277,27 @@ dojo.uuid.Uuid.prototype.getNode = function() {
 		var arrayOfStrings = this._uuidString.split('-');
 		this._nodeString = arrayOfStrings[4];
 	}
-	return this._nodeString;
+	return this._nodeString; // string
 };
 
-/**
- * If this is a version 1 UUID (a time-based UUID), this method returns 
- * the timestamp value encoded in the UUID.  The caller can ask for the
- * timestamp to be returned either as a JavaScript Date object or as a 
- * 15-character string of hex digits.
- * Throws an Error if this is not a version 1 UUID.
- *
- * Examples:
- * <pre>
- *   var uuid = new dojo.uuid.Uuid("b4308fb0-86cd-11da-a72b-0800200c9a66");
- *   var date, string, hexString;
- *   date   = uuid.getTimestamp();         // returns a JavaScript Date
- *   date   = uuid.getTimestamp(Date);     // 
- *   string = uuid.getTimestamp(String);   // "Mon, 16 Jan 2006 20:21:41 GMT"
- *   hexString = uuid.getTimestamp("hex"); // "1da86cdb4308fb0"
- * </pre>
- *
- * @return   Returns the timestamp value as a JavaScript Date object or a 15-character string of hex digits.
- * @throws   Throws an Error if this is not a version 1 UUID.
- */
-dojo.uuid.Uuid.prototype.getTimestamp = function(returnType) {
+dojo.uuid.Uuid.prototype.getTimestamp = function(/* misc? */ returnType) {
+	// Summary: 
+	//   If this is a version 1 UUID (a time-based UUID), this method returns
+	//   the timestamp value encoded in the UUID.  The caller can ask for the
+	//   timestamp to be returned either as a JavaScript Date object or as a 
+	//   15-character string of hex digits.
+	// returnType: misc Any of these five values: "string", String, "hex", "date", Date
+	// Returns: 
+	//   Returns the timestamp value as a JavaScript Date object or a 15-character string of hex digits.
+	// Examples: 
+	//   var uuid = new dojo.uuid.Uuid("b4308fb0-86cd-11da-a72b-0800200c9a66");
+	//   var date, string, hexString;
+	//   date   = uuid.getTimestamp();         // returns a JavaScript Date
+	//   date   = uuid.getTimestamp(Date);     // 
+	//   string = uuid.getTimestamp(String);   // "Mon, 16 Jan 2006 20:21:41 GMT"
+	//   hexString = uuid.getTimestamp("hex"); // "1da86cdb4308fb0"
+	// Exceptions: 
+	//   Throws an Error if this is not a version 1 UUID.
 	var errorMessage = "Called getTimestamp() on a dojo.uuid.Uuid that was not a TIME_BASED UUID.";
 	dojo.lang.assert(this.getVersion() == dojo.uuid.Uuid.Version.TIME_BASED, errorMessage);
 	
