@@ -151,10 +151,10 @@ dojo.addOnLoad(function()
 	});
 
 	addTest('rotated_rect', function(testName){
-		var surface = getTestSurface(testName, '30 degree CCW rotated blue translucent rectangle');
+		var surface = getTestSurface(testName, '30g CCW blue translucent rounded rect');
 		dojo.debug('rotated_rect');
 		// anonymous 30 degree CCW rotated green rectangle
-		surface.createRect(rect)
+		surface.createRect({r: 20})
 			.setFill([0, 0, 255, 0.5])
 			// rotate it around its center and move to (100, 100)
 			.setTransform([dojo.gfx.matrix.translate(100, 100), dojo.gfx.matrix.rotategAt(30, 0, 0)])
