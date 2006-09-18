@@ -187,7 +187,7 @@ dojo.collections.BinaryTree=function(data){
 	}
 }
 dojo.collections.BinaryTree.TraversalMethods={
-	Preorder : 0,
-	Inorder : 1,
-	Postorder : 2
+	Preorder : 1,
+	Inorder : 2,
+	Postorder : 3
 };
