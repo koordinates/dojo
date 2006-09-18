@@ -11,7 +11,7 @@ dojo.require("dojo.i18n.common");
 // Load the bundles containing localization information for
 // names and formats
 dojo.requireLocalization("dojo.i18n.calendar", "gregorian");
-dojo.requireLocalization("dojo.i18n.calendar", "gregorian-extras");
+dojo.requireLocalization("dojo.i18n.calendar", "gregorianExtras");
 
 //NOTE: Everything in this module assumes Gregorian calendars.
 // Other calendars will be implemented in separate modules.
@@ -620,7 +620,7 @@ dojo.date._getGregorianBundle = function(locale){
 })();
 
 dojo.date.addCustomFormats("dojo.i18n.calendar","gregorian");
-dojo.date.addCustomFormats("dojo.i18n.calendar","gregorian-extras");
+dojo.date.addCustomFormats("dojo.i18n.calendar","gregorianExtras");
 
 //FIXME: return by value, not reference
 dojo.date.getNames = function(/*String*/item, /*String*/type, /*String?*/use, /*String?*/locale){
