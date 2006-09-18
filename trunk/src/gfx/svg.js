@@ -312,7 +312,7 @@ dojo.declare("dojo.gfx.Rect", dojo.gfx.Shape, {
 	attachShape: function(rawNode){
 		var shape = null;
 		if(rawNode){
-			shape = this.inherited("attach", [rawNode]);
+			shape = this.inherited("attachShape", [rawNode]);
 			shape.r = Math.min(rawNode.getAttribute("rx"), rawNode.getAttribute("ry"));
 		}
 		return shape;
