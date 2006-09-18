@@ -276,8 +276,9 @@ dojo.lang.mixin(dojo.html.selection, {
 			range.select();
 		}else if(_window["getSelection"]){
 			var selection = _window.getSelection();
-			// FIXME: does this work on Safari?
-			if(selection["selectAllChildren"]){ // Mozilla
+			if(selection["setBaseAndExtent"]){ // Safari
+				selection.setBaseAndExtent(element, 0, element, element.innerText.length - 1);
+			} else if(selection["selectAllChildren"]){ // Mozilla
 				selection.selectAllChildren(element);
 			}
 		}
