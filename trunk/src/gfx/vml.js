@@ -317,23 +317,50 @@ dojo.declare("dojo.gfx.Rect", dojo.gfx.Shape, {
 		this.attach(rawNode);
 	},
 	setShape: function(newShape){
-		var ts = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
-		with(this.rawNode.style){
-			left   = ts.x.toFixed();
-			top    = ts.y.toFixed();
-			width  = (typeof(ts.width) == "string" && ts.width.indexOf("%") >= 0)  ? ts.width  : ts.width.toFixed();
-			height = (typeof(ts.width) == "string" && ts.height.indexOf("%") >= 0) ? ts.height : ts.height.toFixed();
+		var shape = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		var style = this.rawNode.style;
+		style.left   = shape.x.toFixed();
+		style.top    = shape.y.toFixed();
+		style.width  = (typeof(shape.width) == "string" && shape.width.indexOf("%") >= 0)  ? shape.width  : shape.width.toFixed();
+		style.height = (typeof(shape.width) == "string" && shape.height.indexOf("%") >= 0) ? shape.height : shape.height.toFixed();
+		var r = Math.min(1, (shape.r / Math.min(parseFloat(shape.width), parseFloat(shape.height)))).toFixed(8);
+		// a workaround for the VML's arcsize bug: cannot read arcsize of an instantiated node
+		var parent = this.rawNode.parentNode;
+		var before = null;
+		if(parent){
+			if(parent.lastChild != this.rawNode){
+				for(var i = 0; i < parent.childNodes.length; ++i){
+					if(parent.childNodes[i] == this.rawNode){
+						before = parent.childNodes[i+1];
+						break;
+					}
+				}
+			}
+			parent.removeChild(this.rawNode);
 		}
-		this.rawNode.arcSize = Math.min(1, (2 * ts.r / Math.min(parseFloat(ts.width), parseFloat(ts.height)))).toFixed(8);
+		this.rawNode.arcsize = r;
+		if(parent){
+			if(before){
+				parent.insertBefore(this.rawNode, before);
+			}else{
+				parent.appendChild(this.rawNode);
+			}
+		}
 		return this.setTransform(this.matrix);
 	},
 	attachShape: function(rawNode){
+		// a workaround for the VML's arcsize bug: cannot read arcsize of an instantiated node
+		var arcsize = rawNode.outerHTML.match(/arcsize = \"(\d*\.?\d+[%f]?)\"/)[1];
+		arcsize = (arcsize.indexOf("%") >= 0) ? parseFloat(arcsize) / 100 : dojo.gfx.vml._parseFloat(arcsize);
+		var width  = parseFloat(rawNode.style.width);
+		var height = parseFloat(rawNode.style.height);
+		// make an object
 		return dojo.gfx.makeParameters(dojo.gfx.defaultRect, {
 			x: parseInt(rawNode.style.left),
 			y: parseInt(rawNode.style.top),
-			width:  parseInt(rawNode.style.width),
-			height: parseInt(rawNode.style.height),
-			r: (typeof(rawNode.arcSize) == "string" && rawNode.arcSize.indexOf("%") >= 0) ? parseFloat(rawNode.arcSize) / 100 : parseFloat(rawNode.arcSize)
+			width:  width,
+			height: height,
+			r: Math.min(width, height) * arcsize
 		});
 	}
 });
