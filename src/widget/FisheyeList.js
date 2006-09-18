@@ -613,6 +613,8 @@ dojo.widget.defineWidget(
 	iconSrc: "",
 	svgSrc: "",
 	caption: "",
+	// will be set to the id of the orginal div element
+	id: "",
 
 	blankImgPath: dojo.uri.dojoUri("src/widget/templates/images/blank.gif"),
 
@@ -635,9 +637,18 @@ dojo.widget.defineWidget(
 			this.domNode.appendChild(this.svgNode);
 			this.imgNode.style.display = 'none';
 		} else if((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4)==".png")&&(dojo.render.html.ie)&&(!dojo.render.html.ie70)){
+			/* we set the id of the new fisheyeListItem to the id of the div defined in the HTML */
+			if (dojo.dom.hasParent(this.imgNode) && this.id != ""){
+				var parent = this.imgNode.parentNode;
+				parent.setAttribute("id", this.id);
+			}
 			this.imgNode.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+this.iconSrc+"', sizingMethod='scale')";
 			this.imgNode.src = this.blankImgPath.toString();
 		} else {
+			if (dojo.dom.hasParent(this.imgNode) && this.id != ""){
+				var parent = this.imgNode.parentNode;
+				parent.setAttribute("id", this.id);
+			}
 			this.imgNode.src = this.iconSrc;
 		}
 
