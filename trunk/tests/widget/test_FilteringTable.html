@@ -91,6 +91,18 @@
 				v
 			);
 		}
+
+		var addCount = 0;
+		function addRow(){
+			var w=dojo.widget.byId("parsedFromHtml");
+			w.store.addData({
+				Name:names[addCount%names.length],
+				DateAdded:dates[addCount+2%dates.length],
+				DateModified:dates[addCount%dates.length],
+				Label:"<i>This is an <strong>added</strong> row</i>."
+			});
+			addCount++;	
+		}
 	</script>
 	<style type="text/css">
 		/***
@@ -176,9 +188,14 @@
 	</p>
 	<h2>Filtering Table, parsed from existing HTML data</h2>
 	<div id="inputArea">
-		<div style="font-size:0.85em;">Change the value of Adam's Label (html allowed):</div>
-		<textarea id="updateTestInput" value="" onchange="updateCell(this);"></textarea>
 		<div style=font-size:0.85em;">
+			<h3>Data manipulation</h3>
+			<input type="button" value="Add a new row" onclick="addRow();" />
+			<div>Change the value of Adam's Label (html allowed):</div>
+			<textarea id="updateTestInput" value="" onchange="updateCell(this);"></textarea>
+		</div>
+		<div style=font-size:0.85em;">
+			<h3>Filtering</h3>
 			<input type="button" value="Show only DateModified between 6/1/2004 and 2/1/2006" onclick="applyDate('parsedFromHtml');" /> 
 			<input type="button" value="Show only names between M and Z" onclick="applyName('parsedFromHtml');" /> 
 			<input type="button" value="Clear Filters" onclick="clearFilters('parsedFromHtml');" />

@@ -804,6 +804,7 @@ dojo.widget.defineWidget(
 		});
 		dojo.event.connect(this.store, "onAddData", function(addedObject){
 			var row=self.createRow(addedObject);
+			dojo.event.connect(row, "onclick", self, "onSelect");
 			self.domNode.tBodies[0].appendChild(row);
 			self.render();
 		});
@@ -811,6 +812,7 @@ dojo.widget.defineWidget(
 			for(var i=0; i<arr.length; i++){
 				arr[i].isSelected=false;
 				var row=self.createRow(arr[i]);
+				dojo.event.connect(row, "onclick", self, "onSelect");
 				self.domNode.tBodies[0].appendChild(row);
 			};
 			self.render();
