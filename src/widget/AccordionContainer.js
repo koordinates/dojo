@@ -46,7 +46,9 @@ dojo.widget.defineWidget(
 		},
 		
 		onResized: function(){
-			this.children[0].setSizes();
+			if(this.children[0]){
+				this.children[0].setSizes();
+			}
 		}
 	}
 );
