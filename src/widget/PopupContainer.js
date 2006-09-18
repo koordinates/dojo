@@ -1,4 +1,4 @@
-﻿dojo.provide("dojo.widget.PopupContainer");
+dojo.provide("dojo.widget.PopupContainer");
 
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.layout");
