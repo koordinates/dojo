@@ -23,57 +23,63 @@ if(dojo.hostenv.post_load_){
 	}catch(e){ }
 }
 
+// summary:
+//		dojo.widget.RichText is the core of the WYSIWYG editor in dojo, which
+//		provides the basic editing features. It also encapsulates the differences
+//		of different js engines for various browsers
 dojo.widget.defineWidget(
 	"dojo.widget.RichText",
 	dojo.widget.HtmlWidget,
 	{
-		/** whether to inherit the parent's width or simply use 100% */
+		// Boolean:
+		//		whether to inherit the parent's width or simply use 100%
 		inheritWidth: false,
+
+		// Boolean:
+		//		whether focusing into this instance of richtext when page onload
 		focusOnLoad: true,
 		
-		/**
-		 * If a save name is specified the content is saved and restored if the
-		 * editor is not properly closed after editing has started.
-		 */
+		// String:
+		//		If a save name is specified the content is saved and restored if the
+		//		editor is not properly closed after editing has started.
 		saveName: "",
+
+		// String:
+		//		temporary content storage
 		_content: "",
 		
-		/* set height to fix the editor at a specific height, with scrolling */
+		// String:
+		//		set height to fix the editor at a specific height, with scrolling
 		height: "",
 
-		/** The minimum height that the editor should have */
+		// String:
+		//		The minimum height that the editor should have
 		minHeight: "1em",
-		
+
+		// Boolean:
 		isClosed: true,
+		// Boolean:
 		isLoaded: false,
-		
-		/** whether to use the active-x object in IE */
+
+		// Boolean:
+		//		whether to use the active-x object in IE
 		useActiveX: false,
 
-		/*whether to use relative URLs for images - if this is enabled
-		images will be given absolute URLs when inside the editor but
-		will be changed to use relative URLs (to the current page) on save
-		*/
+		// Boolean:
+		//		whether to use relative URLs for images - if this is enabled
+		//		images will be given absolute URLs when inside the editor but
+		//		will be changed to use relative URLs (to the current page) on save
 		relativeImageUrls: false,
-		
+
+		// String:
+		//		used to concat contents from multiple textareas into a single string
 		_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
-
-		/*
-		defaultContentCleaner: function(content){
-			if(!dojo.render.html.ie){
-				return content;
-			}
-
-			content = content.replace(/\x20/g, " ");
-			// alert(content);
-			return content;
-		},
-		*/
 
 	/* Init
 	 *******/
 
 		fillInTemplate: function(){
+			// summary: see dojo.widget.DomWidget 
 			dojo.event.topic.publish("dojo.widget.RichText::init", this);
 			this.open();
 
@@ -117,6 +123,7 @@ dojo.widget.defineWidget(
 		},
 
 
+		// Array: events which should be connected to the underlying editing area
 		events: ["onBlur", "onFocus", "onKeyPress", "onKeyDown", "onKeyUp", "onClick"],
 
 		/**
@@ -125,7 +132,12 @@ dojo.widget.defineWidget(
 		 * designMode is used, an <object> and active-x component if inside of IE or
 		 * a reguler element if contentEditable is available.
 		 */
-		open: function (element) {
+		open: function (/*DomNode, optional*/element) {
+			// summary:
+			//		Transforms the node referenced in this.domNode into a rich text editing
+			//		node. This can result in the creation and replacement with an <iframe> if
+			//		designMode is used, an <object> and active-x component if inside of IE or
+			//		a reguler element if contentEditable is available.
 			var h = dojo.render.html;
 			dojo.event.topic.publish("dojo.widget.RichText::open", this);
 
@@ -333,9 +345,10 @@ dojo.widget.defineWidget(
 			this.isClosed = false;
 		},
 
-		_hasCollapseableMargin: function(element, side) {
-			// check if an element has padding or borders on the given side
-			// which would prevent it from collapsing margins
+		_hasCollapseableMargin: function(/*DomNode*/element, /*String*/side) {
+			// summary:
+			//		check if an element has padding or borders on the given side
+			//		which would prevent it from collapsing margins
 			if (dojo.html.getPixelValue(element, 
 										 'border-'+side+'-width', 
 										 false)) {
@@ -349,11 +362,12 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		_getContributingMargin:	function(element, topOrBottom) {
-			// calculate how much margin this element and its first or last
-			// child are contributing to the total margin between this element
-			// and the adjacent node. CSS border collapsing makes this
-			// necessary.
+		_getContributingMargin:	function(/*DomNode*/element, /*String*/topOrBottom) {
+			// summary:
+			//		calculate how much margin this element and its first or last
+			//		child are contributing to the total margin between this element
+			//		and the adjacent node. CSS border collapsing makes this
+			//		necessary.
 
 			if (topOrBottom == "top") {
 				var siblingAttr = "previousSibling";
@@ -422,10 +436,11 @@ dojo.widget.defineWidget(
 			}
 			
 		},
-		
-		/** Draws an iFrame using the existing one if one exists. 
-			Used by Mozilla, Safari, and Opera */
-		_drawIframe: function (html) {
+
+		_drawIframe: function (/*String*/html) {
+			// summary:
+			//		Draws an iFrame using the existing one if one exists. 
+			//		Used by Mozilla, Safari, and Opera
 
 			// detect firefox < 1.5, which has some iframe loading issues
 			var oldMoz = Boolean(dojo.render.html.moz && (
@@ -565,45 +580,78 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		applyEditingAreaStyleSheets: function(){
+		_applyEditingAreaStyleSheets: function(){
+			// summary:
+			//		apply the specified css files in styleSheets
+			var files = [];
 			if(this.styleSheets){
-				this.editingAreaStyleSheets = this.editingAreaStyleSheets.concat(this.styleSheets.split(';'));
+				files = this.styleSheets.split(';');
 			}
 
-			if(this.editingAreaStyleSheets.length>0){
-				if(this.object){
-					//for IE activeX mode, we can not append it after it is loaded, 
-					//otherwise keeping undo will crash IE reliably
-					var text = "";
-					for(var i in this.editingAreaStyleSheets){
-						var url = this.editingAreaStyleSheets[i];
-						if(url){
-							text += '<link rel="stylesheet" type="text/css" href="'+(new dojo.uri.Uri(dojo.global().location, url)).toString()+'"/>'
-						}
-					}
-					return text;
-				}else{
-					var head = this.document.getElementsByTagName("head")[0];
-					for(var i in this.editingAreaStyleSheets){
-						var url = this.editingAreaStyleSheets[i];
-						if(url){
-							var stylesheet = this.document.createElement("link");
-							with(stylesheet){
-								rel="stylesheet";
-								type="text/css";
-								//lets specify absolute path
-								href=(new dojo.uri.Uri(dojo.global().location, url)).toString();
-							}
-							head.appendChild(stylesheet);
-						}
-					}
-				}
+			//empty this.editingAreaStyleSheets here, as it will be filled in addStyleSheet
+			files = files.concat(this.editingAreaStyleSheets);
+			this.editingAreaStyleSheets = [];
+
+			if(files.length>0){
+				for(var i=0;i<files.length;i++){
+					var url = files[i];
+					if(url){ 
+						this.addStyleSheet(new dojo.uri.Uri(dojo.global().location, url));
+	 				}
+	 			}
 			}
-			return "";
 		},
 
-		/** Draws an active x object, used by IE */
-		_drawObject: function (html) {
+		addStyleSheet: function(/*dojo.uri.Uri*/uri) {
+			// summary:
+			//		add an external stylesheet for the editing area
+			// uri:	a dojo.uri.Uri pointing to the url of the external css file
+			var url=uri.toString();
+			if(dojo.lang.find(this.editingAreaStyleSheets, url) > -1){
+				dojo.debug("dojo.widget.RichText.addStyleSheet: Style sheet "+url+" is already applied to the editing area!");
+				return;
+			}
+			this.editingAreaStyleSheets.push(url);
+			if(this.document.createStyleSheet){ //IE
+				this.document.createStyleSheet(url);
+			}else{ //other browser
+				var head = this.document.getElementsByTagName("head")[0];
+				var stylesheet = this.document.createElement("link");
+				with(stylesheet){
+					rel="stylesheet";
+					type="text/css";
+					href=url;
+				}
+				head.appendChild(stylesheet);
+			}
+		},
+		
+		removeStyleSheet: function (/*dojo.uri.Uri*/uri) {
+			// summary:
+			//		remove an external stylesheet for the editing area
+			var url=uri.toString();
+			var index = dojo.lang.find(this.editingAreaStyleSheets, url);
+			if(index == -1){
+				dojo.debug("dojo.widget.RichText.removeStyleSheet: Style sheet "+url+" is not applied to the editing area so it can not be removed!");
+				return;
+			}
+			delete this.editingAreaStyleSheets[index];
+
+			var links = this.document.getElementsByTagName("link");
+			for(var i=0;i<links.length;i++){
+				if(links[i].href == url){
+					if(dojo.render.html.ie){//we need to empty the href first, to get IE to remove the rendered styles
+						links[i].href="";
+					}
+					dojo.html.removeNode(links[i]);
+					break;
+				}
+			}
+		},
+
+		_drawObject: function (/*String*/html) {
+			// summary:
+			//		Draws an active x object, used by IE
 			this.object = dojo.html.createExternalElement(dojo.doc(), "object");
 
 			with (this.object) {
@@ -625,9 +673,8 @@ dojo.widget.defineWidget(
 				this.object.attachEvent(e.toLowerCase(), dojo.lang.hitch(this, e));
 			}, this);
 
-			var styles = this.applyEditingAreaStyleSheets();
 			this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
-				'<html><title></title>' + styles +
+				'<html><title></title>' +
 				'<style type="text/css">' +
 				'    body,html { padding: 0; margin: 0; }' + //font: ' + font + '; }' +
 				(this.height ? '' : '    body,  { overflow: hidden; }') +
@@ -736,15 +783,14 @@ dojo.widget.defineWidget(
 					addListener(this.document, "keyup", dojo.lang.hitch(this, "onKeyUp"));
 					addListener(this.document, "click", dojo.lang.hitch(this, "onClick"));
 				}
-
-				this.applyEditingAreaStyleSheets();
 				// FIXME: when scrollbars appear/disappear this needs to be fired						
 			}else if(dojo.render.html.ie){
 				// IE contentEditable
 				this.connect(this, "onDisplayChanged", "_updateHeight");
 				this.editNode.style.zoom = 1.0;
-				this.applyEditingAreaStyleSheets();
 			}
+
+			this._applyEditingAreaStyleSheets();
 
 			if(this.focusOnLoad){
 				this.focus();
@@ -902,7 +948,6 @@ dojo.widget.defineWidget(
 		onBlur: function(e){ },
 		_initialFocus: true,
 		onFocus: function(e){ 
-			//what's this for?
 			if( (dojo.render.html.mozilla)&&(this._initialFocus) ){
 				this._initialFocus = false;
 				if(dojo.string.trim(this.editNode.innerHTML) == "&nbsp;"){
@@ -1194,22 +1239,6 @@ dojo.widget.defineWidget(
 					command = "inserthtml";
 					argument="<hr>";
 				}
-//				if(command == "inserttable"){
-//					var tableInfo = this.constructor._tableInfo;
-//					if(!tableInfo){
-//						tableInfo = dojo.doc().createElement("object");
-//						tableInfo.classid = "clsid:47B0DFC7-B7A3-11D1-ADC5-006008A5848C";
-//						dojo.body().appendChild(tableInfo);
-//						this.constructor._table = tableInfo;
-//					}
-//					
-//					tableInfo.NumRows = argument["rows"];
-//					tableInfo.NumCols = argument["cols"];
-//					tableInfo.TableAttrs = argument["tableattrs"];
-//					tableInfo.CellAttrs = argument["cellattrs"];
-//					tableInfo.Caption = argument["caption"];
-//					argument = tableInfo;
-//				}
 			
 				if(command == "inserthtml"){
 					var range = this.document.selection.createRange();
@@ -1408,6 +1437,8 @@ dojo.widget.defineWidget(
 	 ********/
 		
 		placeCursorAtStart: function(){
+			// summary:
+			//		place the cursor at the start of the editing area
 			this.focus();
 			//see comments in placeCursorAtEnd
 			if(dojo.render.html.moz && this.editNode.firstChild && 
@@ -1420,6 +1451,8 @@ dojo.widget.defineWidget(
 		},
 
 		placeCursorAtEnd: function(){
+			// summary:
+			//		place the cursor at the end of the editing area
 			this.focus();
 			//In mozilla, if last child is not a text node, we have to use selectElementChildren on this.editNode.lastChild
 			//otherwise the cursor would be placed at the end of the closing tag of this.editNode.lastChild
@@ -1432,8 +1465,9 @@ dojo.widget.defineWidget(
 			dojo.withGlobal(this.window, "collapse", dojo.html.selection, [false]);
 		},
 
-		//this function set the content while trying to maintain the undo stack
-		replaceEditorContent: function(html){
+		replaceEditorContent: function(/*String*/html){
+			// summary:
+			//		this function set the content while trying to maintain the undo stack
 			html = this._preFilterContent(html);
 			if(this.isClosed){
 				this.domNode.innerHTML = html;
@@ -1446,7 +1480,9 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		_preFilterContent: function(html){
+		_preFilterContent: function(/*String*/html){
+			// summary:
+			//		filter the input before setting the content of the editing area
 			var ec = html;
 			dojo.lang.forEach(this.contentPreFilters, function(ef){
 				ec = ef(ec);
@@ -1464,7 +1500,9 @@ dojo.widget.defineWidget(
 			}
 			return ec;
 		},
-		_postFilterContent: function(html){
+		_postFilterContent: function(/*String*/html){
+			// summary:
+			//		filter the output after getting the content of the editing area
 			var ec = html;
 			if(this.contentDomPostFilters.length>0){
 				var dom = this.document.createElement('div');
@@ -1480,10 +1518,12 @@ dojo.widget.defineWidget(
 			return ec;
 		},
 
+		//Int: stored last time height
 		_lastHeight: 0,
 
-		/** Updates the height of the editor area to fit the contents. */
 		_updateHeight: function(){
+			// summary:
+			//		Updates the height of the editor area to fit the contents.
 			if(!this.isLoaded){ return; }
 			if(this.height){ return; }
 
@@ -1501,16 +1541,17 @@ dojo.widget.defineWidget(
 			this.editorObject.style.height = this._lastHeight + "px";
 			this.window.scrollTo(0, 0);
 		},
-		
-		/**
-		 * Saves the content in an onunload event if the editor has not been closed
-		 */
+
 		_saveContent: function(e){
+			// summary:
+			//		Saves the content in an onunload event if the editor has not been closed
 			var saveTextarea = dojo.doc().getElementById("dojo.widget.RichText.savedContent");
 			saveTextarea.value += this._SEPARATOR + this.saveName + ":" + this.getEditorContent();
 		},
 
 		getEditorContent: function(){
+			// summary:
+			//		return the current content of the editing area (post filters are applied)
 			var ec = "";
 			try{
 				ec = (this._content.length > 0) ? this._content : this.editNode.innerHTML;
@@ -1549,16 +1590,14 @@ dojo.widget.defineWidget(
 			}
 			return ec;
 		},
-		
-		/**
-		 * Kills the editor and optionally writes back the modified contents to the 
-		 * element from which it originated.
-		 *
-		 * @param save Whether or not to save the changes. If false, the changes are
-		 *             discarded.
-		 * @return true if the contents has been modified, false otherwise
-		 */
-		close: function(save, force){
+
+		close: function(/*Boolean*/save, /*Boolean*/force){
+			// summery:
+			//		Kills the editor and optionally writes back the modified contents to the 
+			//		element from which it originated.
+			// save: 
+			//		Whether or not to save the changes. If false, the changes are discarded.
+			// force: 
 			if(this.isClosed){return false; }
 
 			if (arguments.length == 0) { save = true; }
@@ -1628,7 +1667,7 @@ dojo.widget.defineWidget(
 			this.editingArea = null;
 			this.editorObject = null;
 
-			return changed;
+			return changed; // Boolean: whether the content has been modified
 		},
 
 		destroyRendering: function(){}, // stub!
@@ -1636,47 +1675,27 @@ dojo.widget.defineWidget(
 		destroy: function (){
 			this.destroyRendering();
 			if(!this.isClosed){ this.close(false); }
-		
-			// disconnect those listeners.
-			while(this._connected.length){
-				this.disconnect(this._connected[0],
-					this._connected[1], this._connected[2]);
-			}
 
 			dojo.widget.RichText.superclass.destroy.call(this);
 		},
 
-		_connected: [],
 		connect: function (targetObj, targetFunc, thisFunc) {
+			// summary: convenient method for dojo.event.connect
 			dojo.event.connect(targetObj, targetFunc, this, thisFunc);
-			// this._connected.push([targetObj, targetFunc, thisFunc]);	
 		},
 		
-		// FIXME: below two functions do not work with the above line commented out
 		disconnect: function (targetObj, targetFunc, thisFunc) {
-			for (var i = 0; i < this._connected.length; i++) {
-				if (this._connected[0] == targetObj &&
-					this._connected[1] == targetFunc &&
-					this._connected[2] == thisFunc) {
-					dojo.event.disconnect(targetObj, targetFunc, this, thisFunc);
-					this._connected.splice(i, 1);
-					break;
-				}
-			}
+			// summary: convenient method for dojo.event.disconnect
+			dojo.event.disconnect(targetObj, targetFunc, this, thisFunc);
 		},
 
 		disconnectAllWithRoot: function (targetObj) {
-			for (var i = 0; i < this._connected.length; i++) {
-				if (this._connected[0] == targetObj) {
-					dojo.event.disconnect(targetObj,
-						this._connected[1], this, this._connected[2]);
-					this._connected.splice(i, 1);
-				}
-			}	
+			dojo.deprecated("disconnectAllWithRoot", "is deprecated. No need to disconnect manually", "0.5");
 		},
 
-		fixContentForMoz: function(html){
-			//Moz can not handle strong/em tags correctly, so we change them here
+		_fixContentForMoz: function(html){
+			// summary:
+			//		Moz can not handle strong/em tags correctly, correct them here
 			html = html.replace(/<strong([ \>])/gi, '<b$1' );
 			html = html.replace(/<\/strong>/gi, '<\/b>' );
 			html = html.replace(/<em([ \>])/gi, '<i$1' );
@@ -1686,14 +1705,23 @@ dojo.widget.defineWidget(
 	},
 	"html",
 	function(){
+		// summary:
+		//		Constructor for this widget, initialize per-instance variables
+
+		// Array: pre content filter function register array
 		this.contentPreFilters = [];
+		// Array: post content filter function register array
 		this.contentPostFilters = [];
+		// Array: pre content dom filter function register array
 		this.contentDomPreFilters = [];
+		// Array: post content dom filter function register array
 		this.contentDomPostFilters = [];
-		this.styleSheets = ""; // ; separated list of css files
+		// String: semicolon (";") separated list of css files for the editing area
+		this.styleSheets = "";
+		// Array: array to store all the stylesheets applied to the editing area
 		this.editingAreaStyleSheets=[];
 		if(dojo.render.html.moz){
-			this.contentPreFilters.push(this.fixContentForMoz);
+			this.contentPreFilters.push(this._fixContentForMoz);
 		}
 		
 		this._keyHandlers = {};
