@@ -4,7 +4,9 @@ dojo.require("dojo.html.common");
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.display");
 
-dojo.html.sumAncestorProperties = function(node, prop){
+dojo.html.sumAncestorProperties = function(/* HTMLElement */node, /* string */prop){
+	//	summary
+	//	Returns the sum of the passed property on all ancestors of node.
 	node = dojo.byId(node);
 	if(!node){ return 0; } // FIXME: throw an error?
 	
@@ -20,10 +22,12 @@ dojo.html.sumAncestorProperties = function(node, prop){
 		}
 		node = node.parentNode;
 	}
-	return retVal;
+	return retVal;	//	integer
 }
 
-dojo.html.setStyleAttributes = function(node, attributes) { 
+dojo.html.setStyleAttributes = function(/* HTMLElement */node, /* string */attributes) { 
+	//	summary
+	//	allows a dev to pass a string similar to what you'd pass in style="", and apply it to a node.
 	node = dojo.byId(node);
 	var splittedAttribs=attributes.replace(/(;)?\s*$/, "").split(";"); 
 	for(var i=0; i<splittedAttribs.length; i++){ 
@@ -59,7 +63,9 @@ dojo.html.boxSizing = {
 	CONTENT_BOX: "content-box"
 };
 
-dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll, boxType){
+dojo.html.getAbsolutePosition = dojo.html.abs = function(/* HTMLElement */node, /* boolean? */includeScroll, /* string? */boxType){
+	//	summary
+	//	Gets the absolute position of the passed element based on the document itself.
 	node = dojo.byId(node, node.ownerDocument);
 	var ret = {
 		x: 0,
@@ -165,18 +171,18 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll, bo
 			ret.x -= extentFuncArray[i-1](node, 'left');
 		}
 	}
-
 	ret.top = ret.y;
 	ret.left = ret.x;
-
-	return ret;
+	return ret;	//	object
 }
 
-dojo.html.isPositionAbsolute = function(node){
-	return (dojo.html.getComputedStyle(node, 'position') == 'absolute');
+dojo.html.isPositionAbsolute = function(/* HTMLElement */node){
+	//	summary
+	//	Returns if the element is absolutely positioned or not.
+	return (dojo.html.getComputedStyle(node, 'position') == 'absolute');	//	boolean
 }
 
-dojo.html._sumPixelValues = function(node, selectors, autoIsZero){
+dojo.html._sumPixelValues = function(/* HTMLElement */node, selectors, autoIsZero){
 	var total = 0;
 	for(var x=0; x<selectors.length; x++){
 		total += dojo.html.getPixelValue(node, selectors[x], autoIsZero);
@@ -184,91 +190,117 @@ dojo.html._sumPixelValues = function(node, selectors, autoIsZero){
 	return total;
 }
 
-dojo.html.getMargin = function(node){
+dojo.html.getMargin = function(/* HTMLElement */node){
+	//	summary
+	//	Returns the dimensions of the passed node including margins.
 	return {
 		width: dojo.html._sumPixelValues(node, ["margin-left", "margin-right"], (dojo.html.getComputedStyle(node, 'position') == 'absolute')),
 		height: dojo.html._sumPixelValues(node, ["margin-top", "margin-bottom"], (dojo.html.getComputedStyle(node, 'position') == 'absolute'))
-	};
+	};	//	object
 }
 
-dojo.html.getBorder = function(node){
+dojo.html.getBorder = function(/* HTMLElement */node){
+	//	summary
+	//	Returns the dimensions of the passed node including borders.
 	return {
 		width: dojo.html.getBorderExtent(node, 'left') + dojo.html.getBorderExtent(node, 'right'),
 		height: dojo.html.getBorderExtent(node, 'top') + dojo.html.getBorderExtent(node, 'bottom')
-	};
+	};	//	object
 }
 
-dojo.html.getBorderExtent = function(node, side){
-	return (dojo.html.getStyle(node, 'border-' + side + '-style') == 'none' ? 0 : dojo.html.getPixelValue(node, 'border-' + side + '-width'));
+dojo.html.getBorderExtent = function(/* HTMLElement */node, /* string */side){
+	//	summary
+	//	returns the width of the requested border
+	return (dojo.html.getStyle(node, 'border-' + side + '-style') == 'none' ? 0 : dojo.html.getPixelValue(node, 'border-' + side + '-width'));	// integer
 }
 
-dojo.html.getMarginExtent = function(node, side){
-	return dojo.html._sumPixelValues(node, ["margin-" + side], dojo.html.isPositionAbsolute(node));
+dojo.html.getMarginExtent = function(/* HTMLElement */node, /* string */side){
+	//	summary
+	//	returns the width of the requested margin
+	return dojo.html._sumPixelValues(node, ["margin-" + side], dojo.html.isPositionAbsolute(node));	//	integer
 }
 
-dojo.html.getPaddingExtent = function(node, side){
-	return dojo.html._sumPixelValues(node, ["padding-" + side], true);
+dojo.html.getPaddingExtent = function(/* HTMLElement */node, /* string */side){
+	//	summary
+	//	Returns the width of the requested padding 
+	return dojo.html._sumPixelValues(node, ["padding-" + side], true);	//	integer
 }
 
-dojo.html.getPadding = function(node){
+dojo.html.getPadding = function(/* HTMLElement */node){
+	//	summary
+	//	Returns the dimensions of the passed node including padding.
 	return {
 		width: dojo.html._sumPixelValues(node, ["padding-left", "padding-right"], true),
 		height: dojo.html._sumPixelValues(node, ["padding-top", "padding-bottom"], true)
-	};
+	};	//	object
 }
 
-dojo.html.getPadBorder = function(node){
+dojo.html.getPadBorder = function(/* HTMLElement */node){
+	//	summary
+	//	Returns the dimesions of the passed node including padding and border
 	var pad = dojo.html.getPadding(node);
 	var border = dojo.html.getBorder(node);
-	return { width: pad.width + border.width, height: pad.height + border.height };
+	return { width: pad.width + border.width, height: pad.height + border.height };	//	object
 }
 
-dojo.html.getBoxSizing = function(node){
+dojo.html.getBoxSizing = function(/* HTMLElement */node){
+	//	summary
+	//	Returns which box model the passed element is working with
 	var h = dojo.render.html;
 	var bs = dojo.html.boxSizing;
 	if((h.ie)||(h.opera)){ 
 		var cm = document["compatMode"];
 		if((cm == "BackCompat")||(cm == "QuirksMode")){ 
-			return bs.BORDER_BOX; 
+			return bs.BORDER_BOX; 	//	string
 		}else{
-			return bs.CONTENT_BOX; 
+			return bs.CONTENT_BOX; 	//	string
 		}
 	}else{
 		if(arguments.length == 0){ node = document.documentElement; }
 		var sizing = dojo.html.getStyle(node, "-moz-box-sizing");
 		if(!sizing){ sizing = dojo.html.getStyle(node, "box-sizing"); }
-		return (sizing ? sizing : bs.CONTENT_BOX);
+		return (sizing ? sizing : bs.CONTENT_BOX);	//	string
 	}
 }
 
-dojo.html.isBorderBox = function(node){
-	return (dojo.html.getBoxSizing(node) == dojo.html.boxSizing.BORDER_BOX);
+dojo.html.isBorderBox = function(/* HTMLElement */node){
+	//	summary
+	//	returns whether the passed element is using border box sizing or not.
+	return (dojo.html.getBoxSizing(node) == dojo.html.boxSizing.BORDER_BOX);	//	boolean
 }
 
-dojo.html.getBorderBox = function(node){
+dojo.html.getBorderBox = function(/* HTMLElement */node){
+	//	summary
+	//	Returns the dimensions of the passed element based on border-box sizing.
 	node = dojo.byId(node);
-	return { width: node.offsetWidth, height: node.offsetHeight };
+	return { width: node.offsetWidth, height: node.offsetHeight };	//	object
 }
 
-dojo.html.getPaddingBox = function(node){
+dojo.html.getPaddingBox = function(/* HTMLElement */node){
+	//	summary
+	//	Returns the dimensions of the passed node, with border calcs removed.
 	var box = dojo.html.getBorderBox(node);
 	var border = dojo.html.getBorder(node);
 	return {
 		width: box.width - border.width,
 		height:box.height - border.height
-	};
+	};	//	object
 }
 
-dojo.html.getContentBox = function(node){
+dojo.html.getContentBox = function(/* HTMLElement */node){
+	//	summary
+	//	returns the dimensions of the passed node without any padding, border or margin calcs.
 	node = dojo.byId(node);
 	var padborder = dojo.html.getPadBorder(node);
 	return {
 		width: node.offsetWidth - padborder.width,
 		height: node.offsetHeight - padborder.height
-	};
+	};	//	object
 }
 
-dojo.html.setContentBox = function(node, args){
+dojo.html.setContentBox = function(/* HTMLElement */node, /* object */args){
+	//	summary
+	//	Sets the dimensions of the passed node according to content sizing.
 	node = dojo.byId(node);
 	var width = 0; var height = 0;
 	var isbb = dojo.html.isBorderBox(node);
@@ -282,16 +314,20 @@ dojo.html.setContentBox = function(node, args){
 		height = args.height + padborder.height;
 		ret.height = dojo.html.setPositivePixelValue(node, "height", height);
 	}
-	return ret;
+	return ret;	//	object
 }
 
-dojo.html.getMarginBox = function(node){
+dojo.html.getMarginBox = function(/* HTMLElement */node){
+	//	summary
+	//	returns the dimensions of the passed node including any margins.
 	var borderbox = dojo.html.getBorderBox(node);
 	var margin = dojo.html.getMargin(node);
-	return { width: borderbox.width + margin.width, height: borderbox.height + margin.height };
+	return { width: borderbox.width + margin.width, height: borderbox.height + margin.height };	//	object
 }
 
-dojo.html.setMarginBox = function(node, args){
+dojo.html.setMarginBox = function(/* HTMLElement */node, /* object */args){
+	//	summary
+	//	Sets the dimensions of the passed node using margin box calcs.
 	node = dojo.byId(node);
 	var width = 0; var height = 0;
 	var isbb = dojo.html.isBorderBox(node);
@@ -308,26 +344,30 @@ dojo.html.setMarginBox = function(node, args){
 		height -= margin.height;
 		ret.height = dojo.html.setPositivePixelValue(node, "height", height);
 	}
-	return ret;
+	return ret;	//	object
 }
 
-dojo.html.getElementBox = function(node, type){
+dojo.html.getElementBox = function(/* HTMLElement */node, /* string */type){
+	//	summary
+	//	return dimesions of a node based on the passed box model type.
 	var bs = dojo.html.boxSizing;
 	switch(type){
 		case bs.MARGIN_BOX:
-			return dojo.html.getMarginBox(node);
+			return dojo.html.getMarginBox(node);	//	object
 		case bs.BORDER_BOX:
-			return dojo.html.getBorderBox(node);
+			return dojo.html.getBorderBox(node);	//	object
 		case bs.PADDING_BOX:
-			return dojo.html.getPaddingBox(node);
+			return dojo.html.getPaddingBox(node);	//	object
 		case bs.CONTENT_BOX:
 		default:
-			return dojo.html.getContentBox(node);
+			return dojo.html.getContentBox(node);	//	object
 	}
 }
 // in: coordinate array [x,y,w,h] or dom node
 // return: coordinate object
-dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, includeScroll, boxtype) {
+dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(/* array */coords, /* boolean? */includeScroll, /* string? */boxtype) {
+	//	summary
+	//	Converts an array of coordinates into an object of named arguments.
 	if(coords instanceof Array || typeof coords == "array"){
 		dojo.deprecated("dojo.html.toCoordinateArray", "use dojo.html.toCoordinateObject({left: , top: , width: , height: }) instead", "0.5");
 		// coords is already an array (of format [x,y,w,h]), just return it
@@ -363,7 +403,7 @@ dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, in
 	}
 	ret.x = ret.left;
 	ret.y = ret.top;
-	return ret;
+	return ret;	//	object
 }
 
 dojo.html.setMarginBoxWidth = dojo.html.setOuterWidth = function(node, width){

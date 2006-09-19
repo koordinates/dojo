@@ -1,13 +1,16 @@
 dojo.provide("dojo.html.util");
 dojo.require("dojo.html.layout");
 
-// Get the window object where the element is placed in.
-dojo.html.getElementWindow = function(element){
-	return dojo.html.getDocumentWindow( element.ownerDocument );
+dojo.html.getElementWindow = function(/* HTMLElement */element){
+	//	summary
+	// 	Get the window object where the element is placed in.
+	return dojo.html.getDocumentWindow( element.ownerDocument );	//	Window
 }
 
-// Get window object associated with document doc
 dojo.html.getDocumentWindow = function(doc){
+	//	summary
+	// 	Get window object associated with document doc
+
 	// With Safari, there is not wa to retrieve the window from the document, so we must fix it.
 	if(dojo.render.html.safari && !doc._parentWindow){
 		/*
@@ -38,29 +41,28 @@ dojo.html.getDocumentWindow = function(doc){
 		//another possibility is to add an onUnload handler which seems overkill to me (liucougar)
 		var win = doc._parentWindow;
 		doc._parentWindow = null;
-		return win;
+		return win;	//	Window
 	}
 
-	return doc._parentWindow || doc.parentWindow || doc.defaultView;
+	return doc._parentWindow || doc.parentWindow || doc.defaultView;	//	Window
 }
 
-/**
- * Calculates the mouse's direction of gravity relative to the centre
- * of the given node.
- * <p>
- * If you wanted to insert a node into a DOM tree based on the mouse
- * position you might use the following code:
- * <pre>
- * if (gravity(node, e) & gravity.NORTH) { [insert before]; }
- * else { [insert after]; }
- * </pre>
- *
- * @param node The node
- * @param e		The event containing the mouse coordinates
- * @return		 The directions, NORTH or SOUTH and EAST or WEST. These
- *						 are properties of the function.
- */
-dojo.html.gravity = function(node, e){
+dojo.html.gravity = function(/* HTMLElement */node, /* DOMEvent */e){
+	//	summary
+	//	Calculates the mouse's direction of gravity relative to the centre
+	//	of the given node.
+	//	<p>
+	//	If you wanted to insert a node into a DOM tree based on the mouse
+	//	position you might use the following code:
+	//	<pre>
+	//	if (gravity(node, e) & gravity.NORTH) { [insert before]; }
+	//	else { [insert after]; }
+	//	</pre>
+	//
+	//	@param node The node
+	//	@param e		The event containing the mouse coordinates
+	//	@return		 The directions, NORTH or SOUTH and EAST or WEST. These
+	//						 are properties of the function.
 	node = dojo.byId(node);
 	var mouse = dojo.html.getCursorPosition(e);
 
@@ -72,8 +74,7 @@ dojo.html.gravity = function(node, e){
 	}
 	
 	with (dojo.html.gravity) {
-		return ((mouse.x < nodecenterx ? WEST : EAST) |
-			(mouse.y < nodecentery ? NORTH : SOUTH));
+		return ((mouse.x < nodecenterx ? WEST : EAST) | (mouse.y < nodecentery ? NORTH : SOUTH));	//	integer
 	}
 }
 
@@ -82,28 +83,29 @@ dojo.html.gravity.SOUTH = 1 << 1;
 dojo.html.gravity.EAST = 1 << 2;
 dojo.html.gravity.WEST = 1 << 3;
 
-dojo.html.overElement = function(element, e){
+dojo.html.overElement = function(/* HTMLElement */element, /* DOMEvent */e){
+	//	summary
+	//	Returns whether the mouse is over the passed element.
 	element = dojo.byId(element);
 	var mouse = dojo.html.getCursorPosition(e);
-
-	with(dojo.html){
-		var bb = getBorderBox(element);
-		var absolute = getAbsolutePosition(element, true, dojo.html.boxSizing.BORDER_BOX);
-		var top = absolute.y;
-		var bottom = top + bb.height;
-		var left = absolute.x;
-		var right = left + bb.width;
-	}
+	var bb = dojo.html.getBorderBox(element);
+	var absolute = dojo.html.getAbsolutePosition(element, true, dojo.html.boxSizing.BORDER_BOX);
+	var top = absolute.y;
+	var bottom = top + bb.height;
+	var left = absolute.x;
+	var right = left + bb.width;
 	
-	return (mouse.x >= left && mouse.x <= right &&
-		mouse.y >= top && mouse.y <= bottom);
+	return (mouse.x >= left 
+		&& mouse.x <= right 
+		&& mouse.y >= top 
+		&& mouse.y <= bottom
+	);	//	boolean
 }
 
-/**
- * Attempts to return the text as it would be rendered, with the line breaks
- * sorted out nicely. Unfinished.
- */
-dojo.html.renderedTextContent = function(node){
+dojo.html.renderedTextContent = function(/* HTMLElement */node){
+	//	summary
+	//	Attempts to return the text as it would be rendered, with the line breaks
+	//	sorted out nicely. Unfinished.
 	node = dojo.byId(node);
 	var result = "";
 	if (node == null) { return result; }
@@ -175,10 +177,12 @@ dojo.html.renderedTextContent = function(node){
 				break;
 		}
 	}
-	return result;
+	return result;	//	string
 }
 
-dojo.html.createNodesFromText = function(txt, trim){
+dojo.html.createNodesFromText = function(/* string */txt, /* boolean? */trim){
+	//	summary
+	//	Attempts to create a set of nodes based on the structure of the passed text.
 	if(trim) { txt = txt.replace(/^\s+|\s+$/g, ""); }
 
 	var tn = dojo.doc().createElement("div");
@@ -235,45 +239,50 @@ dojo.html.createNodesFromText = function(txt, trim){
 	}
 	tn.style.display = "none"; // FIXME: why do we do this?
 	dojo.body().removeChild(tn);
-	return nodes;
+	return nodes;	//	array
 }
 
-/* TODO: make this function have variable call sigs
- *
- * kes(node, ptArray, cornerArray, padding, hasScroll)
- * kes(node, ptX, ptY, cornerA, cornerB, cornerC, paddingArray, hasScroll)
- */
+dojo.html.placeOnScreen = function(
+	/* HTMLElement */node, 
+	/* integer */desiredX, 
+	/* integer */desiredY, 
+	/* integer */padding, 
+	/* boolean? */hasScroll, 
+	/* string? */corners, 
+	/* boolean? */tryOnly
+){
+	//	summary
+	//	Keeps 'node' in the visible area of the screen while trying to
+	//	place closest to desiredX, desiredY. The input coordinates are
+	//	expected to be the desired screen position, not accounting for
+	//	scrolling. If you already accounted for scrolling, set 'hasScroll'
+	//	to true. Set padding to either a number or array for [paddingX, paddingY]
+	//	to put some buffer around the element you want to position.
+	//	Set which corner(s) you want to bind to, such as
+	//
+	//	placeOnScreen(node, desiredX, desiredY, padding, hasScroll, "TR")
+	//	placeOnScreen(node, [desiredX, desiredY], padding, hasScroll, ["TR", "BL"])
+	//
+	//	The desiredX/desiredY will be treated as the topleft(TL)/topright(TR) or 
+	//	BottomLeft(BL)/BottomRight(BR) corner of the node. Each corner is tested
+	//	and if a perfect match is found, it will be used. Otherwise, it goes through
+	//	all of the specified corners, and choose the most appropriate one.
+	//	By default, corner = ['TL'].
+	//	If tryOnly is set to true, the node will not be moved to the place.
+	//
+	//	NOTE: node is assumed to be absolutely or relatively positioned.
+	//
+	//	Alternate call sig:
+	//	 placeOnScreen(node, [x, y], padding, hasScroll)
+	//
+	//	Examples:
+	//	 placeOnScreen(node, 100, 200)
+	//	 placeOnScreen("myId", [800, 623], 5)
+	//	 placeOnScreen(node, 234, 3284, [2, 5], true)
 
-/**
- * Keeps 'node' in the visible area of the screen while trying to
- * place closest to desiredX, desiredY. The input coordinates are
- * expected to be the desired screen position, not accounting for
- * scrolling. If you already accounted for scrolling, set 'hasScroll'
- * to true. Set padding to either a number or array for [paddingX, paddingY]
- * to put some buffer around the element you want to position.
- * Set which corner(s) you want to bind to, such as
- *
- * placeOnScreen(node, desiredX, desiredY, padding, hasScroll, "TR")
- * placeOnScreen(node, [desiredX, desiredY], padding, hasScroll, ["TR", "BL"])
- *
- * The desiredX/desiredY will be treated as the topleft(TL)/topright(TR) or 
- * BottomLeft(BL)/BottomRight(BR) corner of the node. Each corner is tested
- * and if a perfect match is found, it will be used. Otherwise, it goes through
- * all of the specified corners, and choose the most appropriate one.
- * By default, corner = ['TL'].
- * If tryOnly is set to true, the node will not be moved to the place.
- *
- * NOTE: node is assumed to be absolutely or relatively positioned.
- *
- * Alternate call sig:
- *  placeOnScreen(node, [x, y], padding, hasScroll)
- *
- * Examples:
- *  placeOnScreen(node, 100, 200)
- *  placeOnScreen("myId", [800, 623], 5)
- *  placeOnScreen(node, 234, 3284, [2, 5], true)
- */
-dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll, corners, tryOnly) {
+	// TODO: make this function have variable call sigs
+	//	kes(node, ptArray, cornerArray, padding, hasScroll)
+	//	kes(node, ptX, ptY, cornerA, cornerB, cornerC, paddingArray, hasScroll)
 	if(desiredX instanceof Array || typeof desiredX == "array") {
 		tryOnly = corners;
 		corners = hasScroll;
@@ -313,8 +322,8 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll,
 	for(var cidex=0; cidex<corners.length; ++cidex){
 		var corner = corners[cidex];
 		var match = true;
-		var tryX = desiredX - (corner.charAt(1)=='L' ? 0 : w) + padding[0] * (corner.charAt(1)=='L' ? 1 : -1);
-		var tryY = desiredY - (corner.charAt(0)=='T' ? 0 : h) + padding[1] * (corner.charAt(0)=='T' ? 1 : -1);
+		var tryX = desiredX - (corner.charAt(1)=='L' ? 0 : w) + padding[0]//	(corner.charAt(1)=='L' ? 1 : -1);
+		var tryY = desiredY - (corner.charAt(0)=='T' ? 0 : h) + padding[1]//	(corner.charAt(0)=='T' ? 1 : -1);
 		if(hasScroll) {
 			tryX -= scroll.x;
 			tryY -= scroll.y;
@@ -359,32 +368,32 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll,
 		node.style.top = besty + "px";
 	}
 	
-	return { left: bestx, top: besty, x: bestx, y: besty, dist: bestDistance };
+	return { left: bestx, top: besty, x: bestx, y: besty, dist: bestDistance };	//	object
 }
 
-/**
- * Like placeOnScreenPoint except that it attempts to keep one of the node's
- * corners at desiredX, desiredY.  Favors the bottom right position
- *
- * Examples placing node at mouse position (where e = [Mouse event]):
- *  placeOnScreenPoint(node, e.clientX, e.clientY);
- */
 dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasScroll) {
 	dojo.deprecated("dojo.html.placeOnScreenPoint", "use dojo.html.placeOnScreen() instead", "0.5");
 	return dojo.html.placeOnScreen(node, desiredX, desiredY, padding, hasScroll, ['TL', 'TR', 'BL', 'BR']);
 }
 
-/**
- * Like placeOnScreen, except it accepts aroundNode instead of x.y 
- * and attempts to place node around it. aroundType (see 
- * dojo.html.boxSizing in html/layout.js) determines which box of the
- * aroundNode should be used to calculate the outer box.
- * aroundCorners specify Which corner of aroundNode should be 
- * used to place the node => which corner(s) of node to use (see the
- * corners parameter in dojo.html.placeOnScreen)
- * aroundCorners: {'TL': 'BL', 'BL': 'TL'}
- */
-dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, aroundType, aroundCorners, tryOnly){
+dojo.html.placeOnScreenAroundElement = function(
+	/* HTMLElement */node, 
+	/* HTMLElement */aroundNode, 
+	/* integer */padding, 
+	/* string? */aroundType, 
+	/* string? */aroundCorners, 
+	/* boolean? */tryOnly
+){
+	//	summary
+	//	Like placeOnScreen, except it accepts aroundNode instead of x.y 
+	//	and attempts to place node around it. aroundType (see 
+	//	dojo.html.boxSizing in html/layout.js) determines which box of the
+	//	aroundNode should be used to calculate the outer box.
+	//	aroundCorners specify Which corner of aroundNode should be 
+	//	used to place the node => which corner(s) of node to use (see the
+	//	corners parameter in dojo.html.placeOnScreen)
+	//	aroundCorners: {'TL': 'BL', 'BL': 'TL'}
+
 	var best, bestDistance=Infinity;
 	aroundNode = dojo.byId(aroundNode);
 	var oldDisplay = aroundNode.style.display;
@@ -419,11 +428,12 @@ dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, aroun
 		node.style.left = best.left + "px";
 		node.style.top = best.top + "px";
 	}
-	return best;
+	return best;	//	object
 }
 
-//scrollIntoView in some implementation is broken, use our own
-dojo.html.scrollIntoView = function(node){
+dojo.html.scrollIntoView = function(/* HTMLElement */node){
+	//	summary
+	//	Scroll the passed node into view, if it is not.
 	if(!node){ return; }
 	
 	// don't rely on that node.scrollIntoView works just because the function is there

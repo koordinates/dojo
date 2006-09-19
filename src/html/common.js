@@ -13,14 +13,18 @@ dojo.html.body = function(){
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS.
 // Need to investigate for KHTML and Opera
 
-dojo.html.getEventTarget = function(evt){
+dojo.html.getEventTarget = function(/* DOMEvent */evt){
+	//	summary
+	//	Returns the target of an event
 	if(!evt) { evt = dojo.global().event || {} };
 	var t = (evt.srcElement ? evt.srcElement : (evt.target ? evt.target : null));
 	while((t)&&(t.nodeType!=1)){ t = t.parentNode; }
-	return t;
+	return t;	//	HTMLElement
 }
 
 dojo.html.getViewport = function(){
+	//	summary
+	//	Returns the dimensions of the viewable area of a browser window
 	var _window = dojo.global();
 	var _document = dojo.doc();
 	var w = 0;
@@ -49,10 +53,12 @@ dojo.html.getViewport = function(){
 		w = dojo.body().clientWidth;
 		h = dojo.body().clientHeight;
 	}
-	return { width: w, height: h };
+	return { width: w, height: h };	//	object
 }
 
 dojo.html.getScroll = function(){
+	//	summary
+	//	Returns the scroll position of the document
 	var _window = dojo.global();
 	var _document = dojo.doc();
 	var top = _window.pageYOffset || _document.documentElement.scrollTop || dojo.body().scrollTop || 0;
@@ -61,10 +67,12 @@ dojo.html.getScroll = function(){
 		top: top, 
 		left: left, 
 		offset:{ x: left, y: top }	//	note the change, NOT an Array with added properties. 
-	};
+	};	//	object
 }
 
-dojo.html.getParentByType = function(node, type) {
+dojo.html.getParentByType = function(/* HTMLElement */node, /* string */type) {
+	//	summary
+	//	Returns the first ancestor of node with tagName type.
 	var _document = dojo.doc();
 	var parent = dojo.byId(node);
 	type = type.toLowerCase();
@@ -74,10 +82,12 @@ dojo.html.getParentByType = function(node, type) {
 		}
 		parent = parent.parentNode;
 	}
-	return parent;
+	return parent;	//	HTMLElement
 }
 
-dojo.html.getAttribute = function(node, attr){
+dojo.html.getAttribute = function(/* HTMLElement */node, /* string */attr){
+	//	summary
+	//	Returns the value of attribute attr from node.
 	node = dojo.byId(node);
 	// FIXME: need to add support for attr-specific accessors
 	if((!node)||(!node.getAttribute)){
@@ -90,38 +100,35 @@ dojo.html.getAttribute = function(node, attr){
 
 	// first try the approach most likely to succeed
 	var v = node.getAttribute(ta.toUpperCase());
-	if((v)&&(typeof v == 'string')&&(v!="")){ return v; }
+	if((v)&&(typeof v == 'string')&&(v!="")){ return v;	//	string }
 
 	// try returning the attributes value, if we couldn't get it as a string
-	if(v && v.value){ return v.value; }
+	if(v && v.value){ return v.value;	//	string }
 
 	// this should work on Opera 7, but it's a little on the crashy side
 	if((node.getAttributeNode)&&(node.getAttributeNode(ta))){
-		return (node.getAttributeNode(ta)).value;
+		return (node.getAttributeNode(ta)).value;	//	string
 	}else if(node.getAttribute(ta)){
-		return node.getAttribute(ta);
+		return node.getAttribute(ta);	//	string
 	}else if(node.getAttribute(ta.toLowerCase())){
-		return node.getAttribute(ta.toLowerCase());
+		return node.getAttribute(ta.toLowerCase());	//	string
 	}
-	return null;
+	return null;	//	string
 }
 	
-/**
- *	Determines whether or not the specified node carries a value for the
- *	attribute in question.
- */
-dojo.html.hasAttribute = function(node, attr){
-	return dojo.html.getAttribute(dojo.byId(node), attr) ? true : false;
+dojo.html.hasAttribute = function(/* HTMLElement */node, /* string */attr){
+	//	summary
+	//	Determines whether or not the specified node carries a value for the attribute in question.
+	return dojo.html.getAttribute(dojo.byId(node), attr) ? true : false;	//	boolean
 }
 	
-/**
- * Returns the mouse position relative to the document (not the viewport).
- * For example, if you have a document that is 10000px tall,
- * but your browser window is only 100px tall,
- * if you scroll to the bottom of the document and call this function it
- * will return {x: 0, y: 10000}
- */
-dojo.html.getCursorPosition = function(e){
+dojo.html.getCursorPosition = function(/* DOMEvent */e){
+	//	summary
+	//	Returns the mouse position relative to the document (not the viewport).
+	//	For example, if you have a document that is 10000px tall,
+	//	but your browser window is only 100px tall,
+	//	if you scroll to the bottom of the document and call this function it
+	//	will return {x: 0, y: 10000}
 	e = e || dojo.global().event;
 	var cursor = {x:0, y:0};
 	if(e.pageX || e.pageY){
@@ -133,22 +140,21 @@ dojo.html.getCursorPosition = function(e){
 		cursor.x = e.clientX + ((de||db)["scrollLeft"]) - ((de||db)["clientLeft"]);
 		cursor.y = e.clientY + ((de||db)["scrollTop"]) - ((de||db)["clientTop"]);
 	}
-	return cursor;
+	return cursor;	//	object
 }
 
-/**
- * Like dojo.dom.isTag, except case-insensitive
-**/
-dojo.html.isTag = function(node /* ... */) {
+dojo.html.isTag = function(/* HTMLElement */node) {
+	//	summary
+	//	Like dojo.dom.isTag, except case-insensitive
 	node = dojo.byId(node);
 	if(node && node.tagName) {
 		for (var i=1; i<arguments.length; i++){
 			if (node.tagName.toLowerCase()==String(arguments[i]).toLowerCase()){
-				return String(arguments[i]).toLowerCase();
+				return String(arguments[i]).toLowerCase();	//	string
 			}
 		}
 	}
-	return "";
+	return "";	//	string
 }
 
 //define dojo.html.createExternalElement for IE to workaround the annoying activation "feature" in new IE
@@ -170,8 +176,10 @@ if(dojo.render.html.ie){
 }else{
 	//for other browsers, simply use document.createElement
 	//is enough
-	dojo.html.createExternalElement = function(doc, tag){
-		return doc.createElement(tag);
+	dojo.html.createExternalElement = function(/* HTMLDocument */doc, /* string */tag){
+		//	summary
+		//	Creates an element in the HTML document, here for ActiveX activation workaround.
+		return doc.createElement(tag);	//	HTMLElement
 	}
 }
 
