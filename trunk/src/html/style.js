@@ -308,10 +308,14 @@ dojo.html.getPixelValue = function(/* HTMLElement */node, /* string */cssSelecto
 	//	Get the value of passed selector in pixels.
 	var result = dojo.html.getUnitValue(node, cssSelector, autoIsZero);
 	// FIXME: there is serious debate as to whether or not this is the right solution
-	if(isNaN(result.value)){ return 0; //	integer }	
+	if(isNaN(result.value)){ 
+		return 0; //	integer 
+	}	
 	// FIXME: code exists for converting other units to px (see Dean Edward's IE7) 
 	// but there are cross-browser complexities
-	if((result.value)&&(result.units != 'px')){ return NaN;	//	integer }
+	if((result.value)&&(result.units != 'px')){ 
+		return NaN;	//	integer 
+	}
 	return result.value;	//	integer
 }
 
@@ -339,7 +343,9 @@ dojo.html.insertCssRule = function(/* string */selector, /* string */declaration
 			// FIXME: should create a new style sheet here
 			// fall back on an exsiting style sheet
 			dojo.html.styleSheet = document.styleSheets[0];
-		} else { return null;	//	integer } // fail
+		} else { 
+			return null;	//	integer 
+		} // fail
 	}
 
 	if (arguments.length < 3) { // index may == 0
@@ -347,7 +353,9 @@ dojo.html.insertCssRule = function(/* string */selector, /* string */declaration
 			index = dojo.html.styleSheet.cssRules.length;
 		} else if (dojo.html.styleSheet.rules) { // IE
 			index = dojo.html.styleSheet.rules.length;
-		} else { return null;	//	integer } // fail
+		} else { 
+			return null;	//	integer 
+		} // fail
 	}
 
 	if (dojo.html.styleSheet.insertRule) { // W3
@@ -355,7 +363,9 @@ dojo.html.insertCssRule = function(/* string */selector, /* string */declaration
 		return dojo.html.styleSheet.insertRule(rule, index);	//	integer
 	} else if (dojo.html.styleSheet.addRule) { // IE
 		return dojo.html.styleSheet.addRule(selector, declaration, index);	//	integer
-	} else { return null; // integer} // fail
+	} else { 
+		return null; // integer
+	} // fail
 }
 
 dojo.html.removeCssRule = function(/* integer? */index){
@@ -423,7 +433,9 @@ dojo.html.insertCssText = function(/* string */cssStr, /* HTMLDocument? */doc, /
 	//	summary
 	//	Attempt to insert CSS rules into the document through inserting a style element
 	// DomNode Style  = insertCssText(String ".dojoMenu {color: green;}"[, DomDoc document, dojo.uri.Uri Url ])
-	if(!cssStr){ return; }
+	if(!cssStr){ 
+		return; //	HTMLStyleElement
+	}
 	if(!doc){ doc = document; }
 	if(URI){// fix paths in cssStr
 		cssStr = dojo.html.fixPathsInCssText(cssStr, URI);
@@ -435,7 +447,7 @@ dojo.html.insertCssText = function(/* string */cssStr, /* HTMLDocument? */doc, /
 	var head = doc.getElementsByTagName("head")[0];
 	if(!head){ // must have a head tag 
 		dojo.debug("No head tag in document, aborting styles");
-		return;
+		return;	//	HTMLStyleElement
 	}else{
 		head.appendChild(style);
 	}
