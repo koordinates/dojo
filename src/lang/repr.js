@@ -39,7 +39,7 @@ dojo.lang.repr = function(obj){
 				obj.toString == Function.prototype.toString ||
 				obj.toString == Object.prototype.toString
 			)){
-			return o.NAME;
+			return obj.NAME;
 		}
 	}
 
