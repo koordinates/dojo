@@ -100,10 +100,14 @@ dojo.html.getAttribute = function(/* HTMLElement */node, /* string */attr){
 
 	// first try the approach most likely to succeed
 	var v = node.getAttribute(ta.toUpperCase());
-	if((v)&&(typeof v == 'string')&&(v!="")){ return v;	//	string }
+	if((v)&&(typeof v == 'string')&&(v!="")){ 
+		return v;	//	string 
+	}
 
 	// try returning the attributes value, if we couldn't get it as a string
-	if(v && v.value){ return v.value;	//	string }
+	if(v && v.value){ 
+		return v.value;	//	string 
+	}
 
 	// this should work on Opera 7, but it's a little on the crashy side
 	if((node.getAttributeNode)&&(node.getAttributeNode(ta))){
