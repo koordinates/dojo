@@ -27,7 +27,31 @@ public class Cookie {
 
 	private static DateFormat EXPIRES_FORMAT_2 = new SimpleDateFormat(
 			"E, dd-MMM-yyyy k:m:s 'GMT'", Locale.US);
-
+	
+	public Cookie(URI uri, String name, String value, 
+			String expires, String path, String domain)
+	{
+		_uri = uri;
+		_name = name;
+		_value = value;
+		
+		if (expires != null) {
+			try {
+				_expires = EXPIRE_FORMAT_1.parse(expires);
+			} catch (ParseException e) {
+				try {
+					_expires = EXPIRES_FORMAT_2.parse(expires);
+				} catch (ParseException e2) {
+					throw new IllegalArgumentException(
+							"Bad date format in header: " + expires);
+				}
+			}
+		}
+		
+		_path = path;
+		_domain = domain;
+	}
+	
 	/**
 	 * Construct a cookie from the URI and header fields
 	 * 

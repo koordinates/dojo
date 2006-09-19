@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dojotoolkit;
 
 import org.mozilla.javascript.Context;
@@ -26,6 +23,9 @@ public class DojoContextFactory extends ContextFactory {
 			return true;
 		
 		case Context.FEATURE_STRICT_VARS:
+			return true;
+			
+		case Context.FEATURE_E4X:
 			return true;
 			
 		case Context.FEATURE_PARENT_PROTO_PROPRTIES:

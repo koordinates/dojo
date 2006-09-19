@@ -17,6 +17,37 @@ public class ListCookieHandler extends CookieHandler {
 	// "Long" term storage for cookies, not serialized so only
 	// for current JVM instance
 	private List<Cookie> cache = new LinkedList<Cookie>();
+	
+	/**
+	 * Adds a new cookied composed of individual parts.
+	 * @param uri
+	 * @param name
+	 * @param value
+	 * @param expires
+	 * @param path
+	 * @param domain
+	 */
+	public void setCookie(String uriStr, String name, String value, 
+			String expires, String path, String domain)
+	throws Exception
+	{
+		URI uri = new URI(uriStr);
+
+		Cookie cookie = new Cookie(uri, name, value, expires, path, domain);
+
+		// Remove cookie if it already exists
+		// New one will replace
+		for (Cookie existingCookie : cache) {
+			if ((cookie.getURI().equals(existingCookie.getURI()))
+					&& (cookie.getName().equals(existingCookie
+							.getName()))) {
+				cache.remove(existingCookie);
+				break;
+			}
+		}
+
+		cache.add(cookie);
+	}
 
 	/**
 	 * Saves all applicable cookies present in the response headers into cache.
@@ -27,9 +58,9 @@ public class ListCookieHandler extends CookieHandler {
 	 *            Immutable map from field names to lists of field values
 	 *            representing the response header fields returned
 	 */
-
 	public void put(URI uri, Map<String, List<String>> responseHeaders)
-			throws IOException {
+			throws IOException 
+	{
 		List<String> setCookieList = responseHeaders.get("Set-Cookie");
 		if (setCookieList != null) {
 			for (String item : setCookieList) {
@@ -62,8 +93,9 @@ public class ListCookieHandler extends CookieHandler {
 	 */
 
 	public Map<String, List<String>> get(URI uri,
-			Map<String, List<String>> requestHeaders) throws IOException {
-
+			Map<String, List<String>> requestHeaders) 
+			throws IOException 
+	{
 		// Retrieve all the cookies for matching URI
 		// Put in comma-separated list
 		StringBuilder cookies = new StringBuilder();
