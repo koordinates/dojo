@@ -76,7 +76,64 @@ function test_date_isLeapYear () {
 	jum.assertTrue("isLeapYear_test7", dojo.date.isLeapYear(new Date(1600,0,1)));
 }
 
+// The getTimezone function pulls from either the date's toString or
+// toLocaleString method -- it's really just a string-processing
+// function (assuming the Date obj passed in supporting both toString 
+// and toLocaleString) and as such can be tested for multiple browsers
+// by manually settting up fake Date objects with the actual strings
+// produced by various browser/OS combinations.
+// FIXME: the function and tests are not localized.
+function test_date_getTimezoneName() {
+	
+	// Create a fake Date object with toString and toLocaleString
+	// results manually set to simulate tests for multiple browsers
+	function fakeDate(str, strLocale) {
+		this.str = str || '';
+		this.strLocale = strLocale || '';
+		this.toString = function() {
+			return this.str;
+		};
+		this.toLocaleString = function() {
+			return this.strLocale;
+		};
+	}
+	var dt = new fakeDate();
+	
+	// FF 1.5 Ubuntu Linux (Breezy)
+	dt.str = 'Sun Sep 17 2006 22:25:51 GMT-0500 (CDT)';
+	dt.strLocale = 'Sun 17 Sep 2006 10:25:51 PM CDT';
+	jum.assertEquals("getTimezoneName_test1", 'CDT', dojo.date.getTimezoneName(dt));
 
+	// Safari 2.0 Mac OS X 10.4
+	dt.str = 'Sun Sep 17 2006 22:55:01 GMT-0500';
+	dt.strLocale = 'September 17, 2006 10:55:01 PM CDT';
+	jum.assertEquals("getTimezoneName_test2", 'CDT', dojo.date.getTimezoneName(dt));
+
+	// FF 1.5 Mac OS X 10.4
+	dt.str = 'Sun Sep 17 2006 22:57:18 GMT-0500 (CDT)';
+	dt.strLocale = 'Sun Sep 17 22:57:18 2006';
+	jum.assertEquals("getTimezoneName_test3", 'CDT', dojo.date.getTimezoneName(dt));
+
+	// Opera 9 Mac OS X 10.4 -- no TZ data expect empty string return
+	dt.str = 'Sun, 17 Sep 2006 22:58:06 GMT-0500';
+	dt.strLocale = 'Sunday September 17, 22:58:06 GMT-0500 2006';
+	jum.assertEquals("getTimezoneName_test4", '', dojo.date.getTimezoneName(dt));
+	
+	// IE 6 Windows XP
+	dt.str = 'Mon Sep 18 11:21:07 CDT 2006';
+	dt.strLocale = 'Monday, September 18, 2006 11:21:07 AM';
+	jum.assertEquals("getTimezoneName_test5", 'CDT', dojo.date.getTimezoneName(dt));
+
+	// Opera 9 Ubuntu Linux (Breezy) -- no TZ data expect empty string return 
+	dt.str = 'Mon, 18 Sep 2006 13:30:32 GMT-0500';
+	dt.strLocale = 'Monday September 18, 13:30:32 GMT-0500 2006';
+	jum.assertEquals("getTimezoneName_test6", '', dojo.date.getTimezoneName(dt));
+	
+	// IE 5.5 Windows 2000
+	dt.str = 'Mon Sep 18 13:49:22 CDT 2006';
+	dt.strLocale = 'Monday, September 18, 2006 1:49:22 PM';
+	jum.assertEquals("getTimezoneName_test7", 'CDT', dojo.date.getTimezoneName(dt));
+}
 
 function test_date_getOrdinal () {
 	jum.assertEquals("getOrdinal_test1", "st", dojo.date.getOrdinal(new Date(2006,0,1)));

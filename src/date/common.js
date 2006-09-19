@@ -53,6 +53,7 @@ dojo.date.getIsoWeekOfYear = function (dateObject, firstDay) {
 /* Informational Functions
  **************************/
 
+//DEPRECATED: These timezone arrays will be deprecated in 0.5
 dojo.date.shortTimezones = ["IDLW", "BET", "HST", "MART", "AKST", "PST", "MST",
 	"CST", "EST", "AST", "NFT", "BST", "FST", "AT", "GMT", "CET", "EET", "MSK",
 	"IRT", "GST", "AFT", "AGTT", "IST", "NPT", "ALMT", "MMT", "JT", "AWST",
@@ -80,41 +81,75 @@ dojo.date.timezones = ["International Date Line West", "Bering Standard Time",
 	"Line Islands Time (Kribati)"];
 */
 
-dojo.date.getDaysInMonth = function (dateObject) {
+dojo.date.getDaysInMonth = function(/*Date*/dateObject){
 	var month = dateObject.getMonth();
 	var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 	if (month == 1 && dojo.date.isLeapYear(dateObject)) { return 29; }
 	else { return days[month]; }
 }
 
-dojo.date.isLeapYear = function (dateObject) {
-	/*
-	 * Leap years are years with an additional day YYYY-02-29, where the year
-	 * number is a multiple of four with the following exception: If a year
-	 * is a multiple of 100, then it is only a leap year if it is also a
-	 * multiple of 400. For example, 1900 was not a leap year, but 2000 is one.
-	 */
+dojo.date.isLeapYear = function(/*Date*/dateObject){
+// summary:
+//	Determines if the year of the dateObject is a leap year
+//
+// description:
+//	Leap years are years with an additional day YYYY-02-29, where the year
+//	number is a multiple of four with the following exception: If a year
+//	is a multiple of 100, then it is only a leap year if it is also a
+//	multiple of 400. For example, 1900 was not a leap year, but 2000 is one.
+
 	var year = dateObject.getFullYear();
 	return (year%400 == 0) ? true : (year%100 == 0) ? false : (year%4 == 0) ? true : false;
 }
 
-dojo.date.getTimezoneName = function (dateObject) {
-	// need to negate timezones to get it right 
-	// i.e UTC+1 is CET winter, but getTimezoneOffset returns -60
-	var timezoneOffset = -(dateObject.getTimezoneOffset());
-	
-	for (var i = 0; i < dojo.date.timezoneOffsets.length; i++) {
-		if (dojo.date.timezoneOffsets[i] == timezoneOffset) {
-			return dojo.date.shortTimezones[i];
+// FIXME: This is not localized
+dojo.date.getTimezoneName = function(/*Date*/dateObject){
+// summary:
+//	Get the user's time zone as provided by the browser
+//
+// dateObject: needed because the timezone may vary with time (daylight savings)
+//
+// description:
+//	Try to get time zone info from toString or toLocaleString
+//	method of the Date object -- UTC offset is not a time zone.
+//	See http://www.twinsun.com/tz/tz-link.htm
+//	Note: results may be inconsistent across browsers.
+
+	var str = dateObject.toString(); // Start looking in toString
+	var tz = ''; // The result -- return empty string if nothing found
+	var match;
+
+	// First look for something in parentheses -- fast lookup, no regex
+	var pos = str.indexOf('(');
+	if (pos > -1) {
+		pos++;
+		tz = str.substring(pos, str.indexOf(')'));
+	}
+	// If at first you don't succeed ...
+	else{
+		// If IE knows about the TZ, it appears before the year
+		// Capital letters or slash before a 4-digit year 
+		// at the end of string
+		var pat = /([A-Z\/]+) \d{4}$/;
+		if((match = str.match(pat))) {
+			tz = match[1];
+		}
+		// Some browsers (e.g. Safari) glue the TZ on the end
+		// of toLocaleString instead of putting it in toString
+		else{
+			str = dateObject.toLocaleString();
+			// Capital letters or slash -- end of string, 
+			// after space
+			pat = / ([A-Z\/]+)$/;
+			if((match = str.match(pat))) {
+				tz = match[1];
+			}
 		}
 	}
-	
-	// we don't know so return it formatted as "+HH:MM"
-	function $ (s) { s = String(s); while (s.length < 2) { s = "0" + s; } return s; }
-	return (timezoneOffset < 0 ? "-" : "+") + $(Math.floor(Math.abs(
-		timezoneOffset)/60)) + ":" + $(Math.abs(timezoneOffset)%60);
-}
 
+	// Make sure it doesn't somehow end up return AM or PM
+	return tz == 'AM' || tz == 'PM' ? '' : tz; //String
+}
 
 
 //FIXME: not localized
