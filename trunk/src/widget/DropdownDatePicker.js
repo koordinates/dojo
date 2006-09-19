@@ -30,7 +30,9 @@ dojo.widget.defineWidget(
 		// name of the form element
 		name: "",
 
-		postMixInProperties: function(localProperties, frag) {
+		postMixInProperties: function(localProperties, frag){
+			// summary: see dojo.widget.DomWidget
+
 			dojo.widget.DropdownDatePicker.superclass.postMixInProperties.apply(this, arguments);
 			var messages = dojo.i18n.getLocalization("dojo.widget", "DropdownDatePicker", this.lang);
 			this.iconAlt = messages.selectDate;
@@ -46,6 +48,8 @@ dojo.widget.defineWidget(
 		},
 
 		fillInTemplate: function(args, frag){
+			// summary: see dojo.widget.DomWidget
+
 			dojo.widget.DropdownDatePicker.superclass.fillInTemplate.call(this, args, frag);
 
 			var dpNode = document.createElement("div");
