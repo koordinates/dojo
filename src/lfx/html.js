@@ -7,7 +7,7 @@ dojo.require("dojo.html.display");
 dojo.require("dojo.html.color");
 dojo.require("dojo.html.layout");
 
-dojo.lfx.html._byId = function(/*Array*/ nodes){
+dojo.lfx.html._byId = function(nodes){
 	if(!nodes){ return []; }
 	if(dojo.lang.isArrayLike(nodes)){
 		if(!nodes.alreadyChecked){
@@ -16,17 +16,15 @@ dojo.lfx.html._byId = function(/*Array*/ nodes){
 				n.push(dojo.byId(node));
 			});
 			n.alreadyChecked = true;
-			return n; // Array
+			return n;
 		}else{
-			return nodes; // Array
+			return nodes;
 		}
 	}else{
-		/* nodes: DOMNode
-		   pId: d */
 		var n = [];
 		n.push(dojo.byId(nodes));
 		n.alreadyChecked = true;
-		return n; // Array
+		return n;
 	}
 }
 
@@ -162,7 +160,7 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 	return anim; // dojo.lfx.Animation
 }
 
-dojo.lfx.html._makeFadeable = function(/*Array*/ nodes){
+dojo.lfx.html._makeFadeable = function(nodes){
 	var makeFade = function(node){
 		if(dojo.render.html.ie){
 			// only set the zoom if the "tickle" value would be the same as the
@@ -186,8 +184,6 @@ dojo.lfx.html._makeFadeable = function(/*Array*/ nodes){
 	if(dojo.lang.isArrayLike(nodes)){
 		dojo.lang.forEach(nodes, makeFade);
 	}else{
-		/* nodes: DOMNode
-		   pId: d */
 		makeFade(nodes);
 	}
 }
