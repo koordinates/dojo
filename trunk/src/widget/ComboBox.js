@@ -262,9 +262,10 @@ dojo.widget.defineWidget(
 			this.comboBoxValue.value = value;
 			if (this.textInputNode.value != value) { // prevent mucking up of selection
 				this.textInputNode.value = value;
+				// only change state and value if a new value is set
+				dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
+				this.onValueChanged(value);
 			}
-			dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
-			this.onValueChanged(value);
 		},
 
 		// for user to override
