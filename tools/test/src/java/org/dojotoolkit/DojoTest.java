@@ -228,7 +228,8 @@ public class DojoTest {
             global.init(new DojoContextFactory());
 			execString(cx, global, 
 					"djConfig = { \n" + 
-					"	baseRelativePath: \"" + path(_dojoDir.getAbsolutePath() + File.separatorChar) +"\",\n" + 
+					"	baseRelativePath: \"" + path(_dojoDir.getAbsolutePath() + File.separatorChar) +"\",\n" +
+					"   baseLoaderUri: \"" + path(_dojoDir.getAbsolutePath() + File.separatorChar) +"\",\n" +
 					"	isDebug: true,\n" +
 					"   debugAtAllCosts: true,\n" +
 					"};\n",
