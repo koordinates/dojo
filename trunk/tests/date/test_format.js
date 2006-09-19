@@ -53,10 +53,9 @@ function test_date_strftime() {
 	res = 'January';
 	jum.assertEquals("strftime_test4", res, dojo.date.strftime(dt, fmt, 'en'));
 
-//dojo.date.format can't print timezones yet	
-	//fmt = '%c';
-	//res = 'Sunday, January 1, 2006 6:23:00 PM';
-	//jum.assertEquals("strftime_test5", res, dojo.date.strftime(dt, fmt));
+	fmt = '%c';
+	res = 'Sunday, January 1, 2006 6:23:00 PM';
+	jum.assertEquals("strftime_test5", res, dojo.date.strftime(dt, fmt).substring(0, res.length));
 	
 	fmt = '%C';
 	res = '20';
@@ -138,10 +137,9 @@ function test_date_strftime() {
 	res = 'Sunday, January 1, 2006';
 	jum.assertEquals("strftime_test25", res, dojo.date.strftime(dt, fmt, 'en'));
 
-// dojo.date.format can't print timezones yet
-//	fmt = '%X';
-//	res = '6:23:00 PM';
-//	jum.assertEquals("strftime_test26", res, dojo.date.strftime(dt, fmt, 'en'));
+	fmt = '%X';
+	res = '6:23:00 PM';
+	jum.assertEquals("strftime_test26", res, dojo.date.strftime(dt, fmt, 'en').substring(0,res.length));
 	
 	fmt = '%y';
 	res = '06';
