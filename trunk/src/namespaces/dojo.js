@@ -90,8 +90,13 @@ dojo.require("dojo.namespace");
 		}
 	};
 
-	dojo.addDojoNamespaceMapping = function(shortName, fullName){
-		map[shortName]=fullName;    
+	dojo.addDojoNamespaceMapping = function(/*String*/shortName, /*String*/packageName){
+	// summary:
+	//	Add an entry to the mapping table for the dojo: namespace
+	//
+	// shortName: the name to be used as the widget's tag name in the dojo: namespace
+	// packageName: the path to the Javascript module in dotted package notation
+		map[shortName]=packageName;    
 	};
 	
 	function dojoNamespaceResolver(name, domain){
