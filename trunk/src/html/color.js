@@ -4,7 +4,9 @@ dojo.provide("dojo.html.color");
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.lang.common");
 
-dojo.html.getBackgroundColor = function(node){
+dojo.html.getBackgroundColor = function(/* HTMLElement */node){
+	//	summary
+	//	returns the background color of the passed node as a 32-bit color (RGBA)
 	node = dojo.byId(node);
 	var color;
 	do{
@@ -19,5 +21,5 @@ dojo.html.getBackgroundColor = function(node){
 	}else{
 		color = dojo.gfx.color.extractRGB(color);
 	}
-	return color;
+	return color;	//	array
 }

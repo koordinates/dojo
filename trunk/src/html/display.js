@@ -1,5 +1,4 @@
 dojo.provide("dojo.html.display");
-
 dojo.require("dojo.html.style");
 
 dojo.html._toggle = function(node, tester, setter){
@@ -8,12 +7,9 @@ dojo.html._toggle = function(node, tester, setter){
 	return tester(node);
 }
 
-// show/hide are library constructs
-
-// show() 
-// if the node.style.display == 'none' then 
-// set style.display to '' or the value cached by hide()
-dojo.html.show = function(node){
+dojo.html.show = function(/* HTMLElement */node){
+	//	summary
+	//	Show the passed element
 	node = dojo.byId(node);
 	if(dojo.html.getStyleProperty(node, 'display')=='none'){
 		dojo.html.setStyle(node, 'display', (node.dojoDisplayCache||''));
@@ -21,9 +17,9 @@ dojo.html.show = function(node){
 	}
 }
 
-// if the node.style.display == 'none' then 
-// set style.display to '' or the value cached by hide()
-dojo.html.hide = function(node){
+dojo.html.hide = function(/* HTMLElement */node){
+	//	summary
+	//	Hide the passed element
 	node = dojo.byId(node);
 	if(typeof node["dojoDisplayCache"] == "undefined"){ // it could == '', so we cannot say !node.dojoDisplayCount
 		var d = dojo.html.getStyleProperty(node, 'display')
@@ -34,81 +30,85 @@ dojo.html.hide = function(node){
 	dojo.html.setStyle(node, 'display', 'none');
 }
 
-// setShowing() calls show() if showing is true, hide() otherwise
-dojo.html.setShowing = function(node, showing){
+dojo.html.setShowing = function(/* HTMLElement */node, /* boolean? */showing){
+	//	summary
+	// Calls show() if showing is true, hide() otherwise
 	dojo.html[(showing ? 'show' : 'hide')](node);
 }
 
-// isShowing() is true if the node.style.display is not 'none'
-// FIXME: returns true if node is bad, isHidden would be easier to make correct
-dojo.html.isShowing = function(node){
-	return (dojo.html.getStyleProperty(node, 'display') != 'none');
+dojo.html.isShowing = function(/* HTMLElement */node){
+	//	summary
+	//	Returns whether the element is displayed or not.
+	// FIXME: returns true if node is bad, isHidden would be easier to make correct
+	return (dojo.html.getStyleProperty(node, 'display') != 'none');	//	boolean
 }
 
-// Call setShowing() on node with the complement of isShowing(), then return the new value of isShowing()
-dojo.html.toggleShowing = function(node){
-	return dojo.html._toggle(node, dojo.html.isShowing, dojo.html.setShowing);
+dojo.html.toggleShowing = function(/* HTMLElement */node){
+	//	summary
+	// Call setShowing() on node with the complement of isShowing(), then return the new value of isShowing()
+	return dojo.html._toggle(node, dojo.html.isShowing, dojo.html.setShowing);	//	boolean
 }
-
-// display is a CSS concept
 
 // Simple mapping of tag names to display values
 // FIXME: simplistic 
 dojo.html.displayMap = { tr: '', td: '', th: '', img: 'inline', span: 'inline', input: 'inline', button: 'inline' };
 
-// Suggest a value for the display property that will show 'node' based on it's tag
-dojo.html.suggestDisplayByTagName = function(node)
-{
+dojo.html.suggestDisplayByTagName = function(/* HTMLElement */node){
+	//	summary
+	// Suggest a value for the display property that will show 'node' based on it's tag
 	node = dojo.byId(node);
 	if(node && node.tagName){
 		var tag = node.tagName.toLowerCase();
-		return (tag in dojo.html.displayMap ? dojo.html.displayMap[tag] : 'block');
+		return (tag in dojo.html.displayMap ? dojo.html.displayMap[tag] : 'block');	//	string
 	}
 }
 
-// setDisplay() sets the value of style.display to value of 'display' parameter if it is a string.
-// Otherwise, if 'display' is false, set style.display to 'none'.
-// Finally, set 'display' to a suggested display value based on the node's tag
-dojo.html.setDisplay = function(node, display){
+dojo.html.setDisplay = function(/* HTMLElement */node, /* string */display){
+	//	summary
+	// 	setDisplay() sets the value of style.display to value of 'display' parameter if it is a string.
+	// 	Otherwise, if 'display' is false, set style.display to 'none'.
+	// 	Finally, set 'display' to a suggested display value based on the node's tag
 	dojo.html.setStyle(node, 'display', ((display instanceof String || typeof display == "string") ? display : (display ? dojo.html.suggestDisplayByTagName(node) : 'none')));
 }
 
-// isDisplayed() is true if the the computed display style for node is not 'none'
-// FIXME: returns true if node is bad, isNotDisplayed would be easier to make correct
-dojo.html.isDisplayed = function(node){
-	return (dojo.html.getComputedStyle(node, 'display') != 'none');
+dojo.html.isDisplayed = function(/* HTMLElement */node){
+	//	summary
+	// 	isDisplayed() is true if the the computed display style for node is not 'none'
+	// 	FIXME: returns true if node is bad, isNotDisplayed would be easier to make correct
+	return (dojo.html.getComputedStyle(node, 'display') != 'none');	//	boolean
 }
 
-// Call setDisplay() on node with the complement of isDisplayed(), then
-// return the new value of isDisplayed()
-dojo.html.toggleDisplay = function(node){
-	return dojo.html._toggle(node, dojo.html.isDisplayed, dojo.html.setDisplay);
+dojo.html.toggleDisplay = function(/* HTMLElement */node){
+	//	summary
+	// 	Call setDisplay() on node with the complement of isDisplayed(), then
+	// 	return the new value of isDisplayed()
+	return dojo.html._toggle(node, dojo.html.isDisplayed, dojo.html.setDisplay);	//	boolean
 }
 
-// visibility is a CSS concept
-
-// setVisibility() sets the value of style.visibility to value of
-// 'visibility' parameter if it is a string.
-// Otherwise, if 'visibility' is false, set style.visibility to 'hidden'.
-// Finally, set style.visibility to 'visible'.
-dojo.html.setVisibility = function(node, visibility){
+dojo.html.setVisibility = function(/* HTMLElement */node, /* string */visibility){
+	//	summary
+	// 	setVisibility() sets the value of style.visibility to value of 'visibility' parameter if it is a string.
+	// 	Otherwise, if 'visibility' is false, set style.visibility to 'hidden'. Finally, set style.visibility to 'visible'.
 	dojo.html.setStyle(node, 'visibility', ((visibility instanceof String || typeof visibility == "string") ? visibility : (visibility ? 'visible' : 'hidden')));
 }
 
-// isVisible() is true if the the computed visibility style for node is not 'hidden'
-// FIXME: returns true if node is bad, isInvisible would be easier to make correct
-dojo.html.isVisible = function(node){
-	return (dojo.html.getComputedStyle(node, 'visibility') != 'hidden');
+dojo.html.isVisible = function(/* HTMLElement */node){
+	//	summary
+	// 	isVisible() is true if the the computed visibility style for node is not 'hidden'
+	// 	FIXME: returns true if node is bad, isInvisible would be easier to make correct
+	return (dojo.html.getComputedStyle(node, 'visibility') != 'hidden');	//	boolean
 }
 
-// Call setVisibility() on node with the complement of isVisible(), then
-// return the new value of isVisible()
 dojo.html.toggleVisibility = function(node){
-	return dojo.html._toggle(node, dojo.html.isVisible, dojo.html.setVisibility);
+	//	summary
+	// Call setVisibility() on node with the complement of isVisible(), then return the new value of isVisible()
+	return dojo.html._toggle(node, dojo.html.isVisible, dojo.html.setVisibility);	//	boolean
 }
 
-/* float between 0.0 (transparent) and 1.0 (opaque) */
-dojo.html.setOpacity = function(node, opacity, dontFixOpacity){
+dojo.html.setOpacity = function(/* HTMLElement */node, /* float */opacity, /* boolean? */dontFixOpacity){
+	//	summary
+	//	Sets the opacity of node in a cross-browser way.
+	//	float between 0.0 (transparent) and 1.0 (opaque)
 	node = dojo.byId(node);
 	var h = dojo.render.html;
 	if(!dontFixOpacity){
@@ -141,7 +141,9 @@ dojo.html.setOpacity = function(node, opacity, dontFixOpacity){
 	}
 }
 
-dojo.html.clearOpacity = function clearOpacity(node){
+dojo.html.clearOpacity = function(/* HTMLElement */node){
+	//	summary
+	//	Clears any opacity setting on the passed element.
 	node = dojo.byId(node);
 	var ns = node.style;
 	var h = dojo.render.html;
@@ -167,7 +169,9 @@ dojo.html.clearOpacity = function clearOpacity(node){
 	}
 }
 
-dojo.html.getOpacity = function getOpacity (node){
+dojo.html.getOpacity = function(/* HTMLElement */node){
+	//	summary
+	//	Returns the opacity of the passed element
 	node = dojo.byId(node);
 	var h = dojo.render.html;
 	if(h.ie){
@@ -178,5 +182,5 @@ dojo.html.getOpacity = function getOpacity (node){
 		var opac = node.style.opacity || node.style.MozOpacity ||
 			node.style.KhtmlOpacity || 1;
 	}
-	return opac >= 0.999999 ? 1.0 : Number(opac);
+	return opac >= 0.999999 ? 1.0 : Number(opac);	//	float
 }
