@@ -38,7 +38,9 @@ dojo.lang.getType = function(/* object */value){
 				return name;	//	string
 			}
 		}
-		if(dojo.lang.isObject(value)) { return "object";	//	string }
+		if(dojo.lang.isObject(value)) { 
+			return "object";	//	string 
+		}
 	} catch(E) {}
 	return "unknown";	//	string
 }
