@@ -1,38 +1,29 @@
 dojo.provide("dojo.string.common");
 
-dojo.require("dojo.string");
-
-/**
- * Trim whitespace from 'str'. If 'wh' > 0,
- * only trim from start, if 'wh' < 0, only trim
- * from end, otherwise trim both ends
- */
-dojo.string.trim = function(str, wh){
+dojo.string.trim = function(/* string */str, /* integer? */wh){
+	//	summary
+	//	Trim whitespace from str.  If wh > 0, trim from start, if wh < 0, trim from end, else both
 	if(!str.replace){ return str; }
 	if(!str.length){ return str; }
 	var re = (wh > 0) ? (/^\s+/) : (wh < 0) ? (/\s+$/) : (/^\s+|\s+$/g);
-	return str.replace(re, "");
+	return str.replace(re, "");	//	string
 }
 
-/**
- * Trim whitespace at the beginning of 'str'
- */
-dojo.string.trimStart = function(str) {
-	return dojo.string.trim(str, 1);
+dojo.string.trimStart = function(/* string */str) {
+	//	summary
+	//	Trim whitespace at the beginning of 'str'
+	return dojo.string.trim(str, 1);	//	string
 }
 
-/**
- * Trim whitespace at the end of 'str'
- */
-dojo.string.trimEnd = function(str) {
+dojo.string.trimEnd = function(/* string */str) {
+	//	summary
+	//	Trim whitespace at the end of 'str'
 	return dojo.string.trim(str, -1);
 }
 
-/**
- * Return 'str' repeated 'count' times, optionally
- * placing 'separator' between each rep
- */
-dojo.string.repeat = function(str, count, separator) {
+dojo.string.repeat = function(/* string */str, /* integer */count, /* string? */separator) {
+	//	summary
+	//	Return 'str' repeated 'count' times, optionally placing 'separator' between each rep
 	var out = "";
 	for(var i = 0; i < count; i++) {
 		out += str;
@@ -40,15 +31,13 @@ dojo.string.repeat = function(str, count, separator) {
 			out += separator;
 		}
 	}
-	return out;
+	return out;	//	string
 }
 
-/**
- * Pad 'str' to guarantee that it is at least 'len' length
- * with the character 'c' at either the start (dir=1) or
- * end (dir=-1) of the string
- */
-dojo.string.pad = function(str, len/*=2*/, c/*='0'*/, dir/*=1*/) {
+dojo.string.pad = function(/* string */str, /* integer */len/*=2*/, /* string */ c/*='0'*/, /* integer */dir/*=1*/) {
+	//	summary
+	//	Pad 'str' to guarantee that it is at least 'len' length with the character 'c' at either the 
+	//	start (dir=1) or end (dir=-1) of the string
 	var out = String(str);
 	if(!c) {
 		c = '0';
@@ -63,15 +52,17 @@ dojo.string.pad = function(str, len/*=2*/, c/*='0'*/, dir/*=1*/) {
 			out += c;
 		}
 	}
-	return out;
+	return out;	//	string
 }
 
-/** same as dojo.string.pad(str, len, c, 1) */
-dojo.string.padLeft = function(str, len, c) {
-	return dojo.string.pad(str, len, c, 1);
+dojo.string.padLeft = function(/* string */str, /* integer */len, /* string */c) {
+	//	summary
+	//	same as dojo.string.pad(str, len, c, 1)
+	return dojo.string.pad(str, len, c, 1);	//	string
 }
 
-/** same as dojo.string.pad(str, len, c, -1) */
-dojo.string.padRight = function(str, len, c) {
-	return dojo.string.pad(str, len, c, -1);
+dojo.string.padRight = function(/* string */str, /* integer */len, /* string */c) {
+	//	summary
+	//	same as dojo.string.pad(str, len, c, -1)
+	return dojo.string.pad(str, len, c, -1);	//	string
 }

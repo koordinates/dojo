@@ -5,8 +5,9 @@ dojo.require("dojo.string");
 // Spidermoneky and Rhino, while arr.push()/arr.join() style concatenation is
 // significantly quicker on IE (Jscript/wsh/etc.).
 
-dojo.string.Builder = function(str){
-
+dojo.string.Builder = function(/* string? */str){
+	//	summary
+	//	Builder object based on .NET's StringBuilder.
 	this.arrConcat = (dojo.render.html.capable && dojo.render.html["ie"]);
 
 	var a = [];
@@ -21,10 +22,14 @@ dojo.string.Builder = function(str){
 	}
 
 	this.toString = this.valueOf = function(){ 
-		return (this.arrConcat) ? a.join("") : b;
+		//	summary
+		//	Concatenate internal buffer and return as a string
+		return (this.arrConcat) ? a.join("") : b;	//	string
 	};
 
 	this.append = function(){
+		//	summary
+		//	Append all arguments to the end of the internal buffer
 		for(var x=0; x<arguments.length; x++){
 			var s = arguments[x];
 			if((s instanceof String)||(typeof s == "string")){
@@ -40,17 +45,21 @@ dojo.string.Builder = function(str){
 				this.append.apply(this, s);
 			}
 		}
-		return this;
+		return this;	//	dojo.string.Builder
 	};
 
 	this.clear = function(){
+		//	summary
+		//	Clear the internal buffer.
 		a = [];
 		b = "";
 		length = this.length = 0;
-		return this;
+		return this;	//	dojo.string.Builder
 	};
 
-	this.remove = function(f,l){
+	this.remove = function(/* integer */f, /* integer */l){
+		//	summary
+		//	Remove a section of string from the internal buffer.
 		var s = ""; 
 		if(this.arrConcat){
 			b = a.join(""); 
@@ -65,10 +74,12 @@ dojo.string.Builder = function(str){
 			a.push(b);
 			b="";
 		}
-		return this;
+		return this;	//	dojo.string.Builder
 	};
 
-	this.replace = function(o,n){
+	this.replace = function(/* string */o, /* string */n){
+		//	summary
+		//	replace phrase *o* with phrase *n*.
 		if(this.arrConcat){
 			b = a.join(""); 
 		}
@@ -79,10 +90,12 @@ dojo.string.Builder = function(str){
 			a.push(b);
 			b="";
 		}
-		return this;
+		return this;	//	dojo.string.Builder
 	};
 
-	this.insert = function(idx,s){
+	this.insert = function(/* integer */idx, /* string */s){
+		//	summary
+		//	Insert string s at index idx.
 		if(this.arrConcat){
 			b = a.join(""); 
 		}
@@ -99,7 +112,7 @@ dojo.string.Builder = function(str){
 			a.push(b); 
 			b="";
 		}
-		return this;
+		return this;	//	dojo.string.Builder
 	};
 
 	this.append.apply(this, arguments);
