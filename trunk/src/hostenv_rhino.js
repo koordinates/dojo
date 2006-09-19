@@ -16,6 +16,16 @@ dojo.locale = dojo.locale || java.util.Locale.getDefault().toString().replace('_
 dojo.render.name = dojo.hostenv.name_ = 'rhino';
 dojo.hostenv.getVersion = function() {return version();};
 
+if (dj_undef("byId")) {
+	dojo.byId = function(id, doc){
+		if(id && (typeof id == "string" || id instanceof String)){
+			if(!doc){ doc = document; }
+			return doc.getElementById(id);
+		}
+		return id; // assume it's a node
+	}
+}
+
 // see comments in spidermonkey loadUri
 dojo.hostenv.loadUri = function(uri, cb){
 	try{
@@ -25,19 +35,20 @@ dojo.hostenv.loadUri = function(uri, cb){
 				// try it as a file first, URL second
 				(new java.net.URL(uri)).openStream();
 			}catch(e){
-				return 0;
+				dojo.debug("rhino load('" + uri + "') failed. Exception: " + e);
+				return false;
 			}
 		}
 		if(cb){
 			var contents = (local ? readText : readUri)(uri, "UTF-8");
 			cb(eval('('+contents+')'));
 		}else{
-			var ok = load(uri);
+			load(uri);
 		}
-		return 1;
+		return true;
 	}catch(e){
-		dojo.debug("rhino load('", uri, "') failed. Exception: " + e);
-		return 0;
+		dojo.debug("rhino load('" + uri + "') failed. Exception: " + e);
+		return false;
 	}
 }
 
