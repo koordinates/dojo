@@ -39,7 +39,7 @@ dojo.extend(dojo.lang.timing.Timer, {
 			this.onStart();
 		}
 		this.isRunning = true;
-		this.timer = dj_global.setInterval(this.onTick, this.interval);
+		this.timer = dj_global.setInterval(dojo.lang.hitch(this, "onTick"), this.interval);
 	},
 	
 	stop : function(){
