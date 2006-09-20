@@ -9,7 +9,7 @@ dojo.require("dojo.lang.common");
 
 dojo.validate.isValidCreditCard = function(value,ccType){
 	//checks if type matches the # scheme, and if Luhn checksum is accurate (unless its an Enroute card, the checkSum is skipped)
-	if(value&&ccType&&((ccType=='er'||dojo.validate.isValidLuhn(value))&&(dojo.validate.isValidCreditCardNumber(value,ccType)))){
+	if(value&&ccType&&((ccType.toLowerCase()=='er'||dojo.validate.isValidLuhn(value))&&(dojo.validate.isValidCreditCardNumber(value,ccType.toLowerCase())))){
 			return true;
 	}
 	return false;
@@ -41,16 +41,17 @@ dojo.validate.isValidCreditCardNumber = function(value,ccType) {
 		'jcb':'(3[0-9]{15}|(2131|1800)[0-9]{11})','er':'2(014|149)[0-9]{11}'
 	};
 	if(ccType&&dojo.lang.has(cardinfo,ccType.toLowerCase())){
-		return (value.match(cardinfo[ccType]))?ccType:false
+		return Boolean(value.match(cardinfo[ccType.toLowerCase()])); // boolean
 	}else{
 		for(var p in cardinfo){
-			if(value.match(cardinfo[p])){
+			if(value.match('^'+cardinfo[p]+'$')!=null){
 				results.push(p);
 			}
 		}
-		return (results.length)?results.join('|'):false;
+		return (results.length)?results.join('|'):false; // string | boolean
 	}	
 }
+
 dojo.validate.isValidCvv = function(value, ccType) {
 	if(typeof value!='string'){
 		value=String(value);
