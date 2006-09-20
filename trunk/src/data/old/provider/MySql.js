@@ -1,17 +1,17 @@
-dojo.provide("dojo.data.provider.MySql");
-dojo.require("dojo.data.provider.Base");
+dojo.provide("dojo.data.old.provider.MySql");
+dojo.require("dojo.data.old.provider.Base");
 
 // -------------------------------------------------------------------
 // Constructor
 // -------------------------------------------------------------------
-dojo.data.provider.MySql = function() {
+dojo.data.old.provider.MySql = function() {
 	/**
 	 * summary:
 	 * A MySql Data Provider knows how to connect to a MySQL database
 	 * on a server and and make the content records available as 
-	 * dojo.data.Items.
+	 * dojo.data.old.Items.
 	 */
-	dojo.unimplemented('dojo.data.provider.MySql');
+	dojo.unimplemented('dojo.data.old.provider.MySql');
 };
 
-dojo.inherits(dojo.data.provider.MySql, dojo.data.provider.Base);
+dojo.inherits(dojo.data.old.provider.MySql, dojo.data.old.provider.Base);

@@ -1,8 +1,8 @@
-dojo.provide("dojo.data.format.Csv");
+dojo.provide("dojo.data.old.format.Csv");
 dojo.require("dojo.lang.assert");
 
 
-dojo.data.format.Csv = new function() {
+dojo.data.old.format.Csv = new function() {
 
 	// -------------------------------------------------------------------
 	// Public functions
@@ -75,8 +75,8 @@ dojo.data.format.Csv = new function() {
 		return arrayOfOutputRecords; // Array
 	};
 
-	this.loadDataProviderFromFileContents = function(/* dojo.data.provider.Base */ dataProvider, /* string */ csvFileContents) {
-		dojo.lang.assertType(dataProvider, dojo.data.provider.Base);
+	this.loadDataProviderFromFileContents = function(/* dojo.data.old.provider.Base */ dataProvider, /* string */ csvFileContents) {
+		dojo.lang.assertType(dataProvider, dojo.data.old.provider.Base);
 		dojo.lang.assertType(csvFileContents, String);
 		var arrayOfArrays = this.getArrayStructureFromCsvFileContents(csvFileContents);
 		if (arrayOfArrays) {
@@ -93,8 +93,8 @@ dojo.data.format.Csv = new function() {
 		}
 	};
 	
-	this.getCsvStringFromResultSet = function(/* dojo.data.ResultSet */ resultSet) {
-		dojo.unimplemented('dojo.data.format.Csv.getCsvStringFromResultSet');
+	this.getCsvStringFromResultSet = function(/* dojo.data.old.ResultSet */ resultSet) {
+		dojo.unimplemented('dojo.data.old.format.Csv.getCsvStringFromResultSet');
 		var csvString = null;
 		return csvString; // String
 	};

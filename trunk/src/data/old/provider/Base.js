@@ -1,10 +1,10 @@
-dojo.provide("dojo.data.provider.Base");
+dojo.provide("dojo.data.old.provider.Base");
 dojo.require("dojo.lang.assert");
 
 // -------------------------------------------------------------------
 // Constructor
 // -------------------------------------------------------------------
-dojo.data.provider.Base = function() {
+dojo.data.old.provider.Base = function() {
 	/**
 	 * summary:
 	 * A Data Provider serves as a connection to some data source,
@@ -19,7 +19,7 @@ dojo.data.provider.Base = function() {
 // -------------------------------------------------------------------
 // Public instance methods
 // -------------------------------------------------------------------
-dojo.data.provider.Base.prototype.beginTransaction = function() {
+dojo.data.old.provider.Base.prototype.beginTransaction = function() {
 	/**
 	 * Marks the beginning of a transaction.
 	 *
@@ -34,7 +34,7 @@ dojo.data.provider.Base.prototype.beginTransaction = function() {
 	this._countOfNestedTransactions += 1;
 };
 
-dojo.data.provider.Base.prototype.endTransaction = function() {
+dojo.data.old.provider.Base.prototype.endTransaction = function() {
 	/**
 	 * Marks the end of a transaction.
 	 */
@@ -51,11 +51,11 @@ dojo.data.provider.Base.prototype.endTransaction = function() {
 	}
 };
 
-dojo.data.provider.Base.prototype.getNewItemToLoad = function() {
-	return this._newItem(); // dojo.data.Item
+dojo.data.old.provider.Base.prototype.getNewItemToLoad = function() {
+	return this._newItem(); // dojo.data.old.Item
 };
 
-dojo.data.provider.Base.prototype.newItem = function(/* string */ itemName) {
+dojo.data.old.provider.Base.prototype.newItem = function(/* string */ itemName) {
 	/**
 	 * Creates a new item.
 	 */
@@ -64,41 +64,41 @@ dojo.data.provider.Base.prototype.newItem = function(/* string */ itemName) {
 	if (itemName) {
 		item.set('name', itemName);
 	}
-	return item; // dojo.data.Item
+	return item; // dojo.data.old.Item
 };
 
-dojo.data.provider.Base.prototype.newAttribute = function(/* string */ attributeId) {
+dojo.data.old.provider.Base.prototype.newAttribute = function(/* string */ attributeId) {
 	/**
 	 * Creates a new attribute.
 	 */
 	dojo.lang.assertType(attributeId, String, {optional: true});
 	var attribute = this._newAttribute(attributeId);
-	return attribute; // dojo.data.Attribute
+	return attribute; // dojo.data.old.Attribute
 };
 
-dojo.data.provider.Base.prototype.getAttribute = function(/* string */ attributeId) {
-	dojo.unimplemented('dojo.data.provider.Base');
+dojo.data.old.provider.Base.prototype.getAttribute = function(/* string */ attributeId) {
+	dojo.unimplemented('dojo.data.old.provider.Base');
 	var attribute;
-	return attribute; // dojo.data.Attribute
+	return attribute; // dojo.data.old.Attribute
 };
 
-dojo.data.provider.Base.prototype.getAttributes = function() {
-	dojo.unimplemented('dojo.data.provider.Base');
+dojo.data.old.provider.Base.prototype.getAttributes = function() {
+	dojo.unimplemented('dojo.data.old.provider.Base');
 	return this._arrayOfAttributes; // Array
 };
 
-dojo.data.provider.Base.prototype.fetchArray = function() {
-	dojo.unimplemented('dojo.data.provider.Base');
+dojo.data.old.provider.Base.prototype.fetchArray = function() {
+	dojo.unimplemented('dojo.data.old.provider.Base');
 	return []; // Array
 };
 
-dojo.data.provider.Base.prototype.fetchResultSet = function() {
-	dojo.unimplemented('dojo.data.provider.Base');
+dojo.data.old.provider.Base.prototype.fetchResultSet = function() {
+	dojo.unimplemented('dojo.data.old.provider.Base');
 	var resultSet;
-	return resultSet; // dojo.data.ResultSet
+	return resultSet; // dojo.data.old.ResultSet
 };
 
-dojo.data.provider.Base.prototype.noteChange = function(/* dojo.data.Item */ item, /* string or dojo.data.Attribute */ attribute, /* anything */ value) {
+dojo.data.old.provider.Base.prototype.noteChange = function(/* dojo.data.old.Item */ item, /* string or dojo.data.old.Attribute */ attribute, /* anything */ value) {
 	var change = {item: item, attribute: attribute, value: value};
 	if (this._countOfNestedTransactions === 0) {
 		this.beginTransaction();
@@ -109,43 +109,43 @@ dojo.data.provider.Base.prototype.noteChange = function(/* dojo.data.Item */ ite
 	}
 };
 
-dojo.data.provider.Base.prototype.addItemObserver = function(/* dojo.data.Item */ item, /* object */ observer) {
+dojo.data.old.provider.Base.prototype.addItemObserver = function(/* dojo.data.old.Item */ item, /* object */ observer) {
 	/**
 	 * summary: Registers an object as an observer of an item,
 	 * so that the object will be notified when the item changes.
 	 */
-	dojo.lang.assertType(item, dojo.data.Item);
+	dojo.lang.assertType(item, dojo.data.old.Item);
 	item.addObserver(observer);
 };
 
-dojo.data.provider.Base.prototype.removeItemObserver = function(/* dojo.data.Item */ item, /* object */ observer) {
+dojo.data.old.provider.Base.prototype.removeItemObserver = function(/* dojo.data.old.Item */ item, /* object */ observer) {
 	/**
 	 * summary: Removes the observer registration for a previously
 	 * registered object.
 	 */ 
-	dojo.lang.assertType(item, dojo.data.Item);
+	dojo.lang.assertType(item, dojo.data.old.Item);
 	item.removeObserver(observer);
 };
 
 // -------------------------------------------------------------------
 // Private instance methods
 // -------------------------------------------------------------------
-dojo.data.provider.Base.prototype._newItem = function() {
-	var item = new dojo.data.Item(this);
-	return item; // dojo.data.Item
+dojo.data.old.provider.Base.prototype._newItem = function() {
+	var item = new dojo.data.old.Item(this);
+	return item; // dojo.data.old.Item
 };
 
-dojo.data.provider.Base.prototype._newAttribute = function(/* String */ attributeId) {
-	var attribute = new dojo.data.Attribute(this);
-	return attribute; // dojo.data.Attribute
+dojo.data.old.provider.Base.prototype._newAttribute = function(/* String */ attributeId) {
+	var attribute = new dojo.data.old.Attribute(this);
+	return attribute; // dojo.data.old.Attribute
 };
 
-dojo.data.provider.Base.prototype._saveChanges = function() {
+dojo.data.old.provider.Base.prototype._saveChanges = function() {
 	var arrayOfChangesMade = this._changesInCurrentTransaction;
 	return arrayOfChangesMade; // Array
 };
 
-dojo.data.provider.Base.prototype._notifyObserversOfChanges = function(/* Array */ arrayOfChanges) {
+dojo.data.old.provider.Base.prototype._notifyObserversOfChanges = function(/* Array */ arrayOfChanges) {
 	var arrayOfResultSets = this._getResultSets();
 	for (var i in arrayOfChanges) {
 		var change = arrayOfChanges[i];
@@ -166,8 +166,8 @@ dojo.data.provider.Base.prototype._notifyObserversOfChanges = function(/* Array 
 	}
 };
 
-dojo.data.provider.Base.prototype._getResultSets = function() {
-	dojo.unimplemented('dojo.data.provider.Base');
+dojo.data.old.provider.Base.prototype._getResultSets = function() {
+	dojo.unimplemented('dojo.data.old.provider.Base');
 	return []; // Array
 };
 

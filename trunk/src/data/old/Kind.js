@@ -1,10 +1,10 @@
-dojo.provide("dojo.data.Kind");
-dojo.require("dojo.data.Item");
+dojo.provide("dojo.data.old.Kind");
+dojo.require("dojo.data.old.Item");
 
 // -------------------------------------------------------------------
 // Constructor
 // -------------------------------------------------------------------
-dojo.data.Kind = function(/* dojo.data.provider.Base */ dataProvider) {
+dojo.data.old.Kind = function(/* dojo.data.old.provider.Base */ dataProvider) {
 	/**
 	 * summary:
 	 * A Kind represents a kind of item.  In the dojo data model
@@ -13,6 +13,6 @@ dojo.data.Kind = function(/* dojo.data.provider.Base */ dataProvider) {
 	 * Dog, and in MySQL the record for Snoopy would be in the 
 	 * table Dog.
 	 */
-	dojo.data.Item.call(this, dataProvider);
+	dojo.data.old.Item.call(this, dataProvider);
 };
-dojo.inherits(dojo.data.Kind, dojo.data.Item);
+dojo.inherits(dojo.data.old.Kind, dojo.data.old.Item);

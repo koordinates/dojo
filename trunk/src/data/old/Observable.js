@@ -1,17 +1,17 @@
-dojo.provide("dojo.data.Observable");
+dojo.provide("dojo.data.old.Observable");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.assert");
 
 // -------------------------------------------------------------------
 // Constructor
 // -------------------------------------------------------------------
-dojo.data.Observable = function() {
+dojo.data.old.Observable = function() {
 };
 
 // -------------------------------------------------------------------
 // Public instance methods
 // -------------------------------------------------------------------
-dojo.data.Observable.prototype.addObserver = function(/* object */ observer) {
+dojo.data.old.Observable.prototype.addObserver = function(/* object */ observer) {
 	/**
 	 * summary: Registers an object as an observer of this item,
 	 * so that the object will be notified when the item changes.
@@ -26,7 +26,7 @@ dojo.data.Observable.prototype.addObserver = function(/* object */ observer) {
 	}
 };
 
-dojo.data.Observable.prototype.removeObserver = function(/* object */ observer) {
+dojo.data.old.Observable.prototype.removeObserver = function(/* object */ observer) {
 	/**
 	 * summary: Removes the observer registration for a previously
 	 * registered object.
@@ -40,7 +40,7 @@ dojo.data.Observable.prototype.removeObserver = function(/* object */ observer) 
 	}
 };
 
-dojo.data.Observable.prototype.getObservers = function() {
+dojo.data.old.Observable.prototype.getObservers = function() {
 	/**
 	 * summary: Returns an array with all the observers of this item.
 	 */ 

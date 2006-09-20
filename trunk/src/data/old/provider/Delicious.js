@@ -1,25 +1,25 @@
-dojo.provide("dojo.data.provider.Delicious");
-dojo.require("dojo.data.provider.FlatFile");
-dojo.require("dojo.data.format.Json");
+dojo.provide("dojo.data.old.provider.Delicious");
+dojo.require("dojo.data.old.provider.FlatFile");
+dojo.require("dojo.data.old.format.Json");
 
 // -------------------------------------------------------------------
 // Constructor
 // -------------------------------------------------------------------
-dojo.data.provider.Delicious = function() {
+dojo.data.old.provider.Delicious = function() {
 	/**
 	 * summary:
 	 * The Delicious Data Provider can be used to take data from
-	 * del.icio.us and make it available as dojo.data.Items
+	 * del.icio.us and make it available as dojo.data.old.Items
 	 * In order to use the Delicious Data Provider, you need 
 	 * to have loaded a script tag that looks like this:
 	 * <script type="text/javascript" src="http://del.icio.us/feeds/json/gumption?count=8"></script>
 	 */
-	dojo.data.provider.FlatFile.call(this);
+	dojo.data.old.provider.FlatFile.call(this);
 	// Delicious = null;
 	if (Delicious && Delicious.posts) {
-		dojo.data.format.Json.loadDataProviderFromArrayOfJsonData(this, Delicious.posts);
+		dojo.data.old.format.Json.loadDataProviderFromArrayOfJsonData(this, Delicious.posts);
 	} else {
-		// document.write("<script type='text/javascript'>dojo.data.provider.Delicious._fetchComplete()</script>");		
+		// document.write("<script type='text/javascript'>dojo.data.old.provider.Delicious._fetchComplete()</script>");		
 		/*
 		document.write("<script type='text/javascript'>alert('boo!');</script>");		
 		document.write("<script type='text/javascript'>var foo = 'not dojo'; alert('dojo == ' + foo);</script>");		
@@ -40,19 +40,19 @@ dojo.data.provider.Delicious = function() {
 	d.load('type', 'String');
 	t.load('type', 'String');
 };
-dojo.inherits(dojo.data.provider.Delicious, dojo.data.provider.FlatFile);
+dojo.inherits(dojo.data.old.provider.Delicious, dojo.data.old.provider.FlatFile);
 
 /********************************************************************
  * FIXME: the rest of this is work in progress
  *
  
-dojo.data.provider.Delicious.prototype.getNewItemToLoad = function() {
+dojo.data.old.provider.Delicious.prototype.getNewItemToLoad = function() {
 	var newItem = this._newItem();
 	this._currentArray.push(newItem);
-	return newItem; // dojo.data.Item
+	return newItem; // dojo.data.old.Item
 };
 
-dojo.data.provider.Delicious.prototype.fetchArray = function(query) {
+dojo.data.old.provider.Delicious.prototype.fetchArray = function(query) {
 	if (!query) {	
 		query = "gumption";
 	}
@@ -64,7 +64,7 @@ dojo.data.provider.Delicious.prototype.fetchArray = function(query) {
 		document.write("<script type='text/javascript'>alert('line 63: ' + Delicious.posts[0].u);</script>");		
 		document.write("<script type='text/javascript'>callMe();</script>");		
 	alert("line 66");
-	dojo.data.format.Json.loadDataProviderFromArrayOfJsonData(this, Delicious.posts);
+	dojo.data.old.format.Json.loadDataProviderFromArrayOfJsonData(this, Delicious.posts);
 	return this._currentArray; // Array
 };
 
