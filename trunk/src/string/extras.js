@@ -220,7 +220,7 @@ dojo.string.has = function(/*string*/str /* , ... */) {
 dojo.string.normalizeNewlines = function(/*string*/text, /*string? (\n or \r)*/newlineChar){
 // summary:
 //	Changes occurences of CR and LF in text to CRLF, or if newlineChar is provided as '\n' or '\r',
-//	substitutes newlineChar for occurrences of CR and CRLF
+//	substitutes newlineChar for occurrences of CR/LF and CRLF
 
 	if (newlineChar == "\n"){
 		text = text.replace(/\r\n/g, "\n");
