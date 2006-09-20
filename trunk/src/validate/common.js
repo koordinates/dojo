@@ -155,6 +155,27 @@ dojo.validate.isNumberFormat = function(value, flags) {
 	return re.test(value);
 }
 
+//Compares value against the Luhn algorithm to verify its integrity
+dojo.validate.isValidLuhn = function(value) {
+	var sum, parity, curDigit;
+	if(typeof value!='string'){
+		value = String(value);
+	}
+	value = value.replace(/[- ]/g,''); //ignore dashes and whitespaces
+	parity = value.length%2;
+	sum=0;
+	for(var i=0;i<value.length;i++){
+		curDigit = parseInt(value.charAt(i));
+		if(i%2==parity){
+			curDigit*=2;
+		}
+		if(curDigit>9){
+			curDigit-=9;
+		}
+		sum+=curDigit;
+	}
+	return !(sum%10);
+}
 /**
 	Procedural API Description
 
