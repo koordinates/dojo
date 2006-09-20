@@ -7,9 +7,11 @@ dojo.lang.whatAmI = function(value) {
 }
 dojo.lang.whatAmI.custom = {};
 
-dojo.lang.getType = function(/* object */value){
-	//	summary
-	//	Attempts to determine what type value is.
+dojo.lang.getType = function(/* anything */ value){
+	/* summary:
+	 *	 Attempts to determine what type value is.
+	 * value: anything Any literal value or object instance.
+	 */
 	try {
 		if(dojo.lang.isArray(value)) { 
 			return "array";	//	string 
@@ -45,9 +47,22 @@ dojo.lang.getType = function(/* object */value){
 	return "unknown";	//	string
 }
 
-dojo.lang.isNumeric = function(/* object */value){
-	//	summary
-	//	Returns if value can be interpreted as a number
+dojo.lang.isNumeric = function(/* anything */ value){
+	/* summary:
+	 *   Returns true if value can be interpreted as a number
+	 * value: anything Any literal value or object instance.
+	 * examples: 
+	 *   dojo.lang.isNumeric(3);                 // returns true
+	 *   dojo.lang.isNumeric("3");               // returns true
+	 *   dojo.lang.isNumeric(new Number(3));     // returns true
+	 *   dojo.lang.isNumeric(new String("3"));   // returns true
+	 *
+	 *   dojo.lang.isNumeric(3/0);               // returns false
+	 *   dojo.lang.isNumeric("foo");             // returns false
+	 *   dojo.lang.isNumeric(new Number("foo")); // returns false
+	 *   dojo.lang.isNumeric(false);             // returns false
+	 *   dojo.lang.isNumeric(true);              // returns false
+	 */
 	return (!isNaN(value) 
 		&& isFinite(value) 
 		&& (value != null) 
@@ -57,9 +72,15 @@ dojo.lang.isNumeric = function(/* object */value){
 	);	//	boolean
 }
 
-dojo.lang.isBuiltIn = function(/* object */value){
-	//	summary
-	//	Returns if value is of a type provided by core JavaScript
+dojo.lang.isBuiltIn = function(/* anything */ value){
+	/* summary:
+	 *   Returns true if value is of a type provided by core JavaScript
+	 * value: anything Any literal value or object instance.
+	 * description: 
+	 *   Returns true for any literal, and for any object that is an 
+	 *   instance of a built-in type like String, Number, Boolean, 
+	 *   Array, Function, or Error.
+	 */
 	return (dojo.lang.isArray(value)
 		|| dojo.lang.isFunction(value)	
 		|| dojo.lang.isString(value)
@@ -71,21 +92,62 @@ dojo.lang.isBuiltIn = function(/* object */value){
 	);	//	boolean
 }
 
-dojo.lang.isPureObject = function(/* object */value){
-	//	summary
-	//	Returns true for any value where the value of value.constructor == Object
+dojo.lang.isPureObject = function(/* anything */ value){
+	/* summary:
+	 *   Returns true for any value where the value of value.constructor == Object
+	 * value: anything Any literal value or object instance.
+	 * description: 
+	 *   Returns true for any literal, and for any object that is an 
+	 *   instance of a built-in type like String, Number, Boolean, 
+	 *   Array, Function, or Error.
+	 * examples: 
+	 *   dojo.lang.isPureObject(new Object()); // returns true
+	 *   dojo.lang.isPureObject({a: 1, b: 2}); // returns true
+	 * 
+	 *   dojo.lang.isPureObject(new Date());   // returns false
+	 *   dojo.lang.isPureObject([11, 2, 3]);   // returns false
+	 */
 	return ((value != null) 
 		&& dojo.lang.isObject(value) 
 		&& value.constructor == Object
 	);	//	boolean
 }
 
-dojo.lang.isOfType = function(/* object */value, /* function */type, /* object? */keywordParameters) {
-	//	summary
-	//	Given a value and a datatype, this method returns true if the
-	//	type of the value matches the datatype. The datatype parameter
-	//	can be an array of datatypes, in which case the method returns
-	//	true if the type of the value matches any of the datatypes.
+dojo.lang.isOfType = function(/* anything */ value, /* function */ type, /* object? */ keywordParameters) {
+	/* summary:
+	 *	 Returns true if 'value' is of type 'type'
+	 * description: 
+	 *	 Given a value and a datatype, this method returns true if the
+	 *	 type of the value matches the datatype. The datatype parameter
+	 *	 can be an array of datatypes, in which case the method returns
+	 *	 true if the type of the value matches any of the datatypes.
+	 * value: anything Any literal value or object instance.
+	 * type: misc. A class of object, or a literal type, or the string name of a type, or an array with a list of types.
+	 * keywordParameters: object? {optional: boolean}
+	 * examples: 
+	 *   dojo.lang.isOfType("foo", String);                // returns true
+	 *   dojo.lang.isOfType(12345, Number);                // returns true
+	 *   dojo.lang.isOfType(false, Boolean);               // returns true
+	 *   dojo.lang.isOfType([6, 8], Array);                // returns true
+	 *   dojo.lang.isOfType(dojo.lang.isOfType, Function); // returns true
+	 *   dojo.lang.isOfType({foo: "bar"}, Object);         // returns true
+	 *   dojo.lang.isOfType(new Date(), Date);             // returns true
+	 *
+	 *   dojo.lang.isOfType("foo", "string");                // returns true
+	 *   dojo.lang.isOfType(12345, "number");                // returns true
+	 *   dojo.lang.isOfType(false, "boolean");               // returns true
+	 *   dojo.lang.isOfType([6, 8], "array");                // returns true
+	 *   dojo.lang.isOfType(dojo.lang.isOfType, "function"); // returns true
+	 *   dojo.lang.isOfType({foo: "bar"}, "object");         // returns true
+	 *   dojo.lang.isOfType(xxxxx, "undefined");             // returns true
+	 *   dojo.lang.isOfType(null, "null");                   // returns true
+	 *
+	 *   dojo.lang.isOfType("foo", [Number, String, Boolean]); // returns true
+	 *   dojo.lang.isOfType(12345, [Number, String, Boolean]); // returns true
+	 *   dojo.lang.isOfType(false, [Number, String, Boolean]); // returns true
+	 *
+	 *   dojo.lang.isOfType(null, Date, {optional: true} );    // returns true	// description: 
+	 */
 	var optional = false;
 	if (keywordParameters) {
 		optional = keywordParameters["optional"];
@@ -167,8 +229,8 @@ dojo.lang.isOfType = function(/* object */value, /* function */type, /* object? 
 }
 
 dojo.lang.getObject=function(/* String */ str){
-	//	summary
-	//	Will return an object, if it exists, based on the name in the passed string.
+	// summary:
+	//   Will return an object, if it exists, based on the name in the passed string.
 	var parts=str.split("."), i=0, obj=dj_global; 
 	do{ 
 		obj=obj[parts[i++]]; 
@@ -177,8 +239,8 @@ dojo.lang.getObject=function(/* String */ str){
 }
 
 dojo.lang.doesObjectExist=function(/* String */ str){
-	//	summary
-	//	Check to see if object [str] exists, based on the passed string.
+	// summary:
+	//   Check to see if object [str] exists, based on the passed string.
 	var parts=str.split("."), i=0, obj=dj_global; 
 	do{ 
 		obj=obj[parts[i++]]; 
