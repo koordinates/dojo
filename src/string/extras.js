@@ -33,8 +33,8 @@ dojo.string.capitalize = function(/*string*/str){
 // summary:
 //	Uppercases the first letter of each word
 
-	if (!dojo.lang.isString(str)) { return ""; }
-	if (arguments.length == 0) { str = this; }
+	if(!dojo.lang.isString(str)){ return ""; }
+	if(arguments.length == 0){ str = this; }
 
 	var words = str.split(' ');
 	for(var i=0; i<words.length; i++){
@@ -51,8 +51,9 @@ dojo.string.isBlank = function(/*string*/str){
 	return (dojo.string.trim(str).length == 0); // boolean
 }
 
+//FIXME: not sure exactly what encodeAscii is trying to do, or if it's working right
 dojo.string.encodeAscii = function(/*string*/str){
-	if(!dojo.lang.isString(str)){ return str; }
+	if(!dojo.lang.isString(str)){ return str; } // unknown
 	var ret = "";
 	var value = escape(str);
 	var match, re = /%u([0-9A-F]{4})/i;
@@ -67,6 +68,12 @@ dojo.string.encodeAscii = function(/*string*/str){
 }
 
 dojo.string.escape = function(/*string*/type, /*string*/str){
+// summary:
+//	Adds escape sequences for special characters according to the convention of 'type'
+//
+// type: one of xml|html|xhtml|sql|regexp|regex|javascript|jscript|js|ascii
+// str: the string to be escaped
+
 	var args = dojo.lang.toArray(arguments, 1);
 	switch(type.toLowerCase()){
 		case "xml":
@@ -91,6 +98,10 @@ dojo.string.escape = function(/*string*/type, /*string*/str){
 }
 
 dojo.string.escapeXml = function(/*string*/str, /*boolean*/noSingleQuotes){
+//summary:
+//	Adds escape sequences for special characters in XML: &<>"'
+//  Optionally skips escapes for single quotes
+
 	str = str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;")
 		.replace(/>/gm, "&gt;").replace(/"/gm, "&quot;");
 	if(!noSingleQuotes){ str = str.replace(/'/gm, "&#39;"); }
@@ -98,18 +109,33 @@ dojo.string.escapeXml = function(/*string*/str, /*boolean*/noSingleQuotes){
 }
 
 dojo.string.escapeSql = function(/*string*/str){
+//summary:
+//	Adds escape sequences for single quotes in SQL expressions
+
 	return str.replace(/'/gm, "''"); //string
 }
 
 dojo.string.escapeRegExp = function(/*string*/str){
+//summary:
+//	Adds escape sequences for special characters in regular expressions
+
 	return str.replace(/\\/gm, "\\\\").replace(/([\f\b\n\t\r[\^$|?*+(){}])/gm, "\\$1"); // string
 }
 
+//FIXME: should this one also escape backslash?
 dojo.string.escapeJavaScript = function(/*string*/str){
+//summary:
+//	Adds escape sequences for single and double quotes as well
+//	as non-visible characters in JavaScript string literal expressions
+
 	return str.replace(/(["'\f\b\n\t\r])/gm, "\\$1"); // string
 }
 
-dojo.string.escapeString = function(/*string*/str){ 
+//FIXME: looks a lot like escapeJavaScript, just adds quotes? deprecate one?
+dojo.string.escapeString = function(/*string*/str){
+//summary:
+//	Adds escape sequences for non-visual characters, double quote and backslash
+//	and surrounds with double quotes to form a valid string literal.
 	return ('"' + str.replace(/(["\\])/g, '\\$1') + '"'
 		).replace(/[\f]/g, "\\f"
 		).replace(/[\b]/g, "\\b"
@@ -125,9 +151,9 @@ dojo.string.summary = function(/*string*/str, /*number*/len){
 
 	if(!len || str.length <= len){
 		return str; // string
-	}else{
-		return str.substring(0, len).replace(/\.+$/, "") + "..."; // string
 	}
+
+	return str.substring(0, len).replace(/\.+$/, "") + "..."; // string
 }
 
 dojo.string.endsWith = function(/*string*/str, /*string*/end, /*boolean*/ignoreCase){
@@ -191,21 +217,23 @@ dojo.string.has = function(/*string*/str /* , ... */) {
 	return false; // boolean
 }
 
-dojo.string.normalizeNewlines = function(/*string*/text, /*string*/newlineChar){
-	if (newlineChar == "\n"){
-		text = text.replace(/\r\n/g, "\n");
-		text = text.replace(/\r/g, "\n");
-	} else if (newlineChar == "\r"){
-		text = text.replace(/\r\n/g, "\r");
-		text = text.replace(/\n/g, "\r");
+dojo.string.normalizeNewlines = function(/*string*/text, /*string? (\n or \r)*/newlineChar){
+// summary:
+//	Changes occurences of CR and LF in text to CRLF, or if newlineChar is provided as '\n' or '\r',
+//	substitutes newlineChar for occurrences of CR and CRLF
+
+	if(newlineChar == "\n" || newlineChar == "\r"){
+		text = text.replace(/\r\n/g, newlineChar).replace(/\r/g, newlineChar);
 	}else{
-		text = text.replace(/([^\r])\n/g, "$1\r\n");
-		text = text.replace(/\r([^\n])/g, "\r\n$1");
+		text = text.replace(/([^\r])\n/g, "$1\r\n").replace(/\r([^\n])/g, "\r\n$1");
 	}
 	return text; // string
 }
 
-dojo.string.splitEscaped = function(/*string*/str, /*string*/charac){
+dojo.string.splitEscaped = function(/*string*/str, /*string of length=1*/charac){
+// summary:
+//	Splits 'str' into an array separated by 'charac', but skips characters escaped with a backslash
+
 	var components = [];
 	for (var i = 0, prevcomma = 0; i < str.length; i++){
 		if (str.charAt(i) == '\\'){ i++; continue; }
