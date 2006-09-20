@@ -114,7 +114,11 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		fillInTemplate: function() {
+		fillInTemplate: function(args, frag) {
+			// Copy style info from input node to output node
+			var source = this.getFragNodeRef(frag);
+			dojo.html.copyStyle(this.domNode, source);
+
 			// summary: see dojo.widget.DomWidget
 
 			dojo.widget.DatePicker.superclass.fillInTemplate.apply(this, arguments);

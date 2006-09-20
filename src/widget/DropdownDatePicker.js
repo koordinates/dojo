@@ -52,17 +52,14 @@ dojo.widget.defineWidget(
 
 			dojo.widget.DropdownDatePicker.superclass.fillInTemplate.call(this, args, frag);
 
-			var dpNode = document.createElement("div");
-			this.containerNode.appendChild(dpNode);
-
 			this.datePicker = dojo.widget.createWidget("DatePicker",
-				{ widgetContainerId: this.widgetId, lang: this.lang, date: this.date }, dpNode);
+				{ widgetContainerId: this.widgetId, lang: this.lang, date: this.date }, this.containerNode, "child");
 			dojo.event.connect(this.datePicker, "onSetDate", this, "onSetDate");
 			if(this.date){
 				this.onSetDate();
 			}
 			this.containerNode.style.zIndex = this.zIndex;
-			this.containerNode.style.backgroundColor = "transparent";
+			this.containerNode.explodeClassName = "calendarBodyContainer";
 			this.valueNode.name=this.name;
 		},
 

@@ -453,6 +453,7 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 	var startCoords = h.toCoordinateObject(start, true);
 	var outline = document.createElement("div");
 	h.copyStyle(outline, endNode);
+	if (endNode.explodeClassName) { outline.className = endNode.explodeClassName; }
 	with(outline.style){
 		position = "absolute";
 		display = "none";
@@ -465,7 +466,6 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 		display = "block";
 	}
 	var endCoords = h.toCoordinateObject(endNode, true);
-	outline.style.backgroundColor = h.getStyle(endNode, "background-color").toLowerCase();
 	with(endNode.style){
 		display = "none";
 		visibility = "visible";
@@ -506,6 +506,7 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 
 	var outline = document.createElement("div");
 	dojo.html.copyStyle(outline, startNode);
+	if (startNode.explodeClassName) { outline.className = startNode.explodeClassName; }
 	dojo.html.setOpacity(outline, 0.3);
 	with(outline.style){
 		position = "absolute";

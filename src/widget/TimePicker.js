@@ -45,7 +45,11 @@ dojo.widget.defineWidget(
 	templatePath: dojo.uri.dojoUri("src/widget/templates/TimePicker.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TimePicker.css"),
 
-	fillInTemplate: function(){
+	fillInTemplate: function(args, frag){
+		// Copy style info from input node to output node
+		var source = this.getFragNodeRef(frag);
+		dojo.html.copyStyle(this.domNode, source);
+
 		this.initData();
 		this.initUI();
 	},
