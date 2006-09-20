@@ -222,8 +222,12 @@ dojo.string.normalizeNewlines = function(/*string*/text, /*string? (\n or \r)*/n
 //	Changes occurences of CR and LF in text to CRLF, or if newlineChar is provided as '\n' or '\r',
 //	substitutes newlineChar for occurrences of CR and CRLF
 
-	if(newlineChar == "\n" || newlineChar == "\r"){
-		text = text.replace(/\r\n/g, newlineChar).replace(/\r/g, newlineChar);
+	if (newlineChar == "\n"){
+		text = text.replace(/\r\n/g, "\n");
+		text = text.replace(/\r/g, "\n");
+	} else if (newlineChar == "\r"){
+		text = text.replace(/\r\n/g, "\r");
+		text = text.replace(/\n/g, "\r");
 	}else{
 		text = text.replace(/([^\r])\n/g, "$1\r\n").replace(/\r([^\n])/g, "\r\n$1");
 	}
