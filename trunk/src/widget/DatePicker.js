@@ -185,11 +185,7 @@ dojo.widget.defineWidget(
 			var curClass;
 			var currentClassName = "";
 			var nextDate = new Date(this.firstDay);
-			if(nextDate.getMonth() == this.curMonth.getMonth()) {
-				curClass = "current";
-			}else{
-				curClass = "previous";
-			}
+			curClass = (nextDate.getMonth() == this.curMonth.getMonth()) ? "current" : "previous";
 			if(this.displayWeeks=="" || this.adjustWeeks){
 				this.adjustWeeks = true;
 				this.displayWeeks = Math.ceil((dojo.date.getDaysInMonth(this.curMonth) + this._getAdjustedDay(this.curMonth))/7);
@@ -392,13 +388,13 @@ dojo.widget.defineWidget(
 			this.selectedIsUsed = false;
 			this.todayIsUsed = false;
 			dojo.lang.forEach(["disabledPrevious", "disabledCurrent", "disabledNext"], function(name){
-				if(dojo.html.hasClass(eventTarget, this.classNames.name)){return;}
+				if(dojo.html.hasClass(eventTarget, this.classNames[name])){return;}
 			}, this);
+			if(this.staticDisplay){return;}
 			var month = this.curMonth.getMonth();
 			var year = this.curMonth.getFullYear();
-			if(this.staticDisplay){return;}
 			if (dojo.html.hasClass(eventTarget, this.classNames.next)){
-				month = ++month % 12;
+					month = ++month % 12;
 				if(month===0){++year;}
 			} else if (dojo.html.hasClass(eventTarget, this.classNames.previous)){
 				month = --month % 12;
