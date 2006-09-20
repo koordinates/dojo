@@ -387,19 +387,23 @@ dojo.widget.defineWidget(
 			dojo.event.browser.stopEvent(evt);
 			this.selectedIsUsed = false;
 			this.todayIsUsed = false;
-			dojo.lang.forEach(["disabledPrevious", "disabledCurrent", "disabledNext"], function(name){
-				if(dojo.html.hasClass(eventTarget, this.classNames[name])){return;}
-			}, this);
-			if(this.staticDisplay){return;}
+
+			if(dojo.html.hasClass(eventTarget, this.classNames["disabledPrevious"])||dojo.html.hasClass(eventTarget, this.classNames["disabledCurrent"])||dojo.html.hasClass(eventTarget, this.classNames["disabledNext"])){
+				return; //this date is disabled... ignore it
+			}
 			var month = this.curMonth.getMonth();
 			var year = this.curMonth.getFullYear();
-			if (dojo.html.hasClass(eventTarget, this.classNames.next)){
-					month = ++month % 12;
+
+			if(dojo.html.hasClass(eventTarget, this.classNames.next)){
+				if(this.staticDisplay){return;}
+				month = ++month % 12;
 				if(month===0){++year;}
-			} else if (dojo.html.hasClass(eventTarget, this.classNames.previous)){
+			} else if(dojo.html.hasClass(eventTarget, this.classNames.previous)){
+				if(this.staticDisplay){return;}
 				month = --month % 12;
 				if(month==11){--year;}
 			}
+
 			this.setDate(new Date(year, month, eventTarget.innerHTML));
 		},
 
