@@ -20,7 +20,7 @@ dojo["namespace"] = {
 		// If the namespace is "dojo", or the user has not specified allowed namespaces return true.
 		// Otherwise, if the user has specifically allowed this namespace, return true, otherwise false.
 		var incl = djConfig.includeNamespace;
-		return((name==this.dojo)||(!incl)||(inArray(incl, name)));
+		return((name==this.dojo)||(!incl)||(dojo.lang.inArray(incl, name)));
 	},
 	get: function(name){
 		// summary
