@@ -1,19 +1,19 @@
-dojo.provide("dojo.data.format.Json");
+dojo.provide("dojo.data.old.format.Json");
 dojo.require("dojo.lang.assert");
 
-dojo.data.format.Json = new function() {
+dojo.data.old.format.Json = new function() {
 
 	// -------------------------------------------------------------------
 	// Public functions
 	// -------------------------------------------------------------------
-	this.loadDataProviderFromFileContents = function(/* dojo.data.provider.Base */ dataProvider, /* string */ jsonFileContents) {
-		dojo.lang.assertType(dataProvider, dojo.data.provider.Base);
+	this.loadDataProviderFromFileContents = function(/* dojo.data.old.provider.Base */ dataProvider, /* string */ jsonFileContents) {
+		dojo.lang.assertType(dataProvider, dojo.data.old.provider.Base);
 		dojo.lang.assertType(jsonFileContents, String);
 		var arrayOfJsonData = eval("(" + jsonFileContents + ")");
 		this.loadDataProviderFromArrayOfJsonData(dataProvider, arrayOfJsonData);
 	};
 	
-	this.loadDataProviderFromArrayOfJsonData = function(/* dojo.data.provider.Base */ dataProvider, /* Array */ arrayOfJsonData) {
+	this.loadDataProviderFromArrayOfJsonData = function(/* dojo.data.old.provider.Base */ dataProvider, /* Array */ arrayOfJsonData) {
 		dojo.lang.assertType(arrayOfJsonData, Array, {optional: true});
 		if (arrayOfJsonData && (arrayOfJsonData.length > 0)) {
 			var firstRow = arrayOfJsonData[0];
@@ -27,8 +27,8 @@ dojo.data.format.Json = new function() {
 		}
 	};
 
-	this.getJsonStringFromResultSet = function(/* dojo.data.ResultSet */ resultSet) {
-		dojo.unimplemented('dojo.data.format.Json.getJsonStringFromResultSet');
+	this.getJsonStringFromResultSet = function(/* dojo.data.old.ResultSet */ resultSet) {
+		dojo.unimplemented('dojo.data.old.format.Json.getJsonStringFromResultSet');
 		var jsonString = null;
 		return jsonString; // String
 	};
@@ -36,7 +36,7 @@ dojo.data.format.Json = new function() {
 	// -------------------------------------------------------------------
 	// Private functions
 	// -------------------------------------------------------------------
-	function _loadDataProviderFromArrayOfArrays(/* dojo.data.provider.Base */ dataProvider, /* Array */ arrayOfJsonData) {
+	function _loadDataProviderFromArrayOfArrays(/* dojo.data.old.provider.Base */ dataProvider, /* Array */ arrayOfJsonData) {
 		/** 
 		 * Example: 
 		 * var arrayOfJsonStates = [
@@ -59,7 +59,7 @@ dojo.data.format.Json = new function() {
 		}
 	}
 
-	function _loadDataProviderFromArrayOfObjects(/* dojo.data.provider.Base */ dataProvider, /* Array */ arrayOfJsonData) {
+	function _loadDataProviderFromArrayOfObjects(/* dojo.data.old.provider.Base */ dataProvider, /* Array */ arrayOfJsonData) {
 		/** 
 		 * Example: 
 		 * var arrayOfJsonStates = [

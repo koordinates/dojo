@@ -1,10 +1,10 @@
-dojo.require("dojo.data.*");
+dojo.require("dojo.data.old.*");
 
 function data_binding_init() {
 	var chartDiv = dojo.byId('putChartHere');
 	var tableDiv = dojo.byId('putSortableTableHere');
 
-	var dataProvider = new dojo.data.provider.FlatFile({url: "data_set_four.json"});	
+	var dataProvider = new dojo.data.old.provider.FlatFile({url: "data_set_four.json"});	
 	queryResultSet = dataProvider.fetchResultSet();
 	
 	var attributeMapping = {x: "X", 

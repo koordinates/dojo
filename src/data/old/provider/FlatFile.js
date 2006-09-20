@@ -1,23 +1,23 @@
-dojo.provide("dojo.data.provider.FlatFile");
-dojo.require("dojo.data.provider.Base");
-dojo.require("dojo.data.Item");
-dojo.require("dojo.data.Attribute");
-dojo.require("dojo.data.ResultSet");
-dojo.require("dojo.data.format.Json");
-dojo.require("dojo.data.format.Csv");
+dojo.provide("dojo.data.old.provider.FlatFile");
+dojo.require("dojo.data.old.provider.Base");
+dojo.require("dojo.data.old.Item");
+dojo.require("dojo.data.old.Attribute");
+dojo.require("dojo.data.old.ResultSet");
+dojo.require("dojo.data.old.format.Json");
+dojo.require("dojo.data.old.format.Csv");
 dojo.require("dojo.lang.assert");
 
 // -------------------------------------------------------------------
 // Constructor
 // -------------------------------------------------------------------
-dojo.data.provider.FlatFile = function(/* keywords */ keywordParameters) {
+dojo.data.old.provider.FlatFile = function(/* keywords */ keywordParameters) {
 	/**
 	 * summary:
 	 * A Json Data Provider knows how to read in simple JSON data
 	 * tables and make their contents accessable as Items.
 	 */
 	dojo.lang.assertType(keywordParameters, "pureobject", {optional: true});
-	dojo.data.provider.Base.call(this);
+	dojo.data.old.provider.Base.call(this);
 	this._arrayOfItems = [];
 	this._resultSet = null;
 	this._dictionaryOfAttributes = {};
@@ -27,36 +27,36 @@ dojo.data.provider.FlatFile = function(/* keywords */ keywordParameters) {
 		var jsonString  = keywordParameters["jsonString"];
 		var fileUrl     = keywordParameters["url"];
 		if (jsonObjects) {
-			dojo.data.format.Json.loadDataProviderFromArrayOfJsonData(this, jsonObjects);
+			dojo.data.old.format.Json.loadDataProviderFromArrayOfJsonData(this, jsonObjects);
 		}
 		if (jsonString) {
-			dojo.data.format.Json.loadDataProviderFromFileContents(this, jsonString);
+			dojo.data.old.format.Json.loadDataProviderFromFileContents(this, jsonString);
 		}
 		if (fileUrl) {
 			var arrayOfParts = fileUrl.split('.');
 			var lastPart = arrayOfParts[(arrayOfParts.length - 1)];
 			var formatParser = null;
 			if (lastPart == "json") {
-				formatParser = dojo.data.format.Json;
+				formatParser = dojo.data.old.format.Json;
 			}
 			if (lastPart == "csv") {
-				formatParser = dojo.data.format.Csv;
+				formatParser = dojo.data.old.format.Csv;
 			}
 			if (formatParser) {
 				var fileContents = dojo.hostenv.getText(fileUrl);
 				formatParser.loadDataProviderFromFileContents(this, fileContents);
 			} else {
-				dojo.lang.assert(false, "new dojo.data.provider.FlatFile({url: }) was passed a file without a .csv or .json suffix");
+				dojo.lang.assert(false, "new dojo.data.old.provider.FlatFile({url: }) was passed a file without a .csv or .json suffix");
 			}
 		}
 	}
 };
-dojo.inherits(dojo.data.provider.FlatFile, dojo.data.provider.Base);
+dojo.inherits(dojo.data.old.provider.FlatFile, dojo.data.old.provider.Base);
 
 // -------------------------------------------------------------------
 // Public instance methods
 // -------------------------------------------------------------------
-dojo.data.provider.FlatFile.prototype.getProviderCapabilities = function(/* string */ keyword) {
+dojo.data.old.provider.FlatFile.prototype.getProviderCapabilities = function(/* string */ keyword) {
 	dojo.lang.assertType(keyword, String, {optional: true});
 	if (!this._ourCapabilities) {
 		this._ourCapabilities = {
@@ -79,22 +79,22 @@ dojo.data.provider.FlatFile.prototype.getProviderCapabilities = function(/* stri
 	}
 };
 
-dojo.data.provider.FlatFile.prototype.registerAttribute = function(/* string or dojo.data.Attribute */ attributeId) {
+dojo.data.old.provider.FlatFile.prototype.registerAttribute = function(/* string or dojo.data.old.Attribute */ attributeId) {
 	var registeredAttribute = this.getAttribute(attributeId);
 	if (!registeredAttribute) {
-		var newAttribute = new dojo.data.Attribute(this, attributeId);
+		var newAttribute = new dojo.data.old.Attribute(this, attributeId);
 		this._dictionaryOfAttributes[attributeId] = newAttribute;
 		registeredAttribute = newAttribute;
 	}
-	return registeredAttribute; // dojo.data.Attribute
+	return registeredAttribute; // dojo.data.old.Attribute
 };
 
-dojo.data.provider.FlatFile.prototype.getAttribute = function(/* string or dojo.data.Attribute */ attributeId) {
+dojo.data.old.provider.FlatFile.prototype.getAttribute = function(/* string or dojo.data.old.Attribute */ attributeId) {
 	var attribute = (this._dictionaryOfAttributes[attributeId] || null);
-	return attribute; // dojo.data.Attribute or null
+	return attribute; // dojo.data.old.Attribute or null
 };
 
-dojo.data.provider.FlatFile.prototype.getAttributes = function() {
+dojo.data.old.provider.FlatFile.prototype.getAttributes = function() {
 	var arrayOfAttributes = [];
 	for (var key in this._dictionaryOfAttributes) {
 		var attribute = this._dictionaryOfAttributes[key];
@@ -103,41 +103,41 @@ dojo.data.provider.FlatFile.prototype.getAttributes = function() {
 	return arrayOfAttributes; // Array
 };
 
-dojo.data.provider.FlatFile.prototype.fetchArray = function(query) {
+dojo.data.old.provider.FlatFile.prototype.fetchArray = function(query) {
 	/**
 	 * summary: Returns an Array containing all of the Items.
 	 */ 
 	return this._arrayOfItems; // Array
 };
 
-dojo.data.provider.FlatFile.prototype.fetchResultSet = function(query) {
+dojo.data.old.provider.FlatFile.prototype.fetchResultSet = function(query) {
 	/**
 	 * summary: Returns a ResultSet containing all of the Items.
 	 */ 
 	if (!this._resultSet) {
-		this._resultSet = new dojo.data.ResultSet(this, this.fetchArray(query));
+		this._resultSet = new dojo.data.old.ResultSet(this, this.fetchArray(query));
 	}
-	return this._resultSet; // dojo.data.ResultSet
+	return this._resultSet; // dojo.data.old.ResultSet
 };
 
 // -------------------------------------------------------------------
 // Private instance methods
 // -------------------------------------------------------------------
-dojo.data.provider.FlatFile.prototype._newItem = function() {
-	var item = new dojo.data.Item(this);
+dojo.data.old.provider.FlatFile.prototype._newItem = function() {
+	var item = new dojo.data.old.Item(this);
 	this._arrayOfItems.push(item);
-	return item; // dojo.data.Item
+	return item; // dojo.data.old.Item
 };
 
-dojo.data.provider.FlatFile.prototype._newAttribute = function(/* String */ attributeId) {
+dojo.data.old.provider.FlatFile.prototype._newAttribute = function(/* String */ attributeId) {
 	dojo.lang.assertType(attributeId, String);
 	dojo.lang.assert(this.getAttribute(attributeId) === null);
-	var attribute = new dojo.data.Attribute(this, attributeId);
+	var attribute = new dojo.data.old.Attribute(this, attributeId);
 	this._dictionaryOfAttributes[attributeId] = attribute;
-	return attribute; // dojo.data.Attribute
+	return attribute; // dojo.data.old.Attribute
 };
 
-dojo.data.provider.Base.prototype._getResultSets = function() {
+dojo.data.old.provider.Base.prototype._getResultSets = function() {
 	return [this._resultSet]; // Array
 };
 

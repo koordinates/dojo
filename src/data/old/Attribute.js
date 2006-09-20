@@ -1,31 +1,31 @@
-dojo.provide("dojo.data.Attribute");
-dojo.require("dojo.data.Item");
+dojo.provide("dojo.data.old.Attribute");
+dojo.require("dojo.data.old.Item");
 dojo.require("dojo.lang.assert");
 
 // -------------------------------------------------------------------
 // Constructor
 // -------------------------------------------------------------------
-dojo.data.Attribute = function(/* dojo.data.provider.Base */ dataProvider, /* string */ attributeId) {
+dojo.data.old.Attribute = function(/* dojo.data.old.provider.Base */ dataProvider, /* string */ attributeId) {
 	/**
 	 * summary:
 	 * An Attribute object represents something like a column in 
 	 * a relational database.
 	 */
-	dojo.lang.assertType(dataProvider, dojo.data.provider.Base, {optional: true});
+	dojo.lang.assertType(dataProvider, dojo.data.old.provider.Base, {optional: true});
 	dojo.lang.assertType(attributeId, String);
-	dojo.data.Item.call(this, dataProvider);
+	dojo.data.old.Item.call(this, dataProvider);
 	this._attributeId = attributeId;
 };
-dojo.inherits(dojo.data.Attribute, dojo.data.Item);
+dojo.inherits(dojo.data.old.Attribute, dojo.data.old.Item);
 
 // -------------------------------------------------------------------
 // Public instance methods
 // -------------------------------------------------------------------
-dojo.data.Attribute.prototype.toString = function() {
+dojo.data.old.Attribute.prototype.toString = function() {
 	return this._attributeId; // string
 };
 
-dojo.data.Attribute.prototype.getAttributeId = function() {
+dojo.data.old.Attribute.prototype.getAttributeId = function() {
 	/**
 	 * summary: 
 	 * Returns the string token that uniquely identifies this
@@ -37,14 +37,14 @@ dojo.data.Attribute.prototype.getAttributeId = function() {
 	return this._attributeId; // string
 };
 
-dojo.data.Attribute.prototype.getType = function() {
+dojo.data.old.Attribute.prototype.getType = function() {
 	/**
 	 * summary: Returns the data type of the values of this attribute.
 	 */ 
-	return this.get('type'); // dojo.data.Type or null
+	return this.get('type'); // dojo.data.old.Type or null
 };
 
-dojo.data.Attribute.prototype.setType = function(/* dojo.data.Type or null */ type) {
+dojo.data.old.Attribute.prototype.setType = function(/* dojo.data.old.Type or null */ type) {
 	/**
 	 * summary: Sets the data type for this attribute.
 	 */ 
