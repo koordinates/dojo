@@ -1,9 +1,13 @@
+.datePickerContainer {
+	width:160px; /* needed for proper user styling */
+}
+
 .calendarContainer {
 /*	border:1px solid #566f8f;*/
 }
 
 .calendarBodyContainer {
-	width:160px;
+	width:160px; /* needed for the explode effect */
 	background: #7591bc url("images/dpBg.gif") top left repeat-x;
 }
 

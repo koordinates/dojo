@@ -28,17 +28,13 @@ dojo.widget.defineWidget(
 
 		fillInTemplate: function(args, frag){
 			dojo.widget.DropdownTimePicker.superclass.fillInTemplate.call(this, args, frag);
-			var source = this.getFragNodeRef(frag);
 
-			var dpNode = document.createElement("div");
-			this.containerNode.appendChild(dpNode);
-			
 			var timeProps = { widgetContainerId: this.widgetId };
-			this.timePicker = dojo.widget.createWidget("TimePicker", timeProps, dpNode);
+			this.timePicker = dojo.widget.createWidget("TimePicker", timeProps, this.containerNode, "child");
 			dojo.event.connect(this.timePicker, "onSetTime", this, "onSetTime");
 			dojo.event.connect(this.inputNode,  "onchange",  this, "onInputChange");
 			this.containerNode.style.zIndex = this.zIndex;
-			this.containerNode.style.backgroundColor = "transparent";
+			this.containerNode.explodeClassName = "timeBorder";
 			if(args.storedtime){
 				this.timePicker.selectedTime.anyTime = false;
 				this.timePicker.setDateTime("2005-01-01T" + args.storedtime);
