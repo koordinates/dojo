@@ -4,19 +4,21 @@ dojo.require("dojo.string.common");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.array");
 
-/**
- * Performs parameterized substitutions on a string.  For example,
- *   dojo.string.substituteParams("File '%{0}' is not found in directory '%{1}'.","foo.html","/temp");
- * returns
- *   "File 'foo.html' is not found in directory '/temp'."
- * 
- * @param template the original string template with %{values} to be replaced
- * @param hash name/value pairs (type object) to provide substitutions.  Alternatively, substitutions may be
- *  included as arguments 1..n to this function, corresponding to template parameters 0..n-1
- * @return the completed string. Throws an exception if any parameter is unmatched
- */
-//TODO: use ${} substitution syntax instead, like widgets do?
-dojo.string.substituteParams = function(template /*string */, hash /* object - optional or ... */) {
+//TODO: should we use ${} substitution syntax instead, like widgets do?
+dojo.string.substituteParams = function(/*string*/template, /* object - optional or ... */hash){
+// summary:
+//	Performs parameterized substitutions on a string. Throws an exception if any parameter is unmatched.
+//
+// description:
+//	For example,
+//		dojo.string.substituteParams("File '%{0}' is not found in directory '%{1}'.","foo.html","/temp");
+//	returns
+//		"File 'foo.html' is not found in directory '/temp'."
+//
+// template: the original string template with %{values} to be replaced
+// hash: name/value pairs (type object) to provide substitutions.  Alternatively, substitutions may be
+//	included as arguments 1..n to this function, corresponding to template parameters 0..n-1
+
 	var map = (typeof hash == 'object') ? hash : dojo.lang.toArray(arguments, 1);
 
 	return template.replace(/\%\{(\w+)\}/g, function(match, key){
@@ -24,11 +26,13 @@ dojo.string.substituteParams = function(template /*string */, hash /* object - o
 			return map[key];
 		}
 		dojo.raise("Substitution not found: " + key);
-	});
+	}); // string
 };
 
-/** Uppercases the first letter of each word */
-dojo.string.capitalize = function (str) {
+dojo.string.capitalize = function(/*string*/str){
+// summary:
+//	Uppercases the first letter of each word
+
 	if (!dojo.lang.isString(str)) { return ""; }
 	if (arguments.length == 0) { str = this; }
 
@@ -36,177 +40,180 @@ dojo.string.capitalize = function (str) {
 	for(var i=0; i<words.length; i++){
 		words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
 	}
-	return words.join(" ");
+	return words.join(" "); // string
 }
 
-/**
- * Return true if the entire string is whitespace characters
- */
-dojo.string.isBlank = function (str) {
-	if(!dojo.lang.isString(str)) { return true; }
-	return (dojo.string.trim(str).length == 0);
+dojo.string.isBlank = function(/*string*/str){
+// summary:
+//	Return true if the entire string is whitespace characters
+
+	if(!dojo.lang.isString(str)){ return true; }
+	return (dojo.string.trim(str).length == 0); // boolean
 }
 
-dojo.string.encodeAscii = function(str) {
-	if(!dojo.lang.isString(str)) { return str; }
+dojo.string.encodeAscii = function(/*string*/str){
+	if(!dojo.lang.isString(str)){ return str; }
 	var ret = "";
 	var value = escape(str);
 	var match, re = /%u([0-9A-F]{4})/i;
-	while((match = value.match(re))) {
+	while((match = value.match(re))){
 		var num = Number("0x"+match[1]);
 		var newVal = escape("&#" + num + ";");
 		ret += value.substring(0, match.index) + newVal;
 		value = value.substring(match.index+match[0].length);
 	}
 	ret += value.replace(/\+/g, "%2B");
-	return ret;
+	return ret; // string
 }
 
-dojo.string.escape = function(type, str) {
+dojo.string.escape = function(/*string*/type, /*string*/str){
 	var args = dojo.lang.toArray(arguments, 1);
-	switch(type.toLowerCase()) {
+	switch(type.toLowerCase()){
 		case "xml":
 		case "html":
 		case "xhtml":
-			return dojo.string.escapeXml.apply(this, args);
+			return dojo.string.escapeXml.apply(this, args); // string
 		case "sql":
-			return dojo.string.escapeSql.apply(this, args);
+			return dojo.string.escapeSql.apply(this, args); // string
 		case "regexp":
 		case "regex":
-			return dojo.string.escapeRegExp.apply(this, args);
+			return dojo.string.escapeRegExp.apply(this, args); // string
 		case "javascript":
 		case "jscript":
 		case "js":
-			return dojo.string.escapeJavaScript.apply(this, args);
+			return dojo.string.escapeJavaScript.apply(this, args); // string
 		case "ascii":
 			// so it's encode, but it seems useful
-			return dojo.string.encodeAscii.apply(this, args);
+			return dojo.string.encodeAscii.apply(this, args); // string
 		default:
-			return str;
+			return str; // string
 	}
 }
 
-dojo.string.escapeXml = function(str, noSingleQuotes) {
+dojo.string.escapeXml = function(/*string*/str, /*boolean*/noSingleQuotes){
 	str = str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;")
 		.replace(/>/gm, "&gt;").replace(/"/gm, "&quot;");
-	if(!noSingleQuotes) { str = str.replace(/'/gm, "&#39;"); }
-	return str;
+	if(!noSingleQuotes){ str = str.replace(/'/gm, "&#39;"); }
+	return str; // string
 }
 
-dojo.string.escapeSql = function(str) {
-	return str.replace(/'/gm, "''");
+dojo.string.escapeSql = function(/*string*/str){
+	return str.replace(/'/gm, "''"); //string
 }
 
-dojo.string.escapeRegExp = function(str) {
-	return str.replace(/\\/gm, "\\\\").replace(/([\f\b\n\t\r[\^$|?*+(){}])/gm, "\\$1");
+dojo.string.escapeRegExp = function(/*string*/str){
+	return str.replace(/\\/gm, "\\\\").replace(/([\f\b\n\t\r[\^$|?*+(){}])/gm, "\\$1"); // string
 }
 
-dojo.string.escapeJavaScript = function(str) {
-	return str.replace(/(["'\f\b\n\t\r])/gm, "\\$1");
+dojo.string.escapeJavaScript = function(/*string*/str){
+	return str.replace(/(["'\f\b\n\t\r])/gm, "\\$1"); // string
 }
 
-dojo.string.escapeString = function(str){ 
+dojo.string.escapeString = function(/*string*/str){ 
 	return ('"' + str.replace(/(["\\])/g, '\\$1') + '"'
 		).replace(/[\f]/g, "\\f"
 		).replace(/[\b]/g, "\\b"
 		).replace(/[\n]/g, "\\n"
 		).replace(/[\t]/g, "\\t"
-		).replace(/[\r]/g, "\\r");
+		).replace(/[\r]/g, "\\r"); // string
 }
 
 // TODO: make an HTML version
-dojo.string.summary = function(str, len) {
-	if(!len || str.length <= len) {
-		return str;
-	} else {
-		return str.substring(0, len).replace(/\.+$/, "") + "...";
+dojo.string.summary = function(/*string*/str, /*number*/len){
+// summary:
+//	Truncates 'str' after 'len' characters and appends periods as necessary so that it ends with "..."
+
+	if(!len || str.length <= len){
+		return str; // string
+	}else{
+		return str.substring(0, len).replace(/\.+$/, "") + "..."; // string
 	}
 }
 
-/**
- * Returns true if 'str' ends with 'end'
- */
-dojo.string.endsWith = function(str, end, ignoreCase) {
-	if(ignoreCase) {
+dojo.string.endsWith = function(/*string*/str, /*string*/end, /*boolean*/ignoreCase){
+// summary:
+//	Returns true if 'str' ends with 'end'
+
+	if(ignoreCase){
 		str = str.toLowerCase();
 		end = end.toLowerCase();
 	}
 	if((str.length - end.length) < 0){
-		return false;
+		return false; // boolean
 	}
-	return str.lastIndexOf(end) == str.length - end.length;
+	return str.lastIndexOf(end) == str.length - end.length; // boolean
 }
 
-/**
- * Returns true if 'str' ends with any of the arguments[2 -> n]
- */
-dojo.string.endsWithAny = function(str /* , ... */) {
+dojo.string.endsWithAny = function(/*string*/str /* , ... */){
+// summary:
+//	Returns true if 'str' ends with any of the arguments[2 -> n]
+
 	for(var i = 1; i < arguments.length; i++) {
 		if(dojo.string.endsWith(str, arguments[i])) {
-			return true;
+			return true; // boolean
 		}
 	}
-	return false;
+	return false; // boolean
 }
 
-/**
- * Returns true if 'str' starts with 'start'
- */
-dojo.string.startsWith = function(str, start, ignoreCase) {
+dojo.string.startsWith = function(/*string*/str, /*string*/start, /*boolean*/ignoreCase){
+// summary:
+//	Returns true if 'str' starts with 'start'
+
 	if(ignoreCase) {
 		str = str.toLowerCase();
 		start = start.toLowerCase();
 	}
-	return str.indexOf(start) == 0;
+	return str.indexOf(start) == 0; // boolean
 }
 
-/**
- * Returns true if 'str' starts with any of the arguments[2 -> n]
- */
-dojo.string.startsWithAny = function(str /* , ... */) {
+dojo.string.startsWithAny = function(/*string*/str /* , ... */){
+// summary:
+//	Returns true if 'str' starts with any of the arguments[2 -> n]
+
 	for(var i = 1; i < arguments.length; i++) {
 		if(dojo.string.startsWith(str, arguments[i])) {
-			return true;
+			return true; // boolean
 		}
 	}
-	return false;
+	return false; // boolean
 }
 
-/**
- * Returns true if 'str' contains any of the arguments 2 -> n
- */
-dojo.string.has = function(str /* , ... */) {
+dojo.string.has = function(/*string*/str /* , ... */) {
+// summary:
+//	Returns true if 'str' contains any of the arguments 2 -> n
+
 	for(var i = 1; i < arguments.length; i++) {
 		if(str.indexOf(arguments[i]) > -1){
-			return true;
+			return true; // boolean
 		}
 	}
-	return false;
+	return false; // boolean
 }
 
-dojo.string.normalizeNewlines = function (text,newlineChar) {
-	if (newlineChar == "\n") {
+dojo.string.normalizeNewlines = function(/*string*/text, /*string*/newlineChar){
+	if (newlineChar == "\n"){
 		text = text.replace(/\r\n/g, "\n");
 		text = text.replace(/\r/g, "\n");
-	} else if (newlineChar == "\r") {
+	} else if (newlineChar == "\r"){
 		text = text.replace(/\r\n/g, "\r");
 		text = text.replace(/\n/g, "\r");
-	} else {
+	}else{
 		text = text.replace(/([^\r])\n/g, "$1\r\n");
 		text = text.replace(/\r([^\n])/g, "\r\n$1");
 	}
-	return text;
+	return text; // string
 }
 
-dojo.string.splitEscaped = function (str,charac) {
+dojo.string.splitEscaped = function(/*string*/str, /*string*/charac){
 	var components = [];
-	for (var i = 0, prevcomma = 0; i < str.length; i++) {
-		if (str.charAt(i) == '\\') { i++; continue; }
-		if (str.charAt(i) == charac) {
+	for (var i = 0, prevcomma = 0; i < str.length; i++){
+		if (str.charAt(i) == '\\'){ i++; continue; }
+		if (str.charAt(i) == charac){
 			components.push(str.substring(prevcomma, i));
 			prevcomma = i + 1;
 		}
 	}
 	components.push(str.substr(prevcomma));
-	return components;
+	return components; // array
 }
