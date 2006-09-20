@@ -1,6 +1,4 @@
-if(typeof window == 'undefined'){
-	dojo.raise("no window object");
-}
+if (typeof window != 'undefined') {
 
 // attempt to figure out the path to dojo if it isn't set in the config
 (function() {
@@ -476,4 +474,6 @@ dojo.withDoc = function (/*Object*/documentObject, /*Function*/callback, /*Objec
 		dj_currentDocument = oldDoc;
 	}
 	return rval;
+}
+
 }
