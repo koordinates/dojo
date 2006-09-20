@@ -1,5 +1,7 @@
 dojo.provide("dojo.widget.Editor2Plugin.ContextMenu");
 
+dojo.require("dojo.widget.Menu2");
+
 dojo.event.topic.subscribe("dojo.widget.Editor2::onLoad", function(editor){
 	var p = new dojo.widget.Editor2Plugin.ContextMenu(editor);
 });
