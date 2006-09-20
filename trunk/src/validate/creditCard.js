@@ -15,9 +15,9 @@ dojo.validate.isValidCreditCard = function(value,ccType){
 	return false;
 }
 dojo.validate.isValidCreditCardNumber = function(value,ccType) {
-	//only checks if the # matches the pattern for that card, or returns a | delimited string of matching card types if none specified
-	//value == CC # with only digits, no spaces or special chars
-	//ccType is of the values in cardinfo -- if Omitted it will attempt to return the cardType or 'no match' which this should probably also be changed...
+	//only checks if the # matches the pattern for that card or any card types if none is specified
+	//value == CC #, white spaces and dashes are ignored
+	//ccType is of the values in cardinfo -- if Omitted it it returns a | delimited string of matching card types, or false if no matches found
 	if(typeof value!='string'){
 		value = String(value);
 	}
@@ -41,8 +41,7 @@ dojo.validate.isValidCreditCardNumber = function(value,ccType) {
 		'jcb':'(3[0-9]{15}|(2131|1800)[0-9]{11})','er':'2(014|149)[0-9]{11}'
 	};
 	if(ccType&&dojo.lang.has(cardinfo,ccType.toLowerCase())){
-		// FIXME: where is p defined?
-		return (value.match(cardinfo[p]))?ccType:false
+		return (value.match(cardinfo[ccType]))?ccType:false
 	}else{
 		for(var p in cardinfo){
 			if(value.match(cardinfo[p])){
