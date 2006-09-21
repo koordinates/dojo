@@ -8,15 +8,13 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 dojo.require("dojo.lang.array");
-/*
-	Some facts:
-	-We now display only as many weeks as necessary, unless you tell us otherwise displayWeeks="X" to force a calendar size
+
+/*TODO:  these comments need to be incorporated elsewhere
+	- We now display only as many weeks as necessary, unless you tell us otherwise displayWeeks="X" to force a calendar size
 	- To get a sense of what month to highlight, we find the first day of the month and add 6 to it to get the first Saturday of
 	  the month, this is either the first of 2 months or the 2nd of 3 displayed months .
-	- You can now limit available dates by providing startDate="YYYY-mm-dd" and endDate="YYYY-mm-dd"... this will disable/enable
+	- You can now limit available dates by providing startDate="yyyy-MM-dd" and endDate="yyyy-MM-dd"... this will disable/enable
 	   incremental controls as needed to avoid the user wasting time scrolling through disabled dates.
-	- Currently, I assume that dates are stored in the RFC 3339 format, because I find it to be most human readable and easy to parse
-	http://www.faqs.org/rfcs/rfc3339.html: 		2005-06-30T08:05:00-07:00
 */
 
 dojo.widget.defineWidget(
@@ -32,13 +30,14 @@ dojo.widget.defineWidget(
 	 	              easy to select a date, or increment by week, month, and/or year. 
 	 	              It is designed to be used on its own, or inside of other widgets to  
 	 	              create drop down DatePickers or other similar combination widgets. 
-	 	              To get a sense of what month to highlight, we basically initialize on 
+	 	              To get a sense of what month to highlight, we initialize on 
 	 	              the first Saturday of each month, since that will be either the first  
 	 	              of two or the second of three months being partially displayed, and  
-	 	              then work forwards and backwards from that point. Currently, we assume  
-	 	              that dates are passed as Date objects or in the `RFC 3339`_ format  
-	 	              (2005-06-30T08:05:00-07:00), because Dylan finds it to be most human  
-	 	              readable and easy to parse.
+	 	              then work forwards and backwards from that point. 
+	 	              Dates are passed as Date objects or in the `RFC 3339` format  
+	 	              http://www.faqs.org/rfcs/rfc3339.html (2005-06-30T08:05:00-07:00),
+	 	              so that they are serializable and locale-independent.
+
 	 	 usage: 
 	 	              var datePicker = dojo.widget.createWidget("DatePicker", {},   
 	 	              dojo.byId("datePickerNode")); 
@@ -113,11 +112,11 @@ dojo.widget.defineWidget(
 		},
 
 		fillInTemplate: function(args, frag) {
+			// summary: see dojo.widget.DomWidget
+
 			// Copy style info from input node to output node
 			var source = this.getFragNodeRef(frag);
 			dojo.html.copyStyle(this.domNode, source);
-
-			// summary: see dojo.widget.DomWidget
 
 			dojo.widget.DatePicker.superclass.fillInTemplate.apply(this, arguments);
 			this.weekTemplate = dojo.dom.removeNode(this.calendarWeekTemplate);
@@ -147,12 +146,12 @@ dojo.widget.defineWidget(
 			return this.date; /*Date*/
 		},
 
-		setValue: function(rfcDate /*Date|String*/) {
+		setValue: function(/*Date|String*/rfcDate) {
 			//summary: set the current date from RFC 3339 formatted string or a date object, synonymous with setDate
 			this.setDate(rfcDate);
 		},			
 
-		setDate: function(dateObj /*Date|String*/) {
+		setDate: function(/*Date|String*/dateObj) {
 			//summary: set the current date and update the UI
 			if(typeof dateObj=="string"){
 				this.date = dojo.date.fromRfc3339(dateObj);
@@ -231,11 +230,12 @@ dojo.widget.defineWidget(
 				}
 				nextDate = dojo.date.add(nextDate, dojo.date.dateParts.DAY, 1);
 			}
-			this._initControls(this.staticDisplay);
+			this._initControls();
 		},
-		_initControls: function(static){
+		_initControls: function(){
 			var d = new Date(this.firstDay);
-			var decWeek = incWeek = decMonth = incMonth = decYear = incYear = !this.staticDisplay;
+			var decWeek, incWeek, decMonth, incMonth, decYear, incYear;
+			decWeek = incWeek = decMonth = incMonth = decYear = incYear = !this.staticDisplay;
 			if(decWeek){
 					if(d<this.startDate){
 					decWeek = decMonth = decYear = false;
@@ -266,13 +266,16 @@ dojo.widget.defineWidget(
 					incYear = false;
 				}
 			}
-			var vis = {'true':'visible','false':'hidden'};
-			dojo.html.setVisibility(this.decreaseWeekNode,vis[decWeek]);
-			dojo.html.setVisibility(this.increaseWeekNode,vis[incWeek]);
-			dojo.html.setVisibility(this.decreaseMonthNode,vis[decMonth]);
-			dojo.html.setVisibility(this.increaseMonthNode,vis[incMonth]);
-			dojo.html.setVisibility(this.previousYearLabelNode,vis[decYear]);
-			dojo.html.setVisibility(this.nextYearLabelNode,vis[incYear]);
+
+			function enableControl(node, enabled){
+				dojo.html.setVisibility(node, enabled ? 'visible' : 'hidden');
+			}
+			enableControl(this.decreaseWeekNode,decWeek);
+			enableControl(this.increaseWeekNode,incWeek);
+			enableControl(this.decreaseMonthNode,decMonth);
+			enableControl(this.increaseMonthNode,incMonth);
+			enableControl(this.previousYearLabelNode,decYear);
+			enableControl(this.nextYearLabelNode,incYear);
 		},
 		
 		_incrementWeek: function(evt) {
@@ -352,12 +355,12 @@ dojo.widget.defineWidget(
 			}else if(revertToEndDate){
 				d = new Date(this.endDate);
 			}else{
-				d= new Date(year, this.curMonth.getMonth(), 1);
+				d = new Date(year, this.curMonth.getMonth(), 1);
 			}
 			this._preInitUI(d,false,true);
 		},
 	
-		onIncrementWeek: function(evt) {
+		onIncrementWeek: function(/*Event*/evt) {
 			// summary: handler for increment week event
 			evt.stopPropagation();
 			if(!this.staticDisplay){
@@ -365,7 +368,7 @@ dojo.widget.defineWidget(
 			}
 		},
 	
-		onIncrementMonth: function(evt) {
+		onIncrementMonth: function(/*Event*/evt) {
 			// summary: handler for increment month event
 			evt.stopPropagation();
 			if(!this.staticDisplay){
@@ -373,7 +376,7 @@ dojo.widget.defineWidget(
 			}
 		},
 		
-		onIncrementYear: function(evt) {
+		onIncrementYear: function(/*Event*/evt) {
 			// summary: handler for increment year event
 			evt.stopPropagation();
 			if(!this.staticDisplay){
@@ -405,12 +408,12 @@ dojo.widget.defineWidget(
 			return currentClassName;
 		},
 	
-		onClick: function(evt) {
+		onClick: function(/*Event*/evt) {
 			//summary: the click event handler
 			dojo.event.browser.stopEvent(evt);
 		},
 
-		_handleUiClick: function(evt) {
+		_handleUiClick: function(/*Event*/evt) {
 			var eventTarget = evt.target;
 			if(eventTarget.nodeType != dojo.dom.ELEMENT_NODE){eventTarget = eventTarget.parentNode;}
 			dojo.event.browser.stopEvent(evt);
@@ -421,12 +424,10 @@ dojo.widget.defineWidget(
 				return; //this date is disabled... ignore it
 			}else if (dojo.html.hasClass(eventTarget, this.classNames["next"])) {
 				month = ++month % 12;
-				// if month is now == 0, add a year
-				year = (month==0) ? ++year : year;
+				if(month===0){++year;}
 			} else if (dojo.html.hasClass(eventTarget, this.classNames["previous"])) {
 				month = --month % 12;
-				// if month is now == 0, substract a year
-				year = (month==11) ? --year : year;
+				if(month==11){--year;}
 			}
 			this.clickedNode = eventTarget;
 			this.setDate(new Date(year, month, eventTarget.innerHTML));
@@ -440,11 +441,18 @@ dojo.widget.defineWidget(
 			if(dateObj<this.startDate||dateObj>this.endDate){
 				return true;
 			}
-			//TODO: tie in filter function here when implemented
-			return false;
-		},						
 
-		_initFirstDay: function(dateObj /*Date*/, adj /*Boolean*/){
+			return this.isDisabledDate(dateObj, this.lang);
+		},
+
+		isDisabledDate: function(/*Date*/dateObj, /*String?*/locale){
+		// summary:
+		//	May be overridden to disable certain dates in the calendar e.g. isDisabledDate=dojo.date.isWeekend
+
+			return false; // Boolean
+		},
+
+		_initFirstDay: function(/*Date*/dateObj, /*Boolean*/adj){
 			//adj: false for first day of month, true for first day of week adjusted by startOfWeek
 			var d = new Date(dateObj);
 			if(!adj){d.setDate(1);}
@@ -452,7 +460,7 @@ dojo.widget.defineWidget(
 			return d; // Date
 		},
 
-		_getAdjustedDay: function(dateObj){
+		_getAdjustedDay: function(/*Date*/dateObj){
 			//summary: used to adjust date.getDay() values to the new values based on the current first day of the week value
 			var days = [0,1,2,3,4,5,6];
 			if(this.weekStartsOn>0){
@@ -460,7 +468,7 @@ dojo.widget.defineWidget(
 					days.unshift(days.pop());
 				}
 			}
-			return days[dateObj.getDay()];
+			return days[dateObj.getDay()]; // Number: 0..6 where 0=Sunday
 		}
 	}
 );
