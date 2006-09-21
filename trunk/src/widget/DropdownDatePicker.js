@@ -26,7 +26,7 @@ dojo.widget.defineWidget(
 		saveFormat: "",
 		// type of format appropriate to locale.  see dojo.date.format
 		formatLength: "short", // only parsing of short is supported at this time
-		date: "",
+		date: "", //if =='today' will default to todays date
 		// name of the form element
 		name: "",
 
@@ -36,7 +36,10 @@ dojo.widget.defineWidget(
 			dojo.widget.DropdownDatePicker.superclass.postMixInProperties.apply(this, arguments);
 			var messages = dojo.i18n.getLocalization("dojo.widget", "DropdownDatePicker", this.lang);
 			this.iconAlt = messages.selectDate;
-
+			
+			if(typeof(this.date)=='string'&&this.date.toLowerCase()=='today'){
+				this.date = new Date();
+			}
 			if(this.date && isNaN(this.date)){
 				var orig = this.date;
 				this.date = dojo.date.fromRfc3339(this.date);
@@ -55,6 +58,7 @@ dojo.widget.defineWidget(
 			this.datePicker = dojo.widget.createWidget("DatePicker",
 				{ widgetContainerId: this.widgetId, lang: this.lang, date: this.date }, this.containerNode, "child");
 			dojo.event.connect(this.datePicker, "onSetDate", this, "onSetDate");
+			
 			if(this.date){
 				this.onSetDate();
 			}
