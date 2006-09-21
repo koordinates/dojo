@@ -421,7 +421,27 @@ dojo.body = function(){
 
 dojo.byId = function(id, doc){
 	if((id)&&((typeof id == "string")||(id instanceof String))){
-		return (doc || dj_currentDocument).getElementById(id);
+		if (!doc) { doc = dj_currentDocument; }
+		var ele = doc.getElementById(id);
+		// workaround bug in IE and Opera 8.2 where getElementById returns wrong element
+		if (ele && (ele.id != id) && doc.all) {
+			ele = null;
+			// get all matching elements with this id
+			eles = doc.all[id];
+			if (eles) {
+				// if more than 1, choose first with the correct id
+				if (eles.length) {
+					for (var i=0; i < eles.length; i++) {
+						if (eles[i].id == id) {
+							ele = eles[i];
+							break;
+						}
+					}
+				// return 1 and only element
+				} else { ele = eles; }
+			}
+		}
+		return ele;
 	}
 	return id; // assume it's a node
 }
