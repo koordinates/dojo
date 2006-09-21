@@ -61,7 +61,6 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 			top = f.top+"px";
 			bottom = "auto";
 			right = "auto";
-			overflow = "visible";	// necessary on FF for getMarginBox() calls below to work correctly
 		}
 		dojo.html.addClass(elm, "dojoAlign" + dojo.string.capitalize(pos));
 
@@ -78,8 +77,10 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 				elm.style.top = f.top + f.height + "px";
 			}
 		}else if(pos=="left" || pos=="right"){
-			dojo.html.setMarginBox(elm, { height: f.height });
 			var w = dojo.html.getMarginBox(elm).width;
+			// width needs to be set for Firefox (#941)
+			dojo.html.setMarginBox(elm, { width: w, height: f.height });
+
 			f.width -= w;
 			if(pos=="left"){
 				f.left += w;
