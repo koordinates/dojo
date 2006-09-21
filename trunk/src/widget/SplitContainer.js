@@ -51,8 +51,9 @@ dojo.widget.defineWidget(
 
 		dojo.html.insertCssFile(this.templateCssPath, null, true);
 		dojo.html.addClass(this.domNode, "dojoSplitContainer");
-		var oldMoz = (dojo.render.html.moz && !window.XML);
-		if (oldMoz) {
+		// overflow has to be explicitly hidden for splitContainers using gekko (trac #1435)
+		// to keep other combined css classes from inadvertantly making the overflow visible
+		if (dojo.render.html.moz) {
 		        this.domNode.style.overflow = '-moz-scrollbars-none'; // hidden doesn't work
 		}
 		
