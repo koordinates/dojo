@@ -349,7 +349,7 @@ dojo.widget.defineWidget(
 
 		// does the keyboard related stuff
 		_handleKeyEvents: function(evt){
-			if(evt.ctrlKey || evt.altKey){ return; }
+			if(evt.ctrlKey || evt.altKey || !evt.key){ return; }
 
 			// reset these
 			this._prev_key_backspace = false;
@@ -358,20 +358,7 @@ dojo.widget.defineWidget(
 			var k = dojo.event.browser.keys;
 			var doSearch = true;
 
-			// mozilla quirk 
-			// space has no keyCode in mozilla
-			var keyCode = evt.keyCode;
-			if(keyCode==0 && evt.charCode==k.KEY_SPACE){
-				keyCode = k.KEY_SPACE;
-			}
-			// Safari quirk. keyCodes for arrow keys are different
-			if (dojo.render.html.safari) {
-				switch(keyCode) {
-					case 63232: keyCode = k.KEY_UP_ARROW; break;
-					case 63233: keyCode = k.KEY_DOWN_ARROW; break;
-				}
-			}
-			switch(keyCode){
+			switch(evt.key){
 	 			case k.KEY_DOWN_ARROW:
 					if(!this.popupWidget.isShowingNow){
 						this.startSearchFromInput();
@@ -383,12 +370,6 @@ dojo.widget.defineWidget(
 					this.highlightPrevOption();
 					dojo.event.browser.stopEvent(evt);
 					return;
-				case k.KEY_ENTER:
-					// prevent submitting form if we press enter with list open
-					if(this.popupWidget.isShowingNow){
-						dojo.event.browser.stopEvent(evt);
-					}
-					// fallthrough
 				case k.KEY_TAB:
 					// using linux alike tab for autocomplete
 					if(!this.autoComplete && this.popupWidget.isShowingNow && this._highlighted_option){
@@ -402,7 +383,13 @@ dojo.widget.defineWidget(
 						return;
 					}
 					break;
-				case k.KEY_SPACE:
+				case k.KEY_ENTER:
+					// prevent submitting form if we press enter with list open
+					if(this.popupWidget.isShowingNow){
+						dojo.event.browser.stopEvent(evt);
+					}
+					// fallthrough
+				case " ":
 					if(this.popupWidget.isShowingNow && this._highlighted_option){
 						dojo.event.browser.stopEvent(evt);
 						this.selectOption();
@@ -424,7 +411,6 @@ dojo.widget.defineWidget(
 					break;
 				case k.KEY_RIGHT_ARROW: // fall through
 				case k.KEY_LEFT_ARROW: // fall through
-				case k.KEY_SHIFT:
 					doSearch = false;
 					break;
 				default:// non char keys (F1-F12 etc..)  shouldn't open list
@@ -445,23 +431,10 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		onKeyDown: function(evt){
-			// IE needs to stop keyDown others need to stop keyPress
-			if(!document.createEvent){ // only IE
-				this._handleKeyEvents(evt);
-			}
-			// FIXME: What about ESC ??
-		},
-
-		onKeyPress: function(evt){
-			if(document.createEvent){ // never IE
-				this._handleKeyEvents(evt);
-			}
-		},
-
 		// When inputting characters using an input method, such as Asian  
 		// languages, it will generate this event instead of onKeyDown event 
 		compositionEnd: function(evt){
+			evt.key = evt.keyCode;
 			this._handleKeyEvents(evt);
 		},
 
