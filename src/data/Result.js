@@ -1,4 +1,5 @@
 dojo.provide("dojo.data.Result");
+dojo.require("dojo.lang.declare");
 dojo.require("dojo.experimental");
 
 /* summary:
