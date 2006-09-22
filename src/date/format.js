@@ -214,7 +214,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 
 	options = options || {};
 
-	var locale = dojo.normalizeLocale(options.locale);
+	var locale = dojo.hostenv.normalizeLocale(options.locale);
 	var formatLength = options.formatLength || 'full';
 	var info = dojo.date._getGregorianBundle(locale);
 	var str = [];
@@ -260,7 +260,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 
 	//TODO: this is still quite rough - it only implements a small portion of the parsing algorithm needed,
 	// and doesn't provide much flexibility in matching.
-	var locale = dojo.normalizeLocale(options.locale);
+	var locale = dojo.hostenv.normalizeLocale(options.locale);
 	var info = dojo.date._getGregorianBundle(locale);
 	var formatLength = options.formatLength || 'full';
 	if (options.selector != 'dateOnly'){ dojo.unimplemented("can only parse dates at this time"); }

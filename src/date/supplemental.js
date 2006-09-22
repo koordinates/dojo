@@ -17,7 +17,7 @@ dojo.date.getFirstDayOfWeek = function(/*String?*/locale){
 		sy:4
 	};
 
-	locale = dojo.normalizeLocale(locale);
+	locale = dojo.hostenv.normalizeLocale(locale);
 	var country = locale.split("-")[1];
 	var dow = firstDay[country];
 	return (typeof dow == 'undefined') ? 1 : dow; /*Number*/
@@ -40,7 +40,7 @@ dojo.date.getWeekend = function(/*String?*/locale){
 		eg:6,il:6,sy:6
 	};
 
-	locale = dojo.normalizeLocale(locale);
+	locale = dojo.hostenv.normalizeLocale(locale);
 	var country = locale.split("-")[1];
 	var start = weekendStart[country];
 	var end = weekendEnd[country];
