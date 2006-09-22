@@ -273,7 +273,7 @@ dojo.i18n.number.FORMAT_TABLE = {
 })();
 
 dojo.i18n.number._mapToLocalizedFormatData = function(table, locale){
-	locale = dojo.normalizeLocale(locale);
+	locale = dojo.hostenv.normalizeLocale(locale);
 //TODO: most- to least-specific search? search by country code?
 //TODO: implement aliases to simplify and shorten tables
 	var data = table[locale];

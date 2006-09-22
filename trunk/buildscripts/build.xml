@@ -38,7 +38,7 @@
 	<property name="website_dir" value="${docs_dir}/website"/>
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
 	<property name="profile" value=""/>
-	<property name="locales" value="en-us,hi,nl,ja-jp"/>
+	<property name="locales" value="en-gb,en-us,de-de,es-es,fr-fr,it-it,pt-br,ko-kr,zh-tw,zh-cn,ja-jp"/>
 	<!-- FIXME: where should this list come from? -->
 
 	<loadfile property="copyright" srcFile="./copyright.txt"/>
@@ -541,6 +541,15 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			<param name="buildPrefix" value="dojo" />
 		</antcall>
 
+		<!-- 
+			clobber requireLocalization statements.  They need to be come no-ops since the resources
+			are now prebuilt and also because we do not want dojo.js to trigger XHRs on load
+		-->
+		<replaceregexp match="dojo.requireLocalization\((.*?)\);" 
+			byline="true" flags="g" file="${release_dir}/source.__package__.js">
+			<substitution expression=""/>
+		</replaceregexp>
+
 		<antcall target="-rhino-compress">
 			<param name="srcFile" value="${release_dir}/source.__package__.js" />
 			<param name="dstFile" value="${release_dir}/dojo.js" />
@@ -608,6 +617,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 
 	<target name="-flatten-resources"
 		description="loads all localization bundles in the build for a particular locale, flattens the object, and outputs a preloaded version">
+<!-- FIXME: should also remove dojo.requireLocalization() calls from the build? -->
 		<copy overwrite="true" file="${srcFile}" tofile="${release_dir}/localizations.tmp.js">
 			<filterchain>
 				<tokenfilter>
@@ -616,9 +626,9 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			</filterchain>
 		</copy>
 		<!--FIXME: dir=.. is kludgey. Having trouble bootstrapping without it -->
-		<java jar="./lib/custom_rhino.jar" failonerror="false" logError="true"
+		<java jar="./lib/js.jar" outputProperty="generatedLocales" failonerror="true" logError="true"
 			fork="true" dir=".." >
-			<arg line="-f ./buildscripts/flattenResources.js './buildscripts/${release_dir}/localizations.tmp.js'" />
+			<arg line="./buildscripts/flattenResources.js" />
 			<arg line="./buildscripts/${release_dir}/localizations.tmp.js" />
 			<arg line="./buildscripts/${release_dir}/nls" />
 			<arg line="${buildPrefix}" />
@@ -627,11 +637,12 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 		</java>
 		<delete file="${release_dir}/localizations.tmp.js" />
 		<available property="hasResources" file="${release_dir}/nls" type="dir" />
+		<echo message="Generated flattened resources for prefix ${buildPrefix} in the following locales: ${generatedLocales}."/>
 	</target>
 
 	<target name="-preload-resources" depends="-flatten-resources" if="hasResources"
-		description="prepends data necessary for the bootstrap to preload the flattened resource files">
-		<replaceregexp match="^" byline="false" replace="var dj_localesBuilt='${locales}'.split(',');var dj_localesGenerated=${generatedLocales};"
+		description="inserts data necessary for the bootstrap to preload the flattened resource files">
+		<replaceregexp match="/\*\*\*BUILD:localesGenerated\*\*\*/" byline="false" replace="=${generatedLocales}"
 			file="${dstFile}"/>
 	</target>
 

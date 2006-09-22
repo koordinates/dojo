@@ -34,7 +34,8 @@ var djLoadedBundles = [];
 var drl = dojo.requireLocalization;
 dojo.requireLocalization = function(modulename, bundlename, locale){
 	drl(modulename, bundlename, locale);
-	djLoadedBundles.push({modulename: modulename, bundlename: bundlename});
+//TODO: avoid dups?
+	djLoadedBundles.push({modulename: modulename, module: eval(modulename), bundlename: bundlename});
 };
 
 load(reqFile);
@@ -42,14 +43,14 @@ load(reqFile);
 //print("loaded bundles: "+djLoadedBundles.length);
 
 var djBundlesByLocale = {};
-var locale, entry, bundle;
+var jsLocale, entry, bundle;
 
 for (var i = 0; i < djLoadedBundles.length; i++){
 	entry = djLoadedBundles[i];
-	bundle = dojo.hostenv.findModule(entry.modulename)._nls[entry.bundlename];
-	for (locale in bundle){
-		if (!djBundlesByLocale[locale]){djBundlesByLocale[locale]=[];}
-		djBundlesByLocale[locale].push(entry);
+	bundle = entry.module.nls[entry.bundlename];
+	for (jsLocale in bundle){
+		if (!djBundlesByLocale[jsLocale]){djBundlesByLocale[jsLocale]=[];}
+		djBundlesByLocale[jsLocale].push(entry);
 	}
 }
 
@@ -57,7 +58,8 @@ localeList = [];
 
 var mkdir = false;
 var dir = new java.io.File(destDir);
-for (locale in djBundlesByLocale){
+for (jsLocale in djBundlesByLocale){
+	var locale = jsLocale.replace('_', '-');
 	if(!mkdir){ dir.mkdir(); mkdir = true; }
 	var outFile = new java.io.File(dir, prefix + "_" + locale + ".js");
 	var os = new java.io.BufferedWriter(
@@ -66,12 +68,15 @@ for (locale in djBundlesByLocale){
 		os.write("dojo.provide(\"nls.dojo_"+locale+"\");");
 		for (var j = 0; j < djLoadedBundles.length; j++){
 			entry = djLoadedBundles[j];
-			var pkg = [entry.modulename,"_nls",entry.bundlename].join(".");
-			var pkg2 = [pkg,locale].join(".");
-			os.write("dojo.hostenv.startPackage(\""+pkg2+"\");");
-			os.write("dojo.hostenv.loaded_modules_[\""+pkg+"\"] = true;");
-			bundle = dojo.hostenv.findModule(entry.modulename)._nls[entry.bundlename];
-			os.write(pkg2+"="+dojo.json.serialize(bundle[locale]));
+			var bundlePkg = [entry.modulename,"nls",entry.bundlename].join(".");
+			var translationPkg = [bundlePkg,jsLocale].join(".");
+			bundle = entry.module.nls[entry.bundlename];
+			if(bundle[jsLocale]){ //FIXME:redundant check?
+				os.write("dojo.provide(\""+bundlePkg+"\");");
+				os.write(bundlePkg+"._built=true;");
+				os.write("dojo.provide(\""+translationPkg+"\");");
+				os.write(translationPkg+"="+dojo.json.serialize(bundle[jsLocale])+";");
+			}
 		}
 	}finally{
 		os.close();
