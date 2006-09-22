@@ -230,27 +230,29 @@ dojo.widget.defineWidget(
 				}
 				nextDate = dojo.date.add(nextDate, dojo.date.dateParts.DAY, 1);
 			}
+			this.lastDay = dojo.date.add(nextDate,dojo.date.dateParts.DAY,-1);
 			this._initControls();
 		},
 		_initControls: function(){
-			var d = new Date(this.firstDay);
+			var d = this.firstDay;
+			var d2 = this.lastDay;
 			var decWeek, incWeek, decMonth, incMonth, decYear, incYear;
 			decWeek = incWeek = decMonth = incMonth = decYear = incYear = !this.staticDisplay;
-			if(decWeek && d<this.startDate){
-				decWeek = decMonth = decYear = false;
-			}
 			with(dojo.date.dateParts){
 				var add = dojo.date.add;
-				if(incWeek && add(d,DAY,(this.displayWeeks+1)*7)>this.endDate){
+				if(decWeek && add(d,DAY,(-1*(this._getAdjustedDay(d)+1)))<this.startDate){
+					decWeek = decMonth = decYear = false;
+				}
+				if(incWeek && d2>this.endDate){
 					incWeek = incMonth = incYear = false;
 				}
-				if(decMonth && add(d,MONTH,-1)<this.startDate){
+				if(decMonth && add(d,DAY,-1)<this.startDate){
 					decMonth = decYear = false;
 				}
-				if(incMonth && add(d,MONTH,1)>this.endDate){
+				if(incMonth && add(d2,DAY,1)>this.endDate){
 					incMonth = incYear = false;
 				}
-				if(decYear && add(d,YEAR,-1)<this.startDate){
+				if(decYear && add(d2,YEAR,-1)<this.startDate){
 					decYear = false;
 				}
 				if(incYear && add(d,YEAR,1)>this.endDate){
