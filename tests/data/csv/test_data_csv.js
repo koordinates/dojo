@@ -87,4 +87,12 @@ function test_data_csv_movies() {
 	};
 	result.forEach(anotherCallback);
 	jum.assertTrue('220', onlyOnce == 1);
+	
+	var handlerObject = {};
+	handlerObject.callbackMethod = function(item, result) {
+		callback(item, result);
+	}
+	result.forEach({object:handlerObject, callback:"callbackMethod"});
 }
+
+
