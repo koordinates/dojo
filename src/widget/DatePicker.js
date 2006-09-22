@@ -236,33 +236,24 @@ dojo.widget.defineWidget(
 			var d = new Date(this.firstDay);
 			var decWeek, incWeek, decMonth, incMonth, decYear, incYear;
 			decWeek = incWeek = decMonth = incMonth = decYear = incYear = !this.staticDisplay;
-			if(decWeek){
-					if(d<this.startDate){
-					decWeek = decMonth = decYear = false;
-				}
+			if(decWeek && d<this.startDate){
+				decWeek = decMonth = decYear = false;
 			}
-			if(incWeek){
-				if(dojo.date.add(d,dojo.date.dateParts.DAY,(this.displayWeeks+1)*7)>this.endDate){
+			with(dojo.date.dateParts){
+				var add = dojo.date.add;
+				if(incWeek && add(d,DAY,(this.displayWeeks+1)*7)>this.endDate){
 					incWeek = incMonth = incYear = false;
 				}
-			}
-			if(decMonth){
-				if(dojo.date.add(d,dojo.date.dateParts.MONTH,-1)<this.startDate){
+				if(decMonth && add(d,MONTH,-1)<this.startDate){
 					decMonth = decYear = false;
 				}
-			}
-			if(incMonth){
-				if(dojo.date.add(d,dojo.date.dateParts.MONTH,1)>this.endDate){
+				if(incMonth && add(d,MONTH,1)>this.endDate){
 					incMonth = incYear = false;
 				}
-			}
-			if(decYear){
-				if(dojo.date.add(d,dojo.date.dateParts.YEAR,-1)<this.startDate){
+				if(decYear && add(d,YEAR,-1)<this.startDate){
 					decYear = false;
 				}
-			}
-			if(incYear){
-				if(dojo.date.add(d,dojo.date.dateParts.YEAR,1)>this.endDate){
+				if(incYear && add(d,YEAR,1)>this.endDate){
 					incYear = false;
 				}
 			}
