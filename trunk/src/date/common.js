@@ -170,29 +170,32 @@ dojo.date.compareTypes={
 	//	bitmask for comparison operations.
 	DATE:1, TIME:2 
 };
-dojo.date.compare=function(/* Date */ dateA, /* Date */ dateB, /* int */ options){
+dojo.date.compare=function(/* Date */ dateA, /* Date */ dateB, /* dojo.date.compareTypes */ options){
 	//	summary
-	//	Compare two date objects by date, time, or both.
+	//	Compare two date objects by date, time, or both.  Returns 0 if equal, positive if a > b, else negative.
 	var dA=dateA;
 	var dB=dateB||new Date();
 	var now=new Date();
-	var opt=options||(dojo.date.compareTypes.DATE|dojo.date.compareTypes.TIME);
-	var d1=new Date(
-		((opt&dojo.date.compareTypes.DATE)?(dA.getFullYear()):now.getFullYear()), 
-		((opt&dojo.date.compareTypes.DATE)?(dA.getMonth()):now.getMonth()), 
-		((opt&dojo.date.compareTypes.DATE)?(dA.getDate()):now.getDate()), 
-		((opt&dojo.date.compareTypes.TIME)?(dA.getHours()):0), 
-		((opt&dojo.date.compareTypes.TIME)?(dA.getMinutes()):0), 
-		((opt&dojo.date.compareTypes.TIME)?(dA.getSeconds()):0)
-	);
-	var d2=new Date(
-		((opt&dojo.date.compareTypes.DATE)?(dB.getFullYear()):now.getFullYear()), 
-		((opt&dojo.date.compareTypes.DATE)?(dB.getMonth()):now.getMonth()), 
-		((opt&dojo.date.compareTypes.DATE)?(dB.getDate()):now.getDate()), 
-		((opt&dojo.date.compareTypes.TIME)?(dB.getHours()):0), 
-		((opt&dojo.date.compareTypes.TIME)?(dB.getMinutes()):0), 
-		((opt&dojo.date.compareTypes.TIME)?(dB.getSeconds()):0)
-	);
+	//FIXME: shorten this code
+	with(dojo.date.compareTypes){
+		var opt=options||(DATE|TIME);
+		var d1=new Date(
+			(opt&DATE)?dA.getFullYear():now.getFullYear(), 
+			(opt&DATE)?dA.getMonth():now.getMonth(),
+			(opt&DATE)?dA.getDate():now.getDate(),
+			(opt&TIME)?dA.getHours():0,
+			(opt&TIME)?dA.getMinutes():0,
+			(opt&TIME)?dA.getSeconds():0
+		);
+		var d2=new Date(
+			(opt&DATE)?dB.getFullYear():now.getFullYear(),
+			(opt&DATE)?dB.getMonth():now.getMonth(),
+			(opt&DATE)?dB.getDate():now.getDate(),
+			(opt&TIME)?dB.getHours():0,
+			(opt&TIME)?dB.getMinutes():0,
+			(opt&TIME)?dB.getSeconds():0
+		);
+	}
 	if(d1.valueOf()>d2.valueOf()){
 		return 1;	//	int
 	}
@@ -224,99 +227,101 @@ dojo.date.add = function(/* Date */ dt, /* dojo.date.dateParts */ interv, /* int
 	if(typeof dt == 'number'){dt = new Date(dt);} // Allow timestamps
 //FIXME: what's the reason behind this?	incr = incr || 1;
 
-	function fixOvershoot() {
-		if (ret.getDate() < dt.getDate()) {
-			ret.setDate(0);
+	function fixOvershoot(){
+		if (sum.getDate() < dt.getDate()){
+			sum.setDate(0);
 		}
 	}
 	
-	var ret = new Date(dt);
+	var sum = new Date(dt);
 
-	switch(interv) {
-		case dojo.date.dateParts.YEAR:
-			ret.setFullYear(dt.getFullYear()+incr);
-			// Keep increment/decrement from 2/29 out of March
-			fixOvershoot();
-			break;
-		case dojo.date.dateParts.QUARTER:
-			// Naive quarter is just three months
-			incr*=3;
-			// fallthrough...
-		case dojo.date.dateParts.MONTH:
-			ret.setMonth(dt.getMonth()+incr);
-			// Reset to last day of month if you overshoot
-			fixOvershoot();
-			break;
-		case dojo.date.dateParts.WEEK:
-			incr*=7;
-			// fallthrough...
-		case dojo.date.dateParts.DAY:
-			ret.setDate(dt.getDate() + incr);
-			break;
-		case dojo.date.dateParts.WEEKDAY:
-			//FIXME: assumes Saturday/Sunday weekend, but even this is not fixed.  There are CLDR entries to localize this.
-			var dat = dt.getDate();
-			var weeks = 0;
-			var days = 0;
-			var strt = 0;
-			var trgt = 0;
-			var adj = 0;
-			// Divide the increment time span into weekspans plus leftover days
-			// e.g., 8 days is one 5-day weekspan / and two leftover days
-			// Can't have zero leftover days, so numbers divisible by 5 get
-			// a days value of 5, and the remaining days make up the number of weeks
-			var mod = incr % 5;
-			if (mod == 0) {
-				days = (incr > 0) ? 5 : -5;
-				weeks = (incr > 0) ? ((incr-5)/5) : ((incr+5)/5);
-			}
-			else {
-				days = mod;
-				weeks = parseInt(incr/5);
-			}
-			// Get weekday value for orig date param
-			strt = dt.getDay();
-			// Orig date is Sat / positive incrementer
-			// Jump over Sun
-			if (strt == 6 && incr > 0) {
-				adj = 1;
-			}
-			// Orig date is Sun / negative incrementer
-			// Jump back over Sat
-			else if (strt == 0 && incr < 0) {
-				adj = -1;
-			}
-			// Get weekday val for the new date
-			trgt = (strt + days);
-			// New date is on Sat or Sun
-			if (trgt == 0 || trgt == 6) {
-				adj = (incr > 0) ? 2 : -2;
-			}
-			// Increment by number of weeks plus leftover days plus
-			// weekend adjustments
-			ret.setDate(dat + (7*weeks) + days + adj);
-			break;
-		case dojo.date.dateParts.HOUR:
-			ret.setHours(ret.getHours()+incr);
-			break;
-		case dojo.date.dateParts.MINUTE:
-			ret.setMinutes(ret.getMinutes()+incr);
-			break;
-		case dojo.date.dateParts.SECOND:
-			ret.setSeconds(ret.getSeconds()+incr);
-			break;
-		case dojo.date.dateParts.MILLISECOND:
-			ret.setMilliseconds(ret.getMilliseconds()+incr);
-			break;
-		default:
-			// Do nothing
-			break;
+	with(dojo.date.dateParts){
+		switch(interv){
+			case YEAR:
+				sum.setFullYear(dt.getFullYear()+incr);
+				// Keep increment/decrement from 2/29 out of March
+				fixOvershoot();
+				break;
+			case QUARTER:
+				// Naive quarter is just three months
+				incr*=3;
+				// fallthrough...
+			case MONTH:
+				sum.setMonth(dt.getMonth()+incr);
+				// Reset to last day of month if you overshoot
+				fixOvershoot();
+				break;
+			case WEEK:
+				incr*=7;
+				// fallthrough...
+			case DAY:
+				sum.setDate(dt.getDate() + incr);
+				break;
+			case WEEKDAY:
+				//FIXME: assumes Saturday/Sunday weekend, but even this is not fixed.  There are CLDR entries to localize this.
+				var dat = dt.getDate();
+				var weeks = 0;
+				var days = 0;
+				var strt = 0;
+				var trgt = 0;
+				var adj = 0;
+				// Divide the increment time span into weekspans plus leftover days
+				// e.g., 8 days is one 5-day weekspan / and two leftover days
+				// Can't have zero leftover days, so numbers divisible by 5 get
+				// a days value of 5, and the remaining days make up the number of weeks
+				var mod = incr % 5;
+				if (mod == 0) {
+					days = (incr > 0) ? 5 : -5;
+					weeks = (incr > 0) ? ((incr-5)/5) : ((incr+5)/5);
+				}
+				else {
+					days = mod;
+					weeks = parseInt(incr/5);
+				}
+				// Get weekday value for orig date param
+				strt = dt.getDay();
+				// Orig date is Sat / positive incrementer
+				// Jump over Sun
+				if (strt == 6 && incr > 0) {
+					adj = 1;
+				}
+				// Orig date is Sun / negative incrementer
+				// Jump back over Sat
+				else if (strt == 0 && incr < 0) {
+					adj = -1;
+				}
+				// Get weekday val for the new date
+				trgt = (strt + days);
+				// New date is on Sat or Sun
+				if (trgt == 0 || trgt == 6) {
+					adj = (incr > 0) ? 2 : -2;
+				}
+				// Increment by number of weeks plus leftover days plus
+				// weekend adjustments
+				sum.setDate(dat + (7*weeks) + days + adj);
+				break;
+			case HOUR:
+				sum.setHours(sum.getHours()+incr);
+				break;
+			case MINUTE:
+				sum.setMinutes(sum.getMinutes()+incr);
+				break;
+			case SECOND:
+				sum.setSeconds(sum.getSeconds()+incr);
+				break;
+			case MILLISECOND:
+				sum.setMilliseconds(sum.getMilliseconds()+incr);
+				break;
+			default:
+				// Do nothing
+				break;
+		}
 	}
 
-	return ret; // Date
+	return sum; // Date
 };
 
-dojo.date.diff = function(/* Date */ dtA, /* Date */ dtB, /* dojo.date.dateParts */ interv) {
+dojo.date.diff = function(/* Date */ dtA, /* Date */ dtB, /* dojo.date.dateParts */ interv){
 //	summary:
 //		Get the difference in a specific unit of time (e.g., number of months, weeks,
 //		days, etc.) between two dates.
@@ -341,136 +346,138 @@ dojo.date.diff = function(/* Date */ dtA, /* Date */ dtB, /* dojo.date.dateParts
 	var houDiff = minDiff/60;
 	var dayDiff = houDiff/24;
 	var weeDiff = dayDiff/7;
-	var ret = 0; // Integer return value
+	var delta = 0; // Integer return value
 
-	switch(interv) {
-		case dojo.date.dateParts.YEAR:
-			ret = yeaDiff;
-			break;
-		case dojo.date.dateParts.QUARTER:
-			var mA = dtA.getMonth();
-			var mB = dtB.getMonth();
-			// Figure out which quarter the months are in
-			var qA = Math.floor(mA/3) + 1;
-			var qB = Math.floor(mB/3) + 1;
-			// Add quarters for any year difference between the dates
-			qB += (yeaDiff * 4);
-			ret = qB - qA;
-			break;
-		case dojo.date.dateParts.MONTH:
-			ret = monDiff;
-			break;
-		case dojo.date.dateParts.WEEK:
-			// Truncate instead of rounding
-			// Don't use Math.floor -- value may be negative
-			ret = parseInt(weeDiff);
-			break;
-		case dojo.date.dateParts.DAY:
-			ret = dayDiff;
-			break;
-		case dojo.date.dateParts.WEEKDAY:
-			var days = Math.round(dayDiff);
-			var weeks = parseInt(days/7);
-			var mod = days % 7;
-			
-			// Even number of weeks
-			if (mod == 0) {
-				days = weeks*5;
-			}
-			// Weeks plus spare change (< 7 days)
-			else {
-				var adj = 0;
-				var aDay = dtA.getDay();
-				var bDay = dtB.getDay();
+	with(dojo.date.dateParts){
+		switch(interv){
+			case YEAR:
+				delta = yeaDiff;
+				break;
+			case QUARTER:
+				var mA = dtA.getMonth();
+				var mB = dtB.getMonth();
+				// Figure out which quarter the months are in
+				var qA = Math.floor(mA/3) + 1;
+				var qB = Math.floor(mB/3) + 1;
+				// Add quarters for any year difference between the dates
+				qB += (yeaDiff * 4);
+				delta = qB - qA;
+				break;
+			case MONTH:
+				delta = monDiff;
+				break;
+			case WEEK:
+				// Truncate instead of rounding
+				// Don't use Math.floor -- value may be negative
+				delta = parseInt(weeDiff);
+				break;
+			case DAY:
+				delta = dayDiff;
+				break;
+			case WEEKDAY:
+				var days = Math.round(dayDiff);
+				var weeks = parseInt(days/7);
+				var mod = days % 7;
 
-				weeks = parseInt(days/7);
-				mod = days % 7;
-				// Mark the date advanced by the number of
-				// round weeks (may be zero)
-				var dtMark = new Date(dtA);
-				dtMark.setDate(dtMark.getDate()+(weeks*7));
-				var dayMark = dtMark.getDay();
-				// Spare change days -- 6 or less
-				// ----------
-				// Positive diff
-				if (dayDiff > 0) {
-					switch (true) {
-						// Range starts on Sat
-						case aDay == 6:
-							adj = -1;
-							break;
-						// Range starts on Sun
-						case aDay == 0:
-							adj = 0;
-							break;
-						// Range ends on Sat
-						case bDay == 6:
-							adj = -1;
-							break;
-						// Range ends on Sun
-						case bDay == 0:
-							adj = -2;
-							break;
-						// Range contains weekend
-						case (dayMark + mod) > 5:
-							adj = -2;
-							break;
-						default:
-							// Do nothing
-							break;
-					}
+				// Even number of weeks
+				if (mod == 0) {
+					days = weeks*5;
 				}
-				// Negative diff
-				else if (dayDiff < 0) {
-					switch (true) {
-						// Range starts on Sat
-						case aDay == 6:
-							adj = 0;
-							break;
-						// Range starts on Sun
-						case aDay == 0:
-							adj = 1;
-							break;
-						// Range ends on Sat
-						case bDay == 6:
-							adj = 2;
-							break;
-						// Range ends on Sun
-						case bDay == 0:
-							adj = 1;
-							break;
-						// Range contains weekend
-						case (dayMark + mod) < 0:
-							adj = 2;
-							break;
-						default:
-							// Do nothing
-							break;
+				// Weeks plus spare change (< 7 days)
+				else {
+					var adj = 0;
+					var aDay = dtA.getDay();
+					var bDay = dtB.getDay();
+	
+					weeks = parseInt(days/7);
+					mod = days % 7;
+					// Mark the date advanced by the number of
+					// round weeks (may be zero)
+					var dtMark = new Date(dtA);
+					dtMark.setDate(dtMark.getDate()+(weeks*7));
+					var dayMark = dtMark.getDay();
+					// Spare change days -- 6 or less
+					// ----------
+					// Positive diff
+					if (dayDiff > 0) {
+						switch (true) {
+							// Range starts on Sat
+							case aDay == 6:
+								adj = -1;
+								break;
+							// Range starts on Sun
+							case aDay == 0:
+								adj = 0;
+								break;
+							// Range ends on Sat
+							case bDay == 6:
+								adj = -1;
+								break;
+							// Range ends on Sun
+							case bDay == 0:
+								adj = -2;
+								break;
+							// Range contains weekend
+							case (dayMark + mod) > 5:
+								adj = -2;
+								break;
+							default:
+								// Do nothing
+								break;
+						}
 					}
+					// Negative diff
+					else if (dayDiff < 0) {
+						switch (true) {
+							// Range starts on Sat
+							case aDay == 6:
+								adj = 0;
+								break;
+							// Range starts on Sun
+							case aDay == 0:
+								adj = 1;
+								break;
+							// Range ends on Sat
+							case bDay == 6:
+								adj = 2;
+								break;
+							// Range ends on Sun
+							case bDay == 0:
+								adj = 1;
+								break;
+							// Range contains weekend
+							case (dayMark + mod) < 0:
+								adj = 2;
+								break;
+							default:
+								// Do nothing
+								break;
+						}
+					}
+					days += adj;
+					days -= (weeks*2);
 				}
-				days += adj;
-				days -= (weeks*2);
-			}
-			ret = days;
-			
-			break;
-		case dojo.date.dateParts.HOUR:
-			ret = houDiff;
-			break;
-		case dojo.date.dateParts.MINUTE:
-			ret = minDiff;
-			break;
-		case dojo.date.dateParts.SECOND:
-			ret = secDiff;
-			break;
-		case dojo.date.dateParts.MILLISECOND:
-			ret = msDiff;
-			break;
-		default:
-			// Do nothing
-			break;
+				delta = days;
+
+				break;
+			case HOUR:
+				delta = houDiff;
+				break;
+			case MINUTE:
+				delta = minDiff;
+				break;
+			case SECOND:
+				delta = secDiff;
+				break;
+			case MILLISECOND:
+				delta = msDiff;
+				break;
+			default:
+				// Do nothing
+				break;
+		}
 	}
 
 	// Round for fractional values and DST leaps
-	return Math.round(ret); // Number (integer)
+	return Math.round(delta); // Number (integer)
 };
