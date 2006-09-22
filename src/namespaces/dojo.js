@@ -43,7 +43,7 @@ dojo.require("dojo.namespace");
 			"inlineeditbox": "dojo.widget.InlineEditBox",
 			"layoutcontainer": "dojo.widget.LayoutContainer",
 			"linkpane": "dojo.widget.LinkPane",
-			"manager": "dojo.widget.Manager",
+			"pagecontainer": "dojo.widget.PageContainer",
 			"popupcontainer": "dojo.widget.Menu2",
 			"popupmenu2": "dojo.widget.Menu2",
 			"menuitem2": "dojo.widget.Menu2",

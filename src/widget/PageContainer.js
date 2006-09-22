@@ -76,7 +76,8 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 	removeChild: function(/* Widget */page){
 		dojo.widget.PageContainer.superclass.removeChild.call(this, page);
 
-		dojo.html.removeClass(page.domNode, "selected");
+		// this will notify any tablists to remove a button; do this first because it may affect sizing
+		dojo.event.topic.publish(this.widgetId+"-removePane", page);
 
 		if (this.selectedPageWidget === page) {
 			this.selectedPageWidget = undefined;
@@ -84,8 +85,6 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 				this.selectPage(this.children[0], true);
 			}
 		}
-
-		dojo.event.topic.publish(this.widgetId+"-removePane", page);
 	},
 
 	selectPage: function(/* Widget */ page, /* Boolean */ _noRefresh, /* Widget */ callingWidget){
