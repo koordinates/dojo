@@ -3,40 +3,43 @@ dojo.require("dojo.data.Read");
 dojo.require("dojo.lang.assert");
 
 dojo.declare("dojo.data.csv.CsvStore", dojo.data.Read, {
-	/* summary:
+	/* Summary:
 	 *   The CsvStore implements the dojo.data.Read API.  
+	 * Examples:
+	 *   var csvStore = new dojo.data.csv.CsvStore({url:"movies.csv");
+	 *   var csvStore = new dojo.data.csv.CsvStore({url:"http://example.com/movies.csv");
+	 *   var fileContents = dojo.hostenv.getText("movies.csv");
+	 *   var csvStore = new dojo.data.csv.CsvStore({string:fileContents);
 	 */
 	initializer: 
 		function(/* object */ keywordParameters) {
-			var csvFileContents = keywordParameters["string"];
-			// dojo.debug("csvFileContents = " + csvFileContents);
-			var arrayOfArrays = this._getArrayOfArraysFromCsvFileContents(csvFileContents);
-			// dojo.debug("this.arrayOfArrays.length = " + arrayOfArrays.length);
-			if (arrayOfArrays.length == 0) {
-				this._arrayOfKeys = [];
-			} else {
-				this._arrayOfKeys = arrayOfArrays[0];
-			}
-			this._arrayOfItems = this._getArrayOfItemsFromArrayOfArrays(arrayOfArrays);
-			// dojo.debug("this._arrayOfItems.length = " + this._arrayOfItems.length);
+			// keywordParameters: object {string: String, url: String}
+			this._arrayOfItems = [];
+			this._loadFinished = false;
+			this._csvFileUrl = keywordParameters["url"];
+			this._csvFileContents = keywordParameters["string"];
 		},
 	get:
 		function(/* item */ item, /* attribute or attribute-name-string */ attribute, /* value? */ defaultValue) {
+			// Summary: See dojo.data.Read.get()
 			var attributeValue = item[attribute] || defaultValue;
 			return attributeValue; // a literal, an item, null, or undefined (never an array)
 		},
 	getValues:
 		function(/* item */ item, /* attribute or attribute-name-string */ attribute) {
+			// Summary: See dojo.data.Read.getValues()
 			var array = [this.get(item, attribute)];
 			return array; // an array that may contain literals and items
 		},
 	getAttributes:
 		function(/* item */ item) {
+			// Summary: See dojo.data.Read.getAttributes()
 			var array = this._arrayOfKeys;
 			return array; // array
 		},
 	hasAttribute:
 		function(/* item */ item, /* attribute or attribute-name-string */ attribute) {
+			// Summary: See dojo.data.Read.hasAttribute()
 			for (var i in this._arrayOfKeys) {
 				if (this._arrayOfKeys[i] == attribute) {
 					return true;
@@ -46,10 +49,12 @@ dojo.declare("dojo.data.csv.CsvStore", dojo.data.Read, {
 		},
 	hasAttributeValue:
 		function(/* item */ item, /* attribute or attribute-name-string */ attribute, /* anything */ value) {
+			// Summary: See dojo.data.Read.hasAttributeValue()
 			return (this.get(item, attribute) == value); // boolean
 		},
 	isItem:
 		function(/* anything */ something) {
+			// Summary: See dojo.data.Read.isItem()
 			for (var i in this._arrayOfItems) {
 				if (this._arrayOfItems[i] == something) {
 					return true;
@@ -59,11 +64,25 @@ dojo.declare("dojo.data.csv.CsvStore", dojo.data.Read, {
 		},
 	find:
 		function(/* implementation-dependent */ query, /* object */ optionalKeywordArgs ) {
+			// Summary: See dojo.data.Read.find()
+			if (!this._loadFinished) {
+				if (this._csvFileUrl) {
+					this._csvFileContents = dojo.hostenv.getText(this._csvFileUrl);
+				}
+				var arrayOfArrays = this._getArrayOfArraysFromCsvFileContents(this._csvFileContents);
+				if (arrayOfArrays.length == 0) {
+					this._arrayOfKeys = [];
+				} else {
+					this._arrayOfKeys = arrayOfArrays[0];
+				}
+				this._arrayOfItems = this._getArrayOfItemsFromArrayOfArrays(arrayOfArrays);
+			}
 			var result = new dojo.data.csv.Result(this._arrayOfItems, this);
 			return result; // dojo.data.csv.Result
 		},
 	getIdentity:
 		function(/* item */ item) {
+			// Summary: See dojo.data.Read.getIdentity()
 			for (var i in this._arrayOfItems) {
 				if (this._arrayOfItems[i] == item) {
 					return i;
@@ -73,6 +92,7 @@ dojo.declare("dojo.data.csv.CsvStore", dojo.data.Read, {
 		},
 	getByIdentity:
 		function(/* string */ id) {
+			// Summary: See dojo.data.Read.getByIdentity()
 			var i = parseInt(id);
 			if (i < this._arrayOfItems.length) {
 				return this._arrayOfItems[i];
@@ -85,9 +105,9 @@ dojo.declare("dojo.data.csv.CsvStore", dojo.data.Read, {
 	// Private methods
 	_getArrayOfArraysFromCsvFileContents:
 		function(/* string */ csvFileContents) {
-			/* summary:
+			/* Summary:
 			 *   Parses a string of CSV records into a nested array structure.
-			 * description:
+			 * Description:
 			 *   Given a string containing CSV records, this method parses
 			 *   the string and returns a data structure containing the parsed
 			 *   content.  The data structure we return is an array of length
@@ -95,7 +115,7 @@ dojo.declare("dojo.data.csv.CsvStore", dojo.data.Read, {
 			 *   return array contains one sub-array for each CSV line, and each 
 			 *   sub-array contains C string values, where C is the number of 
 			 *   columns in the CSV data.
-			 * example:
+			 * Example:
 			 *   For example, given this CSV string as input:
 			 *     "Title, Year, Producer \n Alien, 1979, Ridley Scott \n Blade Runner, 1982, Ridley Scott"
 			 *   We will return this data structure:
@@ -152,9 +172,9 @@ dojo.declare("dojo.data.csv.CsvStore", dojo.data.Read, {
 
 	_getArrayOfItemsFromArrayOfArrays:
 		function(/* array */ arrayOfArrays) {
-			/* summary:
+			/* Summary:
 			 *   Converts a nested array structure into an array of keyword objects.
-			 * example:
+			 * Example:
 			 *   For example, given this as input:
 			 *     [["Title", "Year", "Producer"]
 			 *      ["Alien", "1979", "Ridley Scott"],  
