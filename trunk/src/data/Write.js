@@ -1,4 +1,5 @@
 dojo.provide("dojo.data.Write");
+dojo.require("dojo.lang.declare");
 dojo.require("dojo.data.Read");
 dojo.require("dojo.experimental");
 
