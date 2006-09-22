@@ -151,7 +151,7 @@ dojo.declare("dojo.data.Read", null, {
 		 *   var results = store.find({author:"King", {async: true, maxResults:100});
 		 */
 			dojo.unimplemented('dojo.data.Read.find');
-			var result = new dojo.data.Result().
+			var result = null; // new dojo.data.Result().
 			return result; // an object that implements dojo.data.Result
 		},
 	getIdentity:
