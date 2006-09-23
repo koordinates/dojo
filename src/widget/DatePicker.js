@@ -148,7 +148,16 @@ dojo.widget.defineWidget(
 			}else{
 				this.date = new Date(dateObj);
 			}
-			this._preInitUI(this.date,false,true);
+			if(this.selectedNode!=null){
+				dojo.html.removeClass(this.selectedNode,this.classNames.selectedDate);
+			}
+			if(this.clickedNode!=null){
+				dojo.html.addClass(this.clickedNode,this.classNames.selectedDate);
+				this.selectedNode = this.clickedNode;
+				this._preinitUI(this.date,false,false);
+			}else{
+				this._preInitUI(this.date,false,true);
+			}
 			this.clickedNode=null;
 			this.onSetDate();
 		},
@@ -156,13 +165,6 @@ dojo.widget.defineWidget(
 		_preInitUI: function(dateObj,initFirst,initUI) {
 			//initFirst is to tell _initFirstDay if you want first day of the displayed calendar, or first day of the week for dateObj
 			//initUI tells preInitUI to go ahead and run initUI if set to true
-			if(this.selectedNode!=null){
-				dojo.html.removeClass(this.selectedNode,this.classNames.selectedDate);
-			}
-			if(this.clickedNode!=null){
-				dojo.html.addClass(this.clickedNode,this.classNames.selectedDate);
-				this.selectedNode = this.clickedNode;
-			}
 			this.firstDay = this._initFirstDay(dateObj,initFirst,false);
 			this.selectedIsUsed = false;
 			this.currentIsUsed = false;
