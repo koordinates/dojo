@@ -27,10 +27,12 @@ function test_null_expression_values(){
 	jum.assertEquals("getFunctionValue", store.getField(data[2], "nested.name"), "value");
 	jum.assertEquals("getNullField", store.getField(data[1], "val1"), null);
 	
+	jum.assertEquals("store null expr ref", store.getField(data[0], "val1.missing"), null);
+	
 	try {
-		store.getField(data[0], "val1.missing");
-	} catch (e) { jum.assertTrue("field with syntax missing", e instanceof Error);return;}
-	throw new JUMAssertFailure("Previous test should have failed.");
+		store.getField(data[0], "val1.getMissing()");
+	} catch (e) { jum.assertTrue("field with non existant function ref", e instanceof Error);return;}
+	throw new JUMAssertFailure("Previous store.getField test should have failed.");
 }
 
 function test_null_field_values(){
@@ -39,9 +41,5 @@ function test_null_field_values(){
 	];
 	
 	var store=new dojo.collections.Store(data);
-	
-	try {
-		store.getField(data[0], "val1");
-	} catch (e) { jum.assertTrue("field missing", e instanceof Error); return;}
-	throw new JUMAssertFailure("Previous test should have failed.");
+	jum.assertEquals("store null value", null, store.getField(data[0], "val1"));
 }
