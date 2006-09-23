@@ -96,18 +96,8 @@ dojo.widget.defineWidget(
 				this.weekStartsOn=dojo.date.getFirstDayOfWeek(this.lang);
 			}
 			this.today = new Date();
-			if(!this.date) {
-				this.date = new Date();
-			}else if(this.date && (typeof this.date=="string") && (this.date.split("-").length > 2)) {
+			if(this.date && (typeof this.date=="string") && (this.date.split("-").length > 2)) {
 				this.date = dojo.date.fromRfc3339(this.date);
-			} else {
-				this.date = new Date(this.date);
-			}
-			if(this.date<this.startDate){
-				this.date = this.startDate;
-			}
-			if(this.date>this.endDate){
-				this.date = this.endDate;
 			}
 		},
 
@@ -120,7 +110,7 @@ dojo.widget.defineWidget(
 
 			dojo.widget.DatePicker.superclass.fillInTemplate.apply(this, arguments);
 			this.weekTemplate = dojo.dom.removeNode(this.calendarWeekTemplate);
-			this.setDate(this.date); // triggers UI initialization
+			this._preInitUI((this.date)?this.date:this.today,false,true); //init UI with date selected ONLY if user supplies one
 
 			// Insert localized day names in the template
 			var dayLabels = dojo.lang.unnest(dojo.date.getNames('days', this.dayWidth, 'standAlone', this.lang)); //if we dont use unnest, we risk modifying the dayLabels array inside of dojo.date and screwing up other calendars on the page
@@ -158,15 +148,7 @@ dojo.widget.defineWidget(
 			}else{
 				this.date = new Date(dateObj);
 			}
-			if(this.selectedNode!=null){
-				dojo.html.removeClass(this.selectedNode,this.classNames.selectedDate);
-			}
-			if(this.clickedNode!=null){
-				dojo.html.addClass(this.clickedNode,this.classNames.selectedDate);
-				this.selectedNode = this.clickedNode;
-			}else{
-				this._preInitUI(this.date,false,true);
-			}
+			this._preInitUI(this.date,false,true);
 			this.clickedNode=null;
 			this.onSetDate();
 		},
@@ -174,6 +156,13 @@ dojo.widget.defineWidget(
 		_preInitUI: function(dateObj,initFirst,initUI) {
 			//initFirst is to tell _initFirstDay if you want first day of the displayed calendar, or first day of the week for dateObj
 			//initUI tells preInitUI to go ahead and run initUI if set to true
+			if(this.selectedNode!=null){
+				dojo.html.removeClass(this.selectedNode,this.classNames.selectedDate);
+			}
+			if(this.clickedNode!=null){
+				dojo.html.addClass(this.clickedNode,this.classNames.selectedDate);
+				this.selectedNode = this.clickedNode;
+			}
 			this.firstDay = this._initFirstDay(dateObj,initFirst,false);
 			this.selectedIsUsed = false;
 			this.currentIsUsed = false;
@@ -390,7 +379,7 @@ dojo.widget.defineWidget(
 		
 		_getDateClassName: function(date, monthState) {
 			var currentClassName = this.classNames[monthState];
-			if ((!this.selectedIsUsed) && (date.getDate() == this.date.getDate()) && (date.getMonth() == this.date.getMonth()) && (date.getFullYear() == this.date.getFullYear())) {
+			if ((!this.selectedIsUsed && this.date) && (date.getDate() == this.date.getDate()) && (date.getMonth() == this.date.getMonth()) && (date.getFullYear() == this.date.getFullYear())) {
 				currentClassName = this.classNames.selectedDate + " " + currentClassName;
 				this.selectedIsUsed = true;
 			}
