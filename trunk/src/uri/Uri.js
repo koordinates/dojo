@@ -15,12 +15,6 @@ dojo.uri = new function() {
 		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri()+loc,uri);
 	}
 
-	this.nsUri = function(ns,uri){
-		// by convention a namespace matches a top-level module, but strictly speaking Dojo namespaces are a widget concept
-		dojo.deprecated("dojo.uri.nsUri", "replaced by dojo.uri.moduleUri", "0.4");
-		return dojo.uri.moduleUri(ns,uri);
-	}
-
 	this.Uri = function (/*uri1, uri2, [...]*/) {
 		// An object representing a Uri.
 		// Each argument is evaluated in order relative to the next until

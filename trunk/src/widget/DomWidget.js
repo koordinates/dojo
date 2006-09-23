@@ -19,11 +19,6 @@ dojo.widget.defaultStrings = {
 	baseScriptUri: dojo.hostenv.getBaseScriptUri()
 };
 
-dojo.widget.buildFromTemplate = function(){
-	// summary: deprecated, use dojo.widget.fillFromTemplateCache
-	dojo.lang.forward("fillFromTemplateCache");
-}
-
 dojo.widget.fillFromTemplateCache = function(	/*DomWidget*/				obj, 
 												/*String||dojo.uri.Uri*/	templatePath,
 												/*String, optional*/		templateString,
@@ -41,12 +36,6 @@ dojo.widget.fillFromTemplateCache = function(	/*DomWidget*/				obj,
 
 	// dojo.debug("avoidCache:", avoidCache);
 	var tpath = templatePath || obj.templatePath;
-
-	// DEPRECATED: use Uri objects, not strings
-	if (tpath && !(tpath instanceof dojo.uri.Uri)) {
-		tpath = dojo.uri.dojoUri(tpath);
-		dojo.deprecated("templatePath should be of type dojo.uri.Uri", null, "0.4");
-	}
 
 	var tmplts = dojo.widget._templateCache;
 	if(!obj["widgetType"]) { // don't have a real template here
@@ -582,11 +571,6 @@ dojo.declare("dojo.widget.DomWidget",
 				args["templateCssPath"] = args["templatecsspath"];
 			}
 			var cpath = args["templateCssPath"] || this.templateCssPath;
-			// DEPRECATED: use Uri objects, not strings
-			if (cpath && !(cpath instanceof dojo.uri.Uri)) {
-				cpath = dojo.uri.dojoUri(cpath);
-				dojo.deprecated("templateCssPath should be of type dojo.uri.Uri", null, "0.4");
-			}
 			if(cpath && !dojo.widget._cssFiles[cpath.toString()]){
 				if((!this.templateCssString)&&(cpath)){
 					this.templateCssString = dojo.hostenv.getText(cpath);
