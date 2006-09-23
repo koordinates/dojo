@@ -76,6 +76,15 @@
 		color:#663;
 		font-size:0.9em;
 	}
+	.myValidateColorValid {
+		background-color: #FF0000;
+	}
+	.myValidateColorInvalid {
+		background-color: #00FF00;
+	}
+	.myValidateColorEmpty {
+		background-color: #0000FF;
+	}
 	</style>
 </head>
 
@@ -132,12 +141,13 @@
 			<div class="formQuestion">
 				<span class="emphasise">Elevation:  </span>
 				<span class="noticeMessage">IntegerTextbox class, 
-					Attributes: {trim: true, required: true, signed: true}, Enter feet above sea level with a sign.</span>
+					Attributes: {trim: true, required: true, signed: true classPrefix: "myValidateColor"}, Enter feet above sea level with a sign.</span>
 			</div>
 			<div class="formAnswer">
 				<input type="text" name="elevation" class="medium" value="300"
 					dojoType="IntegerTextbox"
-					trim="true" 
+					trim="true"
+					classPrefix="myValidateColor"
 					required="true" 
 					signed="true" 
 					invalidMessage="Invalid elevation.  Be sure to use a plus or minus sign." />

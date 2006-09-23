@@ -121,11 +121,8 @@ dojo.widget.defineWidget(
 	{
 		// default values for new subclass properties
 		required: false,
-		validColor: "#cfc",
-		invalidColor: "#fcc",
 		rangeClass: "range",
-		invalidClass: "invalid",
-		missingClass: "missing",
+		classPrefix: "dojoValidate",
 		size: "",
 		maxlength: "",
 		promptMessage: "",
@@ -137,6 +134,8 @@ dojo.widget.defineWidget(
 		lastCheckedValue: null,
 	
 		templatePath: dojo.uri.dojoUri("src/widget/templates/ValidationTextbox.html"),
+		templateCssPath: dojo.uri.dojoUri("src/widget/templates/Validate.css"),
+
 	
 		// new DOM nodes
 		invalidSpan: null,
@@ -198,17 +197,21 @@ dojo.widget.defineWidget(
 		highlight: function() {
 			// highlight textbox background 
 			if ( this.isEmpty() ) {
-				this.textbox.style.backgroundColor = "";
+				dojo.html.setClass(this.textbox,this.classPrefix+"Empty");
+//				this.textbox.style.backgroundColor = "";
 			}else if ( this.isValid() && this.isInRange() ){
-				this.textbox.style.backgroundColor = this.validColor;
+				dojo.html.setClass(this.textbox,this.classPrefix+"Valid");
+//				this.textbox.style.backgroundColor = this.validColor;
 			}else if( this.textbox.value != this.promptMessage){ 
-				this.textbox.style.backgroundColor = this.invalidColor;
+				dojo.html.setClass(this.textbox,this.classPrefix+"Invalid");
+//				this.textbox.style.backgroundColor = this.invalidColor;
 			}
 		},
 	
 		onfocus: function() {
 			if ( !this.listenOnKeyPress) {
-			    this.textbox.style.backgroundColor = "";
+				dojo.html.setClass(this.textbox,this.classPrefix+"Empty");
+//			    this.textbox.style.backgroundColor = "";
 			}
 		},
 	
@@ -222,7 +225,8 @@ dojo.widget.defineWidget(
 				//this.filter();  trim is problem if you have to type two words
 				this.update(); 
 			}else if (this.textbox.value != this.lastCheckedValue){
-			    this.textbox.style.backgroundColor = "";
+				dojo.html.setClass(this.textbox,this.classPrefix+"Empty");
+//			    this.textbox.style.backgroundColor = "";
 			}
 		},
 
