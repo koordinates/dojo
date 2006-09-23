@@ -688,7 +688,7 @@ dojo.gfx._creators = {
 		if(!this.rawNode) return null;
 		var shape = new dojo.gfx.Image();
 		var node = document.createElement('div');
-		node.style.position = "absolute";
+		node.style.position = "relative";
 		node.style.width  = this.rawNode.style.width;
 		node.style.height = this.rawNode.style.height;
 		node.style.filter = "progid:DXImageTransform.Microsoft.Matrix(M11=1, M12=0, M21=0, M22=1, Dx=0, Dy=0)";
