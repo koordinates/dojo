@@ -225,21 +225,11 @@ dojo.extend(dojo.logging.Logger, {
 	},
 
 	logType: function(type, args){
-		var na = [dojo.logging.log.getLevel(type)];
-		if(dojo.lang.isArray(args)){
-			na = na.concat(args);
-		}else if((typeof args == "object")&&(args["length"])){
-			na = na.concat(this.argsToArr(args));
-			/* for(var x=0; x<args.length; x++){
-				na.push(args[x]);
-			} */
-		}else{
-			na = na.concat(this.argsToArr(arguments).slice(1));
-			/* for(var x=1; x<arguments.length; x++){
-				na.push(arguments[x]);
-			} */
+		if (!dojo.lang.isArray(args)){
+			args = this.argsToArr(args);
 		}
-		return this.log.apply(this, na);
+		return this.log.apply(this, [dojo.logging.log.getLevel(type), 
+			args.join('')]);
 	}
 });
 
