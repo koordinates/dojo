@@ -592,7 +592,7 @@ dojo.requireLocalization = function(moduleName, bundleName, locale /*optional*/)
 	var bundle = dojo.hostenv.findModule(bundlePackage);
 	if(bundle){
 		if(djConfig.localizationComplete && bundle._built){return;}
-		var jsLoc = dojo.hostenv.normalizeLocale(locale).replace('-','_');
+		var jsLoc = dojo.hostenv.normalizeLocale(locale).replace('_', '-');
 		var translationPackage = bundlePackage+"."+jsLoc;
 		if(dojo.hostenv.findModule(translationPackage)){return;}
 	}

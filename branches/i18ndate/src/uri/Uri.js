@@ -32,51 +32,27 @@ dojo.uri = new function() {
 			// Safari doesn't support this.constructor so we have to be explicit
 			var relobj = new dojo.uri.Uri(arguments[i].toString());
 			var uriobj = new dojo.uri.Uri(uri.toString());
-
+			
 			if (relobj.path == "" && relobj.scheme == null &&
 				relobj.authority == null && relobj.query == null) {
 				if (relobj.fragment != null) { uriobj.fragment = relobj.fragment; }
 				relobj = uriobj;
-			} else if (relobj.scheme == null) {
-				relobj.scheme = uriobj.scheme;
-			
-				if (relobj.authority == null) {
-					relobj.authority = uriobj.authority;
-					
-					if (relobj.path.charAt(0) != "/") {
-						var path = uriobj.path.substring(0,
-							uriobj.path.lastIndexOf("/") + 1) + relobj.path;
-
-						var segs = path.split("/");
-						for (var j = 0; j < segs.length; j++) {
-							if (segs[j] == ".") {
-								if (j == segs.length - 1) { segs[j] = ""; }
-								else { segs.splice(j, 1); j--; }
-							} else if (j > 0 && !(j == 1 && segs[0] == "") &&
-								segs[j] == ".." && segs[j-1] != "..") {
-
-								if (j == segs.length - 1) { segs.splice(j, 1); segs[j - 1] = ""; }
-								else { segs.splice(j - 1, 2); j -= 2; }
-							}
-						}
-						relobj.path = segs.join("/");
-					}
-				}
 			}
-
-			uri = "";
+			
+			if (relobj.scheme != null && relobj.authority != null)
+				uri = "";
 			if (relobj.scheme != null) { uri += relobj.scheme + ":"; }
 			if (relobj.authority != null) { uri += "//" + relobj.authority; }
 			uri += relobj.path;
 			if (relobj.query != null) { uri += "?" + relobj.query; }
 			if (relobj.fragment != null) { uri += "#" + relobj.fragment; }
 		}
-
+		
 		this.uri = uri.toString();
 
 		// break the uri into its main components
 		var regexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$";
-	  var r = this.uri.match(new RegExp(regexp));
+	    var r = this.uri.match(new RegExp(regexp));
 
 		this.scheme = r[2] || (r[1] ? "" : null);
 		this.authority = r[4] || (r[3] ? "" : null);
