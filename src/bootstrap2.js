@@ -27,13 +27,6 @@
 		tmps.push("browser_debug.js");
 	}
 
-	//Support compatibility packages. Right now this only allows setting one
-	//compatibility package. Might need to revisit later down the line to support
-	//more than one.
-	if((this["djConfig"])&&(djConfig["compat"])){
-		tmps.push("compat/" + djConfig["compat"] + ".js");
-	}
-
 	var loaderRoot = djConfig["baseScriptUri"];
 	if((this["djConfig"])&&(djConfig["baseLoaderUri"])){
 		loaderRoot = djConfig["baseLoaderUri"];
