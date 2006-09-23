@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>TitlePane Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: false};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.TitlePane");
+	dojo.hostenv.writeIncludes();
+</script>
+<style>
+
+div.container {
+	background-color: white;
+	border: 2px solid black;
+	width: 200px;
+	height: 600px;
+	padding: 0px;
+	margin: 0px;
+	overflow: hidden;
+}
+
+.label , .content {
+	width: 300px;
+}
+
+.label {
+	background: grey;
+	height: 20px;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+}
+
+.content {
+	background: #eeeeee;
+}
+
+
+
+</style>
+<script>
+	dojo.addOnLoad(function(){
+		var panes = dojo.widget.byType("TitlePane");
+		var pane = panes.pop();
+	
+		// delete panes custom setContent
+		pane.setContent.prototype = null;
+		pane.setContent = null;
+
+		dojo.require("dojo.widget.html.loader");
+		dojo.widget.html.loader.hookUp({widget: pane, mixin: true});
+
+		pane.setUrl("doc0.html");
+
+		var pane2 = panes.pop();
+		dojo.debug("pane2.setUrl=="+pane2.setUrl+" should be undefined");
+	});
+</script>
+</head>
+<body>
+	<h3>testing to extend with loader on a single instance of titlepane</h3>
+	<div style="height: 300px;">
+		<div dojoType="TitlePane" label="TestLabel" labelNodeClass="label" containerNodeClass="content">
+				Lorem Ipsum
+	
+	Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
+	More Ipsum...
+	
+	Sed sollicitudin suscipit risus. Nam ullamcorper. Sed nisl lectus, pellentesque nec, malesuada eget, ornare a, libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+	
+		</div>
+	</div>
+	<div style="height: 300px;">
+		<div dojoType="TitlePane" label="TestLabel" labelNodeClass="label" containerNodeClass="content">
+			Lorem Ipsum
+	
+	Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
+	More Ipsum...
+	
+	Sed sollicitudin suscipit risus. Nam ullamcorper. Sed nisl lectus, pellentesque nec, malesuada eget, ornare a, libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+	
+		</div>
+	</div>
+</body>
+</html>
