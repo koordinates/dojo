@@ -1,8 +1,15 @@
 // can't set djConfig.extraLocale before bootstrapping unit tests, so manually load resources here for specific locales:
+/**
 dojo.requireLocalization("dojo.i18n.calendar","gregorian","en-us");
 dojo.requireLocalization("dojo.i18n.calendar","gregorian","fr-fr");
 dojo.requireLocalization("dojo.i18n.calendar","gregorian","de-at");
 dojo.requireLocalization("dojo.i18n.calendar","gregorian","ja-jp");
+*/
+
+dojo.requireLocalization("dojo.i18n.calendar","gregorian","en");
+dojo.requireLocalization("dojo.i18n.calendar","gregorian","fr");
+dojo.requireLocalization("dojo.i18n.calendar","gregorian","de");
+dojo.requireLocalization("dojo.i18n.calendar","gregorian","ja");
 
 dojo.require("dojo.date.format");
 
@@ -155,9 +162,136 @@ function test_date_strftime() {
 }
 
 function test_date_parse() {
-	var tzOffset = new Date().getTimezoneOffset()*60*1000;
-	jum.assertEquals("parse_test1", "1155283200000", dojo.date.parse("08/11/06", {formatLength:'short',selector:'dateOnly', locale:'en-us'}).getTime()+tzOffset);
+	var i = 0;
+	function name() { return "parse_test" + i++; }
+
+	/***********
+	 DATES
+	***********/
+
+	var aug_11_2006 = new Date(2006, 7, 11, 0);
+	var aug_11_06CE = new Date(2006, 7, 11, 0);
+	aug_11_06CE.setFullYear(6); //literally the year 6 C.E.
+
+	//en: 'short' fmt: M/d/yy
+	// Tolerate either 8 or 08 for month part.
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("08/11/06", {formatLength:'short', locale:'en'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("8/11/06", {formatLength:'short', locale:'en'}));	
+	// Tolerate yyyy input in yy part...
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("8/11/2006", {formatLength:'short', locale:'en'}));
+	// ...but not in strict mode
+	jum.assertEquals(name(), null, dojo.date.parse("8/11/2006", {formatLength:'short', locale:'en', strict:true}));
+
+	//en: 'medium' fmt: MMM d, yyyy
+	// Tolerate either 8 or 08 for month part.
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("Aug 11, 2006", {formatLength:'medium', locale:'en'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("Aug 11, 2006", {formatLength:'medium', locale:'en'}));	
+	// Tolerate abbreviating period in month part...
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("Aug. 11, 2006", {formatLength:'medium', locale:'en'}));
+	// ...but not in strict mode
+	jum.assertEquals(name(), null, dojo.date.parse("Aug. 11, 2006", {formatLength:'medium', locale:'en', strict:true}));
+	// Note: 06 for year part will be translated literally as the year 6 C.E.
+	jum.assertEquals(name(), aug_11_06CE, dojo.date.parse("Aug 11, 06", {formatLength:'medium', locale:'en'}));
+	//en: 'long' fmt: MMMM d, yyyy
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("August 11, 2006", {formatLength:'long', locale:'en'}));
+
+	//en: 'full' fmt: EEEE, MMMM d, yyyy
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("Friday, August 11, 2006", {formatLength:'full', locale:'en'}));
+	//TODO: wrong day-of-week should fail
+	//jum.assertEquals(name(), null, dojo.date.parse("Thursday, August 11, 2006", {formatLength:'full', locale:'en'}));
+
+	//Whitespace tolerance
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse(" August 11, 2006", {formatLength:'long', locale:'en'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("August  11, 2006", {formatLength:'long', locale:'en'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("August 11 , 2006", {formatLength:'long', locale:'en'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("August 11,  2006", {formatLength:'long', locale:'en'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("August 11, 2006 ", {formatLength:'long', locale:'en'}));
+
+	//Simple Validation Tests
+	//catch "month" > 12 (note: month/day reversals are common when user expectation isn't met wrt european versus US formats)
+	jum.assertEquals(name(), null, dojo.date.parse("15/1/2005", {formatLength:'short', locale:'en'}));
+	//day of month typo rolls over to the next month
+	jum.assertEquals(name(), null, dojo.date.parse("Aug 32, 2006", {formatLength:'medium', locale:'en'}));
+
+	//Spanish (es)
+	//es: 'short' fmt: d/MM/yy
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("11/08/06", {formatLength:'short', locale:'es'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("11/8/06", {formatLength:'short', locale:'es'}));	
+	// Tolerate yyyy input in yy part...
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("11/8/2006", {formatLength:'short', locale:'es'}));
+	// ...but not in strict mode
+	jum.assertEquals(name(), null, dojo.date.parse("11/8/2006", {formatLength:'short', locale:'es', strict:true}));
+	//es: 'medium' fmt: dd-MMM-yy
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("11-ago-06", {formatLength:'medium', locale:'es'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("11-ago-2006", {formatLength:'medium', locale:'es'}));	
+	// Tolerate abbreviating period in month part...
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("11-ago.-2006", {formatLength:'medium', locale:'es'}));
+	// ...but not in strict mode
+	jum.assertEquals(name(), null, dojo.date.parse("11-ago.-2006", {formatLength:'medium', locale:'es', strict:true}));
+	//es: 'long' fmt: d' de 'MMMM' de 'yyyy
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("11 de agosto de 2006", {formatLength:'long', locale:'es'}));
+	//case-insensitive month...
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("11 de Agosto de 2006", {formatLength:'long', locale:'es'}));
+	//...but not in strict mode
+	jum.assertEquals(name(), null, dojo.date.parse("11 de Agosto de 2006", {formatLength:'long', locale:'es', strict:true}));
+	//es 'full' fmt: EEEE d' de 'MMMM' de 'yyyy
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("viernes 11 de agosto de 2006", {formatLength:'full', locale:'es'}));
+	//case-insensitive day-of-week...
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("Viernes 11 de agosto de 2006", {formatLength:'full', locale:'es'}));
+	//...but not in strict mode
+	jum.assertEquals(name(), null, dojo.date.parse("Viernes 11 de agosto de 2006", {formatLength:'full', locale:'es', strict:true}));
+
+	//Japanese (ja)
+	//note: to avoid garbling from non-utf8-aware editors that may touch this file, using the \uNNNN format 
+	//for expressing double-byte chars.
+	//toshi (year): \u5e74
+	//getsu (month): \u6708
+	//nichi (day): \u65e5
+	//kinyoubi (Friday): \u91d1\u66dc\u65e5
+	//zenkaku space: \u3000
+	
+	//ja: 'short' fmt: yy/MM/dd (note: the "short" fmt isn't actually defined in the CLDR data...)
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("06/08/11", {formatLength:'short', locale:'ja'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("06/8/11", {formatLength:'short', locale:'ja'}));	
+ 	// Tolerate yyyy input in yy part...
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("2006/8/11", {formatLength:'short', locale:'ja'}));
+	// ...but not in strict mode
+	jum.assertEquals(name(), null, dojo.date.parse("2006/8/11", {formatLength:'short', locale:'ja', strict:true}));
+	//ja: 'medium' fmt: yyyy/MM/dd
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("2006/08/11", {formatLength:'medium', locale:'ja'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("2006/8/11", {formatLength:'medium', locale:'ja'}));		
+	//ja: 'long' fmt: yyyy'\u5e74'\u6708'd'\u65e5'
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("2006\u5e748\u670811\u65e5", {formatLength:'long', locale:'ja'}));
+	//ja 'full' fmt: yyyy'\u5e74'M'\u6708'd'\u65e5'EEEE
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("2006\u5e748\u670811\u65e5\u91d1\u66dc\u65e5", {formatLength:'full', locale:'ja'}));
+
+	//Whitespace tolerance
+	//tolerate ascii space
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse(" 2006\u5e748\u670811\u65e5\u91d1\u66dc\u65e5 ", {formatLength:'full', locale:'ja'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("2006\u5e74 8\u670811\u65e5 \u91d1\u66dc\u65e5", {formatLength:'full', locale:'ja'}));
+	//tolerate zenkaku space
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("\u30002006\u5e748\u670811\u65e5\u91d1\u66dc\u65e5\u3000", {formatLength:'full', locale:'ja'}));
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("2006\u5e74\u30008\u670811\u65e5\u3000\u91d1\u66dc\u65e5", {formatLength:'full', locale:'ja'}));
+
+	/***********
+	 DATETIMES
+	***********/
+	var aug_11_2006_12_30_am = new Date(2006, 7, 11, 0, 30);
+	var aug_11_2006_12_30_pm = new Date(2006, 7, 11, 12, 30);
+
+	//en: 'short' datetime fmt: M/d/yy h:mm a
+	//note: this is concatenation of dateFormat-short and timeFormat-short, 
+	//cldr provisionally defines datetime fmts as well, but we're not using them at the moment
+	jum.assertEquals(name(), aug_11_2006_12_30_pm, dojo.date.parse("08/11/06 12:30 PM", {formatLength:'short', selector:'datetime', locale:'en'}));
+	//case-insensitive
+	jum.assertEquals(name(), aug_11_2006_12_30_pm, dojo.date.parse("08/11/06 12:30 pm", {formatLength:'short', selector:'datetime', locale:'en'}));
+	//...but not in strict mode
+	jum.assertEquals(name(), null, dojo.date.parse("08/11/06 12:30 pm", {formatLength:'short', selector:'datetime', locale:'en', strict:true}));
+
+	jum.assertEquals(name(), aug_11_2006_12_30_am, dojo.date.parse("08/11/06 12:30 AM", {formatLength:'short', selector:'datetime', locale:'en'}));
+	
 }
+
 
 function test_date_sql() {
 	jum.assertEquals("date.fromSql test", new Date("5/1/2006").valueOf(), dojo.date.fromSql("2006-05-01 00:00:00").valueOf());
