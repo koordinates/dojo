@@ -3,7 +3,7 @@
 <title>PageContainer Demo</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
 <script type="text/javascript">
-	var djConfig = { isDebug: true };
+	var djConfig = { isDebug: true, debugAtAllCosts: true };
 </script>
 <style>
 	h1 { font-family: cursive; font-size: 24pt; }
@@ -11,8 +11,10 @@
 </style>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
-	dojo.require("dojo.widget.*");
 	dojo.require("dojo.event.topic");
+	dojo.require("dojo.widget.PageContainer");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.hostenv.writeIncludes();
 </script>
 <script type="text/javascript">
 	function selected(page){
@@ -33,10 +35,10 @@
 		<p id="page3" dojoType="ContentPane" label="page 3">It was the year of Our Lord one thousand seven hundred and seventy- five. Spiritual revelations were conceded to England at that favoured period, as at this. Mrs. Southcott had recently attained her five-and- twentieth blessed birthday, of whom a prophetic private in the Life Guards had heralded the sublime appearance by announcing that arrangements were made for the swallowing up of London and Westminster. Even the Cock-lane ghost had been laid only a round dozen of years, after rapping out its messages, as the spirits of this very year last past (supernaturally deficient in originality) rapped out theirs. Mere messages in the earthly order of events had lately come to the English Crown and People, from a congress of British subjects in America:</p>
 	</div>
 	<br>
+
 	<button id="previous" onClick="dojo.widget.byId('myPageContainer').previousPage()">&lt;</button>
-	<button id="p1b" onClick="dojo.widget.byId('myPageContainer').selectPage('page1')">Page 1</button>
-	<button id="p2b" onClick="dojo.widget.byId('myPageContainer').selectPage('page2')">Page 2</button>
-	<button id="p3b" onClick="dojo.widget.byId('myPageContainer').selectPage('page3')">Page 3</button>
+	<span dojoType="PageList" container="myPageContainer"></span>
 	<button id="next" onClick="dojo.widget.byId('myPageContainer').nextPage()">&gt;</button>
+	
 </body>
 </html>
