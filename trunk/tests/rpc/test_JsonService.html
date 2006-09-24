@@ -39,9 +39,8 @@
                 handlerNode.innerHTML = result;
         }
 
-	function contentErrBack(error) {
-		dojo.debug("JSON-RPC Error");
-		dojo.debugShallow(error);
+	function contentErrBack(obj) {
+		dojo.debug(obj);
 	}
 
 	// Create a new object
