@@ -154,7 +154,7 @@ dojo.widget.defineWidget(
 			if(this.clickedNode!=null){
 				dojo.html.addClass(this.clickedNode,this.classNames.selectedDate);
 				this.selectedNode = this.clickedNode;
-				this._preinitUI(this.date,false,false);
+				this._preInitUI(this.date,false,false);
 			}else{
 				this._preInitUI(this.date,false,true);
 			}
