@@ -50,17 +50,18 @@
 				var salutations_en = dojo.i18n.getLocalization("tests.i18n", "salutations", "en");
 
 				for (i in tests.i18n.nls.salutations) {
-					var salutations = dojo.i18n.getLocalization("tests.i18n", "salutations", i);
-					var language_as_english = salutations_en[i];
-					var language_as_native = salutations[i];
+					var loc = i.replace('_', '-');
+					var salutations = dojo.i18n.getLocalization("tests.i18n", "salutations", loc);
+					var language_as_english = salutations_en[loc];
+					var language_as_native = salutations[loc];
 					var hello_dojo = dojo.string.substituteParams(salutations.hello_dojo, salutations);
-					if (!dojo.i18n.isLTR(i)) {
+					if (!dojo.i18n.isLTR(loc)) {
 						var RLE = "\u202b";
 						var PDF = "\u202c";
 						hello_dojo = RLE + hello_dojo + PDF;					
 					}
 					dojo.debug(hello_dojo
-						+"\tLocale "+i+"="
+						+"\tLocale "+loc+"="
 						+ language_as_english
 						+" ("+language_as_native+") ");
 				}
