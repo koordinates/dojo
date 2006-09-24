@@ -171,22 +171,24 @@ dojo.errorToString = function(/*Error*/ exception){
 }
 
 dojo.raise = function(/*String*/ message, /*Error?*/ exception){
-	// summary: Throw an error message, appending text of 'exception' if provided.
-	// note: Also prints a message to the user using 'dojo.hostenv.println'.
+	// summary: Common point for raising exceptions in Dojo to enable logging.
+	//	Throws an error message with text of 'exception' if provided, or
+	//	rethrows exception object.
+
 	if(exception){
 		message = message + ": "+dojo.errorToString(exception);
 	}
 
 	// print the message to the user if hostenv.println is defined
-	try {	dojo.hostenv.println("FATAL: "+message); } catch (e) {}
+	try { if(djConfig.isDebug){ dojo.hostenv.println("FATAL exception raised: "+message); } } catch (e) {}
 
-	throw Error(message);
+	throw exception || Error(message);
 }
 
 //Stub functions so things don't break.
 //TODOC:  HOW TO DOC THESE?
-dojo.debug = function(){}
-dojo.debugShallow = function(obj){}
+dojo.debug = function(){};
+dojo.debugShallow = function(obj){};
 dojo.profile = { start: function(){}, end: function(){}, stop: function(){}, dump: function(){} };
 
 function dj_eval(/*String*/ scriptFragment){ 
