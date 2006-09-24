@@ -175,6 +175,13 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 				case 'S':
 					s = Math.round(dateObject.getMilliseconds() * Math.pow(10, l-3));
 					break;
+				case 'v': // FIXME: don't know what this is. seems to be same as z?
+				case 'z':
+					// We only have one timezone to offer; the one from the browser
+					s = dojo.date.getTimezoneName(dateObject);
+					if(s){break;}
+					l=4;
+					// fallthrough... use GMT if tz not available
 				case 'Z':
 					var offset = dateObject.getTimezoneOffset();
 					var tz = [
@@ -194,8 +201,6 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 				case 'F':
 				case 'g':
 				case 'A':
-				case 'v':
-				case 'z':
 					dojo.debug(match+" modifier not yet implemented");
 					s = "?";
 					break;
@@ -470,7 +475,7 @@ function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
 
 	for(var i=0; i<chunks.length; i++){
 		if(!chunks[i]){
-			chunks[i]=''; //FIXME - was chunks[i]='\''
+			chunks[i]=''; //FIXME - was chunks[i]='\''  Need to translate two single quotes to a single quote (e.g. o''clock)
 		} else{
 			chunks[i]=(literal ? applyLiteral : applyPattern)(chunks[i]);
 			literal = !literal;
@@ -705,7 +710,7 @@ dojo.date.strftime = function (/*Date*/dateObject, /*String*/format, /*String?*/
 					_(Math.abs(timezoneOffset)%60);
 
 			case "Z": // time zone or name or abbreviation
-				return dojo.date.getTimezoneName(dateObject); //TODO
+				return dojo.date.getTimezoneName(dateObject);
 			
 			case "%":
 				return "%";
