@@ -18,7 +18,8 @@ dojo.widget.defineWidget(
 		
 		this.handColor="#788598";
 		this.handStroke="#6f7b8c";
-		this.secondHandColor="#c90405";
+	//	this.secondHandColor="#c90405";
+		this.secondHandColor=[201, 4, 5, 0.8];
 		this.topLabelColor="#efefef";
 		this.labelColor="#fff";
 
@@ -121,24 +122,31 @@ dojo.widget.defineWidget(
 			
 			var hP=[ {x: -3, y: -4}, {x: 3, y: -4}, {x: 1, y: -27}, { x:-1, y:-27}, {x: -3, y: -4} ];
 			var mP=[ {x: -3, y: -4}, {x: 3, y: -4}, {x: 1, y: -38}, {x:-1, y:-38}, {x: -3, y: -4} ];
-			var sP=[ {x: -2, y: 0}, {x: 2, y: 0}, {x: 1, y: -45}, {x: -1, y: -45}, {x: -2, y: 0} ];
+			var sP=[ {x: -2, y: -2}, {x: 2, y: -2}, {x: 1, y: -45}, {x: -1, y: -45}, {x: -2, y: -2} ];
 			
 			this.shadows.hour.shadow = this._initPoly(this.surface, hP)
 				.setFill([0, 0, 0, 0.1]);
 			this.hands.hour = this._initPoly(this.surface, hP)
 				.setStroke({color: this.handStroke, width:1 })
-				.setFill(this.handColor);
-
+				.setFill({ 
+					type:"linear", 
+					x1:0, y1:0, x2:0, y2:-27, 
+					colors:[{offset:0, color:"#fff"}, {offset:0.33, color:this.handColor}]
+				});
 			this.shadows.minute.shadow = this._initPoly(this.surface, mP)
 				.setFill([0, 0, 0, 0.1]);
 			this.hands.minute = this._initPoly(this.surface, mP)
 				.setStroke({color: this.handStroke, width:1 })
-				.setFill(this.handColor);
+				.setFill({ 
+					type:"linear", 
+					x1:0, y1:0, x2:0, y2:-38, 
+					colors:[{offset:0, color:"#fff"}, {offset:0.33, color:this.handColor}]
+				});
 
 			this.surface.createCircle({r: 6})
 				.setStroke({color: this.handStroke, width:2 })
 				.setFill("#fff")
-				.setTransform({dx: 76, dy: 76});
+				.setTransform({dx: 75, dy: 75});
 
 			this.shadows.second.shadow = this._initPoly(this.surface, sP)
 				.setFill([0, 0, 0, 0.1]);
@@ -148,7 +156,7 @@ dojo.widget.defineWidget(
 			//	clock centers, doesn't move.
 			this.surface.createCircle({r: 4})
 				.setFill(this.secondHandColor)
-				.setTransform({dx: 76, dy: 76});
+				.setTransform({dx: 75, dy: 75});
 
 			//	labels
 			this.topLabelNode=document.createElement("div");
