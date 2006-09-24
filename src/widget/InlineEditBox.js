@@ -27,7 +27,8 @@ dojo.widget.defineWidget(
 	submitButton: null,
 	cancelButton: null,
 	mode: "text",
-
+	name: "",
+	
 	minWidth: 100, //px. minimum width of edit box
 	minHeight: 200, //px. minimum width of edit box, if it's a TA
 
@@ -36,7 +37,7 @@ dojo.widget.defineWidget(
 	defaultText: "",
 	doFade: false,
 	
-	onSave: function(newValue, oldValue){},
+	onSave: function(newValue, oldValue, name){},
 	onUndo: function(value){},
 
 	postCreate: function(args, frag){
@@ -127,7 +128,7 @@ dojo.widget.defineWidget(
 			(dojo.string.trim(ee.value) != "")){
 			this.doFade = true;
 			this.history.push(this.textValue);
-			this.onSave(ee.value, this.textValue);
+			this.onSave(ee.value, this.textValue, this.name);
 			this.textValue = ee.value;
 			this.editable.innerHTML = "";
 			var textNode = document.createTextNode( this.textValue );
@@ -163,10 +164,12 @@ dojo.widget.defineWidget(
 
 	undo: function(){
 		if(this.history.length > 0){
+			var curValue = this.textValue;
 			var value = this.history.pop();
 			this.editable.innerHTML = value;
 			this.textValue = value;
 			this.onUndo(value);
+			this.onSave(value, curValue, this.name);
 		}
 	},
 
