@@ -16,5 +16,7 @@
 	'timeFormat-medium': "a hh'시' mm'분'",
 	'timeFormat-short': "a hh'시' mm'분'",
 
+	am: '오전',
+	pm: '오후',
 	eras: ['기원전','서기']
 })
