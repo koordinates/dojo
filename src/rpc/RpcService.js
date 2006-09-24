@@ -28,8 +28,8 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 	errorCallback: function(/* dojo.Deferred */ deferredRequestHandler){
 		// summary
 		// create callback that calls the Deferres errback method
-		return function(type, obj, e){
-			deferredRequestHandler.errback(e);
+		return function(type, e){
+			deferredRequestHandler.errback(new Error(e.message));
 		}
 	},
 
@@ -38,8 +38,14 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 		// create callback that calls the Deferred's callback method
 		var tf = dojo.lang.hitch(this, 
 			function(type, obj, e){
-				var results = this.parseResults(obj||e);
-				deferredRequestHandler.callback(results); 
+				if (obj["error"]!=null) {
+					var err = new Error(obj.error);
+					err.id = obj.id;
+					deferredRequestHandler.errback(err);
+				} else {
+					var results = this.parseResults(obj);
+					deferredRequestHandler.callback(results); 
+				}
 			}
 		);
 		return tf;

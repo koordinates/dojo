@@ -25,9 +25,13 @@
 	$testObject = new testClass();
 
 	$method = $req->method;
-	$ret = call_user_func_array(array($testObject,$method),$req->params);
+	if ($method != "triggerRpcError") {
+		$ret = call_user_func_array(array($testObject,$method),$req->params);
+		$results['result'] = $ret;
+	} else {
+		$results['error'] = "Triggered RPC Error test";
+	}
 	$results['id'] = $req->id;
-	$results['result'] = $ret;
 
 	$encoded = $json->encode($results);
 

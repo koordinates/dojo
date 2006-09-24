@@ -69,6 +69,7 @@ dojo.extend(dojo.rpc.JsonService, {
 			contentType: this.contentType,
 			mimetype: "text/json",
 			load: this.resultCallback(deferredRequestHandler),
+			error: this.errorCallback(deferredRequestHandler),
 			preventCache:this.bustCache 
 		});
 	},
