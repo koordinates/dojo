@@ -56,7 +56,7 @@ dojo.extend(dojo.rpc.JsonService, {
 	lastSubmissionId: 0,
 
 	callRemote: function(method, params){
-		var deferred = new dojo.rpc.Deferred();
+		var deferred = new dojo.Deferred();
 		this.bind(method, params, deferred);
 		return deferred;
 	},
