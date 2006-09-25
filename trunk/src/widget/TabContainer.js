@@ -133,7 +133,7 @@ dojo.widget.defineWidget(
 
 dojo.widget.defineWidget("dojo.widget.TabButton", dojo.widget.PageButton,
 {
-	templateString: "<div class='dojoTabPaneTab' dojoAttachEvent='onClick'>"
+	templateString: "<div class='dojoTab' dojoAttachEvent='onClick'>"
 						+"<div dojoAttachPoint='innerDiv'>"
 							+"<span dojoAttachPoint='titleNode' tabIndex='-1' waiRole='tab'>${this.label}</span>"
 							+"<span dojoAttachPoint='closeButtonNode' class='close closeImage' style='${this.closeButtonStyle}'"
@@ -160,7 +160,7 @@ dojo.widget.defineWidget(
 	{
 		imgPath: dojo.uri.dojoUri("src/widget/templates/images/tab_close.gif"),
 		
-		templateString: "<div class='dojoTabPaneTab' dojoAttachEvent='onClick;onKey'>"
+		templateString: "<div class='dojoTab' dojoAttachEvent='onClick;onKey'>"
 							+"<div dojoAttachPoint='innerDiv'>"
 								+"<span dojoAttachPoint='titleNode' tabIndex='-1' waiRole='tab'>${this.label}</span>"
 								+"<img class='close' src='${this.imgPath}' alt='[x]' style='${this.closeButtonStyle}'"
