@@ -9,7 +9,7 @@ dojo.addOnLoad(function(){
 	var search = dojo.widget.byId("search");
 	search.downArrowNode.style.visibility = "hidden";
 	var provider = search.dataProvider;
-	dojo.docs.getFunctionNames().addCallback(function(/*Object*/ data){
+	dojo.docs.functionNames().addCallback(function(/*Object*/ data){
 		var search = dojo.widget.byId("search").dataProvider;
 		var rePrivate = /\._[^.]+$/;
 		var output = [];
