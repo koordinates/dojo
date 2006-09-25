@@ -251,7 +251,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //		A string representation of a date
 //
 // options: object {selector: string, formatLength: string, datePattern: string, timePattern: string, locale: string, strict: boolean}
-//		selector- choice of timeOnly,dateOnly (default: date and time)
+//		selector- choice of timeOnly, dateOnly, dateTime (default: dateOnly)
 //		formatLength- choice of long, short, medium or full (plus any custom additions).  Defaults to 'full'
 //		datePattern,timePattern- override pattern with this string
 //		locale- override the locale used to determine formatting rules
@@ -280,27 +280,20 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 		dojo.debug(msg);
 		pattern = datePattern;
 	}
-	
-//	dojo.debug("Locale: " + locale + ", parsing value '" + value + "' against pattern: " + pattern);
-
-	//DEBUG
-	//for (p in info)
-	//	dojo.debug(p + ': ' + info[p]);
 
 	var groups = [];
 	var dateREString = _processPattern(pattern, dojo.lang.curry(this, _buildDateTimeRE, groups, info, options));
 	var dateRE = new RegExp("^" + dateREString + "$");
 
-	//DEBUG
-	//if (typeof window != 'undefined') window.re = dateRE;
-	
 	var match = dateRE.exec(value);
 	if(!match){
 		return null;
 	}
 
 	var widthList = ['abbr', 'wide', 'narrow'];
-	var result = new Date(1970, 0);
+	//1972 is a leap year.  We want to avoid Feb 29 rolling over into Mar 1,
+	//in the cases where the year is parsed after the month and day.
+	var result = new Date(1972, 0);
 	var expected = {};
 	for(var i=1; i<match.length; i++){
 		var grp=groups[i-1];
@@ -454,10 +447,10 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 		return null;
 	}
 
-	//TODO: need to implement a getWeekday() method in order to test 
-	//validity of input strings containing 'EEE' or 'EEEE'....
+	//TODO: implement a getWeekday() method in order to test 
+	//validity of input strings containing 'EEE' or 'EEEE'...
 
-	return result; 
+	return result; /*Date*/
 };
 
 function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
@@ -468,26 +461,19 @@ function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
 	applyLiteral = applyLiteral || identity;
 	applyAll = applyAll || identity;
 
-	var chunks = pattern.split('\'');
+	//split on single quotes (which escape literals in date format strings) 
+	//but preserve escaped single quotes (e.g., o''clock)
+	var chunks = pattern.match(/(''|[^'])+/g); 
 	var literal = false;
-//DEBUG
-//for(var i=0; i<chunks.length; i++) { dojo.debug("Chunk #" + i + ": " + chunks[i]); }
 
 	for(var i=0; i<chunks.length; i++){
 		if(!chunks[i]){
-			chunks[i]=''; //FIXME - was chunks[i]='\''  Need to translate two single quotes to a single quote (e.g. o''clock)
-		} else{
+			chunks[i]='';
+		} else {
 			chunks[i]=(literal ? applyLiteral : applyPattern)(chunks[i]);
 			literal = !literal;
 		}
-
-//DEBUG
-//dojo.debug("Chunk #" + i + ": " + chunks[i]);
-
 	}
-//DEBUG
-//dojo.debug("Chunks: " + chunks.join(''));
-
 	return applyAll(chunks.join(''));
 }
 
@@ -513,7 +499,7 @@ function _buildDateTimeRE(groups, info, options, pattern) {
 			case 'H': 
 			case 'K': 
 			case 'k':
-				s = '\\d{2}';
+				s = '\\d{1,2}';
 				break;
 			case 'm':
 			case 's':
@@ -537,10 +523,11 @@ function _buildDateTimeRE(groups, info, options, pattern) {
 			default:
 				dojo.unimplemented("parse of date format, pattern=" + pattern);
 		}
+
 		if(groups){ groups.push(match); }
+
+		//tolerate whitespace
 		return '\\s*(' + s + ')\\s*';
-//DEBUG
-//return '(' + s + ')';
 	});
 }
 })();
