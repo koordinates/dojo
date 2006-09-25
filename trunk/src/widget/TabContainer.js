@@ -35,7 +35,7 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 
 	fillInTemplate: function() {
 		// create the tab list that will have a tab (a.k.a. tab button) for each tab panel
-		this.tablist = dojo.widget.createWidget("TabList",
+		this.tablist = dojo.widget.createWidget("TabController",
 			{
 				id: this.widgetId + "_tablist",
 				labelPosition: this.labelPosition,
@@ -95,12 +95,12 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 	}
 });
 
-// TabList - set of tabs (the things with labels and a close button, that you click to show a tab panel)
-// When intialized, the TabList monitors the TabContainer, and whenever a pane is
+// TabController - set of tabs (the things with labels and a close button, that you click to show a tab panel)
+// When intialized, the TabController monitors the TabContainer, and whenever a pane is
 // added or deleted updates itself accordingly.
 dojo.widget.defineWidget(
-    "dojo.widget.TabList",
-    dojo.widget.PageList,
+    "dojo.widget.TabController",
+    dojo.widget.PageController,
 	{
 		templateString: "<div wairole='tablist' dojoAttachEvent='onKey'></div>",
 
@@ -123,7 +123,7 @@ dojo.widget.defineWidget(
 			if(!this["class"]){
 				this["class"] = "dojoTabLabels-" + this.labelPosition + (this.doLayout ? "" : " dojoTabNoLayout");
 			}
-			dojo.widget.TabList.superclass.postMixInProperties.apply(this, arguments);
+			dojo.widget.TabController.superclass.postMixInProperties.apply(this, arguments);
 		}
 	}
 );
