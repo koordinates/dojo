@@ -13,9 +13,22 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.DatePicker");
+	dojo.addOnLoad(init);
+	var formDp, dpInput;
+	function init(){
+		formDp = dojo.widget.byId('formDp');
+		dpInput = dojo.byId('dpInput');
+		dojo.event.connect(formDp,'onSetDate','setDpInput');
+	};
+	function setDpInput(){
+		dpInput.value = dojo.date.toRfc3339(formDp.getDate(),'dateOnly');
+	}
 </script>
 </head>
 <body>
+<p>A DatePicker mimicking a formNode (requires extra coding on developers part)</p>
+<div id="formDp" dojoType="datepicker"  style="border:1px solid red;padding:1px;"></div><input name="date" id="dpInput" type="text" size="10"/>
+
 <p>A calendar in your locale, or the closest thing to it we currently provide</p>
 <div id="test" dojoType="datepicker"  style="border:1px solid red;padding:1px;"></div>
 
