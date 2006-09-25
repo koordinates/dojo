@@ -40,7 +40,7 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 				id: this.widgetId + "_tablist",
 				labelPosition: this.labelPosition,
 				doLayout: this.doLayout,
-				container: this.widgetId
+				containerId: this.widgetId
 			}, this.tablistNode);
 		dojo.widget.TabContainer.superclass.fillInTemplate.apply(this, arguments);
 	},

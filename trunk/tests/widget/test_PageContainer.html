@@ -8,6 +8,13 @@
 <style>
 	h1 { font-family: cursive; font-size: 24pt; }
 	p { font-family: cursive; font-size: 14pt; }
+
+	/* set style for page controller */
+	.dojoPageController .item { margin: 0px 5px 0px 5px; }
+	.dojoPageController .selectButton { text-decoration: underline; cursor: pointer; margin-right: 3px;}
+	.dojoPageController .closeButton { cursor: pointer; };
+	.dojoPageController .item { color: #333366; }
+	.dojoPageController .current { color: blue; font: bold;}
 </style>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
@@ -26,6 +33,7 @@
 		dojo.byId("next2").disabled = page.isLastPage;
 	}
 	dojo.event.topic.subscribe("myPageContainer-selectPane", selected);
+	// TODO: if someone removes the first or last page have to disable the previous/next buttons */
 </script>
 </head>
 
@@ -33,7 +41,7 @@
 	<h1>A Tale Of Two Cities</h1>
 
 	<button id="previous" onClick="dojo.widget.byId('myPageContainer').previousPage()">&lt;</button>
-	<span dojoType="PageController" container="myPageContainer"></span>
+	<span dojoType="PageController" containerId="myPageContainer"></span>
 	<button id="next" onClick="dojo.widget.byId('myPageContainer').nextPage()">&gt;</button>
 
 	<div id="myPageContainer" dojoType="PageContainer" style="width: 100%; height: 20em; border: 3px dashed aqua; margin: 1em 0 1em 0;">
@@ -43,7 +51,7 @@
 	</div>
 
 	<button id="previous2" onClick="dojo.widget.byId('myPageContainer').previousPage()">&lt;</button>
-	<span dojoType="PageController" container="myPageContainer"></span>
+	<span dojoType="PageController" containerId="myPageContainer"></span>
 	<button id="next2" onClick="dojo.widget.byId('myPageContainer').nextPage()">&gt;</button>
 	
 </body>
