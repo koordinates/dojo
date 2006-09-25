@@ -52,7 +52,7 @@ function testClose(pane,tab) {
 
 <body>
 	<p>First should be a RemoteTabController, then some text, then the tabs</p>
-	<div dojoType="RemoteTabController" tabContainer="mainTabContainer"></div>
+	<div id="before1" dojoType="RemoteTabController" tabContainer="mainTabContainer"></div>
 	<br>
 	<p>These tabs are made up of local and external content. Tab 1 and Tab 2 are loading
 	files tab1.html and tab2.html. Tab 3 and Another Tab are using content that is already
@@ -118,8 +118,9 @@ function testClose(pane,tab) {
 
 	<p>some text here</p>
 
-	 <div dojoType="RemoteTabController" tabContainer="mainTabContainer" class="controller1" ></div>
+	 <div id="after1" dojoType="RemoteTabController" tabContainer="mainTabContainer" class="controller1" ></div>
 	<br>
-	 <div dojoType="RemoteTabController" tabContainer="mainTabContainer" class="controller2" ></div>
+	 <div id="after2" dojoType="RemoteTabController" tabContainer="mainTabContainer" class="controller2" ></div>
+	 end!!!
 </body>
 </html>
