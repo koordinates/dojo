@@ -38,23 +38,7 @@
 	font-size : 90%;
 }
 
-.dojoTabPanePaneClose {
-	position : absolute;
-	bottom : 0px;
-	right : 6px;
-	height : 12px;
-	width : 12px;
-	font-size : small;
-}
-.dojoTabPanePaneCloseImage {
-	background : url(images/tab_close.gif) no-repeat right top;
-}
-
-.dojoTabPanePaneCloseHover {
-	background-image : url(images/tab_close_h.gif);
-}
-
-.dojoTabPaneTabClose {
+.dojoTabPaneTab .close {
 	display : inline-block;
 	height : 12px;
 	width : 12px;
@@ -64,11 +48,11 @@
 	font-size: small;
 }
 
-.dojoTabPaneTabCloseImage {
+.dojoTabPaneTab .closeImage {
 	background : url(images/tab_close.gif) no-repeat right top;
 }
 
-.dojoTabPaneTabCloseHover {
+.dojoTabPaneTab .closeHover {
 	background-image : url(images/tab_close_h.gif);
 }
 
