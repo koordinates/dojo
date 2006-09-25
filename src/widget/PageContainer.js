@@ -172,11 +172,11 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 });
 
 
-// PageList - set of buttons to select the page in a page list
-// When intialized, the PageList monitors the container, and whenever a pane is
+// PageController - set of buttons to select the page in a page list
+// When intialized, the PageController monitors the container, and whenever a pane is
 // added or deleted updates itself accordingly.
 dojo.widget.defineWidget(
-    "dojo.widget.PageList",
+    "dojo.widget.PageController",
     dojo.widget.HtmlWidget,
 	{
 		templateString: "<span wairole='tablist' dojoAttachEvent='onKey'></span>",
@@ -192,7 +192,7 @@ dojo.widget.defineWidget(
 
 		// String
 		//	Class name to apply to the top dom node
-		"class": "dojoPageList",
+		"class": "dojoPageController",
 
 		fillInTemplate: function() {
 			dojo.html.addClass(this.domNode, this["class"]);  // "class" is a reserved word in JS

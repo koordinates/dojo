@@ -9,7 +9,7 @@ dojo.require("dojo.event.*");
 
 dojo.widget.defineWidget(
     "dojo.widget.RemoteTabController",
-    dojo.widget.TabList,
+    dojo.widget.TabController,
 	{
         templateCssPath: dojo.uri.dojoUri("src/widget/templates/RemoteTabControl.css"),
 		templateString: '<div dojoAttachPoint="domNode" wairole="tablist"></div>',
