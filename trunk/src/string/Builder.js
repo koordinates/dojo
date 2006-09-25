@@ -1,5 +1,6 @@
 dojo.provide("dojo.string.Builder");
 dojo.require("dojo.string");
+dojo.require("dojo.lang.common");
 
 // NOTE: testing shows that direct "+=" concatenation is *much* faster on
 // Spidermoneky and Rhino, while arr.push()/arr.join() style concatenation is
@@ -32,7 +33,9 @@ dojo.string.Builder = function(/* string? */str){
 		//	Append all arguments to the end of the internal buffer
 		for(var x=0; x<arguments.length; x++){
 			var s = arguments[x];
-			if((s instanceof String)||(typeof s == "string")){
+			if(dojo.lang.isArrayLike(s)){
+				this.append.apply(this, s);
+			} else {
 				if(this.arrConcat){
 					a.push(s);
 				}else{
@@ -40,9 +43,6 @@ dojo.string.Builder = function(/* string? */str){
 				}
 				length += s.length;
 				this.length = length;
-			}else{
-				// if we get something array-like, call append with it as args
-				this.append.apply(this, s);
 			}
 		}
 		return this;	//	dojo.string.Builder
