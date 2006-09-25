@@ -178,7 +178,7 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(/* HTMLElement */node, 
 
 dojo.html.isPositionAbsolute = function(/* HTMLElement */node){
 	//	summary
-	//	Returns if the element is absolutely positioned or not.
+	//	Returns true if the element is absolutely positioned.
 	return (dojo.html.getComputedStyle(node, 'position') == 'absolute');	//	boolean
 }
 
@@ -192,7 +192,7 @@ dojo.html._sumPixelValues = function(/* HTMLElement */node, selectors, autoIsZer
 
 dojo.html.getMargin = function(/* HTMLElement */node){
 	//	summary
-	//	Returns the dimensions of the passed node including margins.
+	//	Returns the width and height of the passed node's margin
 	return {
 		width: dojo.html._sumPixelValues(node, ["margin-left", "margin-right"], (dojo.html.getComputedStyle(node, 'position') == 'absolute')),
 		height: dojo.html._sumPixelValues(node, ["margin-top", "margin-bottom"], (dojo.html.getComputedStyle(node, 'position') == 'absolute'))
@@ -201,7 +201,7 @@ dojo.html.getMargin = function(/* HTMLElement */node){
 
 dojo.html.getBorder = function(/* HTMLElement */node){
 	//	summary
-	//	Returns the dimensions of the passed node including borders.
+	//	Returns the width and height of the passed node's border
 	return {
 		width: dojo.html.getBorderExtent(node, 'left') + dojo.html.getBorderExtent(node, 'right'),
 		height: dojo.html.getBorderExtent(node, 'top') + dojo.html.getBorderExtent(node, 'bottom')
@@ -228,7 +228,7 @@ dojo.html.getPaddingExtent = function(/* HTMLElement */node, /* string */side){
 
 dojo.html.getPadding = function(/* HTMLElement */node){
 	//	summary
-	//	Returns the dimensions of the passed node including padding.
+	//	Returns the width and height of the passed node's padding
 	return {
 		width: dojo.html._sumPixelValues(node, ["padding-left", "padding-right"], true),
 		height: dojo.html._sumPixelValues(node, ["padding-top", "padding-bottom"], true)
@@ -237,7 +237,7 @@ dojo.html.getPadding = function(/* HTMLElement */node){
 
 dojo.html.getPadBorder = function(/* HTMLElement */node){
 	//	summary
-	//	Returns the dimesions of the passed node including padding and border
+	//	Returns the width and height of the passed node's padding and border
 	var pad = dojo.html.getPadding(node);
 	var border = dojo.html.getBorder(node);
 	return { width: pad.width + border.width, height: pad.height + border.height };	//	object
@@ -278,7 +278,7 @@ dojo.html.getBorderBox = function(/* HTMLElement */node){
 
 dojo.html.getPaddingBox = function(/* HTMLElement */node){
 	//	summary
-	//	Returns the dimensions of the passed node, with border calcs removed.
+	//	Returns the dimensions of the padding box (see http://www.w3.org/TR/CSS21/box.html)
 	var box = dojo.html.getBorderBox(node);
 	var border = dojo.html.getBorder(node);
 	return {
@@ -289,7 +289,7 @@ dojo.html.getPaddingBox = function(/* HTMLElement */node){
 
 dojo.html.getContentBox = function(/* HTMLElement */node){
 	//	summary
-	//	returns the dimensions of the passed node without any padding, border or margin calcs.
+	//	Returns the dimensions of the content box (see http://www.w3.org/TR/CSS21/box.html)
 	node = dojo.byId(node);
 	var padborder = dojo.html.getPadBorder(node);
 	return {
