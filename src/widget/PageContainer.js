@@ -28,7 +28,7 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 		// Copy style info from input node to output node
 		var source = this.getFragNodeRef(frag);
 		dojo.html.copyStyle(this.domNode, source);
-		dojo.widget.PageContainer.superclass.fillInTemplate.call(this, args, frag);
+		dojo.widget.PageContainer.superclass.fillInTemplate.apply(this, arguments);
 	},
 
 	postCreate: function(args, frag) {
@@ -41,9 +41,9 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 		}
 	},
 
-	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
+	addChild: function(child){
 		this._setupPage(child);
-		dojo.widget.PageContainer.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);
+		dojo.widget.PageContainer.superclass.addChild.apply(this, arguments);
 
 		// in case the page labels have overflowed from one line to two lines
 		this.onResized();
@@ -74,7 +74,7 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 	},
 
 	removeChild: function(/* Widget */page){
-		dojo.widget.PageContainer.superclass.removeChild.call(this, page);
+		dojo.widget.PageContainer.superclass.removeChild.apply(this, arguments);
 
 		// this will notify any tablists to remove a button; do this first because it may affect sizing
 		dojo.event.topic.publish(this.widgetId+"-removePane", page);
@@ -190,7 +190,8 @@ dojo.widget.defineWidget(
 		//	the name of the button widget to create to correspond to each page
 		buttonWidget: "PageButton",
 
-		// Class name to apply to the top dom node
+		// String
+		//	Class name to apply to the top dom node
 		"class": "dojoPageList",
 
 		fillInTemplate: function() {
@@ -220,7 +221,7 @@ dojo.widget.defineWidget(
 		addButton: function(/* Widget */ pane){
 			// summary
 			//   Called whenever a pane is added to the container
-			//   Create button corresponding to the pane
+			//   Create button corresponding to the pane	
 			var button = dojo.widget.createWidget(this.buttonWidget,
 				{
 					container: this.container,
@@ -272,7 +273,7 @@ dojo.widget.defineWidget(
 // Also has infrastructure to help support close (destroy) button for the given page
 dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 {
-	templateString: "<button dojoAttachEvent='onClick'>${this.label}</button>",
+	templateString: "<button dojoAttachEvent='onClick' dojoAttachPoint='titleNode'>${this.label}</button>",
 
 	// String
 	//  Name to print on the button
@@ -290,10 +291,6 @@ dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 	//	true iff we should also print a close icon to destroy corresponding pane
 	closable: false,
 
-	postMixInProperties: function(){
-		this.container = dojo.widget.byId(this.container);
-	},
-
 	postCreate: function(){
 		dojo.event.connect(this.pane, "show", this, "onPaneSelect");
 		dojo.event.connect(this.pane, "hide", this, "onPaneDeselect");
@@ -303,25 +300,27 @@ dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 		// summary
 		//  Clicking a button will select the corresponding pane
 		this.focus();
-		this.container.selectPage(this.pane, false, this);
+		var container = dojo.widget.byId(this.container);
+		container.selectPage(this.pane, false, this);
 	},
 
 	onCloseButtonMouseOver: function(){
 		// summary
 		//	The close button changes color a bit when you mouse over	
-		dojo.html.addClass(this.closeButtonNode, "hover");
+		dojo.html.addClass(this.closeButtonNode, "closeHover");
 	},
 
 	onCloseButtonMouseOut: function(){
 		// summary
 		// 	Revert close button to normal color on mouse out
-		dojo.html.removeClass(this.closeButtonNode, "hover");
+		dojo.html.removeClass(this.closeButtonNode, "closeHover");
 	},
 
 	onCloseButtonClick: function(evt){
 		// summary
 		//	Handle clicking the close button for this tab
-		this.container.closePage(this.pane);
+		var container = dojo.widget.byId(this.container);
+		container.closePage(this.pane);
 		dojo.event.browser.stopEvent(evt);
 	},
 	
@@ -329,12 +328,14 @@ dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 		// summary
 		//	This is run whenever the pane corresponding to this button is selected
 		dojo.html.addClass(this.domNode, "current");
+		this.titleNode.setAttribute("tabIndex","0");
 	},
 	
 	onPaneDeselect: function(){
 		// summary
 		//	This function is run whenever the pane corresponding to this button is deselected (and another pane is shown)
 		dojo.html.removeClass(this.domNode, "current");
+		this.titleNode.setAttribute("tabIndex","-1");
 	},
 
 	destroy: function(){
@@ -342,13 +343,13 @@ dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 		//	This function is called when the target pane is destroyed or detached from the container
 		dojo.event.disconnect(this.pane, "show", this, "onPaneSelected");
 		dojo.event.disconnect(this.pane, "hide", this, "onPaneDeselected");
-		this.inherited("destroy");
+		dojo.widget.PageButton.superclass.destroy.apply(this, arguments);
 	},
 	
 	focus: function(){
 		// summary
 		//	This will focus on the this button (for accessibility you need to do this when the button is selected)
-		this.domNode.focus();
+		this.titleNode.focus();
 		this.parent._currentPage = this;
 	}
 });
