@@ -9,12 +9,24 @@ dojo.lang.extend(dojo.gfx.color.Color, {
 
 });
 
-dojo.gfx.color.rgb2hsv = function(r, g, b){
+// Default input range for RBG values is 0-255
+dojo.gfx.color.rgb2hsv = function(/* int || Array */r, /* int */g, /* int */b, /* Object? */options){
+	//	summary
+	//	converts an RGB value set to HSV, ranges depending on optional options object.
+	//	patch for options by Matthew Eernisse 	
 	if (dojo.lang.isArray(r)) {
+		if(g) {
+			options = g;
+		}
 		b = r[2] || 0;
 		g = r[1] || 0;
 		r = r[0] || 0;
 	}
+
+	var opt = {
+		inputRange:  (options && options.inputRange)  ? options.inputRange : 255,
+		outputRange: (options && options.outputRange) ? options.outputRange : [255, 255, 255]
+	};
 
 	// r,g,b, each 0 to 255, to HSV.
 	// h = 0.0 to 360.0 (corresponding to 0..360.0 degrees around hexcone)
@@ -31,6 +43,25 @@ dojo.gfx.color.rgb2hsv = function(r, g, b){
 	var s = null;
 	var v = null;
 
+	switch(opt.inputRange) { 
+		// 0.0-1.0 
+		case 1:
+			r = (r * 255);
+			g = (g * 255);
+			b = (b * 255);
+			break;
+		// 0-100 
+		case 100:
+			r = (r / 100) * 255;
+			g = (g / 100) * 255;
+			b = (b / 100) * 255;
+			break;
+		// 0-255
+		default:
+			// Do nothing
+			break;
+	} 
+	
 	var min = Math.min(r, g, b);
 	v = Math.max(r, g, b);
 
@@ -58,22 +89,60 @@ dojo.gfx.color.rgb2hsv = function(r, g, b){
 				}
 			}
 		}
-		if (h < 0){
+		if (h <= 0){
 			h += 360;
 		}
 	}
-
-	h = (h == 0) ? 360 : Math.ceil((h / 360) * 255);
-	s = Math.ceil(s * 255);
+	// Hue
+	switch (opt.outputRange[0]) {
+		case 360:
+			// Do nothing
+			break;
+		case 100:
+			h = (h / 360) * 100;
+			break;
+		case 1:
+			h = (h / 360);
+			break;
+		default: // 255
+			h = (h / 360) * 255;
+			break;
+	}
+	// Saturation
+	switch (opt.outputRange[1]) {
+		case 100:
+			s = s * 100;
+		case 1:
+			// Do nothing
+			break;
+		default: // 255
+			s = s * 255;
+			break;
+	}
+	// Value
+	switch (opt.outputRange[2]) {
+		case 100:
+			v = (v / 255) * 100;
+			break;
+		case 1:
+			v = (v / 255);
+			break;
+		default: // 255
+			// Do nothing
+			break;
+	}
+	h = dojo.math.round(h);
+	s = dojo.math.round(s);
+	v = dojo.math.round(v);
 	return [h, s, v];
 }
 
 // Based on C Code in "Computer Graphics -- Principles and Practice,"
 // Foley et al, 1996, p. 593.
 //
-// H = 0.0 to 360.0 (corresponding to 0..360 degrees around hexcone) 0 for S = 0
-// S = 0.0 (shade of gray) to 1.0 (pure color)
-// V = 0.0 (black) to 1.0 (white)
+// H = 0 to 255 (corresponding to 0..360 degrees around hexcone) 0 for S = 0
+// S = 0 (shade of gray) to 255 (pure color)
+// V = 0 (black) to 255 (white)
 dojo.gfx.color.hsv2rgb = function(/* int || Array */h, /* int */s, /* int */v, /* Object? */options){
 	//	summary
 	//	converts an HSV value set to RGB, ranges depending on optional options object.
@@ -153,14 +222,14 @@ dojo.gfx.color.hsv2rgb = function(/* int || Array */h, /* int */s, /* int */v, /
 			b = dojo.math.round(b, 2);
 			break;
 		case 100:
-			r = Math.ceil(r * 100);
-			g = Math.ceil(g * 100);
-			b = Math.ceil(b * 100);
+			r = Math.round(r * 100);
+			g = Math.round(g * 100);
+			b = Math.round(b * 100);
 			break;
 		default:
-			r = Math.ceil(r * 255);
-			g = Math.ceil(g * 255);
-			b = Math.ceil(b * 255);
+			r = Math.round(r * 255);
+			g = Math.round(g * 255);
+			b = Math.round(b * 255);
 	}
 
 	return [r, g, b];
