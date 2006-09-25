@@ -76,6 +76,10 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 	removeChild: function(/* Widget */page){
 		dojo.widget.PageContainer.superclass.removeChild.apply(this, arguments);
 
+		// If we are being destroyed than don't the code below (to select another pane), because we are deleting
+		// every pane one by one
+		if(this._beingDestroyed){ return; }
+
 		// this will notify any tablists to remove a button; do this first because it may affect sizing
 		dojo.event.topic.publish(this.widgetId+"-removePane", page);
 
@@ -164,10 +168,11 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 	},
 
 	destroy: function(){
+		this._beingDestroyed = true;
 		dojo.event.topic.destroy(this.widgetId+"-addPane");
 		dojo.event.topic.destroy(this.widgetId+"-removePane");
 		dojo.event.topic.destroy(this.widgetId+"-selectPane");
-		this.inherited("destroy");
+		dojo.widget.PageContainer.superclass.destroy.apply(this, arguments);
 	}
 });
 
@@ -217,7 +222,7 @@ dojo.widget.defineWidget(
 			dojo.event.topic.unsubscribe(this.containerId+"-addPane", this, "onAddPage");
 			dojo.event.topic.unsubscribe(this.containerId+"-removePane", this, "onRemovePage");
 			dojo.event.topic.unsubscribe(this.containerId+"-selectPane", this, "onSelectPage");
-			this.inherited("destroy");		
+			dojo.widget.PageController.superclass.destroy.apply(this, arguments);
 		},
 
 		onAddPage: function(/* Widget */ pane){

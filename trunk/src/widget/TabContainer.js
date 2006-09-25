@@ -90,7 +90,7 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 	},
 
 	destroy: function(){
-		this.tabList.destroy();
+		this.tablist.destroy();
 		dojo.widget.TabContainer.superclass.destroy.apply(this, arguments);
 	}
 });
