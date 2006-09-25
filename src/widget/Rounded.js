@@ -7,6 +7,8 @@ dojo.require("dojo.html.style");
 dojo.require("dojo.html.display");
 dojo.require("dojo.gfx.color");
 
+dojo.deprecated("dojo.widget.Rounded will be removed in version 0.5; you can now apply rounded corners to any block element using dojo.lfx.rounded.", "0.5");
+
 /*
  *	The following script is derived (with permission) from curvyCorners,
  *	written by Cameron Cooke (CLA on file) and was adapted to Dojo by Brian
