@@ -257,7 +257,8 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //		locale- override the locale used to determine formatting rules
 //		strict- strict parsing, off by default
 //
-	
+
+	options = options || {};
 	var locale = dojo.hostenv.normalizeLocale(options.locale);
 	var info = dojo.date._getGregorianBundle(locale);
 	var formatLength = options.formatLength || 'full';
