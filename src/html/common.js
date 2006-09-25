@@ -133,6 +133,8 @@ dojo.html.getCursorPosition = function(/* DOMEvent */e){
 	//	but your browser window is only 100px tall,
 	//	if you scroll to the bottom of the document and call this function it
 	//	will return {x: 0, y: 10000}
+	//	NOTE: for events delivered via dojo.event.connect() and/or dojoAttachEvent (for widgets),
+	//	you can just access evt.pageX and evt.pageY, rather than calling this function.
 	e = e || dojo.global().event;
 	var cursor = {x:0, y:0};
 	if(e.pageX || e.pageY){
