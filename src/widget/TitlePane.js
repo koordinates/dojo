@@ -31,16 +31,24 @@ dojo.widget.defineWidget(
 		}	
 
 		if (!this.open) {
-			dojo.lfx.wipeOut(this.containerNode,0).play();
+			with(this.containerNode.style) {
+				visibility = "hidden";
+				position = "absolute";
+			}
+			//dojo.lfx.wipeOut(this.containerNode,0).play();
 		}
 	},
 
 	onLabelClick: function() {
 		if (this.open) {
-			dojo.lfx.wipeOut(this.containerNode,250).play();
+			var callback = function(node, anim) {
+				dojo.html.setStyle(node, "position", "absolute");
+			};
+			dojo.lfx.wipeOut(this.containerNode, 250, 5, callback).play();
 			this.open=false;
-		}else {
-			dojo.lfx.wipeIn(this.containerNode,250).play();
+		} else {
+			dojo.html.setStyle(this.containerNode, "position", "relative");
+			dojo.lfx.wipeIn(this.containerNode, 250).play();
 			this.open=true;
 		}
 	},
