@@ -1,0 +1,354 @@
+<!--DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"-->
+<html>
+<head>
+	<title>Dojo API Reference</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/common.css" />
+	<link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/text.css" />
+	<script type="text/javascript">
+		var djConfig = {isDebug: true, debugAtAllCosts:false};
+	</script>
+	<script type='text/javascript'>
+		// if we're accessing from the local disk, dojo is in a different place
+		// TODO: I'm sure there is a smarter way to do this...
+		if (window.location.href.indexOf("file:") == 0 || window.location.href.indexOf("localhost") > -1) {
+			djConfig.baseScriptURI = "..";
+			// debug: write "LOCAL" up there so we can tell we're on local mode
+			window.document.title = "===LOCAL=== " + window.document.title;
+		} else {
+			djConfig.baseScriptURI = ".";
+		}
+		document.write("<"+"script type='text/javascript' src='"+djConfig.baseScriptURI+"/dojo.js'><"+"/script>");
+		document.write("<"+"script type='text/javascript' src='"+djConfig.baseScriptURI+"/src/io/common.js'><"+"/script>");
+		document.write("<"+"script type='text/javascript' src='"+djConfig.baseScriptURI+"/src/io/BrowserIO.js'><"+"/script>");
+	</script>
+
+	<script type="text/javascript">
+		dojo.require("dojo.uri.*");
+		dojo.require("dojo.io.cookie");
+		dojo.require("dojo.lang.common");
+		dojo.require("dojo.widget.*");
+		dojo.require("dojo.widget.TreeV3");
+		dojo.require("dojo.widget.TreeNodeV3");
+		dojo.require("dojo.widget.TreeBasicControllerV3");
+		dojo.require("dojo.lfx.html");
+	</script>
+
+
+<!-- the following are items that I hacked and haven't been approved yet
+		TODO: move these into the base build -->
+	<script type="text/javascript" src="ApiRef2-console.js"></script>
+	<script type="text/javascript" src="ApiRef2-profile.js"></script>
+	<script type="text/javascript" src="ApiRef2-ProfileHelper.js"></script>
+	<script type="text/javascript" src="ApiRef2-docs.js"></script>
+
+<!-- script that does all the heavy lifting -->
+	<script type="text/javascript" src="ApiRef2.js"></script>
+
+
+	<style type='text/css'>
+		BODY {
+			margin:0px;
+		}
+
+		BODY, DIV, P, SPAN, TD, LI { font-family:Verdana, Arial, sans-serif; }
+
+		.pageTitle {			
+			font-family:Georgia,Times,serif;
+			width:100%;
+			text-align:center;
+			font-size:2em;
+			font-weight:bold;
+			line-height:3em;
+		}
+
+		.rightSidebar {
+			
+		}
+		.treeNode {
+			margin-left:20px;
+		}
+		
+		.nodeName {
+			cursor:pointer;	
+			font-family:Verdana;
+			font-size:10px;
+		}
+		
+		/* Nest these inside each other to get content that scrolls cleanly if necessary */
+		.scrollContainerOuter {
+			position:relative;
+			overflow:auto;
+			width:100%;
+			height:100%;
+		}
+		
+		.scrollContainerInner {
+			position:absolute;
+			width:100%;
+			height:100%;
+		}
+		
+		
+		/* content containers */
+		#fnTreeContainer {
+			
+		}
+		#fnTreeCell {
+			border:1px solid #bea83b;
+			border-top-width:0px;
+			padding-right:0px;
+		}
+		#contentCell {
+			border:0px solid #bea83b;		
+			border-width:0px 1px 1px 0px;
+		}
+		#content {
+			font-family:Verdana;
+		}
+		#meta {
+		
+		}
+		
+		.packageHeader {
+			border:0px solid #bea83b;
+			border-width:1px 0px;
+			padding:5px;
+			font-weight:bold;
+			font-size:150%;
+			margin:3px 10px 10px 0px;
+		}
+		
+		.packageContainer {
+		
+		}
+		
+	
+		.classHeader {
+			border:0px dotted #bea83b;
+			border-width:1px 0px;
+			padding:5px;
+			font-weight:bold;
+			font-size:125%;
+			margin:10px 10px 5px 0px;
+		}
+
+		.classContainer {
+			padding-left:20px;
+			padding-bottom:5px;
+			margin-bottom:5px;		
+		}
+
+		.itemLink,
+		.itemLinkExpanded,
+		.itemLinkCollapsed {
+			cursor:pointer;
+			color:darkblue;		
+		}
+
+		.itemLinkExpanded,
+		.itemLinkCollapsed {
+			background-repeat:no-repeat;
+			padding-left:17px;
+			background-position:0px -2px;
+		}
+
+		.itemLinkCollapsed {
+			background-image:url(images/plus.gif);
+		}
+		.itemLinkExpanded {
+			background-image:url(images/minus.gif);
+		}
+
+
+		.constructor {
+			font-weight:bold;
+			margin:4px 0px 6px 10px;
+		}	
+
+		.classLabel {
+			color: #333333;
+			font-weight:bold;
+			margin-left:-10px;
+		}
+		
+		.classParamsTable {	}
+		
+		.classParamTableCell {
+			padding:0px 20px 0px 0px;
+		}
+				
+		.methodHeader {	}
+		.methodContainer,
+		.requiresContainer {
+			margin:2px 20px 5px 20px;
+			font-size:75%;
+		}
+		
+		.methodDetailsContainer {
+			padding:5px;
+			background-color:#eeeeee;
+			font-size:75%;
+		}
+		.methodLabel {
+			font-weight:bold;
+		}
+		.methodSource {
+			white-space:pre;
+			font-size:75%;
+		}
+		
+		.methodSummary,
+		.methodDescription {
+			color:#666666;
+			font-size:75%;
+			margin:2px 10px 4px 0px;
+		}
+		
+		.emptyMethods {
+			font-style:italic;
+			font-size:75%;
+			color:#666666;
+		}
+		
+		.paramsList {			/* list in the method signature */
+		
+		}
+						
+		.paramsContainer {		/* table of params */
+			margin:2px 0px 5px 20px;
+		}
+		
+		.paramsTable {
+			border-collapse:collapse;
+		}
+		.paramsTable TD {
+			border:1px solid #666666;
+			padding:2px 5px 2px 5px;
+		}
+		
+		.paramName,
+		.paramType,
+		.paramDescription,
+		.paramsHeader {
+			font-size:75%;
+		}
+		.paramsHeader {
+			font-weight:bold;
+		}
+
+		.paramType,
+		.paramOptional,
+		.paramProtected {
+			font-style:italic;
+		}
+
+		.paramOptional,
+		.paramProtected {
+			color:#666666;
+		}
+		
+		#mini-header {
+			background-image:url(images/helpbg.gif);
+		}
+		
+		
+		.searchBox {
+			width:250px;
+			border:1px solid;
+			border-color:#666666 #eeeeee #eeeeee #666666;
+			font-size:75%;
+			margin-left:3px;
+			padding:2px 2px 2px 3px;
+		}
+		
+		.debugMenu {
+			border:1px solid;
+			border-color:#666666 #eeeeee #eeeeee #666666;
+			font-size:75%;
+			margin-right:5px;
+		}
+		
+		.stripe {
+			background-image:url(images/summerStripe.gif);
+			height:26px;
+			font-weight:bold;
+		}
+		
+		.noPad {
+			padding:0px;
+		}
+		.noVPad {
+			padding-top:0px; padding-bottom:0px;
+		}
+		
+		.loadingPrompt {
+			font-size:150%;
+			font-weight:bold;
+			padding:20px;
+		}
+	</style>
+
+</head>
+<body>
+	<table style='width:100%;height:100%;table-layout:fixed;' cellspacing=0 cellpadding=5>
+	<thead>
+		<colgroup>
+			<col style='width:30em'/>
+			<col style='width:100%'/>
+			<col style='width:200px'/>
+		</colgroup>
+	</thead>
+		<tr><td colspan=3 class='noPad'>
+			<div id="foundation-header">
+					<div id="header-links">
+						<ul>
+							<li><a href="http://dojotoolkit.org/" id="header-index">Home</a></li>
+							<li><a href="http://trac.dojotoolkit.org/" id="header-bugtracking">Bug Tracking</a></li>
+							<li><a href="http://dojo.jot.com/" id="header-wiki">Wiki</a></li>
+							<li><a href="http://blog.dojotoolkit.org/" id="header-blog">Blog</a></li>
+							<li><a href="http://dojotoolkit.org/foundation/" id="header-about">About the Dojo Foundation</a></li>
+						</ul>
+					</div>
+				</div>
+		</td></tr>
+		<tr id="mini-header">
+			<td class='noPad'><a href='http://dojotoolkit.org'><img src='images/dojo-help.gif' width=32 height=24 border=0></a></td>
+			<td class='noPad'></td>
+			<td class='noPad' align=right><img src='images/help.gif' width=97 height=24></td>
+		</tr>
+		<tr>
+			<td class="stripe noVPad">Search:<input id='searchBox' class='searchBox' type='text' value='dojo' onblur='ApiRef.showReference(this.value)'></td>
+			<td class="stripe noVPad">
+				Dojo API Reference
+			</td>
+			<td class="stripe noVPad" style='text-align:right'>
+					<select class='debugMenu' onchange="ApiRef.debugMenuAction(this.options[this.selectedIndex].getAttribute('action'), this)">
+						<option action=''>Debug</option>
+						<option action='ApiRef.debugFunctionNames()'>Show Function Names</option>
+						<option action='ApiRef.debugObjectTree()'>Show Object Tree</option>
+						<option action='ApiRef.debugClassMap()'>Show Class Map</option>
+						<option action='ApiRef.debugPkgData()'>Show Package Data...</option>
+						<option action='ApiRef.debugItemData()'>Show Item Data...</option>
+					</select>
+			</td>		
+		</tr>
+		<tr><td id='fnTreeCell' style='vertical-align:top;height:100%;'>
+			<div class='scrollContainerOuter'>
+				<div id="fnTreeContainer" class='scrollContainerInner'>
+					<div class='loadingPrompt'>
+						Loading Class Tree...
+					</div>
+				</div>
+			</div>
+		</td>
+		<td id='contentCell' style='vertical-align:top;height:100%;' colspan=2>
+			<div class='scrollContainerOuter'>
+				<div id="content" class='scrollContainerInner'>
+				</div>
+			</div>
+		</td>
+	</tr>
+	</table>
+</body>
+</html>
