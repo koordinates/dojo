@@ -261,7 +261,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 	var locale = dojo.hostenv.normalizeLocale(options.locale);
 	var info = dojo.date._getGregorianBundle(locale);
 	var formatLength = options.formatLength || 'full';
-	if (!options.selector) options.selector = 'dateOnly';
+	if(!options.selector){ options.selector = 'dateOnly'; }
 	var datePattern = options.datePattern || info["dateFormat-" + formatLength];
 	var timePattern = options.timePattern || info["timeFormat-" + formatLength];
 
@@ -281,7 +281,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 		pattern = datePattern;
 	}
 	
-	dojo.debug("Locale: " + locale + ", parsing value '" + value + "' against pattern: " + pattern);
+//	dojo.debug("Locale: " + locale + ", parsing value '" + value + "' against pattern: " + pattern);
 
 	//DEBUG
 	//for (p in info)
@@ -319,7 +319,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 						//of 80 years before and 20 years after present year
 						var year = '' + new Date().getFullYear();
 						var century = year.substring(0, 2) * 100;
-						var yearPart = new Number(year.substring(2, 4));
+						var yearPart = Number(year.substring(2, 4));
 						var cutoff = Math.min(yearPart + 20, 99);
 						var num = (v < cutoff) ? century + v : century - 100 + v;
 						result.setFullYear(num);
@@ -344,19 +344,19 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 						//Case-insensitive
 						v = v.toLowerCase();
 					}
-					var strs = info['months-format-' + widthList[l-3]];
-					for (var j=0; j<strs.length; j++) {
+					var months = info['months-format-' + widthList[l-3]].concat();
+					for (var j=0; j<months.length; j++) {
 						if (!options.strict) {
 							//Case-insensitive
-							strs[j] = strs[j].toLowerCase();
+							months[j] = months[j].toLowerCase();
 						}
-						if (v == strs[j]) {
+						if (v == months[j]) {
 							result.setMonth(j);
 							expected.month = j;
 							break;
 						}
 					}
-					if (j==strs.length) {
+					if (j==months.length) {
 						dojo.debug("dojo.date.parse: Could not parse month name: '" + v + "'.");
 						return null;
 					}
@@ -371,20 +371,20 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 					//Case-insensitive
 					v = v.toLowerCase();
 				}
-				var strs = info['days-format-' + widthList[l-3]];
-				for (var j=0; j<strs.length; j++) {
+				var days = info['days-format-' + widthList[l-3]].concat();
+				for (var j=0; j<days.length; j++) {
 					if (!options.strict) {
 						//Case-insensitive
-						strs[j] = strs[j].toLowerCase();
+						days[j] = days[j].toLowerCase();
 					}
-					if (v == strs[j]) {
+					if (v == days[j]) {
 						//TODO: not sure what to actually do with this input,
 						//in terms of setting something on the Date obj...?
 						//without more context, can't affect the actual date
 						break;
 					}
 				}
-				if (j==strs.length) {
+				if (j==days.length) {
 					dojo.debug("dojo.date.parse: Could not parse weekday name: '" + v + "'.");
 					return null;
 				}
@@ -394,8 +394,8 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 				expected.date = v;
 				break;
 			case 'a': //am/pm
-				var am = info['am'];
-				var pm = info['pm'];
+				var am = info.am;
+				var pm = info.pm;
 				if (!options.strict) {
 					v = v.replace(/\./g,'').toLowerCase();
 					am = am.replace(/\./g,'').toLowerCase();
@@ -433,7 +433,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 				result.setMinutes(v);
 				break;
 			case 's': //seconds
-				result.setSeconds(s);
+				result.setSeconds(v);
 				break;
 			default:
 				dojo.unimplemented("incomplete parse algorithm: " + grp.charAt(0));
@@ -542,7 +542,7 @@ function _buildDateTimeRE(groups, info, options, pattern) {
 //DEBUG
 //return '(' + s + ')';
 	});
-};
+}
 })();
 
 //TODO: try to common strftime and format code somehow?
@@ -628,12 +628,12 @@ dojo.date.strftime = function (/*Date*/dateObject, /*String*/format, /*String?*/
 				
 			case "k": // Hour as a decimal number using a 24-hour clock (range
 					  // 0 to 23 (space-padded))
-				if (padChar == null) { padChar = " " };
+				if (padChar == null) { padChar = " "; }
 				return _(dateObject.getHours());
 
 			case "l": // Hour as a decimal number using a 12-hour clock (range
 					  // 1 to 12 (space-padded))
-				if (padChar == null) { padChar = " " };
+				if (padChar == null) { padChar = " "; }
 				return _(dateObject.getHours() % 12 || 12);
 			
 			case "m": // month as a decimal number (range 01 to 12)
@@ -747,10 +747,10 @@ dojo.date.strftime = function (/*Date*/dateObject, /*String*/format, /*String?*/
 		var property = $(format.charAt(index++));
 		switch (switchCase) {
 			case "upper":
-			property = property.toUpperCase();
+				property = property.toUpperCase();
 				break;
 			case "lower":
-			property = property.toLowerCase();
+				property = property.toLowerCase();
 				break;
 			case "swap": // Upper to lower, and versey-vicea
 				var compareString = property.toLowerCase();
@@ -809,7 +809,6 @@ dojo.date._getGregorianBundle = function(locale){
 dojo.date.addCustomFormats("dojo.i18n.calendar","gregorian");
 dojo.date.addCustomFormats("dojo.i18n.calendar","gregorianExtras");
 
-//FIXME: return by value, not reference
 dojo.date.getNames = function(/*String*/item, /*String*/type, /*String?*/use, /*String?*/locale){
 //
 // summary:
@@ -827,41 +826,46 @@ dojo.date.getNames = function(/*String*/item, /*String*/type, /*String?*/use, /*
 		label = lookup[props.join('-')];
 	}
 	props[1] = 'format';
-	return label || lookup[props.join('-')]; /*Array*/
+
+	// return by copy so changes won't be made accidentally to the in-memory model
+	return (label || lookup[props.join('-')]).concat(); /*Array*/
 };
 
 // Convenience methods
 
 dojo.date.getDayName = function(/*Date*/dateObject, /*String?*/locale){
+// summary: gets the full localized day of the week corresponding to the date object
 	return dojo.date.getNames('days', 'wide', 'format', locale)[dateObject.getDay()]; /*String*/
 };
 
 dojo.date.getDayShortName = function(/*Date*/dateObject, /*String?*/locale){
+// summary: gets the abbreviated localized day of the week corresponding to the date object
 	return dojo.date.getNames('days', 'abbr', 'format', locale)[dateObject.getDay()]; /*String*/
 };
 
 dojo.date.getMonthName = function(/*Date*/dateObject, /*String?*/locale){
+// summary: gets the full localized month name corresponding to the date object
 	return dojo.date.getNames('months', 'wide', 'format', locale)[dateObject.getMonth()]; /*String*/
 };
 
 dojo.date.getMonthShortName = function(/*Date*/dateObject, /*String?*/locale){
+// summary: gets the abbreviated localized month name corresponding to the date object
 	return dojo.date.getNames('months', 'abbr', 'format', locale)[dateObject.getMonth()]; /*String*/
 };
 
-/**
- *
- * Returns a string of the date relative to the current date.
- *
- * @param date The date object
- *
- * Example returns:
- * - "1 minute ago"
- * - "4 minutes ago"
- * - "Yesterday"
- * - "2 days ago"
- */
 //FIXME: not localized
 dojo.date.toRelativeString = function(date) {
+// summary:
+//	Returns a string of the date relative to the current date.  Note: this is not localized yet.  English only.
+//
+// date: a Date object
+//
+// description: Example returns:
+//	 - "1 minute ago"
+//	 - "4 minutes ago"
+//	 - "Yesterday"
+//	 - "2 days ago"
+
 	var now = new Date();
 	var diff = (now - date) / 1000;
 	var end = " ago";
@@ -893,25 +897,24 @@ dojo.date.toRelativeString = function(date) {
 		}
 	}
 	return dojo.date.toShortDateString(date);
-}
+};
 
 //FIXME: SQL methods can probably be moved to a different module without i18n deps
 
-/**
- * Convert a Date to a SQL string, optionally ignoring the HH:MM:SS portion of the Date
- */
 dojo.date.toSql = function(date, noTime) {
-	return dojo.date.strftime(date, "%F" + !noTime ? " %T" : "");
-}
+// summary:
+//	Convert a Date to a SQL string, optionally ignoring the HH:MM:SS portion of the Date
 
-/**
- * Convert a SQL date string to a JavaScript Date object
- */
+	return dojo.date.strftime(date, "%F" + !noTime ? " %T" : "");
+};
+
 dojo.date.fromSql = function(sqlDate) {
+// summary:
+//	Convert a SQL date string to a JavaScript Date object
+
 	var parts = sqlDate.split(/[\- :]/g);
 	while(parts.length < 6) {
 		parts.push(0);
 	}
 	return new Date(parts[0], (parseInt(parts[1],10)-1), parts[2], parts[3], parts[4], parts[5]);
-}
-
+};
