@@ -109,9 +109,9 @@ dojo.html.classMatchType = {
 
 dojo.html.getElementsByClass = function(
 	/* string */classStr, 
-	/* HTMLElement */parent, 
-	/* string */nodeType, 
-	/* integer */classMatchType, 
+	/* HTMLElement? */parent, 
+	/* string? */nodeType, 
+	/* integer? */classMatchType, 
 	/* boolean? */useNonXpath
 ){
 	//	summary
