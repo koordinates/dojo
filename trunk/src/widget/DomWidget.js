@@ -165,7 +165,7 @@ dojo.widget.attachTemplateNodes = function(	/*DomNode*/		rootNode,
 		var baseNode = (x == -1) ? rootNode : nodes[x];
 		// FIXME: is this going to have capitalization problems?  Could use getAttribute(name, 0); to get attributes case-insensitve
 		var attachPoint = [];
-		if(!targetObj.enableSubWidgets || !baseNode.getAttribute('dojoType')){
+		if(!targetObj.widgetsInTemplate || !baseNode.getAttribute('dojoType')){
 			for(var y=0; y<this.attachProperties.length; y++){
 				var tmpAttachPoint = baseNode.getAttribute(this.attachProperties[y]);
 				if(tmpAttachPoint){
@@ -360,7 +360,7 @@ dojo.declare("dojo.widget.DomWidget",
 		// Boolean:
 		//		should we parse the template to find widgets that might be
 		//		declared in markup inside it? false by default.
-		enableSubWidgets: false,
+		widgetsInTemplate: false,
 
 		addChild: function(	/*Widget*/				widget, 
 							/*DomNode, optional*/	overrideContainerNode, 
@@ -607,47 +607,7 @@ dojo.declare("dojo.widget.DomWidget",
 												// will handle population of data
 												// from properties, remote data
 												// sets, etc.
-
-			if(this.enableSubWidgets){
-				var parser = new dojo.xml.Parse();
-		
-				var frag = parser.parseElement(this.domNode, null, true);
-				// createSubComponents not createComponents because frag has already been created
-				dojo.widget.getParser().createSubComponents(frag, this);
-		
-				//connect event to this widget/attach dom node
-				for(var i = 0; i < this.children.length; i++){
-					var widget = this.children[i];
-					if(widget.extraArgs['dojoattachevent']){
-						var evts = widget.extraArgs['dojoattachevent'].split(";");
-						for(var j=0; j<evts.length; j++){
-							var thisFunc = null;
-							var tevt = dojo.string.trim(evts[j]);
-							if(tevt.indexOf(":") >= 0){
-								// oh, if only JS had tuple assignment
-								var funcNameArr = tevt.split(":");
-								tevt = dojo.string.trim(funcNameArr[0]);
-								thisFunc = dojo.string.trim(funcNameArr[1]);
-							}
-							if(!thisFunc){
-								thisFunc = tevt;
-							}
-							if(dojo.lang.isFunction(widget[tevt])){
-								dojo.event.connect(widget, tevt, this, thisFunc);
-							}else{
-								alert(tevt+" is not a function in widget "+widget);
-							}
-						}
-					}
-					if(widget.extraArgs['dojoattachpoint']){
-						//don't attach widget.domNode here, as we do not know which
-						//dom node we should connect to (in checkbox widget case, 
-						//it is inputNode). So we make the widget itself available
-						this[widget.extraArgs['dojoattachpoint']] = widget;
-					}
-				}
-			}
-		},
+	},
 
 		buildFromTemplate: function(/*Object*/args, /*Object*/frag){
 			// summary:
@@ -741,7 +701,108 @@ dojo.declare("dojo.widget.DomWidget",
 			// dojo.profile.start("attachTemplateNodes");
 			this.attachTemplateNodes();
 			// dojo.profile.end("attachTemplateNodes");
-			
+	
+			if(this.widgetsInTemplate){
+				var parser = new dojo.xml.Parse();
+
+				var subContainerNode;
+				//TODO: use xpath here?
+				var subnodes = this.domNode.getElementsByTagName("*");
+				for(var i=0;i<subnodes.length;i++){
+					if(subnodes[i].getAttribute('dojoAttachPoint') == 'subContainerWidget'){
+						subContainerNode = subnodes[i];
+//						break;
+					}
+					if(subnodes[i].getAttribute('dojoType')){
+						subnodes[i].setAttribute('_isSubWidget', true);
+					}
+				}
+		        if (this.isContainer && !this.containerNode){
+                    //no containerNode is available, which means a widget is used as a container. find it here and move
+                    //all dom nodes defined in the main html page as children of this.domNode into the actual container
+                    //widget's node (at this point, the subwidgets defined in the template file is not parsed yet)
+					if(subContainerNode){
+						var src = this.getFragNodeRef(frag);
+						if (src){
+							dojo.dom.moveChildren(src, subContainerNode);
+							//do not need to follow children nodes in the main html page, as they
+							//will be dealt with in the subContainerWidget
+							frag['dojoDontFollow'] = true;
+						}
+					}else{
+						dojo.debug("No subContainerWidget node can be found in template file for widget "+this);
+					}
+				}
+
+				var templatefrag = parser.parseElement(this.domNode, null, true);
+				// createSubComponents not createComponents because frag has already been created
+				dojo.widget.getParser().createSubComponents(templatefrag, this);
+	
+				//find all the sub widgets defined in the template file of this widget
+				var subwidgets = [];
+				var stack = [this];
+				var w;
+				while((w = stack.pop())){
+					for(var i = 0; i < w.children.length; i++){
+						var cwidget = w.children[i];
+						if(cwidget._processedSubWidgets || !cwidget.extraArgs['_issubwidget']){ continue; }
+						subwidgets.push(cwidget);
+						if(cwidget.isContainer){
+							stack.push(cwidget);
+						}
+					}
+				}
+	
+				//connect event to this widget/attach dom node
+				for(var i = 0; i < subwidgets.length; i++){
+					var widget = subwidgets[i];
+					if(widget._processedSubWidgets){
+						dojo.debug("This should not happen: widget._processedSubWidgets is already true!");
+						return;
+					}
+					widget._processedSubWidgets = true;
+					if(widget.extraArgs['dojoattachevent']){
+						var evts = widget.extraArgs['dojoattachevent'].split(";");
+						for(var j=0; j<evts.length; j++){
+							var thisFunc = null;
+							var tevt = dojo.string.trim(evts[j]);
+							if(tevt.indexOf(":") >= 0){
+								// oh, if only JS had tuple assignment
+								var funcNameArr = tevt.split(":");
+								tevt = dojo.string.trim(funcNameArr[0]);
+								thisFunc = dojo.string.trim(funcNameArr[1]);
+							}
+							if(!thisFunc){
+								thisFunc = tevt;
+							}
+							if(dojo.lang.isFunction(widget[tevt])){
+								dojo.event.connect(widget, tevt, this, thisFunc);
+							}else{
+								alert(tevt+" is not a function in widget "+widget);
+							}
+						}
+					}
+	
+					//if an isContainer widget has isSubContainer = 'true', set
+					//it as this.subContainerWidget
+//					if(widget.isContainer && widget.extraArgs['issubcontainer']){
+//						if(this.containerNode){
+//							dojo.debug("this.containerNode is already set for widget "+this+" ("+this.containerNode+", "+this.containerNode_Widget+")");
+//							return;
+//						}
+//	
+//						this.subContainerWidget = widget;
+//					}
+//	dojo.debug(widget);
+					if(widget.extraArgs['dojoattachpoint']){
+						//don't attach widget.domNode here, as we do not know which
+						//dom node we should connect to (in checkbox widget case, 
+						//it is inputNode). So we make the widget itself available
+						this[widget.extraArgs['dojoattachpoint']] = widget;
+					}
+				}
+			}
+		
 			// relocate source contents to templated container node
 			// this.containerNode must be able to receive children, or exceptions will be thrown
 			if (this.isContainer && this.containerNode){
