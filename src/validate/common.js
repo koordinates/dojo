@@ -99,14 +99,11 @@ dojo.validate.isCurrency = function(value, flags) {
   @return  true or false.
 */
 dojo.validate.isInRange = function(value, flags) {
-	//FIXME: due to some widgets using custom separator code, we check for that flag to determine what separator to remove
-	//this would make a great place for i18n support tie in. Currently isNaN is done only if a separator is supplied, otherwise
-	//behavior of isInRange is identical to before
-	if(dojo.lang.has(flags,'separator')){
-		value = value.replace(flags.separator,''); //stripping the seperator allows NaN to perform as expected
-		if(isNaN(value)){
-			return false;
-		}
+	//stripping the seperator allows NaN to perform as expected, if no separator, we assume ','
+	//once i18n support is ready for this, instead of assuming, we default to i18n's recommended value
+	value = value.replace((dojo.lang.has(flags,'separator'))?flags.separator:',','');
+	if(isNaN(value)){
+		return false;
 	}
 	// assign default values to missing paramters
 	flags = (typeof flags == "object") ? flags : {};
