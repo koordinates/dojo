@@ -31,11 +31,15 @@ dojo.hostenv.loadUri = function(uri, cb){
 	try{
 		var local = (new java.io.File(uri)).exists();
 		if(!local){
-			// try it as a file first, URL second. A failure here will cause an exception
-			// and exit the try block (and return false)
-			var stream = (new java.net.URL(uri)).openStream();
-			// close the stream so we don't leak resources
-			stream.close();
+			try{
+				// try it as a file first, URL second
+				var stream = (new java.net.URL(uri)).openStream();
+				// close the stream so we don't leak resources
+				stream.close();
+			}catch(e){
+				// no debug output; this failure just means the uri was not found.
+				return false;
+			}
 		}
 //FIXME: Use Rhino 1.6 native readFile/readUrl if available?
 		if(cb){
