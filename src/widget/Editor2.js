@@ -280,7 +280,7 @@ dojo.widget.defineWidget(
 	"dojo.widget.Editor2DialogContent",
 	dojo.widget.HtmlWidget,
 {
-	enableSubWidgets: true,
+	widgetsInTemplate: true,
 
 	loadContent:function(){
 		return true;
