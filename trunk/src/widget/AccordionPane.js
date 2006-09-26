@@ -14,20 +14,38 @@ dojo.widget.defineWidget(
 	dojo.widget.HtmlWidget,
 {
 	// parameters
-	open: false,
+
+	// String
+	//	Label to print on top of AccordionPane
 	label: "",
-	labelNodeClass: "",
-	containerNodeClass: "",
+
+	// String
+	//	class string for the AccordionPane's dom node
+	"class": "dojoAccordionPane",
+
+	// String
+	//	class string for the AccordionPane's label node
+	labelNodeClass: "label",
+
+	// String
+	//	class string for the AccordionPane's container node
+	containerNodeClass: "accBody",
 	
-	open: true,
+	// Boolean
+	//	If true, this is the open pane
+	open: false,
+
 	templatePath: dojo.uri.dojoUri("src/widget/templates/AccordionPane.html"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/AccordionPane.css"),
 
 	isContainer: true,
 
 	// methods
     fillInTemplate: function() {
+    	dojo.html.addClass(this.domNode, this["class"]);
 		dojo.widget.AccordionPane.superclass.fillInTemplate.call(this);
 		dojo.html.disableSelection(this.labelNode);
+		this.setSelected(this.open);
 	},
 
 	setLabel: function(label) {
@@ -51,5 +69,10 @@ dojo.widget.defineWidget(
 
 	onLabelClick: function() {
 		this.parent.selectPage(this);
+	},
+	
+	setSelected: function(/*Boolean*/ isSelected){
+		this.open=isSelected;
+		(isSelected ? dojo.html.addClass : dojo.html.removeClass)(this.domNode, this["class"]+"-selected");
 	}
 });

@@ -43,19 +43,20 @@ dojo.widget.defineWidget(
 	dojo.widget.HtmlWidget,
 	{
 		isContainer: true,
-		labelNodeClass: "",
-		containerNodeClass: "",
+		labelNodeClass: "label",
+		containerNodeClass: "accBody",
 
 		// Integer
 		//	Amount of time (in ms) it takes to slide panes
 		duration: 250,
 
 		fillInTemplate: function(){
-			// position must be either relative or absolute
 			with(this.domNode.style){
+				// position must be either relative or absolute
 				if(position!="absolute"){
 					position="relative";
 				}
+				overflow="hidden";
 			}
 		},
 
@@ -129,8 +130,7 @@ dojo.widget.defineWidget(
 		selectPage: function(/*Widget*/ page){
 			// summary
 			//	close the current page and select a new one
-			dojo.lang.forEach(this.children, function(child){child.open=false;});
-			page.open=true;
+			dojo.lang.forEach(this.children, function(child){child.setSelected(child==page);});
 
 			// slide each pane that needs to be moved
 			var y = 0;

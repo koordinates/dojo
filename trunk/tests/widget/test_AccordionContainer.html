@@ -13,35 +13,16 @@
 			dojo.require("dojo.widget.*");
 		</script>
 		
-		<style>
-		.label {
-			border: 1px solid black;
-			background: #232323;
-			color: #fff;
-			font-weight: bold;
-		}
-		
-		.label :hover {
-			cursor: pointer;
-		}
-		
-		.accBody {
-			background: #ededed;
-			overflow: auto;
-		}
-		</style>
-		
 		<!-- programatic creation -->
 		<script>
 			var accordion;
 		
 			function init() {
-				accordion = dojo.widget.createWidget("AccordionContainer", 
-					{labelNodeClass: "label", containerNodeClass: "accBody"},
+				accordion = dojo.widget.createWidget("AccordionContainer", null,
 					dojo.byId("accordionShell"));
 				var label=["pane 1", "pane 2", "pane 3"];
 				for(i=0; i<label.length; ++i) {
-					var content = dojo.widget.createWidget("ContentPane", {label: label[i]});
+					var content = dojo.widget.createWidget("ContentPane", {label: label[i], open: i==1});
 					content.setContent("this is " + label[i]);
 					dojo.debug("adding content pane " + content.widgetId);
 					accordion.addChild(content);
@@ -170,6 +151,7 @@
 
 		<h2>Programatically created:</h2>
 		<button onclick="destroyChildren();">destroy children</button>
-		<div id="accordionShell" style="width: 400px; height: 400px; border: dashed blue 2px; overflow: hidden;"></div>
+		<br>
+		<div id="accordionShell" style="width: 400px; height: 400px; border: solid #232323 3px;"></div>
 	</body>
 </html>
