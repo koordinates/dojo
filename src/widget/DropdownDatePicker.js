@@ -79,7 +79,25 @@ dojo.widget.defineWidget(
 			this._synchValueNode();
 			this.hideContainer();
 		},
+		getValue: function(/*Boolean*/displayFormat){
+			// summary: return current date in RFC 3339 format if displayFormat is false otherwise, uses displayFormat that inputNode uses
+			return (displayFormat)?dojo.date.format(this.datePicker.date,{formatLength:this.formatLength, datePattern:this.displayFormat, selector:'dateOnly', locale:this.lang}):dojo.date.toRfc3339(new Date(this.datePicker.date),'dateOnly'); /*String*/
+		},
 
+		getDate: function(){
+			// summary: return current date as a Date object
+			return this.datePicker.date; /*Date*/
+		},
+
+		setValue: function(/*Date|String*/rfcDate){
+			//summary: set the current date from RFC 3339 formatted string or a date object, synonymous with setDate
+			this.datePicker.setDate(rfcDate);
+		},			
+			
+		setDate: function(/*Date|String*/rfcDate){
+			this.datePicker.setDate(rfcDate);
+		},
+		
 		onInputChange: function(){
 			if(this.dateFormat){
 				dojo.deprecated("dojo.widget.DropdownDatePicker",
