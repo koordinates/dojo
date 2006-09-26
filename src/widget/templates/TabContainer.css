@@ -5,6 +5,8 @@
 .dojoTabPaneWrapper {
 	border : 1px solid #6290d2;
 	_zoom: 1; /* force IE6 layout mode so top border doesnt disappear */
+	display: block;
+	clear: both;
 }
 
 .dojoTabLabels-top {
@@ -12,6 +14,10 @@
 	margin-bottom : -1px;
 	width : 100%;
 	z-index: 2;	/* so the bottom of the tab label will cover up the border of dojoTabPaneWrapper */
+}
+
+.dojoTabNoLayout {
+	display: block;
 }
 
 .dojoTabNoLayout.dojoTabLabels-top .dojoTab {
