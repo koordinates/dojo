@@ -24,7 +24,7 @@ dojo.profile.ProfileHelper = {
 									//  note: you must set these AFTER mixing in the ProfileHelper
 
 	_profile : true,				// if true, we do profiling in this class
-	_autoDebugProfile : true,		// if true, we output debug information when profiling finishes
+	_autoDebugProfile : false,		// if true, we output debug information on this.endProfile()
 	_profileMinTime : 1,			// if > 0, we only output if debug total time is > minTime
 	
 	startProfile : function(name) {

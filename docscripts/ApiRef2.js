@@ -1,5 +1,5 @@
 var ApiRef = {
-	_debug : true,
+	_debug : false,
 
 	_showFunctionsInTree : false,				// set to true to show individual function entries in the fucntion tree
 												//	NOTE: setting this to true makes building the tree VERY slow
@@ -7,13 +7,45 @@ var ApiRef = {
 	
 	skipProtected : false,		// set to false to show protected variables
 
-	functionMap : {},
-	classMap : {},
-	treeNodeMap : {},
+	// initialize the data structures we'll be building below
+
+	functionList : [],
+
+	// HACK: initialize any wierd values in the source data below to make things work
+	functionMap : {
+	
+			// make the dojo object first, since the load order is indeterminate and a package may be loaded before dojo
+			dojo 							: {	type: "package",	pkgName : "dojo",		ref : "dojo"	},
+			"dojo.io.cometd"	 			: { type: "package",	pkgName : "dojo.io",	ref : "dojo.io.cometd" },
+			"cometd" 						: { type: "package",	pkgName : "dojo.io",	ref : "dojo.io.cometd" },
+			"cometd.callbackPollTransport"	: { type: "method",		pkgName : "dojo.io",	ref : "dojo.io.cometd", 		dontPromote:true},
+			"cometd.iframeTransport"		: { type: "method",		pkgName : "dojo.io",	ref : "dojo.io.cometd", 		dontPromote:true},
+			"cometd.longPollTransport"		: { type: "method",		pkgName : "dojo.io",	ref : "dojo.io.cometd", 		dontPromote:true},
+			"cometd.mimeReplaceTransport"	: { type: "method",		pkgName : "dojo.io",	ref : "dojo.io.cometd", 		dontPromote:true},
+			"dojo.widget.a11y"				: { type: "package",	pkgName : "dojo.widget",ref : "dojo.widget.Checkbox"}
+//			"dojo.widget.html.loader"		: { type: "method",		pkgName : "dojo.io",	ref : "dojo.io.cometd", dontPromote:true}
+	},
+
+	// items here will be skipped from the tree entirely
+	skipItems : {
+		"dojo.widget.html.loader":true,
+		"cometd.callbackPollTransport":true
+	},
+
+
 	pkgDataCache : {},
-	itemDataCache : {},
 	
 	init : function() {
+		// set up debugging and profiling, based on cookie values
+		//	use the debug menu to turn this on and off
+		this._debug = (dojo.io.cookie.getCookie("ApiRef_debug") == "true")
+		if (this._debug) dojo.debug("ApiRef.debugging is on (use debug menu to change).");
+
+		this._profile = (dojo.io.cookie.getCookie("ApiRef_profile") == "true");
+		this._autoDebugProfile = (this._profile && this._debug);
+		if (this._profile) dojo.debug("ApiRef.profiling is on (use debug menu to change).");
+		
+		// load the list of functions and start everything going when that's done
 		this.functionNameLoader = dojo.docs.require("function_names");
 		this.functionNameLoader.callback = function(data){ApiRef.initObjectTree(data)};
 	},
@@ -42,9 +74,11 @@ var ApiRef = {
 
 	},
 	
-	showReference : function(name, pkgName) {
-	// XXX THIS SEEMS DANGEROUS...
-		if (pkgName == null) pkgName = this.getItemPackageName(name);
+	showReference : function(name) {
+		var pkgName = this.getItemPackageName(name);
+		if (pkgName == null) {
+			return dojo.debug("ApiRef.showReference("+name+"): can't find package");
+		}
 		if (this._debug) dojo.debug("ApiRef.showReference("+name+","+pkgName+")");
 
 		var callback = function(pkgData) {
@@ -54,22 +88,23 @@ var ApiRef = {
 	},
 	
 	showReferenceCallback : function (name, pkgName) {
-		var itemType = this.getItemType(name);
+		var item = this.getItem(name);
+		if (this._debug) dojo.debug("ApiRef.showReferenceCallback("+name+","+pkgName+"): looks like a " + item.type);
 
-		if (this._debug) dojo.debug("ApiRef.showReferenceCallback("+name+","+pkgName+"): looks like a " + itemType);
-		var itemData = this.getItemData(name, pkgName);
+		var itemData = this.getItemData(name);
+
 		var output;
-		switch (itemType) {
+		switch (item.type) {
 			case "package":
-				output = this.outputPackage(itemData, name, pkgName);
+				output = this.outputPackage(itemData, name);
 				break;
 				
 			case "class":
-				output = this.outputClass(itemData, name, pkgName)
+				output = this.outputClass(itemData, name)
 				break;
 				
 			case "method":
-				output = this.outputMethod(itemData, name, pkgName);
+				output = this.outputMethod(itemData, name);
 				break;
 		}
 		this.setContent(output);
@@ -79,34 +114,25 @@ var ApiRef = {
 		dojo.byId("searchBox").value = name;
 	},
 	
-	getItemType : function(name) {
-		// summary
-		// 	approximate the item type based on the length and shape of the name
-		//	returns: "package", "class" or "method"
-		var split = name.split("."),
-			leaf = split[split.length-1]
-		;
-		if (this.classMap[name]) {
-			// handle "dojo" or "dojo.collections"
-			if (split.length == 1 || split.length == 2) {
-				return "package";
-			}
+	getItem : function(name) {
+		return this.functionMap[name];
+	},
 
-			var leafStart = leaf.charAt(0);
-			if (leafStart.toLowerCase() != leafStart) {
-				// starts with a capital -- probably a class
-				return "class";
-			} else {
-				return "package";
-			}
-		} else {
-			return "method";
-		}
+	getItemType : function(name) {
+		// summary: Return the display type for this item.
+		//	returns: "package", "class" or "method"
+		
+		return this.getItem(name).type;
 	},
 	
-	getItemPackageName : function(name, pkgName) {
-		if (pkgName != null) return pkgName;
-		return name.split(".").slice(0,2).join(".");
+	getItemPackageName : function(name) {
+		var item = this.getItem(name);
+		return (item ? item.pkgName : null);
+	},
+
+	getItemReferenceName : function(name) {
+		var item = this.getItem(name);
+		return (item ? item.ref : null);
 	},
 	
 	getItemLeafName : function(name) {
@@ -119,58 +145,101 @@ var ApiRef = {
 		return name.slice(0, name.length - 1).join(".");
 	},
 	
-	getItemData : function(name, pkgName, pkgData) {
-		if (this.itemDataCache[name]) return this.itemDataCache[name];
+	getItemData : function(name) {
+		if (this.functionMap[name].data) return this.functionMap[name].data;
 
-		if (pkgName == null) pkgName = this.getItemPackageName(name);
-		if (pkgData == null) pkgData = this.getPkgData(pkgName);
-		
-		if (pkgData == null) throw("Couldn't get package for "+pkgName+" ("+name+")");
-		
-		var itemType = this.getItemType(name);
-		if (itemType == "package") return (this.itemDataCache[name] = pkgData);
+		var item = this.getItem(name),
+			pkgData = this.getPkgData(item.pkgName)
+		;
+		if (pkgData == null) throw("Couldn't get package for "+pkgName+" ("+name+":"+ref+")");
 
-		var split = name.split(".");
+		var data = this._getItemData(name, item.type, item.ref, item.pkgName, pkgData);
+//		if (data == null) {
+//			data = this._getItemData(ref, refItem);
+//		}
 		
+		this.functionMap[name].data = data;
+		return data;
+	},
+
+	_getItemData : function(name, type, ref, pkgName, pkgData) {
+		if (this._debug) dojo.debug("_getItemData(",name, type, ref, pkgName, pkgData,")");
+
+		if (type == "package") {
+			if (ref != pkgName && pkgData[ref]) {
+				//dojo.debug("getting pkg contents"+ref);
+				pkgData = pkgData[ref];
+			}
+			return pkgData;
+		}
+
 		// get the class
-		var className = (itemType == "class" ? name : this.getItemParentName(name));
-		var classData = pkgData[className];
+///		var className = (type == "class" ? name : ref);//this.getItemParentName(name));
+		var classData = this._getClassData(ref, pkgData);
+		if (classData == null) {
+			classData = this._getClassData(name, pkgData);	
+		}
 		
-		if (itemType == "class") {
-			return (this.itemDataCache[className] = classData);
+		if (type == "class") {
+			return classData;
 		}
 
 		// method
-		if (classData == null) return null
-		if (classData && classData.meta) classData = classData.meta;
-		var method = classData.functions[name];
-		if (method && method._) method = method._;
-		if (method && method.meta) method = method.meta;
-		return (this.itemDataCache[name] = method);
+		return this._getMethodData(name, classData);
 	},
 	
+	_getClassData : function (name, data) {
+		return data[name];
+	},
+	
+	_getMethodData : function(name, data) {
+		if (data == null) return null;
+		if (data.meta) data = data.meta;
+		var method = data.functions[name];
+		if (method && method._) method = method._;
+		if (method && method.meta) method = method.meta;
+		return method;	
+	},
+
 	
 	setContent : function(html, add) {
 		var el = dojo.byId("content");
 		if (add == true) {
 			el.innerHTML += html;
 		} else {
-			el.innerHTML = html;
+			el.innerHTML = "<span id='contentTop'></span>" + html;
 		}
+		dojo.html.scrollIntoView(dojo.byId("contentTop"));
 	},
-	
-	onToggleMethod : function(methodName, pkgName, el) {
-		var methodData = this.getItemData(methodName, pkgName);
-		if (methodData == null) {
-			return dojo.debug("onToggleMethod("+methodName+","+pkgName+"): can't load method data");	
+
+	onToggleClass : function(className, el) {
+		var classData = this.getItemData(className);
+		if (classData == null) {
+			return dojo.debug("onToggleClass("+className+"): can't load class data");	
 		}
 	
 		if (el.className == "itemLinkCollapsed") {
 			el.className = "itemLinkExpanded";
-			this.wipeReplace(methodName, this.outputMethodDetails(methodData, methodName), 200, 500);
+			this.wipeReplace("class-"+className, this.outputClassDetails(classData, className), 200, 500);
 		} else {
 			el.className = "itemLinkCollapsed";
-			this.wipeReplace(methodName, this.outputMethodSummary(methodData, methodName), 500, 200);
+			this.wipeReplace("class-"+className, this.outputClassSummary(classData, className), 500, 200);
+		}
+	},
+
+	
+	onToggleMethod : function(methodName, el) {
+		var methodData = this.getItemData(methodName);
+		if (methodData == null) {
+			return dojo.debug("onToggleMethod("+methodName+"): can't load method data");	
+		}
+	
+		if (el.className == "itemLinkCollapsed") {
+			el.className = "itemLinkExpanded";
+			this.wipeReplace("method-"+methodName, this.outputMethodDetails(methodData, methodName), 200, 500);
+		} else {
+			el.className = "itemLinkCollapsed";
+			this.wipeReplace("method-"+methodName, this.outputMethodSummary(methodData, methodName), 500, 200);
 		}
 	},
 
@@ -185,22 +254,43 @@ var ApiRef = {
 	},
 
 	
-	outputPackage : function(pkgData, packageName, pkgName) {
+	outputPackage : function(pkgData, packageName) {
 		var output = [];
 		output.push("<div class='packageHeader'>Package:", packageName, "</div>");
 		output.push("<div class='packageContainer'>");
 		for (var className in pkgData) {
 			var classObj = pkgData[className];
-			output.push(this.outputClass(classObj, className, pkgName));
+			output.push(this.outputClass(classObj, className));
 		}
 		output.push("</div>");	// packageContainer
 		return output.join("\n");
 	},
 	
-	outputClass : function(classObj, className, pkgName) {
+	outputClass : function(classObj, className, showDetails) {
+		showDetails = (showDetails != false);
+		
 		var output = [];
-		output.push("<div class='classHeader'>Class: ", className, "</div>");
-		output.push("<div class='classContainer'>");
+		if (className != "meta") {
+			if (showDetails) {
+				output.push("<div class='classHeader'>Class: ", className, "</div>");			
+			} else {
+				output.push("<div class='classHeader'>", this.outputItemLink(className, "onToggleClass('"+className+"',this)", "itemLinkCollapsed classLink"), "</div>");
+			}
+		}
+		output.push("<div id='class-", className, "' class='classContainer'>");
+		if (showDetails) {
+			output.push(this.outputClassDetails(classObj, className));
+		}
+		output.push("</div>");	// classContainer
+		return output.join("");
+	},
+	
+	outputClassSummary : function(classObj, className) {
+		return "";
+	},
+
+	outputClassDetails : function(classObj, className) {
+		var output = [];
 
 		try {
 			var requires = classObj.meta.requires.common;
@@ -226,7 +316,7 @@ var ApiRef = {
 			
 				// if both are present, write them in a table next to each other
 				var bothPresent = (propList != null && handlerList != null);
-				if (bothPresent) output.push("<table class='classParamsTable'><tr><td class='classParamTableCell'>");
+				if (bothPresent) output.push("<table class='classParamTable'><tr><td class='classParamTableCell'>");
 
 				if (propList) {
 					output.push("<div class='classLabel'>Instance Variables:</div>");
@@ -253,7 +343,7 @@ var ApiRef = {
 			var constructor = classObj.meta.functions[className]._.meta;
 			if (constructor) {
 				output.push("<div class='classLabel'>Constructor:</div>");
-				output.push(this.outputMethod(constructor, className, pkgName));
+				output.push(this.outputMethod(constructor, className));
 			}
 		} catch (e) {
 //			output.push(className, ": No constructor</div>");
@@ -261,15 +351,26 @@ var ApiRef = {
 
 		// output the methods
 		try {
-			var methods = classObj.meta.functions;
+//dojo.debug(className,"co:",classObj);
+			var methods = classObj.functions || classObj.meta.functions;
 			var wroteAMethod = false;
 			if (methods != null) {
 				output.push("<div class='classLabel'>Methods:</div>");
+				// sort the methodNames
+				var names = [];
 				for (var methodName in methods) {
+					names.push(methodName);
+				}
+				names.sort(this._caseInsensitiveSort);
+
+				// now output all the methods
+				for (var i = 0, len = names.length; i < len; i++) {
+					var methodName = names[i];
 					if (methodName == className) continue;
 	
+//dojo.debug(methodName, methods[methodName]);
 					var method = methods[methodName]._.meta;
-					output.push(this.outputMethod(method, methodName, pkgName));
+					output.push(this.outputMethod(method, methodName));
 					wroteAMethod = true;
 				}
 				if (!wroteAMethod) {
@@ -279,11 +380,10 @@ var ApiRef = {
 		} catch (e) {
 			output.push("<div class='emptyMethods'>(No methods)</div>");
 		}
-		output.push("</div>");	// classContainer
 		return output.join("");
 	},
 	
-	outputMethod : function(methodData, methodName, pkgName) {
+	outputMethod : function(methodData, methodName) {
 		if (methodData == null) {
 			dojo.debug("ApiRef.outputMethod("+methodName+"): method data is null");
 			return "";
@@ -291,7 +391,7 @@ var ApiRef = {
 
 		var shortName = methodName.split(".");
 		shortName = shortName[shortName.length - 1];
-		var isProtected = shortName.indexOf("_") == 0;
+		var isProtected = (shortName.indexOf("_") == 0);
 		if (isProtected && this.skipProtected) {
 			if (this._debug) dojo.debug("skipping protected method " + methodName);
 			return "";
@@ -299,7 +399,7 @@ var ApiRef = {
 
 		var output = [];
 		output.push("<div class=methodHeader>");
-		output.push(this.outputItemLink(methodName, "onToggleMethod('"+methodName+"','"+pkgName+"',this)", "itemLinkCollapsed"), "(");
+		output.push(this.outputItemLink(methodName, "onToggleMethod('"+methodName+"',this)", "itemLinkCollapsed"), "(");
 		if (methodData.parameters) {
 			var paramOutput = [];
 			for (var paramName in methodData.parameters) {
@@ -314,14 +414,14 @@ var ApiRef = {
 			}
 			output.push("<span class=paramsList>", paramOutput.join(", "),  "</span>");	
 		}
-		output.push(")");
+		output.push(" )");
 		if (methodData.returns) {
 			output.push(" <i>returns</i> ", this.outputItemLink(methodData.returns));
 		}
 
 		output.push("</div>");
 
-		output.push("<div class=methodContainer id='", methodName, "'>");
+		output.push("<div class=methodContainer id='method-", methodName, "'>");
 	
 		output.push(this.outputMethodSummary(methodData, methodName));
 
@@ -356,19 +456,39 @@ var ApiRef = {
 		}
 
 		if (methodData.src) {
-			output.push("<div class=methodLabel>Source:</div>", "<div class=methodSource>", methodData.src, "</div>");
+			
+			output.push("<div class=methodLabel>Source:</div>", "<div class=methodSource>", this.outputSrc(methodData.src), "</div>");
 		}
 
 		output.push("</div>");
 		return output.join("");
 	},
 	
+
+	_colorizeTargets : [
+		{re:/\t/g, replacement:"    "},
+		{re:/'(.*?)'/g, replacement:"<span class='sourceString'>'$1'</span>"},
+		{re:/"(.*?)"/g, replacement:"<span class='sourceString'>\"$1\"</span>"},
+		{re:/(dojo[\.\w]*)/g, replacement:"<span class='sourceDojoRef' onclick=\"ApiRef.showReference('$1')\">$1</span>"},
+		{re:/(\W)(break|case|catch|continue|delete|do|else|false|finally|for|function|if|in|instanceof|new|return|switch|this|true|try|typeof|var|void|while|with)(?=\W)/g, replacement:"$1<span class='sourceKeyword'>$2</span>" },
+		{re:/(\/\/.*)\n/g, replacement:"<span class='sourceComment'>$1</span>\n"}
+	],
+	outputSrc : function(src) {
+		for (var i = 0; i < this._colorizeTargets.length; i++) {
+			var re = this._colorizeTargets[i].re,
+				replacement = this._colorizeTargets[i].replacement
+			;
+			src = src.replace(re, replacement);
+		}
+		return src;
+	},
+	
 	
 	outputParameters : function(params, filteredList) {
 		var output = [];
 			output.push("<div class='paramsContainer'>");
-			output.push("<table class='paramsTable'>");
-			output.push("<tr><td class=paramsHeader>Type</td><td class=paramsHeader>Name</td><td class=paramsHeader>Description</td></tr>");
+			output.push("<table class='paramTable'>");
+			output.push("<tr><td class=paramHeader>Type</td><td class=paramHeader>Name</td><td class=paramHeader>Description</td></tr>");
 
 			if (filteredList == null) {
 				for (var name in params) {
@@ -424,7 +544,7 @@ var ApiRef = {
 	outputItemLink : function(name, linkMethod, className, contentPrefix, contentSuffix) {
 		if (name == null || typeof name != "string") return name;
 		var split = name.split(".");
-		if (split.length == 1) return name;
+//		if (split.length == 1) return name;
 		
 		var searchName = name;
 		if (split[split.length - 1] == "*") {
@@ -453,6 +573,19 @@ var ApiRef = {
 	
 	
 	
+	//
+	//	event handling
+	//
+	searchBoxKeyPress : function(event, el) {
+		if (event.which == 13) {
+			setTimeout(function(){
+							el.onblur();
+							el.select();
+						}, 0);
+		}
+	},
+	
+	
 	
 		
 	//
@@ -465,13 +598,11 @@ var ApiRef = {
 	
 		ApiRef.buildObjectTree();
 		
-		var cookieItem = dojo.io.cookie.getCookie("ApiRef_lastItem"),
-			cookiePkg = dojo.io.cookie.getCookie("ApiRef_lastPkg")
-		;
-		if (cookieItem != null && cookiePkg != null) {
-			ApiRef.showReference(cookieItem, cookiePkg);
+		var cookieItem = dojo.io.cookie.getCookie("ApiRef_lastItem");
+		if (cookieItem != null) {
+			ApiRef.showReference(cookieItem);
 		} else {
-			ApiRef.showReference("dojo","dojo");
+			ApiRef.showReference("dojo");
 		}
 	},
 
@@ -483,8 +614,11 @@ var ApiRef = {
 		var controller = this.treeController = dojo.widget.createWidget("TreeBasicControllerV3");
 		var tree = this.tree = dojo.widget.createWidget("TreeV3", {listeners: [controller.widgetId]});
 
+		// make the map of nodes, which also figures out their types
+		this.buildFunctionMap();
+
 		// make the tree from the function map and expand it to level 1
-		ApiRef.buildObjectTreeNodes();
+		this.buildObjectTreeNodes();
 
 		controller.expandToLevel(tree, 1);
 
@@ -498,144 +632,203 @@ var ApiRef = {
 		this.endProfile("buildObjectTree");
 	},
 
-	//
-	//	creating the tree of functions
-	//
-	//	yields:  object with properties of string (terminal) or object (nested)
-	buildObjectTreeNodes : function(mapOnly) {
-		this.clearProfile("buildObjectTreeNodes");
-		this.startProfile("buildObjectTreeNodes");
+	buildFunctionMap : function() {
+		// summary: Build the data structures from the "function_names" file needed to display things.
+		// description:
+		//	Populates two objects:
+		//		ApiRef.functionList	: a sorted array of all of the functions the parser told us about
+		//		ApiRef.functionMap	: an object listing each function, and its:
+		//				.type		: "method", "class" or "package"
+		//				.pkgName	: local_json file it comes from
+		//				.ref	: high-level object it can be found in (ie: for 'nested classes' listed under superclass)
+		this.startProfile("buildFunctionMap");
+
 		// list items whos output is non-standard in the function_names that you want to skip
-		var skipItems = {
-			"dojo.widget.html.loader":true
-		}
 
-		// put the "dojo" node in there first to make sure its filename is set correctly
-		this.makeTreeNode("dojo","dojo");
 
-		var classes = this.function_names;
-		var map = this.functionMap = {};
-		var count = 0;
-		for (var className in classes) {
-			var split = className.split(".");
-			var leaf = split[split.length - 1];
-			var list = classes[className];
+		var functions = this.function_names;
+				
+		for (var className in functions) {
+			var fnList = functions[className];
+			var leafName = this.getItemLeafName(className);
 
-			if (skipItems[className] != null) {
-				if (this._debug) dojo.debug("Skipping non-standard item: " + className);
-				continue;
-			}
+			// get the pkgName, which is the first two items of the className
+			//  XXX I'm not sure this is always correct
+			var pkgName = className.split(".").slice(0,2).join(".");
 
 			// if entry ends with "_", it's a package -- strip off the "_"
-			if (leaf == "_") {
+			if (leafName == "_") {
 				className = this.getItemParentName(className);
 			}
 
-			// add it to the list of "classes"
-			this.classMap[className] = true;
-			
+			// add the item itself to the tree
+			this._addToFunctionMap(className, className, pkgName);
 
-			// if "_maxTreeNodes" is set, stop after that many items
-			if (this._showFunctionsInTree && this._maxTreeNodes && count++ > this._maxTreeNodes) break;
-			
-			// get the pkgName, which is the first two items of the className
-			var pkgName = this.getItemPackageName(className);
-			if (mapOnly != true) this.makeTreeNode(className, pkgName);
-			this.addToMap(map, className);
-			for (var i = 0; i < list.length; i++) {
-				var fn = list[i];
-				if (this.getTreeNodeByPath(fn)) continue;
-
+			for (var i = 0; i < fnList.length; i++) {
+				var fn = fnList[i];
+				
 				if (fn.charAt(0) == "[") {
 					if (this._debug) dojo.debug("Skipping array item: " + fn);
 					continue;			
 				}
-				if (this._showFunctionsInTree != true) {
-					var split = fn.split(".");
-					var firstChar = split[split.length - 1].charAt(0);
-					if (firstChar == "_" || firstChar.toLowerCase() == firstChar  || !isNaN(parseInt(firstChar))) continue;
-				}
-				if (mapOnly != true) this.makeTreeNode(fn, pkgName);
-				this.addToMap(map, fn);
+
+				this._addToFunctionMap(fn, className, pkgName);
+				continue;
 			}
 		}
-		this.endProfile("buildObjectTreeNodes");
-	},
-	
-	getTreeNodeByPath : function(fullName) {
-		return this.treeNodeMap[fullName];
+		
+		this.startProfile("buildFunctionMap:sort");
+		// get the full list of functions and sort them
+		var fnList = this.functionList = [];
+		var map = this.functionMap;
+		for (var fn in map) {
+			fnList.push(fn);
+		}
+		this.functionList.sort(this._caseInsensitiveSort);
+
+		// now re-build the map based on the sorted list
+		var sortedMap = {};
+		for (var i = 0, len = fnList.length; i < len; i++) {
+			sortedMap[fnList[i]] = map[fnList[i]];
+		}
+		this.functionMap = sortedMap;
+
+		this.endProfile("buildFunctionMap:sort");
+		
+		this.endProfile("buildFunctionMap");
 	},
 
-	getNodeParent : function(fullName, pkgName) {
+	_caseInsensitiveSort : function(a,b) {
+		var A = a.toLowerCase();
+		var B = b.toLowerCase();
+		if (A == B) return 0;
+		if (A < B) return -1;
+		return 1;
+	},
+
+	_addToFunctionMap : function(name, ref, pkgName) {
+		if (name == "") return;
+//???	if (this.getItem(name) != null) {return;}
+		var split = name.split(".");
+		for (var i = 0, len = split.length - 1; i < len; i++) {
+			var parentName = split.slice(0,i+1).join(".");
+			if (this.functionMap[parentName] == null) {
+//dojo.debug("adding parent " +parentName);
+				this.functionMap[parentName] = {
+					ref : parentName,
+					pkgName : pkgName,
+					type : (this._looksLikeAClass(parentName) && !this.skipItems[parentName] ? "class" : "method")
+				}
+			} else if (this.functionMap[parentName].type == "method" && !this.functionMap[parentName].dontPromote) {
+//dojo.debug("promoting parent " +parentName);
+				this.functionMap[parentName].type = "package";
+			}
+		}
+		if (this.functionMap[name] == null) {
+			this.functionMap[name] = {
+				ref : ref,
+				pkgName : pkgName,
+				type : (this._looksLikeAClass(split) ? "class" : "method")
+			}
+//			this.functionList.push(name);
+		}
+	},
+	
+	_looksLikeAClass : function(name) {
+		if (name.constructor == String) name = name.split(".");
+		var firstChar = name[name.length - 1].charAt(0);
+		return (firstChar != "_" && firstChar.toLowerCase() != firstChar  && isNaN(parseInt(firstChar)));
+	},
+
+	//
+	//	creating the tree of functions
+	//
+	//	yields:  object with properties of string (terminal) or object (nested)
+	buildObjectTreeNodes : function() {
+		this.startProfile("buildObjectTreeNodes");
+		var fnList = this.functionList,
+			fnMap = this.functionMap
+		;
+		
+		for (var i = 0, len = fnList.length; i < len; i++) {
+			var name = fnList[i],
+				item = fnMap[name]
+			;
+			this.makeTreeNode(name, null);	
+		}
+		
+		this.endProfile("buildObjectTreeNodes");
+	},
+
+	getTreeNode : function(fullName) {
+		return this.getItem(fullName).node;
+	},
+
+	getNodeParent : function(fullName) {
 		var parentName = this.getItemParentName(fullName);
 		// if a top-level node, parent is the tree itself
 		if (parentName == "") return this.tree;
 		
-		var parent = this.getTreeNodeByPath(parentName);
+		var parent = this.getTreeNode(parentName);
 		if (parent) return parent;
 
 		// if not found, build up to it
 		parentName = parentName.split(".");
 		var ancestorName = "";
 		var parent = this.tree;
-		for (var i = 0; i < parentName.length; i++) {
-			ancestorName += parentName[i];
-			var node = this.treeNodeMap[ancestorName];
+		for (var i = 0, len = parentName.length; i < len; i++) {
+			ancestorName = parentName.slice(0,i+1).join(".")
+//dojo.debug(ancestorName);
+			var node = this.getTreeNode(ancestorName);
 			if (!node) {
-				node = this.makeTreeNode(ancestorName, pkgName, parent);
+//dojo.debug("making parent node ",ancestorName);
+				node = this.makeTreeNode(ancestorName, parent);
 			}
 			parent = node;
-			ancestorName += ".";
 		}
 		return parent;
 	},
 
-	makeTreeNode : function (fullName, pkgName, parent) {
-		var node = this.getTreeNodeByPath(fullName);
+	makeTreeNode : function (fullName, parent) {
+		var node = this.getTreeNode(fullName);
 		if (node) return node;
 		
-		var split = fullName.split(".");
-		var title = split[split.length - 1];
+		var title = this.getItemLeafName(fullName);
 
 		if (parent == null) {
-			parent = this.getNodeParent(fullName, pkgName);
+			parent = this.getNodeParent(fullName);
 		}
 		
-		var node = dojo.widget.createWidget("TreeNodeV3", {title:title, pkgName:pkgName, fullName:fullName, tree:this.tree.widgetId, toggle:"wipe"});
-		node.toggleDuration = 400;
-		node.onHideChildren = function() {
-			this.inherited("onHideChildren", arguments);
-			//HACK: the wipe toggle pops the node back to full size at the end of the hide...
-			this.containerNode.style.display = "none";	
+		var mapItem = this.getItem(fullName);
+		if (mapItem.type != "method") {
+			if (this._debug) title = title + "<span class='tinyGray'>("+mapItem.type.charAt(0).toUpperCase() + ":" + mapItem.ref + ")</span>";
+			var node = dojo.widget.createWidget("TreeNodeV3", {title:title, fullName:fullName, tree:this.tree.widgetId});
+			node.toggleDuration = 250;
+	//		node.toggle= "wipe";
+	
+			node.onHideChildren = function() {
+				this.inherited("onHideChildren", arguments);
+				//HACK: the wipe toggle pops the node back to full size at the end of the hide...
+				this.containerNode.style.display = "none";	
+			}
+			
+			node.viewFocus = function() {
+				dojo.widget.TreeNodeV3.prototype.viewFocus.apply(this, arguments);
+				if (ApiRef._debug) dojo.debug("viewFocus on " + this.fullName);
+				ApiRef.showReference(this.fullName);
+			}
+	
+			parent.addChild(node);
+			
+	
+			this.functionMap[fullName].node = node;
+			this.functionMap[fullName].hasNode = true;
 		}
 		
-		node.viewFocus = function() {
-			dojo.widget.TreeNodeV3.prototype.viewFocus.apply(this, arguments);
-			if (this._debug) dojo.debug("viewFocus on " + this.fullName);
-			ApiRef.showReference(this.fullName, this.pkgName);
-		}
-		this.treeNodeMap[fullName] = node;
-		parent.addChild(node);
 		return node;
 	},
 
 
-
-	addToMap : function(map, name) {
-		var split = name.split(".");
-		var head = map;
-		for (var i = 0; i < split.length; i++) {
-			var it = split[i];
-			if (typeof head[it] == "string") {
-				head[it] = {};
-			} else if (head[it] == null) {
-				head[it] = (i == split.length - 1 ? name : {});
-			}
-			head = head[it];
-		}
-	},
-	
-	
 
 	
 	
@@ -651,20 +844,38 @@ var ApiRef = {
 		el.selectedIndex = 0;
 	},
 	
-	debugObjectTree : function(rebuild, showFunctions) {
-		if (rebuild == true) {
-			this._showFunctionsInTree = (showFunctions == true);
-			this.buildObjectTreeNodes(true);
-		}
-		this.setContent("<H2>Items shown in the object tree</h2>"+ApiRef.objectToHtml(this.functionMap, true));
+	debugMessageToggle : function() {
+		this._debug = (this._debug ? false : true);
+		this._autoDebugProfile = (this._profile && this._debug);
+		dojo.io.cookie.setCookie("ApiRef_debug", ""+this._debug, -1);
+		alert("Debugging is now " + (this._debug ? "on." : "off."));
+	},
+	
+	debugProfileToggle : function() {
+		this._profile = (this._profile ? false : true);
+		this._autoDebugProfile = (this._profile && this._debug);
+		dojo.io.cookie.setCookie("ApiRef_profile", ""+this._profile, -1);
+		alert("Profiling is now " + (this._profile ? "on." : "off."));
 	},
 	
 	debugFunctionNames : function() {
 		this.setContent("<H2>Function Names (from local_json/function_names)</h2>"+ApiRef.objectToHtml(ApiRef.function_names, true, null));
 	},
+
+	debugKnownFunctions : function() {
+		this.setContent("<H2>List of known functions:</h2>"+ApiRef.objectToHtml(this.functionList, true));
+	},
 	
-	debugClassMap : function() {
-		this.setContent("<H2>List of 'Classes'</h2>"+ApiRef.objectToHtml(ApiRef.classMap, true, null));
+	debugFunctionMap : function(rebuild, showFunctions) {
+		if (rebuild == true) {
+			this._showFunctionsInTree = (showFunctions == true);
+			this.buildObjectTreeNodes(true);
+		}
+		var fieldList = ["type","ref","pkgName", "hasNode"]
+			getRowClassFn = function(prop, item) {
+				return (prop != item.ref ? "hiliteRow" : "normalRow");
+			}
+		this.setContent("<H2>Items shown in the object tree</h2>"+ApiRef.objectToTable(this.functionMap, fieldList, getRowClassFn));
 	},
 	
 	debugItemData : function(itemName) {
@@ -675,7 +886,7 @@ var ApiRef = {
 		}
 		var pkgName = this.getItemPackageName(itemName);
 		var callback = function() {
-			var itemData = ApiRef.getItemData(itemName, pkgName);
+			var itemData = ApiRef.getItemData(itemName);
 			var itemType = ApiRef.getItemType(itemName);
 			ApiRef.setContent("<H2>Data for item '"+itemName+"' which looks like a "+itemType+"</h2>"+ApiRef.objectToHtml(itemData, true, null));	
 		}
@@ -701,14 +912,13 @@ var ApiRef = {
 
 }
 
-dojo.addOnLoad(ApiRef.init);
+dojo.addOnLoad(dojo.lang.hitch(ApiRef, ApiRef.init));
 
 
 // mix in the profiling helper code
 dojo.lang.mixin(ApiRef, dojo.profile.ProfileHelper);
-this._profile = false;
-this._autoDebugProfile = false;
-
+ApiRef._profile = false;
+ApiRef._autoDebugProfile = false;
 
 
 
@@ -766,4 +976,29 @@ ApiRef._objectToString = function(/*Object*/ it, /*Boolean*/ sort, /*String*/ in
 			}
 			return ["{\n", nextIndent, output.join(",\n" + nextIndent), "\n", indent, "}"].join("");
 	}
+}
+
+
+ApiRef.objectToTable = function(object, outputFields, getRowClassFn) {
+	var output = [];
+	for (var prop in object) {
+		var item = object[prop];
+		var className = (getRowClassFn ? getRowClassFn(prop, item) : "normalRow");
+		var itemOut = ["<tr class='", className, "'><td style='font-size:small'>", prop, " </td>"];
+		for (var f = 0, flen = outputFields.length; f < flen; f++) {
+			itemOut.push("<td style='font-size:small'>", item[outputFields[f]], " </td>");
+		}
+		itemOut.push("</tr>");
+		output.push(itemOut.join(""));
+	}
+	
+	var tableOutput = ["<table style='border-collapse:collapse' cellspacing=0 cellpadding=2 border=1>\n",
+						"<tr><th style='font-size:small;text-align:left;'>Item</th>"];
+	for (var f = 0, len = outputFields.length; f < flen; f++) {
+		tableOutput.push("<th style='font-size:small;text-align:left;'>", outputFields[f], " </th>");
+	}
+	tableOutput.push("</tr>\n");
+	tableOutput.push(output.join("\n"));
+	tableOutput.push("\n</table>");
+	return tableOutput.join("");
 }
