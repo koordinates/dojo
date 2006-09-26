@@ -64,11 +64,30 @@ dojo["namespace"] = {
 	}
 }
 
-dojo.registerNamespace = function(name, module, resolver /*optional*/){
+dojo.registerNamespace = function(/*String*/name, /*String*/module, /*Function?*/resolver){
+	// summary: maps a module name to a namespace for widgets, and optionally maps widget names to modules for auto-loading
+	// description: An unregistered namespace is mapped to an eponymous module.
+	//	For example, namespace acme is mapped to module acme, and widgets are
+	//	assumed to belong to acme.widget. If you want to use a different widget
+	//	module, use dojo.registerNamespace.
 	dojo["namespace"].register.apply(dojo["namespace"], arguments);
 }
 
-dojo.registerNamespaceResolver = function(name, resolver){
+dojo.registerNamespaceResolver = function(/*String*/name, /*Function*/resolver){
+	// summary: a resolver function maps widget names to modules, so the
+	//	widget manager can auto-load needed widget implementations
+	// description: The resolver provides information to allow Dojo
+	//	to load widget modules on demand. When a widget is created,
+	//	a namespace resolver can tell Dojo what module to require
+	//	to ensure that the widget implementation code is loaded.
+	//
+	// The input string in the name argument will always be lower-case.
+	//
+	//  dojo.registerNamespaceResolver("acme",
+	//    function(name){ 
+	//      return "acme.widget."+dojo.string.capitalize(name);
+	//    }
+	//  );
 	var n = dojo["namespace"].namespaces[name];
 	if(n){
 		n.resolver = resolver;
