@@ -214,7 +214,7 @@ dojo.hostenv.callLoaded = function(){
 	}
 }
 
-dojo.hostenv.getModuleSymbols = function(modulename){
+dojo.hostenv.getModuleSymbols = function(/*String*/modulename){
 	var syms = modulename.split(".");
 	for(var i = syms.length; i>0; i--){
 		var parentModule = syms.slice(0, i).join(".");
@@ -229,11 +229,11 @@ dojo.hostenv.getModuleSymbols = function(modulename){
 			}
 		}
 	}
-	return syms;
+	return syms; // Array
 }
 
 dojo.hostenv._global_omit_module_check = false;
-dojo.hostenv.loadModule = function(modulename, exactOnly, omitModuleCheck){
+dojo.hostenv.loadModule = function(/*String*/modulename, /*Boolean?*/exactOnly, /*Boolean?*/omitModuleCheck){
 // summary:
 //	loads a Javascript module from the appropriate URI
 //
@@ -349,7 +349,7 @@ dojo.hostenv.loadModule = function(modulename, exactOnly, omitModuleCheck){
 	return module;
 }
 
-dojo.hostenv.startPackage = function(packageName){
+dojo.hostenv.startPackage = function(/*String*/packageName){
 // summary:
 //	Creates a JavaScript package
 //
@@ -392,7 +392,7 @@ dojo.hostenv.findModule = function(/*String*/moduleName, /*Boolean?*/mustExist){
 	if(mustExist){
 		dojo.raise("no loaded module named '" + moduleName + "'");
 	}
-	return null;
+	return null; // null
 }
 
 //Start of old bootstrap2:
@@ -449,24 +449,29 @@ dojo.provide = function(){
 	return dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
 }
 
-dojo.registerModulePath = function(module, prefix){
+dojo.registerModulePath = function(/*String*/module, /*String*/prefix){
+	// summary: maps a module name to a path
+	// description: An unregistered module is given the default path of ../<module>,
+	//	relative to Dojo root. For example, module acme is mapped to ../acme.
+	//	If you want to use a different module name, use dojo.registerModulePath. 
 	return dojo.hostenv.setModulePrefix(module, prefix);
 }
 
-dojo.setModulePrefix = function(module, prefix){
+dojo.setModulePrefix = function(/*String*/module, /*String*/prefix){
+	// summary: maps a module name to a path
 	dojo.deprecated('dojo.setModulePrefix("' + module + '", "' + prefix + '")', "replaced by dojo.registerModulePath", "0.5");
 	return dojo.registerModulePath(module, prefix);
 }
 
-// determine if an object supports a given method
-// useful for longer api chains where you have to test each object in the chain
-dojo.exists = function(obj, name){
+dojo.exists = function(/*Object*/obj, /*String*/name){
+	// summary: determine if an object supports a given method
+	// description: useful for longer api chains where you have to test each object in the chain
 	var p = name.split(".");
 	for(var i = 0; i < p.length; i++){
 		if(!obj[p[i]]){ return false; }
 		obj = obj[p[i]];
 	}
-	return true;
+	return true; // Boolean
 }
 
 // Localization routines
@@ -517,7 +522,7 @@ dojo.hostenv.preloadLocalizations = function(){
 			dojo.hostenv.searchLocalePath(locale, true, function(loc){
 				for(var i=0; i<localesGenerated.length;i++){
 					if(localesGenerated[i] == loc){
-						dojo.require("nls.dojo_"+loc);
+						dojo["require"]("nls.dojo_"+loc);
 						return true;
 					}
 				}
@@ -533,8 +538,7 @@ dojo.hostenv.preloadLocalizations = function(){
 	dojo.hostenv.preloadLocalizations = function(){};
 }
 
-//FIXME: should I follow the pattern and put this under dojo.hostenv with a dojo.* alias?
-dojo.requireLocalization = function(moduleName, bundleName, locale /*optional*/){
+dojo.requireLocalization = function(/*String*/moduleName, /*String*/bundleName, /*String?*/locale){
 // summary:
 //	Declares translated resources and loads them if necessary, in the same style as dojo.require.
 //	Contents of the resource bundle are typically strings, but may be any name/value pair,
