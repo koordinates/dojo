@@ -7,42 +7,16 @@ require_once('DojoString.php');
 
 class DojoParameter
 {
-  private $parameter_value = "";
-  private $parameter_type = "";
-  private $raw_parameter_value = array();
-  private $raw_source = array();
-  
-  public function __construct(&$source, &$code, $package_name, $compressed_package_name, $function_name, $compressed_function_name)
+  public function __construct()
   {
-    $this->source = $source;
-    $this->code = $code;
-    $this->package_name = $package_name;
-    $this->compressed_package_name = $compressed_package_name;
-    $this->function_name = $function_name;
-    $this->compressed_function_name = $compressed_function_name;
-    
-    $this->end = $this->parameter_end = $this->content_end = array(count($this->code) - 1, strlen(end($this->code)) - 1);
   }
   
   public function getRawValue()
   {
-    if ($this->raw_parameter_value) {
-      return $this->raw_parameter_value;
-    }
-    
-    $lines = $this->chop($this->code, $this->start[0], $this->start[1], $this->end[0], $this->end[1]);
-    $this->raw_parameter_value = $lines;
-    return $this->raw_parameter_value;
   }
   
   public function getRawSource()
   {
-    if ($this->raw_source) {
-      return $this->raw_source;
-    }
-    
-    $lines = $this->chop($this->source, $this->start[0], $this->start[1], $this->end[0], $this->end[1]);
-    return $this->raw_parameter_value = $lines;
   }
 
   public function getValue()

@@ -47,14 +47,21 @@ class Text
     }
     if ($end_position === false) {
       $end_position = strlen($array[$end_line]) - 1;
+      if($end_position < 0){
+        $end_position = 0;
+      }
     }
     
-    $exclusive = round($exclusive);
     $lines = array_slice($array, $start_line, $end_line - $start_line + 1, true);
     if ($start_position > 0) {
-      $lines[$start_line] = Text::blankOutAt($lines[$start_line], 0, ($exclusive) ? $start_position : $start_position - 1);
+      $lines[$start_line] = Text::blankOutAt($lines[$start_line], 0, $start_position - 1);
     }
-    $lines[$end_line] = Text::blankOutAt($lines[$end_line], ($exclusive) ? $end_position : $end_position + 1, strlen($lines[$end_line]));
+    $lines[$end_line] = Text::blankOutAt($lines[$end_line], $end_position + 1, strlen($lines[$end_line]));
+    if ($exclusive) {
+      $lines[$start_line]{$start_position} = ' ';
+      $lines[$end_line]{$end_position} = ' ';
+    }
+    
     return $lines;
   }
 }

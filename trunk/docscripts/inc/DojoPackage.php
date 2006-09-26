@@ -193,7 +193,7 @@ class DojoPackage
     
   }
   
-  private function getSource()
+  public function getSource()
   {
 		if ($this->source) {
 			return $this->source;
@@ -205,7 +205,7 @@ class DojoPackage
   /**
    * Removes comments and strings, preserving layout
    */
-  private function getCode()
+  public function getCode()
   {
 		if ($this->code) {
 			return $this->code;
