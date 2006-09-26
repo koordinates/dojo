@@ -137,7 +137,6 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 
 	// Explicitly set this widget's size (in pixels).
 	resizeTo: function(w, h){
-		if(!this._isResized(w,h)){ return; }
 		dojo.html.setMarginBox(this.domNode, { width: w, height: h });
 		this.onResized();
 	},
