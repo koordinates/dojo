@@ -1,10 +1,11 @@
 <?php
 
 require_once('DojoFunction.php');
+require_once('DojoFunctionDeclare.php');
 require_once('DojoObject.php');
 require_once('DojoString.php');
 
-class DojoParameter extends DojoFunction
+class DojoParameter
 {
   private $parameter_value = "";
   private $parameter_type = "";
@@ -49,9 +50,9 @@ class DojoParameter extends DojoFunction
     if ($this->parameter_value) {
       return $this->parameter_value;
     }
-    
+
     $parameter_value = implode("\n", $this->chop($this->source, $this->start[0], $this->start[1], $this->end[0], $this->end[1]));
-    $parameter_value = $this->trim($parameter_value);
+    $parameter_value = Text::trim($parameter_value);
     
     if ($parameter_value{0} == '"' || $parameter_value{0} == "'") {
       $object = new DojoString($parameter_value);
@@ -62,6 +63,12 @@ class DojoParameter extends DojoFunction
       $object->setStart($this->start[0], $this->start[1]);
       $object->setEnd($this->end[0], $this->end[1]);
       $this->parameter_value = $object;
+    }
+    elseif (strpos($parameter_value, 'function') === 0) {
+    	$function = new DojoFunctionDeclare($this->source, $this->code, $this->package_name, $this->compressed_package_name, $this->function_name);
+    	$function->setStart($this->start[0], $this->start[1]);
+    	$function->buildFunction();
+    	$this->parameter_value = $function;
     }
     else {
       $this->parameter_value = $parameter_value;
@@ -93,7 +100,7 @@ class DojoParameter extends DojoFunction
       }
     }
     
-    return $this->parameter_type = $this->trim($parameter_type);
+    return $this->parameter_type = Text::trim($parameter_type);
   }
 }
   

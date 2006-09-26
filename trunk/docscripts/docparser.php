@@ -1,6 +1,7 @@
 <?php
 
 require_once('inc/Dojo.php');
+require_once('inc/DojoPackage.php');
 require_once('inc/DojoObject.php');
 require_once('inc/DojoString.php');
 require_once('inc/DojoArray.php');
@@ -11,11 +12,11 @@ header('Content-type: text/plain');
 $output = array();
 
 $dojo = new Dojo('../');
-
-$files = getFileList('../');
+$files = $dojo->getFileList();
+$files = array('src/widget/Widget.js');
 
 foreach ($files as $file) {
-  $package = $dojo->getPackage($file);
+  $package = new DojoPackage($dojo, $file);
   
   if (strpos($file, '__package__.js') !== false) {
     // Handle dojo.kwCompoundRequire calls
@@ -57,63 +58,112 @@ foreach ($files as $file) {
     // Handle dojo.requireAfterIf calls
     $calls = array_merge($package->getFunctionCalls('dojo.requireIf'), $package->getFunctionCalls('dojo.requireAfterIf'));
     foreach ($calls as $call) {
-      $enviromnent = $call->getParameter(0);
+      $environment = $call->getParameter(0);
       $require = $call->getParameter(1);
       if ($environment && $require) {
         $environment = $environment->getValue();
         $require = $environment->getValue();
-        if ($enviromnent instanceof DojoString && $require instanceof DojoString) {
+        if ($environment instanceof DojoString && $require instanceof DojoString) {
           $output[$package->getPackageName()]['meta']['requires'][$environment->getValue()][] = $require->getValue();
         }
       }
     }
     
     // Handle dojo.declare calls
+    // Say hello to the piece of crap function signature Scott spawned from the depths of hell
     $calls = array_merge($package->getFunctionCalls('dojo.declare'), $package->getFunctionCalls('dojo.widget.defineWidget'));
     foreach ($calls as $call) {
       $parameters = $call->getParameters();
-      if ($parameters[0]) {
-        $name = $parameters[0]->getValue();
+
+      $name = '';
+      $environment = '';
+      
+      $arguments = array(
+      	'name' => null,
+      	'environment' => null,
+      	'function_mixins' => null,
+      	'function' => null,
+      	'mixins' => null,
+      	0 => null,
+      	1 => null,
+      	2 => null,
+      	3 => null,
+      	4 => null
+      );
+      
+      if (count($parameters) > 0) {
+      	$arguments[0] = $arguments['name'] = $parameters[0]->getValue();
+      	if($arguments['name'] instanceof DojoString) {
+      		$arguments['name'] = $arguments['name']->getValue();
+      	}
+			}
+			if (count($parameters) > 1) {
+				$arguments[1] = $arguments['environment'] = $parameters[1]->getValue();
+			}
+			if (count($parameters) > 2) {
+				$arguments[2] = $arguments['function_mixins'] = $parameters[2]->getValue();
+			}
+			if (count($parameters) > 3) {
+				$arguments[3] = $arguments['function'] = $parameters[3]->getValue();
+			}
+			if (count($parameters) > 4) {
+				$arguments[4] = $arguments['mixins'] = $parameters[4]->getValue();
+			}
+      
+      // Logic
+      
+			if ($arguments[3] instanceof DojoString) {
+				$arguments['environment'] = $arguments[3];
+				$arguments['function_mixins'] = $arguments[1];
+				$arguments['function'] = $arguments[4];
+				$arguments['mixins'] = $arguments[2];
+			}
+			else{
+				$function = 3;
+				if ($arguments[1] instanceof DojoString) {
+					$arguments['environment'] = $arguments[1];
+					$arguments['function_mixins'] = $arguments[2];
+				}
+				else {
+					$arguments['environment'] = '';
+					$arguments['function_mixins'] = '';
+					if ($arguments[1] instanceof DojoString) {
+						$arguments['function_mixins'] = $arguments[1]->getValue();						
+					}
+					$function = 2;
+				}
+			}
+
+			if ($arguments[$function] instanceof DojoFunction) {
+				$arguments['function'] = $arguments[$function];
+				$arguments['mixins'] = $arguments[$function + 1];
+			}
+			else {
+				$arguments['function'] = null;
+				$arguments['mixins'] = $arguments[$function];
+			}
+
+      $output[$package->getPackageName()]['meta']['functions'][$arguments['name']]['_']['meta']['summary'] = '';
+      if ($arguments['function_mixin'] instanceof DojoFunction) {
+        $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['inherits'][] = $arguments['function_mixin']->getFunctionName();
+        $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['this_inherits'][] = $arguments['function_mixin']->getFunctionName();
       }
-      if ($parameters[1]) {
-        $superclass = $parameters[1]->getValue();
-      }
-      if ($parameters[2]) {
-        $props = $parameters[2]->getValue();
-      }
-      if ($parameters[3]) {
-        if ($call->getFunctionCallName() == 'dojo.declare') {
-          $init = $parameters[3]->getValue();
-        }
-        else {
-          $renderer = $parameters[3]->getValue();
-        }
-      }
-      if ($parameters[4] && $call->getFunctionCallName() == 'dojo.widget.defineWidget') {
-        $init = $parameters[4]->getValue();
-      }
-      if (!$name instanceof DojoString) continue;
-      if (!is_string($superclass)) continue;
-      $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['summary'] = '';
-      if ($superclass != "null" && $superclass != "false" && $superclass != "undefined") {
-        $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['inherits'][] = $superclass;
-        $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['this_inherits'][] = $superclass;
-      }
-      if ($props instanceof DojoObject) {
-        $keys = $props->getKeys();
+      print_r($output);
+      if ($arguments['mixins'] instanceof DojoObject) {
+        $keys = $arguments['mixins']->getKeys();
         foreach ($keys as $key) {
           if ($key == 'initializer') {
-            $init = $props->getValue($key);
+            $init = $arguments['mixins']->getValue($key);
             continue;
           }
-          if ($props->isFunction($key)) {
-            $function = $props->getValue($key);
+          if ($arguments['mixins']->isFunction($key)) {
+            $function = $arguments['mixins']->getValue($key);
             $function->setThis($superclass);
             $function->setFunctionName($name->getValue() . '.' . $key);
             rolloutFunction($output, $package, $function);
           }
           else {
-            $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['protovariables'][$key] = "";
+            $output[$package->getPackageName()]['meta']['functions'][$arguments['name']]['_']['meta']['protovariables'][$key] = "";
           }
         }
       }
@@ -235,7 +285,7 @@ foreach ($wiki_files as $wiki_file) {
 		$returns = $xpath->query("//*[@name = 'DocFnForm/returns']")->item(0)->textContent;
 		
 		$output[$require]['meta']['functions'][$name]['_']['meta']['description'] = $main_text;
-		$output[$require]['meta']['functions'][$name]['_']['meta']['returns']['descriptionscription'] = $returns;
+		$output[$require]['meta']['functions'][$name]['_']['meta']['returns']['description'] = $returns;
 
 		unset($require);
 		unset($name);
