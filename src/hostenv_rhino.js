@@ -31,14 +31,13 @@ dojo.hostenv.loadUri = function(uri, cb){
 	try{
 		var local = (new java.io.File(uri)).exists();
 		if(!local){
-			try{
-				// try it as a file first, URL second
-				(new java.net.URL(uri)).openStream();
-			}catch(e){
-				dojo.debug("rhino load('" + uri + "') failed. Exception: " + e);
-				return false;
-			}
+			// try it as a file first, URL second. A failure here will cause an exception
+			// and exit the try block (and return false)
+			var stream = (new java.net.URL(uri)).openStream();
+			// close the stream so we don't leak resources
+			stream.close();
 		}
+//FIXME: Use Rhino 1.6 native readFile/readUrl if available?
 		if(cb){
 			var contents = (local ? readText : readUri)(uri, "UTF-8");
 			cb(eval('('+contents+')'));
@@ -205,10 +204,9 @@ dojo.doc = function(){
 	return document;
 }
 
-/**
- * provides threading support
- */
 function setTimeout(func, delay){
+	// summary: provides timed callbacks using Java threads
+
 	var def={
 		sleepTime:delay,
 		hasSlept:false,
