@@ -18,9 +18,13 @@ dojo.gfx.vml._parseFloat = function(str) {
 	return str.match(/^\d+f$/i) ? parseInt(str) / 65536 : parseFloat(str);
 };
 
+dojo.gfx.vml.pt_in_px = 0.75; // FIXME: why 1pt = 0.75px?
+
+dojo.gfx.vml.pt2px = function(len){ return len / this.pt_in_px; };
+dojo.gfx.vml.px2pt = function(len){ return len * this.pt_in_px; };
+
 dojo.gfx.vml.normalizedLength = function(len) {
-	// FIXME: why 1pt = 0.75px ?
-	return len.indexOf("pt") >= 0 ? parseFloat(len) / 0.75 : parseFloat(len);
+	return len.indexOf("pt") >= 0 ? dojo.gfx.vml.pt2px(parseFloat(len)) : parseFloat(len);
 };
 
 dojo.lang.extend(dojo.gfx.Shape, {
@@ -118,8 +122,8 @@ dojo.lang.extend(dojo.gfx.Shape, {
 					fo.src = f.src;
 					if(f.width && f.height){
 						// in points
-						fo.size.x = 0.75 * f.width;
-						fo.size.y = 0.75 * f.height;
+						fo.size.x = dojo.gfx.vml.px2pt(f.width);
+						fo.size.y = dojo.gfx.vml.px2pt(f.height);
 					}
 					fo.alignShape = false;
 					fo.position.x = 0;
@@ -228,12 +232,12 @@ dojo.lang.extend(dojo.gfx.Shape, {
 				}
 			}else if(fo.on && fo.type == "tile"){
 				var fillStyle = dojo.lang.shallowCopy(dojo.gfx.defaultPattern, true);
-				fillStyle.width  = fo.size.x / 0.75; // from pt
-				fillStyle.height = fo.size.y / 0.75; // from pt
+				fillStyle.width  = dojo.gfx.vml.pt2px(fo.size.x); // from pt
+				fillStyle.height = dojo.gfx.vml.pt2px(fo.size.y); // from pt
 				fillStyle.x = fo.origin.x * fillStyle.width;
 				fillStyle.y = fo.origin.y * fillStyle.height;
 				fillStyle.src = fo.src;
-			}else if(rawNode.fillcolor){
+			}else if(fo.on && rawNode.fillcolor){
 				// a color object !
 				fillStyle = new dojo.gfx.color.Color(rawNode.fillcolor+"");
 				fillStyle.a = fo.opacity;
@@ -250,9 +254,8 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			matrix.xy = s.matrix.xtoy;
 			matrix.yx = s.matrix.ytox;
 			matrix.yy = s.matrix.ytoy;
-			// TODO: transform from pt to px
-			matrix.dx = s.offset.x / 0.75;
-			matrix.dy = s.offset.y / 0.75;
+			matrix.dx = dojo.gfx.vml.pt2px(s.offset.x);
+			matrix.dy = dojo.gfx.vml.pt2px(s.offset.y);
 		}
 		return dojo.gfx.matrix.normalize(matrix);
 	},
@@ -731,16 +734,15 @@ dojo.gfx.attachNode = function(node){
 			s = new dojo.gfx.Rect();
 			break;
 		case dojo.gfx.Ellipse.nodeType:
-			s = new dojo.gfx.Ellipse();
+			s = (node.style.width == node.style.height)
+				? new dojo.gfx.Circle()
+				: new dojo.gfx.Ellipse();
 			break;
 		case dojo.gfx.Polyline.nodeType:
 			s = new dojo.gfx.Polyline();
 			break;
 		case dojo.gfx.Path.nodeType:
 			s = new dojo.gfx.Path();
-			break;
-		case dojo.gfx.Circle.nodeType:
-			s = new dojo.gfx.Circle();
 			break;
 		case dojo.gfx.Line.nodeType:
 			s = new dojo.gfx.Line();

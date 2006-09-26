@@ -76,6 +76,7 @@ dojo.gfx.color.named = {
 	black:      [0,0,0],
 	red:        [255,0,0],
 	green:	    [0,255,0],
+	lime:	    [0,255,0],
 	blue:       [0,0,255],
 	navy:       [0,0,128],
 	gray:       [128,128,128],
