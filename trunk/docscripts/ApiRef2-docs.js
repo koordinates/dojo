@@ -30,14 +30,15 @@ dojo.lang.mixin(dojo.docs, {
 	_callbacks: {function_names: []},
 	_cache: {}, // Saves the JSON objects in cache
 	require: function(/*String*/ require, /*bool*/ sync) {
-		dojo.profile.ProfileHelper.startProfile("dojo.docs.require('" + require + "')");
+		if (require == null) return dojo.debug("dojo.dojcs.require(): you must pass a package to load");
+		ApiRef.startProfile("dojo.docs.require('" + require + "')");
 		var parts = require.split("/");
 		var size = parts.length;
 		var deferred = new dojo.Deferred;
 		var args = {
 			mimetype: "text/json",
 			load: function(type, data){
-				dojo.profile.ProfileHelper.endProfile("dojo.docs.require('" + require + "')");
+				ApiRef.endProfile("dojo.docs.require('" + require + "')");
 
 				if(parts[0] != "function_names") {
 // MOW: this was messing up loading of packages
@@ -71,7 +72,7 @@ dojo.lang.mixin(dojo.docs, {
 			}
 //		}
 
-		dojo.debug("dojo.docs.require('" + require + "'): starting (looking in " + args.url + ")");
+		if (ApiRef._debug) dojo.debug("dojo.docs.require('" + require + "'): starting (looking in " + args.url + ")");
 		
 		dojo.io.bind(args);
 		return deferred;
