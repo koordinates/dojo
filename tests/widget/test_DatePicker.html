@@ -13,21 +13,35 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.DatePicker");
+	dojo.require("dojo.debug.Firebug");
 	dojo.addOnLoad(init);
-	var formDp, dpInput;
+	var formDp, dpInput, setDate;
 	function init(){
 		formDp = dojo.widget.byId('formDp');
 		dpInput = dojo.byId('dpInput');
+		setDate = dojo.byId('setDate');
 		dojo.event.connect(formDp,'onSetDate','setDpInput');
+		dojo.event.connect(setDate,'onclick','updateDp');
 	};
 	function setDpInput(){
-		dpInput.value = dojo.date.toRfc3339(formDp.getDate(),'dateOnly');
-	}
+		dpInput.value = formDp.getValue();
+	};
+	function updateDp(){
+		var d = dojo.date.fromRfc3339(dpInput.value,'dateOnly');
+		var s = dpInput.value;
+		var s = s.split('-');
+		if(d.getFullYear()==s[0]&&d.getMonth()+1==s[1]&&d.getDate()==s[2]){
+			formDp.setDate(dpInput.value);
+		}else{
+			alert("You need to enter a date in the format of YYYY-mm-dd");
+		}
+	};
 </script>
 </head>
 <body>
-<p>A DatePicker mimicking a formNode (requires extra coding on developers part)</p>
-<div id="formDp" dojoType="datepicker"  style="border:1px solid red;padding:1px;"></div><input name="date" id="dpInput" type="text" size="10"/>
+<p>A DatePicker mimicking a formNode (requires extra coding on developers part) You can also see how etDate() affects the UI by clicking the setDate button</p>
+
+<div id="formDp" dojoType="datepicker"  style="border:1px solid blue;padding:1px;"></div><input name="date" id="dpInput" type="text" size="10"/><button id="setDate">setDate</button>
 
 <p>A calendar in your locale, or the closest thing to it we currently provide</p>
 <div id="test" dojoType="datepicker"  style="border:1px solid red;padding:1px;"></div>
@@ -52,6 +66,7 @@
 
 <p>Same as first, with startDate of 10 September 2006 and endDate of 24 September 2006 (note how the controls<br/>
  are disabled). This is considered a static display, because the range of startDate and endDate is less than the displayWeeks.</p>
+
 <div dojoType="datepicker" startDate="2006-09-10" endDate="2006-09-24"></div>
 
 <p>Same as first, with startDate of 23 September 2006 and endDate of 10 October 2006 (note where the calendar<br/>
@@ -63,6 +78,7 @@ display starts since the range overlaps the end of a month and the beginning of 
 <div dojoType="datepicker" staticDisplay="true" date="2005-12-25"></div>
 
 <p>now on to the locale stuff...</p>
+
 <p>en-us locale</p>
 <div lang="en-us" dojoType="datepicker"></div>
 <p>nl-nl locale</p>
@@ -74,6 +90,7 @@ display starts since the range overlaps the end of a month and the beginning of 
 <p>ja-jp locale</p>
 <div lang="ja-jp" dojoType="datepicker"></div>
 <p>fi-fi locale</p>
+
 <div lang="fi-fi" dojoType="datepicker"></div>
 <p>sv-se locale</p>
 <div lang="sv-se" dojoType="datepicker"></div>

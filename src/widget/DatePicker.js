@@ -9,14 +9,6 @@ dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 dojo.require("dojo.lang.array");
 
-/*TODO:  these comments need to be incorporated elsewhere
-	- We now display only as many weeks as necessary, unless you tell us otherwise displayWeeks="X" to force a calendar size
-	- To get a sense of what month to highlight, we find the first day of the month and add 6 to it to get the first Saturday of
-	  the month, this is either the first of 2 months or the 2nd of 3 displayed months .
-	- You can now limit available dates by providing startDate="yyyy-MM-dd" and endDate="yyyy-MM-dd"... this will disable/enable
-	   incremental controls as needed to avoid the user wasting time scrolling through disabled dates.
-*/
-
 dojo.widget.defineWidget(
 	"dojo.widget.DatePicker",
 	dojo.widget.HtmlWidget,
@@ -47,7 +39,7 @@ dojo.widget.defineWidget(
 	
 		//start attributes
 		
-		//total weeks to display default will be to display as needed
+		//total weeks to display default 
 		displayWeeks: 6, 
 		//if true, weekly size of calendar changes to acomodate the month if false, 42 day format is used
 		adjustWeeks: false,
@@ -60,7 +52,7 @@ dojo.widget.defineWidget(
 		//current date selected by DatePicker in rfc 3339 date format "YYYY-mm-dd" -- once initialized, this.date will be a date Object
 		date: "",
 		storedDate: "", //deprecated use date instead
-		//if startDate and endDate are less than 42 days apart, we disabled incremental controls -- you can set this by default, in cases where you want a date in a specific month only.
+		//disable all incremental controls, must pick a date in the current display
 		staticDisplay: false,
 
 		//how to render the names of the days in the header.  see dojo.date.getDayNames
@@ -96,8 +88,10 @@ dojo.widget.defineWidget(
 				this.weekStartsOn=dojo.date.getFirstDayOfWeek(this.lang);
 			}
 			this.today = new Date();
+			this.today.setHours(0,0,0,0);
 			if(this.date && (typeof this.date=="string") && (this.date.split("-").length > 2)) {
 				this.date = dojo.date.fromRfc3339(this.date);
+				this.date.setHours(0,0,0,0);
 			}
 		},
 
@@ -128,7 +122,7 @@ dojo.widget.defineWidget(
 		
 		getValue: function() {
 			// summary: return current date in RFC 3339 format
-			return dojo.date.toRfc3339(this.date); /*String*/
+			return dojo.date.toRfc3339(new Date(this.date),'dateOnly'); /*String*/
 		},
 
 		getDate: function() {
@@ -148,14 +142,15 @@ dojo.widget.defineWidget(
 			}else{
 				this.date = new Date(dateObj);
 			}
+			this.date.setHours(0,0,0,0);
 			if(this.selectedNode!=null){
 				dojo.html.removeClass(this.selectedNode,this.classNames.selectedDate);
 			}
 			if(this.clickedNode!=null){
 				dojo.html.addClass(this.clickedNode,this.classNames.selectedDate);
 				this.selectedNode = this.clickedNode;
-				this._preInitUI(this.date,false,false);
 			}else{
+				//only call this if setDate was called by means other than clicking a date
 				this._preInitUI(this.date,false,true);
 			}
 			this.clickedNode=null;
@@ -381,11 +376,12 @@ dojo.widget.defineWidget(
 		
 		_getDateClassName: function(date, monthState) {
 			var currentClassName = this.classNames[monthState];
-			if ((!this.selectedIsUsed && this.date) && (date.getDate() == this.date.getDate()) && (date.getMonth() == this.date.getMonth()) && (date.getFullYear() == this.date.getFullYear())) {
+			//we use Number comparisons because 2 dateObjects never seem to equal each other otherwise
+			if ((!this.selectedIsUsed && this.date) && (Number(date) == Number(this.date))) {
 				currentClassName = this.classNames.selectedDate + " " + currentClassName;
 				this.selectedIsUsed = true;
 			}
-			if((!this.currentIsUsed) && (date.getDate() == this.today.getDate()) && (date.getMonth() == this.today.getMonth()) && (date.getFullYear() == this.today.getFullYear())) {
+			if((!this.currentIsUsed) && (Number(date) == Number(this.today))) {
 				currentClassName = currentClassName + " "  + this.classNames.currentDate;
 				this.currentIsUsed = true;
 			}
@@ -441,6 +437,7 @@ dojo.widget.defineWidget(
 			var d = new Date(dateObj);
 			if(!adj){d.setDate(1);}
 			d.setDate(d.getDate()-this._getAdjustedDay(d,this.weekStartsOn));
+			d.setHours(0,0,0,0);
 			return d; // Date
 		},
 
