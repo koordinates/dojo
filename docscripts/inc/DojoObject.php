@@ -4,7 +4,7 @@ require_once('DojoFunction.php');
 require_once('DojoObject.php');
 require_once('DojoArray.php');
 
-class DojoObject extends DojoFunction
+class DojoObject
 {
   public $keys = array();
   
@@ -48,10 +48,10 @@ class DojoObject extends DojoFunction
           continue;
         }
         
-        $trimmed_line = $this->trim($line);
+        $trimmed_line = Text::trim($line);
         if (preg_match('%([0-9a-zA-Z_.$]+):%', $trimmed_line, $match)) {
-          $lines[$line_number] = $this->blankOut($match[0], $lines[$line_number]);
-          $source_lines[$line_number] = $this->blankOut($match[0], $source_lines[$line_number]);
+          $lines[$line_number] = Text::blankOut($match[0], $lines[$line_number]);
+          $source_lines[$line_number] = Text::blankOut($match[0], $source_lines[$line_number]);
           
           $end = end($lines);
           $this->keys[$match[1]] = array(
@@ -139,7 +139,7 @@ class DojoObject extends DojoFunction
       }
     }
     
-    return $this->keys[$key] = $this->trim(implode("\n", $this->keys[$key]['source']));
+    return $this->keys[$key] = Text::trim(implode("\n", $this->keys[$key]['source']));
   }
 }
 

@@ -4,16 +4,11 @@ require_once('DojoPackage.php');
 
 class Dojo
 {
-  public static $output = array();
-  public static $root_dir;
-  /** An array (by line #) of full source */ protected $source = array();
-  /** $source - comments = $code */ protected $code = array();
-  protected $package_name; // The uncompressed name of the package
-  protected $compressed_package_name; // The compressed name of the package
+  private $dir;
   
   public function __construct($dir)
   {
-    self::$root_dir = $dir;
+    $this->setDir($dir);
   }
   
   public function getPackage($file)
@@ -21,42 +16,53 @@ class Dojo
     return new DojoPackage($file);
   }
   
-  /**
-   * Blanks out a portion of a string with whitespace
-   * 
-   * @param $to_blank Portion of the string to be removed
-   * @param $string Overall string to remove it from
-   */
-  protected function blankOut($to_blank, $string)
+  public function getDir()
   {
-    $length = strlen($to_blank);
-    if (!$length) {
-      return $string;
-    }
+    return $this->dir;
+  }
+  
+  public function setDir($dir)
+  {
+    $this->dir = $dir;
+  }
 
-    $blanks = array_fill(0, $length, ' ');
-    return preg_replace('%' . preg_quote($to_blank, '%') . '%', implode($blanks), $string, 1);
-  }
-  
-  protected function blankOutAt($to_blank, $start, $end = -1)
+  public function getFileList($dir = false, $recurse = false)
   {
-    if($end == -1) {
-      $end = strlen($to_blank) - 1;
+    $output = array();
+    if ($dir === false) {
+      $dir = $this->getDir();
     }
-    $length = $end - $start + 1;
-    if (!$length) {
-      return $to_blank;
-    }
-    if ($length < 0) {
-      print 'hi';
-    }
-    $blanks = array_fill(0, $length, ' ');
-    return substr($to_blank, 0, $start) . implode($blanks) .  substr($to_blank, $end + 1);
-  }
   
-  protected function trim($string)
-  {
-    return trim(preg_replace('%(^\s*/\*.*\*/\s*?|\s*?/\*.*\*/\s*$|^\s*//.*\n\s*?|\s*?//.*$)%U', '', $string));
+    if (!$recurse) {
+      $old_dir = getcwd();
+      chdir($dir);
+      $dir = '.';
+    }
+    $files = scandir($dir);
+  
+    foreach ($files as $file) {
+      if ($file{0} == '.') continue;
+      if (is_dir($dir . '/' . $file)) {
+        if (!$recurse && $file != 'src') continue;
+        if ($recurse) {
+          $file = $dir . '/' . $file;
+        }
+        $output = array_merge($output, $this->getFileList($file, true));
+      }
+      else {
+        if (substr($file, -2) == 'js') {
+          if ($recurse) {
+            $file = $dir . '/' . $file;
+          }
+          $output[] = $file;
+        }
+      }
+    }
+    
+    if (!$recurse) {
+      chdir($old_dir);
+    }
+    return $output;
   }
 
 }

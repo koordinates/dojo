@@ -1,43 +1,35 @@
 <?php
 
+require_once('Dojo.php');
 require_once('DojoFunctionCall.php');
 require_once('DojoFunctionDeclare.php');
 require_once('DojoParameter.php');
+require_once('Text.php');
 
-class DojoPackage extends Dojo
+class DojoPackage
 {
+	private $dojo;
   protected $file; // The file reference (including dir) to the file;
-  protected $functions = array(); // Builds an array of functions by name, with meta
-  protected $calls = array(); // Builds an array of calls
-  protected $variables = array(); // Builds an array of variables
+	private $code; // The source - comments
+	private $source;
+  //protected $functions = array(); // Builds an array of functions by name, with meta
+  //protected $calls = array(); // Builds an array of calls
+  //protected $variables = array(); // Builds an array of variables
   
-  public function __construct($file)
+  public function __construct(Dojo $dojo, $file)
   {
-    $this->file = $file;
-    $this->package_name = $this->getPackageName();
-    if ($this->package_name == null) {
-      return null;
-    }
-    $this->compressed_package_name = $this->getCompressedPackage();
-    $this->source = $this->getSource();
-    $this->code = $this->getCode();
+		$this->dojo = $dojo;
+    $this->setFile($file);
   }
-  
-  /**
-   * Looks through source to find variables that are set on any external or global object
-   * 
-   * NOTE: This is VERY hard to do.
-   * 
-   * TODO: Implement
-   * TODO: Look for var variable = "value"; in the global scope.
-   */
-  public function getExternalVariableNames()
-  {
-  }
-  
-	protected function getLines()
+	
+	public function getFile()
 	{
-		return $this->removeDiscoveredCode($this->code);
+		return $this->file;
+	}
+	
+	public function setFile($file)
+	{
+		$this->file = $file;
 	}
 	
 	protected function grepLines($lines)
@@ -159,65 +151,18 @@ class DojoPackage extends Dojo
    *
    * @param unknown_type $name
    */
-  public function getFunctionCalls($name, $in_global_namespace = false)
+  public function getFunctionCalls($name)
   {
     if ($this->calls[$name]) {
       return $this->calls[$name];
     }
     
     $this->calls[$name] = array();
-    $lines = $this->code;
-    if ($in_global_namespace) {
-      $lines = $this->removeDiscoveredCode($lines);
-    }
+    $lines = $this->getCode();
     $lines = preg_grep('%\b' . preg_quote($name) . '\s*\(%', $lines);
     foreach ($lines as $line_number => $line) {
-      $call = new DojoFunctionCall($this->source, $this->code, $this->package_name, $this->compressed_package_name, $name);
-
-      $start = strpos($line, $name);
-      $call->setStart($line_number, $start);
-      $call->setParameterStart($line_number, strpos($line, '(', $start));
-
-      $end = strpos($line, ')', $start);
-      if ($end) {
-        $call->setEnd($line_number, $end);
-        $call->setParameterEnd($line_number, $end);
-      }
-      else {
-        $i = $line_number;
-        $balance = 0;
-        do {
-          $line = $this->code[$i];
-          $chars = array();
-          for ($j = 0; $j < strlen($line); $j++) {
-            $chars[] = $line{$j};
-          }
-
-          if (isset($start)) {
-            $chars = array_slice($chars, $start, strlen($line), true);
-          }
-          unset($start);
-
-          $chars = preg_grep('%[()]%', $chars);
-          
-          foreach ($chars as $char_number => $char) {
-            if ($char == '(') {
-              ++$balance;
-            }
-            elseif ($char == ')') {
-              --$balance;
-              if (!$balance) {
-                $call->setParameterEnd($i, $char_number);
-                $call->setEnd($i, $char_number);
-                break 2;
-              }
-            }
-          }
-          ++$i;
-        }
-        while($i < count($this->code));
-      }
-
+      $call = new DojoFunctionCall($this->dojo, $this);
+      $call->buildFrom($line_number, strpos($line, $name));
       $this->calls[$name][] = $call;
     }
     return $this->calls[$name];
@@ -250,7 +195,10 @@ class DojoPackage extends Dojo
   
   private function getSource()
   {
-    $lines = explode("\n", file_get_contents(self::$root_dir . $this->file));
+		if ($this->source) {
+			return $this->source;
+		}
+    $this->source = $lines = explode("\n", file_get_contents($this->dojo->getDir() . $this->file));
     return $lines;
   }
   
@@ -259,27 +207,31 @@ class DojoPackage extends Dojo
    */
   private function getCode()
   {
-    $lines = $this->source;
+		if ($this->code) {
+			return $this->code;
+		}
+		
+    $lines = $this->getSource();
     $multiline_started = false;
     foreach ($lines as $line_number => $line) {
       if ($multiline_started) {
         if (preg_match('%^.*\*/%U', $line, $match)) {
-          $line = $this->blankOut($match[0], $line);
+          $line = Text::blankOut($match[0], $line);
           $multiline_started = false;
         }
         else {
-          $line = $this->blankOut($line, $line);
+          $line = Text::blankOut($line, $line);
         }
       }
       
       preg_match_all('%(?:"(.*)(?<!\\\\)"' . "|'(.*)(?<!\\\\)')%U", $line, $matches);
       foreach (array_merge($matches[1], $matches[2]) as $match) {
-        $line = $this->blankOut($match, $line);
+        $line = Text::blankOut($match, $line);
       }
       
       preg_match_all('%/\*.*\*/%U', $line, $matches);
       foreach ($matches[0] as $match) {
-        $line = $this->blankOut($match, $line);
+        $line = Text::blankOut($match, $line);
       }
       
       if (preg_match_all('%(?:(/\*.*)|(//.*))$%', $line, $matches, PREG_SET_ORDER)) {
@@ -287,12 +239,13 @@ class DojoPackage extends Dojo
           if ($match[1]) {
             $multiline_started = true;
           }
-          $line = $this->blankOut($match[0], $line);
+          $line = Text::blankOut($match[0], $line);
         }
       }
       
       $lines[$line_number] = $line;
     }
+		$this->code = $lines;
     return $lines;
   }
   
@@ -314,11 +267,6 @@ class DojoPackage extends Dojo
       $name = 'dojo';
     }
     return $name;
-  }
-  
-  private function getCompressedPackage()
-  {
-    return preg_replace('%^dojo(?=\.|$)%', '_', $this->package_name);
   }
   
 }

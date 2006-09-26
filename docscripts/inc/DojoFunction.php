@@ -3,7 +3,7 @@
 require_once('DojoPackage.php');
 require_once('DojoParameter.php');
 
-class DojoFunction extends DojoPackage
+class DojoFunction
 {
   protected $start = array(0, 0);
   protected $end = array(0, 0);
@@ -26,6 +26,10 @@ class DojoFunction extends DojoPackage
   
   public function setFunctionName($function_name) {
     $this->function_name = $function_name;
+  }
+  
+  public function getFunctionName() {
+  	return $this->function_name;
   }
   
   public function setStart($line_number, $position)
@@ -88,16 +92,16 @@ class DojoFunction extends DojoPackage
     for ($line_number = $this->start[0]; $line_number <= $this->end[0]; $line_number++) {
       $line = $lines[$line_number];
       if ($this->start[0] == $this->end[0]) {
-        $lines[$line_number] = $this->blankOutAt($line, $this->start[1], $this->end[1]);
+        $lines[$line_number] = Text::blankOutAt($line, $this->start[1], $this->end[1]);
       }
       elseif ($line_number == $this->start[0]) {
-        $lines[$line_number] = $this->blankOutAt($line, $this->start[1]);
+        $lines[$line_number] = Text::blankOutAt($line, $this->start[1]);
       }
       elseif ($line_number == $this->end[0]) {
-        $lines[$line_number] = $this->blankOutAt($line, 0, $this->end[1]);
+        $lines[$line_number] = Text::blankOutAt($line, 0, $this->end[1]);
       }
       else {
-        $lines[$line_number] = $this->blankOut($line, $line);
+        $lines[$line_number] = Text::blankOut($line, $line);
       }
     }
     return $lines;
@@ -145,6 +149,9 @@ class DojoFunction extends DojoPackage
           if ($i + 1 < strlen($line)) {
             $parameter->setStart($line_number, $i + 1);
           }
+          elseif(strlen($line) == 1) {
+          	$parameter->setStart($line_number, 0);
+          }
           else {
             $parameter->setStart($line_number + 1, 0);
           }
@@ -184,17 +191,6 @@ class DojoFunction extends DojoPackage
     }
     
     return $this->parameters;
-  }
-
-  protected function chop($array, $start_line, $start_position, $end_line, $end_position, $exclusive = false)
-  {
-    $exclusive = round($exclusive);
-    $lines = array_slice($array, $start_line, $end_line - $start_line + 1, true);
-    if ($start_position > 0) {
-      $lines[$start_line] = $this->blankOutAt($lines[$start_line], 0, ($exclusive) ? $start_position : $start_position - 1);
-    }
-    $lines[$end_line] = $this->blankOutAt($lines[$end_line], ($exclusive) ? $end_position : $end_position + 1, strlen($lines[$end_line]));
-    return $lines;
   }
   
   /**

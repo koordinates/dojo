@@ -2,7 +2,7 @@
 
 require_once('DojoFunction.php');
 
-class DojoFunctionDeclare extends DojoFunction
+class DojoFunctionDeclare
 {
   protected $content_start = array(0, 0);
   protected $content_end = array(0, 0);
@@ -160,6 +160,53 @@ class DojoFunctionDeclare extends DojoFunction
   public function getThisVariable($this_variable_name)
   {
     return $this->this_variable_names[$this_variable_name];
+  }
+  
+  public function buildFunction(){
+  	$lines = $this->chop($this->code, $this->start[0], $this->start[1], count($this->code) - 1, strlen($this->code[count($this->code) - 1]), false);
+	
+	  $this->setParameterStart($this->start[0], strpos($lines[0], '('));
+	
+	  $content_start = false; // For content start
+	  $parameter_end = false; // For parameter end
+	
+	  $balance = 0;
+	
+	  for ($line_number = $this->start[0]; $lines[$line_number] !== false; $line_number++) {
+	    $line = $lines[$line_number];
+	    if (trim($line) == '') {
+	      continue;
+	    }
+	    
+	    if (!$content_start && ($pos = strpos($line, '{')) !== false) {
+	      $content_start = true;
+	      $start = $pos;
+	      $this->setContentStart($line_number, $pos);
+	    }
+	    if (!$parameter_end && ($pos = strpos($line, ')')) !== false) {
+	      $parameter_end = true;
+	      $this->setParameterEnd($line_number, $pos);
+	    }
+	    
+	    if ($content_start) {
+	      for ($char_pos = $start; $char_pos < strlen($line); $char_pos++) {
+	        $start = 0;
+	        $char = $line{$char_pos};
+	        
+	        if ($char == '{') {
+	          ++$balance;
+	        }
+	        elseif ($char == '}') {
+	          --$balance;
+	          if (!$balance) {
+	            $this->setContentEnd($line_number, $char_pos);
+	            $this->setEnd($line_number, $char_pos);
+	            return;
+	          }
+	        }
+	      }
+	    }
+	  }
   }
   
   public function getReturnComments()

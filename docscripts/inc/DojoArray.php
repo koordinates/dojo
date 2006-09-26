@@ -2,7 +2,7 @@
 
 require_once('DojoFunction.php');
 
-class DojoArray extends DojoFunction
+class DojoArray
 {
   protected $items = array();
   
