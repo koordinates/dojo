@@ -1,6 +1,5 @@
 dojo.provide("dojo.collections.Collections");
 
-dojo.collections={Collections:true};
 dojo.collections.DictionaryEntry=function(/* string */k, /* object */v){
 	//	summary
 	//	return an object of type dojo.collections.DictionaryEntry
