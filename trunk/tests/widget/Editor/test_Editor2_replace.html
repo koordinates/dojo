@@ -49,6 +49,13 @@
 					updateContent(this.contentSource,this.getEditorContent());
 				}));
 			}));
+
+			dojo.event.connect(dj_global, "updateContent", dojo.lang.hitch(newEditor, function(contentId, content) {
+				if (contentId == this.contentSource) {
+					this.replaceEditorContent(content);
+				}
+			}));
+
 			newFloat.addChild(newEditor);
 
 		}
@@ -64,6 +71,12 @@
 
 </head>
 <body>
+	<p>Some more editor tests, primarily dealing with programmatically created editors</p>
+	<ul>
+		<li>Open up an arbitrary number of editors on either of the two source data areas</li>
+		<li>Open up multiple editors on the same source area, changes to one editor, should be reflected everywhere that source data is opened</li>
+		<li>Closing an editor (which destroys it) shouldn't throw an error when a new one is created</li>
+	</ul>
 
 	<div id="editA" dojoType="dojo:Button" label="Edit Content A">Edit Content A</div>
 	<div id="content1">
