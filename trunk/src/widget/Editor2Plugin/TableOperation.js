@@ -6,16 +6,23 @@ dojo.require("dojo.widget.Editor2");
 //the stylesheets for the editing areas are already applied and the prefilters
 //are executed, so we have to insert our own trick before that point 
 dojo.event.topic.subscribe("dojo.widget.RichText::init", function(editor){
-	if(dojo.render.html.moz){
+	editor.__TableOperationShowBorder = false;
+	
+	if(dojo.render.html.moz && false){
 		//include the css file to show table border when border=0
-		editor.editingAreaStyleSheets.push(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
+		editor.__TableOperationShowBorder = true;
+		editor.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
+//		editor.editingAreaStyleSheets.push(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
 	}else if(dojo.render.html.ie){
 		//add/remove a class to a table with border=0 to show the border when loading/saving
 		editor.contentDomPreFilters.push(dojo.widget.Editor2Plugin.TableOperation.showIETableBorder);
 		editor.contentDomPostFilters.push(dojo.widget.Editor2Plugin.TableOperation.removeIEFakeClass);
 		//include the css file to show table border when border=0
-		editor.editingAreaStyleSheets.push(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
+//		editor.__TableOperationShowBorder = true;
+//		editor.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
+//		editor.editingAreaStyleSheets.push(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
 	}
+	dojo.widget.Editor2Plugin.TableOperation.toggleTableBorderCommand.execute(editor);
 });
 
 dojo.widget.Editor2Plugin.TableOperation = {
@@ -23,8 +30,10 @@ dojo.widget.Editor2Plugin.TableOperation = {
 		var name = name.toLowerCase();
 	
 		var item;
-		if(name == 'inserttable'){
-			item = new dojo.widget.Editor2ToolbarButton(name);
+		switch(name){
+			case 'inserttable':
+			case 'toggletableborder':
+				item = new dojo.widget.Editor2ToolbarButton(name);
 		}
 	
 		return item;
@@ -48,6 +57,31 @@ dojo.widget.Editor2Plugin.TableOperation = {
 		},
 		destory: function(){}
 	},
+	toggleTableBorderCommand: {
+		execute: function(instance){
+			var curInst = instance || dojo.widget.Editor2Manager.getCurrentInstance();
+			if(editor.__TableOperationShowBorder){
+				editor.__TableOperationShowBorder = false;
+				if(dojo.render.html.moz){
+					editor.removeStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
+				}else if(dojo.render.html.ie){
+					editor.removeStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
+				}
+			}else{
+				editor.__TableOperationShowBorder = true;
+				if(dojo.render.html.moz){
+					editor.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
+				}else if(dojo.render.html.ie){
+					editor.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
+				}
+			}
+		},
+		getState: function(){
+			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			return editor.__TableOperationShowBorder ? dojo.widget.Editor2Manager.commandState.Latched : dojo.widget.Editor2Manager.commandState.Enabled;
+		},
+		destory: function(){}
+	},
 	showIETableBorder: function(dom){
 		var tables = dom.getElementsByTagName('table');
 		dojo.lang.forEach(tables, function(t){
@@ -64,7 +98,9 @@ dojo.widget.Editor2Plugin.TableOperation = {
 	}
 }
 
-//register commands: inserttable, deletetable
+//register commands: toggletableborder, inserttable, deletetable
+dojo.widget.Editor2Manager.registerCommand("toggletableborder", dojo.widget.Editor2Plugin.TableOperation.toggleTableBorderCommand);
+
 dojo.widget.Editor2Manager.registerCommand("inserttable", new dojo.widget.Editor2DialogCommand('inserttable', 
 		{contentFile: "dojo.widget.Editor2Plugin.InsertTableDialog", 
 			contentClass: "Editor2InsertTableDialog",
@@ -72,7 +108,7 @@ dojo.widget.Editor2Manager.registerCommand("inserttable", new dojo.widget.Editor
 
 dojo.widget.Editor2Manager.registerCommand("deletetable", dojo.widget.Editor2Plugin.TableOperation.deleteTableCommand);
 
-//register inserttable as toolbar item
+//register toggletableborder and inserttable as toolbar item
 dojo.widget.Editor2ToolbarItemManager.registerHandler(dojo.widget.Editor2Plugin.TableOperation.getToolbarItem);
 
 //add context menu support if dojo.widget.Editor2Plugin.ContextMenu is included before this plugin

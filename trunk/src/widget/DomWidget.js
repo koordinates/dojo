@@ -717,10 +717,10 @@ dojo.declare("dojo.widget.DomWidget",
 						subnodes[i].setAttribute('_isSubWidget', true);
 					}
 				}
-		        if (this.isContainer && !this.containerNode){
-                    //no containerNode is available, which means a widget is used as a container. find it here and move
-                    //all dom nodes defined in the main html page as children of this.domNode into the actual container
-                    //widget's node (at this point, the subwidgets defined in the template file is not parsed yet)
+				if (this.isContainer && !this.containerNode){
+					//no containerNode is available, which means a widget is used as a container. find it here and move
+					//all dom nodes defined in the main html page as children of this.domNode into the actual container
+					//widget's node (at this point, the subwidgets defined in the template file is not parsed yet)
 					if(subContainerNode){
 						var src = this.getFragNodeRef(frag);
 						if (src){
