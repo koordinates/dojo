@@ -3,6 +3,7 @@
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.lang.declare");
 dojo.require("dojo.lang.extras");
+dojo.require("dojo.dom");
 
 //dojo.gfx.defaultRenderer.init();
 
@@ -45,10 +46,7 @@ dojo.lang.mixin(dojo.gfx, {
 			}
 		}
 		return result;
-	},
-
-	_GUID: 1,
-	guid: function(){ return "dj_gfx_guid_" + dojo.gfx._GUID++; }
+	}
 });
 
 // this is a Shape object, which knows how to apply graphical attributes and a transformation

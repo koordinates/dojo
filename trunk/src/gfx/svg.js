@@ -103,7 +103,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			}
 		}else{
 			fill = document.createElementNS(dojo.svg.xmlns.svg, nodeType);
-			fill.setAttribute("id", dojo.gfx.guid());
+			fill.setAttribute("id", dojo.dom.getUniqueId());
 			defs.appendChild(fill);
 		}
 		if(nodeType == "pattern"){
