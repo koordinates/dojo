@@ -251,8 +251,8 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		if(rawNode){
 			var s = rawNode.skew;
 			matrix.xx = s.matrix.xtox;
-			matrix.xy = s.matrix.xtoy;
-			matrix.yx = s.matrix.ytox;
+			matrix.xy = s.matrix.ytox;
+			matrix.yx = s.matrix.xtoy;
 			matrix.yy = s.matrix.ytoy;
 			matrix.dx = dojo.gfx.vml.pt2px(s.offset.x);
 			matrix.dy = dojo.gfx.vml.pt2px(s.offset.y);
