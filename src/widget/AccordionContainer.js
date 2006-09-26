@@ -47,7 +47,7 @@ dojo.widget.defineWidget(
 		containerNodeClass: "",
 
 		// Integer
-		//	Amount of time (in ms) it takes to slide tabs
+		//	Amount of time (in ms) it takes to slide panes
 		duration: 250,
 
 		fillInTemplate: function(){
@@ -60,8 +60,8 @@ dojo.widget.defineWidget(
 		},
 
 		addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){
-			var child = this._addChild(child);
-			this._setSizes(false);
+			var child = this._addChild(widget);
+			this._setSizes();
 			return child;
 		},
 		
@@ -88,16 +88,16 @@ dojo.widget.defineWidget(
 			this.children=[];
 			dojo.html.removeChildren(this.domNode);
 			dojo.lang.forEach(tmpChildren, dojo.lang.hitch(this,"_addChild"));
-			this._setSizes(false);
+			this._setSizes();
 		},
 	
 		removeChild: function(widget) {
 			dojo.widget.AccordionContainer.superclass.removeChild.call(this, widget);
-			this._setSizes(false);
+			this._setSizes();
 		},
 		
 		onResized: function(){
-			this._setSizes(false);
+			this._setSizes();
 		},
 
 		_setSizes: function() {
