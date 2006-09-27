@@ -60,25 +60,25 @@ dojo.widget.Editor2Plugin.TableOperation = {
 	toggleTableBorderCommand: {
 		execute: function(instance){
 			var curInst = instance || dojo.widget.Editor2Manager.getCurrentInstance();
-			if(editor.__TableOperationShowBorder){
-				editor.__TableOperationShowBorder = false;
+			if(curInst.__TableOperationShowBorder){
+				curInst.__TableOperationShowBorder = false;
 				if(dojo.render.html.moz){
-					editor.removeStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
+					curInst.removeStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
 				}else if(dojo.render.html.ie){
-					editor.removeStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
+					curInst.removeStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
 				}
 			}else{
-				editor.__TableOperationShowBorder = true;
+				curInst.__TableOperationShowBorder = true;
 				if(dojo.render.html.moz){
-					editor.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
+					curInst.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
 				}else if(dojo.render.html.ie){
-					editor.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
+					curInst.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
 				}
 			}
 		},
 		getState: function(){
 			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-			return editor.__TableOperationShowBorder ? dojo.widget.Editor2Manager.commandState.Latched : dojo.widget.Editor2Manager.commandState.Enabled;
+			return curInst.__TableOperationShowBorder ? dojo.widget.Editor2Manager.commandState.Latched : dojo.widget.Editor2Manager.commandState.Enabled;
 		},
 		destory: function(){}
 	},
