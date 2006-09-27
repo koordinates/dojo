@@ -8,7 +8,7 @@ dojo.xml.XslTransform = function(/*String*/ xsltUri) {
 
 	//	Note this is supported by IE and Mozilla ONLY.
 
-	dojo.debug("XslTransform is supported by Internet Explorer and Mozilla, with limited support in Opera 9.");
+	dojo.debug("XslTransform is supported by Internet Explorer and Mozilla, with limited support in Opera 9 (no document function support).");
 	var IS_IE = window.ActiveXObject ? true : false;
 	var ACTIVEX_DOMS = [
 		"Msxml2.DOMDocument.5.0", 
@@ -135,23 +135,25 @@ dojo.xml.XslTransform = function(/*String*/ xsltUri) {
         return serializer.serializeToString(resultDoc);
     }
   
-    this.getResultString = function(/*XMLDOcument*/ xmlDoc, /*2 Dimensional Array*/params, /*HTMLDocument*/parentDoc) {
+    this.getResultString = function(/*XMLDocument*/ xmlDoc, /*2 Dimensional Array*/params, /*HTMLDocument*/parentDoc) {
+        var content = null;
         if (IS_IE) {
             addIeParams(params);
-            var result = getIeResultStr(xmlDoc, params);
-            removeIeParams(params);   
-            return result;
+            content = getIeResultStr(xmlDoc, params);
+            removeIeParams(params);  
         } else {
-            return getMozillaResultStr(xmlDoc, params, parentDoc);
-        }
+            content = getMozillaResultStr(xmlDoc, params, parentDoc);
+        } 
+        //dojo.debug(content);
+        return content;
     };
   
-    this.transformToContentPane = function(/*XMLDOcument*/ xmlDoc, /*2 Dimensional Array*/params, /*ContentPane*/contentPane, /*HTMLDocument*/parentDoc) {
+    this.transformToContentPane = function(/*XMLDocument*/ xmlDoc, /*2 Dimensional Array*/params, /*ContentPane*/contentPane, /*HTMLDocument*/parentDoc) {
         var content = this.getResultString(xmlDoc, params, parentDoc);
         contentPane.setContent(content);
     };
       
-    this.transformToRegion = function(/*XMLDOcument*/ xmlDoc, /*2 Dimensional Array*/params, /*HTMLElement*/region, /*HTMLDocument*/parentDoc) {
+    this.transformToRegion = function(/*XMLDocument*/ xmlDoc, /*2 Dimensional Array*/params, /*HTMLElement*/region, /*HTMLDocument*/parentDoc) {
         try {
             var content = this.getResultString(xmlDoc, params, parentDoc);
             region.innerHTML = content;
@@ -160,11 +162,11 @@ dojo.xml.XslTransform = function(/*String*/ xsltUri) {
         }
     };
   
-    this.transformToDocument = function(/*XMLDOcument*/ xmlDoc, /*2 Dimensional Array*/params) {
+    this.transformToDocument = function(/*XMLDocument*/ xmlDoc, /*2 Dimensional Array*/params) {
         return getResultDom(xmlDoc, params);
     }
   
-    this.transformToWindow = function(/*XMLDOcument*/ xmlDoc, /*2 Dimensional Array*/params, /*HTMLDocument*/windowDoc, /*HTMLDocument*/parentDoc) {
+    this.transformToWindow = function(/*XMLDocument*/ xmlDoc, /*2 Dimensional Array*/params, /*HTMLDocument*/windowDoc, /*HTMLDocument*/parentDoc) {
         try {
             windowDoc.open();
             windowDoc.write(this.getResultString(xmlDoc, params, parentDoc));
