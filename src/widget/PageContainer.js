@@ -136,7 +136,8 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 		page.selected=true;
 
 		// size the current page (in case this is the first time it's being shown, or I have been resized)
-		this.onResized();
+		var content = dojo.html.getContentBox(this.containerNode);
+		page.resizeTo(content.width, content.height);
 
 		// make sure we dont refresh onClose and on postCreate
 		// speeds up things a bit when using refreshOnShow and fixes #646

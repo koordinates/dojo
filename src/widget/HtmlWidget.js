@@ -138,7 +138,12 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 	// Explicitly set this widget's size (in pixels).
 	resizeTo: function(w, h){
 		dojo.html.setMarginBox(this.domNode, { width: w, height: h });
-		this.onResized();
+		
+		// can't do sizing if widget is hidden because referencing node.offsetWidth/node.offsetHeight returns 0.
+		// do sizing on show() instead.
+		if(this.isShowing()){
+			this.onResized();
+		}
 	},
 
 	resizeSoon: function(){
