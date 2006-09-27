@@ -83,7 +83,7 @@ dojo.i18n.currency.format = function(value, iso, flags /*optional*/, locale /*op
 * @return Number
 * 	Returns a primative numeric value, Number.NaN if unable to convert to a number, or null if an unsupported locale is provided.
 **/
-dojo.i18n.currency.parse = function(value, iso, locale /*optional*/){
+dojo.i18n.currency.parse = function(value, iso, locale, flags /*optional*/){
 	if (typeof flags.validate == "undefined") {flags.validate = true;}
 
 	if (flags.validate && !dojo.i18n.number.isCurrency(value, iso, locale, flags)) {
