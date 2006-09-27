@@ -159,10 +159,10 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 	},
 
 	closePage: function(page) {
-		// Summary:	callback when user tries to remove page from PageContainer
-		var onc = page.extraArgs.onClose || page.extraArgs.onclose;
-		var fcn = dojo.lang.isFunction(onc) ? onc : window[onc];
-		var remove = dojo.lang.isFunction(fcn) ? fcn(this,page) : true;
+		// summary
+		//	callback when user clicks the [X] to remove a page
+		//	if onClose() returns true then remove and destroy the childd
+		var remove = page.onClose(this, page);
 		if(remove) {
 			this.removeChild(page);
 			// makes sure we can clean up executeScripts in ContentPane onUnLoad
@@ -376,5 +376,6 @@ dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 dojo.lang.extend(dojo.widget.Widget, {
 	label: "",
 	selected: false,	// is this tab currently selected?
-	tabCloseButton: false
+	closeButton: false,
+	onClose: function(){ return true; }	// callback if someone tries to close the child, child will be closed if func returns true
 });
