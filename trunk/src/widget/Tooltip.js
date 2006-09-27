@@ -140,10 +140,16 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		checkSize: function() {
+		checkSize: function(){
 			// checkSize() is called when the user has resized the browser window,
 			// but that doesn't affect this widget (or this widget's children)
 			// so it can be safely ignored
+		},
+
+		uninitialize: function(){
+			this.close();
+			dojo.event.disconnect(this._connectNode, "onmouseover", this, "onMouseOver");
 		}
+
 	}
 );
