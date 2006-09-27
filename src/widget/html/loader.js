@@ -159,6 +159,7 @@ dojo.widget.html.loader = new (function(){
 		/************** <title> ***********/
 		// khtml can't attach a <style> or <title> node as child of body
 		var regex = /<title[^>]*>([\s\S]*?)<\/title>/i;
+		var match, attr;
 		while(match = regex.exec(s)){
 			titles.push(match[1]);
 			s = s.substring(0, match.index) + s.substr(match.index + match[0].length);
