@@ -31,41 +31,17 @@ class DojoPackage
 	{
 		$this->file = $file;
 	}
-	
-	protected function grepLines($lines)
-	{
-		return preg_grep('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*(new\s*)?function\s*\()%', $lines);
-	}
-	
-	protected function lineMatches($line)
-	{
-		if (preg_match('%(?:\bfunction\s+([a-zA-Z0-9_.$]+)\b\s*\(|\b([a-zA-Z0-9_.$]+)\s*=\s*(?:(new)\s*)?function\s*\()%', $line, $match)) {
-			return $match;
-		}
-		return false;
-	}
-	
-	protected function shouldSkipFunction($function_name)
-	{
-	  return strpos($function_name, 'this.') === 0;
-	}
-	
-	protected function reName($function_name)
-	{
-	  return $function_name;
-	}
 
   public function getFunctionDeclarations()
   {
     $in_function = array();
     $lines = $this->getLines();
     
-    $matches = $this->grepLines($lines);
+    $matches = preg_grep('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*(new\s*)?function\s*\()%', $lines);
     foreach (array_keys($matches) as $start_line_number) {
       if (in_array($start_line_number, $in_function)) continue;
       $line = $lines[$start_line_number];
-			$match = $this->lineMatches($line);
-      if(!$match) {
+      if (!preg_match('%(?:\bfunction\s+([a-zA-Z0-9_.$]+)\b\s*\(|\b([a-zA-Z0-9_.$]+)\s*=\s*(?:(new)\s*)?function\s*\()%', $line, $match)) {
         continue;
       }
       
@@ -75,7 +51,7 @@ class DojoPackage
       }
       
       $function_name = implode(array_slice($match, 1));
-      if ($this->shouldSkipFunction($line)) {
+      if (strpos($function_name, 'this.') === 0) {
         continue;
       }
       if (($pos = strpos($function_name, '.prototype.')) !== false) {
@@ -83,9 +59,7 @@ class DojoPackage
         $function_name = str_replace('.prototype.', '.', $function_name);
       }
       
-      $function_name = $this->reName($function_name);
-      
-      $function = new DojoFunctionDeclare($this->source, $this->code, $this->package_name, $this->compressed_package_name, $function_name);
+      $function = new DojoFunctionDeclare($this->dojo, $this->package);
       if ($anonymous) {
         $function->setAnonymous(true);
       }

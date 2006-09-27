@@ -4,24 +4,25 @@ require_once('DojoFunction.php');
 
 class DojoFunctionDeclare
 {
-  protected $content_start = array(0, 0);
-  protected $content_end = array(0, 0);
-  protected $function_name = "";
-  protected $block_comment_keys = array();
-  protected $block_comments = array();
-  protected $this_variable_names = array();
-  protected $returns = array();
-  protected $this_inheritance_calls = array();
-  protected $comment_block_start = false;
-  protected $comment_block_end = false;
-  protected $anonymous = false;
+  private $dojo;
+  private $package;
+  private $start;
+  private $end;
 
-  public function __construct(&$source, &$code, $package_name, $compressed_package_name, $function_name = false)
+  public function __construct($dojo, $package)
   {
-    if ($function_name) {
-      $this->setFunctionName($function_name);
-    }
-    parent::__construct($source, $code, $package_name, $compressed_package_name);
+    $this->dojo = $dojo;
+    $this->package = $package;
+  }
+  
+  public function setStart($line_number, $position)
+  {
+    $this->start = array($line_number, $position);
+  }
+  
+  public function setEnd($line_number, $position)
+  {
+    $this->end = array($line_number, $position);
   }
   
   /**
@@ -95,7 +96,7 @@ class DojoFunctionDeclare
       return array_keys($this->this_variable_names);
     }
     
-    $lines = $this->chop($this->code, $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
+    $lines = Text::chop($this->package->getCode(), $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
     if ($variables = preg_grep('%\bthis\.[a-zA-Z0-9_.$]+\s*=%', $lines)) {
       foreach (array_keys($variables) as $start_line_number) {
         $line = $lines[$start_line_number];
@@ -163,7 +164,7 @@ class DojoFunctionDeclare
   }
   
   public function buildFunction(){
-  	$lines = $this->chop($this->code, $this->start[0], $this->start[1], count($this->code) - 1, strlen($this->code[count($this->code) - 1]), false);
+  	$lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], count($this->code) - 1, strlen($this->code[count($this->code) - 1]), false);
 	
 	  $this->setParameterStart($this->start[0], strpos($lines[0], '('));
 	
@@ -215,7 +216,7 @@ class DojoFunctionDeclare
       return array_keys($this->returns);
     }
     
-    $lines = $this->chop($this->source, $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
+    $lines = Text::chop($this->package->getSource(), $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
     $returns = preg_grep('%return.*(//|\*/)%', $lines);
     foreach (array_keys($returns) as $start_line_number) {
       $value = '';
@@ -269,7 +270,7 @@ class DojoFunctionDeclare
       return $this->this_inheritance_calls;
     }
     
-    $lines = $this->chop($this->code, $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
+    $lines = Text::chop($this->package->getCode(), $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
     if ($calls = preg_grep('%\b[a-zA-Z0-9_.$]+\.call\s*\(%', $lines)) {
       foreach (array_keys($calls) as $start_line_number) {
         for ($line_number = $start_line_number; $line_number < count($this->code); $line_number++) {
@@ -320,7 +321,7 @@ class DojoFunctionDeclare
     
     $comments = array();
     $multiline = false;
-    $lines = $this->chop($this->source, $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
+    $lines = Text::chop($this->package->getSource(), $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
     foreach ($lines as $line_number => $line) {
       if ($multiline) {
         if (($pos = strpos($line, '*/')) !== false) {
@@ -417,7 +418,7 @@ class DojoFunctionDeclare
   
   public function getSource()
   {
-    $lines = $this->chop($this->source, $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
+    $lines = Text::chop($this->package->getSource(), $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
     $comments = $this->getBlockCommentKeys(); // Make sure it's here
     if ($this->comment_block_start && $this->comment_block_end) {
       for ($line_number = $this->comment_block_start[0]; $line_number <= $this->comment_block_end[0]; $line_number++) {
@@ -462,7 +463,7 @@ class DojoFunctionDeclare
   
   protected function getLines()
 	{
-		return $this->chop($this->code, $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
+		return Text::chop($this->package->getCode(), $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
 	}
 	
 	protected function grepLines($lines)
