@@ -29,7 +29,7 @@ dojo.lang.mixin(dojo.gfx, {
 	normalizeParameters: function(existed, update){
 		if(update){
 			var empty = {};
-			for(x in existed){
+			for(var x in existed){
 				if(x in update && !(x in empty)){
 					existed[x] = update[x];
 				}
