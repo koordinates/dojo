@@ -230,9 +230,8 @@ dojo.widget.defineWidget(
 		},
 		createContent: function(){
 			if(!this.contentWidget && this.contentClass){
-				this.contentWidget = dojo.widget.createWidget(this.contentClass, {parent: this});
-				this.containerNode.appendChild(this.contentWidget.domNode);
-				dojo.event.connect(this, "destroy", this.contentWidget, "destroy");
+				this.contentWidget = dojo.widget.createWidget(this.contentClass);
+				this.addChild(this.contentWidget);
 			}
 		},
 		show: function(){
