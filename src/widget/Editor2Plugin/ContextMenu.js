@@ -55,7 +55,7 @@ dojo.declare("dojo.widget.Editor2Plugin.ContextMenu", null,
 	{
 	setup: function(){
 		var gs = dojo.widget.Editor2Plugin.ContextMenuManager.menuGroups;
-		for(i in gs){
+		for(var i in gs){
 			var g = dojo.widget.Editor2Plugin.ContextMenuManager.getGroup(gs[i], this);
 			if(g){
 				this.groups.push(g);
