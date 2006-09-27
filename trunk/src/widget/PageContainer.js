@@ -365,7 +365,9 @@ dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 	focus: function(){
 		// summary
 		//	This will focus on the this button (for accessibility you need to do this when the button is selected)
-		this.titleNode.focus();
+		if(this.titleNode.focus){	// mozilla 1.7 doesn't have focus() func
+			this.titleNode.focus();
+		}
 		this.parent._currentPage = this;
 	}
 });
