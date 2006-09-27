@@ -45,7 +45,7 @@ dojo.lfx.easeDefault = function(n){
 		// FIXME: investigate more and post a KDE bug (Fredrik)
 		return (parseFloat("0.5")+((Math.sin( (n+parseFloat("1.5")) * Math.PI))/2));
 	}else{
-		return (0.5+((Math.sin( (n+1.5) * Math.PI))/2));dojo.debug(ret);
+		return (0.5+((Math.sin( (n+1.5) * Math.PI))/2));
 	}
 }
 
