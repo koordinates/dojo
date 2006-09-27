@@ -98,7 +98,7 @@ dojo.i18n.number.parse = function(value, locale /*optional*/, flags /*optional*/
 	var numbers = value.split(flags.decimal);
 	if (numbers.length > 2){return Number.NaN; }
 	var whole = Number(numbers[0].replace(new RegExp("\\" + flags.separator, "g"), ""));
-	var fract = (number.length == 1) ? 0 : Number(numbers[1]) / Math.pow(10, String(numbers[1]).length); // could also do Number(whole + "." + numbers[1]) if whole != NaN
+	var fract = (numbers.length == 1) ? 0 : Number(numbers[1]) / Math.pow(10, String(numbers[1]).length); // could also do Number(whole + "." + numbers[1]) if whole != NaN
 
 //TODO: exp
 
