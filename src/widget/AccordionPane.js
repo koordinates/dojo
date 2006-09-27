@@ -74,5 +74,13 @@ dojo.widget.defineWidget(
 	setSelected: function(/*Boolean*/ isSelected){
 		this.open=isSelected;
 		(isSelected ? dojo.html.addClass : dojo.html.removeClass)(this.domNode, this["class"]+"-selected");
+
+		// make sure child is showing (lazy load)
+		if(isSelected  && this.children.length){
+			var child = this.children[0];
+			if(!child.isShowing()){
+				child.show();
+			}
+		}
 	}
 });
