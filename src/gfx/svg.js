@@ -373,7 +373,7 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.Shape, {
 		}else{
 			this.shape = dojo.gfx.makeParameters(this.shape, points);
 		}
-		attr = "";
+		var attr = "";
 		for(var i = 0; i< this.shape.points.length; ++i){
 			attr += this.shape.points[i].x.toFixed(8) + " " + this.shape.points[i].y.toFixed(8) + " ";
 		}
