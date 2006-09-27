@@ -282,6 +282,7 @@ dojo.widget.defineWidget(
 
 	
 	loadIfNeeded: function(node, sync) {
+		var deferred
 		if (node.state == node.loadStates.UNCHECKED && node.isFolder && !node.children.length) {
 			// populate deferred with other things to pre-do
 			deferred = this.loadRemote(node, sync);			
