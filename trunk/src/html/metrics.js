@@ -95,7 +95,8 @@ dojo.html.measureFragment = function(/* HTMLElement */node, /* string */html, /*
 };
 
 //	the following are derived from the 13th Parallel Column script, as
-//		reinterpreted by trt.  http://www.13thparallel.org
+//		reinterpreted by trt.  http://www.13thparallel.org/archive/column-script
+//	Original by Dan Pupius and Michael van Ouwerkerk.
 dojo.html.getFittedFragment = function(/* HTMLElement */node, /* string */html){
 	//	summary
 	//	Given html, return the fragment that will fit on one line of passed node.
