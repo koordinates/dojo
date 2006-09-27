@@ -17,7 +17,7 @@ $files = array('src/widget/Widget.js');
 
 foreach ($files as $file) {
   $package = new DojoPackage($dojo, $file);
-  
+
   if (strpos($file, '__package__.js') !== false) {
     // Handle dojo.kwCompoundRequire calls
     $calls = $package->getFunctionCalls('dojo.kwCompoundRequire');

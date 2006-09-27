@@ -7,8 +7,15 @@ require_once('DojoString.php');
 
 class DojoParameter
 {
-  public function __construct()
+	private $dojo;
+	private $package;
+	private $start;
+	private $end;
+	
+  public function __construct($dojo, $package)
   {
+		$this->dojo = $dojo;
+		$this->package = $package;
   }
   
   public function getRawValue()
@@ -18,6 +25,16 @@ class DojoParameter
   public function getRawSource()
   {
   }
+	
+	public function setStart($line, $position)
+	{
+		$this->start = array($line, $position);
+	}
+	
+	public function setEnd($line, $position)
+	{
+		$this->end = array($line, $position);
+	}
 
   public function getValue()
   {
@@ -25,7 +42,7 @@ class DojoParameter
       return $this->parameter_value;
     }
 
-    $parameter_value = implode("\n", $this->chop($this->source, $this->start[0], $this->start[1], $this->end[0], $this->end[1]));
+    $parameter_value = implode("\n", Text::chop($this->package->getSource(), $this->start[0], $this->start[1], $this->end[0], $this->end[1]));
     $parameter_value = Text::trim($parameter_value);
     
     if ($parameter_value{0} == '"' || $parameter_value{0} == "'") {
@@ -39,7 +56,7 @@ class DojoParameter
       $this->parameter_value = $object;
     }
     elseif (strpos($parameter_value, 'function') === 0) {
-    	$function = new DojoFunctionDeclare($this->source, $this->code, $this->package_name, $this->compressed_package_name, $this->function_name);
+    	$function = new DojoFunctionDeclare($this->dojo, $this->package);
     	$function->setStart($this->start[0], $this->start[1]);
     	$function->buildFunction();
     	$this->parameter_value = $function;
@@ -57,7 +74,7 @@ class DojoParameter
       return $this->parameter_type;
     }
     
-    $parameter_type = implode("\n", $this->chop($this->source, $this->start[0], $this->start[1], $this->end[0], $this->end[1]));
+    $parameter_type = implode("\n", Text::chop($this->package->getSource(), $this->start[0], $this->start[1], $this->end[0], $this->end[1]));
     preg_match_all('%(?:^\s*/\*(.*)\*/|//(.*)$|/\*(.*)\*/\s*$)%', $parameter_type, $matches, PREG_SET_ORDER);
     
     $parameter_type = '';

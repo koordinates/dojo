@@ -96,7 +96,7 @@ class DojoFunctionCall
   public function getParameters()
   {
     $this->parameters = new DojoParameters($this->dojo, $this->package);
-    $this->parameters->buildParameters($this->parameter_start[0], $this->parameter_start[1], $this->parameter_end[0], $this->parameter_end[1]);
+    return $this->parameters->buildParameters($this->parameter_start[0], $this->parameter_start[1], $this->parameter_end[0], $this->parameter_end[1]);
   }
   
   public function getParameter($pos)

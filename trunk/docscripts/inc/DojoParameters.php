@@ -6,6 +6,7 @@ class DojoParameters
 {
   private $dojo;
   private $package;
+  private $parameters;
   
   public function __construct($dojo, $package)
   {
@@ -29,7 +30,7 @@ class DojoParameters
       for ($i = $start; $i < strlen($line); $i++) {
         $start = 0;
         if (!isset($parameter)) {
-          $parameter = new DojoParameter();
+          $parameter = new DojoParameter($this->dojo, $this->package);
           if ($i + 1 < strlen($line)) {
             $parameter->setStart($line_number, $i + 1);
           }
@@ -70,7 +71,7 @@ class DojoParameters
     }
     
     if ($parameter) {
-      $parameter->setEnd($this->parameter_end[0], $this->parameter_end[1] - 1);
+      $parameter->setEnd($end_line, $end_position - 1);
       $this->parameters[] = $parameter;
     }
     
