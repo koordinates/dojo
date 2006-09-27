@@ -61,7 +61,7 @@ dojo.math.matrix.product = function() {
 	}
 	var result = arguments[0];
 	for (var i=1; i<arguments.length; i++){
-		result = matrix.multiply(result,arguments[i]);
+		result = dojo.math.matrix.multiply(result,arguments[i]);
 	}
 	return result;
 }
@@ -72,7 +72,7 @@ dojo.math.matrix.sum = function() {
 		dojo.debug ("can't sum 0 matrices!");
 		return 0;
 	}
-	var result = matrix.copy(arguments[0]);
+	var result = dojo.math.matrix.copy(arguments[0]);
 	var rows = result.length;
 	if (rows==0) {
 		dojo.debug ("can't deal with matrices of 0 rows!");
@@ -240,9 +240,9 @@ dojo.math.matrix.identity = function(size, scale){
 		scale = 1;
 	}
 	var m = [];
-	for(var i=0; i<n; i++){
+	for(var i=0; i<size; i++){
 		m[i] = [];
-		for(var j=0; j<n; j++){
+		for(var j=0; j<size; j++){
 			m[i][j] = (i==j? scale: 0);
 		}
 	}
