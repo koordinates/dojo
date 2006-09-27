@@ -80,7 +80,7 @@ dojo.widget.defineWidget(
 			}
 			
 			if (nodeWidget.isTreeNode) {
-				returnWidget = nodeWidget.parent.children[nodeWidget.getParentIndex()+1];				
+				var returnWidget = nodeWidget.parent.children[nodeWidget.getParentIndex()+1];				
 			}
 			
 		}
@@ -148,7 +148,7 @@ dojo.widget.defineWidget(
 	// left arrow
 	_focusZoomOut: function(node) {
 		
-		returnWidget = node;
+		var returnWidget = node;
 		
 		// if not expanded, expand, else move to 1st child
 		if (node.isFolder && node.isExpanded) {

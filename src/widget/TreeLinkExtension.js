@@ -32,7 +32,7 @@ dojo.widget.defineWidget(
 	makeALabel: function() {		
 		var newLabel = document.createElement("a");
 		
-		for(key in this.params) {
+		for(var key in this.params) {
 			if (key in {}) continue;
 			newLabel.setAttribute(key, this.params[key]);
 		}
@@ -53,7 +53,7 @@ dojo.widget.defineWidget(
 	},
 	
 	listenNode: function(node) {
-		for(key in node.object) {
+		for(var key in node.object) {
 			if (key in {}) continue;
 			node.labelNode.setAttribute(key, node.object[key]);
 		}
