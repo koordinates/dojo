@@ -11,8 +11,6 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.ComboBox");
-</script>
-<script>
 	function setVal1(val){
 		dojo.byId('value1').value=val;
 	}
@@ -21,6 +19,11 @@
 	}
 	function setVal3(val){
 		dojo.byId('value3').value=val;
+	}
+	var combo;
+	dojo.addOnLoad(init);
+	function init(){
+		combo = dojo.widget.createWidget("dojo:ComboBox", {name:"prog",autocomplete:false,dataUrl:"comboBoxData.js"}, dojo.byId("progCombo"));
 	}
 </script>
 </head>
@@ -129,9 +132,11 @@ The drop down list is filtered by the data you have already typed in.
  	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
 		dataUrl="comboBoxData.js" style="width: 200px;" name="foo.bar" autocomplete="false"
 	>
-
+	<br>
+	<p>A combo created by createWidget</p>
+	<input id="progCombo">
 	<input type="submit">
-
+	
 </form>
 <p>
 this is some text below the combo boxes. It shouldn't get pushed out of the way when search results get returned.
@@ -143,7 +148,6 @@ also: adding a simple combo box to test IE bleed through problem:
   <option">IE bleed through</option>
   <option>problem</option>
 </select>
-
 <h3>Some tests:</h3>
 <ol>
 <li>Note: This is not really a ComboBox - it is actually an AutoCompleter.</li>

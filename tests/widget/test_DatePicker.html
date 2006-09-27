@@ -9,15 +9,14 @@
 					extraLocale: ['en-us', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx']
 	};
 </script>
-
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.DatePicker");
 	dojo.require("dojo.debug.Firebug");
 	dojo.addOnLoad(init);
-	var formDp, dpInput, setDate;
+	var formDp, dpInput, setDate, dp;
 	function init(){
-		formDp = dojo.widget.byId('formDp');
+		formDp = dojo.widget.createWidget("DatePicker", {}, dojo.byId("dpNode")); 
 		dpInput = dojo.byId('dpInput');
 		setDate = dojo.byId('setDate');
 		dojo.event.connect(formDp,'onSetDate','setDpInput');
@@ -39,9 +38,10 @@
 </script>
 </head>
 <body>
-<p>A DatePicker mimicking a formNode (requires extra coding on developers part) You can also see how etDate() affects the UI by clicking the setDate button</p>
+<h1>Dojo DatePicker Demo</h1>
+<p>A DatePicker mimicking a formNode (requires extra coding on developers part) You can also see how setDate() affects the UI by clicking the setDate button (this is also created via createWidget not markup)</p>
 
-<div id="formDp" dojoType="datepicker"  style="border:1px solid blue;padding:1px;"></div><input name="date" id="dpInput" type="text" size="10"/><button id="setDate">setDate</button>
+<div id="dpNode" style="border:1px solid blue;padding:1px;"></div><input name="date" id="dpInput" type="text" size="10"/><button id="setDate">setDate</button>
 
 <p>A calendar in your locale, or the closest thing to it we currently provide</p>
 <div id="test" dojoType="datepicker"  style="border:1px solid red;padding:1px;"></div>
