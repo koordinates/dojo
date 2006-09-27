@@ -7,6 +7,9 @@ dojo.require("dojo.math");
 dojo.require("dojo.svg");
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.gfx.color.hsl");
+dojo.require("dojo.experimental");
+dojo.experimental("dojo.widget.svg.HslColorPicker");
+
 
 dojo.widget.defineWidget(
 	"dojo.widget.svg.HslColorPicker",
