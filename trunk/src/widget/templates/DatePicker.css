@@ -1,5 +1,5 @@
 .datePickerContainer {
-	width:160px; /* needed for proper user styling */
+	width:164px; /* needed for proper user styling */
 }
 
 .calendarContainer {
@@ -7,7 +7,7 @@
 }
 
 .calendarBodyContainer {
-	width:160px; /* needed for the explode effect */
+	width:100%; /* needed for the explode effect (explain?) */
 	background: #7591bc url("images/dpBg.gif") top left repeat-x;
 }
 
@@ -136,7 +136,15 @@
 
 .nextYear, .previousYear {
 	cursor:pointer;cursor:hand;
-	margin:0 0.55em;
+	padding:0;
+}
+
+.nextYear {
+	margin:0 0 0 0.55em;
+}
+
+.previousYear {
+	margin:0 0.55em 0 0;
 }
 
 .incrementControl {
