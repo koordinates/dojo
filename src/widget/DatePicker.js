@@ -369,9 +369,14 @@ dojo.widget.defineWidget(
 		
 		_setYearLabels: function(year) {
 			var y = year - 1;
-			dojo.lang.forEach(["previousYearLabelNode", "currentYearLabelNode", "nextYearLabelNode"], function(node){
-				this[node].innerHTML = y++; /*ticket #1206: dojo.date.format(new Date(y++, 0), {formatLength:'yearOnly', locale:this.lang});*/
-			}, this);
+			var that = this;
+			function f(n){
+				that[n+"YearLabelNode"].innerHTML =
+					dojo.date.format(new Date(y++, 0), {formatLength:'yearOnly', locale:that.lang});
+			}
+			f("previous");
+			f("current");
+			f("next");
 		},
 		
 		_getDateClassName: function(date, monthState) {
