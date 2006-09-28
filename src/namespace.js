@@ -7,7 +7,7 @@ dojo["namespace"] = {
 	loading: {},
 	loaded: {},
 	register: function(name, module, resolver /*optional*/, noOverride) {
-		if((!noOverride)&&(!this.namespaces[name])){
+		if((!noOverride)||(!this.namespaces[name])){
 			this.namespaces[name] = new dojo["namespace"].Namespace(name, module, resolver);
 		}
 	},
