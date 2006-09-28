@@ -137,9 +137,10 @@ dojo["namespace"].Namespace.prototype.resolve = function(name, domain, omit_modu
 
 dojo["namespace"].Namespace.prototype.getModule = function(widgetName){
 	if (!this.module) {return null;}
+	if (!dojo.lang.isArray(this.module)){ return this.module; }
+	
 	if (!this.resolver){return null;}
 	var fullName = this.resolver(widgetName);
-	
 	if(!fullName){
 		if(dojo.lang.isArray(this.module)){
 			return this.module[0];
