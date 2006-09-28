@@ -138,27 +138,20 @@ dojo["namespace"].Namespace.prototype.resolve = function(name, domain, omit_modu
 dojo["namespace"].Namespace.prototype.getModule = function(widgetName){
 	if (!this.module) {return null;}
 	if (!dojo.lang.isArray(this.module)){ return this.module; }
+	if (this.module.length <= 0) { return null; }
+	if (!this.resolver){return this.module[0];}
 	
-	if (!this.resolver){return null;}
 	var fullName = this.resolver(widgetName);
-	if(!fullName){
-		if(dojo.lang.isArray(this.module)){
-			return this.module[0];
-		} else {
-			return this.module;
-		}
+	if(!fullName){ return this.module[0]; }
+	
+	var modpos=fullName.lastIndexOf(".");
+	if(modpos > -1){
+		return fullName.substr(0, modpos);
+	} else { 
+		return this.module[0]; 
 	}
 	
-	if(dojo.lang.isArray(this.module)){
-		var modpos=fullName.lastIndexOf(".");
-		if(modpos > -1){
-			return fullName.substr(0, modpos);
-		} else { 
-			return this.module[0]; 
-		}
-	} else {
-		return this.module;
-	}
+	return null;
 }
 
 // NOTE: rather put this in dojo.widget.Widget, but that fubars debugAtAllCosts
