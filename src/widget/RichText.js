@@ -1471,10 +1471,10 @@ dojo.widget.defineWidget(
 			html = this._preFilterContent(html);
 			if(this.isClosed){
 				this.domNode.innerHTML = html;
-			}else if(this.window.getSelection && !dojo.render.html.moz){ // Safari
+			}else if(this.window && this.window.getSelection && !dojo.render.html.moz){ // Safari
 				// look ma! it's a totally f'd browser!
 				this.editNode.innerHTML = html;
-			}else if(this.window.getSelection || this.document.selection){ // Moz/IE
+			}else if((this.window && this.window.getSelection) || (this.document && this.document.selection)){ // Moz/IE
 				this.execCommand("selectall");
 				this.execCommand("inserthtml", html);
 			}
