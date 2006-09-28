@@ -57,8 +57,7 @@ class DojoParameter
     }
     elseif (strpos($parameter_value, 'function') === 0) {
     	$function = new DojoFunctionDeclare($this->dojo, $this->package);
-    	$function->setStart($this->start[0], $this->start[1]);
-    	$function->buildFunction();
+    	$function->buildFunctionFrom($this->start[0], $this->start[1]);
     	$this->parameter_value = $function;
     }
     else {
