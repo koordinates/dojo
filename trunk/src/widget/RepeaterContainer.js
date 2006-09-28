@@ -10,7 +10,7 @@ dojo.widget.defineWidget("dojo.widget.RepeaterContainer", dojo.widget.HtmlWidget
 		name: "",
 		rowTemplate: "",
 		myObject: null,
-		index: "",
+		pattern: "",
 		useDnd: false,
 		isContainer: true,
 
@@ -32,14 +32,14 @@ dojo.widget.defineWidget("dojo.widget.RepeaterContainer", dojo.widget.HtmlWidget
 		reIndexRows: function() {
 			for(var i=0,len=this.domNode.childNodes.length; i<len;i++) {
 				var elems = ["INPUT", "SELECT", "TEXTAREA"];
-				for (var k=0; k < 3; k++) {
+				for (var k=0; k < elems.length; k++) {
 					var list = this.domNode.childNodes[i].getElementsByTagName(elems[k]);
 					for (var j=0,len2=list.length; j<len2; j++) {
 						var name = list[j].name;
-						var index=dojo.string.escape("regexp", this.index);
+						var index=dojo.string.escape("regexp", this.pattern);
 						index = index.replace(/%\\{index\\}/g,"%{index}");
 						var nameRegexp = dojo.string.substituteParams(index, {"index": "[0-9]*"});
-						var newName= dojo.string.substituteParams(this.index, {"index": "" + i});
+						var newName= dojo.string.substituteParams(this.pattern, {"index": "" + i});
 						var re=new RegExp(nameRegexp,"g");
 						list[j].name = name.replace(re,newName);
 					}
@@ -48,7 +48,7 @@ dojo.widget.defineWidget("dojo.widget.RepeaterContainer", dojo.widget.HtmlWidget
 		},
 
 		onDeleteRow: function(e) {
-			var index=dojo.string.escape("regexp", this.index);
+			var index=dojo.string.escape("regexp", this.pattern);
 			index = index.replace(/%\\{index\\}/g,"%{index}");
 			var nameRegexp = dojo.string.substituteParams(index, {"index": "([0-9]*)"});
 			var re=new RegExp(nameRegexp,"g");
@@ -99,7 +99,7 @@ dojo.widget.defineWidget("dojo.widget.RepeaterContainer", dojo.widget.HtmlWidget
 			var frag = parser.parseElement(node, null, true);
 			dojo.widget.getParser().createSubComponents(frag, this);
 			var elems = ["INPUT", "SELECT", "IMG"];
-			for (var k=0; k < 3; k++) {
+			for (var k=0; k < elems.length; k++) {
 				var list = node.getElementsByTagName(elems[k]);
 				for(var i=0, len=list.length; i<len; i++) {
 					var child = list[i];
@@ -112,7 +112,7 @@ dojo.widget.defineWidget("dojo.widget.RepeaterContainer", dojo.widget.HtmlWidget
 						}
 					} else if (child.getAttribute("rowAction") != null) {
 						if(child.getAttribute("rowAction") == "delete") {
-							child.name=dojo.string.substituteParams(this.index, {"index": "0"});
+							child.name=dojo.string.substituteParams(this.pattern, {"index": "0"});
 							dojo.event.connect(child, "onclick", this, "onDeleteRow");
 						} // if
 					} // else-if
