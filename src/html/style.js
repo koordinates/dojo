@@ -24,7 +24,6 @@ dojo.html.getClasses = function(/* HTMLElement */node) {
 	return (c == "") ? [] : c.split(/\s+/g);	//	array
 }
 
-
 dojo.html.hasClass = function(/* HTMLElement */node, /* string */classname){
 	//	summary
 	//	Returns whether or not the specified classname is a portion of the
@@ -390,12 +389,13 @@ dojo.html.removeCssRule = function(/* integer? */index){
 }
 
 dojo.html._insertedCssFiles = []; // cache container needed because IE reformats cssText when added to DOM
-dojo.html.insertCssFile = function(/* string */URI, /* HTMLDocument? */doc, /* boolean? */checkDuplicates){
+dojo.html.insertCssFile = function(/* string */URI, /* HTMLDocument? */doc, /* boolean? */checkDuplicates, /* boolean */fail_ok){
 	//	summary
 	// calls css by XmlHTTP and inserts it into DOM as <style [widgetType="widgetType"]> *downloaded cssText*</style>
 	if(!URI){ return; }
 	if(!doc){ doc = document; }
-	var cssStr = dojo.hostenv.getText(URI);
+	var cssStr = dojo.hostenv.getText(URI, false, fail_ok);
+  if(cssStr===null){ return; } 
 	cssStr = dojo.html.fixPathsInCssText(cssStr, URI);
 
 	if(checkDuplicates){
