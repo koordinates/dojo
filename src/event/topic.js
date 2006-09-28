@@ -74,8 +74,16 @@ dojo.event.topic.TopicImpl = function(topicName){
 		});
 	}
 
+	this._getJoinPoint = function(){
+		return dojo.event.MethodJoinPoint.getForMethod(this, "sendMessage");
+	}
+
+	this.setSquelch = function(shouldSquelch){
+		this._getJoinPoint().squelch = shouldSquelch;
+	}
+
 	this.destroy = function(){
-		dojo.event.MethodJoinPoint.getForMethod(this, "sendMessage").disconnect();
+		this._getJoinPoint().disconnect();
 	}
 
 	this.registerPublisher = function(publisherObject, publisherMethod){

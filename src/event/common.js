@@ -341,6 +341,7 @@ dojo.event.MethodJoinPoint = function(obj, methname){
 	this.object = obj||dj_global;
 	this.methodname = methname;
 	this.methodfunc = this.object[methname];
+	this.squelch = false;
 	this.before = [];
 	this.after = [];
 	this.around = [];
@@ -518,22 +519,36 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 			}
 		}
 
+		var unRollSquelch = function(){
+			if(this.squelch){
+				try{
+					return unrollAdvice.apply(this, arguments);
+				}catch(e){ 
+					dojo.debug(e);
+				}
+			}else{
+				return unrollAdvice.apply(this, arguments);
+			}
+		}
+
 		if(this.before.length>0){
 			// pass a cloned array, if this event disconnects this event forEach on this.before wont work
-			dojo.lang.forEach(this.before.concat(new Array()), unrollAdvice);
+			dojo.lang.forEach(this.before.concat(new Array()), unRollSquelch);
 		}
 
 		var result;
-		if(this.around.length>0){
-			var mi = new dojo.event.MethodInvocation(this, obj, args);
-			result = mi.proceed();
-		}else if(this.methodfunc){
-			result = this.object[this.methodname].apply(this.object, args);
-		}
+		try{
+			if(this.around.length>0){
+				var mi = new dojo.event.MethodInvocation(this, obj, args);
+				result = mi.proceed();
+			}else if(this.methodfunc){
+				result = this.object[this.methodname].apply(this.object, args);
+			}
+		}catch(e){ if(!this.squelch){ dojo.raise(e); } }
 
 		if(this.after.length>0){
 			// see comment on this.before above
-			dojo.lang.forEach(this.after.concat(new Array()), unrollAdvice);
+			dojo.lang.forEach(this.after.concat(new Array()), unRollSquelch);
 		}
 
 		return (this.methodfunc) ? result : null;
