@@ -92,6 +92,10 @@ if (window.console) {
 		// not supported
 		dojo.debug("dojo.debug.console requires Firebug > 0.4");
 	}
+} else if (dojo.render.html.opera) {
+	if (opera && opera.postError) {
+		dojo.hostenv.println=opera.postError;
+	} else {
+		dojo.debug("dojo.debug.Opera requires Opera > 8.0");
+	}
 }
-
-
