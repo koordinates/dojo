@@ -336,7 +336,7 @@ dojo.widget.defineWidget(
 							// remove a dojo.js or dojo.js.uncompressed.js from remoteScripts
 							// we declare all files named dojo.js as bad, regardless of path
 							if(regexDojoJs.exec(attr[2])){
-								dojo.debug("Security note! inhibit:"+attr[2]+" from  beeing loaded again.");
+								dojo.debug("Security note! inhibit:"+attr[2]+" from  being loaded again.");
 							}else{
 								scripts.push({path: attr[2]});
 							}
