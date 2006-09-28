@@ -1,4 +1,5 @@
 dojo.provide("dojo.debug.Firebug");
+dojo.deprecated("dojo.debug.Firebbug is slated for removal in 0.5; use dojo.debug.console instead.", "0.5");
 
 // summary
 // Firebug Console logger.
