@@ -38,6 +38,7 @@ dojo.require("dojo.namespace");
 			"editortree": "dojo.widget.EditorTree",
 			"editortreecontextmenu": "dojo.widget.EditorTreeContextMenu",
 			"editortreenode": "dojo.widget.EditorTreeNode",
+			"filteringtable": "dojo.widget.FilteringTable",
 			"fisheyelist": "dojo.widget.FisheyeList",
 			"editortreecontroller": "dojo.widget.EditorTreeController",
 			"googlemap": "dojo.widget.GoogleMap",
