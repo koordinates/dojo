@@ -128,7 +128,7 @@ dojo["namespace"].Namespace.prototype.resolve = function(name, domain, omit_modu
 		if(dojo.hostenv.findModule(fullName, false)){
 			this._loaded[fullName] = true;
 		}else{
-			if(!omit_module_check){dojo.raise("dojo.namespace.Namespace.resolve: module '" + fullName + "' not found after loading via namespace '" + this.name + "'");} 
+			if(!dj_undef(omit_module_check) & !omit_module_check){dojo.raise("dojo.namespace.Namespace.resolve: module '" + fullName + "' not found after loading via namespace '" + this.name + "'");} 
 			this._failed[fullName] = true;
 		}
 	}
