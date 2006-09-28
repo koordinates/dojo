@@ -182,7 +182,7 @@ dojo.widget.manager = new function(){
 		// empty prefix is included automatically
 	}
 	
-	findImplementationInModule = function(lowerCaseWidgetName, module){
+	var findImplementationInModule = function(lowerCaseWidgetName, module){
 		if(!module){return null;}
 		for(var i=0, l=renderPrefixCache.length, widgetModule; i<=l; i++){
 			widgetModule = (i<l ? module[renderPrefixCache[i]] : module);
@@ -196,7 +196,7 @@ dojo.widget.manager = new function(){
 		return null;
 	}
 
-	findImplementation = function(lowerCaseWidgetName, moduleName){
+	var findImplementation = function(lowerCaseWidgetName, moduleName){
 		// locate registered widget module
 		var module = dojo.evalObjPath(moduleName, false);
 		// locate a widget implementation in the registered module for our current rendering environment
