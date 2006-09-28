@@ -137,15 +137,24 @@ dojo["namespace"].Namespace.prototype.resolve = function(name, domain, omit_modu
 
 dojo["namespace"].Namespace.prototype.getModule = function(widgetName){
 	if (!this.module) {return null;}
-	if(!this.resolver){return null;}
+	if (!this.resolver){return null;}
 	var fullName = this.resolver(widgetName);
-	if(!fullName){return null;}
+	
+	if(!fullName){
+		if(dojo.lang.isArray(this.module)){
+			return this.module[0];
+		} else {
+			return this.module;
+		}
+	}
 	
 	if(dojo.lang.isArray(this.module)){
 		var modpos=fullName.lastIndexOf(".");
 		if(modpos > -1){
 			return fullName.substr(0, modpos);
-		} else { return null; }
+		} else { 
+			return this.module[0]; 
+		}
 	} else {
 		return this.module;
 	}
