@@ -35,8 +35,6 @@
 		dec(dojo.byId("extToggler"), "onclick", obj, "extScriptToggle");
 	}
 
-	// Due to bug #659, event disconnect on single function does not work
-	// as a workaround construct a placeholder for our connects 
 	var obj = {
 		// toggle 
 		inFileScriptToggle: function(){
@@ -105,7 +103,7 @@ if(typeof _container_ == 'undefined'){ // browsing page as standalone
 	dojo.addOnLoad(obj.connect);
 }else{
 	_container_.addOnLoad(connect);
-	_container_.addOnUnLoad(connect);
+	_container_.addOnUnload(connect);
 }
 
 </script>
