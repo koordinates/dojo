@@ -36,7 +36,7 @@ class DojoPackage
   {
     $in_function = array();
     $lines = $this->getLines();
-    
+
     $matches = preg_grep('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*(new\s*)?function\s*\()%', $lines);
     foreach (array_keys($matches) as $start_line_number) {
       if (in_array($start_line_number, $in_function)) continue;
@@ -63,58 +63,11 @@ class DojoPackage
       if ($anonymous) {
         $function->setAnonymous(true);
       }
-      $function->setStart($start_line_number, strpos($line, $match[0]));
-      $function->setParameterStart($start_line_number, strpos($line, '('));
       if ($prototype) {
         $function->setThis($prototype);
       }
-
-      $content_start = false; // For content start
-      $parameter_end = false; // For parameter end
-
-      $balance = 0;
-
-      for ($line_number = $start_line_number; $lines[$line_number] !== false; $line_number++) {
-        $in_function[] = $line_number; // No inner function declarations
-        $line = $lines[$line_number];
-        if (trim($line) == '') {
-          continue;
-        }
-        
-        if (!$content_start && ($pos = strpos($line, '{')) !== false) {
-          $content_start = true;
-          $start = $pos;
-          $function->setContentStart($line_number, $pos);
-        }
-        if (!$parameter_end && ($pos = strpos($line, ')')) !== false) {
-          $parameter_end = true;
-          $function->setParameterEnd($line_number, $pos);
-        }
-        
-        if ($content_start) {
-          for ($char_pos = $start; $char_pos < strlen($line); $char_pos++) {
-            $start = 0;
-            $char = $line{$char_pos};
-            
-            if ($char == '{') {
-              ++$balance;
-            }
-            elseif ($char == '}') {
-              --$balance;
-              if (!$balance) {
-                $function->setContentEnd($line_number, $char_pos);
-                $function->setEnd($line_number, $char_pos);
-                if (!$function->isAnonymous()) {
-                  $this->functions[] = $function;
-                }
-								$this->functions = array_merge($this->functions, $function->getFunctionDeclarations());
-                unset($function);
-                continue 3;
-              }
-            }
-          }
-        }
-      }
+      $function->buildFrom($start_line_number, strpos($line, $match[0]));
+      $this->functions[] = $function;
     }
     
     return $this->functions;

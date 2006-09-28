@@ -163,6 +163,12 @@ class DojoFunctionDeclare
     return $this->this_variable_names[$this_variable_name];
   }
   
+  public function buildFunctionFrom($line, $position)
+  {
+    $this->setStart($line, $position);
+    $this->buildFunction();
+  }
+  
   public function buildFunction(){
   	$lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], count($this->code) - 1, strlen($this->code[count($this->code) - 1]), false);
 	
