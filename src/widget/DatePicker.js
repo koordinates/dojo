@@ -7,7 +7,6 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
-dojo.require("dojo.lang.array");
 
 dojo.widget.defineWidget(
 	"dojo.widget.DatePicker",
@@ -49,7 +48,7 @@ dojo.widget.defineWidget(
 		endDate: "2941-10-12",
 		//adjusts the first day of the week 0==Sunday..6==Saturday
 		weekStartsOn: "",
-		//current date selected by DatePicker in rfc 3339 date format "YYYY-mm-dd" -- once initialized, this.date will be a date Object
+		//current date selected by DatePicker in rfc 3339 date format "yyyy-MM-dd" -- once initialized, this.date will be a date Object
 		date: "",
 		storedDate: "", //deprecated use date instead
 		//disable all incremental controls, must pick a date in the current display
@@ -98,11 +97,12 @@ dojo.widget.defineWidget(
 		fillInTemplate: function(args, frag) {
 			// summary: see dojo.widget.DomWidget
 
+			dojo.widget.DatePicker.superclass.fillInTemplate.apply(this, arguments);
+
 			// Copy style info from input node to output node
 			var source = this.getFragNodeRef(frag);
 			dojo.html.copyStyle(this.domNode, source);
 
-			dojo.widget.DatePicker.superclass.fillInTemplate.apply(this, arguments);
 			this.weekTemplate = dojo.dom.removeNode(this.calendarWeekTemplate);
 			this._preInitUI((this.date)?this.date:this.today,false,true); //init UI with date selected ONLY if user supplies one
 
