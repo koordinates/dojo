@@ -248,14 +248,14 @@ dojo.widget.manager = new function(){
 		if(nsObj){nsObj.resolve(widgetName);}
 
 		// locate a widget implementation in the registered module for our current rendering environment
-		impl = findImplementation(lowerCaseWidgetName, nsObj.module);
+		impl = findImplementation(lowerCaseWidgetName, nsObj.getModule(widgetName));
 		if(impl){return(imps[lowerCaseWidgetName] = impl)};
 
 		// try to load a manifest to resolve this implemenation
 		nsObj = dojo["namespace"].require(ns);
 		if((nsObj)&&(nsObj.resolver)){
 			nsObj.resolve(widgetName);
-			impl = findImplementation(lowerCaseWidgetName, nsObj.module);
+			impl = findImplementation(lowerCaseWidgetName, nsObj.getModule(widgetName));
 			if(impl){return(imps[lowerCaseWidgetName] = impl)};
 		}
 	
