@@ -21,13 +21,17 @@ dojo.require("dojo.namespace");
 			"combobutton": "dojo.widget.Button",
 			"contentpane": "dojo.widget.ContentPane",
 			"contextmenu": "dojo.widget.ContextMenu",
+			"currencytextbox": "dojo.widget.validate.CurrencyTextbox",
 			"datepicker": "dojo.widget.DatePicker",
+			"datetextbox": "dojo.widget.validate.DateTextbox",
 			"debugconsole": "dojo.widget.DebugConsole",
 			"dialog": "dojo.widget.Dialog",
 			"docpane": "dojo.widget.DocPane",
 			"dropdownbutton": "dojo.widget.Button",
 			"dropdowndatepicker": "dojo.widget.DropdownDatePicker",
 			"dropdowntimepicker": "dojo.widget.DropdownTimePicker",
+			"emaillisttextbox": "dojo.widget.validate.EmailListTextbox",
+			"emailtextbox": "dojo.widget.validate.EmailTextbox",
 			"editor2": "dojo.widget.Editor2",
 			"editor2toolbar": "dojo.widget.Editor2Toolbar",
 			"editor": "dojo.widget.Editor",
@@ -42,6 +46,8 @@ dojo.require("dojo.namespace");
 			"formcontainer": "dojo.widget.FormContainer",
 			"hslcolorpicker": "dojo.widget.HslColorPicker",
 			"inlineeditbox": "dojo.widget.InlineEditBox",
+			"integertextbox": "dojo.widget.validate.IntegerTextbox",
+			"ipaddresstextbox": "dojo.widget.validate.IpAddressTextbox",
 			"layoutcontainer": "dojo.widget.LayoutContainer",
 			"linkpane": "dojo.widget.LinkPane",
 			"pagecontainer": "dojo.widget.PageContainer",
@@ -54,6 +60,8 @@ dojo.require("dojo.namespace");
 			"menubaritem2": "dojo.widget.Menu2",
 			"monthlyCalendar": "dojo.widget.MonthlyCalendar",
 			"radiogroup": "dojo.widget.RadioGroup",
+			"realnumbertextbox": "dojo.widget.validate.RealNumberTextbox",
+			"regexptextbox": "dojo.widget.validate.RegexpTextbox",
 			"repeatercontainer": "dojo.widget.RepeaterContainer", 
 			"richtext": "dojo.widget.RichText",
 			"remotetabcontroller": "dojo.widget.RemoteTabController",
@@ -67,7 +75,9 @@ dojo.require("dojo.namespace");
 			"tabcontainer": "dojo.widget.TabContainer",
 			"tabcontroller": "dojo.widget.TabContainer",
 			"taskbar": "dojo.widget.TaskBar",
+			"textbox": "dojo.widget.validate.Textbox",
 			"timepicker": "dojo.widget.TimePicker",
+			"timetextbox": "dojo.widget.validate.TimeTextbox",
 			"titlepane": "dojo.widget.TitlePane",
 			"toaster": "dojo.widget.Toaster",
 			"toggler": "dojo.widget.Toggler",
@@ -94,8 +104,13 @@ dojo.require("dojo.namespace");
 			"treerpccontrollerv3": "dojo.widget.TreeRpcControllerV3",
 			"treeselectorv3": "dojo.widget.TreeSelectorV3",
 			"treev3": "dojo.widget.TreeV3",
-
-			"validate": "dojo.widget.validate",
+			
+			"urltextbox": "dojo.widget.validate.UrlTextbox",
+			"usphonenumbertextbox": "dojo.widget.validate.UsPhoneNumberTextbox",
+			"ussocialsecuritynumbertextbox": "dojo.widget.validate.UsSocialSecurityNumberTextbox",
+			"usstatetextbox": "dojo.widget.validate.UsStateTextbox",
+			"usziptextbox": "dojo.widget.validate.UsZipTextbox",
+			"validationtextbox": "dojo.widget.validate.ValidationTextbox",
 			"treeloadingcontroller": "dojo.widget.TreeLoadingController",
 			"widget": "dojo.widget.Widget",
 			"wizard": "dojo.widget.Wizard",
@@ -126,6 +141,4 @@ dojo.require("dojo.namespace");
 	}
 
 	dojo.registerNamespaceResolver("dojo", dojoNamespaceResolver);
-	//dojo.defineNamespace("dojo", "src", "dojo", dojoNamespaceResolver);
-
 })();

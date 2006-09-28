@@ -135,5 +135,21 @@ dojo["namespace"].Namespace.prototype.resolve = function(name, domain, omit_modu
 	return Boolean(this._loaded[fullName]);
 }
 
+dojo["namespace"].Namespace.prototype.getModule = function(widgetName){
+	if (!this.module) {return null;}
+	if(!this.resolver){return null;}
+	var fullName = this.resolver(widgetName);
+	if(!fullName){return null;}
+	
+	if(dojo.lang.isArray(this.module)){
+		var modpos=fullName.lastIndexOf(".");
+		if(modpos > -1){
+			return fullName.substr(0, modpos);
+		} else { return null; }
+	} else {
+		return this.module;
+	}
+}
+
 // NOTE: rather put this in dojo.widget.Widget, but that fubars debugAtAllCosts
-dojo.registerNamespace("dojo", "dojo.widget");
+dojo.registerNamespace("dojo", ["dojo.widget","dojo.widget.validate"]);
