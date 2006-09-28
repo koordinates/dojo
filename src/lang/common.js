@@ -165,7 +165,7 @@ dojo.lang.isFunction = function(it){
 
 dojo.lang.isString = function(it){
 	// summary:	Return true if it is a String.
-	return (it instanceof String || typeof it == "string");
+	return (typeof it == "string" || it instanceof String);
 }
 
 dojo.lang.isAlien = function(it){
