@@ -18,7 +18,7 @@ dojo.widget.defineWidget(
 		// per widgetImpl variables
 		this._styleNodes =  [];
 		this._onLoadStack = [];
-		this._onUnLoadStack = [];
+		this._onUnloadStack = [];
 		this._callOnUnLoad = false;
 		this.scriptScope; // undefined for now
 		this._ioBindObj;
@@ -38,6 +38,7 @@ dojo.widget.defineWidget(
 		refreshOnShow: false,	// use with cacheContent: false
 		handler: "", // generate pane content from a java function
 		executeScripts: false,	// if true scripts in content will be evaled after content is innerHTML'ed
+		scriptSeparation: true,	// if false script eval in global scope
 		loadingMessage: "Loading...",
 
 		postCreate: function(args, frag, parentComp){
@@ -107,13 +108,13 @@ dojo.widget.defineWidget(
 						if(type=="load"){
 							self.onDownloadEnd.call(self, url, data);
 						}else{
-							// XHR insnt a normal JS object, IE doesnt have prototype on XHR so we cant extend it or shallowCopy it
+							// XHR isnt a normal JS object, IE doesnt have prototype on XHR so we cant extend it or shallowCopy it
 							var e = {
 								responseText: xhr.responseText,
 								status: xhr.status,
 								statusText: xhr.statusText,
 								responseHeaders: xhr.getAllResponseHeaders(),
-								_text: "Error loading '" + url + "' (" + xhr.status + " "+  xhr.statusText + ")"
+								text: "Error loading '" + url + "' (" + xhr.status + " "+  xhr.statusText + ")"
 							};
 							self._handleDefaults.call(self, e, "onDownloadError");
 							self.onLoad();
@@ -144,7 +145,7 @@ dojo.widget.defineWidget(
 	
 		// called before old content is cleared
 		onUnLoad: function(e){
-			this._runStack("_onUnLoadStack");
+			this._runStack("_onUnloadStack");
 			delete this.scriptScope;
 		},
 	
@@ -162,7 +163,7 @@ dojo.widget.defineWidget(
 	
 			if(err.length){
 				var name = (stName== "_onLoadStack") ? "addOnLoad" : "addOnUnLoad";
-				this._handleDefaults(name+" failure\n "+err, "onExecError", true);
+				this._handleDefaults(name+" failure\n "+err, "onExecError", "debug");
 			}
 		},
 	
@@ -172,10 +173,15 @@ dojo.widget.defineWidget(
 			this._pushOnStack(this._onLoadStack, obj, func);
 		},
 	
-		addOnUnLoad: function(/*Function or Object ?*/ obj, /*Function*/ func){
+		addOnUnload: function(/*Function or Object ?*/ obj, /*Function*/ func){
 			// summary
-			// 	same as to dojo.addUnOnLoad but does not take "function_name" as a string
-			this._pushOnStack(this._onUnLoadStack, obj, func);
+			// 	same as to dojo.addUnOnUnload but does not take "function_name" as a string
+			this._pushOnStack(this._onUnloadStack, obj, func);
+		},
+
+		addOnUnLoad: function(){
+			dojo.deprecated(this.widgetType + ".addOnUnLoad, use addOnUnload instead. (lowercased Load)", 0.5);
+			this.addOnUnload.apply(this, arguments);
 		},
 	
 		_pushOnStack: function(stack, obj, func){
@@ -210,15 +216,15 @@ dojo.widget.defineWidget(
 			this.setContent(data);
 		},
 	
-		// usefull if user wants to prevent default behaviour ie: _setContent("Error...")
-		_handleDefaults: function(e, handler, useAlert){
+		// useful if user wants to prevent default behaviour ie: _setContent("Error...")
+		_handleDefaults: function(e, handler, messType){
 			if(!handler){ handler = "onContentError"; }
 
-			if(dojo.lang.isString(e)){ e = {_text: e}; }
+			if(dojo.lang.isString(e)){ e = {text: e}; }
 
-			if(!e._text){ e._text = e.toString(); }
+			if(!e.text){ e.text = e.toString(); }
 
-			e.toString = function(){ return this._text; };
+			e.toString = function(){ return this.text; };
 
 			if(typeof e.returnValue != "boolean"){
 				e.returnValue = true; 
@@ -229,16 +235,29 @@ dojo.widget.defineWidget(
 			// call our handler
 			this[handler](e);
 			if(e.returnValue){
-				if(useAlert){
-					alert(e.toString());
-				}else{
+				switch(messType){
+					case true: // fallthrough, old compat
+					case "alert":
+						alert(e.toString()); break;
+					case "debug":
+						dojo.debug(e.toString()); break;
+					default:
 					// makes sure scripts can clean up after themselves, before we setContent
 					if(this._callOnUnLoad){ this.onUnLoad(); } 
-					this._callOnUnLoad = false; // makes sure we dont try to call onUnLoad again on this event,
-												// ie onUnLoad before 'Loading...' but not before clearing 'Loading...'
-					this._setContent(e.toString());
+					// makes sure we dont try to call onUnLoad again on this event,
+					// ie onUnLoad before 'Loading...' but not before clearing 'Loading...'
+					this._callOnUnLoad = false;
+
+					// we might end up in a endless recursion here if domNode cant append content
+					if(arguments.callee._loopStop){
+						dojo.debug(e.toString());
+					}else{
+						arguments.callee._loopStop = true;
+						this._setContent(e.toString());
+					}
 				}
 			}
+			arguments.callee._loopStop = false;
 		},
 	
 		// pathfixes, require calls, css stuff and neccesary content clean
@@ -300,9 +319,7 @@ dojo.widget.defineWidget(
 								default:
 									path = origPath;
 							}
-			
 							fix = " " + attr[1] + "=" + attr[2] + path + attr[2];
-		
 							// slices up tag before next attribute check
 							tagFix += tag.substring(0, attr.index) + fix;
 							tag = tag.substring((attr.index + attr[0].length), tag.length);
@@ -367,14 +384,23 @@ dojo.widget.defineWidget(
 					if(match) { s = match[1]; }
 				}
 	
-				/******** scan for scriptScope in html eventHandlers and replace with link to this pane *********/
-				if(this.executeScripts){
-					var regex = /(<[a-zA-Z][a-zA-Z0-9]*\s[^>]*\S=(['"])[^>]*[^\.\]])scriptScope([^>]*>)/;
-					str = "";
+				/*** replace scriptScope prefix in html Event handler
+				* working order: find tags with scriptScope in a tag attribute
+				* then replace all standalone scriptScope occurencies with reference to to this widget
+				* valid onClick="scriptScope.func()" or onClick="scriptScope['func']();scriptScope.i++"
+				* not valid onClick="var.scriptScope.ref" nor onClick="var['scriptScope'].ref" */
+				if(this.executeScripts && this.scriptSeparation){
+					var regex = /(<[a-zA-Z][a-zA-Z0-9]*\s[^>]*?\S=)((['"])[^>]*scriptScope[^>]*>)/;
+					var regexAttr = /([\s'";:\(])scriptScope(.*)/; // we rely on that attribute begins ' or "
+					str = ""; 
 					while(tag = regex.exec(s)){
-						tmp = ((tag[2]=="'") ? '"': "'");
-						str += s.substring(0, tag.index);
-						s = s.substr(tag.index).replace(regex, "$1dojo.widget.byId("+ tmp + this.widgetId + tmp + ").scriptScope$3");
+						tmp = ((tag[3]=="'") ? '"': "'");fix= "";
+						str += s.substring(0, tag.index) + tag[1];
+						while(attr = regexAttr.exec(tag[2])){
+							tag[2] = tag[2].substring(0, attr.index) + attr[1] + "dojo.widget.byId("+ tmp + this.widgetId + tmp + ").scriptScope" + attr[2];
+						}
+						str += tag[2];
+						s = s.substr(tag.index + tag[0].length);
 					}
 					s = str + s;
 				}
@@ -415,7 +441,7 @@ dojo.widget.defineWidget(
 					node.innerHTML = cont;
 				}
 			}catch(e){
-				e._text = "Could'nt load content:"+e.description;
+				e.text = "Couldn't load content:"+e.description;
 				this._handleDefaults(e, "onContentError");
 			}
 		},
@@ -454,10 +480,10 @@ dojo.widget.defineWidget(
 				if(this.parseContent){
 					for(var i = 0; i < data.requires.length; i++){
 						try{
-							eval(data.requires[i]);
+							eval(data.requires[i]);dojo.debug(data.requires[i]);
 						} catch(e){
-							e._text = "ContentPane: error in package loading calls, " + (e.description||e);
-							this._handleDefaults(e, "onContentError", true);
+							e.text = "ContentPane: error in package loading calls, " + (e.description||e);
+							this._handleDefaults(e, "onContentError", "debug");
 						}
 					}
 				}
@@ -521,11 +547,11 @@ dojo.widget.defineWidget(
 					dojo.io.bind(this._cacheSetting({
 						"url": 		scripts[i].path,
 						"load":     function(type, scriptStr){
-								dojo.lang.hitch(self, tmp = scriptStr);
+								dojo.lang.hitch(self, tmp = ";"+scriptStr);
 						},
 						"error":    function(type, error){
-								error._text = type + " downloading remote script";
-								self._handleDefaults.call(self, error, "onExecError", true);
+								error.text = type + " downloading remote script";
+								self._handleDefaults.call(self, error, "onExecError", "debug");
 						},
 						"mimetype": "text/plain",
 						"sync":     true
@@ -535,15 +561,29 @@ dojo.widget.defineWidget(
 					code += scripts[i];
 				}
 			}
-	
+
+
 			try{
-				// initialize a new anonymous container for our script, dont make it part of this widgets scope chain
-				// instead send in a variable that points to this widget, usefull to connect events to onLoad, onUnLoad etc..
-				delete this.scriptScope;
-				this.scriptScope = new (new Function('_container_', code+'; return this;'))(self);
+				if(this.scriptSeparation){
+					// initialize a new anonymous container for our script, dont make it part of this widgets scope chain
+					// instead send in a variable that points to this widget, useful to connect events to onLoad, onUnLoad etc..
+					delete this.scriptScope;
+					this.scriptScope = new (new Function('_container_', code+'; return this;'))(self);
+				}else{
+					// exec in global, lose the _container_ feature
+					var djg = dojo.global();
+					if(djg.execScript){
+						djg.execScript(code);
+					}else{
+						var djd = dojo.doc();
+						var sc = djd.createElement("script");
+						sc.appendChild(djd.createTextNode(code));
+						(this.containerNode||this.domNode).appendChild(sc);
+					}
+				}
 			}catch(e){
-				e._text = "Error running scripts from content:\n"+e.description;
-				this._handleDefaults(e, "onExecError", true);
+				e.text = "Error running scripts from content:\n"+e.description;
+				this._handleDefaults(e, "onExecError", "debug");
 			}
 		}
 	}

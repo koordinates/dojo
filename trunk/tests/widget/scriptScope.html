@@ -14,7 +14,7 @@
 		+"		}"
 		+"	};"
 		+"	_container_.addOnLoad(function(){dojo.event.connect(['_paths','_mem'], 'onclick', obj, 'click');});"
-		+"	_container_.addOnUnLoad(function(){ dojo.event.disconnect(['_paths','_mem'], 'onclick', obj, 'click');});"
+		+"	_container_.addOnUnload(function(){ dojo.event.disconnect(['_paths','_mem'], 'onclick', obj, 'click');});"
 		+"</scr"+"ipt>"
 		+"Memory leak (check manually if browser eats resources)<br>"
 		+"<a href='acme/test_RemotePaths.html' id='_paths'>stub link, Paths</a><br/>"
@@ -85,7 +85,24 @@
 			+"</scr"+"ipt>"
 			+"<a href='javascript:window[\"alert\"](scriptScope.i++) ;'>Alert me the value of scriptScope.i</a><br/>"
 			+"<a href='javascript:window.alert(scriptScope.i++) ;'>Alert me the value of scriptScope.i</a><br/>"
-			+"<a href='#' onclick='alert(scriptScope.i++) ;'>Alert me the value of scriptScope.i</a><br/>";
+			+"<a href='#' onclick='alert(scriptScope.i++) ;'>Alert me the value of scriptScope.i</a><br/>"
+			+"<scr"+"ipt>"
+			+"	this.message = function(debug){"
+			+"		if(debug){"
+			+"			dojo.debug('hello');"
+			+"		}else{"
+			+"			alert('hello');"
+			+"		}"
+  			+"}"
+			+"</scr"+"ipt>"
+			+"<style>#docpane div{cursor: pointer; color:blue;}</style>"
+			+"<div onclick='scriptScope.message()'>Shall alert hello</div>"
+			+"<div onclick=' scriptScope.message()'>Shall alert hello</div>"
+			+"<div id='cl' onclick='scriptScope.message()'>Shall alert hello</div>"
+			+"<div onmousedown=\"dojo.widget.byType('contentpane')[0].scriptScope.j = 0;scriptScope.message(true);\" "
+			+"onmouseup=\"scriptScope.j++;alert(scriptScope.j);\">Shall debug hello then alert 1</div>"
+			+"<div onclick='dojo.widget.byType(\"contentpane\")[0].scriptScope.message()'>Shall alert hello</div>"
+			+"<div onclick='dojo.scriptScope.message()'>Shall NOT alert</div>";
 		dojo.widget.byId('docpane').setContent(cont);
 	}
 
