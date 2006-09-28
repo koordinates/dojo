@@ -247,7 +247,7 @@ dojo.widget.defineWidget(
 			}
 
 			function enableControl(node, enabled){
-				dojo.html.setVisibility(node, enabled ? 'visible' : 'hidden');
+				dojo.html.setVisibility(node, enabled ? '' : 'hidden');
 			}
 			enableControl(this.decreaseWeekNode,decWeek);
 			enableControl(this.increaseWeekNode,incWeek);
