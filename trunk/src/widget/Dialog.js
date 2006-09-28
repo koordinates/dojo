@@ -155,7 +155,12 @@ dojo.declare(
 
 		//call this function in show() of subclass
 		showModalDialog: function() {
+			if (this.followScroll && !this._scrollConnected){
+				this._scrollConnected = true;
+				dojo.event.connect(window, "onscroll", this, "onScroll");
+			}
 			this.setBackgroundOpacity();
+			this.sizeBackground();
 			this.showBackground();
 		},
 
@@ -169,6 +174,27 @@ dojo.declare(
 
 			this.shared.bg.style.display = "none";
 			this.shared.bg.style.width = this.shared.bg.style.height = "1px";
+
+			if (this._scrollConnected){
+				this._scrollConnected = false;
+				dojo.event.disconnect(window, "onscroll", this, "onScroll");
+			}
+		},
+
+		onScroll: function(){
+			var scroll_offset = dojo.html.getScroll().offset;
+			this.shared.bg.style.top = scroll_offset.y + "px";
+			this.shared.bg.style.left = scroll_offset.x + "px";
+			this.placeModalDialog();
+		},
+
+		// Called when the browser window's size is changed
+		checkSize: function() {
+			if(this.isShowing()){
+				this.sizeBackground();
+				this.placeModalDialog();
+				this.onResized();
+			}
 		}
 	});
 
@@ -183,11 +209,6 @@ dojo.widget.defineWidget(
 		lifetime: 0,
 
 		show: function() {
-			if (this.followScroll && !this._scrollConnected){
-				this._scrollConnected = true;
-				dojo.event.connect(window, "onscroll", this, "onScroll");
-			}
-			
 			if(this.lifetime){
 				this.timeRemaining = this.lifetime;
 				if(!this.blockDuration){
@@ -231,11 +252,6 @@ dojo.widget.defineWidget(
 			if(this.timer){
 				clearInterval(this.timer);
 			}
-
-			if (this._scrollConnected){
-				this._scrollConnected = false;
-				dojo.event.disconnect(window, "onscroll", this, "onScroll");
-			}
 		},
 		
 		setTimerNode: function(node){
@@ -266,22 +282,6 @@ dojo.widget.defineWidget(
 				}else if(this.timerNode){
 					this.timerNode.innerHTML = Math.ceil(this.timeRemaining/1000);
 				}
-			}
-		},
-
-		onScroll: function(){
-			var scroll_offset = dojo.html.getScroll().offset;
-			this.shared.bg.style.top = scroll_offset.y + "px";
-			this.shared.bg.style.left = scroll_offset.x + "px";
-			this.placeModalDialog();
-		},
-
-		// Called when the browser window's size is changed
-		checkSize: function() {
-			if(this.isShowing()){
-				this.sizeBackground();
-				this.placeModalDialog();
-				this.onResized();
 			}
 		}
 	}
