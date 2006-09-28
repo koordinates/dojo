@@ -1,18 +1,18 @@
 dojo.provide("dojo.debug.console");
-
 // summary:
-// 	Console logger, for use with Firebug and Safari's (simpler) console.
+// 	Console logger, for use with FireFox Firebug, Safari and Opera's consoles.
 // description:
-//  This package redirects the normal dojo debugging output to the firebug console.  
+//  This package redirects the normal dojo debugging output to the console log in modern browsers.
 //  When using Firebug, it does this  by sending the entire object to the console, 
-//	rather than just overriding dojo.hostenv.println, so that Firebug's 
-//	interactive object inspector is available.
+//	rather than just overriding dojo.hostenv.println, so that Firebug's interactive 
+//	object inspector is available.
+// see: http://www.joehewitt.com/software/firebug/docs.php
 
 if (window.console) {
 	if (console.info != null) {
 		// using a later version of Firebug -- lots of fun stuff!
 		
-		var logMethod = function() {
+		dojo.debug = function() {
 			// summary: Write all of the arguments to the Firebug console
 			// description: Uses console.info() so that the (i) icon prints next to the debug line
 			//	rather than munging the arguments by adding "DEBUG:" in front of them.
@@ -20,8 +20,7 @@ if (window.console) {
 			if (!djConfig.isDebug)	{	 return;	}
 			console.info.apply(console, arguments);
 		}
-		dojo.debug = logMethod;
-		dojo.debugDeep = logMethod;	
+		dojo.debugDeep = dojo.debug;	
 
 		dojo.debugShallow = function(/*Object*/ obj, /*Boolean?*/showMethods, /*Boolean?*/sort) {
 			// summary:  Write first-level properties of obj to the console.
@@ -81,21 +80,25 @@ if (window.console) {
 	} else if (console.log != null) {
 		// using Safari or an old version of Firebug
 		
-		logMethod = function() {
+		dojo.debug = function() {
 			if (!djConfig.isDebug) { return ; }
 			// make sure we're only writing a single string to Safari's console
 			var args = dojo.lang.toArray(arguments);
 			console.log("DEBUG: " + args.join(" "));
 		}
-		dojo.debug = logMethod;
 	} else {
 		// not supported
 		dojo.debug("dojo.debug.console requires Firebug > 0.4");
 	}
 } else if (dojo.render.html.opera) {
+	// using Opera 8.0 or later
 	if (opera && opera.postError) {
 		dojo.hostenv.println=opera.postError;
+		// summary:  hook debugging up to Opera's postError routine
+
 	} else {
 		dojo.debug("dojo.debug.Opera requires Opera > 8.0");
+
 	}
 }
+
