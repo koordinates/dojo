@@ -7,7 +7,7 @@
 
 	<script type="text/javascript">
 		var djConfig = {
-					isDebug: true
+			isDebug: true, extraLocale: ['de-de', 'en-us']
 		};
 	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
@@ -297,18 +297,32 @@
 			<div class="formQuestion">
 				<span class="emphasise"> Date (American format) </span>
 				<span class="noticeMessage">DateTextbox class, 
-					Attributes: {required: true, trim: true}. Works for leap years</span>
+					Attributes: {lang: "en-us", required: true, trim: true}. Works for leap years</span>
 			</div>
 			<div class="formAnswer">
-				<input type="text" name="date1" class="medium" value="12/30/2005"
+				<input type="text" name="date1" class="medium" value="12/30/05" lang="en-us"
 					dojoType="DateTextbox"
 					trim="true" 
 					required="true" 
-					invalidMessage="Invalid date. Use MM/DD/YYYY format." />
+					invalidMessage="Invalid date. Use M/d/yy format." />
 			</div>
 
 			<div class="formQuestion">
-				<span class="emphasise"> Date (European format) </span>
+				<span class="emphasise"> Date (German format) </span>
+				<span class="noticeMessage">DateTextbox class, 
+					Attributes: {formatLength:"medium", lang: "de-de", required: true, trim: true}. Works for leap years</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="date2" class="medium" value="30.12.2005" lang="de-de" formatLength="medium"
+					dojoType="DateTextbox"
+					trim="true" 
+					required="true" 
+					invalidMessage="Invalid date. Use dd.MM.yyyy format." />
+			</div>
+
+
+			<div class="formQuestion">
+				<span class="emphasise"> Date (European format) using format (deprecated in 0.5) </span>
 				<span class="noticeMessage">DateTextbox class, 
 					Attributes: {format:"YYYY.MM.DD", required: true, trim: true}. Works for leap years</span>
 			</div>
@@ -324,10 +338,10 @@
 			<div class="formQuestion">
 				<span class="emphasise"> 12 Hour Time </span>
 				<span class="noticeMessage">TimeTextbox class, 
-					Attributes: {required: true, trim: true}</span>
+					Attributes: {formatLength: "medium", required: true, trim: true}</span>
 			</div>
 			<div class="formAnswer">
-				<input type="text" name="time1" class="medium" value="5:45:00 pm"
+				<input type="text" name="time1" class="medium" value="5:45:00 pm" formatLength="medium"
 					dojoType="TimeTextbox"
 					trim="true" 
 					required="true" 
@@ -335,7 +349,21 @@
 			</div>
 
 			<div class="formQuestion">
-				<span class="emphasise"> 24 Hour Time </span>
+				<span class="emphasise"> 24 Hour Time</span>
+				<span class="noticeMessage">TimeTextbox class, 
+					Attributes: {displayFormat:"HH:mm:ss", required: true, trim: true}</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="time2" class="medium" value="17:45:00"
+					dojoType="TimeTextbox"
+					trim="true" 
+					required="true" 
+					format = "HH:mm:ss"
+					invalidMessage="Invalid time. Use HH:mm:ss where HH is 00 - 23 hours." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> 24 Hour Time using format attribute (deprecated in 0.5)</span>
 				<span class="noticeMessage">TimeTextbox class, 
 					Attributes: {format:"HH:mm:ss", required: true, trim: true}</span>
 			</div>

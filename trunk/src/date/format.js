@@ -205,7 +205,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 					s = "?";
 					break;
 				default:
-					dojo.raise("dojo.date.parse: invalid format: "+pattern);
+					dojo.raise("dojo.date.format: invalid pattern char: "+pattern);
 			}
 			if(pad){ s = dojo.string.pad(s, l); }
 			return s;
