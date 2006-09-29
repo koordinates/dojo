@@ -37,6 +37,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.lfx.html");
 dojo.require("dojo.widget.AccordionPane");
+dojo.require("dojo.widget.PageContainer");
 
 dojo.widget.defineWidget(
 	"dojo.widget.AccordionContainer",
@@ -69,8 +70,13 @@ dojo.widget.defineWidget(
 		_addChild: function(/*Widget*/ widget){
 			// summary
 			//	Internal call to add child, used during postCreate() and by the real addChild() call
+			if(widget.open){
+				dojo.deprecated("open parameter deprecated, use 'selected=true' instead will be removed in ", "0.5");
+				dojo.debug(widget.widgetId + ": open == " + widget.open);
+				widget.selected=true;
+			}
 			if (widget.widgetType != "AccordionPane") {
-				var wrapper=dojo.widget.createWidget("AccordionPane",{label: widget.label, open: widget.open, labelNodeClass: this.labelNodeClass, containerNodeClass: this.containerNodeClass, allowCollapse: this.allowCollapse });
+				var wrapper=dojo.widget.createWidget("AccordionPane",{label: widget.label, selected: widget.selected, labelNodeClass: this.labelNodeClass, containerNodeClass: this.containerNodeClass, allowCollapse: this.allowCollapse });
 				wrapper.addChild(widget);
 				this.addWidgetAsDirectChild(wrapper);
 				this.registerChild(wrapper, this.children.length);
@@ -104,18 +110,17 @@ dojo.widget.defineWidget(
 		_setSizes: function() {
 			// summary
 			//	Move panes to right position based on current open node.
-			//	Set "slide" to false for initial widget creation, or true when changing the open pane
-			var mySize=dojo.html.getContentBox(this.domNode);
 
 			// get cumulative height of all the title bars, and figure out which pane is open
 			var totalCollapsedHeight = 0;
 			var openIdx = 0;
 			dojo.lang.forEach(this.children, function(child, idx){
 				totalCollapsedHeight += child.getLabelHeight();
-				if(child.open){ openIdx=idx; }
+				if(child.selected){ openIdx=idx; }
 			});
 
 			// size and position each pane
+			var mySize=dojo.html.getContentBox(this.domNode);
 			var y = 0;
 			dojo.lang.forEach(this.children, function(child, idx){
 				var childCollapsedHeight = child.getLabelHeight();
@@ -127,7 +132,7 @@ dojo.widget.defineWidget(
 			});
 		},
 
-		selectPage: function(/*Widget*/ page){
+		selectChild: function(/*Widget*/ page){
 			// summary
 			//	close the current page and select a new one
 			dojo.lang.forEach(this.children, function(child){child.setSelected(child==page);});
@@ -139,7 +144,7 @@ dojo.widget.defineWidget(
 				if(child.domNode.style.top != (y+"px")){
 					anims.push(dojo.lfx.html.slideTo(child.domNode, {top: y, left: 0}, this.duration));
 				}
-				y += child.open ? dojo.html.getBorderBox(child.domNode).height : child.getLabelHeight();
+				y += child.selected ? dojo.html.getBorderBox(child.domNode).height : child.getLabelHeight();
 			});
 			dojo.lfx.combine(anims).play();
 		}
@@ -150,6 +155,8 @@ dojo.widget.defineWidget(
 // Since any widget can be specified as a child, mix them
 // into the base widget class.  (This is a hack, but it's effective.)
 dojo.lang.extend(dojo.widget.Widget, {
-	label: "",
+	// String
+	//	is this the selected child?
+	//	DEPRECATED: will be removed in 0.5.  Used "selected" attribute instead.
 	open: false
 });

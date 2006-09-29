@@ -33,7 +33,7 @@ dojo.widget.defineWidget(
 	
 	// Boolean
 	//	If true, this is the open pane
-	open: false,
+	selected: false,
 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/AccordionPane.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/AccordionPane.css"),
@@ -45,7 +45,7 @@ dojo.widget.defineWidget(
     	dojo.html.addClass(this.domNode, this["class"]);
 		dojo.widget.AccordionPane.superclass.fillInTemplate.call(this);
 		dojo.html.disableSelection(this.labelNode);
-		this.setSelected(this.open);
+		this.setSelected(this.selected);
 	},
 
 	setLabel: function(label) {
@@ -68,11 +68,11 @@ dojo.widget.defineWidget(
 	},
 
 	onLabelClick: function() {
-		this.parent.selectPage(this);
+		this.parent.selectChild(this);
 	},
 	
 	setSelected: function(/*Boolean*/ isSelected){
-		this.open=isSelected;
+		this.selected=isSelected;
 		(isSelected ? dojo.html.addClass : dojo.html.removeClass)(this.domNode, this["class"]+"-selected");
 
 		// make sure child is showing (lazy load)
