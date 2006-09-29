@@ -22,7 +22,7 @@
 					dojo.byId("accordionShell"));
 				var label=["pane 1", "pane 2", "pane 3"];
 				for(i=0; i<label.length; ++i) {
-					var content = dojo.widget.createWidget("ContentPane", {label: label[i], open: i==1});
+					var content = dojo.widget.createWidget("ContentPane", {label: label[i], selected: i==1});
 					content.setContent("this is " + label[i]);
 					dojo.debug("adding content pane " + content.widgetId);
 					accordion.addChild(content);
@@ -46,7 +46,7 @@
 		<div dojoType="AccordionContainer" labelNodeClass="label" containerNodeClass="accBody"
 			style="border: 2px solid black; float: left; margin-right: 30px;  width: 400px; height: 300px; overflow: hidden"
 		>
-		        <div dojoType="ContentPane" open="true" label="Pane 1" style="overflow: scroll;">
+		        <div dojoType="ContentPane" selected="true" label="Pane 1" style="overflow: scroll;">
 				<h2>Pane 1 w/ tree</h2>
 						<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
 						
