@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.DomWidget");
 
 dojo.require("dojo.event.*");
+dojo.require("dojo.io.*");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
