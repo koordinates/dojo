@@ -9,6 +9,7 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.InlineEditBox");
 	dojo.require("dojo.event.*");
+	dojo.hostenv.writeIncludes();
 </script>
 <script type="text/javascript">
 	function saveHandler(newValue, oldValue) {
@@ -23,6 +24,8 @@
 
 <style type="text/css">
 	body { font-family : sans-serif; background:#fff; }
+	
+	.inlineEdit { background-color: #CCC76A; }
 </style>
 </head>
 
@@ -44,6 +47,10 @@ This link will disable the textarea box above, I <i>triple dog dare you</i> to
 
 <a href="#" onClick="dojo.widget.byId('areaEditable').enable()">Enable textarea</a>
 
+</p>
+
+<p id="backgroundArea" class="inlineEdit" dojoType="inlineEditBox" >
+This text should have a colored background when not in editing mode.
 </p>
 
 </body>
