@@ -50,7 +50,7 @@ function testClose(pane,tab) {
 	files tab1.html and tab2.html. Tab 3 and Another Tab are using content that is already
 	part of this page.</p>
 
-	<div id="mainTabContainer" dojoType="TabContainer" style="width: 100%; height: 20em;" selectedTab="tab2">
+	<div id="mainTabContainer" dojoType="TabContainer" style="width: 100%; height: 20em;" selectedChild="tab2">
 	
 		<div id="tab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
 		
@@ -111,33 +111,34 @@ function testClose(pane,tab) {
 	<p>some text here</p>
 
 	<div id="ttabs" dojoType="TabContainer" labelPosition="top" style="width: 100%; height: 10em;"
-      selectedTab="tab2" closeButton="tab">
-		<div id="ttab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
+      selectedChild="tab2">
+		<div id="ttab1" dojoType="ContentPane" href="tab1.html" label="Tab 1" closable="true"></div>
 		<div id="ttab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
-		<div dojoType="ContentPane" label="Tab 3" onClose="testClose">
+		<div dojoType="ContentPane" label="Tab 3" onClose="testClose" closable="true">
 			<h1>I am tab 3</h1>
 			<p>And I was already part of the page! That's cool, no?</p>
+			<p>If you try to close me there should be a confirm dialog.</p>
 		</div>
 	</div>
 	
 	<p>some text here</p>
 
 	<div id="btabs" dojoType="TabContainer" labelPosition="bottom" style="width: 100%; height: 10em;" 
-        selectedTab="tab2" closeButton="pane">
+        selectedChild="tab2">
 		<div id="btab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
 		<div id="btab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" onLoad="dojo.debug('Tab2 onLoad');" label="Tab 2"></div>
 	</div>
 	
 	<p>some text here</p>
 
-	<div id="lhtabs" dojoType="TabContainer" labelPosition="left-h" style="width: 100%; height: 10em;" selectedTab="tab2">
+	<div id="lhtabs" dojoType="TabContainer" labelPosition="left-h" style="width: 100%; height: 10em;" selectedChild="tab2">
 		<div id="lhtab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
 		<div id="lhtab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
 	</div>
 	
 	<p>some text here</p>
 
-	<div id="lrtabs" dojoType="TabContainer" labelPosition="right-h" style="width: 100%; height: 10em;" selectedTab="tab2">
+	<div id="lrtabs" dojoType="TabContainer" labelPosition="right-h" style="width: 100%; height: 10em;" selectedChild="tab2">
 		<div id="rhtab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
 		<div id="rhtab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
 	</div>
