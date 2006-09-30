@@ -204,7 +204,7 @@ dojo.widget.defineWidget(
 				//this is our new UI loop... one loop to rule them all, and in the datepicker bind them
 				currentCalendarNode = calendarNodes.item(i);
 				currentCalendarNode.innerHTML = nextDate.getDate();
-				var curClass = (nextDate.getMonth() == this.curMonth.getMonth())? 'current':'previous';
+				var curClass = (nextDate.getMonth()<this.curMonth.getMonth())?'previous':(nextDate.getMonth()==this.curMonth.getMonth())?'current':'next';
 				var mappedClass = curClass;
 				if(this._isDisabledDate(nextDate)){
 					var classMap={previous:"disabledPrevious",current:"disabledCurrent",next:"disabledNext"};
