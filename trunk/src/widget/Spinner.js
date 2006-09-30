@@ -6,7 +6,9 @@ dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.validate");
+dojo.require("dojo.widget.validate.IntegerTextbox");
+dojo.require("dojo.widget.validate.RealNumberTextbox");
+dojo.require("dojo.widget.validate.DateTextbox");
 
 // Mixin for validation widgets with a spinner
 // This class basically (conceptually) extends dojo.widget.validate.ValidationTextbox.
