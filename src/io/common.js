@@ -218,7 +218,7 @@ dojo.io.bind = function(request){
 dojo.io.sendBindError = function(request /* Object */, message /* String */){
 	//Need to be careful since not all hostenvs support setTimeout.
 	if((typeof request.error == "function" || typeof request.handle == "function")
-		&& typeof setTimeout == "function"){
+		&& (typeof setTimeout == "function" || typeof setTimeout == "object")){
 		var errorObject = new dojo.io.Error(message);
 		setTimeout(function(){
 			request[(typeof request.error == "function") ? "error" : "handle"]("error", errorObject, null, request);
