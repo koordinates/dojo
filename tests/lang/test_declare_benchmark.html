@@ -20,7 +20,7 @@
 			-moz-border-radius:10px;
 		}
 	</style>
-	<script>djConfig = { isDebug: true }</script>
+	<script>djConfig = { isDebug: true, debugContainerId:"debug" }</script>
 	<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
 	<script language="JavaScript" type="text/javascript">
 		dojo.require("dojo.lang.declare");
@@ -33,6 +33,7 @@
 			var objects={};
 			
 			function createObjects(objtype, objname, number, testname){
+				dojo.debug("started: " + testname + " ..");
 				var ret=[];
 				for (var i=0; i < number; i++){
 					pr.start(testname)
@@ -43,6 +44,7 @@
 			}
 			
 			function callAdd(object,number){
+				dojo.debug("started: " + object._name + " ..");
 				for(var i=0; i<number;i++) {
 					pr.start(object._name);
 					object.add(1,2);
@@ -340,6 +342,7 @@
 				var obj=new TestExt("call TestExt.add 10000 times");
 				callAdd(obj, 10000);
 				
+				document.getElementById("debug").innerHTML="";
 				pr.dump(true);
 				document.getElementById("loader").style.display="none";
 			}
@@ -358,8 +361,12 @@
 	<p id="loader" class="loading">
 		This may take a while to run, be patient and it'll finish eventually..
 	</p>
+	<h2>Benchmarking Tests</h2>
 	<p>
 		Tests and benchmarks different types of javascript inheritance schemes.
+	</p>
+	<p id="debug">
+	
 	</p>
 </body>
 </html>
