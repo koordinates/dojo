@@ -5,7 +5,7 @@ dojo.profile = {
 	_profiles: {},
 	_pns: [],
 
-	this.start = function(/*String*/ name){
+	start:function(/*String*/ name){
 		if(!this._profiles[name]){
 			this._profiles[name] = {iters: 0, total: 0};
 			this._pns[this._pns.length] = name;
@@ -18,7 +18,7 @@ dojo.profile = {
 		this._profiles[name].start = new Date();
 	},
 
-	this.end = function(/*String*/ name){
+	end:function(/*String*/ name){
 		var ed = new Date();
 		if((this._profiles[name])&&(this._profiles[name]["start"])){
 			with(this._profiles[name]){
@@ -33,7 +33,7 @@ dojo.profile = {
 		}
 	},
 
-	this.dump = function(/*boolean*/ appendToDoc){
+	dump:function(/*boolean*/ appendToDoc){
 		var tbl = document.createElement("table");
 		with(tbl.style){
 			border = "1px solid black";
