@@ -13,7 +13,7 @@ dojo.require("dojo.widget.HtmlWidget");
 //it can open in a given position x,y or around a given node.
 //In addition, it handles animation and IE bleed through workaround.
 //This class can not be used standalone: it should be mixed-in to a
-//dojo.widget.HtmlWidget. Use PopupContainer instead if you want a 
+//dojo.widget.HtmlWidget. Use PopupContainer instead if you want a
 //a standalone popup widget
 dojo.declare(
 	"dojo.widget.PopupContainerBase",
@@ -108,7 +108,7 @@ dojo.declare(
 		this.popupIndex = parentPopup ? parentPopup.popupIndex + 1 : 1;
 
 		if(this.isTopLevel){
-			var button = explodeSrc instanceof Array ? null : explodeSrc;
+			var button = dojo.html.isNode(explodeSrc) ? explodeSrc : null;
 			dojo.widget.PopupManager.opened(this, button);
 		}
 
@@ -120,7 +120,7 @@ dojo.declare(
 			this._bookmark = null;
 		}
 
-		//convert explodeSrc from format [x, y] to 
+		//convert explodeSrc from format [x, y] to
 		//{left: x, top: y, width: 0, height: 0} which is the new
 		//format required by dojo.html.toCoordinateObject
 		if(explodeSrc instanceof Array){
@@ -218,7 +218,7 @@ dojo.declare(
 
 	closeSubpopup: function(force) {
 		if(this.currentSubpopup == null){ return; }
-		
+
 		this.currentSubpopup.close(force);
 		this.currentSubpopup = null;
 	},
@@ -227,7 +227,7 @@ dojo.declare(
 		this.inherited('onShow');
 		// With some animation (wipe), after close, the size of the domnode is 0
 		// and next time when shown, the open() function can not determine
-		// the correct place to popup, so we store the opened size here and 
+		// the correct place to popup, so we store the opened size here and
 		// set it after close (in function onHide())
 		this.openedSize={w: this.domNode.style.width, h: this.domNode.style.height};
 		// prevent IE bleed through
@@ -255,7 +255,7 @@ dojo.declare(
 
 	onHide: function() {
 		dojo.widget.HtmlWidget.prototype.onHide.call(this);
-		
+
 		//restore size of the domnode, see comment in
 		//function onShow()
 		if(this.openedSize){
@@ -264,7 +264,7 @@ dojo.declare(
 				height=this.openedSize.h;
 			}
 		}
-		
+
 		this.processQueue();
 	}
 });
@@ -302,13 +302,13 @@ dojo.widget.PopupManager = new function(){
 
 	/*
 		This function register all the iframes and the top window,
-		so that whereever the user clicks in the page, the popup 
+		so that whereever the user clicks in the page, the popup
 		menu will be closed
 		In case you add an iframe after onload event, please call
 		dojo.widget.PopupManager.registerWin manually
 	*/
 	this.registerAllWindows = function(targetWindow){
-		//starting from window.top, clicking everywhere in this page 
+		//starting from window.top, clicking everywhere in this page
 		//should close popup menus
 		if(!targetWindow) { //see comment below
 			targetWindow = dojo.html.getDocumentWindow(window.top.document);
