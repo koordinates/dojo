@@ -9,6 +9,8 @@
    };
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../../src/gfx/common.js"></script>
+<script type="text/javascript" src="../../src/gfx/path.js"></script>
 <!--<script type="text/javascript" src="../../src/gfx/vml.js"></script>-->
 <!--<script type="text/javascript" src="../../src/gfx/svg.js"></script>-->
 <script type="text/javascript">
@@ -319,31 +321,38 @@ dojo.addOnLoad(function()
 	// test arcTo 
 	addTest('arcTo', function(testName){
 		var surface = getTestSurface(testName, 'arcTo: from 0 to 360 degree, w/ 30 degree of x axis rotation, rendered with different color');
-        var startPoint = dojo.gfx.matrix.multiplyPoint(dojo.gfx.matrix.rotateg(30), 100, 0);
-        var g1 = surface.createGroup();
+
+		var m = dojo.gfx.matrix;
+		var g1 = surface.createGroup();
+		var g2 = g1.createGroup();
+
+		var rx = 100, ry = 60, xRotg = 30;
+		var startPoint = m.multiplyPoint(m.rotateg(xRotg), {x: -rx, y: 0  });
+		var endPoint   = m.multiplyPoint(m.rotateg(xRotg), {x: 0,   y: -ry});
+	    
 		var re1 = g1.createPath()
-			.moveTo(startPoint.x, startPoint.y)
-			.arcTo(dojo.math.degToRad(90), 0, 0, 100, 60, dojo.math.degToRad(30), true)
+			.moveTo(startPoint)
+			.arcTo(rx, ry, xRotg, true, false, endPoint)
 			.setStroke({color: "red"})
 			;
 		var ge1 = g1.createPath()
-			.moveTo(re1.lastPos.x, re1.lastPos.y)
-			.arcTo(dojo.math.degToRad(360), 0, 0, 100, 60, dojo.math.degToRad(30), true)
-			.setStroke({color: "green"})
+			.moveTo(re1.getLastPosition())
+			.arcTo(rx, ry, xRotg, false, false, startPoint)
+			.setStroke({color: "blue"})
 			;
-		g1.setTransform({dx: 150, dy: 100});
-        var g2 = surface.createGroup();
 		var re2 = g2.createPath()
-			.moveTo(startPoint.x, startPoint.y)
-			.arcTo(dojo.math.degToRad(90), 0, 0, 100, 60, dojo.math.degToRad(30), false)
+			.moveTo(startPoint)
+			.arcTo(rx, ry, xRotg, false, true, endPoint)
 			.setStroke({color: "red"})
 			;
 		var ge2 = g2.createPath()
-			.moveTo(re2.lastPos.x, re2.lastPos.y)
-			.arcTo(dojo.math.degToRad(360), 0, 0, 100, 60, dojo.math.degToRad(30), false)
-			.setStroke({color: "green"})
+			.moveTo(re2.getLastPosition())
+			.arcTo(rx, ry, xRotg, true, true, startPoint)
+			.setStroke({color: "blue"})
 			;
-		g2.setTransform({dx: 180, dy: 130});
+			
+		g1.setTransform({dx: 150, dy: 150});
+		g2.setTransform({dx: 10,  dy: 10});
 	});
 
 	// test path: curveTo, smoothCurveTo

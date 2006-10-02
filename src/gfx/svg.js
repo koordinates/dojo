@@ -5,6 +5,7 @@ dojo.require("dojo.svg");
 
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.gfx.common");
+dojo.require("dojo.gfx.path");
 
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.gfx.svg");
@@ -383,6 +384,7 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.Shape, {
 });
 dojo.gfx.Polyline.nodeType = "polyline";
 
+/*
 dojo.lang.extend(dojo.gfx.Path, {
 	_extraDrawTo: function(action){
 		this.rawNode.setAttribute("d", this.shape.path);
@@ -445,6 +447,7 @@ dojo.lang.extend(dojo.gfx.Path, {
 	}
 });
 dojo.gfx.Path.nodeType = "path";
+*/
 
 dojo.declare("dojo.gfx.Image", dojo.gfx.Shape, {
 	initializer: function(rawNode) {
@@ -465,6 +468,28 @@ dojo.declare("dojo.gfx.Image", dojo.gfx.Shape, {
 	attachFill:   function(rawNode){ return null; }
 });
 dojo.gfx.Image.nodeType = "image";
+
+dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
+	initializer: function(rawNode){
+		this.inherited("initializer", [rawNode]);
+		// override inherited methods
+		var _this = this;
+		var old_updateWithSegment = this._updateWithSegment;
+		this._updateWithSegment = function(segment){
+			old_updateWithSegment.call(_this, segment);
+			if(typeof(_this.shape.path) == "string"){
+				_this.rawNode.setAttribute("d", _this.shape.path);
+			}
+		};
+		var oldSetShape = this.setShape;
+		this.setShape = function(newShape){
+			oldSetShape.call(_this, newShape);
+			_this.rawNode.setAttribute("d", _this.shape.path);
+			return _this;
+		};
+	}
+});
+dojo.gfx.Path.nodeType = "path";
 
 dojo.gfx._creators = {
 	// creators

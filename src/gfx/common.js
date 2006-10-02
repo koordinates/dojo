@@ -8,7 +8,7 @@ dojo.require("dojo.dom");
 //dojo.gfx.defaultRenderer.init();
 
 dojo.lang.mixin(dojo.gfx, {
-	defaultPath:     {type: "path",     path: "", absolute: true},
+	defaultPath:     {type: "path",     path: ""},
 	defaultPolyline: {type: "polyline", points: []},
 	defaultRect:     {type: "rect",     x: 0, y: 0, width: 100, height: 100, r: 0},
 	defaultEllipse:  {type: "ellipse",  cx: 0, cy: 0, rx: 100, ry: 200},
@@ -46,6 +46,21 @@ dojo.lang.mixin(dojo.gfx, {
 			}
 		}
 		return result;
+	},
+	formatNumber: function(x, addSpace){
+		var val = x.toString();
+		if(val.indexOf("e") >= 0){
+			val = x.toFixed(4);
+		}else{
+			var point = val.indexOf(".");
+			if(point >= 0 && val.length - point > 5){
+				val = x.toFixed(4);
+			}
+		}
+		if(x < 0){
+			return val;
+		}
+		return addSpace ? " " + val : val;
 	}
 });
 
@@ -63,17 +78,19 @@ dojo.gfx.Shape = function(){
 	// virtual group structure
 	this.parent = null;
 	this.parentMatrix = null;
+	// bounding box
+	this.bbox = null;
 };
 
 dojo.lang.extend(dojo.gfx.Shape, {
 	// trivial getters
-	getNode:      function(){ return this.rawNode; },
-	getShape:     function(){ return this.shape; },
-	getTransform: function(){ return this.matrix; },
-	getFill:      function(){ return this.fillStyle; },
-	getStroke:    function(){ return this.strokeStyle; },
-	getParent:    function(){ return this.parent; },
-	
+	getNode:        function(){ return this.rawNode; },
+	getShape:       function(){ return this.shape; },
+	getTransform:   function(){ return this.matrix; },
+	getFill:        function(){ return this.fillStyle; },
+	getStroke:      function(){ return this.strokeStyle; },
+	getParent:      function(){ return this.parent; },
+	getBoundingBox: function(){ return this.bbox; },
 	getEventSource: function(){ return this.rawNode; },
 	
 	// empty settings
@@ -172,41 +189,4 @@ dojo.gfx.Surface = function(){
 
 dojo.lang.extend(dojo.gfx.Surface, {
 	getEventSource: function(){ return this.rawNode; }
-});
-
-// this is a Path shape
-dojo.declare("dojo.gfx.Path", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPath, true);
-		this.lastPos = {x: 0, y: 0};
-		this._extraInit(rawNode);
-		this.attach(rawNode);
-	},
-	setAbsoluteMode: function(mode){
-		this.shape.absolute = typeof(mode) == "string" ? (mode == "absolute") : mode;
-		return this;
-	},
-	getAbsoluteMode: function(){
-		return this.shape.absolute;
-	},
-	closePath: function(){
-		return this._drawTo("z", []);
-	},
-	moveTo: function(x, y){
-		this._update(x, y);
-		return this._drawTo("m", [x, y]);
-	},
-	lineTo: function(x, y){
-		this._update(x, y);
-		return this._drawTo("l", [x, y]);
-	},
-	curveTo: function(x1, y1, x2, y2, x, y){
-		this._update(x, y, x2, y2);
-		return this._drawTo("c", [x1, y1, x2, y2, x, y]);
-	},
-	_2PI: Math.PI * 2,
-	// these are meant to be overridden in derived classes
-	_extraInit: function(rawNode) {},
-	_drawTo: function(action) { return this; },
-	_update: function(x, y, x2, y2) {}
 });
