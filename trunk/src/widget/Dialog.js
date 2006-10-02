@@ -66,31 +66,28 @@ dojo.declare(
 			}, 100);
 		},
 
-		//if the target mixin class already defined postCreate,
-		//dojo.widget.ModalDialogBase.prototype.postCreate.call(this)
-		//should be called in its postCreate()
+		// if the target mixin class already defined postCreate,
+		// dojo.widget.ModalDialogBase.prototype.postCreate.call(this)
+		// should be called in its postCreate()
 		postCreate: function() {
-			with(this.domNode.style) {
-				position = "absolute";
-				zIndex = 999;
-				display = "none";
-				overflow = "visible";
-			}
+			this.domNode.style.position = "absolute";
+			this.domNode.style.zIndex = 999;
+			this.domNode.style.display = "none";
+			this.domNode.style.overflow = "visible";
+			
 			var b = dojo.body();
 			b.appendChild(this.domNode);
 
 			if(!this.shared.bg){
 				this.shared.bg = document.createElement("div");
 				this.shared.bg.className = "dialogUnderlay";
-				with(this.shared.bg.style) {
-					position = "absolute";
-					left = top = "0px";
-					zIndex = 998;
-					display = "none";
-				}
+				this.shared.bg.style.position = "absolute";
+				this.shared.bg.style.left = top = "0px";
+				this.shared.bg.style.zIndex = 998;
+				this.shared.bg.style.display = "none";
+				
 				this.setBackgroundColor(this.bgColor);
 				b.appendChild(this.shared.bg);
-	
 				this.shared.bgIframe = new dojo.html.BackgroundIframe(this.shared.bg);
 			}
 		},
@@ -118,16 +115,21 @@ dojo.declare(
 
 		sizeBackground: function() {
 			if(this.bgOpacity > 0) {
+				
 				var viewport = dojo.html.getViewport();
 				var h = viewport.height;
 				var w = viewport.width;
 				this.shared.bg.style.width = w + "px";
 				this.shared.bg.style.height = h + "px";
+				
+				var scroll_offset = dojo.html.getScroll().offset;
+				this.shared.bg.style.top = scroll_offset.y + "px";
+				this.shared.bg.style.left = scroll_offset.x + "px";
 				// process twice since the scroll bar may have been removed
 				// by the previous resizing
-				var viewport = dojo.html.getViewport();
-				if (viewport.width != w) { this.shared.bg.style.width = viewport.width + "px"; }
-				if (viewport.height != h) { this.shared.bg.style.height = viewport.height + "px"; }
+				// var viewport = dojo.html.getViewport();
+				// if (viewport.width != w) { this.shared.bg.style.width = viewport.width + "px"; }
+				// if (viewport.height != h) { this.shared.bg.style.height = viewport.height + "px"; }
 			}
 		},
 
@@ -140,17 +142,15 @@ dojo.declare(
 		placeModalDialog: function() {
 			var scroll_offset = dojo.html.getScroll().offset;
 			var viewport_size = dojo.html.getViewport();
-
+			
 			// find the size of the dialog
 			var mb = dojo.html.getMarginBox(this.containerNode);
-
+			
 			var x = scroll_offset.x + (viewport_size.width - mb.width)/2;
 			var y = scroll_offset.y + (viewport_size.height - mb.height)/2;
-
-			with(this.domNode.style) {
-				left = x + "px";
-				top = y + "px";
-			}
+			
+			this.domNode.style.left = x + "px";
+			this.domNode.style.top = y + "px";
 		},
 
 		//call this function in show() of subclass
@@ -159,6 +159,7 @@ dojo.declare(
 				this._scrollConnected = true;
 				dojo.event.connect(window, "onscroll", this, "onScroll");
 			}
+			
 			this.setBackgroundOpacity();
 			this.sizeBackground();
 			this.showBackground();
@@ -231,7 +232,6 @@ dojo.widget.defineWidget(
 
 			this.showModalDialog();
 			dojo.widget.Dialog.superclass.show.call(this);
-			this.checkSize();
 		},
 
 		onLoad: function(){
