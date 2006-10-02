@@ -193,7 +193,7 @@ dojo.widget.defineWidget(
 				if(tmpAction == "hide"){
 					component.style.visibility = "hidden";
 				}else{
-					comonent.style.visibility = "visible";
+					component.style.visibility = "visible";
 				}
 			}
 		}
