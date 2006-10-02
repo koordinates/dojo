@@ -4,6 +4,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
+dojo.require("dojo.html.selection");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Checkbox",
@@ -23,7 +24,7 @@ dojo.widget.defineWidget(
 		postMixInProperties: function(){
 			dojo.widget.Checkbox.superclass.postMixInProperties.apply(this, arguments);
 			// set the variables referenced by the template
-			// valid HTML 4.01 and XHTML use disabled="disabled" - convert to boolean 
+			// valid HTML 4.01 and XHTML use disabled="disabled" - convert to boolean
 			//NOTE: this doesn't catch disabled with no value if FF
 			this.disabled = (this.disabled == "disabled" || this.disabled == true);
 			// valid HTML 4.01 and XHTML require checked="checked"
@@ -43,19 +44,31 @@ dojo.widget.defineWidget(
 		postCreate: function(args, frag){
 			// find any associated label and create a labelled-by relationship
 			// assumes <label for="inputId">label text </label> rather than
-			// <label><input type="xyzzy">label text</label> 
+			// <label><input type="xyzzy">label text</label>
+			var notcon = true;
+			this.id = this.id !="" ? this.id : this.widgetId;
 			if(this.id != ""){
 				var labels = document.getElementsByTagName("label");
 				if (labels != null && labels.length > 0){
 					for(var i=0; i<labels.length; i++){
 						if (labels[i].htmlFor == this.id){
-							labels[i].id = (labels[i].htmlFor + "label"); 
+							labels[i].id = (labels[i].htmlFor + "label");
+							this._connectEvents(labels[i]);
 							dojo.widget.wai.setAttr(this.domNode, "waiState", "labelledby", labels[i].id);
 							break;
 						}
 					}
 				}
 			}
+			this._connectEvents(this.domNode);
+		},
+
+		_connectEvents: function(node){
+			dojo.event.connect(node, "onmouseover", this, "mouseOver");
+			dojo.event.connect(node, "onmouseout", this, "mouseOut");
+			dojo.event.connect(node, "onkey", this, "onKey");
+			dojo.event.connect(node, "onclick", this, "_onClick");
+			dojo.html.disableSelection(node);
 		},
 
 		fillInTemplate: function(){
@@ -68,6 +81,7 @@ dojo.widget.defineWidget(
 				this._setInfo();
 			}
 			e.preventDefault();
+			e.stopPropagation();
 			this.onClick();
 		},
 
@@ -80,23 +94,23 @@ dojo.widget.defineWidget(
 	 			this._onClick(e);
 	 		}
 		},
-		
+
 		mouseOver: function(e){
 			this.hover(e, true);
 		},
-		
+
 		mouseOut: function(e){
 			this.hover(e, false);
 		},
-		
+
 		hover: function(e, isOver){
 			if (this.disabled == false){
 				var state = this.checked ? "On" : "Off";
 				var style = "dojoHtmlCheckbox" + state + "Hover";
 				if (isOver){
-					dojo.html.addClass(this.domNode, style);
+					dojo.html.addClass(this.imageNode, style);
 				}else{
-					dojo.html.removeClass(this.domNode,style);
+					dojo.html.removeClass(this.imageNode,style);
 				}
 			}
 		},
@@ -104,7 +118,7 @@ dojo.widget.defineWidget(
 		// set CSS class string according to checked/unchecked and disabled/enabled state
 		_setInfo: function(){
 			var state = "dojoHtmlCheckbox" + (this.disabled ? "Disabled" : "") + (this.checked ? "On" : "Off");
-			dojo.html.setClass(this.domNode, "dojoHtmlCheckbox " + state);
+			dojo.html.setClass(this.imageNode, "dojoHtmlCheckbox " + state);
 			this.inputNode.checked = this.checked;
 			dojo.widget.wai.setAttr(this.domNode, "waiState", "checked", this.checked);
 		}
@@ -113,13 +127,13 @@ dojo.widget.defineWidget(
 dojo.widget.defineWidget(
 	"dojo.widget.a11y.Checkbox",
 	dojo.widget.Checkbox,
-	{	
+	{
 		templatePath: dojo.uri.dojoUri('src/widget/templates/CheckboxA11y.html'),
-		
+
 		postCreate: function(args, frag){
 			// nothing to do but don't want Checkbox version to run
 		},
-		
+
 		fillInTemplate: function(){
 		},
 		_onClick: function(){
