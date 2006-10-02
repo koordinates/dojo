@@ -719,7 +719,6 @@ dojo.widget.defineWidget(
 				}
 			}
 
-			this.textInputNode.value = tgt.getAttribute("resultName");
 			this.selectedResult = [tgt.getAttribute("resultName"), tgt.getAttribute("resultValue")];
 			this.setAllValues(tgt.getAttribute("resultName"), tgt.getAttribute("resultValue"));
 			if(!evt.noHide){
