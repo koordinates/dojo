@@ -11,8 +11,6 @@ dojo.require("dojo.namespace");
 	var map = {
 		html: {
 			"accordioncontainer": "dojo.widget.AccordionContainer",
-			"treerpccontroller": "dojo.widget.TreeRPCController",
-			"accordionpane": "dojo.widget.AccordionPane",
 			"button": "dojo.widget.Button",
 			"chart": "dojo.widget.Chart",
 			"checkbox": "dojo.widget.Checkbox",
@@ -94,6 +92,7 @@ dojo.require("dojo.namespace");
 			"treeselector": "dojo.widget.TreeSelector",
 			"treecontrollerextension": "dojo.widget.TreeControllerExtension",
 			"treenode": "dojo.widget.TreeNode",
+			"treerpccontroller": "dojo.widget.TreeRPCController",
 			"treebasiccontrollerv3": "dojo.widget.TreeBasicControllerV3",
 			"treecontextmenuv3": "dojo.widget.TreeContextMenuV3",
 			"treedeselectondblselect": "dojo.widget.TreeDeselectOnDblselect",
