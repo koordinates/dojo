@@ -104,7 +104,7 @@ dojo.require("dojo.namespace");
 			"treeemphaseonselect": "dojo.widget.TreeEmphaseOnSelect",
 			"treelinkextension": "dojo.widget.TreeLinkExtension",
 			"treeloadingcontrollerv3": "dojo.widget.TreeLoadingControllerV3",
-			"treemenuitemv3": "dojo.widget.TreeMenuItemV3",
+			"treemenuitemv3": "dojo.widget.TreeContextMenuV3",
 			"treerpccontrollerv3": "dojo.widget.TreeRpcControllerV3",
 			"treeselectorv3": "dojo.widget.TreeSelectorV3",
 			"treev3": "dojo.widget.TreeV3",
