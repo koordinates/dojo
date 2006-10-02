@@ -448,8 +448,8 @@ dojo.widget.defineWidget(
 		},
 
 		setAllValues: function(value1, value2){
-			this.setValue(value1);
 			this.setSelectedValue(value2);
+			this.setValue(value1);
 		},
 
 		// does the actual highlight
