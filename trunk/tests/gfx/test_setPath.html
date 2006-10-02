@@ -1,0 +1,46 @@
+﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" >
+<head>
+<title>Testing setPath</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript">djConfig = { isDebug: true };</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<!--<script type="text/javascript" src="../../src/gfx/path.js"></script>-->
+<!--<script type="text/javascript" src="../../src/gfx/vml.js"></script>-->
+<!--<script type="text/javascript" src="../../src/gfx/svg.js"></script>-->
+<script type="text/javascript">
+dojo.require("dojo.gfx.*");
+
+makeShapes = function(){
+	var surface = dojo.gfx.createSurface("test", 500, 300);
+	// relative path
+	surface
+		.createPath("m100 100 100 0 0 100c0 50-50 50 -100 0s-50-100 0-100z")
+		.setStroke({color: "blue"})
+		.setFill("#ddd")
+		;
+	// absolute path translated
+	surface
+		.createPath("M100 100 200 100 200 200C200 250 150 250 100 200S50 100 100 100z")
+		.setStroke({color: "blue"})
+		.setFill("#ddd")
+		.setTransform({dx: 200})
+		;
+	/*
+	// control points
+	surface
+		.createPath("M100 100 200 100 200 200 200 250 150 250 100 200 50 150 50 100 100 100z")
+		.setStroke({color: "red"})
+		;
+	*/
+};
+
+dojo.addOnLoad(makeShapes);
+
+</script>
+</head>
+<body>
+<p>Testing setPath</p>
+<div id="test" style="width: 500px; height: 300px;"></div>
+<p>That's all Folks!</p>
+</body>
+</html>
