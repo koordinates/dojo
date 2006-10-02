@@ -205,7 +205,7 @@ dojo.io.bind = function(request){
 			}
 		}
 		if(tsName == ""){
-			dojo.io.sendBindError(request, "None of the laoded transports for dojo.io.bind()"
+			dojo.io.sendBindError(request, "None of the loaded transports for dojo.io.bind()"
 				+ " can handle the request.");
 			return request;
 		}
