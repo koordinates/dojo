@@ -151,8 +151,7 @@ dojo.widget.defineWidget(
 				this.onMouseDown(e);
 				this.buttonClick(e);
 				dojo.lang.setTimeout(this, "onMouseUp", 75, e);
-				e.preventDefault();
-				e.stopPropagation();
+				dojo.event.browser.stopEvent(e);
 			}
 			if(menu && menu.isShowingNow && e.key == e.KEY_DOWN_ARROW){
 				// disconnect onBlur when focus moves into menu
@@ -181,7 +180,12 @@ dojo.widget.defineWidget(
 
 		buttonClick: function(/*Event*/ e){
 			// summary: internal function for handling button clicks
-			if(!this.disabled){ this.onClick(e); }
+			if(!this.disabled){ 
+				// focus may fail when tabIndex is not supported on div's
+				// by the browser, or when the node is disabled
+				try { this.domNode.focus(); } catch(e2) {};
+				this.onClick(e); 
+			}
 		},
 
 		onClick: function(/*Event*/ e) {
@@ -373,6 +377,9 @@ dojo.widget.defineWidget(
 			//	callback when clicking the right part of button;
 			//	onClick() is the callback for the left side of the button.
 			if( this.disabled ){ return; }
+			// focus may fail when tabIndex is not supported on div's
+			// by the browser, or when the node is disabled
+			try { this.domNode.focus(); } catch(e2) {};
 			this._toggleMenu(this.menuId);
 		},
 	
@@ -390,14 +397,12 @@ dojo.widget.defineWidget(
 				this.onMouseDown(e);
 				this.buttonClick(e);
 				dojo.lang.setTimeout(this, "onMouseUp", 75, e);
-				e.preventDefault();
-				e.stopPropagation();
+				dojo.event.browser.stopEvent(e);
 			} else if (e.key == e.KEY_DOWN_ARROW && e.altKey){
 				this.rightDown(e);
 				this.rightClick(e);
 				dojo.lang.setTimeout(this, "rightUp", 75, e);
-				e.preventDefault();
-				e.stopPropagation();
+				dojo.event.browser.stopEvent(e);
 			} else if(menu && menu.isShowingNow && e.key == e.KEY_DOWN_ARROW){
 				// disconnect onBlur when focus moves into menu
 				dojo.event.disconnect(this.domNode, "onblur", this, "onBlur");
