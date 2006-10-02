@@ -64,7 +64,7 @@
 			var result = csvStore.find();
 			var dataInSimpleStoreFormat = [];
 			var columnsInFilteringTableFormat = null;
-			var addRow = function(item, result) {
+			var addRow = function(item, index, result) {
 				var object = {};
 				var attributes = csvStore.getAttributes(item);
 				object["Identity"] = csvStore.getIdentity(item);
@@ -97,7 +97,7 @@
 		function displayViaDebugStrings() {
 			var csvStore = new dojo.data.csv.CsvStore({url:'movies.csv'});
 			var result = csvStore.find();
-			var displayItem = function(item, result) {
+			var displayItem = function(item, index, result) {
 				var string = '{';
 				var attributes = csvStore.getAttributes(item);
 				for (var i in attributes) {

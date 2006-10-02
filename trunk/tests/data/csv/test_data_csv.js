@@ -28,7 +28,7 @@ function test_data_csv_empty() {
 	jum.assertTrue('122', result.inProgress() == false);
 	jum.assertTrue('123', result.getStore() == csvStore);
 	
-	var callback = function(item, result) { 
+	var callback = function(item, index, result) { 
 		// always fail if we get called
 		jum.assertTrue('130', false);
 	};
@@ -55,7 +55,7 @@ function test_data_csv_movies() {
 	jum.assertTrue('202', result.inProgress() == false);
 	jum.assertTrue('203', result.getStore() == csvStore);
 
-	var callback = function(item, result) {
+	var callback = function(item, index, result) {
 		jum.assertTrue('210', csvStore.isItem(item));
 		
 		var identity = csvStore.getIdentity(item);
@@ -81,7 +81,7 @@ function test_data_csv_movies() {
 	result.forEach(callback);
 	
 	var onlyOnce = 0;
-	var anotherCallback = function(item, result) {
+	var anotherCallback = function(item, index, result) {
 		onlyOnce++;
 		result.cancel();
 	};
@@ -89,10 +89,10 @@ function test_data_csv_movies() {
 	jum.assertTrue('220', onlyOnce == 1);
 	
 	var handlerObject = {};
-	handlerObject.callbackMethod = function(item, result) {
-		callback(item, result);
+	handlerObject.callbackMethod = function(item, index, result) {
+		callback(item, index, result);
 	}
-	result.forEach({object:handlerObject, callback:"callbackMethod"});
+	result.forEach(handlerObject.callbackMethod, handlerObject);
 }
 
 
