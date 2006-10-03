@@ -41,6 +41,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 //		selector- choice of timeOnly,dateOnly (default: date and time)
 //		formatLength- choice of long, short, medium or full (plus any custom additions).  Defaults to 'full'
 //		datePattern,timePattern- override pattern with this string
+//		am,pm- override strings for am/pm in times
 //		locale- override the locale used to determine formatting rules
 //
 
@@ -254,6 +255,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //		selector- choice of timeOnly, dateOnly, dateTime (default: dateOnly)
 //		formatLength- choice of long, short, medium or full (plus any custom additions).  Defaults to 'full'
 //		datePattern,timePattern- override pattern with this string
+//		am,pm- override strings for am/pm in times
 //		locale- override the locale used to determine formatting rules
 //		strict- strict parsing, off by default
 //
@@ -388,8 +390,8 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 				expected.date = v;
 				break;
 			case 'a': //am/pm
-				var am = info.am;
-				var pm = info.pm;
+				var am = options.am || info.am;
+				var pm = options.pm || info.pm;
 				if (!options.strict) {
 					v = v.replace(/\./g,'').toLowerCase();
 					am = am.replace(/\./g,'').toLowerCase();
@@ -407,20 +409,11 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 				}
 				break;
 			case 'h': //hour (1-12)
+			case 'H': //hour (0-23)
+			case 'k': //hour (0-11)
+			case 'K': //hour (1-24)
 				//in the 12-hour case, adjusting for am/pm requires the 'a' part
 				//which for now we will assume always comes after the 'h' part
-				result.setHours(v);
-				break;
-			case 'H': //hour (0-23)
-				result.setHours(v);
-				break;
-			case 'k': //hour (0-11)
-				++v; //adjust to the 1-12 input that js setHours() expects
-				//also see 12-hour case comment in the 'h' case above
-				result.setHours(v);
-				break;
-			case 'K': //hour (1-24)
-				--v; // js setHours() range is 0 to 23
 				result.setHours(v);
 				break;
 			case 'm': //minutes
@@ -430,7 +423,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 				result.setSeconds(v);
 				break;
 			default:
-				dojo.unimplemented("incomplete parse algorithm: " + grp.charAt(0));
+				dojo.unimplemented("dojo.date.parse: unsupported pattern char=" + grp.charAt(0));
 		}
 	}
 
@@ -510,8 +503,8 @@ function _buildDateTimeRE(groups, info, options, pattern) {
 				s = '\\d+';
 				break;
 			case 'a':
-				var am = info.am || 'AM';
-				var pm = info.pm || 'PM';
+				var am = options.am || info.am || 'AM';
+				var pm = options.pm || info.pm || 'PM';
 				if (options.strict) {
 					s = am + '|' + pm;
 				} else {
@@ -763,12 +756,12 @@ dojo.date.strftime = function (/*Date*/dateObject, /*String*/format, /*String?*/
 	}
 	string += format.substring(i);
 	
-	return string;
+	return string; // String
 };
 
 (function(){
 var _customFormats = [];
-dojo.date.addCustomFormats = function(packageName, bundleName){
+dojo.date.addCustomFormats = function(/*String*/packageName, /*String*/bundleName){
 //
 // summary:
 //		Add a reference to a bundle containing localized custom formats to be
@@ -784,13 +777,13 @@ dojo.date.addCustomFormats = function(packageName, bundleName){
 	_customFormats.push({pkg:packageName,name:bundleName});
 };
 
-dojo.date._getGregorianBundle = function(locale){
+dojo.date._getGregorianBundle = function(/*String*/locale){
 	var gregorian = {};
 	dojo.lang.forEach(_customFormats, function(desc){
 		var bundle = dojo.i18n.getLocalization(desc.pkg, desc.name, locale);
 		gregorian = dojo.lang.mixin(gregorian, bundle);
 	}, this);
-	return gregorian;
+	return gregorian; /*Object*/
 };
 })();
 
@@ -842,11 +835,9 @@ dojo.date.getMonthShortName = function(/*Date*/dateObject, /*String?*/locale){
 };
 
 //FIXME: not localized
-dojo.date.toRelativeString = function(date) {
+dojo.date.toRelativeString = function(/*Date*/dateObject) {
 // summary:
-//	Returns a string of the date relative to the current date.  Note: this is not localized yet.  English only.
-//
-// date: a Date object
+//	Returns an description in English of the date relative to the current date.  Note: this is not localized yet.  English only.
 //
 // description: Example returns:
 //	 - "1 minute ago"
@@ -855,7 +846,7 @@ dojo.date.toRelativeString = function(date) {
 //	 - "2 days ago"
 
 	var now = new Date();
-	var diff = (now - date) / 1000;
+	var diff = (now - dateObject) / 1000;
 	var end = " ago";
 	var future = false;
 	if(diff < 0) {
@@ -884,19 +875,20 @@ dojo.date.toRelativeString = function(date) {
 			return diff + " days" + end;
 		}
 	}
-	return dojo.date.toShortDateString(date);
+	return dojo.date.format(dateObject); // String
 };
 
 //FIXME: SQL methods can probably be moved to a different module without i18n deps
 
-dojo.date.toSql = function(date, noTime) {
+dojo.date.toSql = function(/*Date*/dateObject, /*Boolean?*/noTime) {
 // summary:
-//	Convert a Date to a SQL string, optionally ignoring the HH:MM:SS portion of the Date
+//	Convert a Date to a SQL string
+// noTime: whether to ignore the time portion of the Date.  Defaults to false.
 
-	return dojo.date.strftime(date, "%F" + !noTime ? " %T" : "");
+	return dojo.date.strftime(dateObject, "%F" + !noTime ? " %T" : ""); // String
 };
 
-dojo.date.fromSql = function(sqlDate) {
+dojo.date.fromSql = function(/*String*/sqlDate) {
 // summary:
 //	Convert a SQL date string to a JavaScript Date object
 
@@ -904,5 +896,5 @@ dojo.date.fromSql = function(sqlDate) {
 	while(parts.length < 6) {
 		parts.push(0);
 	}
-	return new Date(parts[0], (parseInt(parts[1],10)-1), parts[2], parts[3], parts[4], parts[5]);
+	return new Date(parts[0], (parseInt(parts[1],10)-1), parts[2], parts[3], parts[4], parts[5]); // Date
 };
