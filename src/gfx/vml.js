@@ -704,8 +704,12 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 	renderers: {
 		M: "_moveToA", m: "_moveToR", 
 		L: "_lineToA", l: "_lineToR", 
+		H: "_hLineToA", h: "_hLineToR", 
+		V: "_vLineToA", v: "_vLineToR", 
 		C: "_curveToA", c: "_curveToR", 
 		S: "_smoothCurveToA", s: "_smoothCurveToR", 
+		Q: "_qCurveToA", q: "_qCurveToR", 
+		T: "_qSmoothCurveToA", t: "_qSmoothCurveToR", 
 		A: "_arcTo", a: "_arcTo", 
 		Z: "_closePath", z: "_closePath"
 	},
@@ -775,6 +779,55 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 		this.lastControl = {};
 		return p;
 	},
+	_hLineToA: function(segment, last){
+		var p = [" l"];
+		var n = segment.args;
+		var l = n.length;
+		var y = " " + last.y.toFixed();
+		for(var i = 0; i < l; ++i){
+			p.push(" ");
+			p.push(n[i].toFixed());
+			p.push(y);
+		}
+		this.lastControl = {};
+		return p;
+	},
+	_hLineToR: function(segment){
+		var p = [" r"];
+		var n = segment.args;
+		var l = n.length;
+		for(var i = 0; i < l; ++i){
+			p.push(" ");
+			p.push(n[i].toFixed());
+			p.push(" 0");
+		}
+		this.lastControl = {};
+		return p;
+	},
+	_vLineToA: function(segment, last){
+		var p = [" l"];
+		var n = segment.args;
+		var l = n.length;
+		var x = " " + last.x.toFixed();
+		for(var i = 0; i < l; ++i){
+			p.push(x);
+			p.push(" ");
+			p.push(n[i].toFixed());
+		}
+		this.lastControl = {};
+		return p;
+	},
+	_vLineToR: function(segment){
+		var p = [" r"];
+		var n = segment.args;
+		var l = n.length;
+		for(var i = 0; i < l; ++i){
+			p.push(" 0 ");
+			p.push(n[i].toFixed());
+		}
+		this.lastControl = {};
+		return p;
+	},
 	_curveToA: function(segment){
 		var p = [];
 		var n = segment.args;
@@ -783,7 +836,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 			p.push(" c");
 			this._addArgs(p, n, i, i + 6);
 		}
-		this.lastControl = {x: n[l - 4], y: n[l - 3]};
+		this.lastControl = {x: n[l - 4], y: n[l - 3], type: "C"};
 		return p;
 	},
 	_curveToR: function(segment, last){
@@ -797,6 +850,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 			last.x += n[i + 4];
 			last.y += n[i + 5];
 		}
+		this.lastControl.type = "C";
 		return p;
 	},
 	_smoothCurveToA: function(segment, last){
@@ -805,7 +859,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 		var l = n.length;
 		for(var i = 0; i < l; i += 4){
 			p.push(" c");
-			if("x" in this.lastControl){
+			if(this.lastControl.type == "C"){
 				this._addArgs(p, [
 					2 * last.x - this.lastControl.x, 
 					2 * last.y - this.lastControl.y
@@ -815,7 +869,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 			}
 			this._addArgs(p, n, i, i + 4);
 		}
-		this.lastControl = {x: n[l - 4], y: n[l - 3]};
+		this.lastControl = {x: n[l - 4], y: n[l - 3], type: "C"};
 		return p;
 	},
 	_smoothCurveToR: function(segment, last){
@@ -824,7 +878,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 		var l = n.length;
 		for(var i = 0; i < l; i += 4){
 			p.push(" v");
-			if("x" in this.lastControl){
+			if(this.lastControl.type == "C"){
 				this._addArgs(p, [
 					last.x - this.lastControl.x, 
 					last.y - this.lastControl.y
@@ -837,6 +891,76 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 			last.x += n[i + 2];
 			last.y += n[i + 3];
 		}
+		this.lastControl.type = "C";
+		return p;
+	},
+	_qCurveToA: function(segment){
+		var p = [];
+		var n = segment.args;
+		var l = n.length;
+		for(var i = 0; i < l; i += 4){
+			p.push(" qb");
+			this._addArgs(p, n, i, i + 4);
+		}
+		this.lastControl = {x: n[l - 4], y: n[l - 3], type: "Q"};
+		return p;
+	},
+	_qCurveToR: function(segment, last){
+		var p = [];
+		var n = segment.args;
+		var l = n.length;
+		for(var i = 0; i < l; i += 4){
+			p.push(" qb");
+			this._addArgsAdjusted(p, last, n, i, i + 4);
+			this.lastControl = {x: last.x + n[i], y: last.y + n[i + 1]};
+			last.x += n[i + 2];
+			last.y += n[i + 3];
+		}
+		this.lastControl.type = "Q";
+		return p;
+	},
+	_qSmoothCurveToA: function(segment, last){
+		var p = [];
+		var n = segment.args;
+		var l = n.length;
+		for(var i = 0; i < l; i += 2){
+			p.push(" qb");
+			if(this.lastControl.type == "Q"){
+				this._addArgs(p, [
+					this.lastControl.x = 2 * last.x - this.lastControl.x, 
+					this.lastControl.y = 2 * last.y - this.lastControl.y
+				]);
+			}else{
+				this._addArgs(p, [
+					this.lastControl.x = last.x, 
+					this.lastControl.y = last.y
+				]);
+			}
+			this._addArgs(p, n, i, i + 2);
+		}
+		this.lastControl.type = "Q";
+		return p;
+	},
+	_qSmoothCurveToR: function(segment, last){
+		var p = [];
+		var n = segment.args;
+		var l = n.length;
+		for(var i = 0; i < l; i += 2){
+			p.push(" qb");
+			if(this.lastControl.type == "Q"){
+				this._addArgs(p, [
+					this.lastControl.x = 2 * last.x - this.lastControl.x, 
+					this.lastControl.y = 2 * last.y - this.lastControl.y
+				]);
+			}else{
+				this._addArgs(p, [
+					this.lastControl.x = last.x, 
+					this.lastControl.y = last.y
+				]);
+			}
+			this._addArgsAdjusted(p, last, n, i, i + 2);
+		}
+		this.lastControl.type = "Q";
 		return p;
 	},
 	_PI4: Math.PI / 4,

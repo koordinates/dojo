@@ -54,10 +54,26 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape, {
 			case "L":
 			case "C":
 			case "S":
+			case "Q":
+			case "T":
 				for(var i = 0; i < l; i += 2){
 					this._updateBBox(this.bbox, n[i], n[i + 1]);
 				}
 				this.last.x = n[l - 2];
+				this.last.y = n[l - 1];
+				this.absolute = true;
+				break;
+			case "H":
+				for(var i = 0; i < l; ++i){
+					this._updateBBox(this.bbox, n[i], this.last.y);
+				}
+				this.last.x = n[l - 1];
+				this.absolute = true;
+				break;
+			case "V":
+				for(var i = 0; i < l; ++i){
+					this._updateBBox(this.bbox, this.last.x, n[i]);
+				}
 				this.last.y = n[l - 1];
 				this.absolute = true;
 				break;
@@ -73,8 +89,21 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape, {
 				this.absolute = false;
 				break;
 			case "l":
+			case "t":
 				for(var i = 0; i < l; i += 2){
 					this._updateBBox(this.bbox, this.last.x += n[i], this.last.y += n[i + 1]);
+				}
+				this.absolute = false;
+				break;
+			case "h":
+				for(var i = 0; i < l; ++i){
+					this._updateBBox(this.bbox, this.last.x += n[i], this.last.y);
+				}
+				this.absolute = false;
+				break;
+			case "v":
+				for(var i = 0; i < l; ++i){
+					this._updateBBox(this.bbox, this.last.x, this.last.y += n[i]);
 				}
 				this.absolute = false;
 				break;
@@ -87,6 +116,7 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape, {
 				this.absolute = false;
 				break;
 			case "s":
+			case "q":
 				for(var i = 0; i < l; i += 4){
 					this._updateBBox(this.bbox, this.last.x + n[i], this.last.y + n[i + 1]);
 					this._updateBBox(this.bbox, this.last.x += n[i + 2], this.last.y += n[i + 3]);
@@ -119,7 +149,7 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape, {
 			this.shape.path = this.shape.path.concat(path);
 		}
 	},
-	_validSegments: {"m": 2, "l": 2, "c": 6, "s": 4, "a": 7, "z": 0},
+	_validSegments: {m: 2, l: 2, h: 1, v: 1, c: 6, s: 4, q: 4, t: 2, a: 7, z: 0},
 	_pushSegment: function(action, args){
 		var group = this._validSegments[action.toLowerCase()];
 		if(typeof(group) == "number"){
@@ -166,6 +196,18 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape, {
 		this._pushSegment(this.absolute ? "L" : "l", args);
 		return this;
 	},
+	hLineTo: function(){
+		var args = [];
+		this._collectArgs(args, arguments);
+		this._pushSegment(this.absolute ? "H" : "h", args);
+		return this;
+	},
+	vLineTo: function(){
+		var args = [];
+		this._collectArgs(args, arguments);
+		this._pushSegment(this.absolute ? "V" : "v", args);
+		return this;
+	},
 	curveTo: function(){
 		var args = [];
 		this._collectArgs(args, arguments);
@@ -176,6 +218,18 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape, {
 		var args = [];
 		this._collectArgs(args, arguments);
 		this._pushSegment(this.absolute ? "S" : "s", args);
+		return this;
+	},
+	qCurveTo: function(){
+		var args = [];
+		this._collectArgs(args, arguments);
+		this._pushSegment(this.absolute ? "Q" : "q", args);
+		return this;
+	},
+	qSmoothCurveTo: function(){
+		var args = [];
+		this._collectArgs(args, arguments);
+		this._pushSegment(this.absolute ? "T" : "t", args);
 		return this;
 	},
 	arcTo: function(){
