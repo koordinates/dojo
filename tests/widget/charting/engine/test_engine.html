@@ -1,0 +1,106 @@
+<html>
+	<head>
+		<title>Dojo Charting Engine, general tests</title>
+		<script>
+			djConfig={ 
+				isDebug:true 
+			}</script>
+		<script src="../../../../dojo.js"></script>
+		<script>
+			dojo.require("dojo.collections.Store");
+			dojo.require("dojo.widget.charting.engine.Chart");
+
+			//	our sample data for our line chart.
+			var json = [
+				{ x: 0, y: 115 },
+				{ x: 10, y: 24 },
+				{ x: 15, y:63 },
+				{ x: 25, y: 5 },
+				{ x: 40, y: 98 },
+				{ x: 45, y: 54 }
+			];
+
+			var store = new dojo.collections.Store();
+			store.setData(json);
+
+			//	define the chart.
+			var en = dojo.widget.charting.engine;
+			var s1 = new en.Series({
+				dataSource:store,
+				bindingX:"x",
+				bindingY:"y",
+				color:"#090",
+				label:"The Main Series"
+			});
+
+			//	test the evaluate
+			/*
+			var data = s1.evaluate();
+			var a=[];
+			for(var i=0; i<data.length; i++){
+				a.push("{ x:"+data[i].x +", y:"+data[i].y + "}");
+			}
+			alert("Data evaluation:\n"+a.join("\n"));
+			*/
+			
+			//	keep going.
+			var xA = new en.Axis();
+			xA.range={upper:50, lower:0};
+			xA.origin="max";
+			xA.nLabels = 6;
+			xA.showTicks = true;
+
+			var yA = new en.Axis();
+			yA.range={upper:150,lower:0};
+			yA.nLabels = 4;
+			yA.showLines = true;
+			yA.showTicks = true;
+
+			var p = new en.Plot(xA, yA, [ s1 ]);
+
+			var pa = new en.PlotArea();
+			pa.size={width:700,height:170};
+			pa.padding={top:20, right:10, bottom:30, left:30 };
+			pa.plots.push(p);
+
+			//////////////////////
+			var xB = new en.Axis();
+			xB.range={upper:50, lower:-20};
+			xB.origin=0;
+			xB.nLabels = 4;
+
+			var yB = new en.Axis();
+			yB.range={upper:120,lower:0};
+			yB.origin=0;
+			yB.nLabels = 5;
+			yB.showLines = true;
+
+			var p2 = new en.Plot(xB, yB, [ s1 ]);
+			var pa2 = new en.PlotArea();
+			pa2.plots.push(p2);
+			pa2.size={width:700,height:170};
+			pa2.padding={top:20, right:10, bottom:30, left:30 };
+			
+			var chart = new en.Chart(null, "Test chart", "This is a potential description");
+			chart.addPlotArea({ x:50,y:50, plotArea:pa });
+			chart.addPlotArea({ x:50,y:250, plotArea:pa2 });
+			
+			dojo.addOnLoad(function(){
+				chart.node = dojo.byId("chartTest1");
+				chart.render();
+			});
+		</script>
+		<style>
+			#chartTest1 {
+				margin:12px;
+				width:800px;
+				height:500px;
+				background-color:#dedeed;
+				border:1px solid #999;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="chartTest1"></div>
+	</body>
+</html>
