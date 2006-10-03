@@ -422,7 +422,7 @@ function jum_has_settimeout() {
 * calls timeout_handler and then throws an exception (if timeout_handler does not).
 */
 function jum_wait(description, attempt_handler, timeout_handler, total_millis, interval_millis, remaining_millis) {
-  bu_alert('(jsunit_wrap.js) in jum_wait for "' + description + '", remaining_millis=' + remaining_millis + ' arguments.length=' + arguments.length);
+  // bu_alert('(jsunit_wrap.js) in jum_wait for "' + description + '", remaining_millis=' + remaining_millis + ' arguments.length=' + arguments.length);
   if (typeof total_millis == 'undefined') total_millis = jum.DEFAULT_TIMEOUT_MILLIS;
   if (typeof interval_millis == 'undefined') interval_millis = 1000;
   if (typeof remaining_millis == 'undefined') remaining_millis = total_millis;
@@ -806,7 +806,9 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
       throw Error(mess);
     }
     var groupnames = jum_get_groupnames(this.alltests_);
-    jum.report_("There are " + groupnames.length + " test groups...");
+    jum.report_("\n\n=============================================\n"
+    			+"There are " + groupnames.length + " test groups...\n"
+    			+ "=============================================");
     for(var i=0;i<groupnames.length;++i) {
       jum.runOneGroup_(groupnames[i]);
     }
@@ -832,9 +834,9 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
 
   jum.my_println_ = function(line) {
     jum.initOutput_();
-    if (jum.my_println_ != arguments.callee) jum.my_println_(line);
-    //alert("you didn't call initOutput_: " + line);
-    //throw Error("you didn't call initOutput_");
+    if (jum.my_println_ != arguments.callee) {
+    	jum.my_println_(line);
+    }
   };
 
   jum.my_output_ = function(categ, line) {
@@ -860,41 +862,39 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
   };
 
   jum.initOutput_ = function() {
-     //alert("in initOutput_");
      // sigh, KJS has no "load" global, just: "debug", "print", "version" 
      if((typeof load != 'undefined' || typeof debug != 'undefined') && typeof print != 'undefined'){
         jum.my_println_ = function(line){
-            // print(3||4);
             print(line)
         };
-         //else if (typeof alert != 'undefined') jum.my_println_ = function(line) {alert(line)};
      }else if (typeof window != 'undefined'){
-        jum.set_output_window_(jum.create_output_window_());
+     	jum.set_output_window_(jum.create_output_window_());
         jum.my_println_ = function(line) {
-	  // break up multiple lines
-	  var lines = line.split(/\n/);
-	  if (lines.length > 1) {
-	    //alert('(jsunit_wrap.js) splitting multi-line: ' + line);
-	    for(var i=0;i<lines.length;++i) jum.my_println_(lines[i]);
-	    return;
-	  }
-	  if (this.output_win_.closed) {
-             alert("(jsunit_wrap.js) output window is closed; can't output: " + line);
-	     alert('(jsunit_wrap.js) throwing exception since no test output window');
-	     throw Error('(jsunit_wrap.js) no test output window');
-	     //return;
-          }
-          this.output_win_.focus();
-          // on Moz, a Text child is enough.
-	  // on IE, the \n does nothing and it is a long run-on line.
-	  var doc = this.output_win_.document;
-          var text_node = doc.createTextNode(line/* + "\n"*/);
-          var div_node = doc.createElement('div');
-	  div_node.appendChild(text_node);
-          this.output_element_.appendChild(div_node);
+			// break up multiple lines
+			var lines = line.split(/\n/);
+			if (lines.length > 1) {
+			    //alert('(jsunit_wrap.js) splitting multi-line: ' + line);
+			    for(var i=0;i<lines.length;++i) jum.my_println_(lines[i]);
+			    return;
+			}
+		  	if (this.output_win_.closed) {
+	             alert("(jsunit_wrap.js) output window is closed; can't output: " + line);
+		     alert('(jsunit_wrap.js) throwing exception since no test output window');
+		     throw Error('(jsunit_wrap.js) no test output window');
+		     //return;
+	          }
+	          this.output_win_.focus();
+	          // on Moz, a Text child is enough.
+		  	// on IE, the \n does nothing and it is a long run-on line.
+		  	var doc = this.output_win_.document;
+	          var text_node = doc.createTextNode(line/* + "\n"*/);
+	          var div_node = doc.createElement('div');
+		  		div_node.appendChild(text_node);
+	          this.output_element_.appendChild(div_node);
         };
+     } else {
+     	throw Error("(jsunit_wrap.js) no way to display test debug output: no global 'window' or 'print' symbols");
      }
-     else throw Error("(jsunit_wrap.js) no way to display test debug output: no global 'window' or 'print' symbols");
   };
 
   jum.initCounts_ = function() {
@@ -920,7 +920,7 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
   var JUM_CATCH_EXCEPTIONS = true;
 
   jum.runOneGroup_ = function(groupname) {
-    var groupdef = jum_get_groupdef(this.alltests_, groupname);
+    var groupdef = jum_get_groupdef(jum.alltests_, groupname);
     var testdefs = jum_get_testdefs(groupdef);
 
     this.all_count_ += testdefs.length;
@@ -977,8 +977,8 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
 jum.init = function(scopeobj) { jum_choose_tests(scopeobj); this.inited_ = true;}
 
 /** By default match as 'test_' + groupname + '_' + testname */
-//:CLIVAR RegExp TEST_FUNCTION_REGEXP
-jum.TEST_FUNCTION_REGEXP = /^test(_([^_]+)){2,}$/;
+// old test function regexp: /^test(_([^_]+)){2,}$/
+jum.TEST_FUNCTION_REGEXP = /^test_([^_]+)_?([^_]+)/;
 
 jum.DEFAULT_GROUPNAME = 'all';
 
@@ -1156,16 +1156,20 @@ function jum_get_object_function_names(scopeobj) {
   var count = 0;
   for(var k in scopeobj) {
     count++;
-
+	
     // if (k.indexOf("jum") == -1 && k.indexOf("JUM") == -1) alert("examining: " + k);
     // Safari 1.2 will crash on typeof window[k] for a bunch of symbols.
-    if (k == 'removeEventListener' || k == 'history' || k == 'name' || k == 'onselect') continue;
+    if (k == 'removeEventListener' || k == 'history' || k == 'name' || k == 'onselect') {continue;}
     // sigh, in Mozilla even this will cause an exception: typeof window['fullScreen']
-    if (k == 'fullScreen' || k == 'scrollMaxX' || k == 'scrollMaxY') continue;
+    if (k == 'fullScreen' || k == 'scrollMaxX' || k == 'scrollMaxY') {continue;}
 	// Sigh, I'm not even going to try to find all the dangerous symbols.
 	// just apply the symbol test function now.
-    if (!jum_is_test_function(k)) continue; 
-    if (typeof scopeobj[k] == 'function') a.push(k);
+    
+    if (!jum_is_test_function(k)) {continue;}
+    
+    if (typeof scopeobj[k] == 'function') {
+    	a.push(k);
+    }
   }
   jum_debug("returning all function members in object: " + a); 
   return a;
@@ -1243,10 +1247,8 @@ function jum_choose_tests(scopeobj) {
      }
      if (removed.length > 0) bu_alert("removed " + removed.length + " non-existent test function names: " + removed.join(','));
      test_func_names = filtered;
-  }
-
-  // if not, we have to do some reflection
-  else {
+  } else {
+  	
      if (jum_are_global_functions_enumerable()) {
        test_func_names = jum_get_object_function_names(scopeobj);
      }
@@ -1254,7 +1256,7 @@ function jum_choose_tests(scopeobj) {
        test_func_names = jum_parse_window_scripts();
      }
      else {throw new Error("no way to determine test functions");}
-
+     
      // filter for ones whose names match the pattern
      //bu_alert("(jsunit_wrap.js) got " + test_func_names.length + " symbols before filtering for test functions");
      test_func_names = jum_just_test_functions(test_func_names);
@@ -1265,19 +1267,16 @@ function jum_choose_tests(scopeobj) {
   // see if user has selected a desired group
   var groupname = jum.getChosenTestGroupName();
   if (groupname && groupname == '') groupname = null;
-
+  
   if (groupname) {
      jum.info("(jsunit_wrap.js) running group " + groupname);
      test_func_names = jum_function_names_in_group(test_func_names);
   }
-
-  // append our special test at the end
-//  test_func_names.push('jum_special_reportAsync');
-
+  
   // convert to alltests
   var alltests = jum_new_alltests();
   jum_initialize_alltests(alltests, scopeobj, test_func_names);
-
+  
   // append our special test at the end
   if (jum_has_settimeout()) {
      jum_add_test(alltests, 'special', 'reportAsync', 'jum_special_reportAsync', jum_special_reportAsync);
@@ -1288,14 +1287,20 @@ function jum_choose_tests(scopeobj) {
   }
 
   // set tests
-  //bu_alert("(jsunit_wrap.js) setting tests");
   jum.setTests(alltests);
 }
 
-function jum_get_groupdef(alltests, groupname) {return alltests.groups_by_name_[groupname]}
+function jum_get_groupdef(alltests, groupname) {
+	return alltests.groups_by_name_[groupname];
+}
+
 //function jum_get_groupdef_testnames(groupdef) {return groupdef.test_names_}
-function jum_get_testdefs(groupdef) {return groupdef.tests_array_}
-function jum_get_groupnames(alltests) {return alltests.group_names_}
+function jum_get_testdefs(groupdef) {
+	return groupdef.tests_array_;
+}
+function jum_get_groupnames(alltests) {
+	return alltests.group_names_;
+}
 
 // get a flat Array of all function names in the alltests object
 function jum_get_all_function_names(alltests) {
@@ -1324,31 +1329,38 @@ function jum_get_all_function_names(alltests) {
 * Returns an alltests object created from the array of test function names.
 *
 * @param re The regexp to apply to function names. Default is jum.TEST_FUNCTION_REGEXP.
-* @param default_groupname. The groupname to assign to a test when the regexp matches only the testname, not the groupname and testname. Default is 'all'.
+* @param default_groupname. The groupname to assign to a test when the regexp matches only 
+* 	the testname, not the groupname and testname. Default is 'all'.
 */
 function jum_initialize_alltests(alltests, scopeobj, test_func_names, re, default_groupname) {
-  if (!re) re = jum.TEST_FUNCTION_REGEXP;
-  if (!default_groupname) default_groupname = jum.DEFAULT_GROUPNAME;
-  if (!scopeobj) scopeobj = jum_global;
-
-  jum_debug("iterating over " + test_func_names.length + " test function names");
+  if (!re) {
+  	re = jum.TEST_FUNCTION_REGEXP;
+  }
+  if (!default_groupname) {
+  	default_groupname = jum.DEFAULT_GROUPNAME;
+  }
+  if (!scopeobj) { scopeobj = jum_global;}
+  
   for(var i=0;i<test_func_names.length;++i) {
     var funcname = test_func_names[i];
     var parts = funcname.match(re);
-    if (!parts) throw Error("function name '" + funcname + "' does not match regexp " + re);
-
-    var groupname; var testname;
-    if (parts.length == 2) {testname = parts[1]; groupname = default_groupname;}
-    else {groupname = parts[1]; testname = parts[2];}
-
-    jum_debug("found group '" + groupname + "', testname '" + testname + "'");
-
+    if (!parts) {
+    	throw Error("function name '" + funcname + "' does not match regexp " + re);
+    }
+    
+    var groupname,testname=null;
+    if (parts.length == 2) {
+    	testname = parts[1]; 
+    	groupname = default_groupname;
+    } else {
+    	groupname = parts[1];
+    	testname = parts[2];
+    }
+    
     var funcobj = scopeobj[funcname];
     jum_add_test(alltests, groupname, testname, funcname, funcobj);
   }
-  //jum_debug("made alltests: " + alltests.toSource());
-  //bu_alert("(jsunit_wrap.js) found " + alltests.group_names_.length + " groups");
-
+	
   return alltests;
 }
 
@@ -1358,37 +1370,32 @@ function jum_new_alltests() {
     groups_array_ : [],
     group_names_ : []
   }
-  // alltests.groups_by_name_ = {};
-  // alltests.groups_array_ = [];
-  // alltests.group_names_ = [];
 }
 
 function jum_add_test(alltests, groupname, testname, funcname, funcobj) {
-  jum_debug("adding test '" + testname + "' to group '" + groupname + "'");
-  //bu_alert("adding test '" + testname + "' to group '" + groupname + "'");
-  if (typeof alltests.groups_by_name_ == 'undefined') {
-  }
-  var groupdef;
-  //if (groupname in alltests.groups_by_name_) {
+  
+  var groupdef=null;
+  
   if (typeof alltests.groups_by_name_[groupname] != 'undefined') {
     groupdef = alltests.groups_by_name_[groupname];
-  }
-  else {
+  } else {
     groupdef = alltests.groups_by_name_[groupname] = {
-	groupname: groupname, 
-	tests_by_testname_: {}, 
-	tests_array_ : [], 
-	test_names_ : [],
-	function_names_ : []
+		groupname: groupname, 
+		tests_by_testname_: {}, 
+		tests_array_ : [], 
+		test_names_ : [],
+		function_names_ : []
 	};
     alltests.groups_array_.push(groupdef);
     alltests.group_names_.push(groupname);
   }
   var testdef = {testname: testname, funcname: funcname, funcobj: funcobj};
+  
   groupdef.tests_by_testname_[testname] = testdef;
   groupdef.tests_array_.push(testdef);
   groupdef.test_names_.push(testname);
   groupdef.function_names_.push(funcname);
+  
   if (groupdef.function_names_.length == 0) throw new Error("(jsunit_wrap.js) buggy Array.push");
 }
 

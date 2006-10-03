@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.CookieHandler;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Core class for running dojo based tests within 
@@ -33,12 +35,14 @@ public class DojoTest {
 	public static final String ARG_TEST_DIR = "testdir";
 	public static final String ARG_TEST_FILES = "testfiles";
 	public static final String ARG_USE_LOCAL = "uselocal";
+	public static final String ARG_GROUP = "group";
 	
 	private String[] _testFiles;
 	private File _dojoDir;
 	private File _outputDir;
 	private File _testDir;
 	private boolean _useLocal;
+	private String _testGroup;
 	
 	/**
 	 * Default constructor.
@@ -85,6 +89,16 @@ public class DojoTest {
 	public void setTestDir(File testDir)
 	{
 		_testDir = testDir;
+	}
+	
+	/**
+	 * If set will cause the system to only execute
+	 * those tests contained in the specified group. 
+	 * @param name The name of the group to run tests for.
+	 */
+	public void setTestGroup(String name)
+	{
+		_testGroup = name;
 	}
 	
 	/**
@@ -283,8 +297,11 @@ public class DojoTest {
 					"epilogue.js"
 			);
 			
+			// run either all tests or one specific group
+			String jumcmd = _testGroup != null ? "jum.runGroup('"+_testGroup+"');" : "jum.runAll();";
+			
 			execString(cx, global, 
-					"jum.init();jum.runAll();",
+					"jum.init();" + jumcmd,
 					"jum"
 			);
 		} finally {
@@ -327,14 +344,43 @@ public class DojoTest {
 	 * Prints a usage message when invoked with incorrect arguments
 	 * from the command line.
 	 */
-	void printUsage()
+	static void printUsage()
 	{
 		System.out.println("Usage: DojoTest "
 				+ DojoTest.ARG_DOJO_DIR + " <dojo path> "
 				+ DojoTest.ARG_OUTPUT_DIR + " <output path> "
 				+ DojoTest.ARG_USE_LOCAL + " <whether or not to force using local dojo test resources if detected>"
 				+ DojoTest.ARG_TEST_DIR + " <test dir path> "
+				+ DojoTest.ARG_GROUP + " <test group to run(if not specified runs all)>"
 				+ DojoTest.ARG_TEST_FILES + " <list of space seperated test file paths> ");
+	}
+	
+	/**
+	 * Checks for a matching command line argument.
+	 * 
+	 * <p>
+	 * Note, will exit vm and run {@link #printUsage()} if an argument is specified
+	 * with no value. (ie -dojodir <blank> )
+	 * </p>
+	 * 
+	 * @param name Name of argument to match.
+	 * @param args The original executable command line arguments.
+	 * @param index The current index being matched against.
+	 * 
+	 * @return True if argument matches, false otherwise.
+	 */
+	static final boolean matchArg(String name, String[] args, int index)
+	{
+		if (name.indexOf(args[index]) > -1) {
+			if ((index + 1) >= args.length) {
+				System.err.println("No argument found for given input of <" + name + ">.");
+				DojoTest.printUsage();
+				System.exit(-1);
+			}
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -346,41 +392,51 @@ public class DojoTest {
 		DojoTest test = new DojoTest();
 		
 		// validate arguments
-		if (args == null || args.length < 10) {
-			test.printUsage();
+		if (args == null || args.length <= 0) {
+			DojoTest.printUsage();
 			System.exit(-1);
 		}
 		
-		// grab initial configuration
-		for (int i=0; i < 8; i++) {
-			if (DojoTest.ARG_DOJO_DIR.equals(args[i])) {
+		List<String> files = new ArrayList<String>();
+		
+		// parse arguments
+		for (int i=0; i < args.length; i++) {
+			
+			if (DojoTest.matchArg(DojoTest.ARG_DOJO_DIR, args, i)) {
 				test.setDojoDir(new File(args[i + 1]));
 				i++;
 				continue;
 			}
 			
-			if (DojoTest.ARG_OUTPUT_DIR.equals(args[i])) {
+			if (DojoTest.matchArg(DojoTest.ARG_OUTPUT_DIR, args, i)) {
 				test.setOutputDir(new File(args[i + 1]));
 				i++;
 				continue;
 			}
 			
-			if (DojoTest.ARG_TEST_DIR.equals(args[i])) {
+			if (DojoTest.matchArg(DojoTest.ARG_TEST_DIR, args, i)) {
 				test.setTestDir(new File(args[i + 1]));
 				i++;
 				continue;
 			}
 			
-			if (DojoTest.ARG_USE_LOCAL.equals(args[i])) {
+			if (DojoTest.matchArg(DojoTest.ARG_USE_LOCAL, args, i)) {
 				test.setUseLocal(Boolean.valueOf(args[i + 1]));
 				i++;
 				continue;
 			}
+			
+			if (DojoTest.matchArg(DojoTest.ARG_GROUP, args, i)) {
+				test.setTestGroup(args[i + 1]);
+				i++;
+				continue;
+			}
+			
+			// else must be a test file/file path
+			files.add(args[i]);
 		}
 		
-		String[] testFiles = new String[args.length - 9];
-		System.arraycopy(args, 9, testFiles, 0, testFiles.length);
-		test.setTestFiles(testFiles);
+		test.setTestFiles(files.toArray(new String[files.size()]));
 		
 		test.execute();
 	}

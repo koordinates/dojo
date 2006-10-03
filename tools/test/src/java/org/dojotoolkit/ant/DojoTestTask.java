@@ -169,6 +169,8 @@ public class DojoTestTask extends Task {
 			return;
 		}
 		
+		String testGroup = getProject().getProperty("test.group");
+		
 		Execute execute = new Execute();
 		execute.setAntRun(getProject());
 		
@@ -184,6 +186,11 @@ public class DojoTestTask extends Task {
 		cmd.createArgument().setFile(_testDir);
 		cmd.createArgument().setValue(DojoTest.ARG_USE_LOCAL);
 		cmd.createArgument().setValue(String.valueOf(_localDetected));
+		
+		if (testGroup != null) {
+			cmd.createArgument().setValue(DojoTest.ARG_GROUP);
+			cmd.createArgument().setValue(testGroup);
+		}
 		
 		cmd.createArgument().setValue(DojoTest.ARG_TEST_FILES);
 		for (int i=0; i < tests.length; i++) 

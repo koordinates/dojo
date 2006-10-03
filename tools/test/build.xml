@@ -114,11 +114,11 @@ system.
 			       dest="${build.dir}"
 			       overwrite="true" />
 	</target>
-
+	
 	<!-- ==================================================================== -->
 	<!-- TESTING                                                   			  -->
 	<!-- ==================================================================== -->
-
+	
 	<target name="compile-test" depends="compile-tasks" 
 		description="Compiles classes/code needed to test dojo tasks.">
 		
