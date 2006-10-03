@@ -8,6 +8,7 @@ class DojoFunctionDeclare
   private $package;
   private $start;
   private $end;
+  private $parameters;
 
   public function __construct($dojo, $package)
   {
@@ -172,7 +173,8 @@ class DojoFunctionDeclare
   public function buildFunction(){
   	$lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], count($this->code) - 1, strlen($this->code[count($this->code) - 1]), false);
 	
-	  $this->setParameterStart($this->start[0], strpos($lines[0], '('));
+    $parameter_start = array($this->start[0], strpos($lines[0], '('));
+    $this->parameters = new DojoParameters($this->dojo, $this->package);
 	
 	  $content_start = false; // For content start
 	  $parameter_end = false; // For parameter end
@@ -192,7 +194,7 @@ class DojoFunctionDeclare
 	    }
 	    if (!$parameter_end && ($pos = strpos($line, ')')) !== false) {
 	      $parameter_end = true;
-	      $this->setParameterEnd($line_number, $pos);
+        $this->parameters->buildParameters($parameter_start[0], $parameter_start[1], $line_number, $pos);
 	    }
 	    
 	    if ($content_start) {

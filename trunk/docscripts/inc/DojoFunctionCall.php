@@ -10,8 +10,6 @@ class DojoFunctionCall
   private $package;
   private $start;
   private $end;
-  private $parameter_start;
-  private $parameter_end;
   private $parameters;
   
   public function __construct($dojo, $package)
@@ -30,30 +28,21 @@ class DojoFunctionCall
     $this->end = array($line, $position);
   }
   
-  public function setParameterStart($line, $position)
-  {
-    $this->parameter_start = array($line, $position);
-  }
-  
-  public function setParameterEnd($line, $position)
-  {
-    $this->parameter_end = array($line, $position);
-  }
-  
   public function buildFrom($line_number, $start)
   {
     $this->setStart($line_number, $start);
+    $this->parameters = new DojoParameters($this->dojo, $this->package);
     
     $lines = $this->package->getCode();
     $lines = Text::chop($lines, $line_number, $start);
     $line = $lines[$line_number];
-    $this->setParameterStart($line_number, strpos($line, '(', $start));
+    $parameter_start = array($line_number, strpos($line, '(', $start));
 
     foreach($lines as $line_number => $line) {
       $end = strpos($line, ')', $start);
       if ($end) {
         $this->setEnd($line_number, $end);
-        $this->setParameterEnd($line_number, $end);
+        $this->parameters->buildParameters($parameter_start[0], $parameter_start[1], $line_number, $end);
         return;
       }
       else {
@@ -93,16 +82,14 @@ class DojoFunctionCall
     }
   }
   
-  public function getParameters()
-  {
-    $this->parameters = new DojoParameters($this->dojo, $this->package);
-    return $this->parameters->buildParameters($this->parameter_start[0], $this->parameter_start[1], $this->parameter_end[0], $this->parameter_end[1]);
-  }
-  
   public function getParameter($pos)
   {
-    $parameters = $this->getParameters();
-    return $parameters[$pos];
+    return $this->parameters->getParameter($pos);
+  }
+  
+  public function getParameters()
+  {
+    return $this->parameters->getParameters();
   }
 }
 
