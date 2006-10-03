@@ -283,9 +283,14 @@ function test_date_parse() {
 	jum.assertEquals(name(), null, dojo.date.parse("08/11/06 12:30 pm", {formatLength:'short', selector:'datetime', locale:'en', strict:true}));
 
 	jum.assertEquals(name(), aug_11_2006_12_30_am, dojo.date.parse("08/11/06 12:30 AM", {formatLength:'short', selector:'datetime', locale:'en'}));
-	
 }
 
+function test_time_parse(){
+	
+	var time = new Date(2006, 7, 11, 12, 30);
+	var tformat = {selector:'timeOnly', locale:'en', strict:true};
+	jum.assertEquals(time.getHours(), dojo.date.parse("12:30 AM", tformat));
+}
 
 function test_date_sql() {
 	jum.assertEquals("date.fromSql test", new Date("5/1/2006").valueOf(), dojo.date.fromSql("2006-05-01 00:00:00").valueOf());
