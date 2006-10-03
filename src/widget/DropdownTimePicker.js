@@ -9,25 +9,37 @@ dojo.require("dojo.html.*");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.widget", "DropdownTimePicker");
 
+// summary
+//	input box with a drop-down gui control, for setting the time (hours, minutes, seconds, am/pm) of an event
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownTimePicker",
 	dojo.widget.DropdownContainer,
 	{
+		// URL
+		//	path of icon for button to display time picker widget
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/timeIcon.gif"),
-		zIndex: "10",
-		timePicker: null,
 		
-		timeFormat: "%R",
-		time: null,
+		// Number
+		//	z-index of time picker widget
+		zIndex: "10",
 
-		postMixInProperties: function(localProperties, frag) {
+		// String
+		//	format string for how time is displayed in the input box	
+		timeFormat: "%R",
+
+		// String
+		//	time value in server format (which is probably different than the displayed format)
+		//	TODO: this (and the equivalent field in DropdownDatePicker) should be renamed to "value"
+		value: "",
+
+		postMixInProperties: function() {
 			dojo.widget.DropdownTimePicker.superclass.postMixInProperties.apply(this, arguments);
 			var messages = dojo.i18n.getLocalization("dojo.widget", "DropdownTimePicker", this.lang);
 			this.iconAlt = messages.selectTime;
 		},
 
-		fillInTemplate: function(args, frag){
-			dojo.widget.DropdownTimePicker.superclass.fillInTemplate.call(this, args, frag);
+		fillInTemplate: function(){
+			dojo.widget.DropdownTimePicker.superclass.fillInTemplate.apply(this, arguments);
 
 			var timeProps = { widgetContainerId: this.widgetId };
 			this.timePicker = dojo.widget.createWidget("TimePicker", timeProps, this.containerNode, "child");
@@ -35,9 +47,9 @@ dojo.widget.defineWidget(
 			dojo.event.connect(this.inputNode,  "onchange",  this, "onInputChange");
 			this.containerNode.style.zIndex = this.zIndex;
 			this.containerNode.explodeClassName = "timeBorder";
-			if(args.storedtime){
+			if(this.value){
 				this.timePicker.selectedTime.anyTime = false;
-				this.timePicker.setDateTime("2005-01-01T" + args.storedtime);
+				this.timePicker.setDateTime("2005-01-01T" + this.value);
 				this.timePicker.initData();
 				this.timePicker.initUI();
 				this.onSetTime();
@@ -45,11 +57,13 @@ dojo.widget.defineWidget(
 		},
 		
 		onSetTime: function(){
+			// summary: callback when user sets the time via the TimePicker widget
 			this.inputNode.value = this.timePicker.selectedTime.anyTime ? "" : dojo.date.strftime(this.timePicker.time, this.timeFormat);
 			this.hideContainer();
 		},
 		
 		onInputChange: function(){
+			// summary: callback when the user has typed in a time value manually
 			this.timePicker.time = "2005-01-01T" + this.inputNode.value;
 			this.timePicker.setDateTime(this.timePicker.time);
 			this.timePicker.initData();
@@ -57,12 +71,14 @@ dojo.widget.defineWidget(
 		},
 		
 		enable: function() {
+			// summary: enable this widget to accept user input
 			this.inputNode.disabled = false;
 			this.timePicker.enable();
 			this.inherited("enable", []);
 		},
 		
 		disable: function() {
+			// summary: lock this widget so that the user can't change the value
 			this.inputNode.disabled = true;
 			this.timePicker.disable();
 			this.inherited("disable", []);
