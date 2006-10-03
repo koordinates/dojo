@@ -23,7 +23,11 @@ dojo.widget.defineWidget(
 		// String
 		//	name used when submitting form; same as "name" attribute or plain HTML elements
 		name: "",
-		
+
+		// String
+		//	id attached to the checkbox, used when submitting form
+		id: "",
+
 		// Boolean
 		//	if true, checkbox is initially marked turned on;
 		//	in markup, specified as "checked='checked'" or just "checked"
