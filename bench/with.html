@@ -26,12 +26,13 @@ function bench () {
 
 	tic();
 	for (var i = 0; i < 10000; i++) {
-		foo.bar.node.style.position="relative";
-		foo.bar.node.style.top="10px";
-		foo.bar.node.style.left="10px";
-		foo.bar.node.style.height="100px";
-		foo.bar.node.style.width="300px";
-		foo.bar.node.style.background="red";
+		var f=foo.bar.node.style;
+		f.position="relative";
+		f.top="10px";
+		f.left="10px";
+		f.height="100px";
+		f.width="300px";
+		f.background="red";
 	}
 	toc("direct access");
 }
