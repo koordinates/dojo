@@ -599,14 +599,14 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 	</target>
 	<!-- end compress task -->
 
-	<target name="-rhino-compress"
-		unless="nostrip">
+	<target name="-rhino-compress" unless="nostrip">
 		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}.uncompressed.js" />
-		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" output="${dstFile}">
-			<arg line="-strict" />
-			<arg line="-opt -1"/>
+		<java jar="./lib/custom_rhino.jar" failonerror="true" logerror="true" fork="true" output="${dstFile}">
+			<arg value="-strict" />
+			<arg value="-opt"/>
+			<arg value="-1" />
 			<arg value="-c" />
-			<arg value="${srcFile}" />
+			<arg path="${srcFile}" />
 		</java>
 	</target>
 
