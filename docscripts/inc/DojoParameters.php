@@ -77,6 +77,26 @@ class DojoParameters
     
     return $this->parameters;
   }
+  
+  public function getParameter($pos)
+  {
+    if ($this->parameters) {
+      return $this->parameters[$pos];
+    }
+    else {
+      return array();
+    }
+  }
+  
+  public function getParameters()
+  {
+    if ($this->parameters) {
+      return $this->parameters;
+    }
+    else {
+      return array();
+    }
+  }
 }
 
 ?>
