@@ -41,6 +41,12 @@ dojo.require("dojo.widget.PageContainer");
  *	Panes are stacked by z-index like a stack of cards, so they can be slid correctly.
  *	The panes on the bottom extend past the bottom of the viewport (but are hidden).
  *
+ * usage
+ *	<div dojoType="AccordionContainer">
+ *		<div dojoType="ContentPane" label="pane 1">...</div>
+ *		...
+ *	</div>
+ *
  * TODO:
  *	* this widget should extend PageContainer
  *	* call child.onShow(), child.onHide() so you can attach to those methods if you want
@@ -76,7 +82,7 @@ dojo.require("dojo.widget.PageContainer");
 		addChild: function(/*Widget*/ widget){
 			var child = this._addChild(widget);
 			this._setSizes();
-			return child;
+			return child;	// Widget
 		},
 		
 		_addChild: function(/*Widget*/ widget){
@@ -92,13 +98,13 @@ dojo.require("dojo.widget.PageContainer");
 				wrapper.addChild(widget);
 				this.addWidgetAsDirectChild(wrapper);
 				this.registerChild(wrapper, this.children.length);
-				return wrapper;
+				return wrapper;	// Widget
 			} else {
 				dojo.html.addClass(widget.containerNode, this.containerNodeClass);
 				dojo.html.addClass(widget.labelNode, this.labelNodeClass);
 				this.addWidgetAsDirectChild(widget);
 				this.registerChild(widget, this.children.length);	
-				return widget;
+				return widget;	// Widget
 			}
 		},
 	
@@ -224,7 +230,7 @@ dojo.widget.defineWidget(
 
 	getLabelHeight: function() {
 		// summary: returns the height of the title dom node
-		return dojo.html.getMarginBox(this.labelNode).height;
+		return dojo.html.getMarginBox(this.labelNode).height;	// Integer
 	},
 
 	onLabelClick: function() {

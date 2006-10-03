@@ -228,6 +228,11 @@ dojo.widget.defineWidget(
 /*
  * summary
  *	push the button and a menu shows up
+ * usage
+ *	<button dojoType="DropDownButton" menuId="mymenu">Hello world</button>
+ *
+ *  var button1 = dojo.widget.createWidget("DropDownButton", {caption: "hello world", menuId: foo});
+ *	document.body.appendChild(button1.domNode);
  */
 dojo.widget.defineWidget(
 	"dojo.widget.DropDownButton",
@@ -271,6 +276,11 @@ dojo.widget.defineWidget(
 /*
  * summary
  *	left side is normal button, right side displays menu
+ * usage
+ *	<button dojoType="ComboButton" onClick="..." menuId="mymenu">Hello world</button>
+ *
+ *  var button1 = dojo.widget.createWidget("DropDownButton", {caption: "hello world", onClick: foo, menuId: "myMenu"});
+ *	document.body.appendChild(button1.domNode);
  */
 dojo.widget.defineWidget(
 	"dojo.widget.ComboButton",
@@ -283,7 +293,7 @@ dojo.widget.defineWidget(
 		templatePath: dojo.uri.dojoUri("src/widget/templates/ComboButtonTemplate.html"),
 	
 		// Integer
-		//	# of pixels between left&right part of button
+		//	# of pixels between left & right part of button
 		splitWidth: 2,
 		
 		// Integer
