@@ -20,7 +20,7 @@ dojo.require("dojo.lang.func");
 // TODO: more resiliency for 4+ arguments to connect()
 
 dojo.event = new function(){
-	this.canTimeout = dojo.lang.isFunction(dj_global["setTimeout"])||dojo.lang.isAlien(dj_global["setTimeout"]);
+	this._canTimeout = dojo.lang.isFunction(dj_global["setTimeout"])||dojo.lang.isAlien(dj_global["setTimeout"]);
 
 	// FIXME: where should we put this method (not here!)?
 	function interpolateArgs(args, searchForNames){
@@ -171,10 +171,71 @@ dojo.event = new function(){
 		return ao;
 	}
 
-	this.connect = function(){
+	this.connect = function(/*...*/){
 		// summary:
-		// 	dojo.event.connect is the glue that holds most Dojo-based
-		// 	applications together.
+		//		dojo.event.connect is the glue that holds most Dojo-based
+		//		applications together. Most combinations of arguments are
+		//		supported, with the connect() method attempting to disambiguate
+		//		the implied types of positional parameters. The following will
+		//		all work:
+		//			dojo.event.connect("globalFunctionName1", "globalFunctionName2");
+		//			dojo.event.connect(functionReference1, functionReference2);
+		//			dojo.event.connect("globalFunctionName1", functionReference2);
+		//			dojo.event.connect(functionReference1, "globalFunctionName2");
+		//			dojo.event.connect(scope1, "functionName1", "globalFunctionName2");
+		//			dojo.event.connect("globalFunctionName1", scope2, "functionName2");
+		//			dojo.event.connect(scope1, "functionName1", scope2, "functionName2");
+		//			dojo.event.connect("after", scope1, "functionName1", scope2, "functionName2");
+		//			dojo.event.connect("before", scope1, "functionName1", scope2, "functionName2");
+		//			dojo.event.connect("around", 	scope1, "functionName1", 
+		//											scope2, "functionName2",
+		//											aroundFunctionReference);
+		//			dojo.event.connect("around", 	scope1, "functionName1", 
+		//											scope2, "functionName2",
+		//											scope3, "aroundFunctionName");
+		//			dojo.event.connect("before-around", 	scope1, "functionName1", 
+		//													scope2, "functionName2",
+		//													aroundFunctionReference);
+		//			dojo.event.connect("after-around", 		scope1, "functionName1", 
+		//													scope2, "functionName2",
+		//													aroundFunctionReference);
+		//			dojo.event.connect("after-around", 		scope1, "functionName1", 
+		//													scope2, "functionName2",
+		//													scope3, "aroundFunctionName");
+		//			dojo.event.connect("around", 	scope1, "functionName1", 
+		//											scope2, "functionName2",
+		//											scope3, "aroundFunctionName", true, 30);
+		//			dojo.event.connect("around", 	scope1, "functionName1", 
+		//											scope2, "functionName2",
+		//											scope3, "aroundFunctionName", null, null, 10);
+		// adviceType: 
+		//		Optional. String. One of "before", "after", "around",
+		//		"before-around", or "after-around". FIXME
+		// srcObj:
+		//		the scope in which to locate the named srcFunc. Along with
+		//		srcFunc, this creates a way to dereference the function to
+		//		call. So if the function in question is "foo.bar", the
+		//		srcObj/srcFunc pair would be foo and "bar", where "bar" is a
+		//		string and foo is an object reference.
+		// srcFunc:
+		//		the name of the function to connect to. When it is executed,
+		//		the listener being registered with this call will be called.
+		//		The adviceType defines the call order between the source and
+		//		the target functions.
+
+		/*
+				ao.adviceType = args[0];
+				ao.srcObj = args[1];
+				ao.srcFunc = args[2];
+				ao.adviceObj = args[3]
+				ao.adviceFunc = args[4];
+				ao.aroundObj = args[5];
+				ao.aroundFunc = args[6];
+				ao.once = args[7];
+				ao.delay = args[8];
+				ao.rate = args[9];
+				ao.adviceMsg = args[10];
+		*/
 		if(arguments.length == 1){
 			var ao = arguments[0];
 		}else{
@@ -187,6 +248,7 @@ dojo.event = new function(){
 			}
 			ao.srcFunc = "onkeypress";
 		}
+
 
 		if(dojo.lang.isArray(ao.srcObj) && ao.srcObj!=""){
 			var tmpAO = {};
@@ -269,17 +331,11 @@ dojo.event = new function(){
 			var tmpName  = dojo.lang.nameAnonFunc(kwArgs.adviceFunc, kwArgs.adviceObj, true);
 			kwArgs.adviceFunc = tmpName;
 		}
-		return dojo.event[fn](	(kwArgs["type"]||kwArgs["adviceType"]||"after"),
-									kwArgs["srcObj"]||dj_global,
-									kwArgs["srcFunc"],
-									kwArgs["adviceObj"]||kwArgs["targetObj"]||dj_global,
-									kwArgs["adviceFunc"]||kwArgs["targetFunc"],
-									kwArgs["aroundObj"],
-									kwArgs["aroundFunc"],
-									kwArgs["once"],
-									kwArgs["delay"],
-									kwArgs["rate"],
-									kwArgs["adviceMsg"]||false );
+		kwArgs.srcObj = kwArgs["srcObj"]||dj_global;
+		kwArgs.adviceObj = kwArgs["adviceObj"]||kwArgs["targetObj"]||dj_global;
+		kwArgs.adviceFunc = kwArgs["adviceFunc"]||kwArgs["targetFunc"];
+		// pass kwargs to avoid unrolling/repacking
+		return dojo.event[fn](kwArgs);
 	}
 
 	this.kwConnect = function(kwArgs){
@@ -342,9 +398,9 @@ dojo.event.MethodJoinPoint = function(obj, methname){
 	this.methodname = methname;
 	this.methodfunc = this.object[methname];
 	this.squelch = false;
-	this.before = [];
-	this.after = [];
-	this.around = [];
+	// this.before = [];
+	// this.after = [];
+	// this.around = [];
 }
 
 dojo.event.MethodJoinPoint.getForMethod = function(obj, methname){
@@ -473,7 +529,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 				var cur = new Date();
 				var timerSet = false;
 				if((marr["last"])&&((cur-marr.last)<=rate)){
-					if(dojo.event.canTimeout){
+					if(dojo.event._canTimeout){
 						if(marr["delayTimer"]){
 							clearTimeout(marr.delayTimer);
 						}
@@ -531,14 +587,14 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 			}
 		}
 
-		if(this.before.length>0){
+		if((this["before"])&&(this.before.length>0)){
 			// pass a cloned array, if this event disconnects this event forEach on this.before wont work
 			dojo.lang.forEach(this.before.concat(new Array()), unRollSquelch);
 		}
 
 		var result;
 		try{
-			if(this.around.length>0){
+			if((this["around"])&&(this.around.length>0)){
 				var mi = new dojo.event.MethodInvocation(this, obj, args);
 				result = mi.proceed();
 			}else if(this.methodfunc){
@@ -546,7 +602,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 			}
 		}catch(e){ if(!this.squelch){ dojo.raise(e); } }
 
-		if(this.after.length>0){
+		if((this["after"])&&(this.after.length>0)){
 			// see comment on this.before above
 			dojo.lang.forEach(this.after.concat(new Array()), unRollSquelch);
 		}
@@ -555,14 +611,15 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 	},
 
 	getArr: function(kind){
-		var arr = this.after;
+		var type = "after";
 		// FIXME: we should be able to do this through props or Array.in()
 		if((typeof kind == "string")&&(kind.indexOf("before")!=-1)){
-			arr = this.before;
+			type = "before";
 		}else if(kind=="around"){
-			arr = this.around;
+			type = "around";
 		}
-		return arr;
+		if(!this[type]){ this[type] = []; }
+		return this[type]
 	},
 
 	kwAddAdvice: function(args){
