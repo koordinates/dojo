@@ -29,7 +29,6 @@ dojo.widget.defineWidget(
 
 		// String
 		//	time value in server format (which is probably different than the displayed format)
-		//	TODO: this (and the equivalent field in DropdownDatePicker) should be renamed to "value"
 		value: "",
 
 		postMixInProperties: function() {
