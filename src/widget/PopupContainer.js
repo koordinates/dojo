@@ -311,7 +311,7 @@ dojo.widget.PopupManager = new function(){
 		//starting from window.top, clicking everywhere in this page
 		//should close popup menus
 		if(!targetWindow) { //see comment below
-			targetWindow = dojo.html.getDocumentWindow(window.top.document);
+			targetWindow = dojo.html.getDocumentWindow(window.top && window.top.document || window.document);
 		}
 
 		this.registerWin(targetWindow);
