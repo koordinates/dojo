@@ -17,7 +17,7 @@ dojo.declare(
 		isContainer: true,
 
 		// static variables
-		_shared: {bg: null, bgIframe: null},
+		shared: {bg: null, bgIframe: null},
 
 		// String
 		//	provide a focusable element or element id if you need to
@@ -95,18 +95,18 @@ dojo.declare(
 			var b = dojo.body();
 			b.appendChild(this.domNode);
 
-			if(!this._shared.bg){
-				this._shared.bg = document.createElement("div");
-				this._shared.bg.className = "dialogUnderlay";
-				with(this._shared.bg.style){
+			if(!this.shared.bg){
+				this.shared.bg = document.createElement("div");
+				this.shared.bg.className = "dialogUnderlay";
+				with(this.shared.bg.style){
 					position = "absolute";
 					left = top = "0px";
 					zIndex = 998;
 					display = "none";
 				}
 				this.setBackgroundColor(this.bgColor);
-				b.appendChild(this._shared.bg);
-				this._shared.bgIframe = new dojo.html.BackgroundIframe(this._shared.bg);
+				b.appendChild(this.shared.bg);
+				this.shared.bgIframe = new dojo.html.BackgroundIframe(this.shared.bg);
 			}
 		},
 
@@ -121,7 +121,7 @@ dojo.declare(
 			} else {
 				color = new dojo.gfx.color.Color(color);
 			}
-			this._shared.bg.style.backgroundColor = color.toString();
+			this.shared.bg.style.backgroundColor = color.toString();
 			return this.bgColor = color;
 		},
 
@@ -129,9 +129,9 @@ dojo.declare(
 			// summary
 			//	changes background opacity set by "bgOpacity" parameter
 			if(arguments.length == 0) { op = this.bgOpacity; }
-			dojo.html.setOpacity(this._shared.bg, op);
+			dojo.html.setOpacity(this.shared.bg, op);
 			try {
-				this.bgOpacity = dojo.html.getOpacity(this._shared.bg);
+				this.bgOpacity = dojo.html.getOpacity(this.shared.bg);
 			} catch (e) {
 				this.bgOpacity = op;
 			}
@@ -144,28 +144,28 @@ dojo.declare(
 				var viewport = dojo.html.getViewport();
 				var h = viewport.height;
 				var w = viewport.width;
-				with(this._shared.bg.style){
+				with(this.shared.bg.style){
 					width = w + "px";
 					height = h + "px";
 				}
 				var scroll_offset = dojo.html.getScroll().offset;
-				this._shared.bg.style.top = scroll_offset.y + "px";
-				this._shared.bg.style.left = scroll_offset.x + "px";
+				this.shared.bg.style.top = scroll_offset.y + "px";
+				this.shared.bg.style.left = scroll_offset.x + "px";
 				// process twice since the scroll bar may have been removed
 				// by the previous resizing
-				// var viewport = dojo.html.getViewport();
-				// if (viewport.width != w) { this._shared.bg.style.width = viewport.width + "px"; }
-				// if (viewport.height != h) { this._shared.bg.style.height = viewport.height + "px"; }
+				var viewport = dojo.html.getViewport();
+				if (viewport.width != w) { this.shared.bg.style.width = viewport.width + "px"; }
+				if (viewport.height != h) { this.shared.bg.style.height = viewport.height + "px"; }
 			}
 		},
 
 		_showBackground: function() {
 			if(this.bgOpacity > 0) {
-				this._shared.bg.style.display = "block";
+				this.shared.bg.style.display = "block";
 			}
 		},
 
-		_placeModalDialog: function() {
+		placeModalDialog: function() {
 			var scroll_offset = dojo.html.getScroll().offset;
 			var viewport_size = dojo.html.getViewport();
 			
@@ -204,8 +204,8 @@ dojo.declare(
 				dojo.byId(this.focusElement).blur();
 			}
 
-			this._shared.bg.style.display = "none";
-			this._shared.bg.style.width = this._shared.bg.style.height = "1px";
+			this.shared.bg.style.display = "none";
+			this.shared.bg.style.width = this.shared.bg.style.height = "1px";
 
 			if (this._scrollConnected){
 				this._scrollConnected = false;
@@ -215,15 +215,15 @@ dojo.declare(
 
 		_onScroll: function(){
 			var scroll_offset = dojo.html.getScroll().offset;
-			this._shared.bg.style.top = scroll_offset.y + "px";
-			this._shared.bg.style.left = scroll_offset.x + "px";
-			this._placeModalDialog();
+			this.shared.bg.style.top = scroll_offset.y + "px";
+			this.shared.bg.style.left = scroll_offset.x + "px";
+			this.placeModalDialog();
 		},
 
 		checkSize: function() {
 			if(this.isShowing()){
 				this._sizeBackground();
-				this._placeModalDialog();
+				this.placeModalDialog();
 				this.onResized();
 			}
 		}
@@ -250,9 +250,9 @@ dojo.widget.defineWidget(
 			if(this.lifetime){
 				this.timeRemaining = this.lifetime;
 				if(!this.blockDuration){
-					dojo.event.connect(this._shared.bg, "onclick", this, "hide");
+					dojo.event.connect(this.shared.bg, "onclick", this, "hide");
 				}else{
-					dojo.event.disconnect(this._shared.bg, "onclick", this, "hide");
+					dojo.event.disconnect(this.shared.bg, "onclick", this, "hide");
 				}
 				if(this.timerNode){
 					this.timerNode.innerHTML = Math.ceil(this.timeRemaining/1000);
@@ -274,7 +274,7 @@ dojo.widget.defineWidget(
 		onLoad: function(){
 			// when href is specified we need to reposition
 			// the dialog after the data is loaded
-			this._placeModalDialog();
+			this.placeModalDialog();
 			dojo.widget.Dialog.superclass.onLoad.call(this);
 		},
 		
@@ -319,7 +319,7 @@ dojo.widget.defineWidget(
 			if(this.timer){
 				this.timeRemaining -= 100;
 				if(this.lifetime - this.timeRemaining >= this.blockDuration){
-					dojo.event.connect(this._shared.bg, "onclick", this, "hide");
+					dojo.event.connect(this.shared.bg, "onclick", this, "hide");
 					if(this.closeNode){
 						this.closeNode.style.visibility = "visible";
 					}
