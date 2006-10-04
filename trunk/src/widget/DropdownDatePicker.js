@@ -37,17 +37,7 @@ dojo.widget.defineWidget(
 			var messages = dojo.i18n.getLocalization("dojo.widget", "DropdownDatePicker", this.lang);
 			this.iconAlt = messages.selectDate;
 			
-			if(typeof(this.date)=='string'&&this.date.toLowerCase()=='today'){
-				this.date = new Date();
-			}
-			if(this.date && isNaN(this.date)){
-				var orig = this.date;
-				this.date = dojo.date.fromRfc3339(this.date);
-				if(!this.date){this.date = new Date(orig); dojo.deprecated("dojo.widget.DropdownDatePicker", "date attributes must be passed in Rfc3339 format", "0.5");}
-			}
-			if(this.date && !isNaN(this.date)){
-				this.date = new Date(this.date);
-			}
+			this._initData();
 		},
 
 		fillInTemplate: function(args, frag){
@@ -122,7 +112,21 @@ dojo.widget.defineWidget(
 			// this will fix up the display of entries like 01/32/2006
 			if(input){ this.onSetDate(); }
 		},
-
+		
+		_initData: function(){
+			if(typeof(this.date)=='string'&&this.date.toLowerCase()=='today'){
+				this.date = new Date();
+			}
+			if(this.date && isNaN(this.date)){
+				var orig = this.date;
+				this.date = dojo.date.fromRfc3339(this.date);
+				if(!this.date){this.date = new Date(orig); dojo.deprecated("dojo.widget.DropdownDatePicker", "date attributes must be passed in Rfc3339 format", "0.5");}
+			}
+			if(this.date && !isNaN(this.date)){
+				this.date = new Date(this.date);
+			}
+		},
+		
 		_synchValueNode: function(){
 			var date = this.datePicker.date;
 			var value;
