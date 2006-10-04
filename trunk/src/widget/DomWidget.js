@@ -608,7 +608,12 @@ dojo.declare("dojo.widget.DomWidget",
 								thisFunc = tevt;
 							}
 							if(dojo.lang.isFunction(widget[tevt])){
-								dojo.event.connect(widget, tevt, this, thisFunc);
+								dojo.event.kwConnect({
+									srcObj: widget, 
+									srcFunc: tevt, 
+									targetObj: this, 
+									targetFunc: thisFunc
+								});
 							}else{
 								alert(tevt+" is not a function in widget "+widget);
 							}
