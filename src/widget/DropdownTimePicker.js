@@ -28,7 +28,8 @@ dojo.widget.defineWidget(
 		timeFormat: "%R",
 
 		// String
-		//	time value in server format (which is probably different than the displayed format)
+		//	time value in RFC3339 format (http://www.ietf.org/rfc/rfc3339.txt)
+		//	ex: 12:00
 		value: "",
 
 		postMixInProperties: function() {
