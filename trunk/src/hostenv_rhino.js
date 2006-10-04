@@ -208,6 +208,10 @@ dojo.doc = function(){
 	return document;
 }
 
+dojo.body = function(){
+	return document.body;	
+}
+
 function setTimeout(func, delay){
 	// summary: provides timed callbacks using Java threads
 
