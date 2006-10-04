@@ -6,7 +6,9 @@ class DojoParameters
 {
   private $dojo;
   private $package;
-  private $parameters;
+  private $parameters = array();
+  private $start;
+  private $end;
   
   public function __construct($dojo, $package)
   {
@@ -14,68 +16,40 @@ class DojoParameters
     $this->package = $package;
   }
   
-  public function buildParameters($start_line, $start, $end_line, $end_position)
+  public function setStart($line_number, $position)
   {
-    $paren_balance = 0;
-    $block_balance = 0;
-    $bracket_balance = 0;
+    $this->start = array($line_number, $position);
+  }
+  
+  public function setEnd($line_number, $position)
+  {
+    $this->end = array($line_number, $position);
+  }
+  
+  public function build()
+  {
+    if (!$this->start) {
+      die("DojoFunctionCall->build() used before setting a start position");
+    }
 
-    $lines = Text::chop($this->package->getSource(), $start_line, $start, $end_line, $end_position, true);
-    foreach ($lines as $line_number => $line) {
-      if (trim($line) == '') {
-        $start = 0;
-        continue;
+    $code = $this->package->getCode();
+    $start = array($this->start[0], $this->start[1]);
+
+    do {
+      $parameter = new DojoParameter($this->dojo, $this->package);
+      $parameter->setStart($start[0], $start[1]);
+      $end = $parameter->build();
+      $start = array($end[0], $end[1] + 1);
+      if ($start[1] >= strlen($code[$start[0]])) {
+        $start = array($start[0] + 1, 0);
       }
       
-      for ($i = $start; $i < strlen($line); $i++) {
-        $start = 0;
-        if (!isset($parameter)) {
-          $parameter = new DojoParameter($this->dojo, $this->package);
-          if ($i + 1 < strlen($line)) {
-            $parameter->setStart($line_number, $i + 1);
-          }
-          elseif(strlen($line) == 1) {
-          	$parameter->setStart($line_number, 0);
-          }
-          else {
-            $parameter->setStart($line_number + 1, 0);
-          }
-        }
-        
-        $char = $line{$i};
-        if ($char == '(') {
-          ++$paren_balance;
-        }
-        elseif ($char == ')') {
-          --$paren_balance;
-        }
-        elseif ($char == '{') {
-          ++$block_balance;
-        }
-        elseif ($char == '}') {
-          --$block_balance;
-        }
-        elseif ($char == '[') {
-          ++$bracket_balance;
-        }
-        elseif ($char == ']') {
-          --$bracket_balance;
-        }
-        
-        if (!$paren_balance && !$block_balance && !$bracket_balance && $char == ',') {
-          $parameter->setEnd($line_number, $i - 1);
-          $this->parameters[] = $parameter;
-          unset($parameter);
-        }
-      }
-    }
-    
-    if ($parameter) {
-      $parameter->setEnd($end_line, $end_position - 1);
       $this->parameters[] = $parameter;
     }
+    while ($code[$end[0]]{$end[1]} != ')');
     
-    return $this->parameters;
+    $this->setEnd($end[0], $end[1]);
+    return $end;
   }
   
   public function getParameter($pos)

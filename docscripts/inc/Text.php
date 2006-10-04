@@ -64,6 +64,15 @@ class Text
     
     return $lines;
   }
+  
+  public static function toArray($string)
+  {
+    $chars = array();
+    for ($i = 0; $i < strlen($string); $i++) {
+      $chars[] = $string{$i};
+    }
+    return $chars;
+  }
 }
 
 ?>
