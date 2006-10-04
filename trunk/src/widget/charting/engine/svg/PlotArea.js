@@ -2,17 +2,16 @@ dojo.provide("dojo.widget.charting.engine.svg.PlotArea");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.svg");
 
-(function(){
-	var p=dojo.widget.charting.engine.PlotArea;
-	p.prototype.initializePlot = function(plot){
+dojo.extend(dojo.widget.charting.engine.PlotArea, {
+	initializePlot: function(plot){
 		//	summary
 		//	Initialize the plot node for data rendering.
 		plot.destroy();
 		plot.dataNode = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		plot.dataNode.setAttribute("id", plot.getId());
 		return plot.dataNode;	//	SVGElement
-	};
-	p.prototype.initializeAxis = function(axisObject){
+	},
+	initializeAxis: function(axisObject){
 		//	summary
 		//	Initialize the passed axis descriptor.  Note that this should always
 		//	be the result of this.getAxes, and not the axis directly!
@@ -147,20 +146,32 @@ dojo.require("dojo.svg");
 		}
 		group.appendChild(line);
 		return group;
-	};
+	},
 
-	p.prototype.initialize = function(){
+	initialize: function(){
 		this.destroy();	//	kill everything first.
 		
 		//	start with the background
 		this.nodes.main = document.createElement("div");
-
 
 		this.nodes.area = document.createElementNS(dojo.svg.xmlns.svg, "svg");
 		this.nodes.area.setAttribute("id", this.getId());
 		this.nodes.area.setAttribute("width", this.size.width);
 		this.nodes.area.setAttribute("height", this.size.height);
 		this.nodes.main.appendChild(this.nodes.area);
+
+		var area=this.getArea();
+		var defs = document.createElementNS(dojo.svg.xmlns.svg, "defs");
+		var clip = document.createElementNS(dojo.svg.xmlns.svg, "clipPath");
+		clip.setAttribute("id",this.getId()+"-clip");
+		var rect = document.createElementNS(dojo.svg.xmlns.svg, "rect");		
+		rect.setAttribute("x", area.left);
+		rect.setAttribute("y", area.top);
+		rect.setAttribute("width", this.size.width-area.left);
+		rect.setAttribute("height", this.size.height-area.top);
+		clip.appendChild(rect);
+		defs.appendChild(clip);
+		this.nodes.area.appendChild(defs);
 		
 		this.nodes.background = document.createElementNS(dojo.svg.xmlns.svg, "rect");
 		this.nodes.background.setAttribute("id", this.getId()+"-background");
@@ -171,6 +182,7 @@ dojo.require("dojo.svg");
 
 		this.nodes.plots = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		this.nodes.plots.setAttribute("id", this.getId()+"-plots");
+		this.nodes.plots.setAttribute("style","clip-path:url(#"+this.getId()+"-clip);");
 		this.nodes.area.appendChild(this.nodes.plots);
 
 		for(var i=0; i<this.plots.length; i++){
@@ -186,5 +198,5 @@ dojo.require("dojo.svg");
 			this.nodes.axes.appendChild(this.initializeAxis(axes[p]));
 		}
 		return this.nodes.main;
-	};
-})();
+	}
+});

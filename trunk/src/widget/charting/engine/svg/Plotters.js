@@ -3,9 +3,8 @@ dojo.require("dojo.lang.common");
 dojo.require("dojo.svg");
 
 //	Mixin the SVG-specific plotter object.
-(function(){
-	var p = dojo.widget.charting.engine.Plotters;
-	p.Line = function(
+dojo.mixin(dojo.widget.charting.engine.Plotters, {
+	Line: function(
 		/* array */data, 
 		/* dojo.widget.charting.engine.PlotArea */plotarea,
 		/* dojo.widget.charting.engine.Plot */plot,
@@ -60,8 +59,8 @@ dojo.require("dojo.svg");
 		}
 		path.setAttribute("d", cmd.join(" "));
 		return line;
-	};
-	p.Area = function(
+	},
+	Area: function(
 		/* array */data, 
 		/* dojo.widget.charting.engine.PlotArea */plotarea,
 		/* dojo.widget.charting.engine.Plot */plot,
@@ -123,6 +122,73 @@ dojo.require("dojo.svg");
 		cmd.push("Z");
 		path.setAttribute("d", cmd.join(" "));
 		return line;
-	};
-	p["Default"] = p.Line;
-})();
+	},
+	Scatter: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		var r=7;
+		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
+		for (var i=0; i<data.length; i++){
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot);
+			var y = plot.axisY.getCoord(data[i].y, plotarea, plot);
+			var point = document.createElementNS(dojo.svg.xmlns.svg, "path");
+			point.setAttribute("fill", data[i].series.color);
+			point.setAttribute("stroke-width", "0");
+			point.setAttribute("d",
+				"M " + x + "," + (y-r) + " " +
+				"Q " + x + "," + y + " " + (x+r) + "," + y + " " +
+				"Q " + x + "," + y + " " + x + "," + (y+r) + " " +
+				"Q " + x + "," + y + " " + (x-r) + "," + y + " " +
+				"Q " + x + "," + y + " " + x + "," + (y-r) + " " +
+				"Z"
+			);
+			if(applyTo){ applyTo(point, data[i].src); }
+			group.appendChild(point);
+		}
+		return group;
+	},
+	Bubble: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		//	we will expect an additional binding to "size" here.  And it will be raw, no factors.
+		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
+		var sizeFactor=1;
+		for (var i=0; i<data.length; i++){
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot);
+			var y = plot.axisY.getCoord(data[i].y, plotarea, plot);
+			if(i==0){
+				//	figure out the size factor, start with the axis with the greater range.
+				var raw = data[i].size;
+				var ax = plot.axisX;
+				var ay = plot.axisY;
+				var axis = ax;
+				var p="x";
+				var co=x;
+				if(Math.abs(ax.range.upper-ax.range.lower) < Math.abs(ay.range.upper-ay.range.lower)){
+					axis=ay;
+					p="y";
+					co=y;
+				}
+				var dx = axis.getCoord(data[i][p] + raw, plotarea, plot)-co;
+				sizeFactor = dx/raw;
+			}
+			var point = document.createElementNS(dojo.svg.xmlns.svg, "circle");
+			point.setAttribute("fill", data[i].series.color);
+			point.setAttribute("fill-opacity", "0.8");
+			point.setAttribute("stroke-width", 0);
+			point.setAttribute("cx",x);
+			point.setAttribute("cy",y);
+			point.setAttribute("r", (data[i].size/2)*sizeFactor);
+			if(applyTo){ applyTo(point, data[i].src); }
+			group.appendChild(point);
+		}
+		return group;
+	}
+});
+dojo.widget.charting.engine.Plotters["Default"] = dojo.widget.charting.engine.Plotters.Line;

@@ -19,6 +19,9 @@ dojo.extend(dojo.widget.charting.engine.Series, {
 		this.bindings = bindings;
 		this.onBind();
 	},
+	addBinding:function(name, binding){
+		this.bindings[name] = binding;
+	},
 	evaluate:function(kwArgs){
 		var ret = [];
 		var a = this.dataSource.getData();
@@ -51,12 +54,11 @@ dojo.extend(dojo.widget.charting.engine.Series, {
 		}
 
 		for(var i=start; i<end; i++){
-			ret.push({
-				x: this.dataSource.getField(a[i], this.bindings.x),
-				y: this.dataSource.getField(a[i], this.bindings.y),
-				src: a[i],
-				series: this
-			});
+			var o = { src: a[i], series: this };
+			for(var p in this.bindings){
+				o[p] = this.dataSource.getField(a[i], this.bindings[p]);
+			}
+			ret.push(o);
 		}
 
 		//	sort by the x axis, assume data is already cast correctly
