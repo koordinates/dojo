@@ -288,8 +288,10 @@ function test_date_parse() {
 function test_time_parse(){
 	
 	var time = new Date(2006, 7, 11, 12, 30);
-	var tformat = {selector:'timeOnly', locale:'en', strict:true};
-	jum.assertEquals(time.getHours(), dojo.date.parse("12:30 AM", tformat));
+	var tformat = {selector:'timeOnly', strict:true, timePattern:"h:mm a"};
+	
+	jum.assertEquals(time.getHours(), dojo.date.parse("12:30 PM", tformat).getHours());
+	jum.assertEquals(time.getMinutes(), dojo.date.parse("12:30 PM", tformat).getMinutes());
 }
 
 function test_date_sql() {

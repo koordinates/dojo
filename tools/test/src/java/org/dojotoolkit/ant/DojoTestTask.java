@@ -16,6 +16,7 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
 import org.dojotoolkit.DojoTest;
 
 import java.io.BufferedInputStream;
@@ -175,7 +176,8 @@ public class DojoTestTask extends Task {
 		execute.setAntRun(getProject());
 		
 		CommandlineJava cmd = new CommandlineJava();
-		cmd.createClasspath(getProject()).createPath().setLocation(findJar());
+		Path cp = cmd.createClasspath(getProject());
+		cp.createPath().setLocation(findJar());
 		cmd.setClassname("org.dojotoolkit.DojoTest");
 		
 		cmd.createArgument().setValue(DojoTest.ARG_DOJO_DIR);
