@@ -451,6 +451,8 @@ dojo.widget.defineWidget(
 	},
 
 	openSubmenu: function(){
+		if (this.disabled){ return; }
+
 		// first close any other open submenu
 		this.parent.closeSubpopup();
 
