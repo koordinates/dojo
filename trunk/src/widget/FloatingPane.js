@@ -10,8 +10,6 @@ dojo.require("dojo.lfx.shadow");
 dojo.require("dojo.widget.html.layout");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.dnd.HtmlDragMove");
-dojo.require("dojo.dnd.HtmlDragMoveSource");
-dojo.require("dojo.dnd.HtmlDragMoveObject");
 dojo.require("dojo.widget.Dialog");		// for ModalFloatingPane
 dojo.require("dojo.widget.ResizeHandle");
 
