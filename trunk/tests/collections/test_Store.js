@@ -15,7 +15,7 @@ function test_simple_getters(){
 	jum.assertEquals("store dataByKey", store.getDataByKey("3"), data[2]);
 }
 
-function test_null_expression_values(){
+function test_nullexpression_values(){
 	var data=[
 		{Id:1, val1:"testval", simpleNum:1.2, getName:function(){return "Bob Smith";}},
 		{Id:2, val1:null, simpleNum:56, getName:function(){return "Jane";}},
@@ -31,7 +31,7 @@ function test_null_expression_values(){
 	
 	try {
 		store.getField(data[0], "val1.getMissing()");
-	} catch (e) { jum.assertTrue("field with non existant function ref", e instanceof Error);return;}
+	} catch (e) { jum.assertTrue(e instanceof Error);return;}
 	throw new JUMAssertFailure("Previous store.getField test should have failed.");
 }
 

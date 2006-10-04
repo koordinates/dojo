@@ -432,6 +432,15 @@ public class DojoTest {
 				continue;
 			}
 			
+			// not really needed, should only happen once and then 
+			// the rest fall through to the bottom files.add() 
+			// TODO: This doesn't make sense :/ 
+			if (DojoTest.matchArg(DojoTest.ARG_TEST_FILES, args, i)) {
+				files.add(args[i + 1]);
+				i++;
+				continue;
+			}
+			
 			// else must be a test file/file path
 			files.add(args[i]);
 		}

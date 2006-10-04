@@ -68,7 +68,7 @@ system.
 	<!-- Distribution                                                         -->
 	<!-- ==================================================================== -->
 
-	<target name="dist-jar" depends="compile-tasks,copy-resources,extract-rhino-jar"
+	<target name="dist-jar" depends="compile-tasks,copy-resources,extract-jars"
 			description="Creates the ant-dojotest.jar task.">
 		<mkdir dir="${dist.dir}" />
 		<jar destfile="${dist.dir}/ant-dojotest.jar" update="true">
@@ -109,10 +109,13 @@ system.
 		<copy verbose="false" file="${epilogue}" todir="${build.dir}" />
 	</target>
 
-	<target name="extract-rhino-jar">
+	<target name="extract-jars">
 		<unjar src="${root.lib}/custom_rhino.jar"
 			       dest="${build.dir}"
 			       overwrite="true" />
+		<unjar src="${root.lib}/xbean.jar"
+					       dest="${build.dir}"
+					       overwrite="true" />
 	</target>
 	
 	<!-- ==================================================================== -->
