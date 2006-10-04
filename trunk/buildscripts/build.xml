@@ -431,11 +431,14 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		<!-- FIXME: need to actually get a list of js files to be processed  -->
 
 		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" 
-			outputproperty="concatFilesProp" logError="true">
-			<arg line="-opt -1"/>
-			<arg line="-f ${profileFile}" />
+			outputproperty="concatFilesProp" logerror="true">
+			<arg value="-opt" />
+			<arg value="-1" />
+			<arg value="-f" />
+			<arg value="${profileFile}" />
 			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
+		
 		<script language="javascript">
 			<![CDATA[
 			var currentTask = dojo.getTargets().get("-set-profile-deps");
@@ -606,7 +609,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			<arg value="-opt"/>
 			<arg value="-1" />
 			<arg value="-c" />
-			<arg path="${srcFile}" />
+			<arg value="${srcFile}" />
 		</java>
 	</target>
 
@@ -626,7 +629,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			</filterchain>
 		</copy>
 		<!--FIXME: dir=.. is kludgey. Having trouble bootstrapping without it -->
-		<java jar="./lib/custom_rhino.jar" outputProperty="generatedLocales" failonerror="true" logError="true"
+		<java jar="./lib/custom_rhino.jar" outputProperty="generatedLocales" failonerror="true" logerror="true"
 			fork="true" dir=".." >
 			<arg value="./buildscripts/flattenResources.js" />
 			<arg value="./buildscripts/${release_dir}/localizations.tmp.js" />
