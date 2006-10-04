@@ -102,25 +102,33 @@ dojo.widget.defineWidget(
 			}
 			this.highlight();
 		},
-	
+		
+		updateClass: function(class){
+		//summary: used to ensure that only 1 validation class is set at a time
+			var pre = this.classPrefix;
+			dojo.html.removeClass(this.textbox,pre+"Empty");
+			dojo.html.removeClass(this.textbox,pre+"Valid");
+			dojo.html.removeClass(this.textbox,pre+"Invalid");
+			dojo.html.addClass(this.textbox,pre+class);
+		},
+		
 		// Called oninit, and onblur.
 		highlight: function() {
 			// highlight textbox background 
-			if ( this.isEmpty() ) {
-				dojo.html.setClass(this.textbox,this.classPrefix+"Empty");
-//				this.textbox.style.backgroundColor = "";
-			}else if ( this.isValid() && this.isInRange() ){
-				dojo.html.setClass(this.textbox,this.classPrefix+"Valid");
-//				this.textbox.style.backgroundColor = this.validColor;
-			}else if( this.textbox.value != this.promptMessage){ 
-				dojo.html.setClass(this.textbox,this.classPrefix+"Invalid");
-//				this.textbox.style.backgroundColor = this.invalidColor;
+			if (this.isEmpty()) {
+				this.updateClass("Empty");
+			}else if (this.isValid() && this.isInRange() ){
+				this.updateClass("Valid");
+			}else if(this.textbox.value != this.promptMessage){ 
+				this.updateClass("Invalid");
+			}else{
+				this.updateClass("Empty");
 			}
 		},
 	
 		onfocus: function() {
 			if ( !this.listenOnKeyPress) {
-				dojo.html.setClass(this.textbox,this.classPrefix+"Empty");
+				this.updateClass("Empty");
 //			    this.textbox.style.backgroundColor = "";
 			}
 		},
@@ -135,7 +143,7 @@ dojo.widget.defineWidget(
 				//this.filter();  trim is problem if you have to type two words
 				this.update(); 
 			}else if (this.textbox.value != this.lastCheckedValue){
-				dojo.html.setClass(this.textbox,this.classPrefix+"Empty");
+				this.updateClass("Empty");
 //			    this.textbox.style.backgroundColor = "";
 			}
 		},
