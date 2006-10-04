@@ -1,6 +1,5 @@
 <?php
 
-require_once('DojoFunction.php');
 require_once('DojoParameters.php');
 require_once('Text.php');
 
@@ -16,6 +15,7 @@ class DojoFunctionCall
   {
     $this->dojo = $dojo;
     $this->package = $package;
+    $this->parameters = new DojoParameters($dojo, $package);
   }
   
   public function setStart($line, $position)
@@ -28,58 +28,18 @@ class DojoFunctionCall
     $this->end = array($line, $position);
   }
   
-  public function buildFrom($line_number, $start)
+  public function build()
   {
-    $this->setStart($line_number, $start);
-    $this->parameters = new DojoParameters($this->dojo, $this->package);
-    
-    $lines = $this->package->getCode();
-    $lines = Text::chop($lines, $line_number, $start);
-    $line = $lines[$line_number];
-    $parameter_start = array($line_number, strpos($line, '(', $start));
-
-    foreach($lines as $line_number => $line) {
-      $end = strpos($line, ')', $start);
-      if ($end) {
-        $this->setEnd($line_number, $end);
-        $this->parameters->buildParameters($parameter_start[0], $parameter_start[1], $line_number, $end);
-        return;
-      }
-      else {
-        $i = $line_number;
-        $balance = 0;
-        do {
-          $line = $lines[$i];
-          $chars = array();
-          for ($j = 0; $j < strlen($line); $j++) {
-            $chars[] = $line{$j};
-          }
-  
-          if (isset($start)) {
-            $chars = array_slice($chars, $start, strlen($line), true);
-          }
-          unset($start);
-  
-          $chars = preg_grep('%[()]%', $chars);
-          
-          foreach ($chars as $char_number => $char) {
-            if ($char == '(') {
-              ++$balance;
-            }
-            elseif ($char == ')') {
-              --$balance;
-              if (!$balance) {
-                $this->setParameterEnd($i, $char_number);
-                $this->setEnd($i, $char_number);
-                break 2;
-              }
-            }
-          }
-          ++$i;
-        }
-        while($i < count($this->code));
-      }
+    if (!$this->start) {
+      die("DojoFunctionCall->build() used before setting a start position");
     }
+
+    $code = $this->package->getCode();
+    $this->parameters->setStart($this->start[0], strpos($code[$this->start[0]], '(', $this->start[1]));
+    $end = $this->parameters->build();
+
+    $this->setEnd($end[0], $end[1]);
+    return $end;
   }
   
   public function getParameter($pos)

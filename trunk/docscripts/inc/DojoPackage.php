@@ -89,7 +89,8 @@ class DojoPackage
     $lines = preg_grep('%\b' . preg_quote($name) . '\s*\(%', $lines);
     foreach ($lines as $line_number => $line) {
       $call = new DojoFunctionCall($this->dojo, $this);
-      $call->buildFrom($line_number, strpos($line, $name));
+      $call->setStart($line_number, strpos($line, $name));
+      $call->build();
       $this->calls[$name][] = $call;
     }
     return $this->calls[$name];
