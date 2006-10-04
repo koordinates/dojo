@@ -204,8 +204,9 @@ dojo.widget.defineWidget(
 		},
 	
 		onUnLoad: function(e){
+			// summary:
+			//		Deprecated, use onUnload (lowercased load)
 			dojo.deprecated(this.widgetType+".onUnLoad, use .onUnload (lowercased load)", 0.5);
-			this.onUnload.apply(this, arguments);
 		},
 
 		onUnload: function(e){
@@ -213,6 +214,10 @@ dojo.widget.defineWidget(
 			//		Event hook, is called before old content is cleared
 			this._runStack("_onUnloadStack");
 			delete this.scriptScope;
+			// FIXME: remove for 0.5 along with onUnLoad
+			if(this.onUnLoad !== dojo.widget.ContentPane.prototype.onUnLoad){
+				this.onUnLoad.apply(this, arguments);
+			}
 		},
 	
 		_runStack: function(stName){
@@ -244,7 +249,7 @@ dojo.widget.defineWidget(
 			this._pushOnStack(this._onLoadStack, obj, func);
 		},
 	
-		addOnUnload: function(/*Function or Object ?*/ obj, /*Function*/ func){
+		addOnUnload: function(/*Function||Object, optional*/ obj, /*Function*/ func){
 			// summary
 			//		Stores function refs and calls them one by one in the order they came in
 			//		when unload event occurs.
@@ -256,6 +261,8 @@ dojo.widget.defineWidget(
 		},
 
 		addOnUnLoad: function(){
+			// summary:
+			//		Deprecated use addOnUnload (lower cased load)
 			dojo.deprecated(this.widgetType + ".addOnUnLoad, use addOnUnload instead. (lowercased Load)", 0.5);
 			this.addOnUnload.apply(this, arguments);
 		},
@@ -613,7 +620,7 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		setHandler: function(handler) {
+		setHandler: function(/*Function*/ handler) {
 			// summary:
 			//		Generate pane content from given java function
 			var fcn = dojo.lang.isFunction(handler) ? handler : window[handler];
