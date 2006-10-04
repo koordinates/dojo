@@ -56,7 +56,8 @@
 			yA.showLines = true;
 			yA.showTicks = true;
 
-			var p = new en.Plot(xA, yA, [ s1 ]);
+			var p = new en.Plot(xA, yA);
+			p.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.Area });
 
 			var pa = new en.PlotArea();
 			pa.size={width:700,height:170};
