@@ -26,15 +26,17 @@ dojo.widget.charting.engine.PlotArea = function(){
 	//	this is preset for a limited color range (green to purple), 
 	//	anticipating a max of 32 series on this plot area.
 	//	if you need more flexibility, override these numbers.
-	this._color = { h: 120, s: 120, l: 120, step: 5 };
+	this._color = { h: 140, s: 120, l: 120, step: 13 };
 };
 dojo.widget.charting.engine.PlotArea.count = 0;
 
 dojo.extend(dojo.widget.charting.engine.PlotArea, {
 	nextColor: function(){
 		var rgb=dojo.gfx.color.hsl2rgb(this._color.h, this._color.s, this._color.l);
-		this._color.h += this._color.step;
-		if(this._color.h >=300){ this._color.h = 120; }
+		this._color.h = (this._color.h + this._color.step)%360;
+		while(this._color.h < 140){ 
+			this._color.h += this._color.step; 
+		}
 		return dojo.gfx.color.rgb2hex(rgb[0], rgb[1], rgb[2]);
 	},
 	getArea:function(){
