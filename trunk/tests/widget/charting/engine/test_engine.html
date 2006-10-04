@@ -12,14 +12,13 @@
 
 			//	our sample data for our line chart.
 			var json = [
-				{ x: 0, y: 115 },
-				{ x: 10, y: 24 },
-				{ x: 15, y:63 },
-				{ x: 25, y: 5 },
-				{ x: 40, y: 98 },
-				{ x: 45, y: 54 }
+				{ x: 0, y: 110, size:20 },
+				{ x: 10, y: 24, size:4 },
+				{ x: 15, y:63, size:32 },
+				{ x: 25, y: 5, size:13 },
+				{ x: 40, y: 98, size:7 },
+				{ x: 45, y: 54, size:18 }
 			];
-
 			var store = new dojo.collections.Store();
 			store.setData(json);
 
@@ -29,10 +28,16 @@
 				dataSource:store,
 				bindingX:"x",
 				bindingY:"y",
-				color:"#090",
 				label:"The Main Series"
 			});
-
+			s1.addBinding("size", "size");
+			var s2 = new en.Series({
+				dataSource:store,
+				bindingX:"y",
+				bindingY:"size",
+				label:"Series 2"
+			});
+			
 			//	test the evaluate
 			/*
 			var data = s1.evaluate();
@@ -45,30 +50,44 @@
 			
 			//	keep going.
 			var xA = new en.Axis();
-			xA.range={upper:50, lower:0};
+			xA.range={upper:120, lower:0};
 			xA.origin="max";
-			xA.nLabels = 6;
+			xA.nLabels = 7;
 			xA.showTicks = true;
 
 			var yA = new en.Axis();
-			yA.range={upper:150,lower:0};
+			yA.range={upper:120,lower:0};
 			yA.nLabels = 4;
 			yA.showLines = true;
 			yA.showTicks = true;
 
+			var yA2 = new en.Axis();
+			yA2.range={upper:50,lower:0};
+			yA2.origin="max";
+			yA2.nLabels = 3;
+			yA2.showTicks = true;
+			
 			var p = new en.Plot(xA, yA);
-			p.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.Area });
+			p.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.Bubble });
+			var pA = new en.Plot(xA, yA2);
+			pA.addSeries({ data:s2, plotter: dojo.widget.charting.engine.Plotters.Area });
 
 			var pa = new en.PlotArea();
 			pa.size={width:700,height:170};
-			pa.padding={top:20, right:10, bottom:30, left:30 };
+			pa.padding={top:20, right:30, bottom:30, left:30 };
 			pa.plots.push(p);
+			pa.plots.push(pA);
+
+			//	auto assign colors, and increase the step (since we've only 2 series)
+			pa._color.step *= 7;
+			s1.color = pa.nextColor();
+			s2.color = pa.nextColor();
 
 			//////////////////////
 			var xB = new en.Axis();
 			xB.range={upper:50, lower:-20};
 			xB.origin=0;
-			xB.nLabels = 4;
+			xB.nLabels = 5;
 
 			var yB = new en.Axis();
 			yB.range={upper:120,lower:0};
@@ -76,7 +95,8 @@
 			yB.nLabels = 5;
 			yB.showLines = true;
 
-			var p2 = new en.Plot(xB, yB, [ s1 ]);
+			var p2 = new en.Plot(xB, yB);
+			p2.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.Line });
 			var pa2 = new en.PlotArea();
 			pa2.plots.push(p2);
 			pa2.size={width:700,height:170};
