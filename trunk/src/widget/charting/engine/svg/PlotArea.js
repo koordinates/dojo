@@ -167,8 +167,8 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 		var rect = document.createElementNS(dojo.svg.xmlns.svg, "rect");		
 		rect.setAttribute("x", area.left);
 		rect.setAttribute("y", area.top);
-		rect.setAttribute("width", this.size.width-area.left);
-		rect.setAttribute("height", this.size.height-area.top);
+		rect.setAttribute("width", area.right-area.left);
+		rect.setAttribute("height", area.bottom-area.top);
 		clip.appendChild(rect);
 		defs.appendChild(clip);
 		this.nodes.area.appendChild(defs);

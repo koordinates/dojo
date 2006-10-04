@@ -165,23 +165,15 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			if(i==0){
 				//	figure out the size factor, start with the axis with the greater range.
 				var raw = data[i].size;
-				var ax = plot.axisX;
-				var ay = plot.axisY;
-				var axis = ax;
-				var p="x";
-				var co=x;
-				if(Math.abs(ax.range.upper-ax.range.lower) < Math.abs(ay.range.upper-ay.range.lower)){
-					axis=ay;
-					p="y";
-					co=y;
-				}
-				var dx = axis.getCoord(data[i][p] + raw, plotarea, plot)-co;
-				sizeFactor = dx/raw;
+				var dy = plot.axisY.getCoord(data[i].y + raw, plotarea, plot)-y;
+				sizeFactor = dy/raw;
 			}
+			if(sizeFactor<1) { sizeFactor = 1; }
 			var point = document.createElementNS(dojo.svg.xmlns.svg, "circle");
 			point.setAttribute("fill", data[i].series.color);
 			point.setAttribute("fill-opacity", "0.8");
-			point.setAttribute("stroke-width", 0);
+			point.setAttribute("stroke", data[i].series.color);
+			point.setAttribute("stroke-width", "1");
 			point.setAttribute("cx",x);
 			point.setAttribute("cy",y);
 			point.setAttribute("r", (data[i].size/2)*sizeFactor);
