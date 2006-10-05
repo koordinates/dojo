@@ -450,10 +450,23 @@ dojo.event = new function(){
 
 // exactly one of these is created whenever a method with a joint point is run,
 // if there is at least one 'around' advice.
-dojo.event.MethodInvocation = function(join_point, obj, args){
+dojo.event.MethodInvocation = function(/*dojo.event.MethodJoinPoint*/join_point, /*Object*/obj, /*Array*/args){
+	// summary:
+	//		a class the models the call into a function. This is used under the
+	//		covers for all method invocations on both ends of a
+	//		connect()-wrapped function dispatch. This allows us to "pickle"
+	//		calls, such as in the case of around advice.
+	// join_point:
+	//		a dojo.event.MethodJoinPoint object that represents a connection
+	// obj:
+	//		the scope the call will execute in
+	// args:
+	//		an array of parameters that will get passed to the callee
 	this.jp_ = join_point;
 	this.object = obj;
 	this.args = [];
+	// make sure we don't lock into a mutable object which can change under us.
+	// It's ok if the individual items change, though.
 	for(var x=0; x<args.length; x++){
 		this.args[x] = args[x];
 	}
@@ -462,6 +475,9 @@ dojo.event.MethodInvocation = function(join_point, obj, args){
 }
 
 dojo.event.MethodInvocation.prototype.proceed = function(){
+	// summary:
+	//		proceed with the method call that's represented by this invocation
+	//		object
 	this.around_index++;
 	if(this.around_index >= this.jp_.around.length){
 		return this.jp_.object[this.jp_.methodname].apply(this.jp_.object, this.args);
@@ -475,32 +491,39 @@ dojo.event.MethodInvocation.prototype.proceed = function(){
 } 
 
 
-dojo.event.MethodJoinPoint = function(obj, methname){
+dojo.event.MethodJoinPoint = function(/*Object*/obj, /*String*/funcName){
 	this.object = obj||dj_global;
-	this.methodname = methname;
-	this.methodfunc = this.object[methname];
+	this.methodname = funcName;
+	this.methodfunc = this.object[funcName];
 	this.squelch = false;
 	// this.before = [];
 	// this.after = [];
 	// this.around = [];
 }
 
-dojo.event.MethodJoinPoint.getForMethod = function(obj, methname){
-	// if(!(methname in obj)){
+dojo.event.MethodJoinPoint.getForMethod = function(/*Object*/obj, /*String*/funcName){
+	// summary:
+	//		"static" class function for returning a MethodJoinPoint from a
+	//		scoped function. If one doesn't exist, one is created.
+	// obj:
+	//		the scope to search for the function in
+	// funcName:
+	//		the name of the function to return a MethodJoinPoint for
 	if(!obj){ obj = dj_global; }
-	if(!obj[methname]){
+	if(!obj[funcName]){
 		// supply a do-nothing method implementation
-		obj[methname] = function(){};
-		if(!obj[methname]){
+		obj[funcName] = function(){};
+		if(!obj[funcName]){
 			// e.g. cannot add to inbuilt objects in IE6
-			dojo.raise("Cannot set do-nothing method on that object "+methname);
+			dojo.raise("Cannot set do-nothing method on that object "+funcName);
 		}
-	}else if((!dojo.lang.isFunction(obj[methname]))&&(!dojo.lang.isAlien(obj[methname]))){
-		return null; // FIXME: should we throw an exception here instead?
+	}else if((!dojo.lang.isFunction(obj[funcName]))&&(!dojo.lang.isAlien(obj[funcName]))){
+		// FIXME: should we throw an exception here instead?
+		return null; 
 	}
-	// we hide our joinpoint instance in obj[methname + '$joinpoint']
-	var jpname = methname + "$joinpoint";
-	var jpfuncname = methname + "$joinpoint$method";
+	// we hide our joinpoint instance in obj[funcName + '$joinpoint']
+	var jpname = funcName + "$joinpoint";
+	var jpfuncname = funcName + "$joinpoint$method";
 	var joinpoint = obj[jpname];
 	if(!joinpoint){
 		var isNode = false;
@@ -509,14 +532,14 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname){
 				(obj["nodeType"])||
 				(obj["addEventListener"]) ){
 				isNode = true;
-				dojo.event.browser.addClobberNodeAttrs(obj, [jpname, jpfuncname, methname]);
+				dojo.event.browser.addClobberNodeAttrs(obj, [jpname, jpfuncname, funcName]);
 			}
 		}
-		var origArity = obj[methname].length;
-		obj[jpfuncname] = obj[methname];
-		// joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, methname);
+		var origArity = obj[funcName].length;
+		obj[jpfuncname] = obj[funcName];
+		// joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, funcName);
 		joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, jpfuncname);
-		obj[methname] = function(){ 
+		obj[funcName] = function(){ 
 			var args = [];
 
 			if((isNode)&&(!arguments.length)){
@@ -550,13 +573,16 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname){
 			// return joinpoint.run.apply(joinpoint, arguments); 
 			return joinpoint.run.apply(joinpoint, args); 
 		}
-		obj[methname].__preJoinArity = origArity;
+		obj[funcName].__preJoinArity = origArity;
 	}
-	return joinpoint;
+	return joinpoint; // dojo.event.MethodJoinPoint
 }
 
 dojo.lang.extend(dojo.event.MethodJoinPoint, {
 	unintercept: function(){
+		// summary: 
+		//		destroy the connection to all listeners that may have been
+		//		registered on this joinpoint
 		this.object[this.methodname] = this.methodfunc;
 		this.before = [];
 		this.after = [];
@@ -566,6 +592,10 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 	disconnect: dojo.lang.forward("unintercept"),
 
 	run: function(){
+		// summary:
+		//		execute the connection represented by this join point. The
+		//		arguments passed to run() will be passed to the function and
+		//		its listeners.
 		var obj = this.object||dj_global;
 		var args = arguments;
 
@@ -692,7 +722,11 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		return (this.methodfunc) ? result : null;
 	},
 
-	getArr: function(kind){
+	getArr: function(/*String*/kind){
+		// summary: return a list of listeners of the past "kind"
+		// kind:
+		//		can be one of: "before", "after", "around", "before-around", or
+		//		"after-around"
 		var type = "after";
 		// FIXME: we should be able to do this through props or Array.in()
 		if((typeof kind == "string")&&(kind.indexOf("before")!=-1)){
@@ -701,10 +735,10 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 			type = "around";
 		}
 		if(!this[type]){ this[type] = []; }
-		return this[type]
+		return this[type]; // Array
 	},
 
-	kwAddAdvice: function(args){
+	kwAddAdvice: function(/*Object*/args){
 		this.addAdvice(	args["adviceObj"], args["adviceFunc"], 
 						args["aroundObj"], args["aroundFunc"], 
 						args["adviceType"], args["precedence"], 
