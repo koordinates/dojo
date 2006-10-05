@@ -5,7 +5,8 @@ dojo.require("dojo.widget.DropdownContainer");
 dojo.require("dojo.widget.TimePicker");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.*");
-
+dojo.require("dojo.date.format");
+dojo.require("dojo.date.serialize");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.widget", "DropdownTimePicker");
 
@@ -23,9 +24,17 @@ dojo.widget.defineWidget(
 		//	z-index of time picker widget
 		zIndex: "10",
 
+		// pattern used in display of formatted time.  See dojo.date.format.
+		displayFormat: "",
+
 		// String
-		//	format string for how time is displayed in the input box	
-		timeFormat: "%R",
+		//	Deprecated. format string for how time is displayed in the input box using strftime, see dojo.date.strftime	
+		timeFormat: "",
+
+//FIXME: need saveFormat attribute support
+
+		// type of format appropriate to locale.  see dojo.date.format
+		formatLength: "short",
 
 		// String
 		//	time value in RFC3339 format (http://www.ietf.org/rfc/rfc3339.txt)
@@ -41,7 +50,7 @@ dojo.widget.defineWidget(
 		fillInTemplate: function(){
 			dojo.widget.DropdownTimePicker.superclass.fillInTemplate.apply(this, arguments);
 
-			var timeProps = { widgetContainerId: this.widgetId };
+			var timeProps = { widgetContainerId: this.widgetId, lang: this.lang };
 			this.timePicker = dojo.widget.createWidget("TimePicker", timeProps, this.containerNode, "child");
 			dojo.event.connect(this.timePicker, "onSetTime", this, "onSetTime");
 			dojo.event.connect(this.inputNode,  "onchange",  this, "onInputChange");
@@ -58,13 +67,23 @@ dojo.widget.defineWidget(
 		
 		onSetTime: function(){
 			// summary: callback when user sets the time via the TimePicker widget
-			this.inputNode.value = this.timePicker.selectedTime.anyTime ? "" : dojo.date.strftime(this.timePicker.time, this.timeFormat);
+			if(this.timePicker.selectedTime.anyTime){
+				this.inputNode.value = "";
+			}else if(this.timeFormat){
+				dojo.deprecated("dojo.widget.DropdownTimePicker",
+				"Must use displayFormat attribute instead of timeFormat.  See dojo.date.format for specification.", "0.5");
+				this.inputNode.value = dojo.date.strftime(this.timePicker.time, this.timeFormat, this.lang);
+			}else{
+				this.inputNode.value = dojo.date.format(this.timePicker.time,
+					{formatLength:this.formatLength, datePattern:this.displayFormat, selector:'timeOnly', locale:this.lang});
+			}
+
 			this.hideContainer();
 		},
 		
 		onInputChange: function(){
 			// summary: callback when the user has typed in a time value manually
-			this.timePicker.time = "2005-01-01T" + this.inputNode.value;
+			this.timePicker.time = "2005-01-01T" + this.inputNode.value; //FIXME: i18n
 			this.timePicker.setDateTime(this.timePicker.time);
 			this.timePicker.initData();
 			this.timePicker.initUI();

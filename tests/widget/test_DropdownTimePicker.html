@@ -1,10 +1,7 @@
 <html>
 <head>
 <script type="text/javascript">
-djConfig = {
-	isDebug: true
-	//, debugAtAllCosts: true 
-};
+	var djConfig = {isDebug: true, extraLocale: ["en-us","es-es","de-de"]};
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <!--
@@ -27,13 +24,17 @@ Drop down should appear below the input box.
 </p>
 <p>
 Wipe:
-	<input dojoType="dropdowntimepicker" value="12:00" containertoggle="wipe" containerToggleDuration="300">
+	<input dojoType="dropdowntimepicker" lang="en-us" value="12:00" containertoggle="wipe" containerToggleDuration="300">
 Explode:
-	<input dojoType="dropdowntimepicker" value="11:00" containertoggle="explode" containerToggleDuration="500">
-Fade:
-	<input dojoType="dropdowntimepicker" value="10:00" containertoggle="fade" containerToggleDuration="500">
+	<input dojoType="dropdowntimepicker" lang="en-us" value="11:00" containertoggle="explode" containerToggleDuration="500">
+Fade:»
+	<input dojoType="dropdowntimepicker" lang="en-us" value="10:00" containertoggle="fade" containerToggleDuration="500">
 Nothing:
-	<input dojoType="dropdowntimepicker" value="9:00">
+	<input dojoType="dropdowntimepicker" lang="en-us" value="9:00">
+German:
+	<input dojoType="dropdowntimepicker" lang="de-de" value="9:00">
+Spanish:
+	<input dojoType="dropdowntimepicker" lang="es-es" value="9:00">
 </p>
 </body>
 </html>
