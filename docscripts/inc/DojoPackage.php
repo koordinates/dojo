@@ -1,10 +1,7 @@
 <?php
 
-require_once('Dojo.php');
-require_once('DojoFunctionCall.php');
-require_once('DojoFunctionDeclare.php');
-require_once('DojoParameter.php');
 require_once('Text.php');
+require_once('DojoFunctionCall.php');
 
 class DojoPackage
 {
@@ -45,7 +42,7 @@ class DojoPackage
       }
 
       if(preg_match('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*(new\s*)?function\s*\()%', $line, $match)) {
-        $declaration = new DojoFunctionDeclare($this->dojo, $this->package);
+        $declaration = new DojoFunctionDeclare($this);
         $declaration->setStart($line_number, strpos($line, $match[0]));
         $end = $declaration->build();
         $last_line = $end[0];
@@ -71,7 +68,7 @@ class DojoPackage
     $lines = $this->getCode();
     $lines = preg_grep('%\b' . preg_quote($name) . '\s*\(%', $lines);
     foreach ($lines as $line_number => $line) {
-      $call = new DojoFunctionCall($this->dojo, $this);
+      $call = new DojoFunctionCall($this);
       $call->setStart($line_number, strpos($line, $name));
       $call->build();
       $this->calls[$name][] = $call;

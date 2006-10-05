@@ -1,7 +1,5 @@
 <?php
 
-require_once('DojoPackage.php');
-
 class Dojo
 {
   private $dir;
