@@ -532,6 +532,7 @@ dojo.widget.defineWidget(
 		},
 
 		setFocus: function(){
+			// summary: focus is set on this instance
 //			dojo.debug("setFocus: start "+this.widgetId);
 			if(dojo.widget.Editor2Manager.getCurrentInstance() === this){ return; }
 
@@ -541,6 +542,7 @@ dojo.widget.defineWidget(
 		},
 
 		setBlur: function(){
+			// summary: focus on this instance is lost
 //			 dojo.debug("setBlur:", this);
 			//dojo.event.disconnect(this.toolbarWidget, "exec", this, "execCommand");
 		},
@@ -550,6 +552,7 @@ dojo.widget.defineWidget(
 		_updateToolbarFrequency: 500,
 
 		updateToolbar: function(/*Boolean*/force){
+			// summary: update the associated toolbar of this Editor2
 			if((!this.isLoaded)||(!this.toolbarWidget)){ return; }
 
 			// keeps the toolbar from updating too frequently
