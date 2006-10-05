@@ -103,13 +103,13 @@ dojo.widget.defineWidget(
 			this.highlight();
 		},
 		
-		updateClass: function(cls){
+		updateClass: function(className){
 		//summary: used to ensure that only 1 validation class is set at a time
 			var pre = this.classPrefix;
 			dojo.html.removeClass(this.textbox,pre+"Empty");
 			dojo.html.removeClass(this.textbox,pre+"Valid");
 			dojo.html.removeClass(this.textbox,pre+"Invalid");
-			dojo.html.addClass(this.textbox,pre+cls);
+			dojo.html.addClass(this.textbox,pre+className);
 		},
 		
 		// Called oninit, and onblur.
