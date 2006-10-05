@@ -249,7 +249,7 @@ dojo.widget.defineWidget(
 			// summary
 			//   Called whenever a page is removed from the container.
 			//   Remove the button corresponding to the page.
-			if(this.currentChild == page){ this.currentChild = null; }
+			if(this._currentChild == page){ this._currentChild = null; }
 			var button = this.pane2button[page];
 			button.destroy();
 			this.pane2button[page] = null;
@@ -258,13 +258,13 @@ dojo.widget.defineWidget(
 		onSelectChild: function(/*Widget*/ page){
 			// Summary
 			//	Called when a page has been selected in the PageContainer, either by me or by another PageController
-			if(this.currentChild){
-				var oldButton=this.pane2button[this.currentChild];
+			if(this._currentChild){
+				var oldButton=this.pane2button[this._currentChild];
 				oldButton.clearSelected();
 			}
 			var newButton=this.pane2button[page];
 			newButton.setSelected();
-			this.currentChild=page;
+			this._currentChild=page;
 		},
 
 		onButtonClick: function(/*Widget*/ page){
@@ -291,7 +291,7 @@ dojo.widget.defineWidget(
 				var next = null;	// the next button to focus on
 				
 				// find currently focused button in children array
-				var current = dojo.lang.find(this.children, this._currentPage);
+				var current = dojo.lang.find(this.children, this.pane2button[this._currentChild]);
 				
 				// pick next button to focus on
 				if(evt.keyCode == evt.KEY_RIGHT_ARROW){
