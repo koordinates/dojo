@@ -11,6 +11,7 @@ class DojoParameter
 	private $package;
 	private $start;
 	private $end;
+  private $parameter_value;
 	
   public function __construct($dojo, $package)
   {
@@ -45,27 +46,27 @@ class DojoParameter
     $code = $this->package->getCode();
     $start_line = $this->start[0];
     $start_position = $this->start[1] + 1;
-    if ($start_position >= strlen($code[$start_line])) {
+    if ($start_position > strlen($code[$start_line])) {
       ++$start_line;
       $start_position = 0;
     }
     
-    $lines = Text::chop($code, $this->start[0], $this->start[1], null, null, true);    
+    $paren_balance = 0;
+    $block_balance = 0;
+    $bracket_balance = 0;
+    
+    $lines = Text::chop($code, $this->start[0], $this->start[1], false, false, true);    
     foreach ($lines as $line_number => $line) {
       if ($start_line >  $line_number) {
         continue;
       }
-      
-      $paren_balance = 0;
-      $block_balance = 0;
-      $bracket_balance = 0;
 
       $chars = array_slice(Text::toArray($line), $start_position, strlen($line), true);
       $start_position = 0;
       foreach ($chars as $char_position => $char) {
         if (($char == ',' || $char == ')') && !$paren_balance && !$block_balance && !$bracket_balance) {
           $this->setEnd($line_number, $char_position);
-          return array($line_number, $char_position);
+          return $this->end;
         }
 
         if ($char == '(') {
@@ -125,7 +126,7 @@ class DojoParameter
     if ($this->parameter_type) {
       return $this->parameter_type;
     }
-    
+
     $parameter_type = implode("\n", Text::chop($this->package->getSource(), $this->start[0], $this->start[1], $this->end[0], $this->end[1]));
     preg_match_all('%(?:^\s*/\*(.*)\*/|//(.*)$|/\*(.*)\*/\s*$)%', $parameter_type, $matches, PREG_SET_ORDER);
     

@@ -42,10 +42,10 @@ class Text
   
   public static function chop($array, $start_line, $start_position, $end_line = false, $end_position = false, $exclusive = false)
   {
-    if ($end_line === false) {
+    if (!is_numeric($end_line)) {
       $end_line = end(array_keys($array));
     }
-    if ($end_position === false) {
+    if (!is_numeric($end_position)) {
       $end_position = strlen($array[$end_line]) - 1;
       if($end_position < 0){
         $end_position = 0;
