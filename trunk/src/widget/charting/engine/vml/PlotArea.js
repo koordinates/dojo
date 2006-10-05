@@ -35,7 +35,7 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 		var area = this.getArea();
 		var axis = axisObject.axis;
 		var stroke = 1;
-		var textSize=11;
+		var textSize=10;
 
 		//	figure out the origin value.
 		if(isNaN(axis.origin)){
