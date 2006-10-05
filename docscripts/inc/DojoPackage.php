@@ -13,7 +13,7 @@ class DojoPackage
 	private $code; // The source - comments
 	private $source;
   //protected $functions = array(); // Builds an array of functions by name, with meta
-  //protected $calls = array(); // Builds an array of calls
+  protected $calls = array(); // Builds an array of calls
   //protected $variables = array(); // Builds an array of variables
   
   public function __construct(Dojo $dojo, $file)

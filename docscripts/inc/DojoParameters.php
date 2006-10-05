@@ -33,16 +33,12 @@ class DojoParameters
     }
 
     $code = $this->package->getCode();
-    $start = array($this->start[0], $this->start[1]);
+    $end = array($this->start[0], $this->start[1]);
 
     do {
       $parameter = new DojoParameter($this->dojo, $this->package);
-      $parameter->setStart($start[0], $start[1]);
+      $parameter->setStart($end[0], $end[1]);
       $end = $parameter->build();
-      $start = array($end[0], $end[1] + 1);
-      if ($start[1] >= strlen($code[$start[0]])) {
-        $start = array($start[0] + 1, 0);
-      }
       
       $this->parameters[] = $parameter;
     }
