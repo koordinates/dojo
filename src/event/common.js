@@ -310,11 +310,21 @@ dojo.event = new function(){
 
 		mjp.kwAddAdvice(ao);
 
-		return mjp;	// advanced users might want to fsck w/ the join point
-					// manually
+		// advanced users might want to fsck w/ the join point manually
+		return mjp; // a MethodJoinPoint object
 	}
 
-	this.log = function(a1, a2){
+	this.log = function(/*object or funcName*/ a1, /*funcName*/ a2){
+		// summary:
+		//		a function that will wrap and log all calls to the specified
+		//		a1.a2() function. If only a1 is passed, it'll be used as a
+		//		function or function name on the global context. Logging will
+		//		be sent to dojo.debug
+		// a1:
+		//		if a2 is passed, this should be an object. If not, it can be a
+		//		function or function name.
+		// a2:
+		//		a function name
 		var kwArgs;
 		if((arguments.length == 1)&&(typeof a1 == "object")){
 			kwArgs = a1;
@@ -335,21 +345,30 @@ dojo.event = new function(){
 	}
 
 	this.connectBefore = function(){
+		// summary:
+		//	 	takes the same parameters as dojo.event.connect(), except that
+		//	 	the advice type will always be "before"
 		var args = ["before"];
 		for(var i = 0; i < arguments.length; i++){ args.push(arguments[i]); }
-		return this.connect.apply(this, args);
+		return this.connect.apply(this, args); // a MethodJoinPoint object
 	}
 
 	this.connectAround = function(){
+		// summary:
+		//	 	takes the same parameters as dojo.event.connect(), except that
+		//	 	the advice type will always be "around"
 		var args = ["around"];
 		for(var i = 0; i < arguments.length; i++){ args.push(arguments[i]); }
-		return this.connect.apply(this, args);
+		return this.connect.apply(this, args); // a MethodJoinPoint object
 	}
 
 	this.connectOnce = function(){
+		// summary:
+		//	 	takes the same parameters as dojo.event.connect(), except that
+		//	 	the "once" flag will always be set to "true"
 		var ao = interpolateArgs(arguments, true);
 		ao.once = true;
-		return this.connect(ao);
+		return this.connect(ao); // a MethodJoinPoint object
 	}
 
 	this._kwConnectImpl = function(kwArgs, disconnect){
@@ -371,12 +390,39 @@ dojo.event = new function(){
 		return dojo.event[fn](kwArgs);
 	}
 
-	this.kwConnect = function(kwArgs){
-		return this._kwConnectImpl(kwArgs, false);
+	this.kwConnect = function(/*Object*/ kwArgs){
+		// summary:
+		//		A version of dojo.event.connect() that takes a map of named
+		//		parameters instead of the positional parameters that
+		//		dojo.event.connect() uses. For many advanced connection types,
+		//		this can be a much more readable (and potentially faster)
+		//		alternative.
+		// kwArgs:
+		// 		An object that can have the following properties:
+		//			- adviceType
+		//			- srcObj
+		//			- srcFunc
+		//			- adviceObj
+		//			- adviceFunc 
+		//			- aroundObj
+		//			- aroundFunc
+		//			- once
+		//			- delay
+		//			- rate
+		//			- adviceMsg
+		//		As with connect, only srcFunc and adviceFunc are generally
+		//		required
+
+		return this._kwConnectImpl(kwArgs, false); // a MethodJoinPoint object
 
 	}
 
 	this.disconnect = function(){
+		// summary:
+		//		Takes the same parameters as dojo.event.connect() but destroys
+		//		an existing connection instead of building a new one. For
+		//		multiple identical connections, multiple disconnect() calls
+		//		will unroll one each time it's called.
 		if(arguments.length == 1){
 			var ao = arguments[0];
 		}else{
@@ -391,10 +437,13 @@ dojo.event = new function(){
 			ao.srcFunc = "onkeypress";
 		}
 		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
-		return mjp.removeAdvice(ao.adviceObj, ao.adviceFunc, ao.adviceType, ao.once);
+		return mjp.removeAdvice(ao.adviceObj, ao.adviceFunc, ao.adviceType, ao.once); // a MethodJoinPoint object
 	}
 
 	this.kwDisconnect = function(kwArgs){
+		// summary:
+		//		Takes the same parameters as dojo.event.kwConnect() but
+		//		destroys an existing connection instead of building a new one.
 		return this._kwConnectImpl(kwArgs, true);
 	}
 }
