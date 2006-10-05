@@ -5,8 +5,8 @@
 <title>Dojo Time Picker Widget Test</title>
 
 <script type="text/javascript">
-	var djConfig = {isDebug: true, debugAtAllCosts: true};
-	djConfig = {isDebug: true};
+//	var djConfig = {isDebug: true, debugAtAllCosts: true};
+	var djConfig = {isDebug: true, extraLocale: ["en-us","de-de"]};
 </script>
 
 <script type="text/javascript" src="../../dojo.js"></script>
@@ -15,10 +15,13 @@
 </script>
 </head>
 <body>
-Normal timepicker:
-<div dojoType="timepicker"></div>
+Normal English-US timepicker:
+<div dojoType="timepicker" lang="en-us"></div>
 <br>
 And with a border (just for testing):
-<div dojoType="timepicker" style="border:2px solid red;padding:1px;"></div>
+<div dojoType="timepicker" lang="en-us" style="border:2px solid red;padding:1px;"></div>
+<br>
+Normal German timepicker:
+<div dojoType="timepicker" lang="de-de"></div>
 </body>
 </html>
