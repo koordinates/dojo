@@ -1,10 +1,63 @@
 dojo.provide("dojo.widget.charting.engine.vml.Plotters");
 dojo.require("dojo.lang.common");
 
-/*
- *	Mixin the VML-specific plotter object.
- */
 dojo.mixin(dojo.widget.charting.engine.Plotters, {
+	/*********************************************************
+	 *	Grouped plotters: need all series on a plot at once.
+	 *********************************************************/
+	Bar: function(
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* object? */kwArgs,
+		/* function? */applyTo
+	){
+		var area = plotarea.getArea();
+		var group = document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+		
+		//	calculate the width of each bar.
+		var space = 4;
+		var n = plot.series.length;
+		var width = Math.round(((area.right-area.left)-(space*(n-1)))/n);
+		var yOrigin = plot.axisY.getCoord(plot.axisX.origin, plotarea, plot);
+		for(var i=0; i<n; i++){
+			var series = plot.series[i];
+			var data = series.data.evaluate(kwArgs);
+			var x = area.left+(width*i)+(space*i);
+			var value = data[data.length-1].y;
+
+			var yA = yOrigin;
+			var y = plot.axisY.getCoord(value, plotarea, plot);
+			var h = Math.abs(yA-y);
+			if(value < plot.axisX.origin){
+				yA = y;
+				y = yOrigin;
+			}
+			
+			var bar=document.createElement("v:rect");
+			bar.style.position="absolute";
+			bar.style.top=y+1+"px";
+			bar.style.left=x+"px";
+			bar.style.width=width+"px";
+			bar.style.height=h+"px";
+			bar.setAttribute("fillColor", data[data.length-1].series.color);
+			bar.setAttribute("stroked", "false");
+			bar.style.antialias="false";
+			var fill=document.createElement("v:fill");
+			fill.setAttribute("opacity", "0.65");
+			bar.appendChild(fill);
+			group.appendChild(bar);
+		}
+		return group;
+	},
+
+	/*********************************************************
+	 *	Single plotters: one series at a time.
+	 *********************************************************/
 	Line: function(
 		/* array */data, 
 		/* dojo.widget.charting.engine.PlotArea */plotarea,

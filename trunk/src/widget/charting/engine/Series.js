@@ -5,12 +5,15 @@ dojo.require("dojo.widget.charting.engine.Plotters");
 dojo.widget.charting.engine.Series = function(/* object? */kwArgs){
 	var args = kwArgs || { length:1 };
 	this.dataSource = args.dataSource || null;
-	this.bindings = { x:args.bindingX || null, y:args.bindingY || null };
+	this.bindings = { };
 	this.color = args.color;
 	this.label = args.label;
 
-	this.hasValidBinding=false;
-	this.evaluate(args);	//	to initially set the valid flag
+	if(args.bindings){
+		for(var p in args.bindings){
+			this.addBinding(p, args.bindings[p]);
+		}
+	}
 };
 
 dojo.extend(dojo.widget.charting.engine.Series, {
@@ -61,15 +64,14 @@ dojo.extend(dojo.widget.charting.engine.Series, {
 			ret.push(o);
 		}
 
-		//	sort by the x axis, assume data is already cast correctly
-		ret.sort(function(a,b){
-			if(a.x > b.x) return 1;
-			if(a.x < b.x) return -1;
-			return 0;
-		});
-
-		this.hasValidBinding=true;
-
+		//	sort by the x axis, if available.
+		if(typeof(ret[0].x) != "undefined"){
+			ret.sort(function(a,b){
+				if(a.x > b.x) return 1;
+				if(a.x < b.x) return -1;
+				return 0;
+			});
+		}
 		return ret;	//	array
 	},
 
