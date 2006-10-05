@@ -395,7 +395,7 @@ dojo.widget.svg.Chart.Plotter=new function(){
 	this.plot=function(/* dojo.widget.Chart.DataSeries */series, /* dojo.widget.Chart */chart){
 		//	summary
 		//	plot the passed series.
-		if (series.values.length==0) return;
+		if (series.values.length==0) return;	//	void
 		if (series.plotType && plotters[series.plotType]){
 			return plotters[series.plotType](series, chart);	//	void
 		}
