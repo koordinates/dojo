@@ -26,17 +26,23 @@
 			var en = dojo.widget.charting.engine;
 			var s1 = new en.Series({
 				dataSource:store,
-				bindingX:"x",
-				bindingY:"y",
+				bindings:{ x:"x", y:"y", size:"size" },
 				label:"The Main Series"
 			});
-			s1.addBinding("size", "size");
 			var s2 = new en.Series({
 				dataSource:store,
-				bindingX:"y",
-				bindingY:"size",
+				bindings:{ x:"y", y:"size" },
 				label:"Series 2"
 			});
+
+			//	set up some bars for a test.
+			var b0 = new dojo.collections.Store();
+			b0.setData([{ x:98, y:76, z:12, a:23, b:52 }]);
+			var bar0 = new en.Series({ dataSource:b0, bindings:{ y:"x" }, label: "Bar 0" });
+			var bar1 = new en.Series({ dataSource:b0, bindings:{ y:"y" }, label: "Bar 1" });
+			var bar2 = new en.Series({ dataSource:b0, bindings:{ y:"z" }, label: "Bar 2" });
+			var bar3 = new en.Series({ dataSource:b0, bindings:{ y:"a" }, label: "Bar 3" });
+			var bar4 = new en.Series({ dataSource:b0, bindings:{ y:"b" }, label: "Bar 4" });
 			
 			//	test the evaluate
 			/*
@@ -79,28 +85,49 @@
 			pa.plots.push(pA);
 
 			//	auto assign colors, and increase the step (since we've only 2 series)
-			pa._color.step *= 7;
+		//	pa._color.step *= 7;
 			s1.color = pa.nextColor();
 			s2.color = pa.nextColor();
 
 			//////////////////////
 			var xB = new en.Axis();
-			xB.range={upper:50, lower:-20};
-			xB.origin=0;
+			xB.range={upper:50, lower:0};
+			xB.origin="max";
 			xB.nLabels = 5;
 
 			var yB = new en.Axis();
 			yB.range={upper:120,lower:0};
-			yB.origin=0;
+			yB.origin="min";
 			yB.nLabels = 5;
 			yB.showLines = true;
 
+			var yB2 = new en.Axis();
+			yB2.range={upper:100,lower:0};
+			yB2.origin="max";
+			yB2.nLabels = 5;
+
 			var p2 = new en.Plot(xB, yB);
 			p2.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.Line });
+
+			var p3 = new en.Plot(xB, yB2);
+			p3.renderType = dojo.widget.charting.engine.RenderPlotSeries.Grouped;
+			p3.addSeries({ data:bar0, plotter: dojo.widget.charting.engine.Plotters.Bar });
+			p3.addSeries({ data:bar1, plotter: dojo.widget.charting.engine.Plotters.Bar });
+			p3.addSeries({ data:bar2, plotter: dojo.widget.charting.engine.Plotters.Bar });
+			p3.addSeries({ data:bar3, plotter: dojo.widget.charting.engine.Plotters.Bar });
+			p3.addSeries({ data:bar4, plotter: dojo.widget.charting.engine.Plotters.Bar });
+			
 			var pa2 = new en.PlotArea();
+			pa2.plots.push(p3);
 			pa2.plots.push(p2);
 			pa2.size={width:700,height:170};
-			pa2.padding={top:20, right:10, bottom:30, left:30 };
+			pa2.padding={top:20, right:30, bottom:30, left:30 };
+			
+			bar0.color = pa2.nextColor();
+			bar1.color = pa2.nextColor();
+			bar2.color = pa2.nextColor();
+			bar3.color = pa2.nextColor();
+			bar4.color = pa2.nextColor();
 			
 			var chart = new en.Chart(null, "Test chart", "This is a potential description");
 			chart.addPlotArea({ x:50,y:50, plotArea:pa });

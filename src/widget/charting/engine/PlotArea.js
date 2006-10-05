@@ -26,7 +26,7 @@ dojo.widget.charting.engine.PlotArea = function(){
 	//	this is preset for a limited color range (green to purple), 
 	//	anticipating a max of 32 series on this plot area.
 	//	if you need more flexibility, override these numbers.
-	this._color = { h: 140, s: 120, l: 120, step: 13 };
+	this._color = { h: 140, s: 120, l: 120, step: 27 };
 };
 dojo.widget.charting.engine.PlotArea.count = 0;
 
@@ -119,15 +119,27 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 			|| !this.nodes.axes
 		){ this.initialize(); }
 
-		//	plot each series.
+		//	plot it.
 		for(var i=0; i<this.plots.length; i++){
 			var plot=this.plots[i];
-			var target=plot.dataNode;
-			for(var j=0; j<plot.series.length; j++){
-				var series = plot.series[j];
-				var data = series.data.evaluate(kwArgs);
-				target.appendChild(series.plotter(data, this, plot, applyToData));
+			this.nodes.plots.removeChild(plot.dataNode);
+			var target = this.initializePlot(plot);
+			switch(plot.renderType){
+				case dojo.widget.charting.engine.RenderPlotSeries.Grouped:	{
+					// ALWAYS plot using the first plotter, ignore any others.
+					target.appendChild(plot.series[0].plotter(this, plot, kwArgs, applyToData));
+					break;
+				}
+				case dojo.widget.charting.engine.RenderPlotSeries.Singly:
+				default: {
+					for(var j=0; j<plot.series.length; j++){
+						var series = plot.series[j];
+						var data = series.data.evaluate(kwArgs);
+						target.appendChild(series.plotter(data, this, plot, applyToData));
+					}
+				}
 			}
+			this.nodes.plots.appendChild(target);
 		}
 	},
 	destroy: function(){

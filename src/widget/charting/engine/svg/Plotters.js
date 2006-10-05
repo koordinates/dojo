@@ -2,8 +2,58 @@ dojo.provide("dojo.widget.charting.engine.svg.Plotters");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.svg");
 
+dojo.require('dojo.json');
+
 //	Mixin the SVG-specific plotter object.
 dojo.mixin(dojo.widget.charting.engine.Plotters, {
+	/*********************************************************
+	 *	Grouped plotters: need all series on a plot at once.
+	 *********************************************************/
+	Bar: function(
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* object? */kwArgs,
+		/* function? */applyTo
+	){
+		var area = plotarea.getArea();
+		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
+		
+		//	calculate the width of each bar.
+		var space = 4;
+		var n = plot.series.length;
+		var width = ((area.right-area.left)-(space*(n-1)))/n;
+		var yOrigin = plot.axisY.getCoord(plot.axisX.origin, plotarea, plot);
+		for(var i=0; i<n; i++){
+			var series = plot.series[i];
+			var data = series.data.evaluate(kwArgs);
+			var x = area.left+(width*i)+(space*i);
+			var value = data[data.length-1].y;
+
+			var yA = yOrigin;
+			var y = plot.axisY.getCoord(value, plotarea, plot);
+			var h = Math.abs(yA-y);
+			if(value < plot.axisX.origin){
+				yA = y;
+				y = yOrigin;
+			}
+			
+			var bar=document.createElementNS(dojo.svg.xmlns.svg, "rect");
+			bar.setAttribute("fill", data[data.length-1].series.color);
+			bar.setAttribute("stroke-width", "0");
+			bar.setAttribute("x", x);
+			bar.setAttribute("y", y);
+			bar.setAttribute("width", width);
+			bar.setAttribute("height", h);
+			bar.setAttribute("fill-opacity", "0.65");
+			if(applyTo){ applyTo(bar, data[data.length-1].src); }
+			group.appendChild(bar);
+		}
+		return group;
+	},
+
+	/*********************************************************
+	 *	Single plotters: one series at a time.
+	 *********************************************************/
 	Line: function(
 		/* array */data, 
 		/* dojo.widget.charting.engine.PlotArea */plotarea,

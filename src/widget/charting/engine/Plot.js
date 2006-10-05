@@ -3,6 +3,8 @@ dojo.require("dojo.lang.common");
 dojo.require("dojo.widget.charting.engine.Axis");
 dojo.require("dojo.widget.charting.engine.Series");
 
+dojo.widget.charting.engine.RenderPlotSeries = { Singly:"single", Grouped:"grouped" };
+
 dojo.widget.charting.engine.Plot = function(
 	/* dojo.widget.charting.engine.Axis? */xaxis, 
 	/* dojo.widget.charting.engine.Axis? */yaxis, 
@@ -15,6 +17,9 @@ dojo.widget.charting.engine.Plot = function(
 	this.axisY = null;
 	this.series = [];
 	this.dataNode = null;
+
+	//	for bar charts, pie charts and stacked charts, change to Grouped.
+	this.renderType = dojo.widget.charting.engine.RenderPlotSeries.Singly;
 	if(xaxis){
 		this.setAxis(xaxis,"x");
 	}
