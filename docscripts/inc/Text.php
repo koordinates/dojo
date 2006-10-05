@@ -19,6 +19,20 @@ class Text
     return preg_replace('%' . preg_quote($to_blank, '%') . '%', implode($blanks), $string, 1);
   }
   
+  public static function getNextPosition($array, $line_position_pair)
+  {
+    list($line_number, $position) = $line_position_pair;
+    ++$position;
+    if ($position >= strlen($array[$line_number])) {
+      ++$line_number;
+      $position = 0;
+      while (!strlen($array[$line_number])) {
+        ++$line_number;
+      }
+    }
+    return array($line_number, $position);
+  }
+  
   public static function blankOutAt($to_blank, $start, $end = -1)
   {
     if($end == -1) {

@@ -7,15 +7,13 @@ require_once('DojoString.php');
 
 class DojoParameter
 {
-	private $dojo;
 	private $package;
 	private $start;
 	private $end;
   private $parameter_value;
 	
-  public function __construct($dojo, $package)
+  public function __construct($package)
   {
-		$this->dojo = $dojo;
 		$this->package = $package;
   }
   
@@ -111,7 +109,13 @@ class DojoParameter
     }
     elseif (strpos($parameter_value, 'function') === 0) {
     	$function = new DojoFunctionDeclare($this->dojo, $this->package);
-    	$function->buildFunctionFrom($this->start[0], $this->start[1]);
+      $code = $this->package->getCode();
+      $start = $this->start;
+      while (($pos = strpos($code[$start[0]], 'function')) === false) {
+        ++$start[0];
+      }
+      $function->setStart($start[0], $pos);
+      $function->build();
     	$this->parameter_value = $function;
     }
     else {

@@ -1,19 +1,22 @@
 <?php
 
-require_once('DojoFunction.php');
+require_once('DojoFunctionBody.php');
 
 class DojoFunctionDeclare
 {
-  private $dojo;
   private $package;
   private $start;
   private $end;
   private $parameters;
+  private $name;
+  private $body;
 
-  public function __construct($dojo, $package)
+  public function __construct($package)
   {
     $this->dojo = $dojo;
     $this->package = $package;
+    $this->parameters = new DojoParameters($package);
+    $this->body = new DojoFunctionBody($package);
   }
   
   public function setStart($line_number, $position)
@@ -164,58 +167,75 @@ class DojoFunctionDeclare
     return $this->this_variable_names[$this_variable_name];
   }
   
-  public function buildFunctionFrom($line, $position)
-  {
-    $this->setStart($line, $position);
-    $this->buildFunction();
-  }
-  
-  public function buildFunction(){
-  	$lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], count($this->code) - 1, strlen($this->code[count($this->code) - 1]), false);
-	
-    $parameter_start = array($this->start[0], strpos($lines[0], '('));
-    $this->parameters = new DojoParameters($this->dojo, $this->package);
-	
-	  $content_start = false; // For content start
-	  $parameter_end = false; // For parameter end
-	
-	  $balance = 0;
-	
-	  for ($line_number = $this->start[0]; $lines[$line_number] !== false; $line_number++) {
-	    $line = $lines[$line_number];
-	    if (trim($line) == '') {
-	      continue;
-	    }
-	    
-	    if (!$content_start && ($pos = strpos($line, '{')) !== false) {
-	      $content_start = true;
-	      $start = $pos;
-	      $this->setContentStart($line_number, $pos);
-	    }
-	    if (!$parameter_end && ($pos = strpos($line, ')')) !== false) {
-	      $parameter_end = true;
-        $this->parameters->buildParameters($parameter_start[0], $parameter_start[1], $line_number, $pos);
-	    }
-	    
-	    if ($content_start) {
-	      for ($char_pos = $start; $char_pos < strlen($line); $char_pos++) {
-	        $start = 0;
-	        $char = $line{$char_pos};
-	        
-	        if ($char == '{') {
-	          ++$balance;
-	        }
-	        elseif ($char == '}') {
-	          --$balance;
-	          if (!$balance) {
-	            $this->setContentEnd($line_number, $char_pos);
-	            $this->setEnd($line_number, $char_pos);
-	            return;
-	          }
-	        }
-	      }
-	    }
-	  }
+  /*
+       $matches = preg_grep('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*(new\s*)?function\s*\()%', $lines);
+    foreach ($matches as $line_number => $line) {
+      
+    }
+    
+    foreach (array_keys($matches) as $start_line_number) {
+      $line = $lines[$start_line_number];
+      if (!preg_match('%(?:\bfunction\s+([a-zA-Z0-9_.$]+)\b\s*\(|\b([a-zA-Z0-9_.$]+)\s*=\s*(?:(new)\s*)?function\s*\()%', $line, $match)) {
+        continue;
+      }
+      
+      if ($keys = array_keys($match, 'new')) {
+        unset($match[$keys[0]]);
+        $anonymous = true;
+      }
+      
+      $function_name = implode(array_slice($match, 1));
+      if (strpos($function_name, 'this.') === 0) {
+        continue;
+      }
+      if (($pos = strpos($function_name, '.prototype.')) !== false) {
+        $prototype = substr($function_name, 0, $pos);
+        $function_name = str_replace('.prototype.', '.', $function_name);
+      }
+      
+      $function = new DojoFunctionDeclare($this->dojo, $this->package);
+      if ($anonymous) {
+        $function->setAnonymous(true);
+      }
+      if ($prototype) {
+        $function->setThis($prototype);
+      }
+      $function->buildFrom($start_line_number, strpos($line, $match[0]));
+      $this->functions[] = $function;
+    }
+    
+    return $this->functions;
+  */
+  public function build(){
+    if (!$this->start) {
+      die("DojoFunctionDeclare->build() used before setting a start position");
+    }
+
+  	$lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1]);
+    $line = trim($lines[$this->start[0]]);
+    if (strpos($line, 'function') === 0) {
+      $line = substr($line, 8);
+      preg_match('%[^\s]%', $line, $match);
+      if ($match[0] != '(') {
+        $this->name = trim(substr($line, strpos($line, '(')));
+      }
+    }
+    else {
+      $this->name = trim(substr($line, 0, strpos($line, 'function')));
+    }
+    
+    $this->parameters->setStart($this->start[0], strpos($lines[$this->start[0]], '('));
+    $end = $this->parameters->build();
+    
+    $lines = Text::chop($this->package->getCode(), $end[0], $end[1]);
+    foreach ($lines as $line_number => $line) {
+      if (($pos = strpos($line, '{')) !== false) {
+        $this->body->setStart($line_number, $pos);
+        $end = $this->body->build();
+        $this->setEnd($end[0], $end[1]);
+        return $end;
+      }
+    }
   }
   
   public function getReturnComments()
