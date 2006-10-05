@@ -212,8 +212,8 @@ dojo.event = new function(){
 		//		Optional. String. One of "before", "after", "around",
 		//		"before-around", or "after-around". FIXME
 		// srcObj:
-		//		the scope in which to locate the named srcFunc. Along with
-		//		srcFunc, this creates a way to dereference the function to
+		//		the scope in which to locate/execute the named srcFunc. Along
+		//		with srcFunc, this creates a way to dereference the function to
 		//		call. So if the function in question is "foo.bar", the
 		//		srcObj/srcFunc pair would be foo and "bar", where "bar" is a
 		//		string and foo is an object reference.
@@ -222,6 +222,39 @@ dojo.event = new function(){
 		//		the listener being registered with this call will be called.
 		//		The adviceType defines the call order between the source and
 		//		the target functions.
+		// adviceObj:
+		//		the scope in which to locate/execute the named adviceFunc.
+		// adviceFunc:
+		//		the name of the function being conected to srcObj.srcFunc
+		// aroundObj:
+		//		the scope in which to locate/execute the named aroundFunc.
+		// aroundFunc:
+		//		the name of, or a reference to, the function that will be used
+		//		to mediate the advice call. Around advice requires a special
+		//		unary function that will be passed a "MethodInvocation" object.
+		//		These objects have several important properties, namely:
+		//			- args
+		//				a mutable array of arguments to be passed into the
+		//				wrapped function
+		//			- proceed
+		//				a function that "continues" the invocation. The result
+		//				of this function is the return of the wrapped function.
+		//				You can then manipulate this return before passing it
+		//				back out (or take further action based on it).
+		// once:
+		//		boolean that determines whether or not this connect() will
+		//		create a new connection if an identical connect() has already
+		//		been made. Defaults to "false".
+		// delay:
+		//		an optional delay (in ms), as an integer, for dispatch of a
+		//		listener after the source has been fired.
+		// rate:
+		//		an optional rate throttling parameter (integer, in ms). When
+		//		specified, this particular connection will not fire more than
+		//		once in the interval specified by the rate
+		// adviceMsg:
+		//		boolean. Should the listener have all the parameters passed in
+		//		as a single argument?
 
 		/*
 				ao.adviceType = args[0];
