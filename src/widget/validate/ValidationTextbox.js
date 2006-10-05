@@ -2,6 +2,7 @@ dojo.provide("dojo.widget.validate.ValidationTextbox");
 
 dojo.require("dojo.widget.validate.Textbox");
 dojo.require("dojo.validate.common");
+dojo.require("dojo.i18n.common");
 
 /*
   ****** ValidationTextbox ******

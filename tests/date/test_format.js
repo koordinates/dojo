@@ -276,13 +276,13 @@ function test_date_parse() {
 	//en: 'short' datetime fmt: M/d/yy h:mm a
 	//note: this is concatenation of dateFormat-short and timeFormat-short, 
 	//cldr provisionally defines datetime fmts as well, but we're not using them at the moment
-	jum.assertEquals(name(), aug_11_2006_12_30_pm, dojo.date.parse("08/11/06 12:30 PM", {formatLength:'short', selector:'datetime', locale:'en'}));
+	jum.assertEquals(name(), aug_11_2006_12_30_pm, dojo.date.parse("08/11/06 12:30 PM", {formatLength:'short', selector:'dateTime', locale:'en'}));
 	//case-insensitive
-	jum.assertEquals(name(), aug_11_2006_12_30_pm, dojo.date.parse("08/11/06 12:30 pm", {formatLength:'short', selector:'datetime', locale:'en'}));
+	jum.assertEquals(name(), aug_11_2006_12_30_pm, dojo.date.parse("08/11/06 12:30 pm", {formatLength:'short', selector:'dateTime', locale:'en'}));
 	//...but not in strict mode
-	jum.assertEquals(name(), null, dojo.date.parse("08/11/06 12:30 pm", {formatLength:'short', selector:'datetime', locale:'en', strict:true}));
+	jum.assertEquals(name(), null, dojo.date.parse("08/11/06 12:30 pm", {formatLength:'short', selector:'dateTime', locale:'en', strict:true}));
 
-	jum.assertEquals(name(), aug_11_2006_12_30_am, dojo.date.parse("08/11/06 12:30 AM", {formatLength:'short', selector:'datetime', locale:'en'}));
+	jum.assertEquals(name(), aug_11_2006_12_30_am, dojo.date.parse("08/11/06 12:30 AM", {formatLength:'short', selector:'dateTime', locale:'en'}));
 }
 
 function test_time_parse(){
