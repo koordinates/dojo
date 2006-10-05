@@ -2,14 +2,12 @@
 
 class DojoFunctionBody
 {
-	private $dojo;
 	private $package;
 	private $start;
 	private $end;
 	
-  public function __construct($dojo, $package)
+  public function __construct($package)
   {
-		$this->dojo = $dojo;
 		$this->package = $package;
   }
 	

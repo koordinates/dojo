@@ -1,7 +1,6 @@
 <?php
 
 require_once('DojoParameters.php');
-require_once('Text.php');
 
 class DojoFunctionCall
 {

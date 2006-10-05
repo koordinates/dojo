@@ -1,6 +1,6 @@
 <?php
 
-require_once('Text.php');
+require_once('DojoParameter.php');
 
 class DojoParameters
 {
@@ -34,7 +34,7 @@ class DojoParameters
     $end = array($this->start[0], $this->start[1]);
 
     do {
-      $parameter = new DojoParameter($this->dojo, $this->package);
+      $parameter = new DojoParameter($this->package);
       $parameter->setStart($end[0], $end[1]);
       $end = $parameter->build();
       

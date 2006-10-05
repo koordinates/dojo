@@ -1,7 +1,5 @@
 <?php
 
-require_once('DojoParameters.php');
-
 class DojoArray
 {
   private $package;

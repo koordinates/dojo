@@ -1,9 +1,8 @@
 <?php
 
-require_once('DojoFunction.php');
-require_once('DojoFunctionDeclare.php');
-require_once('DojoObject.php');
 require_once('DojoString.php');
+require_once('DojoObject.php');
+require_once('DojoFunctionDeclare.php');
 
 class DojoParameter
 {
@@ -108,7 +107,7 @@ class DojoParameter
       $this->parameter_value = $object;
     }
     elseif (strpos($parameter_value, 'function') === 0) {
-    	$function = new DojoFunctionDeclare($this->dojo, $this->package);
+    	$function = new DojoFunctionDeclare($this->package);
       $code = $this->package->getCode();
       $start = $this->start;
       while (($pos = strpos($code[$start[0]], 'function')) === false) {

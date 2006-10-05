@@ -1,16 +1,24 @@
 <?php
 
-require_once('DojoFunction.php');
-require_once('DojoObject.php');
-require_once('DojoArray.php');
-
 class DojoObject
 {
   private $package;
+  private $start;
+  private $end;
   
   public function __construct($package)
   {
     $this->package = $package;
+  }
+  
+  public function setStart($line_number, $position)
+  {
+    $this->start = array($line_number, $position);
+  }
+  
+  public function setEnd($line_number, $position)
+  {
+    $this->end = array($line_number, $position);
   }
   
   public function getKeys() {
@@ -100,7 +108,7 @@ class DojoObject
         return;
       }
       elseif (preg_match('%^\s*function\s*\(%', $line)) {
-        $declare = new DojoFunctionDeclare($this->source, $this->code, $this->package_name, $this->compressed_package_name, $this->function_name . '.' . $key);
+        $declare = new DojoFunctionDeclare($this->package);
         $declare->setThis($this->function_name);
         $declare->setStart($this->start[0], $this->start[1]);
         $declare->setEnd($this->end[0], $this->end[1]);
