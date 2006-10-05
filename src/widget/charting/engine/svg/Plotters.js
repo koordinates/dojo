@@ -166,9 +166,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		}
 		//	finish it off
 		cmd.push("L");
-		cmd.push(x + "," + plot.axisY.getCoord(0, plotarea, plot));
+		cmd.push(x + "," + plot.axisY.getCoord(plot.axisX.origin, plotarea, plot));
 		cmd.push("L");
-		cmd.push( plot.axisX.getCoord(0, plotarea, plot) + "," +  plot.axisY.getCoord(0, plotarea, plot));
+		cmd.push(plot.axisX.getCoord(data[0].x, plotarea, plot) + "," +  plot.axisY.getCoord(plot.axisX.origin, plotarea, plot));
 		cmd.push("Z");
 		path.setAttribute("d", cmd.join(" "));
 		return line;

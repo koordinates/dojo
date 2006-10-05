@@ -211,9 +211,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			if(applyTo){ applyTo(c, data[i].src); }
 		}
 		cmd.push("l");
-		cmd.push(x + "," + Math.round(plot.axisY.getCoord(0, plotarea, plot)));
+		cmd.push(x + "," + Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
 		cmd.push("l");
-		cmd.push(Math.round(plot.axisX.getCoord(0, plotarea, plot)) + "," +  Math.round(plot.axisY.getCoord(0, plotarea, plot)));
+		cmd.push(Math.round(plot.axisX.getCoord(data[0].x, plotarea, plot)) + "," +  Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
 		path.setAttribute("path", cmd.join(" ")+" e");
 		group.appendChild(path);
 		return group;
