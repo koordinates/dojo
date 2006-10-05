@@ -11,37 +11,63 @@ dojo.require("dojo.string.common");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.widget", "DropdownDatePicker");
 
+		/*
+		summary: 
+			DatePicker form input that allows for selecting a Date from the UI or typing of date in an inputbox
+	 	description: 
+			Basically this is DatePicker in a DropdownContainer, it supports all features of DatePicker as well
+			as wrapping its value inside of a form element to be submitted.
+	 	 usage: 
+	 	              var ddp = dojo.widget.createWidget("DropdownDatePicker", {},   
+	 	              dojo.byId("DropdownDatePickerNode")); 
+	 	 
+	 	              <input dojoType="DropdownDatePicker">
+		*/
+
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownDatePicker",
 	dojo.widget.DropdownContainer,
 	{
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/dateIcon.gif"),
 		zIndex: "10",
-
-		// pattern used in display of formatted date.  See dojo.date.format.
+		
+		//String
+		// 	pattern used in display of formatted date.  See dojo.date.format.
 		displayFormat: "",
 		dateFormat: "", // deprecated in 0.5
-		// formatting used when submitting form.  A pattern string like display format or one of the following:
-		// rfc|iso|posix|unix  By default, uses rfc3339 style date formatting.
+		//String
+		// 	formatting used when submitting form.  A pattern string like display format or one of the following:
+		// 	rfc|iso|posix|unix  By default, uses rfc3339 style date formatting.
 		saveFormat: "",
-		// type of format appropriate to locale.  see dojo.date.format
+		//String
+		// 	type of format appropriate to locale.  see dojo.date.format
 		formatLength: "short", // only parsing of short is supported at this time
-		date: "", //if =='today' will default to todays date
-		value: "", //form value property
-		// name of the form element
+		//String|Date
+		//	form value property if =='today' will default to todays date
+		value: "", 
+		//String
+		// 	name of the form element
 		name: "",
-		//total weeks to display default 
+		//Integer
+		//	total weeks to display default 
 		displayWeeks: 6, 
-		//if true, weekly size of calendar changes to acomodate the month if false, 42 day format is used
+		//Boolean
+		//	if true, weekly size of calendar changes to acomodate the month if false, 42 day format is used
 		adjustWeeks: false,
-		//first available date in the calendar set
+		//String|Date
+		//	first available date in the calendar set
 		startDate: "1492-10-12",
-		//last available date in the calendar set
+		//String|Date
+		//	last available date in the calendar set
 		endDate: "2941-10-12",
-		//adjusts the first day of the week 0==Sunday..6==Saturday
+		//Integer
+		//	adjusts the first day of the week 0==Sunday..6==Saturday
 		weekStartsOn: "",
-		storedDate: "", //deprecated use date instead
-		//disable all incremental controls, must pick a date in the current display
+		//String
+		//	deprecated use value instead
+		storedDate: "",
+		//Boolean
+		//d	isable all incremental controls, must pick a date in the current display
 		staticDisplay: false,
 		
 		postMixInProperties: function(localProperties, frag){
@@ -125,7 +151,7 @@ dojo.widget.defineWidget(
 			this.hideContainer();
 		},
 
-		onValueChanged: function(date /*Date*/){
+		onValueChanged: function(/*Date*/date){
 		//summary: triggered when this.value is changed
 		},
 		

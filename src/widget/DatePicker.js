@@ -8,10 +8,6 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 
-dojo.widget.defineWidget(
-	"dojo.widget.DatePicker",
-	dojo.widget.HtmlWidget,
-	{
 		/*
 		summary: 
 	 	              Base class for a stand-alone DatePicker widget 
@@ -35,25 +31,41 @@ dojo.widget.defineWidget(
 	 	 
 	 	              <div dojoType="DatePicker"></div> 
 		*/
-	
+
+dojo.widget.defineWidget(
+	"dojo.widget.DatePicker",
+	dojo.widget.HtmlWidget,
+	{	
 		//start attributes
 		
-		//total weeks to display default 
+		//String|Date
+		//	form value property if =='today' will default to todays date
+		value: "", 
+		//String
+		// 	name of the form element
+		name: "",
+		//Integer
+		//	total weeks to display default 
 		displayWeeks: 6, 
-		//if true, weekly size of calendar changes to acomodate the month if false, 42 day format is used
+		//Boolean
+		//	if true, weekly size of calendar changes to acomodate the month if false, 42 day format is used
 		adjustWeeks: false,
-		//first available date in the calendar set
+		//String|Date
+		//	first available date in the calendar set
 		startDate: "1492-10-12",
-		//last available date in the calendar set
+		//String|Date
+		//	last available date in the calendar set
 		endDate: "2941-10-12",
-		//adjusts the first day of the week 0==Sunday..6==Saturday
+		//Integer
+		//	adjusts the first day of the week 0==Sunday..6==Saturday
 		weekStartsOn: "",
-		//current date selected by DatePicker in rfc 3339 date format "yyyy-MM-dd" -- once initialized, this.value will be a date Object
-		value: "",
-		storedDate: "", //deprecated use date instead
-		//disable all incremental controls, must pick a date in the current display
+		//String
+		//	deprecated use value instead
+		storedDate: "",
+		//Boolean
+		//d	isable all incremental controls, must pick a date in the current display
 		staticDisplay: false,
-
+		
 		//how to render the names of the days in the header.  see dojo.date.getDayNames
 		dayWidth: 'narrow',
 		classNames: {
@@ -418,7 +430,7 @@ dojo.widget.defineWidget(
 			this.setDate(new Date(year, month, eventTarget.innerHTML));
 		},
 		
-		onValueChanged: function(date /*Date*/) {
+		onValueChanged: function(/*Date*/date) {
 			//summary: the set date event handler
 		},
 		
