@@ -12,7 +12,7 @@ class DojoPackage
   protected $file; // The file reference (including dir) to the file;
 	private $code; // The source - comments
 	private $source;
-  //protected $functions = array(); // Builds an array of functions by name, with meta
+  protected $declarations = array(); // Builds an array of functions declarations by name, with meta
   protected $calls = array(); // Builds an array of calls
   //protected $variables = array(); // Builds an array of variables
   
@@ -34,43 +34,26 @@ class DojoPackage
 
   public function getFunctionDeclarations()
   {
-    $in_function = array();
-    $lines = $this->getLines();
+    $lines = $this->getCode();
+    $end = array(0, 0);
 
-    $matches = preg_grep('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*(new\s*)?function\s*\()%', $lines);
-    foreach (array_keys($matches) as $start_line_number) {
-      if (in_array($start_line_number, $in_function)) continue;
-      $line = $lines[$start_line_number];
-      if (!preg_match('%(?:\bfunction\s+([a-zA-Z0-9_.$]+)\b\s*\(|\b([a-zA-Z0-9_.$]+)\s*=\s*(?:(new)\s*)?function\s*\()%', $line, $match)) {
+    $matches = preg_grep('%function%', $lines);
+    $last_line = 0;
+    foreach ($matches as $line_number => $line) {
+      if ($line_number < $last_line) {
         continue;
       }
-      
-      if ($keys = array_keys($match, 'new')) {
-        unset($match[$keys[0]]);
-        $anonymous = true;
+
+      if(preg_match('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*(new\s*)?function\s*\()%', $line, $match)) {
+        $declaration = new DojoFunctionDeclare($this->dojo, $this->package);
+        $declaration->setStart($line_number, strpos($line, $match[0]));
+        $end = $declaration->build();
+        $last_line = $end[0];
+        $this->declarations[$declaration->getName] = $declaration;
       }
-      
-      $function_name = implode(array_slice($match, 1));
-      if (strpos($function_name, 'this.') === 0) {
-        continue;
-      }
-      if (($pos = strpos($function_name, '.prototype.')) !== false) {
-        $prototype = substr($function_name, 0, $pos);
-        $function_name = str_replace('.prototype.', '.', $function_name);
-      }
-      
-      $function = new DojoFunctionDeclare($this->dojo, $this->package);
-      if ($anonymous) {
-        $function->setAnonymous(true);
-      }
-      if ($prototype) {
-        $function->setThis($prototype);
-      }
-      $function->buildFrom($start_line_number, strpos($line, $match[0]));
-      $this->functions[] = $function;
     }
     
-    return $this->functions;
+    return $end;
   }
   
   /**
@@ -94,31 +77,6 @@ class DojoPackage
       $this->calls[$name][] = $call;
     }
     return $this->calls[$name];
-  }
-  
-  /**
-   * Gets rid of blocks of code that have already been found
-   * to do things like check for globals
-   *
-   * @param array $lines
-   * @return array
-   */
-  public function removeDiscoveredCode($lines)
-  {
-    foreach ($this->calls as $per_name) {
-      foreach ($per_name as $call) {
-        $lines = $call->removeDiscoveredCode($lines);
-      }
-    }
-    foreach ($this->functions as $declare) {
-      $lines = $declare->removeDiscoveredCode($lines);
-    }
-    return $lines;
-  }
-  
-  public function getVariables()
-  {
-    
   }
   
   public function getSource()

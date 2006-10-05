@@ -6,18 +6,11 @@ require_once('DojoArray.php');
 
 class DojoObject
 {
-  public $keys = array();
+  private $package;
   
-  public function __construct(&$source, &$code, $package_name, $compressed_package_name, $function_name, $compressed_function_name)
+  public function __construct($package)
   {
-    $this->source = $source;
-    $this->code = $code;
-    $this->package_name = $package_name;
-    $this->compressed_package_name = $compressed_package_name;
-    $this->function_name = $function_name;
-    $this->compressed_function_name = $compressed_function_name;
-    
-    $this->end = $this->parameter_end = $this->content_end = array(count($this->code) - 1, strlen(end($this->code)) - 1);
+    $this->package = $package;
   }
   
   public function getKeys() {

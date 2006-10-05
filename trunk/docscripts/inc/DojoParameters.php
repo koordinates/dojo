@@ -4,15 +4,13 @@ require_once('Text.php');
 
 class DojoParameters
 {
-  private $dojo;
   private $package;
   private $parameters = array();
   private $start;
   private $end;
   
-  public function __construct($dojo, $package)
+  public function __construct($package)
   {
-    $this->dojo = $dojo;
     $this->package = $package;
   }
   
