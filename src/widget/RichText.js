@@ -960,7 +960,10 @@ dojo.widget.defineWidget(
 			if(this.iframe && !dojo.render.html.ie) { this.window.focus(); }
 			else if(this.object) { this.document.focus(); }
 			// editNode may be hidden in display:none div, lets just punt in this case
-			else if(this.editNode && dojo.lang.isFunction(this.editNode.focus)) { this.editNode.focus(); }
+			else if(this.editNode && this.editNode.focus) { this.editNode.focus(); }
+			else{
+				dojo.debug("Have no idea how to focus into the editor!");
+			}
 		},
 
 		/** this event will be fired everytime the display context changes and the
