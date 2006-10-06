@@ -8,15 +8,6 @@ dojo.widget.tags.addParseTreeHandler("dojo:ToolbarColorDialog");
 
 dojo.widget.html.ToolbarColorDialog = function(){
 	dojo.widget.html.ToolbarDialog.call(this);
-	
-	/*
-	FIXME: 	why the fuck did anyone ever think this kind of expensive iteration
-			was a good idea?
-
-	for (var method in this.constructor.prototype) {
-		this[method] = this.constructor.prototype[method];
-	}
-	*/
 }
 
 dojo.inherits(dojo.widget.html.ToolbarColorDialog, dojo.widget.html.ToolbarDialog);

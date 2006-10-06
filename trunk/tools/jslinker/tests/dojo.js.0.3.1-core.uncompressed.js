@@ -1092,7 +1092,7 @@ dojo.hostenv.makeWidgets = function(){
 		if(dojo.evalObjPath("dojo.widget.Parse")){
 			// we must do this on a delay to avoid:
 			//	http://www.shaftek.org/blog/archives/000212.html
-			// IE is such a tremendous peice of shit.
+			//	(IE bug)
 				var parser = new dojo.xml.Parse();
 				if(sids.length > 0){
 					for(var x=0; x<sids.length; x++){
@@ -2921,7 +2921,7 @@ dojo.require("dojo.lang.extras");
  *		server classes. Wish it were always this easy.
  *
  *	xpcshell:
- *		XPCOM for I/O. A cluster-fuck to be sure.
+ *		XPCOM for I/O.
  *
  *	spidermonkey:
  *		S.O.L.

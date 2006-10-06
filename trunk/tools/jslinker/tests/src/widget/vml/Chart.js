@@ -97,7 +97,7 @@ dojo.lang.extend(dojo.widget.vml.Chart, {
 		this.dataGroup.style.position="relative";
 		this.plotArea.appendChild(this.dataGroup);
 
-		//	clipping rects, what a fucking pain.
+		//	clipping rects, what a pain.
 		var bg=this.domNode.style.backgroundColor;
 		var r=document.createElement("v:rect");
 		r.setAttribute("fillcolor", bg);

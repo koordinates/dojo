@@ -87,7 +87,7 @@
 [2:49pm] slightlyoff: right, stream return, etc
 [2:49pm] ttrenka: (other ready states are more aimed at accessing responseBody and responseStream from a COM+ platform)
 [2:49pm] slightlyoff: but I don't expect writing client-side C++ for Dojo = )
-[2:49pm] ttrenka: fuck I hope not
+[2:49pm] ttrenka: I hope not
 [2:49pm] mda_: the alternative to xmlhttp is what, a hidden iframe that the server puts individual <script> elements into?
 [2:49pm] ttrenka: (oops, sorry, pardon my french)
 [2:49pm] ttrenka: that's one way. Using java in the browser is another
