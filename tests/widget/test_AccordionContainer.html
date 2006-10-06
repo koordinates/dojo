@@ -46,7 +46,8 @@
 		<div dojoType="AccordionContainer" labelNodeClass="label" containerNodeClass="accBody"
 			style="border: 2px solid black; float: left; margin-right: 30px;  width: 400px; height: 300px; overflow: hidden"
 		>
-		        <div dojoType="ContentPane" selected="true" label="Pane 1" style="overflow: scroll;">
+		        <div dojoType="ContentPane" selected="true" label="Pane 1" style="overflow: scroll;"
+		        	onShow="dojo.debug('pane 1 shown');" onHide="dojo.debug('pane 1 hidden');" >
 				<h2>Pane 1 w/ tree</h2>
 						<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
 						
