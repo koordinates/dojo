@@ -85,7 +85,8 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 				var ol = opts.length;
 				var data = [];
 				for(var x=0; x<ol; x++){
-					var keyValArr = [String(opts[x].innerHTML), String(opts[x].value)];
+					var text = opts[x].textContent || opts[x].innerText || opts[x].innerHTML;
+					var keyValArr = [String(text), String(opts[x].value)];
 					data.push(keyValArr);
 					if(opts[x].selected){ 
 						cbox.setAllValues(keyValArr[0], keyValArr[1]);
@@ -232,7 +233,6 @@ dojo.widget.defineWidget(
 		optionsListWrapper: null,
 		optionsListNode: null,
 		downArrowNode: null,
-		cbTableNode: null,
 		searchTimer: null,
 		searchDelay: 100,
 		dataUrl: "",
@@ -502,14 +502,14 @@ dojo.widget.defineWidget(
 
 		// reset button size; this function is called when the input area has changed size
 		onResize: function(){
-			var inputSize = dojo.html.getBorderBox(this.cbTableNode);
+			var inputSize = dojo.html.getContentBox(this.textInputNode);
 			if( inputSize.height == 0 ){
 				// need more time to calculate size
-				dojo.lang.setTimeout(this, "onResize", 100);
+				dojo.lang.setTimeout(this, "onResize", 50);
 				return;
 			}
 			var buttonSize = { width: inputSize.height, height: inputSize.height};
-			dojo.html.setMarginBox(this.downArrowNode, buttonSize);
+			dojo.html.setContentBox(this.downArrowNode, buttonSize);
 		},
 
 		fillInTemplate: function(args, frag){
@@ -521,7 +521,14 @@ dojo.widget.defineWidget(
 			this.comboBoxValue.name = this.name; 
 			this.comboBoxSelectionValue.name = this.name+"_selected";
 
+			/* different nodes get different parts of the style */
+			dojo.html.copyStyle(this.domNode, source);
 			dojo.html.copyStyle(this.textInputNode, source);
+			dojo.html.copyStyle(this.downArrowNode, source);
+			with (this.downArrowNode.style) { // calculate these later
+				width = "0px";
+				height = "0px";
+			}
 
 			var dpClass;
 			if(this.mode == "remote"){
@@ -757,7 +764,7 @@ dojo.widget.defineWidget(
 					width = (dojo.html.getMarginBox(this.domNode).width-2)+"px";
 					
 				}
-				this.popupWidget.open(this.cbTableNode, this, this.downArrowNode);
+				this.popupWidget.open(this.domNode, this, this.downArrowNode);
 			}else{
 				this.hideResultList();
 			}
