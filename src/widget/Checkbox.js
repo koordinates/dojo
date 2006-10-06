@@ -18,7 +18,7 @@ dojo.widget.defineWidget(
 		// Boolean
 		//	if true, clicking will not change the state of the checkbox.
 		//	in markup, this is specified as "disabled='disabled'", or just "disabled", 
-		disabled: "enabled",
+		disabled: false,
 		
 		// String
 		//	name used when submitting form; same as "name" attribute or plain HTML elements
@@ -31,7 +31,7 @@ dojo.widget.defineWidget(
 		// Boolean
 		//	if true, checkbox is initially marked turned on;
 		//	in markup, specified as "checked='checked'" or just "checked"
-		checked: "",
+		checked: false,
 		
 		// Integer
 		//	order fields are traversed when user hits the tab key
@@ -39,21 +39,8 @@ dojo.widget.defineWidget(
 
 		postMixInProperties: function(){
 			dojo.widget.Checkbox.superclass.postMixInProperties.apply(this, arguments);
-			// set the variables referenced by the template
-			// valid HTML 4.01 and XHTML use disabled="disabled" - convert to boolean
-			//NOTE: this doesn't catch disabled with no value if FF
-			this.disabled = (this.disabled == "disabled" || this.disabled == true);
-			// valid HTML 4.01 and XHTML require checked="checked"
-			// convert to boolean NOTE: this doesn't catch checked with no value in FF
-			this.checked = (this.checked == "checked" || this.checked == true);
-
-			// output valid checked and disabled attributes
-			this.disabledStr = this.disabled ? "disabled=\"disabled\"" : "";
-			this.checkedStr = this.checked ? "checked=\"checked\"" : "";
-
+			
 			// set tabIndex="0" because if tabIndex=="" user won't be able to tab to the field
-
-
 			if(!this.disabled && this.tabIndex==""){ this.tabIndex="0"; }
 		},
 
@@ -77,6 +64,8 @@ dojo.widget.defineWidget(
 				}
 			}
 			this._connectEvents(this.domNode);
+			// this is needed here for IE
+			this.inputNode.checked=this.checked;
 		},
 
 		_connectEvents: function(/*DomNode*/ node){
@@ -140,6 +129,9 @@ dojo.widget.defineWidget(
 			var state = "dojoHtmlCheckbox" + (this.disabled ? "Disabled" : "") + (this.checked ? "On" : "Off");
 			dojo.html.setClass(this.imageNode, "dojoHtmlCheckbox " + state);
 			this.inputNode.checked = this.checked;
+			if (this.disabled){
+				this.inputNode.disabled = true;
+			}
 			dojo.widget.wai.setAttr(this.domNode, "waiState", "checked", this.checked);
 		}
 	}
@@ -154,7 +146,11 @@ dojo.widget.defineWidget(
 		templatePath: dojo.uri.dojoUri('src/widget/templates/CheckboxA11y.html'),
 
 		postCreate: function(args, frag){
-			// nothing to do but don't want Checkbox version to run
+			this.inputNode.checked=this.checked;
+			//only set disabled if true since FF interprets any value for disabled as true
+			if (this.disabled){
+				this.inputNode.setAttribute("disabled",true);
+			} 
 		},
 
 		fillInTemplate: function(){
