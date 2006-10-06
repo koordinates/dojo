@@ -2,9 +2,6 @@
 
 require_once('inc/Dojo.php');
 require_once('inc/DojoPackage.php');
-require_once('inc/DojoObject.php');
-require_once('inc/DojoString.php');
-require_once('inc/DojoArray.php');
 require_once('inc/helpers.inc');
 
 header('Content-type: text/plain');
@@ -69,86 +66,53 @@ foreach ($files as $file) {
       }
     }
     
-    // Handle dojo.declare calls
-    // Say hello to the piece of crap function signature Scott spawned from the depths of hell
+    // This closely matches dojo.widget.defineWidget as declared in src/widget/Widget.js
     $calls = array_merge($package->getFunctionCalls('dojo.declare'), $package->getFunctionCalls('dojo.widget.defineWidget'));
     foreach ($calls as $call) {
-      $parameters = $call->getParameters();
-
-      $name = '';
-      $environment = '';
-      
-      $arguments = array(
-      	'name' => null,
-      	'environment' => null,
-      	'function_mixins' => null,
-      	'function' => null,
-      	'mixins' => null,
-      	0 => null,
-      	1 => null,
-      	2 => null,
-      	3 => null,
-      	4 => null
-      );
-      
-      if (count($parameters) > 0) {
-      	$arguments[0] = $arguments['name'] = $parameters[0]->getValue();
-      	if($arguments['name'] instanceof DojoString) {
-      		$arguments['name'] = $arguments['name']->getValue();
-      	}
-			}
-			if (count($parameters) > 1) {
-				$arguments[1] = $arguments['environment'] = $parameters[1]->getValue();
-			}
-			if (count($parameters) > 2) {
-				$arguments[2] = $arguments['function_mixins'] = $parameters[2]->getValue();
-			}
-			if (count($parameters) > 3) {
-				$arguments[3] = $arguments['function'] = $parameters[3]->getValue();
-			}
-			if (count($parameters) > 4) {
-				$arguments[4] = $arguments['mixins'] = $parameters[4]->getValue();
-			}
-      
-      // Logic
-      
-			if ($arguments[3] instanceof DojoString) {
-				$arguments['environment'] = $arguments[3];
-				$arguments['function_mixins'] = $arguments[1];
-				$arguments['function'] = $arguments[4];
-				$arguments['mixins'] = $arguments[2];
-			}
-			else{
-				$function = 3;
-				if ($arguments[1] instanceof DojoString) {
-					$arguments['environment'] = $arguments[1];
-					$arguments['function_mixins'] = $arguments[2];
-				}
-				else {
-					$arguments['environment'] = '';
-					$arguments['function_mixins'] = '';
-					if ($arguments[1] instanceof DojoString) {
-						$arguments['function_mixins'] = $arguments[1]->getValue();						
-					}
-					$function = 2;
-				}
-			}
-
-			if ($arguments[$function] instanceof DojoFunction) {
-				$arguments['function'] = $arguments[$function];
-				$arguments['mixins'] = $arguments[$function + 1];
-			}
-			else {
-				$arguments['function'] = null;
-				$arguments['mixins'] = $arguments[$function];
-			}
-
-      $output[$package->getPackageName()]['meta']['functions'][$arguments['name']]['_']['meta']['summary'] = '';
-      if ($arguments['function_mixin'] instanceof DojoFunction) {
-        $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['inherits'][] = $arguments['function_mixin']->getFunctionName();
-        $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['this_inherits'][] = $arguments['function_mixin']->getFunctionName();
+      if ($call->getName() == 'dojo.declare') {
+        $args = array($call->getParameter(0), null, $call->getParameter(1), $call->getParameter(2), $call->getParameter(3));
       }
-      print_r($output);
+      else {
+        if ($call->getParameter(3)->isA(DojoString)) {
+          $args = array($call->getParameter(0), $call->getParameter(3), $call->getParameter(1), $call->getParameter(4), $call->getParameter(2));
+        }
+        else {
+          $args = array($call->getParameter(0));
+          $p = 3;
+          if ($call->getParameter(1)->isA(DojoString)) {
+            array_push($args, $call->getParameter(1), $call->getParameter(2));
+          }
+          else {
+            array_push($args, null, $call->getParameter(1));
+            $p = 2;
+          }
+          if ($call->getParameter($p)->isA(DojoFunctionDeclare)) {
+            array_push($args, $call->getParameter($p), $call->getParameter($p + 1));
+          }
+          else {
+            array_push($args, null, $call->getParameter($p));
+          }
+        }
+      }
+      
+      $package = $package->getPackageName();
+      $name = $args[0]->getString();
+
+      // $args looks like (name, null, superclass(es), initializer, mixins)      
+      if ($args[2]->isA(DojoString)) {
+        $output[$package]['meta']['functions'][$name]['_']['meta']['inherits'][] = $args[2]->getString();
+        $output[$package]['meta']['functions'][$name]['_']['meta']['this_inherits'][] = $args[2]->getString();
+      }
+      elseif ($args[2]->isA(DojoArray)) {
+        $items = $args[2]->getArray();
+        foreach ($items as $item) {
+          if ($item->isA(DojoString)) {
+            $output[$package]['meta']['functions'][$name]['_']['meta']['inherits'][] = $item->getString();
+            $output[$package]['meta']['functions'][$name]['_']['meta']['this_inherits'][] = $item->getString();
+          }
+        }
+      }
+
       if ($arguments['mixins'] instanceof DojoObject) {
         $keys = $arguments['mixins']->getKeys();
         foreach ($keys as $key) {

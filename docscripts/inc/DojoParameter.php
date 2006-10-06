@@ -34,6 +34,14 @@ class DojoParameter
 		$this->end = array($line, $position);
 	}
   
+  public function isA($class)
+  {
+    if ($this->parameter_value instanceof $class) {
+      return true;
+    }
+    return false;
+  }
+  
   public function build()
   {
     if (!$this->start) {
@@ -86,6 +94,19 @@ class DojoParameter
         }
       }
     }
+  }
+  
+  public function getString()
+  {
+    if (!$this->parameter_value) {
+      $this->parameter_value = $this->getValue();
+    }
+    
+    if ($this->parameter_value instanceof DojoString) {
+      return $this->parameter_value->getValue();
+    }
+    
+    return '';
   }
 
   public function getValue()
