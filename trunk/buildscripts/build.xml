@@ -563,13 +563,6 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			<param name="dstFile" value="${release_dir}/dojo.js" />
 		</antcall>
 
-		<!--
-		<java jar="./lib/custom_rhino.jar" fork="true" output="${release_dir}/__package__.js">
-			<arg value="-c" />
-			<arg value="${release_dir}/source.__package__.js" />
-		</java>
-		-->
-
 		<!-- add build notice -->
 		<replaceregexp match="^" byline="false" replace="${build_notice}">
 			<fileset dir="${release_dir}" includes="dojo.js"/>
@@ -605,7 +598,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 	<target name="-rhino-compress" unless="nostrip">
 		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}.uncompressed.js" />
 		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true">
-			<redirector logError="true" output="${dstFile}" alwayslog="true" />
+			<redirector logError="true"  output="${dstFile}" alwayslog="false" />
 			<arg value="-strict" />
 			<arg value="-opt"/>
 			<arg value="-1" />
