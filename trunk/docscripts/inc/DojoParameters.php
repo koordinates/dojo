@@ -48,11 +48,11 @@ class DojoParameters
   
   public function getParameter($pos)
   {
-    if ($this->parameters) {
+    if ($this->parameters && !empty($this->parameters[$pos])) {
       return $this->parameters[$pos];
     }
     else {
-      return array();
+      return new DojoParameter($package);
     }
   }
   

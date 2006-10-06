@@ -7,11 +7,15 @@ class DojoFunctionCall
   private $package;
   private $start;
   private $end;
+  private $name;
   private $parameters;
   
-  public function __construct($package)
+  public function __construct($package, $line_number = false, $position = false)
   {
     $this->package = $package;
+    if ($line_number !== false && $position !== false) {
+      $this->setStart($line_number, $position);
+    }
     $this->parameters = new DojoParameters($package);
   }
   
@@ -37,6 +41,17 @@ class DojoFunctionCall
 
     $this->setEnd($end[0], $end[1]);
     return $end;
+  }
+  
+  public function getName()
+  {
+    if ($this->name) {
+      return $this->name;
+    }
+    
+    $line = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], $this->start[0]);
+    $line = $line[$this->start[0]];
+    return $this->name = trim(substr($line, 0, strpos($line, '(')));
   }
   
   public function getParameter($pos)
