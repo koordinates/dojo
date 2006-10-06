@@ -452,7 +452,7 @@ dojo.widget.defineWidget(
 					this.toggleHtmlEditing();
 					break;
 				default:
-					dojo.widget.Editor2.superclass.execCommand.call(this, command, argument);
+					dojo.widget.Editor2.superclass.execCommand.apply(this, arguments);
 			}
 		},
 		queryCommandEnabled: function(/*String*/command, argument){
@@ -461,7 +461,7 @@ dojo.widget.defineWidget(
 					return true;
 				default:
 					if(this._inSourceMode){ return false;}
-					return dojo.widget.Editor2.superclass.queryCommandEnabled.call(this, command, argument);
+					return dojo.widget.Editor2.superclass.queryCommandEnabled.apply(this, arguments);
 			}
 		},
 		queryCommandState: function(/*String*/command, argument){
@@ -469,7 +469,7 @@ dojo.widget.defineWidget(
 				case 'htmltoggle':
 					return this._inSourceMode;
 				default:
-					return dojo.widget.Editor2.superclass.queryCommandState.call(this, command, argument);
+					return dojo.widget.Editor2.superclass.queryCommandState.apply(this, arguments);
 			}
 		},
 
