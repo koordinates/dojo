@@ -623,7 +623,6 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			</filterchain>
 		</copy>
 		
-		<!--FIXME: dir=".." is kludgey. Having trouble bootstrapping without it -->
 		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" >
 			<redirector logError="true" outputproperty="generatedLocales" alwayslog="true" />
 			<arg value="flattenResources.js" />
@@ -633,6 +632,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			<arg value="${locales}" />
 			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
+		
 		<delete file="${release_dir}/localizations.tmp.js" />
 		<available property="hasResources" file="${release_dir}/nls" type="dir" />
 		<echo message="Generated flattened resources for prefix ${buildPrefix} in the following locales: ${generatedLocales}."/>
