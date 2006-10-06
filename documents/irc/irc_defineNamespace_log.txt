@@ -391,7 +391,6 @@ ttrenka: "two lesbians, preferably sisters, doing it, and i just watch"
 schontz: unless it is the american version 
 dylanks: (British version that is, not the lame US ripoff)
 ttrenka: heh
-iamthewalrus: damn straight
 slightlyoff: oy
 ttrenka: it's a quote
 ttrenka: ...been doing an Office fest for the past couple of weeks
@@ -473,7 +472,6 @@ ttrenka: ok, so back to "define()"
 slightlyoff: the word "define" in my mind seems to imply that you're creating an object right there
 ttrenka: ok
 slightlyoff: when in fact we're just specifying namespaces/locations
-slightlyoff: oh, shit, tom
 slightlyoff: hrm
 ttrenka: ?
 ttrenka: oh

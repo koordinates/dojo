@@ -263,7 +263,7 @@
 [2:29pm] mda: if they *want* to optimize for what in particular has actually changed, they can do that.
 [2:29pm] slightlyoff: ah, hrm
 [2:29pm] mda: but minimally, all widgets have to implement that base method.
-[2:29pm] slightlyoff: damnit, I want watch() back in the language...
+[2:29pm] slightlyoff: I want watch() back in the language...
 [2:29pm] slightlyoff:
 [2:29pm] mda: that is how X Window widget sets usually did it back in the 80s, as i recall 
 [2:30pm] slightlyoff: yeah, that's how the heavyweight widget sets do it today

@@ -18,7 +18,7 @@ dojo.require("dojo.lang.extras");
  *		server classes. Wish it were always this easy.
  *
  *	xpcshell:
- *		XPCOM for I/O. A cluster-fuck to be sure.
+ *		XPCOM for I/O.
  *
  *	spidermonkey:
  *		S.O.L.

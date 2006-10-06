@@ -142,7 +142,7 @@ public class ASTLiteral extends SimpleNode {
 		value = valueStr;
 
 		// PENDING(uwe): clean up and other value types
-		// PENDING(uwe): serious shit here -> escaping/unescaping, quotes etc
+		// PENDING(uwe): serious stuff here -> escaping/unescaping, quotes etc
 		Token token = getBeginToken();
 
 		char quoteChar = token.image.charAt(0);
