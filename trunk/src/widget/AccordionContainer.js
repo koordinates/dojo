@@ -242,11 +242,17 @@ dojo.widget.defineWidget(
 		this.selected=isSelected;
 		(isSelected ? dojo.html.addClass : dojo.html.removeClass)(this.domNode, this["class"]+"-selected");
 
-		// make sure child is showing (lazy load)
-		if(isSelected  && this.children.length){
-			var child = this.children[0];
-			if(!child.isShowing()){
-				child.show();
+		// make sure child is showing (lazy load), and also that onShow()/onHide() is called
+		var child = this.children[0];
+		if(child){
+			if(isSelected){
+				if(!child.isShowing()){
+					child.show();
+				}else{
+					child.onShow();
+				}
+			}else{
+				child.onHide();
 			}
 		}
 	}
