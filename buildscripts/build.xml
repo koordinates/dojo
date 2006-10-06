@@ -401,7 +401,7 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		<chmod perm="ugo+r" type="file" dir="${release_dir}" includes="**/*.*"/>
 	</target>
 	<!-- strip-docs task -->
-
+	
 	<!-- -set-profile-deps task -->
 	<target name="-set-profile-deps" depends="-fix-config"
 		description="populates the contents of the dependency list for a given profile">
@@ -430,8 +430,8 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 		<!-- FIXME: need to actually get a list of js files to be processed  -->
 
-		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" 
-			outputproperty="concatFilesProp" logerror="true">
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true">
+			<redirector logError="true" outputproperty="concatFilesProp" alwayslog="true" />
 			<arg value="-opt" />
 			<arg value="-1" />
 			<arg value="-f" />
@@ -604,7 +604,8 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 
 	<target name="-rhino-compress" unless="nostrip">
 		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}.uncompressed.js" />
-		<java jar="./lib/custom_rhino.jar" failonerror="true" logerror="true" fork="true" output="${dstFile}">
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true">
+			<redirector logError="true" output="${dstFile}" alwayslog="true" />
 			<arg value="-strict" />
 			<arg value="-opt"/>
 			<arg value="-1" />
@@ -629,8 +630,8 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			</filterchain>
 		</copy>
 		<!--FIXME: dir=.. is kludgey. Having trouble bootstrapping without it -->
-		<java jar="./lib/custom_rhino.jar" outputProperty="generatedLocales" failonerror="true" logerror="true"
-			fork="true" dir=".." >
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" dir=".." >
+			<redirector logError="true" outputproperty="generatedLocales" alwayslog="true" />
 			<arg value="./buildscripts/flattenResources.js" />
 			<arg value="./buildscripts/${release_dir}/localizations.tmp.js" />
 			<arg value="./buildscripts/${release_dir}/nls" />
