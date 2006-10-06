@@ -117,6 +117,7 @@ cometd = new function(){
 	}
 
 	this.finishInit = function(type, data, evt, request){
+		data = data[0];
 		this.handshakeReturn = data;
 		// pick a transport
 		if(data["authSuccessful"] == false){
