@@ -20,10 +20,11 @@ var localeList = arguments[3].split(',');
 
 djConfig={
 	locale: 'xx',
-	extraLocale: localeList
+	extraLocale: localeList,
+	baseRelativePath: "../"
 };
 
-load('dojo.js');
+load('../dojo.js');
 
 dojo.require("dojo.i18n.common");
 dojo.require("dojo.json");
