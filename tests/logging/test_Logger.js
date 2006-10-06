@@ -53,7 +53,7 @@ function test_logging_exception(){
 		dojo.log.exception(msg, e, true);
 	}
 	var last = dojo.logging.logQueueHandler.data.pop();
-	jum.assertEquals("test70", msg, last.message.substr(0, msg.length));
+	jum.assertEquals(msg, last.message.substr(0, msg.length));
 }
 
 function test_logging_log(){
