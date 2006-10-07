@@ -196,7 +196,7 @@ dojo.widget.defineWidget(
 	
 	
 	_focusLabel: function(node) {
-				
+		//dojo.debug((new Error()).stack)		
 		var lastFocused = node.tree.lastFocused;
 		var labelNode;
 		
@@ -287,7 +287,7 @@ dojo.widget.defineWidget(
 	onAfterTreeCreate: function(message) {
 		var tree = message.source;
 		dojo.event.browser.addListener(tree.domNode, "onKey", dojo.lang.hitch(this, this.onKey));
-		//dojo.event.browser.addListener(tree.domNode, "onclick", dojo.lang.hitch(this, this.onClick));
+		dojo.event.browser.addListener(tree.domNode, "onmousedown", dojo.lang.hitch(this, this.onTreeMouseDown));
 		dojo.event.browser.addListener(tree.domNode, "onclick", dojo.lang.hitch(this, this.onTreeClick));
 		dojo.event.browser.addListener(tree.domNode, "onfocus", dojo.lang.hitch(this, this.onFocusTree));
 		tree.domNode.setAttribute("tabIndex", "0");
@@ -300,11 +300,14 @@ dojo.widget.defineWidget(
 		}
 	},
 
+    onTreeMouseDown: function(e) {
+    },
+
 	onTreeClick: function(e){
 		//dojo.profile.start("onTreeClick");
 		
 		var domElement = e.target;
-		
+		//dojo.debug('click')
 		// find node
         var node = this.domElement2TreeNode(domElement);		
 		if (!node || !node.isTreeNode) {

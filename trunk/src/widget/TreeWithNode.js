@@ -43,8 +43,8 @@ dojo.declare(
 	},
 	
 	
-	expandLevel: "", // expand to level automatically
-	loadLevel: "", // load to level automatically
+	expandLevel: 0, // expand to level automatically
+	loadLevel: 0, // load to level automatically
 		
 	hasLock: function() {
 		return this.lockLevel>0;

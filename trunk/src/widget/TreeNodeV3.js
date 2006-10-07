@@ -225,6 +225,8 @@ dojo.widget.defineWidget(
 		}
 		//dojo.debug("publish "+this.tree.eventNames.changeTree);
 		
+		        
+
 		dojo.event.topic.publish(this.tree.eventNames.afterChangeTree, {oldTree:null, newTree:this.tree, node:this} );
 		
 		
@@ -536,7 +538,16 @@ dojo.widget.defineWidget(
 	viewFocus: function() {
 		dojo.html.addClass(this.labelNode, this.tree.classPrefix+"LabelFocused");
 	},
-	
+    
+    viewEmphase: function() {
+        dojo.html.clearSelection(this.labelNode);
+        
+		dojo.html.addClass(this.labelNode, this.tree.classPrefix+'NodeEmphased');
+    },
+    
+    viewUnemphase: function() {
+        dojo.html.removeClass(this.labelNode, this.tree.classPrefix+'NodeEmphased');
+    },
 	
 	
 // ================================ detach from parent ===================================
