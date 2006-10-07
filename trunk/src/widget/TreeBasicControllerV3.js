@@ -372,6 +372,20 @@ dojo.widget.defineWidget(
 	},
 	
 	/**
+	 * expand tree to specific node
+	 */
+	expandToNode: function(node) {
+		n = node.parent
+		s = []
+		while (!n.isExpanded) {
+			s.push(n)
+			n = n.parent
+		}
+				
+		dojo.lang.forEach(s, function(n) { n.expand() })
+	},
+		
+	/**
 	 * walk a node in time, forward order, with pauses between expansions
 	 */
 	expandToLevel: function(nodeOrTree, level) {
