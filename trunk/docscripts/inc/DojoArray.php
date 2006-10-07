@@ -1,25 +1,10 @@
 <?php
 
-class DojoArray
+require_once('DojoBlock.php');
+
+class DojoArray extends DojoBlock
 {
-  private $package;
   private $parameters;
-  
-  public function __construct($package)
-  {
-    $this->package = $package;
-    $this->parameters = new DojoParameters($package);
-  }
-  
-  public function setStart($line_number, $position)
-  {
-    $this->start = array($line_number, $position);
-  }
-  
-  public function setEnd($line_number, $position)
-  {
-    $this->end = array($line_number, $position);
-  }
   
   public function build()
   {
