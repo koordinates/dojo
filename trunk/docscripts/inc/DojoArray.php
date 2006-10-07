@@ -4,6 +4,8 @@ require_once('DojoBlock.php');
 
 class DojoArray extends DojoBlock
 {
+  private $object = 'DojoArray';
+  
   private $parameters;
   
   public function build()

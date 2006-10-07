@@ -5,6 +5,8 @@ require_once('DojoBlock.php');
 
 class DojoFunctionCall extends DojoBlock
 {
+  private $object = 'DojoFunctionCall';
+  
   private $name;
   private $parameters;
   

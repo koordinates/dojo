@@ -6,7 +6,7 @@ class DojoBoolean
   
   public function __construct($value)
   {
-    $this->value = (eval($value));
+    $this->value = ($value == 'true');
   }
   
   public function getValue()

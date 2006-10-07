@@ -24,6 +24,10 @@ class TestText extends UnitTestCase
     $source_array = array(' "     ")');
     list($line_number, $position) = Text::findTermination($source_array, ')', '()');
     $this->assertEqual($line_number . '/' . $position, '0/8');
+    
+    $source_array = array(' function() {', '   ', '},');
+    list($line_number, $position) = Text::findTermination($source_array, ',)', '(){}');
+    $this->assertEqual($line_number . '/' . $position, '2/1');
   }
 }
 

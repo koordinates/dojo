@@ -2,6 +2,8 @@
 
 class DojoNull
 {
+  private $object = 'DojoNull';
+  
   private $value = '';
   
   public function __construct($value)
