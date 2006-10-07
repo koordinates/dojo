@@ -658,7 +658,18 @@ function test_validate_check(){
 				{text: "option 5", value: "pistachio almond", selected: true},
 				{text: "option 6", value: "mocha almond chip", selected: false}
 			]
-		}
+		},
+		// <select> null selection
+		s3: {
+			type: "select-one", 
+			name: "s3",
+			selectedIndex: 0,
+			options: [
+				{text: "option 1", value: "", selected: true},
+				{text: "option 2", value: "v1", selected: false},
+				{text: "option 3", value: "v2", selected: false}
+			]
+		},
 	};
 
 	// Profile for form input
@@ -670,7 +681,8 @@ function test_validate_check(){
 		ucfirst: ["tx10"],
 		digit: ["tx11"],
 		// required fields
-		required: ["tx2", "tx3", "tx4", "tx5", "tx6", "tx7", "tx8", "pw1", "ta1", "rb1", "rb2", "cb3", "s1", "s2", 
+		required: ["tx2", "tx3", "tx4", "tx5", "tx6", "tx7", "tx8", "pw1", "ta1", "rb1", "rb2", 
+					"cb3", "s1", "s2", "s3",
 			{"doubledip":2}, {"tripledip":3} ],
 		// dependant/conditional fields
 		dependancies:	{
@@ -737,8 +749,8 @@ function test_validate_check(){
 	jum.assertFalse("missing_test23", results.isMissing("cc_no") );
 	jum.assertTrue("missing_test24", results.isMissing("cc_exp") );
 	jum.assertFalse("missing_test25", results.isMissing("cc_type") );
-	// missing: tx8, ta1, rb2, cb3, s1, doubledip, tripledip, cc_exp
-	jum.assertEquals("missing_test26", 8, results.getMissing().length );
+	// missing: tx8, ta1, rb2, cb3, s1, s3, doubledip, tripledip, cc_exp
+	jum.assertEquals(9, results.getMissing().length );
 
 	// test constraint stuff
 	jum.assertTrue("invalid_test1", results.hasInvalid() );
