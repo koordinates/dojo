@@ -131,6 +131,8 @@ dojo.declare(
 		
 		var hadChildren = this.children.length > 0;
 		
+        this.destroyChildren()
+        
 		if (childrenArray) {
 			this.children = childrenArray;
 		}
