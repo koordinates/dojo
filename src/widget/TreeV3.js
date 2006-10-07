@@ -61,8 +61,10 @@ dojo.widget.defineWidget(
 		afterAddChild: "afterAddChild",
 		afterDetach: "afterDetach",
 		afterExpand: "afterExpand",
+		beforeExpand: "beforeExpand",
 		afterSetTitle: "afterSetTitle",		
-		afterCollapse: "afterCollapse"
+		afterCollapse: "afterCollapse",	
+		beforeCollapse: "beforeCollapse"
 	},
 
 	classPrefix: "Tree",
@@ -256,7 +258,7 @@ dojo.widget.defineWidget(
 		
 		var _this = this;
 			
-		
+		//dojo.html.disableSelection(this.domNode)
 				
 		dojo.lang.forEach(this.listeners,
 			function(elem) {
@@ -264,6 +266,8 @@ dojo.widget.defineWidget(
 				t.listenTree(_this)				
 			}
 		);
+		
+
 		
 		
 

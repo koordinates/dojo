@@ -12,52 +12,55 @@ dojo.widget.defineWidget(
 	[dojo.widget.PopupMenu2, dojo.widget.TreeCommon],
 	function() {
 		this.listenedTrees = {};
+		
 	},
 {
-	open: function(x, y, parentMenu, explodeSrc){
 
-		var result = dojo.widget.PopupMenu2.prototype.open.apply(this, arguments);
-
-		/* publish many events here about structural changes */
-		dojo.event.topic.publish(this.eventNames.open, { menu:this });
-
-		return result;
-	},
-
-	listenTreeEvents: ["afterChangeTree","beforeTreeDestroy"],
+	listenTreeEvents: ["afterTreeCreate","beforeTreeDestroy"],
 	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},
 	
-	onBeforeTreeDestroy: function(message) {
-		this.unlistenTree(message.source);
+	onAfterTreeCreate: function(message) {
+		var tree = message.source;
+		this.bindDomNode(tree.domNode);
 	},
-
-
-	onAfterChangeTree: function(message) {
-		//dojo.debugShallow(message);
-				
-		            
-		if (!message.newTree || !this.listenedTrees[message.newTree.widgetId]) {
-			// I got this message because node leaves me (oldtree)
-			this.processDescendants(message.node, this.listenNodeFilter, this.unlistenNode);
-		}		
+	
+	onBeforeTreeDestroy: function(message) {
+		this.unBindDomNode(message.source.domNode);
+	},
+	
+	
+	getTreeNode: function() {
 		
-		if (!message.oldTree || !this.listenedTrees[message.oldTree.widgetId]) {
-			// we have new node
-			this.processDescendants(message.node, this.listenNodeFilter, this.listenNode);
+		var source = this.getTopOpenEvent().target;
+		var treeNode = this.domElement2TreeNode(source);
+		return treeNode
+	},
+		
+	open: function() {
+		var result = dojo.widget.PopupMenu2.prototype.open.apply(this, arguments);
+
+		for(var i=0; i< this.children.length; i++) {
+			if (this.children[i].menuOpen) {
+				this.children[i].menuOpen(this.getTreeNode());
+			}
+		}
+		return result
+	},
+	
+	close: function(){
+		
+		for(var i=0; i< this.children.length; i++) {
+			if (this.children[i].menuClose) {
+				this.children[i].menuClose(this.getTreeNode());
+			}
 		}
 		
-		//dojo.profile.end("onTreeChange");
-	},
 
-	
-	listenNode: function(node) {
-		this.bindDomNode(node.labelNode);
-	},
-
-
-	unlistenNode: function(node) {
-		this.unBindDomNode(node.labelNode);
+		var result = dojo.widget.PopupMenu2.prototype.close.apply(this, arguments);
+		
+		return result
 	}
+	
 });
 
 
@@ -77,25 +80,24 @@ dojo.widget.defineWidget(
 		}
 	},
 
+		
 	getTreeNode: function() {
 		var menu = this;
 
 		// FIXME: change to dojo.widget[this.widgetType]
 		while (! (menu instanceof dojo.widget.TreeContextMenuV3) ) {
-			menu = menu.parent;
+				menu = menu.parent;
 		}
 
-		var source = menu.getTopOpenEvent().target;
+		var treeNode = menu.getTreeNode()
 
-		var treeNode = this.domElement2TreeNode(source);
-		
 		return treeNode;
 	},
 
 
-	menuOpen: function(message) {
-		var treeNode = this.getTreeNode();
+	menuOpen: function(treeNode) {
 
+		treeNode.viewEmphase()
 		this.setDisabled(false); // enable by default
 
 		var _this = this;
@@ -105,6 +107,11 @@ dojo.widget.defineWidget(
 			}
 		);
 
+	},
+	
+	menuClose: function(treeNode) {
+
+		treeNode.viewUnemphase()
 	},
 
 	toString: function() {

@@ -25,21 +25,11 @@ dojo.widget.defineWidget(
 
 	
 	onSelect: function(message) {
-		var domNode = message.node.labelNode;
-		
-		dojo.html.clearSelection(domNode);
-		
-
-		dojo.html.addClass(domNode, message.node.tree.classPrefix+'NodeEmphased');
-		//dojo.debug("after select "+dojo.html.getClass(message.node.labelNode))
-		
+		message.node.viewEmphase()		
 	},
 	
 	onDeselect: function(message) {
-		var domNode = message.node.labelNode;
-		
-		//dojo.debug(dojo.html.getClass(message.node.labelNode))		
-		dojo.html.removeClass(domNode, message.node.tree.classPrefix+'NodeEmphased');
+		message.node.viewUnemphase()
 	}
 	
 
