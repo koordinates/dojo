@@ -659,6 +659,16 @@ function test_validate_check(){
 				{text: "option 6", value: "mocha almond chip", selected: false}
 			]
 		},
+		doublea: {
+			type: "select-multiple", 
+			name: "doublea",
+			selectedIndex: 2,
+			options: [
+				{text: "option 1", value: "vanilla", selected: false},
+				{text: "option 2", value: "chocolate", selected: true},
+				{text: "option 3", value: "", selected: true}
+			]
+		},
 		// <select> null selection
 		s3: {
 			type: "select-one", 
@@ -683,7 +693,7 @@ function test_validate_check(){
 		// required fields
 		required: ["tx2", "tx3", "tx4", "tx5", "tx6", "tx7", "tx8", "pw1", "ta1", "rb1", "rb2", 
 					"cb3", "s1", "s2", "s3",
-			{"doubledip":2}, {"tripledip":3} ],
+			{"doubledip":2}, {"tripledip":3}, {"doublea":2} ],
 		// dependant/conditional fields
 		dependancies:	{
 			cc_exp: "cc_no",
@@ -744,13 +754,15 @@ function test_validate_check(){
 	jum.assertTrue("missing_test18", results.isMissing("cb3") );
 	jum.assertTrue("missing_test17", results.isMissing("s1") );
 	jum.assertFalse("missing_test20", results.isMissing("s2") );
+	jum.assertTrue(results.isMissing("s3"));
 	jum.assertTrue("missing_test21", results.isMissing("doubledip") );
 	jum.assertTrue("missing_test22", results.isMissing("tripledip") );
+	jum.assertTrue(results.isMissing("doublea"));
 	jum.assertFalse("missing_test23", results.isMissing("cc_no") );
 	jum.assertTrue("missing_test24", results.isMissing("cc_exp") );
 	jum.assertFalse("missing_test25", results.isMissing("cc_type") );
 	// missing: tx8, ta1, rb2, cb3, s1, s3, doubledip, tripledip, cc_exp
-	jum.assertEquals(9, results.getMissing().length );
+	jum.assertEquals(10, results.getMissing().length );
 
 	// test constraint stuff
 	jum.assertTrue("invalid_test1", results.hasInvalid() );

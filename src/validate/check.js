@@ -128,7 +128,7 @@ dojo.validate.check = function(form, profile) {
 			else if ( elem.type == "select-multiple" ) {
 				var selected = 0;
 				for (var j = 0; j < elem.options.length; j++) {
-					if (elem.options[j].selected && /^\s*$/.test(elem.options[j].value)) { selected++; }
+					if (elem.options[j].selected && !/^\s*$/.test(elem.options[j].value)) { selected++; }
 				}
 				if ( selected < numRequired ) {	
 					missing[missing.length] = elem.name;
