@@ -18,6 +18,12 @@
 	dojo.require("dojo.widget.TreeDeselectOnDblselect");	
 	dojo.require("dojo.dnd.TreeDragAndDropV3");
 	dojo.hostenv.writeIncludes();
+    
+    dojo.addOnLoad(function() {
+        tree = dojo.widget.byId('firstTree')
+        dojo.event.browser.addListener(tree.domNode, "onclick", function(e) { dojo.debug(e) });
+	})
+    
 </script>
 
 
@@ -52,7 +58,7 @@
 
 
 MyTree
-<div dojoType="TreeV3" expandLevel="2" DndMode="between;onto" DndAcceptTypes="firstTree" widgetId="firstTree" listeners="controller;dndcontroller;selector">
+<div dojoType="TreeV3" style="background-color:gray" expandLevel="2" DndMode="between;onto" DndAcceptTypes="firstTree" widgetId="firstTree" listeners="controller;dndcontroller;selector">
     <div dojoType="TreeNodeV3" widgetId="Item 1" title="Item 1">
         <div dojoType="TreeNodeV3" widgetId="Item 1.1" title="Item 1.1<br/>blas"><br/></div>
         <div dojoType="TreeNodeV3" title="Item 1.2" widgetId="Item 1.2">

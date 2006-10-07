@@ -102,7 +102,10 @@ dojo.widget.defineWidget(
 	
 	
 	onTreeClick: function(event) {
+		
+		
 		var node = this.domElement2TreeNode(event.target);
+		
 		if (node) {
 			this.processNode(node, event);
 		}
