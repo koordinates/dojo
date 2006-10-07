@@ -2,7 +2,7 @@
 
 dojo.require("dojo.math");
 
-dojo.require("dojo.gfx.common");
+dojo.require("dojo.gfx.shape");
 
 // this is a Path shape
 dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape, {
@@ -39,8 +39,8 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape, {
 		if("l" in this.bbox){
 			if(this.bbox.l > x) this.bbox.l = x;
 			if(this.bbox.r < x) this.bbox.r = x;
-			if(this.bbox.t > x) this.bbox.t = x;
-			if(this.bbox.b > x) this.bbox.b = x;
+			if(this.bbox.t > y) this.bbox.t = y;
+			if(this.bbox.b < y) this.bbox.b = y;
 		}else{
 			this.bbox = {l: x, b: y, r: x, t: y};
 		}

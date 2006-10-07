@@ -8,6 +8,7 @@ dojo.require("dojo.string.*");
 
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.gfx.common");
+dojo.require("dojo.gfx.shape");
 dojo.require("dojo.gfx.path");
 
 dojo.require("dojo.experimental");
@@ -272,7 +273,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	}
 });
 
-dojo.declare("dojo.gfx.Group", dojo.gfx.VirtualGroup, {
+dojo.declare("dojo.gfx.Group", dojo.gfx.shape.VirtualGroup, {
 	attach: function(rawNode){
 		if(rawNode){
 			this.rawNode = rawNode;
@@ -315,13 +316,10 @@ dojo.lang.extend(dojo.gfx.Shape, zIndex);
 dojo.lang.extend(dojo.gfx.Group, zIndex);
 delete zIndex;
 
-dojo.declare("dojo.gfx.Rect", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultRect, true);
-		this.attach(rawNode);
-	},
+dojo.declare("dojo.gfx.Rect", dojo.gfx.shape.Rect, {
 	setShape: function(newShape){
 		var shape = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.bbox = null;
 		var style = this.rawNode.style;
 		style.left   = shape.x.toFixed();
 		style.top    = shape.y.toFixed();
@@ -356,12 +354,13 @@ dojo.declare("dojo.gfx.Rect", dojo.gfx.Shape, {
 		// a workaround for the VML's arcsize bug: cannot read arcsize of an instantiated node
 		var arcsize = rawNode.outerHTML.match(/arcsize = \"(\d*\.?\d+[%f]?)\"/)[1];
 		arcsize = (arcsize.indexOf("%") >= 0) ? parseFloat(arcsize) / 100 : dojo.gfx.vml._parseFloat(arcsize);
-		var width  = parseFloat(rawNode.style.width);
-		var height = parseFloat(rawNode.style.height);
+		var style = rawNode.style;
+		var width  = parseFloat(style.width);
+		var height = parseFloat(style.height);
 		// make an object
 		return dojo.gfx.makeParameters(dojo.gfx.defaultRect, {
-			x: parseInt(rawNode.style.left),
-			y: parseInt(rawNode.style.top),
+			x: parseInt(style.left),
+			y: parseInt(style.top),
 			width:  width,
 			height: height,
 			r: Math.min(width, height) * arcsize
@@ -370,27 +369,24 @@ dojo.declare("dojo.gfx.Rect", dojo.gfx.Shape, {
 });
 dojo.gfx.Rect.nodeType = "roundrect"; // use a roundrect so the stroke join type is respected
 
-dojo.declare("dojo.gfx.Ellipse", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultEllipse, true);
-		this.attach(rawNode);
-	},
+dojo.declare("dojo.gfx.Ellipse", dojo.gfx.shape.Ellipse, {
 	setShape: function(newShape){
-		var ts = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
-		with(this.rawNode.style){
-			left   = (ts.cx - ts.rx).toFixed();
-			top    = (ts.cy - ts.ry).toFixed();
-			width  = (ts.rx * 2).toFixed();
-			height = (ts.ry * 2).toFixed();
-		}
+		var shape = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.bbox = null;
+		var style = this.rawNode.style;
+		style.left   = (shape.cx - shape.rx).toFixed();
+		style.top    = (shape.cy - shape.ry).toFixed();
+		style.width  = (shape.rx * 2).toFixed();
+		style.height = (shape.ry * 2).toFixed();
 		return this.setTransform(this.matrix);
 	},
 	attachShape: function(rawNode){
-		var rx = parseInt(rawNode.style.width ) / 2;
-		var ry = parseInt(rawNode.style.height) / 2;
+		var style = this.rawNode.style;
+		var rx = parseInt(style.width ) / 2;
+		var ry = parseInt(style.height) / 2;
 		return dojo.gfx.makeParameters(dojo.gfx.defaultEllipse, {
-			cx: parseInt(rawNode.style.left) + rx,
-			cy: parseInt(rawNode.style.top ) + ry,
+			cx: parseInt(style.left) + rx,
+			cy: parseInt(style.top ) + ry,
 			rx: rx,
 			ry: ry
 		});
@@ -398,57 +394,51 @@ dojo.declare("dojo.gfx.Ellipse", dojo.gfx.Shape, {
 });
 dojo.gfx.Ellipse.nodeType = "oval";
 
-dojo.declare("dojo.gfx.Circle", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultCircle, true);
-		this.attach(rawNode);
-	},
+dojo.declare("dojo.gfx.Circle", dojo.gfx.shape.Circle, {
 	setShape: function(newShape){
-		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
-		this.rawNode.style.left   = (this.shape.cx - this.shape.r).toFixed();
-		this.rawNode.style.top    = (this.shape.cy - this.shape.r).toFixed();
-		this.rawNode.style.width  = (this.shape.r * 2).toFixed();
-		this.rawNode.style.height = (this.shape.r * 2).toFixed();
+		var shape = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.bbox = null;
+		var style = this.rawNode.style;
+		style.left   = (shape.cx - shape.r).toFixed();
+		style.top    = (shape.cy - shape.r).toFixed();
+		style.width  = (shape.r * 2).toFixed();
+		style.height = (shape.r * 2).toFixed();
 		return this;
 	},
 	attachShape: function(rawNode){
-		var r = parseInt(rawNode.style.width) / 2;
+		var style = this.rawNode.style;
+		var r = parseInt(style.width) / 2;
 		return dojo.gfx.makeParameters(dojo.gfx.defaultCircle, {
-			cx: parseInt(rawNode.style.left) + r,
-			cy: parseInt(rawNode.style.top)  + r,
+			cx: parseInt(style.left) + r,
+			cy: parseInt(style.top)  + r,
 			r:  r
 		});
 	}
 });
 dojo.gfx.Circle.nodeType = "oval";
 
-dojo.declare("dojo.gfx.Line", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultLine, true);
-		this.attach(rawNode);
-	},
+dojo.declare("dojo.gfx.Line", dojo.gfx.shape.Line, {
 	setShape: function(newShape){
-		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
-		this.rawNode.from = this.shape.x1.toFixed() + "," + this.shape.y1.toFixed();
-		this.rawNode.to   = this.shape.x2.toFixed() + "," + this.shape.y2.toFixed();
+		var shape = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.bbox = null;
+		var rawNode = this.rawNode;
+		rawNode.from = shape.x1.toFixed() + "," + shape.y1.toFixed();
+		rawNode.to   = shape.x2.toFixed() + "," + shape.y2.toFixed();
 		return this;
 	},
 	attachShape: function(rawNode){
+		var rawNode = this.rawNode;
 		return dojo.gfx.makeParameters(dojo.gfx.defaultLine, {
-			x1: this.rawNode.from.x,
-			y1: this.rawNode.from.y,
-			x2: this.rawNode.to.x,
-			y2: this.rawNode.to.y
+			x1: rawNode.from.x,
+			y1: rawNode.from.y,
+			x2: rawNode.to.x,
+			y2: rawNode.to.y
 		});
 	}
 });
 dojo.gfx.Line.nodeType = "line";
 
-dojo.declare("dojo.gfx.Polyline", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPolyline, true);
-		this.attach(rawNode);
-	},
+dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline, {
 	setShape: function(points, closed){
 		if(points && points instanceof Array){
 			this.shape = dojo.gfx.makeParameters(this.shape, { points: points });
@@ -456,11 +446,14 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.Shape, {
 		}else{
 			this.shape = dojo.gfx.makeParameters(this.shape, points);
 		}
-		var attr = "";
-		for(var i = 0; i< this.shape.points.length; ++i){
-			attr += this.shape.points[i].x.toFixed(8) + " " + this.shape.points[i].y.toFixed(8) + " ";
+		this.bbox = null;
+		var attr = [];
+		var p = this.shape.points;
+		for(var i = 0; i< p.length; ++i){
+			attr.push(p[i].x.toFixed());
+			attr.push(p[i].y.toFixed());
 		}
-		this.rawNode.points.value = attr;
+		this.rawNode.points.value = attr.join(" ");
 		return this.setTransform(this.matrix);
 	},
 	attachShape: function(rawNode){
@@ -476,22 +469,18 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.Shape, {
 });
 dojo.gfx.Polyline.nodeType = "polyline";
 
-dojo.declare("dojo.gfx.Image", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultImage, true);
-		this.attach(rawNode);
-	},
+dojo.declare("dojo.gfx.Image", dojo.gfx.shape.Image, {
 	getEventSource: function() {
 		return this.rawNode ? this.rawNode.firstChild : null;
 	},
 	setShape: function(newShape){
-		var ts = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
-        this.rawNode.firstChild.src = ts.src;
-        if(ts.width || ts.height){
-			with(this.rawNode.firstChild.style){
-				width  = ts.width;
-				height = ts.height;
-			}
+		var shape = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.bbox = null;
+		var firstChild = this.rawNode.firstChild;
+        firstChild.src = shape.src;
+        if(shape.width || shape.height){
+			firstChild.style.width  = shape.width;
+			firstChild.style.height = shape.height;
         }
 		return this.setTransform(this.matrix);
 	},
