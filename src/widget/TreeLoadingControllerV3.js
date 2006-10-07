@@ -237,6 +237,7 @@ dojo.widget.defineWidget(
 		return deferred;
 	},
 	
+	
 	expandToLevel: function(nodeOrTree, level, sync) {
 		return this.recurseToLevel(nodeOrTree, nodeOrTree.isTree ? level+1 : level, this.expand, this, nodeOrTree.isTree, sync);
 	},

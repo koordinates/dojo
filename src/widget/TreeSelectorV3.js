@@ -201,7 +201,7 @@ dojo.widget.defineWidget(
 		if (index >=0 ) {
 			return; // already selected
 		}
-		
+				
 		//dojo.debug("select "+node);
 		this.selectedNodes.push(node);
 						
