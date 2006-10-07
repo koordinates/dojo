@@ -6,9 +6,12 @@ class DojoObject
   private $start;
   private $end;
   
-  public function __construct($package)
+  public function __construct($package, $line_number = false, $position = false)
   {
     $this->package = $package;
+    if ($line_number !== false && $position !== false) {
+      $this->setStart($line_number, $position);
+    }
   }
   
   public function setStart($line_number, $position)

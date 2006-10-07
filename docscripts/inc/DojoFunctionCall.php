@@ -1,32 +1,17 @@
 <?php
 
 require_once('DojoParameters.php');
+require_once('DojoBlock.php');
 
-class DojoFunctionCall
+class DojoFunctionCall extends DojoBlock
 {
-  private $package;
-  private $start;
-  private $end;
   private $name;
   private $parameters;
   
   public function __construct($package, $line_number = false, $position = false)
   {
-    $this->package = $package;
-    if ($line_number !== false && $position !== false) {
-      $this->setStart($line_number, $position);
-    }
+    parent::__construct($package, $line_number, $position);
     $this->parameters = new DojoParameters($package);
-  }
-  
-  public function setStart($line, $position)
-  {
-    $this->start = array($line, $position);
-  }
-  
-  public function setEnd($line, $position)
-  {
-    $this->end = array($line, $position);
   }
   
   public function build()

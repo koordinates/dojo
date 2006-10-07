@@ -79,13 +79,40 @@ class Text
     return $lines;
   }
   
+  /**
+   * Always starts at the beginning. If you want a character to be ignored, it shouldn't be passed (see chop and blankOutAt)
+   */
+  public static function findTermination($source_array, $termination_characters, $enclosing_characters = '')
+  {
+    $characters = array();
+    $terminators = array();
+    foreach(self::toArray($termination_characters) as $character) { 
+      $terminators[$character] = true;
+    }
+    foreach (self::toArray($enclosing_characters) as $index => $character) {
+      $characters[$character] = ($index % 2) ? -1 : 1;
+    }
+    $all_characters = array_merge(array_keys($terminators), array_keys($characters));
+    
+    $balance = 0;
+    
+    foreach ($source_array as $line_number => $line) {
+      $line = self::toArray($line);
+      foreach (array_intersect($line, $all_characters) as $position => $character) {
+        if (!$balance && $terminators[$character]) {
+          return array($line_number, $position);
+        }
+        $balance += $characters[$character];
+        if (!$balance && $terminators[$character]) {
+          return array($line_number, $position);
+        }
+      }
+    }
+  }
+  
   public static function toArray($string)
   {
-    $chars = array();
-    for ($i = 0; $i < strlen($string); $i++) {
-      $chars[] = $string{$i};
-    }
-    return $chars;
+    return array_slice(preg_split('%%', $string), 1, -1);
   }
 }
 

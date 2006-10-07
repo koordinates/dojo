@@ -11,7 +11,6 @@ class DojoPackage
 	private $source;
   protected $declarations = array(); // Builds an array of functions declarations by name, with meta
   protected $calls = array(); // Builds an array of calls
-  //protected $variables = array(); // Builds an array of variables
   
   public function __construct(Dojo $dojo, $file)
   {
@@ -68,9 +67,12 @@ class DojoPackage
     $lines = $this->getCode();
     $lines = preg_grep('%\b' . preg_quote($name) . '\s*\(%', $lines);
     foreach ($lines as $line_number => $line) {
-      $call = new DojoFunctionCall($this);
-      $call->setStart($line_number, strpos($line, $name));
-      $call->build();
+      $position = strpos($line, $name);
+      if ($line_number < $last_line_number || ($line_number == $last_line_number && $position < $last_position)) {
+        continue;
+      }
+      $call = new DojoFunctionCall($this, $line_number, $position);
+      list($last_line_number, $last_position) = $call->build();
       $this->calls[$name][] = $call;
     }
     return $this->calls[$name];
