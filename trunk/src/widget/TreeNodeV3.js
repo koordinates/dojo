@@ -32,15 +32,17 @@ dojo.widget.defineWidget(
 	expandNode: null,
 	labelNode: null,
 		
-		
-	nodeType: "",
+    /**
+     *	can't call it nodeType cause of IE problems
+     */
+	nodeDocType: "",
     selected: false,
 	
-	getNodeType: function() {
-		return this.nodeType;
+	getnodeDocType: function() {
+		return this.nodeDocType;
 	},
 	
-	cloneProperties: ["actionsDisabled","tryLazyInit","nodeType","objectId","object",
+	cloneProperties: ["actionsDisabled","tryLazyInit","nodeDocType","objectId","object",
 		   "title","isFolder","isExpanded","state"],
 	
 	
@@ -281,7 +283,7 @@ dojo.widget.defineWidget(
 			while (elem = stack.pop()) {
 				for(var i=0; i<elem.childNodes.length; i++) {
 					var childNode = elem.childNodes[i]
-					if (childNode.nodeType != 1) continue;
+					if (childNode.nodeDocType != 1) continue;
 					// change prefix for classes
 					dojo.html.setClass(childNode, dojo.html.getClass(childNode).replace(reg, '$1'+newTree.classPrefix));
 					stack.push(childNode);
