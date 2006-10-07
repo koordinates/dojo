@@ -465,7 +465,7 @@ dojo.html.fixPathsInCssText = function(/* string */cssStr, /* string */URI){
 	// usage: cssText comes from dojoroot/src/widget/templates/Foobar.css
 	// 	it has .dojoFoo { background-image: url(images/bar.png);} then uri should point to dojoroot/src/widget/templates/
 	function iefixPathsInCssText() {
-		var regexIe = /AlphaImageLoader\(src\=['"]([\t\s\w()\/.\\'"-:#=&?]*)['"]/;
+		var regexIe = /AlphaImageLoader\(src\=['"]([\t\s\w()\/.\\'"-:#=&?~]*)['"]/;
 		while(match = regexIe.exec(cssStr)){
 			url = match[1].replace(regexTrim, "$2");
 			if(!regexProtocol.exec(url)){
