@@ -19,7 +19,7 @@ abstract class DojoBlock
     $this->start = array($line_number, $position);
   }
   
-  public function setEnd($line_number, $position)
+  protected function setEnd($line_number, $position)
   {
     $this->end = array($line_number, $position);
   }

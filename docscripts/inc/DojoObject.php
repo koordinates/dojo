@@ -1,149 +1,64 @@
 <?php
 
-class DojoObject
+require_once('DojoBlock.php');
+
+class DojoObject extends DojoBlock
 {
-  private $package;
-  private $start;
-  private $end;
+  private $object = 'DojoObject';
   
-  public function __construct($package, $line_number = false, $position = false)
+  private $values = array();
+  
+  public function build()
   {
-    $this->package = $package;
-    if ($line_number !== false && $position !== false) {
-      $this->setStart($line_number, $position);
-    }
-  }
-  
-  public function setStart($line_number, $position)
-  {
-    $this->start = array($line_number, $position);
-  }
-  
-  public function setEnd($line_number, $position)
-  {
-    $this->end = array($line_number, $position);
-  }
-  
-  public function getKeys() {
-    if ($this->keys) {
-      return array_keys($this->keys);
+    if (!$this->start) {
+      die("DojoObject->build() used before setting a start position");
     }
     
-    $lines = $this->chop($this->code, $this->start[0], $this->start[1], $this->end[0], $this->end[1]);
-    foreach ($lines as $line_number => $line) {
-      if (($pos = strpos($line, '{')) !== false) {
-        $this->setParameterStart($line_number, $pos);
-        break;
-      }
-    }
-    foreach (array_reverse($lines, true) as $line_number => $line) {
-      if (($pos = strrpos($line, '}')) !== false) {
-        $this->setParameterEnd($line_number, $pos);
-        break;
-      }
-    }
-    
-    $parameters = $this->getParameters();
-    foreach ($parameters as $parameter) {
-      $lines = $parameter->getRawValue();
-      $source_lines = $parameter->getRawSource();
+    $lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], false, false, true);
+    $end = array($this->start[0], $this->start[1]);
+
+    do {
+      $lines = Text::chop($this->package->getCode(), $end[0], $end[1], false, false, true); 
       foreach ($lines as $line_number => $line) {
-        if (trim($line) == '') {
-          continue;
-        }
-        
-        $trimmed_line = Text::trim($line);
-        if (preg_match('%([0-9a-zA-Z_.$]+):%', $trimmed_line, $match)) {
-          $lines[$line_number] = Text::blankOut($match[0], $lines[$line_number]);
-          $source_lines[$line_number] = Text::blankOut($match[0], $source_lines[$line_number]);
-          
-          $end = end($lines);
-          $this->keys[$match[1]] = array(
-            'lines' => $lines,
-            'source' => $source_lines
-          );
-        }
-      }
-    }
-    
-    return array_keys($this->keys);
-  }
-  
-  public function isFunction($key) {
-    $value = $this->getValue($key);
-    return $value instanceof DojoFunctionDeclare;
-  }
-  
-  public function isString($key) {
-    $value = $this->getValue($key);
-    if (is_string($value)) {
-      return $value{0} == '"' || $value{0} == "'";
-    }
-    return false;
-  }
-  
-  public function getValue($key) {
-    if (empty($this->keys)) {
-      $this->getKeys();
-    }
-    
-    if (!is_array($this->keys[$key])) {
-      return $this->keys[$key];
-    }
-    
-    $lines = $this->keys[$key]['lines'];
-    foreach ($lines as $line_number => $line) {
-      if (trim($line) == '') {
-        continue;
-      }
-      
-      if (preg_match('%^\s*\[%', $line)) {
-        $array = new DojoArray($this->source, $this->code, $this->package_name, $this->compressed_package_name);
-        $array->setStart($line_number, strpos($line, '['));
-        $array->setParameterStart($line_number, strpos($line, '['));
-        foreach (array_reverse($lines, true) as $line_number => $line) {
-          if (($pos = strrpos($line, ']')) !== false) {
-            $array->setParameterEnd($line_number, $pos);
-            $array->setEnd($line_number, $pos);
-            return $array;
+        if (preg_match('%^\s*([a-zA-Z0-9_$]+|"\s+"):%', $line, $match)) {
+          $end = array($line_number, strlen($match[0]));
+          if ($match[1]{0} == '"') {
+            $key = trim(implode(Text::chop($this->package->getSource(), $line_number, strpos($line, '"') + 1, $line_number, strlen($match[0]) - 3, false)));
           }
-        }
-        return;
-      }
-      elseif (preg_match('%^\s*function\s*\(%', $line)) {
-        $declare = new DojoFunctionDeclare($this->package);
-        $declare->setThis($this->function_name);
-        $declare->setStart($this->start[0], $this->start[1]);
-        $declare->setEnd($this->end[0], $this->end[1]);
-        $start = false;
-        $end = false;
-      }
-      
-      if ($declare) {
-        if (!$start && ($pos = strpos($line, '(')) !== false) {
-          $declare->setParameterStart($line_number, $pos);
-          $start = true;
-        }
-        
-        if (!$end && ($pos = strpos($line, ')')) !== false) {
-          $declare->setParameterEnd($line_number, $pos);
-        }
-        
-        if (($pos = strpos($line, '{')) !== false) {
-          $declare->setContentStart($line_number, $pos);
-          foreach (array_reverse($lines, true) as $line_number => $line) {
-            if (($pos = strrpos($line, '}')) !== false) {
-              $declare->setContentEnd($line_number, $pos);
-              $declare->setEnd($line_number, $pos);
-              $this->keys[$key] = $declare;
-              return $this->keys[$key];
-            }
+          else {
+            $key = $match[1];
           }
+          break;
         }
       }
+      $parameter = new DojoParameter($this->package, $end[0], $end[1], '}');
+      $end = $parameter->build();
+      
+      if (!$key) {
+        die('DojoObject->build() couldn\'t find a key');
+      }
+      $this->values[$key] = $parameter;
     }
-    
-    return $this->keys[$key] = Text::trim(implode("\n", $this->keys[$key]['source']));
+    while ($lines[$end[0]]{$end[1]} != '}');
+
+    $this->setEnd($end[0], $end[1]);
+    return $end;
+  }
+  
+  public function getKeys()
+  {
+    if (!$this->values) {
+      $this->build();
+    }
+    return array_keys($this->values);
+  }
+  
+  public function getValues()
+  {
+    if (!$this->values) {
+      $this->build();
+    }
+    return $this->values;
   }
 }
 

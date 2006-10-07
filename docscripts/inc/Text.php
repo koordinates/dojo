@@ -103,9 +103,6 @@ class Text
           return array($line_number, $position);
         }
         $balance += $characters[$character];
-        if (!$balance && $terminators[$character]) {
-          return array($line_number, $position);
-        }
       }
     }
   }

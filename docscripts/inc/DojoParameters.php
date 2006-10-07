@@ -4,6 +4,8 @@ require_once('DojoParameter.php');
 
 class DojoParameters
 {
+  private $object = 'DojoParameters';
+  
   private $package;
   private $parameters = array();
   private $start;

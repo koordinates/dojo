@@ -127,58 +127,57 @@ function rolloutFunction(&$output, $package, $declaration) {
   if ($declaration->isThis()) {
     $masquerading_as_function = $declaration->getThis();
   }
+
+	$package_name = $package->getPackageName();
   
-  $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['summary'] = '';
+  $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['summary'] = '';
   $parameters = $declaration->getParameters();
   foreach ($parameters as $parameter) {
-    $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['parameters'][$parameter->getValue()]['type'] = $parameter->getType();
+    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['parameters'][$parameter->getValue()]['type'] = $parameter->getType();
+		$declaration->addBlockCommentKey($parameter->getValue());
   }
   
   $declaration->addBlockCommentKey('summary');
   $declaration->addBlockCommentKey('description');
-  $parameters = $declaration->getParameters();
-  foreach ($parameters as $parameter) {
-    $declaration->addBlockCommentKey($parameter->getValue());
-  }
   
   $comment_keys = $declaration->getBlockCommentKeys();
   foreach ($comment_keys as $key) {
     if ($key == 'summary') {
-      $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['summary'] = $declaration->getBlockComment($key);
+      $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['summary'] = $declaration->getBlockComment($key);
     }
     elseif ($key == 'description') {
-      $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['description'] = $declaration->getBlockComment($key);
+      $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['description'] = $declaration->getBlockComment($key);
     }
   }
-  
-  $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['src'] = $declaration->getSource();
+
+  $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['src'] = $declaration->getSource();
   
   $this_variables = $declaration->getThisVariableNames();
   foreach ($this_variables as $this_variable) {
-    if (isset($output[$package->getPackageName()][$masquerading_as_function]['_']['meta']['this_variables'])) {
-      if (!in_array($this_variable, $output[$package->getPackageName()]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'])) {
-        $output[$package->getPackageName()]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'][] = $this_variable;
+    if (isset($output[$package_name][$masquerading_as_function]['_']['meta']['this_variables'])) {
+      if (!in_array($this_variable, $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'])) {
+        $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'][] = $this_variable;
       }
     }
     else {
-      $output[$package->getPackageName()]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'][] = $this_variable;
+      $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'][] = $this_variable;
     }
   }
   
   $returns = array_unique($declaration->getReturnComments());
   if (count($returns) == 1) {
-    $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['returns'] = $returns[0];
+    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['returns'] = $returns[0];
   }
   elseif ($returns) {
-    $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['returns'] = 'mixed';
+    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['returns'] = 'mixed';
   }
   
   if ($calls = $declaration->getThisInheritanceCalls()) {
-    $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['this_inherits'] = $calls;
+    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['this_inherits'] = $calls;
   }
   
   if ($declaration->isThis()) {
-    $output[$package->getPackageName()]['meta']['functions'][$function_name]['_']['meta']['this'] = $declaration->getThis();
+    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['this'] = $declaration->getThis();
   }
 }
 
