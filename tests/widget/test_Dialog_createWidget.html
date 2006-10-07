@@ -5,8 +5,9 @@
 <title>Dialog Widget Dojo Tests</title>
 <script type="text/javascript"> djConfig = { isDebug: true }; </script>
 <script type="text/javascript" src="../../dojo.js"></script>
-<script type="text/javascript" src="../../src/widget/Dialog.js">
-	//dojo.require("dojo.widget.Dialog");
+<script type="text/javascript">
+	dojo.require("dojo.debug.console");
+	dojo.require("dojo.widget.Dialog");
 </script>
 
 <script type="text/javascript">
@@ -14,11 +15,9 @@ var dlg, dlgProg;
 function init() {
 //	dlg = dojo.widget.byId("DialogContent");
 	dlgProg = dojo.widget.createWidget("dojo:Dialog",{toggle:"fade",toggleDuration:"250"}, dojo.byId("dialogNode"));
-//	var btn = document.getElementById("hider");
-//	dlg.setCloseControl(btn);
-	var btn2 = document.getElementById("hider2");
-	dlgProg.setCloseControl(btn2);
-	dojo.require("dojo.debug.Firebug");
+	dojo.debug(dlgProg.domNode.innerHTML);
+//	var btn2 = document.getElementById("hider2");
+//	dlgProg.setCloseControl(btn2);
 }
 dojo.addOnLoad(init);
 
@@ -38,33 +37,35 @@ form {
 </style>
 </head>
 <body>
-<a href="javascript:dlg.show()">Show</a> ---- <a href="javascript:dlgProg.show()">Show Programatic Dialog</a>
+<a href="javascript:dlgProg.show()">Show Programatic Dialog</a>
 <div id="dialogNode">
 	<form onsubmit="return false;">
 		<table>
-			<tr>
-				<td>This was created via createWidget!</td>
-			</tr>
-			<tr>
-				<td>Name:</td>
-				<td><input type="text"></td>
-			</tr>
-			<tr>
-				<td>Location:</td>
-				<td><input type="text"></td>
-			</tr>
-			<tr>
-				<td>Description:</td>
-				<td><input type="text"></td>
-			</tr>
-			<tr>
-				<td>Location:</td>
-				<td><input type="file"></td>
-			</tr>
-			<tr>
-				<td colspan="2" align="center">
-					<input type="button" id="hider2" value="OK"></td>
-			</tr>
+			<tbody>
+				<tr>
+					<td>This was created via createWidget!</td>
+				</tr>
+				<tr>
+					<td>Name:</td>
+					<td><input type="text"></td>
+				</tr>
+				<tr>
+					<td>Location:</td>
+					<td><input type="text"></td>
+				</tr>
+				<tr>
+					<td>Description:</td>
+					<td><input type="text"></td>
+				</tr>
+				<tr>
+					<td>Location:</td>
+					<td><input type="file"></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+						<input type="button" id="hider2" value="OK"></td>
+				</tr>
+			</tbody>
 		</table>
 	</form>
 </div>
@@ -186,7 +187,7 @@ turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
 consectetuer dapibus eros. Aliquam nisl.
 </p>
 
-<a href="javascript:dlg.show()">Show</a>
+<a href="javascript:dlgProg.show()">Show</a>
 <p>
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
 semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
