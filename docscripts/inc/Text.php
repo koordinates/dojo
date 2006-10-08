@@ -118,7 +118,7 @@ class Text
     $middle = array();
     $last = array();
     $data = false;
-    $mulitline = false;
+    $multiline = false;
     
     if ($started) {
       if (($pos = strpos($line, '*/')) !== false) {
@@ -160,7 +160,7 @@ class Text
       }
     }
     
-    return array(implode(' ', $first), implode(' ', $middle), implode(' ', $last), $data, $mulitline);
+    return array(implode(' ', $first), implode(' ', $middle), implode(' ', $last), $data, $multiline);
   }
 }
 
