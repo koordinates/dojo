@@ -5,6 +5,7 @@ dojo.require("dojo.math");
 dojo.require("dojo.lang.declare");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.string.*");
+dojo.require("dojo.html.metrics");
 
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.gfx.common");
@@ -20,13 +21,29 @@ dojo.gfx.vml._parseFloat = function(str) {
 	return str.match(/^\d+f$/i) ? parseInt(str) / 65536 : parseFloat(str);
 };
 
-dojo.gfx.vml.pt_in_px = 0.75; // FIXME: why 1pt = 0.75px?
+dojo.gfx.vml.cm_in_pt = 72 / 2.54;
+dojo.gfx.vml.mm_in_pt = 7.2 / 2.54;
 
-dojo.gfx.vml.pt2px = function(len){ return len / this.pt_in_px; };
-dojo.gfx.vml.px2pt = function(len){ return len * this.pt_in_px; };
+dojo.gfx.vml.px_in_pt = function(){ return dojo.html.getCachedFontMeasurements()["12pt"] / 12; };
+
+dojo.gfx.vml.pt2px = function(len){ return len * this.px_in_pt(); };
+dojo.gfx.vml.px2pt = function(len){ return len / this.px_in_pt(); };
 
 dojo.gfx.vml.normalizedLength = function(len) {
-	return len.indexOf("pt") >= 0 ? dojo.gfx.vml.pt2px(parseFloat(len)) : parseFloat(len);
+	if(len.length == 0) return 0;
+	if(len.length > 2){
+		var px_in_pt = this.px_in_pt();
+		var val = parseFloat(len);
+		switch(len.slice(-2)){
+			case "px": return val;
+			case "pt": return val * px_in_pt;
+			case "in": return val * 72 * px_in_pt;
+			case "pc": return val * 12 * px_in_pt;
+			case "mm": return val / this.mm_in_pt * px_in_pt;
+			case "cm": return val / this.cm_in_pt * px_in_pt;
+		}
+	}
+	return parseFloat(len);
 };
 
 dojo.lang.extend(dojo.gfx.Shape, {
@@ -1121,14 +1138,16 @@ dojo.lang.extend(dojo.gfx.Surface, {
 });
 
 dojo.gfx.createSurface = function(parentNode, width, height){
-   var s = new dojo.gfx.Surface();
-   s.rawNode = document.createElement("v:group");
-   s.rawNode.style.width  = (width) ? (width + "px") : "100%";
-   s.rawNode.style.height = (height) ? (height + "px") : "100%";
-   s.rawNode.coordsize = (width && height) ? (width + " " + height) : "100% 100%";
-   s.rawNode.coordorigin = "0 0";
-   dojo.byId(parentNode).appendChild(s.rawNode);
-   return s;
+	var s = new dojo.gfx.Surface();
+	s.rawNode = document.createElement("v:group");
+	s.rawNode.style.width  = width  ? width  : "100%";
+	s.rawNode.style.height = height ? height : "100%";
+	s.rawNode.coordsize = (width && height)
+		? (parseFloat(width) + " " + parseFloat(height))
+		: "100% 100%";
+	s.rawNode.coordorigin = "0 0";
+	dojo.byId(parentNode).appendChild(s.rawNode);
+	return s;
 };
 
 dojo.gfx.attachSurface = function(node){
