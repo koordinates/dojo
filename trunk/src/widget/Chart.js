@@ -15,6 +15,8 @@ dojo.declare(
 	isContainer: false,
 
 	assignColors: function(){
+		//	summary
+		//	Assigns/generates a color for a data series.
 		var hue=30;
 		var sat=120;
 		var lum=120;
