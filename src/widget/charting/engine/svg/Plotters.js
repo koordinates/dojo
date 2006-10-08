@@ -168,7 +168,88 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 	/*********************************************************
 	 *	Single plotters: one series at a time.
 	 *********************************************************/
+	DataBar: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		//	summary
+		//	Like Bar.
+		var area = plotarea.getArea();
+		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
+		
+		var n = data.length;
+		var w = (area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower);	//	the width of each group.
+		var yOrigin = plot.axisY.getCoord(plot.axisX.origin, plotarea, plot);
+
+		for(var i=0; i<n; i++){
+			//	calculate offset
+			var value = data[i].y;
+			var yA = yOrigin;
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot) - (w/2);
+			var y = plot.axisY.getCoord(value, plotarea, plot);
+			var h = Math.abs(yA-y);
+			if(value < plot.axisX.origin){
+				yA = y;
+				y = yOrigin;
+			}
+			var bar=document.createElementNS(dojo.svg.xmlns.svg, "rect");
+			bar.setAttribute("fill", data[i].series.color);
+			bar.setAttribute("stroke-width", "0");
+			bar.setAttribute("x", x);
+			bar.setAttribute("y", y);
+			bar.setAttribute("width", w);
+			bar.setAttribute("height", h);
+			bar.setAttribute("fill-opacity", "0.65");
+			if(applyTo){ applyTo(bar, data[i].src); }
+			group.appendChild(bar);
+		}
+		return group;
+	},
 	Line: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		var area = plotarea.getArea();
+		var line = document.createElementNS(dojo.svg.xmlns.svg, "g");
+		var path = document.createElementNS(dojo.svg.xmlns.svg, "path");
+		line.appendChild(path);
+
+		path.setAttribute("fill", "none");
+		path.setAttribute("stroke", data[0].series.color);
+		path.setAttribute("stroke-width" , "2");
+		path.setAttribute("stroke-opacity", "0.85");
+		if(data[0].series.label != null){
+			path.setAttribute("title", data[0].series.label);
+		}
+
+		var cmd=[];
+		for(var i=0; i<data.length; i++){
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot);
+			var y = plot.axisY.getCoord(data[i].y, plotarea, plot);
+			if(i==0){ cmd.push("M"); }
+			else { cmd.push("L"); }
+			cmd.push(x+","+y);
+			
+			//	points on the line
+			var c=document.createElementNS(dojo.svg.xmlns.svg, "circle");
+			c.setAttribute("cx",x);
+			c.setAttribute("cy",y);
+			c.setAttribute("r","3");
+			c.setAttribute("fill", data[i].series.color);
+			c.setAttribute("fill-opacity", "0.65");
+			c.setAttribute("stroke-width", "1");
+			c.setAttribute("stroke-opacity", "0.85");
+			line.appendChild(c);
+			if(applyTo){ applyTo(c, data[i].src); }
+		}
+		path.setAttribute("d", cmd.join(" "));
+		return line;
+	},
+	CurvedLine: function(
 		/* array */data, 
 		/* dojo.widget.charting.engine.PlotArea */plotarea,
 		/* dojo.widget.charting.engine.Plot */plot,
@@ -225,6 +306,55 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		return line;
 	},
 	Area: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		var area = plotarea.getArea();
+		var line = document.createElementNS(dojo.svg.xmlns.svg, "g");
+		var path = document.createElementNS(dojo.svg.xmlns.svg, "path");
+		line.appendChild(path);
+
+		path.setAttribute("fill", data[0].series.color);
+		path.setAttribute("fill-opacity", "0.4");
+		path.setAttribute("stroke", data[0].series.color);
+		path.setAttribute("stroke-width" , "1");
+		path.setAttribute("stroke-opacity", "0.85");
+		if(data[0].series.label != null){
+			path.setAttribute("title", data[0].series.label);
+		}
+
+		var cmd=[];
+		for(var i=0; i<data.length; i++){
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot);
+			var y = plot.axisY.getCoord(data[i].y, plotarea, plot);
+			if(i==0){ cmd.push("M"); }
+			else { cmd.push("L"); }
+			cmd.push(x+","+y);
+			
+			//	points on the line
+			var c=document.createElementNS(dojo.svg.xmlns.svg, "circle");
+			c.setAttribute("cx",x);
+			c.setAttribute("cy",y);
+			c.setAttribute("r","3");
+			c.setAttribute("fill", data[i].series.color);
+			c.setAttribute("fill-opacity", "0.65");
+			c.setAttribute("stroke-width", "1");
+			c.setAttribute("stroke-opacity", "0.85");
+			line.appendChild(c);
+			if(applyTo){ applyTo(c, data[i].src); }
+		}
+		//	finish it off
+		cmd.push("L");
+		cmd.push(x + "," + plot.axisY.getCoord(plot.axisX.origin, plotarea, plot));
+		cmd.push("L");
+		cmd.push(plot.axisX.getCoord(data[0].x, plotarea, plot) + "," +  plot.axisY.getCoord(plot.axisX.origin, plotarea, plot));
+		cmd.push("Z");
+		path.setAttribute("d", cmd.join(" "));
+		return line;
+	},
+	CurvedArea: function(
 		/* array */data, 
 		/* dojo.widget.charting.engine.PlotArea */plotarea,
 		/* dojo.widget.charting.engine.Plot */plot,
