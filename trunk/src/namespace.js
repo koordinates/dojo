@@ -136,8 +136,7 @@ dojo["namespace"].Namespace.prototype.resolve = function(/*String*/name, /*Strin
 		if(dojo.hostenv.findModule(fullName, false)){
 			this._loaded[fullName] = true;
 		}else{
-			//Q: should be a logical and?
-			if(!dj_undef(omitModuleCheck) & !omitModuleCheck){dojo.raise("dojo.namespace.Namespace.resolve: module '" + fullName + "' not found after loading via namespace '" + this.name + "'");} 
+			if(!omit_module_check){dojo.raise("dojo.namespace.Namespace.resolve: module '" + fullName + "' not found after loading via namespace '" + this.name + "'");} 
 			this._failed[fullName] = true;
 		}
 	}
