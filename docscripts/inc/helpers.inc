@@ -163,7 +163,7 @@ function rolloutFunction(&$output, $package, $declaration) {
       }
     }
     else {
-      $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['instance_variables'][] = $this_variable;
+      $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['instance_variables'][] = $instance_variable;
     }
   }
 
