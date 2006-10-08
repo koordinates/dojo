@@ -500,14 +500,20 @@ dojo.widget.defineWidget(
 					_iframeInitialized = true;
 				}else{ return; }
 				if(!this.editNode){
-					if(this.iframe.contentWindow){
-						this.window = this.iframe.contentWindow;
+					if(dojo.render.html.moz){
+						// test for an edge case sometimes found in large apps
+						if(this.iframe.contentWindow) {
+							this.window = this.iframe.contentWindow;
+						}
 					}else{
 						// for opera
 						this.window = this.iframe.contentDocument.window;
 					}
 					if(dojo.render.html.moz){
-						this.document = this.iframe.contentWindow.document
+						// test for an edge case sometimes found in large apps
+						if(this.iframe.contentWindow) {
+							this.document = this.iframe.contentWindow.document
+						}
 					}else{
 						this.document = this.iframe.contentDocument;
 					}
@@ -1599,7 +1605,9 @@ dojo.widget.defineWidget(
 			if(this.isClosed){return false; }
 
 			if (arguments.length == 0) { save = true; }
-			this._content = this._postFilterContent(this.editNode.innerHTML);
+			if(this.editNode) {
+				this._content = this._postFilterContent(this.editNode.innerHTML);
+			}
 			var changed = (this.savedContent.innerHTML != this._content);
 
 			// line height is squashed for iframes
