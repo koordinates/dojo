@@ -166,7 +166,6 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape, {
 			}
 		}
 	},
-	_pathRegExp: /([A-Za-z]+)|(\d+(\.\d+)?)|(\.\d+)|(-\d+(\.\d+)?)|(-\.\d+)/g,
 	_collectArgs: function(array, args){
 		for(var i = 0; i < args.length; ++i){
 			var t = args[i];
@@ -248,7 +247,7 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape, {
 	
 	// setShape
 	_setPath: function(path){
-		var p = path.match(this._pathRegExp);
+		var p = path.match(dojo.gfx.pathRegExp);
 		this.segments = [];
 		this.absolute = true;
 		this.bbox = {};
