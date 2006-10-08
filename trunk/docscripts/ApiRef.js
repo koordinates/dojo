@@ -986,8 +986,13 @@ if (this.functionMap[name] == null) dojo.debug("getItem("+name+"): name not foun
 			// assume it is an item, use item.name
 			name = name.name;
 		}
-
+		if (name == null) return "";
 		if (title == null) title = name;
+
+		// skip types that are not in the functionMap, since we can't link to them anyway
+		if (this.getItem(name) == null) return title;
+
+
 		typeStr = (type == null ? "" : ", '" + type + "'");
 		if (linkMethod == null) linkMethod = "showItem";
 		if (className == null) className = "itemLink";
