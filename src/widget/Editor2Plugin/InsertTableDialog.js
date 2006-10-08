@@ -1,5 +1,4 @@
 ﻿dojo.provide("dojo.widget.Editor2Plugin.InsertTableDialog");
-dojo.provide("dojo.widget.Editor2InsertTableDialog");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2InsertTableDialog",

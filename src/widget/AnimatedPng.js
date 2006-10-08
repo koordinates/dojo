@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.AnimatedPng");
-dojo.provide("dojo.widget.AnimatedPng");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");

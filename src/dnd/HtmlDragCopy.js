@@ -1,6 +1,4 @@
 ﻿dojo.provide("dojo.dnd.HtmlDragCopy");
-dojo.provide("dojo.dnd.HtmlDragCopySource");
-dojo.provide("dojo.dnd.HtmlDragCopyObject");
 dojo.require("dojo.dnd.*");
 
 dojo.declare("dojo.dnd.HtmlDragCopySource", dojo.dnd.HtmlDragSource, {

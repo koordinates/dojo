@@ -1,5 +1,5 @@
 dojo.provide("dojo.regexp");
-dojo.provide("dojo.regexp.us");
+
 
 // *** Regular Expression Generators ***
 

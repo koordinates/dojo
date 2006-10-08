@@ -3,7 +3,6 @@
  * - test, bug fix, more features :)
 */
 dojo.provide("dojo.widget.Editor2");
-dojo.provide("dojo.widget.Editor2Manager");
 
 dojo.require("dojo.io.*");
 dojo.require("dojo.html.*");

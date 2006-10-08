@@ -1,6 +1,5 @@
 dojo.require("dojo.io.common"); // io/common.js provides setIFrameSrc and the IO namespace
 dojo.provide("dojo.io.cometd");
-dojo.provide("cometd");
 dojo.require("dojo.AdapterRegistry");
 dojo.require("dojo.json");
 dojo.require("dojo.io.BrowserIO"); // we need XHR for the handshake, etc.

@@ -1,5 +1,4 @@
 ﻿dojo.provide("dojo.widget.Editor2Plugin.CreateLinkDialog");
-dojo.provide("dojo.widget.Editor2CreateLinkDialog");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2CreateLinkDialog",
