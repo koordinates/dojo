@@ -39,18 +39,18 @@
 			var b0 = new dojo.collections.Store();
 			b0.setData([
 				{ x:43, y:88, z:42, a:66, b:34 },
-				{ x:15, y:10, z:14, a:68, b:69 },
+				{ x:15, y:68, z:14, a:10, b:69 },
 				{ x:92, y:82, z:4, a:52, b:21 },
-				{ x:100, y:40, z:83, a:47, b:35 },
+				{ x:100, y:47, z:83, a:40, b:35 },
 				{ x:3, y:97, z:3, a:83, b:6 },
 				{ x:70, y:89, z:87, a:88, b:30 },
 				{ x:26, y:100, z:78, a:32, b:36 },
-				{ x:20, y:3, z:28, a:36, b:13 },
-				{ x:39, y:31, z:28, a:69, b:77 },
+				{ x:20, y:36, z:28, a:3, b:13 },
+				{ x:39, y:69, z:28, a:31, b:77 },
 				{ x:9, y:97, z:80, a:5, b:9 },
 				{ x:98, y:76, z:12, a:23, b:52 }
 			]);
-			var bar0 = new en.Series({ dataSource:b0, bindings:{ y:"x", high:"y", low:"a" }, label: "Bar 0" });
+			var bar0 = new en.Series({ dataSource:b0, bindings:{ x: "x", y:"x", high:"y", low:"a", open:"b", close:"z" }, label: "Bar 0" });
 			var bar1 = new en.Series({ dataSource:b0, bindings:{ y:"y", high:"z", low:"b" }, label: "Bar 1" });
 			var bar2 = new en.Series({ dataSource:b0, bindings:{ y:"z", high:"a", low:"x" }, label: "Bar 2" });
 			var bar3 = new en.Series({ dataSource:b0, bindings:{ y:"a", high:"b", low:"y" }, label: "Bar 3" });
@@ -85,9 +85,10 @@
 			yA2.showTicks = true;
 			
 			var p = new en.Plot(xA, yA);
-			p.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.Bubble });
+			p.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.DataBar });
 			var pA = new en.Plot(xA, yA2);
-			pA.addSeries({ data:s2, plotter: dojo.widget.charting.engine.Plotters.Area });
+			pA.addSeries({ data:s2, plotter: dojo.widget.charting.engine.Plotters.CurvedArea });
+//			pA.addSeries({ data:bar0, plotter: dojo.widget.charting.engine.Plotters.HighLowOpenClose });
 
 			var pa = new en.PlotArea();
 			pa.size={width:700,height:170};
@@ -118,7 +119,7 @@
 			yB2.origin="max";
 
 			var p2 = new en.Plot(xB, yB);
-			p2.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.Line });
+			p2.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.CurvedLine });
 
 			var p3 = new en.Plot(xB, yB2);
 			p3.renderType = dojo.widget.charting.engine.RenderPlotSeries.Grouped;
