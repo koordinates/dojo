@@ -31,7 +31,9 @@ class DojoFunctionBody extends DojoBlock
   
   public function addBlockCommentKey($key)
   {
-    $this->keys[] = $key;
+    if ($key) {
+      $this->keys[] = $key;
+    }
   }
   
   public function getSource()
@@ -40,7 +42,8 @@ class DojoFunctionBody extends DojoBlock
     $source = array();
     $lines = Text::chop($this->package->getSource(), $this->comment_end[0], $this->comment_end[1], $this->end[0], $this->end[1], true);
     foreach ($lines as $line_number => $line) {
-      if (empty($line)) continue;
+      $trimmed_line = trim($line);
+      if ($trimmed_line === '') continue;
       $source[] = $line;
     }
     return implode("\n", $source);
@@ -61,71 +64,45 @@ class DojoFunctionBody extends DojoBlock
     if ($this->block_comments) { 
       return array_keys($this->block_comments); 
     }
+    
+    $this->build();
 
-    $comments = array(); 
-    $multiline = false;
+    $expression = '%^(' . implode('|', $this->keys) . ')\W*%';
+    $buffer = array();
     $key = '';
-    $buffer = '';
+    
     $lines = Text::chop($this->package->getSource(), $this->start[0], $this->start[1], $this->end[0], $this->end[1], true);
-    $grepped = preg_grep('%^\W*(' . implode('|', $this->keys) . ')\b%', $lines);
-    foreach ($lines as $line_number => $line) {
-      $line = trim($line);
-      if (!$line) continue;
-      $opener = substr($line, 0, 2);
-      $closer = substr($line, -2);
-      if ($opener == '/*' && $closer == '*/') {
-        $line = '// ' . substr($line, 2, -2);
-      }
-      
-      if ($multiline) {
-        if (($pos = strpos($line, 0, '*/')) !== false) {
-          $multiline = false;
-          $replacing = substr($line, 0, $pos);
-          $line = str_replace($replacing, '', $line);
-          $buffer .= ' ' . $replacing;
+    foreach ($lines as $line_number =>  $line) {
+      list($comment , , $data, $multiline) = Text::findComments($line, $multiline);
+      if (preg_match($expression, $comment, $match)) {
+        if ($buffer && $key) {
+          $this->comments[$key] = implode(' ', $buffer);
+        }
+        $key = $match[1];
+        if ($match[0] == $comment) {
+          $comment = '';
+        }
+        else {
+          $comment = substr($comment, strlen($match[0]));
         }
       }
       
-      if ($multiline) {
-        // Leave it liks that
-      }
-      elseif ($opener == '//') {
-        $line = substr($line, 2);
-      }
-      elseif (preg_match_all('%/\*\s*(.*?)\s*\*/%', $line, $matches)) {
-        foreach ($matches[0] as $match_number => $match) {
-          if (!$match_number) {
-            $line = str_replace($match, '// ' . $matches[1][$match_number], $line);
-          }
-          else {
-            $line = str_replace($match, ' ' . $matches[1][$match_number], $line);
-          }
-        }
-      }
-      elseif ($opener == '/*') {
-        $line = substr($line, 2);
-        $multiline = true;
-      }
-      else {
-        $this->comments[$key] = $buffer;
-        $key = '';
-        $buffer = '';
+      if ($data) {
         $this->comment_end = array($line_number, 0);
         break;
       }
       
-      if ($grepped[$line_number]) {
-        if (preg_match('%^\W*(' . implode('|', $this->keys) . ')\W*%', $line, $match)) {
-          $line = str_replace($match[0], '', $line);
-          $key = $match[1];
-        }
+      if ($comment !== '') {
+        $buffer[] = $comment;
       }
-
-      $buffer .= $line . ' ';
     }
     
-    if ($key) {
-      $this->comments[$key] = $buffer;
+    if ($buffer && $key) {
+      $this->comments[$key] = implode(' ', $buffer);
+    }
+
+    if (!$this->comment_end) {
+      $this->comment_end = $this->end;
     }
 
     return array_keys($this->comments);

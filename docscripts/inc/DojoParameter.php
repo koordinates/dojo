@@ -5,7 +5,6 @@ require_once('DojoNull.php');
 require_once('DojoBoolean.php');
 require_once('DojoVariable.php');
 require_once('DojoObject.php');
-require_once('DojoArray.php');
 require_once('DojoFunctionDeclare.php');
 require_once('DojoBlock.php');
 
@@ -16,11 +15,17 @@ class DojoParameter extends DojoBlock
   private $terminator = ')';
   
   private $parameter_value;
+  private $parameter_type;
   
   public function __construct($package, $line_number = false, $position = false, $terminator = ')')
   {
     parent::__construct($package, $line_number, $position);
     $this->terminator = $terminator;
+  }
+  
+  public function exists()
+  {
+    return !empty($this->parameter_value);
   }
   
   public function isA($class)
@@ -77,7 +82,7 @@ class DojoParameter extends DojoBlock
     if ($this->isA(DojoVariable)) {
       return $this->parameter_value->getValue();
     }
-    return new DojoVariable($this->package);
+    return new DojoVariable('');
   }
 
   public function getValue()
@@ -111,6 +116,7 @@ class DojoParameter extends DojoBlock
     elseif ($parameter_value{0} == '[') {
       foreach ($lines as $line_number => $line) {
         if (($position = strpos($line, '[')) !== false) {
+          require_once('DojoArray.php'); // Chase condition
           $this->parameter_value = new DojoArray($this->package, $line_number, $position);
           break;
         }
@@ -122,7 +128,7 @@ class DojoParameter extends DojoBlock
     elseif ($parameter_value == 'true' || $parameter_value == 'false') {
       $this->parameter_value = new DojoBoolean($parameter_value);
     }
-    else {
+    elseif (!empty($parameter_value)) {
       $this->parameter_value = new DojoVariable($parameter_value);
     }
 
@@ -135,24 +141,14 @@ class DojoParameter extends DojoBlock
       return $this->parameter_type;
     }
 
-    $parameter_type = implode("\n", Text::chop($this->package->getSource(), $this->start[0], $this->start[1], $this->end[0], $this->end[1]));
-    preg_match_all('%(?:^\s*/\*(.*)\*/|//(.*)$|/\*(.*)\*/\s*$)%', $parameter_type, $matches, PREG_SET_ORDER);
-    
-    $parameter_type = '';
-    foreach ($matches as $match) {
-      array_shift($match);
-      $match = implode($match);
-      if ($match) {
-        if (!$parameter_type) {
-          $parameter_type = $match;
-        }
-        else {
-          $parameter_type .= ' ' . $match;
-        }
-      }
+    $type = array();
+    $lines = Text::chop($this->package->getSource(), $this->start[0], $this->start[1], $this->end[0], $this->end[1], true);
+    foreach ($lines as $line) {
+      list($first, $middle, $last, $data, $multiline) = Text::findComments($line, $multiline);
+      $type = array_merge($type, array($first, $middle, $last));
     }
     
-    return $this->parameter_type = Text::trim($parameter_type);
+    return $this->parameter_type = implode(' ', array_diff($type, array('')));
   }
 }
   

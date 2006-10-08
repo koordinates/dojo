@@ -111,6 +111,57 @@ class Text
   {
     return array_slice(preg_split('%%', $string), 1, -1);
   }
+  
+  public static function findComments($line, $started = false)
+  {
+    $first = array();
+    $middle = array();
+    $last = array();
+    $data = false;
+    $mulitline = false;
+    
+    if ($started) {
+      if (($pos = strpos($line, '*/')) !== false) {
+        $first[] = trim(substr($line, 0, $pos));
+        $line = substr($line, $pos + 2);
+      }
+      else {
+        $multiline = true;
+      }
+    }
+
+    $single_line = false;
+    if (!$multiline) {
+      $parts = preg_split('%(\s*(?://|/\*|\*/)\s*)%', $line, -1, PREG_SPLIT_DELIM_CAPTURE);
+      foreach ($parts as $part) {
+        if (!($part = trim($part))) continue;
+        if ($multiline && $part == '*/') {
+          $multiline = false;
+        }
+        elseif ($single_line || $multiline) {
+          if (!$data) {
+            $first[] = $part;
+          }
+          else {
+            $last[] = $part;
+          }
+        }
+        elseif ($part == '//') {
+          $single_line = true;
+        }
+        elseif ($part == '/*') {
+          $multiline = true;
+        }
+        else {
+          $data = true;
+          $middle = array_merge($middle, $last);
+          $last = array();
+        }
+      }
+    }
+    
+    return array(implode(' ', $first), implode(' ', $middle), implode(' ', $last), $data, $mulitline);
+  }
 }
 
 ?>
