@@ -567,128 +567,6 @@ dojo.gfx.path._calcArc = function(alpha){
 	};
 };
 
-/*
-dojo.lang.extend(dojo.gfx.Path, {
-	_pathVmlToSvgMap: { r: "l", l: "L", t: "m", m: "M", v: "c", c: "C", x: "z" },
-	_pathSvgToVmlMap: { l: "r", L: "l", m: "t", M: "m", c: "v", C: "c", z: "x" },
-	_extraInit: function(rawNode) {
-		this.lastControl = {x: 0, y: 0};
-		this.lastAction = "";
-	},
-	_drawTo: function(action, args){
-		this.shape.path += this.shape.absolute ? action.toUpperCase() : action.toLowerCase();
-		for(var i = 0; i < args.length; ++i){
-			this.shape.path += args[i].toFixed() + " ";
-		}
-		this.lastAction = action; 
-		this.setShape();
-		return this;
-	},
-	_update: function(x, y, x2, y2){
-		if(this.shape.absolute){
-			this.lastPos = {x: x, y: y};
-			if(typeof(y2) != "undefined"){
-				this.lastControl.x = x2;
-				this.lastControl.y = y2;
-			} else {
-				this.lastControl.x = this.lastPos.x;
-				this.lastControl.y = this.lastPos.y;
-			}
-		} else {
-			if(typeof(y2) != "undefined"){
-				this.lastControl.x = this.lastPos.x + x2;
-				this.lastControl.y = this.lastPos.y + y2;
-			} else {
-				this.lastControl.x = this.lastPos.x + x;
-				this.lastControl.y = this.lastPos.y + y;
-			}
-			this.lastPos.x += x;
-			this.lastPos.y += y;
-		}
-	},
-	setShape: function(newShape){
-		this.shape = dojo.gfx.makeParameters(this.shape, typeof(newShape) == "string" ? { path: newShape } : newShape);
-		this.setAbsoluteMode(this.shape.absolute);
-		// convert SVG path to VML path
-		var path = this.shape.path;
-		for(var i in this._pathSvgToVmlMap){
-			path = path.replace( new RegExp(i, 'g'),  this._pathSvgToVmlMap[i] );
-		}
-		this.rawNode.path.v = path + " e";
-		return this.setTransform(this.matrix);
-	},
-	_mirror: function(action){
-		if(action != this.lastAction){
-			return {x: this.lastPos.x, y: this.lastPos.y};
-		}
-		var x1 = 2 * this.lastPos.x - this.lastControl.x;
-		var y1 = 2 * this.lastPos.y - this.lastControl.y;
-		if(!this.shape.absolute){
-			x1 -= this.lastPos.x;
-			y1 -= this.lastPos.y;
-		}
-		return {x: x1, y: y1};
-	},
-	smoothCurveTo: function(x2, y2, x, y){
-		var pos = this._mirror("c");
-		var x1 = pos.x;
-		var y1 = pos.y;
-		return this.curveTo(x1, y1, x2, y2, x, y);
-	},
-	_PI4: Math.PI / 4,
-	_curvePI4: dojo.gfx.Path._calcArc(Math.PI / 8),
-	arcTo: function(endAngle, cx, cy, rx, ry, xRotate, isCCW){
-		// start of our arc
-		var startAngle = Math.atan2(cy - this.lastPos.y, this.lastPos.x - cx) - xRotate;
-		// size of our arc in radians
-		var theta = isCCW ? endAngle - startAngle : startAngle - endAngle;
-		if(theta < 0){
-			theta += this._2PI;
-		}else if(theta > this._2PI){
-			theta = this._2PI;
-		}
-		// calculate our elliptic transformation
-		var elliptic_transform;
-		with(dojo.gfx.matrix){
-			elliptic_transform = normalize([
-				translate(cx, cy),
-				rotate(xRotate),
-				scale(rx, ry)
-			]);
-		};
-		// draw curve chunks
-		var alpha = this._PI4 / 2;
-		var curve = this._curvePI4;
-		var step  = isCCW ? alpha : -alpha;
-		for(var angle = theta; angle > 0; angle -= this._PI4){
-			if(angle < this._PI4){
-				alpha = angle / 2;
-				curve = dojo.gfx.Path._calcArc(alpha);
-				step  = isCCW ? alpha : -alpha;
-			}
-			var c1, c2, e;
-			with(dojo.gfx.matrix){
-				var m = normalize([elliptic_transform, rotate(startAngle + step)]);
-				if(isCCW){
-					c1 = multiplyPoint(m, curve.c1);
-					c2 = multiplyPoint(m, curve.c2);
-					e  = multiplyPoint(m, curve.e );
-				}else{
-					c1 = multiplyPoint(m, curve.c2);
-					c2 = multiplyPoint(m, curve.c1);
-					e  = multiplyPoint(m, curve.s );
-				}
-			};
-			// draw the curve
-			this.curveTo(c1.x, c1.y, c2.x, c2.y, e.x, e.y);
-			startAngle += 2 * step;
-		}
-		return this;
-	}
-});
-dojo.gfx.Path.nodeType = "shape";
-*/
-
 dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 	initializer: function(rawNode){
 		if(rawNode) rawNode.setAttribute("dojoGfxType", "path");
@@ -721,7 +599,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 			return _this;
 		};
 	},
-	_pathVmlToSvgMap: {m: "M", l: "L", t: "m", r: "l", c: "C", v: "c", qb: "Q", e: ""},
+	_pathVmlToSvgMap: {m: "M", l: "L", t: "m", r: "l", c: "C", v: "c", qb: "Q", x: "z", e: ""},
 	attachShape: function(rawNode){
 		var shape = dojo.lang.shallowCopy(dojo.gfx.defaultPath, true);
 		var p = rawNode.path.v.match(dojo.gfx.pathRegExp);
