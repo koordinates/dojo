@@ -313,6 +313,19 @@ dojo.declare("dojo.gfx.Group", dojo.gfx.Shape, {
 dojo.gfx.Group.nodeType = "g";
 
 dojo.declare("dojo.gfx.Rect", dojo.gfx.shape.Rect, {
+	initializer: function(rawShape){
+		// override inherited methods
+		var _this = this;
+		var old_attachShape = this.attachShape;
+		this.attachShape = function(rawNode){
+			var shape = null;
+			if(rawNode){
+				shape = old_attachShape.call(_this, rawNode);
+				shape.r = Math.min(rawNode.getAttribute("rx"), rawNode.getAttribute("ry"));
+			}
+			return shape;
+		};
+	},
 	setShape: function(newShape){
 		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
 		this.bbox = null;
@@ -322,14 +335,6 @@ dojo.declare("dojo.gfx.Rect", dojo.gfx.shape.Rect, {
 		this.rawNode.setAttribute("rx", this.shape.r);
 		this.rawNode.setAttribute("ry", this.shape.r);
 		return this;
-	},
-	attachShape: function(rawNode){
-		var shape = null;
-		if(rawNode){
-			shape = this.inherited("attachShape", [rawNode]);
-			shape.r = Math.min(rawNode.getAttribute("rx"), rawNode.getAttribute("ry"));
-		}
-		return shape;
 	}
 });
 dojo.gfx.Rect.nodeType = "rect";
