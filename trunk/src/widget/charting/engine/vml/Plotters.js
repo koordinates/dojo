@@ -210,7 +210,122 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 	/*********************************************************
 	 *	Single plotters: one series at a time.
 	 *********************************************************/
+	DataBar: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		//	summary
+		//	Like Bar.
+		var area = plotarea.getArea();
+		var group = document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+		
+		var n = data.length;
+		var w = (area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower);	//	the width of each group.
+		var yOrigin = plot.axisY.getCoord(plot.axisX.origin, plotarea, plot);
+
+		for(var i=0; i<n; i++){
+			//	calculate offset
+			var value = data[i].y;
+			var yA = yOrigin;
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot)-(w/2)+1;
+			var y = plot.axisY.getCoord(value, plotarea, plot);
+			var h = Math.abs(yA-y);
+			if(value < plot.axisX.origin){
+				yA = y;
+				y = yOrigin;
+			}
+			var bar=document.createElement("v:rect");
+			bar.style.position="absolute";
+			bar.style.top=y+1+"px";
+			bar.style.left=x+"px";
+			bar.style.width=w+"px";
+			bar.style.height=h+"px";
+			bar.setAttribute("fillColor", data[i].series.color);
+			bar.setAttribute("stroked", "false");
+			bar.style.antialias="false";
+			var fill=document.createElement("v:fill");
+			fill.setAttribute("opacity", "0.6");
+			bar.appendChild(fill);
+			if(applyTo){ applyTo(bar, data[i].src); }
+			group.appendChild(bar);
+		}
+		return group;
+	},
 	Line: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		var area = plotarea.getArea();
+		var group=document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+
+		var path=document.createElement("v:shape");
+		path.setAttribute("strokeweight", "2px");
+		path.setAttribute("strokecolor", data[0].series.color);
+		path.setAttribute("fillcolor", "none");
+		path.setAttribute("filled", "false");
+		path.setAttribute("coordsize", (area.right-area.left) + "," + (area.bottom-area.top));
+		path.style.position="absolute";
+		path.style.top="0px";
+		path.style.left="0px";
+		path.style.width=area.right-area.left+"px";
+		path.style.height=area.bottom-area.top+"px";
+		var stroke=document.createElement("v:stroke");
+		stroke.setAttribute("opacity", "0.8");
+		path.appendChild(stroke);
+
+		var cmd = [];
+		var r=3;
+		for(var i=0; i<data.length; i++){
+			var x = Math.round(plot.axisX.getCoord(data[i].x, plotarea, plot));
+			var y = Math.round(plot.axisY.getCoord(data[i].y, plotarea, plot));
+
+			if (i==0){
+				cmd.push("m");
+				cmd.push(x+","+y);
+			}else{
+				cmd.push("l");
+				cmd.push(x+","+y);
+			}
+
+			//	add the circle.
+			var c = document.createElement("v:oval");
+			c.setAttribute("strokeweight", "1px");
+			c.setAttribute("strokecolor", data[i].series.color);
+			c.setAttribute("fillcolor", data[i].series.color);
+			var str=document.createElement("v:stroke");
+			str.setAttribute("opacity","0.8");
+			c.appendChild(str);
+			str=document.createElement("v:fill");
+			str.setAttribute("opacity","0.6");
+			c.appendChild(str);
+			var s=c.style;
+			s.position="absolute";
+			s.top=(y-r)+"px";
+			s.left=(x-r)+"px";
+			s.width=(r*2)+"px";
+			s.height=(r*2)+"px";
+			group.appendChild(c);
+			if(applyTo){ applyTo(c, data[i].src); }
+		}
+		path.setAttribute("path", cmd.join(" ")+" e");
+		group.appendChild(path);
+		return group;
+	},
+	CurvedLine: function(
 		/* array */data, 
 		/* dojo.widget.charting.engine.PlotArea */plotarea,
 		/* dojo.widget.charting.engine.Plot */plot,
@@ -288,6 +403,79 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		return group;
 	},
 	Area: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		var area = plotarea.getArea();
+		var group=document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+
+		var path=document.createElement("v:shape");
+		path.setAttribute("strokeweight", "1px");
+		path.setAttribute("strokecolor", data[0].series.color);
+		path.setAttribute("fillcolor", data[0].series.color);
+		path.setAttribute("coordsize", (area.right-area.left) + "," + (area.bottom-area.top));
+		path.style.position="absolute";
+		path.style.top="0px";
+		path.style.left="0px";
+		path.style.width=area.right-area.left+"px";
+		path.style.height=area.bottom-area.top+"px";
+		var stroke=document.createElement("v:stroke");
+		stroke.setAttribute("opacity", "0.8");
+		path.appendChild(stroke);
+		var fill=document.createElement("v:fill");
+		fill.setAttribute("opacity", "0.4");
+		path.appendChild(fill);
+
+		var cmd = [];
+		var r=3;
+		for(var i=0; i<data.length; i++){
+			var x = Math.round(plot.axisX.getCoord(data[i].x, plotarea, plot));
+			var y = Math.round(plot.axisY.getCoord(data[i].y, plotarea, plot));
+
+			if (i==0){
+				cmd.push("m");
+				cmd.push(x+","+y);
+			}else{
+				cmd.push("l");
+				cmd.push(x+","+y);
+			}
+
+			//	add the circle.
+			var c = document.createElement("v:oval");
+			c.setAttribute("strokeweight", "1px");
+			c.setAttribute("strokecolor", data[i].series.color);
+			c.setAttribute("fillcolor", data[i].series.color);
+			var str=document.createElement("v:stroke");
+			str.setAttribute("opacity","0.8");
+			c.appendChild(str);
+			str=document.createElement("v:fill");
+			str.setAttribute("opacity","0.6");
+			c.appendChild(str);
+			var s=c.style;
+			s.position="absolute";
+			s.top=(y-r)+"px";
+			s.left=(x-r)+"px";
+			s.width=(r*2)+"px";
+			s.height=(r*2)+"px";
+			group.appendChild(c);
+			if(applyTo){ applyTo(c, data[i].src); }
+		}
+		cmd.push("l");
+		cmd.push(x + "," + Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
+		cmd.push("l");
+		cmd.push(Math.round(plot.axisX.getCoord(data[0].x, plotarea, plot)) + "," +  Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
+		path.setAttribute("path", cmd.join(" ")+" e");
+		group.appendChild(path);
+		return group;
+	},
+	CurvedArea: function(
 		/* array */data, 
 		/* dojo.widget.charting.engine.PlotArea */plotarea,
 		/* dojo.widget.charting.engine.Plot */plot,
