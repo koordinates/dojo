@@ -61,8 +61,8 @@ class DojoFunctionBody extends DojoBlock
   
   public function getBlockCommentKeys() 
   {
-    if ($this->block_comments) { 
-      return array_keys($this->block_comments); 
+    if ($this->comments) { 
+      return array_keys($this->comments); 
     }
     
     $this->build();
@@ -73,10 +73,11 @@ class DojoFunctionBody extends DojoBlock
     
     $lines = Text::chop($this->package->getSource(), $this->start[0], $this->start[1], $this->end[0], $this->end[1], true);
     foreach ($lines as $line_number =>  $line) {
-      list($comment , , $data, $multiline) = Text::findComments($line, $multiline);
+      list($comment, , , $data, $multiline) = Text::findComments($line, $multiline);
       if (preg_match($expression, $comment, $match)) {
         if ($buffer && $key) {
           $this->comments[$key] = implode(' ', $buffer);
+          $buffer = array();
         }
         $key = $match[1];
         if ($match[0] == $comment) {
@@ -102,7 +103,7 @@ class DojoFunctionBody extends DojoBlock
     }
 
     if (!$this->comment_end) {
-      $this->comment_end = $this->end;
+      $this->comment_end = $this->start;
     }
 
     return array_keys($this->comments);
@@ -130,13 +131,41 @@ class DojoFunctionBody extends DojoBlock
       return $this->return_comments;
     }
     
-    $this->build();
-    $lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], $this->end[0], $this->end[1], true);
+    $buffer = array();
+    $this->getBlockCommentKeys();
+    $lines = Text::chop($this->package->getSource(), $this->comment_end[0], $this->comment_end[1], $this->end[0], $this->end[1], true);
     foreach ($lines as $line) {
-      if (preg_match('%\breturn\b.*(?://\s*(.*)|/\*\s*(.*)\s*\*/)%', $line, $match)) {
-        $this->return_comments[] = $match[1] . $match[2];
+      if ($multiline) {
+        list($first, $middle, $last, $data, $multiline) = Text::findComments($line, $multiline);
+        if ($first) {
+          $buffer[] = trim($first);
+        }
+        if ($data) {
+          $multiline = false;
+          if ($buffer) {
+            $this->return_comments[] = implode(' ', array_diff($buffer, array('')));
+            $buffer = array();
+          }
+        }
+      }
+      if (strpos($line, 'return') !== false) {
+        if ($data && $buffer) {
+          $this->return_comments[] = implode(' ', array_diff($buffer, array('')));
+          $buffer = array();
+        }
+        list($first, $middle, $last, $data, $multiline) = Text::findComments($line, $multiline);
+        if ($last) {
+          $buffer[] = $last;
+        }
       }
     }
+    
+    if ($data && $buffer) {
+      $this->return_comments[] = implode(' ', array_diff($buffer, array('')));
+    }
+    
+    $this->return_comment = array_unique($this->return_comments);
+    
     return $this->return_comments;
   }
   
