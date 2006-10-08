@@ -15,38 +15,152 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* object? */kwArgs,
 		/* function? */applyTo
 	){
+		//	summary
+		//	Like Bar, but grouped together.
 		var area = plotarea.getArea();
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		
-		//	calculate the width of each bar.
-		var space = 4;
-		var n = plot.series.length;
-		var width = ((area.right-area.left)-(space*(n-1)))/n;
-		var yOrigin = plot.axisY.getCoord(plot.axisX.origin, plotarea, plot);
+		//	precompile the data
+		var n = plot.series.length;	//	how many series
+		var data = [];
 		for(var i=0; i<n; i++){
-			var series = plot.series[i];
-			var data = series.data.evaluate(kwArgs);
-			var x = area.left+(width*i)+(space*i);
-			var value = data[data.length-1].y;
+			var tmp = plot.series[i].data.evaluate(kwArgs);
+			data.push(tmp);
+		}
 
-			var yA = yOrigin;
-			var y = plot.axisY.getCoord(value, plotarea, plot);
-			var h = Math.abs(yA-y);
-			if(value < plot.axisX.origin){
-				yA = y;
-				y = yOrigin;
+		//	calculate the width of each bar.
+		var space = 8;
+		var nPoints = data[0].length;
+		var width = ((area.right-area.left)-(space*(nPoints-1)))/nPoints;	//	the width of each group.
+		var barWidth = width/n;	//	the width of each bar, no spaces.
+		var yOrigin = plot.axisY.getCoord(plot.axisX.origin, plotarea, plot);
+
+		for(var i=0; i<nPoints; i++){
+			//	calculate offset
+			var xStart = area.left+(width*i)+(space*i);
+			for(var j=0; j<n; j++){
+				var value = data[j][i].y;
+				var yA = yOrigin;
+				var x = xStart + (barWidth*j);
+				var y = plot.axisY.getCoord(value, plotarea, plot);
+				var h = Math.abs(yA-y);
+				if(value < plot.axisX.origin){
+					yA = y;
+					y = yOrigin;
+				}
+				
+				var bar=document.createElementNS(dojo.svg.xmlns.svg, "rect");
+				bar.setAttribute("fill", data[j][i].series.color);
+				bar.setAttribute("stroke-width", "0");
+				bar.setAttribute("x", x);
+				bar.setAttribute("y", y);
+				bar.setAttribute("width", barWidth);
+				bar.setAttribute("height", h);
+				bar.setAttribute("fill-opacity", "0.65");
+				if(applyTo){ applyTo(bar, data[j][i].src); }
+				group.appendChild(bar);
 			}
-			
-			var bar=document.createElementNS(dojo.svg.xmlns.svg, "rect");
-			bar.setAttribute("fill", data[data.length-1].series.color);
-			bar.setAttribute("stroke-width", "0");
-			bar.setAttribute("x", x);
-			bar.setAttribute("y", y);
-			bar.setAttribute("width", width);
-			bar.setAttribute("height", h);
-			bar.setAttribute("fill-opacity", "0.65");
-			if(applyTo){ applyTo(bar, data[data.length-1].src); }
-			group.appendChild(bar);
+		}
+		return group;
+	},
+	HorizontalBar: function(
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* object? */kwArgs,
+		/* function? */applyTo
+	){
+		var area = plotarea.getArea();
+		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
+		
+		//	precompile the data
+		var n = plot.series.length;	//	how many series
+		var data = [];
+		for(var i=0; i<n; i++){
+			var tmp = plot.series[i].data.evaluate(kwArgs);
+			data.push(tmp);
+		}
+
+		var space = 6;
+		var nPoints = data[0].length;
+		var h = ((area.bottom-area.top)-(space*(nPoints-1)))/nPoints;
+		var barH = h/n;
+		var xOrigin = plot.axisX.getCoord(0, plotarea, plot);
+
+		for(var i=0; i<nPoints; i++){
+			//	calculate offset
+			var yStart = area.top+(h*i)+(space*i);
+			for(var j=0; j<n; j++){
+				var value = data[j][i].y;
+				var y = yStart + (barH*j);
+				var xA = xOrigin;
+				var x = plot.axisX.getCoord(value, plotarea, plot);
+				var w = Math.abs(x-xA);
+				if(value > 0){
+					x = xOrigin;
+				}
+				
+				var bar=document.createElementNS(dojo.svg.xmlns.svg, "rect");
+				bar.setAttribute("fill", data[j][i].series.color);
+				bar.setAttribute("stroke-width", "0");
+				bar.setAttribute("x", xA);
+				bar.setAttribute("y", y);
+				bar.setAttribute("width", w);
+				bar.setAttribute("height", barH);
+				bar.setAttribute("fill-opacity", "0.6");
+				if(applyTo){ applyTo(bar, data[j][i].src); }
+				group.appendChild(bar);
+			}
+		}
+		return group;
+	},
+	Gantt: function(
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* object? */kwArgs,
+		/* function? */applyTo
+	){
+		//	BINDINGS: high/low
+		var area = plotarea.getArea();
+		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
+
+		//	precompile the data
+		var n = plot.series.length;	//	how many series
+		var data = [];
+		for(var i=0; i<n; i++){
+			var tmp = plot.series[i].data.evaluate(kwArgs);
+			data.push(tmp);
+		}
+
+		var space = 2;
+		var nPoints = data[0].length;
+		var h = ((area.bottom-area.top)-(space*(nPoints-1)))/nPoints;
+		var barH = h/n;
+		for(var i=0; i<nPoints; i++){
+			//	calculate offset
+			var yStart = area.top+(h*i)+(space*i);
+			for(var j=0; j<n; j++){
+				var high = data[j][i].high;
+				var low = data[j][i].low;
+				if(low > high){
+					var t = high;
+					high = low;
+					low = t;
+				}
+				var x = plot.axisX.getCoord(low, plotarea, plot);
+				var w = plot.axisX.getCoord(high, plotarea, plot) - x;
+				var y = yStart + (barH*j);
+				
+				var bar=document.createElementNS(dojo.svg.xmlns.svg, "rect");
+				bar.setAttribute("fill", data[j][i].series.color);
+				bar.setAttribute("stroke-width", "0");
+				bar.setAttribute("x", x);
+				bar.setAttribute("y", y);
+				bar.setAttribute("width", w);
+				bar.setAttribute("height", barH);
+				bar.setAttribute("fill-opacity", "0.6");
+				if(applyTo){ applyTo(bar, data[j][i].src); }
+				group.appendChild(bar);
+			}
 		}
 		return group;
 	},
