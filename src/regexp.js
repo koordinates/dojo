@@ -1,5 +1,5 @@
 dojo.provide("dojo.regexp");
-dojo.provide("dojo.regexp.us");
+dojo.evalObjPath("dojo.regexp.us", true);	// this file also defines stuff in the dojo.regexp.us module (TODO: move to separate file?)
 
 // *** Regular Expression Generators ***
 
@@ -406,6 +406,7 @@ dojo.regexp.currency = function(/*Object?*/flags){
 	}
 	return currencyRE; // String
 }
+
 
 dojo.regexp.us.state = function(/*Object?*/flags){
 	// summary: A regular expression to match US state and territory abbreviations
