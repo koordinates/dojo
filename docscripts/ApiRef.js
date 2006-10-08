@@ -299,7 +299,7 @@ var ApiRef = {
 	
 	getItem : function(name) {
 		if (typeof name != "string") return name;
-if (this.functionMap[name] == null) dojo.debug("getItem("+name+"): name not found");
+		if (this._debug && this.functionMap[name] == null) dojo.debug("getItem("+name+"): name not found");
 		return this.functionMap[name];
 	},
 
