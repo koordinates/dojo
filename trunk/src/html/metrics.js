@@ -82,6 +82,15 @@ dojo.html.getFontMeasurements = function(){
 	return heights; 	//	object
 };
 
+dojo.html._fontMeasurements = null;
+
+dojo.html.getCachedFontMeasurements = function(recalculate){
+	if(recalculate || !dojo.html._fontMeasurements){
+		dojo.html._fontMeasurements = dojo.html.getFontMeasurements();
+	}
+	return dojo.html._fontMeasurements;
+};
+
 dojo.html.measureFragment = function(/* HTMLElement */node, /* string */html, /* string? */boxType){
 	//	summary
 	//	get the dimensions of passed node if it were populated with passed html.
