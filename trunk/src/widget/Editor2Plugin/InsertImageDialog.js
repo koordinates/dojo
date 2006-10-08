@@ -1,5 +1,4 @@
 ﻿dojo.provide("dojo.widget.Editor2Plugin.InsertImageDialog");
-dojo.provide("dojo.widget.Editor2InsertImageDialog");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2InsertImageDialog",

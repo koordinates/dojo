@@ -1,6 +1,4 @@
 ﻿dojo.provide("dojo.widget.Editor2Plugin.FindReplaceDialog");
-dojo.provide("dojo.widget.Editor2FindDialog");
-dojo.provide("dojo.widget.Editor2ReplaceDialog");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2FindDialog",

@@ -1,13 +1,4 @@
-dojo.provide("dojo.widget.ToolbarContainer");
 dojo.provide("dojo.widget.Toolbar");
-dojo.provide("dojo.widget.ToolbarItem");
-dojo.provide("dojo.widget.ToolbarButtonGroup");
-dojo.provide("dojo.widget.ToolbarButton");
-dojo.provide("dojo.widget.ToolbarDialog");
-dojo.provide("dojo.widget.ToolbarMenu");
-dojo.provide("dojo.widget.ToolbarSeparator");
-dojo.provide("dojo.widget.ToolbarSpace");
-dojo.provide("dojo.widget.Icon");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.html.style");

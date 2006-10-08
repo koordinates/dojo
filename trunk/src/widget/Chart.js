@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.Chart");
-dojo.provide("dojo.widget.Chart.DataSeries");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.gfx.color");

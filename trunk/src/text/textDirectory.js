@@ -1,6 +1,4 @@
 dojo.provide("dojo.text.textDirectory");
-dojo.provide("dojo.text.textDirectory.Property");
-dojo.provide("dojo.text.textDirectory.tokenise");
 dojo.require("dojo.string");
 
 /* adapted from Paul Sowden's iCalendar work */

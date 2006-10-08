@@ -1,6 +1,4 @@
 dojo.provide("dojo.dnd.HtmlDragMove");
-dojo.provide("dojo.dnd.HtmlDragMoveSource");
-dojo.provide("dojo.dnd.HtmlDragMoveObject");
 dojo.require("dojo.dnd.*");
 
 dojo.declare("dojo.dnd.HtmlDragMoveSource", dojo.dnd.HtmlDragSource, {

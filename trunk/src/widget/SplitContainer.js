@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.SplitContainer");
-dojo.provide("dojo.widget.SplitContainerPanel");
 
 //
 // TODO

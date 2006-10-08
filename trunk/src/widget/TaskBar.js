@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.TaskBar");
-dojo.provide("dojo.widget.TaskBarItem");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.FloatingPane");

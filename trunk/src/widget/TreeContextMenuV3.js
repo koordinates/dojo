@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.TreeContextMenuV3");
-dojo.provide("dojo.widget.TreeMenuItemV3");
 
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");

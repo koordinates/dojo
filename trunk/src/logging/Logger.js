@@ -42,7 +42,6 @@
 // Dependencies:	none
 
 dojo.provide("dojo.logging.Logger");
-dojo.provide("dojo.log");
 dojo.require("dojo.lang.common");
 
 /*

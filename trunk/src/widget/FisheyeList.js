@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.FisheyeList");
-dojo.provide("dojo.widget.FisheyeListItem");
 
 //
 // TODO
