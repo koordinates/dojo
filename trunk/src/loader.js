@@ -25,20 +25,23 @@
 			dojo: {name: "dojo", value: "src"}
 		},
 
-		setModulePrefix: function(module, prefix){
+		setModulePrefix: function(/*String*/module, /*String*/prefix){
+			// summary: establishes module/prefix pair
 			this.modulePrefixes_[module] = {name: module, value: prefix};
 		},
 
-		moduleHasPrefix: function(module){
+		moduleHasPrefix: function(/*String*/module){
+			// summary: checks to see if module has been established
 			var mp = this.modulePrefixes_;
-			return Boolean(mp[module] && mp[module].value);
+			return Boolean(mp[module] && mp[module].value); // Boolean
 		},
 
-		getModulePrefix: function(module){
+		getModulePrefix: function(/*String*/module){
+			// summary: gets the prefix associated with module
 			if(this.moduleHasPrefix(module)){
-				return this.modulePrefixes_[module].value;
+				return this.modulePrefixes_[module].value; // String
 			}
-			return module;
+			return module; // String
 		},
 
 		getTextStack: [],
@@ -123,14 +126,15 @@ dojo.hostenv.loadUri = function(/*String (URL)*/uri, /*Function?*/cb){
 }
 
 // FIXME: probably need to add logging to this method
-dojo.hostenv.loadUriAndCheck = function(uri, module, /*Function?*/cb){
+dojo.hostenv.loadUriAndCheck = function(/*String (URL)*/uri, /*String*/moduleName, /*Function?*/cb){
+	// summary: calls loadUri then findModule and returns true if both succeed
 	var ok = true;
 	try{
 		ok = this.loadUri(uri, cb);
 	}catch(e){
 		dojo.debug("failed loading ", uri, " with error: ", e);
 	}
-	return Boolean(ok && this.findModule(module, false)); // Boolean
+	return Boolean(ok && this.findModule(moduleName, false)); // Boolean
 }
 
 dojo.loaded = function(){ }
@@ -160,18 +164,19 @@ dojo.hostenv.unloaded = function(){
 	dojo.unloaded();
 }
 
-/*
-Call styles:
-	dojo.addOnLoad(functionPointer)
-	dojo.addOnLoad(object, "functionName")
-*/
-dojo.addOnLoad = function(obj, fcnName) {
+dojo.addOnLoad = function(/*Object or Function*/obj, /*String?*/functionName) {
+// summary: registers a function to be triggered when the "onLoad" event fires
+//
+// usage:
+//	dojo.addOnLoad(functionPointer)
+//	dojo.addOnLoad(object, "functionName")
+
 	var dh = dojo.hostenv;
 	if(arguments.length == 1) {
 		dh.modulesLoadedListeners.push(obj);
 	} else if(arguments.length > 1) {
 		dh.modulesLoadedListeners.push(function() {
-			obj[fcnName]();
+			obj[functionName]();
 		});
 	}
 
@@ -184,13 +189,18 @@ dojo.addOnLoad = function(obj, fcnName) {
 	}
 }
 
-dojo.addOnUnload = function(obj, fcnName){
+dojo.addOnUnload = function(/*Object or Function*/obj, /*String?*/functionName){
+// summary: registers a function to be triggered when the "onLoad" event fires
+//
+// usage:
+//	dojo.addOnLoad(functionPointer)
+//	dojo.addOnLoad(object, "functionName")
 	var dh = dojo.hostenv;
 	if(arguments.length == 1){
 		dh.unloadListeners.push(obj);
 	} else if(arguments.length > 1) {
 		dh.unloadListeners.push(function() {
-			obj[fcnName]();
+			obj[functionName]();
 		});
 	}
 }
@@ -233,7 +243,7 @@ dojo.hostenv.getModuleSymbols = function(/*String*/modulename){
 }
 
 dojo.hostenv._global_omit_module_check = false;
-dojo.hostenv.loadModule = function(/*String*/modulename, /*Boolean?*/exactOnly, /*Boolean?*/omitModuleCheck){
+dojo.hostenv.loadModule = function(/*String*/moduleName, /*Boolean?*/exactOnly, /*Boolean?*/omitModuleCheck){
 // summary:
 //	loads a Javascript module from the appropriate URI
 //
@@ -264,23 +274,23 @@ dojo.hostenv.loadModule = function(/*String*/modulename, /*Boolean?*/exactOnly, 
 //	
 //	dj_load is an alias for dojo.hostenv.loadModule
 
-	if(!modulename){ return; }
+	if(!moduleName){ return; }
 	omitModuleCheck = this._global_omit_module_check || omitModuleCheck;
-	var module = this.findModule(modulename, false);
+	var module = this.findModule(moduleName, false);
 	if(module){
 		return module;
 	}
 
 	// protect against infinite recursion from mutual dependencies
-	if(dj_undef(modulename, this.loading_modules_)){
-		this.addedToLoadingCount.push(modulename);
+	if(dj_undef(moduleName, this.loading_modules_)){
+		this.addedToLoadingCount.push(moduleName);
 	}
-	this.loading_modules_[modulename] = 1;
+	this.loading_modules_[moduleName] = 1;
 
 	// convert periods to slashes
-	var relpath = modulename.replace(/\./g, '/') + '.js';
+	var relpath = moduleName.replace(/\./g, '/') + '.js';
 
-	var nsyms = modulename.split(".");
+	var nsyms = moduleName.split(".");
 	
 	// this line allowed loading of a module manifest as if it were a namespace
 	// it's an interesting idea, but shouldn't be combined with 'namespaces' proper
@@ -291,14 +301,14 @@ dojo.hostenv.loadModule = function(/*String*/modulename, /*Boolean?*/exactOnly, 
 	// 'namespace manifest' from that
 	//dojo.getNamespace(nsyms[0]);
 
-	var syms = this.getModuleSymbols(modulename);
+	var syms = this.getModuleSymbols(moduleName);
 	var startedRelative = ((syms[0].charAt(0) != '/') && !syms[0].match(/^\w+:/));
 	var last = syms[syms.length - 1];
 	var ok;
 	// figure out if we're looking for a full package, if so, we want to do
 	// things slightly diffrently
 	if(last=="*"){
-		modulename = nsyms.slice(0, -1).join('.');
+		moduleName = nsyms.slice(0, -1).join('.');
 		while(syms.length){
 			syms.pop();
 			syms.push(this.pkgFileName);
@@ -306,14 +316,14 @@ dojo.hostenv.loadModule = function(/*String*/modulename, /*Boolean?*/exactOnly, 
 			if(startedRelative && relpath.charAt(0)=="/"){
 				relpath = relpath.slice(1);
 			}
-			ok = this.loadPath(relpath, !omitModuleCheck ? modulename : null);
+			ok = this.loadPath(relpath, !omitModuleCheck ? moduleName : null);
 			if(ok){ break; }
 			syms.pop();
 		}
 	}else{
 		relpath = syms.join("/") + '.js';
-		modulename = nsyms.join('.');
-		var modArg = !omitModuleCheck ? modulename : null;
+		moduleName = nsyms.join('.');
+		var modArg = !omitModuleCheck ? moduleName : null;
 		ok = this.loadPath(relpath, modArg);
 		if(!ok && !exactOnly){
 			syms.pop();
@@ -332,7 +342,7 @@ dojo.hostenv.loadModule = function(/*String*/modulename, /*Boolean?*/exactOnly, 
 		}
 
 		if(!ok && !omitModuleCheck){
-			dojo.raise("Could not load '" + modulename + "'; last tried '" + relpath + "'");
+			dojo.raise("Could not load '" + moduleName + "'; last tried '" + relpath + "'");
 		}
 	}
 
@@ -340,9 +350,9 @@ dojo.hostenv.loadModule = function(/*String*/modulename, /*Boolean?*/exactOnly, 
 	//Don't bother if we're doing xdomain (asynchronous) loading.
 	if(!omitModuleCheck && !this["isXDomain"]){
 		// pass in false so we can give better error
-		module = this.findModule(modulename, false);
+		module = this.findModule(moduleName, false);
 		if(!module){
-			dojo.raise("symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+			dojo.raise("symbol '" + moduleName + "' is not defined after loading '" + relpath + "'"); 
 		}
 	}
 
@@ -397,7 +407,7 @@ dojo.hostenv.findModule = function(/*String*/moduleName, /*Boolean?*/mustExist){
 
 //Start of old bootstrap2:
 
-dojo.kwCompoundRequire = function(modMap){
+dojo.kwCompoundRequire = function(/*Object containing Arrays*/modMap){
 // description:
 //	This method taks a "map" of arrays which one can use to optionally load dojo
 //	modules. The map is indexed by the possible dojo.hostenv.name_ values, with
@@ -430,11 +440,11 @@ dojo.kwCompoundRequire = function(modMap){
 	}
 }
 
-dojo.require = function(){
+dojo.require = function(/*...*/){
 	dojo.hostenv.loadModule.apply(dojo.hostenv, arguments);
 }
 
-dojo.requireIf = function(){
+dojo.requireIf = function(/*...*/){
 	var arg0 = arguments[0];
 	if((arg0 === true)||(arg0=="common")||(arg0 && dojo.render[arg0].capable)){
 		var args = [];
@@ -445,7 +455,7 @@ dojo.requireIf = function(){
 
 dojo.requireAfterIf = dojo.requireIf;
 
-dojo.provide = function(){
+dojo.provide = function(/*...*/){
 	return dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
 }
 
@@ -468,7 +478,7 @@ dojo.exists = function(/*Object*/obj, /*String*/name){
 	// description: useful for longer api chains where you have to test each object in the chain
 	var p = name.split(".");
 	for(var i = 0; i < p.length; i++){
-		if(!obj[p[i]]){ return false; }
+		if(!obj[p[i]]){ return false; } // Boolean
 		obj = obj[p[i]];
 	}
 	return true; // Boolean
@@ -512,7 +522,7 @@ dojo.hostenv.preloadLocalizations = function(){
 //	Load built, flattened resource bundles, if available for all locales used in the page.
 //	Execute only once.  Note that this is a no-op unless there is a build.
 
-	var localesGenerated /***BUILD:localesGenerated***/; // value will be inserted at build time, if necessary
+	var localesGenerated /***BUILD:localesGenerated***/; // value will be inserted here at build time, if necessary
 
 	if(localesGenerated){
 		dojo.registerModulePath("nls","nls");
@@ -523,10 +533,10 @@ dojo.hostenv.preloadLocalizations = function(){
 				for(var i=0; i<localesGenerated.length;i++){
 					if(localesGenerated[i] == loc){
 						dojo["require"]("nls.dojo_"+loc);
-						return true;
+						return true; // Boolean
 					}
 				}
-				return false;
+				return false; // Boolean
 			});
 		}
 		preload();

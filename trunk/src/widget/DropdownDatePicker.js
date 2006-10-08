@@ -32,16 +32,17 @@ dojo.widget.defineWidget(
 		zIndex: "10",
 		
 		//String
-		// 	pattern used in display of formatted date.  See dojo.date.format.
+		// 	pattern used in display of formatted date.  Uses locale-specific format by default.  See dojo.date.format.
 		displayFormat: "",
-		dateFormat: "", // deprecated in 0.5
-		//String
-		// 	formatting used when submitting form.  A pattern string like display format or one of the following:
-		// 	rfc|iso|posix|unix  By default, uses rfc3339 style date formatting.
-		saveFormat: "",
 		//String
 		// 	type of format appropriate to locale.  see dojo.date.format
 		formatLength: "short", // only parsing of short is supported at this time
+		dateFormat: "", // deprecated in 0.5
+		//String
+		//	Locale-independent formatting used when submitting form
+		//	A pattern string like display format or one of the following:
+		//	rfc|iso|posix|unix  By default, uses rfc3339 style date formatting.
+		saveFormat: "",
 		//String|Date
 		//	form value property if =='today' will default to todays date
 		value: "", 
