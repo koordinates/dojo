@@ -3,19 +3,26 @@
 <head>
 	<title>Dojo API Reference</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/common.css" />
-	<link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/text.css" />
+	<link rel="stylesheet" type="text/css" href="css/common.css" />	<!-- COPIED FROM dtk.org -->
+	<link rel="stylesheet" type="text/css" href="css/text.css" />	<!-- COPIED FROM dtk.org -->
+	<link rel="stylesheet" type="text/css" href="css/ApiRef.css" />
 	<script type="text/javascript">
-		var djConfig = {isDebug: true, debugAtAllCosts:false};
+		var djConfig = {
+			isDebug: true, 
+			debugAtAllCosts:false,
+			preventBackButtonFix: false 
+		};
 	</script>
 	<script type='text/javascript'>
 		// if we're accessing from the local disk, dojo is in a different place
 		// TODO: I'm sure there is a smarter way to do this...
 		if (window.location.href.indexOf("file:") == 0 || window.location.href.indexOf("localhost") > -1) {
+			window.inLocalMode = true;
 			djConfig.baseScriptURI = "..";
 			// debug: write "LOCAL" up there so we can tell we're on local mode
 			window.document.title = "===LOCAL=== " + window.document.title;
 		} else {
+			window.inLocalMode = false;
 			djConfig.baseScriptURI = ".";
 		}
 		document.write("<"+"script type='text/javascript' src='"+djConfig.baseScriptURI+"/dojo.js'><"+"/script>");
@@ -24,318 +31,35 @@
 	</script>
 
 	<script type="text/javascript">
+		dojo.require("dojo.debug.console");
 		dojo.require("dojo.uri.*");
+		dojo.require("dojo.io.*");
 		dojo.require("dojo.io.cookie");
+		dojo.require("dojo.Deferred");
+		dojo.require("dojo.DeferredList");
+
+		dojo.require("dojo.dom");
+
 		dojo.require("dojo.lang.common");
+
 		dojo.require("dojo.widget.*");
 		dojo.require("dojo.widget.TreeV3");
 		dojo.require("dojo.widget.TreeNodeV3");
 		dojo.require("dojo.widget.TreeBasicControllerV3");
+		dojo.require("dojo.widget.TreeSelectorV3");
+		dojo.require("dojo.widget.TreeEmphaseOnSelect");
 		dojo.require("dojo.lfx.html");
-	</script>
+		dojo.require("dojo.undo.browser");
+		dojo.require("dojo.profile");
+</script>
 
 
 <!-- the following are items that I hacked and haven't been approved yet
 		TODO: move these into the base build -->
-	<script type="text/javascript" src="ApiRef2-console.js"></script>
-	<script type="text/javascript" src="ApiRef2-profile.js"></script>
-	<script type="text/javascript" src="ApiRef2-ProfileHelper.js"></script>
-	<script type="text/javascript" src="ApiRef2-docs.js"></script>
+	<script type="text/javascript" src="ProfileHelper.js"></script>
 
 <!-- script that does all the heavy lifting -->
-	<script type="text/javascript" src="ApiRef2.js"></script>
-
-
-	<style type='text/css'>
-		BODY {
-			margin:0px;
-		}
-
-		BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT { 
-			font-family:Verdana, Arial, sans-serif; 
-			font-size:12px;
-		}
-
-		/* Nest these inside each other to get content that scrolls cleanly if necessary */
-		.scrollContainerOuter {
-			position:relative;
-			overflow:auto;
-			width:100%;
-			height:100%;
-		}
-		
-		.scrollContainerInner {
-			position:absolute;
-			width:100%;
-			height:100%;
-		}
-		
-		
-		/* content containers */
-		#fnTreeContainer {
-			
-		}
-		#fnTreeCell {
-			border:1px solid #bea83b;
-			border-top-width:0px;
-			padding-right:0px;
-		}
-		#contentCell {
-			border:0px solid #bea83b;		
-			border-width:0px 1px 1px 0px;
-		}
-		#content {
-			font-family:Verdana;
-		}
-		#meta {
-		
-		}
-		
-		#contentTop {
-			position:absolute;
-			overflow:hidden;
-			width:1px;height:1px;
-		}
-		
-		.packageHeader {
-			background-image:url(images/summerStripe-big.gif);
-			background-repeat:repeat-x;
-			height:28px;
-			padding:5px;
-			font-weight:bold;
-			font-size:20px;
-			line-height:23px;
-			margin:3px 10px 10px 0px;
-		}
-		
-		.packageContainer {
-		
-		}
-		
-	
-		.classHeader {
-			background-image:url(images/summerStripe.gif);
-			background-repeat:repeat-x;
-			height:26px;
-			padding:5px;
-			padding-top:3px;
-			font-weight:bold;
-			font-size:16px;
-			margin:10px 10px 5px 0px;
-		}
-
-		.classContainer {
-			padding-left:20px;
-			padding-bottom:5px;
-			margin-bottom:5px;		
-		}
-
-		.itemLink,
-		.itemLinkExpanded,
-		.itemLinkCollapsed {
-			font-size:inherit;
-			cursor:pointer;
-			color:darkgreen;		
-		}
-
-		.itemLinkExpanded,
-		.itemLinkCollapsed {
-			background-repeat:no-repeat;
-			padding-left:17px;
-			background-position:0px -2px;
-		}
-
-		.itemLinkCollapsed {
-			background-image:url(images/plus.gif);
-		}
-		.itemLinkExpanded {
-			background-image:url(images/minus.gif);
-		}
-
-		.classHeader .itemLinkExpanded,
-		.classHeader .itemLinkCollapsed {
-			background-position:0px 0px;
-			font-weight:bold;
-		}
-
-		.constructor {
-			font-weight:bold;
-			margin:4px 0px 6px 10px;
-		}	
-
-		.classLabel {
-			color: #666666;
-			font-weight:bold;
-			padding-bottom:2px;
-			margin:5px 10px 5px 0px;
-			border-bottom:1px dotted #666666;
-		}
-		
-		.classParamTable {	}
-		
-		.classParamTableCell {
-			padding:0px 20px 0px 0px;
-		}
-				
-		.methodHeader {	
-			margin-left:10px;
-		}
-		.methodContainer,
-		.requiresContainer {
-			margin:2px 20px 5px 30px;
-			font-size:10px;
-		}
-		
-		.methodDetailsContainer {
-			margin-top:5px;
-			margin-bottom:15px;
-			padding:5px;
-			padding-top:0px;
-			background-color:#f8f8f8;
-			border:1px solid #eeeeee;
-			font-size:10px;
-			-moz-border-radius:5px;
-		}
-		.methodLabel {
-			font-weight:bold;
-			border-bottom:1px dotted #cccccc;
-			margin:5px;
-		}
-		.methodSource,
-		.sourceKeyword,
-		.sourceString,
-		.sourceDojoRef,
-		.sourceComment {
-			white-space:pre;
-			font-family:monospace;
-			font-size:9px;
-		}
-		.sourceKeyword {
-			color:darkblue;
-		}
-
-		.sourceString,
-		.sourceString .sourceKeyword,
-		.sourceString .sourceDojoRef {
-			color:slateblue;
-		}
-		
-		.sourceComment,
-		.sourceComment .sourceKeyword,
-		.sourceComment .sourceDojoRef,
-		.sourceComment .sourceString {
-			color:#999999;
-		}
-		
-		.sourceDojoRef {
-			cursor:pointer;
-			color:darkgreen;
-		}
-		
-		.methodSummary,
-		.methodDescription {
-			color:#666666;
-			font-size:10px;
-			margin:2px 10px 4px 10px;
-		}
-		
-		.emptyMethods {
-			font-style:italic;
-			font-size:10px;
-			color:#666666;
-		}
-		
-		.paramsList {			/* list in the method signature */
-			margin-right:0px;
-		}
-						
-		.paramsContainer {		/* table of params */
-			margin:2px 0px 5px 20px;
-		}
-		
-		.paramTable {
-			border-collapse:collapse;
-		}
-		.paramTable TD {
-			border:1px solid #cccccc;
-			padding:2px 5px 2px 5px;
-		}
-		
-		.paramName,
-		.paramType,
-		.paramDescription,
-		.paramHeader,
-		.paramProtected,
-		.paramOptional {
-			font-size:10px;
-		}
-		.paramHeader {
-			font-weight:bold;
-		}
-
-		.paramType,
-		.paramOptional,
-		.paramProtected {
-			font-style:italic;
-		}
-
-		.paramOptional,
-		.paramProtected {
-			color:#666666;
-		}
-		
-		#mini-header {
-			background-image:url(images/helpbg.gif);
-		}
-		
-		
-		.searchBox {
-			width:220px;
-			border:1px solid;
-			border-color:#666666 #eeeeee #eeeeee #666666;
-			font-size:10px;
-			margin-left:3px;
-			padding:2px 2px 2px 3px;
-			font-weight:normal;
-		}
-		
-		.debugMenu {
-			border:1px solid;
-			border-color:#666666 #eeeeee #eeeeee #666666;
-			font-size:10px;
-			margin-right:5px;
-			font-weight:normal;
-		}
-		
-		.stripe {
-			background-image:url(images/summerStripe.gif);
-			height:26px;
-			font-weight:bold;
-		}
-		
-		.noPad {
-			padding:0px;
-		}
-		.noVPad {
-			padding-top:0px; padding-bottom:0px;
-		}
-		
-		.loadingPrompt {
-			font-size:16px;
-			font-weight:bold;
-			padding:20px;
-		}
-		
-		.tinyGray {
-			font-size:9px;
-			color:#cccccc;
-		}
-		
-		.normalRow {}
-		.hiliteRow {
-			background-color:#eeeeee;
-		}
-	</style>
+	<script type="text/javascript" src="ApiRef.js"></script>
 
 </head>
 <body>
@@ -344,7 +68,7 @@
 		<colgroup>
 			<col  style='width:300px'>
 			<col  style='width:100%'>
-			<col  style='width:200px'>
+			<col  style='width:250px'>
 		</colgroup>
 	</thead>
 	<tbody>
@@ -362,25 +86,34 @@
 				</div>
 		</td></tr>
 		<tr id="mini-header">
-			<td class='noPad'><a href='http://dojotoolkit.org'><img src='images/dojo-help.gif' width=32 height=24 border=0></a></td>
+			<td class='noPad'><a href='http://dojotoolkit.org'><img src='img/dojo-help.gif' width=32 height=24 border=0></a></td>
 			<td class='noPad'></td>
-			<td class='noPad' style='text-align:right'><img src='images/help.gif' width=97 height=24></td>
+			<td class='noPad' style='text-align:right'><img src='img/help.gif' width=97 height=24></td>
 		</tr>
 		<tr>
-			<td class="stripe noVPad">Search:<input id='searchBox' class='searchBox' type='text' value='dojo' onblur='ApiRef.showReference(this.value)' onkeypress='ApiRef.searchBoxKeyPress(event, this)'></td>
 			<td class="stripe noVPad">
-				Dojo API Reference
+				<table cellspacing=0 cellpadding=0 border=0>
+					<tr><td class='label'>Search:</td>
+						<td><input id='searchBox' class='searchBox' dojoType="combobox" id="search" autoComplete="false" Xonblur='ApiRef.showItem(this.value)' Xonkeypress='ApiRef.searchBoxKeyPress(event, this)'></td>
+					</tr>
+				</table>
 			</td>
+			<td id='title' class="stripe noVPad"></td>
 			<td class="stripe noVPad" style='text-align:right'>
 					<select class='debugMenu' onchange="ApiRef.debugMenuAction(this.options[this.selectedIndex].getAttribute('action'), this)">
 						<option action=''>Debug:</option>
-						<option action='ApiRef.debugMessageToggle()'>Toggle debug messages</option>
-						<option action='ApiRef.debugProfileToggle()'>Toggle profiling messages</option>
-						<option action='ApiRef.debugFunctionNames()'>Show function_names</option>
-						<option action='ApiRef.debugKnownFunctions()'>Show Known Functions</option>
-						<option action='ApiRef.debugFunctionMap()'>Show Function->Type Map</option>
-						<option action='ApiRef.debugPkgData()'>Show Package Data...</option>
-						<option action='ApiRef.debugItemData()'>Show Item Data...</option>
+						<option action='ApiRef.debug_toggleDebug()'>Toggle debug messages</option>
+						<option action='ApiRef.debug_toggleProfile()'>Toggle profiling messages</option>
+						<option action='ApiRef.debug_showPackageMap()'>Show Package -> Function Map</option>
+						<option action='ApiRef.debug_showFunctionMap()'>Show Function->Type Map</option>
+						<option action='ApiRef.debug_showObjectMap()'>" " (w/o functions)</option>
+						<option action='ApiRef.debug_showFunctionTree()'>Show Function Tree</option>
+						<option action='ApiRef.debug_showFunctionTreeNames()'>Show Function Tree Names</option>
+						<option action='ApiRef.debug_showKnownFunctions()'>Show All Known Functions</option>
+						<option action='ApiRef.debug_showParserData()'>Show Parser Data for File...</option>
+						<option action='ApiRef.debug_showItemData()'>Show Parser Data for Reference...</option>
+						<option action='ApiRef.debug_showItem()'>Show Item for Reference...</option>
+						<option action='ApiRef.debug_showTodo()'>Show ApiRef To Do List...</option>
 					</select>
 			</td>		
 		</tr>
@@ -388,7 +121,9 @@
 				<div class='scrollContainerOuter'>
 					<div id="fnTreeContainer" class='scrollContainerInner'>
 						<div class='loadingPrompt'>
-							Loading Class Tree...
+							Loading Class Tree... 
+							
+							<br><br>(This could take a few moments).
 						</div>
 					</div>
 				</div>
