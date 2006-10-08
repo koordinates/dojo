@@ -37,12 +37,24 @@
 
 			//	set up some bars for a test.
 			var b0 = new dojo.collections.Store();
-			b0.setData([{ x:98, y:76, z:12, a:23, b:52 }]);
-			var bar0 = new en.Series({ dataSource:b0, bindings:{ y:"x" }, label: "Bar 0" });
-			var bar1 = new en.Series({ dataSource:b0, bindings:{ y:"y" }, label: "Bar 1" });
-			var bar2 = new en.Series({ dataSource:b0, bindings:{ y:"z" }, label: "Bar 2" });
-			var bar3 = new en.Series({ dataSource:b0, bindings:{ y:"a" }, label: "Bar 3" });
-			var bar4 = new en.Series({ dataSource:b0, bindings:{ y:"b" }, label: "Bar 4" });
+			b0.setData([
+				{ x:43, y:88, z:42, a:66, b:34 },
+				{ x:15, y:10, z:14, a:68, b:69 },
+				{ x:92, y:82, z:4, a:52, b:21 },
+				{ x:100, y:40, z:83, a:47, b:35 },
+				{ x:3, y:97, z:3, a:83, b:6 },
+				{ x:70, y:89, z:87, a:88, b:30 },
+				{ x:26, y:100, z:78, a:32, b:36 },
+				{ x:20, y:3, z:28, a:36, b:13 },
+				{ x:39, y:31, z:28, a:69, b:77 },
+				{ x:9, y:97, z:80, a:5, b:9 },
+				{ x:98, y:76, z:12, a:23, b:52 }
+			]);
+			var bar0 = new en.Series({ dataSource:b0, bindings:{ y:"x", high:"y", low:"a" }, label: "Bar 0" });
+			var bar1 = new en.Series({ dataSource:b0, bindings:{ y:"y", high:"z", low:"b" }, label: "Bar 1" });
+			var bar2 = new en.Series({ dataSource:b0, bindings:{ y:"z", high:"a", low:"x" }, label: "Bar 2" });
+			var bar3 = new en.Series({ dataSource:b0, bindings:{ y:"a", high:"b", low:"y" }, label: "Bar 3" });
+			var bar4 = new en.Series({ dataSource:b0, bindings:{ y:"b", high:"x", low:"z" }, label: "Bar 4" });
 			
 			//	test the evaluate
 			/*
@@ -90,11 +102,11 @@
 
 			//////////////////////
 			var xB = new en.Axis();
-			xB.range={upper:50, lower:0};
+			xB.range={upper:100, lower:0};
 			xB.origin="max";
 			xB.showTicks = true;
 			xB.showLines = true;
-			xB.labels = [ 0, 25, 50 ];
+			xB.labels = [ 0, 20, 40, 60, 80, 100 ];
 
 			var yB = new en.Axis();
 			yB.range={upper:120,lower:0};
@@ -110,16 +122,16 @@
 
 			var p3 = new en.Plot(xB, yB2);
 			p3.renderType = dojo.widget.charting.engine.RenderPlotSeries.Grouped;
-			p3.addSeries({ data:bar0, plotter: dojo.widget.charting.engine.Plotters.Bar });
-			p3.addSeries({ data:bar1, plotter: dojo.widget.charting.engine.Plotters.Bar });
-			p3.addSeries({ data:bar2, plotter: dojo.widget.charting.engine.Plotters.Bar });
-			p3.addSeries({ data:bar3, plotter: dojo.widget.charting.engine.Plotters.Bar });
-			p3.addSeries({ data:bar4, plotter: dojo.widget.charting.engine.Plotters.Bar });
+			p3.addSeries({ data:bar0, plotter: dojo.widget.charting.engine.Plotters.Gantt });
+			p3.addSeries({ data:bar1, plotter: dojo.widget.charting.engine.Plotters.Gantt });
+			p3.addSeries({ data:bar2, plotter: dojo.widget.charting.engine.Plotters.Gantt });
+			p3.addSeries({ data:bar3, plotter: dojo.widget.charting.engine.Plotters.Gantt });
+			p3.addSeries({ data:bar4, plotter: dojo.widget.charting.engine.Plotters.HorizontalBar });
 			
 			var pa2 = new en.PlotArea();
 			pa2.plots.push(p3);
 			pa2.plots.push(p2);
-			pa2.size={width:700,height:170};
+			pa2.size={width:700,height:400};
 			pa2.padding={top:20, right:30, bottom:30, left:30 };
 			
 			bar0.color = pa2.nextColor();
@@ -141,7 +153,7 @@
 			#chartTest1 {
 				margin:12px;
 				width:800px;
-				height:500px;
+				height:700px;
 				background-color:#dedeed;
 				border:1px solid #999;
 			}

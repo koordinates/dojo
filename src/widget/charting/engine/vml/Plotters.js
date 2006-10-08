@@ -19,38 +19,190 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		group.style.width=plotarea.size.width+"px";
 		group.style.height=plotarea.size.height+"px";
 		
+		//	precompile the data
+		var n = plot.series.length;	//	how many series
+		var data = [];
+		for(var i=0; i<n; i++){
+			var tmp = plot.series[i].data.evaluate(kwArgs);
+			data.push(tmp);
+		}
+
+		//	calculate the width of each bar.
+		var space = 8;
+		var nPoints = data[0].length;
+		var width = ((area.right-area.left)-(space*(nPoints-1)))/nPoints;	//	the width of each group.
+		var barWidth = Math.round(width/n);	//	the width of each bar, no spaces.
+		var yOrigin = plot.axisY.getCoord(plot.axisX.origin, plotarea, plot);
+
+		for(var i=0; i<nPoints; i++){
+			//	calculate offset
+			var xStart = area.left+(width*i)+(space*i);
+			for(var j=0; j<n; j++){
+				var value = data[j][i].y;
+				var yA = yOrigin;
+				var x = xStart + (barWidth*j);
+				var y = plot.axisY.getCoord(value, plotarea, plot);
+				var h = Math.abs(yA-y);
+				if(value < plot.axisX.origin){
+					yA = y;
+					y = yOrigin;
+				}
+				
+				var bar=document.createElement("v:rect");
+				bar.style.position="absolute";
+				bar.style.top=y+1+"px";
+				bar.style.left=x+"px";
+				bar.style.width=barWidth+"px";
+				bar.style.height=h+"px";
+				bar.setAttribute("fillColor", data[j][i].series.color);
+				bar.setAttribute("stroked", "false");
+				bar.style.antialias="false";
+				var fill=document.createElement("v:fill");
+				fill.setAttribute("opacity", "0.6");
+				bar.appendChild(fill);
+				if(applyTo){ applyTo(bar, data[j][i].src); }
+				group.appendChild(bar);
+			}
+		}
+		return group;
+	},
+	HorizontalBar: function(
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* object? */kwArgs,
+		/* function? */applyTo
+	){
+		var area = plotarea.getArea();
+		var group = document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+		
+		//	precompile the data
+		var n = plot.series.length;	//	how many series
+		var data = [];
+		for(var i=0; i<n; i++){
+			var tmp = plot.series[i].data.evaluate(kwArgs);
+			data.push(tmp);
+		}
+
+		var space = 6;
+		var nPoints = data[0].length;
+		var h = ((area.bottom-area.top)-(space*(nPoints-1)))/nPoints;
+		var barH = h/n;
+		var xOrigin = plot.axisX.getCoord(0, plotarea, plot);
+
+		for(var i=0; i<nPoints; i++){
+			//	calculate offset
+			var yStart = area.top+(h*i)+(space*i);
+			for(var j=0; j<n; j++){
+				var value = data[j][i].y;
+				var y = yStart + (barH*j);
+				var xA = xOrigin;
+				var x = plot.axisX.getCoord(value, plotarea, plot);
+				var w = Math.abs(x-xA);
+				if(value > 0){
+					x = xOrigin;
+				}
+				
+				var bar=document.createElement("v:rect");
+				bar.style.position="absolute";
+				bar.style.top=y+1+"px";
+				bar.style.left=xA+"px";
+				bar.style.width=w+"px";
+				bar.style.height=barH+"px";
+				bar.setAttribute("fillColor", data[j][i].series.color);
+				bar.setAttribute("stroked", "false");
+				bar.style.antialias="false";
+				var fill=document.createElement("v:fill");
+				fill.setAttribute("opacity", "0.6");
+				bar.appendChild(fill);
+				if(applyTo){ applyTo(bar, data[j][i].src); }
+				group.appendChild(bar);
+			}
+		}
+
 		//	calculate the width of each bar.
 		var space = 4;
 		var n = plot.series.length;
-		var width = Math.round(((area.right-area.left)-(space*(n-1)))/n);
-		var yOrigin = plot.axisY.getCoord(plot.axisX.origin, plotarea, plot);
+		var h = ((area.bottom-area.top)-(space*(n-1)))/n;
+		var xOrigin = plot.axisX.getCoord(0, plotarea, plot);
 		for(var i=0; i<n; i++){
 			var series = plot.series[i];
 			var data = series.data.evaluate(kwArgs);
-			var x = area.left+(width*i)+(space*i);
+			var y = area.top+(h*i)+(space*i);
 			var value = data[data.length-1].y;
 
-			var yA = yOrigin;
-			var y = plot.axisY.getCoord(value, plotarea, plot);
-			var h = Math.abs(yA-y);
-			if(value < plot.axisX.origin){
-				yA = y;
-				y = yOrigin;
+			var xA = xOrigin;
+			var x = plot.axisX.getCoord(value, plotarea, plot);
+			var w = Math.abs(xA-x);
+			if(value > 0){
+				xA = x;
+				x = xOrigin;
 			}
 			
-			var bar=document.createElement("v:rect");
-			bar.style.position="absolute";
-			bar.style.top=y+1+"px";
-			bar.style.left=x+"px";
-			bar.style.width=width+"px";
-			bar.style.height=h+"px";
-			bar.setAttribute("fillColor", data[data.length-1].series.color);
-			bar.setAttribute("stroked", "false");
-			bar.style.antialias="false";
-			var fill=document.createElement("v:fill");
-			fill.setAttribute("opacity", "0.65");
-			bar.appendChild(fill);
-			group.appendChild(bar);
+		}
+		return group;
+	},
+	Gantt: function(
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* object? */kwArgs,
+		/* function? */applyTo
+	){
+		//	BINDINGS: high/low
+		var area = plotarea.getArea();
+		var group = document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+		
+		//	precompile the data
+		var n = plot.series.length;	//	how many series
+		var data = [];
+		for(var i=0; i<n; i++){
+			var tmp = plot.series[i].data.evaluate(kwArgs);
+			data.push(tmp);
+		}
+
+		var space = 2;
+		var nPoints = data[0].length;
+		var h = ((area.bottom-area.top)-(space*(nPoints-1)))/nPoints;
+		var barH = h/n;
+		for(var i=0; i<nPoints; i++){
+			//	calculate offset
+			var yStart = area.top+(h*i)+(space*i);
+			for(var j=0; j<n; j++){
+				var high = data[j][i].high;
+				var low = data[j][i].low;
+				if(low > high){
+					var t = high;
+					high = low;
+					low = t;
+				}
+				var x = plot.axisX.getCoord(low, plotarea, plot);
+				var w = plot.axisX.getCoord(high, plotarea, plot) - x;
+				var y = yStart + (barH*j);
+				
+				var bar=document.createElement("v:rect");
+				bar.style.position="absolute";
+				bar.style.top=y+1+"px";
+				bar.style.left=x+"px";
+				bar.style.width=w+"px";
+				bar.style.height=barH+"px";
+				bar.setAttribute("fillColor", data[j][i].series.color);
+				bar.setAttribute("stroked", "false");
+				bar.style.antialias="false";
+				var fill=document.createElement("v:fill");
+				fill.setAttribute("opacity", "0.6");
+				bar.appendChild(fill);
+				if(applyTo){ applyTo(bar, data[j][i].src); }
+				group.appendChild(bar);
+			}
 		}
 		return group;
 	},
