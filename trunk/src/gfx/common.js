@@ -61,7 +61,8 @@ dojo.lang.mixin(dojo.gfx, {
 			return val;
 		}
 		return addSpace ? " " + val : val;
-	}
+	},
+	pathRegExp: /([A-Za-z]+)|(\d+(\.\d+)?)|(\.\d+)|(-\d+(\.\d+)?)|(-\.\d+)/g
 });
 
 // this is a Surface object

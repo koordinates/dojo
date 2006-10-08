@@ -274,6 +274,28 @@ dojo.lang.extend(dojo.gfx.Shape, {
 });
 
 dojo.declare("dojo.gfx.Group", dojo.gfx.shape.VirtualGroup, {
+	initializer: function(rawNode){
+		// override inherited methods
+		var _this = this;
+		var old_add = this.add;
+		this.add = function(shape){
+			if(_this != shape.getParent()){
+				_this.rawNode.appendChild(shape.rawNode);
+				old_add.call(_this, shape);
+			}
+			return _this;
+		};
+		var old_remove = this.remove;
+		this.remove = function(shape, silently){
+			if(_this == shape.getParent()){
+				if(_this.rawNode == shape.rawNode.parentNode){
+					_this.rawNode.removeChild(shape.rawNode);
+				}
+				old_remove.call(_this, shape, silently);
+			}
+			return _this;
+		};
+	},
 	attach: function(rawNode){
 		if(rawNode){
 			this.rawNode = rawNode;
@@ -282,22 +304,6 @@ dojo.declare("dojo.gfx.Group", dojo.gfx.shape.VirtualGroup, {
 			this.strokeStyle = null;
 			this.matrix = null;
 		}
-	},
-	add: function(shape){
-		if(this != shape.getParent()){
-			this.rawNode.appendChild(shape.rawNode);
-			this.inherited("add", [shape]);
-		}
-		return this;
-	},
-	remove: function(shape, silently){
-		if(this == shape.getParent()){
-			if(this.rawNode == shape.rawNode.parentNode){
-				this.rawNode.removeChild(shape.rawNode);
-			}
-			this.inherited("remove", [shape, silently]);
-		}
-		return this;
 	}
 });
 dojo.gfx.Group.nodeType = "group";
@@ -418,27 +424,35 @@ dojo.declare("dojo.gfx.Circle", dojo.gfx.shape.Circle, {
 dojo.gfx.Circle.nodeType = "oval";
 
 dojo.declare("dojo.gfx.Line", dojo.gfx.shape.Line, {
+	initializer: function(rawNode){
+		if(rawNode) rawNode.setAttribute("dojoGfxType", "line");
+	},
 	setShape: function(newShape){
 		var shape = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
 		this.bbox = null;
-		var rawNode = this.rawNode;
-		rawNode.from = shape.x1.toFixed() + "," + shape.y1.toFixed();
-		rawNode.to   = shape.x2.toFixed() + "," + shape.y2.toFixed();
-		return this;
+		this.rawNode.path.v = "m" + shape.x1.toFixed() + " " + shape.y1.toFixed() +
+			"l" + shape.x2.toFixed() + " " + shape.y2.toFixed() + "e";
+		return this.setTransform(this.matrix);
 	},
 	attachShape: function(rawNode){
-		var rawNode = this.rawNode;
-		return dojo.gfx.makeParameters(dojo.gfx.defaultLine, {
-			x1: rawNode.from.x,
-			y1: rawNode.from.y,
-			x2: rawNode.to.x,
-			y2: rawNode.to.y
-		});
+		var p = rawNode.path.v.match(dojo.gfx.pathRegExp);
+		var shape = {};
+		do{
+			if(p.length < 7 || p[0] != "m" || p[3] != "l" || p[6] != "e") break;
+			shape.x1 = parseInt(p[1]);
+			shape.y1 = parseInt(p[2]);
+			shape.x2 = parseInt(p[4]);
+			shape.y2 = parseInt(p[5]);
+		}while(false);
+		return dojo.gfx.makeParameters(dojo.gfx.defaultLine, shape);
 	}
 });
-dojo.gfx.Line.nodeType = "line";
+dojo.gfx.Line.nodeType = "shape";
 
 dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline, {
+	initializer: function(rawNode){
+		if(rawNode) rawNode.setAttribute("dojoGfxType", "polyline");
+	},
 	setShape: function(points, closed){
 		if(points && points instanceof Array){
 			this.shape = dojo.gfx.makeParameters(this.shape, { points: points });
@@ -449,25 +463,43 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline, {
 		this.bbox = null;
 		var attr = [];
 		var p = this.shape.points;
-		for(var i = 0; i< p.length; ++i){
-			attr.push(p[i].x.toFixed());
-			attr.push(p[i].y.toFixed());
+		if(p.length > 0){
+			attr.push("m");
+			attr.push(p[0].x.toFixed());
+			attr.push(p[0].y.toFixed());
+			if(p.length > 1){
+				attr.push("l");
+				for(var i = 1; i < p.length; ++i){
+					attr.push(p[i].x.toFixed());
+					attr.push(p[i].y.toFixed());
+				}
+			}
 		}
-		this.rawNode.points.value = attr.join(" ");
+		attr.push("e");
+		this.rawNode.path.v = attr.join(" ");
 		return this.setTransform(this.matrix);
 	},
 	attachShape: function(rawNode){
 		var shape = dojo.lang.shallowCopy(dojo.gfx.defaultPolyline, true);
-		var points = rawNode.points.value.match(/\d+/g);
-		if(points){
-			for(var i = 0; i < points.length; i += 2){
-				shape.points.push({ x: parseFloat(points[i]), y: parseFloat(points[i + 1]) });
+		var p = rawNode.path.v.match(dojo.gfx.pathRegExp);
+		do{
+			if(p.length < 3 || p[0] != "m") break;
+			var x = parseInt(p[0]);
+			var y = parseInt(p[1]);
+			if(isNaN(x) || isNaN(y)) break;
+			shape.points.push({x: x, y: y});
+			if(p.length < 6 || p[3] != "l") break;
+			for(var i = 4; i < p.length; i += 2){
+				x = parseInt(p[i]);
+				y = parseInt(p[i + 1]);
+				if(isNaN(x) || isNaN(y)) break;
+				shape.points.push({x: x, y: y});
 			}
-		}
+		}while(false);
 		return shape;
 	}
 });
-dojo.gfx.Polyline.nodeType = "polyline";
+dojo.gfx.Polyline.nodeType = "shape";
 
 dojo.declare("dojo.gfx.Image", dojo.gfx.shape.Image, {
 	getEventSource: function() {
@@ -659,7 +691,7 @@ dojo.gfx.Path.nodeType = "shape";
 
 dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 	initializer: function(rawNode){
-		this.inherited("initializer", [rawNode]);
+		if(rawNode) rawNode.setAttribute("dojoGfxType", "path");
 		this.vmlPath = "";
 		this.lastControl = {};
 		// override inherited methods
@@ -1069,10 +1101,10 @@ dojo.gfx._creators = {
 		return this.createObject(dojo.gfx.Circle, circle);
 	},
 	createLine: function(line){
-		return this.createObject(dojo.gfx.Line, line);
+		return this.createObject(dojo.gfx.Line, line, true);
 	},
 	createPolyline: function(points){
-		return this.createObject(dojo.gfx.Polyline, points);
+		return this.createObject(dojo.gfx.Polyline, points, true);
 	},
 	createPath: function(path){
 		return this.createObject(dojo.gfx.Path, path, true);
@@ -1131,14 +1163,18 @@ dojo.gfx.attachNode = function(node){
 				? new dojo.gfx.Circle()
 				: new dojo.gfx.Ellipse();
 			break;
-		case dojo.gfx.Polyline.nodeType:
-			s = new dojo.gfx.Polyline();
-			break;
 		case dojo.gfx.Path.nodeType:
-			s = new dojo.gfx.Path();
-			break;
-		case dojo.gfx.Line.nodeType:
-			s = new dojo.gfx.Line();
+			switch(node.getAttribute("dojoGfxType")){
+				case "line":
+					s = new dojo.gfx.Line();
+					break;
+				case "polyline":
+					s = new dojo.gfx.Polyline();
+					break;
+				case "path":
+					s = new dojo.gfx.Path();
+					break;
+			}
 			break;
 		case dojo.gfx.Image.nodeType:
 			s = new dojo.gfx.Image();

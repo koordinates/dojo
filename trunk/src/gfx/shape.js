@@ -185,15 +185,17 @@ dojo.declare("dojo.gfx.shape.Polyline", dojo.gfx.Shape, {
 		this.attach(rawNode);
 	},
 	getBoundingBox: function(){
-		if(!this.bbox && this.shape.point.length){
+		if(!this.bbox && this.shape.points.length){
 			var p = this.shape.points;
 			var l = p.length;
-			var bbox = {l: p.x, t: p.y, r: p.x, b: p.y};
+			var t = p[0];
+			var bbox = {l: t.x, t: t.y, r: t.x, b: t.y};
 			for(var i = 1; i < l; ++i){
-				if(bbox.l > p.x) bbox.l = p.x;
-				if(bbox.r < p.x) bbox.r = p.x;
-				if(bbox.t > p.y) bbox.t = p.y;
-				if(bbox.b < p.y) bbox.b = p.y;
+				t = p[i];
+				if(bbox.l > t.x) bbox.l = t.x;
+				if(bbox.r < t.x) bbox.r = t.x;
+				if(bbox.t > t.y) bbox.t = t.y;
+				if(bbox.b < t.y) bbox.b = t.y;
 			}
 			this.bbox = {
 				x:		bbox.l, 
