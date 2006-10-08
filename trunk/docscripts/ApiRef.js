@@ -1097,7 +1097,7 @@ if (this.functionMap[name] == null) dojo.debug("getItem("+name+"): name not foun
 			}
 		);
 		
-dojo.debug("Done initializing searchBox");
+//dojo.debug("Done initializing searchBox");
 	},
 	
 	getSearchBoxValue : function() {
@@ -1237,7 +1237,7 @@ dojo.debug("Done initializing searchBox");
 				
 			}
 			ancestor.hasChildren = "K";
-			ancestor.isObject = true;
+			ancestor.isObject = "O";
 			lastAncestor = ancestor;
 		}
 
