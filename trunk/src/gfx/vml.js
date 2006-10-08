@@ -711,15 +711,37 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 				_this.rawNode.path.v = _this.vmlPath + " e";
 			}
 		};
-		var oldSetShape = this.setShape;
+		var old_setShape = this.setShape;
 		this.setShape = function(newShape){
 			_this.vmlPath = [];
 			_this.lastControl = {};
-			oldSetShape.call(_this, newShape);
+			old_setShape.call(_this, newShape);
 			_this.vmlPath = _this.vmlPath.join("");
 			_this.rawNode.path.v = _this.vmlPath + " e";
 			return _this;
 		};
+	},
+	_pathVmlToSvgMap: {m: "M", l: "L", t: "m", r: "l", c: "C", v: "c", qb: "Q", e: ""},
+	attachShape: function(rawNode){
+		var shape = dojo.lang.shallowCopy(dojo.gfx.defaultPath, true);
+		var p = rawNode.path.v.match(dojo.gfx.pathRegExp);
+		var t = [], skip = false;
+		for(var i = 0; i < p.length; ++p){
+			var s = p[i];
+			if(s in this._pathVmlToSvgMap) {
+				skip = false;
+				t.push(this._pathVmlToSvgMap[s]);
+			} else if(!skip){
+				var n = parseInt(s);
+				if(isNaN(n)){
+					skip = true;
+				}else{
+					t.push(n);
+				}
+			}
+		}
+		if(t.length) shape.path = t.join(" ");
+		return shape;
 	},
 	// VML-specific segment renderers
 	renderers: {
