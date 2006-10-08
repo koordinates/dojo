@@ -12,7 +12,7 @@ dojo.widget.defineWidget(
 		// summary: A TextBox which tests for a valid date
 		// format: Deprecated. Style as described in v0.3 in dojo.validate.  Default is  "MM/DD/YYYY".
 
-		// pattern used in display of formatted date.  See dojo.date.format.
+		// optional pattern used in display of formatted date.  Uses locale-specific format by default.  See dojo.date.format.
 		displayFormat: "",
 		// type of format appropriate to locale.  see dojo.date.format
 		formatLength: "short",
@@ -52,7 +52,7 @@ dojo.widget.defineWidget(
 		// amSymbol: Deprecated. Used with format. The symbol used for AM.  Default is "AM" or "am".
 		// pmSymbol: Deprecated. Used with format. The symbol used for PM.  Default is "PM" or "pm".
 
-		// pattern used in display of formatted date.  See dojo.date.format.
+		// optional pattern used in display of formatted date.  Uses locale-specific format by default.  See dojo.date.format.
 		displayFormat: "",
 		// type of format appropriate to locale.  see dojo.date.format
 		formatLength: "short",

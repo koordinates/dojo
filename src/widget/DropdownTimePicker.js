@@ -24,7 +24,7 @@ dojo.widget.defineWidget(
 		//	z-index of time picker widget
 		zIndex: "10",
 
-		// pattern used in display of formatted time.  See dojo.date.format.
+		// pattern used in display of formatted time.  Uses locale-specific format by default.  See dojo.date.format.
 		displayFormat: "",
 
 		// String
