@@ -1,6 +1,7 @@
 <?php
 
 require_once('lib/JSON.php');
+require_once('DojoVariable.php');
 
 function writeToDisk($output, $dir, $format = 'json', $environment = 'remote') {
 	if ($dir{strlen($dir) - 1} == '/') {
@@ -133,8 +134,10 @@ function rolloutFunction(&$output, $package, $declaration) {
   $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['summary'] = '';
   $parameters = $declaration->getParameters();
   foreach ($parameters as $parameter) {
-    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['parameters'][$parameter->getValue()]['type'] = $parameter->getType();
-		$declaration->addBlockCommentKey($parameter->getValue());
+    if ($parameter->isA(DojoVariable)) {
+      $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['parameters'][$parameter->getVariable()]['type'] = $parameter->getType();
+      $declaration->addBlockCommentKey($parameter->getVariable());
+    }
   }
   
   $declaration->addBlockCommentKey('summary');
@@ -152,19 +155,19 @@ function rolloutFunction(&$output, $package, $declaration) {
 
   $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['src'] = $declaration->getSource();
   
-  $this_variables = $declaration->getThisVariableNames();
-  foreach ($this_variables as $this_variable) {
-    if (isset($output[$package_name][$masquerading_as_function]['_']['meta']['this_variables'])) {
-      if (!in_array($this_variable, $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'])) {
-        $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'][] = $this_variable;
+  $instance_variables = $declaration->getInstanceVariableNames();
+  foreach ($instance_variables as $instance_variable) {
+    if (isset($output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['instance_variables'])) {
+      if (!in_array($instance_variable, $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['instance_variables'])) {
+        $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['instance_variables'][] = $instance_variable;
       }
     }
     else {
-      $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['this_variables'][] = $this_variable;
+      $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['instance_variables'][] = $this_variable;
     }
   }
-  
-  $returns = array_unique($declaration->getReturnComments());
+
+  $returns = $declaration->getReturnComments();
   if (count($returns) == 1) {
     $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['returns'] = $returns[0];
   }
@@ -176,8 +179,11 @@ function rolloutFunction(&$output, $package, $declaration) {
     $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['this_inherits'] = $calls;
   }
   
-  if ($declaration->isThis()) {
-    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['this'] = $declaration->getThis();
+  if ($declaration->getPrototype()) {
+    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['prototype'] = $declaration->getPrototype();
+  }
+  if ($declaration->getInstance()) {
+    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['instance'] = $declaration->getInstance();
   }
 }
 

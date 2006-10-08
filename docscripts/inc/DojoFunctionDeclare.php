@@ -8,7 +8,7 @@ class DojoFunctionDeclare extends DojoBlock
   private $object = 'DojoFunctionDeclare';
   
   private $parameters;
-  private $name;
+  private $function_name;
   private $body;
   
   private $anonymous = false;
@@ -37,9 +37,19 @@ class DojoFunctionDeclare extends DojoBlock
     $this->prototype = $function_name;
   }
   
+  public function getPrototype()
+  {
+    return $this->prototype;
+  }
+  
   public function setInstance($function_name)
   {
     $this->instance = $function_name;
+  }
+  
+  public function getInstance()
+  {
+    return $this->instance;
   }
   
   public function isAnonymous()
@@ -57,13 +67,19 @@ class DojoFunctionDeclare extends DojoBlock
     return ($this->prototype) ? $this->prototype : $this->instance;
   }
   
-  // Should be pulled using DojoFunctionBody
-  public function getThisVariableNames()
+  public function getInstanceVariableNames()
   {
-    if ($this->this_variable_names) {
-      return array_keys($this->this_variable_names);
-    }
-    return array_keys($this->this_variable_names);
+    return array_unique($this->body->getInstanceVariableNames());
+  }
+  
+  public function getReturnComments()
+  {
+    return array_unique($this->body->getReturnComments());
+  }
+  
+  public function getThisInheritanceCalls()
+  {
+    return array_unique($this->body->getThisInheritanceCalls());
   }
 
   public function build(){
@@ -80,11 +96,11 @@ class DojoFunctionDeclare extends DojoBlock
       $line = substr($line, 8);
       preg_match('%[^\s]%', $line, $match);
       if ($match[0] != '(') {
-        $this->name = trim(substr($line, strpos($line, '(')));
+        $this->function_name = trim(substr($line, strpos($line, '(')));
       }
     }
     else {
-      $name = trim(substr($line, 0, strpos($line, 'function')));
+      $name = trim(substr($line, 0, strpos($line, '=')));
       if (preg_match('%\s+new\s*%', $name, $match)) {
         $this->anonymous = true;
         $name = str_replace($match[0], '', $name);
@@ -97,7 +113,7 @@ class DojoFunctionDeclare extends DojoBlock
         $this->instance = substr($name, 0, $pos);
         $name = preg_replace('%^this\.%', '', $name);
       }
-      $this->name = $name;
+      $this->function_name = $name;
     }
     
     $this->parameters->setStart($this->start[0], strpos($lines[$this->start[0]], '('));

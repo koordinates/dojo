@@ -10,33 +10,23 @@ class DojoFunctionBody extends DojoBlock
 
   private $keys = array();
   private $comments = array();
+  private $return_comments = array();
+  private $instance_variables = array();
+  private $this_inheritance_calls = array();
   
   public function build()
   {
 		if (!$this->start) {
       die("DojoFunctionBody->build() used before setting a start position");
     }
+    if ($this->end) {
+      return $this->end;
+    }
 		
 		$balance = 0;
 		$start_position = $this->start[1];
-		$lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1]);
-		foreach ($lines as $line_number => $line) {
-      $chars = array_slice(Text::toArray($line), $start_position, strlen($line), true);
-      $start_position = 0;
-      foreach ($chars as $char_position => $char) {
-        if ($char == '{') {
-          ++$balance;
-        }
-        elseif ($char == '}') {
-          --$balance;
-					if (!$balance) {
-						$end = array($line_number, $char_position);
-						$this->setEnd($end[0], $end[1]);
-						return $end;
-					}
-        }
-      }
-		}
+		$lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], false, false, true);
+    return $this->end = Text::findTermination($lines, '}', '{}');
   }
   
   public function addBlockCommentKey($key)
@@ -140,6 +130,55 @@ class DojoFunctionBody extends DojoBlock
 
     return array_keys($this->comments);
   }
+  
+  public function getInstanceVariableNames()
+  {
+    if ($this->instance_variables) {
+      return $this->instance_variables;
+    }
+    
+    $this->build();
+    $lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], $this->end[0], $this->end[1], true);
+    foreach ($lines as $line) {
+      if (preg_match('%\bthis\.([a-zA-Z0-9._$]+)\s*=%', $line, $match)) {
+        $this->instance_variables[] = $match[1];
+      }
+    }
+    return $this->instance_variables;
+  }
+  
+  public function getReturnComments()
+  {
+    if ($this->return_comments) {
+      return $this->return_comments;
+    }
+    
+    $this->build();
+    $lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], $this->end[0], $this->end[1], true);
+    foreach ($lines as $line) {
+      if (preg_match('%\breturn\b.*(?://\s*(.*)|/\*\s*(.*)\s*\*/)%', $line, $match)) {
+        $this->return_comments[] = $match[1] . $match[2];
+      }
+    }
+    return $this->return_comments;
+  }
+  
+  public function getThisInheritanceCalls()
+  {
+    if ($this->this_inheritance_calls) {
+      return $this->this_inheritance_calls;
+    }
+    
+    $this->build();
+    $lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], $this->end[0], $this->end[1], true);
+    foreach ($lines as $line) {
+      if (preg_match('%\b([a-zA-Z0-9_.$]+)\.(?:apply|call)\s*\(%', $line, $match)) {
+        $this->this_inheritance_calls[] = $match[1];
+      }
+    }
+    return $this->this_inheritance_calls;
+  }
+
 }
   
 ?>
