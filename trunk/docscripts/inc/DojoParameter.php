@@ -71,6 +71,14 @@ class DojoParameter extends DojoBlock
     }
     return new DojoFunctionDeclare($this->package);
   }
+  
+  public function getVariable()
+  {
+    if ($this->isA(DojoVariable)) {
+      return $this->parameter_value->getValue();
+    }
+    return new DojoVariable($this->package);
+  }
 
   public function getValue()
   {

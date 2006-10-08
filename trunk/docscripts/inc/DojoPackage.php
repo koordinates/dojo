@@ -45,11 +45,11 @@ class DojoPackage
         $declaration->setStart($line_number, strpos($line, $match[0]));
         $end = $declaration->build();
         $last_line = $end[0];
-        $this->declarations[$declaration->getName] = $declaration;
+        $this->declarations[$declaration->getFunctionName()] = $declaration;
       }
     }
     
-    return $end;
+    return $this->declarations;
   }
   
   /**
