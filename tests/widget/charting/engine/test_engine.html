@@ -9,15 +9,16 @@
 		<script>
 			dojo.require("dojo.collections.Store");
 			dojo.require("dojo.widget.charting.engine.Chart");
+			dojo.require('dojo.json');
 
 			//	our sample data for our line chart.
 			var json = [
-				{ x: 0, y: 110, size:20 },
-				{ x: 10, y: 24, size:4 },
-				{ x: 15, y:63, size:32 },
-				{ x: 25, y: 5, size:13 },
-				{ x: 40, y: 98, size:7 },
-				{ x: 45, y: 54, size:18 }
+				{ x: 0, y: 110, size:20, x2:20, high:110, low: 80, open:90, close:96 },
+				{ x: 10, y: 24, size:4, x2: 25, high:56, low: 43, open:43, close:54 },
+				{ x: 15, y:63, size:32, x2: 30, high: 100, low: 40, open:56, close: 96 },
+				{ x: 25, y: 5, size:13, x2: 35, high: 40, low: 36, open:40, close:36 },
+				{ x: 40, y: 98, size:7, x2: 40, high: 86, low: 66, open: 80, close: 70 },
+				{ x: 45, y: 54, size:18, x2: 45, high: 50, low: 0, open: 42, close: 4 }
 			];
 			var store = new dojo.collections.Store();
 			store.setData(json);
@@ -33,6 +34,21 @@
 				dataSource:store,
 				bindings:{ x:"y", y:"size" },
 				label:"Series 2"
+			});
+			var s3 = new en.Series({ 
+				dataSource:store, 
+				bindings:{ x: "x2", high:"high", low:"low", open:"open", close:"close" }, 
+				label: "Series 3" 
+			});
+			var s4 = new en.Series({
+				dataSource:store,
+				bindings:{ x:"y", y:"low" },
+				label:"Series 4"
+			});
+			var s5 = new en.Series({
+				dataSource:store,
+				bindings:{ x:"y", y:"open" },
+				label:"Series 5"
 			});
 
 			//	set up some bars for a test.
@@ -50,7 +66,7 @@
 				{ x:9, y:97, z:80, a:5, b:9 },
 				{ x:98, y:76, z:12, a:23, b:52 }
 			]);
-			var bar0 = new en.Series({ dataSource:b0, bindings:{ x: "x", y:"x", high:"y", low:"a", open:"b", close:"z" }, label: "Bar 0" });
+			var bar0 = new en.Series({ dataSource:b0, bindings:{ y:"x", high:"y", low:"a" }, label: "Bar 0" });
 			var bar1 = new en.Series({ dataSource:b0, bindings:{ y:"y", high:"z", low:"b" }, label: "Bar 1" });
 			var bar2 = new en.Series({ dataSource:b0, bindings:{ y:"z", high:"a", low:"x" }, label: "Bar 2" });
 			var bar3 = new en.Series({ dataSource:b0, bindings:{ y:"a", high:"b", low:"y" }, label: "Bar 3" });
@@ -68,16 +84,16 @@
 			
 			//	keep going.
 			var xA = new en.Axis();
-			xA.range={upper:100, lower:0};
+			xA.range={upper:130, lower:0};
 			xA.origin="max";
 			xA.showTicks = true;
 			xA.labels = [ 0, 20, 40, 60, 80, 100 ];
 
 			var yA = new en.Axis();
-			yA.range={upper:120,lower:0};
+			yA.range={upper:180,lower:0};
 			yA.showLines = true;
 			yA.showTicks = true;
-			yA.labels = [ {label:"min", value:0 }, { label:"35",value:35}, { label:"max", value:120} ];
+			yA.labels = [ {label:"min", value:0 }, { label:"35",value:35 }, { label:"max", value:120 } ];
 
 			var yA2 = new en.Axis();
 			yA2.range={upper:50,lower:0};
@@ -85,10 +101,12 @@
 			yA2.showTicks = true;
 			
 			var p = new en.Plot(xA, yA);
-			p.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.DataBar });
-			var pA = new en.Plot(xA, yA2);
-			pA.addSeries({ data:s2, plotter: dojo.widget.charting.engine.Plotters.CurvedArea });
-//			pA.addSeries({ data:bar0, plotter: dojo.widget.charting.engine.Plotters.HighLowOpenClose });
+			p.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.CurvedLine });
+			var pA = new en.Plot(xA, yA);
+			pA.renderType = dojo.widget.charting.engine.RenderPlotSeries.Grouped;
+			pA.addSeries({ data:s2, plotter: dojo.widget.charting.engine.Plotters.StackedCurvedArea });
+			pA.addSeries({ data:s4, plotter: dojo.widget.charting.engine.Plotters.StackedCurvedArea });
+			pA.addSeries({ data:s5, plotter: dojo.widget.charting.engine.Plotters.StackedCurvedArea });
 
 			var pa = new en.PlotArea();
 			pa.size={width:700,height:170};
@@ -97,9 +115,11 @@
 			pa.plots.push(pA);
 
 			//	auto assign colors, and increase the step (since we've only 2 series)
-		//	pa._color.step *= 7;
 			s1.color = pa.nextColor();
 			s2.color = pa.nextColor();
+			s3.color = pa.nextColor();
+			s4.color = pa.nextColor();
+			s5.color = pa.nextColor();
 
 			//////////////////////
 			var xB = new en.Axis();
