@@ -309,7 +309,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 					cmd.push(x+","+y);
 				}
 			}
-			path.setAttribute("path", cmd.join(" ")+" e");
+			path.setAttribute("path", cmd.join(" ")+" x e");
 			group.appendChild(path);
 		}
 		return group;
@@ -436,7 +436,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 					cmd.push(x+","+y);
 				}
 			}
-			path.setAttribute("path", cmd.join(" ")+" e");
+			path.setAttribute("path", cmd.join(" ")+" x e");
 			group.appendChild(path);
 		}
 		return group;
@@ -706,7 +706,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		cmd.push(x + "," + Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
 		cmd.push("l");
 		cmd.push(Math.round(plot.axisX.getCoord(data[0].x, plotarea, plot)) + "," +  Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
-		path.setAttribute("path", cmd.join(" ")+" e");
+		path.setAttribute("path", cmd.join(" ")+" x e");
 		group.appendChild(path);
 		return group;
 	},
@@ -789,7 +789,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		cmd.push(x + "," + Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
 		cmd.push("l");
 		cmd.push(Math.round(plot.axisX.getCoord(data[0].x, plotarea, plot)) + "," +  Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
-		path.setAttribute("path", cmd.join(" ")+" e");
+		path.setAttribute("path", cmd.join(" ")+" x e");
 		group.appendChild(path);
 		return group;
 	},
