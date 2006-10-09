@@ -206,6 +206,241 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		}
 		return group;
 	},
+	StackedArea: function(
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* object? */kwArgs,
+		/* function? */applyTo
+	){
+		var area = plotarea.getArea();
+		var group=document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+
+		//	precompile the data
+		var n = plot.series.length;	//	how many series
+		var data = [];
+		var totals = [];
+
+		//	we're assuming that all series for this plot has the name x assignment for now.
+		for(var i=0; i<n; i++){
+			var tmp = plot.series[i].data.evaluate(kwArgs);
+			//	run through and add current totals
+			for(var j=0; j<tmp.length; j++){
+				if(i==0){ totals.push(tmp[j].y); }
+				else { totals[j] += tmp[j].y; }
+				tmp[j].y = totals[j];
+			}
+			data.push(tmp);
+		}
+
+		for(var i=n-1; i>=0; i--){
+			var path=document.createElement("v:shape");
+			path.setAttribute("strokeweight", "1px");
+			path.setAttribute("strokecolor", data[i][0].series.color);
+			path.setAttribute("fillcolor", data[i][0].series.color);
+			path.setAttribute("coordsize", (area.right-area.left) + "," + (area.bottom-area.top));
+			path.style.position="absolute";
+			path.style.top="0px";
+			path.style.left="0px";
+			path.style.width=area.right-area.left+"px";
+			path.style.height=area.bottom-area.top+"px";
+			var stroke=document.createElement("v:stroke");
+			stroke.setAttribute("opacity", "0.8");
+			path.appendChild(stroke);
+			var fill=document.createElement("v:fill");
+			fill.setAttribute("opacity", "0.4");
+			path.appendChild(fill);
+
+			var cmd = [];
+			var r=3;
+			for(var j=0; j<data[i].length; j++){
+				var values = data[i];
+				var x = Math.round(plot.axisX.getCoord(values[j].x, plotarea, plot));
+				var y = Math.round(plot.axisY.getCoord(values[j].y, plotarea, plot));
+
+				if (j==0){
+					cmd.push("m");
+					cmd.push(x+","+y);
+				}else{
+					cmd.push("l");
+					cmd.push(x+","+y);
+				}
+
+				//	add the circle.
+				var c = document.createElement("v:oval");
+				c.setAttribute("strokeweight", "1px");
+				c.setAttribute("strokecolor", values[j].series.color);
+				c.setAttribute("fillcolor", values[j].series.color);
+				var str=document.createElement("v:stroke");
+				str.setAttribute("opacity","0.8");
+				c.appendChild(str);
+				str=document.createElement("v:fill");
+				str.setAttribute("opacity","0.6");
+				c.appendChild(str);
+				var s=c.style;
+				s.position="absolute";
+				s.top=(y-r)+"px";
+				s.left=(x-r)+"px";
+				s.width=(r*2)+"px";
+				s.height=(r*2)+"px";
+				group.appendChild(c);
+				if(applyTo){ applyTo(c, data[j].src); }
+			}
+
+			//	now run the path backwards from the previous series.
+			if(i == 0){
+				cmd.push("l");
+				cmd.push(x + "," + Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
+				cmd.push("l");
+				cmd.push(Math.round(plot.axisX.getCoord(data[0][0].x, plotarea, plot)) + "," +  Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
+			} else {
+				var values = data[i-1];
+				cmd.push("l");
+				cmd.push(x + "," + Math.round(plot.axisY.getCoord(values[values.length-1].y, plotarea, plot)));
+				for(var j=values.length-2; j>=0; j--){
+					var x = Math.round(plot.axisX.getCoord(values[j].x, plotarea, plot));
+					var y = Math.round(plot.axisY.getCoord(values[j].y, plotarea, plot));
+					
+					cmd.push("l");
+					cmd.push(x+","+y);
+				}
+			}
+			path.setAttribute("path", cmd.join(" ")+" e");
+			group.appendChild(path);
+		}
+		return group;
+	},
+	StackedCurvedArea: function(
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* object? */kwArgs,
+		/* function? */applyTo
+	){
+		var tension = 3;
+		var area = plotarea.getArea();
+		var group=document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+
+		//	precompile the data
+		var n = plot.series.length;	//	how many series
+		var data = [];
+		var totals = [];
+
+		//	we're assuming that all series for this plot has the name x assignment for now.
+		for(var i=0; i<n; i++){
+			var tmp = plot.series[i].data.evaluate(kwArgs);
+			//	run through and add current totals
+			for(var j=0; j<tmp.length; j++){
+				if(i==0){ totals.push(tmp[j].y); }
+				else { totals[j] += tmp[j].y; }
+				tmp[j].y = totals[j];
+			}
+			data.push(tmp);
+		}
+
+		for(var i=n-1; i>=0; i--){
+			var path=document.createElement("v:shape");
+			path.setAttribute("strokeweight", "1px");
+			path.setAttribute("strokecolor", data[i][0].series.color);
+			path.setAttribute("fillcolor", data[i][0].series.color);
+			path.setAttribute("coordsize", (area.right-area.left) + "," + (area.bottom-area.top));
+			path.style.position="absolute";
+			path.style.top="0px";
+			path.style.left="0px";
+			path.style.width=area.right-area.left+"px";
+			path.style.height=area.bottom-area.top+"px";
+			var stroke=document.createElement("v:stroke");
+			stroke.setAttribute("opacity", "0.8");
+			path.appendChild(stroke);
+			var fill=document.createElement("v:fill");
+			fill.setAttribute("opacity", "0.4");
+			path.appendChild(fill);
+
+			var cmd = [];
+			var r=3;
+			for(var j=0; j<data[i].length; j++){
+				var values = data[i];
+				var x = Math.round(plot.axisX.getCoord(values[j].x, plotarea, plot));
+				var y = Math.round(plot.axisY.getCoord(values[j].y, plotarea, plot));
+
+				if (j==0){
+					cmd.push("m");
+					cmd.push(x+","+y);
+				}else{
+					var lastx = Math.round(plot.axisX.getCoord(values[j-1].x, plotarea, plot));
+					var lasty = Math.round(plot.axisY.getCoord(values[j-1].y, plotarea, plot));
+					var dx=x-lastx;
+					var dy=y-lasty;
+					
+					cmd.push("c");
+					var cx=Math.round((x-(tension-1)*(dx/tension)));
+					cmd.push(cx+","+lasty);
+					cx=Math.round((x-(dx/tension)));
+					cmd.push(cx+","+y);
+					cmd.push(x+","+y);
+				}
+
+				//	add the circle.
+				var c = document.createElement("v:oval");
+				c.setAttribute("strokeweight", "1px");
+				c.setAttribute("strokecolor", values[j].series.color);
+				c.setAttribute("fillcolor", values[j].series.color);
+				var str=document.createElement("v:stroke");
+				str.setAttribute("opacity","0.8");
+				c.appendChild(str);
+				str=document.createElement("v:fill");
+				str.setAttribute("opacity","0.6");
+				c.appendChild(str);
+				var s=c.style;
+				s.position="absolute";
+				s.top=(y-r)+"px";
+				s.left=(x-r)+"px";
+				s.width=(r*2)+"px";
+				s.height=(r*2)+"px";
+				group.appendChild(c);
+				if(applyTo){ applyTo(c, data[j].src); }
+			}
+
+			//	now run the path backwards from the previous series.
+			if(i == 0){
+				cmd.push("l");
+				cmd.push(x + "," + Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
+				cmd.push("l");
+				cmd.push(Math.round(plot.axisX.getCoord(data[0][0].x, plotarea, plot)) + "," +  Math.round(plot.axisY.getCoord(plot.axisX.origin, plotarea, plot)));
+			} else {
+				var values = data[i-1];
+				cmd.push("l");
+				cmd.push(x + "," + Math.round(plot.axisY.getCoord(values[values.length-1].y, plotarea, plot)));
+				for(var j=values.length-2; j>=0; j--){
+					var x = Math.round(plot.axisX.getCoord(values[j].x, plotarea, plot));
+					var y = Math.round(plot.axisY.getCoord(values[j].y, plotarea, plot));
+
+					var lastx = Math.round(plot.axisX.getCoord(values[j+1].x, plotarea, plot));
+					var lasty = Math.round(plot.axisY.getCoord(values[j+1].y, plotarea, plot));
+					var dx=x-lastx;
+					var dy=y-lasty;
+					
+					cmd.push("c");
+					var cx=Math.round((x-(tension-1)*(dx/tension)));
+					cmd.push(cx+","+lasty);
+					cx=Math.round((x-(dx/tension)));
+					cmd.push(cx+","+y);
+					cmd.push(x+","+y);
+				}
+			}
+			path.setAttribute("path", cmd.join(" ")+" e");
+			group.appendChild(path);
+		}
+		return group;
+	},
 
 	/*********************************************************
 	 *	Single plotters: one series at a time.
@@ -558,6 +793,215 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		group.appendChild(path);
 		return group;
 	},
+	HighLow: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		//	summary
+		var area = plotarea.getArea();
+		var group=document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+		
+		var n = data.length;
+		var part = ((area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower))/4;
+		var w = part*2;
+
+		for(var i=0; i<n; i++){
+			var high = data[i].high;
+			var low = data[i].low;
+			if(low > high){
+				var t = low;
+				low = high;
+				high = t;
+			}
+
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot) - (w/2);
+			var y = plot.axisY.getCoord(high, plotarea, plot);
+			var h = plot.axisY.getCoord(low, plotarea, plot)-y;
+
+			//	high + low
+			var bar=document.createElement("v:rect");
+			bar.style.position="absolute";
+			bar.style.top=y+1+"px";
+			bar.style.left=x+"px";
+			bar.style.width=w+"px";
+			bar.style.height=h+"px";
+			bar.setAttribute("fillColor", data[i].series.color);
+			bar.setAttribute("stroked", "false");
+			bar.style.antialias="false";
+			var fill=document.createElement("v:fill");
+			fill.setAttribute("opacity", "0.6");
+			bar.appendChild(fill);
+			if(applyTo){ applyTo(bar, data[i].src); }
+			group.appendChild(bar);
+		}
+		return group;
+	},	
+	HighLowClose: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		//	summary
+		var area = plotarea.getArea();
+		var group=document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+		
+		var n = data.length;
+		var part = ((area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower))/4;
+		var w = part*2;
+
+		for(var i=0; i<n; i++){
+			var high = data[i].high;
+			var low = data[i].low;
+			if(low > high){
+				var t = low;
+				low = high;
+				high = t;
+			}
+			var c = data[i].close;
+
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot) - (w/2);
+			var y = plot.axisY.getCoord(high, plotarea, plot);
+			var h = plot.axisY.getCoord(low, plotarea, plot)-y;
+			var close = plot.axisY.getCoord(c, plotarea, plot);
+
+			var g = document.createElement("div");
+
+			//	high + low
+			var bar=document.createElement("v:rect");
+			bar.style.position="absolute";
+			bar.style.top=y+1+"px";
+			bar.style.left=x+"px";
+			bar.style.width=w+"px";
+			bar.style.height=h+"px";
+			bar.setAttribute("fillColor", data[i].series.color);
+			bar.setAttribute("stroked", "false");
+			bar.style.antialias="false";
+			var fill=document.createElement("v:fill");
+			fill.setAttribute("opacity", "0.6");
+			bar.appendChild(fill);
+			g.appendChild(bar);
+
+			var line = document.createElement("v:line");
+			line.setAttribute("strokecolor", data[i].series.color);
+			line.setAttribute("strokeweight", "1px");
+			line.setAttribute("from", x+"px,"+close+"px");
+			line.setAttribute("to", (x+w+(part*2)-2)+"px,"+close+"px");
+			var s=line.style;
+			s.position="absolute";
+			s.top="0px";
+			s.left="0px";
+			s.antialias="false";
+			var str=document.createElement("v:stroke");
+			str.setAttribute("opacity","0.6");
+			line.appendChild(str);
+			g.appendChild(line);
+
+			if(applyTo){ applyTo(g, data[i].src); }
+			group.appendChild(g);
+		}
+		return group;
+	},	
+	HighLowOpenClose: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		//	summary
+		var area = plotarea.getArea();
+		var group=document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+		
+		var n = data.length;
+		var part = ((area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower))/4;
+		var w = part*2;
+
+		for(var i=0; i<n; i++){
+			var high = data[i].high;
+			var low = data[i].low;
+			if(low > high){
+				var t = low;
+				low = high;
+				high = t;
+			}
+			var o = data[i].open;
+			var c = data[i].close;
+
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot) - (w/2);
+			var y = plot.axisY.getCoord(high, plotarea, plot);
+			var h = plot.axisY.getCoord(low, plotarea, plot)-y;
+			var open = plot.axisY.getCoord(o, plotarea, plot);
+			var close = plot.axisY.getCoord(c, plotarea, plot);
+
+			var g = document.createElement("div");
+
+			//	high + low
+			var bar=document.createElement("v:rect");
+			bar.style.position="absolute";
+			bar.style.top=y+1+"px";
+			bar.style.left=x+"px";
+			bar.style.width=w+"px";
+			bar.style.height=h+"px";
+			bar.setAttribute("fillColor", data[i].series.color);
+			bar.setAttribute("stroked", "false");
+			bar.style.antialias="false";
+			var fill=document.createElement("v:fill");
+			fill.setAttribute("opacity", "0.6");
+			bar.appendChild(fill);
+			g.appendChild(bar);
+
+			var line = document.createElement("v:line");
+			line.setAttribute("strokecolor", data[i].series.color);
+			line.setAttribute("strokeweight", "1px");
+			line.setAttribute("from", (x-(part*2))+"px,"+open+"px");
+			line.setAttribute("to", (x+w-2)+"px,"+open+"px");
+			var s=line.style;
+			s.position="absolute";
+			s.top="0px";
+			s.left="0px";
+			s.antialias="false";
+			var str=document.createElement("v:stroke");
+			str.setAttribute("opacity","0.6");
+			line.appendChild(str);
+			g.appendChild(line);
+			
+			var line = document.createElement("v:line");
+			line.setAttribute("strokecolor", data[i].series.color);
+			line.setAttribute("strokeweight", "1px");
+			line.setAttribute("from", x+"px,"+close+"px");
+			line.setAttribute("to", (x+w+(part*2)-2)+"px,"+close+"px");
+			var s=line.style;
+			s.position="absolute";
+			s.top="0px";
+			s.left="0px";
+			s.antialias="false";
+			var str=document.createElement("v:stroke");
+			str.setAttribute("opacity","0.6");
+			line.appendChild(str);
+			g.appendChild(line);
+
+			if(applyTo){ applyTo(g, data[i].src); }
+			group.appendChild(g);
+		}
+		return group;
+	},	
 	Scatter: function(
 		/* array */data, 
 		/* dojo.widget.charting.engine.PlotArea */plotarea,

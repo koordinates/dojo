@@ -56,7 +56,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 				bar.setAttribute("y", y);
 				bar.setAttribute("width", barWidth);
 				bar.setAttribute("height", h);
-				bar.setAttribute("fill-opacity", "0.65");
+				bar.setAttribute("fill-opacity", "0.6");
 				if(applyTo){ applyTo(bar, data[j][i].src); }
 				group.appendChild(bar);
 			}
@@ -164,6 +164,188 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		}
 		return group;
 	},
+	StackedArea: function(
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* object? */kwArgs,
+		/* function? */applyTo
+	){
+		var area = plotarea.getArea();
+		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
+
+		//	precompile the data
+		var n = plot.series.length;	//	how many series
+		var data = [];
+		var totals = [];
+
+		//	we're assuming that all series for this plot has the name x assignment for now.
+		for(var i=0; i<n; i++){
+			var tmp = plot.series[i].data.evaluate(kwArgs);
+			//	run through and add current totals
+			for(var j=0; j<tmp.length; j++){
+				if(i==0){ totals.push(tmp[j].y); }
+				else { totals[j] += tmp[j].y; }
+				tmp[j].y = totals[j];
+			}
+			data.push(tmp);
+		}
+
+		for(var i=n-1; i>=0; i--){
+			var path = document.createElementNS(dojo.svg.xmlns.svg, "path");
+			path.setAttribute("fill", data[i][0].series.color);
+			path.setAttribute("fill-opacity", "0.4");
+			path.setAttribute("stroke", data[i][0].series.color);
+			path.setAttribute("stroke-width" , "1");
+			path.setAttribute("stroke-opacity", "0.85");
+
+			var cmd = [];
+			var r=3;
+			for(var j=0; j<data[i].length; j++){
+				var values = data[i];
+				var x = plot.axisX.getCoord(values[j].x, plotarea, plot);
+				var y = plot.axisY.getCoord(values[j].y, plotarea, plot);
+
+				if(j==0){ cmd.push("M"); }
+				else { cmd.push("L"); }
+				cmd.push(x+","+y);
+				
+				//	points on the line
+				var c=document.createElementNS(dojo.svg.xmlns.svg, "circle");
+				c.setAttribute("cx",x);
+				c.setAttribute("cy",y);
+				c.setAttribute("r","3");
+				c.setAttribute("fill", values[j].series.color);
+				c.setAttribute("fill-opacity", "0.6");
+				c.setAttribute("stroke-width", "1");
+				c.setAttribute("stroke-opacity", "0.85");
+				group.appendChild(c);
+				if(applyTo){ applyTo(c, data[i].src); }
+			}
+
+			//	now run the path backwards from the previous series.
+			if(i == 0){
+				cmd.push("L");
+				cmd.push(x + "," + plot.axisY.getCoord(plot.axisX.origin, plotarea, plot));
+				cmd.push("L");
+				cmd.push(plot.axisX.getCoord(data[0][0].x, plotarea, plot) + "," +  plot.axisY.getCoord(plot.axisX.origin, plotarea, plot));
+				cmd.push("Z");
+			} else {
+				var values = data[i-1];
+				cmd.push("L");
+				cmd.push(x + "," + Math.round(plot.axisY.getCoord(values[values.length-1].y, plotarea, plot)));
+				for(var j=values.length-2; j>=0; j--){
+					var x = plot.axisX.getCoord(values[j].x, plotarea, plot);
+					var y = plot.axisY.getCoord(values[j].y, plotarea, plot);
+					cmd.push("L");
+					cmd.push(x+","+y);
+				}
+			}
+			path.setAttribute("d", cmd.join(" ")+ " Z");
+			group.appendChild(path);
+		}
+		return group;
+	},
+	StackedCurvedArea: function(
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* object? */kwArgs,
+		/* function? */applyTo
+	){
+		var tension = 3;
+		var area = plotarea.getArea();
+		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
+
+		//	precompile the data
+		var n = plot.series.length;	//	how many series
+		var data = [];
+		var totals = [];
+
+		//	we're assuming that all series for this plot has the name x assignment for now.
+		for(var i=0; i<n; i++){
+			var tmp = plot.series[i].data.evaluate(kwArgs);
+			//	run through and add current totals
+			for(var j=0; j<tmp.length; j++){
+				if(i==0){ totals.push(tmp[j].y); }
+				else { totals[j] += tmp[j].y; }
+				tmp[j].y = totals[j];
+			}
+			data.push(tmp);
+		}
+
+		for(var i=n-1; i>=0; i--){
+			var path = document.createElementNS(dojo.svg.xmlns.svg, "path");
+			path.setAttribute("fill", data[i][0].series.color);
+			path.setAttribute("fill-opacity", "0.4");
+			path.setAttribute("stroke", data[i][0].series.color);
+			path.setAttribute("stroke-width" , "1");
+			path.setAttribute("stroke-opacity", "0.85");
+
+			var cmd = [];
+			var r=3;
+			for(var j=0; j<data[i].length; j++){
+				var values = data[i];
+				var x = plot.axisX.getCoord(values[j].x, plotarea, plot);
+				var y = plot.axisY.getCoord(values[j].y, plotarea, plot);
+				var dx = area.left + 1;
+				var dy = area.bottom;
+				if(j>0){
+					dx = x - plot.axisX.getCoord(values[j-1].x, plotarea, plot);
+					dy = plot.axisY.getCoord(values[j-1].y, plotarea, plot);
+				}
+
+				if(j==0){ cmd.push("M"); }
+				else {
+					cmd.push("C");
+					var cx = x-(tension-1) * (dx/tension);
+					cmd.push(cx + "," + dy);
+					cx = x - (dx/tension);
+					cmd.push(cx + "," + y);
+				}
+				cmd.push(x+","+y);
+				
+				//	points on the line
+				var c=document.createElementNS(dojo.svg.xmlns.svg, "circle");
+				c.setAttribute("cx",x);
+				c.setAttribute("cy",y);
+				c.setAttribute("r","3");
+				c.setAttribute("fill", values[j].series.color);
+				c.setAttribute("fill-opacity", "0.6");
+				c.setAttribute("stroke-width", "1");
+				c.setAttribute("stroke-opacity", "0.85");
+				group.appendChild(c);
+				if(applyTo){ applyTo(c, data[i].src); }
+			}
+
+			//	now run the path backwards from the previous series.
+			if(i == 0){
+				cmd.push("L");
+				cmd.push(x + "," + plot.axisY.getCoord(plot.axisX.origin, plotarea, plot));
+				cmd.push("L");
+				cmd.push(plot.axisX.getCoord(data[0][0].x, plotarea, plot) + "," +  plot.axisY.getCoord(plot.axisX.origin, plotarea, plot));
+				cmd.push("Z");
+			} else {
+				var values = data[i-1];
+				cmd.push("L");
+				cmd.push(x + "," + Math.round(plot.axisY.getCoord(values[values.length-1].y, plotarea, plot)));
+				for(var j=values.length-2; j>=0; j--){
+					var x = plot.axisX.getCoord(values[j].x, plotarea, plot);
+					var y = plot.axisY.getCoord(values[j].y, plotarea, plot);
+					var dx = x - plot.axisX.getCoord(values[j+1].x, plotarea, plot);
+					var dy = plot.axisY.getCoord(values[j+1].y, plotarea, plot);
+
+					cmd.push("C");
+					var cx = x-(tension-1) * (dx/tension);
+					cmd.push(cx + "," + dy);
+					cx = x - (dx/tension);
+					cmd.push(cx + "," + y);
+					cmd.push(x+","+y);
+				}
+			}
+			path.setAttribute("d", cmd.join(" ")+ " Z");
+			group.appendChild(path);
+		}
+		return group;
+	},
 
 	/*********************************************************
 	 *	Single plotters: one series at a time.
@@ -201,7 +383,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			bar.setAttribute("y", y);
 			bar.setAttribute("width", w);
 			bar.setAttribute("height", h);
-			bar.setAttribute("fill-opacity", "0.65");
+			bar.setAttribute("fill-opacity", "0.6");
 			if(applyTo){ applyTo(bar, data[i].src); }
 			group.appendChild(bar);
 		}
@@ -240,7 +422,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			c.setAttribute("cy",y);
 			c.setAttribute("r","3");
 			c.setAttribute("fill", data[i].series.color);
-			c.setAttribute("fill-opacity", "0.65");
+			c.setAttribute("fill-opacity", "0.6");
 			c.setAttribute("stroke-width", "1");
 			c.setAttribute("stroke-opacity", "0.85");
 			line.appendChild(c);
@@ -296,7 +478,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			c.setAttribute("cy",y);
 			c.setAttribute("r","3");
 			c.setAttribute("fill", data[i].series.color);
-			c.setAttribute("fill-opacity", "0.65");
+			c.setAttribute("fill-opacity", "0.6");
 			c.setAttribute("stroke-width", "1");
 			c.setAttribute("stroke-opacity", "0.85");
 			line.appendChild(c);
@@ -339,7 +521,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			c.setAttribute("cy",y);
 			c.setAttribute("r","3");
 			c.setAttribute("fill", data[i].series.color);
-			c.setAttribute("fill-opacity", "0.65");
+			c.setAttribute("fill-opacity", "0.6");
 			c.setAttribute("stroke-width", "1");
 			c.setAttribute("stroke-opacity", "0.85");
 			line.appendChild(c);
@@ -402,7 +584,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			c.setAttribute("cy",y);
 			c.setAttribute("r","3");
 			c.setAttribute("fill", data[i].series.color);
-			c.setAttribute("fill-opacity", "0.65");
+			c.setAttribute("fill-opacity", "0.6");
 			c.setAttribute("stroke-width", "1");
 			c.setAttribute("stroke-opacity", "0.85");
 			line.appendChild(c);
@@ -416,6 +598,170 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		cmd.push("Z");
 		path.setAttribute("d", cmd.join(" "));
 		return line;
+	},
+	HighLow: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		//	summary
+		var area = plotarea.getArea();
+		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
+		
+		var n = data.length;
+		var part = ((area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower))/4;
+		var w = part*2;
+
+		for(var i=0; i<n; i++){
+			var high = data[i].high;
+			var low = data[i].low;
+			if(low > high){
+				var t = low;
+				low = high;
+				high = t;
+			}
+
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot) - (w/2);
+			var y = plot.axisY.getCoord(high, plotarea, plot);
+			var h = plot.axisY.getCoord(low, plotarea, plot)-y;
+
+			//	high + low
+			var bar=document.createElementNS(dojo.svg.xmlns.svg, "rect");
+			bar.setAttribute("fill", data[i].series.color);
+			bar.setAttribute("stroke-width", "0");
+			bar.setAttribute("x", x);
+			bar.setAttribute("y", y);
+			bar.setAttribute("width", w);
+			bar.setAttribute("height", h);
+			bar.setAttribute("fill-opacity", "0.6");
+			if(applyTo){ applyTo(bar, data[i].src); }
+			group.appendChild(bar);
+		}
+		return group;
+	},
+	HighLowClose: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		//	summary
+		var area = plotarea.getArea();
+		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
+		
+		var n = data.length;
+		var part = ((area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower))/4;
+		var w = part*2;
+
+		for(var i=0; i<n; i++){
+			var high = data[i].high;
+			var low = data[i].low;
+			if(low > high){
+				var t = low;
+				low = high;
+				high = t;
+			}
+			var c = data[i].close;
+
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot) - (w/2);
+			var y = plot.axisY.getCoord(high, plotarea, plot);
+			var h = plot.axisY.getCoord(low, plotarea, plot)-y;
+			var close = plot.axisY.getCoord(c, plotarea, plot);
+
+			var g = document.createElementNS(dojo.svg.xmlns.svg, "g");
+
+			//	high + low
+			var bar=document.createElementNS(dojo.svg.xmlns.svg, "rect");
+			bar.setAttribute("fill", data[i].series.color);
+			bar.setAttribute("stroke-width", "0");
+			bar.setAttribute("x", x);
+			bar.setAttribute("y", y);
+			bar.setAttribute("width", w);
+			bar.setAttribute("height", h);
+			bar.setAttribute("fill-opacity", "0.6");
+			g.appendChild(bar);
+
+			//	close
+			var line=document.createElementNS(dojo.svg.xmlns.svg, "line");
+			line.setAttribute("x1", x);
+			line.setAttribute("x2", x+w+(part*2));
+			line.setAttribute("y1", close);
+			line.setAttribute("y2", close);
+			line.setAttribute("style", "stroke:"+data[i].series.color+";stroke-width:1px;stroke-opacity:0.6;");
+			g.appendChild(line);
+
+			if(applyTo){ applyTo(g, data[i].src); }
+			group.appendChild(g);
+		}
+		return group;
+	},
+	HighLowOpenClose: function(
+		/* array */data, 
+		/* dojo.widget.charting.engine.PlotArea */plotarea,
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* function? */applyTo
+	){
+		//	summary
+		var area = plotarea.getArea();
+		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
+		
+		var n = data.length;
+		var part = ((area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower))/4;
+		var w = part*2;
+
+		for(var i=0; i<n; i++){
+			var high = data[i].high;
+			var low = data[i].low;
+			if(low > high){
+				var t = low;
+				low = high;
+				high = t;
+			}
+			var o = data[i].open;
+			var c = data[i].close;
+
+			var x = plot.axisX.getCoord(data[i].x, plotarea, plot) - (w/2);
+			var y = plot.axisY.getCoord(high, plotarea, plot);
+			var h = plot.axisY.getCoord(low, plotarea, plot)-y;
+			var open = plot.axisY.getCoord(o, plotarea, plot);
+			var close = plot.axisY.getCoord(c, plotarea, plot);
+
+			var g = document.createElementNS(dojo.svg.xmlns.svg, "g");
+
+			//	high + low
+			var bar=document.createElementNS(dojo.svg.xmlns.svg, "rect");
+			bar.setAttribute("fill", data[i].series.color);
+			bar.setAttribute("stroke-width", "0");
+			bar.setAttribute("x", x);
+			bar.setAttribute("y", y);
+			bar.setAttribute("width", w);
+			bar.setAttribute("height", h);
+			bar.setAttribute("fill-opacity", "0.6");
+			g.appendChild(bar);
+
+			//	open
+			var line=document.createElementNS(dojo.svg.xmlns.svg, "line");
+			line.setAttribute("x1", x-(part*2));
+			line.setAttribute("x2", x+w);
+			line.setAttribute("y1", open);
+			line.setAttribute("y2", open);
+			line.setAttribute("style", "stroke:"+data[i].series.color+";stroke-width:1px;stroke-opacity:0.6;");
+			g.appendChild(line);
+
+			//	close
+			var line=document.createElementNS(dojo.svg.xmlns.svg, "line");
+			line.setAttribute("x1", x);
+			line.setAttribute("x2", x+w+(part*2));
+			line.setAttribute("y1", close);
+			line.setAttribute("y2", close);
+			line.setAttribute("style", "stroke:"+data[i].series.color+";stroke-width:1px;stroke-opacity:0.6;");
+			g.appendChild(line);
+
+			if(applyTo){ applyTo(g, data[i].src); }
+			group.appendChild(g);
+		}
+		return group;
 	},
 	Scatter: function(
 		/* array */data, 

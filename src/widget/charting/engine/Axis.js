@@ -74,9 +74,9 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 					this._labels.push(this.labels[i]);
 				}
 			}
-			else if(!isNaN(parseFloat(this.labels[i]))){
+			else if(!isNaN(this.labels[0])){
 				for(var i=0; i<this.labels.length; i++){
-					this._labels.push({ label: this.labels[i]+"", value: parseFloat(this.labels[i]) });
+					this._labels.push({ label: this.labels[i], value: this.labels[i] });
 				}
 			}
 			else {
