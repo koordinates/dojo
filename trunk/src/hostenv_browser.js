@@ -341,9 +341,25 @@ if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
 }
 //	END DOMContentLoaded
 
-dj_addNodeEvtHdlr(window, "unload", function(){
-	dojo.hostenv.unloaded();
-});
+// IE WebControl hosted in an application can fire "beforeunload" and "unload" 
+// events when control visibility changes, causing Dojo to unload too soon. The 
+// following code fixes the problem 
+// Reference: http://support.microsoft.com/default.aspx?scid=kb;en-us;199155 
+if(dojo.render.html.ie){
+	dj_addNodeEvtHdlr(window, "beforeunload", function(){ 
+		dojo.hostenv._unloading = true; 
+		window.setTimeout(function() { 
+			dojo.hostenv._unloading = false; 
+		}, 0); 
+	}); 
+} 
+
+dj_addNodeEvtHdlr(window, "unload", function(){ 
+	dojo.hostenv.unloaded(); 
+	if((!dojo.render.html.ie)||(dojo.render.html.ie && dojo.hostenv._unloading)){
+		dojo.hostenv.unloaded(); 
+	} 
+}); 
 
 dojo.hostenv.makeWidgets = function(){
 	// you can put searchIds in djConfig and dojo.hostenv at the moment
