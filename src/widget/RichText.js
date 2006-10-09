@@ -691,6 +691,10 @@ dojo.widget.defineWidget(
 		//we use activeX to obtain the list, if success or the names are already cached,
 		//return true
 		_cacheLocalBlockFormatNames: function(){
+			// summary:
+			//		in IE, names for blockformat is locale dependent, so we cache the values here
+			//		we use activeX to obtain the list, if success or the names are already cached,
+			//		return true
 			if(!this._native2LocalFormatNames['p']){
 				var obj = this.object;
 				if(!obj){
@@ -728,6 +732,7 @@ dojo.widget.defineWidget(
 		_isResized: function(){ return false; },
 
 		onLoad: function(e){
+			// summary: handler after the content of the document finishes loading
 			this.isLoaded = true;
 			if (this.object){
 				this.document = this.object.DOM;
@@ -797,8 +802,8 @@ dojo.widget.defineWidget(
 			this.onDisplayChanged(e);
 		},
 
-		/** Fired on keydown */
 		onKeyDown: function(e){
+			// summary: Fired on keydown
 			if((!e)&&(this.object)){
 				e = dojo.event.browser.fixEvent(this.window.event);
 			}
@@ -825,15 +830,15 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		/** Fired on keyup */
 		onKeyUp: function(e){
+			// summary: Fired on keyup
 			return;
 		},
 
 		KEY_CTRL: 1,
 
-		/** Fired on keypress. */
 		onKeyPress: function(e){
+			// summary: Fired on keypress
 			if((!e)&&(this.object)){
 				e = dojo.event.browser.fixEvent(this.window.event);
 			}
@@ -903,7 +908,8 @@ dojo.widget.defineWidget(
 			dojo.lang.setTimeout(this, this.onKeyPressed, 1, e);
 		},
 
-		addKeyHandler: function (key, modifiers, handler) {
+		addKeyHandler: function (/*String*/key, /*Int*/modifiers, /*Function*/handler) {
+			// summary: add a handler for a keyboard shortcut
 			if (!(this._keyHandlers[key] instanceof Array)) { this._keyHandlers[key] = []; }
 			this._keyHandlers[key].push({
 				modifiers: modifiers || 0,
@@ -911,14 +917,11 @@ dojo.widget.defineWidget(
 			});
 		},
 
-
-
-		/**
-		 * Fired after a keypress event has occured and it's action taken. This
-		 * is useful if action needs to be taken after text operations have
-		 * finished
-		 */
 		onKeyPressed: function (e) {
+			// summary:
+			//		Fired after a keypress event has occured and it's action taken. This
+		 	//		is useful if action needs to be taken after text operations have finished
+
 			// Mozilla adds a single <p> with an embedded <br> when you hit enter once:
 			//   <p><br>\n</p>
 			// when you hit enter again it adds another <br> inside your enter
@@ -947,6 +950,7 @@ dojo.widget.defineWidget(
 		onBlur: function(e){ },
 		_initialFocus: true,
 		onFocus: function(e){
+			// summary: Fired on focus
 			if( (dojo.render.html.mozilla)&&(this._initialFocus) ){
 				this._initialFocus = false;
 				if(dojo.string.trim(this.editNode.innerHTML) == "&nbsp;"){
@@ -957,12 +961,14 @@ dojo.widget.defineWidget(
 		},
 
 		blur: function () {
+			// summary: remove focus from this instance
 			if(this.iframe) { this.window.blur(); }
 			else if(this.object) { this.document.body.blur(); }
 			else if(this.editNode) { this.editNode.blur(); }
 		},
 
 		focus: function () {
+			// summary: move focus to this instance
 			if(this.iframe && !dojo.render.html.ie) { this.window.focus(); }
 			else if(this.object) { this.document.focus(); }
 			// editNode may be hidden in display:none div, lets just punt in this case
@@ -980,7 +986,7 @@ dojo.widget.defineWidget(
 	/* Formatting commands
 	 **********************/
 
-		/** IE's Active X codes: see http://www.computerbytesman.com/js/activex/dhtmledit.htm */
+		// Object: IE's Active X codes: see http://www.computerbytesman.com/js/activex/dhtmledit.htm
 		_activeX: {
 			command: {
 				bold: 5000,
@@ -1077,16 +1083,11 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		/**
-		 * Used as the advice function by dojo.event.connect to map our
-		 * normalized set of commands to those supported by the target
-		 * browser
-		 *
-		 * @param arugments The arguments Array, containing at least one
-		 *                  item, the command and an optional second item,
-		 *                  an argument.
-		 */
-		_normalizeCommand: function (cmd){
+		_normalizeCommand: function (/*String*/cmd){
+			// summary:
+			//		Used as the advice function by dojo.event.connect to map our
+		 	//		normalized set of commands to those supported by the target
+		 	//		browser
 			var drh = dojo.render.html;
 
 			var command = cmd.toLowerCase();
@@ -1108,15 +1109,12 @@ dojo.widget.defineWidget(
 			return command;
 		},
 
-		/**
-		 * Tests whether a command is supported by the host. Clients SHOULD check
-		 * whether a command is supported before attempting to use it, behaviour
-		 * for unsupported commands is undefined.
-		 *
-		 * @param command The command to test for
-		 * @return true if the command is supported, false otherwise
-		 */
-		queryCommandAvailable: function (command) {
+		queryCommandAvailable: function (/*String*/command) {
+			// summary:
+			//		Tests whether a command is supported by the host. Clients SHOULD check
+			//		whether a command is supported before attempting to use it, behaviour
+			//		for unsupported commands is undefined.
+			// command: The command to test for
 			var ie = 1;
 			var mozilla = 1 << 1;
 			var safari = 1 << 2;
@@ -1186,16 +1184,13 @@ dojo.widget.defineWidget(
 				(dojo.render.html.mozilla && supportedBy.mozilla) ||
 				(dojo.render.html.safari && supportedBy.safari) ||
 				(gt420 && supportedBy.safari420) ||
-				(dojo.render.html.opera && supportedBy.opera);
+				(dojo.render.html.opera && supportedBy.opera);  // Boolean: return true if the command is supported, false otherwise
 		},
 
-		/**
-		 * Executes a command in the Rich Text area
-		 *
-		 * @param command The command to execute
-		 * @param argument An optional argument to the command
-		 */
-		execCommand: function (command, argument){
+		execCommand: function (/*String*/command, argument){
+			// summary: Executes a command in the Rich Text area
+			// command: The command to execute
+			// argument: An optional argument to the command
 			var returnValue;
 
 			//focus() is required for IE (none-activeX mode) to work
@@ -1342,7 +1337,8 @@ dojo.widget.defineWidget(
 			return returnValue;
 		},
 
-		queryCommandEnabled: function(command){
+		queryCommandEnabled: function(/*String*/command){
+			// summary: check whether a command is enabled or not
 			command = this._normalizeCommand(command);
 			if(this.object){
 				switch (command) {
@@ -1386,6 +1382,7 @@ dojo.widget.defineWidget(
 		},
 
 		queryCommandState: function(command){
+			// summary: check the state of a given command
 			command = this._normalizeCommand(command);
 			if(this.object){
 				if(command == "forecolor"){
@@ -1409,6 +1406,7 @@ dojo.widget.defineWidget(
 		},
 
 		queryCommandValue: function (command) {
+			// summary: check the value of a given command
 			command = this._normalizeCommand(command);
 			if (this.object) {
 				switch (command) {
