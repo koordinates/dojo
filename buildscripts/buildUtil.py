@@ -31,20 +31,20 @@ def regexpMagic(loader, pkgString, srcRoot):
 
 	# "Now they have two problems" -- jwz
 	#	http://en.wikiquote.org/wiki/Jamie_Zawinski
-	matches = re.findall('(templatePath\s?=\s?(dojo\.uri\.(dojo)?Uri\(\s*)?"(.+)"(\s*\))?)', pkgString)
+	matches = re.findall('(templatePath\s*=\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"(.+)"(\s*\))?)', pkgString)
 	print matches
 	for x in matches:
 		replacement = "templateString=\""+escape(open(srcRoot+x[3]).read())+"\""
 		pkgString = string.replace(pkgString, x[0], replacement)
 
-	matches = re.findall('(templatePath\s?:\s?(dojo\.uri\.(dojo)?Uri\(\s*)?"([\w\.\/]+)"(\s*\))?)', pkgString)
+	matches = re.findall('(templatePath\s*:\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"([\w\.\/]+)"(\s*\))?)', pkgString)
 	print matches
 	for x in matches:
 		replacement = "templateString:\""+escape(open(srcRoot+x[3]).read())+"\""
 		pkgString = string.replace(pkgString, x[0], replacement)
 
 	#Find template CSS stuff.
-	matches = re.findall('(templateCssPath\s?:\s?(dojo\.uri\.(dojo)?Uri\(\s*)?"([\w\.\/]+)"(\s*\))?)', pkgString)
+	matches = re.findall('(templateCssPath\s*:\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"([\w\.\/]+)"(\s*\))?)', pkgString)
 	print matches
 	for x in matches:
 		replacement = "templateCssString:\""+escape(open(srcRoot+x[3]).read())+"\",templateCssPath:"+uriMethod+"(\""+x[3]+"\")"
@@ -53,7 +53,7 @@ def regexpMagic(loader, pkgString, srcRoot):
 	#This regexp is a little weak because it assumes a "this" in front of the templateCssPath.
 	#In theory it could be something else, but in practice it is not, and it gets a little too weird
 	#to figure out, at least given the short amount of time this change is going in.
-	matches = re.findall('(this\.templateCssPath\s?=\s?(dojo\.uri\.(dojo)?Uri\(\s*)?"(.+)"(\s*\))?)', pkgString)
+	matches = re.findall('(this\.templateCssPath\s*=\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"(.+)"(\s*\))?)', pkgString)
 	print matches
 	for x in matches:
 		replacement = "this.templateCssString=\""+escape(open(srcRoot+x[3]).read())+"\";this.templateCssPath="+uriMethod+"(\""+x[3]+"\")"
