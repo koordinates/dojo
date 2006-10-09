@@ -159,7 +159,7 @@ dojo.hostenv.getXmlhttpObject = function(){
  */
 dojo.hostenv._blockAsync = false;
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
-	// need to block async callbacks from snatching this thread as the result 
+	// need to block async callbacks from snatching this thread as the result
 	// of an async callback might call another sync XHR, this hangs khtml forever
 	// hostenv._blockAsync must also be checked in BrowserIO's watchInFlight()
 	// NOTE: must be declared before scope switches ie. this.getXmlhttpObject()
@@ -341,25 +341,25 @@ if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
 }
 //	END DOMContentLoaded
 
-// IE WebControl hosted in an application can fire "beforeunload" and "unload" 
-// events when control visibility changes, causing Dojo to unload too soon. The 
-// following code fixes the problem 
-// Reference: http://support.microsoft.com/default.aspx?scid=kb;en-us;199155 
+// IE WebControl hosted in an application can fire "beforeunload" and "unload"
+// events when control visibility changes, causing Dojo to unload too soon. The
+// following code fixes the problem
+// Reference: http://support.microsoft.com/default.aspx?scid=kb;en-us;199155
 if(dojo.render.html.ie){
-	dj_addNodeEvtHdlr(window, "beforeunload", function(){ 
-		dojo.hostenv._unloading = true; 
-		window.setTimeout(function() { 
-			dojo.hostenv._unloading = false; 
-		}, 0); 
-	}); 
-} 
+	dj_addNodeEvtHdlr(window, "beforeunload", function(){
+		dojo.hostenv._unloading = true;
+		window.setTimeout(function() {
+			dojo.hostenv._unloading = false;
+		}, 0);
+	});
+}
 
-dj_addNodeEvtHdlr(window, "unload", function(){ 
-	dojo.hostenv.unloaded(); 
+dj_addNodeEvtHdlr(window, "unload", function(){
+	dojo.hostenv.unloaded();
 	if((!dojo.render.html.ie)||(dojo.render.html.ie && dojo.hostenv._unloading)){
-		dojo.hostenv.unloaded(); 
-	} 
-}); 
+		dojo.hostenv.unloaded();
+	}
+});
 
 dojo.hostenv.makeWidgets = function(){
 	// you can put searchIds in djConfig and dojo.hostenv at the moment
@@ -412,9 +412,9 @@ dojo.hostenv.writeIncludes = function(){}
 
 //TODOC:  HOW TO DOC THIS?
 // @global: dj_currentDocument
-// summary: 
+// summary:
 //		Current document object. 'dj_currentDocument' can be modified for temporary context shifting.
-// description:  
+// description:
 //    dojo.doc() returns dojo.currentDocument.
 //		Refer to dojo.doc() rather than referring to 'window.document' to ensure your
 //		code runs correctly in managed contexts.
@@ -461,7 +461,7 @@ dojo.byId = function(id, doc){
 	}
 	return id; // assume it's a node
 }
- 
+
 dojo.setContext = function(/*Object*/globalObject, /*Object*/ globalDocument){
 	dj_currentContext = globalObject;
 	dj_currentDocument = globalDocument;
@@ -476,10 +476,10 @@ dojo._fireCallback = function(callback, context, cbArguments) {
 
 dojo.withGlobal = function(/*Object*/globalObject, /*Function*/callback, /*Object?*/thisObject, /*Array?*/cbArguments){
 	// summary:
-	//		Call callback with globalObject as dojo.global() and globalObject.document 
-	//		as dojo.doc(). If provided, globalObject will be executed in the context of 
+	//		Call callback with globalObject as dojo.global() and globalObject.document
+	//		as dojo.doc(). If provided, globalObject will be executed in the context of
 	//		object thisObject
-	// description: 
+	// description:
 	//		When callback() returns or throws an error, the dojo.global() and dojo.doc() will
 	//		be restored to its previous state.
 	var rval;
@@ -498,7 +498,7 @@ dojo.withDoc = function (/*Object*/documentObject, /*Function*/callback, /*Objec
 	// summary:
 	//		Call callback with documentObject as dojo.doc(). If provided, callback will be executed
 	//		in the context of object thisObject
-	// description: 
+	// description:
 	//		When callback() returns or throws an error, the dojo.doc() will
 	//		be restored to its previous state.
 	var rval;
@@ -512,4 +512,26 @@ dojo.withDoc = function (/*Object*/documentObject, /*Function*/callback, /*Objec
 	return rval;
 }
 
+//Firefox 1.5 seems to get confused if we use a relative path for baseScriptUri
+//and that path is used by XHR as part of the evaluation of dojo.js (and some
+//other cases, see ticket #1618). Force it to be a full URL.
+if(dojo.render.html.moz){
+	// in order to use dojo.raise, this should come after println (and dojo.body which is used in println)
+	(function(){
+			var root = dojo.hostenv.getBaseScriptUri();
+			//only modify relative path
+			if(root.charAt(0) == '.'){
+				var loc = window.location.href;
+				var i = loc.lastIndexOf('/');
+				if(i>-1){
+					loc = loc.substring(0, i);
+				}else{
+					dojo.raise("Document location parsing failed. Please reopen bug #1618.");
+					return;
+				}
+				 djConfig["baseScriptUri"] = loc + "/" + root;
+			}
+	})();
 }
+
+} //if (typeof window != 'undefined')
