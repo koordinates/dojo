@@ -176,7 +176,7 @@ function rolloutFunction(&$output, $package, $declaration) {
   }
   
   if ($calls = $declaration->getThisInheritanceCalls()) {
-    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['this_inherits'] = $calls;
+    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['call_chain'] = $calls;
   }
   
   if ($declaration->getPrototype()) {
