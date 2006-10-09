@@ -434,10 +434,10 @@ dojo.declare("dojo.gfx.Circle", dojo.gfx.shape.Circle, {
 });
 dojo.gfx.Circle.nodeType = "oval";
 
-dojo.declare("dojo.gfx.Line", dojo.gfx.shape.Line, {
-	initializer: function(rawNode){
+dojo.declare("dojo.gfx.Line", dojo.gfx.shape.Line,
+	function(rawNode){
 		if(rawNode) rawNode.setAttribute("dojoGfxType", "line");
-	},
+	}, {
 	setShape: function(newShape){
 		var shape = this.shape = dojo.gfx.makeParameters(this.shape, newShape);
 		this.bbox = null;
@@ -460,10 +460,10 @@ dojo.declare("dojo.gfx.Line", dojo.gfx.shape.Line, {
 });
 dojo.gfx.Line.nodeType = "shape";
 
-dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline, {
-	initializer: function(rawNode){
+dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline,
+	function(rawNode){
 		if(rawNode) rawNode.setAttribute("dojoGfxType", "polyline");
-	},
+	}, {
 	setShape: function(points, closed){
 		if(points && points instanceof Array){
 			this.shape = dojo.gfx.makeParameters(this.shape, { points: points });
@@ -579,12 +579,11 @@ dojo.gfx.path._calcArc = function(alpha){
 };
 
 dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
-function(rawNode){
-	if(rawNode) rawNode.setAttribute("dojoGfxType", "path");
-	this.vmlPath = "";
-	this.lastControl = {};
-},
-{
+	function(rawNode){
+		if(rawNode) rawNode.setAttribute("dojoGfxType", "path");
+		this.vmlPath = "";
+		this.lastControl = {};
+	}, {
 	_updateWithSegment: function(segment){
 		var last = dojo.lang.shallowCopy(this.last);
 		dojo.gfx.Path.superclass._updateWithSegment.apply(this, arguments);
