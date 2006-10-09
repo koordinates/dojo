@@ -1595,9 +1595,7 @@ dojo.widget.defineWidget(
 			if(this.isClosed){return false; }
 
 			if (arguments.length == 0) { save = true; }
-			if(this.editNode) {
-				this._content = this._postFilterContent(this.editNode.innerHTML);
-			}
+			this._content = this._postFilterContent(this.editNode.innerHTML);
 			var changed = (this.savedContent.innerHTML != this._content);
 
 			// line height is squashed for iframes
