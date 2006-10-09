@@ -91,7 +91,6 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 			s.position="absolute";
 			s.top = y+"px";
 			if(anchor == "center"){
-				//	magic.
 				s.left = x + "px";
 				s.textAlign="center";
 			} else if (anchor == "left"){
