@@ -291,27 +291,21 @@ dojo.lang.extend(dojo.gfx.Shape, {
 });
 
 dojo.declare("dojo.gfx.Group", dojo.gfx.shape.VirtualGroup, {
-	initializer: function(rawNode){
-		// override inherited methods
-		var _this = this;
-		var old_add = this.add;
-		this.add = function(shape){
-			if(_this != shape.getParent()){
-				_this.rawNode.appendChild(shape.rawNode);
-				old_add.call(_this, shape);
+	add: function(shape){
+		if(this != shape.getParent()){
+			this.rawNode.appendChild(shape.rawNode);
+			dojo.gfx.Group.superclass.add.apply(this, arguments);
+		}
+		return this;
+	},
+	remove: function(shape, silently){
+		if(this == shape.getParent()){
+			if(this.rawNode == shape.rawNode.parentNode){
+				this.rawNode.removeChild(shape.rawNode);
 			}
-			return _this;
-		};
-		var old_remove = this.remove;
-		this.remove = function(shape, silently){
-			if(_this == shape.getParent()){
-				if(_this.rawNode == shape.rawNode.parentNode){
-					_this.rawNode.removeChild(shape.rawNode);
-				}
-				old_remove.call(_this, shape, silently);
-			}
-			return _this;
-		};
+			dojo.gfx.Group.superclass.remove.apply(this, arguments);
+		}
+		return this;
 	},
 	attach: function(rawNode){
 		if(rawNode){
@@ -584,37 +578,34 @@ dojo.gfx.path._calcArc = function(alpha){
 	};
 };
 
-dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
-	initializer: function(rawNode){
-		if(rawNode) rawNode.setAttribute("dojoGfxType", "path");
-		this.vmlPath = "";
+dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
+function(rawNode){
+	if(rawNode) rawNode.setAttribute("dojoGfxType", "path");
+	this.vmlPath = "";
+	this.lastControl = {};
+},
+{
+	_updateWithSegment: function(segment){
+		var last = dojo.lang.shallowCopy(this.last);
+		dojo.gfx.Path.superclass._updateWithSegment.apply(this, arguments);
+		// add a VML path segment
+		var path = this[this.renderers[segment.action]](segment, last);
+		if(typeof(this.vmlPath) == "string"){
+			this.vmlPath += path.join("");
+		}else{
+			this.vmlPath = this.vmlPath.concat(path);
+		}
+		if(typeof(this.vmlPath) == "string"){
+			this.rawNode.path.v = this.vmlPath + " e";
+		}
+	},
+	setShape: function(newShape){
+		this.vmlPath = [];
 		this.lastControl = {};
-		// override inherited methods
-		var _this = this;
-		var old_updateWithSegment = this._updateWithSegment;
-		this._updateWithSegment = function(segment){
-			var last = dojo.lang.shallowCopy(_this.last);
-			old_updateWithSegment.call(_this, segment);
-			// add a VML path segment
-			var path = _this[_this.renderers[segment.action]](segment, last);
-			if(typeof(_this.vmlPath) == "string"){
-				_this.vmlPath += path.join("");
-			}else{
-				_this.vmlPath = _this.vmlPath.concat(path);
-			}
-			if(typeof(_this.vmlPath) == "string"){
-				_this.rawNode.path.v = _this.vmlPath + " e";
-			}
-		};
-		var old_setShape = this.setShape;
-		this.setShape = function(newShape){
-			_this.vmlPath = [];
-			_this.lastControl = {};
-			old_setShape.call(_this, newShape);
-			_this.vmlPath = _this.vmlPath.join("");
-			_this.rawNode.path.v = _this.vmlPath + " e";
-			return _this;
-		};
+		dojo.gfx.Path.superclass.setShape.apply(this, arguments);
+		this.vmlPath = this.vmlPath.join("");
+		this.rawNode.path.v = this.vmlPath + " e";
+		return this;
 	},
 	_pathVmlToSvgMap: {m: "M", l: "L", t: "m", r: "l", c: "C", v: "c", qb: "Q", x: "z", e: ""},
 	attachShape: function(rawNode){
