@@ -198,13 +198,13 @@ dojo.widget.defineWidget(
 		enable: function() {
 			this.inputNode.disabled = false;
 			this.datePicker.enable();
-			this.inherited("enable", []);
+			dojo.widget.DropdownDatePicker.superclass.enable.apply(this, arguments);
 		},
 		
 		disable: function() {
 			this.inputNode.disabled = true;
 			this.datePicker.disable();
-			this.inherited("disable", []);
+			dojo.widget.DropdownDatePicker.superclass.disable.apply(this, arguments);
 		}
 	}
 );

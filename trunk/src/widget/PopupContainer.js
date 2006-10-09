@@ -240,7 +240,7 @@ dojo.declare(
 	},
 
 	onShow: function() {
-		this.inherited('onShow');
+		dojo.widget.PopupContainer.superclass.onShow.apply(this, arguments);
 		// With some animation (wipe), after close, the size of the domnode is 0
 		// and next time when shown, the open() function can not determine
 		// the correct place to popup, so we store the opened size here and

@@ -216,8 +216,8 @@ dojo.declare(
 			}catch(e){ /* squelch! */ }
 		},
 
-		postMixInProperties: function(args, frag){
-			this.inherited("postMixInProperties");
+		spinnerPostMixInProperties: function(args, frag){
+			// summary: the widget's postMixInProperties() method should call this method
 
 			// set image size before instantiating template;
 			// changing it aftwards doesn't work on FF
@@ -226,8 +226,8 @@ dojo.declare(
 			this.buttonSize = { width: inputSize.height / 2 - 1, height: inputSize.height / 2 - 1};
 		},
 
-		postCreate: function(){
-			this.inherited("postCreate");
+		spinnerPostCreate: function(args, frag){
+			// summary: the widget's postCreate() method should call this method
 
 			// extra listeners
 			if(this.textbox.addEventListener){
@@ -250,7 +250,16 @@ dojo.widget.defineWidget(
 	// int increment amount
 	delta: "1",
 
-	// 
+	postMixInProperties: function(args, frag){
+		dojo.widget.IntegerSpinner.superclass.postMixInProperties.apply(this, arguments);
+		this.spinnerPostMixInProperties(args, frag);
+	},
+
+	postCreate: function(args, frag){
+		dojo.widget.IntegerSpinner.superclass.postCreate.apply(this, arguments);
+		this.spinnerPostCreate(args, frag);
+	},
+
 	adjustValue: function(direction, x){
 		var val = this.getValue().replace(/[^\-+\d]/g, "");
 		if(val.length == 0){ return; }
@@ -291,6 +300,16 @@ dojo.widget.defineWidget(
 {
 	// new subclass properties
 	delta: "1e1",
+
+	postMixInProperties: function(args, frag){
+		dojo.widget.RealNumberSpinner.superclass.postMixInProperties.apply(this, arguments);
+		this.spinnerPostMixInProperties(args, frag);
+	},
+
+	postCreate: function(args, frag){
+		dojo.widget.RealNumberSpinner.superclass.postCreate.apply(this, arguments);
+		this.spinnerPostCreate(args, frag);
+	},
 
 	adjustValue: function(direction, x){
 			var val = this.getValue().replace(/[^\-+\.eE\d]/g, "");
@@ -391,6 +410,16 @@ dojo.widget.defineWidget(
 	[dojo.widget.validate.TimeTextbox, dojo.widget.Spinner],
 	function(){ dojo.experimental("dojo.widget.TimeSpinner"); },
 {
+	postMixInProperties: function(args, frag){
+		dojo.widget.TimeSpinner.superclass.postMixInProperties.apply(this, arguments);
+		this.spinnerPostMixInProperties(args, frag);
+	},
+
+	postCreate: function(args, frag){
+		dojo.widget.TimeSpinner.superclass.postCreate.apply(this, arguments);
+		this.spinnerPostCreate(args, frag);
+	},
+
 	adjustValue: function(direction, x){
 	//FIXME: formatting should make use of dojo.date.format?
 		var val = this.getValue();

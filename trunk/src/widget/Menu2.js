@@ -539,7 +539,7 @@ dojo.widget.defineWidget(
 				rval = this.moveToPrevious(evt);
 				break;
 			default:
-				rval = this.inherited("processKey", [evt]);
+				rval = 	dojo.widget.MenuBar2.superclass.processKey.apply(this, arguments);
 				break;
 		}
 
@@ -547,7 +547,7 @@ dojo.widget.defineWidget(
 	},
 
 	postCreate: function(){
-		this.inherited("postCreate");
+		dojo.widget.MenuBar2.superclass.postCreate.apply(this, arguments);
 		dojo.widget.PopupManager.opened(this);
 		this.isShowingNow = true;
 	},
