@@ -93,14 +93,14 @@ dojo.widget.defineWidget(
 			// summary: enable this widget to accept user input
 			this.inputNode.disabled = false;
 			this.timePicker.enable();
-			this.inherited("enable", []);
+			dojo.widget.DropdownTimePicker.superclass.enable.apply(this, arguments);
 		},
 		
 		disable: function() {
 			// summary: lock this widget so that the user can't change the value
 			this.inputNode.disabled = true;
 			this.timePicker.disable();
-			this.inherited("disable", []);
+			dojo.widget.DropdownTimePicker.superclass.disable.apply(this, arguments);
 		}
 	}
 );
