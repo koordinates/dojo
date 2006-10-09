@@ -74,6 +74,16 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 		}
 		return axes;
 	},
+	getLegendInfo: function(){
+		var a=[];
+		for(var i=0; i<this.plots.length; i++){
+			for(var j=0; j<this.plots[i].series.length; j++){
+				var data = this.plots[i].series[j].data;
+				a.push({ label:data.label, color:data.color });
+			}
+		}
+		return a;
+	},
 	setAxesRanges: function(){
 		//	summary
 		//	find the ranges on all axes on this plotArea.
