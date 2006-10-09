@@ -5,8 +5,18 @@ require_once('DojoBlock.php');
 
 class DojoArray extends DojoParameters
 {
-  private $object = 'DojoParameters';
-  private $terminator = ']';
+  private $object = 'DojoArray';
+  protected $terminator = ']';
+  
+  public function getItems()
+  {
+    return $this->getParameters();
+  }
+  
+  public function getItem($pos)
+  {
+    return $this->getParameter($pos);
+  }
 }
 
 ?>

@@ -77,6 +77,16 @@ class DojoParameter extends DojoBlock
     return new DojoFunctionDeclare($this->package);
   }
   
+  public function getArray()
+  {
+    if ($this->isA(DojoArray)) {
+      $this->parameter_value->build();
+      return $this->parameter_value;
+    }
+    require_once('DojoArray.php'); // Chase condition
+    return new DojoArray($this->package);
+  }
+  
   public function getVariable()
   {
     if ($this->isA(DojoVariable)) {

@@ -109,22 +109,41 @@ class DojoPackage
         }
       }
       
-      preg_match_all('%(?:"(.*)(?<!\\\\)"' . "|'(.*)(?<!\\\\)')%U", $line, $matches);
-      foreach (array_merge($matches[1], $matches[2]) as $match) {
-        $line = Text::blankOut($match, $line);
+      // single-line comment blocks
+      if (preg_match_all('%/\*.*\*/%U', $line, $matches)) {
+        foreach ($matches[0] as $match) {
+          $line = Text::blankOut($match, $line);
+        }
       }
       
-      preg_match_all('%/\*.*\*/%U', $line, $matches);
-      foreach ($matches[0] as $match) {
-        $line = Text::blankOut($match, $line);
+      // Comment blocks, commenting out only the data
+      if (preg_match_all('%(?:/\*(.*)|(?<!\\\|:)//(.*))$%', $line, $matches, PREG_SET_ORDER)) {
+        foreach ($matches as $match) {
+          $line = Text::blankOut($match[1] . $match[2], $line);
+        }
       }
       
-      if (preg_match_all('%(?:(/\*.*)|(//.*))$%', $line, $matches, PREG_SET_ORDER)) {
+      // Removing quotes
+      if (preg_match_all('%(?:"(.*)(?<!\\\\)"' . "|'(.*)(?<!\\\\)')%U", $line, $matches)) {
+        foreach (array_merge($matches[1], $matches[2]) as $match) {
+          $line = Text::blankOut($match, $line);
+        }
+      }
+      
+      // Comment blocks, commenting out all
+      if (preg_match_all('%(?:(/\*.*)|((?<!\\\|:)//.*))$%', $line, $matches, PREG_SET_ORDER)) {
         foreach ($matches as $match) {
           if ($match[1]) {
             $multiline_started = true;
           }
           $line = Text::blankOut($match[0], $line);
+        }
+      }
+      
+      // Remove regular expressions
+      if (preg_match_all('%/(?!\s*[0-9])(.*)(?<!\\\)/(?=(?:[mig]|\s*[.,);]))%U', $line, $matches)){
+        foreach ($matches[1] as $match) {
+          $line = Text::blankOut($match, $line);
         }
       }
       
@@ -150,6 +169,9 @@ class DojoPackage
     $name = implode('.', $parts);
     if ($name == 'dojo.bootstrap1' || $name == 'dojo.bootstrap2' || $name == 'dojo.loader') {
       $name = 'dojo';
+    }
+    if (strpos($this->file, '__package__.js') !== false) {
+      $name .= '._';
     }
     return $name;
   }

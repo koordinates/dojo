@@ -8,7 +8,7 @@ class DojoParameters extends DojoBlock
   private $object = 'DojoParameters';
   
   private $parameters = array();
-  private $terminator = ')';
+  protected $terminator = ')';
   
   public function __construct($package, $line_number = false, $position = false)
   {
@@ -30,7 +30,7 @@ class DojoParameters extends DojoBlock
       
       $this->parameters[] = $parameter;
     }
-    while ($code[$end[0]]{$end[1]} != ')');
+    while ($code[$end[0]]{$end[1]} != $this->terminator);
 
     $this->setEnd($end[0], $end[1]);
     return $end;
@@ -42,7 +42,7 @@ class DojoParameters extends DojoBlock
       return $this->parameters[$pos];
     }
     else {
-      return new DojoParameter($package);
+      return new DojoParameter($this->package);
     }
   }
   
