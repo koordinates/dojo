@@ -6,6 +6,7 @@ dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.event.*");
 dojo.require("dojo.string.extras");
+dojo.require("dojo.uri.Uri");
 
 // used to save content
 if(dojo.hostenv.post_load_){
@@ -500,21 +501,12 @@ dojo.widget.defineWidget(
 					_iframeInitialized = true;
 				}else{ return; }
 				if(!this.editNode){
-					if(dojo.render.html.moz){
-						// test for an edge case sometimes found in large apps
-						if(this.iframe.contentWindow) {
-							this.window = this.iframe.contentWindow;
-						}
-					}else{
+					if(this.iframe.contentWindow){
+						this.window = this.iframe.contentWindow;
+						this.document = this.iframe.contentWindow.document
+					}else if(this.iframe.contentDocument){
 						// for opera
 						this.window = this.iframe.contentDocument.window;
-					}
-					if(dojo.render.html.moz){
-						// test for an edge case sometimes found in large apps
-						if(this.iframe.contentWindow) {
-							this.document = this.iframe.contentWindow.document
-						}
-					}else{
 						this.document = this.iframe.contentDocument;
 					}
 
