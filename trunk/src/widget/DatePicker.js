@@ -172,6 +172,9 @@ dojo.widget.defineWidget(
 		_preInitUI: function(dateObj,initFirst,initUI) {
 			//initFirst is to tell _initFirstDay if you want first day of the displayed calendar, or first day of the week for dateObj
 			//initUI tells preInitUI to go ahead and run initUI if set to true
+			if(dateObj<this.startDate||dateObj>this.endDate){
+				dateObj = new Date((dateObj<this.startDate)?this.startDate:this.endDate);
+			}
 			this.firstDay = this._initFirstDay(dateObj,initFirst);
 			this.selectedIsUsed = false;
 			this.currentIsUsed = false;

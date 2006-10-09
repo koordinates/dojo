@@ -147,6 +147,9 @@ dojo.widget.defineWidget(
 				this.inputNode.value = dojo.date.format(this.datePicker.value,
 					{formatLength:this.formatLength, datePattern:this.displayFormat, selector:'dateOnly', locale:this.lang});
 			}
+			if(this.value < this.datePicker.startDate||this.value>this.datePicker.endDate){
+				this.inputNode.value = "";
+			}
 			this._synchValueNode();
 			this.onValueChanged(this.getDate());
 			this.hideContainer();
