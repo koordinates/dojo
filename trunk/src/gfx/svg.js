@@ -389,24 +389,18 @@ dojo.declare("dojo.gfx.Image", dojo.gfx.shape.Image, {
 });
 dojo.gfx.Image.nodeType = "image";
 
-dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
-	initializer: function(rawNode){
-		this.inherited("initializer", [rawNode]);
-		// override inherited methods
-		var _this = this;
-		var old_updateWithSegment = this._updateWithSegment;
-		this._updateWithSegment = function(segment){
-			old_updateWithSegment.call(_this, segment);
-			if(typeof(_this.shape.path) == "string"){
-				_this.rawNode.setAttribute("d", _this.shape.path);
-			}
-		};
-		var oldSetShape = this.setShape;
-		this.setShape = function(newShape){
-			oldSetShape.call(_this, newShape);
-			_this.rawNode.setAttribute("d", _this.shape.path);
-			return _this;
-		};
+dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
+{
+	_updateWithSegment: function(segment){
+		dojo.gfx.Path.superclass._updateWithSegment.apply(this, arguments);
+		if(typeof(this.shape.path) == "string"){
+			this.rawNode.setAttribute("d", this.shape.path);
+		}
+	},
+	setShape: function(newShape){
+		dojo.gfx.Path.superclass.setShape.apply(this, arguments);
+		this.rawNode.setAttribute("d", this.shape.path);
+		return this;
 	}
 });
 dojo.gfx.Path.nodeType = "path";
