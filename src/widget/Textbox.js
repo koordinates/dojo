@@ -1,4 +1,4 @@
-dojo.provide("dojo.widget.validate.Textbox");
+dojo.provide("dojo.widget.Textbox");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
@@ -29,7 +29,7 @@ dojo.requireLocalization("dojo.widget", "validate");
   @attr lowercase  Removes all characters that are not digits if true.  Default is false.
 */
 dojo.widget.defineWidget(
-	"dojo.widget.validate.Textbox",
+	"dojo.widget.Textbox",
 	dojo.widget.HtmlWidget,
 	{
 		// default values for new subclass properties
@@ -75,7 +75,7 @@ dojo.widget.defineWidget(
 	
 		// All functions below are called by create from dojo.widget.Widget
 		mixInProperties: function(localProperties, frag) {
-			dojo.widget.validate.Textbox.superclass.mixInProperties.apply(this, arguments);
+			dojo.widget.Textbox.superclass.mixInProperties.apply(this, arguments);
 			if ( localProperties["class"] ) { 
 				this.className = localProperties["class"];
 			}

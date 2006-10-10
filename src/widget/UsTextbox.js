@@ -1,11 +1,11 @@
-dojo.provide("dojo.widget.validate.UsTextbox");
+dojo.provide("dojo.widget.UsTextbox");
 
-dojo.require("dojo.widget.validate.ValidationTextbox");
+dojo.require("dojo.widget.ValidationTextbox");
 dojo.require("dojo.validate.us");
 
 dojo.widget.defineWidget(
-	"dojo.widget.validate.UsStateTextbox",
-	dojo.widget.validate.ValidationTextbox,
+	"dojo.widget.UsStateTextbox",
+	dojo.widget.ValidationTextbox,
 	{
 		// summary: a Textbox which tests for a United States state abbreviation
 		// allowTerritories  Allow Guam, Puerto Rico, etc.  Default is true.
@@ -15,7 +15,7 @@ dojo.widget.defineWidget(
 			// summary: see dojo.widget.Widget
 
 			// Initialize properties in super-class.
-			dojo.widget.validate.UsStateTextbox.superclass.mixInProperties.apply(this, arguments);
+			dojo.widget.UsStateTextbox.superclass.mixInProperties.apply(this, arguments);
 
 			// Get properties from markup attributes, and assign to flags object.
 			if(localProperties.allowterritories){
@@ -27,7 +27,7 @@ dojo.widget.defineWidget(
 		},
 
 		isValid: function(){
-			// summary: see dojo.widget.validate.ValidationTextbox
+			// summary: see dojo.widget.ValidationTextbox
 			return dojo.validate.us.isState(this.textbox.value, this.flags);
 		}
 	}
@@ -41,37 +41,37 @@ dojo.widget.defineWidget(
   Validates zip-5 and zip-5 plus 4.
 */
 dojo.widget.defineWidget(
-	"dojo.widget.validate.UsZipTextbox",
-	dojo.widget.validate.ValidationTextbox,
+	"dojo.widget.UsZipTextbox",
+	dojo.widget.ValidationTextbox,
 	{
 		// summary: a Textbox which tests for a United States postal code
 		isValid: function(){
-			// summary: see dojo.widget.validate.ValidationTextbox
+			// summary: see dojo.widget.ValidationTextbox
 			return dojo.validate.us.isZipCode(this.textbox.value);
 		}
 	}
 );
 
 dojo.widget.defineWidget(
-	"dojo.widget.validate.UsSocialSecurityNumberTextbox",
-	dojo.widget.validate.ValidationTextbox,
+	"dojo.widget.UsSocialSecurityNumberTextbox",
+	dojo.widget.ValidationTextbox,
 	{
 		// summary: a Textbox which tests for a United States Social Security number
 		isValid: function(){
-			// summary: see dojo.widget.validate.ValidationTextbox
+			// summary: see dojo.widget.ValidationTextbox
 			return dojo.validate.us.isSocialSecurityNumber(this.textbox.value);
 		}
 	}
 );
 
 dojo.widget.defineWidget(
-	"dojo.widget.validate.UsPhoneNumberTextbox",
-	dojo.widget.validate.ValidationTextbox,
+	"dojo.widget.UsPhoneNumberTextbox",
+	dojo.widget.ValidationTextbox,
 	{
 		// summary: a Textbox which tests for a United States 10-digit telephone number, extension is optional.
 
 		isValid: function(){
-			// summary: see dojo.widget.validate.ValidationTextbox
+			// summary: see dojo.widget.ValidationTextbox
 			return dojo.validate.us.isPhoneNumber(this.textbox.value);
 		}
 	}

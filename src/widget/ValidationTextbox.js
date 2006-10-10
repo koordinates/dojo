@@ -1,7 +1,6 @@
-dojo.provide("dojo.widget.validate.ValidationTextbox");
+dojo.provide("dojo.widget.ValidationTextbox");
 
-dojo.require("dojo.widget.validate.Textbox");
-dojo.require("dojo.validate.common");
+dojo.require("dojo.widget.Textbox");
 dojo.require("dojo.i18n.common");
 
 /*
@@ -25,8 +24,8 @@ dojo.require("dojo.i18n.common");
   @attr promptMessage		Will not issue invalid message if field is populated with default user-prompt text
 */
 dojo.widget.defineWidget(
-	"dojo.widget.validate.ValidationTextbox",
-	dojo.widget.validate.Textbox,
+	"dojo.widget.ValidationTextbox",
+	dojo.widget.Textbox,
 	function() {
 		// this property isn't a primitive and needs to be created on a per-item basis.
 		this.flags = {};
@@ -150,7 +149,7 @@ dojo.widget.defineWidget(
 		},
 
 		postMixInProperties: function(localProperties, frag) {
-			dojo.widget.validate.ValidationTextbox.superclass.postMixInProperties.apply(this, arguments);
+			dojo.widget.ValidationTextbox.superclass.postMixInProperties.apply(this, arguments);
 			this.messages = dojo.i18n.getLocalization("dojo.widget", "validate", this.lang);
 			dojo.lang.forEach(["invalidMessage", "missingMessage", "rangeMessage"], function(prop) {
 				if(this[prop]){ this.messages[prop] = this[prop]; }
@@ -159,7 +158,7 @@ dojo.widget.defineWidget(
 	
 		// FIXME: why are there to fillInTemplate methods defined here?
 		fillInTemplate: function() {
-			dojo.widget.validate.ValidationTextbox.superclass.fillInTemplate.apply(this, arguments);
+			dojo.widget.ValidationTextbox.superclass.fillInTemplate.apply(this, arguments);
 
 			// Attach isMissing and isValid methods to the textbox.
 			// We may use them later in connection with a submit button widget.

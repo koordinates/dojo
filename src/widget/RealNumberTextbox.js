@@ -1,6 +1,7 @@
-dojo.provide("dojo.widget.validate.RealNumberTextbox");
+dojo.provide("dojo.widget.RealNumberTextbox");
 
-dojo.require("dojo.widget.validate.IntegerTextbox");
+dojo.require("dojo.widget.IntegerTextbox");
+dojo.require("dojo.validate.common");
 
 /*
   ****** RealNumberTextbox ******
@@ -16,16 +17,16 @@ dojo.require("dojo.widget.validate.IntegerTextbox");
   @attr max  Maximum signed value.  Default is +Infinity
 */
 dojo.widget.defineWidget(
-	"dojo.widget.validate.RealNumberTextbox",
-	dojo.widget.validate.IntegerTextbox,
+	"dojo.widget.RealNumberTextbox",
+	dojo.widget.IntegerTextbox,
 	{
-		mixInProperties: function(localProperties, frag) {
+		mixInProperties: function(localProperties, frag){
 			// First initialize properties in super-class.
-			dojo.widget.validate.RealNumberTextbox.superclass.mixInProperties.apply(this, arguments);
+			dojo.widget.RealNumberTextbox.superclass.mixInProperties.apply(this, arguments);
 	
 			// Get properties from markup attributes, and assign to flags object.
-			if ( localProperties.places ) { 
-				this.flags.places = Number( localProperties.places );
+			if (localProperties.places){ 
+				this.flags.places = Number(localProperties.places);
 			}
 			if((localProperties.exponent == "true")||
 				(localProperties.exponent == "always")){
@@ -51,10 +52,10 @@ dojo.widget.defineWidget(
 		},
 
 		// Over-ride for real number validation
-		isValid: function() { 
+		isValid: function(){
 			return dojo.validate.isRealNumber(this.textbox.value, this.flags);
 		},
-		isInRange: function() { 
+		isInRange: function(){
 			return dojo.validate.isInRange(this.textbox.value, this.flags);
 		}
 
