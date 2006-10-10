@@ -512,26 +512,4 @@ dojo.withDoc = function (/*Object*/documentObject, /*Function*/callback, /*Objec
 	return rval;
 }
 
-//Firefox 1.5 seems to get confused if we use a relative path for baseScriptUri
-//and that path is used by XHR as part of the evaluation of dojo.js (and some
-//other cases, see ticket #1618). Force it to be a full URL.
-if(dojo.render.html.moz){
-	// in order to use dojo.raise, this should come after println (and dojo.body which is used in println)
-	(function(){
-			var root = dojo.hostenv.getBaseScriptUri();
-			//only modify relative path
-			if(root.charAt(0) == '.'){
-				var loc = window.location.href;
-				var i = loc.lastIndexOf('/');
-				if(i>-1){
-					loc = loc.substring(0, i);
-				}else{
-					dojo.raise("Document location parsing failed. Please reopen bug #1618.");
-					return;
-				}
-				 djConfig["baseScriptUri"] = loc + "/" + root;
-			}
-	})();
-}
-
 } //if (typeof window != 'undefined')
