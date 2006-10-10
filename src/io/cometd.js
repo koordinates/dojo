@@ -106,6 +106,7 @@ cometd = new function(){
 					this._isXD = true;
 					bindArgs.transport = "ScriptSrcTransport";
 					bindArgs.jsonParamName = "jsonp";
+					bindArgs.method = "GET";
 				}
 			}
 		}
@@ -861,9 +862,10 @@ cometd.callbackPollTransport = new function(){
 
 	this.openTunnelWith = function(content, url){
 		// create a <script> element to generate the request
-		dojo.io.bind({
+		var req = dojo.io.bind({
 			url: (url||cometd.url),
 			content: content,
+			mimetype: "text/json",
 			transport: "ScriptSrcTransport",
 			jsonParamName: "jsonp",
 			load: dojo.lang.hitch(this, function(type, data, evt, args){
@@ -890,6 +892,7 @@ cometd.callbackPollTransport = new function(){
 			message.clientId = cometd.clientId;
 			var bindArgs = {
 				url: cometd.url||djConfig["cometdRoot"],
+				mimetype: "text/json",
 				transport: "ScriptSrcTransport",
 				jsonParamName: "jsonp",
 				content: { message: dojo.json.serialize([ message ]) }
