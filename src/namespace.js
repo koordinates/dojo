@@ -102,7 +102,6 @@ dojo.registerNamespaceResolver = function(/*String*/name, /*Function*/resolver){
 }
 
 dojo.registerNamespaceManifest = function(/*String*/module, /*String*/path, /*String*/name, /*String*/widgetModule, /*Function?*/resolver){
-	// summary:
 	dojo.registerModulePath(name, path);
 	dojo.registerNamespace(name, widgetModule, resolver);
 }
@@ -143,20 +142,5 @@ dojo["namespace"].Namespace.prototype.resolve = function(/*String*/name, /*Strin
 	return Boolean(this._loaded[fullName]); // Boolean
 }
 
-dojo["namespace"].Namespace.prototype.getModule = function(/*String*/widgetName){
-	// summary:
-
-	if(!this.module){return null;} // null
-	if(!dojo.lang.isArray(this.module)){ return this.module; } // String
-	if(this.module.length <= 0){ return null; } // null
-	if(!this.resolver){return this.module[0];}
-	
-	var fullName = this.resolver(widgetName);
-	if(!fullName){ return this.module[0]; }
-	
-	var modpos=fullName.lastIndexOf(".");
-	return (modpos > -1) ? fullName.substr(0, modpos) : this.module[0]; // String
-}
-
 // NOTE: rather put this in dojo.widget.Widget, but that fubars debugAtAllCosts
-dojo.registerNamespace("dojo", ["dojo.widget","dojo.widget.validate"]);
+dojo.registerNamespace("dojo", "dojo.widget");
