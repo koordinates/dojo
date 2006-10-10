@@ -129,11 +129,13 @@ dojo.collections.Store = function(/* array? */jsonArray){
 	this.addData = function(/*obj*/obj,/*string?*/key){ 
 		//	summary
 		//	Add an object with optional key to the internal data array.
-		var o={ 
-			key:key||obj[this.keyField], 
-			src:obj 
-		};
-		data.push(o);
+		var k = key || obj[this.keyField];
+		if(this.getByKey(k)){
+			var o = this.getByKey(k);
+		} else {
+			var o={ key:k, src:obj };
+			data.push(o);
+		}
 		this.onAddData(o);
 	};
 	this.addDataRange = function(/*array*/arr){
@@ -141,11 +143,13 @@ dojo.collections.Store = function(/* array? */jsonArray){
 		//	Add a range of objects to the internal data array.
 		var objects=[];
 		for(var i=0; i<arr.length; i++){
-			var o = { 
-				key:arr[i][this.keyField], 
-				src:arr[i] 
-			};
-			data.push(o);
+			var k = arr[i][this.keyField];
+			if(this.getByKey(k)){
+				var o = this.getByKey(k);
+			} else {
+				var o = { key:k, src:arr[i] };
+				data.push(o);
+			}
 			objects.push(o);
 		}
 		this.onAddDataRange(objects);
