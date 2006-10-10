@@ -103,7 +103,7 @@ dojo.widget.defineWidget(
 			if(this.weekStartsOn){ dpArgs.weekStartsOn = this.weekStartsOn; }
 			if(this.adjustWeeks){ dpArgs.adjustWeeks = this.adjustWeeks; }
 			if(this.staticDisplay){ dpArgs.staticDisplay = this.staticDisplay; }
-			if(this.value){ dpArgs.date = this.value; }
+			if(this.lang){ dpArgs.lang = this.lang; }
 			if(this.storedDate){ dpArgs.storedDate = this.storedDate; } //deprecated in 0.5
 			//build the args for DatePicker based on the public attributes of DropdownDatePicker
 			this.datePicker = dojo.widget.createWidget("DatePicker", dpArgs, this.containerNode, "child");
