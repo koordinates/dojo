@@ -6,14 +6,14 @@ dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.validate.IntegerTextbox");
-dojo.require("dojo.widget.validate.RealNumberTextbox");
-dojo.require("dojo.widget.validate.DateTextbox");
+dojo.require("dojo.widget.IntegerTextbox");
+dojo.require("dojo.widget.RealNumberTextbox");
+dojo.require("dojo.widget.DateTextbox");
 
 dojo.require("dojo.experimental");
 
 // summary: Mixin for validation widgets with a spinner
-// description: This class basically (conceptually) extends dojo.widget.validate.ValidationTextbox.
+// description: This class basically (conceptually) extends dojo.widget.ValidationTextbox.
 //	It modifies the template to have up/down arrows, and provides related handling code.
 dojo.declare(
 	"dojo.widget.Spinner",
@@ -243,7 +243,7 @@ dojo.declare(
 
 dojo.widget.defineWidget(
 	"dojo.widget.IntegerSpinner",
-	[dojo.widget.validate.IntegerTextbox, dojo.widget.Spinner],
+	[dojo.widget.IntegerTextbox, dojo.widget.Spinner],
 {
 	// summary: an IntegerSpinner with +/- buttons
 
@@ -295,7 +295,7 @@ dojo.widget.defineWidget(
 */
 dojo.widget.defineWidget(
 	"dojo.widget.RealNumberSpinner",
-	[dojo.widget.validate.RealNumberTextbox, dojo.widget.Spinner],
+	[dojo.widget.RealNumberTextbox, dojo.widget.Spinner],
 	function(){ dojo.experimental("dojo.widget.RealNumberSpinner"); },
 {
 	// new subclass properties
@@ -407,7 +407,7 @@ dojo.widget.defineWidget(
 
 dojo.widget.defineWidget(
 	"dojo.widget.TimeSpinner",
-	[dojo.widget.validate.TimeTextbox, dojo.widget.Spinner],
+	[dojo.widget.TimeTextbox, dojo.widget.Spinner],
 	function(){ dojo.experimental("dojo.widget.TimeSpinner"); },
 {
 	postMixInProperties: function(args, frag){
