@@ -262,8 +262,11 @@ dojo.lfx.html.wipeIn = function(/*Array*/ nodes, /*Decimal?*/ duration, /*Functi
 		var oprop = { overflow: null };
 		
 		// for FF, the node has to be rendered before node.scrollHeight has a value
-		node.style.visibility = "hidden";
-		node.style.display = "block";
+		with(node.style){
+			visibility = "hidden";
+			display = "block";
+			height = "";
+		}
 
 		var anim = dojo.lfx.propertyAnimation(node,
 			{	"height": {
