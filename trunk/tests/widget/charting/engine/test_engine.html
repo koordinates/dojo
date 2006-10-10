@@ -87,6 +87,7 @@
 			xA.range={upper:130, lower:0};
 			xA.origin="max";
 			xA.showTicks = true;
+			xA.label = "A Range of Things";
 			xA.labels = [ 0, 20, 40, 60, 80, 100 ];
 
 			var yA = new en.Axis();
@@ -94,12 +95,8 @@
 			yA.showLines = true;
 			yA.showTicks = true;
 			yA.labels = [ {label:"min", value:0 }, { label:"35",value:35 }, { label:"max", value:120 } ];
+			yA.label = "Areas"
 
-			var yA2 = new en.Axis();
-			yA2.range={upper:50,lower:0};
-			yA2.origin="max";
-			yA2.showTicks = true;
-			
 			var p = new en.Plot(xA, yA);
 			p.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.CurvedLine });
 			var pA = new en.Plot(xA, yA);
@@ -110,7 +107,7 @@
 
 			var pa = new en.PlotArea();
 			pa.size={width:700,height:170};
-			pa.padding={top:20, right:30, bottom:30, left:30 };
+			pa.padding={top:20, right:20, bottom:30, left:50 };
 			pa.plots.push(p);
 			pa.plots.push(pA);
 
@@ -137,6 +134,7 @@
 			var yB2 = new en.Axis();
 			yB2.range={upper:100,lower:0};
 			yB2.origin="max";
+			yB2.label = "Gantt Time Period";
 
 			var p2 = new en.Plot(xB, yB);
 			p2.addSeries({ data:s1, plotter: dojo.widget.charting.engine.Plotters.CurvedLine });
@@ -153,7 +151,7 @@
 			pa2.plots.push(p3);
 			pa2.plots.push(p2);
 			pa2.size={width:700,height:400};
-			pa2.padding={top:20, right:30, bottom:30, left:30 };
+			pa2.padding={top:20, right:40, bottom:30, left:30 };
 			
 			bar0.color = pa2.nextColor();
 			bar1.color = pa2.nextColor();
