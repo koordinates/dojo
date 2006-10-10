@@ -210,14 +210,14 @@
 			<div class="formQuestion">
 				<span class="emphasise">Annual Income:  </span>
 				<span class="noticeMessage">CurrencyTextbox class, 
-					Attributes: {cents: true}. Enter dollars and cents.</span>
+					Attributes: {fractional: true}. Enter dollars and cents.</span>
 			</div>
 			<div class="formAnswer">
 				<input type="text" name="income" class="medium" value="$54,775.53"
 					dojoType="CurrencyTextbox"
 					trim="true" 
 					required="true" 
-					cents = "true"
+					fractional = "true"
 					invalidMessage="Invalid amount.  Include dollar sign, commas, and cents. Example: $12,000.00" />
 			</div>
 
@@ -345,7 +345,7 @@
 					dojoType="TimeTextbox"
 					trim="true" 
 					required="true" 
-					invalidMessage="Invalid time. Use h:mm:ss am/pm type format." />
+					invalidMessage="Invalid time." />
 			</div>
 
 			<div class="formQuestion">
