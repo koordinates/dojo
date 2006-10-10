@@ -1,12 +1,12 @@
 dojo.provide("dojo.widget.TitlePane");
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.HtmlWidget");
+dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.html.style");
 dojo.require("dojo.lfx.*");
 
 dojo.widget.defineWidget(
 	"dojo.widget.TitlePane",
-	dojo.widget.HtmlWidget,
+	dojo.widget.ContentPane,
 {
 	labelNode: "",
 	labelNodeClass: "",
@@ -16,7 +16,6 @@ dojo.widget.defineWidget(
 	open: true,
 	templatePath: dojo.uri.dojoUri("src/widget/templates/TitlePane.html"),
 
-	isContainer: true,
 	postCreate: function() {
 		if (this.label) {
 			this.labelNode.appendChild(document.createTextNode(this.label));
@@ -35,8 +34,8 @@ dojo.widget.defineWidget(
 				visibility = "hidden";
 				position = "absolute";
 			}
-			//dojo.lfx.wipeOut(this.containerNode,0).play();
 		}
+		dojo.widget.TitlePane.superclass.postCreate.apply(this, arguments);
 	},
 
 	onLabelClick: function() {
@@ -51,10 +50,6 @@ dojo.widget.defineWidget(
 			dojo.lfx.wipeIn(this.containerNode, 250).play();
 			this.open=true;
 		}
-	},
-
-	setContent: function(content) {
-		this.containerNode.innerHTML=content;
 	},
 
 	setLabel: function(label) {
