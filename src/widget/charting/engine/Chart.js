@@ -7,6 +7,8 @@ dojo.widget.charting.engine.Chart = function(
 	/* string? */title, 
 	/* string? */description
 ){
+	//	summary
+	//	Create the basic Chart object.
 	this.node = node || null;
 	this.title = title || "Chart";			//	pure string.
 	this.description = description || "";	//	HTML is allowed.
@@ -16,7 +18,9 @@ dojo.widget.charting.engine.Chart = function(
 dojo.extend(dojo.widget.charting.engine.Chart, {
 	//	methods
 	addPlotArea: function(/* object */obj, /* bool? */doRender){
-		//	we expect object to be: { plotArea, (x, y) or (top, left) }
+		//	summary
+		//	Add a PlotArea to this chart; object should be in the
+		//	form of: { plotArea, (x, y) or (top, left) }
 		if(obj.x && !obj.left){ obj.left = obj.x; }
 		if(obj.y && !obj.top){ obj.top = obj.y; }
 		this.plotAreas.push(obj);
@@ -30,13 +34,18 @@ dojo.extend(dojo.widget.charting.engine.Chart, {
 
 	//	standard build methods
 	initialize: function(){
+		//	summary
+		//	Initialize the Chart by rendering it.
 		if(!this.node){ 
 			dojo.raise("dojo.widget.charting.engine.Chart.initialize: there must be a root node defined for the Chart."); 
 		}
 		this.destroy();
 		this.render();
+		this.onInitialize(this);
 	},
 	render:function(){
+		//	summary
+		//	Render the chart in its entirety.
 		if(this.node.style.position != "absolute"){
 			this.node.style.position = "relative";
 		}
@@ -51,6 +60,9 @@ dojo.extend(dojo.widget.charting.engine.Chart, {
 		}
 	},
 	destroy: function(){
+		//	summary
+		//	Destroy any nodes that have maintained references.
+
 		//	kill any existing plotAreas
 		for(var i=0; i<this.plotAreas.length; i++){
 			this.plotAreas[i].plotArea.destroy();

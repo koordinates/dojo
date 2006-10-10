@@ -9,9 +9,12 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 		plot.destroy();
 		plot.dataNode = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		plot.dataNode.setAttribute("id", plot.getId());
-		return plot.dataNode;	//	SVGElement
+		return plot.dataNode;	//	SVGGElement
 	},
 	initialize: function(){
+		//	summary
+		//	Initialize the PlotArea.
+	
 		this.destroy();	//	kill everything first.
 		
 		//	start with the background
@@ -61,6 +64,6 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 			var obj = axes[p];
 			this.nodes.axes.appendChild(obj.axis.initialize(this, obj.plot, obj.drawAgainst, obj.plane));
 		}
-		return this.nodes.main;
+		return this.nodes.main;	//	HTMLDivElement
 	}
 });

@@ -8,9 +8,12 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 		plot.destroy();
 		plot.dataNode = document.createElement("div");
 		plot.dataNode.id  = plot.getId();
-		return plot.dataNode;	//	HTMLElement
+		return plot.dataNode;	//	HTMLDivElement
 	},
 	initialize:function(){
+		//	summary
+		//	Initialize the PlotArea.
+	
 		this.destroy();	//	kill everything first.
 		var main = this.nodes.main = document.createElement("div");
 		
@@ -60,6 +63,6 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 			var obj = ax[p];
 			axes.appendChild(obj.axis.initialize(this, obj.plot, obj.drawAgainst, obj.plane));
 		}
-		return main;
+		return main;	//	HTMLDivElement
 	}
 });

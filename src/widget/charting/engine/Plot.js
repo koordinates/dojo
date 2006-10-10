@@ -10,6 +10,8 @@ dojo.widget.charting.engine.Plot = function(
 	/* dojo.widget.charting.engine.Axis? */yaxis, 
 	/* dojo.widget.charting.engine.Series[]? */series
 ){
+	//	summary
+	//	Creates a new instance of a Plot (X/Y Axis + n Series).
 	var id = "dojo-charting-plot-"+dojo.widget.charting.engine.Plot.count++;
 	this.getId=function(){ return id; };
 	this.setId=function(key){ id = key; };
@@ -37,6 +39,9 @@ dojo.extend(dojo.widget.charting.engine.Plot, {
 		/* dojo.widget.charting.engine.Series || object */series,
 		/* function? */plotter
 	){
+		//	summary
+		//	Add a new Series to this plot.  Can take the form of a Series, or an object
+		//	of the form { series, plotter }
 		if(series.plotter){
 			this.series.push(series);
 		} else {
@@ -47,6 +52,8 @@ dojo.extend(dojo.widget.charting.engine.Plot, {
 		}
 	},
 	setAxis: function(/* dojo.widget.charting.engine.Axis */axis, /* string */which){
+		//	summary
+		//	Set the axis on which plane.
 		if(which.toLowerCase()=="x"){ this.axisX = axis; }
 		else if(which.toLowerCase()=="y"){ this.axisY = axis; }
 	},
@@ -75,6 +82,8 @@ dojo.extend(dojo.widget.charting.engine.Plot, {
 		};	//	object
 	},
 	destroy: function(){
+		//	summary
+		//	Clean out any existing DOM node references.
 		var node=this.dataNode;
 		while(node && node.childNodes && node.childNodes.length > 0){
 			node.removeChild(node.childNodes[0]);

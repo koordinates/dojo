@@ -2,7 +2,7 @@ dojo.provide("dojo.widget.charting.engine.svg.Plotters");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.svg");
 
-dojo.require('dojo.json');
+//	TODO for 0.5: look at replacing manual plotting with dojo.gfx.
 
 //	Mixin the SVG-specific plotter object.
 dojo.mixin(dojo.widget.charting.engine.Plotters, {
@@ -16,7 +16,8 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* function? */applyTo
 	){
 		//	summary
-		//	Like Bar, but grouped together.
+		//	Plots a set of grouped bars.
+		//	Bindings: y
 		var area = plotarea.getArea();
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		
@@ -61,7 +62,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 				group.appendChild(bar);
 			}
 		}
-		return group;
+		return group;	// SVGGElement
 	},
 	HorizontalBar: function(
 		/* dojo.widget.charting.engine.PlotArea */plotarea,
@@ -69,6 +70,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* object? */kwArgs,
 		/* function? */applyTo
 	){
+		//	summary
+		//	Plots data in a set of grouped bars horizontally.
+		//	Bindings: y
 		var area = plotarea.getArea();
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		
@@ -111,7 +115,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 				group.appendChild(bar);
 			}
 		}
-		return group;
+		return group;	//	SVGGElement
 	},
 	Gantt: function(
 		/* dojo.widget.charting.engine.PlotArea */plotarea,
@@ -119,7 +123,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* object? */kwArgs,
 		/* function? */applyTo
 	){
-		//	BINDINGS: high/low
+		//	summary
+		//	Plots a grouped set of Gantt bars
+		//	Bindings: high/low
 		var area = plotarea.getArea();
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
 
@@ -162,7 +168,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 				group.appendChild(bar);
 			}
 		}
-		return group;
+		return group;	//	SVGGElement
 	},
 	StackedArea: function(
 		/* dojo.widget.charting.engine.PlotArea */plotarea,
@@ -170,6 +176,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* object? */kwArgs,
 		/* function? */applyTo
 	){
+		//	summary
+		//	Plots a set of stacked areas.
+		//	Bindings: x/y
 		var area = plotarea.getArea();
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
 
@@ -243,7 +252,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			path.setAttribute("d", cmd.join(" ")+ " Z");
 			group.appendChild(path);
 		}
-		return group;
+		return group;	//	SVGGElement
 	},
 	StackedCurvedArea: function(
 		/* dojo.widget.charting.engine.PlotArea */plotarea,
@@ -251,6 +260,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* object? */kwArgs,
 		/* function? */applyTo
 	){
+		//	summary
+		//	Plots a set of stacked areas, using a tensioning factor to soften points.
+		//	Bindings: x/y
 		var tension = 3;
 		var area = plotarea.getArea();
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
@@ -344,7 +356,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			path.setAttribute("d", cmd.join(" ")+ " Z");
 			group.appendChild(path);
 		}
-		return group;
+		return group;	//	SVGGElement
 	},
 
 	/*********************************************************
@@ -357,7 +369,8 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* function? */applyTo
 	){
 		//	summary
-		//	Like Bar.
+		//	Plots a set of bars in relation to y==0.
+		//	Bindings: x/y
 		var area = plotarea.getArea();
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		
@@ -387,7 +400,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			if(applyTo){ applyTo(bar, data[i].src); }
 			group.appendChild(bar);
 		}
-		return group;
+		return group;	//	SVGGElement
 	},
 	Line: function(
 		/* array */data, 
@@ -395,6 +408,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* dojo.widget.charting.engine.Plot */plot,
 		/* function? */applyTo
 	){
+		//	summary
+		//	Plots the series as a line.
+		//	Bindings: x/y
 		var area = plotarea.getArea();
 		var line = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		var path = document.createElementNS(dojo.svg.xmlns.svg, "path");
@@ -429,7 +445,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			if(applyTo){ applyTo(c, data[i].src); }
 		}
 		path.setAttribute("d", cmd.join(" "));
-		return line;
+		return line;	//	SVGGElement
 	},
 	CurvedLine: function(
 		/* array */data, 
@@ -437,6 +453,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* dojo.widget.charting.engine.Plot */plot,
 		/* function? */applyTo
 	){
+		//	summary
+		//	Plots the series as a line with a tension factor for softening.
+		//	Bindings: x/y
 		var tension = 3;
 		var area = plotarea.getArea();
 		var line = document.createElementNS(dojo.svg.xmlns.svg, "g");
@@ -485,7 +504,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			if(applyTo){ applyTo(c, data[i].src); }
 		}
 		path.setAttribute("d", cmd.join(" "));
-		return line;
+		return line;	// SVGGElement
 	},
 	Area: function(
 		/* array */data, 
@@ -493,6 +512,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* dojo.widget.charting.engine.Plot */plot,
 		/* function? */applyTo
 	){
+		//	summary
+		//	Plots the series as an area.
+		//	Bindings: x/y
 		var area = plotarea.getArea();
 		var line = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		var path = document.createElementNS(dojo.svg.xmlns.svg, "path");
@@ -534,7 +556,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		cmd.push(plot.axisX.getCoord(data[0].x, plotarea, plot) + "," +  plot.axisY.getCoord(plot.axisX.origin, plotarea, plot));
 		cmd.push("Z");
 		path.setAttribute("d", cmd.join(" "));
-		return line;
+		return line;	//	SVGGElement
 	},
 	CurvedArea: function(
 		/* array */data, 
@@ -542,6 +564,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* dojo.widget.charting.engine.Plot */plot,
 		/* function? */applyTo
 	){
+		//	summary
+		//	Plots the series as an area with a tension for softening.
+		//	Bindings: x/y
 		var tension = 3;
 		var area = plotarea.getArea();
 		var line = document.createElementNS(dojo.svg.xmlns.svg, "g");
@@ -597,7 +622,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		cmd.push(plot.axisX.getCoord(data[0].x, plotarea, plot) + "," +  plot.axisY.getCoord(plot.axisX.origin, plotarea, plot));
 		cmd.push("Z");
 		path.setAttribute("d", cmd.join(" "));
-		return line;
+		return line;	//	SVGGElement
 	},
 	HighLow: function(
 		/* array */data, 
@@ -606,6 +631,8 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* function? */applyTo
 	){
 		//	summary
+		//	Plots the series as a set of high/low bars.
+		//	Bindings: x/high/low
 		var area = plotarea.getArea();
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		
@@ -638,7 +665,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			if(applyTo){ applyTo(bar, data[i].src); }
 			group.appendChild(bar);
 		}
-		return group;
+		return group;	//	SVGGElement
 	},
 	HighLowClose: function(
 		/* array */data, 
@@ -647,6 +674,8 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* function? */applyTo
 	){
 		//	summary
+		//	Plots the series as a set of high/low bars with a close indicator.
+		//	Bindings: x/high/low/close
 		var area = plotarea.getArea();
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		
@@ -694,7 +723,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			if(applyTo){ applyTo(g, data[i].src); }
 			group.appendChild(g);
 		}
-		return group;
+		return group;	//	SVGGElement
 	},
 	HighLowOpenClose: function(
 		/* array */data, 
@@ -703,6 +732,8 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* function? */applyTo
 	){
 		//	summary
+		//	Plots the series as a set of high/low bars with open and close indicators.
+		//	Bindings: x/high/low/open/close
 		var area = plotarea.getArea();
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		
@@ -761,7 +792,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			if(applyTo){ applyTo(g, data[i].src); }
 			group.appendChild(g);
 		}
-		return group;
+		return group;	//	SVGGElement
 	},
 	Scatter: function(
 		/* array */data, 
@@ -769,6 +800,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* dojo.widget.charting.engine.Plot */plot,
 		/* function? */applyTo
 	){
+		//	summary
+		//	Plots the series as a set of points.
+		//	Bindings: x/y
 		var r=7;
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		for (var i=0; i<data.length; i++){
@@ -788,7 +822,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			if(applyTo){ applyTo(point, data[i].src); }
 			group.appendChild(point);
 		}
-		return group;
+		return group;	//	SVGGElement
 	},
 	Bubble: function(
 		/* array */data, 
@@ -796,7 +830,9 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 		/* dojo.widget.charting.engine.Plot */plot,
 		/* function? */applyTo
 	){
-		//	we will expect an additional binding to "size" here.  And it will be raw, no factors.
+		//	summary
+		//	Plots the series as a set of points with a size factor.
+		//	Bindings: x/y/size
 		var group = document.createElementNS(dojo.svg.xmlns.svg, "g");
 		var sizeFactor=1;
 		for (var i=0; i<data.length; i++){
@@ -820,7 +856,7 @@ dojo.mixin(dojo.widget.charting.engine.Plotters, {
 			if(applyTo){ applyTo(point, data[i].src); }
 			group.appendChild(point);
 		}
-		return group;
+		return group;	//	SVGGElement
 	}
 });
 dojo.widget.charting.engine.Plotters["Default"] = dojo.widget.charting.engine.Plotters.Line;
