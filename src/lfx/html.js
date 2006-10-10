@@ -40,7 +40,7 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode[]*/ nodes,
 	//				An array of objects defining properties to change.
 	// duration: Duration of the animation in milliseconds.
 	// easing: An easing function.
-	// handlers: object { handler: Function?, onstart: Function?, onstop: Function?, onanimate: Function? }
+	// handlers: { handler: Function?, onstart: Function?, onstop: Function?, onanimate: Function? }
 	nodes = dojo.lfx.html._byId(nodes);
 
 	var targs = {
@@ -402,7 +402,7 @@ dojo.lfx.html.slideTo = function(/*DOMNode*/ nodes,
 	// summary: Returns an animation that will slide "nodes" from its current position to
 	//			the position defined in "coords".
 	// nodes: An array of DOMNodes or one DOMNode.
-	// coords: object { top: Decimal?, left: Decimal? }
+	// coords: { top: Decimal?, left: Decimal? }
 	// duration: Duration of the animation in milliseconds.
 	// easing: An easing function.
 	// callback: Function to run at the end of the animation.
@@ -460,7 +460,7 @@ dojo.lfx.html.slideBy = function(/*DOMNode*/ nodes, /*Object*/ coords, /*int?*/ 
 	// summary: Returns an animation that will slide "nodes" from its current position
 	//			to its current position plus the numbers defined in "coords".
 	// nodes: An array of DOMNodes or one DOMNode.
-	// coords: object { top: Decimal?, left: Decimal? }
+	// coords: { top: Decimal?, left: Decimal? }
 	// duration: Duration of the animation in milliseconds.
 	// easing: An easing function.
 	// callback: Function to run at the end of the animation.

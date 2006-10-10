@@ -150,7 +150,7 @@ dojo.lfx.Animation = function(	/*Object*/ handlers,
 	//	summary
 	//		a generic animation object that fires callbacks into it's handlers
 	//		object at various states
-	//	handlers: object { handler: Function?, onstart: Function?, onstop: Function?, onanimate: Function? }
+	//	handlers: { handler: Function?, onstart: Function?, onstop: Function?, onanimate: Function? }
 	dojo.lfx.IAnimation.call(this);
 	if(dojo.lang.isNumber(handlers)||(!handlers && duration.getValue)){
 		// no handlers argument:
