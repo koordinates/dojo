@@ -5,6 +5,8 @@ dojo.require("dojo.gfx.color.hsl");
 dojo.require("dojo.widget.charting.engine.Plot");
 
 dojo.widget.charting.engine.PlotArea = function(){
+	//	summary
+	//	Creates a new PlotArea for drawing onto a Chart.
 	var id="dojo-charting-plotarea-"+dojo.widget.charting.engine.PlotArea.count++;
 	this.getId=function(){ return id; };
 	this.setId=function(key){ id = key; };
@@ -32,16 +34,18 @@ dojo.widget.charting.engine.PlotArea.count = 0;
 
 dojo.extend(dojo.widget.charting.engine.PlotArea, {
 	nextColor: function(){
+		//	summary
+		//	Advances the internal HSV cursor and returns the next generated color.
 		var rgb=dojo.gfx.color.hsl2rgb(this._color.h, this._color.s, this._color.l);
 		this._color.h = (this._color.h + this._color.step)%360;
 		while(this._color.h < 140){ 
 			this._color.h += this._color.step; 
 		}
-		return dojo.gfx.color.rgb2hex(rgb[0], rgb[1], rgb[2]);
+		return dojo.gfx.color.rgb2hex(rgb[0], rgb[1], rgb[2]);	//	string
 	},
 	getArea:function(){
 		//	summary
-		//	return plot for drawing.
+		//	Return an object describing the coordinates of the available area to plot on.
 		return {
 			left: this.padding.left,
 			right: this.size.width - this.padding.right,
@@ -51,7 +55,7 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 				var a=[ this.top, this.right, this.bottom, this.left ];
 				return "["+a.join()+"]";
 			}
-		};
+		};	//	object
 	},
 	getAxes: function(){
 		//	summary
@@ -72,9 +76,11 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 				plane: "y"
 			};
 		}
-		return axes;
+		return axes;	//	object 
 	},
 	getLegendInfo: function(){
+		//	summary
+		//	return an array describing all data series on this plot area.
 		var a=[];
 		for(var i=0; i<this.plots.length; i++){
 			for(var j=0; j<this.plots[i].series.length; j++){
@@ -82,11 +88,11 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 				a.push({ label:data.label, color:data.color });
 			}
 		}
-		return a;
+		return a;	//	array
 	},
 	setAxesRanges: function(){
 		//	summary
-		//	find the ranges on all axes on this plotArea.
+		//	Find and set the ranges on all axes on this plotArea.
 		//	We do this because plots may have axes in common; if you
 		//	want to use this, make sure you do it *before* initialization.
 		var ranges={};
@@ -120,8 +126,10 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 		}
 	},
 
-	//	will be overridden by renderer, below.
 	render: function(/* object? */kwArgs, /* function? */applyToData){
+		//	summary
+		//	Render this plotArea.  Optional kwArgs are the same as that taken for Series.evaluate;
+		//	applyToData is a callback function used by plotters for customization.
 		if(!this.nodes.main
 			|| !this.nodes.area 
 			|| !this.nodes.background 
@@ -153,7 +161,8 @@ dojo.extend(dojo.widget.charting.engine.PlotArea, {
 		}
 	},
 	destroy: function(){
-		//	kill any existing plots
+		//	summary
+		//	Clean out any existing DOM references.
 		for(var i=0; i<this.plots.length; i++){
 			this.plots[i].destroy();
 		};

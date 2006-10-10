@@ -3,6 +3,8 @@ dojo.require("dojo.lang.common");
 dojo.require("dojo.widget.charting.engine.Plotters");
 
 dojo.widget.charting.engine.Series = function(/* object? */kwArgs){
+	//	summary
+	//	Create an instance of data series for plotting.
 	var args = kwArgs || { length:1 };
 	this.dataSource = args.dataSource || null;
 	this.bindings = { };
@@ -17,15 +19,20 @@ dojo.widget.charting.engine.Series = function(/* object? */kwArgs){
 };
 
 dojo.extend(dojo.widget.charting.engine.Series, {
-	bind:function(src, bindings){
+	bind:function(/* dojo.collections.Store */src, /* object */bindings){
+		//	summary
+		//	Bind this series to src, with bindings.
 		this.dataSource = src;
 		this.bindings = bindings;
-		this.onBind();
 	},
-	addBinding:function(name, binding){
+	addBinding:function(/* string */name, /* string */binding){
+		//	summary
+		//	Bind to field "binding" using "name".
 		this.bindings[name] = binding;
 	},
-	evaluate:function(kwArgs){
+	evaluate:function(/* object? */kwArgs){
+		//	summary
+		//	Evaluate all bindings and return an array of objects describing the bind.
 		var ret = [];
 		var a = this.dataSource.getData();
 		var l = a.length;
@@ -77,13 +84,17 @@ dojo.extend(dojo.widget.charting.engine.Series, {
 
 	//	trends
 	trends:{
-		createRange: function(values, len){
+		createRange: function(/* array */values, /* int */len){
+			//	summary
+			//	Creates the data range used for all trends.
 			var idx = values.length-1;
 			var length = (len||values.length);
-			return { "index": idx, "length": length, "start":Math.max(idx-length,0) };
+			return { "index": idx, "length": length, "start":Math.max(idx-length,0) };	//	object
 		},
 
-		mean: function(values, len){
+		mean: function(/* array */values, /* int */len){
+			//	summary
+			//	Returns the mean or average over the set of values.
 			var range = this.createRange(values, len);
 			if(range.index<0){ return 0; }
 			var total = 0;
@@ -93,10 +104,12 @@ dojo.extend(dojo.widget.charting.engine.Series, {
 				count++;
 			}
 			total /= Math.max(count,1);
-			return total;
+			return total;	//	float
 		},
 
-		variance: function(values,len){
+		variance: function(/* array */values,/* int */len){
+			//	summary
+			//	Returns the variance of the set of values.
 			var range = this.createRange(values,len);
 			if(range.index < 0){ return 0; }
 			var total = 0;
@@ -107,34 +120,42 @@ dojo.extend(dojo.widget.charting.engine.Series, {
 				square += Math.pow(values[i].y, 2);
 				count++;
 			}
-			return (square/count)-Math.pow(total/count,2);
+			return (square/count)-Math.pow(total/count,2);	//	float
 		},
 
-		standardDeviation: function(values, len){
-			return Math.sqrt(this.getVariance(values, len));
+		standardDeviation: function(/* array */values, /* int */len){
+			//	summary
+			//	Returns the standard deviation of the set of values.
+			return Math.sqrt(this.getVariance(values, len));	//	float
 		},
 
-		max: function(values, len){
+		max: function(/* array */values, /* int */len){
+			//	summary
+			//	Returns the max number in the set of values.
 			var range = this.createRange(values, len);
 			if(range.index < 0){ return 0; }
 			var max = Number.MIN_VALUE;
 			for (var i=range.index; i>=range.start; i--){
 				max = Math.max(values[i].y,max);
 			}
-			return max;
+			return max;	//	float
 		},
 
-		min: function(values, len){
+		min: function(/* array */values, /* int */len){
+			//	summary
+			//	Returns the lowest number in the set of values.
 			var range=this.createRange(values, len);
 			if(range.index < 0){ return 0; }
 			var min = Number.MAX_VALUE;
 			for(var i=range.index; i>=range.start; i--){
 				min = Math.min(values[i].y, min);
 			}
-			return min;
+			return min;	//	float
 		},
 
-		median: function(values, len){
+		median: function(/* array */values, /* int */len){
+			//	summary
+			//	Returns the median in the set of values (number closest to the middle of a sorted set).
 			var range = this.createRange(values, len);
 			if(range.index<0){ return 0; }
 			var a = [];
@@ -152,12 +173,14 @@ dojo.extend(dojo.widget.charting.engine.Series, {
 			}
 			a.sort();
 			if(a.length > 0){ 
-				return a[Math.ceil(a.length / 2)]; 
+				return a[Math.ceil(a.length / 2)]; 	//	float
 			}
-			return 0;
+			return 0;	//	float
 		},
 
-		mode: function(values, len){
+		mode: function(/* array */values, /* int */len){
+			//	summary
+			//	Returns the mode in the set of values
 			var range=this.createRange(values, len);
 			if(range.index<0){ return 0; }
 			var o = {};
@@ -178,8 +201,5 @@ dojo.extend(dojo.widget.charting.engine.Series, {
 			}
 			return ret;
 		}
-	},
-
-	//	events
-	onBind:function(){ }
+	}
 });

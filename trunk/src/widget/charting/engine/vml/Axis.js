@@ -2,8 +2,13 @@ dojo.provide("dojo.widget.charting.engine.vml.Axis");
 dojo.require("dojo.lang.common");
 
 dojo.extend(dojo.widget.charting.engine.Axis, {
-	renderLines: function(plotArea, plot, plane){
-		//	wipe if needed
+	renderLines: function(
+		/* dojo.widget.charting.engine.PlotArea */plotArea, 
+		/* dojo.widget.charting.engine.Plot */plot, 
+		/* string */plane
+	){
+		//	summary
+		//	Renders any reference lines for this axis.
 		if(this.nodes.lines){
 			while(this.nodes.lines.childNodes.length > 0){
 				this.nodes.lines.removeChild(this.nodes.lines.childNodes[0]);
@@ -42,10 +47,16 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 			}
 			g.appendChild(l);
 		}
-		return g;
+		return g;	//	HTMLDivElement
 	},
-	renderTicks: function(plotArea, plot, plane, coord){
-		//	wipe if needed
+	renderTicks: function(
+		/* dojo.widget.charting.engine.PlotArea */plotArea, 
+		/* dojo.widget.charting.engine.Plot */plot, 
+		/* string */plane,
+		/* float */coord
+	){
+		//	summary
+		//	Renders any tick lines for this axis.
 		if(this.nodes.ticks){
 			while(this.nodes.ticks.childNodes.length > 0){
 				this.nodes.ticks.removeChild(this.nodes.ticks.childNodes[0]);
@@ -79,9 +90,18 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 			}
 			g.appendChild(l);
 		}
-		return g;
+		return g;	//	HTMLDivElement
 	},
-	renderLabels: function(plotArea, plot, plane, coord, textSize, anchor){
+	renderLabels: function(
+		/* dojo.widget.charting.engine.PlotArea */plotArea, 
+		/* dojo.widget.charting.engine.Plot */plot, 
+		/* string */plane,
+		/* float */coord,
+		/* int */textSize,
+		/* string */anchor
+	){
+		//	summary
+		//	Render all labels for this axis.
 		function createLabel(label, x, y, textSize, anchor){
 			var text = document.createElement("div");
 			var s=text.style;
@@ -132,9 +152,17 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 				g.appendChild(node);
 			}
 		}
-		return g;
+		return g;	//	HTMLDivElement
 	},
-	render: function(plotArea, plot, drawAgainst, plane){
+	render: function(
+		/* dojo.widget.charting.engine.PlotArea */plotArea, 
+		/* dojo.widget.charting.engine.Plot */plot,
+		/* dojo.widget.charting.engine.Axis */drawAgainst,
+		/* string */plane
+	){
+		//	summary
+		//	Renders this axis to the given plot.
+
 		//	get the origin plot point.
 		var area = plotArea.getArea();
 		var stroke = 1;
@@ -191,6 +219,6 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 			}
 		}
 		g.appendChild(line);
-		return g;
+		return g;	//	HTMLDivElement
 	}
 });
