@@ -167,6 +167,15 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 			if(this.showLabels){
 				g.appendChild(this.renderLabels(plotArea, plot, plane, y, textSize, "middle"));
 			}
+			if(this.showLabel && this.label){
+				var x = plotArea.size.width/2;
+				var text = document.createElementNS(dojo.svg.xmlns.svg, "text");
+				text.setAttribute("x", x);
+				text.setAttribute("y", (coord + (textSize*2) + (textSize/2)));
+				text.setAttribute("style", "text-anchor:middle;font-family:sans-serif;font-weight:bold;font-size:"+(textSize+2)+"px;fill:#000;");
+				text.appendChild(document.createTextNode(this.label));
+				g.appendChild(text);
+			}
 		} else {
 			line.setAttribute("x1", coord);
 			line.setAttribute("x2", coord);
@@ -177,6 +186,7 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 			//	set up the labels
 			var isMax = this.origin == drawAgainst.range.upper;
 			var x = coord + (isMax?4:-4);
+			var anchor = isMax?"start":"end";
 			if(this.showLines){
 				g.appendChild(this.renderLines(plotArea, plot, plane, x));
 			}
@@ -184,8 +194,18 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 				g.appendChild(this.renderTicks(plotArea, plot, plane, coord));
 			}
 			if(this.showLabels){
-				var anchor = isMax?"start":"end";
 				g.appendChild(this.renderLabels(plotArea, plot, plane, x, textSize, anchor));
+			}
+			if(this.showLabel && this.label){
+				var x = isMax?(coord+(textSize*2)+(textSize/2)):(coord-(textSize*4));
+				var y = plotArea.size.height / 2;
+				var text = document.createElementNS(dojo.svg.xmlns.svg, "text");
+				text.setAttribute("x", x);
+				text.setAttribute("y", y);
+				text.setAttribute("transform", "rotate(90, " + x + ", " + y + ")");
+				text.setAttribute("style", "text-anchor:middle;font-family:sans-serif;font-weight:bold;font-size:"+(textSize+2)+"px;fill:#000;");
+				text.appendChild(document.createTextNode(this.label));
+				g.appendChild(text);
 			}
 		}
 		g.appendChild(line);

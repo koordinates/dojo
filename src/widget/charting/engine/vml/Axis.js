@@ -196,6 +196,23 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 			if(this.showLabels){
 				g.appendChild(this.renderLabels(plotArea, plot, plane, y, textSize, "center"));
 			}
+			if(this.showLabel && this.label){
+				var x = plotArea.size.width/2;
+				var y = coord + Math.round(textSize*1.5); 
+				var text = document.createElement("div");
+				var s=text.style;
+				text.innerHTML=this.label;
+				s.fontSize=(textSize+2)+"px";
+				s.fontFamily="sans-serif";
+				s.fontWeight="bold";
+				s.position="absolute";
+				s.top = y+"px";
+				s.left = x + "px";
+				s.textAlign="center";
+				document.body.appendChild(text);
+				text.style.left = x-(text.offsetWidth/2)+"px";
+				g.appendChild(text);
+			}
 		} else {
 			line.setAttribute("from", coord+"px,"+area.top+"px");
 			line.setAttribute("to", coord+"px,"+area.bottom+"px");
@@ -203,9 +220,11 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 			//	set up the labels
 			var isMax = this.origin == drawAgainst.range.upper;
 			var x = coord+4;
+			var anchor = "left";
 			if(!isMax){
 				x = area.right-coord+textSize+4;
-				if(coord == area.left){ x += textSize*2; }
+				anchor = "right";
+				if(coord == area.left){ x += (textSize*2)-(textSize/2); }
 			}
 			if(this.showLines){
 				g.appendChild(this.renderLines(plotArea, plot, plane, x));
@@ -214,8 +233,25 @@ dojo.extend(dojo.widget.charting.engine.Axis, {
 				g.appendChild(this.renderTicks(plotArea, plot, plane, coord));
 			}
 			if(this.showLabels){
-				var anchor = !isMax?"right":"left";
 				g.appendChild(this.renderLabels(plotArea, plot, plane, x, textSize, anchor));
+			}
+			if(this.showLabel && this.label){
+				x += (textSize*2)-2;
+				var y = plotArea.size.height/2;
+				var text = document.createElement("div");
+				var s=text.style;
+				text.innerHTML=this.label;
+				s.fontSize=(textSize+2)+"px";
+				s.fontFamily="sans-serif";
+				s.fontWeight="bold";
+				s.position="absolute";
+				s.height = plotArea.size.height+"px";
+				s.writingMode = "tb-rl";
+				s.textAlign="center";
+				s[anchor] = x+"px";
+				document.body.appendChild(text);
+				s.top = y-(text.offsetHeight/2)+"px";
+				g.appendChild(text);
 			}
 		}
 		g.appendChild(line);
