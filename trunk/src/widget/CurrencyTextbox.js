@@ -1,7 +1,7 @@
-dojo.provide("dojo.widget.validate.CurrencyTextbox");
+dojo.provide("dojo.widget.CurrencyTextbox");
 
-dojo.require("dojo.widget.validate.IntegerTextbox");
-dojo.require("dojo.validate.us");
+dojo.require("dojo.widget.IntegerTextbox");
+dojo.require("dojo.validate.common");
 
 /*
   ****** CurrencyTextbox ******
@@ -17,21 +17,21 @@ dojo.require("dojo.validate.us");
   @attr max  Maximum signed value.  Default is +Infinity
 */
 dojo.widget.defineWidget(
-	"dojo.widget.validate.CurrencyTextbox",
-	dojo.widget.validate.IntegerTextbox,
+	"dojo.widget.CurrencyTextbox",
+	dojo.widget.IntegerTextbox,
 	{
-		mixInProperties: function(localProperties, frag) {
+		mixInProperties: function(localProperties, frag){
 			// First initialize properties in super-class.
-			dojo.widget.validate.CurrencyTextbox.superclass.mixInProperties.apply(this, arguments);
+			dojo.widget.CurrencyTextbox.superclass.mixInProperties.apply(this, arguments);
 	
 			// Get properties from markup attributes, and assign to flags object.
-			if ( localProperties.fractional ) { 
-				this.flags.fractional = ( localProperties.fractional == "true" );
-			} else if ( localProperties.cents ) {
-				dojo.deprecated("dojo.widget.validate.IntegerTextbox", "use fractional attr instead of cents", "0.5");
-				this.flags.fractional = ( localProperties.cents == "true" );
+			if(localProperties.fractional){
+				this.flags.fractional = (localProperties.fractional == "true");
+			}else if(localProperties.cents){
+				dojo.deprecated("dojo.widget.IntegerTextbox", "use fractional attr instead of cents", "0.5");
+				this.flags.fractional = (localProperties.cents == "true");
 			}
-			if ( localProperties.symbol ) { 
+			if(localProperties.symbol){
 				this.flags.symbol = localProperties.symbol;
 			}
 			if(localProperties.min){ 
@@ -43,12 +43,11 @@ dojo.widget.defineWidget(
 		},
 
 		// Over-ride for currency validation
-		isValid: function() { 
+		isValid: function(){
 			return dojo.validate.isCurrency(this.textbox.value, this.flags);
 		},
-		isInRange: function() { 
+		isInRange: function(){
 			return dojo.validate.isInRange(this.textbox.value, this.flags);
 		}
-
 	}
 );

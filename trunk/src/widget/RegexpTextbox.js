@@ -1,6 +1,6 @@
-dojo.provide("dojo.widget.validate.RegexpTextbox");
+dojo.provide("dojo.widget.RegexpTextbox");
 
-dojo.require("dojo.widget.validate.ValidationTextbox");
+dojo.require("dojo.widget.ValidationTextbox");
 
 /*
   ****** RegexpTextbox ******
@@ -13,24 +13,24 @@ dojo.require("dojo.widget.validate.ValidationTextbox");
   @attr flags      Flags to pass to the regular expression (e.g. 'i', 'g', etc)
 */
 dojo.widget.defineWidget(
-	"dojo.widget.validate.RegexpTextbox",
-	dojo.widget.validate.ValidationTextbox,
+	"dojo.widget.RegexpTextbox",
+	dojo.widget.ValidationTextbox,
 	{
-	    mixInProperties: function(localProperties, frag) {
+	    mixInProperties: function(localProperties, frag){
 	        // First initialize properties in super-class.
-	        dojo.widget.validate.RegexpTextbox.superclass.mixInProperties.apply(this, arguments);
+	        dojo.widget.RegexpTextbox.superclass.mixInProperties.apply(this, arguments);
 
 	        // Get properties from markup attibutes, and assign to flags object.
-	        if ( localProperties.regexp ) {
+	        if(localProperties.regexp){
 	            this.flags.regexp = localProperties.regexp;
 	        }
-	        if ( localProperties.flags ) {
+	        if(localProperties.flags){
 	            this.flags.flags = localProperties.flags;
 	        }
 	    },
 
 	    // Over-ride for integer validation
-	    isValid: function() {
+	    isValid: function(){
 	        var regexp = new RegExp(this.flags.regexp, this.flags.flags);
 	        return regexp.test(this.textbox.value);
 	    }

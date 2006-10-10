@@ -1,13 +1,13 @@
-dojo.provide("dojo.widget.validate.DateTextbox");
+dojo.provide("dojo.widget.DateTextbox");
 
-dojo.require("dojo.widget.validate.ValidationTextbox");
+dojo.require("dojo.widget.ValidationTextbox");
 dojo.require("dojo.date.format");
 dojo.require("dojo.validate.datetime");
 
 //TODO: combine date and time widgets?
 dojo.widget.defineWidget(
-	"dojo.widget.validate.DateTextbox",
-	dojo.widget.validate.ValidationTextbox,
+	"dojo.widget.DateTextbox",
+	dojo.widget.ValidationTextbox,
 	{
 		// summary: A TextBox which tests for a valid date
 		// format: Deprecated. Style as described in v0.3 in dojo.validate.  Default is  "MM/DD/YYYY".
@@ -22,7 +22,7 @@ dojo.widget.defineWidget(
 			// summary: see dojo.widget.Widget
 
 			// First initialize properties in super-class.
-			dojo.widget.validate.DateTextbox.superclass.mixInProperties.apply(this, arguments);
+			dojo.widget.DateTextbox.superclass.mixInProperties.apply(this, arguments);
 	
 			// Get properties from markup attributes, and assign to flags object.
 			if(localProperties.format){ 
@@ -31,10 +31,10 @@ dojo.widget.defineWidget(
 		},
 
 		isValid: function(){ 
-			// summary: see dojo.widget.validate.ValidationTextbox
+			// summary: see dojo.widget.ValidationTextbox
 
 			if(this.flags.format){
-				dojo.deprecated("dojo.widget.validate.DateTextbox", "format attribute is deprecated; use displayFormat or formatLength instead", "0.5");
+				dojo.deprecated("dojo.widget.DateTextbox", "format attribute is deprecated; use displayFormat or formatLength instead", "0.5");
 				return dojo.validate.isValidDate(this.textbox.value, this.flags.format);
 			}
 
@@ -44,8 +44,8 @@ dojo.widget.defineWidget(
 );
 
 dojo.widget.defineWidget(
-	"dojo.widget.validate.TimeTextbox",
-	dojo.widget.validate.ValidationTextbox,
+	"dojo.widget.TimeTextbox",
+	dojo.widget.ValidationTextbox,
 	{
 		// summary: A TextBox which tests for a valid time
 		// format: Deprecated. Described in v0.3 in dojo.validate.  Default is  "h:mm:ss t".
@@ -61,7 +61,7 @@ dojo.widget.defineWidget(
 			// summary: see dojo.widget.Widget
 
 			// First initialize properties in super-class.
-			dojo.widget.validate.TimeTextbox.superclass.mixInProperties.apply(this, arguments);
+			dojo.widget.TimeTextbox.superclass.mixInProperties.apply(this, arguments);
 	
 			// Get properties from markup attributes, and assign to flags object.
 			if(localProperties.format){ 
@@ -76,9 +76,9 @@ dojo.widget.defineWidget(
 		},
 
 		isValid: function(){ 
-			// summary: see dojo.widget.validate.ValidationTextbox
+			// summary: see dojo.widget.ValidationTextbox
 			if(this.flags.format){
-				dojo.deprecated("dojo.widget.validate.TimeTextbox", "format attribute is deprecated; use displayFormat or formatLength instead", "0.5");
+				dojo.deprecated("dojo.widget.TimeTextbox", "format attribute is deprecated; use displayFormat or formatLength instead", "0.5");
 				return dojo.validate.isValidTime(this.textbox.value, this.flags);
 			}
 

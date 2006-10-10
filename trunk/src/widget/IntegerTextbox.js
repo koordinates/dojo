@@ -1,6 +1,7 @@
-dojo.provide("dojo.widget.validate.IntegerTextbox");
+dojo.provide("dojo.widget.IntegerTextbox");
 
-dojo.require("dojo.widget.validate.ValidationTextbox");
+dojo.require("dojo.widget.ValidationTextbox");
+dojo.require("dojo.validate.common");
 
 /*
   ****** IntegerTextbox ******
@@ -15,12 +16,12 @@ dojo.require("dojo.widget.validate.ValidationTextbox");
   @attr max  Maximum signed value.  Default is +Infinity
 */
 dojo.widget.defineWidget(
-	"dojo.widget.validate.IntegerTextbox",
-	dojo.widget.validate.ValidationTextbox,
+	"dojo.widget.IntegerTextbox",
+	dojo.widget.ValidationTextbox,
 	{
-		mixInProperties: function(localProperties, frag) {
+		mixInProperties: function(localProperties, frag){
 			// First initialize properties in super-class.
-			dojo.widget.validate.IntegerTextbox.superclass.mixInProperties.apply(this, arguments);
+			dojo.widget.IntegerTextbox.superclass.mixInProperties.apply(this, arguments);
 	
 			// Get properties from markup attributes, and assign to flags object.
 			if((localProperties.signed == "true")||
@@ -45,10 +46,10 @@ dojo.widget.defineWidget(
 		},
 
 		// Over-ride for integer validation
-		isValid: function() { 
+		isValid: function(){
 			return dojo.validate.isInteger(this.textbox.value, this.flags);
 		},
-		isInRange: function() { 
+		isInRange: function(){
 			return dojo.validate.isInRange(this.textbox.value, this.flags);
 		}
 	}

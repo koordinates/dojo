@@ -1,11 +1,11 @@
-dojo.provide("dojo.widget.validate.InternetTextbox");
+dojo.provide("dojo.widget.InternetTextbox");
 
-dojo.require("dojo.widget.validate.ValidationTextbox");
+dojo.require("dojo.widget.ValidationTextbox");
 dojo.require("dojo.validate.web");
 
 dojo.widget.defineWidget(
-	"dojo.widget.validate.IpAddressTextbox",
-	dojo.widget.validate.ValidationTextbox,
+	"dojo.widget.IpAddressTextbox",
+	dojo.widget.ValidationTextbox,
 	{
 		// summary:  A Textbox which tests for a valid IP address
 		// description:  Can specify formats for ipv4 or ipv6 as attributes in the markup.
@@ -22,7 +22,7 @@ dojo.widget.defineWidget(
 			// summary: see dojo.widget.Widget
 
 			// First initialize properties in super-class.
-			dojo.widget.validate.IpAddressTextbox.superclass.mixInProperties.apply(this, arguments);
+			dojo.widget.IpAddressTextbox.superclass.mixInProperties.apply(this, arguments);
 
 			// Get properties from markup attributes, and assign to flags object.
 			if(localProperties.allowdotteddecimal){ 
@@ -49,15 +49,15 @@ dojo.widget.defineWidget(
 		},
 
 		isValid: function(){ 
-			// summary: see dojo.widget.validate.ValidationTextbox
+			// summary: see dojo.widget.ValidationTextbox
 			return dojo.validate.isIpAddress(this.textbox.value, this.flags);
 		}
 	}
 );
 
 dojo.widget.defineWidget(
-	"dojo.widget.validate.UrlTextbox",
-	dojo.widget.validate.IpAddressTextbox,
+	"dojo.widget.UrlTextbox",
+	dojo.widget.IpAddressTextbox,
 	{
 		// summary:  A Textbox which tests for a valid URL
 		// scheme        Can be true or false.  If omitted the scheme is optional.
@@ -70,7 +70,7 @@ dojo.widget.defineWidget(
 			// summary: see dojo.widget.Widget
 
 			// First initialize properties in super-class.
-			dojo.widget.validate.UrlTextbox.superclass.mixInProperties.apply(this, arguments);
+			dojo.widget.UrlTextbox.superclass.mixInProperties.apply(this, arguments);
 
 			// Get properties from markup attributes, and assign to flags object.
 			if ( localProperties.scheme ) { 
@@ -91,7 +91,7 @@ dojo.widget.defineWidget(
 		},
 
 		isValid: function(){ 
-			// summary: see dojo.widget.validate.ValidationTextbox
+			// summary: see dojo.widget.ValidationTextbox
 			return dojo.validate.isUrl(this.textbox.value, this.flags);
 		}
 	}
@@ -100,8 +100,8 @@ dojo.widget.defineWidget(
 //FIXME: DOC: need more consistent explanation on whether attributes are inherited from the parent.  Some make sense, some don't?
 
 dojo.widget.defineWidget(
-	"dojo.widget.validate.EmailTextbox",
-	dojo.widget.validate.UrlTextbox,
+	"dojo.widget.EmailTextbox",
+	dojo.widget.UrlTextbox,
 	{
 		// summary:  A Textbox which tests for a valid email address
 		// description:
@@ -113,7 +113,7 @@ dojo.widget.defineWidget(
 			// summary: see dojo.widget.Widget
 
 			// First initialize properties in super-class.
-			dojo.widget.validate.EmailTextbox.superclass.mixInProperties.apply(this, arguments);
+			dojo.widget.EmailTextbox.superclass.mixInProperties.apply(this, arguments);
 	
 			// Get properties from markup attributes, and assign to flags object.
 			if(localProperties.allowcruft){ 
@@ -122,7 +122,7 @@ dojo.widget.defineWidget(
 		},
 
 		isValid: function(){
-			// summary: see dojo.widget.validate.ValidationTextbox
+			// summary: see dojo.widget.ValidationTextbox
 			return dojo.validate.isEmailAddress(this.textbox.value, this.flags);
 		}
 	}
@@ -130,8 +130,8 @@ dojo.widget.defineWidget(
 
 //TODO: perhaps combine with EmailTextbox?
 dojo.widget.defineWidget(
-	"dojo.widget.validate.EmailListTextbox",
-	dojo.widget.validate.EmailTextbox,
+	"dojo.widget.EmailListTextbox",
+	dojo.widget.EmailTextbox,
 	{
 		// summary:  A Textbox which tests for a list of valid email addresses
 		//
@@ -142,7 +142,7 @@ dojo.widget.defineWidget(
 			// summary: see dojo.widget.Widget
 
 			// First initialize properties in super-class.
-			dojo.widget.validate.EmailListTextbox.superclass.mixInProperties.apply(this, arguments);
+			dojo.widget.EmailListTextbox.superclass.mixInProperties.apply(this, arguments);
 	
 			// Get properties from markup attributes, and assign to flags object.
 			if(localProperties.listseparator){ 
@@ -151,7 +151,7 @@ dojo.widget.defineWidget(
 		},
 
 		isValid: function(){
-			// summary: see dojo.widget.validate.ValidationTextbox
+			// summary: see dojo.widget.ValidationTextbox
 			return dojo.validate.isEmailAddressList(this.textbox.value, this.flags);
 		}
 	}
