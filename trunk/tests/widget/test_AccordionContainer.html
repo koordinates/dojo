@@ -44,7 +44,7 @@
 		<p>HTML before</p>
 
 		<div dojoType="AccordionContainer" labelNodeClass="label" containerNodeClass="accBody"
-			style="border: 2px solid black; float: left; margin-right: 30px;  width: 400px; height: 300px; overflow: hidden"
+			style="float: left; margin-right: 30px;  width: 400px; height: 300px; overflow: hidden"
 		>
 		        <div dojoType="ContentPane" selected="true" label="Pane 1" style="overflow: scroll;"
 		        	onShow="dojo.debug('pane 1 shown');" onHide="dojo.debug('pane 1 hidden');" >
@@ -138,6 +138,6 @@
 		<h2>Programatically created:</h2>
 		<button onclick="destroyChildren();">destroy children</button>
 		<br>
-		<div id="accordionShell" style="width: 400px; height: 400px; border: solid #232323 3px;"></div>
+		<div id="accordionShell" style="width: 400px; height: 400px;"></div>
 	</body>
 </html>
