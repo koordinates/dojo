@@ -96,7 +96,7 @@ class DojoFunctionDeclare extends DojoBlock
       $line = substr($line, 8);
       preg_match('%[^\s]%', $line, $match);
       if ($match[0] != '(') {
-        $this->function_name = trim(substr($line, strpos($line, '(')));
+        $this->function_name = trim(substr($line, 0, strpos($line, '(')));
       }
     }
     else {
