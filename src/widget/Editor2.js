@@ -546,6 +546,22 @@ dojo.widget.defineWidget(
 			//dojo.event.disconnect(this.toolbarWidget, "exec", this, "execCommand");
 		},
 
+		saveSelection: function(){
+			// summary: save the current selection for restoring it
+			this._bookmark = null;
+			this._bookmark = dojo.withGlobal(this.window, dojo.html.selection.getBookmark);
+		},
+		restoreSelection: function(){
+			// summary: restore the last saved selection
+			if(this._bookmark){
+				this.focus(); //require for none-activeX IE
+				dojo.withGlobal(this.window, "moveToBookmark", dojo.html.selection, [this._bookmark]);
+				this._bookmark = null;
+			}else{
+				dojo.debug("restoreSelection: no saved selection is found!");
+			}
+		},
+
 		_updateToolbarLastRan: null,
 		_updateToolbarTimer: null,
 		_updateToolbarFrequency: 500,
