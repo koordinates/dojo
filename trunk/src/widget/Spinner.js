@@ -19,61 +19,54 @@ dojo.declare(
 	"dojo.widget.Spinner",
 	null, 
 	{
-		// attach points
-		upArrowNode: null,
-		downArrowNode: null,
-
-		_inputWidget: null,
 		_typamaticTimer: null,
 		_typamaticFunction: null,
-		defaultTimeout: 500,
-		timeoutChangeRate: 0.90,
 		_currentTimeout: this.defaultTimeout,
 		_eventCount: 0,
+		// Number
+		//      number of milliseconds before a held key or button becomes typematic
+		defaultTimeout: 500,
+		// Number
+		//      fraction of time used to change the typematic timer between events
+		//      1.0 means that each typematic event fires at defaultTimeout intervals
+		//      < 1.0 means that each typematic event fires at an increasing faster rate
+		timeoutChangeRate: 0.90,
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/Spinner.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/Spinner.css"),
+		// String
+		//      up arrow graphic URL
 		incrementSrc: dojo.uri.dojoUri("src/widget/templates/images/spinnerIncrement.gif"),
+		// String
+		//      down arrow graphic URL
 		decrementSrc: dojo.uri.dojoUri("src/widget/templates/images/spinnerDecrement.gif"),
 
 		// does the keyboard related stuff
 		_handleKeyEvents: function(/*Event*/ evt){
-			var k = dojo.event.browser.keys;
-			var keyCode = evt.keyCode;
+			if(!evt.key){ return; }
 
-			switch(keyCode){
-				case k.KEY_DOWN_ARROW:
-					dojo.event.browser.stopEvent(evt);
-					this._downArrowPressed(evt);
-					return;
-				case k.KEY_UP_ARROW:
-					dojo.event.browser.stopEvent(evt);
-					this._upArrowPressed(evt);
-					return;
+			if(!evt.ctrlKey && !evt.altKey){
+			        switch(evt.key){
+					case evt.KEY_DOWN_ARROW:
+						dojo.event.browser.stopEvent(evt);
+						this._downArrowPressed(evt);
+						return;
+					case evt.KEY_UP_ARROW:
+						dojo.event.browser.stopEvent(evt);
+						this._upArrowPressed(evt);
+						return;
+				}
 			}
 			this._eventCount++;
 		},
 
-		onSpinnerKeyDown: function(/*Event*/ evt){
-			// IE needs to stop keyDown others need to stop keyPress
-			if(!document.createEvent){ // only IE
-				this._handleKeyEvents(evt);
-			}
-		},
-
-		onSpinnerKeyPress: function(/*Event*/ evt){
-			if(document.createEvent){ // never IE
-				this._handleKeyEvents(evt);
-			}
-		},
-		
-		onSpinnerKeyUp: function(/*Event*/ evt){
+		_onSpinnerKeyUp: function(/*Event*/ evt){
 			this._arrowReleased(evt);
 			this.onkeyup(evt);
 		},
 
 		// reset button size; this function is called when the input area has changed size
-		resize: function(){
+		_resize: function(){
 			var inputSize = dojo.html.getBorderBox(this.textbox);
 			this.buttonSize = { width: inputSize.height / 2, height: inputSize.height / 2 };
 			if(this.upArrowNode){
@@ -112,7 +105,7 @@ dojo.declare(
 				return;
 			}
 			this._pressButton(nodePressed);
-			this.setCursorX(this.adjustValue(direction,this.getCursorX()));
+			this._setCursorX(this.adjustValue(direction,this._getCursorX()));
 			this._typamaticNode = nodePressed;
 			this._typamaticTimer = dojo.lang.setTimeout(this, "_arrowPressed", this._currentTimeout, this._eventCount, direction);
 			this._currentTimeout = Math.round(this._currentTimeout * this.timeoutChangeRate);
@@ -183,7 +176,7 @@ dojo.declare(
 			dojo.event.browser.stopEvent(evt);
 		},
 
-		getCursorX: function(){
+		_getCursorX: function(){
 			var x = -1;
 			try{
 				this.textbox.focus();
@@ -200,7 +193,7 @@ dojo.declare(
 			return x;
 		},
 
-		setCursorX: function(/*Number*/ x){
+		_setCursorX: function(/*Number*/ x){
 			try{
 				this.textbox.focus();
 				if(!x){ x = 0; }
@@ -216,7 +209,7 @@ dojo.declare(
 			}catch(e){ /* squelch! */ }
 		},
 
-		spinnerPostMixInProperties: function(/*Object*/ args, /*Object*/ frag){
+		_spinnerPostMixInProperties: function(/*Object*/ args, /*Object*/ frag){
 			// summary: the widget's postMixInProperties() method should call this method
 
 			// set image size before instantiating template;
@@ -226,7 +219,7 @@ dojo.declare(
 			this.buttonSize = { width: inputSize.height / 2 - 1, height: inputSize.height / 2 - 1};
 		},
 
-		spinnerPostCreate: function(/*Object*/ args, /*Object*/ frag){
+		_spinnerPostCreate: function(/*Object*/ args, /*Object*/ frag){
 			// summary: the widget's postCreate() method should call this method
 
 			// extra listeners
@@ -236,30 +229,38 @@ dojo.declare(
 			}else{
 				dojo.event.connect(this.textbox, "onmousewheel", this, "_mouseWheeled"); // IE + Safari
 			}
-			//dojo.event.connect(window, "onchange", this, "resize");
+			//dojo.event.connect(window, "onchange", this, "_resize");
 		}
 	}
 );
 
+// summary
+//	create spinable, single integer, input field
 dojo.widget.defineWidget(
 	"dojo.widget.IntegerSpinner",
 	[dojo.widget.IntegerTextbox, dojo.widget.Spinner],
 {
 	// summary: an IntegerSpinner with +/- buttons
 
-	// int increment amount
+	// Number
+	//	increment amount
 	delta: "1",
 
 	postMixInProperties: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.IntegerSpinner.superclass.postMixInProperties.apply(this, arguments);
-		this.spinnerPostMixInProperties(args, frag);
+		this._spinnerPostMixInProperties(args, frag);
 	},
 
 	postCreate: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.IntegerSpinner.superclass.postCreate.apply(this, arguments);
-		this.spinnerPostCreate(args, frag);
+		this._spinnerPostCreate(args, frag);
 	},
 
+	// sumary
+	//	spin the input field
+	//	direction < 0: spin down
+	//	direction > 0: spin up
+	//	direction = 0: revalidate existing value
 	adjustValue: function(/*Number*/ direction, /*Number*/ x){
 		var val = this.getValue().replace(/[^\-+\d]/g, "");
 		if(val.length == 0){ return; }
@@ -303,12 +304,12 @@ dojo.widget.defineWidget(
 
 	postMixInProperties: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.RealNumberSpinner.superclass.postMixInProperties.apply(this, arguments);
-		this.spinnerPostMixInProperties(args, frag);
+		this._spinnerPostMixInProperties(args, frag);
 	},
 
 	postCreate: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.RealNumberSpinner.superclass.postCreate.apply(this, arguments);
-		this.spinnerPostCreate(args, frag);
+		this._spinnerPostCreate(args, frag);
 	},
 
 	adjustValue: function(/*Number*/ direction, /*Number*/ x){
@@ -412,12 +413,12 @@ dojo.widget.defineWidget(
 {
 	postMixInProperties: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.TimeSpinner.superclass.postMixInProperties.apply(this, arguments);
-		this.spinnerPostMixInProperties(args, frag);
+		this._spinnerPostMixInProperties(args, frag);
 	},
 
 	postCreate: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.TimeSpinner.superclass.postCreate.apply(this, arguments);
-		this.spinnerPostCreate(args, frag);
+		this._spinnerPostCreate(args, frag);
 	},
 
 	adjustValue: function(/*Number*/ direction, /*Number*/ x){
