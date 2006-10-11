@@ -8,7 +8,7 @@ class DojoPackage
 	private $dojo;
   protected $file; // The file reference (including dir) to the file;
 	private $code; // The source - comments
-	private $source;
+	protected $source;
   protected $declarations = array(); // Builds an array of functions declarations by name, with meta
   protected $calls = array(); // Builds an array of calls
   
@@ -97,60 +97,117 @@ class DojoPackage
 		}
 		
     $lines = $this->getSource();
-    $multiline_started = false;
+    $in_comment = false;
     foreach ($lines as $line_number => $line) {
-      if ($multiline_started) {
+      //print "$line_number $line\n";
+      if ($in_comment !== false) {
         if (preg_match('%^.*\*/%U', $line, $match)) {
           $line = Text::blankOut($match[0], $line);
-          $multiline_started = false;
+          $in_comment = false;
         }
         else {
           $line = Text::blankOut($line, $line);
         }
       }
       
-      // single-line comment blocks
-      if (preg_match_all('%/\*.*\*/%U', $line, $matches)) {
-        foreach ($matches[0] as $match) {
-          $line = Text::blankOut($match, $line);
-        }
-      }
-      
-      // Comment blocks, commenting out only the data
-      if (preg_match_all('%(?:/\*(.*)|(?<!\\\|:)//(.*))$%', $line, $matches, PREG_SET_ORDER)) {
-        foreach ($matches as $match) {
-          $line = Text::blankOut($match[1] . $match[2], $line);
-        }
-      }
-      
-      // Removing quotes
-      if (preg_match_all('%(?:"(.*)(?<!\\\\)"' . "|'(.*)(?<!\\\\)')%U", $line, $matches)) {
-        foreach (array_merge($matches[1], $matches[2]) as $match) {
-          $line = Text::blankOut($match, $line);
-        }
-      }
-      
-      // Comment blocks, commenting out all
-      if (preg_match_all('%(?:(/\*.*)|((?<!\\\|:)//.*))$%', $line, $matches, PREG_SET_ORDER)) {
-        foreach ($matches as $match) {
-          if ($match[1]) {
-            $multiline_started = true;
+      $position = 0;
+      $in_single_string = false;
+      $in_double_string = false;
+      $in_regex = false;
+
+      for ($i = 0; $i < 100; $i++) {
+        $matches = array();
+
+        if ($in_comment === false && $in_regex === false && $in_single_string === false && $in_double_string === false) {
+          if (preg_match('%(?:^|\breturn\b|[=([{,|&;:?])\s*/(?!/)%', $line, $match, PREG_OFFSET_CAPTURE, $position)) {
+            $matches[$match[0][1] + strlen($match[0][0]) - 1] = '/';
           }
-          $line = Text::blankOut($match[0], $line);
+          if (preg_match('%(?:^|\breturn\b|[=([{,|&;:?+])\s*(["\'])%', $line, $match, PREG_OFFSET_CAPTURE, $position)) {
+            $matches[$match[0][1] + strlen($match[0][0]) - 1] = $match[1][0];
+          }
+          if (($pos = strpos($line, '//', $position)) !== false) {
+            $matches[$pos] = '//';
+          }
+          if (($pos = strpos($line, '/*', $position)) !== false) {
+            $matches[$pos] = '/*';
+          }
         }
+        elseif ($in_regex !== false) {
+          if (preg_match('%(?<![/\\\])/\s*([img.)\]},|&;:]|$)%', $line, $match, PREG_OFFSET_CAPTURE, $position)) {
+            $matches[$match[0][1]] = '/';
+          }
+        }
+        elseif ($in_single_string !== false || $in_double_string !== false) {
+          if (preg_match('%(?<!\\\)([\'"])\s*([+.)\]},|&;:?]|$)%', $line, $match, PREG_OFFSET_CAPTURE, $position)) {
+            $matches[$match[0][1]] = $match[1][0];
+          }
+        }
+        elseif ($in_comment !== false) {
+          if (($pos = strpos($line, '*/', $position)) !== false) {
+            $matches[$pos] = '*/';
+          }
+        }
+        
+        if (!$matches) {
+          break;
+        }
+        
+        ksort($matches);
+        foreach ($matches as $position => $match) {
+          if ($in_comment === false && $in_regex === false && $in_single_string === false && $in_double_string === false) {
+            if ($match == '"') {
+              $in_double_string = $position;
+              break;
+            }
+            elseif ($match == "'") {
+              $in_single_string = $position;
+              break;
+            }
+            elseif ($match == '/') {
+              $in_regex = $position;
+              break;
+            }
+            elseif ($match == '//') {
+              $line = Text::blankOutAt($line, $position);
+              break;
+            }
+            elseif ($match == '/*') {
+              $in_comment = $position;
+              break;
+            }
+          }
+          elseif ($in_double_string !== false && $match == '"') {
+            $line = Text::blankOutAt($line, $in_double_string + 1, $position - 1);
+            $in_double_string = false;
+          }
+          elseif ($in_single_string !== false && $match == "'") {
+            $line = Text::blankOutAt($line, $in_single_string + 1, $position - 1);
+            $in_single_string = false;
+          }
+          elseif ($in_regex !== false && $match == '/') {
+            $line = Text::blankOutAt($line, $in_regex + 1, $position - 1);
+            $in_regex = false;
+          }
+          elseif ($in_comment !== false && $match == '*/') {
+            $line = Text::blankOutAt($line, $in_comment + 2, $position - 1);
+            $in_comment = false;
+          }
+        }
+        ++$position;
       }
       
-      // Remove regular expressions
-      if (preg_match_all('%/(?!\s*[0-9])(.*)(?<!\\\)/(?=(?:[mig]|\s*[.,);]))%U', $line, $matches)){
-        foreach ($matches[1] as $match) {
-          $line = Text::blankOut($match, $line);
-        }
+      if ($i == 100) {
+        die("\$i should not reach 100: $line");
       }
       
+      if ($in_comment !== false && !empty($line)) {
+        $line = Text::blankOutAt($line, $in_comment);
+      }
+      
+      //print "$line_number $line\n";
       $lines[$line_number] = $line;
     }
-		$this->code = $lines;
-    return $lines;
+ 		return $this->code = $lines;
   }
   
   public function getPackageName()
