@@ -75,6 +75,17 @@
 			<dojo:propertySet id="testPropertyList" property1="test">
 				<property2>test2</property2>
 			</dojo:propertySet>
+			<select>
+				<option>foo</option>
+				<option>bar</option>
+				<option>baz</option>
+			</select>
+			<!-- the following won't be parsed -->
+			<select parseWidgets="false">
+				<option>foo</option>
+				<option>bar</option>
+				<option>baz</option>
+			</select>
 		</div>
 		<div id="output">
 		

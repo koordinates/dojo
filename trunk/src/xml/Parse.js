@@ -130,6 +130,10 @@ dojo.xml.Parse = function(){
 			tagName = dojoTagName || tagName;
 			process = Boolean(dojoTagName);
 		}
+		
+		if(node && node.getAttribute("parseWidgets") && node.getAttribute("parseWidgets") == "false") {
+			return {};
+		}
 
 		parsedNodeSet[tagName] = [];
 		var pos = tagName.indexOf(":");
