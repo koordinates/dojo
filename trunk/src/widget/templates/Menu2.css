@@ -64,6 +64,10 @@
 	background-image: url(images/submenu_on.gif);
 }
 
+.dojoMenuItem2Disabled .dojoMenuItem2Submenu {
+	background-image: url(images/submenu_disabled.gif);
+}
+
 .dojoMenuSeparator2 {
 	font-size: 1px;
 	margin: 0;
