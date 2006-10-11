@@ -37,7 +37,7 @@ dojo.declare(
 		decrementSrc: dojo.uri.dojoUri("src/widget/templates/images/spinnerDecrement.gif"),
 
 		// does the keyboard related stuff
-		_handleKeyEvents: function(evt){
+		_handleKeyEvents: function(/*Event*/ evt){
 			var k = dojo.event.browser.keys;
 			var keyCode = evt.keyCode;
 
@@ -54,20 +54,20 @@ dojo.declare(
 			this._eventCount++;
 		},
 
-		onSpinnerKeyDown: function(evt){
+		onSpinnerKeyDown: function(/*Event*/ evt){
 			// IE needs to stop keyDown others need to stop keyPress
 			if(!document.createEvent){ // only IE
 				this._handleKeyEvents(evt);
 			}
 		},
 
-		onSpinnerKeyPress: function(evt){
+		onSpinnerKeyPress: function(/*Event*/ evt){
 			if(document.createEvent){ // never IE
 				this._handleKeyEvents(evt);
 			}
 		},
 		
-		onSpinnerKeyUp: function(evt){
+		onSpinnerKeyUp: function(/*Event*/ evt){
 			this._arrowReleased(evt);
 			this.onkeyup(evt);
 		},
@@ -82,17 +82,17 @@ dojo.declare(
 			}
 		},
 
-		_pressButton: function(node){
+		_pressButton: function(/*DomNode*/ node){
 			node.style.borderWidth = "1px 0px 0px 1px";
 			node.style.borderStyle = "inset";
 		},
 
-		_releaseButton: function(node){
+		_releaseButton: function(/*DomNode*/ node){
 			node.style.borderWidth = "0px 1px 1px 0px";
 			node.style.borderStyle = "outset";
 		},
 
-		_arrowPressed: function(evt, direction){
+		_arrowPressed: function(/*Event*/ evt, /*Number*/ direction){
 			var nodePressed = (direction == -1) ? this.downArrowNode : this.upArrowNode;
 			var nodeReleased = (direction == +1) ? this.downArrowNode : this.upArrowNode;
 			if(typeof evt != "number"){
@@ -118,29 +118,29 @@ dojo.declare(
 			this._currentTimeout = Math.round(this._currentTimeout * this.timeoutChangeRate);
 		},
 
-		_downArrowPressed: function(evt){
+		_downArrowPressed: function(/*Event*/ evt){
 			return this._arrowPressed(evt,-1);
 		},
 
 		// IE sends these events when rapid clicking, mimic an extra single click
-		_downArrowDoubleClicked: function(evt){
+		_downArrowDoubleClicked: function(/*Event*/ evt){
 			var rc = this._downArrowPressed(evt);
 			dojo.lang.setTimeout(this, "_arrowReleased", 50, null);
 			return rc;
 		},
 
-		_upArrowPressed: function(evt){
+		_upArrowPressed: function(/*Event*/ evt){
 			return this._arrowPressed(evt,+1);
 		},
 
 		// IE sends these events when rapid clicking, mimic an extra single click
-		_upArrowDoubleClicked: function(evt){
+		_upArrowDoubleClicked: function(/*Event*/ evt){
 			var rc = this._upArrowPressed(evt);
 			dojo.lang.setTimeout(this, "_arrowReleased", 50, null);
 			return rc;
 		},
 
-		_arrowReleased: function(evt){
+		_arrowReleased: function(/*Event*/ evt){
 			this.textbox.focus();
 			if(evt != null && typeof evt == "object" && evt.keyCode && evt.keyCode != null){
 				var keyCode = evt.keyCode;
@@ -163,7 +163,7 @@ dojo.declare(
 			this._currentTimeout = this.defaultTimeout;
 		},
 
-		_mouseWheeled: function(evt) {
+		_mouseWheeled: function(/*Event*/ evt){
 			var scrollAmount = 0;
 			if(typeof evt.wheelDelta == 'number'){ // IE
 				scrollAmount = evt.wheelDelta;
@@ -179,7 +179,7 @@ dojo.declare(
 			}
 		},
 
-		_discardEvent: function(evt) {
+		_discardEvent: function(/*Event*/ evt){
 			dojo.event.browser.stopEvent(evt);
 		},
 
@@ -189,7 +189,7 @@ dojo.declare(
 				this.textbox.focus();
 				if (typeof this.textbox.selectionEnd == "number"){
 					x = this.textbox.selectionEnd;
-				}else if (document.selection && document.selection.createRange) {
+				}else if (document.selection && document.selection.createRange){
 					var range = document.selection.createRange().duplicate();
 					if(range.parentElement() == this.textbox){
 						range.moveStart('textedit', -1);
@@ -200,7 +200,7 @@ dojo.declare(
 			return x;
 		},
 
-		setCursorX: function(x){
+		setCursorX: function(/*Number*/ x){
 			try{
 				this.textbox.focus();
 				if(!x){ x = 0; }
@@ -216,7 +216,7 @@ dojo.declare(
 			}catch(e){ /* squelch! */ }
 		},
 
-		spinnerPostMixInProperties: function(args, frag){
+		spinnerPostMixInProperties: function(/*Object*/ args, /*Object*/ frag){
 			// summary: the widget's postMixInProperties() method should call this method
 
 			// set image size before instantiating template;
@@ -226,7 +226,7 @@ dojo.declare(
 			this.buttonSize = { width: inputSize.height / 2 - 1, height: inputSize.height / 2 - 1};
 		},
 
-		spinnerPostCreate: function(args, frag){
+		spinnerPostCreate: function(/*Object*/ args, /*Object*/ frag){
 			// summary: the widget's postCreate() method should call this method
 
 			// extra listeners
@@ -250,17 +250,17 @@ dojo.widget.defineWidget(
 	// int increment amount
 	delta: "1",
 
-	postMixInProperties: function(args, frag){
+	postMixInProperties: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.IntegerSpinner.superclass.postMixInProperties.apply(this, arguments);
 		this.spinnerPostMixInProperties(args, frag);
 	},
 
-	postCreate: function(args, frag){
+	postCreate: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.IntegerSpinner.superclass.postCreate.apply(this, arguments);
 		this.spinnerPostCreate(args, frag);
 	},
 
-	adjustValue: function(direction, x){
+	adjustValue: function(/*Number*/ direction, /*Number*/ x){
 		var val = this.getValue().replace(/[^\-+\d]/g, "");
 		if(val.length == 0){ return; }
 
@@ -301,17 +301,17 @@ dojo.widget.defineWidget(
 	// new subclass properties
 	delta: "1e1",
 
-	postMixInProperties: function(args, frag){
+	postMixInProperties: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.RealNumberSpinner.superclass.postMixInProperties.apply(this, arguments);
 		this.spinnerPostMixInProperties(args, frag);
 	},
 
-	postCreate: function(args, frag){
+	postCreate: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.RealNumberSpinner.superclass.postCreate.apply(this, arguments);
 		this.spinnerPostCreate(args, frag);
 	},
 
-	adjustValue: function(direction, x){
+	adjustValue: function(/*Number*/ direction, /*Number*/ x){
 			var val = this.getValue().replace(/[^\-+\.eE\d]/g, "");
 			if(!val.length){ return; }
 
@@ -410,25 +410,25 @@ dojo.widget.defineWidget(
 	[dojo.widget.TimeTextbox, dojo.widget.Spinner],
 	function(){ dojo.experimental("dojo.widget.TimeSpinner"); },
 {
-	postMixInProperties: function(args, frag){
+	postMixInProperties: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.TimeSpinner.superclass.postMixInProperties.apply(this, arguments);
 		this.spinnerPostMixInProperties(args, frag);
 	},
 
-	postCreate: function(args, frag){
+	postCreate: function(/*Object*/ args, /*Object*/ frag){
 		dojo.widget.TimeSpinner.superclass.postCreate.apply(this, arguments);
 		this.spinnerPostCreate(args, frag);
 	},
 
-	adjustValue: function(direction, x){
+	adjustValue: function(/*Number*/ direction, /*Number*/ x){
 	//FIXME: formatting should make use of dojo.date.format?
 		var val = this.getValue();
 		var format = (this.flags.format && this.flags.format.search(/[Hhmst]/) >= 0) ? this.flags.format : "hh:mm:ss t";
 		if(direction == 0 || !val.length || !this.isValid()){ return; }
-		if (!this.flags.amSymbol) {
+		if (!this.flags.amSymbol){
 			this.flags.amSymbol = "AM";
 		}
-		if (!this.flags.pmSymbol) {
+		if (!this.flags.pmSymbol){
 			this.flags.pmSymbol = "PM";
 		}
 		var re = dojo.regexp.time(this.flags);
@@ -448,20 +448,20 @@ dojo.widget.defineWidget(
 		var deltaHour = 1;
 		if (hourPos > 0){
 			hour = val.replace(new RegExp(re),"$"+hourPos);
-			if (dojo.lang.isString(this.delta)) {
+			if (dojo.lang.isString(this.delta)){
 				deltaHour = this.delta.replace(new RegExp(re),"$"+hourPos);
 			}
-			if (isNaN(deltaHour)) {
+			if (isNaN(deltaHour)){
 				deltaHour = 1;
 			} else {
 				deltaHour = parseInt(deltaHour);
 			}
-			if (hour.length == 2) {
+			if (hour.length == 2){
 				cursorFormat = cursorFormat.replace(/([Hh])+/, "$1$1");
 			} else {
 				cursorFormat = cursorFormat.replace(/([Hh])+/, "$1");
 			}
-			if (isNaN(hour)) {
+			if (isNaN(hour)){
 				hour = 0;
 			} else {
 				hour = parseInt(hour.replace(/^0(\d)/,"$1"));
@@ -471,16 +471,16 @@ dojo.widget.defineWidget(
 		var deltaMin = 1;
 		if (minPos > 0){
 			min = val.replace(new RegExp(re),"$"+minPos);
-			if (dojo.lang.isString(this.delta)) {
+			if (dojo.lang.isString(this.delta)){
 				deltaMin = this.delta.replace(new RegExp(re),"$"+minPos);
 			}
-			if (isNaN(deltaMin)) {
+			if (isNaN(deltaMin)){
 				deltaMin = 1;
 			} else {
 				deltaMin = parseInt(deltaMin);
 			}
 			cursorFormat = cursorFormat.replace(/m+/, min.replace(/./g,"m"));
-			if (isNaN(min)) {
+			if (isNaN(min)){
 				min = 0;
 			} else {
 				min = parseInt(min.replace(/^0(\d)/,"$1"));
@@ -490,16 +490,16 @@ dojo.widget.defineWidget(
 		var deltaSec = 1;
 		if (secPos > 0){
 			sec = val.replace(new RegExp(re),"$"+secPos);
-			if (dojo.lang.isString(this.delta)) {
+			if (dojo.lang.isString(this.delta)){
 				deltaSec = this.delta.replace(new RegExp(re),"$"+secPos);
 			}
-			if (isNaN(deltaSec)) {
+			if (isNaN(deltaSec)){
 				deltaSec = 1;
 			} else {
 				deltaSec = parseInt(deltaSec);
 			}
 			cursorFormat = cursorFormat.replace(/s+/, sec.replace(/./g,"s"));
-			if (isNaN(sec)) {
+			if (isNaN(sec)){
 				sec = 0;
 			} else {
 				sec = parseInt(sec.replace(/^0(\d)/,"$1"));
@@ -510,94 +510,94 @@ dojo.widget.defineWidget(
 		}
 		var cursorToken = cursorFormat.charAt(x);
 
-		switch(cursorToken) {
+		switch(cursorToken){
 			case 't':
-				if (ampm == this.flags.amSymbol) {
+				if (ampm == this.flags.amSymbol){
 					ampm = this.flags.pmSymbol;
 				}
-				else if (ampm == this.flags.pmSymbol) {
+				else if (ampm == this.flags.pmSymbol){
 					ampm = this.flags.amSymbol;
 				}
 				break;
 			default:
-				if (hour >= 1 && hour < 12 && ampm == this.flags.pmSymbol) {
+				if (hour >= 1 && hour < 12 && ampm == this.flags.pmSymbol){
 					hour += 12;
 				}
-				if (hour == 12 && ampm == this.flags.amSymbol) {
+				if (hour == 12 && ampm == this.flags.amSymbol){
 					hour = 0;
 				}
-				switch(cursorToken) {
+				switch(cursorToken){
 					case 's':
 						sec += deltaSec * direction;
-						while (sec < 0) {
+						while (sec < 0){
 							min--;
 							sec += 60;
 						}
-						while (sec >= 60) {
+						while (sec >= 60){
 							min++;
 							sec -= 60;
 						}
 					case 'm':
-						if (cursorToken == 'm') {
+						if (cursorToken == 'm'){
 							min += deltaMin * direction;
 						}
-						while (min < 0) {
+						while (min < 0){
 							hour--;
 							min += 60;
 						}
-						while (min >= 60) {
+						while (min >= 60){
 							hour++;
 							min -= 60;
 						}
 					case 'h':
 					case 'H':
-						if (cursorToken == 'h' || cursorToken == 'H') {
+						if (cursorToken == 'h' || cursorToken == 'H'){
 							hour += deltaHour * direction;
 						}
-						while (hour < 0) {
+						while (hour < 0){
 							hour += 24;
 						}
-						while (hour >= 24) {
+						while (hour >= 24){
 							hour -= 24;
 						}
 						break;
 					default: // should never get here
 						return;
 				}
-				if (hour >= 12) {
+				if (hour >= 12){
 					ampm = this.flags.pmSymbol;
-					if (format.indexOf('h') >= 0 && hour >= 13) {
+					if (format.indexOf('h') >= 0 && hour >= 13){
 						hour -= 12;
 					}
 				} else {
 					ampm = this.flags.amSymbol;
-					if (format.indexOf('h') >= 0 && hour == 0) {
+					if (format.indexOf('h') >= 0 && hour == 0){
 						hour = 12;
 					}
 				}
 		}
 
 		cursorFormat = format;
-		if (hour >= 0 && hour < 10 && format.search(/[hH]{2}/) >= 0) {
+		if (hour >= 0 && hour < 10 && format.search(/[hH]{2}/) >= 0){
 			hour = "0" + hour.toString();
 		}
-		if (hour >= 10 && cursorFormat.search(/[hH]{2}/) < 0 ) {
+		if (hour >= 10 && cursorFormat.search(/[hH]{2}/) < 0 ){
 			cursorFormat = cursorFormat.replace(/(h|H)/, "$1$1");
 		}
-		if (min >= 0 && min < 10 && cursorFormat.search(/mm/) >= 0) {
+		if (min >= 0 && min < 10 && cursorFormat.search(/mm/) >= 0){
 			min = "0" + min.toString();
 		}
-		if (min >= 10 && cursorFormat.search(/mm/) < 0 ) {
+		if (min >= 10 && cursorFormat.search(/mm/) < 0 ){
 			cursorFormat = cursorFormat.replace(/m/, "$1$1");
 		}
-		if (sec >= 0 && sec < 10 && cursorFormat.search(/ss/) >= 0) {
+		if (sec >= 0 && sec < 10 && cursorFormat.search(/ss/) >= 0){
 			sec = "0" + sec.toString();
 		}
-		if (sec >= 10 && cursorFormat.search(/ss/) < 0 ) {
+		if (sec >= 10 && cursorFormat.search(/ss/) < 0 ){
 			cursorFormat = cursorFormat.replace(/s/, "$1$1");
 		}
 		x = cursorFormat.indexOf(cursorToken);
-		if (x == -1) {
+		if (x == -1){
 			x = format.length;
 		}
 		format = format.replace(/[hH]+/, hour);
