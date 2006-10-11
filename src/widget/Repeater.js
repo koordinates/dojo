@@ -1,11 +1,11 @@
-dojo.provide("dojo.widget.RepeaterContainer");
+dojo.provide("dojo.widget.Repeater");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.string");
 dojo.require("dojo.event.*");
 dojo.require("dojo.experimental");
-dojo.experimental("dojo.widget.RepeaterContainer");
+dojo.experimental("dojo.widget.Repeater");
 
-dojo.widget.defineWidget("dojo.widget.RepeaterContainer", dojo.widget.HtmlWidget,
+dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 	{
 		name: "",
 		rowTemplate: "",
