@@ -31,13 +31,15 @@ class DojoObject extends DojoBlock
           break;
         }
       }
-      $parameter = new DojoParameter($this->package, $end[0], $end[1], '}');
-      $end = $parameter->build();
       
       if (!$key) {
-        die('DojoObject->build() couldn\'t find a key');
+        $end = Text::findTermination($lines, '}');
       }
-      $this->values[$key] = $parameter;
+      else {
+        $parameter = new DojoParameter($this->package, $end[0], $end[1], '}');
+        $end = $parameter->build();
+        $this->values[$key] = $parameter;
+      }
     }
     while ($lines[$end[0]]{$end[1]} != '}');
 

@@ -72,8 +72,12 @@ class Text
     }
     $lines[$end_line] = Text::blankOutAt($lines[$end_line], $end_position + 1, strlen($lines[$end_line]));
     if ($exclusive) {
-      $lines[$start_line]{$start_position} = ' ';
-      $lines[$end_line]{$end_position} = ' ';
+      if ($lines[$start_line]{$start_position}) {
+        $lines[$start_line]{$start_position} = ' ';
+      }
+      if ($lines[$end_line]{$end_position}) {
+        $lines[$end_line]{$end_position} = ' ';
+      }
     }
     
     return $lines;
@@ -105,6 +109,8 @@ class Text
         $balance += $characters[$character];
       }
     }
+    
+    return array($line_number, $position);
   }
   
   public static function toArray($string)

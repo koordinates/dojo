@@ -10,28 +10,23 @@ $output = array();
 
 $dojo = new Dojo('../');
 $files = $dojo->getFileList();
-$files = array('src/widget/Widget.js');
 
 foreach ($files as $file) {
   $package = new DojoPackage($dojo, $file);
+  $package_name = $package->getPackageName();
 
-  if (strpos($file, '__package__.js') !== false) {
-    // Handle dojo.kwCompoundRequire calls
-    $calls = $package->getFunctionCalls('dojo.kwCompoundRequire');
-    if ($calls) {
-      $call = $calls[0];
-      $object = $call->getParameter(0);
-      if ($object && $object->getValue() instanceof DojoObject) {
-        $object_contents = $object->getValue();
-        $keys = $object_contents->getKeys();
-        foreach ($keys as $key) {
-          $value = $object_contents->getValue($key);
-          if ($value instanceof DojoArray) {
-            $items = $value->getAll();
-            foreach ($items as $item) {
-              if ($item instanceof DojoString) {
-                $output[$package->getPackageName() . '._']['meta']['requires'][$key][] = $item->getValue();
-								$output['function_names'][$package->getPackageName() . '._'] = array();
+  // Handle compound require calls
+  $calls = $package->getFunctionCalls('dojo.kwCompoundRequire');
+  foreach ($calls as $call) {
+    if ($call->getParameter(0)->isA(DojoObject)) {
+      $object = $call->getParameter(0)->getObject();
+      foreach ($object->getValues() as $key => $value) {
+        if ($value->isA(DojoArray)) {
+          foreach ($value->getArray()->getItems() as $item) {
+            if ($item->isA(DojoString)) {
+              $output[$package_name]['meta']['requires'][$key][] = $item->getString();
+              if (!$output['function_names'][$package_name]) {
+                $output['function_names'][$package_name] = array();
               }
             }
           }
@@ -39,178 +34,170 @@ foreach ($files as $file) {
       }
     }
   }
-  else {
-    // Handle dojo.require calls
-    $calls = $package->getFunctionCalls('dojo.require');
-    foreach ($calls as $call) {
-      $require = $call->getParameter(0);
-      if ($require) {
-        $require = $require->getValue();
-        if ($require instanceof DojoString) {
-          $output[$package->getPackageName()]['meta']['requires']['common'][] = $require->getValue();
-        }
+  // Handle dojo.require calls
+  $calls = $package->getFunctionCalls('dojo.require');
+  foreach ($calls as $call) {
+    $require = $call->getParameter(0);
+    if ($require->isA(DojoString)) {
+      $output[$package_name]['meta']['requires']['common'][] = $require->getString();
+    }
+  }
+  
+  // Handle dojo.requireAfterIf calls
+  $calls = array_merge($package->getFunctionCalls('dojo.requireIf'), $package->getFunctionCalls('dojo.requireAfterIf'));
+  foreach ($calls as $call) {
+    $environment = $call->getParameter(0);
+    $require = $call->getParameter(1);
+    if ($environment && $require) {
+      $environment = $environment->getValue();
+      $require = $environment->getValue();
+      if ($environment instanceof DojoString && $require instanceof DojoString) {
+        $output[$package_name]['meta']['requires'][$environment->getValue()][] = $require->getValue();
       }
     }
-    
-    // Handle dojo.requireAfterIf calls
-    $calls = array_merge($package->getFunctionCalls('dojo.requireIf'), $package->getFunctionCalls('dojo.requireAfterIf'));
-    foreach ($calls as $call) {
-      $environment = $call->getParameter(0);
-      $require = $call->getParameter(1);
-      if ($environment && $require) {
-        $environment = $environment->getValue();
-        $require = $environment->getValue();
-        if ($environment instanceof DojoString && $require instanceof DojoString) {
-          $output[$package->getPackageName()]['meta']['requires'][$environment->getValue()][] = $require->getValue();
-        }
+  }
+  
+  // This closely matches dojo.widget.defineWidget as declared in src/widget/Widget.js
+  $calls = array_merge($package->getFunctionCalls('dojo.declare'), $package->getFunctionCalls('dojo.widget.defineWidget'));
+  foreach ($calls as $call) {
+    if ($call->getName() == 'dojo.declare') {
+      $args = array($call->getParameter(0), null, $call->getParameter(1), $call->getParameter(2), $call->getParameter(3));
+      $name = $args[0]->getString();
+      if ($args[3]->isA(DojoFunctionDeclare)) {
+        $init = $args[3]->getFunction();
       }
     }
-    
-    // This closely matches dojo.widget.defineWidget as declared in src/widget/Widget.js
-    $calls = array_merge($package->getFunctionCalls('dojo.declare'), $package->getFunctionCalls('dojo.widget.defineWidget'));
-    foreach ($calls as $call) {
-      if ($call->getName() == 'dojo.declare') {
-        $args = array($call->getParameter(0), null, $call->getParameter(1), $call->getParameter(2), $call->getParameter(3));
+    else {
+      if ($call->getParameter(3)->isA(DojoString)) {
+        $args = array($call->getParameter(0), $call->getParameter(3), $call->getParameter(1), $call->getParameter(4), $call->getParameter(2));
       }
       else {
-        if ($call->getParameter(3)->isA(DojoString)) {
-          $args = array($call->getParameter(0), $call->getParameter(3), $call->getParameter(1), $call->getParameter(4), $call->getParameter(2));
+        $args = array($call->getParameter(0));
+        $p = 3;
+        if ($call->getParameter(1)->isA(DojoString)) {
+          array_push($args, $call->getParameter(1), $call->getParameter(2));
         }
         else {
-          $args = array($call->getParameter(0));
-          $p = 3;
-          if ($call->getParameter(1)->isA(DojoString)) {
-            array_push($args, $call->getParameter(1), $call->getParameter(2));
-          }
-          else {
-            array_push($args, null, $call->getParameter(1));
-            $p = 2;
-          }
-          if ($call->getParameter($p)->isA(DojoFunctionDeclare)) {
-            array_push($args, $call->getParameter($p), $call->getParameter($p + 1));
-          }
-          else {
-            array_push($args, null, $call->getParameter($p));
-          }
+          array_push($args, null, $call->getParameter(1));
+          $p = 2;
+        }
+        if ($call->getParameter($p)->isA(DojoFunctionDeclare)) {
+          array_push($args, $call->getParameter($p), $call->getParameter($p + 1));
+        }
+        else {
+          array_push($args, null, $call->getParameter($p));
         }
       }
-      
-      $package = $package->getPackageName();
-      $name = $args[0]->getString();
+    }
+    
+    $package_name = $package_name;
+    $name = $args[0]->getString();
 
-      // $args looks like (name, null, superclass(es), initializer, mixins)      
-      if ($args[2]->isA(DojoString)) {
-        $output[$package]['meta']['functions'][$name]['_']['meta']['inherits'][] = $args[2]->getString();
-        $output[$package]['meta']['functions'][$name]['_']['meta']['this_inherits'][] = $args[2]->getString();
-      }
-      elseif ($args[2]->isA(DojoArray)) {
-        $items = $args[2]->getArray();
-        foreach ($items as $item) {
-          if ($item->isA(DojoString)) {
-            $output[$package]['meta']['functions'][$name]['_']['meta']['inherits'][] = $item->getString();
-            $output[$package]['meta']['functions'][$name]['_']['meta']['this_inherits'][] = $item->getString();
-          }
+    // $args looks like (name, null, superclass(es), initializer, mixins)      
+    if ($args[2]->isA(DojoString)) {
+      $output[$package_name]['meta']['functions'][$name]['_']['meta']['prototype_chain'][] = $args[2]->getString();
+      $output[$package_name]['meta']['functions'][$name]['_']['meta']['call_chain'][] = $args[2]->getString();
+    }
+    elseif ($args[2]->isA(DojoArray)) {
+      $items = $args[2]->getArray();
+      foreach ($items as $item) {
+        if ($item->isA(DojoString)) {
+          $output[$package_name]['meta']['functions'][$name]['_']['meta']['prototype_chain'][] = $item->getString();
+          $output[$package_name]['meta']['functions'][$name]['_']['meta']['call_chain'][] = $item->getString();
         }
       }
+    }
 
-      if ($arguments['mixins'] instanceof DojoObject) {
-        $keys = $arguments['mixins']->getKeys();
+    if ($args[4]->isA(DojoObject)) {
+      $object = $args[4]->getObject();
+      $values = $object->getValues();
+      foreach ($values as $key => $value) {
+        if ($key == 'initializer') {
+          $init = $value;
+          continue;
+        }
+        if ($value->isA(DojoFunctionDeclare)) {
+          $function = $value->getFunction($value);
+          $function->setPrototype($name);
+          $function->setFunctionName($name . '.' . $key);
+          rolloutFunction($output, $package, $function);
+        }
+        else {
+          $output[$package_name]['meta']['functions'][$name]['_']['meta']['instance_variables'][] = $key;
+        }
+      }
+    }
+    
+    if ($init) {
+      $init->setFunctionName($name);
+      rolloutFunction($output, $package, $init);
+    }
+  }
+  
+  // Handle function declarations
+  $declarations = $package->getFunctionDeclarations();
+  foreach ($declarations as $declaration) {
+    rolloutFunction($output, $package, $declaration);
+  }
+  
+  $calls = $package->getFunctionCalls('dojo.inherits', true);
+  foreach ($calls as $call) {
+    if ($call->getParameter(0)->isA(DojoVariable) && $call->getParameter(1)->isA(DojoVariable)) {
+      $output[$package_name]['meta']['functions'][$call->getParameter(0)->getVariable()]['_']['meta']['prototype_chain'][] = $call->getParameter(1)->getVariable();
+    }
+  }
+
+  // Handle. dojo.lang.extend and dojo.lang.mixin calls
+  $calls = array_merge($package->getFunctionCalls('dojo.lang.extend', true), $package->getFunctionCalls('dojo.lang.mixin'));
+  foreach ($calls as $call) {
+    $object = $call->getParameter(0);
+    $properties = $call->getParameter(1);
+    if ($object && $properties) {
+      $object = $object->getValue();
+      $call_name = $call->getName();
+      if($call_name == 'dojo.lang.mixin' && $object != $package_name) continue;
+      $properties = $properties->getValue();
+      if (is_string($object) && $properties instanceof DojoObject) {
+        $keys = $properties->getKeys();
         foreach ($keys as $key) {
-          if ($key == 'initializer') {
-            $init = $arguments['mixins']->getValue($key);
-            continue;
-          }
-          if ($arguments['mixins']->isFunction($key)) {
-            $function = $arguments['mixins']->getValue($key);
-            $function->setThis($superclass);
-            $function->setFunctionName($name->getValue() . '.' . $key);
+          if ($properties->isFunction($key)) {
+            $function = $properties->getValue($key);
+            if ($call_name == 'dojo.lang.extend') {
+              $function->setThis($object);
+            }
+            $function->setFunctionName($object . '.' . $key);
             rolloutFunction($output, $package, $function);
           }
           else {
-            $output[$package->getPackageName()]['meta']['functions'][$arguments['name']]['_']['meta']['protovariables'][$key] = "";
-          }
-        }
-      }
-      
-      if ($init instanceof DojoFunctionDeclare) {
-        $parameters = $init->getParameters();
-        foreach ($parameters as $parameter) {
-          $output[$package->getPackageName()]['meta']['functions'][$name->getValue()]['_']['meta']['parameters'][$parameter->getValue()]['type'] = $parameter->getType();
-        }
-      }
-    }
-    
-    // Handle function declarations
-    $declarations = $package->getFunctionDeclarations();
-    foreach ($declarations as $declaration) {
-      rolloutFunction($output, $package, $declaration);
-    }
-    
-    $calls = $package->getFunctionCalls('dojo.inherits', true);
-    foreach ($calls as $call) {
-      $subclass = $call->getParameter(0);
-      $superclass = $call->getParameter(1);
-      if ($subclass && $superclass) {
-        $subclass = $subclass->getValue();
-        $superclass = $superclass->getValue();
-      }
-      if (is_string($subclass) && is_string($superclass)) {
-        $output[$package->getPackageName()]['meta']['functions'][$subclass]['_']['meta']['inherits'][] = $superclass;
-      }
-    }
-
-    // Handle. dojo.lang.extend and dojo.lang.mixin calls
-    $calls = array_merge($package->getFunctionCalls('dojo.lang.extend', true), $package->getFunctionCalls('dojo.lang.mixin'));
-    foreach ($calls as $call) {
-      $object = $call->getParameter(0);
-      $properties = $call->getParameter(1);
-      if ($object && $properties) {
-        $object = $object->getValue();
-				$call_name = $call->getFunctionCallName();
-				if($call_name == 'dojo.lang.mixin' && $object != $package->getPackageName()) continue;
-        $properties = $properties->getValue();
-        if (is_string($object) && $properties instanceof DojoObject) {
-          $keys = $properties->getKeys();
-          foreach ($keys as $key) {
-            if ($properties->isFunction($key)) {
-              $function = $properties->getValue($key);
-							if ($call_name == 'dojo.lang.extend') {
-              	$function->setThis($object);
-							}
-              $function->setFunctionName($object . '.' . $key);
-              rolloutFunction($output, $package, $function);
+            if ($call_name == 'dojo.lang.mixin') {
+              $output[$package_name]['meta']['functions'][$object]['_']['meta']['variables'][$key] = "";
             }
             else {
-							if ($call_name == 'dojo.lang.mixin') {
-              	$output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['variables'][$key] = "";
-							}
-							else {
-              	$output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['protovariables'][$key] = "";
-							}
+              $output[$package_name]['meta']['functions'][$object]['_']['meta']['protovariables'][$key] = "";
             }
           }
         }
-        elseif (is_string($object) && is_string($properties)) {
-          // Note: inherits expects to be reading from prototype values
-          if ($call_name == 'dojo.lang.extend' && strpos($properties, '.prototype') !== false) {
-            $output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['inherits'][] = str_replace('.prototype', '', $properties);
-          }
-          elseif ($call_name == 'dojo.lang.extend' && strpos($properties, 'new ') !== false) {
-            $output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['inherits'][] = str_replace('new ', '', $properties);
-            $output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['this_inherits'][] = str_replace('new ', '', $properties);
-          }
-          else {
-            $output[$package->getPackageName()]['meta']['functions'][$object]['_']['meta']['object_inherits'][] = $properties;
-          }
+      }
+      elseif (is_string($object) && is_string($properties)) {
+        // Note: inherits expects to be reading from prototype values
+        if ($call_name == 'dojo.lang.extend' && strpos($properties, '.prototype') !== false) {
+          $output[$package_name]['meta']['functions'][$object]['_']['meta']['prototype_chain'][] = str_replace('.prototype', '', $properties);
+        }
+        elseif ($call_name == 'dojo.lang.extend' && strpos($properties, 'new ') !== false) {
+          $output[$package_name]['meta']['functions'][$object]['_']['meta']['prototype_chain'][] = str_replace('new ', '', $properties);
+          $output[$package_name]['meta']['functions'][$object]['_']['meta']['call_chain'][] = str_replace('new ', '', $properties);
+        }
+        else {
+          $output[$package_name]['meta']['functions'][$object]['_']['meta']['object_inherits'][] = $properties;
         }
       }
     }
-    
-    if ($output[$package->getPackageName()]) {
-			$output['function_names'][$package->getPackageName()] = array();
-			if (!empty($output[$package->getPackageName()]['meta']['functions'])) {
-      	$output['function_names'][$package->getPackageName()] = array_values(array_keys($output[$package->getPackageName()]['meta']['functions']));
-			}
+  }
+  
+  if ($output[$package_name]) {
+    $output['function_names'][$package_name] = array();
+    if (!empty($output[$package_name]['meta']['functions'])) {
+      $output['function_names'][$package_name] = array_values(array_keys($output[$package_name]['meta']['functions']));
     }
   }
 }
@@ -274,6 +261,7 @@ foreach ($wiki_files as $wiki_file) {
 }
 unset($wiki_files);
 
+print_r($output);
 writeToDisk($output, 'local_json', 'json', 'local');
 //writeToDisk($output, 'json', 'xml', 'eclipse');
 
