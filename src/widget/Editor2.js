@@ -472,7 +472,7 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		onClick: function(/*Object*/e){
+		onClick: function(/*Event*/e){
 			dojo.widget.Editor2.superclass.onClick.call(this, e);
 			//if Popup is used, call dojo.widget.PopupManager.onClick
 			//manually when click in the editing area to close all
