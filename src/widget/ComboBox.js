@@ -12,7 +12,7 @@ dojo.require("dojo.string");
 dojo.require("dojo.widget.html.stabile");
 dojo.require("dojo.widget.PopupContainer");
 
-dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
+dojo.widget.incrementalComboBoxDataProvider = function(/*String*/ url, /*Number*/ limit, /*Number*/ timeout){
 	this.searchUrl = url;
 	this.inFlight = false;
 	this.activeRequest = null;
@@ -20,17 +20,17 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 
 	this.cache = {};
 
-	this.init = function(cbox){
+	this.init = function(/*Widget*/ cbox){
 		this.searchUrl = cbox.dataUrl;
 	};
 
-	this.addToCache = function(keyword, data){
+	this.addToCache = function(/*String*/ keyword, /*Array*/ data){
 		if(this.allowCache){
 			this.cache[keyword] = data;
 		}
 	};
 
-	this.startSearch = function(searchStr, type, ignoreLimit){
+	this.startSearch = function(/*String*/ searchStr, /*String*/ type, /*Boolean*/ ignoreLimit){
 		if(this.inFlight){
 			// FIXME: implement backoff!
 		}
@@ -58,7 +58,7 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 	};
 };
 
-dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
+dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limit, /*Number*/ timeout){
 	// NOTE: this data provider is designed as a naive reference
 	// implementation, and as such it is written more for readability than
 	// speed. A deployable data provider would implement lookups, search
@@ -74,7 +74,7 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	this._lastSearch = "";
 	this._lastSearchResults = null;
 
-	this.init = function(cbox, node){
+	this.init = function(/*Widget*/ cbox, /*DomNode*/ node){
 		if(!dojo.string.isBlank(cbox.dataUrl)){
 			this.getData(cbox.dataUrl);
 		}else{
@@ -97,7 +97,7 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 		}
 	};
 
-	this.getData = function(url){
+	this.getData = function(/*String*/ url){
 		dojo.io.bind({
 			url: url,
 			load: dojo.lang.hitch(this, function(type, data, evt){ 
@@ -114,12 +114,12 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 		});
 	};
 
-	this.startSearch = function(searchStr, type, ignoreLimit){
+	this.startSearch = function(/*String*/ searchStr, /*String*/ type, /*Boolean*/ ignoreLimit){
 		// FIXME: need to add timeout handling here!!
 		this._preformSearch(searchStr, type, ignoreLimit);
 	};
 
-	this._preformSearch = function(searchStr, type, ignoreLimit){
+	this._preformSearch = function(/*String*/ searchStr, /*String*/ type, /*Boolean*/ ignoreLimit){
 		//
 		//	NOTE: this search is LINEAR, which means that it exhibits perhaps
 		//	the worst possible speed characteristics of any search type. It's
@@ -190,15 +190,15 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 		this.provideSearchResults(ret);
 	};
 
-	this.provideSearchResults = function(resultsDataPairs){
+	this.provideSearchResults = function(/*Array*/ resultsDataPairs){
 	};
 
-	this.addData = function(pairs){
+	this.addData = function(/*Array*/ pairs){
 		// FIXME: incredibly naive and slow!
 		this.data = this.data.concat(pairs);
 	};
 
-	this.setData = function(pdata){
+	this.setData = function(/*Array*/ pdata){
 		// populate this.data and initialize lookup structures
 		this.data = pdata;
 	};
@@ -219,7 +219,7 @@ dojo.widget.defineWidget(
 		searchType: "stringstart",
 		dataProvider: null,
 	
-		startSearch: function(searchString){},
+		startSearch: function(/*String*/ searchString){},
 		selectNextResult: function(){},
 		selectPrevResult: function(){},
 		setSelectedResult: function(){},
@@ -258,9 +258,9 @@ dojo.widget.defineWidget(
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/ComboBox.css"),
 
 
-		setValue: function(value) {
+		setValue: function(/*String*/ value){
 			this.comboBoxValue.value = value;
-			if (this.textInputNode.value != value) { // prevent mucking up of selection
+			if (this.textInputNode.value != value){ // prevent mucking up of selection
 				this.textInputNode.value = value;
 				// only change state and value if a new value is set
 				dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
@@ -271,19 +271,19 @@ dojo.widget.defineWidget(
 		// for user to override
 		onValueChanged: function(){ },
 
-		getValue: function() {
+		getValue: function(){
 			return this.comboBoxValue.value;
 		},
 	
-		getState: function() {
+		getState: function(){
 			return {value: this.getValue()};
 		},
 
-		setState: function(state) {
+		setState: function(/*Object*/ state){
 			this.setValue(state.value);
 		},
 
-		getCaretPos: function(element){
+		getCaretPos: function(/*DomNode*/ element){
 			// khtml 3.5.2 has selection* methods as does webkit nightlies from 2005-06-22
 			if(dojo.lang.isNumber(element.selectionStart)){
 				// FIXME: this is totally borked on Moz < 1.3. Any recourse?
@@ -303,19 +303,19 @@ dojo.widget.defineWidget(
 					// There appears to be no workaround for this - googled for quite a while.
 					ntr.setEndPoint("EndToEnd", tr);
 					return String(ntr.text).replace(/\r/g,"").length;
-				} catch (e) {
+				} catch (e){
 					return 0; // If focus has shifted, 0 is fine for caret pos.
 				}
 				
 			}
 		},
 
-		setCaretPos: function(element, location){
+		setCaretPos: function(/*DomNode*/ element, /*Number*/ location){
 			location = parseInt(location);
 			this.setSelectedRange(element, location, location);
 		},
 
-		setSelectedRange: function(element, start, end){
+		setSelectedRange: function(/*DomNode*/ element, /*Number*/ start, /*Number*/ end){
 			if(!end){ end = element.value.length; }  // NOTE: Strange - should be able to put caret at start of text?
 			// Mozilla
 			// parts borrowed from http://www.faqts.com/knowledge_base/view.phtml/aid/13562/fid/130
@@ -348,7 +348,7 @@ dojo.widget.defineWidget(
 		},
 
 		// does the keyboard related stuff
-		_handleKeyEvents: function(evt){
+		_handleKeyEvents: function(/*Event*/ evt){
 			if(evt.ctrlKey || evt.altKey || !evt.key){ return; }
 
 			// reset these
@@ -433,27 +433,27 @@ dojo.widget.defineWidget(
 
 		// When inputting characters using an input method, such as Asian  
 		// languages, it will generate this event instead of onKeyDown event 
-		compositionEnd: function(evt){
+		compositionEnd: function(/*Event*/ evt){
 			evt.key = evt.keyCode;
 			this._handleKeyEvents(evt);
 		},
 
-		onKeyUp: function(evt){
+		onKeyUp: function(/*Event*/ evt){
 			this.setValue(this.textInputNode.value);
 		},
 
-		setSelectedValue: function(value){
+		setSelectedValue: function(/*String*/ value){
 			// FIXME, not sure what to do here!
 			this.comboBoxSelectionValue.value = value;
 		},
 
-		setAllValues: function(value1, value2){
+		setAllValues: function(/*String*/ value1, /*String*/ value2){
 			this.setSelectedValue(value2);
 			this.setValue(value1);
 		},
 
 		// does the actual highlight
-		focusOptionNode: function(node){
+		focusOptionNode: function(/*DomNode*/ node){
 			if(this._highlighted_option != node){
 				this.blurOptionNode();
 				this._highlighted_option = node;
@@ -489,14 +489,14 @@ dojo.widget.defineWidget(
 			dojo.html.scrollIntoView(this._highlighted_option);
 		},
 
-		itemMouseOver: function(evt){
-			if (evt.target === this.optionsListNode) { return; }
+		itemMouseOver: function(/*Event*/ evt){
+			if (evt.target === this.optionsListNode){ return; }
 			this.focusOptionNode(evt.target);
 			dojo.html.addClass(this._highlighted_option, "dojoComboBoxItemHighlight");
 		},
 
-		itemMouseOut: function(evt){
-			if (evt.target === this.optionsListNode) { return; }
+		itemMouseOut: function(/*Event*/ evt){
+			if (evt.target === this.optionsListNode){ return; }
 			this.blurOptionNode();
 		},
 
@@ -512,7 +512,7 @@ dojo.widget.defineWidget(
 			dojo.html.setContentBox(this.downArrowNode, buttonSize);
 		},
 
-		fillInTemplate: function(args, frag){
+		fillInTemplate: function(/*Object*/ args, /*Object*/ frag){
 			// For inlining a table we need browser specific CSS
 			dojo.html.applyBrowserClass(this.domNode);
 
@@ -525,7 +525,7 @@ dojo.widget.defineWidget(
 			dojo.html.copyStyle(this.domNode, source);
 			dojo.html.copyStyle(this.textInputNode, source);
 			dojo.html.copyStyle(this.downArrowNode, source);
-			with (this.downArrowNode.style) { // calculate these later
+			with (this.downArrowNode.style){ // calculate these later
 				width = "0px";
 				height = "0px";
 			}
@@ -561,7 +561,7 @@ dojo.widget.defineWidget(
 			this.tryFocus();
 		},
 
-		openResultList: function(results){
+		openResultList: function(/*Array*/ results){
 			this.clearResultList();
 			if(!results.length){
 				this.hideResultList();
@@ -620,14 +620,14 @@ dojo.widget.defineWidget(
 		},
 	
 		// these 2 are needed in IE and Safari as inputTextNode loses focus when scrolling optionslist
-		_onMouseOver: function(evt){
+		_onMouseOver: function(/*Event*/ evt){
 			if(!this._mouseover_list){
 				this._handleBlurTimer(true, 0);
 				this._mouseover_list = true;
 			}
 		},
 
-		_onMouseOut:function(evt){
+		_onMouseOut:function(/*Event*/ evt){
 			var relTarget = evt.relatedTarget;
 			if(!relTarget || relTarget.parentNode!=this.optionsListNode){
 				this._mouseover_list = false;
@@ -636,7 +636,7 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		_isInputEqualToResult: function(result){
+		_isInputEqualToResult: function(/*String*/ result){
 			var input = this.textInputNode.value;
 			if(!this.dataProvider.caseSensitive){
 				input = input.toLowerCase();
@@ -690,7 +690,7 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		selectOption: function(evt){
+		selectOption: function(/*Event*/ evt){
 			var tgt = null;
 			if(!evt){
 				evt = { target: this._highlighted_option };
@@ -785,7 +785,7 @@ dojo.widget.defineWidget(
 		tryFocus: function(){
 			try {
 				this.textInputNode.focus();
-			} catch (e) {
+			} catch (e){
 				// element isn't focusable if disabled, or not visible etc - not easy to test for.
 	 		};
 		},
@@ -802,7 +802,7 @@ dojo.widget.defineWidget(
 			dojo.event.connect(this.textInputNode, "onfocus", this, "onFocusInput");
 
 			var s = dojo.widget.html.stabile.getState(this.widgetId);
-			if (s) {
+			if (s){
 				this.setState(s);
 			}
 		}
