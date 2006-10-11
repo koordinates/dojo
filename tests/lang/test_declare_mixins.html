@@ -85,16 +85,10 @@
 		b = new my.classes.bar();
 		dojo.debug('> b.method()');
 		dojo.debug(b.method());
-		dojo.debug("> b.inherited('method')");
-		dojo.debug(b.inherited('method'));
 		dojo.debug("> b.identify");
 		dojo.debug(b.identify());
-		dojo.debug("> b.inherited('identify')");
-		dojo.debug(b.inherited('identify'));
 		dojo.debug("> b.method2()");
 		dojo.debug(b.method2());
-		dojo.debug("> b.inherited('method2')");
-		dojo.debug(b.inherited('method2'));
 		dojo.debug("> b.mixid");
 		dojo.debug(b.mixid);
 		dojo.debug('> ************************');
@@ -104,12 +98,8 @@
 		dojo.debug(z.mixid);
 		dojo.debug("> z.method()");
 		dojo.debug(z.method());
-		dojo.debug("> z.inherited('method')");
-		dojo.debug(z.inherited('method'));
 		dojo.debug("> my.mixinBase.prototype.method.call(z)");
 		dojo.debug(mixinBase.prototype.method.call(z));
-		dojo.debug("> z.inheritedFrom(mixinBase, 'method')");
-		dojo.debug(z.inheritedFrom(mixinBase, 'method'));
 	</script>
 </head>
 <body> 

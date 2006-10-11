@@ -24,7 +24,7 @@
 		// override the buttonClick() method declared in Button
 		buttonClick: function() {
 			alert('button ' + this.buttonName + ' clicked');
-			this.inherited('buttonClick', arguments);
+			myown.TestButton.superclass.buttonClick.apply(this, arguments);
 		}
 
 	});
