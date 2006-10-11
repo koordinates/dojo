@@ -587,7 +587,7 @@ dojo.widget.defineWidget(
 				for(var i=0;i<files.length;i++){
 					var url = files[i];
 					if(url){
-						this.addStyleSheet(new dojo.uri.Uri(dojo.global().location, url));
+						this.addStyleSheet(new dojo.uri.Uri(url));
 	 				}
 	 			}
 			}
@@ -602,6 +602,12 @@ dojo.widget.defineWidget(
 				dojo.debug("dojo.widget.RichText.addStyleSheet: Style sheet "+url+" is already applied to the editing area!");
 				return;
 			}
+
+			//if uri is relative, then convert it to absolute so that it can be resolved correctly in iframe
+			if(url.charAt(0) == '.' || (url.charAt(0) != '/' && !uri.host)){
+				url = (new dojo.uri.Uri(dojo.global().location, url)).toString();
+			}
+
 			this.editingAreaStyleSheets.push(url);
 			if(this.document.createStyleSheet){ //IE
 				this.document.createStyleSheet(url);
@@ -761,23 +767,21 @@ dojo.widget.defineWidget(
 					// dojo.raise("onload");
 					// dojo.debug(this.editNode.parentNode.parentNode.parentNode.nodeName);
 				} else if (dojo.render.html.mozilla || dojo.render.html.opera) {
-
-					// We need to unhook the blur event listener on close as we
-					// can encounter a garunteed crash in FF if another event is
-					// also fired
 					var doc = this.document;
-					var blurfp = dojo.event.browser.addListener(this.document, "blur", dojo.lang.hitch(this, "onBlur"));
-					var unBlur = { unBlur: function(e){
-							dojo.event.browser.removeListener(doc, "blur", blurfp);
-					} };
-					dojo.event.connect("before", this, "close", unBlur, "unBlur");
-					dojo.event.browser.addListener(this.document, "focus", dojo.lang.hitch(this, "onFocus"));
-
 					var addListener = dojo.event.browser.addListener;
-					addListener(this.document, "keypress", dojo.lang.hitch(this, "onKeyPress"));
-					addListener(this.document, "keydown", dojo.lang.hitch(this, "onKeyDown"));
-					addListener(this.document, "keyup", dojo.lang.hitch(this, "onKeyUp"));
-					addListener(this.document, "click", dojo.lang.hitch(this, "onClick"));
+					var self = this;
+					dojo.lang.forEach(this.events, function(e){
+						var l = addListener(self.document, e.substr(2).toLowerCase(), dojo.lang.hitch(self, e));
+						if(e=="onBlur"){
+							// We need to unhook the blur event listener on close as we
+							// can encounter a garunteed crash in FF if another event is
+							// also fired
+							var unBlur = { unBlur: function(e){
+									dojo.event.browser.removeListener(doc, "blur", blurfp);
+							} };
+							dojo.event.connect("before", self, "close", unBlur, "unBlur");
+						}
+					});
 				}
 				// FIXME: when scrollbars appear/disappear this needs to be fired
 			}else if(dojo.render.html.ie){
@@ -946,8 +950,9 @@ dojo.widget.defineWidget(
 			if( (dojo.render.html.mozilla)&&(this._initialFocus) ){
 				this._initialFocus = false;
 				if(dojo.string.trim(this.editNode.innerHTML) == "&nbsp;"){
-					this.execCommand("selectall");
-					this.window.getSelection().collapseToStart();
+					this.placeCursorAtStart();
+//					this.execCommand("selectall");
+//					this.window.getSelection().collapseToStart();
 				}
 			}
 		},
@@ -1235,13 +1240,11 @@ dojo.widget.defineWidget(
 						for(var i=0;i<range.length;i++){
 							range.item(i).outerHTML = argument;
 						}
-//
-//						range.collapse(true);
-//						range.select();
 					}else{
-						range.select();
+						// on IE, we can use the pasteHTML method of the textRange object
+						// to get an undo-able innerHTML modification
 						range.pasteHTML(argument);
-						range.collapse(true);
+						range.select();
 					}
 					returnValue = true;
 				}else if(arguments.length == 1){
@@ -1252,14 +1255,12 @@ dojo.widget.defineWidget(
 						this._activeX.ui.noprompt, argument);
 				}
 			}else if(command == "inserthtml"){
-				// on IE, we can use the pasteHTML method of the textRange object
-				// to get an undo-able innerHTML modification
 				if(dojo.render.html.ie){
-					dojo.debug("inserthtml breaks the undo stack when not using the ActiveX version of the control!");
+					//dojo.debug("inserthtml breaks the undo stack when not using the ActiveX version of the control!");
 					var insertRange = this.document.selection.createRange();
-					insertRange.select();
 					insertRange.pasteHTML(argument);
-					insertRange.collapse(true);
+					insertRange.select();
+					//insertRange.collapse(true);
 					return true;
 				}else{
 					return this.document.execCommand(command, false, argument);
