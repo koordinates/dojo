@@ -28,30 +28,24 @@ dojo.require("dojo.lang.extras");
  *   "declaredClass" property
  * 
  * - An initializer function can be specified in the "init" 
- *   argument, or by including a function called "initializer" 
- *   in "props".
+ *   argument
  * 
- * - Superclass methods (inherited methods) can be invoked using "inherited" method:
- *
- * this.inherited(<method name>[, <argument array>]);
- * 
- * - inherited will continue up the prototype chain until it finds an implementation of method
- * - nested calls to inherited are supported (i.e. inherited method "A" can succesfully call inherited("A"), and so on)
- *
  * Aliased as "dojo.declare"
  *
  * Usage:
  *
- * dojo.declare("my.classes.bar", my.classes.foo, {
- *	initializer: function() {
+ * dojo.declare("my.classes.bar", my.classes.foo,
+ *	function() {
+ *		// initialization function
  *		this.myComplicatedObject = new ReallyComplicatedObject(); 
  *	},
+ *	{
  *	someValue: 2,
  *	aMethod: function() { doStuff(); }
  * });
  *
  */
-dojo.lang.declare = function(className /*string*/, superclass /*function || array*/, init /*function*/, props /*object*/){
+dojo.lang.declare = function(/*String*/ className, /*Function|Array*/ superclass, /*Function?*/ init , /*Object*/ props){
 	// FIXME: parameter juggling for backward compat ... deprecate and remove after 0.3.*
 	// new sig: (className (string)[, superclass (function || array)[, init (function)][, props (object)]])
 	// old sig: (className (string)[, superclass (function || array), props (object), init (function)])
@@ -103,9 +97,9 @@ dojo.lang.declare._makeConstructor = function() {
 		if((s)&&(s.constructor)){
 			if(s.constructor==arguments.callee){
 				// if this constructor is invoked directly (my.ancestor.call(this))
-				this.inherited("constructor", arguments);
+				this._inherited("constructor", arguments);
 			}else{
-				this._inherited(s, "constructor", arguments);
+				this._contextMethod(s, "constructor", arguments);
 			}
 		}
 		var m = (self.constructor.mixins)||([]);
@@ -121,7 +115,7 @@ dojo.lang.declare._makeConstructor = function() {
 dojo.lang.declare.base = {
 	_getPropContext: function() { return (this.___proto||this); },
 	// caches ptype context and calls method on it
-	_inherited: function(ptype, method, args){
+	_contextMethod: function(ptype, method, args){
 		var result, stack = this.___proto;
 		this.___proto = ptype;
 		try { result = ptype[method].apply(this,(args||[])); }
@@ -129,19 +123,16 @@ dojo.lang.declare.base = {
 		finally { this.___proto = stack; }
 		return result;
 	},
-	// get value from ctor.prototype.prop. If prop is a function, it is invoked, with args, in our context 
-	inheritedFrom: function(ctor, prop, args){
-		var p = ((ctor)&&(ctor.prototype)&&(ctor.prototype[prop]));
-		return (dojo.lang.isFunction(p) ? p.apply(this, (args||[])) : p);
-	},
-	// searches backward thru prototype chain to find nearest ancestral instance of prop
-	inherited: function(prop, args){
+	_inherited: function(prop, args){
+		// summary
+		//	Searches backward thru prototype chain to find nearest ancestral instance of prop.
+		//	Internal use only.
 		var p = this._getPropContext();
 		do{
 			if((!p.constructor)||(!p.constructor.superclass)){return;}
 			p = p.constructor.superclass;
 		}while(!(prop in p));
-		return (dojo.lang.isFunction(p[prop]) ? this._inherited(p, prop, args) : p[prop]);
+		return (dojo.lang.isFunction(p[prop]) ? this._contextMethod(p, prop, args) : p[prop]);
 	}
 }
 

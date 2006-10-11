@@ -8,12 +8,12 @@ function test_lang_declare() {
 		},
 		protoId: 'foo',
 		getProtoId: function() {
-			var ancestorId = this.inherited('getProtoId', arguments);
+			var ancestorId = my.classes.foo.superclass.getProtoId.apply(this, arguments);
 			// NOTE: _getPropContext is not intended for public usage except in very rare cases
 			return "I am a " + this._getPropContext().protoId + (ancestorId ? " and " + ancestorId : '');
 		},
 		getInstanceId: function(extra) {
-			var ancestorId = this.inherited('getInstanceId', [ extra ]);
+			var ancestorId = my.classes.foo.superclass.getAncestorId.apply(this, arguments);
 			return "a " + this.instanceId[0] + (ancestorId ? " is " + ancestorId : '');
 		},
 		getId: function() {
@@ -31,7 +31,7 @@ function test_lang_declare() {
 		},
 		protoId: 'bar',
 		getId: function(extra) {
-			return "I am a bar and " + this.inherited('getId', [ extra ]);
+			return "I am a bar and " + my.classes.bar.superclass.getId.apply(this, arguments);
 		}
 	});
 	jum.assertEquals("31", "function", typeof my.classes.bar);
@@ -46,7 +46,7 @@ function test_lang_declare() {
 		},
 		protoId: 'zot',
 		getId: function(extra) {
-			return "I am a zot and " + this.inherited('getId', [ extra ]);
+			return "I am a zot and " + my.classes.zot.superclass.getId.apply(this, arguments);
 		}
 	});
 	jum.assertEquals("33", "function", typeof my.classes.zot);

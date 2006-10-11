@@ -131,21 +131,20 @@
 			pr.start("dojo test definition");
 			dojo.lang.declare("DojoTest", DojoTestBase,
 				function(name){
-					this.inherited(name);
 					this._name+="-Test";
 					this._subCalls=0;
 					this._subTotal=0;
 				},
 				{
 				add:function(num1, num2){
-					this.inherited("add", arguments);
+					DojoTest.superclass.add.apply(this, arguments);
 					this._subTotal += num1 + num2;
 					this._subCalls++;
 				},
 				toString:function(){
 					return 'Test [subCalls='+this._subCalls
 					+', subTotal='+this._subTotal
-					+'->' +this.inherited("toString");
+					+'->' + DojoTest.superclass.toString.apply(this, arguments);
 				}
 			});
 			pr.end("dojo test definition");
@@ -153,13 +152,12 @@
 			pr.start("dojo ext test definition");
 			dojo.lang.declare("DojoTestExt", DojoTest,
 				function(name){
-					this.inherited(name);
 					this._extCalls=0;
 					this._extTotal=0;
 				},
 				{
 				add:function(num1, num2){
-					this.inherited("add", arguments);
+					DojoTestExt.superclass.add.apply(this, arguments);
 					this._extTotal += num1 + num2;
 					this._extCalls++;
 				}
