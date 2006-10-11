@@ -7,11 +7,13 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.widget.html.layout");
 
-// A TabContainer is a container that has multiple panes, but shows only
-// one pane at a time.  There are a set of tabs corresponding to each pane,
-// where each tab has the title (aka label) of the pane, and optionally a close button.
+// summary
+//	A TabContainer is a container that has multiple panes, but shows only
+//	one pane at a time.  There are a set of tabs corresponding to each pane,
+//	where each tab has the title (aka label) of the pane, and optionally a close button.
 //
-// Publishes topics <widgetId>-addPane, <widgetId>-removePane, and <widgetId>-selectPane
+//	Publishes topics <widgetId>-addChild, <widgetId>-removeChild, and <widgetId>-selectChild
+//	(where <widgetId> is the id of the TabContainer itself.
 dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, {
 
 	// String
@@ -102,10 +104,11 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 		this.selectChild(tab, _noRefresh, callingWidget);
 	},
 
-	// Keystroke handling for keystrokes on the tab panel itself (that were bubbled up to me)
-	// Ctrl-up: focus is returned from the pane to the tab button
-	// Alt-del: close tab
 	onKey: function(e){
+		// summary
+		//	Keystroke handling for keystrokes on the tab panel itself (that were bubbled up to me)
+		//	Ctrl-up: focus is returned from the pane to the tab button
+		//	Alt-del: close tab
 		if(e.keyCode == e.KEY_UP_ARROW && e.ctrlKey){
 			// set focus to current tab
 			var button = this.correspondingTabButton || this.selectedTabWidget.tabButton;
@@ -125,9 +128,11 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 	}
 });
 
-// TabController - set of tabs (the things with labels and a close button, that you click to show a tab panel)
-// When intialized, the TabController monitors the TabContainer, and whenever a pane is
-// added or deleted updates itself accordingly.
+// summary
+// 	Set of tabs (the things with labels and a close button, that you click to show a tab panel).
+//	Lets the user select the currently shown pane in a TabContainer or PageContainer.
+//	TabController also monitors the TabContainer, and whenever a pane is
+//	added or deleted updates itself accordingly.
 dojo.widget.defineWidget(
     "dojo.widget.TabController",
     dojo.widget.PageController,
@@ -158,9 +163,10 @@ dojo.widget.defineWidget(
 	}
 );
 
-// TabButton (the thing you click to select a pane)
-// Contains the title (aka label) of the pane, and optionally a close-button to destroy the pane
-
+// summary
+//	A tab (the thing you click to select a pane).
+//	Contains the title (aka label) of the pane, and optionally a close-button to destroy the pane.
+//	This is an internal widget and should not be instantiated directly.
 dojo.widget.defineWidget("dojo.widget.TabButton", dojo.widget.PageButton,
 {
 	templateString: "<div class='dojoTab' dojoAttachEvent='onClick'>"
@@ -183,7 +189,9 @@ dojo.widget.defineWidget("dojo.widget.TabButton", dojo.widget.PageButton,
 });
 
 
-// Tab for display in high-contrast mode (where background images don't show up)
+// summary
+//	Tab for display in high-contrast mode (where background images don't show up).
+//	This is an internal widget and shouldn't be instantiated directly.
 dojo.widget.defineWidget(
 	"dojo.widget.a11y.TabButton",
 	dojo.widget.TabButton,
