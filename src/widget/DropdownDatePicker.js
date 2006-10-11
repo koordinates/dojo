@@ -11,43 +11,54 @@ dojo.require("dojo.string.common");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.widget", "DropdownDatePicker");
 
+dojo.widget.defineWidget(
+	"dojo.widget.DropdownDatePicker",
+	dojo.widget.DropdownContainer,
+	{
 		/*
 		summary: 
-			DatePicker form input that allows for selecting a Date from the UI or typing of date in an inputbox
+			A form input for entering dates with a pop-up dojo.widget.DatePicker to aid in selection
+
 	 	description: 
-			Basically this is DatePicker in a DropdownContainer, it supports all features of DatePicker as well
-			as wrapping its value inside of a form element to be submitted.
-	 	 usage: 
+			This is DatePicker in a DropdownContainer, it supports all features of DatePicker.
+	
+			The value displayed in the widget is localized according to the default algorithm provided
+			in dojo.date.format and dojo.date.parse.  It is possible to customize the user-visible formatting
+			with either the formatLength or displayFormat attributes.  The value sent to the server is
+			typically a locale-independent value in a hidden field as defined by the name attribute.
+			RFC3339 representation is used by default, but other options are available with saveFormat.
+
+	 	usage: 
 	 	              var ddp = dojo.widget.createWidget("DropdownDatePicker", {},   
 	 	              dojo.byId("DropdownDatePickerNode")); 
 	 	 
 	 	              <input dojoType="DropdownDatePicker">
 		*/
 
-dojo.widget.defineWidget(
-	"dojo.widget.DropdownDatePicker",
-	dojo.widget.DropdownContainer,
-	{
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/dateIcon.gif"),
 		zIndex: "10",
-		
+
 		//String
-		// 	pattern used in display of formatted date.  Uses locale-specific format by default.  See dojo.date.format.
+		// 	Type of visible formatting used, appropriate to locale (choice of long, short, medium or full)
+		//  See dojo.date.format for details.
+		formatLength: "short",
+		//String
+		// 	Pattern used to display formatted date.  Setting this overrides the locale-specific settings
+		//  which are used by default.  See dojo.date.format for a reference which defines the formatting patterns.
 		displayFormat: "",
-		//String
-		// 	type of format appropriate to locale.  see dojo.date.format
-		formatLength: "short", // only parsing of short is supported at this time
 		dateFormat: "", // deprecated in 0.5
 		//String
-		//	Locale-independent formatting used when submitting form
-		//	A pattern string like displayFormat or one of the following:
-		//	rfc|iso|posix|unix  By default, uses rfc3339 style date formatting.
+		//	Formatting scheme used when submitting the form element.  This formatting is used in a hidden
+		//  field (name) intended for server use, and is therefore typically locale-independent.
+		//  By default, uses rfc3339 style date formatting (rfc)
+		//	Use a pattern string like displayFormat or one of the following:
+		//	rfc|iso|posix|unix
 		saveFormat: "",
 		//String|Date
 		//	form value property if =='today' will default to todays date
 		value: "", 
 		//String
-		// 	name of the form element
+		// 	name of the form element, used to create a hidden field by this name for form element submission.
 		name: "",
 
 		// Implement various attributes from DatePicker
@@ -126,12 +137,12 @@ dojo.widget.defineWidget(
 			this.setDate(rfcDate);
 		},
 
-		setDate: function(/*Date|String*/rfcDate){
+		setDate: function(/*Date|String*/dateObj){
 		//summary: set the current date and update the UI
-			this.datePicker.setDate(rfcDate);
+			this.datePicker.setDate(dateObj);
 			this._synchValueNode();
 		},
-		
+	
 		onSetDate: function(){
 			if(this.dateFormat){
 				dojo.deprecated("dojo.widget.DropdownDatePicker",
@@ -149,7 +160,7 @@ dojo.widget.defineWidget(
 			this.hideContainer();
 		},
 
-		onValueChanged: function(/*Date*/date){
+		onValueChanged: function(/*Date*/dateObj){
 		//summary: triggered when this.value is changed
 		},
 		
