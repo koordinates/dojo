@@ -126,7 +126,7 @@ dojo.widget.defineWidget(
 			this.setDate(rfcDate);
 		},
 
-		setDate: function(/*Date|String*/dateObj){
+		setDate: function(/*Date|String*/rfcDate){
 		//summary: set the current date and update the UI
 			this.datePicker.setDate(rfcDate);
 			this._synchValueNode();
