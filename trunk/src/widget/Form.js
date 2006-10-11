@@ -1,9 +1,9 @@
-dojo.provide("dojo.widget.FormContainer");
+dojo.provide("dojo.widget.Form");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 
-dojo.widget.defineWidget("dojo.widget.FormContainer", dojo.widget.HtmlWidget,
+dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 	{
 		isContainer: true,
    		templateString: "<form dojoAttachPoint='containerNode' dojoAttachEvent='onSubmit:onSubmit'></form>",
@@ -67,7 +67,7 @@ dojo.widget.defineWidget("dojo.widget.FormContainer", dojo.widget.HtmlWidget,
 		},
 		_setToContainers: function (obj, widget) {
 			for(var i=0, len=widget.children.length; i<len; ++i) {
-				if (widget.children[i].widgetType == "RepeaterContainer") {
+				if (widget.children[i].widgetType == "Repeater") {
 					var rIndex=widget.children[i].pattern;
 					var rIndexPos=rIndex.indexOf("%{index}");
 					rIndex=rIndex.substr(0,rIndexPos-1);

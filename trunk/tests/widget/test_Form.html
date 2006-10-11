@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>FormContainer test</title>
+<title>Form test</title>
 </head>
 <script type="text/javascript">
         var djConfig = {isDebug: true};
@@ -8,7 +8,8 @@
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
- dojo.require("dojo.widget.FormContainer");
+ dojo.require("dojo.json");
+ dojo.require("dojo.widget.Form");
  dojo.require("dojo.widget.LayoutContainer");
  dojo.require("dojo.widget.ContentPane");
  dojo.require("dojo.widget.ComboBox");
@@ -31,7 +32,7 @@
  }
 </script>
 <body>
-<form dojoType="FormContainer" id="myForm" action="showPost.php">
+<form dojoType="Form" id="myForm" action="showPost.php">
 <p>Just HTML text</p>
 <table>
 <tr><td>text:</td><td><input type="text" name="testF" value="bar1" /></td></tr>
