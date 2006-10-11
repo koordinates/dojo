@@ -2,7 +2,7 @@
 .dojoPopupMenu2 {
 	position: absolute;
 	border: 1px solid #7298d0;
-	background:#a9ccfe url(images/soriaMenuBg.gif) repeat-x bottom left !important;
+	background:#85aeec url(images/soriaMenuBg.gif) repeat-x bottom left !important;
 	padding: 1px;
 	margin-top: 1px;
 	margin-bottom: 1px;
@@ -71,23 +71,23 @@
 
 .dojoMenuSeparator2Top {
 	height: 50%;
-	border-bottom: 1px solid #7996c1;
+	border-bottom: 1px solid #7a98c4;
 	margin: 0px 2px;
 	font-size: 1px;
 }
 
 .dojoMenuSeparator2Bottom {
 	height: 50%;
-	border-top: 1px solid #e3eeff;
+	border-top: 1px solid #c9deff;
 	margin: 0px 2px;
 	font-size: 1px;
 }
 
 .dojoMenuBar2 {
 	/*position: relative;*/
-	background:#a9ccfe url(images/soriaBarBg.gif) repeat-x bottom left;
-	border-bottom:1px solid #405067;
-	border-top:1px solid #708bb3;
+	background:#85aeec url(images/soriaBarBg.gif) repeat-x top left;
+	border-bottom:1px solid #6b9fec;
+	
 }
 
 .dojoMenuBar2Client {
