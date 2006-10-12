@@ -1,4 +1,4 @@
-﻿dojo.provide("dojo.gfx.matrix");
+dojo.provide("dojo.gfx.matrix");
 
 dojo.require("dojo.lang.common");
 dojo.require("dojo.math.*");
@@ -69,7 +69,7 @@ dojo.mixin(dojo.gfx.matrix, {
 	invert: function(matrix){
 		var m = this.normalize(matrix);
 		var D = m.xx * m.yy - m.xy * m.yx;
-		return new dojo.gfx.matrix.Matrix2D({xx: m.yy/D, xy: -m.xy/D, yx: -m.yx/D, yy: m.xx/D, 
+		return new dojo.gfx.matrix.Matrix2D({xx: m.yy/D, xy: -m.xy/D, yx: -m.yx/D, yy: m.xx/D,
 			dx: (m.yx * m.dy - m.yy * m.dx) / D, dy: (m.xy * m.dx - m.xx * m.dy) / D});
 	},
 	_multiplyPoint: function(m, x, y){
@@ -124,7 +124,7 @@ dojo.mixin(dojo.gfx.matrix, {
 			this._sandwich(this.rotate(angle), a.x, a.y);
 	},
 	rotategAt: function(degree, a, b){
-		return arguments.length > 1 ? 
+		return arguments.length > 1 ?
 			// a and b are components of point
 			this._sandwich(this.rotateg(degree), a, b) :
 			// a is a point
