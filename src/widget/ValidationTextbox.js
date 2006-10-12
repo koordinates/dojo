@@ -127,19 +127,19 @@ dojo.widget.defineWidget(
 			}
 		},
 	
-		onfocus: function() {
+		onfocus: function(evt) {
 			if ( !this.listenOnKeyPress) {
 				this.updateClass("Empty");
 //			    this.textbox.style.backgroundColor = "";
 			}
 		},
 	
-		onblur: function() { 
+		onblur: function(evt) { 
 			this.filter();
 			this.update(); 
 		},
 	
-		onkeyup: function(){ 
+		onkeyup: function(evt){ 
 			if(this.listenOnKeyPress){ 
 				//this.filter();  trim is problem if you have to type two words
 				this.update(); 
