@@ -675,7 +675,7 @@ dojo.widget.defineWidget(
 
 	hideChildren: function(){
 		this.tree.toggleObj.hide(
-			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onHideChildren")
+			this.containerNode, this.tree.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onHideChildren")
 		);
 	},
 
@@ -684,7 +684,7 @@ dojo.widget.defineWidget(
 		//dojo.profile.start("showChildren"+this);
         
 		this.tree.toggleObj.show(
-			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onShowChildren")
+			this.containerNode, this.tree.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onShowChildren")
 		);
         
 		//dojo.profile.end("showChildren"+this);
