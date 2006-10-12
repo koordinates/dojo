@@ -303,31 +303,28 @@ dojo.lfx.html.wipeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Functi
 	var anims = [];
 
 	dojo.lang.forEach(nodes, function(node){
-		var oprop = { overflow: null };
+		var oprop = {  };	// old properties of node (before we mucked w/them)
 		
-		// for FF, the node has to be rendered before node.scrollHeight has a value
-		with(node.style){
-			visibility = "hidden";
-			display = "block";
-			height = "";
-		}
+		// get node height, either it's natural height or it's height specified via style or class attributes
+		// (for FF, the node has to be (temporarily) rendered to measure height)
+		dojo.html.show(node);
+		var height = dojo.html.getBorderBox(node).height;
+		dojo.html.hide(node);
 
 		var anim = dojo.lfx.propertyAnimation(node,
 			{	"height": {
 					start: 1, // 0 causes IE to display the whole panel
-					end: function(){ return node.scrollHeight; } 
+					end: function(){ return height; } 
 				}
 			}, 
 			duration, 
 			easing);
 	
 		anim.connect("beforeBegin", function(){
-			oprop.overflow = dojo.html.getStyle(node, "overflow");
+			oprop.overflow = node.style.overflow;
+			oprop.height = node.style.height;
 			with(node.style){
-				if(oprop.overflow == "visible") {
-					overflow = "hidden";
-				}
-				visibility = "visible";
+				overflow = "hidden";
 				height = "1px"; // 0 causes IE to display the whole panel
 			}
 			dojo.html.show(node);
@@ -336,9 +333,7 @@ dojo.lfx.html.wipeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Functi
 		anim.connect("onEnd", function(){ 
 			with(node.style){
 				overflow = oprop.overflow;
-				// height = "auto";
-				height = "";
-				visibility = "visible";
+				height = oprop.height;
 			}
 			if(callback){ callback(node, anim); }
 		});
@@ -358,7 +353,7 @@ dojo.lfx.html.wipeOut = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Funct
 	var anims = [];
 	
 	dojo.lang.forEach(nodes, function(node){
-		var oprop = { overflow: null };
+		var oprop = {  };	// old properties of node (before we mucked w/them)
 		var anim = dojo.lfx.propertyAnimation(node,
 			{	"height": {
 					start: function(){ return dojo.html.getContentBox(node).height; },
@@ -369,20 +364,19 @@ dojo.lfx.html.wipeOut = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Funct
 			easing,
 			{
 				"beforeBegin": function(){
-					oprop.overflow = dojo.html.getStyle(node, "overflow");
-					if(oprop.overflow == "visible") {
-						node.style.overflow = "hidden";
+					oprop.overflow = node.style.overflow;
+					oprop.height = node.style.height;
+					with(node.style){
+						overflow = "hidden";
 					}
-					node.style.visibility = "visible";
 					dojo.html.show(node);
 				},
 				
 				"onEnd": function(){ 
-					// dojo.html.hide(node);
+					dojo.html.hide(node);
 					with(node.style){
 						overflow = oprop.overflow;
-						visibility = "hidden";
-						height = "1px";		// 0 cause IE to display the whole panel
+						height = oprop.height;
 					}
 					if(callback){ callback(node, anim); }
 				}
