@@ -131,7 +131,7 @@ dojo.xml.Parse = function(){
 			process = Boolean(dojoTagName);
 		}
 		
-		if(node && node.getAttribute("parseWidgets") && node.getAttribute("parseWidgets") == "false") {
+		if(node && node.getAttribute && node.getAttribute("parseWidgets") && node.getAttribute("parseWidgets") == "false") {
 			return {};
 		}
 
