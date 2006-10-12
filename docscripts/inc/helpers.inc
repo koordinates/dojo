@@ -13,7 +13,102 @@ function writeToDisk($output, $dir, $format = 'json', $environment = 'remote') {
 	}
 	delTree($dir);
 
-	if ($format == 'json' && $environment == 'local') {
+  if ($format == 'xml' && $environment == 'pretty') {
+    $document = new DomDocument();
+    $dojo = $document->appendChild($document->createElement('dojo'));
+    unset($output['function_names']);
+    foreach ($output as $package_name => $package_content) {
+      $package = $dojo->appendChild($document->createElement('resource'));
+      $package->setAttribute('location', $package_name);
+
+      if ($package_content['meta']['requires']) {
+        foreach ($package_content['meta']['requires'] as $environment_name => $environment_content) {
+          $requires = $package->appendChild($document->createElement('requires'));
+          $environment = $requires->appendChild($document->createElement('environment'));
+          $environment->setAttribute('type', $environment_name);
+          foreach ($environment_content as $require_name) {
+            $require = $environment->appendChild($document->createElement('require'));
+            $require->appendChild($document->createTextNode($require_name));
+          }
+        }
+      }
+      
+      if ($package_content['meta']['functions']) {
+        foreach ($package_content['meta']['functions'] as $function_name => $function_content) {
+          $function = $package->appendChild($document->createElement('function'));
+          $function->setAttribute('name', $function_name);
+          if ($function_content['meta']['returns']) {
+            $returns = $function->appendChild($document->createElement('returns'));
+            $returns->appendChild($document->createTextNode($function_content['meta']['returns']));
+          }
+          if ($function_content['meta']['summary']) {
+            $summary = $function->appendChild($document->createElement('summary'));
+            $summary->appendChild($document->createTextNode($function_content['meta']['summary']));
+          }
+          if ($function_content['meta']['parameters']) {
+            $parameters = $function->appendChild($document->createElement('parameters'));
+            foreach ($function_content['meta']['parameters'] as $parameter_name => $parameter_content) {
+              $parameter = $parameters->appendChild($document->createElement('parameter'));
+              $parameter->setAttribute('name', $parameter_name);
+              if ($parameter_content['type']) {
+                $parameter->setAttribute('type', $parameter_content['type']);
+              }
+            }
+          }
+          if ($function_content['meta']['prototype']) {
+            $prototype = $function->appendChild($document->createElement('prototype'));
+            $prototype->appendChild($document->createTextNode($function_content['meta']['prototype']));
+          }
+          if ($function_content['meta']['call_chain'] || $function_content['meta']['prototype_chain']) {
+            $chains = $function->appendChild($document->createElement('chains'));
+            if ($function_content['meta']['call_chain']) {
+              foreach ($function_content['meta']['call_chain'] as $function_name) {
+                $chain = $chains->appendChild($document->createElement('chain'));
+                $chain->setAttribute('type', 'call');
+                $chain->appendChild($document->createTextNode($function_name));
+              }
+            }
+            if ($function_content['meta']['prototype_chain']) {
+              foreach ($function_content['meta']['prototype_chain'] as $function_name) {
+                $chain = $chains->appendChild($document->createElement('chain'));
+                $chain->setAttribute('type', 'prototype');
+                $chain->appendChild($document->createTextNode($function_name));
+              }
+            }
+          }
+          if ($function_content['meta']['instance_variables'] || $function_content['meta']['prototype_variables'] || $function_content['meta']['variables']) {
+            $variables = $function->appendChild($document->createElement('variables'));
+            if ($function_content['meta']['variables']) {
+              foreach ($function_content['meta']['variables'] as $variable_name) {
+                $variable = $variables->appendChild($document->createElement('variable'));
+                $variable->appendChild($document->createTextNode($variable_name));
+              }
+            }
+            if ($function_content['meta']['instance_variables']) {
+              foreach ($function_content['meta']['instance_variables'] as $variable_name) {
+                $variable = $variables->appendChild($document->createElement('variable'));
+                $variable->setAttribute('scope', 'instance');
+                $variable->appendChild($document->createTextNode($variable_name));
+              }
+            }
+            if ($function_content['meta']['prototype_variables']) {
+              foreach ($function_content['meta']['prototype_variables'] as $variable_name) {
+                $variable = $variables->appendChild($document->createElement('variable'));
+                $variable->setAttribute('scope', 'prototype');
+                $variable->appendChild($document->createTextNode($variable_name));
+              }
+            }
+          }
+          if ($function_content['meta']['description']) {
+            $summary = $function->appendChild($document->createElement('description'));
+            $summary->appendChild($document->createTextNode($function_content['meta']['description']));
+          }
+        }
+      }
+    }
+    file_put_contents($dir . '/api.xml', $document->saveXML());
+  }
+	elseif ($format == 'json' && $environment == 'local') {
 		$json = new Services_JSON();
 		$merged = array();
     if (isset($output['function_names'])) {
@@ -69,31 +164,26 @@ function writeToDisk($output, $dir, $format = 'json', $environment = 'remote') {
 	          if (!file_exists($dir . '/' . $package_name . '/' . $function_name)) {
 	            mkdir($dir . '/' . $package_name . '/' . $function_name);
 	          }
-	          foreach ($function as $polymorphic_id => $polymorphism) {
-							if (isset($polymorphism['meta'])) {
-								if (!file_exists($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id)) {
-	                mkdir($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id);
-	              }
-		            foreach ($polymorphism['meta'] as $type => $data) {
-									if (empty($data)) {
-										continue;
-									}
+            if (isset($function['meta'])) {
+              foreach ($function['meta'] as $type => $data) {
+                if (empty($data)) {
+                  continue;
+                }
 
-									if ($type == 'summary') {
-										$meta['functions'][$function_name][$polymorphic_id]['meta']['summary'] = $data;
-										unset($polymorphism['meta'][$type]);
-									}
-									else if ($type == 'description' || $type == 'src') {
-										file_put_contents($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id . '/' . $type, $data);
-										unset($polymorphism['meta'][$type]);
-									}
-		            }
-								if (!empty($polymorphism['meta'])) {
-	                $data = $json->encode($polymorphism['meta']);
-	              	file_put_contents($dir . '/' . $package_name . '/' . $function_name . '/' . $polymorphic_id . '/meta', $data);
-								}
-							}
-	          }
+                if ($type == 'summary') {
+                  $meta['functions'][$function_name]['meta']['summary'] = $data;
+                  unset($function['meta'][$type]);
+                }
+                else if ($type == 'description' || $type == 'src') {
+                  file_put_contents($dir . '/' . $package_name . '/' . $function_name . '/' . $type, $data);
+                  unset($function['meta'][$type]);
+                }
+              }
+              if (!empty($function['meta'])) {
+                $data = $json->encode($function['meta']);
+                file_put_contents($dir . '/' . $package_name . '/' . $function_name . '/meta', $data);
+              }
+            }
 	        }
 				}
 				
@@ -131,11 +221,11 @@ function rolloutFunction(&$output, $package, $declaration) {
 
 	$package_name = $package->getPackageName();
   
-  $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['summary'] = '';
+  $output[$package_name]['meta']['functions'][$function_name]['meta']['summary'] = '';
   $parameters = $declaration->getParameters();
   foreach ($parameters as $parameter) {
     if ($parameter->isA(DojoVariable)) {
-      $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['parameters'][$parameter->getVariable()]['type'] = $parameter->getType();
+      $output[$package_name]['meta']['functions'][$function_name]['meta']['parameters'][$parameter->getVariable()]['type'] = $parameter->getType();
       $declaration->addBlockCommentKey($parameter->getVariable());
     }
   }
@@ -146,44 +236,44 @@ function rolloutFunction(&$output, $package, $declaration) {
   $comment_keys = $declaration->getBlockCommentKeys();
   foreach ($comment_keys as $key) {
     if ($key == 'summary') {
-      $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['summary'] = $declaration->getBlockComment($key);
+      $output[$package_name]['meta']['functions'][$function_name]['meta']['summary'] = $declaration->getBlockComment($key);
     }
     elseif ($key == 'description') {
-      $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['description'] = $declaration->getBlockComment($key);
+      $output[$package_name]['meta']['functions'][$function_name]['meta']['description'] = $declaration->getBlockComment($key);
     }
   }
 
-  $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['src'] = $declaration->getSource();
+  $output[$package_name]['meta']['functions'][$function_name]['meta']['src'] = $declaration->getSource();
   
   $instance_variables = $declaration->getInstanceVariableNames();
   foreach ($instance_variables as $instance_variable) {
-    if (isset($output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['instance_variables'])) {
-      if (!in_array($instance_variable, $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['instance_variables'])) {
-        $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['instance_variables'][] = $instance_variable;
+    if (isset($output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'])) {
+      if (!in_array($instance_variable, $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'])) {
+        $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'][] = $instance_variable;
       }
     }
     else {
-      $output[$package_name]['meta']['functions'][$masquerading_as_function]['_']['meta']['instance_variables'][] = $instance_variable;
+      $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'][] = $instance_variable;
     }
   }
 
   $returns = $declaration->getReturnComments();
   if (count($returns) == 1) {
-    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['returns'] = $returns[0];
+    $output[$package_name]['meta']['functions'][$function_name]['meta']['returns'] = $returns[0];
   }
   elseif ($returns) {
-    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['returns'] = 'mixed';
+    $output[$package_name]['meta']['functions'][$function_name]['meta']['returns'] = 'mixed';
   }
   
   if ($calls = $declaration->getThisInheritanceCalls()) {
-    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['call_chain'] = $calls;
+    $output[$package_name]['meta']['functions'][$function_name]['meta']['call_chain'] = $calls;
   }
   
   if ($declaration->getPrototype()) {
-    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['prototype'] = $declaration->getPrototype();
+    $output[$package_name]['meta']['functions'][$function_name]['meta']['prototype'] = $declaration->getPrototype();
   }
   if ($declaration->getInstance()) {
-    $output[$package_name]['meta']['functions'][$function_name]['_']['meta']['instance'] = $declaration->getInstance();
+    $output[$package_name]['meta']['functions'][$function_name]['meta']['instance'] = $declaration->getInstance();
   }
 }
 
