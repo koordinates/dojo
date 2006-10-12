@@ -12,7 +12,6 @@ $timer->start();
 
 $dojo = new Dojo('../');
 $files = $dojo->getFileList();
-//$files = array('src/widget/ContentPane.js');
 
 foreach ($files as $file) {
   $package = new DojoPackage($dojo, $file);
@@ -202,6 +201,22 @@ foreach ($files as $file) {
     $output['function_names'][$package_name] = array();
     if (!empty($output[$package_name]['meta']['functions'])) {
       $output['function_names'][$package_name] = array_values(array_keys($output[$package_name]['meta']['functions']));
+    }
+  }
+  
+  $objects = $package->getObjects();
+  foreach ($objects as $object) {
+    $values = $object->getValues();
+    $name = $object->getName();
+    foreach ($values as $key => $value) {
+      if ($value->isA(DojoFunctionDeclare)) {
+        $function = $value->getFunction($value);
+        $function->setFunctionName($name . '.' . $key);
+        rolloutFunction($output, $package, $function);
+      }
+      else {
+        $output[$package_name]['meta']['functions'][$name]['meta']['variables'][] = $key;
+      }
     }
   }
 }

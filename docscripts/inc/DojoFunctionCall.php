@@ -30,6 +30,22 @@ class DojoFunctionCall extends DojoBlock
     return $end;
   }
   
+  public function removeCodeFrom($lines){
+    for ($i = $this->start[0]; $i <= $this->end[0]; $i++) {
+      $line = $lines[$i];
+      if ($i == $this->start[0]) {
+        $lines[$i] = Text::blankOutAt($line, $this->start[1]);
+      }
+      elseif ($i == $this->end[0]) {
+        $lines[$i] = Text::blankOutAt($line, 0, $this->end[1]);
+      }
+      else {
+        $lines[$i] = Text::blankOut($line, $line);
+      }
+    }
+    return $lines;
+  }
+  
   public function getName()
   {
     if ($this->name) {
