@@ -273,7 +273,7 @@ if (file_exists('wiki')) {
   unset($wiki_files);
 }
 
-//writeToDisk($output, 'local_json', 'json', 'local');
+writeToDisk($output, 'local_json', 'json', 'local');
 //writeToDisk($output, 'json', 'xml', 'eclipse');
 
 $timer->stop();
