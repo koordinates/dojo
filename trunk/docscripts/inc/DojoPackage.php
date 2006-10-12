@@ -11,6 +11,7 @@ class DojoPackage
 	protected $source;
   protected $declarations = array(); // Builds an array of functions declarations by name, with meta
   protected $calls = array(); // Builds an array of calls
+  protected $objects = array(); // Builds an array of objects
   
   public function __construct(Dojo $dojo, $file)
   {
@@ -78,13 +79,43 @@ class DojoPackage
     return $this->calls[$name];
   }
   
+  public function getObjects()
+  {
+    if ($this->objects) {
+      return $this->objects;
+    }
+    
+    $lines = $this->getCode();
+    foreach ($this->calls as $calls) {
+      foreach ($calls as $call) {
+        $lines = $call->removeCodeFrom($lines);
+      }
+    }
+    foreach ($this->declarations as $declaration) {
+      $lines = $declaration->removeCodeFrom($lines);
+    }
+    foreach ($lines as $line_number => $line) {
+      if ($line_number < $end_line_number) {
+        continue;
+      }
+      if (preg_match('%\b([a-zA-Z0-9_.$]+)\s*=\s*{%', $line, $match, PREG_OFFSET_CAPTURE)) {
+        $object = new DojoObject($this, $line_number, $match[0][1] + strlen($match[0][0]) - 1);
+        $object->setName($match[1][0]);
+        list($end_line_number, $end_position) = $object->build();
+        $this->objects[] = $object;
+      }
+    }
+    return $this->objects;
+  }
+  
   public function getSource()
   {
 		if ($this->source) {
 			return $this->source;
 		}
-    $this->source = $lines = explode("\n", file_get_contents($this->dojo->getDir() . $this->file));
-    return $lines;
+    $lines = explode("\n", file_get_contents($this->dojo->getDir() . $this->file));
+    $lines[] = '';
+    return $this->source = $lines;
   }
   
   /**
