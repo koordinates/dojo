@@ -13,7 +13,6 @@ class DojoFunctionDeclare extends DojoBlock
   
   private $anonymous = false;
   private $prototype = '';
-  private $instance = '';
 
   public function __construct($package, $line_number = false, $position = false)
   {
@@ -101,7 +100,7 @@ class DojoFunctionDeclare extends DojoBlock
     }
     else {
       $name = trim(substr($line, 0, strpos($line, '=')));
-      if (preg_match('%\s+new\s*%', $name, $match)) {
+      if (preg_match('%\s+new\s+%', $name, $match)) {
         $this->anonymous = true;
         $name = str_replace($match[0], '', $name);
       }
