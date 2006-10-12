@@ -1,4 +1,4 @@
-﻿dojo.provide("dojo.gfx.common");
+dojo.provide("dojo.gfx.common");
 
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.lang.declare");

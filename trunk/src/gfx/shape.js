@@ -1,4 +1,4 @@
-﻿dojo.provide("dojo.gfx.shape");
+dojo.provide("dojo.gfx.shape");
 
 dojo.require("dojo.lang.declare");
 
