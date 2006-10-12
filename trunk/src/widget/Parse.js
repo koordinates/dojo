@@ -140,16 +140,11 @@ dojo.widget.Parse = function(fragment){
 				}
 				switch(item.toLowerCase()){ 
 					case "checked":
-						if (!properties[item] || typeof properties[item] == "string"){
-							properties[item] = Boolean(!properties[item] ||
-								properties[item].toLowerCase() == "checked");
-							}
-					break;
 					case "disabled":
-						if (!properties[item] || typeof properties[item] == "string"){
-							properties[item] = Boolean(!properties[item] ||
-								properties[item].toLowerCase() == "disabled");
-						}
+						var p = properties[item];
+                         if (typeof p != "boolean"){ 
+                             properties[item] = true;
+                         }
 					break;
 				}
 			} 
