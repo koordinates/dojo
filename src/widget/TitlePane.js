@@ -30,23 +30,16 @@ dojo.widget.defineWidget(
 		}	
 
 		if (!this.open) {
-			with(this.containerNode.style) {
-				visibility = "hidden";
-				position = "absolute";
-			}
+			dojo.html.hide(this.containerNode);
 		}
 		dojo.widget.TitlePane.superclass.postCreate.apply(this, arguments);
 	},
 
 	onLabelClick: function() {
 		if (this.open) {
-			var callback = function(node, anim) {
-				dojo.html.setStyle(node, "position", "absolute");
-			};
-			dojo.lfx.wipeOut(this.containerNode, 250, 5, callback).play();
+			dojo.lfx.wipeOut(this.containerNode, 250).play();
 			this.open=false;
 		} else {
-			dojo.html.setStyle(this.containerNode, "position", "relative");
 			dojo.lfx.wipeIn(this.containerNode, 250).play();
 			this.open=true;
 		}

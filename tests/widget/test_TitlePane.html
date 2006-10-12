@@ -29,7 +29,7 @@ div.container {
 }
 
 .label {
-	background: grey;
+	background: gray;
 	height: 20px;
 	border-top: 1px solid black;
 	border-bottom: 1px solid black;
@@ -37,6 +37,7 @@ div.container {
 
 .content {
 	background: #eeeeee;
+	border-top: 1px solid #eeeeee;	/* w/out this, an <h1> on the top line causes a gap between the .content and .label */
 }
 
 .innerLabel {
@@ -49,6 +50,7 @@ div.container {
 
 .innerContent {
 	background: #aaaaaa;
+	border-top: 1px solid #aaaaaa;	/* w/out this, an <h1> on the top line causes a gap between the .content and .label */
 	width: 250px;
 }
 
