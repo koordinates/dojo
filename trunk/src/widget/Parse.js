@@ -138,14 +138,13 @@ dojo.widget.Parse = function(fragment){
 						}
 					}catch(e){ dojo.debug(e); }
 				}
-				switch(item.toLowerCase()){ 
-					case "checked":
-					case "disabled":
-						var p = properties[item];
-                         if (typeof p != "boolean"){ 
-                             properties[item] = true;
-                         }
-					break;
+				switch(item.toLowerCase()){
+				case "checked":
+				case "disabled":
+					if (typeof properties[item] != "boolean"){ 
+						properties[item] = true;
+					}
+				break;
 				}
 			} 
 		}
