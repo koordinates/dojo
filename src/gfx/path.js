@@ -1,4 +1,4 @@
-﻿dojo.provide("dojo.gfx.path");
+dojo.provide("dojo.gfx.path");
 
 dojo.require("dojo.math");
 
