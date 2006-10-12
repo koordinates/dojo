@@ -4,7 +4,7 @@ dojo.require("dojo.lang.func");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lang.declare");
-dojo.require("dojo.namespace");
+dojo.require("dojo.ns");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.event.*");
 dojo.require("dojo.a11y");
@@ -72,16 +72,15 @@ dojo.declare("dojo.widget.Widget", null,
 	// String: used for building generic widgets
 	widgetType: "Widget",
 
-	// String: defaults to 'dojo'.  "namespace" is a reserved word in JavaScript
-	"namespace": "dojo",
+	// String: defaults to 'dojo'.  "namespace" is a reserved word in JavaScript, so we abbreviate
+	ns: "dojo",
 
 	getNamespacedType: function(){ 
 		// summary:
 		//		get the "full" name of the widget. If the widget comes from the
 		//		"dojo" namespace and is a Button, calling this method will
 		//		return "dojo:button", all lower-case
-		return (this.namespace ? this.namespace + ":" + this.widgetType : this.widgetType).toLowerCase(); // String
-		return (this["namespace"] ? this["namespace"] + ":" + this.widgetType : this.widgetType).toLowerCase(); // String
+		return (this.ns ? this.ns + ":" + this.widgetType : this.widgetType).toLowerCase(); // String
 	},
 	
 	toString: function(){
@@ -192,7 +191,7 @@ dojo.declare("dojo.widget.Widget", null,
 
 		//dojo.profile.start(this.widgetType + " create");
 		if(ns){
-			this["namespace"] = ns;
+			this.ns = ns;
 		}
 		// dojo.debug(this.widgetType, "create");
 		//dojo.profile.start(this.widgetType + " satisfyPropertySets");
@@ -751,8 +750,8 @@ dojo.widget.buildWidgetFromParseTree = function(/*String*/				type,
 	
 	// FIXME: we don't seem to be doing anything with this!
 	// var propertySets = parser.getPropertySets(frag);
-	var localProperties = localProps || parser.parseProperties(frag[frag["namespace"]+":"+stype]);
-	var twidget = dojo.widget.manager.getImplementation(stype,null,null,frag["namespace"]);
+	var localProperties = localProps || parser.parseProperties(frag[frag["ns"]+":"+stype]);
+	var twidget = dojo.widget.manager.getImplementation(stype,null,null,frag["ns"]);
 	if(!twidget){
 		throw new Error('cannot find "' + type + '" widget');
 	}else if (!twidget.create){
@@ -760,7 +759,7 @@ dojo.widget.buildWidgetFromParseTree = function(/*String*/				type,
 	}
 	localProperties["dojoinsertionindex"] = insertionIndex;
 	// FIXME: we lose no less than 5ms in construction!
-	var ret = twidget.create(localProperties, frag, parentComp, frag["namespace"]);
+	var ret = twidget.create(localProperties, frag, parentComp, frag["ns"]);
 	// dojo.profile.end("buildWidgetFromParseTree");
 	return ret;
 }

@@ -1,8 +1,6 @@
 dojo.provide("dojo.widget.Parse");
-
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.dom");
-dojo.require("dojo.namespace");
 
 //
 // dojoML parser should be moved out of 'widget', codifying the difference between a 'component'
@@ -235,7 +233,7 @@ dojo.widget.Parse = function(fragment){
 		componentName is the expected dojo widget name, i.e. Button of ContextMenu
 
 		properties is an object of name value pairs
-		namespace is the namespace of the widget.  Defaults to "dojo"
+		ns is the namespace of the widget.  Defaults to "dojo"
 	*/
 	this.createComponentFromScript = function(nodeRef, componentName, properties, ns){
 		properties.fastMixIn = true;			
@@ -297,7 +295,7 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 			nodeRef: placeKeeperNode,
 			fastMixIn: true
 		};
-		props["namespace"] = ns;
+		props.ns = ns;
 		return dojo.widget.getParser().createComponentFromScript(placeKeeperNode, name, props, ns);
 	}
 

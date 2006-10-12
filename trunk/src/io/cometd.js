@@ -1,4 +1,4 @@
-dojo.require("dojo.io.common"); // io/common.js provides setIFrameSrc and the IO namespace
+dojo.require("dojo.io.common"); // io/common.js provides setIFrameSrc and the IO module
 dojo.provide("dojo.io.cometd");
 dojo.require("dojo.AdapterRegistry");
 dojo.require("dojo.json");

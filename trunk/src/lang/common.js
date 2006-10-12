@@ -8,7 +8,7 @@ dojo.lang.inherits = function(/*Function*/ subclass, /*Function*/ superclass){
 	subclass.prototype = new superclass();
 	subclass.prototype.constructor = subclass;
 	subclass.superclass = superclass.prototype;
-	// DEPRICATED: super is a reserved word, use 'superclass'
+	// DEPRECATED: super is a reserved word, use 'superclass'
 	subclass['super'] = superclass.prototype;
 }
 
