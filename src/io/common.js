@@ -169,7 +169,7 @@ dojo.io.Error = function(msg, type, num){
 dojo.io.transports.addTransport = function(name){
 	this.push(name);
 	// FIXME: do we need to handle things that aren't direct children of the
-	// dojo.io namespace? (say, dojo.io.foo.fooTransport?)
+	// dojo.io module? (say, dojo.io.foo.fooTransport?)
 	this[name] = dojo.io[name];
 }
 

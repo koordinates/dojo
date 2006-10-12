@@ -18,7 +18,7 @@ dojo.uri = new function() {
 	this.Uri = function (/*uri1, uri2, [...]*/) {
 		// An object representing a Uri.
 		// Each argument is evaluated in order relative to the next until
-		// a conanical uri is producued. To get an absolute Uri relative
+		// a canonical uri is produced. To get an absolute Uri relative
 		// to the current document use
 		//      new dojo.uri.Uri(document.baseURI, uri)
 
@@ -33,8 +33,7 @@ dojo.uri = new function() {
 			var relobj = new dojo.uri.Uri(arguments[i].toString());
 			var uriobj = new dojo.uri.Uri(uri.toString());
 
-			if (relobj.path == "" && relobj.scheme == null &&
-				relobj.authority == null && relobj.query == null) {
+			if ((relobj.path=="")&&(relobj.scheme==null)&&(relobj.authority==null)&&(relobj.query==null)) {
 				if (relobj.fragment != null) { uriobj.fragment = relobj.fragment; }
 				relobj = uriobj;
 			} else if (relobj.scheme == null) {

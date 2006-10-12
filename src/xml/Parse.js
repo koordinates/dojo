@@ -4,27 +4,12 @@ dojo.require("dojo.dom");
 //TODO: determine dependencies
 // currently has dependency on dojo.xml.DomUtil nodeTypes constants...
 
-/* generic class for taking a node and parsing it into an object
-
-TODO: WARNING: This comment is wrong!
-
-For example, the following xml fragment
-
-<foo bar="bar">
-	<baz xyzzy="xyzzy"/>
-</foo>
-
-can be described as:
-
-dojo.???.foo = {}
-dojo.???.foo.bar = {}
-dojo.???.foo.bar.value = "bar";
-dojo.???.foo.baz = {}
-dojo.???.foo.baz.xyzzy = {}
-dojo.???.foo.baz.xyzzy.value = "xyzzy"
-
+/* 
+  generic class for taking a node and parsing it into an object
 */
+
 // using documentFragment nomenclature to generalize in case we don't want to require passing a collection of nodes with a single parent
+
 dojo.xml.Parse = function(){
 
 	// supported dojoTagName's:
@@ -44,7 +29,6 @@ dojo.xml.Parse = function(){
 	}
 
 	// locate dojo qualified tag name
-	// FIXME: add rejection test against namespace filters declared in djConfig
 	function getDojoTagName(node){
 		var tagName = getTagName(node);
 		if (!tagName){
@@ -94,12 +78,12 @@ dojo.xml.Parse = function(){
 		}
 		if(djt){ return "dojo:"+djt.toLowerCase(); }
 		// <tag class="classa dojo-type classb"> => dojo:type	
-		if(!dj_global["djConfig"] || !djConfig["ignoreClassNames"]){ 
+		if((!dj_global["djConfig"])|| (djConfig["ignoreClassNames"])){ 
 			// FIXME: should we make this optionally enabled via djConfig?
 			var classes = node.className||node.getAttribute("class");
 			// FIXME: following line, without check for existence of classes.indexOf
 			// breaks firefox 1.5's svg widgets
-			if(classes && classes.indexOf && classes.indexOf("dojo-") != -1){
+			if((classes )&&(classes.indexOf)&&(classes.indexOf("dojo-")!=-1)){
 		    var aclasses = classes.split(" ");
 		    for(var x=0, c=aclasses.length; x<c; x++){
 	        if(aclasses[x].slice(0, 5) == "dojo-"){
@@ -139,9 +123,9 @@ dojo.xml.Parse = function(){
 		var pos = tagName.indexOf(":");
 		if(pos>0){
 			var ns = tagName.substring(0,pos);
-			parsedNodeSet["namespace"] = ns;
+			parsedNodeSet["ns"] = ns;
 			// honor user namespace filters
-			if((dojo["namespace"])&&(!dojo["namespace"].allow(ns))){process=false;}
+			if((dojo.ns)&&(!dojo.ns.allow(ns))){process=false;}
 		}
 
 		if(process){
@@ -158,7 +142,6 @@ dojo.xml.Parse = function(){
 			parsedNodeSet[tagName].nodeRef = node;
 			parsedNodeSet.tagName = tagName;
 			parsedNodeSet.index = thisIdx||0;
-			//dojo.debug("parseElement: set the element tagName = "+parsedNodeSet.tagName+" and namespace to "+parsedNodeSet["namespace"]);
 		}
 
 		var count = 0;
@@ -222,7 +205,7 @@ dojo.xml.Parse = function(){
 		while((attnode=atts[i++])){
 			if((dojo.render.html.capable)&&(dojo.render.html.ie)){
 				if(!attnode){ continue; }
-				if(	(typeof attnode == "object")&&
+				if((typeof attnode == "object")&&
 					(typeof attnode.nodeValue == 'undefined')||
 					(attnode.nodeValue == null)||
 					(attnode.nodeValue == '')){ 
