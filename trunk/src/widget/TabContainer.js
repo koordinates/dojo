@@ -59,17 +59,11 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 		dojo.widget.TabContainer.superclass.fillInTemplate.apply(this, arguments);
 	},
 
-	postCreate: function(args, frag) {
-		// Setup each page panel
-		dojo.lang.forEach(this.children, this._setupChild, this);
+	postCreate: function(args, frag) {	
+		dojo.widget.TabContainer.superclass.postCreate.apply(this, arguments);
 
 		// size the container pane to take up the space not used by the tabs themselves
 		this.onResized();
-
-		// Display the selected page
-		if(this.selectedChildWidget){
-			this.selectChild(this.selectedChildWidget, true);
-		}
 	},
 
 	_setupChild: function(tab){

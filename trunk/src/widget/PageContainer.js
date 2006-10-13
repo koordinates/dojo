@@ -32,40 +32,45 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 	},
 
 	postCreate: function(args, frag) {
-		// Setup each page panel
-		dojo.lang.forEach(this.children, this._setupChild, this);
+		if(this.children.length){
+			// Setup each page panel
+			dojo.lang.forEach(this.children, this._setupChild, this);
 
-		// Display the selected page
-		if(this.selectedChildWidget){
-			this.selectChild(this.selectedChildWidget, true);
+			// Figure out which child to initially display
+			var initialChild;
+			if(this.selectedChild){
+				this.selectChild(this.selectedChild, true);
+			}else{
+				for(var i=0; i<this.children.length; i++){
+					if(this.children[i].selected){
+						this.selectChild(this.children[i], true);
+						break;
+					}
+				}
+				if(!this.selectedChildWidget){
+					this.selectChild(this.children[0], true);
+				}
+			}
 		}
 	},
 
 	addChild: function(child){
-		this._setupChild(child);
 		dojo.widget.PageContainer.superclass.addChild.apply(this, arguments);
+		this._setupChild(child);
 
 		// in case the page labels have overflowed from one line to two lines
 		this.onResized();
+
+		// if this is the first child, then select it
+		if(!this.selectedChildWidget){
+			this.selectChild(child);
+		}
 	},
 
 	_setupChild: function(page){
 		// Summary: Add the given child to this page container
-		page.domNode.style.display="none";
 
-		if(!this.selectedChildWidget || this.selectedChild==page.widgetId || page.selected || (this.children.length==0)){
-			// Deselect old page and select new one
-			// We do this instead of calling selectChild in this case, because other wise other widgets
-			// listening for addChild and selectChild can run into a race condition
-			if(this.selectedChildWidget){
-				this._hideChild(this.selectedChildWidget);
-			}
-			this.selectedChildWidget = page;
-			this._showChild(page);
-
-		} else {
-			this._hideChild(page);
-		}
+		page.hide();
 
 		// publish the addChild event for panes added via addChild(), and the original panes too
 		dojo.event.topic.publish(this.widgetId+"-addChild", page);
@@ -152,7 +157,7 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 	},
 
 	_hideChild: function(page) {
-		page.x=false;
+		page.selected=false;
 		page.hide();
 	},
 
