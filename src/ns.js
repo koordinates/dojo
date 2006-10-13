@@ -86,7 +86,7 @@ dojo.ns.Ns.prototype.resolve = function(/*String*/name, /*String*/domain, /*Bool
 		if(dojo.hostenv.findModule(fullName, false)){
 			this._loaded[fullName] = true;
 		}else{
-			if(!omit_module_check){dojo.raise("dojo.ns.Ns.resolve: module '" + fullName + "' not found after loading via namespace '" + this.name + "'");} 
+			if(!omitModuleCheck){dojo.raise("dojo.ns.Ns.resolve: module '" + fullName + "' not found after loading via namespace '" + this.name + "'");} 
 			this._failed[fullName] = true;
 		}
 	}
