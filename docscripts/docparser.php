@@ -151,37 +151,36 @@ foreach ($files as $file) {
   }
 
   // Handle. dojo.lang.extend and dojo.lang.mixin calls
-  $calls = array_merge($package->getFunctionCalls('dojo.lang.extend', true), $package->getFunctionCalls('dojo.lang.mixin'));
+  $calls = array_merge($package->getFunctionCalls('dojo.extend'), $package->getFunctionCalls('dojo.lang.extend', true), $package->getFunctionCalls('dojo.mixin'), $package->getFunctionCalls('dojo.lang.mixin'));
   foreach ($calls as $call) {
-    $object = $call->getParameter(0);
-    $properties = $call->getParameter(1);
-    if ($object && $properties) {
-      $object = $object->getValue();
+    if ($call->getParameter(0)->isA(DojoVariable)) {
+      $object = $call->getParameter(0)->getVariable();
       $call_name = $call->getName();
-      if($call_name == 'dojo.lang.mixin' && $object != $package_name) continue;
-      $properties = $properties->getValue();
-      if (is_string($object) && $properties instanceof DojoObject) {
-        $keys = $properties->getKeys();
-        foreach ($keys as $key) {
-          if ($properties->isFunction($key)) {
-            $function = $properties->getValue($key);
+
+      if ($call->getParameter(1)->isA(DojoObject)) {
+        $properties = $call->getParameter(1)->getObject();
+        $keys = $properties->getValues();
+        foreach ($keys as $key => $function) {
+          if ($function->isA(DojoFunctionDeclare)) {
+            $function = $function->getFunction();
             if ($call_name == 'dojo.lang.extend') {
-              $function->setThis($object);
+              $function->setPrototype($object);
             }
             $function->setFunctionName($object . '.' . $key);
             rolloutFunction($output, $package, $function);
           }
           else {
-            if ($call_name == 'dojo.lang.mixin') {
-              $output[$package_name]['meta']['functions'][$object]['meta']['variables'][$key] = "";
+            if ($call_name == 'dojo.lang.mixin' || $call_name == 'dojo.mixin') {
+              $output[$package_name]['meta']['functions'][$object]['meta']['variables'][] = $key;
             }
             else {
-              $output[$package_name]['meta']['functions'][$object]['meta']['protovariables'][$key] = "";
+              $output[$package_name]['meta']['functions'][$object]['meta']['prototype_variables'][] = $key;
             }
           }
         }
       }
-      elseif (is_string($object) && is_string($properties)) {
+      elseif ($call->getParameter(1)->isA(DojoString)) {
+        $properties = $call->getParameter(1)->getString();
         // Note: inherits expects to be reading from prototype values
         if ($call_name == 'dojo.lang.extend' && strpos($properties, '.prototype') !== false) {
           $output[$package_name]['meta']['functions'][$object]['meta']['prototype_chain'][] = str_replace('.prototype', '', $properties);
@@ -215,7 +214,14 @@ foreach ($files as $file) {
         rolloutFunction($output, $package, $function);
       }
       else {
+        $object->addBlockCommentKey($key);
         $output[$package_name]['meta']['functions'][$name]['meta']['variables'][] = $key;
+      }
+    }
+    $keys = $object->getBlockCommentKeys();
+    foreach ($keys as $key) {
+      if (!empty($output[$package_name]['meta']['functions'][$name]['meta']['variables']) && in_array($key, $output[$package_name]['meta']['functions'][$name]['meta']['variables'])) {
+        $output[$package_name]['meta']['functions'][$name]['extra']['variables'][$key] = $object->getBlockComment($key);
       }
     }
   }
@@ -293,7 +299,6 @@ writeToDisk($output, 'local_json', 'json', 'local');
 
 $timer->stop();
 if ($_GET['benchmark']) {
-  header('Content-type: text/html');  
   $timer->display();
 }
 

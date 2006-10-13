@@ -120,6 +120,10 @@ class Text
   
   public static function findComments($line, $started = false)
   {
+    if (empty($line) && !$started) {
+      return array(false, false, false, false, false);
+    }
+    
     $first = array();
     $middle = array();
     $last = array();
@@ -165,7 +169,7 @@ class Text
         }
       }
     }
-    
+
     return array(implode(' ', $first), implode(' ', $middle), implode(' ', $last), $data, $multiline);
   }
 }
