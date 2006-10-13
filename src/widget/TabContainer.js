@@ -173,12 +173,12 @@ dojo.widget.defineWidget("dojo.widget.TabButton", dojo.widget.PageButton,
 
 	postMixInProperties: function(){
 		this.closeButtonStyle = this.closeButton ? "" : "display: none";
-		dojo.widget.TabContainer.superclass.postMixInProperties.apply(this, arguments);
+		dojo.widget.TabButton.superclass.postMixInProperties.apply(this, arguments);
 	},
 
 	fillInTemplate: function(){
 		dojo.html.disableSelection(this.titleNode);
-		dojo.widget.TabContainer.superclass.fillInTemplate.apply(this, arguments);
+		dojo.widget.TabButton.superclass.fillInTemplate.apply(this, arguments);
 	}
 });
 
