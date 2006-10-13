@@ -51,7 +51,15 @@ function writeToDisk($output, $dir, $format = 'json', $environment = 'remote') {
               $parameter = $parameters->appendChild($document->createElement('parameter'));
               $parameter->setAttribute('name', $parameter_name);
               if ($parameter_content['type']) {
-                $parameter->setAttribute('type', $parameter_content['type']);
+                $type = $parameter_content['type'];
+                if (substr($type, -1) == '?') {
+                  $parameter->setAttribute('optional', 'true');
+                  $type = trim(substr($type, 0, -1));
+                }
+                $parameter->setAttribute('type', $type);
+              }
+              if (!empty($function_content['extra']['parameters'][$parameter_name])) {
+                $parameter->appendChild($document->createTextNode($function_content['extra']['parameters'][$parameter_name]));
               }
             }
           }
@@ -81,21 +89,30 @@ function writeToDisk($output, $dir, $format = 'json', $environment = 'remote') {
             if ($function_content['meta']['variables']) {
               foreach ($function_content['meta']['variables'] as $variable_name) {
                 $variable = $variables->appendChild($document->createElement('variable'));
-                $variable->appendChild($document->createTextNode($variable_name));
+                $variable->setAttribute('name', $variable_name);
+                if (!empty($function_content['extra']['variables'][$variable_name])) {
+                  $variable->appendChild($document->createTextNode($function_content['extra']['variables'][$variable_name]));
+                }
               }
             }
             if ($function_content['meta']['instance_variables']) {
               foreach ($function_content['meta']['instance_variables'] as $variable_name) {
                 $variable = $variables->appendChild($document->createElement('variable'));
                 $variable->setAttribute('scope', 'instance');
-                $variable->appendChild($document->createTextNode($variable_name));
+                $variable->setAttribute('name', $variable_name);
+                if (!empty($function_content['extra']['variables'][$variable_name])) {
+                  $variable->appendChild($document->createTextNode($function_content['extra']['variables'][$variable_name]));
+                }
               }
             }
             if ($function_content['meta']['prototype_variables']) {
               foreach ($function_content['meta']['prototype_variables'] as $variable_name) {
                 $variable = $variables->appendChild($document->createElement('variable'));
                 $variable->setAttribute('scope', 'prototype');
-                $variable->appendChild($document->createTextNode($variable_name));
+                $variable->setAttribute('name', $variable_name);
+                if (!empty($function_content['extra']['variables'][$variable_name])) {
+                  $variable->appendChild($document->createTextNode($function_content['extra']['variables'][$variable_name]));
+                }
               }
             }
           }
@@ -231,7 +248,24 @@ function rolloutFunction(&$output, $package, $declaration) {
   }
   
   $declaration->addBlockCommentKey('summary');
-  $declaration->addBlockCommentKey('description');
+  $declaration->addBlockCommentKey('description'); 
+  
+  $output[$package_name]['meta']['functions'][$function_name]['meta']['src'] = $declaration->getSource();
+  
+  $all_variables = array();
+  $instance_variables = $declaration->getInstanceVariableNames();
+  foreach ($instance_variables as $instance_variable) {
+    $declaration->addBlockCommentKey($instance_variable);
+    $all_variables[] = $instance_variable;
+    if (isset($output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'])) {
+      if (!in_array($instance_variable, $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'])) {
+        $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'][] = $instance_variable;
+      }
+    }
+    else {
+      $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'][] = $instance_variable;
+    }
+  }
   
   $comment_keys = $declaration->getBlockCommentKeys();
   foreach ($comment_keys as $key) {
@@ -241,19 +275,11 @@ function rolloutFunction(&$output, $package, $declaration) {
     elseif ($key == 'description') {
       $output[$package_name]['meta']['functions'][$function_name]['meta']['description'] = $declaration->getBlockComment($key);
     }
-  }
-
-  $output[$package_name]['meta']['functions'][$function_name]['meta']['src'] = $declaration->getSource();
-  
-  $instance_variables = $declaration->getInstanceVariableNames();
-  foreach ($instance_variables as $instance_variable) {
-    if (isset($output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'])) {
-      if (!in_array($instance_variable, $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'])) {
-        $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'][] = $instance_variable;
-      }
+    elseif (in_array($key, $all_variables)) {
+      $outuput[$package_name]['meta']['functions'][$function_name]['extra']['variables'][$key] = $declaration->getBlockComment($key);
     }
-    else {
-      $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'][] = $instance_variable;
+    elseif (!empty($output[$package_name]['meta']['functions'][$function_name]['meta']['parameters']) && array_key_exists($key, $output[$package_name]['meta']['functions'][$function_name]['meta']['parameters'])) {
+      $output[$package_name]['meta']['functions'][$function_name]['extra']['parameters'][$key] = $declaration->getBlockComment($key);
     }
   }
 

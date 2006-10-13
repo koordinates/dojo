@@ -70,10 +70,20 @@ class DojoFunctionBody extends DojoBlock
     $expression = '%^(' . implode('|', $this->keys) . ')\W*%';
     $buffer = array();
     $key = '';
+    $started = false;
     
     $lines = Text::chop($this->package->getSource(), $this->start[0], $this->start[1], $this->end[0], $this->end[1], true);
     foreach ($lines as $line_number =>  $line) {
       list($comment, , , $data, $multiline) = Text::findComments($line, $multiline);
+      
+      if ($started && $comment === false) {
+        $this->comment_end = array($line_number, 0);
+        break;
+      }
+      elseif ($comment) {
+        $started = true;
+      }
+      
       if (preg_match($expression, $comment, $match)) {
         if ($buffer && $key) {
           $this->comments[$key] = implode(' ', $buffer);

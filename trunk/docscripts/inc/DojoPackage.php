@@ -233,6 +233,7 @@ class DojoPackage
       
       if ($in_comment !== false && !empty($line)) {
         $line = Text::blankOutAt($line, $in_comment);
+        $in_comment = 0;
       }
       
       //print "$line_number $line\n";

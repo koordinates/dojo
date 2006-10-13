@@ -1,6 +1,7 @@
 <?php
 
 require_once('DojoBlock.php');
+require_once('DojoFunctionBody.php');
 
 class DojoObject extends DojoBlock
 {
@@ -8,6 +9,13 @@ class DojoObject extends DojoBlock
   
   private $values = array();
   private $name = '';
+  private $body;
+  
+  public function __construct($package, $line_number = false, $position = false)
+  {
+    parent::__construct($package, $line_number, $position);
+    $this->body = new DojoFunctionBody($package, $line_number, $position);
+  }
   
   public function setName($name)
   {
@@ -17,6 +25,21 @@ class DojoObject extends DojoBlock
   public function getName()
   {
     return $this->name;
+  }
+  
+  public function getBlockCommentKeys()
+  {
+    return $this->body->getBlockCommentKeys();
+  }
+  
+  public function getBlockComment($key)
+  {
+    return $this->body->getBlockComment($key);
+  }
+  
+  public function addBlockCommentKey($key)
+  {
+    return $this->body->addBlockCommentKey($key);
   }
   
   public function build()
