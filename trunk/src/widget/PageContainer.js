@@ -39,16 +39,16 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 			// Figure out which child to initially display
 			var initialChild;
 			if(this.selectedChild){
-				this.selectChild(this.selectedChild, true);
+				this.selectChild(this.selectedChild);
 			}else{
 				for(var i=0; i<this.children.length; i++){
 					if(this.children[i].selected){
-						this.selectChild(this.children[i], true);
+						this.selectChild(this.children[i]);
 						break;
 					}
 				}
 				if(!this.selectedChildWidget){
-					this.selectChild(this.children[0], true);
+					this.selectChild(this.children[0]);
 				}
 			}
 		}
@@ -94,7 +94,7 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 		}
 	},
 
-	selectChild: function(/* Widget */ page, /* Boolean */ _noRefresh, /* Widget */ callingWidget){
+	selectChild: function(/* Widget */ page, /* Widget */ callingWidget){
 		// summary
 		//	Show the given widget (which must be one of my children)
 		page = dojo.widget.byId(page);
@@ -105,7 +105,7 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 			this._hideChild(this.selectedChildWidget);
 		}
 		this.selectedChildWidget = page;
-		this._showChild(page, _noRefresh);
+		this._showChild(page);
 		page.isFirstChild = (page == this.children[0]);
 		page.isLastChild = (page == this.children[this.children.length-1]);
 		dojo.event.topic.publish(this.widgetId+"-selectChild", page);
@@ -135,25 +135,15 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 		}
 	},
 
-	_showChild: function(page, _noRefresh) {
-		page.selected=true;
-
+	_showChild: function(page) {
 		// size the current page (in case this is the first time it's being shown, or I have been resized)
 		if(this.doLayout){
 			var content = dojo.html.getContentBox(this.containerNode);
 			page.resizeTo(content.width, content.height);
 		}
 
-		// make sure we dont refresh onClose and on postCreate
-		// speeds up things a bit when using refreshOnShow and fixes #646
-		if(_noRefresh && page.refreshOnShow){
-			var tmp = page.refreshOnShow;
-			page.refreshOnShow = false;
-			page.show();
-			page.refreshOnShow = tmp;
-		}else{
-			page.show();
-		}
+		page.selected=true;
+		page.show();
 	},
 
 	_hideChild: function(page) {
