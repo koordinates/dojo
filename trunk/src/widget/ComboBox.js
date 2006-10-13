@@ -237,6 +237,7 @@ dojo.widget.defineWidget(
 		searchDelay: 100,
 		dataUrl: "",
 		fadeTime: 200,
+		disabled: false,
 		// maxListLength limits list to X visible rows, scroll on rest 
 		maxListLength: 8, 
 		// mode can also be "remote" for JSON-returning live search or "html" for
@@ -282,6 +283,18 @@ dojo.widget.defineWidget(
 		setState: function(/*Object*/ state){
 			this.setValue(state.value);
 		},
+
+		enable:function(){
+			this.disabled=false;
+			this.isEnabled = true; 
+			this.textInputNode.removeAttribute("disabled");
+		},
+ 
+		disable: function(){
+			this.disabled = true; 
+			this.isEnabled = false;
+			this.textInputNode.setAttribute("disabled",true); 
+		}, 
 
 		getCaretPos: function(/*DomNode*/ element){
 			// khtml 3.5.2 has selection* methods as does webkit nightlies from 2005-06-22
@@ -562,6 +575,9 @@ dojo.widget.defineWidget(
 		},
 
 		openResultList: function(/*Array*/ results){
+			if (!this.isEnabled){
+				return;
+			}
 			this.clearResultList();
 			if(!results.length){
 				this.hideResultList();
@@ -800,7 +816,9 @@ dojo.widget.defineWidget(
 			dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
 			dojo.event.connect(this.textInputNode, "onblur", this, "onBlurInput");
 			dojo.event.connect(this.textInputNode, "onfocus", this, "onFocusInput");
-
+			if (this.disabled){ 
+				this.disable();
+			}
 			var s = dojo.widget.html.stabile.getState(this.widgetId);
 			if (s){
 				this.setState(s);
