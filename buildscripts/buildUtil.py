@@ -23,70 +23,125 @@ def escape(instr):
 		    out.append(instr[x])
 	return string.join(out, "")
 
+def makeResourceUri(resourceName, templatePath, srcRoot, prefixes):
+	# Find best matching prefix.
+	bestPrefix = ""
+	bestPrefixPath = ""
+	if prefixes:
+		for prefix in prefixes:
+			# Prefix must match from the start of the resourceName string.
+			if resourceName.find(prefix[0]) == 0:
+				if len(prefix[0]) > len(bestPrefix):
+					bestPrefix = prefix[0]
+					bestPrefixPath = prefix[1]
+		
+		if bestPrefixPath != "":
+			# Convert resourceName to a path
+			resourceName = resourceName.replace(bestPrefix, "", 1);
+			if resourceName.find(".") == 0:
+				resourceName = resourceName[1:len(resourceName)]
+			resourceName = resourceName.replace(".", "/");
+	
+			# Final path construction
+			finalPath = srcRoot
+			if resourceName:
+				finalPath += resourceName + "/"
+			finalPath += bestPrefixPath + "/" + templatePath
+			return finalPath
+		
+	return srcRoot + templatePath
 
-def regexpMagic(loader, pkgString, srcRoot):
+def regexpMagic(loader, pkgString, srcRoot, prefixes):
 	uriMethod = "dojo.uri.dojoUri"
 	#if loader == "xdomain":
 	#	uriMethod = "dojo.uri.dojoUriXd"
 
 	# "Now they have two problems" -- jwz
 	#	http://en.wikiquote.org/wiki/Jamie_Zawinski
-	matches = re.findall('(templatePath\s*=\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"(.+)"(\s*\))?)', pkgString)
-	print matches
+	matches = re.findall('((templatePath|templateCssPath)\s*(=|:)\s*(dojo\.uri\.(dojo|module)?Uri\(\s*)?[\"\']([\w\.\/]+)[\"\'](([\,\s]*)[\"\']([\w\.\/]*)[\"\'])?(\s*\))?)', pkgString)
+	filePath = ""
 	for x in matches:
-		replacement = "templateString=\""+escape(open(srcRoot+x[3]).read())+"\""
-		pkgString = string.replace(pkgString, x[0], replacement)
+		# Build file path
+		if x[4] == "dojo":
+			print "Dojo match: " + x[5]
+			filePath = srcRoot + x[5]
+		else:
+			print "Module match: " + x[5] + " and " + x[8]
+			filePath = makeResourceUri(x[5], x[8], srcRoot, prefixes)
+		print "Interning resource path: " + filePath
 
-	matches = re.findall('(templatePath\s*:\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"([\w\.\/]+)"(\s*\))?)', pkgString)
-	print matches
-	for x in matches:
-		replacement = "templateString:\""+escape(open(srcRoot+x[3]).read())+"\""
-		pkgString = string.replace(pkgString, x[0], replacement)
+		if x[1] == "templatePath":
+			# Replace templatePaths
+			replacement = "templateString" + x[2] + "\"" + escape(open(filePath).read()) + "\""
+			pkgString = string.replace(pkgString, x[0], replacement)
+		else:
+			# Dealing with templateCssPath
+			# For the CSS we need to keep the template path in there
+			# since the widget loading stuff uses the template path to
+			# know whether the CSS has been processed yet.
+			# Could have matched assignment via : or =. Need different statement separators at the end.
+			assignSeparator = x[2]
+			statementSeparator = ","
+			statementPrefix = ""
+			
+			# FIXME: this is a little weak because it assumes a "this" in front of the templateCssPath
+			# when it is assigned using an "=", as in 'this.templateCssPath = dojo.uri.dojoUri("some/path/to/Css.css");'
+			# In theory it could be something else, but in practice it is not, and it gets a little too weird
+			# to figure out, at least for now.
+			if assignSeparator == "=":
+				statementSeparator = ";"
+				statementPrefix = "this."
+	
+			replacement = "templateCssString" + assignSeparator + "\"" + escape(open(filePath).read()) + "\"" + statementSeparator + statementPrefix + x[0]
+			pkgString = string.replace(pkgString, x[0], replacement)
 
-	#Find template CSS stuff.
-	matches = re.findall('(templateCssPath\s*:\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"([\w\.\/]+)"(\s*\))?)', pkgString)
-	print matches
-	for x in matches:
-		replacement = "templateCssString:\""+escape(open(srcRoot+x[3]).read())+"\",templateCssPath:"+uriMethod+"(\""+x[3]+"\")"
-		pkgString = string.replace(pkgString, x[0], replacement)
-
-	#This regexp is a little weak because it assumes a "this" in front of the templateCssPath.
-	#In theory it could be something else, but in practice it is not, and it gets a little too weird
-	#to figure out, at least given the short amount of time this change is going in.
-	matches = re.findall('(this\.templateCssPath\s*=\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"(.+)"(\s*\))?)', pkgString)
-	print matches
-	for x in matches:
-		replacement = "this.templateCssString=\""+escape(open(srcRoot+x[3]).read())+"\";this.templateCssPath="+uriMethod+"(\""+x[3]+"\")"
-		pkgString = string.replace(pkgString, x[0], replacement)
 	return pkgString
 
-def internTemplateStringsInFile(loader, packageFile, srcRoot):
+def internTemplateStringsInFile(loader, packageFile, srcRoot, prefixes):
 		print packageFile
 		pfd = open(packageFile)
 		pkgString = pfd.read()
 		pfd.close()
-	
-		pkgString = regexpMagic(loader, pkgString, srcRoot)
+
+		pkgString = regexpMagic(loader, pkgString, srcRoot, prefixes)
 		
 		pfd = open(packageFile, "w")
 		pfd.write(pkgString)
 		pfd.close() # flush is implicit
 
 
-def internXdFiles(loader, xdDir, srcRoot):
+def internXdFiles(loader, xdDir, srcRoot, prefixes):
 	xdFiles = glob.glob1(xdDir, "*.xd.js")
 	for name in xdFiles:
 		print "XD INTERNING: " + name
-		internTemplateStringsInFile(loader, xdDir+os.sep+name, srcRoot)
+		internTemplateStringsInFile(loader, xdDir+os.sep+name, srcRoot, prefixes)
 
 
-def internTemplateStrings(loader="default", packageDir="../release/dojo", srcRoot="../"):
+def internTemplateStrings(profileFile, loader="default", packageDir="../release/dojo", srcRoot="../"):
 	#Fix up dojo.js
 	print "loader: " + loader
 	print "packageDir - " + packageDir
 	packageFile = packageDir+"/dojo.js"
+	
+	
+	#Load the profile file so we can get module prefixes.
+	pfd = open(profileFile)
+	profileString = pfd.read()
+	pfd.close()
+
+	# Parse out the module prefixes and build a python list of lists object.
+	compiledRe = re.compile('(dependencies\.prefixes\s*=\s*(\[\s*(.*)\s*\]))', re.DOTALL | re.MULTILINE)
+	matches = compiledRe.findall(profileString)
+	
+	if matches:
+		exec("prefixes = " + matches[0][1])
+		print "Using the following prefixes: "
+		print prefixes
+	else:
+		prefixes = []
+
 	#try:
-	internTemplateStringsInFile(loader, packageFile, srcRoot)
+	internTemplateStringsInFile(loader, packageFile, srcRoot, prefixes)
 	#except:
 	#	packageFile = packageDir+"/__package__.js"
 	#	internTemplateStringsInFile(loader, packageFile, srcRoot)
@@ -94,10 +149,10 @@ def internTemplateStrings(loader="default", packageDir="../release/dojo", srcRoo
 	#If doing xdomain, then need to fix up the .xd.js files in the widget subdir.
 	#Hack alert! I am not patient enough to figure out how to do dir recursion
 	#in python right now.
-	internXdFiles(loader, packageDir+"/src/widget", srcRoot)
-	internXdFiles(loader, packageDir+"/src/widget/html", srcRoot)
-	internXdFiles(loader, packageDir+"/src/widget/svg", srcRoot)
-	internXdFiles(loader, packageDir+"/src/widget/vml", srcRoot)
+	internXdFiles(loader, packageDir+"/src/widget", srcRoot, prefixes)
+	internXdFiles(loader, packageDir+"/src/widget/html", srcRoot, prefixes)
+	internXdFiles(loader, packageDir+"/src/widget/svg", srcRoot, prefixes)
+	internXdFiles(loader, packageDir+"/src/widget/vml", srcRoot, prefixes)
 
 
 def replaceVersion(fileName, version):

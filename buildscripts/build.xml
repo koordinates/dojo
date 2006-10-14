@@ -647,6 +647,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 	<!-- intern-strings task -->
 	<target name="intern-strings" depends="-fix-config"
 		description="pulls template paths specified in prototypes into templateStrings which can be used to speed up widget construction">
+
 		<script language="jython">
 			<![CDATA[
 import sys
@@ -659,7 +660,7 @@ import os
 from buildUtil import *
 
 print "Interning strings for directory: " + dojo.getProperty("release_dir")
-internTemplateStrings(dojo.getProperty("dojoLoader"), project.resolveFile(dojo.getProperty("release_dir")).getPath())
+internTemplateStrings(project.resolveFile("profiles/" + dojo.getProperty("profile") + ".profile.js").getPath(), dojo.getProperty("dojoLoader"), project.resolveFile(dojo.getProperty("release_dir")).getPath())
 ]]>
 		</script>
 	</target>
