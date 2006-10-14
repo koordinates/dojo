@@ -49,6 +49,10 @@ dojo.widget.defineWidget(
 		return elem.getInfo();
 	},
 
+	onBeforeTreeDestroy: function(message) {
+                this.unlistenTree(message.source);
+	},
+
 	onAfterSetFolder: function(message) {
 		
 		//dojo.profile.start("onTreeChange");
