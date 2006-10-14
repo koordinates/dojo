@@ -277,7 +277,7 @@ dojo.widget.defineWidget(
 				if (treeWidget.lastFocused && treeWidget.lastFocused.isTreeNode) { // onClick could have chosen a non-root node
 					nodeWidget = treeWidget.lastFocused;
 				}
-				this._focusLabel(treeWidget, nodeWidget);
+				this._focusLabel(nodeWidget);
 			}
 		}
 		catch(e) {}
