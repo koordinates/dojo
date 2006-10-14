@@ -102,7 +102,7 @@ dojo.io.IframeTransport = new function(){
 				// otherwise we post a GET string by changing URL location for the
 				// iframe
 				var query = dojo.io.argsFromMap(this.currentRequest.content);
-				var tmpUrl = (cr.url.indexOf("?") > -1 ? "&" : "?") + query;
+				var tmpUrl = cr.url + (cr.url.indexOf("?") > -1 ? "&" : "?") + query;
 				dojo.io.setIFrameSrc(this.iframe, tmpUrl, true);
 			}
 		}catch(e){
@@ -145,35 +145,39 @@ dojo.io.IframeTransport = new function(){
 
 		var req = _this.currentRequest;
 
-		// remove all the hidden content inputs
-		var toClean = req._contentToClean;
-		for(var i = 0; i < toClean.length; i++) {
-			var key = toClean[i];
-			if(dojo.render.html.safari){
-				//In Safari (at least 2.0.3), can't use formNode[key] syntax to find the node,
-				//for nodes that were dynamically added.
-				var fNode = req.formNode;
-				for(var j = 0; j < fNode.childNodes.length; j++){
-					var chNode = fNode.childNodes[j];
-					if(chNode.name == key){
-						var pNode = chNode.parentNode;
-						pNode.removeChild(chNode);
-						break;
+		if(req.formNode){
+			// remove all the hidden content inputs
+			var toClean = req._contentToClean;
+			for(var i = 0; i < toClean.length; i++) {
+				var key = toClean[i];
+				if(dojo.render.html.safari){
+					//In Safari (at least 2.0.3), can't use formNode[key] syntax to find the node,
+					//for nodes that were dynamically added.
+					var fNode = req.formNode;
+					for(var j = 0; j < fNode.childNodes.length; j++){
+						var chNode = fNode.childNodes[j];
+						if(chNode.name == key){
+							var pNode = chNode.parentNode;
+							pNode.removeChild(chNode);
+							break;
+						}
 					}
+				}else{
+					var input = req.formNode[key];
+					req.formNode.removeChild(input);
+					req.formNode[key] = null;
 				}
-			}else if(req.formNode){
-				var input = req.formNode[key];
-				req.formNode.removeChild(input);
-				req.formNode[key] = null;
+			}
+	
+			// restore original action + target
+			if(req["_originalAction"]){
+				req.formNode.setAttribute("action", req._originalAction);
+			}
+			if(req["_originalTarget"]){
+				req.formNode.setAttribute("target", req._originalTarget);
+				req.formNode.target = req._originalTarget;
 			}
 		}
-
-		// restore original action + target
-		if(req["_originalAction"]){
-			req.formNode.setAttribute("action", req._originalAction);
-		}
-		req.formNode.setAttribute("target", req._originalTarget);
-		req.formNode.target = req._originalTarget;
 
 		var contentDoc = function(iframe_el){
 			var doc = iframe_el.contentDocument || // W3
