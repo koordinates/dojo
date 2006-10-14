@@ -12,7 +12,7 @@ dojo.io.RhinoHTTPTransport = new function(){
 			// should provide some kind of hook to inject your own, because
 			// in all my projects I use XML for Script to provide a W3C DOM.
 			if(!dojo.lang.inArray((req.mimetype.toLowerCase() || ""),
-				["text/plain", "text/html", "text/javascript", "text/json"])){
+				["text/plain", "text/html", "text/javascript", "text/json", "application/json"])){
 				return false;
 			}
 			
@@ -49,7 +49,7 @@ dojo.io.RhinoHTTPTransport = new function(){
 						dojo.debug(text);
 						ret = null;
 					}
-				}else if(req.mimetype == "text/json"){
+				}else if(req.mimetype == "text/json" || req.mimetype == "application/json"){
 					try{
 						ret = dj_eval("("+text+")");
 					}catch(e){
