@@ -113,12 +113,7 @@ dojo.io.IframeTransport = new function(){
 	this.canHandle = function(kwArgs){
 		return (
 			(
-				// FIXME: can we really handle text/plain and
-				// text/javascript requests?
-				dojo.lang.inArray([	"text/plain", "text/html", "text/javascript", "text/json"], kwArgs["mimetype"])
-			)&&(
-				// make sur we really only get used in file upload cases	
-				(kwArgs["formNode"])&&(dojo.io.checkChildrenForFile(kwArgs["formNode"]))
+				dojo.lang.inArray([	"text/plain", "text/html", "text/javascript", "text/json", "application/json"], kwArgs["mimetype"])
 			)&&(
 				dojo.lang.inArray(["post", "get"], kwArgs["method"].toLowerCase())
 			)&&(
@@ -205,12 +200,12 @@ dojo.io.IframeTransport = new function(){
 	
 			try{
 				var cmt = req.mimetype;
-				if((cmt == "text/javascript")||(cmt == "text/json")){
+				if((cmt == "text/javascript")||(cmt == "text/json")||(cmt == "application/json")){
 					// FIXME: not sure what to do here? try to pull some evalulable
 					// text from a textarea or cdata section? 
 					// how should we set up the contract for that?
 					var js = ifd.getElementsByTagName("textarea")[0].value;
-					if(cmt == "text/json") { js = "(" + js + ")"; }
+					if(cmt == "text/json" || cmt == "application/json") { js = "(" + js + ")"; }
 					value = dj_eval(js);
 				}else if(cmt == "text/html"){
 					value = ifd;
