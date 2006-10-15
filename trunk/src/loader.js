@@ -517,21 +517,26 @@ dojo.hostenv.searchLocalePath = function(/*String*/locale, /*Boolean*/down, /*Fu
 	}
 }
 
+//These two functions are placed outside of preloadLocalizations
+//So that the xd loading can use/override them.
+dojo.hostenv.localesGenerated /***BUILD:localesGenerated***/; // value will be inserted here at build time, if necessary
+dojo.hostenv.registerNlsPrefix = function(){
+	dojo.registerModulePath("nls","nls");	
+}
+
 dojo.hostenv.preloadLocalizations = function(){
 // summary:
 //	Load built, flattened resource bundles, if available for all locales used in the page.
 //	Execute only once.  Note that this is a no-op unless there is a build.
 
-	var localesGenerated /***BUILD:localesGenerated***/; // value will be inserted here at build time, if necessary
-
-	if(localesGenerated){
-		dojo.registerModulePath("nls","nls");
+	if(this.localesGenerated){
+		dojo.hostenv.registerNlsPrefix();
 
 		function preload(locale){
 			locale = dojo.hostenv.normalizeLocale(locale);
 			dojo.hostenv.searchLocalePath(locale, true, function(loc){
-				for(var i=0; i<localesGenerated.length;i++){
-					if(localesGenerated[i] == loc){
+				for(var i=0; i<dojo.hostenv.localesGenerated.length;i++){
+					if(dojo.hostenv.localesGenerated[i] == loc){
 						dojo["require"]("nls.dojo_"+loc);
 						return true; // Boolean
 					}

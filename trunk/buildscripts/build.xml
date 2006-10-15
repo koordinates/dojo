@@ -879,6 +879,9 @@ internTemplateStrings(project.resolveFile("profiles/" + dojo.getProperty("profil
 		<antcall target="xdgen">
 			<param name="xdgenDir" value="${release_dir}/src" />
 		</antcall>
+		<antcall target="xdgen">
+			<param name="xdgenDir" value="${release_dir}/nls" />
+		</antcall>
 	</target>
 	<!-- end xdgenRelease task -->
 
