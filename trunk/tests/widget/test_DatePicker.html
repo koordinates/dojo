@@ -16,7 +16,7 @@
 	dojo.addOnLoad(init);
 	var formDp, dpInput, setDate, dp;
 	function init(){
-		formDp = dojo.widget.createWidget("DatePicker", {}, dojo.byId("dpNode")); 
+		formDp = dojo.widget.createWidget("DatePicker", {value: '2006-10-31'}, dojo.byId("dpNode")); 
 		dpInput = dojo.byId('dpInput');
 		setDate = dojo.byId('setDate');
 		dojo.event.connect(formDp,'onSetDate','setDpInput');
@@ -39,18 +39,18 @@
 </head>
 <body>
 <h1>Dojo DatePicker Demo</h1>
-<p>A DatePicker mimicking a formNode (requires extra coding on developers part) You can also see how setDate() affects the UI by clicking the setDate button (this is also created via createWidget not markup)</p>
+<p>A DatePicker mimicking a formNode (requires extra coding on developers part) You can also see how setDate() affects the UI by clicking the setDate button (this is also created via createWidget not markup) and has a initial value of "2006-10-31"</p>
 
 <div id="dpNode" style="border:1px solid blue;padding:1px;"></div><input name="date" id="dpInput" type="text" size="10"/><button id="setDate">setDate</button>
-
+<br/><br/>
 This should have the month label all on one line (problem in IE) appears fine in FF though.
 <div dojoType="datepicker" widgetId="foo" lang="en-us" displayWeeks="1" staticDisplay="true"></div>
 
 <p>A calendar in your locale, or the closest thing to it we currently provide</p>
 <div id="test" dojoType="datepicker"  style="border:1px solid red;padding:1px;"></div>
 
-<p>Same as above, but Friday is the first day of the week. WOOHOO!</p>
-<div dojoType="datepicker" weekStartsOn="5"></div>
+<p>Same as above, but Friday is the first day of the week. WOOHOO! value="today"</p>
+<div dojoType="datepicker" value="today" weekStartsOn="5"></div>
 
 <p>Same as first, but with only 3 weeks displayed</p>
 <div dojoType="datepicker" displayWeeks="3"></div>
@@ -77,8 +77,8 @@ display starts since the range overlaps the end of a month and the beginning of 
  This is considered a static display, because the range of startDate and endDate is less than the displayWeeks.</p>
 <div dojoType="datepicker" startDate="2006-09-23" endDate="2006-10-10"></div>
 
-<p>Same as first with staticDisplay=true and an initial of date="2005-12-25" (Sunday, December 25, 2005)</p>
-<div dojoType="datepicker" staticDisplay="true" date="2005-12-25"></div>
+<p>Same as first with staticDisplay=true and an initial of value="2005-12-25" (Sunday, December 25, 2005)</p>
+<div dojoType="datepicker" staticDisplay="true" value="2005-12-25"></div>
 
 <p>now on to the locale stuff...</p>
 
