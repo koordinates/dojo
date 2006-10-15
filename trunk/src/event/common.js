@@ -865,3 +865,4 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		}
 		return true;
 	}
+});
