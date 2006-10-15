@@ -739,6 +739,19 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 	},
 
 	kwAddAdvice: function(/*Object*/args){
+		// summary:
+		//		adds advice to the joinpoint with arguments in a map
+		// args:
+		// 		An object that can have the following properties:
+		//			- adviceType
+		//			- adviceObj
+		//			- adviceFunc 
+		//			- aroundObj
+		//			- aroundFunc
+		//			- once
+		//			- delay
+		//			- rate
+		//			- adviceMsg
 		this.addAdvice(	args["adviceObj"], args["adviceFunc"], 
 						args["aroundObj"], args["aroundFunc"], 
 						args["adviceType"], args["precedence"], 
@@ -748,9 +761,37 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 
 	addAdvice: function(	thisAdviceObj, thisAdvice, 
 							thisAroundObj, thisAround, 
-							advice_kind, precedence, 
+							adviceType, precedence, 
 							once, delay, rate, asMessage){
-		var arr = this.getArr(advice_kind);
+		// summary:
+		//		add advice to this joinpoint using positional parameters
+		// thisAdviceObj:
+		//		the scope in which to locate/execute the named adviceFunc.
+		// thisAdviceFunc:
+		//		the name of the function being conected
+		// thisAroundObj:
+		//		the scope in which to locate/execute the named aroundFunc.
+		// thisAroundFunc:
+		//		the name of the function that will be used to mediate the
+		//		advice call.
+		// adviceType: 
+		//		Optional. String. One of "before", "after", "around",
+		//		"before-around", or "after-around". FIXME
+		// once:
+		//		boolean that determines whether or not this advice will create
+		//		a new connection if an identical advice set has already been
+		//		provided. Defaults to "false".
+		// delay:
+		//		an optional delay (in ms), as an integer, for dispatch of a
+		//		listener after the source has been fired.
+		// rate:
+		//		an optional rate throttling parameter (integer, in ms). When
+		//		specified, this particular connection will not fire more than
+		//		once in the interval specified by the rate
+		// adviceMsg:
+		//		boolean. Should the listener have all the parameters passed in
+		//		as a single argument?
+		var arr = this.getArr(adviceType);
 		if(!arr){
 			dojo.raise("bad this: " + this);
 		}
@@ -758,7 +799,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		var ao = [thisAdviceObj, thisAdvice, thisAroundObj, thisAround, delay, rate, asMessage];
 		
 		if(once){
-			if(this.hasAdvice(thisAdviceObj, thisAdvice, advice_kind, arr) >= 0){
+			if(this.hasAdvice(thisAdviceObj, thisAdvice, adviceType, arr) >= 0){
 				return;
 			}
 		}
@@ -770,8 +811,22 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		}
 	},
 
-	hasAdvice: function(thisAdviceObj, thisAdvice, advice_kind, arr){
-		if(!arr){ arr = this.getArr(advice_kind); }
+	hasAdvice: function(thisAdviceObj, thisAdvice, adviceType, arr){
+		// summary:
+		//		returns the array index of the first existing connection
+		//		betweened the passed advice and this joinpoint. Will be -1 if
+		//		none exists.
+		// thisAdviceObj:
+		//		the scope in which to locate/execute the named adviceFunc.
+		// thisAdviceFunc:
+		//		the name of the function being conected
+		// adviceType: 
+		//		Optional. String. One of "before", "after", "around",
+		//		"before-around", or "after-around". FIXME
+		// arr:
+		//		Optional. The list of advices to search. Will be found via
+		//		adviceType if not passed
+		if(!arr){ arr = this.getArr(adviceType); }
 		var ind = -1;
 		for(var x=0; x<arr.length; x++){
 			var aao = (typeof thisAdvice == "object") ? (new String(thisAdvice)).toString() : thisAdvice;
@@ -780,20 +835,33 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 				ind = x;
 			}
 		}
-		return ind;
+		return ind; // Integer
 	},
 
-	removeAdvice: function(thisAdviceObj, thisAdvice, advice_kind, once){
-		var arr = this.getArr(advice_kind);
-		var ind = this.hasAdvice(thisAdviceObj, thisAdvice, advice_kind, arr);
+	removeAdvice: function(thisAdviceObj, thisAdvice, adviceType, once){
+		// summary:
+		//		returns the array index of the first existing connection
+		//		betweened the passed advice and this joinpoint. Will be -1 if
+		//		none exists.
+		// thisAdviceObj:
+		//		the scope in which to locate/execute the named adviceFunc.
+		// thisAdviceFunc:
+		//		the name of the function being conected
+		// adviceType: 
+		//		Optional. String. One of "before", "after", "around",
+		//		"before-around", or "after-around". FIXME
+		// once:
+		//		Optional. Should this only remove the first occurance of the
+		//		connection?
+		var arr = this.getArr(adviceType);
+		var ind = this.hasAdvice(thisAdviceObj, thisAdvice, adviceType, arr);
 		if(ind == -1){
 			return false;
 		}
 		while(ind != -1){
 			arr.splice(ind, 1);
 			if(once){ break; }
-			ind = this.hasAdvice(thisAdviceObj, thisAdvice, advice_kind, arr);
+			ind = this.hasAdvice(thisAdviceObj, thisAdvice, adviceType, arr);
 		}
 		return true;
 	}
-});
