@@ -529,7 +529,7 @@ dojo.hostenv.preloadLocalizations = function(){
 //	Load built, flattened resource bundles, if available for all locales used in the page.
 //	Execute only once.  Note that this is a no-op unless there is a build.
 
-	if(this.localesGenerated){
+	if(dojo.hostenv.localesGenerated){
 		dojo.hostenv.registerNlsPrefix();
 
 		function preload(locale){
