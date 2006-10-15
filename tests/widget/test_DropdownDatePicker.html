@@ -31,10 +31,10 @@
 Here are some date pickers positioned statically.
 Drop down should appear below the input box.
 </p>
-Wipe: with value="today" startDate="2006-10-01"
-<input dojoType="dropdowndatepicker" value="today" startDate="2006-10-01" containerToggle="wipe" containerToggleDuration="300">
-Explode:
-<input dojoType="dropdowndatepicker" value="06/28/2006" containerToggle="explode" containerToggleDuration="500">
+Wipe: with value="2006-10-01" startDate="2006-10-25" Testing invalid initial value + start/endDate
+<input dojoType="dropdowndatepicker" value="2006-10-01" startDate="2006-10-25" containerToggle="wipe" containerToggleDuration="300">
+Explode: testing invalid initial value of "oiwerwerw" (should render as no value provided)
+<input dojoType="dropdowndatepicker" value="oiwerwerw" containerToggle="explode" containerToggleDuration="500">
 Fade:
 <input dojoType="dropdowndatepicker" value="06/30/2006" containerToggle="fade" containerToggleDuration="500">
 	

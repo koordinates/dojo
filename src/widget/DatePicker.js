@@ -1,4 +1,4 @@
-dojo.provide("dojo.widget.DatePicker");
+	dojo.provide("dojo.widget.DatePicker");
 dojo.require("dojo.date.common");
 dojo.require("dojo.date.format");
 dojo.require("dojo.date.serialize");
@@ -97,7 +97,9 @@ dojo.widget.defineWidget(
 			}
 			this.today = new Date();
 			this.today.setHours(0,0,0,0);
-			if(this.value && (typeof this.value=="string") && (this.value.split("-").length > 2)) {
+			if(typeof(this.value)=='string'&&this.value.toLowerCase()=='today'){
+				this.value = new Date();
+			}else if(this.value && (typeof this.value=="string") && (this.value.split("-").length > 2)) {
 				this.value = dojo.date.fromRfc3339(this.value);
 				this.value.setHours(0,0,0,0);
 			}
@@ -127,6 +129,11 @@ dojo.widget.defineWidget(
  			for(i=0; i<7; i++) {
 				dayLabelNodes.item(i).innerHTML = dayLabels[i];
 			}
+			dojo.debug('value:'+this.value);
+			if(this.value){
+				this.setValue(this.value);
+			}
+
 		},
 		
 		getValue: function() {
