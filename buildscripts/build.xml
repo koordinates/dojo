@@ -879,11 +879,30 @@ internTemplateStrings(project.resolveFile("profiles/" + dojo.getProperty("profil
 		<antcall target="xdgen">
 			<param name="xdgenDir" value="${release_dir}/src" />
 		</antcall>
+
+		<available file="${release_dir}/nls" property="flatnls.present"/>
+		<antcall target="xdgenNlsRelease" />
+		
+		<!-- flatten l10n bundles -->
+		<echo>Flattening resource bundles for xd loading</echo>
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true">
+			<redirector logError="true" outputproperty="xdFlattenedBundles" alwayslog="true" />
+			<arg value="flattenBundlesXd.js" />
+			<arg value="../src" />
+			<arg value="${release_dir}" />
+		</java>
+		<echo message="Generated flattened xd bundles."/>
+	</target>
+	<!-- end xdgenRelease task -->
+
+	<!-- xdgenNlsRelease task -->
+	<target name="xdgenNlsRelease" if="flatnls.present">
 		<antcall target="xdgen">
 			<param name="xdgenDir" value="${release_dir}/nls" />
 		</antcall>
 	</target>
-	<!-- end xdgenRelease task -->
+	<!-- end xdgenNlsRelease task -->
+
 
 	<!-- xdgen task -->
 	<target name="xdgen" 
