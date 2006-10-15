@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This plugin adds save() and insertImage() to Editor2 widget, and two commands for each
  * of them. When the corresponding button is clicked in the toolbar, the added function in the
  * Editor2 widget is called. This mimics the original Editor2 behavior. If you want to have other

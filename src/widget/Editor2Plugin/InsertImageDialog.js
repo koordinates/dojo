@@ -1,4 +1,4 @@
-﻿dojo.provide("dojo.widget.Editor2Plugin.InsertImageDialog");
+dojo.provide("dojo.widget.Editor2Plugin.InsertImageDialog");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2InsertImageDialog",
@@ -35,7 +35,7 @@ dojo.widget.defineWidget(
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 		var insertcmd = dojo.widget.Editor2Manager.getCommand('inserthtml');
 		var option = 0;
-	
+
 		var attstr='';
 		for(var i=0; i<this.editableAttributes.length; ++i){
 			name = this.editableAttributes[i];
@@ -48,7 +48,7 @@ dojo.widget.defineWidget(
 			dojo.withGlobal(curInst.window, "selectElement", dojo.html.selection, [this.imageNode]);
 		}
 		insertcmd.execute('<img '+attstr+this.extraAttribText+'/>');
-	
+
 		this.cancel();
 	}
 });

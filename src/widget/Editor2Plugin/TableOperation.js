@@ -8,12 +8,7 @@ dojo.require("dojo.widget.Editor2");
 dojo.event.topic.subscribe("dojo.widget.RichText::init", function(editor){
 	editor.__TableOperationShowBorder = false;
 
-	if(dojo.render.html.moz && false){
-		//include the css file to show table border when border=0
-		editor.__TableOperationShowBorder = true;
-		editor.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
-//		editor.editingAreaStyleSheets.push(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
-	}else if(dojo.render.html.ie){
+	if(dojo.render.html.ie){
 		//add/remove a class to a table with border=0 to show the border when loading/saving
 		editor.contentDomPreFilters.push(dojo.widget.Editor2Plugin.TableOperation.showIETableBorder);
 		editor.contentDomPostFilters.push(dojo.widget.Editor2Plugin.TableOperation.removeIEFakeClass);
