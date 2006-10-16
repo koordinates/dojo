@@ -274,6 +274,11 @@ function rolloutFunction(&$output, $package, $declaration) {
     }
   }
   
+  $instance_functions = $declaration->getInstanceFunctions();
+  foreach ($instance_functions as $instance_function) {
+    rolloutFunction($output, $package, $instance_function);
+  }
+  
   $comment_keys = $declaration->getBlockCommentKeys();
   foreach ($comment_keys as $key) {
     if ($key == 'summary') {
