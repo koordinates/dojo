@@ -440,11 +440,25 @@ dojo.kwCompoundRequire = function(/*Object containing Arrays*/modMap){
 	}
 }
 
-dojo.require = function(/*...*/){
+dojo.require = function(/*String*/ resourceName){
+	// summary
+	//	Ensure that the given resource (ie, javascript
+	//	source file) has been loaded.
+	// description
+	//	dojo.require() is similar to C's #include command or java's "import" command.
+	//	You call dojo.require() to pull in the resources (ie, javascript source files)
+	//	that define the functions you are using. 
+	//
+	//	Note that in the case of a build, many resources have already been included
+	//	into dojo.js (ie, many of the javascript source files have been compressed and
+	//	concatened into dojo.js), so many dojo.require() calls will simply return
+	//	without downloading anything.
 	dojo.hostenv.loadModule.apply(dojo.hostenv, arguments);
 }
 
-dojo.requireIf = function(/*...*/){
+dojo.requireIf = function(/*Boolean*/ condition, /*String*/ resourceName){
+	// summary
+	//	If the condition is true then call dojo.require() for the specified resource
 	var arg0 = arguments[0];
 	if((arg0 === true)||(arg0=="common")||(arg0 && dojo.render[arg0].capable)){
 		var args = [];
@@ -455,7 +469,27 @@ dojo.requireIf = function(/*...*/){
 
 dojo.requireAfterIf = dojo.requireIf;
 
-dojo.provide = function(/*...*/){
+dojo.provide = function(/*String*/ resourceName){
+	// summary
+	//	Each javascript source file must have (exactly) one dojo.provide()
+	//	call at the top of the file, corresponding to the file name.
+	//	For example, dojo/src/foo.js must have dojo.provide("dojo.foo"); at the top of the file.
+	//
+	// description
+	//	Each javascript source file is called a resource.  When a resource
+	//	is loaded by the browser, dojo.provide() registers that it has
+	//	been loaded.
+	//	
+	//	For backwards compatibility reasons, in addition to registering the resource,
+	//	dojo.provide() also ensures that the javascript object for the module exists.  For
+	//	example, dojo.provide("dojo.html.common"), in addition to registering that common.js
+	//	is a resource for the dojo.html module, will ensure that the dojo.html javascript object
+	//	exists, so that calls like dojo.html.foo = function(){ ... } don't fail.
+	//
+	//	In the case of a build (or in the future, a rollup), where multiple javascript source
+	//	files are combined into one bigger file (similar to a .lib or .jar file), that file
+	//	will contain multiple dojo.provide() calls, to note that it includes
+	//	multiple resources.
 	return dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
 }
 
