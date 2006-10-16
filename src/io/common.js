@@ -202,6 +202,7 @@ dojo.io.bind = function(request){
 			var tmp = dojo.io.transports[x];
 			if((this[tmp])&&(this[tmp].canHandle(request))){
 				tsName = tmp;
+				break;
 			}
 		}
 		if(tsName == ""){
