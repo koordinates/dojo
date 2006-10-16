@@ -126,7 +126,7 @@ class DojoFunctionDeclare extends DojoBlock
       }
       if (($pos = strpos($name, 'this.')) === 0) {
         $this->instance = substr($name, 0, $pos);
-        $name = preg_replace('%^this\.%', '', $name);
+        $name = $this->package->getPackageName() . "." . preg_replace('%^this\.%', '', $name);
       }
       $this->function_name = $name;
     }
@@ -171,6 +171,11 @@ class DojoFunctionDeclare extends DojoBlock
   public function getSource()
   {
     return $this->body->getSource();
+  }
+  
+  public function getInstanceFunctions()
+  {
+    return $this->body->getInstanceFunctions();
   }
 }
 

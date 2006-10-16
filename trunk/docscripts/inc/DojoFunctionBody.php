@@ -128,11 +128,26 @@ class DojoFunctionBody extends DojoBlock
     $this->build();
     $lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], $this->end[0], $this->end[1], true);
     foreach ($lines as $line) {
-      if (preg_match('%\bthis\.([a-zA-Z0-9._$]+)\s*=%', $line, $match)) {
+      if (preg_match('%\bthis\.([a-zA-Z0-9._$]+)\s*=\s*(?!function)%', $line, $match)) {
         $this->instance_variables[] = $match[1];
       }
     }
     return $this->instance_variables;
+  }
+  
+  public function getInstanceFunctions()
+  {
+    $functions = array();
+    $this->build();
+    $lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], $this->end[0], $this->end[1], true);
+    foreach ($lines as $line_number => $line) {
+      if (preg_match('%\bthis\.([a-zA-Z0-9._$]+)\s*=\s*function\b%', $line, $match, PREG_OFFSET_CAPTURE)) {
+        $function = new DojoFunctionDeclare($this->package, $line_number, $match[0][1]);
+        $end = $function->build();
+        $functions[] = $function;
+      }
+    }
+    return $functions;
   }
   
   public function getReturnComments()
