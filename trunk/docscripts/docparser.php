@@ -17,28 +17,40 @@ foreach ($files as $file) {
   $package = new DojoPackage($dojo, $file);
   $package_name = $package->getPackageName();
 
+  $compound_calls = $package->getFunctionCalls('dojo.kwCompoundRequire');
+  $require_calls = $package->getFunctionCalls('dojo.require');
+  $require_if_calls = array_merge($package->getFunctionCalls('dojo.requireIf'), $package->getFunctionCalls('dojo.requireAfterIf'));
+  $declare_calls = array_merge($package->getFunctionCalls('dojo.declare'), $package->getFunctionCalls('dojo.widget.defineWidget'));
+  $inherit_calls = $package->getFunctionCalls('dojo.inherits', true);
+  $mixin_calls = array_merge($package->getFunctionCalls('dojo.extend'), $package->getFunctionCalls('dojo.lang.extend', true), $package->getFunctionCalls('dojo.mixin'), $package->getFunctionCalls('dojo.lang.mixin'));
+  $declarations = $package->getFunctionDeclarations();
+  $objects = $package->getObjects();
+
+  // Since there can be chase conditions between declarations and calls, we need to find which were "swallowed" by larger blocks
+  $package->removeSwallowed($mixin_calls);
+  $package->removeSwallowed($declarations);
+
   // Handle compound require calls
-  $calls = $package->getFunctionCalls('dojo.kwCompoundRequire');
-  foreach ($calls as $call) {
+  foreach ($compound_calls as $call) {
     if ($call->getParameter(0)->isA(DojoObject)) {
       $object = $call->getParameter(0)->getObject();
       foreach ($object->getValues() as $key => $value) {
         if ($value->isA(DojoArray)) {
           foreach ($value->getArray()->getItems() as $item) {
             if ($item->isA(DojoString)) {
-              $output[$package_name]['meta']['requires'][$key][] = $item->getString();
               if (!$output['function_names'][$package_name]) {
                 $output['function_names'][$package_name] = array();
               }
+              $output[$package_name]['meta']['requires'][$key][] = $item->getString();
             }
           }
         }
       }
     }
   }
+
   // Handle dojo.require calls
-  $calls = $package->getFunctionCalls('dojo.require');
-  foreach ($calls as $call) {
+  foreach ($require_calls as $call) {
     $require = $call->getParameter(0);
     if ($require->isA(DojoString)) {
       $output[$package_name]['meta']['requires']['common'][] = $require->getString();
@@ -46,8 +58,7 @@ foreach ($files as $file) {
   }
   
   // Handle dojo.requireAfterIf calls
-  $calls = array_merge($package->getFunctionCalls('dojo.requireIf'), $package->getFunctionCalls('dojo.requireAfterIf'));
-  foreach ($calls as $call) {
+  foreach ($require_if_calls as $call) {
     $environment = $call->getParameter(0);
     $require = $call->getParameter(1);
     if ($environment && $require) {
@@ -60,8 +71,7 @@ foreach ($files as $file) {
   }
   
   // This closely matches dojo.widget.defineWidget as declared in src/widget/Widget.js
-  $calls = array_merge($package->getFunctionCalls('dojo.declare'), $package->getFunctionCalls('dojo.widget.defineWidget'));
-  foreach ($calls as $call) {
+  foreach ($declare_calls as $call) {
     if ($call->getName() == 'dojo.declare') {
       $args = array($call->getParameter(0), null, $call->getParameter(1), $call->getParameter(2), $call->getParameter(3));
       $name = $args[0]->getString();
@@ -102,11 +112,12 @@ foreach ($files as $file) {
       $output[$package_name]['meta']['functions'][$name]['meta']['call_chain'][] = $args[2]->getVariable();
     }
     elseif ($args[2]->isA(DojoArray)) {
-      $items = $args[2]->getArray();
+      $items = $args[2]->getArray()->getItems();
       foreach ($items as $item) {
         if ($item->isA(DojoString)) {
-          $output[$package_name]['meta']['functions'][$name]['meta']['prototype_chain'][] = $item->getString();
-          $output[$package_name]['meta']['functions'][$name]['meta']['call_chain'][] = $item->getString();
+          $item = $item->getString();
+          $output[$package_name]['meta']['functions'][$name]['meta']['prototype_chain'][] = $item;
+          $output[$package_name]['meta']['functions'][$name]['meta']['call_chain'][] = $item;
         }
       }
     }
@@ -138,21 +149,18 @@ foreach ($files as $file) {
   }
   
   // Handle function declarations
-  $declarations = $package->getFunctionDeclarations();
   foreach ($declarations as $declaration) {
     rolloutFunction($output, $package, $declaration);
   }
   
-  $calls = $package->getFunctionCalls('dojo.inherits', true);
-  foreach ($calls as $call) {
+  foreach ($inherit_calls as $call) {
     if ($call->getParameter(0)->isA(DojoVariable) && $call->getParameter(1)->isA(DojoVariable)) {
       $output[$package_name]['meta']['functions'][$call->getParameter(0)->getVariable()]['meta']['prototype_chain'][] = $call->getParameter(1)->getVariable();
     }
   }
 
   // Handle. dojo.lang.extend and dojo.lang.mixin calls
-  $calls = array_merge($package->getFunctionCalls('dojo.extend'), $package->getFunctionCalls('dojo.lang.extend', true), $package->getFunctionCalls('dojo.mixin'), $package->getFunctionCalls('dojo.lang.mixin'));
-  foreach ($calls as $call) {
+  foreach ($mixin_calls as $call) {
     if ($call->getParameter(0)->isA(DojoVariable)) {
       $object = $call->getParameter(0)->getVariable();
       $call_name = $call->getName();
@@ -203,7 +211,6 @@ foreach ($files as $file) {
     }
   }
   
-  $objects = $package->getObjects();
   foreach ($objects as $object) {
     $values = $object->getValues();
     $name = $object->getName();
@@ -221,7 +228,9 @@ foreach ($files as $file) {
     $keys = $object->getBlockCommentKeys();
     foreach ($keys as $key) {
       if (!empty($output[$package_name]['meta']['functions'][$name]['meta']['variables']) && in_array($key, $output[$package_name]['meta']['functions'][$name]['meta']['variables'])) {
-        $output[$package_name]['meta']['functions'][$name]['extra']['variables'][$key] = $object->getBlockComment($key);
+        $parts = explode(' ', $object->getBlockComment($key));
+        $output[$package_name]['meta']['functions'][$name]['extra']['variables'][$key]['type'] = array_shift($parts);
+        $output[$package_name]['meta']['functions'][$name]['extra']['variables'][$key]['summary'] = implode(' ', $parts);
       }
     }
   }

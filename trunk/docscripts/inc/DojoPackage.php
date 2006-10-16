@@ -242,6 +242,29 @@ class DojoPackage
  		return $this->code = $lines;
   }
   
+  /**
+   * Remove items from the passed objects if they are inside of existing calls or declarations
+   */
+  public function removeSwallowed(&$objects)
+  {
+    foreach ($objects as $i => $object) {
+      foreach ($this->declarations as $declaration) {
+          if (($object->start[0] > $call->start[0] || ($object->start[0] == $call->start[0] && $object->start[1] > $call->start[1]))
+              && ($object->end[0] < $call->end[0] || ($object->end[0] == $call->end[0] && $object->end[1] < $call->end[1]))) {
+          unset($objects[$i]);
+        }
+      }
+      foreach ($this->calls as $call_name => $calls) {
+        foreach ($calls as $call) {
+          if (($object->start[0] > $call->start[0] || ($object->start[0] == $call->start[0] && $object->start[1] > $call->start[1]))
+              && ($object->end[0] < $call->end[0] || ($object->end[0] == $call->end[0] && $object->end[1] < $call->end[1]))) {
+            unset($objects[$i]);
+          }
+        }
+      }
+    }
+  }
+  
   public function getPackageName()
   {
     $file = $this->file;

@@ -3,8 +3,8 @@
 abstract class DojoBlock
 {
   protected $package;
-  protected $start;
-  protected $end;
+  public $start;
+  public $end;
   
   public function __construct($package, $line_number = false, $position = false)
   {

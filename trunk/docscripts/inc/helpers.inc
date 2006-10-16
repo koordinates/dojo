@@ -91,7 +91,8 @@ function writeToDisk($output, $dir, $format = 'json', $environment = 'remote') {
                 $variable = $variables->appendChild($document->createElement('variable'));
                 $variable->setAttribute('name', $variable_name);
                 if (!empty($function_content['extra']['variables'][$variable_name])) {
-                  $variable->appendChild($document->createTextNode($function_content['extra']['variables'][$variable_name]));
+                  $variable->setAttribute('type', $function_content['extra']['variables'][$variable_name]['type']);
+                  $variable->appendChild($document->createTextNode($function_content['extra']['variables'][$variable_name]['summary']));
                 }
               }
             }
@@ -101,7 +102,13 @@ function writeToDisk($output, $dir, $format = 'json', $environment = 'remote') {
                 $variable->setAttribute('scope', 'instance');
                 $variable->setAttribute('name', $variable_name);
                 if (!empty($function_content['extra']['variables'][$variable_name])) {
-                  $variable->appendChild($document->createTextNode($function_content['extra']['variables'][$variable_name]));
+                  $variable->setAttribute('type', $function_content['extra']['variables'][$variable_name]['type']);
+                  $variable->appendChild($document->createTextNode($function_content['extra']['variables'][$variable_name]['summary']));
+                }
+                $parent_function_name = preg_replace('%\.([^.]+)$%', '', $function_name);
+                if (!empty($package_content['meta']['functions'][$parent_function_name]) && !empty($package_content['meta']['functions'][$parent_function_name]['extra']['variables'][$variable_name])) {
+                  $variable->setAttribute('type', $package_content['meta']['functions'][$parent_function_name]['extra']['variables'][$variable_name]['type']);
+                  $variable->appendChild($document->createTextNode($package_content['meta']['functions'][$parent_function_name]['extra']['variables'][$variable_name]['summary']));
                 }
               }
             }
