@@ -129,7 +129,7 @@ dojo.widget.defineWidget(
  			for(i=0; i<7; i++) {
 				dayLabelNodes.item(i).innerHTML = dayLabels[i];
 			}
-			dojo.debug('value:'+this.value);
+
 			if(this.value){
 				this.setValue(this.value);
 			}
