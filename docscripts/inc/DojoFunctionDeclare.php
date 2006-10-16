@@ -138,7 +138,7 @@ class DojoFunctionDeclare extends DojoBlock
     foreach ($lines as $line_number => $line) {
       if (($pos = strpos($line, '{')) !== false) {
         $this->body->setStart($line_number, $pos);
-        return $this->body->build();
+        return $this->end = $this->body->build();
       }
     }
   }
