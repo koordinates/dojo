@@ -1,7 +1,7 @@
 dojo.kwCompoundRequire({
 	common: [
-		"dojo.text.String",
-		"dojo.text.Builder"
+		"dojo.string.common",
+		"dojo.string.Builder"
 	]
 });
 dojo.provide("dojo.text.*");
