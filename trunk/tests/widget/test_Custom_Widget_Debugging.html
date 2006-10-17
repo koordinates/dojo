@@ -31,6 +31,7 @@
 </script>
 
 <script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../../../src/ns.js"></script>
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.Button");
@@ -44,18 +45,19 @@
 
 <script>
 	// Load user custom button
-	
+
 	// 1. set directory for acme package (which contains widgets)
 	// The path is relative to the dojo/ directory, so typically
 	// it's something like "../acme"
-	dojo.setModulePrefix('acme', 'tests/widget/acme');
-	dojo.widget.manager.registerWidgetPackage('acme');
+	dojo.registerModulePath('acme', 'tests/widget/acme');
 	
 	// 2. load the user defined button
-	dojo.require("acme.UserButton");
+	dojo.require("acme.Button");
+
+	function widgetClick() {
+		dojo.debug('widget [' + this.widgetId + '] was clicked');
+	}
 	
-	// Write any includes that have occcured since the last call to writeIncludes()
-	// After this the debugAtAllCosts is disabled - any further dynamic loads are done normally.
 	dojo.hostenv.writeIncludes();
 </script>
 
@@ -84,21 +86,21 @@
 
 <body>
 
-<h1>User defined button widget</h1>
-<p>Dojo users can extend widgets or write their own.</p>
-<p>The button class has some hooks to allow you to define your own background images. Here's an example:</p>
+<h1>Example Of Using debugAtAllCosts w/Custom Widget</h1>
+
 <div class="box">
-	<button dojoType="UserButton" onclick='dojo.debug("short");'>
+	<button dojoType="acme:Button" onclick='dojo.debug("short");'>
 		<div class="dc">short</div>
 	</button>
-	<button dojoType="UserButton" onclick='dojo.debug("longer");'>
+	<button dojoType="acme:Button" onclick='dojo.debug("longer");'>
 		<div class="dc">bit longer</div>
 	</button>
-	<button dojoType="UserButton" onclick='dojo.debug("longer yet");'>
+	<button dojoType="acme:Button" onclick='dojo.debug("longer yet");'>
 		<div class="dc">ridiculously long</div>
 	</button>
 	<div style="clear: both;"></div>
 </div>
-<p>This page also show you how to debug dojo and custom widgets by using the debugAtAllCosts feature - see comments in the page source code for details.</p>
+<p>See comments in the page source code for details on how to debug custom widgets.</p>
 
-</body></html>
+</body>
+</html>

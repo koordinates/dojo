@@ -9,40 +9,50 @@
 		<script type="text/javascript">
 			dojo.require("dojo.string.*");
 			dojo.require("dojo.widget.Button");
-			
+
+			//
+			// Normal tests
+			//
 			dojo.addOnLoad(function() {
 				var w;
 				w = dojo.widget.createWidget("dojo:Button", { caption: "Created as dojo:Button" });
-				dojo.body().appendChild(w.domNode);
+				dojo.byId("vanilla").appendChild(w.domNode);
 				w = dojo.widget.createWidget("Button", { caption: "Created as Button" });
-				dojo.body().appendChild(w.domNode);
+				dojo.byId("vanilla").appendChild(w.domNode);
 				
-				// Cannot create *components* via createWidget
+				// Cannot create components via createWidget
 				//var w = dojo.widget.createWidget("dojo:foo");
-				
-				// Bogus namespace causes parser to fail
-				try {
-					var w = dojo.widget.createWidget("spuz:Button", { caption: "Created as spuz:Button" });
-					if (w) dojo.body().appendChild(w.domNode);
-				}catch(e){
-					dojo.debug("EXCEPTION: " + e.message);
-				}
 			});
-			
+
+			//
+			// Test auto-load
+			//	
 			dojo.registerModulePath("acme", "tests/widget/acme");
-			// conventional, therefore not required
-			//dojo.registerNamespace("acme", "acme.widget");
-			dojo.require("acme.Button");
+			dojo.registerNamespace("acme", "acme.widget", 
+				function(name){ 
+						return "acme."+dojo.string.capitalize(name);
+			});
 			
 			dojo.addOnLoad(function() {
 				var w = dojo.widget.createWidget("acme:Button", { caption: "Created with auto-require as acme:Button" });
-				dojo.body().appendChild(w.domNode);
+				dojo.byId("al").appendChild(w.domNode);
 			});
-			
-			dojo.widget.tags["dojo:foo"] = function() { dojo.debug("Found a 'foo' component"); };
+
+			//
+			// Test passing a dom node as the first argument to createWidget()
+			//
+
 		</script>
 	</head>
 	<body>
-		<div dojoType="foo"></div>
+		<h1>Test createWidget()</h1>
+		<div id="vanilla"></div>
+
+		<h1>Test createWidget()/auto-loading</h1>
+		<p>
+			This tests the ability for createWidget() to automatically load the code for a widget,
+			even though the user hasn't done a dojo.require() for the widget.
+		</p>
+		<div id="al"></div>
 	</body>
 </html>

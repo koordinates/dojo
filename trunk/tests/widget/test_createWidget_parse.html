@@ -14,6 +14,12 @@
 		</script>
 	</head>
 	<body style="padding-left: 150px;">
+		<h1>createWidget() parsing</h1>
+		<p>
+			This tests passing a dom node as the first argument to createWidget().
+			Note that djConfig.parseWidgets==false, so that the widget markup in this file won't be parsed
+			until createWidget() is told to explicitly do so.
+		</p>
 		<button onclick="dojo.widget.createWidget('toBeParsed');">click here to build the fisheye list</button>
 		<p>HTML before</p>
 		<p>HTML before</p>
