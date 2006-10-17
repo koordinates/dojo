@@ -623,7 +623,7 @@ dojo.flash.Embed.prototype = {
 
 	protocol: function(){
 		switch(window.location.protocol){
-			case "https":
+			case "https:":
 				return "https";
 				break;
 			default:
