@@ -67,6 +67,24 @@ dojo.event.browser = new function(){
 
 	var clobberIdx = 0;
 
+	this.normalizedEventName = function(/*String*/eventName){
+		switch(eventName){
+			case "CheckboxStateChange":
+			case "DOMAttrModified":
+			case "DOMMenuItemActive":
+			case "DOMMenuItemInactive":
+			case "DOMMouseScroll":
+			case "DOMNodeInserted":
+			case "DOMNodeRemoved":
+			case "RadioStateChange":
+				return eventName;
+				break;
+			default:
+				return eventName.toLowerCase();
+				break;
+		}
+	}
+	
 	this.clean = function(/*DOMNode*/node){
 		// summary:
 		//		removes native event handlers so that destruction of the node
@@ -124,7 +142,7 @@ dojo.event.browser = new function(){
 		// capture:
 		//		Optional. should this listener prevent propigation?
 		if(!capture){ var capture = false; }
-		evtName = evtName.toLowerCase();
+		evtName = this.normalizedEventName(evtName);
 		if( (evtName == "onkey") || (evtName == "key") ){
 			if(dojo.render.html.ie){
 				this.removeListener(node, "onkeydown", fp, capture);
@@ -156,7 +174,7 @@ dojo.event.browser = new function(){
 		//		function?
 		if(!node){ return; } // FIXME: log and/or bail?
 		if(!capture){ var capture = false; }
-		evtName = evtName.toLowerCase();
+		evtName = this.normalizedEventName(evtName);
 		if( (evtName == "onkey") || (evtName == "key") ){
 			if(dojo.render.html.ie){
 				this.addListener(node, "onkeydown", fp, capture, dontFix);
