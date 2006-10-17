@@ -157,6 +157,7 @@ dojo.widget.defineWidget(
 	
 	setText: function(txt){
 		// sets the text without informing the server
+		txt = "" + txt;
 		var tt = dojo.string.trim(txt);
 		this.textValue = tt
 		this.editable.innerHTML = tt;
