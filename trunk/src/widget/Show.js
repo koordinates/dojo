@@ -38,7 +38,7 @@ dojo.widget.defineWidget(
 		var source = this.getFragNodeRef(frag);
 		this.sourceNode = dojo.body().appendChild(source.cloneNode(true));
 		for(var i = 0, child; child = this.sourceNode.childNodes[i]; i++){
-			if(child.taName && child.getAttribute("dojotype").toLowerCase() == "showslide"){
+			if(child.tagName && child.getAttribute("dojotype").toLowerCase() == "showslide"){
 				child.className = "dojoShowPrintSlide";
 				child.innerHTML = "<h1>" + child.title + "</h1>" + child.innerHTML;
 			}
