@@ -37,11 +37,20 @@ dojo.widget.defineWidget(
 		//	order fields are traversed when user hits the tab key
 		tabIndex: "",
 
+		// Value
+		//	equivalent to value field on normal checkbox (if checked, the value is passed as
+		//	the value when form is submitted)
+		value: "on",
+
 		postMixInProperties: function(){
 			dojo.widget.Checkbox.superclass.postMixInProperties.apply(this, arguments);
 			
 			// set tabIndex="0" because if tabIndex=="" user won't be able to tab to the field
 			if(!this.disabled && this.tabIndex==""){ this.tabIndex="0"; }
+		},
+
+		fillInTemplate: function(){
+			this._setInfo();
 		},
 
 		postCreate: function(){
@@ -74,10 +83,6 @@ dojo.widget.defineWidget(
 			dojo.event.connect(node, "onkey", this, "onKey");
 			dojo.event.connect(node, "onclick", this, "_onClick");
 			dojo.html.disableSelection(node);
-		},
-
-		fillInTemplate: function(){
-			this._setInfo();
 		},
 
 		_onClick: function(/*Event*/ e){
@@ -125,12 +130,16 @@ dojo.widget.defineWidget(
 		},
 
 		_setInfo: function(){
-			// summary: set CSS class string according to checked/unchecked and disabled/enabled state
+			// summary:
+			//	set state of hidden checkbox node to correspond to displayed value.
+			//	also set CSS class string according to checked/unchecked and disabled/enabled state
 			var state = "dojoHtmlCheckbox" + (this.disabled ? "Disabled" : "") + (this.checked ? "On" : "Off");
 			dojo.html.setClass(this.imageNode, "dojoHtmlCheckbox " + state);
 			this.inputNode.checked = this.checked;
-			if (this.disabled){
-				this.inputNode.disabled = true;
+			if(this.disabled){
+				this.inputNode.setAttribute("disabled",true);
+			}else{
+				this.inputNode.removeAttribute("disabled");
 			}
 			dojo.widget.wai.setAttr(this.domNode, "waiState", "checked", this.checked);
 		}
@@ -145,15 +154,15 @@ dojo.widget.defineWidget(
 	{
 		templatePath: dojo.uri.dojoUri('src/widget/templates/CheckboxA11y.html'),
 
+		fillInTemplate: function(){
+		},
+
 		postCreate: function(args, frag){
 			this.inputNode.checked=this.checked;
 			//only set disabled if true since FF interprets any value for disabled as true
 			if (this.disabled){
 				this.inputNode.setAttribute("disabled",true);
 			} 
-		},
-
-		fillInTemplate: function(){
 		},
 
 		_onClick: function(){
