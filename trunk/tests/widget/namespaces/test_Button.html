@@ -175,9 +175,9 @@ Here's an example:</p>
 		forEachButton(function(widget){ widget.setDisabled(disabled); });
 		dojo.byId("toggle").innerHTML= disabled ? "Enable all" : "Disable all";
 	}
-	var captions=["<img src='images/note.gif'>All", "<i>work</i>", "and", "no", "<h1>play</h1>",
+	var captions=["<img src='../images/note.gif'>All", "<i>work</i>", "and", "no", "<h1>play</h1>",
 				 "<span style='color: red'>makes</span>", "Jack", "<h3>a</h3>", "dull",
-				 "<img src='images/plus.gif'>boy"];
+				 "<img src='../images/plus.gif'>boy"];
 	var idx=0;
 	function changeCaptions(){	
 		forEachButton(function(widget){ widget.setCaption( captions[idx++ % captions.length]); });
