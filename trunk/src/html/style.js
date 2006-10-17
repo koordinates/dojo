@@ -116,6 +116,9 @@ dojo.html.getElementsByClass = function(
 	//	summary
 	//	Returns an array of nodes for the given classStr, children of a
 	//	parent, and optionally of a certain nodeType
+	// FIXME: temporarily set to false because of several dojo tickets related
+	// to the xpath version not working consistently in firefox.
+	useNonXpath = false;
 	var _document = dojo.doc();
 	parent = dojo.byId(parent) || _document;
 	var classes = classStr.split(/\s+/g);
