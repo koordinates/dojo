@@ -622,11 +622,13 @@ dojo.flash.Embed.prototype = {
 	_visible: true,
 
 	protocol: function(){
-		var regexp = new RegExp("https:", "i");
-		if( regexp.test(window.location.href) ) {
-			return "https";
-		} else {
-			return "http";
+		switch(window.location.protocol){
+			case "https":
+				return "https";
+				break;
+			default:
+				return "http";
+				break;
 		}
 	},
 	
@@ -700,7 +702,10 @@ dojo.flash.Embed.prototype = {
 			
 			objectHTML =
 				'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" '
-				  + 'codebase="https://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" '
+				  + 'codebase="'
+					+ this.protocol()
+					+ '://fpdownload.macromedia.com/pub/shockwave/cabs/flash/'
+					+ 'swflash.cab#version=8,0,0,0" '
 				  + 'width="' + this.width + '" '
 				  + 'height="' + this.height + '" '
 				  + 'id="' + this.id + '" '
