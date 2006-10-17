@@ -15,7 +15,7 @@ dojo.widget.defineWidget(
 	function(){
 		this._slides=[];
 	},
-{
+	{
 	isContainer: true,
 	_slide: -1,
 
@@ -38,7 +38,7 @@ dojo.widget.defineWidget(
 		var source = this.getFragNodeRef(frag);
 		this.sourceNode = dojo.body().appendChild(source.cloneNode(true));
 		for(var i = 0, child; child = this.sourceNode.childNodes[i]; i++){
-			if(child.tagName && child.getAttribute("dojotype").toLowerCase() == "showslide"){
+			if(child.taName && child.getAttribute("dojotype").toLowerCase() == "showslide"){
 				child.className = "dojoShowPrintSlide";
 				child.innerHTML = "<h1>" + child.title + "</h1>" + child.innerHTML;
 			}
@@ -57,7 +57,7 @@ dojo.widget.defineWidget(
 		dojo.event.connect(window, "onresize", this, "resizeWindow");
 		dojo.event.connect(this.nav, "onmousemove", this, "popUpNav");
 	},
-	postCreate: function(){		
+	postCreate: function(){
 		this._slides = [];
 		for(var i = 0, child; child = this.children[i]; i++){
 			if(child.widgetType == "ShowSlide"){
@@ -67,8 +67,7 @@ dojo.widget.defineWidget(
 			}
 		}
 		this.option.parentNode.removeChild(this.option);
-
-		dojo.body().style.display = "block";
+		this.domNode.style.display = "block";
 		this.resizeWindow();
 
 		this.gotoSlide(0, true);
