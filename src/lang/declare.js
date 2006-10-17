@@ -3,17 +3,29 @@ dojo.provide("dojo.lang.declare");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.extras");
 
+// FIXME: parameter juggling for backward compat ... deprecate and remove after 0.3.*
+// new sig: (className (string)[, superclass (function || array)[, init (function)][, props (object)]])
+// old sig: (className (string)[, superclass (function || array), props (object), init (function)])
+dojo.lang.declare = function(/*String*/ className, /*Function|Array*/ superclass, /*Function?*/ init, /*Object*/ props){
 /*
- * Creates a constructor: inherit and extend
+ * summary:
+ *	Helper to simulate traditional "constructor" with inheritance using mixins
  *
- * - inherits from "superclass(es)" 
+ * className: the name of the class
  *
- *   "superclass" argument may be a Function, or an array of 
- *   Functions. 
- *
+ * superclass: may be a Function, or an Array of Functions. 
  *   If "superclass" is an array, the first element is used 
  *   as the prototypical ancestor and any following Functions 
- *   become mixin ancestors. 
+ *   become mixin ancestors.
+ *
+ * init: an initializer function
+ *
+ * props: Objects to be mixed in
+ *
+ * description:
+ * Creates a constructor: inherit and extend.  Aliased as "dojo.declare"
+ *
+ * - inherits from "superclass(es)" 
  * 
  *   All "superclass(es)" must be Functions (not mere Objects).
  *
@@ -24,13 +36,11 @@ dojo.require("dojo.lang.extras");
  *
  * - "props" are copied to the constructor prototype
  *
- * - name of the class ("className" argument) is stored in 
- *   "declaredClass" property
+ * - "className" is stored in the "declaredClass" property
  * 
  * - An initializer function can be specified in the "init" 
  *   argument
  * 
- * Aliased as "dojo.declare"
  *
  * Usage:
  *
@@ -45,23 +55,19 @@ dojo.require("dojo.lang.extras");
  * });
  *
  */
-dojo.lang.declare = function(/*String*/ className, /*Function|Array*/ superclass, /*Function?*/ init , /*Object*/ props){
-	// FIXME: parameter juggling for backward compat ... deprecate and remove after 0.3.*
-	// new sig: (className (string)[, superclass (function || array)[, init (function)][, props (object)]])
-	// old sig: (className (string)[, superclass (function || array), props (object), init (function)])
-	if ((dojo.lang.isFunction(props))||((!props)&&(!dojo.lang.isFunction(init)))){ 
+	if((dojo.lang.isFunction(props))||((!props)&&(!dojo.lang.isFunction(init)))){ 
 		var temp = props;
 		props = init;
 		init = temp;
 	}	
 	var mixins = [ ];
-	if (dojo.lang.isArray(superclass)) {
+	if(dojo.lang.isArray(superclass)){
 		mixins = superclass;
 		superclass = mixins.shift();
 	}
 	if(!init){
 		init = dojo.evalObjPath(className, false);
-		if ((init)&&(!dojo.lang.isFunction(init))){ init = null };
+		if(init && !dojo.lang.isFunction(init)){ init = null; }
 	}
 	var ctor = dojo.lang.declare._makeConstructor();
 	var scp = (superclass ? superclass.prototype : null);
@@ -80,21 +86,21 @@ dojo.lang.declare = function(/*String*/ className, /*Function|Array*/ superclass
 	if(dojo.lang.isArray(props)){
 		dojo.lang.extend.apply(dojo.lang, [ctor].concat(props));
 	}else{
-		dojo.lang.extend(ctor, (props)||{});
+		dojo.lang.extend(ctor, props||{});
 	}
 	dojo.lang.extend(ctor, dojo.lang.declare.base);
 	ctor.prototype.constructor = ctor;
-	ctor.prototype.initializer=(ctor.prototype.initializer)||(init)||(function(){});
+	ctor.prototype.initializer = ctor.prototype.initializer || init || (function(){});
 	dojo.lang.setObjPathValue(className, ctor, null, true);
-	return ctor;
+	return ctor; // Function
 }
 
-dojo.lang.declare._makeConstructor = function() {
-	return function(){ 
+dojo.lang.declare._makeConstructor = function(){
+	return function(){
 		// get the generational context (which object [or prototype] should be constructed)
 		var self = this._getPropContext();
 		var s = self.constructor.superclass;
-		if((s)&&(s.constructor)){
+		if(s && s.constructor){
 			if(s.constructor==arguments.callee){
 				// if this constructor is invoked directly (my.ancestor.call(this))
 				this._inherited("constructor", arguments);
@@ -102,14 +108,14 @@ dojo.lang.declare._makeConstructor = function() {
 				this._contextMethod(s, "constructor", arguments);
 			}
 		}
-		var m = (self.constructor.mixins)||([]);
-		for(var i=0,l=m.length; i<l; i++) {
+		var m = self.constructor.mixins||[];
+		for(var i=0,l=m.length; i<l; i++){
 			(((m[i].prototype)&&(m[i].prototype.initializer))||(m[i])).apply(this, arguments);
 		}
-		if((!this.prototyping)&&(self.initializer)){
+		if(!this.prototyping && self.initializer){
 			self.initializer.apply(this, arguments);
 		}
-	}
+	};
 }
 
 dojo.lang.declare.base = {
@@ -118,7 +124,7 @@ dojo.lang.declare.base = {
 	_contextMethod: function(ptype, method, args){
 		var result, stack = this.___proto;
 		this.___proto = ptype;
-		try { result = ptype[method].apply(this,(args||[])); }
+		try { result = ptype[method].apply(this, args||[]); }
 		catch(e) { throw e; }	
 		finally { this.___proto = stack; }
 		return result;
