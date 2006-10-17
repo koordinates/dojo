@@ -15,8 +15,12 @@ dojo.widget.manager = new function(){
 	var renderPrefixCache = [];
 
 	this.getUniqueId = function (widgetType) {
-		return widgetType + "_" + (widgetTypeCtr[widgetType] != undefined ?
+		var widgetId;
+		do{
+			widgetId = widgetType + "_" + (widgetTypeCtr[widgetType] != undefined ?
 			++widgetTypeCtr[widgetType] : widgetTypeCtr[widgetType] = 0);
+		}while(this.getWidgetById(widgetId));
+		return widgetId;
 	}
 
 	this.add = function(widget){
