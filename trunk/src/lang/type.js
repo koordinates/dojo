@@ -43,7 +43,7 @@ dojo.lang.getType = function(/* anything */ value){
 		if(dojo.lang.isObject(value)) { 
 			return "object";	//	string 
 		}
-	} catch(E) {}
+	} catch(e) {}
 	return "unknown";	//	string
 }
 
@@ -178,57 +178,43 @@ dojo.lang.isOfType = function(/* anything */ value, /* function */ type, /* obje
 			case Array:
 			case "array":
 				return dojo.lang.isArray(value);	//	boolean
-				break;
 			case Function:
 			case "function":
 				return dojo.lang.isFunction(value);	//	boolean
-				break;
 			case String:
 			case "string":
 				return dojo.lang.isString(value);	//	boolean
-				break;
 			case Number:
 			case "number":
 				return dojo.lang.isNumber(value);	//	boolean
-				break;
 			case "numeric":
 				return dojo.lang.isNumeric(value);	//	boolean
-				break;
 			case Boolean:
 			case "boolean":
 				return dojo.lang.isBoolean(value);	//	boolean
-				break;
 			case Object:
 			case "object":
 				return dojo.lang.isObject(value);	//	boolean
-				break;
 			case "pureobject":
 				return dojo.lang.isPureObject(value);	//	boolean
-				break;
 			case "builtin":
 				return dojo.lang.isBuiltIn(value);	//	boolean
-				break;
 			case "alien":
 				return dojo.lang.isAlien(value);	//	boolean
-				break;
 			case "undefined":
 				return dojo.lang.isUndefined(value);	//	boolean
-				break;
 			case null:
 			case "null":
 				return (value === null);	//	boolean
-				break;
 			case "optional":
 				dojo.deprecated('dojo.lang.isOfType(value, [type, "optional"])', 'use dojo.lang.isOfType(value, type, {optional: true} ) instead', "0.5");
 				return ((value === null) || dojo.lang.isUndefined(value));	//	boolean
-				break;
 			default:
 				if (dojo.lang.isFunction(type)) {
 					return (value instanceof type);	//	boolean
 				} else {
 					dojo.raise("dojo.lang.isOfType() was passed an invalid type");
 				}
-				break;
 		}
 	}
 	dojo.raise("If we get here, it means a bug was introduced above.");
