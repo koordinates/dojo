@@ -142,7 +142,7 @@ dojo.event.browser = new function(){
 		// capture:
 		//		Optional. should this listener prevent propigation?
 		if(!capture){ var capture = false; }
-		evtName = this.normalizedEventName(evtName);
+		evtName = dojo.event.browser.normalizedEventName(evtName);
 		if( (evtName == "onkey") || (evtName == "key") ){
 			if(dojo.render.html.ie){
 				this.removeListener(node, "onkeydown", fp, capture);
@@ -174,7 +174,7 @@ dojo.event.browser = new function(){
 		//		function?
 		if(!node){ return; } // FIXME: log and/or bail?
 		if(!capture){ var capture = false; }
-		evtName = this.normalizedEventName(evtName);
+		evtName = dojo.event.browser.normalizedEventName(evtName);
 		if( (evtName == "onkey") || (evtName == "key") ){
 			if(dojo.render.html.ie){
 				this.addListener(node, "onkeydown", fp, capture, dontFix);
