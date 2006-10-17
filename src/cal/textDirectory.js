@@ -1,9 +1,5 @@
-dojo.provide("dojo.text.textDirectory");
+dojo.provide("dojo.cal.textDirectory");
 dojo.require("dojo.string");
-
-/* adapted from Paul Sowden's iCalendar work */
-
-dojo.textDirectoryTokeniser = function () {}
 
 /*
  * This class parses a single line from a text/directory file
@@ -12,7 +8,7 @@ dojo.textDirectoryTokeniser = function () {}
  * tokens unaltered and values is an array containing name/value pairs
  * or a single name token packed into arrays.
  */
-dojo.textDirectoryTokeniser.Property = function (line) {
+dojo.cal.textDirectory.Property = function (line) {
 	// split into name/value pair
 	var left = dojo.string.trim(line.substring(0, line.indexOf(':')));
 	var right = dojo.string.trim(line.substr(line.indexOf(':') + 1));
@@ -51,7 +47,7 @@ dojo.textDirectoryTokeniser.Property = function (line) {
 
 
 // tokeniser, parses into an array of properties.
-dojo.textDirectoryTokeniser.tokenise = function (text) {
+dojo.cal.textDirectory.tokenise = function (text) {
 	// normlize to one propterty per line and parse
 	var nText = dojo.string.normalizeNewlines(text,"\n");
 	nText = nText.replace(/\n[ \t]/g, '');
@@ -62,7 +58,7 @@ dojo.textDirectoryTokeniser.tokenise = function (text) {
 
 	for (var i = 0; i < lines.length; i++) {
 		if (dojo.string.trim(lines[i]) == '') { continue; }
-		var prop = new dojo.textDirectoryTokeniser.Property(lines[i]);
+		var prop = new dojo.cal.textDirectory.Property(lines[i]);
 		properties.push(prop);
 	}
 	return properties;
