@@ -664,8 +664,6 @@ dojo.widget.defineWidget(
 		_isValidOption: function(){
 			var tgt = dojo.html.firstElement(this.optionsListNode);
 			var isValidOption = false;
-			var tgt = dojo.html.firstElement(this.optionsListNode);
-			var isValidOption = false;
 			while(!isValidOption && tgt){
 				if(this._isInputEqualToResult(tgt.getAttribute("resultName"))){
 					isValidOption = true;
