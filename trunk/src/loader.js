@@ -225,6 +225,9 @@ dojo.hostenv.callLoaded = function(){
 }
 
 dojo.hostenv.getModuleSymbols = function(/*String*/modulename){
+// summary:
+//	Converts a module name in dotted JS notation to an array representing the path in the source tree
+
 	var syms = modulename.split(".");
 	for(var i = syms.length; i>0; i--){
 		var parentModule = syms.slice(0, i).join(".");
@@ -554,7 +557,10 @@ dojo.hostenv.searchLocalePath = function(/*String*/locale, /*Boolean*/down, /*Fu
 //These two functions are placed outside of preloadLocalizations
 //So that the xd loading can use/override them.
 dojo.hostenv.localesGenerated /***BUILD:localesGenerated***/; // value will be inserted here at build time, if necessary
+
 dojo.hostenv.registerNlsPrefix = function(){
+// summary:
+//	Register module "nls" to point where Dojo can find pre-built localization files
 	dojo.registerModulePath("nls","nls");	
 }
 
