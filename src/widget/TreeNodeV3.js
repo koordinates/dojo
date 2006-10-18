@@ -10,7 +10,8 @@ dojo.widget.defineWidget(
 	[dojo.widget.HtmlWidget, dojo.widget.TreeWithNode],
 	function() {
 		this.actionsDisabled = [];
-	},
+        this.object = {};
+    },
 {
 	tryLazyInit: true,
 
