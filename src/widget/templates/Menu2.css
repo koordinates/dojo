@@ -116,27 +116,10 @@
 	cursor:hand;
 }
 
-.dojoMenuBarItem2 span span {
-	position: absolute;
-	display: none;
-	left: 1px;
-	top: 1px;
-	z-index: -2;
-}
-
 .dojoMenuBarItem2Hover {
 	background-color:#d2e4fd;
 }
 
 .dojoMenuBarItem2Disabled span {
 	color: #4f6582;
-}
-
-.dojoMenuBarItem2Disabled span span {
-	display: block;
-}
-
-.dojoMenuBarItem2Hover span span,
-.dojoMenuBarItem2Hover span span {
-	display: none;
 }
