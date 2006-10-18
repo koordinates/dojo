@@ -92,7 +92,7 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 			var delayRequires = dojo.hostenv.getDelayRequiresAndProvides(text);
 			eval(delayRequires.join(";"));
 		}catch(e){ 
-			print("load exception for: " + uri + ", exception: " + e);
+			java.lang.System.err.println("error loading uri: " + uri + ", exception: " + e);
 			quit(-1);
 		}
 		return true;
@@ -141,7 +141,7 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 				dojo.hostenv.loadModule(dep, null, true);
 			}
 		}catch(e){
-			print("Error loading module!" + e);
+			java.lang.System.err.println("Error loading module!" + e);
 			quit(-1);
 		}
 	}

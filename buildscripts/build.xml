@@ -430,9 +430,8 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 		<!-- FIXME: need to actually get a list of js files to be processed  -->
 
-		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true">
-			<!-- <redirector logError="true" outputproperty="concatFilesProp" alwayslog="true" /> -->
-			<redirector logError="true" outputproperty="concatFilesProp" />
+		<java jar="./lib/custom_rhino.jar" failonerror="true" 
+			fork="true" outputproperty="concatFilesProp" logError="true">
 			<arg value="-opt" />
 			<arg value="-1" />
 			<arg value="-f" />
@@ -598,9 +597,8 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 
 	<target name="-rhino-compress" unless="nostrip">
 		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}.uncompressed.js" />
-		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true">
-			<!-- <redirector logError="true"  output="${dstFile}" alwayslog="false" /> -->
-			<redirector logError="true"  output="${dstFile}" />
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" 
+				logerror="true" output="${dstFile}">
 			<arg value="-strict" />
 			<arg value="-opt"/>
 			<arg value="-1" />
@@ -625,9 +623,8 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			</filterchain>
 		</copy>
 		
-		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" >
-			<!-- <redirector logError="true" outputproperty="generatedLocales" alwayslog="true" /> -->
-			<redirector logError="true" outputproperty="generatedLocales" />
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" 
+			logError="true" outputproperty="generatedLocales" >
 			<arg value="flattenResources.js" />
 			<arg value="${release_dir}/localizations.tmp.js" />
 			<arg value="${release_dir}/nls" />
@@ -903,9 +900,8 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 		
 		<!-- flatten l10n bundles -->
 		<echo>Flattening resource bundles for xd loading</echo>
-		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true">
-			<!-- <redirector logError="true" outputproperty="xdFlattenedBundles" alwayslog="true" /> -->
-			<redirector logError="true" outputproperty="xdFlattenedBundles" />
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
+			logError="true" outputproperty="xdFlattenedBundles" >
 			<arg value="flattenBundlesXd.js" />
 			<arg value="../src" />
 			<arg value="${release_dir}" />
