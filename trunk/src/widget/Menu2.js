@@ -638,7 +638,7 @@ dojo.widget.defineWidget(
 {
 	templateString:
 		 '<td class="dojoMenuBarItem2" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick;">'
-		+'<span><span>${this.caption}</span>${this.caption}</span>'
+		+'<span>${this.caption}</span>'
 		+'</td>',
 
 	highlightClass: 'dojoMenuBarItem2Hover',
