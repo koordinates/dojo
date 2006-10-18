@@ -23,14 +23,17 @@
 </head>
 
 <body>
-	This tests specifying a function name as a parameter to a widget.
+<h1>Widget function parameter test</h1>
+	<p>This tests specifying a function name as a parameter to a widget.
 	In this case, the specified function will override the function inside the
 	widget, rather than connecting (dojo.event.connect) after.
-	<br>
+	<p>
+	Clicking this button should cause both the "default click handler" and the custom handler to fire.
 	<button dojoType="Button" onclick='dojo.debug("connected");'>
 			connected
 	</button>
-	<br>
+	<p>
+	If you click this button, only the widgetClick handler should fire:
 	<button dojoType="Button" onclick='widgetClick'>
 			replaced
 	</button>
