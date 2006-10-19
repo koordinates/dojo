@@ -314,12 +314,10 @@ function dj_load_init(e){
 //	START DOMContentLoaded
 // Mozilla and Opera 9 expose the event we could use
 if(document.addEventListener){
-	if(dojo.render.html.opera && dojo.render.ver > 9.0){
-		document.addEventListener("DOMContentLoaded", dj_load_init, null);
-	}
+	document.addEventListener("DOMContentLoaded", dj_load_init, null);
 
 	//	mainly for Opera 8.5, won't be fired if DOMContentLoaded fired already.
-	window.addEventListener("load", dj_load_init, null);
+	document.addEventListener("load", dj_load_init, null);
 }
 
 // 	for Internet Explorer. readyState will not be achieved on init call, but dojo doesn't need it
