@@ -120,7 +120,8 @@ dojo.widget.defineWidget(
 	 *
 	 * event may be both mouse & keyboard enter
 	 */
-	processNode: function(node, event) {		
+	processNode: function(node, event) {
+		
 		if (node.actionIsDisabled(node.actions.SELECT)) {
 			return;
 		}
@@ -157,12 +158,7 @@ dojo.widget.defineWidget(
 		
 		// if unselected node..
 		
-		
-		// deselect all if no meta key or disallowed
-		if (!this.checkSpecialEvent(event) || !this.allowedMulti) {
-			//dojo.debug("deselect All");
-			this.deselectAll();
-		}
+		this.deselectIfNoMulti(event);
 		
 		//dojo.debug("select");
 
@@ -170,6 +166,13 @@ dojo.widget.defineWidget(
 
 	},
 	
+	// deselect all if no meta key or disallowed
+	deselectIfNoMulti: function(event) {
+		if (!this.checkSpecialEvent(event) || !this.allowedMulti) {
+			//dojo.debug("deselect All");
+			this.deselectAll();
+		}
+	},
 
 	deselectIfAncestorMatch: function(ancestor) {
 		/* deselect all nodes with this ancestor */
