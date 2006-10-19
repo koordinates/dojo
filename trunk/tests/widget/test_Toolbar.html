@@ -28,7 +28,7 @@
 	function init(e) {
 		var now = new Date();
 		tc = dojo.widget.createWidget("ToolbarContainer");
-		document.body.insertBefore(tc.domNode, document.body.firstChild);
+		dojo.byId("markup").appendChild(tc.domNode);
 		tb = dojo.widget.createWidget("Toolbar");
 		tc.addChild(tb);
 		var bg = dojo.widget.createWidget("ToolbarButtonGroup", {
@@ -78,7 +78,8 @@
 </head>
 
 <body>
-	Toolbar:
+	<h1>Programatically created toolbar:</h1>
+	<div id="markup"></div>
 	<a href="javascript:tc.enable()">Enable</a> /
 	<a href="javascript:tc.disable()">Disable</a>
 	<br />
@@ -86,6 +87,80 @@
 	<a href="javascript:tc.enable('justify')">Enable</a> /
 	<a href="javascript:tc.disable('justify')">Disable</a>
 
-</body>
+    <h1>Toolbar from Markup</h1>
 
+    <div id="toolbar1" dojo:type="ToolbarContainer">
+        <div dojo:type="toolbar">
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/cut.gif"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/copy.gif"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/paste.gif"/>
+
+            <span dojo:type="ToolbarSeparator">&nbsp;</span>
+
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/bold.gif" toggleItem="true"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/italic.gif" toggleItem="true"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/underline.gif" toggleItem="true"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/strikethrough.gif" toggleItem="true"/>
+
+            <span dojo:type="ToolbarSeparator">&nbsp;</span>
+
+            <span dojo:type="ToolbarButtonGroup" name="justify" defaultButton="justifyleft" preventDeselect="true">
+                <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/justifyleft.gif" toggleItem="true" name="justifyleft"/>
+                <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/justifycenter.gif" toggleItem="true" name="justifycenter"/>
+                <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/justifyright.gif" toggleItem="true" name="justifyright"/>
+                <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/justifyfull.gif" toggleItem="true" name="justifyfull"/>
+            </span>
+
+            <span dojo:type="ToolbarSeparator"></span>
+
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/insertorderedlist.gif"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/insertunorderedlist.gif"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/indent.gif"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/outdent.gif"/>
+        </div>
+    </div>
+
+    <h1>dojo Trac #448 Test case</h1>
+	<script>
+		
+	      function dumpOutput(val) {
+	      var obj=document.getElementById("output");
+	      obj.innerHTML=obj.innerHTML+" "+val;
+	      }
+	
+	      function toolbarclick(){
+	      dumpOutput("onClick")
+	      }
+	      
+	      function toolbarmouseover(){
+	      dumpOutput("onMouseOver")
+	      }
+	
+	      function toolbarmouseout(){
+	      dumpOutput("onMouseOut")
+	      }
+	
+	      
+	</script>
+	
+	Test case for dojo Trac #448 - ToolbarItem needs to have handlers defined to work in markup.
+	<br>Supported events: onclick, onmouseover, onmouseout
+	<br>Each event outputs event name string to output outline
+	<br>
+	
+	<div dojoType="toolbar">
+	<img dojoType="ToolbarButton" name="toolitem" label="Cut" onMouseOver="toolbarmouseover()" onClick="toolbarclick()" onMouseOut="toolbarmouseout()"icon="../../src/widget/templates/buttons/cut.gif">
+	</img>
+	</div>
+	<div id="output" onclick="this.innerHTML = ''" style="font-size:0.8em;overflow:auto;z-index:300;border:2px solid black;background:#ffffff;float:right;width:500px;height:200px;"></div>
+	
+	
+	
+	    <hr>
+	    <address><a href="mailto:neildev@gmail.com">Neil J</a></address>
+	<!-- Created: Tue Jul 11 03:27:49 EDT 2006 -->
+	<!-- hhmts start -->
+	Last modified: Tue Jul 11 05:32:43 EDT 2006
+	<!-- hhmts end -->
+  </body>
 </html>

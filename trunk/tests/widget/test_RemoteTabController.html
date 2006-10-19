@@ -18,14 +18,13 @@
 <link rel="stylesheet" type="text/css" href="testRemoteTabController.css" />
 
 <script type="text/javascript" src="../../dojo.js"></script>
-<script type="text/javascript" src="../../src/widget/RemoteTabController.js"></script>
+<script type="text/javascript" src="../../src/widget/TabController.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.TabContainer");
 	dojo.require("dojo.widget.Tooltip");
 	dojo.require("dojo.widget.LinkPane");
 	dojo.require("dojo.widget.ContentPane");
 	dojo.require("dojo.widget.Button");
-	dojo.require("dojo.widget.RemoteTabController");
 </script>
 
 <style type="text/css">
@@ -51,18 +50,18 @@ function testClose(pane,tab) {
 </head>
 
 <body>
-	<p>First should be a RemoteTabController, then some text, then the tabs</p>
-	<div id="before1" dojoType="RemoteTabController" tabContainer="mainTabContainer"></div>
+	<p>First should be a TabController, then some text, then the tabs</p>
+	<div id="before1" dojoType="TabController" containerId="mainTabContainer"></div>
 	<br>
 	<p>These tabs are made up of local and external content. Tab 1 and Tab 2 are loading
 	files tab1.html and tab2.html. Tab 3 and Another Tab are using content that is already
 	part of this page.</p>
 
-	<div id="mainTabContainer" dojoType="TabContainer" closeButton="tab" style="width: 100%; height: 20em;" selectedTab="tab2">
+	<div id="mainTabContainer" dojoType="TabContainer" style="width: 100%; height: 20em;" selectedChild="tab2">
 	
 		<div id="tab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
 		
-		<div id="reload every time tab" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
+		<div id="tab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
 		
 		<div dojoType="ContentPane" label="Tab 3">
 			<h1>I am tab 3</h1>
@@ -118,9 +117,9 @@ function testClose(pane,tab) {
 
 	<p>some text here</p>
 
-	 <div id="after1" dojoType="RemoteTabController" tabContainer="mainTabContainer" class="controller1" ></div>
+	 <div id="after1" dojoType="TabController" containerId="mainTabContainer" class="controller1" ></div>
 	<br>
-	 <div id="after2" dojoType="RemoteTabController" tabContainer="mainTabContainer" class="controller2" ></div>
+	 <div id="after2" dojoType="TabController" containerId="mainTabContainer" class="controller2" ></div>
 	 end!!!
 </body>
 </html>

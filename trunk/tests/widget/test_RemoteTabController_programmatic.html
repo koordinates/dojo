@@ -19,13 +19,12 @@
 
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
-	dojo.require("dojo.debug.Firebug");
+	dojo.require("dojo.debug.console");
 	dojo.require("dojo.widget.TabContainer");
 	dojo.require("dojo.widget.Tooltip");
 	dojo.require("dojo.widget.LinkPane");
 	dojo.require("dojo.widget.ContentPane");
 	dojo.require("dojo.widget.Button");
-	dojo.require("dojo.widget.RemoteTabController");
 	dojo.hostenv.writeIncludes();
 </script>
 
@@ -44,8 +43,8 @@ body {
 <script type="text/javascript">
 
 	dojo.addOnLoad(function() {
-		tabs = dojo.widget.createWidget("dojo:TabContainer",{},dojo.byId("content"));
-		remote = dojo.widget.createWidget("dojo:RemoteTabController",{"tabContainer": tabs });
+		tabs = dojo.widget.createWidget("dojo:PageContainer",{widgetId: "content"},dojo.byId("content"));
+		remote = dojo.widget.createWidget("dojo:TabController",{containerId: tabs.widgetId, "class": "controller1" });
 		document.body.appendChild(remote.domNode);
 		
 		//add tabs after remote exists for valid test
