@@ -1,25 +1,26 @@
 dojo.provide("dojo.uri.Uri");
 
 dojo.uri = new function() {
-	this.dojoUri = function (uri) {
-		// returns a Uri object resolved relative to the dojo root
+	this.dojoUri = function (/*dojo.uri.Uri||String*/uri) {
+		// summary: returns a Uri object resolved relative to the dojo root
 		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri(), uri);
 	}
 	
-	// returns a Uri object relative to a (top-level) module
-	// for example dojo.uri.moduleUri("dojo","Editor"), or dojo.uri.moduleUri("acme","someWidget")
-	this.moduleUri = function(module, uri){
+	this.moduleUri = function(/*String*/module, /*dojo.uri.Uri||String*/uri){
+		// summary: returns a Uri object relative to a (top-level) module
+		// description: Examples: dojo.uri.moduleUri("dojo","Editor"), or dojo.uri.moduleUri("acme","someWidget")
 		var loc = dojo.hostenv.getModulePrefix(module);
 		if(!loc){return null;}
 		if(loc.lastIndexOf("/") != loc.length-1){loc += "/";}
 		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri()+loc,uri);
 	}
 
-	this.Uri = function (/*uri1, uri2, [...]*/) {
-		// An object representing a Uri.
-		// Each argument is evaluated in order relative to the next until
-		// a canonical uri is produced. To get an absolute Uri relative
-		// to the current document use
+	this.Uri = function (/*dojo.uri.Uri||String...*/) {
+		// summary: Constructor to create an object representing a URI.
+		// description: 
+		//  Each argument is evaluated in order relative to the next until
+		//  a canonical uri is produced. To get an absolute Uri relative
+		//  to the current document use
 		//      new dojo.uri.Uri(document.baseURI, uri)
 
 		// TODO: support for IPv6, see RFC 2732
