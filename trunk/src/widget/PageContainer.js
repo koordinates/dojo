@@ -246,7 +246,9 @@ dojo.widget.defineWidget(
 			//   Remove the button corresponding to the page.
 			if(this._currentChild == page){ this._currentChild = null; }
 			var button = this.pane2button[page];
-			button.destroy();
+			if(button){
+				button.destroy();
+			}
 			this.pane2button[page] = null;
 		},
 
