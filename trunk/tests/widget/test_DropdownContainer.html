@@ -2,8 +2,8 @@
 <head>
 	<script type="text/javascript">
 		djConfig = { 
-			isDebug: true,
-		}
+			isDebug: true
+		};
 	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
 	<script type="text/javascript">
@@ -20,12 +20,12 @@
 <h1> DropDownContainer tests </h1>
 
 <div dojoType="dropdowncontainer" id="foo"></div>
-<br /><br />
+<br><br>
 <h3>Instantiation from Script:</h3>
 <div id="dropdown"></div>
 <script type="text/javascript">
 	var params = {id: "dropdown"};
-	var widget = dojo.widget.createWidget("DropdownContainer", params, document.getElementById("dropdown"));
+	var widget = dojo.widget.createWidget("DropdownContainer", params, dojo.byId("dropdown"));
 	dojo.debug("widget id: " + widget.domNode.id);
 </script>
 </body>
