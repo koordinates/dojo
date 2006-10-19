@@ -3,15 +3,11 @@ dojo.provide("dojo.lang.declare");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.extras");
 
-// FIXME: parameter juggling for backward compat ... deprecate and remove after 0.3.*
-// new sig: (className (string)[, superclass (function || array)[, init (function)][, props (object)]])
-// old sig: (className (string)[, superclass (function || array), props (object), init (function)])
-dojo.lang.declare = function(/*String*/ className, /*Function|Array*/ superclass, /*Function?*/ init, /*Object*/ props){
+dojo.lang.declare = function(/*String*/ className, /*Function|Array*/ superclass, /*Function?*/ init, /*Object|Array*/ props){
 /*
- * summary:
- *	Helper to simulate traditional "constructor" with inheritance using mixins
+ * summary: Create a feature-rich constructor with a compact notation
  *
- * className: the name of the class
+ * className: the name of the constructor (loosely, a "class")
  *
  * superclass: may be a Function, or an Array of Functions. 
  *   If "superclass" is an array, the first element is used 
@@ -20,12 +16,16 @@ dojo.lang.declare = function(/*String*/ className, /*Function|Array*/ superclass
  *
  * init: an initializer function
  *
- * props: Objects to be mixed in
+ * props: an object (or array of objects) whose properties are copied to the created prototype
  *
- * description:
- * Creates a constructor: inherit and extend.  Aliased as "dojo.declare"
+ * description: Create a constructor using a compact notation for inheritance and prototype extension.
  *
- * - inherits from "superclass(es)" 
+ *   "superclass" argument may be a Function, or an array of 
+ *   Functions. 
+ *
+ *   If "superclass" is an array, the first element is used 
+ *   as the prototypical ancestor and any following Functions 
+ *   become mixin ancestors. 
  * 
  *   All "superclass(es)" must be Functions (not mere Objects).
  *
@@ -34,13 +34,17 @@ dojo.lang.declare = function(/*String*/ className, /*Function|Array*/ superclass
  *   properties are copied to the subclass, and any 
  *   inializater/constructor is invoked. 
  *
- * - "props" are copied to the constructor prototype
+ *   Properties of object "props" are copied to the constructor 
+ *   prototype. If "props" is an array, properties of each
+ *   object in the array are copied to the constructor prototype.
  *
- * - "className" is stored in the "declaredClass" property
+ *   name of the class ("className" argument) is stored in 
+ *   "declaredClass" property
  * 
- * - An initializer function can be specified in the "init" 
- *   argument
+ *   Initializer functions are called when an object 
+ *   is instantiated from this constructor.
  * 
+ * Aliased as "dojo.declare"
  *
  * Usage:
  *
@@ -48,26 +52,28 @@ dojo.lang.declare = function(/*String*/ className, /*Function|Array*/ superclass
  *	function() {
  *		// initialization function
  *		this.myComplicatedObject = new ReallyComplicatedObject(); 
- *	},
- *	{
+ *	},{
  *	someValue: 2,
- *	aMethod: function() { doStuff(); }
+ *	someMethod: function() { 
+ *		doStuff(); 
+ *	}
  * });
  *
  */
-	if((dojo.lang.isFunction(props))||((!props)&&(!dojo.lang.isFunction(init)))){ 
+	if ((dojo.lang.isFunction(props))||((!props)&&(!dojo.lang.isFunction(init)))){ 
+	 // parameter juggling to support omitting init param (also allows reordering init and props arguments)
 		var temp = props;
 		props = init;
 		init = temp;
 	}	
 	var mixins = [ ];
-	if(dojo.lang.isArray(superclass)){
+	if (dojo.lang.isArray(superclass)) {
 		mixins = superclass;
 		superclass = mixins.shift();
 	}
 	if(!init){
 		init = dojo.evalObjPath(className, false);
-		if(init && !dojo.lang.isFunction(init)){ init = null; }
+		if ((init)&&(!dojo.lang.isFunction(init))){ init = null };
 	}
 	var ctor = dojo.lang.declare._makeConstructor();
 	var scp = (superclass ? superclass.prototype : null);
@@ -86,21 +92,21 @@ dojo.lang.declare = function(/*String*/ className, /*Function|Array*/ superclass
 	if(dojo.lang.isArray(props)){
 		dojo.lang.extend.apply(dojo.lang, [ctor].concat(props));
 	}else{
-		dojo.lang.extend(ctor, props||{});
+		dojo.lang.extend(ctor, (props)||{});
 	}
-	dojo.lang.extend(ctor, dojo.lang.declare.base);
+	dojo.lang.extend(ctor, dojo.lang.declare._common);
 	ctor.prototype.constructor = ctor;
-	ctor.prototype.initializer = ctor.prototype.initializer || init || (function(){});
+	ctor.prototype.initializer = (ctor.prototype.initializer)||(init)||(function(){});
 	dojo.lang.setObjPathValue(className, ctor, null, true);
 	return ctor; // Function
 }
 
-dojo.lang.declare._makeConstructor = function(){
-	return function(){
+dojo.lang.declare._makeConstructor = function() {
+	return function(){ 
 		// get the generational context (which object [or prototype] should be constructed)
 		var self = this._getPropContext();
 		var s = self.constructor.superclass;
-		if(s && s.constructor){
+		if((s)&&(s.constructor)){
 			if(s.constructor==arguments.callee){
 				// if this constructor is invoked directly (my.ancestor.call(this))
 				this._inherited("constructor", arguments);
@@ -108,23 +114,23 @@ dojo.lang.declare._makeConstructor = function(){
 				this._contextMethod(s, "constructor", arguments);
 			}
 		}
-		var m = self.constructor.mixins||[];
-		for(var i=0,l=m.length; i<l; i++){
-			(((m[i].prototype)&&(m[i].prototype.initializer))||(m[i])).apply(this, arguments);
+		var ms = (self.constructor.mixins)||([]);
+		for(var i=0, m; (m=ms[i]); i++) {
+			(((m.prototype)&&(m.prototype.initializer))||(m)).apply(this, arguments);
 		}
-		if(!this.prototyping && self.initializer){
+		if((!this.prototyping)&&(self.initializer)){
 			self.initializer.apply(this, arguments);
 		}
-	};
+	}
 }
 
-dojo.lang.declare.base = {
+dojo.lang.declare._common = {
 	_getPropContext: function() { return (this.___proto||this); },
 	// caches ptype context and calls method on it
 	_contextMethod: function(ptype, method, args){
 		var result, stack = this.___proto;
 		this.___proto = ptype;
-		try { result = ptype[method].apply(this, args||[]); }
+		try { result = ptype[method].apply(this,(args||[])); }
 		catch(e) { throw e; }	
 		finally { this.___proto = stack; }
 		return result;
