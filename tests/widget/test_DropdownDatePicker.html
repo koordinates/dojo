@@ -31,12 +31,10 @@
 		Here are some date pickers positioned statically.
 		Drop down should appear below the input box.
 	</p>
-	Wipe: with startDate="2006-10-10" (inputNode is not updating when clicking a date ticket #1694)
-	<input dojoType="dropdowndatepicker" startDate="2006-10-10" containerToggle="wipe" containerToggleDuration="300">
-	<br />
-	Explode: testing invalid initial value of "oiwerwerw" (should render as no value provided not NaN/NaN/NaN ticket #1692)
-	<input dojoType="dropdowndatepicker" value="oiwerwerw" containerToggle="explode" containerToggleDuration="500">
-	<br />
+	Wipe:
+	<input dojoType="dropdowndatepicker" value="2006-10-31" containerToggle="wipe" containerToggleDuration="300">
+	Explode:
+	<input dojoType="dropdowndatepicker" value="2006-07-22" containerToggle="explode" containerToggleDuration="500">
 	Fade:
 	<input dojoType="dropdowndatepicker" value="2006-06-30" containerToggle="fade" containerToggleDuration="500">
 		
@@ -85,5 +83,13 @@
 			<input type="submit" />
 		</form>
 	</div>	
+    <br />
+	These are broken tests for trac tickets:<br/>
+	Wipe: with startDate="2006-10-10" (inputNode is not updating when clicking a date ticket #1694)
+	<input dojoType="dropdowndatepicker" startDate="2006-10-10" containerToggle="wipe" containerToggleDuration="300">
+	<br />
+	Explode: testing invalid initial value of "oiwerwerw" (should render as no value provided not NaN/NaN/NaN ticket #1692)
+	<input dojoType="dropdowndatepicker" value="oiwerwerw" containerToggle="explode" containerToggleDuration="500">
+	<br /><br />
 	</body>
 </html>
