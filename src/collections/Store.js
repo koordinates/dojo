@@ -132,6 +132,7 @@ dojo.collections.Store = function(/* array? */jsonArray){
 		var k = key || obj[this.keyField];
 		if(this.getByKey(k)){
 			var o = this.getByKey(k);
+			o.src = obj;
 		} else {
 			var o={ key:k, src:obj };
 			data.push(o);
@@ -146,6 +147,7 @@ dojo.collections.Store = function(/* array? */jsonArray){
 			var k = arr[i][this.keyField];
 			if(this.getByKey(k)){
 				var o = this.getByKey(k);
+				o.src = obj;
 			} else {
 				var o = { key:k, src:arr[i] };
 				data.push(o);
