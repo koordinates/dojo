@@ -318,13 +318,19 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 		tn = refNode;
 	}
 	var widgetArray = fromScript(tn, name.toLowerCase(), props, ns);
-	if (!widgetArray || !widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
+	if(	(!widgetArray)||(!widgetArray[0])||
+		(typeof widgetArray[0].widgetType == "undefined") ){
 		throw new Error("createWidget: Creation of \"" + name + "\" widget failed.");
 	}
-	if (notRef) {
-		if (widgetArray[0].domNode.parentNode) {
-			widgetArray[0].domNode.parentNode.removeChild(widgetArray[0].domNode);
+	try{
+		if(notRef){
+			if(widgetArray[0].domNode.parentNode){
+				widgetArray[0].domNode.parentNode.removeChild(widgetArray[0].domNode);
+			}
 		}
+	}catch(e){
+		/* squelch for Safari */
+		dojo.debug(e);
 	}
 	return widgetArray[0]; // just return the widget
 }
