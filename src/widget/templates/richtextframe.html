@@ -7,11 +7,13 @@
 		<title></title>
 		<script type="text/javascript">
 			function init(){
-				document.designMode = 'On';
-				parentPageDomain = document.location.href.split('#')[1];
-				if(parentPageDomain){
-					document.domain = parentPageDomain;
-				}
+				document.designMode = 'on';
+				try{
+					parentPageDomain = document.location.href.split('#')[1];
+					if(parentPageDomain){
+						document.domain = parentPageDomain;
+					}
+				}catch(e){ }
 			}
 			window.onload = init;
 		</script>
