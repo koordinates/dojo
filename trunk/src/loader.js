@@ -164,8 +164,13 @@ dojo.hostenv.unloaded = function(){
 	dojo.unloaded();
 }
 
-dojo.addOnLoad = function(/*Object or Function*/obj, /*String?*/functionName) {
-// summary: registers a function to be triggered when the "onLoad" event fires
+dojo.addOnLoad = function(/*Object?*/obj, /*String|Function*/functionName) {
+// summary:
+//	Registers a function to be triggered after the DOM has finished loading 
+//	and widgets declared in markup have been instantiated.  Images and CSS files
+//	may or may not have finished downloading when the specified function is called.
+//	(Note that widgets' CSS and HTML code is guaranteed to be downloaded before said
+//	widgets are instantiated.)
 //
 // usage:
 //	dojo.addOnLoad(functionPointer)
@@ -189,8 +194,8 @@ dojo.addOnLoad = function(/*Object or Function*/obj, /*String?*/functionName) {
 	}
 }
 
-dojo.addOnUnload = function(/*Object or Function*/obj, /*String?*/functionName){
-// summary: registers a function to be triggered when the "onLoad" event fires
+dojo.addOnUnload = function(/*Object?*/obj, /*String|Function?*/functionName){
+// summary: registers a function to be triggered when the page unloads
 //
 // usage:
 //	dojo.addOnLoad(functionPointer)
