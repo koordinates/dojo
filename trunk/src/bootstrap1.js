@@ -279,6 +279,7 @@ dojo.hostenv = (function(){
 		iePreventClobber: false,
 		ieClobberMinimal: true,
 		preventBackButtonFix: true,
+		delayMozLoadingFix: false,
 		searchIds: [],
 		parseWidgets: true
 	};
