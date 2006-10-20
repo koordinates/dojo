@@ -239,13 +239,13 @@ dojo.widget.defineWidget(
 			// Safari's selections go all out of whack if we do it inline,
 			// so for now IE is our only hero
 			//if (typeof document.body.contentEditable != "undefined") {
-			if (this.useActiveX && h.ie) { // active-x
+			if(this.useActiveX && h.ie){ // active-x
 				var self = this;
 				//if call _drawObject directly here, textarea replacement
 				//won't work: no content is shown. However, add a delay
 				//can workaround this. No clue why.
 				setTimeout(function(){self._drawObject(html);}, 0);
-			} else if (h.ie) { // contentEditable, easy
+			}else if(h.ie){ // contentEditable, easy
 				this.iframe = dojo.doc().createElement( 'iframe' ) ;
 				this.iframe.src = 'javascript:void(0)';
 				this.editorObject = this.iframe;
@@ -445,10 +445,10 @@ dojo.widget.defineWidget(
 				this.iframe = dojo.doc().createElement("iframe");
 				// dojo.body().appendChild(this.iframe);
 				with(this.iframe){
-					scrolling = this.height ? "auto" : "no";
 					style.border = "none";
 					style.lineHeight = "0"; // squash line height
 					style.verticalAlign = "bottom";
+					scrolling = this.height ? "auto" : "no";
 				}
 			}
 			// opera likes this to be outside the with block
@@ -458,10 +458,10 @@ dojo.widget.defineWidget(
 				this.iframe.style.height = this.height;
 			}else{
 				var height = this._oldHeight;
-				if (this._hasCollapseableMargin(this.domNode, 'top')) {
+				if(this._hasCollapseableMargin(this.domNode, 'top')){
 					height += this._firstChildContributingMargin;
 				}
-				if (this._hasCollapseableMargin(this.domNode, 'bottom')) {
+				if(this._hasCollapseableMargin(this.domNode, 'bottom')){
 					height += this._lastChildContributingMargin;
 				}
 				this.iframe.height = height;
@@ -551,7 +551,7 @@ dojo.widget.defineWidget(
 
 					tmpContent.parentNode.removeChild(tmpContent);
 					this.document.body.innerHTML = html;
-					if(oldMoz){
+					if(oldMoz||dojo.render.html.safari){
 						this.document.designMode = "on";
 					}
 					this.onLoad();
