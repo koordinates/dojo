@@ -431,7 +431,7 @@ dojo.widget.defineWidget(
 
 		},
 
-		_drawIframe: function (/*String*/html) {
+		_drawIframe: function (/*String*/html){
 			// summary:
 			//		Draws an iFrame using the existing one if one exists.
 			//		Used by Mozilla, Safari, and Opera
@@ -440,10 +440,11 @@ dojo.widget.defineWidget(
 			var oldMoz = Boolean(dojo.render.html.moz && (
 									typeof window.XML == 'undefined'))
 
-			if (!this.iframe) {
+			if(!this.iframe){
 				var currentDomain = (new dojo.uri.Uri(dojo.doc().location)).host;
 				this.iframe = dojo.doc().createElement("iframe");
-				with (this.iframe) {
+				// dojo.body().appendChild(this.iframe);
+				with(this.iframe){
 					scrolling = this.height ? "auto" : "no";
 					style.border = "none";
 					style.lineHeight = "0"; // squash line height
@@ -451,11 +452,11 @@ dojo.widget.defineWidget(
 				}
 			}
 			// opera likes this to be outside the with block
-			this.iframe.src = dojo.uri.dojoUri("src/widget/templates/richtextframe.html") + "#" + ((dojo.doc().domain != currentDomain) ? dojo.doc().domain : "");
+			this.iframe.src = dojo.uri.dojoUri("src/widget/templates/richtextframe.html") + ((dojo.doc().domain != currentDomain) ? ("#"+dojo.doc().domain) : "");
 			this.iframe.width = this.inheritWidth ? this._oldWidth : "100%";
-			if (this.height) {
+			if(this.height){
 				this.iframe.style.height = this.height;
-			} else {
+			}else{
 				var height = this._oldHeight;
 				if (this._hasCollapseableMargin(this.domNode, 'top')) {
 					height += this._firstChildContributingMargin;
@@ -470,9 +471,9 @@ dojo.widget.defineWidget(
 			tmpContent.innerHTML = html;
 
 			// make relative image urls absolute
-			if (this.relativeImageUrls) {
+			if(this.relativeImageUrls){
 				var imgs = tmpContent.getElementsByTagName('img');
-				for (var i=0; i<imgs.length; i++) {
+				for(var i=0; i<imgs.length; i++){
 					imgs[i].src = (new dojo.uri.Uri(dojo.global().location, imgs[i].src)).toString();
 				}
 				html = tmpContent.innerHTML;
@@ -492,6 +493,9 @@ dojo.widget.defineWidget(
 			tmpContent.style.position = "absolute";
 			this.editingArea.appendChild(tmpContent);
 			this.editingArea.appendChild(this.iframe);
+			if(dojo.render.html.safari){
+				this.iframe.src = this.iframe.src;
+			}
 
 			var _iframeInitialized = false;
 
