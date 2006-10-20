@@ -60,20 +60,20 @@ dojo.lang.declare = function(/*String*/ className, /*Function|Array*/ superclass
  * });
  *
  */
-	if ((dojo.lang.isFunction(props))||((!props)&&(!dojo.lang.isFunction(init)))){ 
+	if((dojo.lang.isFunction(props))||((!props)&&(!dojo.lang.isFunction(init)))){ 
 	 // parameter juggling to support omitting init param (also allows reordering init and props arguments)
 		var temp = props;
 		props = init;
 		init = temp;
 	}	
 	var mixins = [ ];
-	if (dojo.lang.isArray(superclass)) {
+	if(dojo.lang.isArray(superclass)){
 		mixins = superclass;
 		superclass = mixins.shift();
 	}
 	if(!init){
 		init = dojo.evalObjPath(className, false);
-		if ((init)&&(!dojo.lang.isFunction(init))){ init = null };
+		if((init)&&(!dojo.lang.isFunction(init))){ init = null };
 	}
 	var ctor = dojo.lang.declare._makeConstructor();
 	var scp = (superclass ? superclass.prototype : null);

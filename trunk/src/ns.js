@@ -1,10 +1,7 @@
 dojo.provide("dojo.ns");
 
-// ns = namespace
-// namespace will be a reserved word in future versions of JavaScript
-// so we break the Dojo rule regarding abbreviations this one time
-
 dojo.ns = {
+	// summary: private object that implements widget namespace management
 	namespaces: {},
 	failed: {},
 	loading: {},
