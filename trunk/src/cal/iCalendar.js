@@ -1,6 +1,6 @@
 dojo.provide("dojo.cal.iCalendar");
 dojo.require("dojo.lang.common");
-dojo.require("dojo.text.textDirectory");
+dojo.require("dojo.cal.textDirectory");
 dojo.require("dojo.date.common");
 dojo.require("dojo.date.serialize");
 
