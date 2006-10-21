@@ -5,6 +5,9 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.DatePicker");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.*");
+dojo.require("dojo.experimental");
+
+dojo.experimental("dojo.widget.MonthlyCalendar");
 
 dojo.widget.defineWidget(
 	"dojo.widget.MonthlyCalendar",
@@ -19,8 +22,10 @@ dojo.widget.defineWidget(
 			this.iCalendars = [];
 		},
 
-		cache: function() {
+		/*
+		cache: function(){
 		},
+		*/
 
 		addCalendar: function(/* dojo.iCalendar */ cal) {
 			dojo.debug("Adding Calendar");
