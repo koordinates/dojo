@@ -34,6 +34,8 @@ dojo.widget.defineWidget(
 		// default values for new subclass properties
 		required: false,
 		rangeClass: "range",
+		invalidClass: "invalid",
+		missingClass: "missing",
 		classPrefix: "dojoValidate",
 		size: "",
 		maxlength: "",
@@ -167,6 +169,7 @@ dojo.widget.defineWidget(
 			this.textbox.isValid = function() { this.isValid.call(this); };
 			this.textbox.isMissing = function() { this.isMissing.call(this); };
 			this.textbox.isInRange = function() { this.isInRange.call(this); };
+			dojo.html.setClass(this.invalidSpan,this.invalidClass);
 			this.update(); 
 			
 			// apply any filters to initial value
