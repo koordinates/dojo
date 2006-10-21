@@ -108,8 +108,7 @@ function add(radioWidgetId, contentId){
     <p>This test does various things with <code>ul</code> and <code>ol</code> lists to
     test that the RadioGroup widget works correctly. The individual li's contained by these
     lists should be exclusively selectable within their groups.
-    <div id="group1" dojoType="RadioGroup" selected="li2">
-        <ol>
+        <ol id="group1" dojoType="RadioGroup" selected="li2">
             <li id="li1" contentId="value1Content" 
                          onItemSelect="show('group1', dojo.byId('li1'))">Value 1</li>
             <li id="li2" contentId="value2Content" 
@@ -117,7 +116,6 @@ function add(radioWidgetId, contentId){
             <li id="li3" contentId="value3Content" 
                          onItemSelect="show('group1', dojo.byId('li3'))">Value 3</li>
         </ol>
-    </div>
     </p>
     
     <div id="value1Content" class="hideContent">

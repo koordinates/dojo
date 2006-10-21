@@ -71,42 +71,28 @@ dojo.addOnLoad(initTest);
     <p>This test does various things with <code>ul</code> and <code>ol</code> lists to
     test that the RadioGroup widget works correctly. The individual li's contained by these
     lists should be exclusively selectable within their groups.
-    <div id="group1" dojoType="RadioGroup">
-        <ol>
-            <li>Value 1</li>
-            <li>Value 2</li>
-            <li>Value 3</li>
-        </ol>
-    </div>
-    </p>
-    
-    <p>
-    The next list should cause errors because it contains no ul or ol nodes. You should
-    see errors like "RadioGroup: Expected ul or ol content." at the bottom of your screen.
-    <div id="group2" dojoType="RadioGroup">
-        <span >This is some content.</span>
-    </div>
+    <ol id="group1" dojoType="RadioGroup">
+    	<li>Value 1</li>
+        <li>Value 2</li>
+        <li>Value 3</li>
+    </ol>
     </p>
     
     <p>This grouping should have "Contact Us" selected by default.
-    <div id="group3" dojoType="RadioGroup" selected="contact">
-        <ul>
+        <ul id="group3" dojoType="RadioGroup" selected="contact">
             <li id="home">Home</li>
             <li id="news">News</li>
             <li id="contact">Contact Us</li>
         </ul>
-    </div>
     </p>
     
     <p>
     	This widget was created dynamically with dojo.widget.createWidget. 
-    	<div id="group4">
-        <ol>
+        <ol id="group4">
             <li>Lists</li>
             <li>are</li>
             <li>boring</li>
         </ol>
-    </div>
     </p>
     
 </body>
