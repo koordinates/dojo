@@ -73,7 +73,7 @@ dojo.ns.Ns = function(/*String*/name, /*String*/module, /*Function?*/resolver){
 
 dojo.ns.Ns.prototype.resolve = function(/*String*/name, /*String*/domain, /*Boolean?*/omitModuleCheck){
 	//summary: map component with 'name' and 'domain' to a module via namespace resolver, if specified
-	if(!this.resolver){return false;} // Boolean
+	if(!this.resolver || djConfig["skipAutoRequire"]){return false;} // Boolean
 	var fullName = this.resolver(name, domain);
 	//only load a widget once. This is a quicker check than dojo.require does
 	if((fullName)&&(!this._loaded[fullName])&&(!this._failed[fullName])){
