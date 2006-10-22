@@ -517,7 +517,10 @@ dojo.widget.defineWidget(
 
 		if (save) {
 			var data = {title:editorTitle};
-			dojo.lang.mixin(data, server_data);
+			
+			if (server_data) { // may be undefined
+				dojo.lang.mixin(data, server_data);
+			}
 			
 			
 			if (node.isPhantom) {			
