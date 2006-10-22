@@ -781,7 +781,7 @@ dojo.widget.defineWidget(
 							// can encounter a garunteed crash in FF if another event is
 							// also fired
 							var unBlur = { unBlur: function(e){
-									dojo.event.browser.removeListener(doc, "blur", blurfp);
+									dojo.event.browser.removeListener(doc, "blur", l);
 							} };
 							dojo.event.connect("before", self, "close", unBlur, "unBlur");
 						}
@@ -844,14 +844,11 @@ dojo.widget.defineWidget(
 			}
 			// handle the various key events
 
-			var character = e.charCode > 0 ? String.fromCharCode(e.charCode) : null;
-			var code = e.keyCode;
-
 			var modifiers = e.ctrlKey ? this.KEY_CTRL : 0;
 
-			if (this._keyHandlers[character]) {
-				// dojo.debug("char:", character);
-				var handlers = this._keyHandlers[character], i = 0, handler;
+			if (this._keyHandlers[e.key]) {
+				// dojo.debug("char:", e.key);
+				var handlers = this._keyHandlers[e.key], i = 0, handler;
 				while (handler = handlers[i++]) {
 					if (modifiers == handler.modifiers) {
 						handler.handler.call(this);
@@ -860,49 +857,6 @@ dojo.widget.defineWidget(
 					}
 				}
 			}
-
-			/*
-			// define some key combos
-			if (e.ctrlKey || e.metaKey) { // modifier pressed
-				switch (character) {
-					case "b": this.execCommand("bold"); break;
-					case "i": this.execCommand("italic"); break;
-					case "u": this.execCommand("underline"); break;
-					//case "a": this.execCommand("selectall"); break;
-					//case "k": this.execCommand("createlink", ""); break;
-					//case "K": this.execCommand("unlink"); break;
-					case "Z": this.execCommand("redo"); break;
-					case "s": this.close(true); break; // saves
-
-					case "1": this.execCommand("formatblock", "h1"); break;
-					case "2": this.execCommand("formatblock", "h2"); break;
-					case "3": this.execCommand("formatblock", "h3"); break;
-					case "4": this.execCommand("formatblock", "h4"); break;
-
-					case "\\": this.execCommand("insertunorderedlist"); break;
-
-					default: switch (code) {
-						case e.KEY_LEFT_ARROW:
-						case e.KEY_RIGHT_ARROW:
-							//break; // preventDefault stops the browser
-								   // going through its history
-						default:
-							preventDefault = false; break; // didn't handle here
-					}
-				}
-			} else {
-				switch (code) {
-					case e.KEY_TAB:
-					  // commenting out bcs it's crashing FF
-						// this.execCommand(e.shiftKey ? "unindent" : "indent");
-						// break;
-					default:
-						preventDefault = false; break; // didn't handle here
-				}
-			}
-
-			if (preventDefault) { e.preventDefault(); }
-			*/
 
 			// function call after the character has been inserted
 			dojo.lang.setTimeout(this, this.onKeyPressed, 1, e);
