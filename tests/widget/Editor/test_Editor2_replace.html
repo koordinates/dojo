@@ -26,6 +26,7 @@
 		}
 
 		function edit(contentId) {
+			var content = dojo.byId(contentId).innerHTML;
 			dojo.debug("Editing " + content);
 
 			var div = document.createElement("div");
@@ -50,11 +51,13 @@
 				}));
 			}));
 
-			dojo.event.connect(dj_global, "updateContent", dojo.lang.hitch(newEditor, function(contentId, content) {
-				if (contentId == this.contentSource) {
-					this.replaceEditorContent(content);
-				}
-			}));
+			dojo.event.connect(dj_global, "updateContent", 
+				dojo.lang.hitch(newEditor, function(contentId, content){
+					if (contentId == this.contentSource) {
+						this.replaceEditorContent(content);
+					}
+				})
+			);
 
 			newFloat.addChild(newEditor);
 
