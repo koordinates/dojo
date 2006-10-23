@@ -68,8 +68,6 @@ dojo.widget.defineWidget(
 		//dojo.profile.end("onTreeChange");
 	},
 	
-	
-
 
 	// down arrow
 	_focusNextVisible: function(nodeWidget) {

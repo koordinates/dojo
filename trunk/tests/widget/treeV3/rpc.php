@@ -10,7 +10,7 @@ extract($_REQUEST);
 
 if ($action == 'getChildren') {
 ?>
-([{title:"empty1",isFolder:true,objectId:"myobj"},{title:"empty2",isFolder:true,objectId:"myobj"},{title:"singleChild",children:[ {title:"leaf"}  ]}])
+([{title:"load1",isFolder:true,objectId:"myobj"},{title:"load2",isFolder:true,objectId:"myobj"},{title:"singleChild",children:[ {title:"leaf"}  ]}])
 <?
 	return;
 }
