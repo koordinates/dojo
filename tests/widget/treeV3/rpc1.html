@@ -22,8 +22,7 @@
 </head>
 <body>
 
-<h4>Every action on node is done with RpcController. ContextMenu, Dnd on.<br>
-strictFolders mode is OFF so you may add new children to ANY node not only folder.</h4>
+<h4>Every action on node is done with RpcController. ContextMenu, Dnd on.</h4>
 
 <script>
 	dojo.addOnLoad(function() { dojo.widget.TreeDemo.bindDemoMenu(dojo.widget.byId('treeController')) });
@@ -46,6 +45,7 @@ strictFolders mode is OFF so you may add new children to ANY node not only folde
 	<div dojoType="TreeMenuItemV3" treeActions="move" iconSrc="../images/downsmall.png" caption="Up" widgetId="treeContextMenuUp"></div>
 	<div dojoType="TreeMenuItemV3" treeActions="move" iconSrc="../images/upsmall.png" caption="Down" widgetId="treeContextMenuDown"></div>
 	<div dojoType="TreeMenuItemV3" treeActions="edit" caption="Edit" widgetId="treeContextMenuEdit"></div>
+    <div dojoType="TreeMenuItemV3" treeActions="refresh" caption="Refresh children" widgetId="treeContextMenuRefresh"></div>
 </div>
 
 
