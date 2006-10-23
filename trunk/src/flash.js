@@ -769,8 +769,8 @@ dojo.flash.Embed.prototype = {
 		var viewport_size = dojo.html.getViewport();
 
 		// compute the centered position    
-		var x = scroll_offset.x + (viewport_size.x - elementWidth) / 2;
-		var y = scroll_offset.y + (viewport_size.y - elementHeight) / 2; 
+		var x = scroll_offset.x + (viewport_size.width - elementWidth) / 2;
+		var y = scroll_offset.y + (viewport_size.height - elementHeight) / 2; 
 
 		// set the centered position
 		var container = dojo.byId(this.id + "Container");
