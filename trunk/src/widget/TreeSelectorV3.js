@@ -102,13 +102,23 @@ dojo.widget.defineWidget(
 	
 	
 	onTreeClick: function(event) {
-		
-		
+				
 		var node = this.domElement2TreeNode(event.target);
 		
-		if (node) {
-			this.processNode(node, event);
+		if (!node) {
+			return;
 		}
+		
+		var checkLabelClick = function(domElement) {
+			return domElement === node.labelNode;
+		}
+		
+		if (this.checkPathCondition(event.target, checkLabelClick)) {
+			//dojo.debug("condition ok");
+			this.processNode(node, event);			
+		}
+		
+		
 	},
 	
 	
@@ -179,7 +189,10 @@ dojo.widget.defineWidget(
 		var _this = this;
 		dojo.lang.forEach(this.selectedNodes, function(node) {
 			var selectedNode = node;
+			node = node.parent
 			while (node && node.isTreeNode) {
+				//dojo.debug("ancestor try "+node);
+				
 				if (node === ancestor) {
 					_this.deselect(selectedNode); 
 					return;					

@@ -316,13 +316,13 @@ dojo.widget.defineWidget(
 			return;
 		}
 		
-		// now check if expand was clicked
-		while (!domElement.widgetId) { // node found => there must be widgetId up here
-			if (domElement === node.expandNode) {
-				this.processExpandClick(node);
-				break;
-			}
-			domElement = domElement.parentNode;
+		
+		var checkExpandClick = function(el) {
+			return el === node.expandNode;
+		}
+		
+		if (this.checkPathCondition(domElement, checkExpandClick)) {
+			this.processExpandClick(node);			
 		}
 		
 		this._focusLabel(node);
@@ -442,11 +442,9 @@ dojo.widget.defineWidget(
 		
 		//dojo.debug("Expand "+node.isFolder);
 		
-		if (node.isFolder) {
-			
+		if (node.isFolder) {			
 			node.expand(); // skip trees or non-folders
-		}
-		
+		}		
 		
 		//dojo.profile.end("expand");
 				
