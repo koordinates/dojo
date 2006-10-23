@@ -32,23 +32,26 @@ dojo.widget.defineWidget(
 		
 		var source = this.getTopOpenEvent().target;
 		var treeNode = this.domElement2TreeNode(source);
-		return treeNode
+		return treeNode;
+	
 	},
 		
 	open: function() {
 		var result = dojo.widget.PopupMenu2.prototype.open.apply(this, arguments);
 
 		for(var i=0; i< this.children.length; i++) {
+			/* notify children */
 			if (this.children[i].menuOpen) {
 				this.children[i].menuOpen(this.getTreeNode());
 			}
 		}
-		return result
+		return result;
 	},
 	
 	close: function(){
 		
 		for(var i=0; i< this.children.length; i++) {
+			/* notify menu entries */
 			if (this.children[i].menuClose) {
 				this.children[i].menuClose(this.getTreeNode());
 			}

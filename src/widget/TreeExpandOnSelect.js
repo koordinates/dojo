@@ -5,8 +5,10 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TreeSelectorV3");
 dojo.require("dojo.html.selection");
 
-// selector extension to emphase node
-
+/**
+ * when a node is selected, expands tree to make it visible
+ * useful for program expansion
+ */
 dojo.widget.defineWidget(
 	"dojo.widget.TreeExpandOnSelect",
 	dojo.widget.HtmlWidget,
