@@ -95,6 +95,14 @@ dojo.widget.defineWidget(
 			this.onClick();
 		},
 
+		setValue: function(/*boolean*/ bool){
+			// summary: set the checkbox state
+			if(this.disabled == false){
+				this.checked = bool;
+				this._setInfo();
+			}
+		},
+
 		onClick: function(){
 			// summary: user overridable callback function for checkbox being clicked
 		},
