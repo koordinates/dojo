@@ -1,0 +1,149 @@
+/* General styles */
+* {
+	font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+}
+BODY {
+; background-attachment: fixed; background-image:  url(ogrelite.jpg); background-repeat: no-repeat; background-position: right bottom
+}
+
+A {
+    color:#000066;
+}
+H2 {
+	font-size: 12pt;
+	color: #FFFFFF;
+	background-color: #666666;
+}
+
+/* Basic layout-table style */
+.layoutTable {
+	border-collapse:collapse;
+	border:none 0px black;
+	width: 100%;
+    empty-cells: show;
+}
+.layoutTable TD {
+	vertical-align:top;
+	border: solid #CCCCCC;
+	border-width: 1px 0px 0px 0px;
+}
+
+/* Navigation bar */
+#navBar {
+	color: white;
+	background-color: black;
+	font-family: Geneva, Arial, Helvetica, san-serif;
+	font-weight: bold;
+	border-width: 0px 0px 2px;
+	border-color: black black #000000;
+	bottom-margin: 8px;
+}
+#navBar A {
+	color:white;
+}
+.navItem {
+	color:white;
+}
+.navSeparator {
+	color: #999999
+}
+
+/* Title path styles */
+#titleName {
+	color:white;
+	font-size: 18pt;
+}
+#titlePath {
+	color:white;
+	font-size: 14px;
+	font-weight: normal;
+}
+
+/* Class/Node/Loader template styles */
+#mainComment {
+    bottom-margin: 8px;
+}
+
+/* Styles for properties of objects/classes */
+TD.propertyCell {
+	width: 1%;
+	padding-left:15px;
+	border-right:solid 1px #CCCCFF;
+}
+.returnLabel {
+	font-weight:normal;
+}
+.param {
+	font-weight:normal;
+}
+.paramLabel {
+	font-weight:normal;
+}
+.optionalParam {
+	color:#666666;
+	font-weight:normal;
+	font-style: italic;
+}
+.optionalParamLabel {
+	color:#666666;
+	font-weight:normal;
+	font-style: italic;
+}
+.returnLabel {
+}
+
+
+/* Styles for @ tag related information */
+.tagCell {
+	width: 1%;
+	padding-left:15px;
+	text-align:right;
+	border-right:solid 1px #CCCCFF;
+}
+.tagLabel {
+	color: #333300;
+}
+.deprecatedLabel {
+	color: #990000;
+	font-weight:bold;
+}
+
+/************************
+ * Node document styles *
+ ************************/
+
+/* Styles for the summary section */
+.nodeSummaryHeading {
+	background-color: #FFFFCC;
+	font-weight: bold;
+}
+.nodeSummaryLabel {
+	font-weight: bold;
+}
+.nodePrivateSummaryLabel {
+	font-style:italic;
+	font-weight: bold;
+	color: #555555;
+}
+
+/* Styles for the detail section */
+.nodeDetailHeading {
+	background-color: #CCFFFF;
+	font-weight: bold;
+}
+
+/* Useful documentation styles (not required by templates, though) */
+.fwEmphasis {
+    color: #CC0000;
+}
+.fwQuestion {
+    color: #000080; 
+    font-weight: bold;
+}
+.fwHTML {
+    padding: 2px;
+    border: green dashed 1px; 
+    overflow:visible;
+}
+.returnTagLabel { color: #333300; ; font-weight: bold}

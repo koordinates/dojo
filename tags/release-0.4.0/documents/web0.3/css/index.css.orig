@@ -1,0 +1,145 @@
+/* 
+	dojotoolkit.org
+	The Summer Theme
+	Index page specific CSS code.
+*/
+#index-header{
+	width:100%;
+	height:200px;
+	position:relative;
+	background-image:url(../img/idx-header-bg.jpg);
+	background-repeat:repeat-x;
+}
+#index-logo{
+	position:absolute;
+	top:40px;
+	left:40px;
+	margin:0;
+	text-indent:-5000px;
+	width:400px;
+	height:150px;
+	background-image:url(../img/idx-logo.gif);
+	background-repeat:no-repeat;
+	z-index:50;
+}
+#index-download{
+	position:absolute;
+	top:65px;
+	right:50px;
+	width:255px;
+	height:102px;
+	z-index:49;
+}
+#index-download a{
+	position:relative;
+	display:block;
+	width:255px;
+	height:102px;
+	text-indent:-5000px;
+	background-image:url(../img/idx-download.png);
+	background-repeat:no-repeat;
+}
+* html #index-download a{
+	background-image:url(../img/idx-download.gif);
+	background-repeat:no-repeat;
+}
+
+#body {
+	position:relative;
+	width:100%;
+	min-height:450px;
+}
+* html #body{
+	min-height: 450px;
+	overflow:visible;
+}
+
+#content {
+	width:auto;	/* stretch to fill */
+	margin:0 348px 50px 50px;
+	/*border: 1px solid black;*/
+}
+
+#content #actionTabs {
+	width:100%;
+	height: auto;
+	min-height: 450px;
+	overflow: visible;
+}
+
+#actionTabs .dojoTabPaneWrapper{
+	border:0;
+	/*height:auto;*/
+	overflow: visible;
+	top: 25px;
+	position: relative;
+}
+
+div.dojoTabLabels-top {
+	position : absolute;;
+	top : 0px;
+	left : 0px;
+	overflow : visible;
+}
+
+div.dojoTabPaneTab span {
+	font-size:1em;
+}
+
+div.dojoTabPaneTab span {
+        background : url(/~dmachi/demoTrunk/www/img/tab_bot_right.gif) no-repeat right bottom;
+	border:0px;
+}
+
+div.dojoTabPaneTab {
+	border: 0px;
+        background : url(/~dmachi/demoTrunk/www/img/tab_bot_left.gif) no-repeat left bottom;
+}
+
+div.dojoTabPaneTab.current {
+        background : url(/~dmachi/demoTrunk/www/img/tab_bot_left_curr.gif) no-repeat left bottom;
+}
+
+div.dojoTabPaneTab.current span {
+        background : url(/~dmachi/demoTrunk/www/img/tab_bot_right_curr.gif) no-repeat right bottom;
+}
+
+
+
+/* sidebar */
+#sidebar {
+	position:absolute;
+	top:16px;
+	right:50px;
+	width:248px;
+}
+
+#sidebar .blurb {
+	text-indent:-5000px;
+	width:250px;
+	height:90px;
+	background-image:url(../img/idx-blurb.png);
+	background-repeat:no-repeat;
+}
+#sidebar .license {
+	margin:16px 0 16px -16px;
+}
+
+#sidebar .license a{
+	display:block;
+	width:282px;
+	height:107px;
+	text-indent:-5000px;
+	background-image:url(../img/idx-license.gif);
+	background-repeat:no-repeat;
+}
+
+#sidebar ul {
+	margin-left:0;
+	padding-left:0;
+}
+
+#sidebar ul li { 
+	font-size:0.85em;
+	margin-bottom:0.5em;
+}

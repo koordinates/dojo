@@ -1,0 +1,138 @@
+<project name="codemanic" default="dev">
+
+<target name="test1"
+        description="run the test suite" >
+   <java classname="org.dojo.jsl.top.Top" fork="true" failonerror="true">
+    	<arg value="--verbose"/> 
+   	    <arg value="--prj"/> 
+		<arg value="jsl.prj"/> 
+    	<arg value="--sources"/> 
+    	<arg file="../tests/test_color.html"/> 	
+        <classpath>
+        <pathelement location="bcel.jar"/>
+	    <pathelement location="sisc.jar"/>
+		<pathelement location="jsl.jar"/>
+        </classpath>
+    </java>
+</target>
+
+<target name="test2"
+        description="run the test suite" >
+   <java classname="org.dojo.jsl.top.Top" fork="true" failonerror="true">
+    	<arg value="--verbose"/> 
+   	    <arg value="--prj"/> 
+		<arg value="jsl.prj"/> 
+    	<arg value="--sources"/> 
+    	<arg file="../tests/test_Colorspace.html"/> 	
+        <classpath>
+        <pathelement location="bcel.jar"/>
+	    <pathelement location="sisc.jar"/>
+		<pathelement location="jsl.jar"/>
+        </classpath>
+    </java>
+</target>
+
+<target name="test3"
+        description="run the test suite" >
+   <java classname="org.dojo.jsl.top.Top" fork="true" failonerror="true">
+    	<arg value="--verbose"/> 
+   	    <arg value="--prj"/> 
+		<arg value="jsl.prj"/> 
+    	<arg value="--sources"/> 
+    	<arg file="../tests/test_drag_n_drop.html"/> 	
+        <classpath>
+        <pathelement location="bcel.jar"/>
+	    <pathelement location="sisc.jar"/>
+		<pathelement location="jsl.jar"/>
+        </classpath>
+    </java>
+</target>
+
+<target name="test4"
+        description="run the test suite" >
+   <java classname="org.dojo.jsl.top.Top" fork="true" failonerror="true">
+    	<arg value="--verbose"/> 
+   	    <arg value="--prj"/> 
+		<arg value="jsl.prj"/> 
+    	<arg value="--sources"/> 
+    	<arg file="../tests/test_fx.html"/> 	
+        <classpath>
+        <pathelement location="bcel.jar"/>
+	    <pathelement location="sisc.jar"/>
+		<pathelement location="jsl.jar"/>
+        </classpath>
+    </java>
+</target>
+
+<target name="test5"
+        description="run the test suite" >
+   <java classname="org.dojo.jsl.top.Top" fork="true" failonerror="true">
+    	<arg value="--verbose"/> 
+   	    <arg value="--prj"/> 
+		<arg value="jsl.prj"/> 
+    	<arg value="--sources"/> 
+    	<arg file="../tests/test_html_selection.html"/> 	
+        <classpath>
+        <pathelement location="bcel.jar"/>
+	    <pathelement location="sisc.jar"/>
+		<pathelement location="jsl.jar"/>
+        </classpath>
+    </java>
+</target>
+
+<target name="test6"
+        description="run the test suite" >
+   <java classname="org.dojo.jsl.top.Top" fork="true" failonerror="true">
+    	<arg value="--verbose"/> 
+   	    <arg value="--prj"/> 
+		<arg value="jsl.prj"/> 
+    	<arg value="--sources"/> 
+    	<arg file="../tests/test_matrix.html"/> 	
+        <classpath>
+        <pathelement location="bcel.jar"/>
+	    <pathelement location="sisc.jar"/>
+		<pathelement location="jsl.jar"/>
+        </classpath>
+    </java>
+</target>
+
+<target name="test7"
+        description="run the test suite" >
+   <java classname="org.dojo.jsl.top.Top" fork="true" failonerror="true">
+    	<arg value="--verbose"/> 
+   	    <arg value="--prj"/> 
+		<arg value="jsl.prj"/> 
+    	<arg value="--sources"/> 
+    	<arg file="../tests/test_sizing.html"/> 	
+        <classpath>
+        <pathelement location="bcel.jar"/>
+	    <pathelement location="sisc.jar"/>
+		<pathelement location="jsl.jar"/>
+        </classpath>
+    </java>
+</target>
+
+<target name="test8"
+        description="run the test suite" >
+    <!-- Copy the template directory for the date picker widget -->
+ 	<copy todir="../tmp/src/widget/templates">
+  	  <fileset dir="../tests/src/widget/templates"
+  	           includes="**"
+  	  />
+    </copy>
+   <java classname="org.dojo.jsl.top.Top" fork="true" failonerror="true">
+    	<arg value="--verbose"/> 
+   	    <arg value="--prj"/> 
+		<arg value="jsl.prj"/> 
+    	<arg value="--sources"/> 
+    	<arg file="../tests/datePicker.html"/> 	
+        <classpath>
+        <pathelement location="bcel.jar"/>
+	    <pathelement location="sisc.jar"/>
+		<pathelement location="jsl.jar"/>
+        </classpath>
+    </java>
+</target>
+
+
+</project>
