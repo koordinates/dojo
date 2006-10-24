@@ -7,9 +7,10 @@ dojo.uri = new function() {
 	}
 	
 	this.moduleUri = function(/*String*/module, /*dojo.uri.Uri||String*/uri){
-		// summary: returns a Uri object relative to a (top-level) module
+		// summary: returns a Uri object relative to a module
 		// description: Examples: dojo.uri.moduleUri("dojo","Editor"), or dojo.uri.moduleUri("acme","someWidget")
-		var loc = dojo.hostenv.getModulePrefix(module);
+		var loc = dojo.hostenv.getModuleSymbols(module).join('/');
+		//var loc = dojo.hostenv.getModulePrefix(module);
 		if(!loc){return null;}
 		if(loc.lastIndexOf("/") != loc.length-1){loc += "/";}
 		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri()+loc,uri);

@@ -232,12 +232,11 @@ dojo.hostenv.callLoaded = function(){
 dojo.hostenv.getModuleSymbols = function(/*String*/modulename){
 // summary:
 //	Converts a module name in dotted JS notation to an array representing the path in the source tree
-
 	var syms = modulename.split(".");
 	for(var i = syms.length; i>0; i--){
 		var parentModule = syms.slice(0, i).join(".");
-		if ((i==1) && !this.moduleHasPrefix(parentModule)){		
-			//Support default module directory (sibling of dojo)
+		if((i==1) && !this.moduleHasPrefix(parentModule)){		
+			// Support default module directory (sibling of dojo) for top-level modules 
 			syms[0] = "../" + syms[0];
 		}else{
 			var parentModulePath = this.getModulePrefix(parentModule);
