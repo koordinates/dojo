@@ -19,14 +19,13 @@
 <body>
 <h1> DropDownContainer tests </h1>
 
-<div dojoType="dropdowncontainer" id="foo"></div>
+<div dojoType="dropdowncontainer" id="foo"><div style="border: 1px solid blue;">some content for the first <br/>dropdown container</div></div>
 <br><br>
 <h3>Instantiation from Script:</h3>
-<div id="dropdown"></div>
+<div id="dropdown"><div style="border: 1px solid black;">some content for the second <br/>dropdown container</div></div>
 <script type="text/javascript">
 	var params = {id: "dropdown"};
 	var widget = dojo.widget.createWidget("DropdownContainer", params, dojo.byId("dropdown"));
-	dojo.debug("widget id: " + widget.domNode.id);
 </script>
 </body>
 </html>
