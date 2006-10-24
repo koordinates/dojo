@@ -401,6 +401,10 @@ dojo.widget.defineWidget(
 					if(this.popupWidget.isShowingNow){
 						dojo.event.browser.stopEvent(evt);
 					}
+					if(this.autoComplete){
+						this.selectOption();
+						return;
+					}
 					// fallthrough
 				case " ":
 					if(this.popupWidget.isShowingNow && this._highlighted_option){
