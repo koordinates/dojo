@@ -38,16 +38,17 @@ dojo.widget.defineWidget(
 		containerToggleDuration: 150,
 		containerAnimInProgress: false,
 
-		templateString: '<span style="white-space:nowrap"><input type="hidden" name="" value="" dojoAttachPoint="valueNode" /><input name="" type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" autocomplete="off" /> <img src="${this.iconURL}" alt="${this.iconAlt}" dojoAttachEvent="onclick: onIconClick" dojoAttachPoint="buttonNode" style="vertical-align:middle; cursor:pointer; cursor:hand" /></span>',
+		templateString: '<span style="white-space:nowrap"><input type="hidden" name="" value="" dojoAttachPoint="valueNode" /><input name="" type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" autocomplete="off" /> <img src="${this.iconURL}" alt="${this.iconAlt}" dojoAttachEvent="onclick:onIconClick" dojoAttachPoint="buttonNode" style="vertical-align:middle; cursor:pointer; cursor:hand" /></span>',
 		templateCssPath: "",
+		isContainer: true,
 
-		fillInTemplate: function(args, frag){
-			var source = this.getFragNodeRef(frag);
-
+		//use attachTemplateNodes to specify containerNode, as fillInTemplate is too late for this
+		attachTemplateNodes: function(){
+			dojo.widget.DropdownContainer.superclass.attachTemplateNodes.apply(this, arguments);
 			this.popup = dojo.widget.createWidget("PopupContainer", {toggle: this.containerToggle, toggleDuration: this.containerToggleDuration});
-
 			this.containerNode = this.popup.domNode;
-
+		},
+		fillInTemplate: function(args, frag){
 			this.domNode.appendChild(this.popup.domNode);
 			if(this.id) { this.domNode.id = this.id; }
 			if(this.inputId){ this.inputNode.id = this.inputId; }
@@ -58,7 +59,6 @@ dojo.widget.defineWidget(
 		},
 
 		onIconClick: function(evt){
-			if(!this.isEnabled) return;
 			if(!this.popup.isShowingNow){
 				this.popup.open(this.inputNode, this, this.buttonNode);
 			}else{
