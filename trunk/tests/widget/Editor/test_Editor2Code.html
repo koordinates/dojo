@@ -8,14 +8,15 @@
 	</script>
 
 	<script type="text/javascript" src="../../../dojo.js"></script>
+	<script type="text/javascript" src="../../../src/widget/RichText.js"></script>
+	<script type="text/javascript" src="../../../src/widget/Editor2.js"></script>
 	<script type="text/javascript">
-	dojo.require("dojo.debug.console");
 	dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands");
 	dojo.require("dojo.widget.Editor2");
 	</script>
 	<script type="text/javascript">
 		function editorTest() {
-			this.editor0 = dojo.widget.createWidget("Editor2", {commandList: ["bold", "italic", "underline", "insertimage", "save"], toolbarTemplatePath: "../../../src/widget/templates/EditorToolbarLight.html", height: 100, shareToolbar: false}, document.getElementById("fooTest"));
+			this.editor0 = dojo.widget.createWidget("Editor2", {commandList: ["bold", "italic", "underline", "insertimage", "save"], toolbarTemplatePath: dojo.uri.dojoUri("src/widget/templates/EditorToolbarLight.html"), height: 100, shareToolbar: false}, document.getElementById("fooTest"));
 			dojo.event.connect(this.editor0, "editorOnLoad", dojo.lang.hitch(this, function() { this.editor0Loaded=true; }));
 			dojo.event.connect(this.editor0, "save", dojo.lang.hitch(this, function() {
 				dojo.debug("editor0");
