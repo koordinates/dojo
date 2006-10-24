@@ -86,6 +86,7 @@ dojo.html.gravity.WEST = 1 << 3;
 dojo.html.overElement = function(/* HTMLElement */element, /* DOMEvent */e){
 	//	summary
 	//	Returns whether the mouse is over the passed element.
+	//	Element must be display:block (ie, not a <span>)
 	element = dojo.byId(element);
 	var mouse = dojo.html.getCursorPosition(e);
 	var bb = dojo.html.getBorderBox(element);
