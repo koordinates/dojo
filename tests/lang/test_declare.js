@@ -4,33 +4,19 @@ function test_lang_declare() {
 	dojo.declare('my.classes.foo', null, {
 		instanceId: [ 'bad' ], // make sure we test a non-primitive									 
 		initializer: function(arg) {
-			this.instanceId = [ 'foo' ]; // this must supercede the prototype in every instance
-		},
-		protoId: 'foo',
-		getProtoId: function() {
-			var ancestorId = my.classes.foo.superclass.getProtoId.apply(this, arguments);
-			// NOTE: _getPropContext is not intended for public usage except in very rare cases
-			return "I am a " + this._getPropContext().protoId + (ancestorId ? " and " + ancestorId : '');
-		},
-		getInstanceId: function(extra) {
-			var ancestorId = my.classes.foo.superclass.getAncestorId.apply(this, arguments);
-			return "a " + this.instanceId[0] + (ancestorId ? " is " + ancestorId : '');
+			this.instanceId = [ 'foo' ]; // this will supercede the prototype in every instance
 		},
 		getId: function() {
 			return "I am a foo";
-		},
-		method: function() {
-			return "A method in foo";
 		}
 	});
 	jum.assertEquals("30", "function", typeof my.classes.foo);
 
 	dojo.declare('my.classes.bar', my.classes.foo, {
 		initializer: function(arg) {
-			this.instanceId = [ 'bar' ]; // this must supercede the prototype in every instance
+			this.instanceId = [ 'bar' ]; // this will supercede the prototype in every instance
 		},
-		protoId: 'bar',
-		getId: function(extra) {
+		getId: function() {
 			return "I am a bar and " + my.classes.bar.superclass.getId.apply(this, arguments);
 		}
 	});
@@ -41,11 +27,9 @@ function test_lang_declare() {
 	
 	dojo.declare('my.classes.zot', my.classes.bar, {
 		initializer: function(arg) {
-			dojo.debug('zot: initializing instance' + (arg ? ' [' + arg + ']' : '')); 
-			this.instanceId = [ 'zot' ]; // this must supercede the prototype in every instance
+			this.instanceId = [ 'zot' ]; // this will supercede the prototype in every instance
 		},
-		protoId: 'zot',
-		getId: function(extra) {
+		getId: function() {
 			return "I am a zot and " + my.classes.zot.superclass.getId.apply(this, arguments);
 		}
 	});
@@ -57,21 +41,7 @@ function test_lang_declare() {
 	z = new my.classes.zot("with an argument");
 	jum.assertEquals("35", "object", typeof z);
 	
-	// getId tests 'inherited' over generations
-	// getInstanceId ensures that instance properties are really per-instance
-	// getProtoId tests the prototype descent algorithm
-	
-	jum.assertEquals("36.1", "I am a foo", f.getId());
-	jum.assertEquals("36.2", "a foo", f.getInstanceId());
-	jum.assertEquals("36.3", "I am a foo", f.getProtoId());
-	
-	jum.assertEquals("37.1", "I am a bar and I am a foo", b.getId());
-	jum.assertEquals("37.2", "a bar is a bar", b.getInstanceId());
-	jum.assertEquals("37.3", "I am a bar and I am a foo", b.getProtoId());
-	
-	jum.assertEquals("38.1", "I am a zot and I am a bar and I am a foo", z.getId());
-	jum.assertEquals("38.2", "a zot is a zot is a zot", z.getInstanceId());
-	jum.assertEquals("38.3", "I am a zot and I am a bar and I am a foo", z.getProtoId());
-	
-	jum.assertEquals("39", z.inherited("method"), "A method in foo");
+	jum.assertEquals("36", "I am a foo", f.getId());
+	jum.assertEquals("37", "I am a bar and I am a foo", b.getId());
+	jum.assertEquals("38", "I am a zot and I am a bar and I am a foo", z.getId());
 }

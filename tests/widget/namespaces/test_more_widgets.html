@@ -11,7 +11,7 @@
 	// old style button with no namespace awareness
 	dojo.widget.defineWidget("my.widget.OldButton", dojo.widget.HtmlWidget, {
 		fillInTemplate: function() {
-			this.domNode.innerHTML = "[Old Button]";
+			this.domNode.innerHTML = "Old Button";
 			dojo.event.connect(this.domNode, 'onclick', function() {
 				alert("Old!");
 			});
@@ -21,7 +21,7 @@
 	// conventional namespaced button
 	dojo.widget.defineWidget("my.widget.Button", dojo.widget.HtmlWidget, {
 		fillInTemplate: function() {
-			this.domNode.innerHTML = "[New Button]";
+			this.domNode.innerHTML = "New Button";
 			dojo.event.connect(this.domNode, 'onclick', function() {
 				alert("New!");
 			});
@@ -31,7 +31,7 @@
 	// button in a custom module
 	dojo.widget.defineWidget("foo.bar.Button", dojo.widget.HtmlWidget, {
 		fillInTemplate: function() {
-			this.domNode.innerHTML = "[Foo Button]";
+			this.domNode.innerHTML = "Foo Button";
 			dojo.event.connect(this.domNode, 'onclick', function() {
 				alert("Foo!");
 			});
