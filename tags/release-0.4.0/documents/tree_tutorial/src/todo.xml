@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Todo for TreeV3</title>
+    
+    
+    <section>
+        <title>A must, easy to implement</title>
+        
+        <itemizedlist>
+            <listitem><simpara>doClone in RPC should get cloned nodes from server, like createChild</simpara></listitem>
+        </itemizedlist>
+        
+    </section>
+    
+    
+    <section>
+        <title>Optional enhancements</title>
+    
+        <itemizedlist>        
+            <listitem>Automated unit-testing system based on Selenium </listitem>
+            <listitem>Optimize all gifs with AGO (advanced gif optimizer) carefully. AGO spoils transparent gifs. It may make single layer LESS than 
+                reported image size, that'd lead to background-repeat effect under OS X or Opera.
+            </listitem>        
+            <listitem>Make SortChildren extension to keep nodes sorted</listitem>
+            <listitem>Make DisableSelection extension to keep node selection</listitem>
+            <listitem>On Drag'n'drop tree 'wobbles', because node size increases/decreases when it is
+                bordered.  Could be nice to evade it, either placing another transparent div with border onto
+                the node or decreasing their size, or using padding divs, or..</listitem>
+      <listitem>Add checkbox extension. Every node will have checkbox, can save/restore checked state. When parent is checked,
+      all children are marked "grey-checked", user may uncheck grey-checked nodes. grey-checked dependant nodes removed if parent is unchecked.
+      This will require rewrite TreeDocIconExtension ( docIcon -&gt; checkbox ) to allow arbitrary new "thing" left from node.</listitem>
+        </itemizedlist>        
+    </section>
+    
+    
+    
+    <section>
+        <title>Problems to solve</title>
+        
+        <itemizedlist>
+            <listitem>Multiple dnd of nodes selected by multiple select work incorrectly. Although all is fine if dragManager
+                uses shift for multiple dnd and TreeSelector uses ctrl. No idea what the reason is.</listitem>
+            <listitem><simpara>Drag'n'drop onDrop errors can't be handled. Need a way to hook on e.g permission denied errors.</simpara>
+            </listitem>
+            <listitem><simpara>When I expand a large tree and try to move its top (dnd), node starts to move after a pause - a gap in time between
+                I start moving node with my mouse and dragClone appears. Lots of calculations?</simpara></listitem>
+            <listitem><simpara>wipe and fade togglers are broken</simpara></listitem>
+            <listitem><simpara>can't add subwidgets in title. Seems I need to put them to children, and children property will contain
+            not only subnodes, but also title widgets.. Will need to fix a lot.</simpara></listitem>
+        </itemizedlist>
+        
+        </section>
+    
+        
+</section>
