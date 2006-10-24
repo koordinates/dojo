@@ -22,29 +22,29 @@ dojo.declare(
 		// String
 		//	text to display in floating pane's title bar (ex: "My Window")
 		title: '',
-		
+
 		// String
 		//	path of icon to display in floating pane's title bar
 		iconSrc: '',
-		
+
 		// Boolean
 		//	if true, display a shadow behind the floating pane
 		hasShadow: false,
-		
+
 		// Boolean
 		//	if true, and the floating pane is inside another container (ContentPane, another FloatingPane, etc.),
 		//	then don't allow the floating pane to be dragged outside of it's container
 		constrainToContainer: false,
-		
+
 		// String
 		//	widget id of TaskBar widget;
 		//	if specified, then an icon for this FloatingPane will be added to the specified TaskBar
 		taskBarId: "",
-		
+
 		// Boolean
 		//	if true, allow user to resize floating pane
 		resizable: true,
-		
+
 		// Boolean
 		//	if true, display title bar for this floating pane
 		titleBarDisplay: true,
@@ -55,11 +55,11 @@ dojo.declare(
 		// Values
 		//	"normal", "maximized", "minimized"
 		windowState: "normal",
-		
+
 		// Boolean
 		//	display button to close window
 		displayCloseAction: false,
-		
+
 		// Boolean
 		//	display button to minimize window (ie, window disappears so only the taskbar item remains)
 		displayMinimizeAction: false,
@@ -82,43 +82,43 @@ dojo.declare(
 			// Copy style info from input node to output node
 			var source = this.getFragNodeRef(frag);
 			dojo.html.copyStyle(this.domNode, source);
-	
+
 			// necessary for safari, khtml (for computing width/height)
 			dojo.body().appendChild(this.domNode);
-	
+
 			// if display:none then state=minimized, otherwise state=normal
 			if(!this.isShowing()){
 				this.windowState="minimized";
 			}
-	
+
 			// <img src=""> can hang IE!  better get rid of it
 			if(this.iconSrc==""){
 				dojo.html.removeNode(this.titleBarIcon);
 			}else{
 				this.titleBarIcon.src = this.iconSrc.toString();// dojo.uri.Uri obj req. toString()
 			}
-	
-			if(this.titleBarDisplay){	
+
+			if(this.titleBarDisplay){
 				this.titleBar.style.display="";
 				dojo.html.disableSelection(this.titleBar);
-	
+
 				this.titleBarIcon.style.display = (this.iconSrc=="" ? "none" : "");
-	
+
 				this.minimizeAction.style.display = (this.displayMinimizeAction ? "" : "none");
-				this.maximizeAction.style.display= 
+				this.maximizeAction.style.display=
 					(this.displayMaximizeAction && this.windowState!="maximized" ? "" : "none");
-				this.restoreAction.style.display= 
+				this.restoreAction.style.display=
 					(this.displayMaximizeAction && this.windowState=="maximized" ? "" : "none");
 				this.closeAction.style.display= (this.displayCloseAction ? "" : "none");
-	
-				this.drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
+
+				this.drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);
 				if (this.constrainToContainer) {
 					this.drag.constrainTo();
 				}
 				this.drag.setDragHandle(this.titleBar);
-	
+
 				var self = this;
-	
+
 				dojo.event.topic.subscribe("dragMove",
 					function (info){
 						if (info.source.domNode == self.domNode){
@@ -127,29 +127,29 @@ dojo.declare(
 					}
 				);
 			}
-	
+
 			if(this.resizable){
 				this.resizeBar.style.display="";
 				this.resizeHandle = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
 				this.resizeBar.appendChild(this.resizeHandle.domNode);
 			}
-	
+
 			// add a drop shadow
 			if(this.hasShadow){
 				this.shadow=new dojo.lfx.shadow(this.domNode);
 			}
-	
+
 			// Prevent IE bleed-through problem
 			this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
-	
+
 			if( this.taskBarId ){
 				this._taskBarSetup();
 			}
-	
+
 			// counteract body.appendChild above
 			dojo.body().removeChild(this.domNode);
 		},
-	
+
 		postCreate: function(){
 			if (dojo.hostenv.post_load_) {
 				this._setInitialWindowState();
@@ -157,7 +157,7 @@ dojo.declare(
 				dojo.addOnLoad(this, "_setInitialWindowState");
 			}
 		},
-	
+
 		maximizeWindow: function(/*Event*/ evt) {
 			// summary: maximize the window
 			var mb = dojo.html.getMarginBox(this.domNode);
@@ -201,7 +201,7 @@ dojo.declare(
 
 			this.windowState="maximized";
 		},
-	
+
 		minimizeWindow: function(/*Event*/ evt) {
 			// summary: hide the window so that only the icon in the taskbar is shown
 			this.hide();
@@ -211,7 +211,7 @@ dojo.declare(
 			this.lastWindowState = this.windowState;
 			this.windowState = "minimized";
 		},
-	
+
 		restoreWindow: function(/*Event*/ evt) {
 			// summary: set the winow to normal size (neither maximized nor minimized)
 			if (this.windowState=="minimized") {
@@ -260,12 +260,12 @@ dojo.declare(
 			dojo.html.removeNode(this.domNode);
 			this.destroy();
 		},
-	
+
 		onMouseDown: function(/*Event*/ evt) {
 			// summary: callback when user clicks anywhere on the floating pane
 			this.bringToTop();
 		},
-	
+
 		bringToTop: function() {
 			// summary
 			//	all the floating panes are stacked in z-index order; bring this floating pane to the top of that stack,
@@ -277,19 +277,19 @@ dojo.declare(
 						windows.push(floatingPanes[x]);
 				}
 			}
-	
+
 			windows.sort(function(a,b) {
 				return a.domNode.style.zIndex - b.domNode.style.zIndex;
 			});
-			
+
 			windows.push(this);
-	
+
 			var floatingPaneStartingZ = 100;
 			for (x=0; x<windows.length;x++) {
 				windows[x].domNode.style.zIndex = floatingPaneStartingZ + x*2;
 			}
 		},
-	
+
 		_setInitialWindowState: function() {
 			if(this.isShowing()){
 				this.width=-1;	// force resize
@@ -301,20 +301,20 @@ dojo.declare(
 				this.show();
 				return;
 			}
-	
+
 			if (this.windowState=="normal") {
 				this.show();
 				return;
 			}
-	
+
 			if (this.windowState=="minimized") {
 				this.hide();
 				return;
 			}
-	
+
 			this.windowState="minimized";
 		},
-	
+
 		_taskBarSetup: function() {
 			// summary: add icon to task bar, connected to me
 			var taskbar = dojo.widget.getWidgetById(this.taskBarId);
@@ -341,32 +341,38 @@ dojo.declare(
 			var mb = dojo.html.getMarginBox(this.domNode);
 			this.resizeTo(mb.width, mb.height);
 		},
-	
+
 		// summary: set the floating pane to the given size
 		resizeTo: function(/*Integer*/ width, /*Integer*/ height){
 			dojo.html.setMarginBox(this.domNode, { width: width, height: height });
-	
+
 			dojo.widget.html.layout(this.domNode,
 				[
 				  {domNode: this.titleBar, layoutAlign: "top"},
 				  {domNode: this.resizeBar, layoutAlign: "bottom"},
 				  {domNode: this.containerNode, layoutAlign: "client"}
 				] );
-	
+
 			// If any of the children have layoutAlign specified, obey it
 			dojo.widget.html.layout(this.containerNode, this.children, "top-bottom");
-			
+
 			this.bgIframe.onResized();
 			if(this.shadow){ this.shadow.size(width, height); }
 			this.onResized();
 		},
-	
+
 		checkSize: function() {
 			// summary
 			//	checkSize() is called when the user has resized the browser window,
 			// 	but that doesn't affect this widget (or this widget's children)
 			// 	so it can be safely ignored...
 			// TODO: unless we are maximized.  then we should resize ourself.
+		},
+		destroyFloatingPane: function() {
+			if(this.resizeHandle){
+				this.resizeHandle.destroy();
+				this.resizeHandle = null;
+			}
 		}
 	}
 );
@@ -377,9 +383,9 @@ dojo.declare(
 //	Must specify size (like style="width: 500px; height: 500px;"),
 dojo.widget.defineWidget(
 	"dojo.widget.FloatingPane",
-	[dojo.widget.ContentPane, dojo.widget.FloatingPaneBase], 
+	[dojo.widget.ContentPane, dojo.widget.FloatingPaneBase],
 {
-	fillInTemplate: function(args, frag){	
+	fillInTemplate: function(args, frag){
 		this.fillInFloatingPaneTemplate(args, frag);
 		dojo.widget.FloatingPane.superclass.fillInTemplate.call(this, args, frag);
 	},
@@ -394,6 +400,10 @@ dojo.widget.defineWidget(
 	onShow: function(){
 		dojo.widget.FloatingPane.superclass.onShow.call(this);
 		this.onFloatingPaneShow();
+	},
+	destroy: function(){
+		this.destroyFloatingPane();
+		dojo.widget.FloatingPane.superclass.destroy.apply(this, arguments);
 	}
 });
 
