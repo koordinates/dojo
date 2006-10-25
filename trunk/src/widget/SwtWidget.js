@@ -28,7 +28,7 @@ try{
 		removeChild: function(){ },
 		cleanUp: function(){ },
 		destroyRendering: function(){ },
-		postInitialize: function(){ },
+		postInitialize: function(){ }
 	});
 
 	// initialize SWT runtime
