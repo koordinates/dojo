@@ -166,15 +166,25 @@ dojo.declare(
 		},
 
 		placeModalDialog: function() {
+			// summary: position modal dialog in center of screen
+
 			var scroll_offset = dojo.html.getScroll().offset;
 			var viewport_size = dojo.html.getViewport();
 			
-			// find the size of the dialog
-			var mb = dojo.html.getMarginBox(this.containerNode);
+			// find the size of the dialog (dialog needs to be showing to get the size)
+			var mb;
+			if(this.isShowing()){
+				mb = dojo.html.getMarginBox(this.containerNode);
+			}else{
+				dojo.html.setVisibility(this.domNode, false);
+				dojo.html.show(this.domNode);
+				mb = dojo.html.getMarginBox(this.containerNode);
+				dojo.html.hide(this.domNode);
+				dojo.html.setVisibility(this.domNode, true);
+			}
 			
 			var x = scroll_offset.x + (viewport_size.width - mb.width)/2;
 			var y = scroll_offset.y + (viewport_size.height - mb.height)/2;
-
 			with(this.domNode.style){
 				left = x + "px";
 				top = y + "px";
@@ -183,12 +193,13 @@ dojo.declare(
 
 		showModalDialog: function() {
 			// summary
-			//	call this function in show() of subclass
+			//	call this function in show() of subclass before calling superclass.show()
 			if (this.followScroll && !this._scrollConnected){
 				this._scrollConnected = true;
 				dojo.event.connect(window, "onscroll", this, "_onScroll");
 			}
-			
+
+			this.placeModalDialog();
 			this.setBackgroundOpacity();
 			this._sizeBackground();
 			this._showBackground();

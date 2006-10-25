@@ -272,7 +272,6 @@ dojo.widget.defineWidget(
 			if(this.modal){
 				this.showModalDialog();
 			}
-			this.placeModalDialog();
 			if(this.modal){
 				//place the background div under this modal pane
 				this.shared.bg.style.zIndex = this.domNode.style.zIndex-1;

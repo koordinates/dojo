@@ -425,7 +425,6 @@ dojo.widget.defineWidget(
 		show: function(){
 			dojo.widget.ModalFloatingPane.superclass.show.apply(this, arguments);
 			this.showModalDialog();
-			this.placeModalDialog();
 			//place the background div under this modal pane
 			this.shared.bg.style.zIndex = this.domNode.style.zIndex-1;
 		},
