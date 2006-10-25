@@ -48,11 +48,20 @@ dojo.widget.defineWidget(
 		dojo.event.connect(this.editable, "onmouseover", this, "onMouseOver");
 		dojo.event.connect(this.editable, "onmouseout", this, "onMouseOut");
 		dojo.event.connect(this.editable, "onclick", this, "beginEdit");
-
-		this.textValue = dojo.string.trim(this.editable.innerHTML);
-		if(dojo.string.trim(this.textValue).length == 0){
-			this.editable.innerHTML = this.defaultText;
-		}		
+		
+		// first see if a textValue was provided in parameters
+		if(dojo.string.trim(this.textValue).length > 0){
+			this.editable.innerHTML = this.textValue;
+			return;
+		}
+		// go hunting
+		var text = dojo.string.trim(this.editable.innerHTML);
+		if(text.length <= 0){
+			this.textValue=this.defaultText;
+			this.editable.innerHTML = this.textValue;
+		} else {
+			this.textValue = text;
+		}
 	},
 	
 	onMouseOver: function(){
