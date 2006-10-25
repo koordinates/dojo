@@ -105,6 +105,7 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 			this._hideChild(this.selectedChildWidget);
 		}
 		this.selectedChildWidget = page;
+		this.selectedChild = page.widgetId;
 		this._showChild(page);
 		page.isFirstChild = (page == this.children[0]);
 		page.isLastChild = (page == this.children[this.children.length-1]);
