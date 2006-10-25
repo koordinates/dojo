@@ -163,10 +163,6 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 
 		dojo.body().appendChild(this.dragClone);
 
-		// shortly the browser will fire an onClick() event,
-		// but since this was really a drag, just squelch it
-		dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");
-
 		dojo.event.topic.publish('dragStart', { source: this } );
 	},
 
@@ -244,7 +240,7 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 
 
 	/**
-	 * If the drag operation returned a success we reomve the clone of
+	 * If the drag operation returned a success we remove the clone of
 	 * ourself from the original position. If the drag operation returned
 	 * failure we slide back over to where we came from and end the operation
 	 * with a little grace.
@@ -280,16 +276,6 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 		}
 
 		dojo.event.topic.publish('dragEnd', { source: this } );
-	},
-
-	squelchOnClick: function(e){
-		// squelch this onClick() event because it's the result of a drag (it's not a real click)
-		dojo.event.browser.stopEvent(e);
-
-		// disconnect after a short delay to prevent "Null argument to unrollAdvice()" warning
-		dojo.lang.setTimeout(function() {
-				dojo.event.disconnect(this.domNode, "onclick", this, "squelchOnClick");
-			},50);
 	},
 
 	constrainTo: function(container) {
