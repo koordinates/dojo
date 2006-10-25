@@ -41,6 +41,8 @@ dojo.require("dojo.ns");
 			"editortreecontroller": "dojo.widget.EditorTreeController",
 			"googlemap": "dojo.widget.GoogleMap",
 			"editortreeselector": "dojo.widget.EditorTreeSelector",
+			"fisheyelist": "dojo.widget.FisheyeList",
+			"fisheyelistitem": "dojo.widget.FisheyeList",
 			"floatingpane": "dojo.widget.FloatingPane",
 			"form": "dojo.widget.Form",
 			"hslcolorpicker": "dojo.widget.HslColorPicker",
