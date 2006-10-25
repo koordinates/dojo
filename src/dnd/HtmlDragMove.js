@@ -21,9 +21,6 @@ dojo.declare("dojo.dnd.HtmlDragMoveSource", dojo.dnd.HtmlDragSource, {
 
 dojo.declare("dojo.dnd.HtmlDragMoveObject", dojo.dnd.HtmlDragObject, {
 	onDragEnd: function(e){
-		// shortly the browser will fire an onClick() event,
-		// but since this was really a drag, just squelch it
-		dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");
 	},
 	onDragStart: function(e){
 		dojo.html.clearSelection();
@@ -46,6 +43,10 @@ dojo.declare("dojo.dnd.HtmlDragMoveObject", dojo.dnd.HtmlDragObject, {
 		if (this.constrainToContainer) {
 			this.constraints = this.getConstraints();
 		}
+
+		// shortly the browser will fire an onClick() event,
+		// but since this was really a drag, just squelch it
+		dojo.event.connect(this.domNode, "onclick", this, "_squelchOnClick");
 	},
 	/**
 	 * Set the position of the drag node.  (x,y) is relative to <body>.
@@ -54,5 +55,13 @@ dojo.declare("dojo.dnd.HtmlDragMoveObject", dojo.dnd.HtmlDragObject, {
 		// The drag clone is attached to it's constraining container so offset for that
 		if(!this.disableY) { this.domNode.style.top = (y-this.containingBlockPosition.y) + "px"; }
 		if(!this.disableX) { this.domNode.style.left = (x-this.containingBlockPosition.x) + "px"; }
+	},
+	_squelchOnClick: function(e){
+		// summary
+		//	this function is called to squelch this onClick() event because
+		//	it's the result of a drag (ie, it's not a real click)
+
+		dojo.event.browser.stopEvent(e);
+		dojo.event.disconnect(this.domNode, "onclick", this, "_squelchOnClick");
 	}
 });
