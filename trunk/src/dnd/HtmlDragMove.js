@@ -39,7 +39,9 @@ dojo.declare("dojo.dnd.HtmlDragMoveObject", dojo.dnd.HtmlDragObject, {
 		this.containingBlockPosition = this.domNode.offsetParent ? 
 			dojo.html.abs(this.domNode.offsetParent, true) : {x:0, y:0};
 
-		this.dragClone.style.position = "absolute";
+		if(dojo.html.getComputedStyle(this.domNode, 'position') != 'absolute'){
+			this.domNode.style.position = "relative";
+		}	
 
 		if (this.constrainToContainer) {
 			this.constraints = this.getConstraints();
