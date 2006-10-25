@@ -27,18 +27,25 @@ dojo.declare("dojo.dnd.HtmlDragMoveObject", dojo.dnd.HtmlDragObject, {
 
 		this.dragClone = this.domNode;
 
+		if(dojo.html.getComputedStyle(this.domNode, 'position') == 'absolute'){
+			this.dragStartPosition = dojo.html.abs(this.domNode, true);
+		}else{
+			this.domNode.style.position = "relative";
+			var left = parseInt(dojo.html.getComputedStyle(this.domNode, 'left'));
+			var top = parseInt(dojo.html.getComputedStyle(this.domNode, 'top'));
+			this.dragStartPosition = {
+				x: isNaN(left) ? 0 : left,
+				y: isNaN(top) ? 0 : top
+			};
+		}	
+
 		this.scrollOffset = dojo.html.getScroll().offset;
-		this.dragStartPosition = dojo.html.abs(this.domNode, true);
 		
 		this.dragOffset = {y: this.dragStartPosition.y - e.pageY,
 			x: this.dragStartPosition.x - e.pageX};
 
 		this.containingBlockPosition = this.domNode.offsetParent ? 
 			dojo.html.abs(this.domNode.offsetParent, true) : {x:0, y:0};
-
-		if(dojo.html.getComputedStyle(this.domNode, 'position') != 'absolute'){
-			this.domNode.style.position = "relative";
-		}	
 
 		if (this.constrainToContainer) {
 			this.constraints = this.getConstraints();
