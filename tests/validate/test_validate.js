@@ -165,7 +165,6 @@ function test_validate_web_getEmailAddressList(){
 
 function test_validate_isInRange(){
 	// test integers
-	dojo.debug('foo');
 	jum.assertFalse("test1", dojo.validate.isInRange( '0', {min: 1, max: 100} ));
 	jum.assertTrue("test2", dojo.validate.isInRange( '1', {min: 1, max: 100} ));
 	jum.assertFalse("test3", dojo.validate.isInRange( '-50', {min: 1, max: 100} ));
