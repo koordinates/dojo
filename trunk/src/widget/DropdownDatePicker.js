@@ -16,7 +16,7 @@ dojo.widget.defineWidget(
 	dojo.widget.DropdownContainer,
 	{
 		/*
-		summary: 
+		summary:
 			A form input for entering dates with a pop-up dojo.widget.DatePicker to aid in selection
 
 	 	description: 
@@ -39,12 +39,13 @@ dojo.widget.defineWidget(
 		zIndex: "10",
 
 		//String
-		// 	Type of visible formatting used, appropriate to locale (choice of long, short, medium or full)
+		// 	Type of formatting used for visual display, appropriate to locale (choice of long, short, medium or full)
 		//  See dojo.date.format for details.
 		formatLength: "short",
 		//String
-		// 	Pattern used to display formatted date.  Setting this overrides the locale-specific settings
-		//  which are used by default.  See dojo.date.format for a reference which defines the formatting patterns.
+		//	A pattern used for the visual display of the formatted date, e.g. dd/MM/yyyy.
+		//	Setting this overrides the default locale-specific settings as well as the formatLength
+		//	attribute.  See dojo.date.format for a reference which defines the formatting patterns.
 		displayFormat: "",
 		dateFormat: "", // deprecated in 0.5
 		//String
@@ -55,7 +56,7 @@ dojo.widget.defineWidget(
 		//	rfc|iso|posix|unix
 		saveFormat: "",
 		//String|Date
-		//	form value property if =='today' will default to todays date
+		//	form value property in rfc3339 format. If =='today', will use today's date
 		value: "", 
 		//String
 		// 	name of the form element, used to create a hidden field by this name for form element submission.
@@ -64,7 +65,7 @@ dojo.widget.defineWidget(
 		// Implement various attributes from DatePicker
 
 		//Integer
-		//	total weeks to display default 
+		//	number of weeks to display 
 		displayWeeks: 6, 
 		//Boolean
 		//	if true, weekly size of calendar changes to accomodate the month if false, 42 day format is used
@@ -88,7 +89,8 @@ dojo.widget.defineWidget(
 			dojo.widget.DropdownDatePicker.superclass.postMixInProperties.apply(this, arguments);
 			var messages = dojo.i18n.getLocalization("dojo.widget", "DropdownDatePicker", this.lang);
 			this.iconAlt = messages.selectDate;
-			
+
+			//FIXME: should this be if/else/else?
 			if(typeof(this.value)=='string'&&this.value.toLowerCase()=='today'){
 				this.value = new Date();
 			}
@@ -213,6 +215,11 @@ dojo.widget.defineWidget(
 			this.inputNode.disabled = true;
 			this.datePicker.disable();
 			dojo.widget.DropdownDatePicker.superclass.disable.apply(this, arguments);
+		},
+
+		destroy: function(/*Boolean*/finalize){
+			this.datePicker.destroy(finalize);
+			dojo.widget.DropdownDatePicker.superclass.destroy.apply(this, arguments);
 		}
 	}
 );
