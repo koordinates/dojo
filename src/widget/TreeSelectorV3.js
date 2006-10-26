@@ -171,7 +171,7 @@ dojo.widget.defineWidget(
 			}
 		
 			/* lastClicked.node may be undefined if node was selected(before) programmatically */
-			var wasJustClicked = this.checkRecentLastClicked(node)
+			var wasJustClicked = this.checkRecentClick(node)
 			
 			eventName = wasJustClicked ? this.eventNames.dblselect : this.eventNames.select;
 			if (wasJustClicked) {
@@ -209,7 +209,7 @@ dojo.widget.defineWidget(
 		this.lastClicked.node = node;
 	},
 	
-	checkRecentLastClicked: function(node) {
+	checkRecentClick: function(node) {
 		var diff = new Date() - this.lastClicked.date;
 		//dojo.debug(new Date())
 		//dojo.debug("check old "+this.lastClicked.node+" now "+(new Date())+" diff "+diff)
