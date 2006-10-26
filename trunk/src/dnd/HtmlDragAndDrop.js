@@ -172,8 +172,9 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 			var viewport = dojo.html.getViewport();
 			var width = viewport.width;
 			var height = viewport.height;
-			var x = 0;
-			var y = 0;
+			var scroll = dojo.html.getScroll().offset;
+			var x = scroll.x;
+			var y = scroll.y;
 		} else {
 			var content = dojo.html.getContentBox(this.constrainingContainer);
 			width = content.width;
@@ -187,7 +188,8 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 				dojo.html.getPixelValue(this.constrainingContainer, "padding-top", true) +
 				dojo.html.getBorderExtent(this.constrainingContainer, "top");
 		}
-		
+
+		// TODO: should handle left/top/right/bottom margin separately; left/top should affect minX/minY
 		var mb = dojo.html.getMarginBox(this.domNode);
 		return {
 			minX: x,
