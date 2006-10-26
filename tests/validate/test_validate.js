@@ -165,6 +165,7 @@ function test_validate_web_getEmailAddressList(){
 
 function test_validate_isInRange(){
 	// test integers
+	dojo.debug('foo');
 	jum.assertFalse("test1", dojo.validate.isInRange( '0', {min: 1, max: 100} ));
 	jum.assertTrue("test2", dojo.validate.isInRange( '1', {min: 1, max: 100} ));
 	jum.assertFalse("test3", dojo.validate.isInRange( '-50', {min: 1, max: 100} ));
@@ -184,15 +185,18 @@ function test_validate_isInRange(){
 	jum.assertFalse("test15", dojo.validate.isInRange( '6.00000001e28', {min: 5.567e28, max: 6.000e28} ));
 	jum.assertFalse("test16", dojo.validate.isInRange( '10.000.000,12345e-5', {decimal: ",", max: 10000000.1e-5} ));
 	jum.assertFalse("test17", dojo.validate.isInRange( '10.000.000,12345e-5', {decimal: ",", min: 10000000.2e-5} ));
+	jum.assertTrue("test18", dojo.validate.isInRange('1,500,000', {separator: ',', min: 0}));
 
 	// test currency
-	jum.assertFalse("test18", dojo.validate.isInRange('�123,456,789', {max: 123456788} ));
-	jum.assertFalse("test19", dojo.validate.isInRange('�123,456,789', { min: 123456790} ));
-	jum.assertFalse("test20", dojo.validate.isInRange('$123,456,789.07', { max: 123456789.06} ));
-	jum.assertFalse("test21", dojo.validate.isInRange('$123,456,789.07', { min: 123456789.08} ));
-	jum.assertFalse("test22", dojo.validate.isInRange('123.456.789,00 �',  {max: 123456788, decimal: ","} ));
-	jum.assertFalse("test23", dojo.validate.isInRange('123.456.789,00 �',  {min: 123456790, decimal: ","} ));
-	jum.assertFalse("test24", dojo.validate.isInRange('- T123 456 789-00', {decimal: "-", min:0} ));
+	jum.assertFalse("test19", dojo.validate.isInRange('\u20AC123,456,789', {max: 123456788, symbol: '\u20AC'} ));
+	jum.assertFalse("test20", dojo.validate.isInRange('\u20AC123,456,789', { min: 123456790, symbol: '\u20AC'} ));
+	jum.assertFalse("test21", dojo.validate.isInRange('$123,456,789.07', { max: 123456789.06} ));
+	jum.assertFalse("test22", dojo.validate.isInRange('$123,456,789.07', { min: 123456789.08} ));
+	jum.assertFalse("test23", dojo.validate.isInRange('123.456.789,00 \u20AC',  {max: 123456788, decimal: ",", symbol: '\u20AC'} ));
+	jum.assertFalse("test24", dojo.validate.isInRange('123.456.789,00 \u20AC',  {min: 123456790, decimal: ",", symbol: '\u20AC'} ));
+	jum.assertFalse("test25", dojo.validate.isInRange('- T123 456 789-00', {decimal: "-", min:0} ));
+	jum.assertTrue("test26", dojo.validate.isInRange('\u20AC123,456,789', { max: 123456790, symbol: '\u20AC'} ));
+	jum.assertTrue("test27", dojo.validate.isInRange('$123,456,789.07', { min: 123456789.06} ));
 
 	// test non number
 	//jum.assertFalse("test25", dojo.validate.isInRange( 'a'));
@@ -576,7 +580,7 @@ function test_validate_check(){
 				{text: "option 2", value: "v1", selected: false},
 				{text: "option 3", value: "v2", selected: false}
 			]
-		},
+		}
 	};
 
 	// Profile for form input
