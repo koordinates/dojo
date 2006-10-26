@@ -8,12 +8,11 @@ dojo.require("dojo.lang.func");
 dojo.require("dojo.lfx.toggle");
 
 dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {								 
-	widgetType: "HtmlWidget",
-
 	templateCssPath: null,
 	templatePath: null,
 
 	lang: "",
+
 	// for displaying/hiding widget
 	toggle: "plain",
 	toggleDuration: 150,
@@ -67,14 +66,15 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 
 	toggleShowing: function(){
 		// dojo.html.toggleShowing(this.domNode);
-		if(this.isHidden){
-			this.show();
-		}else{
+		if(this.isShowing()){
 			this.hide();
+		}else{
+			this.show();
 		}
 	},
 
 	show: function(){
+		if(this.isShowing()){ return; }
 		this.animationInProgress=true;
 		this.isHidden = false;
 		this.toggleObj.show(this.domNode, this.toggleDuration, null,
@@ -88,6 +88,7 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 	},
 
 	hide: function(){
+		if(!this.isShowing()){ return; }
 		this.animationInProgress = true;
 		this.isHidden = true;
 		this.toggleObj.hide(this.domNode, this.toggleDuration, null,
