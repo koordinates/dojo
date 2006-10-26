@@ -5,6 +5,15 @@ dojo.mixin(dojo.charting.Plotters, {
 	/*********************************************************
 	 *	Grouped plotters: need all series on a plot at once.
 	 *********************************************************/
+	_group: function(plotarea){
+		var group = document.createElement("div");
+		group.style.position="absolute";
+		group.style.top="0px";
+		group.style.left="0px";
+		group.style.width=plotarea.size.width+"px";
+		group.style.height=plotarea.size.height+"px";
+		return group;
+	},
 	Bar: function(
 		/* dojo.charting.PlotArea */plotarea,
 		/* dojo.charting.Plot */plot,
@@ -15,12 +24,7 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Plots a set of grouped bars.
 		//	Bindings: y
 		var area = plotarea.getArea();
-		var group = document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
+		var group = dojo.charting.Plotters._group(plotarea);
 		
 		//	precompile the data
 		var n = plot.series.length;	//	how many series
@@ -79,12 +83,7 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Plots data in a set of grouped bars horizontally.
 		//	Bindings: y
 		var area = plotarea.getArea();
-		var group = document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
+		var group = dojo.charting.Plotters._group(plotarea);
 		
 		//	precompile the data
 		var n = plot.series.length;	//	how many series
@@ -162,13 +161,8 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Plots a grouped set of Gantt bars
 		//	Bindings: high/low
 		var area = plotarea.getArea();
-		var group = document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
-		
+		var group = dojo.charting.Plotters._group(plotarea);
+
 		//	precompile the data
 		var n = plot.series.length;	//	how many series
 		var data = [];
@@ -224,12 +218,7 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Plots a set of stacked areas.
 		//	Bindings: x/y
 		var area = plotarea.getArea();
-		var group=document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
+		var group = dojo.charting.Plotters._group(plotarea);
 
 		//	precompile the data
 		var n = plot.series.length;	//	how many series
@@ -336,12 +325,7 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Bindings: x/y
 		var tension = 3;
 		var area = plotarea.getArea();
-		var group=document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
+		var group = dojo.charting.Plotters._group(plotarea);
 
 		//	precompile the data
 		var n = plot.series.length;	//	how many series
@@ -469,12 +453,7 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Plots a set of bars in relation to y==0.
 		//	Bindings: x/y
 		var area = plotarea.getArea();
-		var group = document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
+		var group = dojo.charting.Plotters._group(plotarea);
 		
 		var n = data.length;
 		var w = (area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower);	//	the width of each group.
@@ -518,12 +497,7 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Plots the series as a line.
 		//	Bindings: x/y
 		var area = plotarea.getArea();
-		var group=document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
+		var group = dojo.charting.Plotters._group(plotarea);
 
 		var path=document.createElement("v:shape");
 		path.setAttribute("strokeweight", "2px");
@@ -589,12 +563,7 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Bindings: x/y
 		var tension = 3;
 		var area = plotarea.getArea();
-		var group=document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
+		var group = dojo.charting.Plotters._group(plotarea);
 
 		var path=document.createElement("v:shape");
 		path.setAttribute("strokeweight", "2px");
@@ -668,12 +637,7 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Plots the series as an area.
 		//	Bindings: x/y
 		var area = plotarea.getArea();
-		var group=document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
+		var group = dojo.charting.Plotters._group(plotarea);
 
 		var path=document.createElement("v:shape");
 		path.setAttribute("strokeweight", "1px");
@@ -745,12 +709,7 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Bindings: x/y
 		var tension = 3;
 		var area = plotarea.getArea();
-		var group=document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
+		var group = dojo.charting.Plotters._group(plotarea);
 
 		var path=document.createElement("v:shape");
 		path.setAttribute("strokeweight", "1px");
@@ -830,13 +789,8 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Plots the series as a set of high/low bars.
 		//	Bindings: x/high/low
 		var area = plotarea.getArea();
-		var group=document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
-		
+		var group = dojo.charting.Plotters._group(plotarea);
+
 		var n = data.length;
 		var part = ((area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower))/4;
 		var w = part*2;
@@ -882,13 +836,8 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Plots the series as a set of high/low bars with a close indicator.
 		//	Bindings: x/high/low/close
 		var area = plotarea.getArea();
-		var group=document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
-		
+		var group = dojo.charting.Plotters._group(plotarea);
+
 		var n = data.length;
 		var part = ((area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower))/4;
 		var w = part*2;
@@ -955,13 +904,8 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Plots the series as a set of high/low bars with open and close indicators.
 		//	Bindings: x/high/low/open/close
 		var area = plotarea.getArea();
-		var group=document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
-		
+		var group = dojo.charting.Plotters._group(plotarea);
+
 		var n = data.length;
 		var part = ((area.right-area.left)/(plot.axisX.range.upper - plot.axisX.range.lower))/4;
 		var w = part*2;
@@ -1048,12 +992,7 @@ dojo.mixin(dojo.charting.Plotters, {
 		var mod=r/2;
 
 		var area = plotarea.getArea();
-		var group=document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
+		var group = dojo.charting.Plotters._group(plotarea);
 
 		for(var i=0; i<data.length; i++){
 			var x = Math.round(plot.axisX.getCoord(data[i].x, plotarea, plot));
@@ -1089,12 +1028,7 @@ dojo.mixin(dojo.charting.Plotters, {
 		//	Bindings: x/y/size
 		var sizeFactor=1;
 		var area = plotarea.getArea();
-		var group=document.createElement("div");
-		group.style.position="absolute";
-		group.style.top="0px";
-		group.style.left="0px";
-		group.style.width=plotarea.size.width+"px";
-		group.style.height=plotarea.size.height+"px";
+		var group = dojo.charting.Plotters._group(plotarea);
 
 		for(var i=0; i<data.length; i++){
 			var x = Math.round(plot.axisX.getCoord(data[i].x, plotarea, plot));
