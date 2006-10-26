@@ -15,17 +15,19 @@ dojo.widget.defineWidget(
 {
 	selector: "",
 	controller: "",
+	withSelected: false,
+	selectEvent: "select",
 	
 	initialize: function() {
 		this.selector = dojo.widget.byId(this.selector);
 		this.controller = dojo.widget.byId(this.controller);
 		
-		dojo.event.topic.subscribe(this.selector.eventNames.select, this, "onSelect");	
+		dojo.event.topic.subscribe(this.selector.eventNames[this.selectEvent], this, "onSelectEvent");	
 	},
 
 	
-	onSelect: function(message) {
-		this.controller.expandToNode(message.node)
+	onSelectEvent: function(message) {
+		this.controller.expandToNode(message.node, this.withSelected)		
 	}
 	
 	
