@@ -171,8 +171,17 @@ dojo.widget.defineWidget(
 			}
 		
 			/* lastClicked.node may be undefined if node was selected(before) programmatically */
-			eventName = this.checkRecentLastClicked(node) ? this.eventNames.dblselect : this.eventNames.select;
-			this.setLastClicked(node)
+			var wasJustClicked = this.checkRecentLastClicked(node)
+			
+			eventName = wasJustClicked ? this.eventNames.dblselect : this.eventNames.select;
+			if (wasJustClicked) {
+				eventName = this.eventNames.dblselect;
+				/* after dblselect, next select is usual select */
+				this.forgetLastClicked();
+			} else {
+				eventName = this.eventNames.select;
+				this.setLastClicked(node)
+			}
 			
 			dojo.event.topic.publish(eventName, { node: node });
 			
@@ -191,13 +200,17 @@ dojo.widget.defineWidget(
 
 	},
 	
+	forgetLastClicked: function() {
+		this.lastClicked = {}
+	},
+	
 	setLastClicked: function(node) {
 		this.lastClicked.date = new Date();	
 		this.lastClicked.node = node;
 	},
 	
 	checkRecentLastClicked: function(node) {
-		var diff = new Date()-this.lastClicked.date;
+		var diff = new Date() - this.lastClicked.date;
 		//dojo.debug(new Date())
 		//dojo.debug("check old "+this.lastClicked.node+" now "+(new Date())+" diff "+diff)
 		if (this.lastClicked.node && diff < this.dblselectTimeout) {
