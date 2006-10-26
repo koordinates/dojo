@@ -15,8 +15,7 @@
 	dojo.require("dojo.widget.TreeNodeV3");
 	dojo.require("dojo.widget.TreeBasicControllerV3");
 	dojo.require("dojo.widget.TreeSelectorV3");
-	dojo.require("dojo.widget.TreeEmphaseOnSelect");
-	dojo.require("dojo.widget.TreeExpandOnSelect");
+	dojo.require("dojo.widget.TreeOnSelect");
 	dojo.hostenv.writeIncludes();
 
         var reporter = function(reporter) {
@@ -56,7 +55,10 @@ Node expands on dblselect, events are dumped.
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
 <div dojoType="TreeSelectorV3" widgetId="selector"></div>	
 <div dojoType="TreeEmphaseOnSelect" selector="selector"></div>
-<div dojoType="TreeExpandOnSelect" selector="selector" withSelected="true" selectEvent="dblselect" controller="controller"></div>
+
+<div dojoType="TreeExpandToNodeOnSelect" selector="selector" controller="controller"></div>    
+<div dojoType="TreeToggleOnSelect" selector="selector" selectEvent="dblselect" controller="controller"></div>
+
 
 <div dojoType="TreeV3" listeners="controller;selector">
 	<div dojoType="TreeNodeV3" title="Item 1">

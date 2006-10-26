@@ -16,7 +16,7 @@ dojo.widget.defineWidget(
 	selector: "",
 	controller: "",
 	withSelected: false,
-	selectEvent: "select",
+	selectEvent: "select",	
 	
 	initialize: function() {
 		this.selector = dojo.widget.byId(this.selector);
