@@ -376,8 +376,8 @@ dojo.widget.defineWidget(
 	/**
 	 * expand tree to specific node
 	 */
-	expandToNode: function(node) {
-		n = node.parent
+	expandToNode: function(node, withSelected) {
+		n = withSelected ? node : node.parent
 		s = []
 		while (!n.isExpanded) {
 			s.push(n)

@@ -48,13 +48,15 @@
 </head>
 <body> 
 
-<h2>Markup tree with basic controller and multiline content</h2>
+<h2>Selector and extensions test</h2>
+
+Node expands on dblselect, events are dumped.
 
 
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
 <div dojoType="TreeSelectorV3" widgetId="selector"></div>	
 <div dojoType="TreeEmphaseOnSelect" selector="selector"></div>
-<div dojoType="TreeExpandOnSelect" selector="selector" controller="controller"></div>
+<div dojoType="TreeExpandOnSelect" selector="selector" withSelected="true" selectEvent="dblselect" controller="controller"></div>
 
 <div dojoType="TreeV3" listeners="controller;selector">
 	<div dojoType="TreeNodeV3" title="Item 1">
