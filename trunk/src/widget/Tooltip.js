@@ -51,7 +51,7 @@ dojo.widget.defineWidget(
 			// Start tracking mouse movements, so we know when to cancel timers or erase the tooltip
 			if(!this._tracking){
 				dojo.event.connect(document.documentElement, "onmousemove", this, "onMouseMove");
-				this.tracking=true;
+				this._tracking=true;
 			}
 
 			this._onHover(e);			
