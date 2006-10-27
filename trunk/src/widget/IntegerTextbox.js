@@ -4,7 +4,7 @@ dojo.require("dojo.widget.ValidationTextbox");
 dojo.require("dojo.validate.common");
 
 /*
-  ****** IntegerTextbox ******
+summary
 
   A subclass of ValidationTextbox.
   Over-rides isValid/isInRange to test for integer input.

@@ -3,23 +3,17 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.ResizeHandle");
 
+// summary
+//	A resizable textarea.
+//	Takes all the parameters (name, value, etc.) that a vanilla textarea takes.
+// usage
+//	<textarea dojoType="ResizableTextArea">...</textarea>
 dojo.widget.defineWidget(
 	"dojo.widget.ResizableTextarea",
 	dojo.widget.HtmlWidget,
 {
 	templatePath: dojo.uri.dojoUri("src/widget/templates/ResizableTextarea.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/ResizableTextarea.css"),
-	isContainer: false,
-	textAreaNode: null,
-	textAreaContainer: null,
-	textAreaContainerNode: null,
-	statusBar: null,
-	statusBarContainerNode: null,
-	statusLabelNode: null,
-	statusLabel: null,
-	rootLayoutNode: null,
-	resizeHandleNode: null,
-	resizeHandle: null,
 
 	fillInTemplate: function(args, frag){
 		this.textAreaNode = this.getFragNodeRef(frag).cloneNode(true);
@@ -36,7 +30,8 @@ dojo.widget.defineWidget(
 			this.rootLayoutNode
 		);
 
-
+		// TODO: all this code should be replaced with a template
+		// (especially now that templates can contain subwidgets)
 		this.textAreaContainer = dojo.widget.createWidget(
 			"LayoutContainer",
 			{ layoutAlign: "client" },
@@ -76,17 +71,5 @@ dojo.widget.defineWidget(
 			this.resizeHandleNode
 		);
 		this.statusBar.addChild(this.resizeHandle);
-		// dojo.debug(this.rootLayout.widgetId);
-
-		// dojo.event.connect(this.resizeHandle, "beginSizing", this, "hideContent");
-		// dojo.event.connect(this.resizeHandle, "endSizing", this, "showContent");
-	},
-
-	hideContent: function(){
-		this.textAreaNode.style.display = "none";
-	},
-
-	showContent: function(){
-		this.textAreaNode.style.display = "";
 	}
 });

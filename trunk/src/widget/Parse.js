@@ -16,6 +16,9 @@ dojo.require("dojo.dom");
 // therefore dojo.widget.tags should go with this parser code out of the widget module
 //
 
+// summary
+//	Internal class used to traverse a DOM tree looking for widget declarations and
+//	instantiating those widgets
 dojo.widget.Parse = function(fragment){
 	this.propertySetsList = [];
 	this.fragment = fragment;
@@ -269,7 +272,7 @@ dojo.widget.getParser = function(name){
  * @return The new Widget object
  */
 
-dojo.widget.createWidget = function(name, props, refNode, position){
+dojo.widget.createWidget = function(/*String|DomNode*/name, /*Object*/ props, /*DomNode*/ refNode, /*Integer*/ position){
 	var isNode = false;
 	var isNameStr = (typeof name == "string");
 	if(isNameStr){
@@ -332,5 +335,5 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 		/* squelch for Safari */
 		dojo.debug(e);
 	}
-	return widgetArray[0]; // just return the widget
+	return widgetArray[0]; // Widget
 }

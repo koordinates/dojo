@@ -654,7 +654,8 @@ dojo.widget.defineWidget(
 });
 
 
-// ************************** make contextmenu work in konqueror and opera *********************
+// summary
+//	Internal class to make contextmenu work in konqueror and opera
 dojo.widget.Menu2.OperaAndKonqFixer = new function(){
  	var implement = true;
  	var delfunc = false;

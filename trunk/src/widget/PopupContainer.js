@@ -37,15 +37,17 @@ dojo.declare(
 
 	// Widget: parent popup widget
 	parentPopup: null,
-	// Widget: parent Widget
+
+	// Widget: the widget that caused me to be displayed; the logical parent.
 	parent: null,
+
 	// Int: level of sub popup
 	popupIndex: 0,
 
 	// dojo.html.boxSizing: which bounding box to use for open aroundNode. By default use BORDER box of the aroundNode
 	aroundBox: dojo.html.boxSizing.BORDER_BOX,
 
-	// Object: in which window, the open() is triggered
+	// Object: in which window the open() is triggered
 	openedForWindow: null,
 
 	processKey: function(/*Event*/evt){
