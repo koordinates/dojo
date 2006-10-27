@@ -333,16 +333,6 @@ dojo.widget.getDojoEventsFromStr = function(/*String*/str){
 	return ret; // Array
 }
 
-/*
-dojo.widget.buildAndAttachTemplate = function(obj, templatePath, templateCssPath, templateString, targetObj) {
-	this.buildFromTemplate(obj, templatePath, templateCssPath, templateString);
-	var node = dojo.dom.createNodesFromText(obj.templateString, true)[0];
-	this.attachTemplateNodes(node, targetObj||obj, dojo.widget.getDojoEventsFromStr(templateString));
-	return node;
-}
-*/
-
-
 // summary:
 //		dojo.widget.DomWidget is the superclass that provides behavior for all
 //		DOM-based renderers, including HtmlWidget and SvgWidget. DomWidget
@@ -740,7 +730,7 @@ dojo.declare("dojo.widget.DomWidget",
 												// will handle population of data
 												// from properties, remote data
 												// sets, etc.
-	},
+		},
 
 		buildFromTemplate: function(/*Object*/args, /*Object*/frag){
 			// summary:
@@ -869,7 +859,7 @@ dojo.declare("dojo.widget.DomWidget",
 		
 		// method over-ride
 		destroyRendering: function(){
-			// summary: UI destructor
+			// summary: UI destructor.  Destroy the dom nodes associated w/this widget.
 			try{
 				delete this.domNode;
 			}catch(e){ /* squelch! */ }
@@ -877,19 +867,11 @@ dojo.declare("dojo.widget.DomWidget",
 
 		// FIXME: method over-ride
 		cleanUp: function(){},
-		
-		getContainerHeight: function(){
-			// summary: unimplemented!
-			dojo.unimplemented("dojo.widget.DomWidget.getContainerHeight");
-		},
-
-		getContainerWidth: function(){
-			// summary: unimplemented!
-			dojo.unimplemented("dojo.widget.DomWidget.getContainerWidth");
-		},
 
 		createNodesFromText: function(){
-			// summary: unimplemented!
+			// summary
+			//	Attempts to create a set of nodes based on the structure of the passed text.
+			//	Implemented in HtmlWidget and SvgWidget.
 			dojo.unimplemented("dojo.widget.DomWidget.createNodesFromText");
 		}
 	}
