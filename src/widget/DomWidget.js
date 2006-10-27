@@ -90,12 +90,16 @@ dojo.widget._templateCache.dummyCount = 0;
 
 // Array: list of properties to search for node-to-property mappings
 dojo.widget.attachProperties = ["dojoAttachPoint", "id"];
+
 // String: name of the property to use for mapping DOM events to widget functions
 dojo.widget.eventAttachProperty = "dojoAttachEvent";
+
 // String: property name of code to evaluate when the widget is constructed
 dojo.widget.onBuildProperty = "dojoOnBuild";
+
 // Array:  possible accessibility values to set on widget elements - role or state
 dojo.widget.waiNames  = ["waiRole", "waiState"];
+
 // Object: Contains functions to set accessibility roles and states 
 // 	onto widget elements
 dojo.widget.wai = {

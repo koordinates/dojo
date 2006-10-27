@@ -11,30 +11,29 @@ dojo.require("dojo.string.common");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.widget", "DropdownDatePicker");
 
+/*
+summary: 
+	A form input for entering dates with a pop-up dojo.widget.DatePicker to aid in selection
+
+	description: 
+		This is DatePicker in a DropdownContainer, it supports all features of DatePicker.
+
+		The value displayed in the widget is localized according to the default algorithm provided
+		in dojo.date.format and dojo.date.parse.  It is possible to customize the user-visible formatting
+		with either the formatLength or displayFormat attributes.  The value sent to the server is
+		typically a locale-independent value in a hidden field as defined by the name attribute.
+		RFC3339 representation is used by default, but other options are available with saveFormat.
+
+	usage: 
+		var ddp = dojo.widget.createWidget("DropdownDatePicker", {},   
+		dojo.byId("DropdownDatePickerNode")); 
+ 	 
+		<input dojoType="DropdownDatePicker">
+*/
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownDatePicker",
 	dojo.widget.DropdownContainer,
 	{
-		/*
-		summary:
-			A form input for entering dates with a pop-up dojo.widget.DatePicker to aid in selection
-
-	 	description: 
-			This is DatePicker in a DropdownContainer, it supports all features of DatePicker.
-	
-			The value displayed in the widget is localized according to the default algorithm provided
-			in dojo.date.format and dojo.date.parse.  It is possible to customize the user-visible formatting
-			with either the formatLength or displayFormat attributes.  The value sent to the server is
-			typically a locale-independent value in a hidden field as defined by the name attribute.
-			RFC3339 representation is used by default, but other options are available with saveFormat.
-
-	 	usage: 
-	 	              var ddp = dojo.widget.createWidget("DropdownDatePicker", {},   
-	 	              dojo.byId("DropdownDatePickerNode")); 
-	 	 
-	 	              <input dojoType="DropdownDatePicker">
-		*/
-
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/dateIcon.gif"),
 		zIndex: "10",
 
@@ -42,12 +41,15 @@ dojo.widget.defineWidget(
 		// 	Type of formatting used for visual display, appropriate to locale (choice of long, short, medium or full)
 		//  See dojo.date.format for details.
 		formatLength: "short",
+
 		//String
 		//	A pattern used for the visual display of the formatted date, e.g. dd/MM/yyyy.
 		//	Setting this overrides the default locale-specific settings as well as the formatLength
 		//	attribute.  See dojo.date.format for a reference which defines the formatting patterns.
 		displayFormat: "",
-		dateFormat: "", // deprecated in 0.5
+
+		dateFormat: "", // deprecated, will be removed for 0.5
+
 		//String
 		//	Formatting scheme used when submitting the form element.  This formatting is used in a hidden
 		//  field (name) intended for server use, and is therefore typically locale-independent.
@@ -55,9 +57,11 @@ dojo.widget.defineWidget(
 		//	Use a pattern string like displayFormat or one of the following:
 		//	rfc|iso|posix|unix
 		saveFormat: "",
+
 		//String|Date
 		//	form value property in rfc3339 format. If =='today', will use today's date
-		value: "", 
+		value: "",
+
 		//String
 		// 	name of the form element, used to create a hidden field by this name for form element submission.
 		name: "",
@@ -66,19 +70,24 @@ dojo.widget.defineWidget(
 
 		//Integer
 		//	number of weeks to display 
-		displayWeeks: 6, 
+		displayWeeks: 6,
+
 		//Boolean
 		//	if true, weekly size of calendar changes to accomodate the month if false, 42 day format is used
 		adjustWeeks: false,
+
 		//String|Date
 		//	first available date in the calendar set
 		startDate: "1492-10-12",
+
 		//String|Date
 		//	last available date in the calendar set
 		endDate: "2941-10-12",
+
 		//Integer
 		//	adjusts the first day of the week 0==Sunday..6==Saturday
 		weekStartsOn: "",
+
 		//Boolean
 		//	disable all incremental controls, must pick a date in the current display
 		staticDisplay: false,
@@ -114,10 +123,10 @@ dojo.widget.defineWidget(
 
 			//build the args for DatePicker based on the public attributes of DropdownDatePicker
 			this.datePicker = dojo.widget.createWidget("DatePicker", dpArgs, this.containerNode, "child");
-			dojo.event.connect(this.datePicker, "onValueChanged", this, "onSetDate");
+			dojo.event.connect(this.datePicker, "onValueChanged", this, "_updateText");
 			
 			if(this.value){
-				this.onSetDate();
+				this._updateText();
 			}
 			this.containerNode.style.zIndex = this.zIndex;
 			this.containerNode.explodeClassName = "calendarBodyContainer";
@@ -140,12 +149,13 @@ dojo.widget.defineWidget(
 		},
 
 		setDate: function(/*Date|String*/dateObj){
-		//summary: set the current date and update the UI
+			// summary: set the current date and update the UI
 			this.datePicker.setDate(dateObj);
-			this._synchValueNode();
+			this._syncValueNode();
 		},
 	
-		onSetDate: function(){
+		_updateText: function(){
+			// summary: updates the <input> field according to the current value (ie, displays the formatted date)
 			if(this.dateFormat){
 				dojo.deprecated("dojo.widget.DropdownDatePicker",
 				"Must use displayFormat attribute instead of dateFormat.  See dojo.date.format for specification.", "0.5");
@@ -157,16 +167,17 @@ dojo.widget.defineWidget(
 			if(this.value < this.datePicker.startDate||this.value>this.datePicker.endDate){
 				this.inputNode.value = "";
 			}
-			this._synchValueNode();
+			this._syncValueNode();
 			this.onValueChanged(this.getDate());
 			this.hideContainer();
 		},
 
 		onValueChanged: function(/*Date*/dateObj){
-		//summary: triggered when this.value is changed
+			//summary: triggered when this.value is changed
 		},
 		
 		onInputChange: function(){
+			// summary: callback when user manually types a date into the <input> field
 			if(this.dateFormat){
 				dojo.deprecated("dojo.widget.DropdownDatePicker",
 				"Cannot parse user input.  Must use displayFormat attribute instead of dateFormat.  See dojo.date.format for specification.", "0.5");
@@ -186,10 +197,10 @@ dojo.widget.defineWidget(
 			//TODO: usability?  should we provide more feedback somehow? an error notice?
 			// seems redundant to do this if the parse failed, but at least until we have validation,
 			// this will fix up the display of entries like 01/32/2006
-			if(input){ this.onSetDate(); }
+			if(input){ this._updateText(); }
 		},
 
-		_synchValueNode: function(){
+		_syncValueNode: function(){
 			var date = this.datePicker.value;
 			var value;
 			switch(this.saveFormat.toLowerCase()){
