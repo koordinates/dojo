@@ -33,7 +33,7 @@ dojo.widget.Editor2ToolbarItemManager = {
 	},
 	removeHandler: function(func){
 		// summary: remove a registered handler
-		for(var i in this._registeredItemHandlers){
+		for(var i=0;i<this._registeredItemHandlers.length;i++){
 			if(func === this._registeredItemHandlers[i]){
 				delete this._registeredItemHandlers[i];
 				return;
@@ -42,7 +42,7 @@ dojo.widget.Editor2ToolbarItemManager = {
 		dojo.debug("Editor2ToolbarItemManager handler "+func+" is not registered, can not remove.");
 	},
 	destroy: function(){
-		for(var i in this._registeredItemHandlers){
+		for(var i=0;i<this._registeredItemHandlers.length;i++){
 			delete this._registeredItemHandlers[i];
 		}
 	},
@@ -50,7 +50,7 @@ dojo.widget.Editor2ToolbarItemManager = {
 		// summary: return a toobar item with the given name
 		var item;
 		name = name.toLowerCase();
-		for(var i in this._registeredItemHandlers){
+		for(var i=0;i<this._registeredItemHandlers.length;i++){
 			item = this._registeredItemHandlers[i](name);
 			if(item){
 				break;
