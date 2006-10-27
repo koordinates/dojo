@@ -28,6 +28,7 @@
 		document.write("<"+"script type='text/javascript' src='"+djConfig.baseScriptURI+"/dojo.js'><"+"/script>");
 		document.write("<"+"script type='text/javascript' src='"+djConfig.baseScriptURI+"/src/io/common.js'><"+"/script>");
 		document.write("<"+"script type='text/javascript' src='"+djConfig.baseScriptURI+"/src/io/BrowserIO.js'><"+"/script>");
+		document.write("<"+"script type='text/javascript' src='"+djConfig.baseScriptURI+"/src/widget/ComboBox.js'><"+"/script>");
 	</script>
 
 	<script type="text/javascript">
@@ -94,25 +95,37 @@
 			<td class="stripe noVPad">
 				<table cellspacing=0 cellpadding=0 border=0>
 					<tr><td class='label'>Search:</td>
-						<td><input id='searchBox' class='searchBox' dojoType="combobox" id="search" autoComplete="false" Xonblur='ApiRef.showItem(this.value)' Xonkeypress='ApiRef.searchBoxKeyPress(event, this)'></td>
+						<td><input id='searchBox' class='searchBox' dojoType="combobox" maxListLength="20" id="search" autoComplete="true" Xonblur='ApiRef.showItem(this.value)' onkeypress='ApiRef.searchBoxKeyPress(event, this)'></td>
 					</tr>
 				</table>
 			</td>
-			<td id='title' class="stripe noVPad"></td>
+			<td class="stripe noVPad"><table cellspacing=0 cellpadding=0>
+					<tr><td id='title' class='label' width="100%">Dojo API Reference</td>
+						<td style='text-align:right;' class='label'>Show:</td>
+						<td><input id='showInherited' type='checkbox' onclick='ApiRef.toggleInherited()'></td><td><div class='toggleDisplayLink' onclick='ApiRef.toggleInherited()'>Inherited</div></td>
+						<td><input id='showPrivate' type='checkbox' onclick='ApiRef.togglePrivate()'></td><td><div class='toggleDisplayLink' onclick='ApiRef.togglePrivate()'>Private</div></td>
+<!-- NOT IMPLEMENTED YET
+						<td><input id='showDeprecated' type='checkbox' onclick='ApiRef.toggleDeprecated()'></td><td class='toggleDisplayLink' onclick='ApiRef.toggleDeprecated()'>Deprecated</td>
+						<td><input id='showExperimental' type='checkbox' onclick='ApiRef.toggleExperimental()'></td><td class='toggleDisplayLink' onclick='ApiRef.toggleExperimental()'>Experimental</td>
+-->
+					</tr>
+				</table>
+			</td>
 			<td class="stripe noVPad" style='text-align:right'>
 					<select class='debugMenu' onchange="ApiRef.debugMenuAction(this.options[this.selectedIndex].getAttribute('action'), this)">
 						<option action=''>Debug:</option>
+						<option>---------</option>
 						<option action='ApiRef.debug_toggleDebug()'>Toggle debug messages</option>
 						<option action='ApiRef.debug_toggleProfile()'>Toggle profiling messages</option>
+						<option>---------</option>
 						<option action='ApiRef.debug_showPackageMap()'>Show Package -> Function Map</option>
 						<option action='ApiRef.debug_showFunctionMap()'>Show Function->Type Map</option>
 						<option action='ApiRef.debug_showObjectMap()'>" " (w/o functions)</option>
-						<option action='ApiRef.debug_showFunctionTree()'>Show Function Tree</option>
-						<option action='ApiRef.debug_showFunctionTreeNames()'>Show Function Tree Names</option>
 						<option action='ApiRef.debug_showKnownFunctions()'>Show All Known Functions</option>
 						<option action='ApiRef.debug_showParserData()'>Show Parser Data for File...</option>
 						<option action='ApiRef.debug_showItemData()'>Show Parser Data for Reference...</option>
 						<option action='ApiRef.debug_showItem()'>Show Item for Reference...</option>
+						<option>---------</option>
 						<option action='ApiRef.debug_showTodo()'>Show ApiRef To Do List...</option>
 					</select>
 			</td>		
@@ -134,6 +147,14 @@
 					</div>
 				</div>
 			</td>
+<!--
+			<td id='debugCell' style='vertical-align:top;height:100%;'>
+				<div class='scrollContainerOuter'>
+					<div id="debug" class='scrollContainerInner'>
+					</div>
+				</div>
+			</td>
+-->
 		</tr>
 	</tbody>
 	</table>
