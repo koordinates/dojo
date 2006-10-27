@@ -1581,7 +1581,7 @@ dojo.widget.defineWidget(
 					}
 				}
 
-				this.domNode.parentNode.removeChild(this.domNode);
+				dojo.html.removeNode(this.domNode);
 				this.domNode = this.textarea;
 			}else{
 				this.domNode.innerHTML = "";
