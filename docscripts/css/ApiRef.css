@@ -3,8 +3,7 @@ BODY {
 }
 
 BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT { 
-	font-family:Verdana, Arial, sans-serif; 
-	font-size:12px;
+	font-family:sans-serif; 
 }
 
 /* Nest these inside each other to get content that scrolls cleanly if necessary */
@@ -36,7 +35,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 	padding-right:0px;
 }
 #contentCell {
-	padding:0px;
+	padding:5px;
 	border:0px solid #bea83b;		
 	border-width:0px 1px 1px 0px;
 }
@@ -81,7 +80,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 	height:28px;
 	padding:5px;
 	font-weight:bold;
-	font-size:20px;
+	font-size:x-large;
 	line-height:23px;
 	margin:0px;
 }
@@ -114,12 +113,11 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .ObjectHeader {
 	background-image:url(../img/blue-stripe.gif);
 	background-repeat:repeat-x;
-	Xborder-bottom:1px solid #91B6E8;
 
-	height:26px;
-	padding:2px 5px 0px 5px;
+	padding:2px 5px 5px 5px;
 	font-weight:bold;
-	font-size:16px;
+	font-size:large;
+	line-height:150%;
 	margin:0px;
 	
 }
@@ -128,7 +126,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .PackageBody,
 .ClassBody,
 .ObjectBody {
-	padding:0px 15px 5px 15px;
+	padding:0px 10px 5px 10px;
 	background-color:white;
 }
 
@@ -137,7 +135,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .PackageValue,
 .ClassValue,
 .ObjectValue {
-	font-size:10px;
+	font-size:smaller;
 	margin-left:10px;
 }
 
@@ -146,11 +144,29 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .itemLink,
 .itemHeaderLink,
 .itemResourceFile,
-.itemClickToLoad {
+.itemClickToLoad,
+.toggleDisplayLink {
 	font-size:inherit;
 	font-weight:inherit;
 	cursor:pointer;
 	color:darkgreen;		
+}
+
+.fileLink:hover,
+.itemLink:hover,
+.itemHeaderLink:hover,
+.itemResourceFile:hover,
+.itemClickToLoad:hover,
+.toggleDisplayLink:hover {
+	border-bottom:1px dotted darkgreen;
+}
+
+
+.toggleDisplayLink {
+	font-size:smaller;
+	font-weight:normal;
+	margin-right:5px;
+	line-height:19px;
 }
 
 .itemHeaderLink {
@@ -209,12 +225,12 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 
 .itemRequires {
 	margin-left:30px;
-	font-size:10px;
+	font-size:smaller;
 }
 
 .Method,
 .Constructor {
-	border:1px solid #eeeeee;
+	border:1px solid #e8e8e8;
 	margin:0px 2px 5px 2px;
 	-moz-border-radius:8px 9px 3px 3px;	
 }
@@ -223,18 +239,18 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .ConstructorHeader {	
 	padding-top: 2px;
 	padding-bottom:1px;
-	border-bottom:1px dotted #eeeeee;
+	border-bottom:1px dotted #e8e8e8;
 }
 
 .MethodBody,
 .ConstructorBody {
-	background-color:#fAfAfA;
+	background-color:#f8f8f8;
 	padding:3px 10px 5px 28px;
 }
 
 .MethodSummary,
 .ConstructorSummary {
-	font-size: small;
+	font-size:small;
 }
 
 .MethodDetails,
@@ -330,13 +346,13 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .MethodSummaryContainer,
 .MethodDescription {
 	color:#666666;
-	font-size:10px;
+	font-size:small;
 	margin:2px 10px 4px 10px;
 }
 
 .emptyMethods {
 	font-style:italic;
-	font-size:10px;
+	font-size:small;
 	color:#666666;
 }
 
@@ -366,7 +382,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .paramHeader,
 .paramProtected,
 .paramOptional {
-	font-size:10px;
+	font-size:small;
 }
 .paramHeader {
 	font-weight:bold;
@@ -390,7 +406,10 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .stripe .label {
 	font-weight:bold;
 }
-
+.stripe .smallLabel {
+	font-size:smaller;
+	color
+}
 .searchBox {
 	width:220px;
 	font-size:small;
@@ -402,7 +421,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .debugMenu {
 	border:1px solid;
 	border-color:#666666 #eeeeee #eeeeee #666666;
-	font-size:10px;
+	font-size:small;
 	margin-right:5px;
 	font-weight:normal;
 }
@@ -421,14 +440,14 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 }
 
 .loadingPrompt {
-	font-size:16px;
+	font-size:x-large;
 	font-weight:bold;
 	padding:20px;
 }
 
 .tiny,
 .tinyGray {
-	font-size:9px;
+	font-size:x-small;
 }
 .tinyGray {
 	color:#cccccc;
@@ -475,3 +494,10 @@ img.dojoComboBox {
 	background-color:white;
 	padding:2px;
 }
+
+
+.objectOutput {
+	font-size:x-small;
+}
+
+

@@ -19,6 +19,7 @@ class DojoFunctionCall extends DojoBlock
   public function build()
   {
     if (!$this->start) {
+return null;
       die("DojoFunctionCall->build() used before setting a start position");
     }
 
