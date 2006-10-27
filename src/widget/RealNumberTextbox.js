@@ -4,8 +4,7 @@ dojo.require("dojo.widget.IntegerTextbox");
 dojo.require("dojo.validate.common");
 
 /*
-  ****** RealNumberTextbox ******
-
+summary
   A subclass that extends IntegerTextbox.
   Over-rides isValid/isInRange to test for real number input.
   Has 5 new properties that can be specified as attributes in the markup.

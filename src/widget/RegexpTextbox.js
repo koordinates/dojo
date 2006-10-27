@@ -3,8 +3,7 @@ dojo.provide("dojo.widget.RegexpTextbox");
 dojo.require("dojo.widget.ValidationTextbox");
 
 /*
-  ****** RegexpTextbox ******
-
+summary
   A subclass of ValidationTextbox.
   Over-rides isValid to test input based on a regular expression.
   Has a new property that can be specified as attributes in the markup. 

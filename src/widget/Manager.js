@@ -3,7 +3,9 @@ dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.event.*");
 
-// Manager class
+// summary
+//	Manager class for the widgets.
+//	This is an internal class used by dojo; users shouldn't call this class directly.
 dojo.widget.manager = new function(){
 	this.widgets = [];
 	this.widgetIds = [];
