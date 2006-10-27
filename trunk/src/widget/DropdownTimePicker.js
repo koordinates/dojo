@@ -75,7 +75,7 @@ dojo.widget.defineWidget(
 				this.inputNode.value = dojo.date.strftime(this.timePicker.time, this.timeFormat, this.lang);
 			}else{
 				this.inputNode.value = dojo.date.format(this.timePicker.time,
-					{formatLength:this.formatLength, datePattern:this.displayFormat, selector:'timeOnly', locale:this.lang});
+					{formatLength:this.formatLength, timePattern:this.displayFormat, selector:'timeOnly', locale:this.lang});
 			}
 
 			this.hideContainer();
