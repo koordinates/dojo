@@ -9,23 +9,8 @@ dojo.widget.declare(
 	"dojo.widget.SvgWidget",
 	dojo.widget.DomWidget,
 {
-	getContainerHeight: function(){
-		// NOTE: container height must be returned as the INNER height
-		dojo.unimplemented("dojo.widget.SvgWidget.getContainerHeight");
-	},
-
-	getContainerWidth: function(){
-		// return this.parent.domNode.offsetWidth;
-		dojo.unimplemented("dojo.widget.SvgWidget.getContainerWidth");
-	},
-
-	setNativeHeight: function(height){
-		// var ch = this.getContainerHeight();
-		dojo.unimplemented("dojo.widget.SVGWidget.setNativeHeight");
-	},
-
 	createNodesFromText: function(txt, wrap){
-		return dojo.dom.createNodesFromText(txt, wrap);
+		return dojo.svg.createNodesFromText(txt, wrap);
 	}
 });
 
