@@ -9,7 +9,7 @@ dojo.require("dojo.html.iframe");
 dojo.require("dojo.html.util");
 
 // summary:
-//		dojo.widget.DropdownContainer provides an input box and a button for a dropdown.
+//		provides an input box and a button for a dropdown.
 //		In subclass, the dropdown can be specified.
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownContainer",
@@ -17,38 +17,40 @@ dojo.widget.defineWidget(
 	{
 		// String: width of the input box
 		inputWidth: "7em",
+
 		// String: id of this widget
 		id: "",
+
 		// String: id of the input box
 		inputId: "",
+
 		// String: name of the input box
 		inputName: "",
+
 		// dojo.uri.Uri: icon for the dropdown button
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/combo_box_arrow.png"),
+
 		// dojo.uri.Uri: alt text for the dropdown button icon
 		iconAlt: "",
 
-		inputNode: null,
-		buttonNode: null,
-		containerNode: null,
-
 		// String: toggle property of the dropdown
 		containerToggle: "plain",
-		// Int: toggle duration property of the dropdown
+
+		// Integer: toggle duration property of the dropdown
 		containerToggleDuration: 150,
-		containerAnimInProgress: false,
 
 		templateString: '<span style="white-space:nowrap"><input type="hidden" name="" value="" dojoAttachPoint="valueNode" /><input name="" type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" autocomplete="off" /> <img src="${this.iconURL}" alt="${this.iconAlt}" dojoAttachEvent="onclick:onIconClick" dojoAttachPoint="buttonNode" style="vertical-align:middle; cursor:pointer; cursor:hand" /></span>',
 		templateCssPath: "",
 		isContainer: true,
 
-		//use attachTemplateNodes to specify containerNode, as fillInTemplate is too late for this
 		attachTemplateNodes: function(){
+			// summary: use attachTemplateNodes to specify containerNode, as fillInTemplate is too late for this
 			dojo.widget.DropdownContainer.superclass.attachTemplateNodes.apply(this, arguments);
 			this.popup = dojo.widget.createWidget("PopupContainer", {toggle: this.containerToggle, toggleDuration: this.containerToggleDuration});
 			this.containerNode = this.popup.domNode;
 		},
-		fillInTemplate: function(args, frag){
+
+		fillInTemplate: function(){
 			this.domNode.appendChild(this.popup.domNode);
 			if(this.id) { this.domNode.id = this.id; }
 			if(this.inputId){ this.inputNode.id = this.inputId; }
@@ -58,7 +60,7 @@ dojo.widget.defineWidget(
 			dojo.event.connect(this.inputNode, "onchange", this, "onInputChange");
 		},
 
-		onIconClick: function(evt){
+		onIconClick: function(/*Event*/ evt){
 			if(!this.popup.isShowingNow){
 				this.popup.open(this.inputNode, this, this.buttonNode);
 			}else{

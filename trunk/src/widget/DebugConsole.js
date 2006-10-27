@@ -3,6 +3,7 @@ dojo.require("dojo.widget.Widget");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.FloatingPane");
 
+// summary: opens a floating pane that collects and display debug messages (from dojo.debug(), etc.)
 dojo.widget.defineWidget(
 	"dojo.widget.DebugConsole",
 	dojo.widget.FloatingPane,
