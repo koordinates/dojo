@@ -1160,7 +1160,7 @@ dojo.widget.defineWidget(
 					if(this.object){ //IE activeX mode
 						argument = this._native2LocalFormatNames[argument];
 					}
-					else if(drh.ie){ argument = '<'+argument+'>'; }
+					else if(dojo.render.html.ie){ argument = '<'+argument+'>'; }
 				}
 			}
 			if(this.object){
