@@ -50,14 +50,9 @@ dojo.declare("dojo.widget.Widget", null,
 	// Boolean: should this widget eat all events that bubble up to it?
 	isTopLevel:  false, 
 
-	// Boolean: should this widget block other widgets?
-	isModal: false, 
-
 	// Boolean: should this widget respond to user input?
+	// TODO: use "disabled" rather than "isEnabled" because that's standard HTML
 	isEnabled: true,
-
-	// Boolean: have we hidden the widget via hide()?
-	isHidden: false,
 
 	// Boolean: can this widget contain other widgets?
 	isContainer: false, 
@@ -512,9 +507,10 @@ dojo.declare("dojo.widget.Widget", null,
 	},
 	
 	postMixInProperties: function(/*Object*/args, /*Object*/frag, /*Widget*/parent){
-		// summary:
-		//		stub function. Can be over-ridden to handle advanced property
-		//		casting and object configuration.
+		// summary
+		//	Called after the parameters to the widget have been read-in,
+		//	but before the widget template is instantiated.
+		//	Especially useful to set properties that are referenced in the widget template.
 	},
 
 	initialize: function(/*Object*/args, /*Object*/frag, /*Widget*/parent){
@@ -552,14 +548,6 @@ dojo.declare("dojo.widget.Widget", null,
 		return false;
 	},
 
-	cleanUp: function(){
-		// summary: 
-		//		stub function for destruction finalization. SUBCLASSES MUST
-		//		IMPLEMENT
-		dojo.unimplemented("dojo.widget.Widget.cleanUp");
-		return false;
-	},
-
 	addedTo: function(/*Widget*/parent){
 		// summary:
 		//		stub function this is just a signal that can be caught
@@ -584,67 +572,6 @@ dojo.declare("dojo.widget.Widget", null,
 			}
 		}
 		return widget; // Widget
-	},
-
-	resize: function(/*String or int*/width, /*String or int*/height){
-		// summary:
-		// 		both width and height may be set as percentages. The setWidth
-		// 		and setHeight  functions attempt to determine if the passed
-		// 		param is specified in percentage or native units. Integers
-		// 		without a measurement are assumed to be in the native unit of
-		// 		measure.
-		// width:
-		//		the width, either in native measures, or as a percentage. If as
-		//		percentage, pass it as a string in the form "30%".
-		// height:
-		//		the height, either in native measures, or as a percentage. If as
-		//		percentage, pass it as a string in the form "30%".
-		this.setWidth(width);
-		this.setHeight(height);
-	},
-
-	setWidth: function(/*String or int*/width){
-		// summary: like it says on the tin...
-		// width:
-		//		the width, either in native measures, or as a percentage. If as
-		//		percentage, pass it as a string in the form "30%".
-		if((typeof width == "string")&&(width.substr(-1) == "%")){
-			this.setPercentageWidth(width);
-		}else{
-			this.setNativeWidth(width);
-		}
-	},
-
-	setHeight: function(/*String or int*/height){
-		// summary: like it says on the tin...
-		// height:
-		//		the height, either in native measures, or as a percentage. If
-		//		as percentage, pass it as a string in the form "30%".
-		if((typeof height == "string")&&(height.substr(-1) == "%")){
-			this.setPercentageHeight(height);
-		}else{
-			this.setNativeHeight(height);
-		}
-	},
-
-	setPercentageHeight: function(/*int*/height){
-		// summary: stub function. SUBCLASSES MUST IMPLEMENT
-		return false;
-	},
-
-	setNativeHeight: function(/*int*/height){
-		// summary: stub function. SUBCLASSES MUST IMPLEMENT
-		return false;
-	},
-
-	setPercentageWidth: function(/*int*/width){
-		// summary: stub function. SUBCLASSES MUST IMPLEMENT
-		return false;
-	},
-
-	setNativeWidth: function(/*int*/width){
-		// summary: stub function. SUBCLASSES MUST IMPLEMENT
-		return false;
 	},
 
 	getPreviousSibling: function(){

@@ -25,7 +25,6 @@ try{
 			this.buildRendering = function(){ return; }
 			this.destroyRendering = function(){ return; }
 			this.postInitialize = function(){ return; }
-			this.cleanUp = function(){ return; }
 			this.widgetType = "SVGRootWidget";
 			this.domNode = document.documentElement;
 		}

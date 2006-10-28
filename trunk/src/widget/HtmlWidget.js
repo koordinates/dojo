@@ -82,7 +82,6 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 		// summary: show the widget
 		if(this.isShowing()){ return; }
 		this.animationInProgress=true;
-		this.isHidden = false;
 		this.toggleObj.show(this.domNode, this.toggleDuration, null,
 			dojo.lang.hitch(this, this.onShow), this.explodeSrc);
 	},
@@ -97,7 +96,6 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 		// summary: hide the widget (ending up with display:none)
 		if(!this.isShowing()){ return; }
 		this.animationInProgress = true;
-		this.isHidden = true;
 		this.toggleObj.hide(this.domNode, this.toggleDuration, null,
 			dojo.lang.hitch(this, this.onHide), this.explodeSrc);
 	},
