@@ -80,7 +80,10 @@ dojo.widget.Parse = function(fragment){
 		var frag, comps = [];
 		for(var item in fragment){
 			frag = fragment[item];
-			if ((frag)&&(typeof frag == "object")&&(frag!=fragment.nodeRef)&&(frag!=fragment["tagName"])){
+			if ((frag)&&(typeof frag == "object")
+				&&(frag!=fragment.nodeRef)
+				&&(frag!=fragment["tagName"])
+				&&(!dojo.dom.isNode(frag))){// needed in IE when we have event.connected to the domNode
 				comps = comps.concat(this.createComponents(frag, parentComp));
 			}
 		}
