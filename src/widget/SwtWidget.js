@@ -26,7 +26,6 @@ try{
 		registerChild: function(){ },
 		addWidgetAsDirectChild: function(){ },
 		removeChild: function(){ },
-		cleanUp: function(){ },
 		destroyRendering: function(){ },
 		postInitialize: function(){ }
 	});

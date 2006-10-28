@@ -865,9 +865,6 @@ dojo.declare("dojo.widget.DomWidget",
 			}catch(e){ /* squelch! */ }
 		},
 
-		// FIXME: method over-ride
-		cleanUp: function(){},
-
 		createNodesFromText: function(){
 			// summary
 			//	Attempts to create a set of nodes based on the structure of the passed text.
