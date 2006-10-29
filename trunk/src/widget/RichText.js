@@ -4,6 +4,7 @@ dojo.provide("dojo.widget.RichText");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
+dojo.require("dojo.html.selection");
 dojo.require("dojo.event.*");
 dojo.require("dojo.string.extras");
 dojo.require("dojo.uri.Uri");
@@ -84,25 +85,32 @@ dojo.widget.defineWidget(
 			dojo.event.topic.publish("dojo.widget.RichText::init", this);
 			this.open();
 
+
 			// backwards compatibility, needs to be removed
 			dojo.event.connect(this, "onKeyPressed", this, "afterKeyPress");
 			dojo.event.connect(this, "onKeyPress", this, "keyPress");
 			dojo.event.connect(this, "onKeyDown", this, "keyDown");
 			dojo.event.connect(this, "onKeyUp", this, "keyUp");
 
-			// add default some key handlers
+			this.setupDefaultShortcuts();
+		},
+
+		setupDefaultShortcuts: function(){
+			// summary: add some default key handlers
+			// description: 
+			// 		Overwrite this to setup your own handlers. The default
+			// 		implementation does not use Editor2 commands, but directly
+			//		executes the builtin commands within the underlying browser
+			//		support.
 			var ctrl = this.KEY_CTRL;
 			var exec = function (cmd, arg) {
 				return arguments.length == 1 ? function () { this.execCommand(cmd); } :
 					function () { this.execCommand(cmd, arg); }
 			}
-
 			this.addKeyHandler("b", ctrl, exec("bold"));
 			this.addKeyHandler("i", ctrl, exec("italic"));
 			this.addKeyHandler("u", ctrl, exec("underline"));
 			this.addKeyHandler("a", ctrl, exec("selectall"));
-			//this.addKeyHandler("k", ctrl, exec("createlink", ""));
-			//this.addKeyHandler("K", ctrl, exec("unlink"));
 			this.addKeyHandler("s", ctrl, function () { this.save(true); });
 
 			this.addKeyHandler("1", ctrl, exec("formatblock", "h1"));
@@ -115,7 +123,6 @@ dojo.widget.defineWidget(
 				this.addKeyHandler("Z", ctrl, exec("redo"));
 			}
 		},
-
 
 		// Array: events which should be connected to the underlying editing area
 		events: ["onBlur", "onFocus", "onKeyPress", "onKeyDown", "onKeyUp", "onClick"],
