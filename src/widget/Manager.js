@@ -39,7 +39,7 @@ dojo.widget.manager = new function(){
 			}else if(widget.extraArgs["id"]){
 				widget.widgetId = widget.extraArgs["id"];
 			}else{
-				widget.widgetId = this.getUniqueId(widget.widgetType);
+				widget.widgetId = this.getUniqueId(widget.ns+':'+widget.widgetType);
 			}
 		}
 		if(this.widgetIds[widget.widgetId]){
