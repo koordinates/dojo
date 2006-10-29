@@ -1,13 +1,6 @@
-/* TODO:
- * - font selector
- * - test, bug fix, more features :)
-*/
 dojo.provide("dojo.widget.Editor2");
 
 dojo.require("dojo.io.*");
-dojo.require("dojo.html.*");
-dojo.require("dojo.html.layout");
-dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.RichText");
 dojo.require("dojo.widget.Editor2Toolbar");
 
@@ -627,6 +620,27 @@ dojo.widget.defineWidget(
 				this.replaceEditorContent(this._htmlEditNode.value);
 			}
 			return dojo.widget.Editor2.superclass.getEditorContent.call(this);
+		},
+
+		// Array: Commands shortcuts. Each element can has up to 3 fields:
+		//		1. String: the name of the command
+		//		2. String Optional: the char for shortcut key, by default the first char from the command name is used
+		//		3. Int Optional: specify the modifier of the shortcut, by default ctrl is used
+		shortcuts: [['bold'],['italic'],['underline'],['selectall','a'],['insertunorderedlist','\\']],
+		setupDefaultShortcuts: function(){
+			// summary: setup default shortcuts using Editor2 commands
+			var exec = function(cmd){ return function(){ cmd.execute(); } };
+			if(!dojo.render.html.ie){
+				this.shortcuts.push(['redo','Z']);
+			}
+			var self = this;
+			dojo.lang.forEach(this.shortcuts, function(item){
+				var cmd = dojo.widget.Editor2Manager.getCommand(item[0]);
+				if(cmd){
+					self.addKeyHandler(item[1]?item[1]:item[0].charAt(0), item[2]==undefined?self.KEY_CTRL:item[2], exec(cmd));
+				}
+			});
+//			this.addKeyHandler("s", ctrl, function () { this.save(true); });
 		}
 		/*,
 		// FIXME: probably not needed any more with new design, but need to verify
