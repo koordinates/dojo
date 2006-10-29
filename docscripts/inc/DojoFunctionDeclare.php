@@ -122,7 +122,7 @@ class DojoFunctionDeclare extends DojoBlock
       }
       if (($pos = strpos($name, '.prototype.')) !== false) {
         $this->prototype = substr($name, 0, $pos);
-        $name = str_replace('.prototype.', '', $name);
+        $name = str_replace('.prototype', '', $name);
       }
       if (($pos = strpos($name, 'this.')) === 0) {
         $this->instance = substr($name, 0, $pos);

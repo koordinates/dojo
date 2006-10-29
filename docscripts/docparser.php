@@ -2,6 +2,7 @@
 
 require_once('inc/Dojo.php');
 require_once('inc/DojoPackage.php');
+require_once('inc/Plugins.php');
 require_once('inc/helpers.inc');
 require_once('lib/benchmark/Timer.php');
 
@@ -72,6 +73,7 @@ foreach ($files as $file) {
   
   // This closely matches dojo.widget.defineWidget as declared in src/widget/Widget.js
   foreach ($declare_calls as $call) {
+    $init = null;
     if ($call->getName() == 'dojo.declare') {
       $args = array($call->getParameter(0), null, $call->getParameter(1), $call->getParameter(2), $call->getParameter(3));
       $name = $args[0]->getString();
@@ -126,8 +128,8 @@ foreach ($files as $file) {
       $object = $args[4]->getObject();
       $values = $object->getValues();
       foreach ($values as $key => $value) {
-        if ($key == 'initializer') {
-          $init = $value;
+        if ($key == 'initializer' && $value->isA(DojoFunctionDeclare)) {
+          $init = $value->getFunction();
           continue;
         }
         if ($value->isA(DojoFunctionDeclare)) {
@@ -244,8 +246,6 @@ $timer->setMarker("Main Processing finished");
 
 //print_r($output);
 //header('Content-type: text/xml');
-writeToDisk($output, 'pretty_xml', 'xml', 'pretty');
-//writeToDisk($output, 'json');
 
 $timer->setMarker("Main JSON output done");
 
@@ -303,11 +303,11 @@ if (file_exists('wiki')) {
   unset($wiki_files);
 }
 
-writeToDisk($output, 'local_json', 'json', 'local');
-//writeToDisk($output, 'json', 'xml', 'eclipse');
+$plugins = new Plugins('.');
+$plugins->write($output);
 
 $timer->stop();
-if ($_GET['benchmark']) {
+if (isset($_GET['benchmark'])) {
   $timer->display();
 }
 
