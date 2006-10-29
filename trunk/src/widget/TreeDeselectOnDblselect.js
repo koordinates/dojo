@@ -5,7 +5,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TreeSelectorV3");
 
 dojo.deprecated("Does anyone still need this extension? (TreeDeselectOnDblselect)");
-// selector extension to emphase node
+// selector extension to emphasize node
 
 dojo.widget.defineWidget(
 	"dojo.widget.TreeDeselectOnDblselect",

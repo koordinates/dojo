@@ -1,14 +1,14 @@
 
-dojo.provide("dojo.widget.TreeEmphaseOnSelect");
+dojo.provide("dojo.widget.TreeEmphasizeOnSelect");
 
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TreeSelectorV3");
 dojo.require("dojo.html.selection");
 
-// selector extension to emphase node
+// selector extension to emphasize node
 
 dojo.widget.defineWidget(
-	"dojo.widget.TreeEmphaseOnSelect",
+	"dojo.widget.TreeEmphasizeOnSelect",
 	dojo.widget.HtmlWidget,
 {
 	selector: "",
@@ -22,11 +22,11 @@ dojo.widget.defineWidget(
 
 	
 	onSelect: function(message) {
-		message.node.viewEmphase()		
+		message.node.viewEmphasize()		
 	},
 	
 	onDeselect: function(message) {
-		message.node.viewUnemphase()
+		message.node.viewUnemphaizse()
 	}
 	
 

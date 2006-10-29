@@ -13,7 +13,7 @@
 	dojo.require("dojo.widget.TreeV3");
 	dojo.require("dojo.widget.TreeBasicControllerV3");
 	dojo.require("dojo.widget.TreeDndControllerV3");	
-	dojo.require("dojo.widget.TreeEmphaseOnSelect");	
+	dojo.require("dojo.widget.TreeEmphasizeOnSelect");	
 	dojo.require("dojo.widget.TreeSelectorV3");	
 	dojo.require("dojo.widget.TreeDeselectOnDblselect");	
 	dojo.require("dojo.dnd.TreeDragAndDropV3");
@@ -45,7 +45,7 @@
 
 <h2>Tree with drag'n'drop and selector</h2>
 
-<h3>Selector has TreeEmphaseOnSelect extension attached, meaning that a selected node will be highlighted</h3>
+<h3>Selector has TreeEmphasizeOnSelect extension attached, meaning that a selected node will be highlighted</h3>
 
 <h3>Currently, selector with allowedMulti option may have troubles when used with Dnd</h3>
 
@@ -53,7 +53,7 @@
 <div dojoType="TreeSelectorV3" widgetId="selector"></div>	
 
 <div dojoType="TreeDeselectOnDblselect" selector="selector"></div>
-<div dojoType="TreeEmphaseOnSelect" selector="selector"></div>
+<div dojoType="TreeEmphasizeOnSelect" selector="selector"></div>
 <div dojoType="TreeDndControllerV3" controller="controller" widgetId="dndcontroller"></div>
 
 

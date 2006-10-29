@@ -15,7 +15,7 @@
 	dojo.require("dojo.widget.TreeNodeV3");
 	dojo.require("dojo.widget.TreeBasicControllerV3");
 	dojo.require("dojo.widget.TreeSelectorV3");
-	dojo.require("dojo.widget.TreeEmphaseOnSelect");
+	dojo.require("dojo.widget.TreeEmphasizeOnSelect");
 	dojo.hostenv.writeIncludes();
 </script>
 </head>
@@ -26,7 +26,7 @@
 	
     <div dojoType="TreeBasicControllerV3" widgetId="treeController" ></div>
     <div dojoType="TreeSelectorV3" widgetId="treeSelector" ></div>
-    <div dojoType="TreeEmphaseOnSelect" selector="treeSelector"></div>
+    <div dojoType="TreeEmphasizeOnSelect" selector="treeSelector"></div>
 
     <div dojoType="TreeV3" widgetId="firstTree" listeners="treeController;treeSelector">
         <div dojoType="TreeNodeV3" title="Node A" expandLevel="2">
