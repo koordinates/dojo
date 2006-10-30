@@ -4,9 +4,12 @@
 	var djConfig = {isDebug: true, extraLocale: ["en-us","es-es","de-de"]};
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
-<!--
+<script type="text/javascript">
+dojo.require("dojo.debug.console");
+</script>
 <script type="text/javascript" src="../../src/widget/TimePicker.js"></script>
 <script type="text/javascript" src="../../src/widget/DropdownTimePicker.js"></script>
+<!--
 -->
 <script type="text/javascript">
 dojo.require("dojo.widget.DropdownTimePicker");
@@ -27,10 +30,12 @@ Wipe:
 	<input dojoType="dropdowntimepicker" lang="en-us" value="12:00" containertoggle="wipe" containerToggleDuration="300">
 Explode:
 	<input dojoType="dropdowntimepicker" lang="en-us" value="11:00" containertoggle="explode" containerToggleDuration="500">
-Fade:»
+Fade:
 	<input dojoType="dropdowntimepicker" lang="en-us" value="10:00" containertoggle="fade" containerToggleDuration="500">
 Nothing:
 	<input dojoType="dropdowntimepicker" lang="en-us" value="9:00">
+</p>
+<p>
 German:
 	<input dojoType="dropdowntimepicker" lang="de-de" value="9:00">
 Spanish:
