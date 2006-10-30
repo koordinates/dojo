@@ -89,7 +89,6 @@ var ApiRef = {
 
 	cacheParserData : function(parserFile, data, msg) {
 //		if (this._debug) this.debug_showParserData(parserFile, data);
-
 		if (!msg) msg = "Integrating data for module "+parserFile;
 		this.showNotice(msg);
 		this.startProfile("cacheParserData:"+parserFile);
@@ -101,7 +100,6 @@ var ApiRef = {
 //			if (item.data == null) item.data = [];
 //			item.data.push(data);
 		}
-//dojo.debug("cacheParserData", data);
 		this._parseDataObject(data, parserFile, parserFile);
 		this.parserDataCache[parserFile] = data;
 		this.clearNotice(msg);
@@ -211,10 +209,10 @@ var ApiRef = {
 
 		if(size){
 			if(parts[0] == "function_names"){
-				args.url = [this._url, "local_json", "function_names"].join("/");
+				args.url = [this._url, "output/local/json", "function_names"].join("/");
 			}else{
 				var dirs = parts[0].split(".");
-				args.url = [this._url, "local_json", dirs[0]].join("/");
+				args.url = [this._url, "output/local/json", dirs[0]].join("/");
 				if(dirs.length > 1){
 					args.url = [args.url, dirs[1]].join(".");
 				}
@@ -1480,7 +1478,7 @@ var ApiRef = {
 		//		ApiRef.functionList	: a sorted array of all of the functions the parser told us about
 		//		ApiRef.functionMap	: an object listing each function, and its:
 		//				.type		: "module" "package" "class" or "method"
-		//				.parserFile	: local_json file it comes from
+		//				.parserFile	: output/local/json file it comes from
 		//				.pkg	: high-level object it can be found in (ie: for 'nested classes' listed under superclass)
 
 		this.startProfile("buildFunctionMap");
@@ -1778,7 +1776,7 @@ var ApiRef = {
 	},
 		
 	debug_showPackageMap : function() {
-		this.debug_show("<H2>Package to function map (from local_json/function_names)</h2>"+ApiRef.objectToHtml(ApiRef.packageMap, true, null));
+		this.debug_show("<H2>Package to function map (from output/local/json/function_names)</h2>"+ApiRef.objectToHtml(ApiRef.packageMap, true, null));
 	},
 
 	debug_showKnownFunctions : function() {
