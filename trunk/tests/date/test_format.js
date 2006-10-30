@@ -4,6 +4,7 @@ dojo.requireLocalization("dojo.i18n.calendar","gregorian","fr-fr");
 dojo.requireLocalization("dojo.i18n.calendar","gregorian","es");
 dojo.requireLocalization("dojo.i18n.calendar","gregorian","de-at");
 dojo.requireLocalization("dojo.i18n.calendar","gregorian","ja-jp");
+dojo.requireLocalization("dojo.i18n.calendar","gregorian","zh-cn");
 
 dojo.require("dojo.date.format");
 
@@ -26,6 +27,11 @@ function test_date_format() {
 	jum.assertEquals("format_test12", "24:55:12.35", dojo.date.format(date, {timePattern:'k:m:s.SS',selector:'timeOnly'}));
 	jum.assertEquals("format_test13", "0:55:12.35", dojo.date.format(date, {timePattern:'H:m:s.SS',selector:'timeOnly'}));
 	jum.assertEquals("format_test14", "0:55:12.35", dojo.date.format(date, {timePattern:'K:m:s.SS',selector:'timeOnly'}));
+
+	jum.assertEquals("format_test15", "11082006", dojo.date.format(date, {datePattern:"ddMMyyyy", selector:"dateOnly"}));
+
+	// compare without timezone
+	jum.assertEquals("format_test16", "\u4e0a\u534812\u65f655\u520612\u79d2", dojo.date.format(date, {formatLength:'full',selector:'timeOnly', locale:'zh-cn'}).split(' ')[0]);
 }
 
 function test_date_strftime() {
@@ -283,6 +289,8 @@ function test_date_parse() {
 	jum.assertEquals(name(), null, dojo.date.parse("08/11/06 12:30 pm", {formatLength:'short', selector:'dateTime', locale:'en', strict:true}));
 
 	jum.assertEquals(name(), aug_11_2006_12_30_am, dojo.date.parse("08/11/06 12:30 AM", {formatLength:'short', selector:'dateTime', locale:'en'}));
+
+	jum.assertEquals(name(), new Date(2006, 7, 11), dojo.date.parse("11082006", {datePattern:"ddMMyyyy", selector:"dateOnly"}));
 }
 
 function test_time_parse(){
