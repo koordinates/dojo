@@ -865,6 +865,7 @@ dojo.declare("dojo.widget.DomWidget",
 			//		the time this is called from buildRendering. If
 			//		buildRendering is over-ridden, this function may not be
 			//		fired!
+
 			// dojo.unimplemented("dojo.widget.DomWidget.fillInTemplate");
 		},
 		
