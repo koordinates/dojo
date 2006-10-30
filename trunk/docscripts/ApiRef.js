@@ -1726,7 +1726,7 @@ var ApiRef = {
 		// create the tree and controller
 		var controller = this.treeController = dojo.widget.createWidget("TreeBasicControllerV3");
 		var selector = this.treeSelector = dojo.widget.createWidget("TreeSelectorV3");
-		var hiliter = this.treeHiliter = dojo.widget.createWidget("TreeEmphaseOnSelect", {selector:selector.widgetId});
+		var hiliter = this.treeHiliter = dojo.widget.createWidget("TreeEmphasizeOnSelect", {selector:selector.widgetId});
 		var treeWidget = this.treeWidget = dojo.widget.createWidget("TreeV3", {listeners: [selector.widgetId, controller.widgetId]});
 
 		dojo.event.topic.subscribe(selector.eventNames.select, this, "onTreeSelect")
