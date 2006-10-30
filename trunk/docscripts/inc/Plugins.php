@@ -67,8 +67,10 @@ class Plugins
       foreach($files as $file){ 
         if($file{0} != '.'){ 
           if(is_dir($directory . '/' . $file)){ 
-            deltree($directory, $file);
-            rmdir($directory . '/' . $file);
+            $this->delTree($directory, $file);
+						if (!in_array('.svn',  $files) && scandir($directory . '/' . $file) == 2) {
+							rmdir($directory . '/' . $file);
+						}
           }else{ 
             unlink($directory . '/' . $file); 
           } 
