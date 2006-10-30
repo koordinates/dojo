@@ -128,6 +128,21 @@ class DojoPackage
 		}
 		
     $lines = $this->getSource();
+		
+		$in_comment = false;
+		foreach ($lines as $line_number => $line) {
+			if (!$in_comment) {
+				if (($pos = strpos($line, '/*=')) !== false) {
+					$lines[$line_number] = Text::blankOutAt($line, $pos, $pos + 3);
+					$in_comment = true;
+				}
+			}
+			elseif (($pos = strpos($line, '*/')) !== false) {
+				$lines[$line_number] = Text::blankOutAt($line, $pos, $pos + 2);
+				$in_comment = false;
+			}
+		}
+		
     $in_comment = false;
     foreach ($lines as $line_number => $line) {
       //print "$line_number $line\n";
