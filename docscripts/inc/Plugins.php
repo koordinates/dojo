@@ -49,6 +49,9 @@ class Plugins
                 }
                 chmod($file, 0777);
               }
+							
+							global $timer;
+							$timer->setMarker("$function run");
             }
           }
         }

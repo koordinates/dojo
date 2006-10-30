@@ -228,8 +228,6 @@ $timer->setMarker("Main Processing finished");
 //print_r($output);
 //header('Content-type: text/xml');
 
-$timer->setMarker("Main JSON output done");
-
 if (file_exists('wiki')) {
   $wiki_files = scandir('wiki/WikiHome/DojoDotDoc');
   foreach ($wiki_files as $wiki_file) {
