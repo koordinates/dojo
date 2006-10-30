@@ -92,17 +92,22 @@ dojo.addOnUnload(dojo.widget.Editor2Manager, "destroy");
 
 // summary:
 //		dojo.widget.Editor2Command is the base class for all command in Editor2
-dojo.lang.declare("dojo.widget.Editor2Command",null,{
-		initializer: function(name){
-			// summary: Constructor of this class
-			this._name = name;
-		},
-		//this function should be re-implemented in subclass
+dojo.lang.declare("dojo.widget.Editor2Command",null,
+	function(name){
+		// summary: Constructor of this class
+		this._name = name;
+	},
+{
+		_text: 'Unknown',
 		execute: function(para){
 			// summary: Execute the command. should be implemented in subclass
+			// description: this function should be re-implemented in subclass
 			dojo.unimplemented("dojo.widget.Editor2Command.execute");
 		},
-		//default implemetation always returns Enabled
+		getText: function(){
+			// summary: return the text name of this command
+			return this._text;
+		},
 		getState: function(){
 			// summary:
 			//		Return the state of the command. The default behavior is
@@ -115,10 +120,71 @@ dojo.lang.declare("dojo.widget.Editor2Command",null,{
 	}
 );
 
+dojo.widget.Editor2BrowserCommandNames={
+			'bold': 'Bold',
+			'copy': 'Copy',
+			'cut': 'Cut',
+			'Delete': 'Delete',
+			'indent': 'Indent',
+			'inserthorizontalrule': 'Horizental Rule',
+			'insertorderedlist': 'Numbered List',
+			'insertunorderedlist': 'Bullet List',
+			'italic': 'Italic',
+			'justifycenter': 'Align Center',
+			'justifyfull': 'Justify',
+			'justifyleft': 'Align Left',
+			'justifyright': 'Align Right',
+			'outdent': 'Outdent',
+			'paste': 'Paste',
+			'redo': 'Redo',
+			'removeformat': 'Remove Format',
+			'selectall': 'Select All',
+			'strikethrough': 'Strikethrough',
+			'subscript': 'Subscript',
+			'superscript': 'Superscript',
+			'underline': 'Underline',
+			'undo': 'Undo',
+			'unlink': 'Remove Link',
+			'createlink': 'Create Link',
+			'insertimage': 'Insert Image',
+			'htmltoggle': 'HTML Source',
+			'forecolor': 'Foreground Color',
+			'hilitecolor': 'Background Color',
+			'plainformatblock': 'Paragraph Style',
+			'formatblock': 'Paragraph Style',
+			'fontsize': 'Font Size',
+			'fontname': 'Font Name'//,
+//			'inserttable': 'Insert Table',
+//			'insertcell':
+//			'insertcol':
+//			'insertrow':
+//			'deletecells':
+//			'deletecols':
+//			'deleterows':
+//			'mergecells':
+//			'splitcell':
+//			'inserthtml':
+//			'blockdirltr':
+//			'blockdirrtl':
+//			'dirltr':
+//			'dirrtl':
+//			'inlinedirltr':
+//			'inlinedirrtl':
+}
+
 // summary:
 //		dojo.widget.Editor2BrowserCommand is the base class for all the browser built
 //		in commands
-dojo.lang.declare("dojo.widget.Editor2BrowserCommand", dojo.widget.Editor2Command, {
+dojo.lang.declare("dojo.widget.Editor2BrowserCommand", dojo.widget.Editor2Command, 
+	function(name){
+		// summary: Constructor of this class
+		
+		var text = dojo.widget.Editor2BrowserCommandNames[name.toLowerCase()];
+		if(text){
+			this._text = text;
+		}
+	},
+{
 		execute: function(para){
 			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 			if(curInst){

@@ -150,6 +150,7 @@ dojo.declare("dojo.widget.Editor2ToolbarButton", null,{
 		// toolbar: the Editor2Toolbar widget this toolbar item belonging to
 		// nohover: whether this item in charge of highlight this item
 		this._domNode = node;
+		this._domNode.title = this._command.getText();
 		//make this unselectable: different browsers
 		//use different properties for this, so use
 		//js do it automatically
