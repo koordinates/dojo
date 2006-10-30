@@ -13,6 +13,7 @@ class DojoFunctionBody extends DojoBlock
   private $return_comments = array();
   private $instance_variables = array();
   private $this_inheritance_calls = array();
+  private $extra_initial_comment_block = array();
   
   public function build()
   {
@@ -27,6 +28,13 @@ class DojoFunctionBody extends DojoBlock
 		$start_position = $this->start[1];
 		$lines = Text::chop($this->package->getCode(), $this->start[0], $this->start[1], false, false, true);
     return $this->end = Text::findTermination($lines, '}', '{}');
+  }
+  
+  public function addBlockCommentLine($line)
+  {
+    if (trim($line) != '') {
+      $this->extra_initial_comment_block[] = $line;
+    }
   }
   
   public function addBlockCommentKey($key)
@@ -67,53 +75,58 @@ class DojoFunctionBody extends DojoBlock
     
     $this->build();
 
-    $expression = '%^(' . implode('|', $this->keys) . ')\W*%';
+    $expression = '%^\b(' . implode('|', $this->keys) . ')\b\W*%';
     $buffer = array();
     $key = '';
     $started = false;
-    
+   
     $lines = Text::chop($this->package->getSource(), $this->start[0], $this->start[1], $this->end[0], $this->end[1], true);
-    foreach ($lines as $line_number =>  $line) {
-      list($comment, , , $data, $multiline) = Text::findComments($line, $multiline);
-      
-      if ($started && $comment === false) {
-        $this->comment_end = array($line_number, 0);
-        break;
+    for ($i = 0; $i < 2; $i++) {
+      if ($i == 1) {
+        $lines = $this->extra_initial_comment_block;
       }
-      elseif ($comment) {
-        $started = true;
-      }
-      
-      if (preg_match($expression, $comment, $match)) {
-        if ($buffer && $key) {
-          $this->comments[$key] = implode(' ', $buffer);
-          $buffer = array();
+      foreach ($lines as $line_number =>  $line) {
+        list($comment, , , $data, $multiline) = Text::findComments($line, $multiline);
+        
+        if ($started && $comment === false) {
+          $this->comment_end = array($line_number, 0);
+          break;
         }
-        $key = $match[1];
-        if ($match[0] == $comment) {
-          $comment = '';
+        elseif ($comment) {
+          $started = true;
         }
-        else {
-          $comment = substr($comment, strlen($match[0]));
+        
+        if (preg_match($expression, $comment, $match)) {
+          if ($buffer && $key) {
+            $this->comments[$key] = implode(' ', $buffer);
+            $buffer = array();
+          }
+          $key = $match[1];
+          if ($match[0] == $comment) {
+            $comment = '';
+          }
+          else {
+            $comment = substr($comment, strlen($match[0]));
+          }
+        }
+        
+        if ($data) {
+          $this->comment_end = array($line_number, 0);
+          break;
+        }
+        
+        if ($comment !== '') {
+          $buffer[] = $comment;
         }
       }
       
-      if ($data) {
-        $this->comment_end = array($line_number, 0);
-        break;
+      if ($buffer && $key) {
+        $this->comments[$key] = implode(' ', $buffer);
       }
-      
-      if ($comment !== '') {
-        $buffer[] = $comment;
+  
+      if ($i == 0 && !$this->comment_end) {
+        $this->comment_end = $this->start;
       }
-    }
-    
-    if ($buffer && $key) {
-      $this->comments[$key] = implode(' ', $buffer);
-    }
-
-    if (!$this->comment_end) {
-      $this->comment_end = $this->start;
     }
 
     return array_keys($this->comments);

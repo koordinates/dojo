@@ -13,6 +13,7 @@ class DojoFunctionDeclare extends DojoBlock
   
   private $anonymous = false;
   private $prototype = '';
+	private $constructor = false;
 
   public function __construct($package, $line_number = false, $position = false)
   {
@@ -50,6 +51,16 @@ class DojoFunctionDeclare extends DojoBlock
   {
     return $this->instance;
   }
+	
+	public function setConstructor($constructor)
+	{
+		$this->constructor = $constructor;
+	}
+	
+	public function isConstructor()
+	{
+		return $this->constructor;
+	}
   
   public function isAnonymous()
   {
@@ -176,6 +187,94 @@ class DojoFunctionDeclare extends DojoBlock
   public function getInstanceFunctions()
   {
     return $this->body->getInstanceFunctions();
+  }
+  
+  public function rollOut(&$output) {
+    $masquerading_as_function = $function_name = $this->getFunctionName();
+    if ($this->isThis()) {
+      $masquerading_as_function = $this->getThis();
+    }
+  
+    $package_name = $this->package->getPackageName();
+    
+    $output[$package_name]['meta']['functions'][$function_name]['meta']['summary'] = '';
+    $parameters = $this->getParameters();
+    foreach ($parameters as $parameter) {
+      if ($parameter->isA(DojoVariable)) {
+        $output[$package_name]['meta']['functions'][$function_name]['meta']['parameters'][$parameter->getVariable()]['type'] = $parameter->getType();
+        $this->addBlockCommentKey($parameter->getVariable());
+      }
+    }
+    
+    $this->addBlockCommentKey('summary');
+    $this->addBlockCommentKey('description');
+		$this->addBlockCommentKey('returns'); 
+    
+    $output[$package_name]['meta']['functions'][$function_name]['meta']['src'] = $this->getSource();
+    
+    $all_variables = array();
+    $instance_variables = $this->getInstanceVariableNames();
+    foreach ($instance_variables as $instance_variable) {
+      $this->addBlockCommentKey($instance_variable);
+      $all_variables[] = $instance_variable;
+      if (isset($output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'])) {
+        if (!in_array($instance_variable, $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'])) {
+          $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'][] = $instance_variable;
+        }
+      }
+      else {
+        $output[$package_name]['meta']['functions'][$masquerading_as_function]['meta']['instance_variables'][] = $instance_variable;
+      }
+    }
+    
+    $instance_functions = $this->getInstanceFunctions();
+    foreach ($instance_functions as $instance_function) {
+      $instance_function->rollOut($output);
+    }
+    
+    $comment_keys = $this->getBlockCommentKeys();
+    foreach ($comment_keys as $key) {
+      if ($key == 'summary') {
+        $output[$package_name]['meta']['functions'][$function_name]['meta']['summary'] = $this->getBlockComment($key);
+      }
+      elseif ($key == 'description') {
+        $output[$package_name]['meta']['functions'][$function_name]['meta']['description'] = $this->getBlockComment($key);
+      }
+			elseif ($key == 'returns') {
+				$output[$package_name]['meta']['functions'][$function_name]['extra']['returns'] = $this->getBlockComment($key);
+			}
+      elseif (in_array($key, $all_variables) && $comment = $this->getBlockComment($key)) {
+			  list($type, $comment) = explode(' ', $comment, 2);
+        $type = preg_replace('%(^[^a-zA-Z0-9._$]|[^a-zA-Z0-9._$?]$)%', '', $type);
+        $output[$package_name]['meta']['functions'][$function_name]['extra']['variables'][$key]['type'] = $type;
+				$output[$package_name]['meta']['functions'][$function_name]['extra']['variables'][$key]['summary'] = $comment;
+      }
+      elseif (!empty($output[$package_name]['meta']['functions'][$function_name]['meta']['parameters']) && array_key_exists($key, $output[$package_name]['meta']['functions'][$function_name]['meta']['parameters']) && $comment = $this->getBlockComment($key)) {
+			  list($type, $comment) = explode(' ', $comment, 2);
+        $type = preg_replace('%(^[^a-zA-Z0-9._$]|[^a-zA-Z0-9._$?]$)%', '', $type);
+        $output[$package_name]['meta']['functions'][$function_name]['extra']['parameters'][$key]['type'] = $type;
+				$output[$package_name]['meta']['functions'][$function_name]['extra']['parameters'][$key]['summary'] = $comment;
+      }
+    }
+  
+    $returns = $this->getReturnComments();
+    if (count($returns) == 1) {
+      $output[$package_name]['meta']['functions'][$function_name]['meta']['returns'] = $returns[0];
+    }
+    elseif ($returns) {
+      $output[$package_name]['meta']['functions'][$function_name]['meta']['returns'] = 'mixed';
+    }
+    
+    if ($calls = $this->getThisInheritanceCalls()) {
+      $output[$package_name]['meta']['functions'][$function_name]['meta']['call_chain'] = $calls;
+    }
+    
+    if ($this->getPrototype()) {
+      $output[$package_name]['meta']['functions'][$function_name]['meta']['prototype'] = $this->getPrototype();
+    }
+    if ($this->getInstance()) {
+      $output[$package_name]['meta']['functions'][$function_name]['meta']['instance'] = $this->getInstance();
+    }
   }
 }
 

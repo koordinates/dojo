@@ -14,24 +14,23 @@ dojo.widget._cssFiles = {};
 dojo.widget._cssStrings = {};
 dojo.widget._templateCache = {};
 
-// Object: a mapping of strings that are used in template variable replacement
 dojo.widget.defaultStrings = {
+	// summary: a mapping of strings that are used in template variable replacement
 	dojoRoot: dojo.hostenv.getBaseScriptUri(),
 	baseScriptUri: dojo.hostenv.getBaseScriptUri()
 };
 
-dojo.widget.fillFromTemplateCache = function(	/*DomWidget*/				obj, 
-												/*String||dojo.uri.Uri*/	templatePath,
-												/*String, optional*/		templateString,
-												/*Boolean, optional*/		avoidCache){
+dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateString, avoidCache){
 	// summary:
 	//		static method to build from a template w/ or w/o a real widget in
 	//		place
-	// obj: an instance of dojo.widget.DomWidget to initialize the template for
-	// templatePath: the URL to get the template from	
-	// templateString:
+	// obj: DomWidget
+	//		an instance of dojo.widget.DomWidget to initialize the template for
+	// templatePath: String
+	//		the URL to get the template from. dojo.uri.Uri is often passed as well.
+	// templateString: String?
 	//		a string to use in lieu of fetching the template from a URL
-	// avoidCache:
+	// avoidCache: Boolean?
 	//		should the template system not use whatever is in the cache and
 	//		always use the passed templatePath or templateString?
 
@@ -100,32 +99,40 @@ dojo.widget.onBuildProperty = "dojoOnBuild";
 // Array:  possible accessibility values to set on widget elements - role or state
 dojo.widget.waiNames  = ["waiRole", "waiState"];
 
-// Object: Contains functions to set accessibility roles and states 
-// 	onto widget elements
 dojo.widget.wai = {
+	// summary: Contains functions to set accessibility roles and states
+	//		onto widget elements
 	waiRole: { 	
-				// String: information for mapping accessibility role
+				// name: String:
+				//		information for mapping accessibility role
 				name: "waiRole", 
-				// String: URI of the namespace for the set of roles
+				// namespace: String:
+				//		URI of the namespace for the set of roles
 				"namespace": "http://www.w3.org/TR/xhtml2", 
-				// String: alias to assign the namespace
+				// alias: String:
+				//		The alias to assign the namespace
 				alias: "x2",
-				// String: prefix to assign to the role value
+				// prefix: String:
+				//		The prefix to assign to the role value
 				prefix: "wairole:"
 	},
 	waiState: { 
-				// String: informatin for mapping accessibility state
+				// name: String:
+				//		information for mapping accessibility state
 				name: "waiState", 
-				// String: URI of the namespace for the set of states
+				// namespace: String:
+				//		URI of the namespace for the set of states
 				"namespace": "http://www.w3.org/2005/07/aaa", 
-				// String: alias to assign the namespace
+				// alias: String:
+				//		The alias to assign the namespace
 				alias: "aaa",
-				// String: empty string - state value does not require prefix
+				// prefix: String:
+				//		empty string - state value does not require prefix
 				prefix: ""
 	},
 	setAttr: function(/*DomNode*/node, /*String*/ ns, /*String*/ attr, /*String|Boolean*/value){
-		// Summary: Use appropriate API to set the role or state attribute onto the element.
-		// Description: In IE use the generic setAttribute() api.  Append a namespace
+		// summary: Use appropriate API to set the role or state attribute onto the element.
+		// description: In IE use the generic setAttribute() api.  Append a namespace
 		//   alias to the attribute name and appropriate prefix to the value. 
 		//   Otherwise, use the setAttribueNS api to set the namespaced attribute. Also
 		//   add the appropriate prefix to the attribute value.
@@ -148,8 +155,8 @@ dojo.widget.wai = {
 		}
 	},
 	removeAttr: function(/*DomNode*/ node, /*String*/ ns, /*String|Boolena*/ attr){
-		// Summary:  Use the appropriate API to remove the role or state value
-		// Description: In IE use the generic removeAttribute() api.  An alias value 
+		// summary:  Use the appropriate API to remove the role or state value
+		// description: In IE use the generic removeAttribute() api.  An alias value 
 		// 	was added to the attribute name to simulate a namespace when the attribute
 		//  was set.  Otherwise use the removeAttributeNS() api to remove the state value
 		var success = true; //only IE returns a value
@@ -162,9 +169,7 @@ dojo.widget.wai = {
 	}
 };
 
-dojo.widget.attachTemplateNodes = function(	/*DomNode*/		rootNode, 
-											/*Widget*/		targetObj, 
-											/*Array*/		events ){
+dojo.widget.attachTemplateNodes = function(rootNode, /*Widget*/ targetObj, events ){
 	// summary:
 	//		map widget properties and functions to the handlers specified in
 	//		the dom node and it's descendants. This function iterates over all
@@ -174,9 +179,10 @@ dojo.widget.attachTemplateNodes = function(	/*DomNode*/		rootNode,
 	//			* waiRole
 	//			* waiState
 	//			* any "dojoOn*" proprties passed in the events array
-	// rootNode:
+	// rootNode: DomNode
 	//		the node to search for properties. All children will be searched.
-	// events: a list of properties generated from getDojoEventsFromStr.
+	// events: Array
+	//		a list of properties generated from getDojoEventsFromStr.
 
 	// FIXME: this method is still taking WAAAY too long. We need ways of optimizing:
 	//	a.) what we are looking for on each node
@@ -310,11 +316,12 @@ dojo.widget.attachTemplateNodes = function(	/*DomNode*/		rootNode,
 
 }
 
-dojo.widget.getDojoEventsFromStr = function(/*String*/str){
+dojo.widget.getDojoEventsFromStr = function(str){
 	// summary:
 	//		generates a list of properties with names that match the form
 	//		dojoOn*
-	// str: the template string to search
+	// str: String
+	//		the template string to search
 	
 	// var lstr = str.toLowerCase();
 	var re = /(dojoOn([a-z]+)(\s?))=/gi;
@@ -333,30 +340,31 @@ dojo.widget.getDojoEventsFromStr = function(/*String*/str){
 	return ret; // Array
 }
 
-// summary:
-//		dojo.widget.DomWidget is the superclass that provides behavior for all
-//		DOM-based renderers, including HtmlWidget and SvgWidget. DomWidget
-//		implements the templating system that most widget authors use to define
-//		the UI for their widgets.
 dojo.declare("dojo.widget.DomWidget", 
 	dojo.widget.Widget,
 	function(){
+		// summary:
+		//		dojo.widget.DomWidget is the superclass that provides behavior for all
+		//		DOM-based renderers, including HtmlWidget and SvgWidget. DomWidget
+		//		implements the templating system that most widget authors use to define
+		//		the UI for their widgets.
 		if((arguments.length>0)&&(typeof arguments[0] == "object")){
 			this.create(arguments[0]);
 		}
 	},
 	{							 
-		// DomNode: a node that represents the widget template. Pre-empts both templateString and templatePath.
+		// templateNode: DomNode
+		//		a node that represents the widget template. Pre-empts both templateString and templatePath.
 		templateNode: null,
 
-		// String:
+		// templateString String:
 		//		a string that represents the widget template. Pre-empts the
 		//		templatePath. In builds that have their strings "interned", the
 		//		templatePath is converted to an inline templateString, thereby
 		//		preventing a synchronous network call.
 		templateString: null,
 
-		// String:
+		// templateCssString String:
 		//		a string that represents the CSS for the widgettemplate.
 		//		Pre-empts the templateCssPath. In builds that have their
 		//		strings "interned", the templateCssPath is converted to an
@@ -364,7 +372,7 @@ dojo.declare("dojo.widget.DomWidget",
 		//		network call.
 		templateCssString: null,
 
-		// Boolean:
+		// preventClobber Boolean:
 		//		should the widget not replace the node from which it was
 		//		constructed? Widgets that apply behaviors to pre-existing parts
 		//		of a page can be implemented easily by setting this to "true".
@@ -372,39 +380,39 @@ dojo.declare("dojo.widget.DomWidget",
 		//		which the widget was created from.
 		preventClobber: false,
 
-		// DomNode:
+		// domNode DomNode:
 		//		this is our visible representation of the widget! Other DOM
 		//		Nodes may by assigned to other properties, usually through the
 		//		template system's dojoAttachPonit syntax, but the domNode
 		//		property is the canonical "top level" node in widget UI.
 		domNode: null, 
 
-		// DomNode:
+		// containerNode DomNode:
 		//		holds child elements. "containerNode" is generally set via a
 		//		dojoAttachPoint assignment and it designates where widgets that
 		//		are defined as "children" of the parent will be placed
 		//		visually.
 		containerNode: null,
 
-		// Boolean:
+		// widgetsInTemplate Boolean:
 		//		should we parse the template to find widgets that might be
 		//		declared in markup inside it? false by default.
 		widgetsInTemplate: false,
 
-		addChild: function(	/*Widget*/				widget, 
-							/*DomNode, optional*/	overrideContainerNode, 
-							/*String, optional*/	pos, 
-							/*DomNode, optional*/	ref,
-							/*int, optional*/		insertIndex){
+		addChild: function(/*Widget*/	widget, overrideContainerNode, pos, ref, insertIndex){
 			// summary:
 			//		Process the given child widget, inserting it's dom node as
 			//		a child of our dom node
-			// overrideContainerNode: a non-default container node for the widget
-			// pos:
+			// overrideContainerNode: DomNode?
+			//		a non-default container node for the widget
+			// pos: String?
 			//		can be one of "before", "after", "first", or "last". This
 			//		has the same meaning as in dojo.dom.insertAtPosition()
-			// ref: a node to place the widget relative to
-			// insertIndex: DOM index, same meaning as in dojo.dom.insertAtIndex()
+			// ref: DomNode?
+			//		a node to place the widget relative to
+			// insertIndex: int?
+			//		DOM index, same meaning as in dojo.dom.insertAtIndex()
+			// returns: the widget that was inserted
 
 			// FIXME: should we support addition at an index in the children arr and
 			// order the display accordingly? Right now we always append.
@@ -418,23 +426,22 @@ dojo.declare("dojo.widget.DomWidget",
 				this.addWidgetAsDirectChild(widget, overrideContainerNode, pos, ref, insertIndex);
 				this.registerChild(widget, insertIndex);
 			}
-			return widget; // Widget: the widget that was inserted
+			return widget; // Widget
 		},
 		
-		addWidgetAsDirectChild: function(	/*Widget*/				widget, 
-											/*DomNode*/				overrideContainerNode, 
-											/*String, optional*/	pos, 
-											/*DomNode, optional*/	ref, 
-											/*int, optional*/		insertIndex){
+		addWidgetAsDirectChild: function(/*Widget*/	widget, overrideContainerNode, pos, ref, insertIndex){
 			// summary:
 			//		Process the given child widget, inserting it's dom node as
 			//		a child of our dom node
-			// overrideContainerNode: a non-default container node for the widget
-			// pos:
+			// overrideContainerNode: DomNode
+			//		a non-default container node for the widget
+			// pos: String?
 			//		can be one of "before", "after", "first", or "last". This
 			//		has the same meaning as in dojo.dom.insertAtPosition()
-			// ref: a node to place the widget relative to
-			// insertIndex: DOM index, same meaning as in dojo.dom.insertAtIndex()
+			// ref: DomNode?
+			//		a node to place the widget relative to
+			// insertIndex: int?
+			//		DOM index, same meaning as in dojo.dom.insertAtIndex()
 			if((!this.containerNode)&&(!overrideContainerNode)){
 				this.containerNode = this.domNode;
 			}
@@ -470,10 +477,12 @@ dojo.declare("dojo.widget.DomWidget",
 			}
 		},
 
-		registerChild: function(/*Widget*/widget, /*int*/insertionIndex){
+		registerChild: function(widget, insertionIndex){
 			// summary: record that given widget descends from me
-			// widget: the widget that is now a child
-			// inesrtionIndex: where in the children[] array to place it
+			// widget: Widget
+			//		the widget that is now a child
+			// insertionIndex: int
+			//		where in the children[] array to place it
 
 			// we need to insert the child at the right point in the parent's 
 			// 'children' array, based on the insertionIndex
@@ -505,7 +514,7 @@ dojo.declare("dojo.widget.DomWidget",
 			delete dojo.widget.manager.topWidgets[widget.widgetId];
 		},
 
-		removeChild: function(/*Widget*/widget){
+		removeChild: function(/*Widget*/ widget){
 			// summary: detach child domNode from parent domNode
 			dojo.dom.removeNode(widget.domNode);
 
@@ -513,11 +522,11 @@ dojo.declare("dojo.widget.DomWidget",
 			return dojo.widget.DomWidget.superclass.removeChild.call(this, widget); // Widget
 		},
 
-		getFragNodeRef: function(/*Object*/frag){
+		getFragNodeRef: function(frag){
 			// summary:
 			//		returns the source node, if any, that the widget was
 			//		declared from
-			// frag:
+			// frag: Object
 			//		an opaque data structure generated by the first-pass parser
 			if(!frag){return null;} // null
 			if(!frag[this.getNamespacedType()]){
@@ -528,7 +537,7 @@ dojo.declare("dojo.widget.DomWidget",
 			return frag[this.getNamespacedType()]["nodeRef"]; // DomNode
 		},
 		
-		postInitialize: function(/*Object*/args, /*Object*/frag, /*Widget*/parentComp){
+		postInitialize: function(/*Object*/ args, /*Object*/ frag, /*Widget*/ parentComp){
 			// summary:
 			//		Replace the source domNode with the generated dom
 			//		structure, and register the widget with its parent.
@@ -675,7 +684,7 @@ dojo.declare("dojo.widget.DomWidget",
 		},
 
 		// method over-ride
-		buildRendering: function(/*Object*/args, /*Object*/frag){
+		buildRendering: function(/*Object*/ args, /*Object*/ frag){
 			// summary:
 			//		Construct the UI for this widget, generally from a
 			//		template. This can be over-ridden for custom UI creation to
@@ -732,7 +741,7 @@ dojo.declare("dojo.widget.DomWidget",
 												// sets, etc.
 		},
 
-		buildFromTemplate: function(/*Object*/args, /*Object*/frag){
+		buildFromTemplate: function(/*Object*/ args, /*Object*/ frag){
 			// summary:
 			//		Called by buildRendering, creates the actual UI in a DomWidget.
 
@@ -835,12 +844,14 @@ dojo.declare("dojo.widget.DomWidget",
 			}
 		},
 
-		attachTemplateNodes: function(/*DomNode*/baseNode, /*Widget*/targetObj){
+		attachTemplateNodes: function(baseNode, targetObj){
 			// summary: 
 			//		hooks up event handlers and property/node linkages. Calls
 			//		dojo.widget.attachTemplateNodes to do all the hard work.
-			// baseNode: defaults to "this.domNode"
-			// targetObj: defaults to "this"
+			// baseNode: DomNode
+			//		defaults to "this.domNode"
+			// targetObj: Widget
+			//		defaults to "this"
 			if(!baseNode){ baseNode = this.domNode; }
 			if(!targetObj){ targetObj = this; }
 			return dojo.widget.attachTemplateNodes(baseNode, targetObj, 
