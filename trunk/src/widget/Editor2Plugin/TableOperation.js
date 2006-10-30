@@ -52,6 +52,9 @@ dojo.widget.Editor2Plugin.TableOperation = {
 			var table = dojo.withGlobal(curInst.window, "hasAncestorElement", dojo.html.selection, ['table']);
 			return table ? dojo.widget.Editor2Manager.commandState.Enabled : dojo.widget.Editor2Manager.commandState.Disabled;
 		},
+		getText: function(){
+			return 'Delete Table';
+		},
 		destory: function(){}
 	},
 	toggleTableBorderCommand: {
@@ -72,6 +75,9 @@ dojo.widget.Editor2Plugin.TableOperation = {
 					curInst.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
 				}
 			}
+		},
+		getText: function(){
+			return 'Toggle Table Border';
 		},
 		getState: function(){
 			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
