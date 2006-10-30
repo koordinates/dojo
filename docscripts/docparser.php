@@ -13,7 +13,6 @@ $timer->start();
 
 $dojo = new Dojo('../');
 $files = $dojo->getFileList();
-$files = array('src/widget/DomWidget.js');
 
 foreach ($files as $file) {
   $package = new DojoPackage($dojo, $file);
@@ -179,7 +178,7 @@ foreach ($files as $file) {
               $function->setPrototype($object);
             }
             $function->setFunctionName($object . '.' . $key);
-            rolloutFunction($output, $package, $function);
+            $function->rollOut($output);
           }
           else {
             if ($call_name == 'dojo.lang.mixin' || $call_name == 'dojo.mixin') {

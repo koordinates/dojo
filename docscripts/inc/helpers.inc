@@ -218,23 +218,4 @@ function writeToDisk($output, $dir, $format = 'json', $environment = 'remote') {
 	}
 }
 
-function delTree($directory, $last_directory = false)
-{ 
-  if($last_directory){ 
-    $directory .= '/' . $last_directory; 
-  } 
-
-  $files = scandir($directory); 
-  foreach($files as $file){ 
-    if($file{0} != '.'){ 
-      if(is_dir($directory . '/' . $file)){ 
-        deltree($directory, $file);
-        rmdir($directory . '/' . $file);
-      }else{ 
-        unlink($directory . '/' . $file); 
-      } 
-    }
-  }
-}
-
 ?>
