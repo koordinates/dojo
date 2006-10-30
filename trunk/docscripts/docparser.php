@@ -13,6 +13,7 @@ $timer->start();
 
 $dojo = new Dojo('../');
 $files = $dojo->getFileList();
+$files = array('src/widget/DomWidget.js');
 
 foreach ($files as $file) {
   $package = new DojoPackage($dojo, $file);
@@ -126,33 +127,34 @@ foreach ($files as $file) {
 
     if ($args[4]->isA(DojoObject)) {
       $object = $args[4]->getObject();
+			$object->setName($name);
       $values = $object->getValues();
       foreach ($values as $key => $value) {
         if ($key == 'initializer' && $value->isA(DojoFunctionDeclare)) {
           $init = $value->getFunction();
+					$init->setConstructor(true);
           continue;
         }
         if ($value->isA(DojoFunctionDeclare)) {
           $function = $value->getFunction($value);
           $function->setPrototype($name);
-          $function->setFunctionName($name . '.' . $key);
-          rolloutFunction($output, $package, $function);
         }
-        else {
-          $output[$package_name]['meta']['functions'][$name]['meta']['instance_variables'][] = $key;
+        elseif (!$value->isA(DojoObject)) {
+          $output[$package_name]['meta']['functions'][$name]['meta']['prototype_variables'][] = $key;
         }
       }
+      $object->rollOut($output, 'function');
     }
     
     if ($init) {
       $init->setFunctionName($name);
-      rolloutFunction($output, $package, $init);
+      $init->rollOut($output);
     }
   }
   
   // Handle function declarations
   foreach ($declarations as $declaration) {
-    rolloutFunction($output, $package, $declaration);
+    $declaration->rollOut($output);
   }
   
   foreach ($inherit_calls as $call) {
@@ -214,27 +216,7 @@ foreach ($files as $file) {
   }
   
   foreach ($objects as $object) {
-    $values = $object->getValues();
-    $name = $object->getName();
-    foreach ($values as $key => $value) {
-      if ($value->isA(DojoFunctionDeclare)) {
-        $function = $value->getFunction($value);
-        $function->setFunctionName($name . '.' . $key);
-        rolloutFunction($output, $package, $function);
-      }
-      else {
-        $object->addBlockCommentKey($key);
-        $output[$package_name]['meta']['functions'][$name]['meta']['variables'][] = $key;
-      }
-    }
-    $keys = $object->getBlockCommentKeys();
-    foreach ($keys as $key) {
-      if (!empty($output[$package_name]['meta']['functions'][$name]['meta']['variables']) && in_array($key, $output[$package_name]['meta']['functions'][$name]['meta']['variables'])) {
-        $parts = explode(' ', $object->getBlockComment($key));
-        $output[$package_name]['meta']['functions'][$name]['extra']['variables'][$key]['type'] = array_shift($parts);
-        $output[$package_name]['meta']['functions'][$name]['extra']['variables'][$key]['summary'] = implode(' ', $parts);
-      }
-    }
+    $object->rollOut($output);
   }
 }
 

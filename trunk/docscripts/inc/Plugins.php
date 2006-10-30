@@ -12,7 +12,7 @@ class Plugins
     $this->dir = $dir;
     $this->json = new Services_JSON();
   }
-  
+
   public function write($output)
   {
     $dir = $this->dir . '/plugins/output/';
@@ -41,8 +41,13 @@ class Plugins
               $data = call_user_func($function, $output);
               foreach ($data as $file => $contents) {
                 $file = "{$output_dir}{$type}/{$format}/{$file}";
-                file_put_contents($file, $this->json->encode($contents));
-                chmod($file, 0755);
+                if ($format == 'json') {
+                  file_put_contents($file, $this->json->encode($contents));
+                }
+                elseif ($format == 'xml') {
+                  file_put_contents($file, $contents->saveXML());
+                }
+                chmod($file, 0777);
               }
             }
           }
