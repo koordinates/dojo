@@ -99,7 +99,7 @@ dojo.widget.defineWidget(
 
 	menuOpen: function(treeNode) {
 
-		treeNode.viewEmphase()
+		treeNode.viewEmphasize()
 		this.setDisabled(false); // enable by default
 
 		var _this = this;
@@ -113,7 +113,7 @@ dojo.widget.defineWidget(
 	
 	menuClose: function(treeNode) {
 
-		treeNode.viewUnemphase()
+		treeNode.viewUnemphasize()
 	},
 
 	toString: function() {

@@ -26,7 +26,7 @@ dojo.widget.defineWidget(
 	},
 	
 	onDeselect: function(message) {
-		message.node.viewUnemphaizse()
+		message.node.viewUnemphasize()
 	}
 	
 

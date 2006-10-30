@@ -102,7 +102,7 @@ dojo.require("dojo.ns");
 			"treedndcontrollerv3": "dojo.widget.TreeDndControllerV3",
 			"treedociconextension": "dojo.widget.TreeDocIconExtension",
 			"treeeditor": "dojo.widget.TreeEditor",
-			"treeemphaseonselect": "dojo.widget.TreeEmphaseOnSelect",
+			"treeemphasizeonselect": "dojo.widget.TreeEmphasizeOnSelect",
 			"treelinkextension": "dojo.widget.TreeLinkExtension",
 			"treeloadingcontrollerv3": "dojo.widget.TreeLoadingControllerV3",
 			"treemenuitemv3": "dojo.widget.TreeContextMenuV3",
