@@ -51,6 +51,14 @@ dojo.widget.defineWidget(
 		var source = this.getFragNodeRef(frag);
 		dojo.html.copyStyle(this.domNode, source);
 
+		if(args.value){
+			if(args.value instanceof Date){
+				this.storedTime = dojo.date.toRfc3339(args.value);
+			}else{
+				this.storedTime = args.value;
+			}
+		}		
+		
 		this.initData();
 		this.initUI();
 	},
@@ -67,11 +75,11 @@ dojo.widget.defineWidget(
 		//  have a set time
 		// FIXME: should normalize against whitespace on storedTime... for now 
 		// just a lame hack
-		if(this.storedTime.indexOf("T")!=-1 && this.storedTime.split("T")[1] && this.storedTime!=" " && this.storedTime.split("T")[1]!="any") {
+		if(this.storedTime.indexOf("T")!=-1 && this.storedTime.split("T")[1] && this.storedTime!=" " && this.storedTime.split("T")[1]!="any"){
 			this.time = dojo.widget.TimePicker.util.fromRfcDateTime(this.storedTime, this.useDefaultMinutes, this.selectedTime.anyTime);
-		} else if (this.useDefaultTime) {
+		}else if(this.useDefaultTime){
 			this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", this.useDefaultMinutes, this.selectedTime.anyTime);
-		} else {
+		}else{
 			this.selectedTime.anyTime = true;
 			this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", 0, 1);
 		}
@@ -275,6 +283,11 @@ dojo.widget.defineWidget(
 			this.time.setMinutes(minute);
 			this.setDateTime(dojo.widget.TimePicker.util.toRfcDateTime(this.time));
 		}
+		this.onValueChanged(this.time);
+	},
+	
+	onValueChanged: function(/*Date*/date) {
+		//summary: the set date event handler
 	}
 });
 
