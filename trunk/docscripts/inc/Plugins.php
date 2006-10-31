@@ -4,8 +4,8 @@ class Plugins
 {
   private $dir;
   private static $json;
-  private static $formats = array('xml', 'json');
-  private static $types = array('local', 'remote');
+  private static $formats = array('xml', 'json', 'database');
+  private static $types = array('local', 'remote', 'storage');
   
   public function __construct($dir)
   {
