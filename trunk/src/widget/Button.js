@@ -15,11 +15,10 @@ dojo.require("dojo.widget.*");
 dojo.widget.defineWidget(
 	"dojo.widget.Button",
 	dojo.widget.HtmlWidget,
-	function(){
+	{
 		// summary
 		//	Basically the same thing as a normal HTML button, but with special styling.
-	},
-	{
+
 		isContainer: true,
 
 		// caption: String
@@ -233,11 +232,9 @@ dojo.widget.defineWidget(
 dojo.widget.defineWidget(
 	"dojo.widget.DropDownButton",
 	dojo.widget.Button,
-	function(){
+	{
 		// summary
 		//		push the button and a menu shows up
-	},
-	{
 		// menuId: String
 		//	widget id of the menu that this button should activate
 		menuId: "",
@@ -283,11 +280,9 @@ dojo.widget.defineWidget(
 dojo.widget.defineWidget(
 	"dojo.widget.ComboButton",
 	dojo.widget.Button,
-	function(){
+	{
 		// summary
 		//		left side is normal button, right side displays menu
-	},
-	{
 		// menuId: String
 		//	widget id of the menu that this button should activate
 		menuId: "",

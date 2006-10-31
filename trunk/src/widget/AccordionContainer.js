@@ -50,12 +50,11 @@ dojo.require("dojo.widget.PageContainer");
  dojo.widget.defineWidget(
 	"dojo.widget.AccordionContainer",
 	dojo.widget.HtmlWidget,
-	function(){
+	{
 		// summary: 
 		//		Holds a set of panes where every pane's title is visible, but only one pane's content is visible at a time,
 		//		and switching between panes is visualized by sliding the other panes up/down.
-	},
-	{
+
 		isContainer: true,
 		
 		// labelNodeClass: String
@@ -173,12 +172,11 @@ dojo.require("dojo.widget.PageContainer");
 dojo.widget.defineWidget(
 	"dojo.widget.AccordionPane",
 	dojo.widget.HtmlWidget,
-	function(){
-		// summary
-		//		AccordionPane is a box with a title that contains another widget (often a ContentPane).
-		//		It's a widget used internally by AccordionContainer.
-	},
 {
+	// summary
+	//		AccordionPane is a box with a title that contains another widget (often a ContentPane).
+	//		It's a widget used internally by AccordionContainer.
+
 	// parameters
 
 	// label: String

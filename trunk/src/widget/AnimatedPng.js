@@ -18,13 +18,12 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.widget.defineWidget(
 	"dojo.widget.AnimatedPng",
 	dojo.widget.HtmlWidget,
-	function(){
+	{
 		// summary
 		//	PNGs have great tranparency, but lack animation.
 		//	This widget lets you point an img tag at an animated gif for graceful degrading,
 		//	while letting you specify a png containing a grid of cells to animate between.
-	},
-	{
+
 		isContainer: false,
 
 		// width: Integer
