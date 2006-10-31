@@ -26,6 +26,7 @@ foreach ($files as $file) {
   $mixin_calls = array_merge($package->getFunctionCalls('dojo.extend'), $package->getFunctionCalls('dojo.lang.extend', true), $package->getFunctionCalls('dojo.mixin'), $package->getFunctionCalls('dojo.lang.mixin'));
   $declarations = $package->getFunctionDeclarations();
   $objects = $package->getObjects();
+  $aliases = $package->getAliases();
 
   // Since there can be chase conditions between declarations and calls, we need to find which were "swallowed" by larger blocks
   $package->removeSwallowed($mixin_calls);
@@ -207,15 +208,15 @@ foreach ($files as $file) {
     }
   }
   
+  foreach ($objects as $object) {
+    $object->rollOut($output);
+  }
+  
   if ($output[$package_name]) {
     $output['function_names'][$package_name] = array();
     if (!empty($output[$package_name]['meta']['functions'])) {
       $output['function_names'][$package_name] = array_values(array_keys($output[$package_name]['meta']['functions']));
     }
-  }
-  
-  foreach ($objects as $object) {
-    $object->rollOut($output);
   }
 }
 
