@@ -35,6 +35,8 @@ dojo.widget.defineWidget(
 			// where from
 			child: this.getInfo(child),
 			childTree: this.getInfo(child.tree),
+			oldParent: this.getInfo(child.parent),
+			oldParentTree: this.getInfo(oldParent.tree),
 			// where to
 			newParent: this.getInfo(newParent),
 			newParentTree: this.getInfo(newParent.tree),
@@ -386,7 +388,10 @@ dojo.widget.defineWidget(
 		
 		var params = {
 			child: this.getInfo(child),
+			oldParent: this.getInfo(child.parent),
+			oldParentTree: this.getInfo(child.parent.tree),
 			newParent: this.getInfo(newParent),
+			newParentTree: this.getInfo(newParent.tree),
 			index: index,
 			deep: deep ? true : false, // undefined -> false
 			tree: this.getInfo(child.tree)
