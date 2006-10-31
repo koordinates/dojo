@@ -9,10 +9,6 @@ dojo.require("dojo.widget.PageContainer");
 
 
 /**
- *summary
- *	Holds a set of panes where every pane's title is visible, but only one pane's content is visible at a time,
- *	and switching between panes is visualized by sliding the other panes up/down.
- *
  * description
  *	Front view (3 panes, pane #2 open)
  *	------------------------
@@ -54,19 +50,24 @@ dojo.require("dojo.widget.PageContainer");
  dojo.widget.defineWidget(
 	"dojo.widget.AccordionContainer",
 	dojo.widget.HtmlWidget,
+	function(){
+		// summary: 
+		//		Holds a set of panes where every pane's title is visible, but only one pane's content is visible at a time,
+		//		and switching between panes is visualized by sliding the other panes up/down.
+	},
 	{
 		isContainer: true,
 		
-		// String
-		//	CSS class name for dom node w/the title
+		// labelNodeClass: String
+		//		CSS class name for dom node w/the title
 		labelNodeClass: "label",
 		
-		// String
-		//	CSS class name for dom node holding the content
+		// containerNodeClass: String
+		//		CSS class name for dom node holding the content
 		containerNodeClass: "accBody",
 
-		// Integer
-		//	Amount of time (in ms) it takes to slide panes
+		// duration: Integer
+		//		Amount of time (in ms) it takes to slide panes
 		duration: 250,
 
 		fillInTemplate: function(){
@@ -87,7 +88,7 @@ dojo.require("dojo.widget.PageContainer");
 		
 		_addChild: function(/*Widget*/ widget){
 			// summary
-			//	Internal call to add child, used during postCreate() and by the real addChild() call
+			//		Internal call to add child, used during postCreate() and by the real addChild() call
 			if(widget.open){
 				dojo.deprecated("open parameter deprecated, use 'selected=true' instead will be removed in ", "0.5");
 				dojo.debug(widget.widgetId + ": open == " + widget.open);
@@ -127,7 +128,7 @@ dojo.require("dojo.widget.PageContainer");
 
 		_setSizes: function() {
 			// summary
-			//	Set panes' size/position based on my size, and the current open node.
+			//		Set panes' size/position based on my size, and the current open node.
 
 			// get cumulative height of all the title bars, and figure out which pane is open
 			var totalCollapsedHeight = 0;
@@ -152,7 +153,7 @@ dojo.require("dojo.widget.PageContainer");
 
 		selectChild: function(/*Widget*/ page){
 			// summary
-			//	close the current page and select a new one
+			//		close the current page and select a new one
 			dojo.lang.forEach(this.children, function(child){child.setSelected(child==page);});
 
 			// slide each pane that needs to be moved
@@ -169,34 +170,34 @@ dojo.require("dojo.widget.PageContainer");
 	}
 );
 
-/**
- * summary
- *	AccordionPane is a box with a title that contains another widget (often a ContentPane).
- *	It's a widget used internally by AccordionContainer.
- */
 dojo.widget.defineWidget(
 	"dojo.widget.AccordionPane",
 	dojo.widget.HtmlWidget,
+	function(){
+		// summary
+		//		AccordionPane is a box with a title that contains another widget (often a ContentPane).
+		//		It's a widget used internally by AccordionContainer.
+	},
 {
 	// parameters
 
-	// String
+	// label: String
 	//	label to print on top of AccordionPane
 	label: "",
 
-	// String
+	// class: String
 	//	CSS class name for the AccordionPane's dom node
 	"class": "dojoAccordionPane",
 
-	// String
+	// labelNodeClass: String
 	//	CSS class name for the AccordionPane's label node
 	labelNodeClass: "label",
 
-	// String
+	// containerNodeClass: String
 	//	CSS class name for the AccordionPane's container node
 	containerNodeClass: "accBody",
 	
-	// Boolean
+	// selected: Boolean
 	//	if true, this is the open pane
 	selected: false,
 
@@ -205,7 +206,7 @@ dojo.widget.defineWidget(
 
 	isContainer: true,
 
-    fillInTemplate: function() {
+  fillInTemplate: function() {
     	dojo.html.addClass(this.domNode, this["class"]);
 		dojo.widget.AccordionPane.superclass.fillInTemplate.call(this);
 		dojo.html.disableSelection(this.labelNode);
@@ -262,7 +263,7 @@ dojo.widget.defineWidget(
 // Since any widget can be specified as a child, mix them
 // into the base widget class.  (This is a hack, but it's effective.)
 dojo.lang.extend(dojo.widget.Widget, {
-	// String
+	// open: String
 	//	is this the selected child?
 	//	DEPRECATED: will be removed in 0.5.  Used "selected" attribute instead.
 	open: false

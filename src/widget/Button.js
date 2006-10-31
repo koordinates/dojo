@@ -6,8 +6,6 @@ dojo.require("dojo.html.selection");
 dojo.require("dojo.widget.*");
 
 /*
- * summary
- *	Basically the same thing as a normal HTML button, but with special styling.
  * usage
  *	<button dojoType="button" onClick="...">Hello world</button>
  *
@@ -17,33 +15,37 @@ dojo.require("dojo.widget.*");
 dojo.widget.defineWidget(
 	"dojo.widget.Button",
 	dojo.widget.HtmlWidget,
+	function(){
+		// summary
+		//	Basically the same thing as a normal HTML button, but with special styling.
+	},
 	{
 		isContainer: true,
 
-		// String
+		// caption: String
 		//	text to display in button
 		caption: "",
 		
 		templatePath: dojo.uri.dojoUri("src/widget/templates/ButtonTemplate.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/ButtonTemplate.css"),
 		
-		// Url
+		// inactiveImg: Url
 		//	prefix of filename holding images (left, center, right) for button in normal state
 		inactiveImg: "src/widget/templates/images/soriaButton-",
 		
-		// Url
+		// activeImg: Url
 		//	prefix of filename holding images (left, center, right) for button when it's being hovered over
 		activeImg: "src/widget/templates/images/soriaActive-",
 
-		// Url
+		// pressedImg: Url
 		//	prefix of filename holding images (left, center, right) for button between mouse-down and mouse-up
 		pressedImg: "src/widget/templates/images/soriaPressed-",
 
-		// Url
+		// disabledImg: Url
 		//	prefix of filename holding images (left, center, right) for button when it's disabled (aka, grayed-out)
 		disabledImg: "src/widget/templates/images/soriaDisabled-",
 		
-		// Number
+		// widget2height: Number
 		//	shape of the button's end pieces;
 		//	the height of the end pieces is a function of the button's height (which in turn is a function of the button's content),
 		//	and then the width of the end pieces is relative to their height.
@@ -222,8 +224,6 @@ dojo.widget.defineWidget(
 	});
 
 /*
- * summary
- *	push the button and a menu shows up
  * usage
  *	<button dojoType="DropDownButton" menuId="mymenu">Hello world</button>
  *
@@ -233,16 +233,20 @@ dojo.widget.defineWidget(
 dojo.widget.defineWidget(
 	"dojo.widget.DropDownButton",
 	dojo.widget.Button,
+	function(){
+		// summary
+		//		push the button and a menu shows up
+	},
 	{
-		// String
+		// menuId: String
 		//	widget id of the menu that this button should activate
 		menuId: "",
 
-		// Url
+		// downArrow: Url
 		//	path of arrow image to display to the right of the button text
 		downArrow: "src/widget/templates/images/whiteDownArrow.gif",
 
-		// Url
+		// disabledDownArray: Url
 		//	path of arrow image to display to the right of the button text, when the button is disabled
 		disabledDownArrow: "src/widget/templates/images/whiteDownArrow.gif",
 	
@@ -270,8 +274,6 @@ dojo.widget.defineWidget(
 	});
 
 /*
- * summary
- *	left side is normal button, right side displays menu
  * usage
  *	<button dojoType="ComboButton" onClick="..." menuId="mymenu">Hello world</button>
  *
@@ -281,18 +283,22 @@ dojo.widget.defineWidget(
 dojo.widget.defineWidget(
 	"dojo.widget.ComboButton",
 	dojo.widget.Button,
+	function(){
+		// summary
+		//		left side is normal button, right side displays menu
+	},
 	{
-		// String
+		// menuId: String
 		//	widget id of the menu that this button should activate
 		menuId: "",
 	
 		templatePath: dojo.uri.dojoUri("src/widget/templates/ComboButtonTemplate.html"),
 	
-		// Integer
+		// splitWidth: Integer
 		//	# of pixels between left & right part of button
 		splitWidth: 2,
 		
-		// Integer
+		// arrowWidth: Integer
 		//	width of segment holding down arrow
 		arrowWidth: 5,
 	
