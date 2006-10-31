@@ -237,7 +237,7 @@ dojo.widget.defineWidget(
 		searchDelay: 100,
 		dataUrl: "",
 		fadeTime: 200,
-		disabled: false,
+
 		// maxListLength limits list to X visible rows, scroll on rest 
 		maxListLength: 8, 
 		// mode can also be "remote" for JSON-returning live search or "html" for
@@ -286,13 +286,11 @@ dojo.widget.defineWidget(
 
 		enable:function(){
 			this.disabled=false;
-			this.isEnabled = true; 
 			this.textInputNode.removeAttribute("disabled");
 		},
  
 		disable: function(){
 			this.disabled = true; 
-			this.isEnabled = false;
 			this.textInputNode.setAttribute("disabled",true); 
 		}, 
 
@@ -579,7 +577,7 @@ dojo.widget.defineWidget(
 		},
 
 		openResultList: function(/*Array*/ results){
-			if (!this.isEnabled){
+			if (this.disabled){
 				return;
 			}
 			this.clearResultList();

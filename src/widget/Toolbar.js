@@ -330,8 +330,7 @@ dojo.widget.defineWidget(
 		return this.setSelected(!this._selected, force);
 	},
 
-	_enabled: true,
-	isEnabled: function() { return this._enabled; },
+	isEnabled: function() { return !this.disabled; },
 	setEnabled: function(is, force, preventEvent) {
 		is = Boolean(is);
 		if(force || this._enabled != is) {

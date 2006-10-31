@@ -24,10 +24,6 @@ dojo.widget.defineWidget(
 		//	text to display in button
 		caption: "",
 		
-		// Boolean
-		//	if true, cannot click button
-		disabled: false,
-
 		templatePath: dojo.uri.dojoUri("src/widget/templates/ButtonTemplate.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/ButtonTemplate.css"),
 		

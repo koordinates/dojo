@@ -30,8 +30,8 @@
 	function toggleDisabled(button, widget){
 		widget = dojo.widget.byId(widget);
 		button = dojo.byId(button);
-		widget.isEnabled==true ? widget.disable() : widget.enable();
-		button.innerHTML= widget.isEnabled ? "Disable" : "Enable";
+		widget.disabled ? widget.enable() : widget.disable();
+		button.innerHTML= widget.disabled ? "Enable" : "Disable";
 	}
 </script>
 

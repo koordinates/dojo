@@ -9,7 +9,6 @@ dojo.widget.defineWidget(
 		templateCssPath: dojo.uri.dojoUri('tests/widget/namespaces/myns/widget/CheckBox.css'),
 
 		// parameters
-		disabled: "enabled",
 		name: "",
 		checked: false,
 		tabIndex: "0",
