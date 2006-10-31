@@ -1,35 +1,99 @@
 dojo.provide("dojo.widget.ProgressBar");
 
-// requires here
-dojo.require("dojo.widget.*"); // necessary
+dojo.require("dojo.widget.*"); 
 dojo.require("dojo.event");
 dojo.require("dojo.dom.*");
 dojo.require("dojo.html.style");
 dojo.require("dojo.string.*");
 dojo.require("dojo.lfx.*");
 
+// summary:
+// a progress widget, with some calculation and server polling capabilities
+//
+// description: 
+// (implementation) four overlapped divs:
+// (1) lower z-index
+// (4) higher z-index
+// back and front percent label have the same content: when the vertical line (*)
+// partially hides the backPercentLabel, the frontPercentLabel becomes visible
+// 
+//  ________________________(1)_containerNode_________________________________
+// |__(3)_internalProgress____________                                        |
+// |                                  | <--- (*)                              |
+// |     (4) frontPercentLabel        | (2) backPercentLabel                  |
+// |__________________________________|                                       |
+// |__________________________________________________________________________| 
+//
+// usage:
+// <div dojoType="ProgressBar" frontBarClass="..." backBarClass="..."
+//   backBarClass="..." frontBarClass="..." duration="..."
+//   showOnlyIntegers="true|false" width="..." height="..." dataSource="..."
+//   pollInterval="..." 
+//   hasText="true|false" isVertical="true|false" 
+//   progressValue="..." maxProgressValue="..."></div>		
+
 dojo.widget.defineWidget(
 	"dojo.widget.ProgressBar",
 	dojo.widget.HtmlWidget,
 	{
-		// Constructor arguments
+		// String
+		// initial progress value. 
+		// with "%": percentual value, 0% <= progressValue <= 100%
+		// or without "%": absolute value, 0 <= progressValue <= maxProgressValue
 		progressValue: "0",
+		
+		// Float
+		// max sample number
 		maxProgressValue: 100,
+
+		// Integer
+		// ProgressBar width (pixel)
 		width: 300,
+
+		// Integer
+		// ProgressBar height, (pixel)
 		height: 30,
+		
+		// String
+		// css class for frontPercentLabel (4)
 		frontPercentClass: "frontPercent",
+
+		// String
+		// css class for backPercentLabel (2)
 		backPercentClass: "backPercent",
+
+		// String
+		// css class for containerNode (1)
 		frontBarClass: "frontBar",
+
+		// String
+		// css class for internalProgress (3)
 		backBarClass: "backBar",
+
+		// Boolean
+		// if true, the percent label is visible
 		hasText: "false",
-		isVertical:"false",
+
+		// Boolean
+		// if true, the widget is vertical
+		isVertical: "false",
+		
+		// Boolean
+		// if true, the percent label shows only integer values
 		showOnlyIntegers: "false",
+		
+		// String
+		// dataSource uri for server polling
 		dataSource: "",
+		
+		// Integer
+		// server poll interval
 		pollInterval: "3000",
+		
+		// Integer
+		// duration of the animation
 		duration: "1000",
-//		leftImage: null,
-//		centerImage: null,
-//		rightImage: null,
+
 		templatePath: dojo.uri.dojoUri("src/widget/templates/ProgressBar.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/ProgressBar.css"),
 		
@@ -40,7 +104,6 @@ dojo.widget.defineWidget(
 	
 		// private members
 		_pixelUnitRatio: 0.0,
-		// _pixelRatio := width/100
 		_pixelPercentRatio: 0.0,
 		_unitPercentRatio: 0.0,
 		_unitPixelRatio: 0.0,
@@ -55,6 +118,7 @@ dojo.widget.defineWidget(
 		_animationStopped: true,
 		_progressValueBak: false,
 		_hasTextBak: false,
+
 		// public functions
 		fillInTemplate: function(args, frag){
 			this.internalProgress.className = this.frontBarClass;
@@ -83,6 +147,7 @@ dojo.widget.defineWidget(
 			this.showText(this.hasText);
 		},
 		showText: function(visible){
+			// summary: shows or hides the labels
 			if (visible == "true"){
 				this.backPercentLabel.style.display="block";
 				this.frontPercentLabel.style.display="block";
@@ -93,7 +158,6 @@ dojo.widget.defineWidget(
 			this.hasText = visible;
 		},
 		postCreate: function(args, frag){
-			// labels position
 			this.render();
 		},
 		_backupValues: function(){
@@ -125,9 +189,12 @@ dojo.widget.defineWidget(
 				);
 		},
 		getMaxProgressValue: function(){
+			// summary: returns the maxProgressValue
 			return this.maxProgressValue;
 		},
 		setMaxProgressValue: function(maxValue, noRender){
+			// summary: sets the maxProgressValue
+			// if noRender is true, only sets the internal max progress value
 			if (!this._animationStopped){
 				return;
 			}
@@ -142,6 +209,10 @@ dojo.widget.defineWidget(
 			}
 		},
 		setProgressValue: function(value, noRender){
+			// summary: sets the progressValue
+			// if value ends width "%", does a normalization
+			// if noRender is true, only sets the internal value: useful if
+			// there is a setMaxProgressValue call
 			if (!this._animationStopped){
 				return;
 			}
@@ -166,26 +237,30 @@ dojo.widget.defineWidget(
 				this.render();
 			}
 		},
-		setCurrentPercentProgress: function(percentProgress){
-			this._setCurrentPixelProgress(percentProgress);
-		},
 		getProgressValue: function(){
+			// summary: returns the progressValue
 			return this.progressValue;
 		},
 		getProgressPercentValue: function(){
+			// summary: returns the percentual progressValue
 			return this._progressPercentValue;
 		},
 		setDataSource: function(dataSource){
+			// summary: sets the dataSource
 			this.dataSource = dataSource;
 		},
 		setPollInterval: function(pollInterval){
+			// summary: sets the pollInterval
 			this.pollInterval = pollInterval;
 		},
 		start: function(){
+			// summary: starts the server polling
 			var _showFunction = dojo.lang.hitch(this, this._showRemoteProgress);
 			this._oInterval = setInterval(_showFunction, this.pollInterval);
 		},
 		startAnimation: function(){
+			// summary: starts the left-right animation, useful when
+			// the user doesn't know how much time the operation will last
 			if (this._animationStopped) {
 				this._backupValues();
 				this.setProgressValue("10%");
@@ -197,6 +272,7 @@ dojo.widget.defineWidget(
 			}
 		},
 		stopAnimation: function(){
+			// summary: stops the left-right animation
 			if (this._animation) {
 				this._animationStopped = true;
 				this._animation.stop();
@@ -208,7 +284,6 @@ dojo.widget.defineWidget(
 		},
 		_showRemoteProgress: function(){
 			var _self = this;
-//			dojo.debug("getMax: "+this.getMaxProgressValue()+" getprval: "+this.getProgressValue());
 			if ( (this.getMaxProgressValue() == this.getProgressValue()) &&
 				this._oInterval){
 				clearInterval(this._oInterval);
@@ -224,21 +299,20 @@ dojo.widget.defineWidget(
 					dojo.debug("[ProgressBar] showRemoteProgress error");
 				},
 				load: function(type, data, evt){
-					//dojo.debug(data["progress"]);
 					_self.setProgressValue(
 						(_self._oInterval ? data["progress"] : "100%")
 					);
-//				dojo.debug("_oInterval: "+_self._oInterval);
 				}
 			};
 			dojo.io.bind(bArgs);
 		},
 		render: function(){
+			// summary: renders the ProgressBar, based on current values
 			this._setPercentLabel(dojo.string.trim(this._progressPercentValue));
 			this._setPixelValue(this._pixelValue);
 			this._setLabelPosition();
 		},
-		// private functions
+
 		_setLabelPosition: function(){
 			var _widthFront = 
 				dojo.html.getContentBox(this.frontPercentLabel).width;
@@ -256,8 +330,6 @@ dojo.widget.defineWidget(
 			this.backPercentLabel.style.left = _leftBack; 
 			this.frontPercentLabel.style.bottom = _bottomFront;
 			this.backPercentLabel.style.bottom = _bottomBack; 
-//			dojo.debug("bottom: "+this.backPercentLabel.style.bottom);
-//			dojo.debug("BOTTOM: "+_bottom);
 		},
 		_setPercentLabel: function(percentValue){
 			dojo.dom.removeChildren(this.frontPercentLabel);
