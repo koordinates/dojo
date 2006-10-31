@@ -9,11 +9,10 @@ dojo.require("dojo.html.selection");
 dojo.widget.defineWidget(
 	"dojo.widget.Checkbox",
 	dojo.widget.HtmlWidget,
-	function(){
+	{
 		// summary
 		//	Same as an HTML checkbox, but with fancy styling
-	},
-	{
+
 		templatePath: dojo.uri.dojoUri('src/widget/templates/Checkbox.html'),
 		templateCssPath: dojo.uri.dojoUri('src/widget/templates/Checkbox.css'),
 
@@ -154,11 +153,10 @@ dojo.widget.defineWidget(
 dojo.widget.defineWidget(
 	"dojo.widget.a11y.Checkbox",
 	dojo.widget.Checkbox,
-	function(){
+	{
 		// summary
 		//	variation on Checkbox widget to be display on monitors in high-contrast mode (that don't display CSS background images)
-	},
-	{
+
 		templatePath: dojo.uri.dojoUri('src/widget/templates/CheckboxA11y.html'),
 
 		fillInTemplate: function(){
