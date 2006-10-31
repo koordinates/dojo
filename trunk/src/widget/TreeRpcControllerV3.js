@@ -36,7 +36,7 @@ dojo.widget.defineWidget(
 			child: this.getInfo(child),
 			childTree: this.getInfo(child.tree),
 			oldParent: this.getInfo(child.parent),
-			oldParentTree: this.getInfo(oldParent.tree),
+			oldParentTree: this.getInfo(child.parent.tree),
 			// where to
 			newParent: this.getInfo(newParent),
 			newParentTree: this.getInfo(newParent.tree),
