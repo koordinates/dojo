@@ -6,33 +6,35 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.selection");
 
-// summary
-//	Same as an HTML checkbox, but with fancy styling
 dojo.widget.defineWidget(
 	"dojo.widget.Checkbox",
 	dojo.widget.HtmlWidget,
+	function(){
+		// summary
+		//	Same as an HTML checkbox, but with fancy styling
+	},
 	{
 		templatePath: dojo.uri.dojoUri('src/widget/templates/Checkbox.html'),
 		templateCssPath: dojo.uri.dojoUri('src/widget/templates/Checkbox.css'),
 
-		// String
+		// name: String
 		//	name used when submitting form; same as "name" attribute or plain HTML elements
 		name: "",
 
-		// String
+		// id: String
 		//	id attached to the checkbox, used when submitting form
 		id: "",
 
-		// Boolean
+		// checked: Boolean
 		//	if true, checkbox is initially marked turned on;
 		//	in markup, specified as "checked='checked'" or just "checked"
 		checked: false,
 		
-		// Integer
+		// tabIndex: Integer
 		//	order fields are traversed when user hits the tab key
 		tabIndex: "",
 
-		// Value
+		// value: Value
 		//	equivalent to value field on normal checkbox (if checked, the value is passed as
 		//	the value when form is submitted)
 		value: "on",
@@ -149,11 +151,13 @@ dojo.widget.defineWidget(
 	}
 );
 
-// summary
-//	variation on Checkbox widget to be display on monitors in high-contrast mode (that don't display CSS background images)
 dojo.widget.defineWidget(
 	"dojo.widget.a11y.Checkbox",
 	dojo.widget.Checkbox,
+	function(){
+		// summary
+		//	variation on Checkbox widget to be display on monitors in high-contrast mode (that don't display CSS background images)
+	},
 	{
 		templatePath: dojo.uri.dojoUri('src/widget/templates/CheckboxA11y.html'),
 
