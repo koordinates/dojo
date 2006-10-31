@@ -128,6 +128,7 @@ foreach ($files as $file) {
     if ($args[4]->isA(DojoObject)) {
       $object = $args[4]->getObject();
 			$object->setName($name);
+      $object->setAnonymous(true);
       $values = $object->getValues();
       foreach ($values as $key => $value) {
         if ($key == 'initializer' && $value->isA(DojoFunctionDeclare)) {
@@ -144,6 +145,12 @@ foreach ($files as $file) {
         }
       }
       $object->rollOut($output, 'function');
+      if ($object->getBlockComment('summary')) {
+        $output[$package_name]['meta']['functions'][$name]['meta']['summary'] = $object->getBlockComment('summary');
+      }
+      if ($object->getBlockComment('description')) {
+        $output[$package_name]['meta']['functions'][$name]['meta']['description'] = $object->getBlockComment('description');
+      }
     }
     
     if ($init) {

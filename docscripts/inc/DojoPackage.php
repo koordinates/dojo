@@ -197,7 +197,9 @@ class DojoPackage
 		$in_comment = false;
 		foreach ($lines as $line_number => $line) {
 			if (!$in_comment) {
-				if (($pos = strpos($line, '/*=')) !== false) {
+				if (($pos = strpos($line, '/*`')) !== false) {
+					print $line;
+					die();
 					$lines[$line_number] = Text::blankOutAt($line, $pos, $pos + 3);
 					$in_comment = true;
 				}

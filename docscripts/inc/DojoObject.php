@@ -12,6 +12,7 @@ class DojoObject extends DojoBlock
   private $name = '';
   private $body;
   private $extra_block_values = array();
+  private $anonymous = false;
   
   public function __construct($package, $line_number = false, $position = false)
   {
@@ -27,6 +28,16 @@ class DojoObject extends DojoBlock
   public function getName()
   {
     return $this->name;
+  }
+  
+  public function setAnonymous($anonymous)
+  {
+    $this->anonymous = true;
+  }
+  
+  public function isAnonymous()
+  {
+    return $this->anonymous;
   }
   
   public function getBlockCommentKeys()
@@ -147,10 +158,10 @@ class DojoObject extends DojoBlock
         $output[$package_name]['meta'][$item_type][$name]['extra']['variables'][$key]['summary'] = $comment;
       }
     }
-		if ($comment = $this->getBlockComment('summary')) {
+		if (!$this->isAnonymous() && $comment = $this->getBlockComment('summary')) {
 			$output[$package_name]['meta'][$item_type][$name]['meta']['summary'] = $comment;
 		}
-		if ($comment = $this->getBlockComment('description')) {
+		if (!$this->isAnonymous() && $comment = $this->getBlockComment('description')) {
 			$output[$package_name]['meta'][$item_type][$name]['meta']['description'] = $comment;
 		}
   }
