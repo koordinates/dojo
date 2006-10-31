@@ -50,9 +50,10 @@ dojo.declare("dojo.widget.Widget", null,
 	// Boolean: should this widget eat all events that bubble up to it?
 	isTopLevel:  false, 
 
-	// Boolean: should this widget respond to user input?
-	// TODO: use "disabled" rather than "isEnabled" because that's standard HTML
-	isEnabled: true,
+	// Boolean
+	//	should this widget respond to user input?
+	//	in markup, this is specified as "disabled='disabled'", or just "disabled"
+	disabled: false,
 
 	// Boolean: can this widget contain other widgets?
 	isContainer: false, 
@@ -96,24 +97,22 @@ dojo.declare("dojo.widget.Widget", null,
 		// summary:
 		//		enables the widget, usually involving unmasking inputs and
 		//		turning on event handlers. Not implemented here.
-		this.isEnabled = true;
+		this.disabled = false;
 	},
 
 	disable: function(){
 		// summary:
 		//		disables the widget, usually involves masking inputs and
 		//		unsetting event handlers. Not implemented here.
-		this.isEnabled = false;
+		this.disabled = true;
 	},
 
 	hide: function(){
 		// summary: hides the widget from view. Not implemented here.
-		this.isHidden = true;
 	},
 
 	show: function(){
 		// summary: re-adds the widget to the view. Not implemented here.
-		this.isHidden = false;
 	},
 
 	onResized: function(){

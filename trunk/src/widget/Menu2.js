@@ -362,10 +362,6 @@ dojo.widget.defineWidget(
 	//	widget ID of Menu2 widget to open when this menu item is clicked
 	submenuId: '',
 	
-	// Boolean
-	//	if true, this menu item cannot be selected
-	disabled: false,
-	
 	// String
 	//	event names for announcing when menu item is clicked.
 	//	if "default", then use the default name, based on the widget ID

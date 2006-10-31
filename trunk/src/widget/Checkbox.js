@@ -15,11 +15,6 @@ dojo.widget.defineWidget(
 		templatePath: dojo.uri.dojoUri('src/widget/templates/Checkbox.html'),
 		templateCssPath: dojo.uri.dojoUri('src/widget/templates/Checkbox.css'),
 
-		// Boolean
-		//	if true, clicking will not change the state of the checkbox.
-		//	in markup, this is specified as "disabled='disabled'", or just "disabled", 
-		disabled: false,
-		
 		// String
 		//	name used when submitting form; same as "name" attribute or plain HTML elements
 		name: "",

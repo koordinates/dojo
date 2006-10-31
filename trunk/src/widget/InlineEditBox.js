@@ -66,7 +66,7 @@ dojo.widget.defineWidget(
 	
 	onMouseOver: function(){
 		if(!this.editing){
-			if (!this.isEnabled){
+			if (this.disabled){
 				dojo.html.addClass(this.editable, "editableRegionDisabled");
 			} else {
 				dojo.html.addClass(this.editable, "editableRegion");
@@ -101,7 +101,7 @@ dojo.widget.defineWidget(
 	// When user clicks the text, then start editing.
 	// Hide the text and display the form instead.
 	beginEdit: function(e){
-		if(this.editing || !this.isEnabled){ return; }
+		if(this.editing || this.disabled){ return; }
 		this.onMouseOut();
 		this.editing = true;
 
@@ -196,8 +196,8 @@ dojo.widget.defineWidget(
 		this.cancelButton.disabled = true;
 		var ee = this[this.mode.toLowerCase()];
 		ee.disabled = true;
-		
-		dojo.widget.Widget.prototype.disable.call(this);
+		alert("disabling eidt " + this.widgetId);
+		dojo.widget.InlineEditBox.superclass.disable.apply(this, arguments);
 	},
 	
 	enable: function(){
@@ -206,6 +206,6 @@ dojo.widget.defineWidget(
 		var ee = this[this.mode.toLowerCase()];
 		ee.disabled = false;
 		
-		dojo.widget.Widget.prototype.enable.call(this);
+		dojo.widget.InlineEditBox.superclass.enable.apply(this, arguments);
 	}
 });
