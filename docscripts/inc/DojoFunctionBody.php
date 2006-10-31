@@ -148,7 +148,7 @@ class DojoFunctionBody extends DojoBlock
     return $this->instance_variables;
   }
   
-  public function getInstanceFunctions()
+  public function getInstanceFunctions($function_name)
   {
     $functions = array();
     $this->build();
@@ -156,6 +156,7 @@ class DojoFunctionBody extends DojoBlock
     foreach ($lines as $line_number => $line) {
       if (preg_match('%\bthis\.([a-zA-Z0-9._$]+)\s*=\s*function\b%', $line, $match, PREG_OFFSET_CAPTURE)) {
         $function = new DojoFunctionDeclare($this->package, $line_number, $match[0][1]);
+				$function->setFunctionName($function_name);
         $end = $function->build();
         $functions[] = $function;
       }

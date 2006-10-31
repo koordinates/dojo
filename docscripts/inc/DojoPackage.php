@@ -12,6 +12,7 @@ class DojoPackage
   protected $declarations = array(); // Builds an array of functions declarations by name, with meta
   protected $calls = array(); // Builds an array of calls
   protected $objects = array(); // Builds an array of objects
+	protected $aliases = array(); // Builds a key/value list of aliases in this file
   
   public function __construct(Dojo $dojo, $file)
   {
@@ -78,7 +79,70 @@ class DojoPackage
     }
     return $this->calls[$name];
   }
+	
+	public function removeCodeFrom($lines)
+	{
+		for($i = 0; $i < count($lines); $i++) {
+			$line = $lines[$i];
+			if (preg_match('%function\s*\([^)]*\)\s*{%', $line, $match, PREG_OFFSET_CAPTURE)) {
+				$declaration = new DojoFunctionDeclare($this, $i, $match[0][1]);
+				list($i, ) = $declaration->build();
+				$lines = $declaration->removeCodeFrom($lines);
+			}
+			elseif (preg_match('%^.*(with|switch)\s*\([^(]*\)\s*{%', $line, $match)) {
+				$with_lines = Text::chop($lines, $i, strlen($match[0]) - 1, null, null, true);
+				list($end_line, $end_pos) = Text::findTermination($with_lines, '}', '{}()[]');
+				for ($j = $i; $j <= $end_line; $j++) {
+					$line = $lines[$j];
+					if ($j == $i) {
+						$lines[$j] = Text::blankOutAt($line, strlen($match[0]) - 1);
+					}
+					elseif ($j == $end_line) {
+						$lines[$j] = Text::blankOutAt($line, 0, $end_pos);
+					}
+					else {
+						$lines[$j] = Text::blankOut($line, $line);
+					}
+				}
+			}
+		}
+		return $lines;
+	}
   
+	public function getAliases()
+  {
+    if ($this->aliases) {
+      return $this->aliases;
+    }
+    
+    $lines = $this->getCode();
+    foreach ($this->calls as $calls) {
+      foreach ($calls as $call) {
+        $lines = $call->removeCodeFrom($lines);
+      }
+    }
+    foreach ($this->declarations as $declaration) {
+      $lines = $declaration->removeCodeFrom($lines);
+    }
+		foreach ($this->objects as $objects) {
+			$lines = $objects->removeCodeFrom($lines);
+		}
+		$lines = $this->removeCodeFrom($lines);
+    foreach ($lines as $line_number => $line) {
+			if (empty($line)) continue;
+      if (preg_match('%(?:[a-zA-Z0-9._$]+\s*=\s*[a-zA-Z_$][a-zA-Z0-9._$]+)+(?=;|\n)%', $line, $match)) {
+				$aliases = preg_split('%\s*=\s*%', $match[0]);
+				$main_alias = array_pop($aliases);
+				if ($main_alias == 'true' || $main_alias == 'false' || $main_alias == 'null' || $main_alias == 'undefined' || $main_alias == 'this' || $main_alias == 'window' || substr($main_alias, 0, 5) == 'this.' || substr($main_alias, 0, 7) == 'window.') continue;
+				foreach ($aliases as $alias) {
+					$this->aliases[$alias] = $main_alias;
+				}
+			}
+    }
+    return $this->aliases;
+  }
+  
+	
   public function getObjects()
   {
     if ($this->objects) {
@@ -94,6 +158,7 @@ class DojoPackage
     foreach ($this->declarations as $declaration) {
       $lines = $declaration->removeCodeFrom($lines);
     }
+		$lines = $this->removeCodeFrom($lines);
     foreach ($lines as $line_number => $line) {
       if ($line_number < $end_line_number) {
         continue;

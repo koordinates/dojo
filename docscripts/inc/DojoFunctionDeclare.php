@@ -14,6 +14,7 @@ class DojoFunctionDeclare extends DojoBlock
   private $anonymous = false;
   private $prototype = '';
 	private $constructor = false;
+	private $aliases = '';
 
   public function __construct($package, $line_number = false, $position = false)
   {
@@ -26,6 +27,11 @@ class DojoFunctionDeclare extends DojoBlock
   {
     return $this->function_name;
   }
+	
+	public function getAliases()
+	{
+		return $this->aliases;
+	}
   
   public function setFunctionName($function_name)
   {
@@ -127,7 +133,8 @@ class DojoFunctionDeclare extends DojoBlock
     }
     else {
       $name = trim(substr($line, 0, strpos($line, '=')));
-      if (preg_match('%\s+new\s+%', $name, $match)) {
+			$extra = substr($line, strpos($line, '=') + 1);
+      if (preg_match('%^\s+new\s+%', $name, $match) || preg_match('%^\s*new\s+%', $extra, $match)) {
         $this->anonymous = true;
         $name = str_replace($match[0], '', $name);
       }
@@ -136,10 +143,27 @@ class DojoFunctionDeclare extends DojoBlock
         $name = str_replace('.prototype', '', $name);
       }
       if (($pos = strpos($name, 'this.')) === 0) {
-        $this->instance = substr($name, 0, $pos);
-        $name = $this->package->getPackageName() . "." . preg_replace('%^this\.%', '', $name);
+        $this->instance = $this->getFunctionName();
+        $name = $this->getFunctionName() . "." . preg_replace('%^this\.%', '', $name);
       }
-      $this->function_name = $name;
+			
+			$full_lines = Text::chop($this->package->getCode(), $this->start[0], 0);
+			$full_line = substr($full_lines[$this->start[0]], 0, $this->start[1]);
+			if (preg_match('%(?:[a-zA-Z0-9._$]+\s*=\s*)+$%', $full_line, $matches)) {
+				$aliases = preg_split('%\s*=\s*%', $matches[0]);
+				foreach ($aliases as $alias) {
+					$alias = trim($alias);
+					if ($alias) {
+						if (strpos($alias, 'this.') === 0) {
+							print $this->getFunctionName;
+							$alias = $this->getFunctionName() . "." . preg_replace('%^this\.%', '', $alias);
+						}
+						$this->aliases[] = $alias;
+					}
+				}
+			}
+			
+			$this->function_name = $name;
     }
     
     $this->parameters->setStart($this->start[0], strpos($lines[$this->start[0]], '('));
@@ -184,9 +208,9 @@ class DojoFunctionDeclare extends DojoBlock
     return $this->body->getSource();
   }
   
-  public function getInstanceFunctions()
+  public function getInstanceFunctions($function_name)
   {
-    return $this->body->getInstanceFunctions();
+    return $this->body->getInstanceFunctions($function_name);
   }
   
   public function rollOut(&$output) {
@@ -196,8 +220,17 @@ class DojoFunctionDeclare extends DojoBlock
     }
   
     $package_name = $this->package->getPackageName();
-    
+
+		if ($aliases = $this->getAliases()) {
+			foreach ($aliases as $alias) {
+				$output[$package_name]['meta']['functions'][$alias]['meta']['is'] = $function_name;
+			}
+		}
+		if ($this->isAnonymous()) {
+			$output[$package_name]['meta']['functions'][$function_name]['meta']['initialized'] = true;
+		}
     $output[$package_name]['meta']['functions'][$function_name]['meta']['summary'] = '';
+
     $parameters = $this->getParameters();
     foreach ($parameters as $parameter) {
       if ($parameter->isA(DojoVariable)) {
@@ -227,9 +260,10 @@ class DojoFunctionDeclare extends DojoBlock
       }
     }
     
-    $instance_functions = $this->getInstanceFunctions();
+    $instance_functions = $this->getInstanceFunctions($function_name);
     foreach ($instance_functions as $instance_function) {
       $instance_function->rollOut($output);
+			$output[$package_name]['meta']['functions'][$instance_function->getFunctionName()]['meta']['instance'] = $function_name;
     }
     
     $comment_keys = $this->getBlockCommentKeys();
