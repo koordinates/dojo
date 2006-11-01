@@ -18,5 +18,17 @@
 
 	am: "d.e.",
 	pm: "d.u.",
-	eras: ['k.e.','k.u.']
+	eras: ['k.e.','k.u.'],
+
+	'field-era': "éra",
+	'field-year': "év",
+	'field-month': "hónap",
+	'field-week': "hét",
+	'field-day': "nap",
+	'field-weekday': "hét napja",
+	'field-dayperiod': "napszak",
+	'field-hour': "óra",
+	'field-minute': "perc",
+	'field-second': "másodperc",
+	'field-zone': "zóna"
 })

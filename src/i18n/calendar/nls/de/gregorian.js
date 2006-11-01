@@ -15,5 +15,16 @@
 
 	am: "vorm.",
 	pm: "nachm.",
-	eras: ['v. Chr.','n. Chr.']
+	eras: ['v. Chr.','n. Chr.'],
+
+	'field-era': "Epoche",
+	'field-year': "Jahr",
+	'field-month': "Monat",
+	'field-week': "Woche",
+	'field-day': "Tag",
+	'field-weekday': "Wochentag",
+	'field-dayperiod': "Tageshälfte",
+	'field-hour': "Stunde",
+	'field-second': "Sekunde",
+	'field-zone': "Zone"
 })
