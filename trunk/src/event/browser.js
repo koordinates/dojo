@@ -494,8 +494,8 @@ dojo.event.browser = new function(){
 		//		passed event
 		// evt: Optional for IE. The native event object.
 		if(window.event){
-			evt.returnValue = false;
 			evt.cancelBubble = true;
+			evt.returnValue = false;
 		}else{
 			evt.preventDefault();
 			evt.stopPropagation();
