@@ -891,13 +891,33 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 
 	<!-- xdgenRelease task -->
 	<target name="xdgenRelease" if="xdgenRun">
-		<antcall target="xdgen">
-			<param name="xdgenDir" value="${release_dir}/src" />
-		</antcall>
+		<!-- Hmm. have to repeat this work here even though it was done in -set-profile-deps. I guess script block changes
+		to properties only last within that target? -->
+		<script language="javascript">
+			<![CDATA[
+			var pf = dojo.getProperty("profileFile");
+			if((!pf)||(pf=="null")||(pf=="")){
+				var prof = dojo.getProperty("profile");
+				if((prof)&&(prof!="null")&&(prof!="")){
+					dojo.setNewProperty("profileFile", "profiles/"+prof+".profile.js");
+				}else{
+					dojo.setNewProperty("profileFile", "getDependencyList.js");
+				}
+			}			
+		]]>
+		</script>
 
-		<available file="${release_dir}/nls" property="flatnls.present"/>
-		<antcall target="xdgenNlsRelease" />
-		
+		<echo message="Generating xd resource files..."/>
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" logError="true">
+			<arg value="xdgen.js" />
+			<arg value="xdgen" />
+			<arg value="${profileFile}" />
+			<arg value="${release_dir}" />
+			<arg value="${release_dir}/src" />
+			<arg value="${release_dir}/nls" />		
+		</java>
+		<echo message="Finished generating xd resource files."/>
+
 		<!-- flatten l10n bundles -->
 		<echo>Flattening resource bundles for xd loading</echo>
 		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
@@ -910,63 +930,35 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 	</target>
 	<!-- end xdgenRelease task -->
 
-	<!-- xdgenNlsRelease task -->
-	<target name="xdgenNlsRelease" if="flatnls.present">
-		<antcall target="xdgen">
-			<param name="xdgenDir" value="${release_dir}/nls" />
-		</antcall>
-	</target>
-	<!-- end xdgenNlsRelease task -->
-
-
-	<!-- xdgen task -->
-	<target name="xdgen" 
-			description="Create package files that can be used as part of a cross domain dojo installation.">
-		<property name="xdgen.basedir" location="../tools/xdgen"/>
-		<property name="xdgen.src" location="${xdgen.basedir}/src"/>
-		<property name="xdgen.build" location="${xdgen.basedir}/build"/>
-
-		<mkdir dir="${xdgen.build}"/>
-
-		<!-- Compile xdgen if it hasn't been compiled yet -->
-		<javac srcdir="${xdgen.src}" failonerror="true" destdir="${xdgen.build}" debug="true">
-			<classpath>
-				<fileset dir="${xdgen.basedir}/lib">
-					<include name="**/*.jar"/>
-				</fileset>
-			</classpath>
-		</javac>
-
-		<!-- Set up the classpath for the xdgen ant task. -->
-		<path id="xdgen.classpath">
-			<pathelement path="${classpath}"/>
-			<pathelement location="${xdgen.build}"/>
-			<fileset dir="./lib">
-				<include name="**/*.jar"/>
-				<include name="**/*.zip"/>
-			</fileset>
-		</path>
-
-		<!-- Define the xdgen ant task -->
-		<taskdef name="xdgenTask" classname="org.dojotoolkit.xdgen.XdGenAntTask">
-			<classpath refid="xdgen.classpath"/>
-		</taskdef>
-
-		<!-- Call the xdgen ant task -->
-		<xdgenTask>
-			<fileset dir="${xdgenDir}">
-				<include name="**/*.js"/>
-			</fileset>
-		</xdgenTask>
-	</target>
-	<!-- end xdgen task -->
-
 	<!-- xdgenRemove task -->
 	<target name="xdgenRemove" 
 			description="Removes package files that were created by xdgen.">
-		<delete>
-			<fileset dir="${xdgenDir}" includes="**/*.xd.js"/>
-		</delete>
+		<!-- Hmm. have to repeat this work here even though it was done in -set-profile-deps. I guess script block changes
+		to properties only last within that target? -->
+		<script language="javascript">
+			<![CDATA[
+			var pf = dojo.getProperty("profileFile");
+			if((!pf)||(pf=="null")||(pf=="")){
+				var prof = dojo.getProperty("profile");
+				if((prof)&&(prof!="null")&&(prof!="")){
+					dojo.setNewProperty("profileFile", "profiles/"+prof+".profile.js");
+				}else{
+					dojo.setNewProperty("profileFile", "getDependencyList.js");
+				}
+			}			
+		]]>
+		</script>
+		<!-- Remove .xd.js files -->
+		<echo message="Removing xd resource files..."/>
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" logError="true">
+			<arg value="xdgen.js" />
+			<arg value="xdremove" />
+			<arg value="${profileFile}" />
+			<arg value="${release_dir}" />
+			<arg value="${release_dir}/src" />
+			<arg value="${release_dir}/nls" />		
+		</java>
+		<echo message="Finished removing xd resource files."/>
 	</target>
 	<!-- end xdgenRemove task -->
 

@@ -70,15 +70,6 @@ function flattenBundleForXd(srcFile, destFile){
 var srcDir = arguments[0];
 var destDir = arguments[1];
 
-//Clean up input.
-if(srcDir.charAt(srcDir.length) != '/' || srcDir.charAt(srcDir.length) != '\\'){
-	srcDir += "/";
-}
-if(destDir.charAt(destDir.length) != '/' || destDir.charAt(destDir.length) != '\\'){
-	destDir += "/";
-}
-
-print("topSrcDir: " + srcDir + ", topDestDir: " + destDir);
 //Load Dojo so we can use dojo.requireLocalization()
 djConfig={
 	baseRelativePath: "../"
@@ -89,6 +80,13 @@ dojo.require("dojo.json");
 
 //Find the bundles that need to be flattened.
 load("buildUtil.js");
+
+//Clean up input.
+srcDir = buildUtil.ensureEndSlash(srcDir);
+destDir = buildUtil.ensureEndSlash(destDir);
+print("topSrcDir: " + srcDir + ", topDestDir: " + destDir);
+
+
 var nlsFiles = buildUtil.getFilteredFileList(srcDir, /\/nls\//);
 
 //Flatten the bundles
