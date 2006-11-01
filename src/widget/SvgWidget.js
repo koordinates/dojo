@@ -4,6 +4,10 @@ dojo.provide("dojo.widget.SVGWidget"); // back compat
 
 dojo.require("dojo.dom");
 
+
+dojo.require("dojo.experimental");
+dojo.experimental("dojo.widget.SvgWidget");
+
 // SVGWidget is a mixin ONLY
 dojo.widget.declare(
 	"dojo.widget.SvgWidget",
