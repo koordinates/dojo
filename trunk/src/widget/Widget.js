@@ -27,48 +27,52 @@ dojo.declare("dojo.widget.Widget", null,
 	// over-ride.
 	//
 	// base widget properties
-
-	// Widget: the parent of this widget
+	// parent: Widget
+	//		the parent of this widget
 	parent: null, 
 
-	// NOTE: "children" and "extraArgs" re-defined in the constructor as they need to be local to the widget
-
-	// Array:
+	// children: Array
 	//		a list of all of the widgets that have been added as children of
 	//		this component. Should only have values if isContainer is true.
+	
+	// NOTE: "children" and "extraArgs" re-defined in the constructor as they need to be local to the widget
 	children: [],
 
-	// Object:
+	// extraArgs: Object
 	//		a map of properties which the widget system tried to assign from
 	//		user input but did not correspond to any of the properties set on
 	//		the class prototype. These names will also be available in all
 	//		lower-case form in this map
 	extraArgs: {},
 
+	// isTopLevel: Boolean
+	//		should this widget eat all events that bubble up to it?
+	
 	// obviously, top-level and modal widgets should set these appropriately
-
-	// Boolean: should this widget eat all events that bubble up to it?
 	isTopLevel:  false, 
 
-	// Boolean
-	//	should this widget respond to user input?
-	//	in markup, this is specified as "disabled='disabled'", or just "disabled"
+	// disabled: Boolean
+	//		should this widget respond to user input?
+	//		in markup, this is specified as "disabled='disabled'", or just "disabled"
 	disabled: false,
 
-	// Boolean: can this widget contain other widgets?
+	// isContainer: Boolean
+	//		can this widget contain other widgets?
 	isContainer: false, 
 
-	// String:
+	// widgetId: String
 	//		a unique, opaque ID string that can be assigned by users or by the
 	//		system. If the developer passes an ID which is known not to be
 	//		unique, the specified ID is ignored and the system-generated ID is
 	//		used instead.
 	widgetId: "",
 
-	// String: used for building generic widgets
+	// widgetType: String
+	//		used for building generic widgets
 	widgetType: "Widget",
 
-	// String: defaults to 'dojo'.  "namespace" is a reserved word in JavaScript, so we abbreviate
+	// ns: String
+	//		defaults to 'dojo'.  "namespace" is a reserved word in JavaScript, so we abbreviate
 	ns: "dojo",
 
 	getNamespacedType: function(){ 
@@ -136,20 +140,21 @@ dojo.declare("dojo.widget.Widget", null,
 		}
 	},
 
-	create: function(/*Object*/ args, /*Object*/fragment, /*Widget, optional*/parent, /*String, optional*/ns){
+	create: function(args, fragment, parent, ns){
 		// summary:
 		//		'create' manages the initialization part of the widget
 		//		lifecycle. It's called implicitly when any widget is created.
 		//		All other initialization functions for widgets, except for the
 		//		constructor, are called as a result of 'create' being fired.
-		// args:
+		// args: Object
 		//		a normalized view of the parameters that the widget should take
-		// fragment:
+		// fragment: Object
 		//		if the widget is being instantiated from markup, this object 
-		// parent:
+		// parent: Widget?
 		//		the widget, if any, that this widget will be the child of.  If
 		//		none is passed, the global default widget is used.
-		// ns: what namespace the widget belongs to
+		// ns: String?
+		//		what namespace the widget belongs to
 		// description:
 		//		to understand the process by which widgets are instantiated, it
 		//		is critical to understand what other methods 'create' calls and
@@ -224,13 +229,13 @@ dojo.declare("dojo.widget.Widget", null,
 		return this;
 	},
 
-	destroy: function(/*Boolean*/finalize){
+	destroy: function(finalize){
 		// summary:
 		// 		Destroy this widget and it's descendants. This is the generic
 		// 		"destructor" function that all widget users should call to
 		// 		clealy discard with a widget. Once a widget is destroyed, it's
 		// 		removed from the manager object.
-		// finalize:
+		// finalize: Boolean
 		//		is this function being called part of global environment
 		//		tear-down?
 
@@ -260,10 +265,10 @@ dojo.declare("dojo.widget.Widget", null,
 				
 	},
 
-	getChildrenOfType: function(/*String*/type, /*Boolean*/recurse){
+	getChildrenOfType: function(/*String*/type, recurse){
 		// summary: 
 		//		return an array of descendant widgets who match the passed type
-		// recurse:
+		// recurse: Boolean
 		//		should we try to get all descendants that match? Defaults to
 		//		false.
 		var ret = [];
@@ -289,7 +294,7 @@ dojo.declare("dojo.widget.Widget", null,
 	},
 
 	getDescendants: function(){
-		// summary: returns a flattened array of all direct descendants including self
+		// returns: a flattened array of all direct descendants including self
 		var result = [];
 		var stack = [this];
 		var elem;
@@ -335,14 +340,14 @@ dojo.declare("dojo.widget.Widget", null,
 		return args;
 	},
 
-	mixInProperties: function(/*Object*/args, /*Object*/frag){
+	mixInProperties: function(args, /*Object*/frag){
 		// summary:
 		// 		takes the list of properties listed in args and sets values of
 		// 		the current object based on existence of properties with the
 		// 		same name (case insensitive) and the type of the pre-existing
 		// 		property. This is a lightweight conversion and is not intended
 		// 		to capture custom type semantics.
-		// args:
+		// args: Object
 		//		A map of properties and values to set on the current object. By
 		//		default it is assumed that properties in args are in string
 		//		form and need to be converted. However, if there is a
@@ -547,10 +552,11 @@ dojo.declare("dojo.widget.Widget", null,
 		return false;
 	},
 
-	addedTo: function(/*Widget*/parent){
+	addedTo: function(parent){
 		// summary:
 		//		stub function this is just a signal that can be caught
-		// parent: instance of dojo.widget.Widget that we were added to
+		// parent: Widget
+		//		instance of dojo.widget.Widget that we were added to
 	},
 
 	addChild: function(child){
@@ -690,21 +696,20 @@ dojo.widget.buildWidgetFromParseTree = function(/*String*/				type,
 	return ret;
 }
 
-dojo.widget.defineWidget = function(/*String*/			widgetClass, 
-									/*String*/			renderer,
-									/*function||array*/	superclasses, 
-									/*function*/		init,
-									/*Object*/			props){
-
+dojo.widget.defineWidget = function(widgetClass, renderer, superclasses, init, props){
 	// summary: Create a widget constructor function (aka widgetClass)
-	// widgetClass: the location in the object hierarchy to place the new widget class constructor
-	// renderer: usually "html", determines when this delcaration will be used
-	// superclasses:
+	// widgetClass: String
+	//		the location in the object hierarchy to place the new widget class constructor
+	// renderer: String
+	//		usually "html", determines when this delcaration will be used
+	// superclasses: Function||Function[]
 	//		can be either a single function or an array of functions to be
 	//		mixed in as superclasses. If an array, only the first will be used
 	//		to set prototype inheritance.
-	// init: an optional constructor function. Will be called after superclasses are mixed in.
-	// props: a map of properties and functions to extend the class prototype with
+	// init: Function
+	//		an optional constructor function. Will be called after superclasses are mixed in.
+	// props: Object
+	//		a map of properties and functions to extend the class prototype with
 
 	// This meta-function does parameter juggling for backward compat and overloading
 	// if 4th argument is a string, we are using the old syntax

@@ -176,11 +176,8 @@ dojo.widget.defineWidget(
 	// summary
 	//		AccordionPane is a box with a title that contains another widget (often a ContentPane).
 	//		It's a widget used internally by AccordionContainer.
-
-	// parameters
-
 	// label: String
-	//	label to print on top of AccordionPane
+	//		label to print on top of AccordionPane
 	label: "",
 
 	// class: String
