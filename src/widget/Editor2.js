@@ -5,9 +5,10 @@ dojo.require("dojo.widget.RichText");
 dojo.require("dojo.widget.Editor2Toolbar");
 
 // Object: Manager of current focused Editor2 Instance and available editor2 commands
-dojo.widget.Editor2Manager = {
+dojo.widget.Editor2Manager = new dojo.widget.HandlerManager;
+dojo.lang.mixin(dojo.widget.Editor2Manager,
+{
 	_currentInstance: null,
-	_loadedCommands: {},
 
 	// Object: state a command may be in
 	commandState: {Disabled: 0, Latched: 1, Enabled: 2},
@@ -20,47 +21,39 @@ dojo.widget.Editor2Manager = {
 		// summary: Set current focused Editor2 instance
 		this._currentInstance = inst;
 	},
-	registerCommand: function(/*String*/name, /*Object*/cmd){
-		// summary: Register an Editor2 command
-		// name: name of the command (case insensitive)
-		// cmd: an object which implements interface dojo.widget.Editor2Command
-		name = name.toLowerCase();
-		if(this._loadedCommands[name]){
-			delete this._loadedCommands[name];
-		}
-		this._loadedCommands[name] = cmd;
-	},
-	getCommand: function(/*String*/name){
+	getCommand: function(/*dojo.widget.Editor2*/editor,/*String*/name){
 		// summary: Return Editor2 command with the given name
 		// name: name of the command (case insensitive)
+		var oCommand;
 		name = name.toLowerCase();
-		var oCommand = this._loadedCommands[name];
-		if(oCommand){
-			return oCommand;
+		for(var i=0;i<this._registeredHandlers.length;i++){
+			oCommand = this._registeredHandlers[i](editor, name);
+			if(oCommand){
+				return oCommand;
+			}
 		}
-
 		switch(name){
 			case 'htmltoggle':
 				//Editor2 natively provide the htmltoggle functionalitity
 				//and it is treated as a builtin command
-				oCommand = new dojo.widget.Editor2BrowserCommand(name);
+				oCommand = new dojo.widget.Editor2BrowserCommand(editor, name);
 				break;
 			case 'formatblock':
-				oCommand = new dojo.widget.Editor2FormatBlockCommand(name);
+				oCommand = new dojo.widget.Editor2FormatBlockCommand(editor, name);
 				break;
 			case 'anchor':
-				oCommand = new dojo.widget.Editor2Command(name);
+				oCommand = new dojo.widget.Editor2Command(editor, name);
 				break;
 
 			//dialog command
 			case 'createlink':
-				oCommand = new dojo.widget.Editor2DialogCommand(name,
+				oCommand = new dojo.widget.Editor2DialogCommand(editor, name,
 						{contentFile: "dojo.widget.Editor2Plugin.CreateLinkDialog",
 							contentClass: "Editor2CreateLinkDialog",
 							title: "Insert/Edit Link", width: "300px", height: "200px"});
 				break;
 			case 'insertimage':
-				oCommand = new dojo.widget.Editor2DialogCommand(name,
+				oCommand = new dojo.widget.Editor2DialogCommand(editor, name,
 						{contentFile: "dojo.widget.Editor2Plugin.InsertImageDialog",
 							contentClass: "Editor2InsertImageDialog",
 							title: "Insert/Edit Image", width: "400px", height: "270px"});
@@ -70,31 +63,29 @@ dojo.widget.Editor2Manager = {
 				var curtInst = this.getCurrentInstance();
 				if((curtInst && curtInst.queryCommandAvailable(name)) ||
 					(!curtInst && dojo.widget.Editor2.prototype.queryCommandAvailable(name))){
-					oCommand = new dojo.widget.Editor2BrowserCommand(name);
+					oCommand = new dojo.widget.Editor2BrowserCommand(editor, name);
 				}else{
 					dojo.debug("dojo.widget.Editor2Manager.getCommand: Unknown command "+name);
 					return;
 				}
 		}
-		this._loadedCommands[name] = oCommand;
 		return oCommand;
 	},
 	destroy: function(){
 		// summary: Cleaning up. This is called automatically on page unload.
 		this._currentInstance = null;
-		for(var cmd in this._loadedCommands){
-			this._loadedCommands[cmd].destory();
-		}
+		dojo.widget.HandlerManager.prototype.destroy.call(this);
 	}
-};
+});
 
 dojo.addOnUnload(dojo.widget.Editor2Manager, "destroy");
 
 // summary:
 //		dojo.widget.Editor2Command is the base class for all command in Editor2
 dojo.lang.declare("dojo.widget.Editor2Command",null,
-	function(name){
-		// summary: Constructor of this class
+	function(editor,name){
+		this._editor = editor;
+		this._updateTime = 0;
 		this._name = name;
 	},
 {
@@ -176,7 +167,7 @@ dojo.widget.Editor2BrowserCommandNames={
 //		dojo.widget.Editor2BrowserCommand is the base class for all the browser built
 //		in commands
 dojo.lang.declare("dojo.widget.Editor2BrowserCommand", dojo.widget.Editor2Command, 
-	function(name){
+	function(editor,name){
 		// summary: Constructor of this class
 		
 		var text = dojo.widget.Editor2BrowserCommandNames[name.toLowerCase()];
@@ -186,38 +177,32 @@ dojo.lang.declare("dojo.widget.Editor2BrowserCommand", dojo.widget.Editor2Comman
 	},
 {
 		execute: function(para){
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-			if(curInst){
-				curInst.execCommand(this._name, para);
-			}
+			this._editor.execCommand(this._name, para);
 		},
 		getState: function(){
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-			if(curInst){
+			if(this._editor._lastStateTimestamp > this._updateTime || this._state == undefined){
+				this._updateTime = this._editor._lastStateTimestamp;
 				try{
-					if(curInst.queryCommandEnabled(this._name)){
-						if(curInst.queryCommandState(this._name)){
-							return dojo.widget.Editor2Manager.commandState.Latched;
+					if(this._editor.queryCommandEnabled(this._name)){
+						if(this._editor.queryCommandState(this._name)){
+							this._state = dojo.widget.Editor2Manager.commandState.Latched;
 						}else{
-							return dojo.widget.Editor2Manager.commandState.Enabled;
+							this._state = dojo.widget.Editor2Manager.commandState.Enabled;
 						}
 					}else{
-						return dojo.widget.Editor2Manager.commandState.Disabled;
+						this._state = dojo.widget.Editor2Manager.commandState.Disabled;
 					}
 				}catch (e) {
 					//dojo.debug("exception when getting state for command "+this._name+": "+e);
-					return dojo.widget.Editor2Manager.commandState.Enabled;
+					this._state = dojo.widget.Editor2Manager.commandState.Enabled;
 				}
 			}
-			return dojo.widget.Editor2Manager.commandState.Disabled;
+			return this._state;
 		},
 		getValue: function(){
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-			if(curInst){
-				try{
-					return curInst.queryCommandValue(this._name);
-				}catch(e){}
-			}
+			try{
+				return this._editor.queryCommandValue(this._name);
+			}catch(e){}
 		}
 	}
 );
@@ -349,6 +334,16 @@ dojo.widget.defineWidget(
 				this.hideModalDialog();
 			}
 			dojo.widget.Editor2Dialog.superclass.hide.call(this);
+		},
+		//modified from ModalDialogBase.checkSize to call _sizeBackground conditionally
+		checkSize: function(){
+			if(this.isShowing()){
+				if(this.modal){
+					this._sizeBackground();
+				}
+				this.placeModalDialog();
+				this.onResized();
+			}
 		}
 	}
 );
@@ -376,7 +371,7 @@ dojo.widget.defineWidget(
 //		dojo.widget.Editor2DialogCommand provides an easy way to popup a dialog when
 //		the command is executed.
 dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2BrowserCommand,
-	function(name, dialogParas){
+	function(editor, name, dialogParas){
 		this.dialogParas = dialogParas;
 	},
 {
@@ -396,6 +391,9 @@ dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2Browser
 	}
 });
 
+// Object: keeping track of all available share toolbar groups
+dojo.widget.Editor2ToolbarGroups = {};
+
 // summary:
 //		dojo.widget.Editor2 is the WYSIWYG editor in dojo with toolbar. It supports a plugin
 //		framework which can be used to extend the functionalities of the editor, such as
@@ -406,6 +404,9 @@ dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2Browser
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2",
 	dojo.widget.RichText,
+	function(){
+		this._loadedCommands={};
+	},
 	{
 //		// String: url to which save action should send content to
 //		saveUrl: "",
@@ -414,8 +415,6 @@ dojo.widget.defineWidget(
 //		saveArgName: "editorContent",
 //		closeOnSave: false,
 
-		// Boolean: Whether to share toolbar with other instances of Editor2
-		shareToolbar: false,
 		// Boolean: Whether the toolbar should scroll to keep it in the view
 		toolbarAlwaysVisible: false,
 
@@ -434,6 +433,16 @@ dojo.widget.defineWidget(
 		_inSourceMode: false,
 		_htmlEditNode: null,
 
+		// String: 
+		//		This instance of editor will share the same toolbar with other editor with the same toolbarGroup. 
+		//		By default, toolbarGroup is empty and standalone toolbar is used for this instance.
+		toolbarGroup: '',
+		// Boolean: Whether to share toolbar with other instances of Editor2. Deprecated in favor of toolbarGroup
+		shareToolbar: false,
+
+		// String: specify which context menu set should be used for this instance. Include ContextMenu plugin to use this
+		contextMenuGroupSet: '',
+
 		editorOnLoad: function(){
 			// summary:
 			//		Create toolbar and other initialization routines. This is called after
@@ -445,28 +454,34 @@ dojo.widget.defineWidget(
 				dojo.require("dojo.widget.Editor2Plugin.AlwaysShowToolbar");
 			}
 
-			var toolbars = dojo.widget.byType("Editor2Toolbar");
-			if((!toolbars.length)||(!this.shareToolbar)){
-				if(this.toolbarWidget){
-					this.toolbarWidget.show();
-					//re-add the toolbar to the new domNode (caused by open() on another element)
-					dojo.html.insertBefore(this.toolbarWidget.domNode, this.domNode.firstChild);
-				}else{
-					var tbOpts = {};
-					tbOpts.templatePath = this.toolbarTemplatePath;
-					if(this.toolbarTemplateCssPath){
-						tbOpts.templateCssPath = this.toolbarTemplateCssPath;
-					}
-					this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", tbOpts, this.domNode.firstChild, "before");
-
-					dojo.event.connect(this, "close", this.toolbarWidget, "hide");
-
-					this.toolbarLoaded();
-				}
+			if(this.toolbarWidget){
+				this.toolbarWidget.show();
+				//re-add the toolbar to the new domNode (caused by open() on another element)
+				dojo.html.insertBefore(this.toolbarWidget.domNode, this.domNode.firstChild);
 			}else{
-				// FIXME: 	selecting in one shared toolbar doesn't clobber
-				// 			selection in the others. This is problematic.
-				this.toolbarWidget = toolbars[0];
+				if(this.shareToolbar){
+					dojo.deprecated("Editor2:shareToolbar is deprecated in favor of toolbarGroup", "0.5");
+					this.toolbarGroup = 'defaultDojoToolbarGroup';
+				}
+				if(this.toolbarGroup){
+					if(dojo.widget.Editor2ToolbarGroups[this.toolbarGroup]){
+						this.toolbarWidget = dojo.widget.Editor2ToolbarGroups[this.toolbarGroup];
+					}
+				}
+				if(!this.toolbarWidget){
+						var tbOpts = {shareGroup: this.toolbarGroup, parent: this};
+						tbOpts.templatePath = this.toolbarTemplatePath;
+						if(this.toolbarTemplateCssPath){
+							tbOpts.templateCssPath = this.toolbarTemplateCssPath;
+						}
+						this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", tbOpts, this.domNode.firstChild, "before");
+						if(this.toolbarGroup){
+							dojo.widget.Editor2ToolbarGroups[this.toolbarGroup] = this.toolbarWidget;
+						}
+						dojo.event.connect(this, "close", this.toolbarWidget, "hide");
+	
+						this.toolbarLoaded();
+				}
 			}
 
 			dojo.event.topic.registerPublisher("Editor2.clobberFocus", this, "clobberFocus");
@@ -661,7 +676,9 @@ dojo.widget.defineWidget(
 			dojo.widget.Editor2.superclass.destroy.call(this);
 		},
 
+		_lastStateTimestamp: 0,
 		onDisplayChanged: function(/*Object*/e){
+			this._lastStateTimestamp = (new Date()).getTime();
 			dojo.widget.Editor2.superclass.onDisplayChanged.call(this,e);
 			this.updateToolbar();
 		},
@@ -688,6 +705,15 @@ dojo.widget.defineWidget(
 			return dojo.widget.Editor2.superclass.getEditorContent.call(this);
 		},
 
+		getCommand: function(/*String*/name){
+			// summary: return a command associated with this instance of editor
+			if(this._loadedCommands[name]){
+				return this._loadedCommands[name];
+			}
+			var cmd = dojo.widget.Editor2Manager.getCommand(this, name);
+			this._loadedCommands[name] = cmd;
+			return cmd;
+		},
 		// Array: Commands shortcuts. Each element can has up to 3 fields:
 		//		1. String: the name of the command
 		//		2. String Optional: the char for shortcut key, by default the first char from the command name is used
@@ -701,7 +727,7 @@ dojo.widget.defineWidget(
 			}
 			var self = this;
 			dojo.lang.forEach(this.shortcuts, function(item){
-				var cmd = dojo.widget.Editor2Manager.getCommand(item[0]);
+				var cmd = self.getCommand(item[0]);
 				if(cmd){
 					self.addKeyHandler(item[1]?item[1]:item[0].charAt(0), item[2]==undefined?self.KEY_CTRL:item[2], exec(cmd));
 				}

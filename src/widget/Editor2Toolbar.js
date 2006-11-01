@@ -9,152 +9,156 @@ dojo.require("dojo.widget.RichText");
 dojo.require("dojo.widget.PopupContainer");
 dojo.require("dojo.widget.ColorPalette");
 
-// Object: Manager available editor2 toolbar items
-dojo.widget.Editor2ToolbarItemManager = {
-	_registeredItemHandlers: [],
+dojo.lang.declare("dojo.widget.HandlerManager", null,
+	function(){
+		this._registeredHandlers=[];
+	},
+{
 	registerHandler: function(/*Object*/obj, /*String*/func){
-		// summary: register a toolbar item handler
+		// summary: register a handler
 		// obj: object which has the function to call
 		// func: the function in the object
 		if(arguments.length == 2){
-			this._registeredItemHandlers.push(function(){return obj[func].apply(obj, arguments);});
+			this._registeredHandlers.push(function(){return obj[func].apply(obj, arguments);});
 		}else{
 			/* obj: Function
 			    func: null
 			    pId: f */
-//			for(i in this._registeredItemHandlers){
-//				if(func === this._registeredItemHandlers[i]){
-//					dojo.debug("Editor2ToolbarItemManager handler "+func+" is already registered, ignored");
-//					return;
-//				}
-//			}
-			this._registeredItemHandlers.push(obj);
+			this._registeredHandlers.push(obj);
 		}
 	},
 	removeHandler: function(func){
 		// summary: remove a registered handler
-		for(var i=0;i<this._registeredItemHandlers.length;i++){
-			if(func === this._registeredItemHandlers[i]){
-				delete this._registeredItemHandlers[i];
+		for(var i=0;i<this._registeredHandlers.length;i++){
+			if(func === this._registeredHandlers[i]){
+				delete this._registeredHandlers[i];
 				return;
 			}
 		}
-		dojo.debug("Editor2ToolbarItemManager handler "+func+" is not registered, can not remove.");
+		dojo.debug("HandlerManager handler "+func+" is not registered, can not remove.");
 	},
 	destroy: function(){
-		for(var i=0;i<this._registeredItemHandlers.length;i++){
-			delete this._registeredItemHandlers[i];
+		for(var i=0;i<this._registeredHandlers.length;i++){
+			delete this._registeredHandlers[i];
 		}
-	},
+	}
+});
+
+dojo.widget.Editor2ToolbarItemManager = new dojo.widget.HandlerManager;
+dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
+{
 	getToolbarItem: function(/*String*/name){
 		// summary: return a toobar item with the given name
 		var item;
 		name = name.toLowerCase();
-		for(var i=0;i<this._registeredItemHandlers.length;i++){
-			item = this._registeredItemHandlers[i](name);
+		for(var i=0;i<this._registeredHandlers.length;i++){
+			item = this._registeredHandlers[i](name);
 			if(item){
-				break;
+				return item;
 			}
 		}
 
-		if(!item){
-			switch(name){
-				//button for builtin functions
-				case 'bold':
-				case 'copy':
-				case 'cut':
-				case 'delete':
-				case 'indent':
-				case 'inserthorizontalrule':
-				case 'insertorderedlist':
-				case 'insertunorderedlist':
-				case 'italic':
-				case 'justifycenter':
-				case 'justifyfull':
-				case 'justifyleft':
-				case 'justifyright':
-				case 'outdent':
-				case 'paste':
-				case 'redo':
-				case 'removeformat':
-				case 'selectall':
-				case 'strikethrough':
-				case 'subscript':
-				case 'superscript':
-				case 'underline':
-				case 'undo':
-				case 'unlink':
-				case 'createlink':
-				case 'insertimage':
-				//extra simple buttons
-				case 'htmltoggle':
-					item = new dojo.widget.Editor2ToolbarButton(name);
-					break;
-				case 'forecolor':
-				case 'hilitecolor':
-					item = new dojo.widget.Editor2ToolbarColorPaletteButton(name);
-					break;
-				case 'plainformatblock':
-					item = new dojo.widget.Editor2ToolbarFormatBlockPlainSelect("formatblock");
-					break;
-				case 'formatblock':
-					item = new dojo.widget.Editor2ToolbarFormatBlockSelect("formatblock");
-					break;
-				case 'fontsize':
-					item = new dojo.widget.Editor2ToolbarFontSizeSelect("fontsize");
-					break;
-				case 'fontname':
-					item = new dojo.widget.Editor2ToolbarFontNameSelect("fontname");
-					break;
-				case 'inserttable':
-				case 'insertcell':
-				case 'insertcol':
-				case 'insertrow':
-				case 'deletecells':
-				case 'deletecols':
-				case 'deleterows':
-				case 'mergecells':
-				case 'splitcell':
-					dojo.debug(name + " is implemented in dojo.widget.Editor2Plugin.TableOperation, please require it first.");
-					break;
-				//TODO:
-				case 'inserthtml':
-				case 'blockdirltr':
-				case 'blockdirrtl':
-				case 'dirltr':
-				case 'dirrtl':
-				case 'inlinedirltr':
-				case 'inlinedirrtl':
-					dojo.debug("Not yet implemented toolbar item: "+name);
-					break;
-				default:
-					dojo.debug("dojo.widget.Editor2ToolbarItemManager.getToolbarItem: Unknown toolbar item: "+name);
-			}
+		switch(name){
+			//button for builtin functions
+			case 'bold':
+			case 'copy':
+			case 'cut':
+			case 'delete':
+			case 'indent':
+			case 'inserthorizontalrule':
+			case 'insertorderedlist':
+			case 'insertunorderedlist':
+			case 'italic':
+			case 'justifycenter':
+			case 'justifyfull':
+			case 'justifyleft':
+			case 'justifyright':
+			case 'outdent':
+			case 'paste':
+			case 'redo':
+			case 'removeformat':
+			case 'selectall':
+			case 'strikethrough':
+			case 'subscript':
+			case 'superscript':
+			case 'underline':
+			case 'undo':
+			case 'unlink':
+			case 'createlink':
+			case 'insertimage':
+			//extra simple buttons
+			case 'htmltoggle':
+				item = new dojo.widget.Editor2ToolbarButton(name);
+				break;
+			case 'forecolor':
+			case 'hilitecolor':
+				item = new dojo.widget.Editor2ToolbarColorPaletteButton(name);
+				break;
+			case 'plainformatblock':
+				item = new dojo.widget.Editor2ToolbarFormatBlockPlainSelect("formatblock");
+				break;
+			case 'formatblock':
+				item = new dojo.widget.Editor2ToolbarFormatBlockSelect("formatblock");
+				break;
+			case 'fontsize':
+				item = new dojo.widget.Editor2ToolbarFontSizeSelect("fontsize");
+				break;
+			case 'fontname':
+				item = new dojo.widget.Editor2ToolbarFontNameSelect("fontname");
+				break;
+			case 'inserttable':
+			case 'insertcell':
+			case 'insertcol':
+			case 'insertrow':
+			case 'deletecells':
+			case 'deletecols':
+			case 'deleterows':
+			case 'mergecells':
+			case 'splitcell':
+				dojo.debug(name + " is implemented in dojo.widget.Editor2Plugin.TableOperation, please require it first.");
+				break;
+			//TODO:
+			case 'inserthtml':
+			case 'blockdirltr':
+			case 'blockdirrtl':
+			case 'dirltr':
+			case 'dirrtl':
+			case 'inlinedirltr':
+			case 'inlinedirrtl':
+				dojo.debug("Not yet implemented toolbar item: "+name);
+				break;
+			default:
+				dojo.debug("dojo.widget.Editor2ToolbarItemManager.getToolbarItem: Unknown toolbar item: "+name);
 		}
 		return item;
 	}
-};
+});
 
 dojo.addOnUnload(dojo.widget.Editor2ToolbarItemManager, "destroy");
 // summary:
 //		dojo.widget.Editor2ToolbarButton is the base class for all toolbar item in Editor2Toolbar
-dojo.declare("dojo.widget.Editor2ToolbarButton", null,{
-	initializer: function(name){
+dojo.declare("dojo.widget.Editor2ToolbarButton", null,
+	function(name){
 		// summary: constructor
 		this._name = name;
-		this._command = dojo.widget.Editor2Manager.getCommand(name);
+//		this._command = editor.getCommand(name);
 	},
+{
 	create: function(/*DomNode*/node, /*dojo.widget.Editor2Toolbar*/toolbar, /*Boolean*/nohover){
 		// summary: create the item
 		// node: the dom node which is the root of this toolbar item
 		// toolbar: the Editor2Toolbar widget this toolbar item belonging to
 		// nohover: whether this item in charge of highlight this item
 		this._domNode = node;
-		this._domNode.title = this._command.getText();
+		var cmd = toolbar.parent.getCommand(this._name); //FIXME: maybe an issue if different instance has different language
+		if(cmd){
+			this._domNode.title = cmd.getText();
+		}
 		//make this unselectable: different browsers
 		//use different properties for this, so use
 		//js do it automatically
 		this.disableSelection(this._domNode);
+
 		this._parentToolbar = toolbar;
 		dojo.event.connect(this._domNode, 'onclick', this, 'onClick');
 		if(!nohover){
@@ -171,8 +175,12 @@ dojo.declare("dojo.widget.Editor2ToolbarButton", null,{
 		}
 	},
 	onMouseOver: function(){
-		if(this._command.getState() != dojo.widget.Editor2Manager.commandState.Disabled){
-			this.highlightToolbarItem();
+		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+		if(curInst){
+			var _command = curInst.getCommand(this._name);
+			if(_command && _command.getState() != dojo.widget.Editor2Manager.commandState.Disabled){
+				this.highlightToolbarItem();
+			}
 		}
 	},
 	onMouseOut: function(){
@@ -181,37 +189,47 @@ dojo.declare("dojo.widget.Editor2ToolbarButton", null,{
 	destroy: function(){
 		// summary: destructor
 		this._domNode = null;
-		delete this._command;
+//		delete this._command;
 		this._parentToolbar = null;
 	},
 	onClick: function(e){
-		if(this._domNode && !this._domNode.disabled && this._command){
+		if(this._domNode && !this._domNode.disabled && this._parentToolbar.checkAvailability()){
 			e.preventDefault();
 			e.stopPropagation();
-			this._command.execute();
+			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			if(curInst){
+				var _command = curInst.getCommand(this._name);
+				if(_command){
+					_command.execute();
+				}
+			}
 		}
 	},
 	refreshState: function(){
 		// summary: update the state of the toolbar item
-		if(this._domNode && this._command){
-			var em = dojo.widget.Editor2Manager;
-			var state = this._command.getState();
-			if(state != this._lastState){
-				switch(state){
-					case em.commandState.Latched:
-						this.latchToolbarItem();
-						break;
-					case em.commandState.Enabled:
-						this.enableToolbarItem();
-						break;
-					case em.commandState.Disabled:
-					default:
-						this.disableToolbarItem();
+		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+		var em = dojo.widget.Editor2Manager;
+		if(curInst){
+			var _command = curInst.getCommand(this._name);
+			if(_command){
+				var state = _command.getState();
+				if(state != this._lastState){
+					switch(state){
+						case em.commandState.Latched:
+							this.latchToolbarItem();
+							break;
+						case em.commandState.Enabled:
+							this.enableToolbarItem();
+							break;
+						case em.commandState.Disabled:
+						default:
+							this.disableToolbarItem();
+					}
+					this._lastState = state;
 				}
-				this._lastState = state;
 			}
-			return state;
 		}
+		return em.commandState.Enabled;
 	},
 
 	latchToolbarItem: function(){
@@ -249,9 +267,9 @@ dojo.declare("dojo.widget.Editor2ToolbarButton", null,{
 });
 
 // summary: dojo.widget.Editor2ToolbarDropDownButton extends the basic button with a dropdown list
-dojo.declare("dojo.widget.Editor2ToolbarDropDownButton", dojo.widget.Editor2ToolbarButton,{
+dojo.declare("dojo.widget.Editor2ToolbarDropDownButton", dojo.widget.Editor2ToolbarButton, function(){}, {
 	onClick: function(){
-		if(this._domNode){
+		if(this._domNode && !this._domNode.disabled && this._parentToolbar.checkAvailability()){
 			if(!this._dropdown){
 				this._dropdown = dojo.widget.createWidget("PopupContainer", {});
 				this._domNode.appendChild(this._dropdown.domNode);
@@ -276,7 +294,7 @@ dojo.declare("dojo.widget.Editor2ToolbarDropDownButton", dojo.widget.Editor2Tool
 });
 
 // summary: dojo.widget.Editor2ToolbarColorPaletteButton provides a dropdown color palette picker
-dojo.declare("dojo.widget.Editor2ToolbarColorPaletteButton", dojo.widget.Editor2ToolbarDropDownButton,{
+dojo.declare("dojo.widget.Editor2ToolbarColorPaletteButton", dojo.widget.Editor2ToolbarDropDownButton, function(){}, {
 	onDropDownShown: function(){
 		if(!this._colorpalette){
 			this._colorpalette = dojo.widget.createWidget("ColorPalette", {});
@@ -295,52 +313,68 @@ dojo.declare("dojo.widget.Editor2ToolbarColorPaletteButton", dojo.widget.Editor2
 	},
 	setColor: function(color){
 		this._dropdown.close();
-		this._command.execute(color);
+		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+		if(curInst){
+			var _command = curInst.getCommand(this._name);
+			if(_command){
+				_command.execute(color);
+			}
+		}
 	}
 });
 
 // summary: dojo.widget.Editor2ToolbarFormatBlockPlainSelect provides a simple select for setting block format
-dojo.declare("dojo.widget.Editor2ToolbarFormatBlockPlainSelect", dojo.widget.Editor2ToolbarButton,{
+dojo.declare("dojo.widget.Editor2ToolbarFormatBlockPlainSelect", dojo.widget.Editor2ToolbarButton, function(){}, {
 	create: function(node, toolbar){
+		dojo.widget.Editor2ToolbarFormatBlockPlainSelect.superclass.create.apply(this, arguments);
 		//TODO: check node is a select
 		this._domNode = node;
 		this.disableSelection(this._domNode);
-		this._parentToolbar = toolbar;
 		dojo.event.connect(this._domNode, 'onchange', this, 'onChange');
 	},
 
 	destroy: function(){
 		this._domNode = null;
-		this._command = null;
-		this._parentToolbar = null;
 	},
 
 	onChange: function(){
-		if(this._domNode){
+		if(this._parentToolbar.checkAvailability()){
 			var sv = this._domNode.value.toLowerCase();
-			this._command.execute(sv);
+			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			if(curInst){
+				var _command = curInst.getCommand(this._name);
+				if(_command){
+					_command.execute(sv);
+				}
+			}
 		}
 	},
 
 	refreshState: function(){
-		if(this._domNode && this._command){
+		if(this._domNode){
 			dojo.widget.Editor2ToolbarFormatBlockPlainSelect.superclass.refreshState.call(this);
-			var format = this._command.getValue();
-			if(!format){ format = ""; }
-			dojo.lang.forEach(this._domNode.options, function(item){
-				if(item.value.toLowerCase() == format.toLowerCase()){
-					item.selected = true;
+			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			if(curInst){
+				var _command = curInst.getCommand(this._name);
+				if(_command){
+					var format = _command.getValue();
+					if(!format){ format = ""; }
+					dojo.lang.forEach(this._domNode.options, function(item){
+						if(item.value.toLowerCase() == format.toLowerCase()){
+							item.selected = true;
+						}
+					});
 				}
-			});
+			}
 		}
 	}
 });
 
 // summary: dojo.widget.Editor2ToolbarComboItem provides an external loaded dropdown list
-dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDropDownButton,{
+dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDropDownButton, function(){}, {
 	href: null,
 	create: function(node, toolbar){
-		dojo.widget.Editor2ToolbarComboItem.superclass.create.call(this, node, toolbar);
+		dojo.widget.Editor2ToolbarComboItem.superclass.create.apply(this, arguments);
 		//do not use lazy initilization, as we need the local names in refreshState()
 		if(!this._contentPane){
 			dojo.require("dojo.widget.ContentPane");
@@ -369,8 +403,16 @@ dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDr
 	},
 
 	onChange: function(e){
-		var name = e.currentTarget.getAttribute("dropDownItemName");
-		this._command.execute(name);
+		if(this._parentToolbar.checkAvailability()){
+			var name = e.currentTarget.getAttribute("dropDownItemName");
+			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			if(curInst){
+				var _command = curInst.getCommand(this._name);
+				if(_command){
+					_command.execute(name);
+				}
+			}
+		}
 		this._dropdown.close();
 	},
 
@@ -388,7 +430,7 @@ dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDr
 });
 
 // summary: dojo.widget.Editor2ToolbarFormatBlockSelect is an improved format block setting item
-dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2ToolbarComboItem,{
+dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2ToolbarComboItem, function(){}, {
 	href: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorToolbar_FormatBlock.html"),
 
 	setup: function(){
@@ -424,25 +466,28 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2T
 	},
 
 	refreshState: function(){
-		if(this._command){
-			//dojo.widget.Editor2ToolbarFormatBlockSelect.superclass.refreshState.call(this);
-			var format = this._command.getValue();
-			if(format == this._lastSelectedFormat && this._blockDisplayNames){
-				return;
-			}
-			this._lastSelectedFormat = format;
-			var label = this._domNode.getElementsByTagName("label")[0];
-			var isSet = false;
-			if(this._blockDisplayNames){
-				for(var name in this._blockDisplayNames){
-					if(name == format){
-						label.innerHTML = 	this._blockDisplayNames[name];
-						isSet = true;
-						break;
-					}
+		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+		if(curInst){
+			var _command = curInst.getCommand(this._name);
+			if(_command){
+				var format = _command.getValue();
+				if(format == this._lastSelectedFormat && this._blockDisplayNames){
+					return;
 				}
-				if(!isSet){
-					label.innerHTML = "&nbsp;";
+				this._lastSelectedFormat = format;
+				var label = this._domNode.getElementsByTagName("label")[0];
+				var isSet = false;
+				if(this._blockDisplayNames){
+					for(var name in this._blockDisplayNames){
+						if(name == format){
+							label.innerHTML = 	this._blockDisplayNames[name];
+							isSet = true;
+							break;
+						}
+					}
+					if(!isSet){
+						label.innerHTML = "&nbsp;";
+					}
 				}
 			}
 		}
@@ -450,7 +495,7 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2T
 });
 
 // summary: dojo.widget.Editor2ToolbarFontSizeSelect provides a dropdown list for setting fontsize
-dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2ToolbarComboItem,{
+dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2ToolbarComboItem, function(){}, {
 	href: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorToolbar_FontSize.html"),
 
 	setup: function(){
@@ -485,25 +530,28 @@ dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2Tool
 	},
 
 	refreshState: function(){
-		if(this._command){
-			//dojo.widget.Editor2ToolbarFormatBlockSelect.superclass.refreshState.call(this);
-			var size = this._command.getValue();
-			if(size == this._lastSelectedSize && this._fontSizeDisplayNames){
-				return;
-			}
-			this._lastSelectedSize = size;
-			var label = this._domNode.getElementsByTagName("label")[0];
-			var isSet = false;
-			if(this._fontSizeDisplayNames){
-				for(var name in this._fontSizeDisplayNames){
-					if(name == size){
-						label.innerHTML = 	this._fontSizeDisplayNames[name];
-						isSet = true;
-						break;
-					}
+		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+		if(curInst){
+			var _command = curInst.getCommand(this._name);
+			if(_command){
+				var size = _command.getValue();
+				if(size == this._lastSelectedSize && this._fontSizeDisplayNames){
+					return;
 				}
-				if(!isSet){
-					label.innerHTML = "&nbsp;";
+				this._lastSelectedSize = size;
+				var label = this._domNode.getElementsByTagName("label")[0];
+				var isSet = false;
+				if(this._fontSizeDisplayNames){
+					for(var name in this._fontSizeDisplayNames){
+						if(name == size){
+							label.innerHTML = 	this._fontSizeDisplayNames[name];
+							isSet = true;
+							break;
+						}
+					}
+					if(!isSet){
+						label.innerHTML = "&nbsp;";
+					}
 				}
 			}
 		}
@@ -511,7 +559,7 @@ dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2Tool
 });
 
 // summary: dojo.widget.Editor2ToolbarFontNameSelect provides a dropdown list for setting fontname
-dojo.declare("dojo.widget.Editor2ToolbarFontNameSelect", dojo.widget.Editor2ToolbarFontSizeSelect,{
+dojo.declare("dojo.widget.Editor2ToolbarFontNameSelect", dojo.widget.Editor2ToolbarFontSizeSelect, function(){}, {
 	href: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorToolbar_FontName.html")
 });
 
@@ -523,9 +571,6 @@ dojo.widget.defineWidget(
 	{
 		templatePath: dojo.uri.dojoUri("src/widget/templates/EditorToolbar.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/EditorToolbar.css"),
-
-		// DOM Nodes
-//		saveButton: null,
 
 		// String: class name for latched toolbar button items
 		ToolbarLatchedItemStyle: "ToolbarButtonLatched",
@@ -569,6 +614,24 @@ dojo.widget.defineWidget(
 			}
 		},
 
+		shareGroup: '',
+		checkAvailability: function(){
+			// summary: returns whether items in this toolbar can be executed
+			// description: 
+			//		For unshared toolbar, when clicking on a toolbar, the corresponding
+			//		editor will be focused, and this function always return true. For shared
+			//		toolbar, if the current focued editor is not one of the instances sharing
+			//		this toolbar, this function return false, otherwise true.
+			if(!this.shareGroup){
+				this.parent.focus();
+				return true;
+			}
+			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			if(this.shareGroup == curInst.toolbarGroup){
+				return true;
+			}
+			return false;
+		},
 		destroy: function(){
 			for(var it in this.items){
 				this.items[it].destroy();
