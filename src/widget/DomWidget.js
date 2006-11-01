@@ -38,17 +38,17 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateString, 
 	var tpath = templatePath || obj.templatePath;
 
 	var tmplts = dojo.widget._templateCache;
-	if(!obj["widgetType"]) { // don't have a real template here
+	if(!tpath && !obj["widgetType"]) { // don't have a real template here
 		do {
 			var dummyName = "__dummyTemplate__" + dojo.widget._templateCache.dummyCount++;
 		} while(tmplts[dummyName]);
 		obj.widgetType = dummyName;
 	}
-	var wt = obj.widgetType;
+	var wt = tpath?tpath.toString():obj.widgetType;
 
 	var ts = tmplts[wt];
 	if(!ts){
-		tmplts[wt] = { "string": null, "node": null };
+		tmplts[wt] = {"string": null, "node": null};
 		if(avoidCache){
 			ts = {};
 		}else{
@@ -76,6 +76,7 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateString, 
 		}else{
 			tstring = "";
 		}
+
 		obj.templateString = tstring;
 		if(!avoidCache){
 			tmplts[wt]["string"] = tstring;
@@ -750,14 +751,14 @@ dojo.declare("dojo.widget.DomWidget",
 			// dojo.debug("buildFromTemplate:", this);
 			var avoidCache = false;
 			if(args["templatepath"]){
-				avoidCache = true;
+//				avoidCache = true;
 				args["templatePath"] = args["templatepath"];
 			}
 			dojo.widget.fillFromTemplateCache(	this, 
 												args["templatePath"], 
 												null,
 												avoidCache);
-			var ts = dojo.widget._templateCache[this.widgetType];
+			var ts = dojo.widget._templateCache[this.templatePath?this.templatePath.toString():this.widgetType];
 			if((ts)&&(!avoidCache)){
 				if(!this.templateString.length){
 					this.templateString = ts["string"];
