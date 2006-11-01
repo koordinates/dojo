@@ -145,7 +145,9 @@ dojo.extend(dojo.charting.PlotArea, {
 			switch(plot.renderType){
 				case dojo.charting.RenderPlotSeries.Grouped:	{
 					// ALWAYS plot using the first plotter, ignore any others.
-					target.appendChild(plot.series[0].plotter(this, plot, kwArgs, applyToData));
+					if(plot.series[0]){
+						target.appendChild(plot.series[0].plotter(this, plot, kwArgs, applyToData));
+					}
 					break;
 				}
 				case dojo.charting.RenderPlotSeries.Singly:
