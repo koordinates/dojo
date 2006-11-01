@@ -5,7 +5,13 @@ function dojo_local_json($data)
   $output = array();
   if (isset($data['function_names'])) {
     $output['function_names'] = $data['function_names'];
+		foreach($data['object_names'] as $package_name => $object_names) {
+			foreach ($object_names as $object_name) {
+				$output['function_names'][$package_name][] = '{' .  $object_name . '}';
+			}
+		}
     unset($data['function_names']);
+		unset($data['object_names']);
   }
 	foreach ($data as $package_name => $package) {
 		$merged_name = $package_name;
@@ -16,6 +22,36 @@ function dojo_local_json($data)
 		$output[$merged_name][$package_name] = $package;
 	}
   return $output;
+}
+
+function dojo_storage_xml($output)
+{
+	$document = new DomDocument();
+	$flat_list = array();
+	foreach ($output as $package_name => $package_content) {
+		foreach (array('function', 'object') as $item_type) {
+			$items = array();
+			if (!empty($package_content['meta']["{$item_type}s"])) {
+				$items = array_merge($items, $package_content['meta']["{$item_type}s"]);
+			}
+			foreach ($items as $item_name => $item_content) {
+				if (!empty($item_content['meta']['summary'])) {
+					$flat_list[$item_name]['summary'] = $item_content['meta']['summary'];
+				}
+				else {
+					$flat_list[$item_name]['summary'] = '';
+				}
+
+				if (!empty($item_content['meta']['description'])) {
+					$flat_list[$item_name]['description'] = $item_content['meta']['description'];
+				}
+				else {
+					$flat_list[$item_name]['description'] = '';
+				}
+			}
+		}
+	}
+	return array('documentation.xml' => $document);
 }
 
 function dojo_local_xml($output)
@@ -48,6 +84,12 @@ function dojo_local_xml($output)
       foreach ($items as $item_name => $item_content) {
         $item = $package->appendChild($document->createElement($item_type));
         $item->setAttribute('name', $item_name);
+				if (!empty($item_content['meta']['is'])) {
+					$item->setAttribute('is', $item_content['meta']['is']);
+				}
+				if (!empty($item_content['meta']['initialized'])) {
+					$item->setAttribute('initialized', 'true');
+				}
         if ($item_content['meta']['returns']) {
           $returns = $item->appendChild($document->createElement('returns'));
 					$returns->setAttribute('type', $item_content['meta']['returns']);
@@ -85,9 +127,11 @@ function dojo_local_xml($output)
             }
           }
         }
+        if ($item_content['meta']['instance']) {
+					$item->setAttribute('instance', $item_content['meta']['instance']);
+        }
         if ($item_content['meta']['prototype']) {
-          $prototype = $item->appendChild($document->createElement('prototype'));
-          $prototype->appendChild($document->createTextNode($item_content['meta']['prototype']));
+          $item->setAttribute('prototype', $item_content['meta']['prototype']);
         }
         if ($item_content['meta']['call_chain'] || $item_content['meta']['prototype_chain']) {
           $chains = $item->appendChild($document->createElement('chains'));
