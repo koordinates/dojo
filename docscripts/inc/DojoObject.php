@@ -73,9 +73,17 @@ class DojoObject extends DojoBlock
         if (preg_match('%^(\s*)([a-zA-Z0-9_$]+|"\s+"):%', $line, $match)) {
           if ($end[0] != $this->start[0] && $end[1] != $this->start[1]) {
             $between_lines = Text::chop($this->package->getSource(), $end[0], $end[1], $line_number, strlen($match[1]), true);
+            $between_started = true;
             foreach ($between_lines as $between_line) {
+              if ($between_started && empty($between_line)) {
+                break;
+              }
+              if (!empty($between_line)) {
+                $between_started = true;
+              }
               $this->body->addBlockCommentLine($between_line);
             }
+            $between_started = false;
           }
           $end = array($line_number, strlen($match[0]));
           if ($match[2]{0} == '"' || $match[2]{0} == "'") {
