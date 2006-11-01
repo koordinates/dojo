@@ -216,18 +216,6 @@ dojo.widget.defineWidget(
 			this.valueNode.value = value;
 		},
 		
-		enable: function() {
-			this.inputNode.disabled = false;
-			this.datePicker.enable();
-			dojo.widget.DropdownDatePicker.superclass.enable.apply(this, arguments);
-		},
-		
-		disable: function() {
-			this.inputNode.disabled = true;
-			this.datePicker.disable();
-			dojo.widget.DropdownDatePicker.superclass.disable.apply(this, arguments);
-		},
-
 		destroy: function(/*Boolean*/finalize){
 			this.datePicker.destroy(finalize);
 			dojo.widget.DropdownDatePicker.superclass.destroy.apply(this, arguments);

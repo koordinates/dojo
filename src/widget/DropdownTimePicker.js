@@ -204,20 +204,6 @@ dojo.widget.defineWidget(
 					value = dojo.date.format(time, {datePattern:this.saveFormat, selector:'timeOnly', locale:this.lang});
 			}
 			this.valueNode.value = value;
-		},
-
-		enable: function() {
-			// summary: enable this widget to accept user input
-			this.inputNode.disabled = false;
-			this.timePicker.enable();
-			dojo.widget.DropdownTimePicker.superclass.enable.apply(this, arguments);
-		},
-		
-		disable: function() {
-			// summary: lock this widget so that the user can't change the value
-			this.inputNode.disabled = true;
-			this.timePicker.disable();
-			dojo.widget.DropdownTimePicker.superclass.disable.apply(this, arguments);
 		}
 	}
 );

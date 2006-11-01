@@ -56,11 +56,13 @@ dojo.widget.defineWidget(
 			if(this.inputId){ this.inputNode.id = this.inputId; }
 			if(this.inputName){ this.inputNode.name = this.inputName; }
 			this.inputNode.style.width = this.inputWidth;
+			this.inputNode.disabled = this.disabled;
 
 			dojo.event.connect(this.inputNode, "onchange", this, "onInputChange");
 		},
 
 		onIconClick: function(/*Event*/ evt){
+			if(this.disabled) return;
 			if(!this.popup.isShowingNow){
 				this.popup.open(this.inputNode, this, this.buttonNode);
 			}else{
@@ -77,6 +79,18 @@ dojo.widget.defineWidget(
 
 		onInputChange: function(){
 			// summary: signal for changes in the input box
+		},
+		
+		enable: function() {
+			// summary: enable this widget to accept user input
+			this.inputNode.disabled = false;
+			dojo.widget.DropdownContainer.superclass.enable.apply(this, arguments);
+		},
+		
+		disable: function() {
+			// summary: lock this widget so that the user can't change the value
+			this.inputNode.disabled = true;
+			dojo.widget.DropdownContainer.superclass.disable.apply(this, arguments);
 		}
 	}
 );
