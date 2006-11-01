@@ -39,7 +39,7 @@ dojo.widget.defineWidget(
 
 		// Boolean:
 		//		whether focusing into this instance of richtext when page onload
-		focusOnLoad: true,
+		focusOnLoad: false,
 
 		// String:
 		//		If a save name is specified the content is saved and restored if the
@@ -638,6 +638,10 @@ dojo.widget.defineWidget(
 			// summary:
 			//		remove an external stylesheet for the editing area
 			var url=uri.toString();
+			//if uri is relative, then convert it to absolute so that it can be resolved correctly in iframe
+			if(url.charAt(0) == '.' || (url.charAt(0) != '/' && !uri.host)){
+				url = (new dojo.uri.Uri(dojo.global().location, url)).toString();
+			}
 			var index = dojo.lang.find(this.editingAreaStyleSheets, url);
 			if(index == -1){
 				dojo.debug("dojo.widget.RichText.removeStyleSheet: Style sheet "+url+" is not applied to the editing area so it can not be removed!");
