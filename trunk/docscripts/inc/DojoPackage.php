@@ -180,6 +180,19 @@ class DojoPackage
 		}
     $lines = explode("\n", file_get_contents($this->dojo->getDir() . $this->file));
     $lines[] = '';
+		$in_comment = false;
+		foreach ($lines as $line_number => $line) {
+			if (!$in_comment) {
+				if (preg_match('%/\*={5,}%', $line, $match)) {
+					$lines[$line_number] = Text::blankOut($match[0], $line);
+					$in_comment = true;
+				}
+			}
+			elseif (preg_match('%={5,}\*/%', $line, $match)) {
+				$lines[$line_number] = Text::blankOut($match[0], $line);
+				$in_comment = false;
+			}
+		}
     return $this->source = $lines;
   }
   
@@ -193,22 +206,6 @@ class DojoPackage
 		}
 		
     $lines = $this->getSource();
-		
-		$in_comment = false;
-		foreach ($lines as $line_number => $line) {
-			if (!$in_comment) {
-				if (($pos = strpos($line, '/*`')) !== false) {
-					print $line;
-					die();
-					$lines[$line_number] = Text::blankOutAt($line, $pos, $pos + 3);
-					$in_comment = true;
-				}
-			}
-			elseif (($pos = strpos($line, '*/')) !== false) {
-				$lines[$line_number] = Text::blankOutAt($line, $pos, $pos + 2);
-				$in_comment = false;
-			}
-		}
 		
     $in_comment = false;
     foreach ($lines as $line_number => $line) {
