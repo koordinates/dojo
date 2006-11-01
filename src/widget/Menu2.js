@@ -31,6 +31,10 @@ dojo.widget.defineWidget(
 	//	number of milliseconds before hovering (without clicking) causes the submenu to automatically open
 	submenuDelay: 500,
 	
+	// String
+	//  CSS class for disabled nodes
+	disabledClass: 'dojoMenuItem2Disabled',
+	
 	// Integer
 	//	a submenu usually appears to the right, but slightly overlapping, it's parent menu;
 	//	this controls the number of pixels the two menus overlap.
@@ -519,9 +523,9 @@ dojo.widget.defineWidget(
 		this.disabled = value;
 
 		if (this.disabled){
-			dojo.html.addClass(this.domNode, 'dojoMenuItem2Disabled');
+			dojo.html.addClass(this.domNode, this.disabledClass);
 		}else{
-			dojo.html.removeClass(this.domNode, 'dojoMenuItem2Disabled');
+			dojo.html.removeClass(this.domNode, this.disabledClass);
 		}
 	},
 
