@@ -3,7 +3,7 @@
 	'months-format-abbr': ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"],
 	'months-standAlone-narrow': ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"],
 	'days-format-wide': ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"],
-	'days-format-abbr': ["sön", "mån", "tis", "ons", "tor", "fre", "lör"],
+	'days-format-abbr': ["sö", "må", "ti", "on", "to", "fr", "lö"],
 	'days-standAlone-narrow': ["S", "M", "T", "O", "T", "F", "L"],
 
 	'dateFormat-full': "EEEE'en den' d MMMM yyyy",

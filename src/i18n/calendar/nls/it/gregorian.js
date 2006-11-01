@@ -11,5 +11,7 @@
 	'dateFormat-medium': "dd/MMM/yy",
 	'dateFormat-short': "dd/MM/yy",
 
+	am: "m.",
+	pm: "p.",
 	eras: ['aC','dC']
 })

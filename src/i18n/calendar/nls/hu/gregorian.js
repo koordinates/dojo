@@ -1,8 +1,8 @@
 ({
-	'months-format-wide': ["Január", "Február", "Március", "Április", "Május", "Június", "Július", "Augusztus", "Szeptember", "Október", "November", "December"],
-	'months-format-abbr': ["Jan", "Feb", "Már", "Ápr", "Máj", "Jún", "Júl", "Aug", "Sze", "Okt", "Nov", "Dec"],
+	'months-format-wide': ["január", "február", "március", "április", "május", "június", "július", "augusztus", "szeptember", "október", "november", "december"],
+	'months-format-abbr': ["jan", "feb", "már", "apr", "máj", "jún", "júl", "aug", "sze", "okt", "nov", "dec"],
 	'months-standAlone-narrow': ["J", "F", "M", "Á", "M", "J", "J", "A", "S", "O", "N", "D"],
-	'days-format-wide': ["Vasárnap", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat"],
+	'days-format-wide': ["vasárnap", "hétfő", "kedd", "szerda", "csütörtök", "péntek", "szombat"],
 	'days-format-abbr': ["Va", "Hé", "Ke", "Sze", "Csü", "Pé", "Szo"],
 	'days-standAlone-narrow': ["V", "H", "K", "Sz", "Cs", "P", "Sz"],
 
