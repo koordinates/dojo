@@ -712,7 +712,12 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 			}else if(this.methodfunc){
 				result = this.object[this.methodname].apply(this.object, args);
 			}
-		}catch(e){ if(!this.squelch){ dojo.raise(e); } }
+		}catch(e){ 
+			if(!this.squelch){ 
+				dojo.debug(e,"when calling",this.methodname,"on",this.object,"with arguments",args);
+				dojo.raise(e);
+			} 
+		}
 
 		if((this["after"])&&(this.after.length>0)){
 			// see comment on this.before above
