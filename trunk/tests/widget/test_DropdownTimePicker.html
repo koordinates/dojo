@@ -36,6 +36,11 @@ Nothing:
 	<input dojoType="dropdowntimepicker" lang="en-us" value="9:00">
 </p>
 <p>
+	<input id="enabler" type="checkbox" onchange="dojo.widget.byId('bar')[this.checked ? 'enable' : 'disable']();" />
+	<label for="enabler">enable</label>
+	<input id="bar" dojoType="dropdowntimepicker" value="13:00" disabled>
+</p>	
+<p>
 German:
 	<input dojoType="dropdowntimepicker" lang="de-de" value="9:00">
 Spanish:
