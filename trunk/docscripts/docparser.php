@@ -224,6 +224,10 @@ foreach ($files as $file) {
     if (!empty($output[$package_name]['meta']['functions'])) {
       $output['function_names'][$package_name] = array_values(array_keys($output[$package_name]['meta']['functions']));
     }
+    $output['object_names'][$package_name] = array();
+    if (!empty($output[$package_name]['meta']['objects'])) {
+      $output['object_names'][$package_name] = array_values(array_keys($output[$package_name]['meta']['objects']));
+    }    
   }
 }
 
