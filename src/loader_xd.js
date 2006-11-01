@@ -411,7 +411,7 @@ dojo.hostenv.xdRealCallLoaded = dojo.hostenv.callLoaded;
 dojo.hostenv.callLoaded = function(){
 	//If getModulePrefix for dojo returns anything other than "src", that means
 	//there is a path registered for dojo, with implies that dojo was xdomain loaded.
-	if(this.xdHasCalledPreload || dojo.hostenv.getModulePrefix("dojo") == "src"){
+	if(this.xdHasCalledPreload || dojo.hostenv.getModulePrefix("dojo") == "src" || !this.localesGenerated){
 		this.xdRealCallLoaded();
 		this.xdHasCalledPreload = true;
 	}else{

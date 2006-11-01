@@ -202,19 +202,47 @@ buildUtil.getFilteredFileList = function(startDir, regExpFilter, startDirIsJavaO
 		topDir = new java.io.File(startDir);
 	}
 
-	var dirFileArray = topDir.listFiles();
-	for (var i = 0; i < dirFileArray.length; i++){
-		var file = dirFileArray[i];
-		if(file.isFile()){
-			var filePath = file.getPath();
-			if(!file.getName().match(/^\./) && filePath.match(regExpFilter)){
-				files.push(filePath);
+	if(topDir.exists()){
+		var dirFileArray = topDir.listFiles();
+		for (var i = 0; i < dirFileArray.length; i++){
+			var file = dirFileArray[i];
+			if(file.isFile()){
+				var filePath = file.getPath();
+				if(!file.getName().match(/^\./) && filePath.match(regExpFilter)){
+					files.push(filePath);
+				}
+			}else if(file.isDirectory() && !file.getName().match(/^\./)){
+				var dirFiles = this.getFilteredFileList(file, regExpFilter, true);
+				files.push.apply(files, dirFiles);
 			}
-		}else if(file.isDirectory() && !file.getName().match(/^\./)){
-			var dirFiles = this.getFilteredFileList(file, regExpFilter, true);
-			files.push.apply(files, dirFiles);
 		}
 	}
-	
+
 	return files;
+}
+
+buildUtil.ensureEndSlash = function(path){
+	if(path.charAt(path.length) != '/' || path.charAt(path.length) != '\\'){
+		path += "/";
+	}
+	return path;
+}
+
+buildUtil.saveUtf8File = function(fileName, fileContents){
+	var outFile = new java.io.File(fileName);
+	var os = new java.io.BufferedWriter(
+		new java.io.OutputStreamWriter(new java.io.FileOutputStream(outFile), "utf-8")
+	);
+	try{
+		os.write(fileContents);
+	}finally{
+		os.close();
+	}
+}
+
+buildUtil.deleteFile = function(fileName){
+	var file = new java.io.File(fileName);
+	if(file.exists()){
+		file["delete"]();
+	}
 }
