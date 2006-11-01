@@ -18,35 +18,45 @@ dojo.widget.defineWidget(
 		// summary:
 		//		A generic textbox field.
 		//		Serves as a base class to derive more specialized functionality in subclasses.
+
 		// className: String
 		//		The textbox class attribute.
-		
-		// default values for new subclass properties
 		className: "",
+
 		//	name: String
 		//		The textbox name attribute.
 		name: "",
+
 		// value: String
 		//		The textbox value attribute.
 		value: "",
+
 		// type: String
 		//		Basic input tag type declaration.
 		type: "",
+
 		//	trim: Boolean
 		//		Removes leading and trailing whitespace if true.  Default is false.
 		trim: false,
+
 		//	uppercase: Boolean
 		//		Converts all characters to uppercase if true.  Default is false.
 		uppercase: false,
+
 		//	lowercase: Boolean
 		//		Converts all characters to lowercase if true.  Default is false.
 		lowercase: false,
+
 		//	ucFirst: Boolean
 		//		Converts the first character of each word to uppercase if true.
 		ucFirst: false,
+
 		//	digit: Boolean
 		//		Removes all characters that are not digits if true.  Default is false.
 		digit: false,
+		
+		// htmlfloat: String
+		//		"none", "left", or "right".  CSS float attribute applied to generated dom node.
 		htmlfloat: "none",
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/Textbox.html"),

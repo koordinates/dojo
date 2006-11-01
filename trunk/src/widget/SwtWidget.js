@@ -1,5 +1,8 @@
 dojo.provide("dojo.widget.SwtWidget");
 
+dojo.require("dojo.experimental");
+dojo.experimental("dojo.widget.SwtWidget");
+
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.uri.*");

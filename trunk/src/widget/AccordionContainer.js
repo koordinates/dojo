@@ -45,7 +45,6 @@ dojo.require("dojo.widget.PageContainer");
  *
  * TODO:
  *	* this widget should extend PageContainer
- *	* call child.onShow(), child.onHide() so you can attach to those methods if you want
  */
  dojo.widget.defineWidget(
 	"dojo.widget.AccordionContainer",
