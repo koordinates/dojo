@@ -18,5 +18,17 @@
 
 	am: "fm",
 	pm: "em",
-	eras: ['f.Kr.','e.Kr.']
+	eras: ['f.Kr.','e.Kr.'],
+
+	'field-era': "era",
+	'field-year': "år",
+	'field-month': "månad",
+	'field-week': "vecka",
+	'field-day': "dag",
+	'field-weekday': "veckodag",
+	'field-dayperiod': "dagsperiod",
+	'field-hour': "timme",
+	'field-minute': "minut",
+	'field-second': "sekund",
+	'field-zone': "tidszon"
 })
