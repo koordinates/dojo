@@ -11,6 +11,7 @@
 	<script type="text/javascript">
 		dojo.require("dojo.widget.Editor2");
 		dojo.require("dojo.widget.Editor2Plugin.ContextMenu");
+		dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands");
 		dojo.widget.Editor2Plugin.ContextMenuManager.registerGroupSet('menugroup1',['Generic'])
 	</script>
 </head>
@@ -21,7 +22,7 @@
 	<div style="border: 1px solid black;">
 		<div dojoType="Editor2"
 			toolbarTemplatePath="EditorToolbarLight.html",
-			useActiveX="true" focusOnLoad="true"
+			useActiveX="false" focusOnLoad="true"
 			toolbarGroup="group1" id="editor1" toolbarAlwaysVisible="true">
 			look ma! it's <a href='#'>editable</a> content!
 			<ul>
