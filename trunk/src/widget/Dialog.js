@@ -174,11 +174,11 @@ dojo.declare(
 			// find the size of the dialog (dialog needs to be showing to get the size)
 			var mb;
 			if(this.isShowing()){
-				mb = dojo.html.getMarginBox(this.containerNode);
+				mb = dojo.html.getMarginBox(this.domNode);
 			}else{
 				dojo.html.setVisibility(this.domNode, false);
 				dojo.html.show(this.domNode);
-				mb = dojo.html.getMarginBox(this.containerNode);
+				mb = dojo.html.getMarginBox(this.domNode);
 				dojo.html.hide(this.domNode);
 				dojo.html.setVisibility(this.domNode, true);
 			}
