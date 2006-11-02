@@ -388,6 +388,9 @@ dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2Browser
 			dojo.event.connect(this, "destroy", this.dialog, "destroy");
 		}
 		this.dialog.show();
+	},
+	getText: function(){
+		return this.dialogParas.title || dojo.widget.Editor2DialogCommand.superclass.getText.call(this);
 	}
 });
 

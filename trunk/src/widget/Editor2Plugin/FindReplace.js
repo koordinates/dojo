@@ -32,6 +32,9 @@ dojo.declare("dojo.widget.Editor2Plugin.FindCommand", dojo.widget.Editor2DialogC
 		}else{
 			alert("No idea how to search in this browser. Please submit patch if you know.");
 		}
+	},
+	getText: function(){
+		return 'Find';
 	}
 });
 

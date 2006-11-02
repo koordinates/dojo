@@ -326,7 +326,9 @@ dojo.declare("dojo.widget.Editor2ToolbarColorPaletteButton", dojo.widget.Editor2
 // summary: dojo.widget.Editor2ToolbarFormatBlockPlainSelect provides a simple select for setting block format
 dojo.declare("dojo.widget.Editor2ToolbarFormatBlockPlainSelect", dojo.widget.Editor2ToolbarButton, function(){}, {
 	create: function(node, toolbar){
-		dojo.widget.Editor2ToolbarFormatBlockPlainSelect.superclass.create.apply(this, arguments);
+//		dojo.widget.Editor2ToolbarFormatBlockPlainSelect.superclass.create.apply(this, arguments);
+		this._domNode = node;
+		this._parentToolbar = toolbar;
 		//TODO: check node is a select
 		this._domNode = node;
 		this.disableSelection(this._domNode);
