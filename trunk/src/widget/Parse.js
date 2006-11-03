@@ -59,7 +59,7 @@ dojo.widget.Parse = function(/*Object*/fragment){
 				}
 			}
 		}catch(e){
-			dojo.debug("dojo.widget.Parse: error:" + e);
+			dojo.debug("dojo.widget.Parse: error:", e);
 			// note, commenting out the next line is breaking several widgets for me
 			// throw e;
 			// IE is such a pain sometimes
