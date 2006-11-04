@@ -7,6 +7,8 @@ dojo.require("dojo.string.extras");
 dojo.require("dojo.dom");
 dojo.require("dojo.undo.browser");
 
+if(!dj_undef("window")) {
+
 dojo.io.checkChildrenForFile = function(node){
 	var hasFile = false;
 	var inputs = node.getElementsByTagName("input");
@@ -579,4 +581,6 @@ dojo.io.XMLHTTPTransport = new function(){
 		return;
 	}
 	dojo.io.transports.addTransport("XMLHTTPTransport");
+}
+
 }
