@@ -12,26 +12,50 @@ dojo.require("dojo.string");
 dojo.require("dojo.widget.html.stabile");
 dojo.require("dojo.widget.PopupContainer");
 
-dojo.widget.incrementalComboBoxDataProvider = function(/*String*/ url, /*Number*/ limit, /*Number*/ timeout){
-	this.searchUrl = url;
-	this.inFlight = false;
-	this.activeRequest = null;
+dojo.widget.incrementalComboBoxDataProvider = function(){
+	// summary:
+	//	Reference implementation / interface for Combobox incremental data provider.
+	//	This class takes a search string and returns values that match
+	//	that search string.  The filtering of values (to find values matching given
+	//	search string) is done on the server.
+
+	this._inFlight = false;
+	
+	// allowCache: Boolean
+	//	Setting to use/not use cache for previously seen values
+	//	TODO: caching doesn't work.
+	//	TODO: even if caching did work, we need to read the setting for this value from the widget parameters
 	this.allowCache = false;
 
-	this.cache = {};
+	// Cache of previous search results
+	// TODO: this data is unused
+	this._cache = {};
 
 	this.init = function(/*Widget*/ cbox){
+		// summary:
+		//	Initialize based on URL parameter of the combobox widget.
+		//	Other parameters of the combobox widget (mode, searchType, etc.)
+		//	are ignored.
 		this.searchUrl = cbox.dataUrl;
 	};
 
-	this.addToCache = function(/*String*/ keyword, /*Array*/ data){
+	this._addToCache = function(/*String*/ keyword, /*Array*/ data){
 		if(this.allowCache){
-			this.cache[keyword] = data;
+			this._cache[keyword] = data;
 		}
 	};
 
 	this.startSearch = function(/*String*/ searchStr, /*String*/ type, /*Boolean*/ ignoreLimit){
-		if(this.inFlight){
+		// summary:
+		//		Start the search for patterns that match searchStr.
+		// searchStr:
+		//		The characters the user has typed into the <input>.
+		// type:
+		//		Currently unused.
+		// ignoreLimit:
+		//		Currently unused.
+
+		if(this._inFlight){
 			// FIXME: implement backoff!
 		}
 		var tss = encodeURIComponent(searchStr);
@@ -42,7 +66,7 @@ dojo.widget.incrementalComboBoxDataProvider = function(/*String*/ url, /*Number*
 			method: "get",
 			mimetype: "text/json",
 			load: function(type, data, evt){
-				_this.inFlight = false;
+				_this._inFlight = false;
 				if(!dojo.lang.isArray(data)){
 					var arrData = [];
 					for(var key in data){
@@ -50,39 +74,66 @@ dojo.widget.incrementalComboBoxDataProvider = function(/*String*/ url, /*Number*
 					}
 					data = arrData;
 				}
-				_this.addToCache(searchStr, data);
+				_this._addToCache(searchStr, data);
 				_this.provideSearchResults(data);
 			}
 		});
-		this.inFlight = true;
+		this._inFlight = true;
 	};
+
+	this.provideSearchResults = function(/*Array*/ resultsDataPairs){
+		// summary:
+		//	The data provider calls this function with the results of the search.
+		//	The Combobox widget attaches to this function in order to be notified of the results.
+		//
+		// resultsDataPairs:
+		//	Array of label/value pairs (the value is used for the Select widget).  Example:
+		//	[ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ]
+	};
+
 };
 
 
-dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limit, /*Number*/ timeout){
+dojo.widget.ComboBoxDataProvider = function(){
 	// summary:
-	//	Reference implementation / interface for Combobox data provider.
-	//	This class takes a search string and returns values that match
-	//	that search string.
+	//		Reference implementation / interface for Combobox data provider.
+	//		This class takes a search string and returns values that match
+	//		that search string.    All possible values for the combobox are downloaded
+	//		on init(), and then startSearch() merely filters that downloaded list, to find values matching given
+	//		search string locally.
+	//
+	//		NOTE: this data provider is designed as a naive reference
+	//		implementation, and as such it is written more for readability than
+	//		speed. A deployable data provider would implement lookups, search
+	//		caching (and invalidation), and a significantly less naive data
+	//		structure for storage of items.
 
-	// NOTE: this data provider is designed as a naive reference
-	// implementation, and as such it is written more for readability than
-	// speed. A deployable data provider would implement lookups, search
-	// caching (and invalidation), and a significantly less naive data
-	// structure for storage of items.
+	// data: Array
+	//		List of every possible value for the drop down list
+	//		startSearch() simply searches this array and returns matching values.
+	this._data = [];
 
-	this.data = [];
-	this.searchTimeout = timeout || 500;
-	this.searchLimit = limit || 30;
-	this.searchType = "STARTSTRING"; // may also be "STARTWORD" or "SUBSTRING"
+	// searchLimit: Integer
+	//		Maximum number of results to return.
+	//		TODO: need to read this value from the widget parameters
+	this.searchLimit = 30;
+
+	// searchType: String
+	//		Defines what values match the search string; see searchType parameter
+	//		of ComboBox for details
+	//		TODO: need to read this value from the widget parameters; the setting in ComboBox is being ignored.
+	this.searchType = "STARTSTRING";
+
+	// caseSensitive: Boolean
+	//		Should search be case sensitive?
+	//		TODO: this should be a parameter to combobox?
 	this.caseSensitive = false;
-	// for caching optimizations
-	this._lastSearch = "";
-	this._lastSearchResults = null;
 
 	this.init = function(/*Widget*/ cbox, /*DomNode*/ node){
 		// summary:
 		//		Combobox calls init() to initialize the data provider.
+		//		Note that the naive implementation of this function actually downloads
+		//		every possible value for the drop down list (before the user has typed in anything).
 		//	cbox: Combobox
 		//		The comobobox widget object.  The combobox widget object
 		//		contains a number of parameters (dataUrl, mode, etc.) that are
@@ -159,12 +210,12 @@ dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limi
 		if(!this.caseSensitive){
 			searchStr = searchStr.toLowerCase();
 		}
-		for(var x=0; x<this.data.length; x++){
+		for(var x=0; x<this._data.length; x++){
 			if((!ignoreLimit)&&(ret.length >= this.searchLimit)){
 				break;
 			}
 			// FIXME: we should avoid copies if possible!
-			var dataLabel = new String((!this.caseSensitive) ? this.data[x][0].toLowerCase() : this.data[x][0]);
+			var dataLabel = new String((!this.caseSensitive) ? this._data[x][0].toLowerCase() : this._data[x][0]);
 			if(dataLabel.length < searchStr.length){
 				// this won't ever be a good search, will it? What if we start
 				// to support regex search?
@@ -173,12 +224,12 @@ dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limi
 
 			if(st == "STARTSTRING"){
 				if(searchStr == dataLabel.substr(0, searchStr.length)){
-					ret.push(this.data[x]);
+					ret.push(this._data[x]);
 				}
 			}else if(st == "SUBSTRING"){
 				// this one is a gimmie
 				if(dataLabel.indexOf(searchStr) >= 0){
-					ret.push(this.data[x]);
+					ret.push(this._data[x]);
 				}
 			}else if(st == "STARTWORD"){
 				// do a substring search and then attempt to determine if the
@@ -187,7 +238,7 @@ dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limi
 				var idx = dataLabel.indexOf(searchStr);
 				if(idx == 0){
 					// implicit match
-					ret.push(this.data[x]);
+					ret.push(this._data[x]);
 				}
 				if(idx <= 0){
 					// if we didn't match or implicily matched, march onward
@@ -209,7 +260,7 @@ dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limi
 				if(!matches){
 					continue;
 				}else{
-					ret.push(this.data[x]);
+					ret.push(this._data[x]);
 				}
 			}
 		}
@@ -228,13 +279,9 @@ dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limi
 	};
 
 	this._setData = function(/*Array*/ pdata){
-		// summary: populate this.data and initialize lookup structures
-		this.data = pdata;
+		// summary: populate this._data and initialize lookup structures
+		this._data = pdata;
 	};
-	
-	if(dataPairs){
-		this._setData(dataPairs);
-	}
 };
 
 dojo.widget.defineWidget(
@@ -244,7 +291,7 @@ dojo.widget.defineWidget(
 		// summary:
 		//		Auto-completing text box, and base class for Select widget.
 		//
-		//		Note that the drop down box's values are populated from an Object called
+		//		The drop down box's values are populated from an Object called
 		//		a data provider, which returns a list of values based on the characters
 		//		that the user has typed into the input box.
 		//
@@ -252,7 +299,9 @@ dojo.widget.defineWidget(
 		//		provider.
 
 		// forceValidOption: Boolean
-		//		if true, only allow strings in drop down list
+		//		If true, only allow input of strings in drop down list.
+		//		If false, user can select a value from the drop down, or just type in
+		//		any random value.
 		forceValidOption: false,
 		
 		// searchType: String
@@ -267,19 +316,6 @@ dojo.widget.defineWidget(
 		//		(Read only) reference to data provider object created for this combobox
 		//		according to "dataProviderClass" argument.
 		dataProvider: null,
-
-		startSearch: function(/*String*/ searchString){
-			// summary: Stub function; user should not call this directly.
-		},
-		selectNextResult: function(){
-			// summary: Stub function; user should not call this directly.
-		},
-		selectPrevResult: function(){
-			// summary: Stub function; user should not call this directly.
-		},
-		setSelectedResult: function(){
-			// summary: Stub function; user should not call this directly.
-		},
 
 		// autoComplete: Boolean
 		//		If you type in a partial string, and then tab out of the <input> box,
@@ -340,8 +376,8 @@ dojo.widget.defineWidget(
 		templatePath: dojo.uri.dojoUri("src/widget/templates/ComboBox.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/ComboBox.css"),
 
-
 		setValue: function(/*String*/ value){
+			// summary: Sets the value of the combobox
 			this.comboBoxValue.value = value;
 			if (this.textInputNode.value != value){ // prevent mucking up of selection
 				this.textInputNode.value = value;
@@ -356,15 +392,21 @@ dojo.widget.defineWidget(
 		},
 
 		getValue: function(){
-			// summary: return combo box value
+			// summary: Rerturns combo box value
 			return this.comboBoxValue.value;
 		},
 	
 		getState: function(){
+			// summary:
+			//	Used for saving state of ComboBox when navigates to a new
+			//	page, in case they then hit the browser's "Back" button.
 			return {value: this.getValue()};
 		},
 
 		setState: function(/*Object*/ state){
+			// summary:
+			//	Used for restoring state of ComboBox when has navigated to a new
+			//	page but then hits browser's "Back" button.
 			this.setValue(state.value);
 		},
 
@@ -378,7 +420,7 @@ dojo.widget.defineWidget(
 			this.textInputNode.setAttribute("disabled",true); 
 		}, 
 
-		getCaretPos: function(/*DomNode*/ element){
+		_getCaretPos: function(/*DomNode*/ element){
 			// khtml 3.5.2 has selection* methods as does webkit nightlies from 2005-06-22
 			if(dojo.lang.isNumber(element.selectionStart)){
 				// FIXME: this is totally borked on Moz < 1.3. Any recourse?
@@ -405,12 +447,12 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		setCaretPos: function(/*DomNode*/ element, /*Number*/ location){
+		_setCaretPos: function(/*DomNode*/ element, /*Number*/ location){
 			location = parseInt(location);
-			this.setSelectedRange(element, location, location);
+			this._setSelectedRange(element, location, location);
 		},
 
-		setSelectedRange: function(/*DomNode*/ element, /*Number*/ start, /*Number*/ end){
+		_setSelectedRange: function(/*DomNode*/ element, /*Number*/ start, /*Number*/ end){
 			if(!end){ end = element.value.length; }  // NOTE: Strange - should be able to put caret at start of text?
 			// Mozilla
 			// parts borrowed from http://www.faqts.com/knowledge_base/view.phtml/aid/13562/fid/130
@@ -442,8 +484,8 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		// does the keyboard related stuff
 		_handleKeyEvents: function(/*Event*/ evt){
+			// summary: handles keyboard events
 			if(evt.ctrlKey || evt.altKey || !evt.key){ return; }
 
 			// reset these
@@ -456,25 +498,25 @@ dojo.widget.defineWidget(
 			switch(evt.key){
 	 			case k.KEY_DOWN_ARROW:
 					if(!this.popupWidget.isShowingNow){
-						this.startSearchFromInput();
+						this._startSearchFromInput();
 					}
-					this.highlightNextOption();
+					this._highlightNextOption();
 					dojo.event.browser.stopEvent(evt);
 					return;
 				case k.KEY_UP_ARROW:
-					this.highlightPrevOption();
+					this._highlightPrevOption();
 					dojo.event.browser.stopEvent(evt);
 					return;
 				case k.KEY_TAB:
 					// using linux alike tab for autocomplete
 					if(!this.autoComplete && this.popupWidget.isShowingNow && this._highlighted_option){
 						dojo.event.browser.stopEvent(evt);
-						this.selectOption({ 'target': this._highlighted_option, 'noHide': false});
+						this._selectOption({ 'target': this._highlighted_option, 'noHide': false});
 	
 						// put caret last
-						this.setSelectedRange(this.textInputNode, this.textInputNode.value.length, null);
+						this._setSelectedRange(this.textInputNode, this.textInputNode.value.length, null);
 					}else{
-						this.selectOption();
+						this._selectOption();
 						return;
 					}
 					break;
@@ -484,27 +526,27 @@ dojo.widget.defineWidget(
 						dojo.event.browser.stopEvent(evt);
 					}
 					if(this.autoComplete){
-						this.selectOption();
+						this._selectOption();
 						return;
 					}
 					// fallthrough
 				case " ":
 					if(this.popupWidget.isShowingNow && this._highlighted_option){
 						dojo.event.browser.stopEvent(evt);
-						this.selectOption();
-						this.hideResultList();
+						this._selectOption();
+						this._hideResultList();
 						return;
 					}
 					break;
 				case k.KEY_ESCAPE:
-					this.hideResultList();
+					this._hideResultList();
 					this._prev_key_esc = true;
 					return;
 				case k.KEY_BACKSPACE:
 					this._prev_key_backspace = true;
 					if(!this.textInputNode.value.length){
 						this.setAllValues("", "");
-						this.hideResultList();
+						this._hideResultList();
 						doSearch = false;
 					}
 					break;
@@ -523,84 +565,94 @@ dojo.widget.defineWidget(
 			}
 			if(doSearch){
 				// if we have gotten this far we dont want to keep our highlight
-				this.blurOptionNode();
+				this._blurOptionNode();
 	
 				// need to wait a tad before start search so that the event bubbles through DOM and we have value visible
-				this.searchTimer = setTimeout(dojo.lang.hitch(this, this.startSearchFromInput), this.searchDelay);
+				this.searchTimer = setTimeout(dojo.lang.hitch(this, this._startSearchFromInput), this.searchDelay);
 			}
 		},
 
-		// When inputting characters using an input method, such as Asian  
-		// languages, it will generate this event instead of onKeyDown event 
 		compositionEnd: function(/*Event*/ evt){
+			// summary: When inputting characters using an input method, such as Asian  
+			// languages, it will generate this event instead of onKeyDown event 
 			evt.key = evt.keyCode;
 			this._handleKeyEvents(evt);
 		},
 
 		onKeyUp: function(/*Event*/ evt){
+			// summary: callback on key up event
 			this.setValue(this.textInputNode.value);
 		},
 
 		setSelectedValue: function(/*String*/ value){
+			// summary:
+			//		This sets a hidden value associated w/the displayed value.
+			//		The hidden value (and this function) shouldn't be used; if
+			//		you need a hidden value then use Select widget instead of ComboBox.
+			// TODO: remove?
 			// FIXME, not sure what to do here!
 			this.comboBoxSelectionValue.value = value;
 		},
 
 		setAllValues: function(/*String*/ value1, /*String*/ value2){
+			// summary:
+			//		This sets the displayed value and hidden value.
+			//		The hidden value (and this function) shouldn't be used; if
+			//		you need a hidden value then use Select widget instead of ComboBox.
 			this.setSelectedValue(value2);
 			this.setValue(value1);
 		},
 
-		// does the actual highlight
-		focusOptionNode: function(/*DomNode*/ node){
+		_focusOptionNode: function(/*DomNode*/ node){
+			// summary: does the actual highlight
 			if(this._highlighted_option != node){
-				this.blurOptionNode();
+				this._blurOptionNode();
 				this._highlighted_option = node;
 				dojo.html.addClass(this._highlighted_option, "dojoComboBoxItemHighlight");
 			}
 		},
 
-		// removes highlight on highlighted
-		blurOptionNode: function(){
+		_blurOptionNode: function(){
+			// sumary: removes highlight on highlighted
 			if(this._highlighted_option){
 				dojo.html.removeClass(this._highlighted_option, "dojoComboBoxItemHighlight");
 				this._highlighted_option = null;
 			}
 		},
 
-		highlightNextOption: function(){
+		_highlightNextOption: function(){
 			if((!this._highlighted_option) || !this._highlighted_option.parentNode){
-				this.focusOptionNode(this.optionsListNode.firstChild);
+				this._focusOptionNode(this.optionsListNode.firstChild);
 			}else if(this._highlighted_option.nextSibling){
-				this.focusOptionNode(this._highlighted_option.nextSibling);
+				this._focusOptionNode(this._highlighted_option.nextSibling);
 			}
 			dojo.html.scrollIntoView(this._highlighted_option);
 		},
 
-		highlightPrevOption: function(){
+		_highlightPrevOption: function(){
 			if(this._highlighted_option && this._highlighted_option.previousSibling){
-				this.focusOptionNode(this._highlighted_option.previousSibling);
+				this._focusOptionNode(this._highlighted_option.previousSibling);
 			}else{
 				this._highlighted_option = null;
-				this.hideResultList();
+				this._hideResultList();
 				return;
 			}
 			dojo.html.scrollIntoView(this._highlighted_option);
 		},
 
-		itemMouseOver: function(/*Event*/ evt){
+		_itemMouseOver: function(/*Event*/ evt){
 			if (evt.target === this.optionsListNode){ return; }
-			this.focusOptionNode(evt.target);
+			this._focusOptionNode(evt.target);
 			dojo.html.addClass(this._highlighted_option, "dojoComboBoxItemHighlight");
 		},
 
-		itemMouseOut: function(/*Event*/ evt){
+		_itemMouseOut: function(/*Event*/ evt){
 			if (evt.target === this.optionsListNode){ return; }
-			this.blurOptionNode();
+			this._blurOptionNode();
 		},
 
-		// reset button size; this function is called when the input area has changed size
 		onResize: function(){
+			// summary: this function is called when the input area has changed size
 			var inputSize = dojo.html.getContentBox(this.textInputNode);
 			if( inputSize.height == 0 ){
 				// need more time to calculate size
@@ -612,7 +664,7 @@ dojo.widget.defineWidget(
 		},
 
 		fillInTemplate: function(/*Object*/ args, /*Object*/ frag){
-			// For inlining a table we need browser specific CSS
+			// there's some browser specific CSS in ComboBox.css
 			dojo.html.applyBrowserClass(this.domNode);
 
 			var source = this.getFragNodeRef(frag); 
@@ -646,41 +698,43 @@ dojo.widget.defineWidget(
 			this.optionsListNode = this.popupWidget.domNode;
 			this.domNode.appendChild(this.optionsListNode);
 			dojo.html.addClass(this.optionsListNode, 'dojoComboBoxOptions');
-			dojo.event.connect(this.optionsListNode, 'onclick', this, 'selectOption');
+			dojo.event.connect(this.optionsListNode, 'onclick', this, '_selectOption');
 			dojo.event.connect(this.optionsListNode, 'onmouseover', this, '_onMouseOver');
 			dojo.event.connect(this.optionsListNode, 'onmouseout', this, '_onMouseOut');
-			
-			dojo.event.connect(this.optionsListNode, "onmouseover", this, "itemMouseOver");
-			dojo.event.connect(this.optionsListNode, "onmouseout", this, "itemMouseOut");
+
+			// TODO: why does onmouseover and onmouseout connect to two separate handlers???
+			dojo.event.connect(this.optionsListNode, "onmouseover", this, "_itemMouseOver");
+			dojo.event.connect(this.optionsListNode, "onmouseout", this, "_itemMouseOut");
 		},
 
 		focus: function(){
 			// summary
 			//	set focus to input node from code
-			this.tryFocus();
+			//	TODO: is this even used?
+			this._tryFocus();
 		},
 
-		openResultList: function(/*Array*/ results){
+		_openResultList: function(/*Array*/ results){
 			if (this.disabled){
 				return;
 			}
-			this.clearResultList();
+			this._clearResultList();
 			if(!results.length){
-				this.hideResultList();
+				this._hideResultList();
 			}
 
 			if(	(this.autoComplete)&&
 				(results.length)&&
 				(!this._prev_key_backspace)&&
 				(this.textInputNode.value.length > 0)){
-				var cpos = this.getCaretPos(this.textInputNode);
+				var cpos = this._getCaretPos(this.textInputNode);
 				// only try to extend if we added the last character at the end of the input
 				if((cpos+1) > this.textInputNode.value.length){
 					// only add to input node as we would overwrite Capitalisation of chars
 					this.textInputNode.value += results[0][0].substr(cpos);
 					// build a new range that has the distance from the earlier
 					// caret position to the end of the first string selected
-					this.setSelectedRange(this.textInputNode, cpos, this.textInputNode.value.length);
+					this._setSelectedRange(this.textInputNode, cpos, this.textInputNode.value.length);
 				}
 			}
 
@@ -699,30 +753,30 @@ dojo.widget.defineWidget(
 			}
 
 			// show our list (only if we have content, else nothing)
-			this.showResultList();
+			this._showResultList();
 		},
 
-		onFocusInput: function(){
+		_onFocusInput: function(){
 			this._hasFocus = true;
 		},
 
-		onBlurInput: function(){
+		_onBlurInput: function(){
 			this._hasFocus = false;
 			this._handleBlurTimer(true, 500);
 		},
 
-		// collect all blur timers issues here
 		_handleBlurTimer: function(/*Boolean*/clear, /*Number*/ millisec){
+			// summary: collect all blur timers issues here
 			if(this.blurTimer && (clear || millisec)){
 				clearTimeout(this.blurTimer);
 			}
 			if(millisec){ // we ignore that zero is false and never sets as that never happens in this widget
-				this.blurTimer = dojo.lang.setTimeout(this, "checkBlurred", millisec);
+				this.blurTimer = dojo.lang.setTimeout(this, "_checkBlurred", millisec);
 			}
 		},
 	
-		// these 2 are needed in IE and Safari as inputTextNode loses focus when scrolling optionslist
 		_onMouseOver: function(/*Event*/ evt){
+			// summary: needed in IE and Safari as inputTextNode loses focus when scrolling optionslist
 			if(!this._mouseover_list){
 				this._handleBlurTimer(true, 0);
 				this._mouseover_list = true;
@@ -730,11 +784,12 @@ dojo.widget.defineWidget(
 		},
 
 		_onMouseOut:function(/*Event*/ evt){
+			// summary: needed in IE and Safari as inputTextNode loses focus when scrolling optionslist
 			var relTarget = evt.relatedTarget;
 			if(!relTarget || relTarget.parentNode!=this.optionsListNode){
 				this._mouseover_list = false;
 				this._handleBlurTimer(true, 100);
-				this.tryFocus();
+				this._tryFocus();
 			}
 		},
 
@@ -760,9 +815,9 @@ dojo.widget.defineWidget(
 			return isValidOption;
 		},
 
-		checkBlurred: function(){
+		_checkBlurred: function(){
 			if(!this._hasFocus && !this._mouseover_list){
-				this.hideResultList();
+				this._hideResultList();
 				// clear the list if the user empties field and moves away.
 				if(!this.textInputNode.value.length){
 					this.setAllValues("", "");
@@ -781,16 +836,7 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		sizeBackgroundIframe: function(){
-			var mb = dojo.html.getMarginBox(this.optionsListNode);
-			if( mb.width==0 || mb.height==0 ){
-				// need more time to calculate size
-				dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
-				return;
-			}
-		},
-
-		selectOption: function(/*Event*/ evt){
+		_selectOption: function(/*Event*/ evt){
 			var tgt = null;
 			if(!evt){
 				evt = { target: this._highlighted_option };
@@ -824,23 +870,23 @@ dojo.widget.defineWidget(
 			this.selectedResult = [tgt.getAttribute("resultName"), tgt.getAttribute("resultValue")];
 			this.setAllValues(tgt.getAttribute("resultName"), tgt.getAttribute("resultValue"));
 			if(!evt.noHide){
-				this.hideResultList();
-				this.setSelectedRange(this.textInputNode, 0, null);
+				this._hideResultList();
+				this._setSelectedRange(this.textInputNode, 0, null);
 			}
-			this.tryFocus();
+			this._tryFocus();
 		},
 
-		clearResultList: function(){
+		_clearResultList: function(){
 			if(this.optionsListNode.innerHTML){
 				this.optionsListNode.innerHTML = "";  // browser natively knows how to collect this memory
 			}
 		},
 
-		hideResultList: function(){
+		_hideResultList: function(){
 			this.popupWidget.close();
 		},
 
-		showResultList: function(){
+		_showResultList: function(){
 			// Our dear friend IE doesnt take max-height so we need to calculate that on our own every time
 			var childs = this.optionsListNode.childNodes;
 			if(childs.length){
@@ -866,23 +912,24 @@ dojo.widget.defineWidget(
 				}
 				this.popupWidget.open(this.domNode, this, this.downArrowNode);
 			}else{
-				this.hideResultList();
+				this._hideResultList();
 			}
 		},
 
 		handleArrowClick: function(){
+			// summary: callback when arrow is clicked
 			this._handleBlurTimer(true, 0);
-			this.tryFocus();
+			this._tryFocus();
 			if(this.popupWidget.isShowingNow){
-				this.hideResultList();
+				this._hideResultList();
 			}else{
 				// forces full population of results, if they click
 				// on the arrow it means they want to see more options
-				this.startSearch("");
+				this._startSearch("");
 			}
 		},
 
-		tryFocus: function(){
+		_tryFocus: function(){
 			try {
 				this.textInputNode.focus();
 			} catch (e){
@@ -890,16 +937,15 @@ dojo.widget.defineWidget(
 	 		};
 		},
 
-		startSearchFromInput: function(){
-			this.startSearch(this.textInputNode.value);
+		_startSearchFromInput: function(){
+			this.dataProvider.startSearch(this.textInputNode.value);
 		},
 
 		postCreate: function(){
 			this.onResize();
-			dojo.event.connect(this, "startSearch", this.dataProvider, "startSearch");
-			dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
-			dojo.event.connect(this.textInputNode, "onblur", this, "onBlurInput");
-			dojo.event.connect(this.textInputNode, "onfocus", this, "onFocusInput");
+			dojo.event.connect(this.dataProvider, "provideSearchResults", this, "_openResultList");
+			dojo.event.connect(this.textInputNode, "onblur", this, "_onBlurInput");
+			dojo.event.connect(this.textInputNode, "onfocus", this, "_onFocusInput");
 			if (this.disabled){ 
 				this.disable();
 			}
