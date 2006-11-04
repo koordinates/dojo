@@ -11,44 +11,29 @@ dojo.require("dojo.a11y");
 
 dojo.declare("dojo.widget.Widget", null,
 	function(){
-		//dojo.debug("NEW "+this.widgetType);
 		// these properties aren't primitives and need to be created on a per-item
 		// basis.
+
+		// children: Array
+		//		a list of all of the widgets that have been added as children of
+		//		this component. Should only have values if isContainer is true.
 		this.children = [];
-		// this.selection = new dojo.widget.Selection();
-		// FIXME: need to replace this with context menu stuff
+
+		// extraArgs: Object
+		//		a map of properties which the widget system tried to assign from
+		//		user input but did not correspond to any of the properties set on
+		//		the class prototype. These names will also be available in all
+		//		lower-case form in this map
 		this.extraArgs = {};
 	},
 {
-	// FIXME: need to be able to disambiguate what our rendering context is
-	//        here!
-	//
-	// needs to be a string with the end classname. Every subclass MUST
-	// over-ride.
-	//
-	// base widget properties
 	// parent: Widget
 	//		the parent of this widget
 	parent: null, 
 
-	// children: Array
-	//		a list of all of the widgets that have been added as children of
-	//		this component. Should only have values if isContainer is true.
-	
-	// NOTE: "children" and "extraArgs" re-defined in the constructor as they need to be local to the widget
-	children: [],
-
-	// extraArgs: Object
-	//		a map of properties which the widget system tried to assign from
-	//		user input but did not correspond to any of the properties set on
-	//		the class prototype. These names will also be available in all
-	//		lower-case form in this map
-	extraArgs: {},
-
 	// isTopLevel: Boolean
 	//		should this widget eat all events that bubble up to it?
-	
-	// obviously, top-level and modal widgets should set these appropriately
+	//		obviously, top-level and modal widgets should set these appropriately
 	isTopLevel:  false, 
 
 	// disabled: Boolean
@@ -111,14 +96,9 @@ dojo.declare("dojo.widget.Widget", null,
 		this.disabled = true;
 	},
 
-	hide: function(){
-		// summary: hides the widget from view. Not implemented here.
-	},
-
-	show: function(){
-		// summary: re-adds the widget to the view. Not implemented here.
-	},
-
+	// TODO:
+	//	1) this would be better in HtmlWidget rather than here?
+	//	2) since many widgets don't care if they've been resized, maybe this should be a mixin?
 	onResized: function(){
 		// summary:
 		//		A signal that widgets will call when they have been resized.
