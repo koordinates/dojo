@@ -61,7 +61,7 @@ dojo.logging.Record = function(/*Integer*/logLevel, /*String||Array*/message){
 		if(message.length > 0 && dojo.lang.isString(message[0])){
 			this.message=message.shift();
 		}
-		this.message = message;
+		this.msgArgs = message;
 	}else{
 		this.message = message;
 	}
@@ -386,7 +386,6 @@ dojo.lang.extend(dojo.logging.MemoryLogHandler,{
 	
 	emit:function(record){
 		if (!djConfig.isDebug) { return; }
-		
 		var logStr = String(dojo.log.getLevelName(record.level)+": "
 					+record.time.toLocaleTimeString())+": "+record.message;
 		if(!dj_undef("println", dojo.hostenv)){
