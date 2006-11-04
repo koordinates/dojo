@@ -58,7 +58,13 @@ dojo.widget.incrementalComboBoxDataProvider = function(/*String*/ url, /*Number*
 	};
 };
 
+
 dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limit, /*Number*/ timeout){
+	// summary:
+	//	Reference implementation / interface for Combobox data provider.
+	//	This class takes a search string and returns values that match
+	//	that search string.
+
 	// NOTE: this data provider is designed as a naive reference
 	// implementation, and as such it is written more for readability than
 	// speed. A deployable data provider would implement lookups, search
@@ -75,8 +81,19 @@ dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limi
 	this._lastSearchResults = null;
 
 	this.init = function(/*Widget*/ cbox, /*DomNode*/ node){
+		// summary:
+		//		Combobox calls init() to initialize the data provider.
+		//	cbox: Combobox
+		//		The comobobox widget object.  The combobox widget object
+		//		contains a number of parameters (dataUrl, mode, etc.) that are
+		//		actually parameters for the data provider
+		// node:
+		//		Pointer to the domNode in the original markup.
+		//		This is needed in the case when the list of values is embedded
+		//		in the html like <select> <option>Alabama</option> <option>Arkansas</option> ...
+
 		if(!dojo.string.isBlank(cbox.dataUrl)){
-			this.getData(cbox.dataUrl);
+			this._getData(cbox.dataUrl);
 		}else{
 			// check to see if we can populate the list from <option> elements
 			if((node)&&(node.nodeName.toLowerCase() == "select")){
@@ -92,12 +109,12 @@ dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limi
 						cbox.setAllValues(keyValArr[0], keyValArr[1]);
 					}
 				}
-				this.setData(data);
+				this._setData(data);
 			}
 		}
 	};
 
-	this.getData = function(/*String*/ url){
+	this._getData = function(/*String*/ url){
 		dojo.io.bind({
 			url: url,
 			load: dojo.lang.hitch(this, function(type, data, evt){ 
@@ -108,18 +125,27 @@ dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limi
 					}
 					data = arrData;
 				}
-				this.setData(data);
+				this._setData(data);
 			}),
 			mimetype: "text/json"
 		});
 	};
 
 	this.startSearch = function(/*String*/ searchStr, /*String*/ type, /*Boolean*/ ignoreLimit){
+		// summary:
+		//		Start the search for patterns that match searchStr.
+		// searchStr:
+		//		The characters the user has typed into the <input>.
+		// type:
+		//		Currently unused.
+		// ignoreLimit:
+		//		Currently unused.
+
 		// FIXME: need to add timeout handling here!!
-		this._preformSearch(searchStr, type, ignoreLimit);
+		this._performSearch(searchStr, type, ignoreLimit);
 	};
 
-	this._preformSearch = function(/*String*/ searchStr, /*String*/ type, /*Boolean*/ ignoreLimit){
+	this._performSearch = function(/*String*/ searchStr, /*String*/ type, /*Boolean*/ ignoreLimit){
 		//
 		//	NOTE: this search is LINEAR, which means that it exhibits perhaps
 		//	the worst possible speed characteristics of any search type. It's
@@ -191,20 +217,23 @@ dojo.widget.ComboBoxDataProvider = function(/*Array*/ dataPairs, /*Number*/ limi
 	};
 
 	this.provideSearchResults = function(/*Array*/ resultsDataPairs){
+		// summary:
+		//	The data provider calls this function with the results of the search.
+		//	The Combobox widget attaches to this function in order to be notified of the results.
+		//
+		// resultsDataPairs:
+		//	Array of label/value pairs (the value is used for the Select widget).  Example:
+		//	[ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ]
+
 	};
 
-	this.addData = function(/*Array*/ pairs){
-		// FIXME: incredibly naive and slow!
-		this.data = this.data.concat(pairs);
-	};
-
-	this.setData = function(/*Array*/ pdata){
-		// populate this.data and initialize lookup structures
+	this._setData = function(/*Array*/ pdata){
+		// summary: populate this.data and initialize lookup structures
 		this.data = pdata;
 	};
 	
 	if(dataPairs){
-		this.setData(dataPairs);
+		this._setData(dataPairs);
 	}
 };
 
@@ -212,47 +241,100 @@ dojo.widget.defineWidget(
 	"dojo.widget.ComboBox",
 	dojo.widget.HtmlWidget,
 	{
-		// Applies to any renderer
-		isContainer: false,
-	
-		forceValidOption: false,
-		searchType: "stringstart",
-		dataProvider: null,
-	
-		startSearch: function(/*String*/ searchString){},
-		selectNextResult: function(){},
-		selectPrevResult: function(){},
-		setSelectedResult: function(){},
+		// summary:
+		//		Auto-completing text box, and base class for Select widget.
+		//
+		//		Note that the drop down box's values are populated from an Object called
+		//		a data provider, which returns a list of values based on the characters
+		//		that the user has typed into the input box.
+		//
+		//		Many of the options to the ComboBox are actually arguments to the data
+		//		provider.
 
-		// HTML specific stuff
+		// forceValidOption: Boolean
+		//		if true, only allow strings in drop down list
+		forceValidOption: false,
+		
+		// searchType: String
+		//		Argument to data provider.
+		//		Specifies rule for matching typed in string w/list of available auto-completions.
+		//			startString - look for auto-completions that start w/the specified string.
+		//			subString - look for auto-completions containing the typed in string.
+		//			startWord - look for auto-completions where any word starts w/the typed in string.
+		searchType: "stringstart",
+		
+		// dataProvider: Object
+		//		(Read only) reference to data provider object created for this combobox
+		//		according to "dataProviderClass" argument.
+		dataProvider: null,
+
+		startSearch: function(/*String*/ searchString){
+			// summary: Stub function; user should not call this directly.
+		},
+		selectNextResult: function(){
+			// summary: Stub function; user should not call this directly.
+		},
+		selectPrevResult: function(){
+			// summary: Stub function; user should not call this directly.
+		},
+		setSelectedResult: function(){
+			// summary: Stub function; user should not call this directly.
+		},
+
+		// autoComplete: Boolean
+		//		If you type in a partial string, and then tab out of the <input> box,
+		//		automatically copy the first entry displayed in the drop down list to
+		//		the <input> field
 		autoComplete: true,
-		name: "", // clone in the name from the DOM node
-		textInputNode: null,
-		comboBoxValue: null,
-		comboBoxSelectionValue: null,
-		optionsListWrapper: null,
-		optionsListNode: null,
-		downArrowNode: null,
-		searchTimer: null,
+		
+		// searchDelay: Integer
+		//		Delay in milliseconds between when user types something and we start
+		//		searching based on that value
 		searchDelay: 100,
+		
+		// dataUrl: String
+		//		URL argument passed to data provider object (class name specified in "dataProviderClass")
+		//		An example of the URL format for the default data provider is
+		//		"remoteComboBoxData.js?search=%{searchString}"
 		dataUrl: "",
+		
+		// fadeTime: Integer
+		//		Milliseconds duration of fadeout for drop down box
 		fadeTime: 200,
 
-		// maxListLength limits list to X visible rows, scroll on rest 
-		maxListLength: 8, 
-		// mode can also be "remote" for JSON-returning live search or "html" for
-		// dumber live search
-		mode: "local", 
+		// maxListLength: Integer
+		//		 Limits list to X visible rows, scroll on rest 
+		maxListLength: 8,
+		
+		// mode: String
+		//		Argument to the data provider.
+		//		"local" to inline search string, "remote" for JSON-returning live search
+		//		or "html" for dumber live search.
+		//
+		//		If "mode" specified as "remote" then the
+		//		incrementalComboboxDataProvider class is used, regardless of the "dataProviderClass"
+		//		parameter
+		mode: "local",
+		
+		// selectedResult: Array
+		//		(Read only) array specifying the value/label that the user selected
 		selectedResult: null,
-		_highlighted_option: null,
-		_prev_key_backspace: false,
-		_prev_key_esc: false,
-		_gotFocus: false,
-		_mouseover_list: false,
+		
+		// dataProviderClass: String
+		//		Name of  data provider class (code that maps a search string to a list of values)
+		//		The class must match the interface demonstrated by dojo.widget.ComboBoxDataProvider
+		//
+		//	TODO: this is goofy because if mode=="local" then this value is ignored.
+		//	_If_ the user specifies the value of dataProviderClass then it shouldn't be ignored.
+		//	(other the default can vary depending on the setting of mode)
 		dataProviderClass: "dojo.widget.ComboBoxDataProvider",
+		
+		// buttonSrc: URI
+		//		URI for the down arrow icon to the right of the input box.
 		buttonSrc: dojo.uri.dojoUri("src/widget/templates/images/combo_box_arrow.png"),
 
-		//the old implementation has builtin fade toggle, so we mimic it here
+		// dropdownToggle: String
+		//		Animation effect for showing/displaying drop down box
 		dropdownToggle: "fade",
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/ComboBox.html"),
@@ -269,10 +351,12 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		// for user to override
-		onValueChanged: function(){ },
+		onValueChanged: function(/*String*/ value){
+			// summary: callback when value changes, for user to attach to
+		},
 
 		getValue: function(){
+			// summary: return combo box value
 			return this.comboBoxValue.value;
 		},
 	
