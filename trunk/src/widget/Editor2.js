@@ -426,10 +426,15 @@ dojo.widget.defineWidget(
 		toolbarWidget: null,
 		scrollInterval: null,
 
-		// Object: dojo.uri.Uri object to specify the template file for the toolbar
+		// toolbarTemplatePath: dojo.uri.Uri
+		//		to specify the template file for the toolbar
 		toolbarTemplatePath: dojo.uri.dojoUri("src/widget/templates/EditorToolbarOneline.html"),
-		// Object: dojo.uri.Uri object to specify the css file for the toolbar
+		// toolbarTemplateCssPath: dojo.uri.Uri
+		//		to specify the css file for the toolbar
 		toolbarTemplateCssPath: null,
+		// toolbarPlaceHolder: String
+		//		element id to specify where to attach the toolbar
+		toolbarPlaceHolder: '',
 //		toolbarTemplatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorToolbarFCKStyle.html"),
 //		toolbarTemplateCssPath: dojo.uri.dojoUri("src/widget/templates/Editor2/FCKDefault/EditorToolbarFCKStyle.css"),
 
@@ -477,7 +482,11 @@ dojo.widget.defineWidget(
 						if(this.toolbarTemplateCssPath){
 							tbOpts.templateCssPath = this.toolbarTemplateCssPath;
 						}
-						this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", tbOpts, this.domNode.firstChild, "before");
+						if(this.toolbarPlaceHolder){
+							this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", tbOpts, dojo.byId(this.toolbarPlaceHolder), "after");
+						}else{
+							this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", tbOpts, this.domNode.firstChild, "before");
+						}
 						if(this.toolbarGroup){
 							dojo.widget.Editor2ToolbarGroups[this.toolbarGroup] = this.toolbarWidget;
 						}
