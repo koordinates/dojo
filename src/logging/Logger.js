@@ -389,7 +389,7 @@ dojo.lang.extend(dojo.logging.MemoryLogHandler,{
 		var logStr = String(dojo.log.getLevelName(record.level)+": "
 					+record.time.toLocaleTimeString())+": "+record.message;
 		if(!dj_undef("println", dojo.hostenv)){
-			dojo.hostenv.println(logStr);
+			dojo.hostenv.println(logStr, record.msgArgs);
 		}
 		
 		this.data.push(record);
