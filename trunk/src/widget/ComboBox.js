@@ -130,7 +130,7 @@ function(/*Object*/ options, /*DomNode*/ node){
 	//		TODO: this should be a parameter to combobox?
 	this.caseSensitive = false;
 
-	if(!dojo.string.isBlank(options.dataUrl)){
+	if(!dj_undef("dataUrl", options) && !dojo.string.isBlank(options.dataUrl)){
 		this._getData(options.dataUrl);
 	}else{
 		// check to see if we can populate the list from <option> elements

@@ -68,21 +68,21 @@ var comboData = [
 function test_combobox_ctor(){
 	var b1 = new dojo.widget.ComboBox();
 
-	jum.assertEquals("test10", typeof b1, "object");
-	jum.assertEquals("test20", b1.widgetType, "ComboBox");
-	jum.assertEquals("test21", typeof b1["attachProperty"], "undefined");
+	jum.assertEquals(typeof b1, "object");
+	jum.assertEquals(b1.widgetType, "ComboBox");
+	jum.assertEquals(typeof b1["attachProperty"], "undefined");
 }
 
 function test_combobox_dataprovider(){
 	var box = new dojo.widget.ComboBox();
 
-	jum.assertEquals("test30", typeof dojo.widget.ComboBoxDataProvider, "function");
-	jum.assertTrue("test31", comboData.length > 40);
+	jum.assertEquals(typeof dojo.widget.basicComboBoxDataProvider, "function");
+	jum.assertTrue(comboData.length > 40);
 	
-	var provider = new dojo.widget.ComboBoxDataProvider();
-	provider.setData(comboData);
-
-	jum.assertEquals("test32", 30, provider.searchLimit);
+	var provider = new dojo.widget.basicComboBoxDataProvider();
+	provider._setData(comboData);
+	
+	jum.assertEquals(30, provider.searchLimit);
 
 	// test the results of our search
 	var searchTester = function(data){
@@ -97,12 +97,11 @@ function test_combobox_dataprovider(){
 		for(var x=0; x<expectedReturns.length; x++){
 			expectedLabels.push(expectedReturns[x][0]);
 		}
-		jum.assertEquals("test40", 4, data.length);
+		jum.assertEquals(4, data.length);
 		for(var x=0; x<data.length; x++){
-			jum.assertTrue("testfoo", dojo.lang.find(expectedLabels, data[x][0]) != -1);
+			jum.assertTrue(dojo.lang.find(expectedLabels, data[x][0]) != -1);
 		}
 	}
-
-	dojo.event.connect(provider, "provideSearchResults", searchTester);
-	provider.startSearch("W");
+	
+	provider.startSearch("W", searchTester);
 }
