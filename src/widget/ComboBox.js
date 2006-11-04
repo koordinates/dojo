@@ -31,12 +31,12 @@ dojo.widget.incrementalComboBoxDataProvider = function(){
 	// TODO: this data is unused
 	this._cache = {};
 
-	this.init = function(/*Widget*/ cbox){
+	this.init = function(options){
 		// summary:
-		//	Initialize based on URL parameter of the combobox widget.
-		//	Other parameters of the combobox widget (mode, searchType, etc.)
-		//	are ignored.
-		this.searchUrl = cbox.dataUrl;
+		//		Initialize.
+		// options:
+		//		Structure containing {dataUrl: "foo.js?search={searchString}"} or similar data.
+		this.searchUrl = options.dataUrl;
 	};
 
 	this._addToCache = function(/*String*/ keyword, /*Array*/ data){
@@ -45,15 +45,17 @@ dojo.widget.incrementalComboBoxDataProvider = function(){
 		}
 	};
 
-	this.startSearch = function(/*String*/ searchStr, /*String*/ type, /*Boolean*/ ignoreLimit){
+	this.startSearch = function(/*String*/ searchStr, /*Function*/ callback){
 		// summary:
-		//		Start the search for patterns that match searchStr.
+		//		Start the search for patterns that match searchStr, and call
+		//		specified callback functions with the results
 		// searchStr:
 		//		The characters the user has typed into the <input>.
-		// type:
-		//		Currently unused.
-		// ignoreLimit:
-		//		Currently unused.
+		// callback:
+		//		This function will be called with the result, as an
+		//		array of label/value pairs (the value is used for the Select widget).  Example:
+		//		[ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ]
+		
 
 		if(this._inFlight){
 			// FIXME: implement backoff!
@@ -75,22 +77,11 @@ dojo.widget.incrementalComboBoxDataProvider = function(){
 					data = arrData;
 				}
 				_this._addToCache(searchStr, data);
-				_this.provideSearchResults(data);
+				callback(data);
 			}
 		});
 		this._inFlight = true;
 	};
-
-	this.provideSearchResults = function(/*Array*/ resultsDataPairs){
-		// summary:
-		//	The data provider calls this function with the results of the search.
-		//	The Combobox widget attaches to this function in order to be notified of the results.
-		//
-		// resultsDataPairs:
-		//	Array of label/value pairs (the value is used for the Select widget).  Example:
-		//	[ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ]
-	};
-
 };
 
 
@@ -129,22 +120,24 @@ dojo.widget.ComboBoxDataProvider = function(){
 	//		TODO: this should be a parameter to combobox?
 	this.caseSensitive = false;
 
-	this.init = function(/*Widget*/ cbox, /*DomNode*/ node){
+	this.init = function(/*Object*/ options, /*DomNode*/ node){
 		// summary:
 		//		Combobox calls init() to initialize the data provider.
 		//		Note that the naive implementation of this function actually downloads
 		//		every possible value for the drop down list (before the user has typed in anything).
-		//	cbox: Combobox
-		//		The comobobox widget object.  The combobox widget object
-		//		contains a number of parameters (dataUrl, mode, etc.) that are
-		//		actually parameters for the data provider
+		//	options: Object
+		//		Options object.  Example:
+		//		{
+		//			dataUrl: String (URL to query to get list of possible drop down values),
+		//			setAllValues: Function (callback for setting initially selected value)
+		//		}
 		// node:
 		//		Pointer to the domNode in the original markup.
 		//		This is needed in the case when the list of values is embedded
 		//		in the html like <select> <option>Alabama</option> <option>Arkansas</option> ...
-
-		if(!dojo.string.isBlank(cbox.dataUrl)){
-			this._getData(cbox.dataUrl);
+		//		rather than specified as a URL.
+		if(!dojo.string.isBlank(options.dataUrl)){
+			this._getData(options.dataUrl);
 		}else{
 			// check to see if we can populate the list from <option> elements
 			if((node)&&(node.nodeName.toLowerCase() == "select")){
@@ -157,7 +150,7 @@ dojo.widget.ComboBoxDataProvider = function(){
 					var keyValArr = [String(text), String(opts[x].value)];
 					data.push(keyValArr);
 					if(opts[x].selected){ 
-						cbox.setAllValues(keyValArr[0], keyValArr[1]);
+						options.setAllValues(keyValArr[0], keyValArr[1]);
 					}
 				}
 				this._setData(data);
@@ -182,28 +175,28 @@ dojo.widget.ComboBoxDataProvider = function(){
 		});
 	};
 
-	this.startSearch = function(/*String*/ searchStr, /*String*/ type, /*Boolean*/ ignoreLimit){
+	this.startSearch = function(/*String*/ searchStr, /*Function*/ callback){
 		// summary:
 		//		Start the search for patterns that match searchStr.
 		// searchStr:
 		//		The characters the user has typed into the <input>.
-		// type:
-		//		Currently unused.
-		// ignoreLimit:
-		//		Currently unused.
+		// callback:
+		//		This function will be called with the result, as an
+		//		array of label/value pairs (the value is used for the Select widget).  Example:
+		//		[ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ]
 
 		// FIXME: need to add timeout handling here!!
-		this._performSearch(searchStr, type, ignoreLimit);
+		this._performSearch(searchStr, callback);
 	};
 
-	this._performSearch = function(/*String*/ searchStr, /*String*/ type, /*Boolean*/ ignoreLimit){
+	this._performSearch = function(/*String*/ searchStr, /*Function*/ callback){
 		//
 		//	NOTE: this search is LINEAR, which means that it exhibits perhaps
 		//	the worst possible speed characteristics of any search type. It's
 		//	written this way to outline the responsibilities and interfaces for
 		//	a search.
 		//
-		var st = type||this.searchType;
+		var st = this.searchType;
 		// FIXME: this is just an example search, which means that we implement
 		// only a linear search without any of the attendant (useful!) optimizations
 		var ret = [];
@@ -211,7 +204,7 @@ dojo.widget.ComboBoxDataProvider = function(){
 			searchStr = searchStr.toLowerCase();
 		}
 		for(var x=0; x<this._data.length; x++){
-			if((!ignoreLimit)&&(ret.length >= this.searchLimit)){
+			if((this.searchLimit > 0)&&(ret.length >= this.searchLimit)){
 				break;
 			}
 			// FIXME: we should avoid copies if possible!
@@ -264,18 +257,7 @@ dojo.widget.ComboBoxDataProvider = function(){
 				}
 			}
 		}
-		this.provideSearchResults(ret);
-	};
-
-	this.provideSearchResults = function(/*Array*/ resultsDataPairs){
-		// summary:
-		//	The data provider calls this function with the results of the search.
-		//	The Combobox widget attaches to this function in order to be notified of the results.
-		//
-		// resultsDataPairs:
-		//	Array of label/value pairs (the value is used for the Select widget).  Example:
-		//	[ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ]
-
+		callback(ret);
 	};
 
 	this._setData = function(/*Array*/ pdata){
@@ -938,14 +920,16 @@ dojo.widget.defineWidget(
 		},
 
 		_startSearchFromInput: function(){
-			this.dataProvider.startSearch(this.textInputNode.value);
+			this.dataProvider.startSearch(this.textInputNode.value, dojo.lang.hitch(this, "_openResultList"));
 		},
 
 		postCreate: function(){
 			this.onResize();
-			dojo.event.connect(this.dataProvider, "provideSearchResults", this, "_openResultList");
+			
+			// TODO: add these attach events to template
 			dojo.event.connect(this.textInputNode, "onblur", this, "_onBlurInput");
 			dojo.event.connect(this.textInputNode, "onfocus", this, "_onFocusInput");
+
 			if (this.disabled){ 
 				this.disable();
 			}
