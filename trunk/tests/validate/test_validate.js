@@ -481,6 +481,7 @@ function test_validate_check(){
 		tx12: {type: "text", value: "as12.a13", name: "tx12"},
 		tx13: {type: "text", value: "4.13", name: "tx13"},
 		tx14: {type: "text", value: "15.681", name: "tx14"},
+		tx15: {value: "1", name: "tx15"},
 		cc_no: {type: "text", value: "5434 1111 1111 1111",  name: "cc_no"},
 		cc_exp: {type: "text", value: "",  name: "cc_exp"},
 		cc_type: {type: "text", value: "Visa",  name: "cc_type"},
@@ -591,7 +592,7 @@ function test_validate_check(){
 		ucfirst: ["tx10"],
 		digit: ["tx11"],
 		// required fields
-		required: ["tx2", "tx3", "tx4", "tx5", "tx6", "tx7", "tx8", "pw1", "ta1", "rb1", "rb2", 
+		required: ["tx2", "tx3", "tx4", "tx5", "tx6", "tx7", "tx8", "tx15", "pw1", "ta1", "rb1", "rb2", 
 					"cb3", "s1", "s2", "s3",
 			{"doubledip":2}, {"tripledip":3}, {"doublea":2} ],
 		// dependant/conditional fields
