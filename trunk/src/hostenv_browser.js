@@ -307,7 +307,11 @@ function dj_load_init(e){
 		initFunc();
 		dojo.hostenv.modulesLoaded();
 	}else{
-		dojo.addOnLoad(initFunc);
+		//This else case should be xdomain loading.
+		//Make sure this is the first thing in the load listener array.
+		//Part of the dojo.addOnLoad guarantee is that when the listeners are notified,
+		//It means the DOM (or page) has loaded and that widgets have been parsed.
+		dojo.hostenv.modulesLoadedListeners.unshift(initFunc);
 	}
 }
 
