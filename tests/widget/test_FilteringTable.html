@@ -36,6 +36,9 @@
 		function clearFilters(key){
 			dojo.widget.byId(key).clearFilters();
 		}
+		function clearData(key){
+			dojo.widget.byId(key).store.clearData();
+		}
 
 		var getAccounts=function(){
 			return this.accounts;
@@ -248,6 +251,7 @@
 		<input type="button" value="Show only names between M and Z" onclick="applyName('fromJSONData');" /> 
 		<input type="button" value="Show only # accounts less than 4" onclick="applyAccounts('fromJSONData');" /> 
 		<input type="button" value="Clear Filters" onclick="clearFilters('fromJSONData');" />
+		<input type="button" value="Clear Data" onclick="clearData('fromJSONData');" />
 	</div> 
 	<table dojoType="filteringTable" id="fromJSONData" 
 		multiple="true" alternateRows="true"
