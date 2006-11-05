@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.CookieHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -121,12 +120,17 @@ public class DojoTest {
 	public String path(String incoming)
 	{
 		try {
+			
             StringWriter writer = new StringWriter(incoming.length() * 2);
+            
             escapeJavaStyleString(writer, incoming, true);
+            
             return writer.toString();
         } catch (IOException ioe) {
-            // this should never ever happen while writing to a StringWriter
-            ioe.printStackTrace();
+           
+        	// this should never ever happen while writing to a StringWriter
+            
+        	ioe.printStackTrace();
             return null;
         }
 	}
@@ -229,17 +233,21 @@ public class DojoTest {
 		}
 		
 		// to handle session cookies
-		CookieHandler.setDefault(new ListCookieHandler());
+		// CookieHandler.setDefault(new ListCookieHandler());
 		
 		DojoDebugger debugger = new DojoDebugger();
+		
 		Context cx = Context.enter();
 		cx.setOptimizationLevel(-1);
 		cx.setGeneratingDebug(true);
 		cx.setGeneratingSource(true);
 		cx.setDebugger(debugger, new HashMap());
+		
 		try {
 			Global global = new Global();
-            global.init(new DojoContextFactory());
+            
+			global.init(new DojoContextFactory());
+            
 			execString(cx, global, 
 					"djConfig = { \n" + 
 					"	baseRelativePath: \"" + path(_dojoDir.getAbsolutePath() + File.separatorChar) +"\",\n" +
@@ -252,10 +260,12 @@ public class DojoTest {
 			
 			String domPath, jumPath, setupPath = null;
 			if (_useLocal) {
+				
 				domPath = path(_dojoDir.getAbsolutePath() + File.separatorChar + "testtools/JsFakeDom/");
 				jumPath = path(_dojoDir.getAbsolutePath() + File.separatorChar + "testtools/JsTestManager/");
 				setupPath = path(_dojoDir.getAbsolutePath() + File.separatorChar + "tests/");
 			} else {
+				
 				domPath=jumPath=setupPath=path(_outputDir.getAbsolutePath() + File.separatorChar);
 			}
 			
@@ -298,6 +308,7 @@ public class DojoTest {
 			);
 			
 			// run either all tests or one specific group
+			
 			String jumcmd = _testGroup != null ? "jum.runGroup('"+_testGroup+"');" : "jum.runAll();";
 			
 			execString(cx, global, 
@@ -323,6 +334,7 @@ public class DojoTest {
 	void execString(Context cx, Global global, String str, String file)
 	{
 		try {
+			
 			Object result = cx.compileString(
 					str,
 					file, 1 , null
@@ -332,10 +344,12 @@ public class DojoTest {
 				System.out.println(result);
 			
 		} catch (RhinoException e) {
+			
 			System.out.println("RhinoException : " 
 					+ e.lineSource() + " sourceName:" + e.sourceName() + " line: " + e.lineNumber()
 					+ " column: " + e.columnNumber() + " msg: " + e.getMessage());
 		} catch (Throwable t) {
+			
 			System.out.println("Unknown error caught executing script:" + t.getMessage());
 		}
 	}
@@ -372,11 +386,13 @@ public class DojoTest {
 	static final boolean matchArg(String name, String[] args, int index)
 	{
 		if (name.indexOf(args[index]) > -1) {
+			
 			if ((index + 1) >= args.length) {
 				System.err.println("No argument found for given input of <" + name + ">.");
 				DojoTest.printUsage();
 				System.exit(-1);
 			}
+			
 			return true;
 		}
 		
@@ -392,14 +408,16 @@ public class DojoTest {
 		DojoTest test = new DojoTest();
 		
 		// validate arguments
+		
 		if (args == null || args.length <= 0) {
 			DojoTest.printUsage();
 			System.exit(-1);
 		}
 		
-		List<String> files = new ArrayList<String>();
+		List files = new ArrayList();
 		
 		// parse arguments
+		
 		for (int i=0; i < args.length; i++) {
 			
 			if (DojoTest.matchArg(DojoTest.ARG_DOJO_DIR, args, i)) {
@@ -421,7 +439,7 @@ public class DojoTest {
 			}
 			
 			if (DojoTest.matchArg(DojoTest.ARG_USE_LOCAL, args, i)) {
-				test.setUseLocal(Boolean.valueOf(args[i + 1]));
+				test.setUseLocal(Boolean.valueOf(args[i + 1]).booleanValue());
 				i++;
 				continue;
 			}
@@ -435,6 +453,7 @@ public class DojoTest {
 			// not really needed, should only happen once and then 
 			// the rest fall through to the bottom files.add() 
 			// TODO: This doesn't make sense :/ 
+			
 			if (DojoTest.matchArg(DojoTest.ARG_TEST_FILES, args, i)) {
 				files.add(args[i + 1]);
 				i++;
@@ -445,7 +464,7 @@ public class DojoTest {
 			files.add(args[i]);
 		}
 		
-		test.setTestFiles(files.toArray(new String[files.size()]));
+		test.setTestFiles((String[])files.toArray(new String[files.size()]));
 		
 		test.execute();
 	}

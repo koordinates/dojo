@@ -17,14 +17,14 @@ import java.util.WeakHashMap;
  */
 public class DojoDebugger implements Debugger {
 	
-	private Map<DebuggableScript, DebugFrame> _data = new WeakHashMap<DebuggableScript, DebugFrame>();
+	private Map _data = new WeakHashMap();
 	
 	/**
 	 * {@inheritDoc}
 	 */
 	public DebugFrame getFrame(Context cx, DebuggableScript script)
 	{
-		return _data.get(script);
+		return (DojoDebugFrame)_data.get(script);
 	}
 
 	/**

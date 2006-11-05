@@ -65,9 +65,12 @@ public class DojoTestTask extends Task {
 		_testDir = getProject().resolveFile(_testSrc);
 		
 		// output defaults to system tmp dir if not set
+		
 		if (_outputTargetDir != null) {
+			
 			_outputDir = getProject().resolveFile(_outputTargetDir);
 		} else {
+			
 			_outputDir = new File(System.getProperty("java.io.tmpdir"));
 		}
 	}
@@ -80,11 +83,13 @@ public class DojoTestTask extends Task {
 	String[] getTestFiles()
 	{
 		FileSet fs = new FileSet();
+		
 		fs.setIncludes("**/test*.js"); // TODO: Use file sets so these names aren't hard coded
 		fs.setFollowSymlinks(true);
 		fs.setDir(_testDir);
 		
 		DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+		
 		return ds.getIncludedFiles();
 	}
 	
@@ -125,7 +130,9 @@ public class DojoTestTask extends Task {
 			return;
 		
 		if (localPath != null) {
+			
 			File local = getProject().resolveFile(_dojoDir + "/" + localPath + "/" + fileName);
+			
 			if (local.exists()) {
 				_localDetected=true;
 				return;
@@ -133,10 +140,12 @@ public class DojoTestTask extends Task {
 		}
 		
 		File file = new File(_outputDir.getAbsolutePath() + "/" + fileName);
+		
 		if (file.exists()) 
 			return;
 		
 		byte[] data = new byte[3000];
+		
 		BufferedInputStream bi = 
 			new BufferedInputStream(getClass().getClassLoader().getResourceAsStream(fileName));
 		int read = 0;
@@ -161,10 +170,14 @@ public class DojoTestTask extends Task {
 		validate();
 		
 		try {
+			
 			prepareOutput();
-		} catch (Throwable t) { throw new BuildException(t); }
+		} catch (Throwable t) { 
+			throw new BuildException(t); 
+		}
 		
 		String[] tests = getTestFiles();
+		
 		if (tests == null || tests.length < 1) {
 			log("No tests found.");
 			return;
@@ -176,6 +189,7 @@ public class DojoTestTask extends Task {
 		execute.setAntRun(getProject());
 		
 		CommandlineJava cmd = new CommandlineJava();
+		
 		Path cp = cmd.createClasspath(getProject());
 		cp.createPath().setLocation(findJar());
 		cmd.setClassname("org.dojotoolkit.DojoTest");
@@ -190,6 +204,7 @@ public class DojoTestTask extends Task {
 		cmd.createArgument().setValue(String.valueOf(_localDetected));
 		
 		if (testGroup != null) {
+			
 			cmd.createArgument().setValue(DojoTest.ARG_GROUP);
 			cmd.createArgument().setValue(testGroup);
 		}
@@ -241,21 +256,25 @@ public class DojoTestTask extends Task {
 
 		if(null != url) {
 			String u = url.toString();
+			
 			if(u.startsWith("jar:file:")) {
+				
 				int    pling = u.indexOf("!");
 				String jarName = u.substring(4, pling);
+				
 				return new File(fromURI(jarName));
-			}
-			else if(u.startsWith("file:")) {
+				
+			} else if(u.startsWith("file:")) {
+				
 				int    tail = u.indexOf(resource);
 				String dirName = u.substring(0, tail);
 				return new File(fromURI(dirName));
 			}
 		}
-
+		
 		return null;
 	}
-	
+
 	/**
 	 * Stolen from TestNG, resolves uris.
 	 * 
@@ -266,15 +285,17 @@ public class DojoTestTask extends Task {
 	{
 		URL url = null;
 		try {
+			
 			url = new URL(uri);
 		}
 		catch(MalformedURLException murle) {
 		}
-		if((null == url) || !("file".equals(url.getProtocol()))) {
+		
+		if((null == url) || !("file".equals(url.getProtocol())))
 			throw new IllegalArgumentException("Can only handle valid file: URIs");
-		}
-
+		
 		StringBuffer buf = new StringBuffer(url.getHost());
+		
 		if(buf.length() > 0) {
 			buf.insert(0, File.separatorChar).insert(0, File.separatorChar);
 		}
@@ -282,7 +303,7 @@ public class DojoTestTask extends Task {
 		String file = url.getFile();
 		int    queryPos = file.indexOf('?');
 		buf.append((queryPos < 0) ? file : file.substring(0, queryPos));
-
+		
 		uri = buf.toString().replace('/', File.separatorChar);
 
 		if((File.pathSeparatorChar == ';') && uri.startsWith("\\") && (uri.length() > 2)
@@ -292,23 +313,27 @@ public class DojoTestTask extends Task {
 		
 		StringBuffer      sb = new StringBuffer();
 		CharacterIterator iter = new StringCharacterIterator(uri);
+		
 		for(char c = iter.first(); c != CharacterIterator.DONE; c = iter.next()) {
+			
 			if(c == '%') {
 				char c1 = iter.next();
+				
 				if(c1 != CharacterIterator.DONE) {
+					
 					int  i1 = Character.digit(c1, 16);
 					char c2 = iter.next();
+					
 					if(c2 != CharacterIterator.DONE) {
 						int i2 = Character.digit(c2, 16);
 						sb.append((char) ((i1 << 4) + i2));
 					}
 				}
-			}
-			else {
+			} else {
 				sb.append(c);
 			}
 		}
-
+		
 		return sb.toString();
 	}
 }

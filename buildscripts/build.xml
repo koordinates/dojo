@@ -49,22 +49,34 @@
 		<echo>
 build targets:
 	clean - deletes all files in the ${release_dir} directory
+			
 	website - copies website files into the correct location and sets
 		permissions correctly
+			
 	compress - copies the files in ${root}/${src} to the
 		${release_dir}/${project}/${src} directory where it
 		compresses all the .js files with a set of regular
 		expressions and removes all non .js files
+	
+	gen-strip-docs - Strips out most comments,line feeds,etc in ALL js found 
+			in the genereated ${release_dir}.
+	
 	src - Take ./${src} and build the ${release_dir}/${project}/${src}_src
 		directory. More or less a copy of the source files, documentation and
 		all.
+	
 	docs - builds documentation in all formats from ./${src} and place it in ${release_docs_dir}
+	
 	test - builds and runs command line unit tests
+			
 	testScripting - tests the JS and Jython integration in the build process
+			
 	buildFlash - compiles a Flash ActionScript 2 file to use dojo.flash.comm; provide 
 	relative path to file using -Ddojo.flash.file.
+			
 	buildDojoFlash - compiles the dojo.flash package, including its testing
 	and example files.
+			
 	buildDojoStorage - compiles the dojo.storage package
 
 	**** all following build types can take an optional parameter in the form of: -Dversion='currentVer'
@@ -84,7 +96,7 @@ build targets:
 		ant -Dversion=0.3.0 clean docs
 
 	full build, but without docs:
-		ant -Dversion=0.3.0 -Ddocless=true clean release
+		ant -Dversion=0.3.0 -Ddocless=true clean release gen-strip-docs
 
 		</echo>
 	</target>
@@ -292,32 +304,44 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		<delete dir="${release_dir}"/>
 	</target>
 	<!-- end clean task -->
-
+	
 	<!-- gen-strip-docs task -->
 	<target name="gen-strip-docs">
-		<!-- make sure we're dealing with unix newlines -->
-		<replaceregexp match="(\r)" replace="" byline="false" flags="g">
-			<fileset dir="${destdir}" includes="**/*.js"/>
-		</replaceregexp>
-
-		<replaceregexp match="(\n)" replace="NWNEWLINEHERE" byline="false" flags="g">
-			<fileset dir="${destdir}" includes="**/*.js"/>
-		</replaceregexp>
-
+		
 		<!-- strip /* */ (multiline) comments -->
-		<replaceregexp match="\/\*(.*?)\*\/" replace="" byline="false" flags="g">
-			<fileset dir="${destdir}" includes="**/*.js"/>
+		<replaceregexp match="\/\*(.*?)\*\/" replace="" byline="false" flags="sg">
+			<fileset dir="${release_dir}" includes="**/*.js"/>
 		</replaceregexp>
-
+		
+		<!-- strip // comments -->
+		<replaceregexp byline="false"  flags="g">
+			<regexp pattern="([^:(&quot;.'\\])(\/\/.*)|^\/\/.*"/>
+			<substitution expression="\1"/>
+			<fileset dir="${release_dir}" includes="**/*.js"/>
+		</replaceregexp>
+		
+		<replaceregexp match="^[ \t]+|[ \t]+$" replace="" byline="false"  flags="mg">
+			<fileset dir="${release_dir}" includes="**/*.js"/>
+		</replaceregexp>
+		
 		<!-- clobber leading and trailing DocBook comment -->
 		<replaceregexp match="^&lt;\!--" replace="" byline="false" flags="g">
-			<fileset dir="${destdir}" includes="**/*.js"/>
+			<fileset dir="${release_dir}" includes="**/*.js"/>
 		</replaceregexp>
 		<replaceregexp match="--&gt;$" replace="" byline="false" flags="g">
-			<fileset dir="${destdir}" includes="**/*.js"/>
+			<fileset dir="${release_dir}" includes="**/*.js"/>
 		</replaceregexp>
-
+		
+		<replaceregexp match="(\r)" replace="" byline="false" flags="g">
+			<fileset dir="${release_dir}" includes="**/*.js"/>
+		</replaceregexp>
+		
+		<replaceregexp match="\n+" replace="NWNEWLINEHERE" byline="false" flags="g">
+			<fileset dir="${release_dir}" includes="**/*.js"/>
+		</replaceregexp>
+		
 		<!-- add copyright notice -->
+		<!--
 		<replaceregexp match="^" byline="false" replace="${copyright}">
 			<fileset dir="${destdir}">
 				<include name="**/*.js" />
@@ -327,25 +351,29 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 				</not>
 			</fileset>
 		</replaceregexp>
-
-		<replace dir="${release_dir}/${project}/${nodocs}">
+		-->
+		
+		<replace dir="${release_dir}">
 			<include name="**/*.js"/>
 			<replacetoken>NWNEWLINEHERE</replacetoken>
-			<replacevalue>
-				<![CDATA[
-]]>
-			</replacevalue>
+			<replacevalue><![CDATA[
+]]></replacevalue>
 		</replace>
-
-		<!-- add copyright notice -->
-		<replaceregexp match="^" byline="false" replace="${copyright}">
-			<fileset dir="${destdir}">
-				<include name="**/*.js" />
-				<include name="**/*.as" />
-				<not>
-					<contains text="copyright" casesensitive="no"  />
-				</not>
-			</fileset>
+		
+		<replaceregexp match=";\n*" replace=";" byline="false" flags="g">
+			<fileset dir="${release_dir}" includes="**/*.js"/>
+		</replaceregexp>
+		<replaceregexp match="\{(\s*)\n" replace="\{" byline="false" flags="g">
+			<fileset dir="${release_dir}" includes="**/*.js"/>
+		</replaceregexp>
+		<replaceregexp match=",(\n)" replace="," byline="false" flags="g">
+			<fileset dir="${release_dir}" includes="**/*.js"/>
+		</replaceregexp>
+		<replaceregexp match="}(\n*)(\t*)\s*}" replace="}}" byline="false" flags="g">
+			<fileset dir="${release_dir}" includes="**/*.js"/>
+		</replaceregexp>
+		<replaceregexp match="\n*}" replace="}" byline="false" flags="g">
+			<fileset dir="${release_dir}" includes="**/*.js"/>
 		</replaceregexp>
 	</target>
 	<!-- end gen-strip-docs task -->
@@ -376,32 +404,6 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 	</target>
 	<!-- end src task -->
 
-	<!-- strip-docs task -->
-	<target name="strip-docs"
-		depends="-fix-config"
-		description="this task generates files somewhere between the full 'source' version and the fully comment and white-space stripped versions produced by the 'compress' task">
-		<delete dir="${release_dir}/${project}/${nodocs}"/>
-
-		<mkdir dir="${release_dir}/${project}/${nodocs}"/>
-		<mkdir dir="${release_dir}/${project}/${nodocs}/widgets"/>
-		<copy todir="${release_dir}/${project}/${nodocs}">
-			<fileset dir="./${src}" includes="${core.files},console.js" />
-		</copy>
-		<copy todir="${release_dir}/${project}/${nodocs}/widgets">
-			<fileset dir="./${src}/widgets" includes="${widgets}" />
-		</copy>
-
-		<antcall target="gen-strip-docs">
-			<param name="destdir" value="${release_dir}/${project}/${nodocs}" />
-		</antcall>
-		<fixcrlf srcdir="${release_dir}/${project}/${nodocs}"
-			eol="lf" eof="remove"
-			includes="**/*.js" />
-		<chmod perm="ugo+rx" type="dir" dir="${release_dir}" includes="**"/>
-		<chmod perm="ugo+r" type="file" dir="${release_dir}" includes="**/*.*"/>
-	</target>
-	<!-- strip-docs task -->
-	
 	<!-- -set-profile-deps task -->
 	<target name="-set-profile-deps" depends="-fix-config"
 		description="populates the contents of the dependency list for a given profile">

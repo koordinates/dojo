@@ -38,7 +38,7 @@
 		<echo>
 This build creates the Dojo toolkit ant tasks for running the unit testing
 system. 
-			
+	
 	Available options:
 			
 	* dist-jar : Compiles/creates the dist/ant-dojotest.jar for distribution.
@@ -92,8 +92,11 @@ system.
 
 		<javac classpathref="compile.cp"
 			       debug="true"
-			       destdir="${build.dir}">
-			<src path="${src.dir}" />
+			       destdir="${build.dir}"
+				   target="1.4" source="1.4">
+			
+			<exclude name="**/*Cookie*" />
+			<src path="${src.dir}"/>
 		</javac>
 	</target>
 
@@ -165,5 +168,5 @@ system.
 			<classfileset dir="${test.build.target}" includes="**/*.class" />
 		</testng>
 	</target>
-
+	
 </project>
