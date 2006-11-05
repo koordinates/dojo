@@ -3,262 +3,268 @@ dojo.provide("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
-dojo.require("dojo.lfx.*");
 dojo.require("dojo.html.*");
-dojo.require("dojo.html.display");
-dojo.require("dojo.html.layout");
-dojo.require("dojo.html.iframe");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.html.stabile");
 dojo.require("dojo.widget.PopupContainer");
 
-dojo.declare("dojo.widget.incrementalComboBoxDataProvider", null,
-function(options){
-	// summary:
-	//		Reference implementation / interface for Combobox incremental data provider.
-	//		This class takes a search string and returns values that match
-	//		that search string.  The filtering of values (to find values matching given
-	//		search string) is done on the server.
-	//
-	// options:
-	//		Structure containing {dataUrl: "foo.js?search={searchString}"} or similar data.
-
-	this.searchUrl = options.dataUrl;
-
-	// TODO: cache doesn't work
-	this._cache = {};
-
-	this._inFlight = false;
-
-	// allowCache: Boolean
-	//	Setting to use/not use cache for previously seen values
-	//	TODO: caching doesn't work.
-	//	TODO: read the setting for this value from the widget parameters
-	this.allowCache = false;
-},
-{
-	_addToCache: function(/*String*/ keyword, /*Array*/ data){
-		if(this.allowCache){
-			this._cache[keyword] = data;
-		}
-	},
-
-	startSearch: function(/*String*/ searchStr, /*Function*/ callback){
+dojo.declare(
+	"dojo.widget.incrementalComboBoxDataProvider",
+	null,
+	function(options){
 		// summary:
-		//		Start the search for patterns that match searchStr, and call
-		//		specified callback functions with the results
-		// searchStr:
-		//		The characters the user has typed into the <input>.
-		// callback:
-		//		This function will be called with the result, as an
-		//		array of label/value pairs (the value is used for the Select widget).  Example:
-		//		[ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ]
-
-		if(this._inFlight){
-			// FIXME: implement backoff!
-		}
-		var tss = encodeURIComponent(searchStr);
-		var realUrl = dojo.string.substituteParams(this.searchUrl, {"searchString": tss});
-		var _this = this;
-		var request = dojo.io.bind({
-			url: realUrl,
-			method: "get",
-			mimetype: "text/json",
-			load: function(type, data, evt){
-				_this._inFlight = false;
-				if(!dojo.lang.isArray(data)){
-					var arrData = [];
-					for(var key in data){
-						arrData.push([data[key], key]);
+		//		Reference implementation / interface for Combobox incremental data provider.
+		//		This class takes a search string and returns values that match
+		//		that search string.  The filtering of values (to find values matching given
+		//		search string) is done on the server.
+		//
+		// options:
+		//		Structure containing {dataUrl: "foo.js?search={searchString}"} or similar data.
+		//		dataUrl is a URL that is passed the search string a returns a JSON structure
+		//		showing the matching values, like [ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ]
+	
+		this.searchUrl = options.dataUrl;
+	
+		// TODO: cache doesn't work
+		this._cache = {};
+	
+		this._inFlight = false;
+	
+		// allowCache: Boolean
+		//	Setting to use/not use cache for previously seen values
+		//	TODO: caching doesn't work.
+		//	TODO: read the setting for this value from the widget parameters
+		this.allowCache = false;
+	},
+	{
+		_addToCache: function(/*String*/ keyword, /*Array*/ data){
+			if(this.allowCache){
+				this._cache[keyword] = data;
+			}
+		},
+	
+		startSearch: function(/*String*/ searchStr, /*Function*/ callback){
+			// summary:
+			//		Start the search for patterns that match searchStr, and call
+			//		specified callback functions with the results
+			// searchStr:
+			//		The characters the user has typed into the <input>.
+			// callback:
+			//		This function will be called with the result, as an
+			//		array of label/value pairs (the value is used for the Select widget).  Example:
+			//		[ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ]
+	
+			if(this._inFlight){
+				// FIXME: implement backoff!
+			}
+			var tss = encodeURIComponent(searchStr);
+			var realUrl = dojo.string.substituteParams(this.searchUrl, {"searchString": tss});
+			var _this = this;
+			var request = dojo.io.bind({
+				url: realUrl,
+				method: "get",
+				mimetype: "text/json",
+				load: function(type, data, evt){
+					_this._inFlight = false;
+					if(!dojo.lang.isArray(data)){
+						var arrData = [];
+						for(var key in data){
+							arrData.push([data[key], key]);
+						}
+						data = arrData;
 					}
-					data = arrData;
+					_this._addToCache(searchStr, data);
+					callback(data);
 				}
-				_this._addToCache(searchStr, data);
-				callback(data);
-			}
-		});
-		this._inFlight = true;
-	}
-});
-
-dojo.declare("dojo.widget.basicComboBoxDataProvider", null,
-function(/*Object*/ options, /*DomNode*/ node){
-	// summary:
-	//		Reference implementation / interface for Combobox data provider.
-	//		This class takes a search string and returns values that match
-	//		that search string.    All possible values for the combobox are downloaded
-	//		on initialization, and then startSearch() runs locally,
-	//		merely filting that downloaded list, to find values matching search string
-	//
-	//		NOTE: this data provider is designed as a naive reference
-	//		implementation, and as such it is written more for readability than
-	//		speed. A deployable data provider would implement lookups, search
-	//		caching (and invalidation), and a significantly less naive data
-	//		structure for storage of items.
-	//
-	//	options: Object
-	//		Options object.  Example:
-	//		{
-	//			dataUrl: String (URL to query to get list of possible drop down values),
-	//			setAllValues: Function (callback for setting initially selected value)
-	//		}
-	//
-	// node:
-	//		Pointer to the domNode in the original markup.
-	//		This is needed in the case when the list of values is embedded
-	//		in the html like <select> <option>Alabama</option> <option>Arkansas</option> ...
-	//		rather than specified as a URL.
-
-	// _data: Array
-	//		List of every possible value for the drop down list
-	//		startSearch() simply searches this array and returns matching values.
-	this._data = [];
-
-	// searchLimit: Integer
-	//		Maximum number of results to return.
-	//		TODO: need to read this value from the widget parameters
-	this.searchLimit = 30;
-
-	// searchType: String
-	//		Defines what values match the search string; see searchType parameter
-	//		of ComboBox for details
-	//		TODO: need to read this value from the widget parameters; the setting in ComboBox is being ignored.
-	this.searchType = "STARTSTRING";
-
-	// caseSensitive: Boolean
-	//		Should search be case sensitive?
-	//		TODO: this should be a parameter to combobox?
-	this.caseSensitive = false;
-
-	if(!dj_undef("dataUrl", options) && !dojo.string.isBlank(options.dataUrl)){
-		this._getData(options.dataUrl);
-	}else{
-		// check to see if we can populate the list from <option> elements
-		if((node)&&(node.nodeName.toLowerCase() == "select")){
-			// NOTE: we're not handling <optgroup> here yet
-			var opts = node.getElementsByTagName("option");
-			var ol = opts.length;
-			var data = [];
-			for(var x=0; x<ol; x++){
-				var text = opts[x].textContent || opts[x].innerText || opts[x].innerHTML;
-				var keyValArr = [String(text), String(opts[x].value)];
-				data.push(keyValArr);
-				if(opts[x].selected){ 
-					options.setAllValues(keyValArr[0], keyValArr[1]);
-				}
-			}
-			this._setData(data);
+			});
+			this._inFlight = true;
 		}
 	}
-},
-{
-	_getData: function(/*String*/ url){
-		dojo.io.bind({
-			url: url,
-			load: dojo.lang.hitch(this, function(type, data, evt){ 
-				if(!dojo.lang.isArray(data)){
-					var arrData = [];
-					for(var key in data){
-						arrData.push([data[key], key]);
+);
+
+dojo.declare(
+	"dojo.widget.basicComboBoxDataProvider",
+	null,
+	function(/*Object*/ options, /*DomNode*/ node){
+		// summary:
+		//		Reference implementation / interface for Combobox data provider.
+		//		This class takes a search string and returns values that match
+		//		that search string.    All possible values for the combobox are downloaded
+		//		on initialization, and then startSearch() runs locally,
+		//		merely filting that downloaded list, to find values matching search string
+		//
+		//		NOTE: this data provider is designed as a naive reference
+		//		implementation, and as such it is written more for readability than
+		//		speed. A deployable data provider would implement lookups, search
+		//		caching (and invalidation), and a significantly less naive data
+		//		structure for storage of items.
+		//
+		//	options: Object
+		//		Options object.  Example:
+		//		{
+		//			dataUrl: String (URL to query to get list of possible drop down values),
+		//			setAllValues: Function (callback for setting initially selected value)
+		//		}
+		//		The return format for dataURL is (for example)
+		//			[ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ... ]
+		//
+		// node:
+		//		Pointer to the domNode in the original markup.
+		//		This is needed in the case when the list of values is embedded
+		//		in the html like <select> <option>Alabama</option> <option>Arkansas</option> ...
+		//		rather than specified as a URL.
+	
+		// _data: Array
+		//		List of every possible value for the drop down list
+		//		startSearch() simply searches this array and returns matching values.
+		this._data = [];
+	
+		// searchLimit: Integer
+		//		Maximum number of results to return.
+		//		TODO: need to read this value from the widget parameters
+		this.searchLimit = 30;
+	
+		// searchType: String
+		//		Defines what values match the search string; see searchType parameter
+		//		of ComboBox for details
+		//		TODO: need to read this value from the widget parameters; the setting in ComboBox is being ignored.
+		this.searchType = "STARTSTRING";
+	
+		// caseSensitive: Boolean
+		//		Should search be case sensitive?
+		//		TODO: this should be a parameter to combobox?
+		this.caseSensitive = false;
+	
+		if(!dj_undef("dataUrl", options) && !dojo.string.isBlank(options.dataUrl)){
+			this._getData(options.dataUrl);
+		}else{
+			// check to see if we can populate the list from <option> elements
+			if((node)&&(node.nodeName.toLowerCase() == "select")){
+				// NOTE: we're not handling <optgroup> here yet
+				var opts = node.getElementsByTagName("option");
+				var ol = opts.length;
+				var data = [];
+				for(var x=0; x<ol; x++){
+					var text = opts[x].textContent || opts[x].innerText || opts[x].innerHTML;
+					var keyValArr = [String(text), String(opts[x].value)];
+					data.push(keyValArr);
+					if(opts[x].selected){ 
+						options.setAllValues(keyValArr[0], keyValArr[1]);
 					}
-					data = arrData;
 				}
 				this._setData(data);
-			}),
-			mimetype: "text/json"
-		});
-	},
-
-	startSearch: function(/*String*/ searchStr, /*Function*/ callback){
-		// summary:
-		//		Start the search for patterns that match searchStr.
-		// searchStr:
-		//		The characters the user has typed into the <input>.
-		// callback:
-		//		This function will be called with the result, as an
-		//		array of label/value pairs (the value is used for the Select widget).  Example:
-		//		[ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ]
-
-		// FIXME: need to add timeout handling here!!
-		this._performSearch(searchStr, callback);
-	},
-
-	_performSearch: function(/*String*/ searchStr, /*Function*/ callback){
-		//
-		//	NOTE: this search is LINEAR, which means that it exhibits perhaps
-		//	the worst possible speed characteristics of any search type. It's
-		//	written this way to outline the responsibilities and interfaces for
-		//	a search.
-		//
-		var st = this.searchType;
-		// FIXME: this is just an example search, which means that we implement
-		// only a linear search without any of the attendant (useful!) optimizations
-		var ret = [];
-		if(!this.caseSensitive){
-			searchStr = searchStr.toLowerCase();
+			}
 		}
-		for(var x=0; x<this._data.length; x++){
-			if((this.searchLimit > 0)&&(ret.length >= this.searchLimit)){
-				break;
-			}
-			// FIXME: we should avoid copies if possible!
-			var dataLabel = new String((!this.caseSensitive) ? this._data[x][0].toLowerCase() : this._data[x][0]);
-			if(dataLabel.length < searchStr.length){
-				// this won't ever be a good search, will it? What if we start
-				// to support regex search?
-				continue;
-			}
-
-			if(st == "STARTSTRING"){
-				if(searchStr == dataLabel.substr(0, searchStr.length)){
-					ret.push(this._data[x]);
-				}
-			}else if(st == "SUBSTRING"){
-				// this one is a gimmie
-				if(dataLabel.indexOf(searchStr) >= 0){
-					ret.push(this._data[x]);
-				}
-			}else if(st == "STARTWORD"){
-				// do a substring search and then attempt to determine if the
-				// preceeding char was the beginning of the string or a
-				// whitespace char.
-				var idx = dataLabel.indexOf(searchStr);
-				if(idx == 0){
-					// implicit match
-					ret.push(this._data[x]);
-				}
-				if(idx <= 0){
-					// if we didn't match or implicily matched, march onward
-					continue;
-				}
-				// otherwise, we have to go figure out if the match was at the
-				// start of a word...
-				// this code is taken almost directy from nWidgets
-				var matches = false;
-				while(idx!=-1){
-					// make sure the match either starts whole string, or
-					// follows a space, or follows some punctuation
-					if(" ,/(".indexOf(dataLabel.charAt(idx-1)) != -1){
-						// FIXME: what about tab chars?
-						matches = true; break;
+	},
+	{
+		_getData: function(/*String*/ url){
+			dojo.io.bind({
+				url: url,
+				load: dojo.lang.hitch(this, function(type, data, evt){ 
+					if(!dojo.lang.isArray(data)){
+						var arrData = [];
+						for(var key in data){
+							arrData.push([data[key], key]);
+						}
+						data = arrData;
 					}
-					idx = dataLabel.indexOf(searchStr, idx+1);
+					this._setData(data);
+				}),
+				mimetype: "text/json"
+			});
+		},
+	
+		startSearch: function(/*String*/ searchStr, /*Function*/ callback){
+			// summary:
+			//		Start the search for patterns that match searchStr.
+			// searchStr:
+			//		The characters the user has typed into the <input>.
+			// callback:
+			//		This function will be called with the result, as an
+			//		array of label/value pairs (the value is used for the Select widget).  Example:
+			//		[ ["Alabama","AL"], ["Alaska","AK"], ["American Samoa","AS"] ]
+	
+			// FIXME: need to add timeout handling here!!
+			this._performSearch(searchStr, callback);
+		},
+	
+		_performSearch: function(/*String*/ searchStr, /*Function*/ callback){
+			//
+			//	NOTE: this search is LINEAR, which means that it exhibits perhaps
+			//	the worst possible speed characteristics of any search type. It's
+			//	written this way to outline the responsibilities and interfaces for
+			//	a search.
+			//
+			var st = this.searchType;
+			// FIXME: this is just an example search, which means that we implement
+			// only a linear search without any of the attendant (useful!) optimizations
+			var ret = [];
+			if(!this.caseSensitive){
+				searchStr = searchStr.toLowerCase();
+			}
+			for(var x=0; x<this._data.length; x++){
+				if((this.searchLimit > 0)&&(ret.length >= this.searchLimit)){
+					break;
 				}
-				if(!matches){
+				// FIXME: we should avoid copies if possible!
+				var dataLabel = new String((!this.caseSensitive) ? this._data[x][0].toLowerCase() : this._data[x][0]);
+				if(dataLabel.length < searchStr.length){
+					// this won't ever be a good search, will it? What if we start
+					// to support regex search?
 					continue;
-				}else{
-					ret.push(this._data[x]);
+				}
+	
+				if(st == "STARTSTRING"){
+					if(searchStr == dataLabel.substr(0, searchStr.length)){
+						ret.push(this._data[x]);
+					}
+				}else if(st == "SUBSTRING"){
+					// this one is a gimmie
+					if(dataLabel.indexOf(searchStr) >= 0){
+						ret.push(this._data[x]);
+					}
+				}else if(st == "STARTWORD"){
+					// do a substring search and then attempt to determine if the
+					// preceeding char was the beginning of the string or a
+					// whitespace char.
+					var idx = dataLabel.indexOf(searchStr);
+					if(idx == 0){
+						// implicit match
+						ret.push(this._data[x]);
+					}
+					if(idx <= 0){
+						// if we didn't match or implicily matched, march onward
+						continue;
+					}
+					// otherwise, we have to go figure out if the match was at the
+					// start of a word...
+					// this code is taken almost directy from nWidgets
+					var matches = false;
+					while(idx!=-1){
+						// make sure the match either starts whole string, or
+						// follows a space, or follows some punctuation
+						if(" ,/(".indexOf(dataLabel.charAt(idx-1)) != -1){
+							// FIXME: what about tab chars?
+							matches = true; break;
+						}
+						idx = dataLabel.indexOf(searchStr, idx+1);
+					}
+					if(!matches){
+						continue;
+					}else{
+						ret.push(this._data[x]);
+					}
 				}
 			}
+			callback(ret);
+		},
+	
+		_setData: function(/*Array*/ pdata){
+			// summary: populate this._data and initialize lookup structures
+			this._data = pdata;
 		}
-		callback(ret);
-	},
-
-	_setData: function(/*Array*/ pdata){
-		// summary: populate this._data and initialize lookup structures
-		this._data = pdata;
 	}
-});
+);
 
 dojo.widget.defineWidget(
 	"dojo.widget.ComboBox",
@@ -681,13 +687,6 @@ dojo.widget.defineWidget(
 			// TODO: why does onmouseover and onmouseout connect to two separate handlers???
 			dojo.event.connect(this.optionsListNode, "onmouseover", this, "_itemMouseOver");
 			dojo.event.connect(this.optionsListNode, "onmouseout", this, "_itemMouseOut");
-		},
-
-		focus: function(){
-			// summary
-			//	set focus to input node from code
-			//	TODO: is this even used?
-			this._tryFocus();
 		},
 
 		_openResultList: function(/*Array*/ results){
