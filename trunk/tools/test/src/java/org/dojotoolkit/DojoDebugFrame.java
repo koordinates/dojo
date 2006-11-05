@@ -10,7 +10,6 @@ import org.mozilla.javascript.debug.DebuggableScript;
 
 /**
  * @author jkuhnert
- *
  */
 public class DojoDebugFrame implements DebugFrame {
 	

@@ -16,7 +16,7 @@ public class ListCookieHandler extends CookieHandler {
 
 	// "Long" term storage for cookies, not serialized so only
 	// for current JVM instance
-	private List<Cookie> cache = new LinkedList<Cookie>();
+	private List<Cookie> _cache = new LinkedList<Cookie>();
 	
 	/**
 	 * Adds a new cookied composed of individual parts.
@@ -37,16 +37,16 @@ public class ListCookieHandler extends CookieHandler {
 
 		// Remove cookie if it already exists
 		// New one will replace
-		for (Cookie existingCookie : cache) {
+		for (Cookie existingCookie : _cache) {
 			if ((cookie.getURI().equals(existingCookie.getURI()))
 					&& (cookie.getName().equals(existingCookie
 							.getName()))) {
-				cache.remove(existingCookie);
+				_cache.remove(existingCookie);
 				break;
 			}
 		}
 
-		cache.add(cookie);
+		_cache.add(cookie);
 	}
 
 	/**
@@ -67,15 +67,15 @@ public class ListCookieHandler extends CookieHandler {
 				Cookie cookie = new Cookie(uri, item);
 				// Remove cookie if it already exists
 				// New one will replace
-				for (Cookie existingCookie : cache) {
+				for (Cookie existingCookie : _cache) {
 					if ((cookie.getURI().equals(existingCookie.getURI()))
 							&& (cookie.getName().equals(existingCookie
 									.getName()))) {
-						cache.remove(existingCookie);
+						_cache.remove(existingCookie);
 						break;
 					}
 				}
-				cache.add(cookie);
+				_cache.add(cookie);
 			}
 		}
 	}
@@ -99,10 +99,10 @@ public class ListCookieHandler extends CookieHandler {
 		// Retrieve all the cookies for matching URI
 		// Put in comma-separated list
 		StringBuilder cookies = new StringBuilder();
-		for (Cookie cookie : cache) {
+		for (Cookie cookie : _cache) {
 			// Remove cookies that have expired
 			if (cookie.hasExpired()) {
-				cache.remove(cookie);
+				_cache.remove(cookie);
 			} else if (cookie.matches(uri)) {
 				if (cookies.length() > 0) {
 					cookies.append(", ");
@@ -126,7 +126,7 @@ public class ListCookieHandler extends CookieHandler {
 	public String getCookieString()
 	{
 		StringBuilder cookies = new StringBuilder();
-		for (Cookie cookie : cache) {
+		for (Cookie cookie : _cache) {
 			if (cookies.length() > 0) {
 				cookies.append(", ");
 			}
