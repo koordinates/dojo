@@ -34,28 +34,27 @@ def makeResourceUri(resourceName, templatePath, srcRoot, prefixes):
 				if len(prefix[0]) > len(bestPrefix):
 					bestPrefix = prefix[0]
 					bestPrefixPath = prefix[1]
-		
+
 		if bestPrefixPath != "":
 			# Convert resourceName to a path
 			resourceName = resourceName.replace(bestPrefix, "", 1);
 			if resourceName.find(".") == 0:
 				resourceName = resourceName[1:len(resourceName)]
 			resourceName = resourceName.replace(".", "/");
-	
+
 			# Final path construction
 			finalPath = srcRoot
 			if resourceName:
 				finalPath += resourceName + "/"
 			finalPath += bestPrefixPath + "/" + templatePath
 			return finalPath
-		
+
 	return srcRoot + templatePath
 
-def regexpMagic(loader, pkgString, srcRoot, prefixes):
+def regexpMagic(loader, pkgString, srcRoot, prefixes, skiplist=[]):
 	uriMethod = "dojo.uri.dojoUri"
 	#if loader == "xdomain":
 	#	uriMethod = "dojo.uri.dojoUriXd"
-
 	# "Now they have two problems" -- jwz
 	#	http://en.wikiquote.org/wiki/Jamie_Zawinski
 	matches = re.findall('((templatePath|templateCssPath)\s*(=|:)\s*(dojo\.uri\.(dojo|module)?Uri\(\s*)?[\"\']([\w\.\/]+)[\"\'](([\,\s]*)[\"\']([\w\.\/]*)[\"\'])?(\s*\))?)', pkgString)
@@ -65,9 +64,16 @@ def regexpMagic(loader, pkgString, srcRoot, prefixes):
 		if x[4] == "dojo":
 			print "Dojo match: " + x[5]
 			filePath = srcRoot + x[5]
+			resourceNsName = "dojo:"+x[5];
 		else:
 			print "Module match: " + x[5] + " and " + x[8]
 			filePath = makeResourceUri(x[5], x[8], srcRoot, prefixes)
+			resourceNsName = x[5]+':'+x[8]
+
+		if resourceNsName in skiplist:
+			print "Skip intern resource " + filePath
+			continue
+
 		print "Interning resource path: " + filePath
 
 		if x[1] == "templatePath":
@@ -83,7 +89,7 @@ def regexpMagic(loader, pkgString, srcRoot, prefixes):
 			assignSeparator = x[2]
 			statementSeparator = ","
 			statementPrefix = ""
-			
+
 			# FIXME: this is a little weak because it assumes a "this" in front of the templateCssPath
 			# when it is assigned using an "=", as in 'this.templateCssPath = dojo.uri.dojoUri("some/path/to/Css.css");'
 			# In theory it could be something else, but in practice it is not, and it gets a little too weird
@@ -91,20 +97,20 @@ def regexpMagic(loader, pkgString, srcRoot, prefixes):
 			if assignSeparator == "=":
 				statementSeparator = ";"
 				statementPrefix = "this."
-	
+
 			replacement = "templateCssString" + assignSeparator + "\"" + escape(open(filePath).read()) + "\"" + statementSeparator + statementPrefix + x[0]
 			pkgString = string.replace(pkgString, x[0], replacement)
 
 	return pkgString
 
-def internTemplateStringsInFile(loader, packageFile, srcRoot, prefixes):
+def internTemplateStringsInFile(loader, packageFile, srcRoot, prefixes, skiplist):
 		print packageFile
 		pfd = open(packageFile)
 		pkgString = pfd.read()
 		pfd.close()
 
-		pkgString = regexpMagic(loader, pkgString, srcRoot, prefixes)
-		
+		pkgString = regexpMagic(loader, pkgString, srcRoot, prefixes, skiplist)
+
 		pfd = open(packageFile, "w")
 		pfd.write(pkgString)
 		pfd.close() # flush is implicit
@@ -122,17 +128,17 @@ def internTemplateStrings(profileFile, loader="default", packageDir="../release/
 	print "loader: " + loader
 	print "packageDir - " + packageDir
 	packageFile = packageDir+"/dojo.js"
-	
-	
+
+
 	#Load the profile file so we can get module prefixes.
 	pfd = open(profileFile)
 	profileString = pfd.read()
 	pfd.close()
 
 	# Parse out the module prefixes and build a python list of lists object.
-	compiledRe = re.compile('(dependencies\.prefixes\s*=\s*(\[\s*(.*)\s*\]))', re.DOTALL | re.MULTILINE)
+	compiledRe = re.compile('(dependencies\.prefixes\s*=\s*(\[\s*([^;]*)\s*\]))', re.DOTALL | re.MULTILINE)
 	matches = compiledRe.findall(profileString)
-	
+
 	if matches:
 		exec("prefixes = " + matches[0][1])
 		print "Using the following prefixes: "
@@ -140,12 +146,21 @@ def internTemplateStrings(profileFile, loader="default", packageDir="../release/
 	else:
 		prefixes = []
 
+	skiplistRe =  re.compile('(dependencies\.internSkipList\s*=\s*(\[\s*([^;]*)\s*\]))', re.DOTALL | re.MULTILINE)
+	matches = skiplistRe.findall(profileString)
+
+	if matches:
+		exec("skiplist = " + matches[0][1])
+		print "Using the following skip list: "
+		print skiplist
+	else:
+		skiplist = []
 	#try:
-	internTemplateStringsInFile(loader, packageFile, srcRoot, prefixes)
+	internTemplateStringsInFile(loader, packageFile, srcRoot, prefixes, skiplist)
 	#except:
 	#	packageFile = packageDir+"/__package__.js"
 	#	internTemplateStringsInFile(loader, packageFile, srcRoot)
-		
+
 	#If doing xdomain, then need to fix up the .xd.js files in the widget subdir.
 	#Hack alert! I am not patient enough to figure out how to do dir recursion
 	#in python right now.
@@ -190,7 +205,7 @@ def removeRequires(fileName):
 	pfd = open(fileName)
 	fileContents = pfd.read()
 	pfd.close()
-	
+
 	r = re.compile("^dojo\.(require|requireAfterIf|requireIf|kwCompoundRequire)\(.*?\);.*?\n", re.S|re.M)
 	newContents = r.sub("", fileContents)
 
@@ -226,7 +241,7 @@ def buildRestFiles(docDir, docOutDir, styleSheetFile, restFiles=""):
 			os.system("echo `which rst2html.py`")
 			os.system(cmdStr)
 			# java.lang.Runtime.exec(??)
-	
+
 	if not len(restFiles):
 		for name in os.listdir(docDir):
 			tn = os.path.normpath(docDir+os.sep+name)
@@ -240,8 +255,8 @@ def norm(path):
 	else:
 		return path
 
-def buildTestFiles( testDir="../tests/", 
-					testOutFile="../testRunner.js", 
+def buildTestFiles( testDir="../tests/",
+					testOutFile="../testRunner.js",
 					prologueFile="../tests/prologue.js",
 					epilogueFile="../tests/epilogue.js",
 					jumFile="../testtools/JsTestManager/jsunit_wrap.js",
@@ -257,15 +272,15 @@ def buildTestFiles( testDir="../tests/",
 	testOutFD = open(testOutFile, "w+")
 	testOutFD.write("""
 
-djConfig = { 
+djConfig = {
 	baseRelativePath: "%s/",
 	isDebug: true
 };
 
 load("%s/dojo.js");
 
-load("%s", 
-	"%s", 
+load("%s",
+	"%s",
 	"%s");
 """ % (norm(dojoRootPath), norm(dojoRootPath), norm(prologueFile), norm(domImplFile), norm(jumFile))
 	)
