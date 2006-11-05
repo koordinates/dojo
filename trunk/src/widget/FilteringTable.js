@@ -866,6 +866,7 @@ dojo.widget.defineWidget(
 			self.render();
 		});
 		dojo.event.connect(this.store, "onClearData", function(){
+			self.isInitialized = false;
 			self.render();
 		});
 		dojo.event.connect(this.store, "onAddData", function(addedObject){
