@@ -43,7 +43,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 	if(profile.trim instanceof Array){
 		for(var i = 0; i < profile.trim.length; i++){
 			var elem = form[profile.trim[i]];
-			if(elem.type != "text" && elem.type != "textarea" && elem.type != "password"){ continue; }
+			if(dj_undef("type", elem) || elem.type != "text" && elem.type != "textarea" && elem.type != "password"){ continue; }
 			elem.value = elem.value.replace(/(^\s*|\s*$)/g, "");
 		}
 	}
@@ -51,7 +51,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 	if(profile.uppercase instanceof Array){
 		for(var i = 0; i < profile.uppercase.length; i++){
 			var elem = form[profile.uppercase[i]];
-			if(elem.type != "text" && elem.type != "textarea" && elem.type != "password"){ continue; }
+			if(dj_undef("type", elem) || elem.type != "text" && elem.type != "textarea" && elem.type != "password"){ continue; }
 			elem.value = elem.value.toUpperCase();
 		}
 	}
@@ -59,7 +59,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 	if(profile.lowercase instanceof Array){
 		for (var i = 0; i < profile.lowercase.length; i++){
 			var elem = form[profile.lowercase[i]];
-			if(elem.type != "text" && elem.type != "textarea" && elem.type != "password"){ continue; }
+			if(dj_undef("type", elem) || elem.type != "text" && elem.type != "textarea" && elem.type != "password"){ continue; }
 			elem.value = elem.value.toLowerCase();
 		}
 	}
@@ -67,7 +67,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 	if(profile.ucfirst instanceof Array){
 		for(var i = 0; i < profile.ucfirst.length; i++){
 			var elem = form[profile.ucfirst[i]];
-			if(elem.type != "text" && elem.type != "textarea" && elem.type != "password"){ continue; }
+			if(dj_undef("type", elem) || elem.type != "text" && elem.type != "textarea" && elem.type != "password"){ continue; }
 			elem.value = elem.value.replace(/\b\w+\b/g, function(word) { return word.substring(0,1).toUpperCase() + word.substring(1).toLowerCase(); });
 		}
 	}
@@ -75,7 +75,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 	if(profile.digit instanceof Array){
 		for(var i = 0; i < profile.digit.length; i++){
 			var elem = form[profile.digit[i]];
-			if(elem.type != "text" && elem.type != "textarea" && elem.type != "password"){ continue; }
+			if(dj_undef("type", elem) || elem.type != "text" && elem.type != "textarea" && elem.type != "password"){ continue; }
 			elem.value = elem.value.replace(/\D/g, "");
 		}
 	}
@@ -86,11 +86,11 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 			if(!dojo.lang.isString(profile.required[i])){ continue; }
 			var elem = form[profile.required[i]];
 			// Are textbox, textarea, or password fields blank.
-			if((elem.type == "text" || elem.type == "textarea" || elem.type == "password") && /^\s*$/.test(elem.value)){	
+			if(!dj_undef("type", elem) && (elem.type == "text" || elem.type == "textarea" || elem.type == "password") && /^\s*$/.test(elem.value)){	
 				missing[missing.length] = elem.name;
 			}
 			// Does drop-down box have option selected.
-			else if((elem.type == "select-one" || elem.type == "select-multiple") 
+			else if(!dj_undef("type", elem) && (elem.type == "select-one" || elem.type == "select-multiple") 
 						&& (elem.selectedIndex == -1 
 						|| /^\s*$/.test(elem.options[elem.selectedIndex].value))){
 				missing[missing.length] = elem.name;
@@ -128,7 +128,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 				}
 			}
 			// case 2: elem is a select box
-			else if(elem.type == "select-multiple" ){
+			else if(!dj_undef("type", elem) && elem.type == "select-multiple" ){
 				var selected = 0;
 				for(var j = 0; j < elem.options.length; j++){
 					if (elem.options[j].selected && !/^\s*$/.test(elem.options[j].value)) { selected++; }
@@ -153,6 +153,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 		// properties of dependencies object are the names of dependent fields to be checked
 		for(name in profile.dependencies){
 			var elem = form[name];	// the dependent element
+			if(dj_undef("type", elem)){continue;}
 			if(elem.type != "text" && elem.type != "textarea" && elem.type != "password"){ continue; } // limited support
 			if(/\S+/.test(elem.value)){ continue; }	// has a value already
 			if(results.isMissing(elem.name)){ continue; }	// already listed as missing
@@ -168,7 +169,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 		// constraint properties are the names of fields to bevalidated
 		for(name in profile.constraints){
 			var elem = form[name];
-			if(	(elem.type != "text")&&
+			if(dj_undef("type", elem) || (elem.type != "text")&&
 				(elem.type != "textarea")&&
 				(elem.type != "password")){
 				continue;
@@ -206,7 +207,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 		for(name in profile.confirm){
 			var elem = form[name];	// the confirm element
 			var target = form[profile.confirm[name]];
-			if ( (elem.type != "text" && elem.type != "textarea" && elem.type != "password") 
+			if (dj_undef("type", elem) || dj_undef("type", target) || (elem.type != "text" && elem.type != "textarea" && elem.type != "password") 
 				||(target.type != elem.type)
 				||(target.value == elem.value)	// it's valid
 				||(results.isInvalid(elem.name))// already listed as invalid
@@ -219,7 +220,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 	}
 
 	return results; // Object
-}
+};
 
 //TODO: evaluateConstraint doesn't use profile or fieldName args?
 dojo.validate.evaluateConstraint=function(profile, /*Array*/constraint, fieldName, elem){
