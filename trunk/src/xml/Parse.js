@@ -25,7 +25,14 @@ dojo.xml.Parse = function(){
 	// get normalized (lowercase) tagName
 	// some browsers report tagNames in lowercase no matter what
 	function getTagName(node){
-		return ((node)&&(node.tagName) ? node.tagName.toLowerCase() : '');
+		/*
+		return ((node)&&(node["tagName"]) ? node.tagName.toLowerCase() : '');
+		*/
+		try{
+			return node.tagName.toLowerCase();
+		}catch(e){
+			return "";
+		}
 	}
 
 	// locate dojo qualified tag name
@@ -84,10 +91,10 @@ dojo.xml.Parse = function(){
 			// FIXME: following line, without check for existence of classes.indexOf
 			// breaks firefox 1.5's svg widgets
 			if((classes )&&(classes.indexOf)&&(classes.indexOf("dojo-")!=-1)){
-		    var aclasses = classes.split(" ");
-		    for(var x=0, c=aclasses.length; x<c; x++){
-	        if(aclasses[x].slice(0, 5) == "dojo-"){
-            return "dojo:"+aclasses[x].substr(5).toLowerCase(); 
+				var aclasses = classes.split(" ");
+				for(var x=0, c=aclasses.length; x<c; x++){
+					if(aclasses[x].slice(0, 5) == "dojo-"){
+						return "dojo:"+aclasses[x].substr(5).toLowerCase(); 
 					}
 				}
 			}
@@ -98,13 +105,18 @@ dojo.xml.Parse = function(){
 
 	this.parseElement = function(node, hasParentNodeSet, optimizeForDojoML, thisIdx){
 
-		var parsedNodeSet = {};
-		
+		// run shortcuts to bail out of processing up front to save time and
+		// object alloc if possible.
 		var tagName = getTagName(node);
 		//There's a weird bug in IE where it counts end tags, e.g. </dojo:button> as nodes that should be parsed.  Ignore these
-		if((tagName)&&(tagName.indexOf("/")==0)){
-			return null;
-		}
+		if(tagName.indexOf("/")==0){ return null; }
+
+		try{
+			if(node.getAttribute("parseWidgets").toLowerCase() == "false"){
+				return {};
+			}
+		}catch(e){/*continue*/}
+
 		
 		// look for a dojoml qualified name
 		// process dojoml only when optimizeForDojoML is true
@@ -114,11 +126,8 @@ dojo.xml.Parse = function(){
 			tagName = dojoTagName || tagName;
 			process = Boolean(dojoTagName);
 		}
-		
-		if(node && node.getAttribute && node.getAttribute("parseWidgets") && node.getAttribute("parseWidgets") == "false") {
-			return {};
-		}
 
+		var parsedNodeSet = {};
 		parsedNodeSet[tagName] = [];
 		var pos = tagName.indexOf(":");
 		if(pos>0){
@@ -195,6 +204,8 @@ dojo.xml.Parse = function(){
 		return parsedNodeSet;
 	};
 
+	var isIE = ((dojo.render.html.capable)&&(dojo.render.html.ie));
+
 	/* parses a set of attributes on a node into an object tree */
 	this.parseAttributes = function(node){
 		var parsedAttributeSet = {};
@@ -203,7 +214,7 @@ dojo.xml.Parse = function(){
 		// would any of the relevant dom implementations even allow this?
 		var attnode, i=0;
 		while((attnode=atts[i++])){
-			if((dojo.render.html.capable)&&(dojo.render.html.ie)){
+			if(isIE){
 				if(!attnode){ continue; }
 				if((typeof attnode == "object")&&
 					(typeof attnode.nodeValue == 'undefined')||
