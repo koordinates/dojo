@@ -15,8 +15,6 @@
 var dlg;
 function init(e) {
 	dlg = dojo.widget.byId("DialogContent");
-	var btn = document.getElementById("hider");
-	dlg.setCloseControl(btn);
 }
 dojo.addOnLoad(init);
 
@@ -39,26 +37,8 @@ form {
 <a href="javascript:dlg.show()">Show</a>
 
 <div dojoType="dialog" id="DialogContent" bgColor="red" bgOpacity="0.5" toggle="fade" toggleDuration="250">
-	<form onsubmit="return false;">
-		<table>
-			<tr>
-				<td>Name:</td>
-				<td><div style="overflow: auto;"><input type="text" /></div></td>
-			</tr>
-			<tr>
-				<td>Location:</td>
-				<td><div style="overflow: auto;"><input type="text" /></div></td>
-			</tr>
-			<tr>
-				<td>Description:</td>
-				<td><div style="overflow: auto;"><input type="text" /></div></td>
-			</tr>
-			<tr>
-				<td colspan="2" align="right">
-					<input type="button" id="hider" value="OK"/></td>
-			</tr>
-		</table>
-	</form>
+Hello World!
+Clicking anywhere on the screen should close this dialog. 
 </div>
 
 <p style="font-weight: bold;">
@@ -69,6 +49,7 @@ This is a test of a dialog:
   <li>on a short page (check that the red extends all the
 way to the end of the viewport, not just to the end of this text)</li>
   <li>using XHTML</li>
+  <li>No close control is specified, so clicking anywhere on the screen will close the dialog.</li>
 </ul>
 
 <p>
