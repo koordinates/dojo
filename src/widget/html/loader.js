@@ -701,7 +701,7 @@ dojo.widget.html.loader = new (function(){
 		}
 
 		if(!widgetProto.setContent){
-			widgetProto.setContent = function(data, don'tLog){
+			widgetProto.setContent = function(data, dontLog){
 				this.loader.callOnUnLoad.call(this, true);
 		
 				if(!data||dojo.html.isNode(data)){
@@ -749,15 +749,15 @@ dojo.widget.html.loader = new (function(){
 					if(dojo.hostenv.isXDomain && data.requires.length){
 						dojo.addOnLoad(function(){ 
 							asyncParse.call(this, data);
-							if(!don'tLog){
+							if(!dontLog){
 								_loader._log(this, data);
 							}
 						});// this opens a thread need abort undo
-						don'tLog = true;
+						dontLog = true;
 					}else{
 						asyncParse.call(this, data);
 					}
-				}if(!don'tLog){
+				}if(!dontLog){
 // 					_loader._log(this, data);
 				}
 			};
