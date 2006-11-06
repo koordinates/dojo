@@ -51,10 +51,12 @@ dojo.widget.defineWidget(
 	persist: true,
 
 	postMixInProperties: function(){
+		dojo.widget.SplitContainer.superclass.postMixInProperties.apply(this, arguments);
 		this.isHorizontal = (this.orientation == 'horizontal');
 	},
 
 	fillInTemplate: function(){
+		dojo.widget.SplitContainer.superclass.fillInTemplate.apply(this, arguments);
 		dojo.html.addClass(this.domNode, "dojoSplitContainer");
 		// overflow has to be explicitly hidden for splitContainers using gekko (trac #1435)
 		// to keep other combined css classes from inadvertantly making the overflow visible
@@ -75,6 +77,7 @@ dojo.widget.defineWidget(
 	},
 
 	postCreate: function(args, fragment, parentComp){
+		dojo.widget.SplitContainer.superclass.postCreate.apply(this, arguments);
 		// attach the children and create the draggers
 		for(var i=0; i<this.children.length; i++){
             with(this.children[i].domNode.style){
