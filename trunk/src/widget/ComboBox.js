@@ -761,11 +761,13 @@ dojo.widget.defineWidget(
 		_onMouseOut:function(/*Event*/ evt){
 			// summary: needed in IE and Safari as inputTextNode loses focus when scrolling optionslist
 			var relTarget = evt.relatedTarget;
-			if(!relTarget || relTarget.parentNode!=this.optionsListNode){
-				this._mouseover_list = false;
-				this._handleBlurTimer(true, 100);
-				this._tryFocus();
-			}
+			try { // fixes #1807
+				if(!relTarget || relTarget.parentNode != this.optionsListNode){
+					this._mouseover_list = false;
+					this._handleBlurTimer(true, 100);
+					this._tryFocus();
+				}
+			} catch(e){}
 		},
 
 		_isInputEqualToResult: function(/*String*/ result){
