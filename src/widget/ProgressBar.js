@@ -135,8 +135,8 @@ dojo.widget.defineWidget(
 			this.frontPercentLabel.className = this.frontPercentClass;
 			this.backPercentLabel.className = this.backPercentClass;
 			this.progressValue = "" + this.progressValue; 
-			this.domNode.style.height = this.height; 
-			this.domNode.style.width = this.width;
+			this.domNode.style.height = this.height + "px"; 
+			this.domNode.style.width = this.width + "px";
 			this._intDimension = parseInt("0" + eval("this." + this._dimension));
 			this._floatDimension = parseFloat("0" + eval("this."+this._dimension));
 			this._pixelPercentRatio = this._floatDimension/100;
@@ -172,7 +172,7 @@ dojo.widget.defineWidget(
 			var _self = this;
 			dojo.debug("internalProgress width: " + this.internalProgress.style.width);
 			this._animation = dojo.lfx.html.slideTo(this.internalProgress, 
-				{top: 0, left: this.width-parseInt(this.internalProgress.style.width)}, parseInt(this.duration), null, 
+				{top: 0, left: parseInt(this.width)-parseInt(this.internalProgress.style.width)}, parseInt(this.duration), null, 
 					function(){
 						var _backAnim = dojo.lfx.html.slideTo(_self.internalProgress, 
 						{ top: 0, left: 0 }, parseInt(_self.duration));
@@ -322,9 +322,9 @@ dojo.widget.defineWidget(
 				dojo.html.getContentBox(this.backPercentLabel).width;
 			var _heightBack = 
 				dojo.html.getContentBox(this.backPercentLabel).height;
-			var _leftFront = (this.width - _widthFront)/2 + "px";
+			var _leftFront = (parseInt(this.width) - _widthFront)/2 + "px";
 			var _bottomFront = (parseInt(this.height) - parseInt(_heightFront))/2 + "px";
-			var _leftBack = (this.width - _widthBack)/2 + "px";
+			var _leftBack = (parseInt(this.width) - _widthBack)/2 + "px";
 			var _bottomBack = (parseInt(this.height) - parseInt(_heightBack))/2 + "px";
 			this.frontPercentLabel.style.left = _leftFront;
 			this.backPercentLabel.style.left = _leftBack; 
