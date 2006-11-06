@@ -105,7 +105,7 @@ dojo.lang.declare("dojo.widget.Editor2Command",null,
 			//		to always return Enabled
 			return dojo.widget.Editor2Manager.commandState.Enabled;
 		},
-		destory: function(){
+		destroy: function(){
 			// summary: Destructor
 		}
 	}
@@ -577,16 +577,18 @@ dojo.widget.defineWidget(
 			// summary: toggle between WYSIWYG mode and HTML source mode
 			if(this===dojo.widget.Editor2Manager.getCurrentInstance()){
 				if(!this._inSourceMode){
+					var html = this.getEditorContent();
 					this._inSourceMode = true;
 
 					if(!this._htmlEditNode){
 						this._htmlEditNode = dojo.doc().createElement("textarea");
 						dojo.html.insertAfter(this._htmlEditNode, this.editorObject);
 					}
+
 					this._htmlEditNode.style.display = "";
 					this._htmlEditNode.style.width = "100%";
 					this._htmlEditNode.style.height = dojo.html.getBorderBox(this.editNode).height+"px";
-					this._htmlEditNode.value = this.editNode.innerHTML;
+					this._htmlEditNode.value = html;
 
 					//activeX object (IE) doesn't like to be hidden, so move it outside of screen instead
 					with(this.editorObject.style){
@@ -606,8 +608,9 @@ dojo.widget.defineWidget(
 						left = "";
 						top = "";
 					}
+					var html = this._htmlEditNode.value;
 
-					dojo.lang.setTimeout(this, "replaceEditorContent", 1, this._htmlEditNode.value);
+					dojo.lang.setTimeout(this, "replaceEditorContent", 1, html);
 					this._htmlEditNode.style.display = "none";
 					this.focus();
 				}
@@ -712,11 +715,18 @@ dojo.widget.defineWidget(
 		//overload to support source editing mode
 		getEditorContent: function(){
 			if(this._inSourceMode){
-				this.replaceEditorContent(this._htmlEditNode.value);
+				return this._htmlEditNode.value;
 			}
 			return dojo.widget.Editor2.superclass.getEditorContent.call(this);
 		},
 
+		replaceEditorContent: function(html){
+			if(this._inSourceMode){
+				this._htmlEditNode.value = html;
+				return;
+			}
+			dojo.widget.Editor2.superclass.replaceEditorContent.apply(this,arguments);
+		},
 		getCommand: function(/*String*/name){
 			// summary: return a command associated with this instance of editor
 			if(this._loadedCommands[name]){
@@ -734,9 +744,9 @@ dojo.widget.defineWidget(
 		setupDefaultShortcuts: function(){
 			// summary: setup default shortcuts using Editor2 commands
 			var exec = function(cmd){ return function(){ cmd.execute(); } };
-			if(!dojo.render.html.ie){
-				this.shortcuts.push(['redo','Z']);
-			}
+//			if(!dojo.render.html.ie){
+//				this.shortcuts.push(['redo','Z']);
+//			}
 			var self = this;
 			dojo.lang.forEach(this.shortcuts, function(item){
 				var cmd = self.getCommand(item[0]);
