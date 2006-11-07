@@ -5,56 +5,58 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.html.display");
 
-/*
-summary
-	Takes a bunch of pictures and displays them one by one, like a slide show.
-Usage
-	<img dojoType="SlideShow" 
-		imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg;images/5.jpg;images/6.jpg" 
-		imgUrlBase="/foo/bar/images/"
-		transitionInterval="700"
-		delay="7000" 
-		src="images/1.jpg"
-		imgWidth="400" imgHeight="300" />
-*/
+
 dojo.widget.defineWidget(
 	"dojo.widget.SlideShow",
 	dojo.widget.HtmlWidget,
 	{
+		/*
+		summary
+			Takes a bunch of pictures and displays them one by one, like a slide show.
+		Usage
+			<img dojoType="SlideShow" 
+				imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg;images/5.jpg;images/6.jpg" 
+				imgUrlBase="/foo/bar/images/"
+				transitionInterval="700"
+				delay="7000" 
+				src="images/1.jpg"
+				imgWidth="400" imgHeight="300" />
+		*/
+
 		templatePath: dojo.uri.dojoUri("src/widget/templates/SlideShow.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/SlideShow.css"),
 
-		// String[]
+		// imgUrls: String[]
 		//	List of images to use
 		//	Ex: "1.jpg;2.jpg;3.jpg"
 		imgUrls: [],
 		
-		// String
+		// imgUrlBase: String
 		//	Path prefix to prepend to each file specified in imgUrls
 		//	Ex: "/foo/bar/images/"
 		imgUrlBase: "",
 
-		// Integer
+		// delay: Integer
 		//	Number of milliseconds to display each image
 		delay: 4000,
 
-		// Integer
+		// transitionInterval: Integer
 		//	Number of milliseconds to transition between pictures
 		transitionInterval: 2000,
 		
-		// Integer
+		// imgWidth: Integer
 		//	Width of image in pixels
 		imgWidth: 800,
 		
-		// Integer
+		// imgHeight: Integer
 		//	Height of image in pixels
 		imgHeight: 600,
 
-		// Boolean
+		// preventCache: Boolean
 		//	If true, download the image every time, rather than using cached version in browser
 		preventCache: false,
 		
-		// Boolean
+		// stopped: Boolean
 		//	is Animation paused?
 		stopped: false,
 

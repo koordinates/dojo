@@ -3,15 +3,16 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.ResizeHandle");
 
-// summary
-//	A resizable textarea.
-//	Takes all the parameters (name, value, etc.) that a vanilla textarea takes.
-// usage
-//	<textarea dojoType="ResizableTextArea">...</textarea>
 dojo.widget.defineWidget(
 	"dojo.widget.ResizableTextarea",
 	dojo.widget.HtmlWidget,
 {
+	// summary
+	//	A resizable textarea.
+	//	Takes all the parameters (name, value, etc.) that a vanilla textarea takes.
+	// usage
+	//	<textarea dojoType="ResizableTextArea">...</textarea>
+
 	templatePath: dojo.uri.dojoUri("src/widget/templates/ResizableTextarea.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/ResizableTextarea.css"),
 
