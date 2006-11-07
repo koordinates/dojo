@@ -6,6 +6,7 @@ dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.extras");
 
 dojo.require("dojo.experimental");
+dojo.experimental("dojo.widget.html.loader");
 
 // as this is a singleton dojo.declare doesn't buy us anything here
 dojo.widget.html.loader = new (function(){
