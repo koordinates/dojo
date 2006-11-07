@@ -211,7 +211,7 @@
 		<tr>
 			<th field="Name" dataType="String" valign="top">Name</th>
 			<th field="DateAdded" dataType="Date" align="center" valign="top">Date Added</th>
-			<th field="DateModified" dataType="Date" format="%b %d, %Y" align="center" valign="top">Date Modified</th>
+			<th field="DateModified" dataType="Date" sort="asc" format="%b %d, %Y" align="center" valign="top">Date Modified</th>
 			<th dataType="html">Label</th>
 		</tr>
 	</thead>
@@ -260,7 +260,7 @@
 		<tr>
 			<th field="Name" dataType="String">Name</th>
 			<th field="DateAdded" dataType="Date" align="center">Date Added</th>
-			<th field="getAccounts().length" dataType="Number" align="center"># of accounts</th>
+			<th field="getAccounts().length" dataType="Number" sort="desc" align="center"># of accounts</th>
 			<th field="getDescription().getHtml()" dataType="html">Description</th>
 		</tr>
 	</thead>
