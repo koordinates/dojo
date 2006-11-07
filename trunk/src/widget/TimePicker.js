@@ -10,49 +10,49 @@ dojo.require("dojo.html.style");
 dojo.requireLocalization("dojo.i18n.calendar", "gregorian");
 dojo.requireLocalization("dojo.widget", "TimePicker");
 
-/*
-summary: 
-	Base class for a stand-alone TimePicker widget 
-	which makes it easy to select a time. 
-description: 
-	A stand-alone TimePicker widget that makes it easy to select a time. 
-	It is designed to be used on its own, or inside of other widgets
-	(see dojo.widget.DropdownTimePicker) or other similar combination widgets. 
- 	              
-	Times attributes passed in the `RFC 3339` format:
-	http://www.faqs.org/rfcs/rfc3339.html (2005-06-30T08:05:00-07:00)
-	so that they are serializable and locale-independent.
 
-usage: 
-	var timePicker = dojo.widget.createWidget("TimePicker", {},   
-	dojo.byId("timePickerNode")); 
- 	 
-	<div dojoType="TimePicker"></div> 
-*/
 dojo.widget.defineWidget(
 	"dojo.widget.TimePicker",
 	dojo.widget.HtmlWidget,
 	function(){
 
-		//start attributes
+		/*
+		summary: 
+			Base class for a stand-alone TimePicker widget 
+			which makes it easy to select a time. 
+		description: 
+			A stand-alone TimePicker widget that makes it easy to select a time. 
+			It is designed to be used on its own, or inside of other widgets
+			(see dojo.widget.DropdownTimePicker) or other similar combination widgets. 
+		 	              
+			Times attributes passed in the `RFC 3339` format:
+			http://www.faqs.org/rfcs/rfc3339.html (2005-06-30T08:05:00-07:00)
+			so that they are serializable and locale-independent.
 		
-		//Date
+		usage: 
+			var timePicker = dojo.widget.createWidget("TimePicker", {},   
+			dojo.byId("timePickerNode")); 
+		 	 
+			<div dojoType="TimePicker"></div> 
+		*/
+	
+		// time: Date
 		//	selected time
 		this.time = "";
 		
-		//Boolean
+		// useDefaultTime: Boolean
 		//	set following flag to true if a default time should be set
 		this.useDefaultTime = false;
 		
-		//Boolean
+		// useDefaultMinutes: Boolean
 		//	set the following to true to set default minutes to current time, false to // use zero
 		this.useDefaultMinutes = false;
 		
-		//String
-		//	rfc 3339 date
+		// storedTime: String
+		//	rfc 3339 time
 		this.storedTime = "";
 		
-		//Object
+		// currentTime: Object
 		//	time currently selected in the UI, stored in hours, minutes, seconds in the format that will be actually displayed
 		this.currentTime = {};
 		

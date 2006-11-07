@@ -185,6 +185,7 @@ dojo.widget.defineWidget(
 			this.filter();
 
 			// set table to be inlined (technique varies by browser)
+			// TODO: use method in dojo.html that does this
 			if(dojo.render.html.ie){ dojo.html.addClass(this.domNode, "ie"); }
 			if(dojo.render.html.moz){ dojo.html.addClass(this.domNode, "moz"); }
 			if(dojo.render.html.opera){ dojo.html.addClass(this.domNode, "opera"); }

@@ -25,55 +25,88 @@ if(dojo.hostenv.post_load_){
 	}catch(e){ }
 }
 
-// summary:
-//		dojo.widget.RichText is the core of the WYSIWYG editor in dojo, which
-//		provides the basic editing features. It also encapsulates the differences
-//		of different js engines for various browsers
 dojo.widget.defineWidget(
 	"dojo.widget.RichText",
 	dojo.widget.HtmlWidget,
+	function(){
+		// summary:
+		//		dojo.widget.RichText is the core of the WYSIWYG editor in dojo, which
+		//		provides the basic editing features. It also encapsulates the differences
+		//		of different js engines for various browsers
+
+		// contentPreFilters: Array
+		//		pre content filter function register array
+		this.contentPreFilters = [];
+
+		// contentPostFilters: Array
+		//		post content filter function register array
+		this.contentPostFilters = [];
+
+		// contentDomPreFilters: Array
+		//		pre content dom filter function register array
+		this.contentDomPreFilters = [];
+
+		// contentDomPostFilters: Array
+		//		post content dom filter function register array
+		this.contentDomPostFilters = [];
+
+		// styleSheets: String
+		//		semicolon (";") separated list of css files for the editing area
+		this.styleSheets = "";
+
+		// editingAreaStyleSheets: Array
+		//		array to store all the stylesheets applied to the editing area
+		this.editingAreaStyleSheets=[];
+
+		if(dojo.render.html.moz){
+			this.contentPreFilters.push(this._fixContentForMoz);
+		}
+
+		this._keyHandlers = {};
+	},
 	{
-		// Boolean:
+		// inheritWidth: Boolean
 		//		whether to inherit the parent's width or simply use 100%
 		inheritWidth: false,
 
-		// Boolean:
+		// focusOnLoad: Boolean
 		//		whether focusing into this instance of richtext when page onload
 		focusOnLoad: false,
 
-		// String:
+		// saveName: String
 		//		If a save name is specified the content is saved and restored if the
 		//		editor is not properly closed after editing has started.
 		saveName: "",
 
-		// String:
+		// _content: String
 		//		temporary content storage
 		_content: "",
 
-		// String:
+		// height: String
 		//		set height to fix the editor at a specific height, with scrolling
 		height: "",
 
-		// String:
+		// minHeight: String
 		//		The minimum height that the editor should have
 		minHeight: "1em",
 
-		// Boolean:
+		// isClosed: Boolean
 		isClosed: true,
-		// Boolean:
+
+		// isLoaded: Boolean
 		isLoaded: false,
 
-		// Boolean:
+		// useActiveX: Boolean
 		//		whether to use the active-x object in IE
 		useActiveX: false,
 
-		// Boolean:
+		// relativeImageUrls: Boolean
 		//		whether to use relative URLs for images - if this is enabled
 		//		images will be given absolute URLs when inside the editor but
 		//		will be changed to use relative URLs (to the current page) on save
 		relativeImageUrls: false,
 
-		// String:
+		// _SEPARATOR: String
 		//		used to concat contents from multiple textareas into a single string
 		_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
 
@@ -124,7 +157,8 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		// Array: events which should be connected to the underlying editing area
+		// events: Array
+		//		 events which should be connected to the underlying editing area
 		events: ["onBlur", "onFocus", "onKeyPress", "onKeyDown", "onKeyUp", "onClick"],
 
 		/**
@@ -1150,7 +1184,7 @@ dojo.widget.defineWidget(
 				(dojo.render.html.mozilla && supportedBy.mozilla) ||
 				(dojo.render.html.safari && supportedBy.safari) ||
 				(gt420 && supportedBy.safari420) ||
-				(dojo.render.html.opera && supportedBy.opera);  // Boolean: return true if the command is supported, false otherwise
+				(dojo.render.html.opera && supportedBy.opera);  // Boolean return true if the command is supported, false otherwise
 		},
 
 		execCommand: function (/*String*/command, argument){
@@ -1666,28 +1700,5 @@ dojo.widget.defineWidget(
 			html = html.replace(/<\/em>/gi, '<\/i>' );
 			return html;
 		}
-	},
-	"html",
-	function(){
-		// summary:
-		//		Constructor for this widget, initialize per-instance variables
-
-		// Array: pre content filter function register array
-		this.contentPreFilters = [];
-		// Array: post content filter function register array
-		this.contentPostFilters = [];
-		// Array: pre content dom filter function register array
-		this.contentDomPreFilters = [];
-		// Array: post content dom filter function register array
-		this.contentDomPostFilters = [];
-		// String: semicolon (";") separated list of css files for the editing area
-		this.styleSheets = "";
-		// Array: array to store all the stylesheets applied to the editing area
-		this.editingAreaStyleSheets=[];
-		if(dojo.render.html.moz){
-			this.contentPreFilters.push(this._fixContentForMoz);
-		}
-
-		this._keyHandlers = {};
 	}
 );

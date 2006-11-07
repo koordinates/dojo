@@ -4,15 +4,16 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.event.*");
 
-// summary
-//	The handle on the bottom-right corner of FloatingPane or other widgets that allows
-//	the widget to be resized.
-//	Typically not used directly.
 dojo.widget.defineWidget(
 	"dojo.widget.ResizeHandle",
 	dojo.widget.HtmlWidget,
 {
-	// String
+	// summary
+	//	The handle on the bottom-right corner of FloatingPane or other widgets that allows
+	//	the widget to be resized.
+	//	Typically not used directly.
+
+	// targetElmId: String
 	//	id of the Widget OR DomNode that I will size
 	targetElmId: '',
 
