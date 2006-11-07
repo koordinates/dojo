@@ -10,26 +10,48 @@ dojo.require("dojo.date.serialize");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.widget", "DropdownTimePicker");
 
-// summary
-//	input box with a drop-down gui control, for setting the time (hours, minutes, seconds, am/pm) of an event
+/*
+summary: 
+	A form input for entering times with a pop-up dojo.widget.TimePicker to aid in selection
+
+	description: 
+		This is TimePicker in a DropdownContainer, it supports all features of TimeePicker.
+
+		It is possible to customize the user-visible formatting with either the formatLength or 
+		displayFormat attributes.  The value sent to the server is typically a locale-independent 
+		value in a hidden field as defined by the name attribute. RFC3339 representation is used 
+		by default, but other options are available with saveFormat.
+
+	usage: 
+		var dtp = dojo.widget.createWidget("DropdownTimePicker", {},   
+		dojo.byId("DropdownTimePickerNode")); 
+ 	 
+		<input dojoType="DropdownTimePicker">
+*/
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownTimePicker",
 	dojo.widget.DropdownContainer,
 	{
-		// URL
+		//URL
 		//	path of icon for button to display time picker widget
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/timeIcon.gif"),
 		
-		// Number
+		//Number
 		//	z-index of time picker widget
 		zIndex: "10",
 
-		// pattern used in display of formatted time.  Uses locale-specific format by default.  See dojo.date.format.
+		//String
+		//	Type of formatting used for visual display, appropriate to locale (choice of long, short, medium or full)
+		//	See dojo.date.format for details.
+		formatLength: "short",
+
+		//String
+		//	A pattern used for the visual display of the formatted date.
+		//	Setting this overrides the default locale-specific settings as well as the formatLength
+		//	attribute.  See dojo.date.format for a reference which defines the formatting patterns.
 		displayFormat: "",
 
-		// String
-		//	Deprecated. format string for how time is displayed in the input box using strftime, see dojo.date.strftime	
-		timeFormat: "",
+		timeFormat: "", // deprecated, will be removed for 0.5
 
 //FIXME: need saveFormat attribute support
 		//String
@@ -40,12 +62,8 @@ dojo.widget.defineWidget(
 		//	rfc|iso|posix|unix
 		saveFormat: "",
 
-		// type of format appropriate to locale.  see dojo.date.format
-		formatLength: "short",
-
-		// String
-		//	time value in RFC3339 format (http://www.ietf.org/rfc/rfc3339.txt)
-		//	ex: 12:00
+		//String|Date
+		//	form value property in rfc3339 format. ex: 12:00
 		value: "",
 
 		//String
@@ -53,6 +71,7 @@ dojo.widget.defineWidget(
 		name: "",
 
 		postMixInProperties: function() {
+			// summary: see dojo.widget.DomWidget
 			dojo.widget.DropdownTimePicker.superclass.postMixInProperties.apply(this, arguments);
 			var messages = dojo.i18n.getLocalization("dojo.widget", "DropdownTimePicker", this.lang);
 			this.iconAlt = messages.selectTime;
@@ -81,6 +100,8 @@ dojo.widget.defineWidget(
 		},
 
 		fillInTemplate: function(){
+			// summary: see dojo.widget.DomWidget
+
 			dojo.widget.DropdownTimePicker.superclass.fillInTemplate.apply(this, arguments);
 
 			var value = "";
@@ -116,17 +137,17 @@ dojo.widget.defineWidget(
 		},
 
 		getTime: function(){
-			// summary: return current date as a Date object
+			// summary: return current time as a Date object
 			return this.timePicker.storedTime; /*Date*/
 		},
 
 		setValue: function(/*Date|String*/rfcDate){
-			//summary: set the current date from RFC 3339 formatted string or a date object, synonymous with setDate
+			//summary: set the current time from RFC 3339 formatted string or a date object, synonymous with setTime
 			this.setTime(rfcDate);
 		},
 
 		setTime: function(/*Date|String*/dateObj){
-			// summary: set the current date and update the UI
+			// summary: set the current time and update the UI
 			var value = "";
 			if(dateObj instanceof Date) {
 				value = dateObj;
@@ -163,11 +184,11 @@ dojo.widget.defineWidget(
 		},
 
 		onValueChanged: function(/*Date*/dateObj){
-			//summary: triggered when this.value is changed
+			// summary: triggered when this.value is changed
 		},
 		
 		onInputChange: function(){
-			// summary: callback when user manually types a date into the <input> field
+			// summary: callback when user manually types a time into the <input> field
 			if(this.dateFormat){
 				dojo.deprecated("dojo.widget.DropdownTimePicker",
 				"Cannot parse user input.  Must use displayFormat attribute instead of dateFormat.  See dojo.date.format for specification.", "0.5");
@@ -183,7 +204,7 @@ dojo.widget.defineWidget(
 					this.valueNode.value = input;
 				}
 			}
-			// If the date entered didn't parse, reset to the old date.  KISS, for now.
+			// If the time entered didn't parse, reset to the old time.  KISS, for now.
 			//TODO: usability?  should we provide more feedback somehow? an error notice?
 			// seems redundant to do this if the parse failed, but at least until we have validation,
 			// this will fix up the display of entries like 01/32/2006
@@ -204,6 +225,11 @@ dojo.widget.defineWidget(
 					value = dojo.date.format(time, {datePattern:this.saveFormat, selector:'timeOnly', locale:this.lang});
 			}
 			this.valueNode.value = value;
+		},
+		
+		destroy: function(/*Boolean*/finalize){
+			this.timePicker.destroy(finalize);
+			dojo.widget.DropdownTimePicker.superclass.destroy.apply(this, arguments);
 		}
 	}
 );
