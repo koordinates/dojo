@@ -8,14 +8,6 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 
-// summary:
-//		PopupContainerBase is the mixin class which provide popup behaviors:
-//		it can open in a given position x,y or around a given node.
-//		In addition, it handles animation and IE bleed through workaround.
-// description:
-//		This class can not be used standalone: it should be mixed-in to a
-//		dojo.widget.HtmlWidget. Use PopupContainer instead if you want a
-//		a standalone popup widget
 dojo.declare(
 	"dojo.widget.PopupContainerBase",
 	null,
@@ -23,31 +15,40 @@ dojo.declare(
 		this.queueOnAnimationFinish = [];
 	},
 {
+	// summary:
+	//		PopupContainerBase is the mixin class which provide popup behaviors:
+	//		it can open in a given position x,y or around a given node.
+	//		In addition, it handles animation and IE bleed through workaround.
+	// description:
+	//		This class can not be used standalone: it should be mixed-in to a
+	//		dojo.widget.HtmlWidget. Use PopupContainer instead if you want a
+	//		a standalone popup widget
+
 	isContainer: true,
 	templateString: '<div dojoAttachPoint="containerNode" style="display:none;position:absolute;" class="dojoPopupContainer" ></div>',
 
-	// Boolean: whether this popup is shown
+	// isShowingNow: Boolean: whether this popup is shown
 	isShowingNow: false,
 
-	// Widget: the shown sub popup if any
+	// currentSubpopup: Widget: the shown sub popup if any
 	currentSubpopup: null,
 
-	// Int: the minimal popup zIndex
+	// beginZIndex: Integer: the minimal popup zIndex
 	beginZIndex: 1000,
 
-	// Widget: parent popup widget
+	// parentPopup: Widget: parent popup widget
 	parentPopup: null,
 
-	// Widget: the widget that caused me to be displayed; the logical parent.
+	// parent: Widget: the widget that caused me to be displayed; the logical parent.
 	parent: null,
 
-	// Int: level of sub popup
+	// popupIndex: Integer: level of sub popup
 	popupIndex: 0,
 
-	// dojo.html.boxSizing: which bounding box to use for open aroundNode. By default use BORDER box of the aroundNode
+	// aroundBox: dojo.html.boxSizing: which bounding box to use for open aroundNode. By default use BORDER box of the aroundNode
 	aroundBox: dojo.html.boxSizing.BORDER_BOX,
 
-	// Object: in which window the open() is triggered
+	// openedForWindow: Object: in which window the open() is triggered
 	openedForWindow: null,
 
 	processKey: function(/*Event*/evt){
@@ -287,18 +288,20 @@ dojo.declare(
 	}
 });
 
-// summary: dojo.widget.PopupContainer is the widget version of dojo.widget.PopupContainerBase
 dojo.widget.defineWidget(
 	"dojo.widget.PopupContainer",
-	[dojo.widget.HtmlWidget, dojo.widget.PopupContainerBase], {});
+	[dojo.widget.HtmlWidget, dojo.widget.PopupContainerBase], {
+		// summary: dojo.widget.PopupContainer is the widget version of dojo.widget.PopupContainerBase	
+	});
 
 
-// summary:
-//		the popup manager makes sure we don't have several popups
-//		open at once. the root popup in an opening sequence calls
-//		opened(). when a root menu closes it calls closed(). then
-//		everything works. lovely.
 dojo.widget.PopupManager = new function(){
+	// summary:
+	//		the popup manager makes sure we don't have several popups
+	//		open at once. the root popup in an opening sequence calls
+	//		opened(). when a root menu closes it calls closed(). then
+	//		everything works. lovely.
+
 	this.currentMenu = null;
 	this.currentButton = null;		// button that opened current menu (if any)
 	this.currentFocusMenu = null;	// the (sub)menu which receives key events
