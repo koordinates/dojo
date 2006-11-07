@@ -13,58 +13,59 @@ dojo.require("dojo.dnd.HtmlDragMove");
 dojo.require("dojo.widget.Dialog");		// for ModalFloatingPane
 dojo.require("dojo.widget.ResizeHandle");
 
-// summary
-//	Base class for FloatingPane, ModalFloatingPane
 dojo.declare(
 	"dojo.widget.FloatingPaneBase",
 	null,
 	{
-		// String
+		// summary
+		//	Base class for FloatingPane, ModalFloatingPane
+
+		// title: String
 		//	text to display in floating pane's title bar (ex: "My Window")
 		title: '',
 
-		// String
+		// iconSrc: String
 		//	path of icon to display in floating pane's title bar
 		iconSrc: '',
 
-		// Boolean
+		// hasShadow: Boolean
 		//	if true, display a shadow behind the floating pane
 		hasShadow: false,
 
-		// Boolean
+		// constrainToContainer: Boolean
 		//	if true, and the floating pane is inside another container (ContentPane, another FloatingPane, etc.),
 		//	then don't allow the floating pane to be dragged outside of it's container
 		constrainToContainer: false,
 
-		// String
+		// taskBarId: String
 		//	widget id of TaskBar widget;
 		//	if specified, then an icon for this FloatingPane will be added to the specified TaskBar
 		taskBarId: "",
 
-		// Boolean
+		// resizable: Boolean
 		//	if true, allow user to resize floating pane
 		resizable: true,
 
-		// Boolean
+		// titleBarDisplay: Boolean
 		//	if true, display title bar for this floating pane
 		titleBarDisplay: true,
 
-		// String
-		//	control whether window is initially not displayed ("minimized"), displayed full screen ("maximized"),
-		//	or just displayed normally ("normal")
+		// windowState: String
+		//	controls whether window is initially not displayed ("minimized"), displayed full screen ("maximized"),
+		//	or just displayed normally ("normal").
 		// Values
 		//	"normal", "maximized", "minimized"
 		windowState: "normal",
 
-		// Boolean
+		// displayCloseAction: Boolean
 		//	display button to close window
 		displayCloseAction: false,
 
-		// Boolean
+		// displayMinimizeAction: Boolean
 		//	display button to minimize window (ie, window disappears so only the taskbar item remains)
 		displayMinimizeAction: false,
 
-		// Boolean
+		// displayMaximizeAction: Boolean
 		//	display button to maximize window (ie, to take up the full screen)
 		displayMaximizeAction: false,
 
@@ -377,14 +378,15 @@ dojo.declare(
 	}
 );
 
-// summary
-//	A non-modal floating window.
-//	Attaches to a Taskbar which has an icon for each window.
-//	Must specify size (like style="width: 500px; height: 500px;"),
 dojo.widget.defineWidget(
 	"dojo.widget.FloatingPane",
 	[dojo.widget.ContentPane, dojo.widget.FloatingPaneBase],
 {
+	// summary
+	//	A non-modal floating window.
+	//	Attaches to a Taskbar which has an icon for each window.
+	//	Must specify size (like style="width: 500px; height: 500px;"),
+
 	fillInTemplate: function(args, frag){
 		this.fillInFloatingPaneTemplate(args, frag);
 		dojo.widget.FloatingPane.superclass.fillInTemplate.call(this, args, frag);
@@ -408,14 +410,15 @@ dojo.widget.defineWidget(
 });
 
 
-// summary
-//	A modal floating window.
-//	This widget is similar to the Dialog widget, but the window, unlike the Dialog, can be moved.
-//	Must specify size (like style="width: 500px; height: 500px;"),
 dojo.widget.defineWidget(
 	"dojo.widget.ModalFloatingPane",
 	[dojo.widget.FloatingPane, dojo.widget.ModalDialogBase],
 	{
+		// summary
+		//	A modal floating window.
+		//	This widget is similar to the Dialog widget, but the window, unlike the Dialog, can be moved.
+		//	Must specify size (like style="width: 500px; height: 500px;"),
+
 		windowState: "minimized",
 		displayCloseAction: true,
 		postCreate: function(){

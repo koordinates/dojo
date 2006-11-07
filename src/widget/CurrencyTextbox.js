@@ -3,17 +3,6 @@ dojo.provide("dojo.widget.CurrencyTextbox");
 dojo.require("dojo.widget.IntegerTextbox");
 dojo.require("dojo.validate.common");
 
-/*`
-  ****** CurrencyTextbox ******
-
-  Has 5 new properties that can be specified as attributes in the markup.
-
-  @attr fractional      
-  @attr symbol     
-  @attr separator  
-  @attr min  Minimum signed value.  Default is -Infinity
-  @attr max  Maximum signed value.  Default is +Infinity
-*/
 dojo.widget.defineWidget(
 	"dojo.widget.CurrencyTextbox",
 	dojo.widget.IntegerTextbox,
@@ -21,23 +10,29 @@ dojo.widget.defineWidget(
 		// summary:
 		//	  A subclass that extends IntegerTextbox.
 		//		Over-rides isValid/isInRange to test if input denotes a monetary value .
+
+		/*=====
 		// fractional: Boolean
 		//		The decimal places (e.g. for cents).  Can be true or false, optional if omitted.
-		/*=====
 		fractional: undefined,
+
 		// symbol: String
 		//		A currency symbol such as Yen "???", Pound "???", or the Euro "???". Default is "$".
 		symbol: "$",
+
 		// separator: String
 		//		Default is "," instead of no separator as in IntegerTextbox.
 		separator: ",",
+
 		// min: Number
 		//		Minimum signed value.  Default is -Infinity
 		min: undefined,
+
 		// max: Number
 		//		Maximum signed value.  Default is +Infinity
 		max: undefined,
 		=====*/
+
 		mixInProperties: function(localProperties, frag){
 			// First initialize properties in super-class.
 			dojo.widget.CurrencyTextbox.superclass.mixInProperties.apply(this, arguments);

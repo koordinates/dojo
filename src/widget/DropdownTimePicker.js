@@ -10,42 +10,35 @@ dojo.require("dojo.date.serialize");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.widget", "DropdownTimePicker");
 
-/*
-summary: 
-	A form input for entering times with a pop-up dojo.widget.TimePicker to aid in selection
-
-	description: 
-		This is TimePicker in a DropdownContainer, it supports all features of TimeePicker.
-
-		It is possible to customize the user-visible formatting with either the formatLength or 
-		displayFormat attributes.  The value sent to the server is typically a locale-independent 
-		value in a hidden field as defined by the name attribute. RFC3339 representation is used 
-		by default, but other options are available with saveFormat.
-
-	usage: 
-		var dtp = dojo.widget.createWidget("DropdownTimePicker", {},   
-		dojo.byId("DropdownTimePickerNode")); 
- 	 
-		<input dojoType="DropdownTimePicker">
-*/
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownTimePicker",
 	dojo.widget.DropdownContainer,
 	{
-		//URL
-		//	path of icon for button to display time picker widget
-		iconURL: dojo.uri.dojoUri("src/widget/templates/images/timeIcon.gif"),
+		/*
+		summary: 
+			A form input for entering times with a pop-up dojo.widget.TimePicker to aid in selection
 		
-		//Number
-		//	z-index of time picker widget
-		zIndex: "10",
+			description: 
+				This is TimePicker in a DropdownContainer, it supports all features of TimeePicker.
+		
+				It is possible to customize the user-visible formatting with either the formatLength or 
+				displayFormat attributes.  The value sent to the server is typically a locale-independent 
+				value in a hidden field as defined by the name attribute. RFC3339 representation is used 
+				by default, but other options are available with saveFormat.
+		
+			usage: 
+				var dtp = dojo.widget.createWidget("DropdownTimePicker", {},   
+				dojo.byId("DropdownTimePickerNode")); 
+		 	 
+				<input dojoType="DropdownTimePicker">
+		*/
 
-		//String
+		// formatLength: String
 		//	Type of formatting used for visual display, appropriate to locale (choice of long, short, medium or full)
 		//	See dojo.date.format for details.
 		formatLength: "short",
 
-		//String
+		// displayFormat: String
 		//	A pattern used for the visual display of the formatted date.
 		//	Setting this overrides the default locale-specific settings as well as the formatLength
 		//	attribute.  See dojo.date.format for a reference which defines the formatting patterns.
@@ -54,7 +47,7 @@ dojo.widget.defineWidget(
 		timeFormat: "", // deprecated, will be removed for 0.5
 
 //FIXME: need saveFormat attribute support
-		//String
+		// saveFormat: String
 		//	Formatting scheme used when submitting the form element.  This formatting is used in a hidden
 		//  field (name) intended for server use, and is therefore typically locale-independent.
 		//  By default, uses rfc3339 style date formatting (rfc)
@@ -62,11 +55,11 @@ dojo.widget.defineWidget(
 		//	rfc|iso|posix|unix
 		saveFormat: "",
 
-		//String|Date
+		// value: String|Date
 		//	form value property in rfc3339 format. ex: 12:00
 		value: "",
 
-		//String
+		// name: String
 		// 	name of the form element, used to create a hidden field by this name for form element submission.
 		name: "",
 

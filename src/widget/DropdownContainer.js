@@ -8,35 +8,36 @@ dojo.require("dojo.html.display");
 dojo.require("dojo.html.iframe");
 dojo.require("dojo.html.util");
 
-// summary:
-//		provides an input box and a button for a dropdown.
-//		In subclass, the dropdown can be specified.
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownContainer",
 	dojo.widget.HtmlWidget,
 	{
-		// String: width of the input box
+		// summary:
+		//		provides an input box and a button for a dropdown.
+		//		In subclass, the dropdown can be specified.
+
+		// inputWidth: String: width of the input box
 		inputWidth: "7em",
 
-		// String: id of this widget
+		// id: String: id of this widget
 		id: "",
 
-		// String: id of the input box
+		// inputId: String: id of the input box
 		inputId: "",
 
-		// String: name of the input box
+		// inputName: String: name of the input box
 		inputName: "",
 
-		// dojo.uri.Uri: icon for the dropdown button
+		// iconURL: dojo.uri.Uri: icon for the dropdown button
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/combo_box_arrow.png"),
 
-		// dojo.uri.Uri: alt text for the dropdown button icon
+		// iconAlt: dojo.uri.Uri: alt text for the dropdown button icon
 		iconAlt: "",
 
-		// String: toggle property of the dropdown
+		// containerToggle: String: toggle property of the dropdown
 		containerToggle: "plain",
 
-		// Integer: toggle duration property of the dropdown
+		// containerToggleDuration: Integer: toggle duration property of the dropdown
 		containerToggleDuration: 150,
 
 		templateString: '<span style="white-space:nowrap"><input type="hidden" name="" value="" dojoAttachPoint="valueNode" /><input name="" type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" autocomplete="off" /> <img src="${this.iconURL}" alt="${this.iconAlt}" dojoAttachEvent="onclick:onIconClick" dojoAttachPoint="buttonNode" style="vertical-align:middle; cursor:pointer; cursor:hand" /></span>',

@@ -4,13 +4,14 @@ dojo.require("dojo.io.*");
 dojo.require("dojo.widget.RichText");
 dojo.require("dojo.widget.Editor2Toolbar");
 
-// Object: Manager of current focused Editor2 Instance and available editor2 commands
 dojo.widget.Editor2Manager = new dojo.widget.HandlerManager;
 dojo.lang.mixin(dojo.widget.Editor2Manager,
 {
+	// summary: Manager of current focused Editor2 Instance and available editor2 commands
+
 	_currentInstance: null,
 
-	// Object: state a command may be in
+	// commandState: Object: state a command may be in
 	commandState: {Disabled: 0, Latched: 1, Enabled: 2},
 
 	getCurrentInstance: function(){
@@ -80,10 +81,11 @@ dojo.lang.mixin(dojo.widget.Editor2Manager,
 
 dojo.addOnUnload(dojo.widget.Editor2Manager, "destroy");
 
-// summary:
-//		dojo.widget.Editor2Command is the base class for all command in Editor2
 dojo.lang.declare("dojo.widget.Editor2Command",null,
 	function(editor,name){
+		// summary:
+		//		dojo.widget.Editor2Command is the base class for all commands in Editor2
+
 		this._editor = editor;
 		this._updateTime = 0;
 		this._name = name;
@@ -163,13 +165,12 @@ dojo.widget.Editor2BrowserCommandNames={
 //			'inlinedirrtl':
 }
 
-// summary:
-//		dojo.widget.Editor2BrowserCommand is the base class for all the browser built
-//		in commands
 dojo.lang.declare("dojo.widget.Editor2BrowserCommand", dojo.widget.Editor2Command, 
 	function(editor,name){
-		// summary: Constructor of this class
-		
+		// summary:
+		//		dojo.widget.Editor2BrowserCommand is the base class for all the browser built
+		//		in commands
+
 		var text = dojo.widget.Editor2BrowserCommandNames[name.toLowerCase()];
 		if(text){
 			this._text = text;
@@ -243,28 +244,37 @@ dojo.lang.declare("dojo.widget.Editor2FormatBlockCommand", dojo.widget.Editor2Br
 );
 
 dojo.require("dojo.widget.FloatingPane");
-// summary:
-//		dojo.widget.Editor2Dialog provides a Dialog which can be modal or normal for the Editor2.
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2Dialog",
 	[dojo.widget.HtmlWidget, dojo.widget.FloatingPaneBase, dojo.widget.ModalDialogBase],
 	{
+		// summary:
+		//		Provides a Dialog which can be modal or normal for the Editor2.
+
 		templatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorDialog.html"),
-		// Boolean: Whether this is a modal dialog. True by default.
+
+		// modal: Boolean: Whether this is a modal dialog. True by default.
 		modal: true,
+
 //		refreshOnShow: true, //for debug for now
 
-		// String: Wwidth of the dialog. None by default
-		width: false,
-		// String: Height of the dialog. None by default
-		height: false,
+		// width: String: Width of the dialog. None by default.
+		width: "",
 
-		// String: startup state of the dialog
+		// height: String: Height of the dialog. None by default.
+		height: "",
+
+		// windowState: String: startup state of the dialog
 		windowState: "minimized",
 
 		displayCloseAction: true,
 
+		// contentFile: String
+		//	TODO
 		contentFile: "",
+		
+		// contentClass: String
+		//	TODO
 		contentClass: "",
 
 		fillInTemplate: function(args, frag){
@@ -348,13 +358,14 @@ dojo.widget.defineWidget(
 	}
 );
 
-// summary:
-//		dojo.widget.Editor2DialogContent is the actual content of a Editor2Dialog.
-//		This class should be subclassed to provide the content.
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2DialogContent",
 	dojo.widget.HtmlWidget,
 {
+	// summary:
+	//		dojo.widget.Editor2DialogContent is the actual content of a Editor2Dialog.
+	//		This class should be subclassed to provide the content.
+
 	widgetsInTemplate: true,
 
 	loadContent:function(){
@@ -367,11 +378,11 @@ dojo.widget.defineWidget(
 	}
 });
 
-// summary:
-//		dojo.widget.Editor2DialogCommand provides an easy way to popup a dialog when
-//		the command is executed.
 dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2BrowserCommand,
 	function(editor, name, dialogParas){
+		// summary:
+		//		Provides an easy way to popup a dialog when
+		//		the command is executed.
 		this.dialogParas = dialogParas;
 	},
 {
@@ -394,16 +405,10 @@ dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2Browser
 	}
 });
 
-// Object: keeping track of all available share toolbar groups
-dojo.widget.Editor2ToolbarGroups = {};
+dojo.widget.Editor2ToolbarGroups = {
+	// summary: keeping track of all available share toolbar groups
+};
 
-// summary:
-//		dojo.widget.Editor2 is the WYSIWYG editor in dojo with toolbar. It supports a plugin
-//		framework which can be used to extend the functionalities of the editor, such as
-//		adding a context menu, table operation etc.
-// description:
-//		Plugins are available using dojo's require syntax. Please find available built-in plugins
-//		under src/widget/Editor2Plugin.
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2",
 	dojo.widget.RichText,
@@ -411,14 +416,22 @@ dojo.widget.defineWidget(
 		this._loadedCommands={};
 	},
 	{
-//		// String: url to which save action should send content to
+		// summary:
+		//		dojo.widget.Editor2 is the WYSIWYG editor in dojo with toolbar. It supports a plugin
+		//		framework which can be used to extend the functionalities of the editor, such as
+		//		adding a context menu, table operation etc.
+		// description:
+		//		Plugins are available using dojo's require syntax. Please find available built-in plugins
+		//		under src/widget/Editor2Plugin.
+
+//		// saveUrl: String: url to which save action should send content to
 //		saveUrl: "",
-//		// String: HTTP method for save (post or get)
+//		// saveMethod: String: HTTP method for save (post or get)
 //		saveMethod: "post",
 //		saveArgName: "editorContent",
 //		closeOnSave: false,
 
-		// Boolean: Whether the toolbar should scroll to keep it in the view
+		// toolbarAlwaysVisible: Boolean: Whether the toolbar should scroll to keep it in the view
 		toolbarAlwaysVisible: false,
 
 //		htmlEditing: false,
@@ -429,26 +442,30 @@ dojo.widget.defineWidget(
 		// toolbarTemplatePath: dojo.uri.Uri
 		//		to specify the template file for the toolbar
 		toolbarTemplatePath: dojo.uri.dojoUri("src/widget/templates/EditorToolbarOneline.html"),
+
 		// toolbarTemplateCssPath: dojo.uri.Uri
 		//		to specify the css file for the toolbar
 		toolbarTemplateCssPath: null,
+
 		// toolbarPlaceHolder: String
 		//		element id to specify where to attach the toolbar
 		toolbarPlaceHolder: '',
+
 //		toolbarTemplatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorToolbarFCKStyle.html"),
 //		toolbarTemplateCssPath: dojo.uri.dojoUri("src/widget/templates/Editor2/FCKDefault/EditorToolbarFCKStyle.css"),
 
 		_inSourceMode: false,
 		_htmlEditNode: null,
 
-		// String: 
+		// toolbarGroup: String: 
 		//		This instance of editor will share the same toolbar with other editor with the same toolbarGroup. 
 		//		By default, toolbarGroup is empty and standalone toolbar is used for this instance.
 		toolbarGroup: '',
-		// Boolean: Whether to share toolbar with other instances of Editor2. Deprecated in favor of toolbarGroup
+
+		// shareToolbar: Boolean: Whether to share toolbar with other instances of Editor2. Deprecated in favor of toolbarGroup
 		shareToolbar: false,
 
-		// String: specify which context menu set should be used for this instance. Include ContextMenu plugin to use this
+		// contextMenuGroupSet: String: specify which context menu set should be used for this instance. Include ContextMenu plugin to use this
 		contextMenuGroupSet: '',
 
 		editorOnLoad: function(){
@@ -778,6 +795,5 @@ dojo.widget.defineWidget(
 				}
 			}
 		}*/
-	},
-	"html"
+	}
 );
