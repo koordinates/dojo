@@ -12,11 +12,11 @@ dojo.widget.defineWidget(
 	{
 		// format: Deprecated. Style as described in v0.3 in dojo.validate.  Default is  "MM/DD/YYYY".
 
-		// String
+		// displayFormat: String
 		//	optional pattern used format date.  Uses locale-specific format by default.  See dojo.date.format.
 		displayFormat: "",
 
-		// String
+		// formatLength: String
 		//	alternate to displayFormat, to format date as short/medium/long.  see dojo.date.format
 		formatLength: "short",
 
@@ -56,11 +56,11 @@ dojo.widget.defineWidget(
 		// amSymbol: Deprecated. Used with format. The symbol used for AM.  Default is "AM" or "am".
 		// pmSymbol: Deprecated. Used with format. The symbol used for PM.  Default is "PM" or "pm".
 
-		// String
+		// displayFormat: String
 		//	optional pattern used format time.  Uses locale-specific format by default.  See dojo.time.format.
 		displayFormat: "",
 
-		// String
+		// formatLength: String
 		//	alternate to displayFormat, to format time as short/medium/long.  see dojo.time.format
 		formatLength: "short",
 

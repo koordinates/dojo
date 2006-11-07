@@ -11,38 +11,39 @@ dojo.require("dojo.string.common");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.widget", "DropdownDatePicker");
 
-/*
-summary: 
-	A form input for entering dates with a pop-up dojo.widget.DatePicker to aid in selection
 
-	description: 
-		This is DatePicker in a DropdownContainer, it supports all features of DatePicker.
-
-		The value displayed in the widget is localized according to the default algorithm provided
-		in dojo.date.format and dojo.date.parse.  It is possible to customize the user-visible formatting
-		with either the formatLength or displayFormat attributes.  The value sent to the server is
-		typically a locale-independent value in a hidden field as defined by the name attribute.
-		RFC3339 representation is used by default, but other options are available with saveFormat.
-
-	usage: 
-		var ddp = dojo.widget.createWidget("DropdownDatePicker", {},   
-		dojo.byId("DropdownDatePickerNode")); 
- 	 
-		<input dojoType="DropdownDatePicker">
-*/
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownDatePicker",
 	dojo.widget.DropdownContainer,
 	{
-		iconURL: dojo.uri.dojoUri("src/widget/templates/images/dateIcon.gif"),
-		zIndex: "10",
+		/*
+		summary: 
+			A form input for entering dates with a pop-up dojo.widget.DatePicker to aid in selection
+		
+			description: 
+				This is DatePicker in a DropdownContainer, it supports all features of DatePicker.
+		
+				The value displayed in the widget is localized according to the default algorithm provided
+				in dojo.date.format and dojo.date.parse.  It is possible to customize the user-visible formatting
+				with either the formatLength or displayFormat attributes.  The value sent to the server is
+				typically a locale-independent value in a hidden field as defined by the name attribute.
+				RFC3339 representation is used by default, but other options are available with saveFormat.
+		
+			usage: 
+				var ddp = dojo.widget.createWidget("DropdownDatePicker", {},   
+				dojo.byId("DropdownDatePickerNode")); 
+		 	 
+				<input dojoType="DropdownDatePicker">
+		*/
 
-		//String
+		iconURL: dojo.uri.dojoUri("src/widget/templates/images/dateIcon.gif"),
+
+		// formatLength: String
 		// 	Type of formatting used for visual display, appropriate to locale (choice of long, short, medium or full)
 		//  See dojo.date.format for details.
 		formatLength: "short",
 
-		//String
+		// displayFormat: String
 		//	A pattern used for the visual display of the formatted date, e.g. dd/MM/yyyy.
 		//	Setting this overrides the default locale-specific settings as well as the formatLength
 		//	attribute.  See dojo.date.format for a reference which defines the formatting patterns.
@@ -50,7 +51,7 @@ dojo.widget.defineWidget(
 
 		dateFormat: "", // deprecated, will be removed for 0.5
 
-		//String
+		// saveFormat: String
 		//	Formatting scheme used when submitting the form element.  This formatting is used in a hidden
 		//  field (name) intended for server use, and is therefore typically locale-independent.
 		//  By default, uses rfc3339 style date formatting (rfc)
@@ -58,37 +59,37 @@ dojo.widget.defineWidget(
 		//	rfc|iso|posix|unix
 		saveFormat: "",
 
-		//String|Date
+		// value: String|Date
 		//	form value property in rfc3339 format. If =='today', will use today's date
 		value: "",
 
-		//String
+		// name: String
 		// 	name of the form element, used to create a hidden field by this name for form element submission.
 		name: "",
 
 		// Implement various attributes from DatePicker
 
-		//Integer
+		// displayWeeks: Integer
 		//	number of weeks to display 
 		displayWeeks: 6,
 
-		//Boolean
+		// adjustWeeks: Boolean
 		//	if true, weekly size of calendar changes to accomodate the month if false, 42 day format is used
 		adjustWeeks: false,
 
-		//String|Date
+		// startDate: String|Date
 		//	first available date in the calendar set
 		startDate: "1492-10-12",
 
-		//String|Date
+		// endDate: String|Date
 		//	last available date in the calendar set
 		endDate: "2941-10-12",
 
-		//Integer
+		// weekStartsOn: Integer
 		//	adjusts the first day of the week 0==Sunday..6==Saturday
 		weekStartsOn: "",
 
-		//Boolean
+		// staticDisplay: Boolean
 		//	disable all incremental controls, must pick a date in the current display
 		staticDisplay: false,
 		
@@ -128,7 +129,6 @@ dojo.widget.defineWidget(
 			if(this.value){
 				this._updateText();
 			}
-			this.containerNode.style.zIndex = this.zIndex;
 			this.containerNode.explodeClassName = "calendarBodyContainer";
 			this.valueNode.name=this.name;
 		},

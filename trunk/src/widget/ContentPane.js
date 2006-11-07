@@ -22,7 +22,7 @@ dojo.widget.defineWidget(
 		//		But note that those classes can contain any widget as a child.
 		// scriptScope: Function
 		//		reference holder to the inline scripts container, if scriptSeparation is true
-		// bindArgs:
+		// bindArgs: String[]
 		//		Send in extra args to the dojo.io.bind call
 		
 		// per widgetImpl variables
@@ -66,7 +66,6 @@ dojo.widget.defineWidget(
 
 		// preload: Boolean
 		//		Force load of data even if pane is hidden.
-
 		// Note:
 		//		In order to delay download you need to initially hide the node it constructs from
 		preload: false,
@@ -82,7 +81,6 @@ dojo.widget.defineWidget(
 
 		// executeScripts: Boolean
 		//		Run scripts within content, extractContent has NO effect on this.
-
 		// Note:
 		//		if true scripts in content will be evaled after content is innerHTML'ed
 		executeScripts: false,
@@ -91,10 +89,12 @@ dojo.widget.defineWidget(
 		//		Run scripts in a separate scope, unique for each ContentPane
 		scriptSeparation: true,
 
-		// loadingMessage String: Message that shows while downloading
+		// loadingMessage: String
+		//		Message that shows while downloading
 		loadingMessage: "Loading...",
 
-		// isLoaded Boolean: Tells loading status
+		// isLoaded: Boolean
+		//		Tells loading status
 		isLoaded: false,
 
 		postCreate: function(args, frag, parentComp){

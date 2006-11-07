@@ -135,11 +135,11 @@ dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
 });
 
 dojo.addOnUnload(dojo.widget.Editor2ToolbarItemManager, "destroy");
-// summary:
-//		dojo.widget.Editor2ToolbarButton is the base class for all toolbar item in Editor2Toolbar
+
 dojo.declare("dojo.widget.Editor2ToolbarButton", null,
 	function(name){
-		// summary: constructor
+		// summary:
+		//		dojo.widget.Editor2ToolbarButton is the base class for all toolbar item in Editor2Toolbar
 		this._name = name;
 //		this._command = editor.getCommand(name);
 	},
@@ -266,8 +266,9 @@ dojo.declare("dojo.widget.Editor2ToolbarButton", null,
 	}
 });
 
-// summary: dojo.widget.Editor2ToolbarDropDownButton extends the basic button with a dropdown list
-dojo.declare("dojo.widget.Editor2ToolbarDropDownButton", dojo.widget.Editor2ToolbarButton, function(){}, {
+dojo.declare("dojo.widget.Editor2ToolbarDropDownButton", dojo.widget.Editor2ToolbarButton, {
+	// summary: dojo.widget.Editor2ToolbarDropDownButton extends the basic button with a dropdown list
+
 	onClick: function(){
 		if(this._domNode && !this._domNode.disabled && this._parentToolbar.checkAvailability()){
 			if(!this._dropdown){
@@ -293,8 +294,9 @@ dojo.declare("dojo.widget.Editor2ToolbarDropDownButton", dojo.widget.Editor2Tool
 	onDropDownDestroy: function(){}
 });
 
-// summary: dojo.widget.Editor2ToolbarColorPaletteButton provides a dropdown color palette picker
-dojo.declare("dojo.widget.Editor2ToolbarColorPaletteButton", dojo.widget.Editor2ToolbarDropDownButton, function(){}, {
+dojo.declare("dojo.widget.Editor2ToolbarColorPaletteButton", dojo.widget.Editor2ToolbarDropDownButton, {
+	// summary: dojo.widget.Editor2ToolbarColorPaletteButton provides a dropdown color palette picker
+
 	onDropDownShown: function(){
 		if(!this._colorpalette){
 			this._colorpalette = dojo.widget.createWidget("ColorPalette", {});
@@ -323,8 +325,9 @@ dojo.declare("dojo.widget.Editor2ToolbarColorPaletteButton", dojo.widget.Editor2
 	}
 });
 
-// summary: dojo.widget.Editor2ToolbarFormatBlockPlainSelect provides a simple select for setting block format
-dojo.declare("dojo.widget.Editor2ToolbarFormatBlockPlainSelect", dojo.widget.Editor2ToolbarButton, function(){}, {
+dojo.declare("dojo.widget.Editor2ToolbarFormatBlockPlainSelect", dojo.widget.Editor2ToolbarButton, {
+	// summary: dojo.widget.Editor2ToolbarFormatBlockPlainSelect provides a simple select for setting block format
+
 	create: function(node, toolbar){
 //		dojo.widget.Editor2ToolbarFormatBlockPlainSelect.superclass.create.apply(this, arguments);
 		this._domNode = node;
@@ -372,8 +375,9 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockPlainSelect", dojo.widget.Edi
 	}
 });
 
-// summary: dojo.widget.Editor2ToolbarComboItem provides an external loaded dropdown list
-dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDropDownButton, function(){}, {
+dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDropDownButton, {
+	// summary: dojo.widget.Editor2ToolbarComboItem provides an external loaded dropdown list
+
 	href: null,
 	create: function(node, toolbar){
 		dojo.widget.Editor2ToolbarComboItem.superclass.create.apply(this, arguments);
@@ -431,8 +435,9 @@ dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDr
 	}
 });
 
-// summary: dojo.widget.Editor2ToolbarFormatBlockSelect is an improved format block setting item
-dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2ToolbarComboItem, function(){}, {
+dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2ToolbarComboItem, {
+	// summary: dojo.widget.Editor2ToolbarFormatBlockSelect is an improved format block setting item
+
 	href: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorToolbar_FormatBlock.html"),
 
 	setup: function(){
@@ -496,8 +501,9 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2T
 	}
 });
 
-// summary: dojo.widget.Editor2ToolbarFontSizeSelect provides a dropdown list for setting fontsize
-dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2ToolbarComboItem, function(){}, {
+dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2ToolbarComboItem, {
+	// summary: dojo.widget.Editor2ToolbarFontSizeSelect provides a dropdown list for setting fontsize
+
 	href: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorToolbar_FontSize.html"),
 
 	setup: function(){
@@ -560,31 +566,44 @@ dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2Tool
 	}
 });
 
-// summary: dojo.widget.Editor2ToolbarFontNameSelect provides a dropdown list for setting fontname
-dojo.declare("dojo.widget.Editor2ToolbarFontNameSelect", dojo.widget.Editor2ToolbarFontSizeSelect, function(){}, {
+dojo.declare("dojo.widget.Editor2ToolbarFontNameSelect", dojo.widget.Editor2ToolbarFontSizeSelect, {
+	// summary: dojo.widget.Editor2ToolbarFontNameSelect provides a dropdown list for setting fontname
 	href: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorToolbar_FontName.html")
 });
 
-// summary:
-//		dojo.widget.Editor2Toolbar is the main widget for the toolbar associated with an Editor2
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2Toolbar",
 	dojo.widget.HtmlWidget,
+	function(){
+		// summary:
+		//		dojo.widget.Editor2Toolbar is the main widget for the toolbar associated with an Editor2
+
+		dojo.event.connect(this, "fillInTemplate", dojo.lang.hitch(this, function(){
+			if(dojo.render.html.ie){
+				this.domNode.style.zoom = 1.0;
+			}
+		}));
+	},
 	{
 		templatePath: dojo.uri.dojoUri("src/widget/templates/EditorToolbar.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/EditorToolbar.css"),
 
-		// String: class name for latched toolbar button items
+		// ToolbarLatchedItemStyle: String: class name for latched toolbar button items
 		ToolbarLatchedItemStyle: "ToolbarButtonLatched",
-		// String: class name for enabled toolbar button items
+
+		// ToolbarEnabledItemStyle: String: class name for enabled toolbar button items
 		ToolbarEnabledItemStyle: "ToolbarButtonEnabled",
-		// String: class name for disabled toolbar button items
+
+		// ToolbarDisabledItemStyle: String: class name for disabled toolbar button items
 		ToolbarDisabledItemStyle: "ToolbarButtonDisabled",
-		// String: class name for highlighted toolbar button items
+
+		// ToolbarHighlightedItemStyle: String: class name for highlighted toolbar button items
 		ToolbarHighlightedItemStyle: "ToolbarButtonHighlighted",
-		// String: class name for highlighted toolbar select items
+
+		// ToolbarHighlightedSelectStyle: String: class name for highlighted toolbar select items
 		ToolbarHighlightedSelectStyle: "ToolbarSelectHighlighted",
-		// String: class name for highlighted toolbar select dropdown items
+
+		// ToolbarHighlightedSelectItemStyle: String: class name for highlighted toolbar select dropdown items
 		ToolbarHighlightedSelectItemStyle: "ToolbarSelectHighlightedItem",
 
 //		itemNodeType: 'span', //all the items (with attribute dojoETItemName set) defined in the toolbar should be a of this type
@@ -644,13 +663,5 @@ dojo.widget.defineWidget(
 
 		// stub for observers
 //		exec: function(what, arg){ /* dojo.debug(what, new Date()); */ }
-	},
-	"html",
-	function(){
-		dojo.event.connect(this, "fillInTemplate", dojo.lang.hitch(this, function(){
-			if(dojo.render.html.ie){
-				this.domNode.style.zoom = 1.0;
-			}
-		}));
 	}
 );
