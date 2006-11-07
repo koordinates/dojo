@@ -5,23 +5,24 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.selection");
 
-// summary
-//	A container that has multiple children, but shows only
-//	one child at a time (like looking at the pages in a book one by one).
-//
-//	Publishes topics <widgetId>-addChild, <widgetId>-removeChild, and <widgetId>-selectChild
-//
-//	Can be base class for container, Wizard, Show, etc.
 dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
+	// summary
+	//	A container that has multiple children, but shows only
+	//	one child at a time (like looking at the pages in a book one by one).
+	//
+	//	Publishes topics <widgetId>-addChild, <widgetId>-removeChild, and <widgetId>-selectChild
+	//
+	//	Can be base class for container, Wizard, Show, etc.
+
 	isContainer: true,
 
-	// Boolean
+	// doLayout: Boolean
 	//  if true, change the size of my currently displayed child to match my size
 	doLayout: true,
 
 	templateString: "<div dojoAttachPoint='containerNode'></div>",
 
-	// String
+	// selectedChild: String
 	//   id of the currently shown page
 	selectedChild: "",
 
@@ -175,26 +176,27 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 });
 
 
-// summary
-//	Set of buttons to select a page in a page list.
-//	Monitors the specified PageContaine, and whenever a page is
-//	added, deleted, or selected, updates itself accordingly.
 dojo.widget.defineWidget(
     "dojo.widget.PageController",
     dojo.widget.HtmlWidget,
 	{
+		// summary
+		//	Set of buttons to select a page in a page list.
+		//	Monitors the specified PageContaine, and whenever a page is
+		//	added, deleted, or selected, updates itself accordingly.
+
 		templateString: "<span wairole='tablist' dojoAttachEvent='onKey'></span>",
 		isContainer: true,
 
-		// String
+		// containerId: String
 		//	the id of the page container that I point to
 		containerId: "",
 
-		// String
+		// buttonWidget: String
 		//	the name of the button widget to create to correspond to each page
 		buttonWidget: "PageButton",
 
-		// String
+		// class: String
 		//	Class name to apply to the top dom node
 		"class": "dojoPageController",
 
@@ -307,21 +309,22 @@ dojo.widget.defineWidget(
 	}
 );
 
-// summary
-//	Internal widget used by PageList.
-//	The button-like or tab-like object you click to select or delete a page
 dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 {
+	// summary
+	//	Internal widget used by PageList.
+	//	The button-like or tab-like object you click to select or delete a page
+
 	templateString: "<span class='item'>" +
 						"<span dojoAttachEvent='onClick' dojoAttachPoint='titleNode' class='selectButton'>${this.label}</span>" +
 						"<span dojoAttachEvent='onClick:onCloseButtonClick' class='closeButton'>[X]</span>" +
 					"</span>",
 
-	// String
+	// label: String
 	//  Name to print on the button
 	label: "foo",
 	
-	// Boolean
+	// closeButton: Boolean
 	//	true iff we should also print a close icon to destroy corresponding page
 	closeButton: false,
 
@@ -375,8 +378,20 @@ dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 // Since any widget can be specified as a PageContainer child, mix them
 // into the base widget class.  (This is a hack, but it's effective.)
 dojo.lang.extend(dojo.widget.Widget, {
+	// label: String
+	//		Label or title of this widget.  Used by TabContainer to the name the tab, etc.
 	label: "",
-	selected: false,	// is this tab currently selected?
+	
+	// selected: Boolean
+	//		Is this child currently selected?
+	selected: false,
+	
+	// closable: Boolean
+	//		True if user can close (destroy) this child, such as (for example) clicking the X on the tab.
 	closable: false,	// true if user can close this tab pane
-	onClose: function(){ return true; }	// callback if someone tries to close the child, child will be closed if func returns true
+	
+	onClose: function(){
+		// summary: Callback if someone tries to close the child, child will be closed if func returns true
+		return true;
+	}
 });

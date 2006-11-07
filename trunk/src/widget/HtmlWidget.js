@@ -7,24 +7,30 @@ dojo.require("dojo.lang.extras");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.lfx.toggle");
 
-// summary
-//	Base class for all browser based widgets, or at least "html" widgets.
-//	The meaning of "html" has become unclear; in practice, all widgets derive from this class.
 dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {								 
+	// summary
+	//	Base class for all browser based widgets, or at least "html" widgets.
+	//	The meaning of "html" has become unclear; in practice, all widgets derive from this class.
+	
+	// templateCssPath: String
+	//	Path to CSS file for this widget
 	templateCssPath: null,
+	
+	// templatePath: String
+	//	Path to template (HTML file) for this widget
 	templatePath: null,
 
-	// String
+	// lang: String
 	//	Language to display this widget in (like en-us).
 	//	Defaults to brower's specified preferred language (typically the language of the OS)
 	lang: "",
 
-	// String
+	// toggle: String
 	//	Controls animation effect for when show() and hide() (or toggle()) are called.
 	//	Possible values: "plain", "wipe", "fade", "explode"
 	toggle: "plain",
 
-	// Integer
+	// toggleDuration: Integer
 	//	Number of milliseconds for toggle animation effect to complete
 	toggleDuration: 150,
 
@@ -66,7 +72,7 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 		//	if it's inside a container that's hidden
 		//	(either a container widget, or just a domnode with display:none),
 		//	then it won't be displayed
-		return dojo.html.isShowing(this.domNode);
+		return dojo.html.isShowing(this.domNode);	// Boolean
 	},
 
 	toggleShowing: function(){
@@ -167,7 +173,7 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 	onResized: function(){
 		// summary
 		//	Called when my size has changed.
-		//	Must notify children if their size has (possibly) changed
+		//	Must notify children if their size has (possibly) changed.
 		dojo.lang.forEach(this.children, function(child){ if(child.checkSize){child.checkSize();} });
 	}
 });

@@ -2,13 +2,14 @@ dojo.provide("dojo.widget.Menu2");
 
 dojo.require("dojo.widget.PopupContainer");
 
-// summary
-//	provides a menu that can be used as a context menu (typically shown by right-click),
-//	or as the drop down on a DropDownButton, ComboButton, etc.
 dojo.widget.defineWidget(
 	"dojo.widget.PopupMenu2",
 	dojo.widget.PopupContainer,
 	function(){
+		// summary
+		//	provides a menu that can be used as a context menu (typically shown by right-click),
+		//	or as the drop down on a DropDownButton, ComboButton, etc.
+
 		this.targetNodeIds = []; // fill this with nodeIds upon widget creation and it becomes context menu for those nodes
 	
 		this.eventNames =  {
@@ -18,7 +19,7 @@ dojo.widget.defineWidget(
 {
 	snarfChildDomOutput: true,
 
-	// String
+	// eventNaming: String
 	//	if "default" event names are based on widget id, otherwise user must define
 	//	TODO: write real documentation about the events
 	eventNaming: "default",
@@ -27,25 +28,25 @@ dojo.widget.defineWidget(
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Menu2.css"),
 	templateCssString: "",
 
-	// Integer
+	// submenuDelay: Integer
 	//	number of milliseconds before hovering (without clicking) causes the submenu to automatically open
 	submenuDelay: 500,
 	
-	// String
+	// disabledClass: String
 	//  CSS class for disabled nodes
 	disabledClass: 'dojoMenuItem2Disabled',
 	
-	// Integer
+	// submenuOverlap: Integer
 	//	a submenu usually appears to the right, but slightly overlapping, it's parent menu;
 	//	this controls the number of pixels the two menus overlap.
 	submenuOverlap: 5,
 	
-	// Boolean
+	// contextMenuForWindow: Boolean
 	//	if true, right clicking anywhere on the window will cause this context menu to open;
 	//	if false, must specify targetNodeIds
 	contextMenuForWindow: false,
 
-	// Array
+	// targetNodeIds: String[]
 	//	Array of dom node ids of nodes to attach to
 	targetNodeIds: [],
 
