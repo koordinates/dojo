@@ -7,92 +7,93 @@ dojo.require("dojo.html.style");
 dojo.require("dojo.string.*");
 dojo.require("dojo.lfx.*");
 
-// summary:
-// a progress widget, with some calculation and server polling capabilities
-//
-// description: 
-// (implementation) four overlapped divs:
-// (1) lower z-index
-// (4) higher z-index
-// back and front percent label have the same content: when the vertical line (*)
-// partially hides the backPercentLabel, the frontPercentLabel becomes visible
-// 
-//  ________________________(1)_containerNode_________________________________
-// |__(3)_internalProgress____________                                        |
-// |                                  | <--- (*)                              |
-// |     (4) frontPercentLabel        | (2) backPercentLabel                  |
-// |__________________________________|                                       |
-// |__________________________________________________________________________| 
-//
-// usage:
-// <div dojoType="ProgressBar" frontBarClass="..." backBarClass="..."
-//   backBarClass="..." frontBarClass="..." duration="..."
-//   showOnlyIntegers="true|false" width="..." height="..." dataSource="..."
-//   pollInterval="..." 
-//   hasText="true|false" isVertical="true|false" 
-//   progressValue="..." maxProgressValue="..."></div>		
 
 dojo.widget.defineWidget(
 	"dojo.widget.ProgressBar",
 	dojo.widget.HtmlWidget,
 	{
-		// String
+		// summary:
+		// a progress widget, with some calculation and server polling capabilities
+		//
+		// description: 
+		// (implementation) four overlapped divs:
+		// (1) lower z-index
+		// (4) higher z-index
+		// back and front percent label have the same content: when the vertical line (*)
+		// partially hides the backPercentLabel, the frontPercentLabel becomes visible
+		// 
+		//  ________________________(1)_containerNode_________________________________
+		// |__(3)_internalProgress____________                                        |
+		// |                                  | <--- (*)                              |
+		// |     (4) frontPercentLabel        | (2) backPercentLabel                  |
+		// |__________________________________|                                       |
+		// |__________________________________________________________________________| 
+		//
+		// usage:
+		// <div dojoType="ProgressBar" frontBarClass="..." backBarClass="..."
+		//   backBarClass="..." frontBarClass="..." duration="..."
+		//   showOnlyIntegers="true|false" width="..." height="..." dataSource="..."
+		//   pollInterval="..." 
+		//   hasText="true|false" isVertical="true|false" 
+		//   progressValue="..." maxProgressValue="..."></div>
+	
+		// progressValue: String
 		// initial progress value. 
 		// with "%": percentual value, 0% <= progressValue <= 100%
 		// or without "%": absolute value, 0 <= progressValue <= maxProgressValue
-		progressValue: "0",
+		progressValue: 0,
 		
-		// Float
+		// maxProgressValue: Float
 		// max sample number
 		maxProgressValue: 100,
 
-		// Integer
+		// width: Integer
 		// ProgressBar width (pixel)
 		width: 300,
 
-		// Integer
+		// height: Integer
 		// ProgressBar height, (pixel)
 		height: 30,
 		
-		// String
+		// frontPercentClass: String
 		// css class for frontPercentLabel (4)
 		frontPercentClass: "frontPercent",
 
-		// String
+		// backPercentClass: String
 		// css class for backPercentLabel (2)
 		backPercentClass: "backPercent",
 
-		// String
+		// frontBarClass: String
 		// css class for containerNode (1)
 		frontBarClass: "frontBar",
 
-		// String
+		// backBarClass: String
 		// css class for internalProgress (3)
 		backBarClass: "backBar",
 
-		// Boolean
+		// hasText: Boolean
 		// if true, the percent label is visible
-		hasText: "false",
+		hasText: false,
 
-		// Boolean
+		// isVertical: Boolean
 		// if true, the widget is vertical
-		isVertical: "false",
+		isVertical: false,
 		
-		// Boolean
+		// showOnlyIntegers: Boolean
 		// if true, the percent label shows only integer values
-		showOnlyIntegers: "false",
+		showOnlyIntegers: false,
 		
-		// String
+		// dataSource: String
 		// dataSource uri for server polling
 		dataSource: "",
 		
-		// Integer
+		// pollInterval: Integer
 		// server poll interval
-		pollInterval: "3000",
+		pollInterval: 3000,
 		
-		// Integer
+		// duration: Integer
 		// duration of the animation
-		duration: "1000",
+		duration: 1000,
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/ProgressBar.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/ProgressBar.css"),
@@ -123,7 +124,7 @@ dojo.widget.defineWidget(
 		fillInTemplate: function(args, frag){
 			this.internalProgress.className = this.frontBarClass;
 			this.containerNode.className = this.backBarClass;
-			if (this.isVertical == "true"){
+			if (this.isVertical){
 				this.internalProgress.style.bottom="0px";
 				this.internalProgress.style.left="0px";
 				this._dimension = "height";
@@ -148,7 +149,7 @@ dojo.widget.defineWidget(
 		},
 		showText: function(visible){
 			// summary: shows or hides the labels
-			if (visible == "true"){
+			if (visible){
 				this.backPercentLabel.style.display="block";
 				this.frontPercentLabel.style.display="block";
 			} else {
@@ -334,7 +335,7 @@ dojo.widget.defineWidget(
 		_setPercentLabel: function(percentValue){
 			dojo.dom.removeChildren(this.frontPercentLabel);
 			dojo.dom.removeChildren(this.backPercentLabel);
-			var _percentValue = this.showOnlyIntegers == "false" ? 
+			var _percentValue = this.showOnlyIntegers == false ? 
 				percentValue : parseInt(percentValue) + "%";
 			this.frontPercentLabel.
 				appendChild(document.createTextNode(_percentValue));
