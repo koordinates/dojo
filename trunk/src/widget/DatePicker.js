@@ -68,15 +68,16 @@ dojo.widget.defineWidget(
 		storedDate: "",
 
 		//Boolean
-		//d	isable all incremental controls, must pick a date in the current display
+		//	disable all incremental controls, must pick a date in the current display
 		staticDisplay: false,
 		
-		//how to render the names of the days in the header.  see dojo.date.getDayNames
+		//String
+		//	how to render the names of the days in the header. see dojo.date.getDayNames
 		dayWidth: 'narrow',
 
 		classNames: {
 		// summary:
-		//              stores a list of class names that may be overriden
+		//	stores a list of class names that may be overriden
 		//	TODO: this is not good; can't be adjusted via markup, etc. since it's an array
 			previous: "previousMonth",
 			disabledPrevious: "previousMonthDisabled",

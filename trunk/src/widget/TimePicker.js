@@ -10,24 +10,60 @@ dojo.require("dojo.html.style");
 dojo.requireLocalization("dojo.i18n.calendar", "gregorian");
 dojo.requireLocalization("dojo.widget", "TimePicker");
 
+/*
+summary: 
+	Base class for a stand-alone TimePicker widget 
+	which makes it easy to select a time. 
+description: 
+	A stand-alone TimePicker widget that makes it easy to select a time. 
+	It is designed to be used on its own, or inside of other widgets
+	(see dojo.widget.DropdownTimePicker) or other similar combination widgets. 
+ 	              
+	Times attributes passed in the `RFC 3339` format:
+	http://www.faqs.org/rfcs/rfc3339.html (2005-06-30T08:05:00-07:00)
+	so that they are serializable and locale-independent.
+
+usage: 
+	var timePicker = dojo.widget.createWidget("TimePicker", {},   
+	dojo.byId("timePickerNode")); 
+ 	 
+	<div dojoType="TimePicker"></div> 
+*/
 dojo.widget.defineWidget(
 	"dojo.widget.TimePicker",
 	dojo.widget.HtmlWidget,
 	function(){
-		// selected time, JS Date object
+
+		//start attributes
+		
+		//Date
+		//	selected time
 		this.time = "";
-		// set following flag to true if a default time should be set
+		
+		//Boolean
+		//	set following flag to true if a default time should be set
 		this.useDefaultTime = false;
-		// set the following to true to set default minutes to current time, false to // use zero
+		
+		//Boolean
+		//	set the following to true to set default minutes to current time, false to // use zero
 		this.useDefaultMinutes = false;
-		// rfc 3339 date
+		
+		//String
+		//	rfc 3339 date
 		this.storedTime = "";
-		// time currently selected in the UI, stored in hours, minutes, seconds in the format that will be actually displayed
+		
+		//Object
+		//	time currently selected in the UI, stored in hours, minutes, seconds in the format that will be actually displayed
 		this.currentTime = {};
+		
 		this.classNames = {
+		// summary:
+		//	stores a list of class names that may be overriden
 			selectedTime: "selectedItem"
 		};
+		
 		this.any = "any"; //FIXME: never used?
+		
 		// dom node indecies for selected hour, minute, amPm, and "any time option"
 		this.selectedTime = {
 			hour: "",
@@ -38,6 +74,7 @@ dojo.widget.defineWidget(
 
 		// minutes are ordered as follows: ["12", "6", "1", "7", "2", "8", "3", "9", "4", "10", "5", "11"]
 		this.hourIndexMap = ["", 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11, 0];
+		
 		// minutes are ordered as follows: ["00", "30", "05", "35", "10", "40", "15", "45", "20", "50", "25", "55"]
 		this.minuteIndexMap = [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11];
 	},
@@ -46,7 +83,16 @@ dojo.widget.defineWidget(
 	templatePath: dojo.uri.dojoUri("src/widget/templates/TimePicker.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TimePicker.css"),
 
+	postMixInProperties: function(localProperties, frag) {
+		// summary: see dojo.widget.DomWidget
+		dojo.widget.TimePicker.superclass.postMixInProperties.apply(this, arguments);
+		this.calendar = dojo.i18n.getLocalization("dojo.i18n.calendar", "gregorian", this.lang); // "am","pm"
+		this.widgetStrings = dojo.i18n.getLocalization("dojo.widget", "TimePicker", this.lang); // "any"
+	},
+
 	fillInTemplate: function(args, frag){
+		// summary: see dojo.widget.DomWidget
+
 		// Copy style info from input node to output node
 		var source = this.getFragNodeRef(frag);
 		dojo.html.copyStyle(this.domNode, source);
@@ -61,12 +107,6 @@ dojo.widget.defineWidget(
 		
 		this.initData();
 		this.initUI();
-	},
-
-	postMixInProperties: function(localProperties, frag) {
-		dojo.widget.TimePicker.superclass.postMixInProperties.apply(this, arguments);
-		this.calendar = dojo.i18n.getLocalization("dojo.i18n.calendar", "gregorian", this.lang); // "am","pm"
-		this.widgetStrings = dojo.i18n.getLocalization("dojo.widget", "TimePicker", this.lang); // "any"
 	},
 
 	initData: function() {
@@ -102,6 +142,7 @@ dojo.widget.defineWidget(
 	},
 	
 	setTime: function(date) {
+		//summary: set the current date and update the UI
 		if(date) {
 			this.selectedTime.anyTime = false;
 			this.setDateTime(dojo.date.toRfc3339(date));
@@ -292,8 +333,10 @@ dojo.widget.defineWidget(
 });
 
 dojo.widget.TimePicker.util = new function() {
-	// utility functions
+	//summary: utility functions
+	
 	this.toRfcDateTime = function(jsDate) {
+		//summary: formats a Date object to RFC 3339 string
 		if(!jsDate) {
 			jsDate = new Date();
 		}
@@ -302,6 +345,7 @@ dojo.widget.TimePicker.util = new function() {
 	}
 
 	this.fromRfcDateTime = function(rfcDate, useDefaultMinutes, isAnyTime) {
+		//summary: constructs a Date object from RFC 3339 string
 		var tempDate = new Date();
 		if(!rfcDate || rfcDate.indexOf("T")==-1) {
 			if(useDefaultMinutes) {
@@ -320,6 +364,7 @@ dojo.widget.TimePicker.util = new function() {
 	}
 
 	this.toAmPmHour = function(hour) {
+		//summary: converts a 24-hour-based hour value to a 12-hour-based hour value, and an AM/PM flag
 		var amPmHour = hour;
 		var isAm = true;
 		if (amPmHour == 0) {
@@ -334,6 +379,7 @@ dojo.widget.TimePicker.util = new function() {
 	}
 
 	this.fromAmPmHour = function(amPmHour, isAm) {
+		//summary: converts a 12-hour-based hour value and an AM/PM flag to a 24-hour-based hour value
 		var hour = parseInt(amPmHour, 10);
 		if(isAm && hour == 12) {
 			hour = 0;
