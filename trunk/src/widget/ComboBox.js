@@ -915,7 +915,11 @@ dojo.widget.defineWidget(
 		},
 
 		_startSearchFromInput: function(){
-			this.dataProvider.startSearch(this.textInputNode.value, dojo.lang.hitch(this, "_openResultList"));
+			this._startSearch(this.textInputNode.value);
+		},
+
+		_startSearch: function(/*String*/ key){
+			this.dataProvider.startSearch(key, dojo.lang.hitch(this, "_openResultList"));
 		},
 
 		postCreate: function(){
