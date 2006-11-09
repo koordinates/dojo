@@ -14,7 +14,7 @@ dojo.lang.declare("dojo.widget.HandlerManager", null,
 		this._registeredHandlers=[];
 	},
 {
-	// summary: base class for handler function management
+	// summary: internal base class for handler function management
 	registerHandler: function(/*Object*/obj, /*String*/func){
 		// summary: register a handler
 		// obj: object which has the function to call
