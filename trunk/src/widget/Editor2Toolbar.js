@@ -14,6 +14,7 @@ dojo.lang.declare("dojo.widget.HandlerManager", null,
 		this._registeredHandlers=[];
 	},
 {
+	// summary: base class for handler function management
 	registerHandler: function(/*Object*/obj, /*String*/func){
 		// summary: register a handler
 		// obj: object which has the function to call
@@ -138,12 +139,12 @@ dojo.addOnUnload(dojo.widget.Editor2ToolbarItemManager, "destroy");
 
 dojo.declare("dojo.widget.Editor2ToolbarButton", null,
 	function(name){
-		// summary:
-		//		dojo.widget.Editor2ToolbarButton is the base class for all toolbar item in Editor2Toolbar
 		this._name = name;
 //		this._command = editor.getCommand(name);
 	},
 {
+	// summary:
+	//		dojo.widget.Editor2ToolbarButton is the base class for all toolbar item in Editor2Toolbar
 	create: function(/*DomNode*/node, /*dojo.widget.Editor2Toolbar*/toolbar, /*Boolean*/nohover){
 		// summary: create the item
 		// node: the dom node which is the root of this toolbar item
@@ -375,7 +376,7 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockPlainSelect", dojo.widget.Edi
 	}
 });
 
-dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDropDownButton, {
+dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDropDownButton,{
 	// summary: dojo.widget.Editor2ToolbarComboItem provides an external loaded dropdown list
 
 	href: null,
@@ -501,7 +502,7 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2T
 	}
 });
 
-dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2ToolbarComboItem, {
+dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2ToolbarComboItem,{
 	// summary: dojo.widget.Editor2ToolbarFontSizeSelect provides a dropdown list for setting fontsize
 
 	href: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorToolbar_FontSize.html"),
@@ -575,9 +576,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.Editor2Toolbar",
 	dojo.widget.HtmlWidget,
 	function(){
-		// summary:
-		//		dojo.widget.Editor2Toolbar is the main widget for the toolbar associated with an Editor2
-
 		dojo.event.connect(this, "fillInTemplate", dojo.lang.hitch(this, function(){
 			if(dojo.render.html.ie){
 				this.domNode.style.zoom = 1.0;
@@ -585,6 +583,9 @@ dojo.widget.defineWidget(
 		}));
 	},
 	{
+		// summary:
+		//		dojo.widget.Editor2Toolbar is the main widget for the toolbar associated with an Editor2
+
 		templatePath: dojo.uri.dojoUri("src/widget/templates/EditorToolbar.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/EditorToolbar.css"),
 
@@ -659,9 +660,6 @@ dojo.widget.defineWidget(
 				delete this.items[it];
 			}
 			dojo.widget.Editor2Toolbar.superclass.destroy.call(this);
-		}//,
-
-		// stub for observers
-//		exec: function(what, arg){ /* dojo.debug(what, new Date()); */ }
+		}
 	}
 );
