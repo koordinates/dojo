@@ -18,7 +18,7 @@ dojo.declare(
 		isContainer: true,
 
 		// static variables
-		shared: {bg: null, bgIframe: null},
+		shared: {bg: null, bgIframe: null, onClickCatcher: null},
 
 		// focusElement: String
 		//	provide a focusable element or element id if you need to
@@ -108,6 +108,11 @@ dojo.declare(
 				this.setBackgroundColor(this.bgColor);
 				b.appendChild(this.shared.bg);
 				this.shared.bgIframe = new dojo.html.BackgroundIframe(this.shared.bg);
+
+				// on IE6 the click events to close the dialog (when there is no assigned close button)
+				// go the the iframe rather than the dialogUnderlay
+				this.shared.onClickCatcher = this.shared.bgIframe.iframe ? 
+					this.shared.bgIframe.iframe.contentWindow.document : this.shared.bg;
 			}
 		},
 
@@ -205,7 +210,8 @@ dojo.declare(
 			this._sizeBackground();
 			this._showBackground();
 
-			dojo.event.kwConnect({srcObj: this.shared.bg, srcFunc: "onclick", adviceObj: this, adviceFunc: "onBackgroundClick", once: true});
+			dojo.event.kwConnect({srcObj: this.shared.onClickCatcher, srcFunc: "onclick",
+				adviceObj: this, adviceFunc: "onBackgroundClick", once: true});
 		},
 
 		hideModalDialog: function(){
@@ -226,7 +232,8 @@ dojo.declare(
 				dojo.event.disconnect(window, "onscroll", this, "_onScroll");
 			}
 			
-			dojo.event.kwDisconnect({srcObj: this.shared.bg, srcFunc: "onclick", adviceObj: this, adviceFunc: "onBackgroundClick"});
+			dojo.event.kwDisconnect({srcObj: this.shared.onClickCatcher, srcFunc: "onclick",
+				adviceObj: this, adviceFunc: "onBackgroundClick"});
 		},
 
 		_onScroll: function(){
