@@ -74,8 +74,9 @@ dojo.widget.defineWidget(
 		focusOnLoad: false,
 
 		// saveName: String
-		//		If a save name is specified the content is saved and restored if the
-		//		editor is not properly closed after editing has started.
+		//		If a save name is specified the content is saved and restored when the user
+		//		leave this page can come back, or if the editor is not properly closed after
+		//		editing has started.
 		saveName: "",
 
 		// _content: String

@@ -200,8 +200,8 @@ dojo.widget.defineWidget(
 
 	isContainer: true,
 
-  fillInTemplate: function() {
-    	dojo.html.addClass(this.domNode, this["class"]);
+	fillInTemplate: function() {
+		dojo.html.addClass(this.domNode, this["class"]);
 		dojo.widget.AccordionPane.superclass.fillInTemplate.call(this);
 		dojo.html.disableSelection(this.labelNode);
 		this.setSelected(this.selected);
