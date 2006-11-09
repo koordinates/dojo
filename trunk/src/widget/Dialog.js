@@ -272,7 +272,12 @@ dojo.widget.defineWidget(
 		// Integer
 		//	if set, this controls the number of seconds the dialog will be displayed before automatically disappearing
 		lifetime: 0,
-	
+
+		postCreate: function(){
+			dojo.widget.Dialog.superclass.postCreate.apply(this, arguments);
+			dojo.widget.ModalDialogBase.prototype.postCreate.apply(this, arguments);
+		},
+
 		show: function() {
 			if(this.lifetime){
 				this.timeRemaining = this.lifetime;
