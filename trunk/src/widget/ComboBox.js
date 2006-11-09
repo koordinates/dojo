@@ -628,9 +628,9 @@ dojo.widget.defineWidget(
 		onResize: function(){
 			// summary: this function is called when the input area has changed size
 			var inputSize = dojo.html.getContentBox(this.textInputNode);
-			if( inputSize.height == 0 ){
+			if( inputSize.height <= 0 ){
 				// need more time to calculate size
-				dojo.lang.setTimeout(this, "onResize", 50);
+				dojo.lang.setTimeout(this, "onResize", 100);
 				return;
 			}
 			var buttonSize = { width: inputSize.height, height: inputSize.height};
