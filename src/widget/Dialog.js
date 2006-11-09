@@ -37,6 +37,10 @@ dojo.declare(
 		//	if true, readjusts the dialog (and dialog background) when the user moves the scrollbar
 		followScroll: true,
 
+		// closeOnBackgroundClick: Boolean
+		//	clicking anywhere on the background will close the dialog
+		closeOnBackgroundClick: true,
+
 		trapTabs: function(/*Event*/ e){
 			// summary
 			//	callback on focus
@@ -109,10 +113,14 @@ dojo.declare(
 				b.appendChild(this.shared.bg);
 				this.shared.bgIframe = new dojo.html.BackgroundIframe(this.shared.bg);
 
-				// on IE6 the click events to close the dialog (when there is no assigned close button)
-				// go the the iframe rather than the dialogUnderlay
-				this.shared.onClickCatcher = this.shared.bgIframe.iframe ? 
-					this.shared.bgIframe.iframe.contentWindow.document : this.shared.bg;
+				if(this.closeOnBackgroundClick){
+					// on IE6 the click events to close the dialog (when there is no assigned close button)
+					// go the the iframe rather than the dialogUnderlay
+					var onClickCatcher = this.shared.bgIframe.iframe ? 
+						this.shared.bgIframe.iframe.contentWindow.document : this.shared.bg;
+					dojo.event.kwConnect({srcObj: onClickCatcher, srcFunc: "onclick",
+						adviceObj: this, adviceFunc: "onBackgroundClick", once: true});
+				}
 			}
 		},
 
@@ -120,7 +128,7 @@ dojo.declare(
 			// summary
 			//	changes background color specified by "bgColor" parameter
 			//	usage:
-			//		setBackgrounColor("black");
+			//		setBackgroundColor("black");
 			//		setBackgroundColor(0xff, 0xff, 0xff);
 			if(arguments.length >= 3) {
 				color = new dojo.gfx.color.Color(arguments[0], arguments[1], arguments[2]);
@@ -128,7 +136,7 @@ dojo.declare(
 				color = new dojo.gfx.color.Color(color);
 			}
 			this.shared.bg.style.backgroundColor = color.toString();
-			return this.bgColor = color;
+			return this.bgColor = color;	// String: the color
 		},
 
 		setBackgroundOpacity: function(/*Number*/ op) {
@@ -141,7 +149,7 @@ dojo.declare(
 			} catch (e) {
 				this.bgOpacity = op;
 			}
-			return this.bgOpacity;
+			return this.bgOpacity;	// Number: the opacity
 		},
 
 		_sizeBackground: function() {
@@ -209,9 +217,6 @@ dojo.declare(
 			this.setBackgroundOpacity();
 			this._sizeBackground();
 			this._showBackground();
-
-			dojo.event.kwConnect({srcObj: this.shared.onClickCatcher, srcFunc: "onclick",
-				adviceObj: this, adviceFunc: "onBackgroundClick", once: true});
 		},
 
 		hideModalDialog: function(){
@@ -219,7 +224,7 @@ dojo.declare(
 			//	call this function in hide() of subclass
 
 			// workaround for FF focus going into outer space
-			if (this.focusElement) { 
+			if (this.focusElement) {
 				dojo.byId(this.focusElement).focus(); 
 				dojo.byId(this.focusElement).blur();
 			}
@@ -231,9 +236,6 @@ dojo.declare(
 				this._scrollConnected = false;
 				dojo.event.disconnect(window, "onscroll", this, "_onScroll");
 			}
-			
-			dojo.event.kwDisconnect({srcObj: this.shared.onClickCatcher, srcFunc: "onclick",
-				adviceObj: this, adviceFunc: "onBackgroundClick"});
 		},
 
 		_onScroll: function(){
@@ -257,8 +259,6 @@ dojo.declare(
 			//		Clicking anywhere on the background will close the dialog, but only
 			//		if the dialog doesn't have an explicit close button, and only if
 			//		the dialog doesn't have a blockDuration.
-			if(!this.isShowing()){ return; }
-			if(this.closeNode){ return; }
 			if(this.lifetime - this.timeRemaining >= this.blockDuration){ return; }
 			this.hide();
 		}
@@ -281,6 +281,17 @@ dojo.widget.defineWidget(
 		// lifetime: Integer
 		//	if set, this controls the number of seconds the dialog will be displayed before automatically disappearing
 		lifetime: 0,
+
+		// closeNode: String
+		//	Id of button or other dom node to click to close this dialog
+		closeNode: "",
+
+		postMixInProperties: function(){
+			dojo.widget.Dialog.superclass.postMixInProperties.apply(this, arguments);
+			if(this.closeNode){
+				this.setCloseControl(this.closeNode);
+			}
+		},
 
 		postCreate: function(){
 			dojo.widget.Dialog.superclass.postCreate.apply(this, arguments);
@@ -337,19 +348,20 @@ dojo.widget.defineWidget(
 			this.timerNode = node;
 		},
 
-		setCloseControl: function(node) {
+		setCloseControl: function(/*String|DomNode*/ node) {
 			// summary
 			//	Specify which node is the close button for this dialog.
 			//	If no close node is specified then clicking anywhere on the screen will close the dialog.
-			// TODO: make this a parameter too
-			this.closeNode = node;
-			dojo.event.connect(node, "onclick", this, "hide");
+			this.closeNode = dojo.byId(node);
+			dojo.event.connect(this.closeNode, "onclick", this, "hide");
+			this.closeOnBackgroundClick = false;
 		},
 
-		setShowControl: function(node) {
+		setShowControl: function(/*String|DomNode*/ node) {
 			// summary
 			//	when specified node is clicked, show this dialog
 			// TODO: make this a parameter too
+			node = dojo.byId(node);
 			dojo.event.connect(node, "onclick", this, "show");
 		},
 
