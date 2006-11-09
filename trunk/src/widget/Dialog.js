@@ -8,31 +8,32 @@ dojo.require("dojo.html.layout");
 dojo.require("dojo.html.display");
 dojo.require("dojo.html.iframe");
 
-// summary
-//	Mixin for widgets implementing a modal dialog
 dojo.declare(
 	"dojo.widget.ModalDialogBase", 
 	null,
 	{
+		// summary
+		//	Mixin for widgets implementing a modal dialog
+
 		isContainer: true,
 
 		// static variables
 		shared: {bg: null, bgIframe: null},
 
-		// String
+		// focusElement: String
 		//	provide a focusable element or element id if you need to
 		//	work around FF's tendency to send focus into outer space on hide
 		focusElement: "",
 
-		// String
+		// bgColor: String
 		//	color of viewport when displaying a dialog
 		bgColor: "black",
 		
-		// Number
+		// bgOpacity: Number
 		//	opacity (0~1) of viewport color (see bgColor attribute)
 		bgOpacity: 0.4,
 
-		// Boolean
+		// followScroll: Boolean
 		//	if true, readjusts the dialog (and dialog background) when the user moves the scrollbar
 		followScroll: true,
 
@@ -256,20 +257,21 @@ dojo.declare(
 		}
 	});
 
-// summary
-//	Pops up a modal dialog window, blocking access to the screen and also graying out the screen
-//	Dialog is extended from ContentPane so it supports all the same parameters (href, etc.)
 dojo.widget.defineWidget(
 	"dojo.widget.Dialog",
 	[dojo.widget.ContentPane, dojo.widget.ModalDialogBase],
 	{
+		// summary
+		//	Pops up a modal dialog window, blocking access to the screen and also graying out the screen
+		//	Dialog is extended from ContentPane so it supports all the same parameters (href, etc.)
+
 		templatePath: dojo.uri.dojoUri("src/widget/templates/Dialog.html"),
 
-		// Integer
+		// blockDuration: Integer
 		//	number of seconds for which the user cannot dismiss the dialog
 		blockDuration: 0,
 		
-		// Integer
+		// lifetime: Integer
 		//	if set, this controls the number of seconds the dialog will be displayed before automatically disappearing
 		lifetime: 0,
 
