@@ -850,14 +850,6 @@ dojo.declare (
 	 *  Extends dojo.dnd.HtmlDragMoveSource by creating a SliderDragMoveSource */
 	onDragStart: function(/*Event*/ evt){
 		this.slider._isDragInProgress = true;
-		var pos = dojo.html.getAbsolutePosition(this.slider.constrainingContainerNode, true, dojo.html.boxSizing.MARGIN_BOX);
-		if (this.slider.isEnableX){
-			this.slider._minX = pos.x;
-		}
-		if (this.slider.isEnableY){
-			this.slider._minY = pos.y;
-		}
-
 		var dragObj = this.createDragMoveObject ();
 
 		this.slider.notifyListeners();
@@ -910,12 +902,12 @@ dojo.declare (
 		this.updateDragOffset ();
 
 		if (this.slider.isEnableX){
-			var x = this.dragOffset.x + evt.pageX - this.slider._minX;
+			var x = this.dragOffset.x + evt.pageX;
 			this.slider._snapX(x);
 		}
 
 		if (this.slider.isEnableY){
-			var y = this.dragOffset.y + evt.pageY - this.slider._minY;
+			var y = this.dragOffset.y + evt.pageY;
 			this.slider._snapY(y);
 		}
 		if(this.slider.activeDrag){
