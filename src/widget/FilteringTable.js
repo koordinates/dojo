@@ -391,7 +391,9 @@ dojo.widget.defineWidget(
 		var self=this;
 		this["__selected__"] = [];
 		var arr = this.store.getFromHtml(this.columns, body, function(obj, row){
-			obj[self.valueField] = dojo.html.getAttribute(row, "value");
+			if(typeof(obj[self.valueField])=="undefined" || obj[self.valueField]==null){
+				obj[self.valueField] = dojo.html.getAttribute(row, "value");
+			}
 			if(dojo.html.getAttribute(row, "selected")=="true"){
 				self["__selected__"].push(obj);
 			}
