@@ -1,4 +1,5 @@
 dojo.provide("dojo.html.style");
+dojo.require("dojo.html.common");
 dojo.require("dojo.uri.Uri");
 
 dojo.html.getClass = function(/* HTMLElement */node){
