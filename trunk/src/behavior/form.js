@@ -65,8 +65,14 @@ dojo.behavior.form=new function(){
 		else if(evt["target"]){node=evt.target;}
 		
 		if(!node || dj_undef("value", node)){return;}
-		if (!dj_undef("keyCode", evt) && evt.keyCode == evt.KEY_ESCAPE){
-			node.blur();
+		
+		// handle escape key
+		if (!dj_undef("keyCode", evt)){
+			if (evt.keyCode == evt.KEY_ESCAPE) {
+				node.blur();
+			} else { // anything else is probably valid
+				return; 
+			}
 		}
 		
 		var title=node.getAttribute("title");
