@@ -398,7 +398,10 @@ dojo.widget.defineWidget(
 				self["__selected__"].push(obj);
 			}
 		});
-		this.store.setData(arr);
+		
+		this.store.setData(arr, true);
+		this.render();
+		
 		for(var i=0; i<this["__selected__"].length; i++){
 			this.select(this["__selected__"][i]);
 		}
@@ -814,7 +817,7 @@ dojo.widget.defineWidget(
 				return;
 			}
 		}
-		
+
 		//	do the sort
 		var rows=[];
 		var body=this.domNode.tBodies[0];
