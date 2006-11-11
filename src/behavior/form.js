@@ -43,6 +43,7 @@ dojo.behavior.form=new function(){
 		node.value=title+"..";
 		dojo.event.browser.addListener(node, "onfocus", dojo.lang.hitch(this, this.nodeFocused));
 		dojo.event.browser.addListener(node, "onblur", dojo.lang.hitch(this, this.nodeBlurred));
+		dojo.event.browser.addListener(node, "onkeyup", dojo.lang.hitch(this, this.nodeBlurred));
 	}
 	
 	this.nodeFocused = function(evt){
@@ -64,9 +65,15 @@ dojo.behavior.form=new function(){
 		else if(evt["target"]){node=evt.target;}
 		
 		if(!node || dj_undef("value", node)){return;}
+		if (!dj_undef("keyCode", evt) && evt.keyCode == evt.KEY_ESCAPE){
+			node.blur();
+		}
 		
 		var title=node.getAttribute("title");
 		var value=node.value;
+		if(value && value.length > 0) {
+			value=value.substr(0, value.indexOf(".."));
+		}
 		if (value && value.length > 0 && value.toLowerCase() != title.toLowerCase()){
 			return;
 		}
@@ -102,6 +109,7 @@ dojo.behavior.form=new function(){
 			
 			dojo.event.browser.removeListener(elms[i], "onfocus", dojo.lang.hitch(this, this.nodeFocused));
 			dojo.event.browser.removeListener(elms[i], "onblur", dojo.lang.hitch(this, this.nodeBlurred));
+			dojo.event.browser.removeListener(elms[i], "onkeyup", dojo.lang.hitch(this, this.nodeBlurred));
 		}
 	}
 }
