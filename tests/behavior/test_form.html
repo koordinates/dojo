@@ -9,6 +9,7 @@
 		</script>
 		<script type="text/javascript" src="../../dojo.js"></script>
 		<script type="text/javascript">
+			dojo.require("dojo.debug.console");
 			dojo.require("dojo.behavior.form");
 			
 			dojo.addOnLoad(function(){
@@ -17,6 +18,7 @@
 		</script>
 		
 		<style>
+			input		{padding-left:0.3em}
 			input.title {color:#aaa;font-style: italic;font-weight:normal;font-size:small}
 		</style>
 	</head>
@@ -31,6 +33,11 @@
 				
 				<label for="timeofday">Time of Day</label>
 				<input type="text" size="40" name="timeofday" title="Morning/Afternoon/Witching hour" />
+			</fieldset>
+			
+			<fieldset>
+				<legend>Non decorated fields</legend>
+				<input type="text" size="40" value="Shouldn't get decorated" />
 			</fieldset>
 		</form>
 	</body>
