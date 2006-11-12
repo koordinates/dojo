@@ -170,7 +170,16 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 		for(name in profile.constraints){
 			var elem = form[name];
 			if(!elem) {continue;}
-
+			
+			// skip if blank - its optional unless required, in which case it
+			// is already listed as missing.
+			if(!dj_undef("tagName",elem) 
+				&& (elem.tagName.toLowerCase().indexOf("input") >= 0
+					|| elem.tagName.toLowerCase().indexOf("textarea") >= 0) 
+				&& /^\s*$/.test(elem.value)){ 
+				continue; 
+			}
+			
 			var isValid = true;
 			// case 1: constraint value is validation function
 			if(dojo.lang.isFunction(profile.constraints[name])){
