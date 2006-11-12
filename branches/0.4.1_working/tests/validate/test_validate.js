@@ -463,6 +463,11 @@ function test_validate_us_isState(){
 	jum.assertFalse("test6", dojo.validate.us.isState('AA', {allowMilitary: false} ));
 }
 
+function validateAlienSelected(elem){
+	if (elem.length > 0) { return true; }
+	return false;
+}
+
 function test_validate_check(){
 	// A generic form
 	var f = {
@@ -580,6 +585,15 @@ function test_validate_check(){
 				{text: "option 2", value: "v1", selected: false},
 				{text: "option 3", value: "v2", selected: false}
 			]
+		},
+		selectAlien: {
+			name: "selectAlien",
+			multiple: "multiple",
+			id: "selectAlient",
+			size: "10",
+			length: 0,
+			options: [],
+			value:[]
 		}
 	};
 
@@ -612,7 +626,8 @@ function test_validate_check(){
 			tx8: dojo.validate.isURL,
 			tx12: [[dojo.validate.isRealNumber],[dojo.validate.isInRange, {max:100.00,min:5.0}]],
 			tx13: [[dojo.validate.isRealNumber],[dojo.validate.isInRange, {max:100.00,min:5.0}]],
-			tx14: [[dojo.validate.isRealNumber],[dojo.validate.isInRange, {max:100.00,min:5.0}]]		
+			tx14: [[dojo.validate.isRealNumber],[dojo.validate.isInRange, {max:100.00,min:5.0}]],
+			selectAlien: [[validateAlienSelected]]
 		},
 		// confirm fields
 		confirm: {
@@ -666,24 +681,27 @@ function test_validate_check(){
 	jum.assertEquals(10, results.getMissing().length );
 
 	// test constraint stuff
-	jum.assertTrue("invalid_test1", results.hasInvalid() );
-	jum.assertFalse("invalid_test2", results.isInvalid("tx1") );
-	jum.assertTrue("invalid_test3", results.isInvalid("tx2") );
-	jum.assertFalse("invalid_test4", results.isInvalid("tx3") );
-	jum.assertTrue("invalid_test5", results.isInvalid("tx4") );
-	jum.assertTrue("invalid_test6", results.isInvalid("tx5") );
-	jum.assertFalse("invalid_test7", results.isInvalid("tx6") );
-	jum.assertFalse("invalid_test8", results.isInvalid("tx7") );
-	jum.assertFalse("invalid_test9", results.isInvalid("tx8") );
-	jum.assertFalse("invalid_test10", results.isInvalid("pw1") );
-	jum.assertFalse("invalid_test11", results.isInvalid("pw2") );
-	jum.assertFalse("invalid_test12", results.isInvalid("ta1") );
-	jum.assertFalse("invalid_test13", results.isInvalid("ta2") );
-	jum.assertFalse("invalid_test14", results.isInvalid("email") );
-	jum.assertTrue("invalid_test15", results.isInvalid("email_confirm") );
-	// invlaid: txt2, txt4, txt5, email_confirm
-	jum.assertEquals("invalid_test16", 6, results.getInvalid().length );
-	jum.assertTrue("invalid_test17", results.isInvalid("tx12"));
-	jum.assertTrue("invalid_test18", results.isInvalid("tx13"));
-	jum.assertFalse("invalid_test19", results.isInvalid("tx14"));
+	jum.assertTrue(results.hasInvalid() );
+	jum.assertFalse(results.isInvalid("tx1") );
+	jum.assertTrue(results.isInvalid("tx2") );
+	jum.assertFalse(results.isInvalid("tx3") );
+	jum.assertTrue(results.isInvalid("tx4") );
+	jum.assertTrue(results.isInvalid("tx5") );
+	jum.assertFalse(results.isInvalid("tx6") );
+	jum.assertFalse(results.isInvalid("tx7") );
+	jum.assertFalse(results.isInvalid("tx8") );
+	jum.assertFalse(results.isInvalid("pw1") );
+	jum.assertFalse(results.isInvalid("pw2") );
+	jum.assertFalse(results.isInvalid("ta1") );
+	jum.assertFalse(results.isInvalid("ta2") );
+	jum.assertFalse(results.isInvalid("email") );
+	jum.assertTrue(results.isInvalid("email_confirm") );
+	
+	// invlaid: txt2, txt4, txt5, email_confirm, selectAlien
+	
+	jum.assertEquals(7, results.getInvalid().length);
+	jum.assertTrue(results.isInvalid("tx12"));
+	jum.assertTrue(results.isInvalid("tx13"));
+	jum.assertFalse(results.isInvalid("tx14"));
+	jum.assertTrue(results.isInvalid("selectAlien"));
 }
