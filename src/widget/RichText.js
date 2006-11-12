@@ -1634,7 +1634,7 @@ dojo.widget.defineWidget(
 						this.__overflow = null;
 					}
 				}
-
+				this.textarea.value = this._content;
 				dojo.html.removeNode(this.domNode);
 				this.domNode = this.textarea;
 			}else{
