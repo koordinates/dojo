@@ -116,11 +116,11 @@ def internTemplateStringsInFile(loader, packageFile, srcRoot, prefixes, skiplist
 		pfd.close() # flush is implicit
 
 
-def internXdFiles(loader, xdDir, srcRoot, prefixes):
+def internXdFiles(loader, xdDir, srcRoot, prefixes, skiplist):
 	xdFiles = glob.glob1(xdDir, "*.xd.js")
 	for name in xdFiles:
 		print "XD INTERNING: " + name
-		internTemplateStringsInFile(loader, xdDir+os.sep+name, srcRoot, prefixes)
+		internTemplateStringsInFile(loader, xdDir+os.sep+name, srcRoot, prefixes, skiplist)
 
 
 def internTemplateStrings(profileFile, loader="default", packageDir="../release/dojo", srcRoot="../"):
@@ -164,10 +164,10 @@ def internTemplateStrings(profileFile, loader="default", packageDir="../release/
 	#If doing xdomain, then need to fix up the .xd.js files in the widget subdir.
 	#Hack alert! I am not patient enough to figure out how to do dir recursion
 	#in python right now.
-	internXdFiles(loader, packageDir+"/src/widget", srcRoot, prefixes)
-	internXdFiles(loader, packageDir+"/src/widget/html", srcRoot, prefixes)
-	internXdFiles(loader, packageDir+"/src/widget/svg", srcRoot, prefixes)
-	internXdFiles(loader, packageDir+"/src/widget/vml", srcRoot, prefixes)
+	internXdFiles(loader, packageDir+"/src/widget", srcRoot, prefixes, skiplist)
+	internXdFiles(loader, packageDir+"/src/widget/html", srcRoot, prefixes, skiplist)
+	internXdFiles(loader, packageDir+"/src/widget/svg", srcRoot, prefixes, skiplist)
+	internXdFiles(loader, packageDir+"/src/widget/vml", srcRoot, prefixes, skiplist)
 
 
 def replaceVersion(fileName, version):
