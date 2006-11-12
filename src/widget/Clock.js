@@ -10,6 +10,15 @@ dojo.widget.defineWidget(
 	"dojo.widget.Clock",
 	dojo.widget.HtmlWidget,
 	function(){
+		// summary: A basic clock that supports offset and labels
+		// description:
+		//		Uses SVG and Internet Explorer's VML implementation to render a clock
+		//		using the gfx module.
+		// timeZoneOffset: Integer
+		//		Amount (in hours) to offset the clock
+		// date: Date
+		// image: String
+		//		Location of the background image
 		var self=this;
 		this.timeZoneOffset=0;	//	this is fun.
 		this.label="";		//	optional label.
@@ -60,6 +69,7 @@ dojo.widget.defineWidget(
 	},
 	{
 		set:function(/* Date */dt){
+			// summary: Set the date object manually
 			this.date=dt;
 			if(!this.timer.isRunning){
 				this.draw();
