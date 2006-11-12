@@ -36,8 +36,7 @@
 
 			var newFloat =dojo.widget.createWidget("dojo:FloatingPane", {displayCloseAction: true, title: contentId},div);
 
-			// FIXME: dojo.uri.Uri does not seem to work here for toolbarTemplatePath
-			var newEditor= dojo.widget.createWidget("Editor2", {height: 100, shareToolbar: false, toolbarTemplatePath: "../../../src/widget/templates/EditorToolbarLight.html"});
+			var newEditor= dojo.widget.createWidget("Editor2", {height: 100, shareToolbar: false, toolbarTemplatePath: "../../../tests/widget/Editor/EditorToolbarLight.html"});
 			newEditor.contentSource=contentId;
 			dojo.event.connect(newEditor, "editorOnLoad", dojo.lang.hitch(newEditor, function() {
 				dojo.debug("contentId: " + this.contentSource);
