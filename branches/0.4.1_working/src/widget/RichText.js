@@ -175,9 +175,9 @@ dojo.widget.defineWidget(
 			//		designMode is used, an <object> and active-x component if inside of IE or
 			//		a reguler element if contentEditable is available.
 			var h = dojo.render.html;
+			if (!this.isClosed) { this.close(); }
 			dojo.event.topic.publish("dojo.widget.RichText::open", this);
 
-			if (!this.isClosed) { this.close(); }
 			this._content = "";
 			if((arguments.length == 1)&&(element["nodeName"])){ this.domNode = element; } // else unchanged
 
@@ -242,10 +242,8 @@ dojo.widget.defineWidget(
 			this._firstChildContributingMargin = this._getContributingMargin(this.domNode, "top");
 			this._lastChildContributingMargin = this._getContributingMargin(this.domNode, "bottom");
 
-			this.savedContent = dojo.doc().createElement("div");
-			while (this.domNode.hasChildNodes()) {
-				this.savedContent.appendChild(this.domNode.firstChild);
-			}
+			this.savedContent = this.domNode.innerHTML;
+			this.domNode.innerHTML = '';
 
 			this.editingArea = dojo.doc().createElement("div");
 			this.domNode.appendChild(this.editingArea);
@@ -300,7 +298,7 @@ dojo.widget.defineWidget(
 				this.window = this.iframe.contentWindow;
 				this.document = this.window.document;
 				this.document.open();
-				this.document.write("<html><head></head><body style='margin: 0; padding: 0;border: 0; overflow: hidden;'><div></div></body></html>");
+				this.document.write("<html><head></head><body style='overflow: hidden;'><div></div></body></html>");
 				this.document.close();
 				this.editNode = this.document.body.firstChild;//document.createElement("div");
 				this.editNode.contentEditable = true;
@@ -511,6 +509,9 @@ dojo.widget.defineWidget(
 
 			var tmpContent = dojo.doc().createElement('div');
 			tmpContent.innerHTML = html;
+			//append tmpContent to under the current domNode so that the margin
+			//calculation below is correct
+			this.editingArea.appendChild(tmpContent);
 
 			// make relative image urls absolute
 			if(this.relativeImageUrls){
@@ -530,10 +531,11 @@ dojo.widget.defineWidget(
 			if(lastChild){
 				lastChild.style.marginBottom = this._lastChildContributingMargin+"px";
 			}
-
-			// show existing content behind iframe for now
-			tmpContent.style.position = "absolute";
-			this.editingArea.appendChild(tmpContent);
+			//do we want to show the content before the editing area finish loading here?
+			//if external style sheets are used for the editing area, the appearance now
+			//and after loading of the editing area won't be the same (and padding/margin
+			//calculation above may not be accurate)
+//			tmpContent.style.display = "none";
 			this.editingArea.appendChild(this.iframe);
 			if(dojo.render.html.safari){
 				this.iframe.src = this.iframe.src;
@@ -591,14 +593,14 @@ dojo.widget.defineWidget(
 						//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }\n' +
 						'', this.document);
 
-					tmpContent.parentNode.removeChild(tmpContent);
+					dojo.html.removeNode(tmpContent);
 					this.document.body.innerHTML = html;
 					if(oldMoz||dojo.render.html.safari){
 						this.document.designMode = "on";
 					}
 					this.onLoad();
 				}else{
-					tmpContent.parentNode.removeChild(tmpContent);
+					dojo.html.removeNode(tmpContent);
 					this.editNode.innerHTML = html;
 					this.onDisplayChanged();
 				}
@@ -787,13 +789,17 @@ dojo.widget.defineWidget(
 				this.window = this.document.parentWindow;
 				this.editNode = this.document.body.firstChild;
 				this.editingArea.style.height = this.height ? this.height : this.minHeight;
-				this.connect(this, "onDisplayChanged", "_updateHeight");
+				if(!this.height){
+					this.connect(this, "onDisplayChanged", "_updateHeight");
+				}
 				//pretend the object as an iframe, so that the context menu for the
 				//editor can be placed correctly when shown
 				this.window._frameElement = this.object;
 			}else if (this.iframe && !dojo.render.html.ie){
 				this.editNode = this.document.body;
-				this.connect(this, "onDisplayChanged", "_updateHeight");
+				if(!this.height){
+					this.connect(this, "onDisplayChanged", "_updateHeight");
+				}
 
 				try { // sanity check for Mozilla
 					this.document.execCommand("useCSS", false, true); // old moz call
@@ -836,7 +842,9 @@ dojo.widget.defineWidget(
 				// FIXME: when scrollbars appear/disappear this needs to be fired
 			}else if(dojo.render.html.ie){
 				// IE contentEditable
-				this.connect(this, "onDisplayChanged", "_updateHeight");
+				if(!this.height){
+					this.connect(this, "onDisplayChanged", "_updateHeight");
+				}
 				this.editNode.style.zoom = 1.0;
 			}
 
@@ -1601,7 +1609,7 @@ dojo.widget.defineWidget(
 
 			if (arguments.length == 0) { save = true; }
 			this._content = this._postFilterContent(this.editNode.innerHTML);
-			var changed = (this.savedContent.innerHTML != this._content);
+			var changed = (this.savedContent != this._content);
 
 			// line height is squashed for iframes
 			// FIXME: why was this here? if (this.iframe){ this.domNode.style.lineHeight = null; }
@@ -1626,7 +1634,7 @@ dojo.widget.defineWidget(
 						this.__overflow = null;
 					}
 				}
-
+				this.textarea.value = this._content;
 				dojo.html.removeNode(this.domNode);
 				this.domNode = this.textarea;
 			}else{
@@ -1634,8 +1642,6 @@ dojo.widget.defineWidget(
 			}
 
 			if(save){
-				// kill listeners on the saved content
-				dojo.event.browser.clean(this.savedContent);
 				if(dojo.render.html.moz){
 					var nc = dojo.doc().createElement("span");
 					this.domNode.appendChild(nc);
@@ -1643,12 +1649,7 @@ dojo.widget.defineWidget(
 				}else{
 					this.domNode.innerHTML = this._content;
 				}
-			} else {
-				while (this.savedContent.hasChildNodes()) {
-					this.domNode.appendChild(this.savedContent.firstChild);
-				}
 			}
-			delete this.savedContent;
 
 			dojo.html.removeClass(this.domNode, "RichTextEditable");
 			this.isClosed = true;
