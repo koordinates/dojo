@@ -298,7 +298,7 @@ dojo.widget.defineWidget(
 				this.window = this.iframe.contentWindow;
 				this.document = this.window.document;
 				this.document.open();
-				this.document.write("<html><head></head><body style='margin: 0; padding: 0;border: 0; overflow: hidden;'><div></div></body></html>");
+				this.document.write("<html><head></head><body style='overflow: hidden;'><div></div></body></html>");
 				this.document.close();
 				this.editNode = this.document.body.firstChild;//document.createElement("div");
 				this.editNode.contentEditable = true;
