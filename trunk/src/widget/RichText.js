@@ -789,13 +789,17 @@ dojo.widget.defineWidget(
 				this.window = this.document.parentWindow;
 				this.editNode = this.document.body.firstChild;
 				this.editingArea.style.height = this.height ? this.height : this.minHeight;
-				this.connect(this, "onDisplayChanged", "_updateHeight");
+				if(!this.height){
+					this.connect(this, "onDisplayChanged", "_updateHeight");
+				}
 				//pretend the object as an iframe, so that the context menu for the
 				//editor can be placed correctly when shown
 				this.window._frameElement = this.object;
 			}else if (this.iframe && !dojo.render.html.ie){
 				this.editNode = this.document.body;
-				this.connect(this, "onDisplayChanged", "_updateHeight");
+				if(!this.height){
+					this.connect(this, "onDisplayChanged", "_updateHeight");
+				}
 
 				try { // sanity check for Mozilla
 					this.document.execCommand("useCSS", false, true); // old moz call
@@ -838,7 +842,9 @@ dojo.widget.defineWidget(
 				// FIXME: when scrollbars appear/disappear this needs to be fired
 			}else if(dojo.render.html.ie){
 				// IE contentEditable
-				this.connect(this, "onDisplayChanged", "_updateHeight");
+				if(!this.height){
+					this.connect(this, "onDisplayChanged", "_updateHeight");
+				}
 				this.editNode.style.zoom = 1.0;
 			}
 
