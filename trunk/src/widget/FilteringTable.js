@@ -14,8 +14,46 @@ dojo.widget.defineWidget(
 	"dojo.widget.FilteringTable", 
 	dojo.widget.HtmlWidget, 
 	function(){
-		//	summary
-		//	Initializes all properties for the widget.
+		// summary: A basic tabular data widget that supports sorting and filtering mechanisms.
+		// description:
+		//		FilteringTable is a 2D data view that supports multiple column sorting and filtering
+		//		functionality.  It can get its data in one of two ways: via HTML (i.e. degradable
+		//		data), or from an external JSON source through widget.store.setData.  Records in
+		//		a FilteringTable can be selected as if it were a select list.
+		// store: dojo.collections.Store
+		//		The underlying Store for all data represented by the widget.
+		// valueField: String
+		// 		The name of the field used as a unique key for each row, defaults to "Id".
+		// multiple: boolean
+		//		Allow multiple selections.
+		// maxSelect: Integer
+		//		Maximum number of rows that can be selected at once.  0 == no limit.
+		// maxSortable: Integer
+		//		Maximum number of columns allowed for sorting at one time.
+		// minRows: Integer
+		//		The minimum number of rows to show.  Default is 0.
+		// defaultDateFormat: String
+		//		The default format for a date column, as used by dojo.date.format.
+		// alternateRows: Boolean
+		//		Use alternate row CSS classes to show zebra striping.
+		// headClass: String
+		//		CSS Class name for the head of the table.
+		// tbodyClass: String
+		//		CSS Class name for the body of the table.
+		// headerClass: String
+		//		CSS Class name for headers that are not sorted.
+		// headerUpClass: String
+		//		CSS Class name for headers that are for ascending sorted columns. Default is "selectedUp".
+		// headerDownClass: String
+		//		CSS Class name for headers that are for descending sorted columns. Default is "selectedDown".
+		// rowClass: String
+		//		CSS Class name for body rows.
+		// rowAlternateClass: String
+		//		CSS Class name for alternate rows.  Default is "alt".
+		// rowSelectedClass: String
+		//		CSS Class name for selected rows.  Default is "selected".
+		// columnSelectedClass: String
+		//		CSS Class name for any columns being sorted on.  Unimplemented.
 		this.store=new dojo.collections.Store();
 
 		//declare per instance changeable widget properties
