@@ -456,7 +456,7 @@ dojo.html.scrollIntoView = function(/* HTMLElement */node){
 	if(dojo.render.html.ie){
 		//only call scrollIntoView if there is a scrollbar for this menu,
 		//otherwise, scrollIntoView will scroll the window scrollbar
-		if(dojo.html.getBorderBox(node.parentNode).height < node.parentNode.scrollHeight){
+		if(dojo.html.getBorderBox(node.parentNode).height <= node.parentNode.scrollHeight){
 			node.scrollIntoView(false);
 		}
 	}else if(dojo.render.html.mozilla){
