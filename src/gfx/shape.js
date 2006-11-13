@@ -123,7 +123,7 @@ dojo.declare("dojo.gfx.Shape", null, {
 	setFill: function(fill){
 		// summary: sets a fill object
 		//	(the default implementation simply ignores it)
-		// fill: Object: a full object
+		// fill: Object: a fill object
 		//	(see dojo.gfx.defaultLinearGradient, 
 		//	dojo.gfx.defaultRadialGradient, 
 		//	dojo.gfx.defaultPattern, 
