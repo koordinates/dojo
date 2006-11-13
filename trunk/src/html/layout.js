@@ -65,8 +65,10 @@ dojo.html.boxSizing = {
 
 dojo.html.getAbsolutePosition = dojo.html.abs = function(/* HTMLElement */node, /* boolean? */includeScroll, /* string? */boxType){
 	//	summary
-	//	Gets the absolute position of the passed element based on the document itself.
-	node = dojo.byId(node, node.ownerDocument);
+	//		Gets the absolute position of the passed element based on the document itself.
+	//	see also: dojo.html.getAbsolutePositionExt
+	node = dojo.byId(node);
+	var ownerDocument = dojo.doc();
 	var ret = {
 		x: 0,
 		y: 0
@@ -93,18 +95,18 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(/* HTMLElement */node, 
 	}
 
 	var h = dojo.render.html;
-	var db = document["body"]||document["documentElement"];
+	var db = ownerDocument["body"]||ownerDocument["documentElement"];
 
 	if(h.ie){
 		with(node.getBoundingClientRect()){
 			ret.x = left-2;
 			ret.y = top-2;
 		}
-	}else if(document.getBoxObjectFor){
+	}else if(ownerDocument['getBoxObjectFor']){
 		// mozilla
 		nativeBoxType = 1; //getBoxObjectFor return padding box coordinate
 		try{
-			var bo = document.getBoxObjectFor(node);
+			var bo = ownerDocument.getBoxObjectFor(node);
 			ret.x = bo.x - dojo.html.sumAncestorProperties(node, "scrollLeft");
 			ret.y = bo.y - dojo.html.sumAncestorProperties(node, "scrollTop");
 		}catch(e){
