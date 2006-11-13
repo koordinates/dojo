@@ -185,7 +185,6 @@ dojo.widget.defineWidget(
 				(this.domNode.nodeName.toLowerCase() == "textarea")){
 				this.textarea = this.domNode;
 				var html = dojo.string.trim(this.textarea.value);
-				if(html == ""){ html = "&nbsp;"; }
 				this.domNode = dojo.doc().createElement("div");
 				dojo.html.copyStyle(this.domNode, this.textarea);
 				var tmpFunc = dojo.lang.hitch(this, function(){
@@ -232,9 +231,8 @@ dojo.widget.defineWidget(
 				});
 			}else{
 				var html = this._preFilterContent(dojo.string.trim(this.domNode.innerHTML));
-				if(html == ""){ html = "&nbsp;"; }
 			}
-
+			if(html == ""){ html = "&nbsp;"; }
 			var content = dojo.html.getContentBox(this.domNode);
 			this._oldHeight = content.height;
 			this._oldWidth = content.width;
