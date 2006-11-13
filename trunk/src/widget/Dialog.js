@@ -124,6 +124,14 @@ dojo.declare(
 			}
 		},
 
+		uninitialize: function(){
+			// if we're the last one, clobber the shared things
+			if(dojo.widget.byType("Dialog").length <= 1){
+				this.shared.bgIframe.remove();
+				dojo.html.removeNode(this.shared.bg, true);
+			}
+		},
+
 		setBackgroundColor: function(/*String*/ color) {
 			// summary
 			//	changes background color specified by "bgColor" parameter
