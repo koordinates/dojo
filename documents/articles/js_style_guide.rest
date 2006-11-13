@@ -25,15 +25,15 @@ Quick Reference
 
 Table of core API naming constructs:
 
-=============  =========================  =======
-Construct      Convention                 Comment
-=============  =========================  =======
-package        lower                      never multiple words
-class          UpperLower
-public method  lowerUpper                 whether class or instance method. lower_case() is acceptable only if the particular function is mimicking another API.
-public var     lowerUpper
-constant       UpperLower or UPPER_LOWER
-=============  =========================  =======
+===============  =========================  =======
+Construct        Convention                 Comment
+===============  =========================  =======
+resource/module  lower                      never multiple words
+class            UpperLower
+public method    lowerUpper                 whether class or instance method. lower_case() is acceptable only if the particular function is mimicking another API.
+public var       lowerUpper
+constant         UpperLower or UPPER_LOWER
+===============  =========================  =======
 
 Table of constructs that are not visible in the API, and therefore are optional
 and carry less weight of enforcement.
@@ -50,7 +50,7 @@ local vars      ``_lowerUpper``, lowerUpper
 Naming Conventions
 ******************
 
-A.  Names representing packages SHOULD be in all lower case.
+A.  Names representing modules and resources SHOULD be in all lower case.
 B.  Names representing types (classes) MUST be nouns and written in
     UpperLower case::
 
@@ -98,7 +98,7 @@ I.  Generic variables SHOULD have the same name as their type::
 
 J.  All names SHOULD be written in English.
 K.  Variables with a large scope SHOULD have globally unambiguious names;
-    ambiguity MAY be distinguished by package membership. Variables with
+    ambiguity MAY be distinguished by module membership. Variables with
     small or private scope MAY be more terse still.
 L.  The name of the return object is implicit, and SHOULD be avoided in a
     method name::
@@ -115,7 +115,7 @@ M.  Public names SHOULD be as clear as necessary and SHOULD avoid unclear
 
         MouseEventHandler, NOT MseEvtHdlr.
 
-    Note that, again, any context that can be determined by package
+    Note that, again, any context that can be determined by module
     membership SHOULD be used when determining if a variable name is clear.
     For example, a class that represents a mouse event handler::
 
