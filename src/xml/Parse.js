@@ -85,7 +85,7 @@ dojo.xml.Parse = function(){
 		}
 		if(djt){ return "dojo:"+djt.toLowerCase(); }
 		// <tag class="classa dojo-type classb"> => dojo:type	
-		if((!dj_global["djConfig"])|| (djConfig["ignoreClassNames"])){ 
+		if((dj_global["djConfig"])&&(!djConfig["ignoreClassNames"])){ 
 			// FIXME: should we make this optionally enabled via djConfig?
 			var classes = node.className||node.getAttribute("class");
 			// FIXME: following line, without check for existence of classes.indexOf
