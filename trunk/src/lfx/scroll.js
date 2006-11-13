@@ -1,7 +1,7 @@
 dojo.provide("dojo.lfx.scroll");
 dojo.require("dojo.html.util");
 dojo.require("dojo.html.iframe");
-dojo.require("dojo.lfx.*");
+dojo.require("dojo.lfx.Animation");
 
 dojo.lfx.smoothScroll = function(/*DOMNode*/ node,
 											/*Window*/ win,
