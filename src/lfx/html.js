@@ -90,11 +90,13 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode[]*/ nodes,
 		n = dojo.byId(n);
 		if(!n || !n.style){ return; }
 		for(var s in style){
-			if(s == "opacity"){
-				dojo.html.setOpacity(n, style[s]);
-			}else{
-				n.style[s] = style[s];
-			}
+			try{
+				if(s == "opacity"){
+					dojo.html.setOpacity(n, style[s]);
+				}else{
+						n.style[s] = style[s];
+				}
+			}catch(e){ dojo.debug(e); }
 		}
 	}
 
@@ -525,11 +527,13 @@ dojo.lfx.html.explode = function(/*DOMNode*/ start,
 	var startCoords = h.toCoordinateObject(start, true);
 	var outline = document.createElement("div");
 	h.copyStyle(outline, endNode);
-	if (endNode.explodeClassName) { outline.className = endNode.explodeClassName; }
+	if(endNode.explodeClassName){ outline.className = endNode.explodeClassName; }
 	with(outline.style){
 		position = "absolute";
 		display = "none";
 		// border = "1px solid black";
+		backgroundColor = h.getStyle(start, "background-color").toLowerCase();
+		backgroundColor = (backgroundColor == "transparent") ? "rgb(221, 221, 221)" : backgroundColor;
 	}
 	dojo.body().appendChild(outline);
 
