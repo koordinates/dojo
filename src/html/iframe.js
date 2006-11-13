@@ -64,44 +64,53 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	},
 
 	size: function(/* HTMLElement */node) {
-		// 	Call this function if the iframe is connected to dojo.body() rather than the node being shadowed 
+		// summary:
+		//		Call this function if the iframe is connected to dojo.body()
+		//		rather than the node being shadowed 
+
 		//	(TODO: erase)
-		if(!this.iframe) { return; }
+		if(!this.iframe){ return; }
 		var coords = dojo.html.toCoordinateObject(node, true, dojo.html.boxSizing.BORDER_BOX);
-		this.iframe.style.width = coords.width + "px";
-		this.iframe.style.height = coords.height + "px";
-		this.iframe.style.left = coords.left + "px";
-		this.iframe.style.top = coords.top + "px";
+		with(this.iframe.style){
+			width = coords.width + "px";
+			height = coords.height + "px";
+			left = coords.left + "px";
+			top = coords.top + "px";
+		}
 	},
 
-	setZIndex: function(/* HTMLElement */node) {
+	setZIndex: function(/* HTMLElement */node){
 		//	summary
 		//	Sets the z-index of the background iframe.
-		if(!this.iframe) { return; }
-		if(dojo.dom.isNode(node)) {
+		if(!this.iframe){ return; }
+		if(dojo.dom.isNode(node)){
 			this.iframe.style.zIndex = dojo.html.getStyle(node, "z-index") - 1;
-		} else if(!isNaN(node)) {
+		}else if(!isNaN(node)){
 			this.iframe.style.zIndex = node;
 		}
 	},
 
-	show: function() {
-		//	summary
-		//	show the iframe
-		if(!this.iframe) { return; }
-		this.iframe.style.display = "block";
+	show: function(){
+		//	summary:
+		//		show the iframe
+		if(this.iframe){ 
+			this.iframe.style.display = "block";
+		}
 	},
 
-	hide: function() {
-		//	summary
-		//	hide the iframe
-		if(!this.iframe) { return; }
-		this.iframe.style.display = "none";
+	hide: function(){
+		//	summary:
+		//		hide the iframe
+		if(this.iframe){ 
+			this.iframe.style.display = "none";
+		}
 	},
 
-	remove: function() {
-		//	summary
-		//	remove the iframe
-		dojo.html.removeNode(this.iframe);
+	remove: function(){
+		//	summary:
+		//		remove the iframe
+		if(this.iframe){
+			dojo.html.removeNode(this.iframe, true);
+		}
 	}
 });
