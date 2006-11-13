@@ -26,19 +26,19 @@ dojo.require("dojo.event.*");
 dojo.event.connect(dojo.byId("goToHeader0"), "onclick", function (e) {
 	var h2s = dojo.html.iframeContentDocument(dojo.byId("embed0")).getElementsByTagName('h2');
 	var h2 = h2s[h2s.length-1];
-	var anm = new dojo.lfx.smoothScroll(h2,dojo.html.iframeContentWindow(dojo.byId("embed0")),500);
+	var anm = new dojo.lfx.smoothScroll(h2,dojo.html.iframeContentWindow(dojo.byId("embed0")),null,500);
 	anm.play();
 });
 dojo.event.connect(dojo.byId("goToHeader"), "onclick", function (e) {
 	var h2s = dojo.html.iframeContentDocument(dojo.byId("embed")).getElementsByTagName('h2');
 	var h2 = h2s[h2s.length-1];
-	var anm = new dojo.lfx.smoothScroll(h2,window,500);
+	var anm = new dojo.lfx.smoothScroll(h2,window,null,500);
 	anm.play();
 });
 dojo.require("dojo.lfx.html");
 dojo.event.connect(dojo.byId("goToHeader1"), "onclick", function (e) {
 	var node = dojo.byId('targetHeader1');
-	var anm0 = new dojo.lfx.smoothScroll(node,window,500);
+	var anm0 = new dojo.lfx.smoothScroll(node,window,null,500);
 	var anm1 = new dojo.lfx.html.unhighlight(node, '#FFFFA0', 500, dojo.lfx.easeOut);
 	var anm2 = new dojo.lfx.html.highlight(node, '#FFFFA0', 500, dojo.lfx.easeIn);
 	var anm = dojo.lfx.chain(anm0, anm1, anm2); 
