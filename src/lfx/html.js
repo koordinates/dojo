@@ -519,7 +519,8 @@ dojo.lfx.html.explode = function(/*DOMNode*/ start,
 		position = "absolute";
 		display = "none";
 		// border = "1px solid black";
-		backgroundColor = h.getStyle(start, "background-color").toLowerCase();
+		var backgroundStyle = h.getStyle(start, "background-color");
+		backgroundColor = backgroundStyle ? backgroundStyle.toLowerCase() : "transparent";
 		backgroundColor = (backgroundColor == "transparent") ? "rgb(221, 221, 221)" : backgroundColor;
 	}
 	dojo.body().appendChild(outline);
