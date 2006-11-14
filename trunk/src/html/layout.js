@@ -369,19 +369,8 @@ dojo.html.getElementBox = function(/* HTMLElement */node, /* string */type){
 // return: coordinate object
 dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(/* array */coords, /* boolean? */includeScroll, /* string? */boxtype) {
 	//	summary
-	//	Converts an array of coordinates into an object of named arguments.
-	if(coords instanceof Array || typeof coords == "array"){
-		dojo.deprecated("dojo.html.toCoordinateArray", "use dojo.html.toCoordinateObject({left: , top: , width: , height: }) instead", "0.5");
-		// coords is already an array (of format [x,y,w,h]), just return it
-		while ( coords.length < 4 ) { coords.push(0); }
-		while ( coords.length > 4 ) { coords.pop(); }
-		var ret = {
-			left: coords[0],
-			top: coords[1],
-			width: coords[2],
-			height: coords[3]
-		};
-	}else if(!coords.nodeType && !(coords instanceof String || typeof coords == "string") &&
+	//	Converts an object of coordinates into an object of named arguments.
+	if(!coords.nodeType && !(coords instanceof String || typeof coords == "string") &&
 			 ('width' in coords || 'height' in coords || 'left' in coords ||
 			  'x' in coords || 'top' in coords || 'y' in coords)){
 		// coords is a coordinate object or at least part of one
