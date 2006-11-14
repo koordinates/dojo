@@ -399,7 +399,7 @@ dojo.html.insertCssFile = function(/* string */URI, /* HTMLDocument? */doc, /* b
 	if(!URI){ return; }
 	if(!doc){ doc = document; }
 	var cssStr = dojo.hostenv.getText(URI, false, fail_ok);
-  if(cssStr===null){ return; } 
+	if(cssStr===null){ return; }
 	cssStr = dojo.html.fixPathsInCssText(cssStr, URI);
 
 	if(checkDuplicates){
@@ -423,7 +423,7 @@ dojo.html.insertCssFile = function(/* string */URI, /* HTMLDocument? */doc, /* b
 		}
 	}
 
-	var style = dojo.html.insertCssText(cssStr);
+	var style = dojo.html.insertCssText(cssStr, doc);
 	dojo.html._insertedCssFiles.push({'doc': doc, 'cssText': cssStr, 'nodeRef': style});
 
 	// insert custom attribute ex dbgHref="../foo.css" usefull when debugging in DOM inspectors, no?
