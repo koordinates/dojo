@@ -423,11 +423,6 @@ dojo.html.placeOnScreen = function(
 	return { left: bestx, top: besty, x: bestx, y: besty, dist: bestDistance, corner:  bestCorner};	//	object
 }
 
-dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasScroll) {
-	dojo.deprecated("dojo.html.placeOnScreenPoint", "use dojo.html.placeOnScreen() instead", "0.5");
-	return dojo.html.placeOnScreen(node, desiredX, desiredY, padding, hasScroll, ['TL', 'TR', 'BL', 'BR']);
-}
-
 dojo.html.placeOnScreenAroundElement = function(
 	/* HTMLElement */node,
 	/* HTMLElement */aroundNode,

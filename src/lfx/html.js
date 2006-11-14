@@ -406,12 +406,6 @@ dojo.lfx.html.slideTo = function(/*DOMNode*/ nodes,
 	var anims = [];
 	var compute = dojo.html.getComputedStyle;
 	
-	if(dojo.lang.isArray(coords)){
-		/* coords: Array
-		   pId: a */
-		dojo.deprecated('dojo.lfx.html.slideTo(node, array)', 'use dojo.lfx.html.slideTo(node, {top: value, left: value});', '0.5');
-		coords = { top: coords[0], left: coords[1] };
-	}
 	dojo.lang.forEach(nodes, function(node){
 		var top = null;
 		var left = null;
@@ -463,13 +457,6 @@ dojo.lfx.html.slideBy = function(/*DOMNode*/ nodes, /*Object*/ coords, /*int?*/ 
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 	var compute = dojo.html.getComputedStyle;
-
-	if(dojo.lang.isArray(coords)){
-		/* coords: Array
-		   pId: a */
-		dojo.deprecated('dojo.lfx.html.slideBy(node, array)', 'use dojo.lfx.html.slideBy(node, {top: value, left: value});', '0.5');
-		coords = { top: coords[0], left: coords[1] };
-	}
 
 	dojo.lang.forEach(nodes, function(node){
 		var top = null;
