@@ -178,13 +178,23 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 							element.checked=true;
 						}
 						break;
+					case "select-multiple":
+						element.selectedIndex=-1;
+						for (var j=0,len2=element.options.length; j<len2; ++j) {
+							for (var k=0,len3=myObj[name].length;k<len3;++k) {
+								if (element.options[j].value == myObj[name][k]) {
+									element.options[j].selected=true;
+								}
+							}
+						}
+						break;
 					case "select-one":
 						element.selectedIndex="0";
 						for (var j=0,len2=element.options.length; j<len2; ++j) {
 							if (element.options[j].value == myObj[name]) {
 								element.options[j].selected=true;
 							} else {
-								//element.options[j].selected=false;
+							//	element.options[j].selected=false;
 							}
 						}
 						break;
@@ -196,7 +206,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 						element.value=value;
 						break;
 					default:
-						//dojo.debug("Not supported type ("+type+")");
+						dojo.debug("Not supported type ("+type+")");
 						break;
 				}
       			}
@@ -237,7 +247,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 					} // if
 				} // for
 
-				if ((elm.type != "checkbox" && elm.type != "radio") || (elm.type=="radio" && elm.checked)) {
+				if ((elm.type != "select-multiple" && elm.type != "checkbox" && elm.type != "radio") || (elm.type=="radio" && elm.checked)) {
 					if(name == name.split("[")[0]) {
 						myObj[name]=elm.value;
 					} else {
@@ -248,6 +258,15 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 						myObj[name]=[ ];
 					}
 					myObj[name].push(elm.value);
+				} else if (elm.type == "select-multiple") {
+					if(typeof(myObj[name]) == 'undefined') {
+						myObj[name]=[ ];
+					}
+					for (var jdx=0,len3=elm.options.length; jdx<len3; ++jdx) {
+						if (elm.options[jdx].selected) {
+							myObj[name].push(elm.options[jdx].value);
+						}
+					}
 				} // if
 				name=undefined;
 			} // for
