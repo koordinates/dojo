@@ -54,7 +54,7 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 			}
 		},
 
-		reIndexRows: function() {
+		_reIndexRows: function() {
 			for(var i=0,len=this.domNode.childNodes.length; i<len;i++) {
 				var elems = ["INPUT", "SELECT", "TEXTAREA"];
 				for (var k=0; k < elems.length; k++) {
@@ -92,16 +92,16 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 
 		deleteRow: function(/*integer*/idx) {
 			this.domNode.removeChild(this.domNode.childNodes[idx]);
-			this.reIndexRows();
+			this._reIndexRows();
 		},
 
-		changeRowPosition: function(e) {
+		_changeRowPosition: function(e) {
 			if (e.dragStatus == "dropFailure") {
 				this.domNode.removeChild(e["dragSource"].domNode);
 			} else if (e.dragStatus == "dropSuccess") {
 				//  nothing to do
 			} // else-if
-			this.reIndexRows();
+			this._reIndexRows();
 		},
 		setRow: function(/*string*/template, /*object*/myObject) {
 			//template = dojo.string.substituteParams(template, {"index": "0"});
@@ -112,7 +112,7 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 		getRow: function() {
 			return this.rowTemplate;
 		},
-                initRow: function(/*integer or dom node*/node) {
+		_initRow: function(/*integer or dom node*/node) {
 			if (typeof(node) == "number") {
                            node=this.domNode.childNodes[node];
 			} // if
@@ -136,7 +136,7 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 					} // else-if
 				} // for
 			} // for
-                },
+		},
 		onAddRow: function(e) {
 		},
 		addRow: function(/*boolean*/doInit) {
@@ -152,13 +152,13 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 			var parser = new dojo.xml.Parse();
 			var frag = parser.parseElement(node, null, true);
 			dojo.widget.getParser().createSubComponents(frag, this);
-			this.reIndexRows();
+			this._reIndexRows();
 			if (doInit) {
-				this.initRow(node);
+				this._initRow(node);
 			}
 			if (this.useDnd) { // bind to DND
 				node=new dojo.dnd.HtmlDragSource(node, this.widgetId);
-				dojo.event.connect(node, "onDragEnd", this, "changeRowPosition");
+				dojo.event.connect(node, "onDragEnd", this, "_changeRowPosition");
 			}
 			this.onAddRow(node);
 		}
