@@ -8,6 +8,7 @@ dojo.require("dojo.html.selection");
 dojo.require("dojo.event.*");
 dojo.require("dojo.string.extras");
 dojo.require("dojo.uri.Uri");
+dojo.require("dojo.Deferred");
 
 // used to save content
 if(dojo.hostenv.post_load_){
@@ -63,6 +64,8 @@ dojo.widget.defineWidget(
 		}
 
 		this._keyHandlers = {};
+
+		this.onLoadDeferred = new dojo.Deferred();
 	},
 	{
 		// inheritWidth: Boolean
@@ -110,6 +113,10 @@ dojo.widget.defineWidget(
 		// _SEPARATOR: String
 		//		used to concat contents from multiple textareas into a single string
 		_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
+
+		// onLoadDeferred: dojo.Deferred
+		//		deferred that can be used to connect to the onLoad function
+		onLoadDeferred: null,
 
 	/* Init
 	 *******/
@@ -852,6 +859,7 @@ dojo.widget.defineWidget(
 				this.focus();
 			}
 			this.onDisplayChanged(e);
+			this.onLoadDeferred.callback(true);
 		},
 
 		onKeyDown: function(e){
