@@ -160,10 +160,13 @@ dojo.widget.defineWidget(
 				dojo.deprecated("dojo.widget.DropdownDatePicker",
 				"Must use displayFormat attribute instead of dateFormat.  See dojo.date.format for specification.", "0.5");
 				this.inputNode.value = dojo.date.strftime(this.datePicker.value, this.dateFormat, this.lang);
-			}else{
+			}else if(this.datePicker.value){
 				this.inputNode.value = dojo.date.format(this.datePicker.value,
 					{formatLength:this.formatLength, datePattern:this.displayFormat, selector:'dateOnly', locale:this.lang});
+			}else{
+				this.inputNode.value = "";
 			}
+
 			if(this.value < this.datePicker.startDate||this.value>this.datePicker.endDate){
 				this.inputNode.value = "";
 			}
@@ -202,7 +205,7 @@ dojo.widget.defineWidget(
 
 		_syncValueNode: function(){
 			var date = this.datePicker.value;
-			var value;
+				var value = "";
 			switch(this.saveFormat.toLowerCase()){
 				case "rfc": case "iso": case "":
 					value = dojo.date.toRfc3339(date, 'dateOnly');
@@ -211,7 +214,9 @@ dojo.widget.defineWidget(
 					value = Number(date);
 					break;
 				default:
-					value = dojo.date.format(date, {datePattern:this.saveFormat, selector:'dateOnly', locale:this.lang});
+					if(date){
+						value = dojo.date.format(date, {datePattern:this.saveFormat, selector:'dateOnly', locale:this.lang});
+					}
 			}
 			this.valueNode.value = value;
 		},
