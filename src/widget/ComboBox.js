@@ -152,7 +152,7 @@ dojo.declare(
 						options.setAllValues(keyValArr[0], keyValArr[1]);
 					}
 				}
-				this._setData(data);
+				this.setData(data);
 			}
 		}
 	},
@@ -168,7 +168,7 @@ dojo.declare(
 						}
 						data = arrData;
 					}
-					this._setData(data);
+					this.setData(data);
 				}),
 				mimetype: "text/json"
 			});
@@ -259,8 +259,8 @@ dojo.declare(
 			callback(ret);
 		},
 	
-		_setData: function(/*Array*/ pdata){
-			// summary: populate this._data and initialize lookup structures
+		setData: function(/*Array*/ pdata){
+			// summary: set (or reset) the data and initialize lookup structures
 			this._data = pdata;
 		}
 	}
