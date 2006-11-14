@@ -1,6 +1,7 @@
 dojo.provide("dojo.behavior.form");
 dojo.require("dojo.html.style");
 dojo.require("dojo.event.*");
+dojo.require("dojo.html.selection");
 
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.behavior.form");
@@ -10,6 +11,8 @@ dojo.experimental("dojo.behavior.form");
 dojo.behavior.form=new function(){
 	
 	this.titleClass="title";
+	
+	this.processing={};
 	
 	function equals(val1, val2){
 		if (val1 && val1.length > 0 && val2 && val2.length > 0
@@ -32,18 +35,17 @@ dojo.behavior.form=new function(){
 			var formId = elms[i].form.getAttribute("id");
 			if(!formId){formId = elms[i].form.getAttribute("name");}
 			if(!formId) { continue; }
-			
 			if(!forms[formId]){ forms[formId] = elms[i].form; }
 			
 			this.decorateInput(elms[i], title);
 			
 			dojo.event.browser.addListener(elms[i], "onfocus", dojo.lang.hitch(this, this.nodeFocused));
 			dojo.event.browser.addListener(elms[i], "onblur", dojo.lang.hitch(this, this.nodeBlurred));
-			dojo.event.browser.addListener(elms[i], "onkeyup", dojo.lang.hitch(this, this.nodeBlurred));
+			dojo.event.browser.addListener(elms[i], "onkeyup", dojo.lang.hitch(this, this.nodeKeyPressed));
 		}
 		
 		for (var f in forms){
-			dojo.event.connect("before", forms[f], "onsubmit", dojo.lang.hitch(this, this.clearDecorations));
+			dojo.event.connect("after", forms[f], "onsubmit", dojo.lang.hitch(this, this.clearDecorations));
 		}
 	}
 	
@@ -62,11 +64,7 @@ dojo.behavior.form=new function(){
 	
 	this.nodeFocused = function(evt){
 		if(!evt){return;}
-		
-		var node;
-		if(evt["currentTarget"]){node=evt.currentTarget;}
-		else if(evt["target"]){node=evt.target;}
-		if(!node){return;}
+		var node=evt.target;
 		
 		node.removeAttribute("prevesc");
 		dojo.html.removeClass(node, this.titleClass);
@@ -81,44 +79,56 @@ dojo.behavior.form=new function(){
 	
 	this.nodeBlurred = function(evt){
 		if(!evt){return;}
+		var node=evt.target;
 		
-		var node;
-		if(evt["currentTarget"]){node=evt.currentTarget;}
-		else if(evt["target"]){node=evt.target;}
-		if(!node || dj_undef("value", node)){return;}
-		
-		// handle escape key
-		if (!dj_undef("keyCode", evt)){
-			if (evt.keyCode == evt.KEY_ESCAPE) {
-				if (!node.getAttribute("prevesc")){
-					var value=node.value;
-					var title=node.getAttribute("title");
-					if (value && value.length > 0 && !equals(value,title)){
-						dojo.debug("escaped on node", value, title);
-						node.setAttribute("prevesc","1");
-						node.value="";
-						return;
-					} else {
-						node.blur();
-					}
-				} else {
-					node.value="";
-					node.blur();
-				}
-			} else { // anything else is probably valid
-				return;
-			}
+		if (this.processing[node]){
+			this.cleanupBlurProcess(node);
+			return;
 		}
 		
+		this.checkNodeValue(node);
 		this.decorateInput(node);
+	}
+	
+	this.nodeKeyPressed = function(evt){
+		if(!evt){return;}
+		
+		var node=evt.target;
+		if (evt.keyCode == evt.KEY_ESCAPE) {
+			this.checkNodeValue(node);
+		} else if (this.processing[node]){
+			this.cleanupBlurProcess(node);
+			return;
+		} else {return;}
+		
+		node.blur();
+	}
+	
+	this.checkNodeValue = function(node){
+		// prevesc is set to handle two subsequent escape key presses
+		if (!node.getAttribute("prevesc")){
+			var value=node.value;
+			var title=node.getAttribute("title");
+			
+			if (value && value.length > 0 && !equals(value,title)){
+				node.setAttribute("prevesc","1");
+				node.value="";
+				// this helps prevent flickering of old value when blurring focus
+				this.processing[node]=true;
+				node.blur();
+			}
+		}
+	}
+	
+	this.cleanupBlurProcess = function(node){
+		delete this.processing[node];
+		setTimeout(function(){node.focus();}, 10);
 	}
 	
 	this.clearDecorations = function(evt){
 		if(!evt){return;}
 		
-		var form;
-		if(evt["currentTarget"]){form=evt.currentTarget;}
-		else if(evt["target"]){form=evt.target;}
+		var form=evt.target;
 		if(!form) { return; }
 		
 		var elms=form.getElementsByTagName("input");
