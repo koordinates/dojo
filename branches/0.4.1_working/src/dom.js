@@ -473,7 +473,7 @@ dojo.dom.textContent = function(/*Node*/node, /*string*/text){
 dojo.dom.hasParent = function(/*Node*/node){
 	//	summary:
 	//		returns whether or not node is a child of another node.
-	return node && node.parentNode && dojo.dom.isNode(node.parentNode);	//	boolean
+	return Boolean(node && node.parentNode && dojo.dom.isNode(node.parentNode));	//	boolean
 }
 
 /**
