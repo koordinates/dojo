@@ -296,7 +296,7 @@ dojo.widget.defineWidget(
 				this.window = this.iframe.contentWindow;
 				this.document = this.window.document;
 				this.document.open();
-				this.document.write("<html><head></head><body style='overflow: hidden;'><div></div></body></html>");
+				this.document.write("<html><head><style>body{margin:0;padding:0;border:0;overflow:hidden;}</style></head><body><div></div></body></html>");
 				this.document.close();
 				this.editNode = this.document.body.firstChild;//document.createElement("div");
 				this.editNode.contentEditable = true;
@@ -575,19 +575,19 @@ dojo.widget.defineWidget(
 					}
 
 					dojo.html.insertCssText(
-						'    body,html { background: transparent; padding: 0; margin: 0; }\n' +
+						'body,html{background:transparent;padding:0;margin:0;}' +
 						// TODO: left positioning will case contents to disappear out of view
 						//       if it gets too wide for the visible area
-						'    body { top: 0; left: 0; right: 0;' +
-						(((this.height)||(dojo.render.html.opera)) ? '' : ' position: fixed; ') +
-						'        font: ' + font + ';\n' +
-						'        min-height: ' + this.minHeight + '; \n' +
-						'        line-height: ' + lineHeight + '} \n' +
-						'    p { margin: 1em 0 !important; }\n' +
-						'    body > *:first-child { padding-top: 0 !important; margin-top: ' + this._firstChildContributingMargin + 'px !important; }\n' + // FIXME: test firstChild nodeType
-						'    body > *:last-child { padding-bottom: 0 !important; margin-bottom: ' + this._lastChildContributingMargin + 'px !important; }\n' +
-						'    li > ul:-moz-first-node, li > ol:-moz-first-node { padding-top: 1.2em; }\n' +
-						'    li { min-height: 1.2em; }\n' +
+						'body{top:0;left:0;right:0;' +
+						(((this.height)||(dojo.render.html.opera)) ? '' : 'position:fixed;') +
+						'font:' + font + ';' +
+						'min-height:' + this.minHeight + ';' +
+						'line-height:' + lineHeight + '}' +
+						'p{margin: 1em 0 !important;}' +
+						'body > *:first-child{padding-top:0 !important;margin-top:' + this._firstChildContributingMargin + 'px !important;}' + // FIXME: test firstChild nodeType
+						'body > *:last-child{padding-bottom:0 !important;margin-bottom:' + this._lastChildContributingMargin + 'px !important;}' +
+						'li > ul:-moz-first-node, li > ol:-moz-first-node{padding-top:1.2em;}\n' +
+						'li{min-height:1.2em;}' +
 						//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }\n' +
 						'', this.document);
 
