@@ -4,6 +4,10 @@ dojo.require("dojo.data.core.Result");
 dojo.require("dojo.lang.assert");
 dojo.require("dojo.json");
 
+dojo.require("dojo.experimental");
+dojo.experimental("dojo.data.OpmlStore");
+// FIXME: The OpmlStore works in Firefox but does not yet work in IE.
+
 dojo.declare("dojo.data.OpmlStore", dojo.data.core.Read, {
 	/* summary:
 	 *   The OpmlStore implements the dojo.data.core.Read API.  
