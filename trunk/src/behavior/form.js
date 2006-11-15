@@ -45,7 +45,7 @@ dojo.behavior.form=new function(){
 		}
 		
 		for (var f in forms){
-			dojo.event.connect("after", forms[f], "onsubmit", dojo.lang.hitch(this, this.clearDecorations));
+			dojo.event.connect("before", forms[f], "onsubmit", dojo.lang.hitch(this, this.clearDecorations));
 		}
 	}
 	
