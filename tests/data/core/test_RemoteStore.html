@@ -1,18 +1,20 @@
 <html>
 	<head>
-		<title>dojo.data.csv Tests</title>
+		<title>dojo.data.RemoteStore Tests</title>
 		<script type="text/javascript">
 			// Dojo configuration
 			djConfig = {
 				isDebug: true
+				//, debugAtAllCosts : true
 			};
 		</script>
 		<script type="text/javascript" src="../../../dojo.js"></script>
 		<script type="text/javascript" src="../../jsunit_browser.js"></script>
-		<script type="text/javascript" src="test_data_csv.js"></script>
+		<script type="text/javascript" src="../../MockXMLHttpRequest.js"></script>
+		<script type="text/javascript" src="test_RemoteStore.js"></script>
 		<script type="text/javascript">
-			dojo.require("dojo.data.csv.*");
-
+			//dojo.provideIncludes();
+			dojo.require("dojo.data.core.RemoteStore");
 			function init(){
 				run_all_tests();
 				dojo.debug("If you see this message, everything worked!");
