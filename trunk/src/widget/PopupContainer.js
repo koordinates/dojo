@@ -206,8 +206,13 @@ dojo.declare(
 		this.isShowingNow = false;
 		// return focus to the widget that opened the menu
 		try {
-			this.parent.domNode.focus();
-		} catch(e) {}
+			setTimeout(
+				dojo.lang.hitch(this, 
+					function(){ this.parent.domNode.focus(); }
+				),
+				10
+			);
+		}catch(e){ dojo.debug(e); }
 
 		//do not need to restore if current selection is not empty
 		//(use keyboard to select a menu item)
