@@ -5,7 +5,8 @@
 	<title>Dojo Tooltip Widget Test</title>
 	
 	<script type="text/javascript">
-		var djConfig = {isDebug: true, debugAtAllCosts: false };
+		/* since we are loading big images (actually, background-images), need to workaround the mozilla bug */
+		var djConfig = {isDebug: true, delayMozLoadingFix: true };
 	</script>
 	
 	<script type="text/javascript" src="../../dojo.js"></script>
