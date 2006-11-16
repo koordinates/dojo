@@ -536,7 +536,7 @@ dojo.widget.defineWidget(
 			this.loadedPlugins.push(obj);
 		},
 		unregisterLoadedPlugin: function(/*Object*/obj){
-			// summery: Delete a loaded plugin for this instance
+			// summary: Delete a loaded plugin for this instance
 			for(var i in this.loadedPlugins){
 				if(this.loadedPlugins[i] === obj){
 					delete this.loadedPlugins[i];
