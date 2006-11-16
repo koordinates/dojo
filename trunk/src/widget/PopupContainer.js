@@ -87,9 +87,6 @@ dojo.declare(
 			return;
 		}
 
-		// save this so that the focus can be returned
-		this.parent = parent;
-
 		var around = false, node, aroundOrient;
 		if(typeof x == 'object'){
 			node = x;
@@ -98,6 +95,9 @@ dojo.declare(
 			parent = y;
 			around = true;
 		}
+
+		// save this so that the focus can be returned
+		this.parent = parent;
 
 		// for unknown reasons even if the domNode is attached to the body in postCreate(),
 		// it's not attached here, so have to attach it here.
@@ -205,14 +205,14 @@ dojo.declare(
 		}
 		this.isShowingNow = false;
 		// return focus to the widget that opened the menu
-		try {
-			setTimeout(
-				dojo.lang.hitch(this, 
-					function(){ this.parent.domNode.focus(); }
-				),
-				10
-			);
-		}catch(e){ dojo.debug(e); }
+
+		setTimeout(
+			dojo.lang.hitch(this, 
+				function(){ try {this.parent.domNode.focus();}catch(e){ dojo.debug(e); } }
+			),
+			10
+		);
+
 
 		//do not need to restore if current selection is not empty
 		//(use keyboard to select a menu item)
