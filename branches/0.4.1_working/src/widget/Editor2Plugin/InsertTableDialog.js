@@ -6,7 +6,7 @@ dojo.widget.defineWidget(
 {
 	templatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/inserttable.html"),
 
-	editableAttributes: ['summery', 'height', 'cellspacing', 'cellpadding', 'border', 'align'],
+	editableAttributes: ['summary', 'height', 'cellspacing', 'cellpadding', 'border', 'align'],
 
 	loadContent: function(){
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
