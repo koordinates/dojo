@@ -78,14 +78,14 @@ dojo.declare(
 	 	//		around node
 		if (this.isShowingNow){ return; }
 
-		this.aboutToShow();
-
 		// if I click right button and menu is opened, then it gets 2 commands: close -> open
 		// so close enables animation and next "open" is put to queue to occur at new location
 		if(this.animationInProgress){
 			this.queueOnAnimationFinish.push(this.open, arguments);
 			return;
 		}
+
+		this.aboutToShow();
 
 		var around = false, node, aroundOrient;
 		if(typeof x == 'object'){
@@ -206,12 +206,22 @@ dojo.declare(
 		this.isShowingNow = false;
 		// return focus to the widget that opened the menu
 
-		setTimeout(
-			dojo.lang.hitch(this, 
-				function(){ try {this.parent.domNode.focus();}catch(e){ dojo.debug(e); } }
-			),
-			10
-		);
+		if(this.parent){
+			setTimeout(
+				dojo.lang.hitch(this, 
+					function(){
+						try{
+							if(this.parent['focus']){
+								this.parent.focus();
+							}else{
+								this.parent.domNode.focus(); 
+							}
+						}catch(e){dojo.debug("No idea how to focus to parent", e);}
+					}
+				),
+				10
+			);
+		}
 
 
 		//do not need to restore if current selection is not empty
