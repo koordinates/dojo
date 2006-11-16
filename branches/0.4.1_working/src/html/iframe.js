@@ -111,8 +111,8 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 		//		remove the iframe
 		if(this.iframe){
 			dojo.html.removeNode(this.iframe, true);
-			this.iframe=null;
 			delete this.iframe;
+			this.iframe=null;
 		}
 	}
 });
