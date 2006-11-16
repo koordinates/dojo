@@ -65,7 +65,9 @@ dojo.widget.defineWidget(
 
 		this._keyHandlers = {};
 
-		this.onLoadDeferred = new dojo.Deferred();
+		if(dojo.Deferred){
+			this.onLoadDeferred = new dojo.Deferred();
+		}
 	},
 	{
 		// inheritWidth: Boolean
@@ -115,7 +117,8 @@ dojo.widget.defineWidget(
 		_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
 
 		// onLoadDeferred: dojo.Deferred
-		//		deferred that can be used to connect to the onLoad function
+		//		deferred that can be used to connect to the onLoad function. This
+		//		will only be set if dojo.Deferred is required
 		onLoadDeferred: null,
 
 	/* Init
@@ -864,7 +867,9 @@ dojo.widget.defineWidget(
 				this.focus();
 			}
 			this.onDisplayChanged(e);
-			this.onLoadDeferred.callback(true);
+			if(this.onLoadDeferred){
+				this.onLoadDeferred.callback(true);
+			}
 		},
 
 		onKeyDown: function(e){
@@ -1610,7 +1615,7 @@ dojo.widget.defineWidget(
 		},
 
 		close: function(/*Boolean*/save, /*Boolean*/force){
-			// summery:
+			// summary:
 			//		Kills the editor and optionally writes back the modified contents to the
 			//		element from which it originated.
 			// save:
@@ -1645,20 +1650,24 @@ dojo.widget.defineWidget(
 						this.__overflow = null;
 					}
 				}
-				this.textarea.value = this._content;
+				if(save){
+					this.textarea.value = this._content;
+				}else{
+					this.textarea.value = this.savedContent;
+				}
 				dojo.html.removeNode(this.domNode);
 				this.domNode = this.textarea;
 			}else{
-				this.domNode.innerHTML = "";
-			}
-
-			if(save){
-				if(dojo.render.html.moz){
-					var nc = dojo.doc().createElement("span");
-					this.domNode.appendChild(nc);
-					nc.innerHTML = this.editNode.innerHTML;
+				if(save){
+					if(dojo.render.html.moz){
+						var nc = dojo.doc().createElement("span");
+						this.domNode.appendChild(nc);
+						nc.innerHTML = this.editNode.innerHTML;
+					}else{
+						this.domNode.innerHTML = this._content;
+					}
 				}else{
-					this.domNode.innerHTML = this._content;
+					this.domNode.innerHTML = this.savedContent;
 				}
 			}
 
