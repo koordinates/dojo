@@ -15,6 +15,11 @@ $dojo = new Dojo('../');
 $files = $dojo->getFileList();
 
 foreach ($files as $file) {
+  echo "Parsing  $file ...\n";
+
+  // NOTE: if the output dies on a particular file, you can skip it by uncommenting the below
+//if ($file == 'src/widget/RichText.js') continue;
+
   $package = new DojoPackage($dojo, $file);
   $package_name = $package->getPackageName();
 
@@ -301,5 +306,7 @@ $timer->stop();
 if (isset($_GET['benchmark'])) {
   $timer->display();
 }
+
+echo "Parsing complete!\n";
 
 ?>
