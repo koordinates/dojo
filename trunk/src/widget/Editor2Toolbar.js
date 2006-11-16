@@ -392,7 +392,9 @@ dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDr
 	},
 
 	onMouseOver: function(e){
-		dojo.html.addClass(e.currentTarget, this._parentToolbar.ToolbarHighlightedSelectStyle);
+		if(this._lastState != dojo.widget.Editor2Manager.commandState.Disabled){
+			dojo.html.addClass(e.currentTarget, this._parentToolbar.ToolbarHighlightedSelectStyle);
+		}
 	},
 	onMouseOut:function(e){
 		dojo.html.removeClass(e.currentTarget, this._parentToolbar.ToolbarHighlightedSelectStyle);
@@ -429,10 +431,6 @@ dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDr
 
 	onMouseOutItem: function(e){
 		dojo.html.removeClass(e.currentTarget, this._parentToolbar.ToolbarHighlightedSelectItemStyle);
-	},
-
-	refreshState: function(){
-		// summary: overload this to update GUI item
 	}
 });
 
@@ -474,31 +472,36 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2T
 	},
 
 	refreshState: function(){
-		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-		if(curInst){
-			var _command = curInst.getCommand(this._name);
-			if(_command){
-				var format = _command.getValue();
-				if(format == this._lastSelectedFormat && this._blockDisplayNames){
-					return;
-				}
-				this._lastSelectedFormat = format;
-				var label = this._domNode.getElementsByTagName("label")[0];
-				var isSet = false;
-				if(this._blockDisplayNames){
-					for(var name in this._blockDisplayNames){
-						if(name == format){
-							label.innerHTML = 	this._blockDisplayNames[name];
-							isSet = true;
-							break;
-						}
+		dojo.widget.Editor2ToolbarFormatBlockSelect.superclass.refreshState.call(this);
+		if(this._lastState != dojo.widget.Editor2Manager.commandState.Disabled){
+			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			if(curInst){
+				var _command = curInst.getCommand(this._name);
+				if(_command){
+					var format = _command.getValue();
+					if(format == this._lastSelectedFormat && this._blockDisplayNames){
+						return this._lastState;
 					}
-					if(!isSet){
-						label.innerHTML = "&nbsp;";
+					this._lastSelectedFormat = format;
+					var label = this._domNode.getElementsByTagName("label")[0];
+					var isSet = false;
+					if(this._blockDisplayNames){
+						for(var name in this._blockDisplayNames){
+							if(name == format){
+								label.innerHTML = 	this._blockDisplayNames[name];
+								isSet = true;
+								break;
+							}
+						}
+						if(!isSet){
+							label.innerHTML = "&nbsp;";
+						}
 					}
 				}
 			}
 		}
+
+		return this._lastState;
 	}
 });
 
@@ -539,31 +542,35 @@ dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2Tool
 	},
 
 	refreshState: function(){
-		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-		if(curInst){
-			var _command = curInst.getCommand(this._name);
-			if(_command){
-				var size = _command.getValue();
-				if(size == this._lastSelectedSize && this._fontSizeDisplayNames){
-					return;
-				}
-				this._lastSelectedSize = size;
-				var label = this._domNode.getElementsByTagName("label")[0];
-				var isSet = false;
-				if(this._fontSizeDisplayNames){
-					for(var name in this._fontSizeDisplayNames){
-						if(name == size){
-							label.innerHTML = 	this._fontSizeDisplayNames[name];
-							isSet = true;
-							break;
-						}
+		dojo.widget.Editor2ToolbarFormatBlockSelect.superclass.refreshState.call(this);
+		if(this._lastState != dojo.widget.Editor2Manager.commandState.Disabled){
+			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			if(curInst){
+				var _command = curInst.getCommand(this._name);
+				if(_command){
+					var size = _command.getValue();
+					if(size == this._lastSelectedSize && this._fontSizeDisplayNames){
+						return this._lastState;
 					}
-					if(!isSet){
-						label.innerHTML = "&nbsp;";
+					this._lastSelectedSize = size;
+					var label = this._domNode.getElementsByTagName("label")[0];
+					var isSet = false;
+					if(this._fontSizeDisplayNames){
+						for(var name in this._fontSizeDisplayNames){
+							if(name == size){
+								label.innerHTML = 	this._fontSizeDisplayNames[name];
+								isSet = true;
+								break;
+							}
+						}
+						if(!isSet){
+							label.innerHTML = "&nbsp;";
+						}
 					}
 				}
 			}
 		}
+		return this._lastState;
 	}
 });
 
