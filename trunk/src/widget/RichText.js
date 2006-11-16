@@ -181,6 +181,11 @@ dojo.widget.defineWidget(
 			//		node. This can result in the creation and replacement with an <iframe> if
 			//		designMode is used, an <object> and active-x component if inside of IE or
 			//		a reguler element if contentEditable is available.
+
+			if(this.onLoadDeferred.fired >= 0){
+				this.onLoadDeferred = new dojo.Deferred();
+			}
+
 			var h = dojo.render.html;
 			if (!this.isClosed) { this.close(); }
 			dojo.event.topic.publish("dojo.widget.RichText::open", this);
