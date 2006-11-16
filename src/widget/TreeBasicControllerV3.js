@@ -50,7 +50,7 @@ dojo.widget.defineWidget(
 	},
 
 	onBeforeTreeDestroy: function(message) {
-                this.unlistenTree(message.source);
+        this.unlistenTree(message.source);
 	},
 
 	onAfterSetFolder: function(message) {
