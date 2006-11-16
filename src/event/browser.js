@@ -56,6 +56,16 @@ if(dojo.render.html.ie){
 				dojo.widget.manager.destroyAll();
 			}
 		}catch(e){}
+
+		// Workaround for IE leak recommended in ticket #1727 by schallm
+		for(var name in dojo.widget._templateCache){
+			if(dojo.widget._templateCache[name].node){
+				dojo.dom.removeNode(dojo.widget._templateCache[name].node);
+				dojo.widget._templateCache[name].node = null;
+				delete dojo.widget._templateCache[name].node;
+			}
+		}
+
 		try{ window.onload = null; }catch(e){}
 		try{ window.onunload = null; }catch(e){}
 		dojo._ie_clobber.clobberNodes = [];
