@@ -6,7 +6,7 @@ load("buildUtilXd.js");
 findJsFiles = function(srcDirs, filePathRegExp){
 	var jsFileNames = [];
 	for(var i = 0; i < srcDirs.length; i++){
-		var fileList = buildUtil.getFilteredFileList(srcDirs[i].prefixPath, filePathRegExp);
+		var fileList = buildUtil.getFilteredFileList(srcDirs[i].prefixPath, filePathRegExp, true);
 		if(fileList){
 			for(var j = 0; j < fileList.length; j++){
 				jsFileNames.push({prefix: srcDirs[i].prefix, prefixPath: srcDirs[i].prefixPath, path: fileList[j]});
