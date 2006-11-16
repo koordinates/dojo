@@ -631,7 +631,7 @@ dojo.widget.defineWidget(
 					this._htmlEditNode.style.display = "none";
 					this.focus();
 				}
-				this.updateToolbar(true);
+				this.onDisplayChanged(null, true);
 			}
 		},
 
@@ -709,10 +709,10 @@ dojo.widget.defineWidget(
 		},
 
 		_lastStateTimestamp: 0,
-		onDisplayChanged: function(/*Object*/e){
+		onDisplayChanged: function(/*Object*/e, /*Boolean*/forceUpdate){
 			this._lastStateTimestamp = (new Date()).getTime();
 			dojo.widget.Editor2.superclass.onDisplayChanged.call(this,e);
-			this.updateToolbar();
+			this.updateToolbar(forceUpdate);
 		},
 
 		onLoad: function(){
