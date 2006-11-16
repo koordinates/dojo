@@ -1,7 +1,7 @@
 dojo.require("dojo.dom");
 dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html");
+dojo.require("dojo.html.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.storage.*");
 
@@ -21,10 +21,6 @@ var TestStorage = {
 		this._printAvailableKeys();
 		
 		// initialize our event handlers
-		var storageProvider = dojo.byId("storageProvider");
-		dojo.event.connect(storageProvider, "onchange", this,
-		                   this.changeProvider);
-		storageProvider.disabled = false;
 		var directory = dojo.byId("directory");
 		dojo.event.connect(directory, "onchange", this, this.directoryChange);
 		var storageValueElem = dojo.byId("storageValue");
@@ -34,7 +30,7 @@ var TestStorage = {
 		var keyNameField = dojo.byId("storageKey");
 		dojo.event.connect(keyNameField, "onfocus", function(evt){
 			directory.selectedIndex = -1;
-		}); 
+		}); 		
 											 
 		// add onclick listeners to all of our buttons
 		var buttonContainer = dojo.byId("buttonContainer");
@@ -52,13 +48,11 @@ var TestStorage = {
 		
 		// print out metadata
 		this._printProviderMetadata();
-	},
-	
-	changeProvider: function(evt){
-		var provider = evt.target.value;
 		
-		this._setProvider(provider);
-		this._printProviderMetadata();
+		// disable the configuration button if none is supported for this provider
+		if(dojo.storage.hasSettingsUI() == false){
+			dojo.byId("configureButton").disabled = true;	
+		}
 	},
 	
 	directoryChange: function(evt){
@@ -277,6 +271,7 @@ var TestStorage = {
 	
 	_printAvailableKeys: function(){
 		var directory = dojo.byId("directory");
+		
 		// clear out any old keys
 		directory.innerHTML = "";
 		
@@ -305,6 +300,7 @@ var TestStorage = {
 	},
 	
 	_printProviderMetadata: function(){
+		var storageType = dojo.storage.getType();
 		var isSupported = dojo.storage.isAvailable();
 		var maximumSize = dojo.storage.getMaximumSize();
 		var permanent = dojo.storage.isPermanent();
@@ -314,6 +310,7 @@ var TestStorage = {
 			moreInfo = "Flash Comm Version " + dojo.flash.info.commVersion;
 		}
 		
+		dojo.byId("currentStorageProvider").innerHTML = storageType;
 		dojo.byId("isSupported").innerHTML = isSupported;
 		dojo.byId("isPersistent").innerHTML = permanent;
 		dojo.byId("hasUIConfig").innerHTML = uiConfig;
@@ -338,22 +335,6 @@ var TestStorage = {
 		
 		top.appendChild(status);
 		dojo.lfx.fadeOut(status, 2000).play();
-	},
-	
-	_setProvider: function(provider){
-		// change the provider in dojo
-		if (provider == "default"){
-			dojo.storage.manager.autodetect();
-		}else {
-			if (dojo.storage.manager.supportsProvider(provider)){
-				dojo.storage.manager.setProvider(provider);
-			}
-			else {
-				alert("Your platform does not support features necessary to use "
-				      + provider);
-				return;
-			}
-		}
 	}
 };
 
