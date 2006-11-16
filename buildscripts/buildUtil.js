@@ -194,7 +194,7 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 
 //Recurses startDir and finds matches to the files that match regExpFilter.
 //Ignores files/directories that start with a period (.).
-buildUtil.getFilteredFileList = function(startDir, regExpFilter, startDirIsJavaObject){
+buildUtil.getFilteredFileList = function(startDir, regExpFilter, makeUnixPaths, startDirIsJavaObject){
 	var files = [];
 
 	var topDir = startDir;
@@ -208,11 +208,18 @@ buildUtil.getFilteredFileList = function(startDir, regExpFilter, startDirIsJavaO
 			var file = dirFileArray[i];
 			if(file.isFile()){
 				var filePath = file.getPath();
+				if(makeUnixPaths){
+					//Make sure we have a JS string.
+					filePath = String(filePath);
+					if(filePath.indexOf("/") == -1){
+						filePath = filePath.replace(/\\/g, "/");
+					}
+				}
 				if(!file.getName().match(/^\./) && filePath.match(regExpFilter)){
 					files.push(filePath);
 				}
 			}else if(file.isDirectory() && !file.getName().match(/^\./)){
-				var dirFiles = this.getFilteredFileList(file, regExpFilter, true);
+				var dirFiles = this.getFilteredFileList(file, regExpFilter, makeUnixPaths, true);
 				files.push.apply(files, dirFiles);
 			}
 		}

@@ -61,7 +61,7 @@ buildUtilXd.makeXdContents = function(fileContents, baseRelativePath, prefixes){
 					var filePath = this.mapResourceToPath(moduleName, baseRelativePath, prefixes);
 					
 					var bundleRegExp = new RegExp("nls[/]?([\\w\\-]*)/" + bundleName + ".js$");
-					var bundleFiles = buildUtil.getFilteredFileList(filePath + "nls/", bundleRegExp);;
+					var bundleFiles = buildUtil.getFilteredFileList(filePath + "nls/", bundleRegExp, true);
 					
 					//Find the list of locales supported by looking at the path names.
 					var locales = [];
