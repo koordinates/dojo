@@ -767,7 +767,7 @@ dojo.widget.defineWidget(
 					this._handleBlurTimer(true, 100);
 					this._tryFocus();
 				}
-			} catch(e){}
+			}catch(e){}
 		},
 
 		_isInputEqualToResult: function(/*String*/ result){
@@ -867,10 +867,7 @@ dojo.widget.defineWidget(
 			// Our dear friend IE doesnt take max-height so we need to calculate that on our own every time
 			var childs = this.optionsListNode.childNodes;
 			if(childs.length){
-				var visibleCount = this.maxListLength;
-				if(childs.length < visibleCount){
-					visibleCount = childs.length;
-				}
+				var visibleCount = Math.min(childs.length,this.maxListLength);
 
 				with(this.optionsListNode.style)
 				{
@@ -885,7 +882,6 @@ dojo.widget.defineWidget(
 						height = visibleCount * dojo.html.getMarginBox(childs[0]).height +"px";
 					}
 					width = (dojo.html.getMarginBox(this.domNode).width-2)+"px";
-					
 				}
 				this.popupWidget.open(this.domNode, this, this.downArrowNode);
 			}else{
