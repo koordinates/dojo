@@ -79,12 +79,10 @@ dojo.declare("dojo.dnd.HtmlDragSource", dojo.dnd.DragSource, {
 	if(node){
 		this.domNode = node;
 		this.dragObject = node;
-		// register us
-		dojo.dnd.DragSource.call(this);
 		// set properties that might have been clobbered by the mixin
 		this.type = (type)||(this.domNode.nodeName.toLowerCase());
+		this.reregister();
 	}
-
 });
 
 dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
@@ -293,6 +291,7 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 	this.type = type;
 	this.constrainToContainer = false;
 	this.dragSource = null;
+	this.register();
 });
 
 dojo.declare("dojo.dnd.HtmlDropTarget", dojo.dnd.DropTarget, {
@@ -483,4 +482,5 @@ dojo.declare("dojo.dnd.HtmlDropTarget", dojo.dnd.DropTarget, {
 		types = [types];
 	}
 	this.acceptedTypes = types || [];
+	dojo.dnd.dragManager.registerDropTarget(this);
 });
