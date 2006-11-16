@@ -364,7 +364,7 @@ dojo.declare("dojo.gfx.Rect", dojo.gfx.shape.Rect, {
 			shape = dojo.gfx.Rect.superclass.attachShape.apply(this, arguments);
 			shape.r = Math.min(rawNode.getAttribute("rx"), rawNode.getAttribute("ry"));
 		}
-		return shape;	// dojo.gfx.Shape
+		return shape;	// dojo.gfx.shape.Rect
 	},
 	setShape: function(newShape){
 		// summary: sets a rectangle shape object (SVG)
@@ -475,7 +475,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 dojo.gfx.Path.nodeType = "path";
 
 dojo.gfx._creators = {
-	// summary: SVG creators
+	// summary: SVG shape creators
 	createPath: function(path){
 		// summary: creates an SVG path shape
 		// path: Object: a path object (see dojo.gfx.defaultPath)
@@ -520,7 +520,6 @@ dojo.gfx._creators = {
 		// summary: creates an instance of the passed shapeType class
 		// shapeType: Function: a class constructor to create an instance of
 		// rawShape: Object: properties to be passed in to the classes "setShape" method
-
 		if(!this.rawNode){ return null; }
 		var shape = new shapeType();
 		var node = document.createElementNS(dojo.svg.xmlns.svg, shapeType.nodeType); 
