@@ -52,6 +52,10 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 
 	destroyRendering: function(finalize){
 		try{
+			if(this.bgIframe){
+				this.bgIframe.remove();
+				delete this.bgIframe;
+			}
 			if(!finalize && this.domNode){
 				dojo.event.browser.clean(this.domNode);
 			}
