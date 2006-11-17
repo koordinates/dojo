@@ -47,6 +47,12 @@ dojo.string.Builder = function(/* string? */str){
 		return this;	//	dojo.string.Builder
 	};
 
+	this.concat = function(){
+		//	summary
+		//	Alias for the append method.
+		return this.append.apply(this, arguments);	//	dojo.string.Builder
+	};
+
 	this.clear = function(){
 		//	summary
 		//	Clear the internal buffer.
