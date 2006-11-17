@@ -1,9 +1,176 @@
+/** 
+		FIXME: Write better docs.
+
+		The primary maintainer of this module is Brad Neuberg, bkn3@columbia.edu 
+*/
 dojo.provide("dojo.storage.browser");
 
 dojo.require("dojo.storage");
 dojo.require("dojo.flash");
 dojo.require("dojo.json");
 dojo.require("dojo.uri.*");
+
+
+/** 
+	Storage provider that uses WHAT Working Group features in Firefox 2 
+	to achieve permanent storage. The WHAT WG storage API is documented at 
+	http://www.whatwg.org/specs/web-apps/current-work/#scs-client-side
+	
+		@author JB Boisseau, jb.boisseau@eutech-ssii.com
+		@author Brad Neuberg, bkn3@columbia.edu 
+*/
+dojo.storage.browser.WhatWGStorageProvider = function(){
+}
+
+dojo.inherits(dojo.storage.browser.WhatWGStorageProvider, dojo.storage);
+
+// instance methods and properties
+dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
+	namespace: "default",
+	initialized: false,
+	domain: null,
+	_available: null,
+	_statusHandler: null,
+	
+	initialize: function(){
+		if(djConfig["disableWhatWGStorage"] == true){
+			return;
+		}
+		
+		// get current domain
+		this.domain = location.hostname;
+		
+		// indicate that this storage provider is now loaded
+		this.initialized = true;
+		dojo.storage.manager.loaded();	
+	},
+	
+	isAvailable: function(){
+		try{
+			var myStorage = globalStorage[location.hostname];
+		}catch(e){
+			this._available = false;
+			return this._available;
+		}
+		
+		this._available = true;	
+		return this._available;
+	},
+
+	put: function(key, value, resultsHandler){
+		if(this.isValidKey(key) == false){
+			dojo.raise("Invalid key given: " + key);
+		}			
+		
+		this._statusHandler = resultsHandler;
+		
+		// serialize the value;
+		// handle strings differently so they have better performance
+		if(dojo.lang.isString(value)){
+			value = "string:" + value;
+		}else{
+			value = dojo.json.serialize(value);
+		}
+		
+		// register for successful storage events
+		window.addEventListener("storage", function(evt){
+			// indicate we succeeded
+			resultsHandler.call(null, dojo.storage.SUCCESS, key);
+		}, false);
+		
+		// try to store the value	
+		try{
+			var myStorage = globalStorage[this.domain];
+			myStorage.setItem(key,value);
+		}catch(e){
+			// indicate we failed
+			this._statusHandler.call(null, dojo.storage.FAILED, 
+									key, e.toString());
+		}
+	},
+
+	get: function(key){
+		if(this.isValidKey(key) == false){
+			dojo.raise("Invalid key given: " + key);
+		}
+		
+		var myStorage = globalStorage[this.domain];
+		
+		var results = myStorage.getItem(key);
+
+		if(results == null){
+			return null;
+		}
+	
+		results = results.value;
+		
+		// destringify the content back into a 
+		// real JavaScript object;
+		// handle strings differently so they have better performance
+		if(!dojo.lang.isUndefined(results) && results != null 
+			 && /^string:/.test(results)){
+			results = results.substring("string:".length);
+		}else{
+			results = dojo.json.evalJson(results);
+		}
+		
+		return results;
+	},
+
+	getKeys: function(){
+		var myStorage = globalStorage[this.domain];
+		var keysArray = new Array();
+		for(i=0; i<myStorage.length;i++){
+			keysArray[i] = myStorage.key(i);
+		}
+		
+		return keysArray;
+	},
+
+	clear: function(){
+		var myStorage = globalStorage[this.domain];
+		var keys = new Array();
+		for(var i = 0; i < myStorage.length; i++){
+			keys[keys.length] = myStorage.key(i);
+		}
+		
+		for(var i = 0; i < keys.length; i++){
+			myStorage.removeItem(keys[i]);
+		}
+	},
+	
+	remove: function(key){
+		var myStorage = globalStorage[this.domain];
+		myStorage.removeItem(key);
+	},
+	
+	isPermanent: function(){
+		return true;
+	},
+
+	getMaximumSize: function(){
+		return dojo.storage.SIZE_NO_LIMIT;
+	},
+
+	hasSettingsUI: function(){
+		return false;
+	},
+	
+	showSettingsUI: function(){
+		dojo.raise(this.getType() + " does not support a storage settings user-interface");
+	},
+	
+	hideSettingsUI: function(){
+		dojo.raise(this.getType() + " does not support a storage settings user-interface");
+	},
+	
+	getType: function(){
+		return "dojo.storage.browser.WhatWGProvider";
+	}
+});
+
+
+
 
 /** 
 		Storage provider that uses features in Flash to achieve permanent storage.
@@ -17,7 +184,7 @@ dojo.inherits(dojo.storage.browser.FlashStorageProvider, dojo.storage);
 
 // instance methods and properties
 dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
-	"namespace": "default",
+	namespace: "default",
 	initialized: false,
 	_available: null,
 	_statusHandler: null,
@@ -40,13 +207,11 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	isAvailable: function(){
 		if(djConfig["disableFlashStorage"] == true){
 			this._available = false;
+		}else{
+			this._available = true;
 		}
 		
 		return this._available;
-	},
-	
-	setNamespace: function(ns){
-		this["namespace"] = ns;
 	},
 
 	put: function(key, value, resultsHandler){
@@ -56,15 +221,15 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 			
 		this._statusHandler = resultsHandler;
 		
-		// serialize the value
-		// Handle strings differently so they have better performance
+		// serialize the value;
+		// handle strings differently so they have better performance
 		if(dojo.lang.isString(value)){
 			value = "string:" + value;
 		}else{
 			value = dojo.json.serialize(value);
 		}
 		
-		dojo.flash.comm.put(key, value, this["namespace"]);
+		dojo.flash.comm.put(key, value, this.namespace);
 	},
 
 	get: function(key){
@@ -72,15 +237,15 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 			dojo.raise("Invalid key given: " + key);
 		}
 		
-		var results = dojo.flash.comm.get(key, this["namespace"]);
+		var results = dojo.flash.comm.get(key, this.namespace);
 
 		if(results == ""){
 			return null;
 		}
     
 		// destringify the content back into a 
-		// real JavaScript object
-		// Handle strings differently so they have better performance
+		// real JavaScript object;
+		// handle strings differently so they have better performance
 		if(!dojo.lang.isUndefined(results) && results != null 
 			 && /^string:/.test(results)){
 			results = results.substring("string:".length);
@@ -92,7 +257,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	},
 
 	getKeys: function(){
-		var results = dojo.flash.comm.getKeys(this["namespace"]);
+		var results = dojo.flash.comm.getKeys(this.namespace);
 		
 		if(results == ""){
 			return [];
@@ -103,7 +268,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	},
 
 	clear: function(){
-		dojo.flash.comm.clear(this["namespace"]);
+		dojo.flash.comm.clear(this.namespace);
 	},
 	
 	remove: function(key){
@@ -144,7 +309,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 			"dojo.storage.FlashStorageProvider". 
 	*/
 	getType: function(){
-		return "dojo.storage.FlashStorageProvider";
+		return "dojo.storage.browser.FlashStorageProvider";
 	},
 	
 	/** Called when the Flash is finished loading. */
@@ -162,7 +327,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	_onStatus: function(statusResult, key){
 		var ds = dojo.storage;
 		var dfo = dojo.flash.obj;
-		//dojo.debug("_onStatus, statusResult="+statusResult+", key="+key);
+		
 		if(statusResult == ds.PENDING){
 			dfo.center();
 			dfo.setVisible(true);
@@ -177,6 +342,8 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 });
 
 // register the existence of our storage providers
+dojo.storage.manager.register("dojo.storage.browser.WhatWGStorageProvider",
+								new dojo.storage.browser.WhatWGStorageProvider());
 dojo.storage.manager.register("dojo.storage.browser.FlashStorageProvider",
 								new dojo.storage.browser.FlashStorageProvider());
 

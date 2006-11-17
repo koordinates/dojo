@@ -1,17 +1,15 @@
 /** 
 		FIXME: Write better docs.
 
-		@author Brad Neuberg, bkn3@columbia.edu 
+		The primary maintainer of this module is Brad Neuberg, bkn3@columbia.edu 
 */
 dojo.provide("dojo.storage");
 
 dojo.require("dojo.lang.*");
 dojo.require("dojo.event.*");
 
-// create an empty "StorageProvider", which was being created as a side-effect
-//	of the erroneous dojo.provide("dojo.storage.StorageProvider")
-dojo.storage.StorageProvider = {}
 
+dojo.storage.StorageProvider = {};
 
 /** The base class for all storage providers. */
 
@@ -47,7 +45,7 @@ dojo.declare("dojo.storage", null, {
 		applications want access to the storage system from the same domain but
 		want different storage silos. 
 	*/
-	"namespace": "dojoStorage",
+	namespace: "default",
 	
 	/**  
 		If a function is assigned to this property, then when the settings
@@ -222,7 +220,7 @@ dojo.storage.manager = new function(){
 	this.providers = [];
 	
 	// TODO: Provide a way for applications to override the default namespace
-	this["namespace"] = "dojo.storage";
+	this.namespace = "default";
 	
 	this.initialize = function(){
 		// summary: 
@@ -237,10 +235,13 @@ dojo.storage.manager = new function(){
 	this.register = function(/*string*/ name, /*Object*/ instance) {
 		// summary:
 		//		Registers the existence of a new storage provider; used by
-		//		subclasses to inform the manager of their existence. 
+		//		subclasses to inform the manager of their existence. The
+		//		storage manager will select storage providers based on 
+		//		their ordering, so the order in which you call this method
+		//		matters. 
 		// name:
 		//		The full class name of this provider, such as
-		//		"dojo.storage.browser.Flash6StorageProvider".
+		//		"dojo.storage.browser.FlashStorageProvider".
 		// instance:
 		//		An instance of this provider, which we will use to call
 		//		isAvailable() on. 
@@ -266,14 +267,25 @@ dojo.storage.manager = new function(){
 		// summary:
 		//		Autodetects the best possible persistent storage provider
 		//		available on this platform. 
-		if(this.initialized == true) // already finished
+		if(this.initialized == true){ // already finished
 			return;
+		}
 			
 		// go through each provider, seeing if it can be used
 		var providerToUse = null;
-		for(var i = 0; i < this.providers.length; i++) {
+		for(var i = 0; i < this.providers.length; i++){
 			providerToUse = this.providers[i];
-			if(providerToUse.isAvailable()){
+			// a flag to force the storage manager to use a particular 
+			// storage provider type, such as 
+			// djConfig = {forceStorageProvider: "dojo.storage.browser.WhatWGStorageProvider"};
+			if(dojo.lang.isUndefined(djConfig["forceStorageProvider"]) == false
+				&& providerToUse.getType() == djConfig["forceStorageProvider"]){
+				// still call isAvailable for this provider, since this helps some
+				// providers internally figure out if they are available
+				providerToUse.isAvailable();
+				break;
+			}else if(dojo.lang.isUndefined(djConfig["forceStorageProvider"]) == true
+						&& providerToUse.isAvailable()){
 				break;
 			}
 		}	
@@ -309,8 +321,10 @@ dojo.storage.manager = new function(){
 		//		Returns whether the storage system is initialized and ready to
 		//		be used. 
 
-		// FIXME: This should _really_ not be in here, but it fixes a bug
-		if(dojo.flash.ready == false){
+		// FIXME: This should REALLY not be in here, but it fixes a tricky
+		// Flash timing bug
+		if(this.currentProvider.getType() == "dojo.storage.browser.FlashStorageProvider"
+			&& dojo.flash.ready == false){
 			return false;
 		}else{
 			return this.initialized;
@@ -334,7 +348,6 @@ dojo.storage.manager = new function(){
 				return false;
 			return results;
 		}catch (exception){
-			dojo.debug("exception="+exception);
 			return false;
 		}
 	};
