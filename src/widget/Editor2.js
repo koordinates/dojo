@@ -33,6 +33,10 @@ dojo.lang.mixin(dojo.widget.Editor2Manager,
 				return oCommand;
 			}
 		}
+		if(name == 'createlink' || name == 'insertimage'){
+			dojo.deprecated('Command '+name+" is now defined in plugin dojo.widget.Editor2Plugin.DialogCommands. It shall be required explicitly", "0.6");
+			dojo['require']("dojo.widget.Editor2Plugin.DialogCommands"); //avoid loading by the build
+		}
 		switch(name){
 			case 'htmltoggle':
 				//Editor2 natively provide the htmltoggle functionalitity

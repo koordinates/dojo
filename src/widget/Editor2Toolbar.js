@@ -57,6 +57,14 @@ dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
 			}
 		}
 
+		if(name == 'forecolor' || name == 'hilitecolor'){
+			dojo.deprecated('Toolbar item '+name+" is now defined in plugin dojo.widget.Editor2Plugin.ColorPicker. It shall be required explicitly", "0.6");
+			dojo['require']("dojo.widget.Editor2Plugin.ColorPicker"); //avoid loading by the build
+		}else if(name == 'formatblock' || name == 'fontsize' || name == 'fontname'){
+			dojo.deprecated('Toolbar item '+name+" is now defined in plugin dojo.widget.Editor2Plugin.DropDownList. It shall be required explicitly", "0.6");
+			dojo['require']("dojo.widget.Editor2Plugin.DropDownList"); //avoid loading by the build
+		}
+
 		switch(name){
 			//button for builtin functions
 			case 'bold':
@@ -91,13 +99,11 @@ dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
 				break;
 			case 'forecolor':
 			case 'hilitecolor':
-				//don't forget to require dojo.widget.Editor2Plugin.ColorPicker
 				item = new dojo.widget.Editor2ToolbarColorPaletteButton(name);
 				break;
 			case 'plainformatblock':
 				item = new dojo.widget.Editor2ToolbarFormatBlockPlainSelect("formatblock");
 				break;
-			// the next 3 require dojo.widget.Editor2Plugin.DropDownList
 			case 'formatblock':
 				item = new dojo.widget.Editor2ToolbarFormatBlockSelect("formatblock");
 				break;
