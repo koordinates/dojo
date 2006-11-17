@@ -54,7 +54,7 @@ dojo.dom.isNode = function(/* object */wh){
 	if(typeof Element == "function") {
 		try {
 			return wh instanceof Element;	//	boolean
-		} catch(E) {}
+		} catch(e) {}
 	} else {
 		// best-guess
 		return wh && !isNaN(wh.nodeType);	//	boolean
@@ -166,14 +166,6 @@ dojo.dom.copyChildren = function(/*Element*/srcNode, /*Element*/destNode, /*bool
 	return this.moveChildren(clonedNode, destNode, trim);	//	number
 }
 
-dojo.dom.removeChildren = function(/*Element*/node){
-	//	summary:
-	//		removes all children from node and returns the count of children removed.
-	var count = node.childNodes.length;
-	while(node.hasChildNodes()){ node.removeChild(node.firstChild); }
-	return count;	//	number
-}
-
 dojo.dom.replaceChildren = function(/*Element*/node, /*Node*/newChild){
 	//	summary:
 	//		Removes all children of node and appends newChild
@@ -181,6 +173,27 @@ dojo.dom.replaceChildren = function(/*Element*/node, /*Node*/newChild){
 	dojo.dom.removeChildren(node);
 	node.appendChild(newChild);
 }
+
+dojo.dom.removeChildren = function(/*Element*/node){
+	//	summary:
+	//		removes all children from node and returns the count of children removed.
+	var count = node.childNodes.length;
+	while(node.hasChildNodes()){ dojo.dom.removeNode(node.firstChild); }
+	return count; // int
+}
+
+dojo.dom.replaceNode = function(/*Element*/node, /*Element*/newNode){
+	//	summary:
+	//		replaces node with newNode and returns a reference to the removed node
+	if(dojo.render.html.ie){
+		node.parentNode.insertBefore(newNode, node);
+		return dojo.dom.removeNode(node); // Node
+	}else{
+		return node.parentNode.replaceChild(newNode, node); // Node
+	}
+}
+
+dojo.dom._ieRemovedNodes = [];
 
 dojo.dom.removeNode = function(/*Node*/node, /*Boolean*/clean){
 	//	summary:
@@ -191,15 +204,36 @@ dojo.dom.removeNode = function(/*Node*/node, /*Boolean*/clean){
 	//	clean:
 	//		if in an HTML environment and true, this variable ensures that
 	//		potential leaks are handled correctly
+
 	if(node && node.parentNode){
 		try{
-			if((clean)&&(dojo.evalObjPath("dojo.event.browser.clean", false))){
+			if(clean && dojo.evalObjPath("dojo.event.browser.clean", false)){
 				dojo.event.browser.clean(node);
 			}
 		}catch(e){ /* squelch */ }
+
+		if(dojo.render.html.ie){
+			dojo.dom._ieRemovedNodes.push(node);
+		}
+
 		// return a ref to the removed child
-		return node.parentNode.removeChild(node);	//	Node
+		return node.parentNode.removeChild(node); // Node
 	}
+}
+
+dojo.dom._discardElement = function(element){
+	// summary: workaround for IE leak recommended in ticket #1727 by schallm
+	var garbageBin = document.getElementById('IELeakGarbageBin');
+	if (!garbageBin){
+		garbageBin = document.createElement('DIV');
+		garbageBin.id = 'IELeakGarbageBin';
+		garbageBin.style.display = 'none';
+		document.body.appendChild(garbageBin);
+	}
+
+	// move the element to the garbage bin
+	garbageBin.appendChild(element);
+	garbageBin.innerHTML = '';
 }
 
 dojo.dom.getAncestors = function(/*Node*/node, /*function?*/filterFunction, /*boolean?*/returnFirstHit){
