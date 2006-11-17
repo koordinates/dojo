@@ -75,7 +75,7 @@ dojo.lang.declare("dojo.widget.Editor2Plugin.toggleTableBorderCommand", dojo.wid
 
 dojo.widget.Editor2Plugin.TableOperation = {
 	getCommand: function(editor, name){
-		switch(name.toLowerCase()){
+		switch(name){
 			case 'toggletableborder':
 				return new dojo.widget.Editor2Plugin.toggleTableBorderCommand(editor, name);
 			case 'inserttable':
@@ -88,8 +88,6 @@ dojo.widget.Editor2Plugin.TableOperation = {
 		}
 	},
 	getToolbarItem: function(name){
-		var name = name.toLowerCase();
-
 		var item;
 		switch(name){
 			case 'inserttable':

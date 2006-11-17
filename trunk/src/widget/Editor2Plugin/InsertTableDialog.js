@@ -11,7 +11,7 @@ dojo.widget.defineWidget(
 	loadContent: function(){
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 		this.tableNode = dojo.withGlobal(curInst.window, "getSelectedElement", dojo.html.selection);
-		if(!this.tableNode || this.tableNode.tagName.toLowerCase() != 'table'){
+		if(!this.tableNode || this.tableNode.tagName.toUpperCase() != 'TABLE'){
 			this.tableNode = dojo.withGlobal(curInst.window, "getAncestorElement", dojo.html.selection, ['table']);
 		}
 
