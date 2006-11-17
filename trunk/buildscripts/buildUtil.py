@@ -44,9 +44,11 @@ def makeResourceUri(resourceName, templatePath, srcRoot, prefixes):
 
 			# Final path construction
 			finalPath = srcRoot
+			finalPath += bestPrefixPath + "/"
 			if resourceName:
 				finalPath += resourceName + "/"
-			finalPath += bestPrefixPath + "/" + templatePath
+			finalPath += templatePath
+			
 			return finalPath
 
 	return srcRoot + templatePath

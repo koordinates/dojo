@@ -892,7 +892,7 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 	<!-- end buildFlash task -->
 
 	<!-- xdgenRelease task -->
-	<target name="xdgenRelease" if="xdgenRun">
+	<target name="xdgenRelease" if="xdgenRun" depends="xdgenRemove">
 		<!-- Hmm. have to repeat this work here even though it was done in -set-profile-deps. I guess script block changes
 		to properties only last within that target? -->
 		<script language="javascript">
@@ -919,16 +919,6 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 			<arg value="${release_dir}/nls" />
 		</java>
 		<echo message="Finished generating xd resource files."/>
-
-		<!-- flatten l10n bundles -->
-		<echo>Flattening resource bundles for xd loading</echo>
-		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
-			logError="true" outputproperty="xdFlattenedBundles" >
-			<arg value="flattenBundlesXd.js" />
-			<arg value="../src" />
-			<arg value="${release_dir}" />
-		</java>
-		<echo message="Generated flattened xd bundles."/>
 	</target>
 	<!-- end xdgenRelease task -->
 

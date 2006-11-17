@@ -1,59 +1,16 @@
-
-//The regular expressions that will help find dependencies in the file contents.
-var masterRegExpString = "dojo.(requireLocalization|require|requireIf|requireAll|provide|requireAfterIf|requireAfter|kwCompoundRequire|conditionalRequire|hostenv\\.conditionalLoadModule|.hostenv\\.loadModule|hostenv\\.moduleLoaded)\\(([\\w\\W]*?)\\)";
-var globalDependencyRegExp = new RegExp(masterRegExpString, "mg");
-var dependencyPartsRegExp = new RegExp(masterRegExpString);
-
-//START makeXdContents function
-//Function that generates the XD version of the module file's contents
-makeXdContents = function(fileContents, baseRelativePath, prefixes){
-	var dependencies = [];
-	
-	//Use the regexps to find resource dependencies for this module file.
-	var depMatches = fileContents.match(globalDependencyRegExp);
-	if(depMatches){
-		for(var i = 0; i < depMatches.length; i++){
-			var partMatches = depMatches[i].match(dependencyPartsRegExp);
-			dependencies.push('"' + partMatches[1] + '", ' + partMatches[2]);
-		}
-	}
-
-	//Build the xd file contents.
-	var xdContentsBuffer = [];
-	xdContentsBuffer.push("dojo.hostenv.packageLoaded({\n");
-	
-	//Add in dependencies section.
-	if(dependencies.length > 0){
-		xdContentsBuffer.push("depends: [");
-		for(i = 0; i < dependencies.length; i++){
-			if(i > 0){
-				xdContentsBuffer.push(",\n");
-			}
-			xdContentsBuffer.push("[" + dependencies[i] + "]");
-		}
-		xdContentsBuffer.push("],");
-	}
-	
-	//Add the contents of the file inside a function.
-	//Pass in dojo as an argument to the function to help with
-	//allowing multiple versions of dojo in a page.
-	xdContentsBuffer.push("\ndefinePackage: function(dojo){");
-	xdContentsBuffer.push(fileContents);
-	xdContentsBuffer.push("\n}});");
-	
-	return xdContentsBuffer.join("");
-}
-//END makeXdContents function
+load("buildUtilXd.js");
 
 //START findJsFiles function
 //Given an array of source directories to search, find all files
 //that match filePathRegExp.
 findJsFiles = function(srcDirs, filePathRegExp){
 	var jsFileNames = [];
-	for(var j = 0; j < srcDirs.length; j++){
-		var fileList = buildUtil.getFilteredFileList(srcDirs[j], filePathRegExp);
+	for(var i = 0; i < srcDirs.length; i++){
+		var fileList = buildUtil.getFilteredFileList(srcDirs[i].prefixPath, filePathRegExp, true);
 		if(fileList){
-			jsFileNames.push.apply(jsFileNames, fileList);
+			for(var j = 0; j < fileList.length; j++){
+				jsFileNames.push({prefix: srcDirs[i].prefix, prefixPath: srcDirs[i].prefixPath, path: fileList[j]});
+			}
 		}
 	}
 	return jsFileNames;
@@ -74,54 +31,52 @@ djConfig={
 };
 load('../dojo.js');
 dojo.require("dojo.string.extras");
+dojo.require("dojo.i18n.common");
+dojo.require("dojo.json");
 
 //Find the bundles that need to be flattened.
 load("buildUtil.js");
 
 //Define array used to store the source directories that need to be
-//scanned for .js files to convert to .xd.js files.
-var srcDirs = [releaseDir + "src/", releaseDir + "nls/"];
+//scanned for .js files to convert to .xd.js files. The objects
+//in srcDirs should e a 
+var srcDirs = [];
 
 //Any other arguments to this file are directories to search.
 for(var i = 3; i < arguments.length; i++){
-	srcDirs.push(arguments[i]);
+	srcDirs.push({prefix: "dojo", prefixPath: arguments[i]});
 }
 
-//Load the profile file to get resource paths for external modules.
-//Use new String to make sure we have a JS string (not a Java string)
-var profileText = new String(readText(profileFile));
+//Get the resource prefixes from the profile and add them to the search list.
+var prefixes = buildUtilXd.getPrefixesFromProfile(profileFile);
+if(prefixes && prefixes.length > 0){
+	for(i = 0; i < prefixes.length; i++){
+		//Register prefixes with dojo so the flattening of external i18n bundles will work.
+		dojo.registerModulePath(prefixes[i][0], prefixes[i][1]);
 
-//Extract only dependencies.prefixes.
-var dependencies = {
-	prefixes: []
-};
-
-//Get rid of CR and LFs since they seem to mess with the regexp match.
-//Using the "m" option on the regexp was not enough.
-profileText = profileText.replace(/\r/g, "");
-profileText = profileText.replace(/\n/g, "");
-
-var matches = profileText.match(/(dependencies\.prefixes\s*=\s*\[.*\]\s*\;)/m);
-if(matches && matches.length > 0){
-	eval(matches[0]);
-	if(dependencies && dependencies.prefixes && dependencies.prefixes.length > 0){
-		for(i = 0; i < dependencies.prefixes.length; i++){
-			print("Adding module resource dir: " + djConfig.baseRelativePath + dependencies.prefixes[i][1]);
-			srcDirs.push(djConfig.baseRelativePath + dependencies.prefixes[i][1]);
-		}
+		//Add to list of directories to scan.
+		print("Adding module resource dir: " + djConfig.baseRelativePath + prefixes[i][1]);
+		srcDirs.push({prefix: prefixes[i][0], prefixPath: djConfig.baseRelativePath + prefixes[i][1]});
 	}
 }
 
 if(action == "xdgen"){
 	//Build master list of files to process.
-	var jsFileNames = findJsFiles(srcDirs, /\.js$/);
+	var jsFileNames = findJsFiles(srcDirs, /\.js$/);	
 	
 	//Run makeXdContents on each file and save the XD file contents to a xd.js file.
 	for(j = 0; j < jsFileNames.length; j++){
 		//Use new String so we get a JS string and not a Java string.
-		var jsFileName = new String(jsFileNames[j]);
+		var jsFileName = new String(jsFileNames[j].path);
 		var xdFileName = jsFileName.replace(/\.js$/, ".xd.js");
-		var xdContents = makeXdContents(readText(jsFileName), djConfig.baseRelativePath, dependencies.prefixes);
+		
+		//Files in nls directories (except for the top level one in Dojo that has multiple
+		//bundles flattened) need to have special xd contents.
+		if(jsFileName.match(/\/nls\//) && jsFileName.indexOf(releaseDir + "/nls/") == -1){
+			var xdContents = buildUtilXd.makeXdBundleContents(jsFileNames[j].prefix, jsFileNames[j].prefixPath, jsFileName, readText(jsFileName), djConfig.baseRelativePath, prefixes);			
+		}else{
+			var xdContents = buildUtilXd.makeXdContents(readText(jsFileName), djConfig.baseRelativePath, prefixes);
+		}
 		buildUtil.saveUtf8File(xdFileName, xdContents);
 	}
 }else if(action == "xdremove"){
@@ -130,7 +85,7 @@ if(action == "xdgen"){
 	
 	//Run makeXdContents on each file and save the XD file contents to a xd.js file.
 	for(j = 0; j < jsFileNames.length; j++){
-		buildUtil.deleteFile(jsFileNames[j]);
+		buildUtil.deleteFile(jsFileNames[j].path);
 	}
 }
 
