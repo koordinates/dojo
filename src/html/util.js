@@ -239,7 +239,7 @@ dojo.html.createNodesFromText = function(/* string */txt, /* boolean? */trim){
 		nodes.push(parent.childNodes[x].cloneNode(true));
 	}
 	tn.style.display = "none"; // FIXME: why do we do this?
-	dojo.body().removeChild(tn);
+	dojo.dom.removeNode(tn);
 	return nodes;	//	array
 }
 
