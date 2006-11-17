@@ -10,6 +10,8 @@
 	<script type="text/javascript" src="../../../dojo.js"></script>
 	<script type="text/javascript">
 		dojo.require("dojo.widget.Editor2");
+		dojo.require("dojo.widget.Editor2Plugin.DialogCommands");
+		dojo.require("dojo.widget.Editor2Plugin.ColorPicker");
 	</script>
 </head>
 <body bgcolor="white">
@@ -25,7 +27,7 @@ this is text above the editor
 <br>
 <br>
 <br>
-<div style="position: relative;" parseWidgets="false">
+<div style="position: relative;">
 	<div style="border: 1px solid black;">
 		<div dojoType="Editor2" 
 			htmlEditing="true" useActiveX="true" 

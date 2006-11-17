@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
-<!-- 
+<!--
 	Copyright (c) 2004-2006 The Dojo Foundation, Licensed under the Academic
 	Free License version 2.1 or BSD licenses
 -->
 <!--
-	TODO: 
+	TODO:
 		- single-file builds
 		- task for firing off jslink.pl against a set of "app files". TBD:
 		  should we support these as HTML? Or just JS files?
@@ -49,34 +49,34 @@
 		<echo>
 build targets:
 	clean - deletes all files in the ${release_dir} directory
-			
+
 	website - copies website files into the correct location and sets
 		permissions correctly
-			
+
 	compress - copies the files in ${root}/${src} to the
 		${release_dir}/${project}/${src} directory where it
 		compresses all the .js files with a set of regular
 		expressions and removes all non .js files
-	
-	gen-strip-docs - Strips out most comments,line feeds,etc in ALL js found 
+
+	gen-strip-docs - Strips out most comments,line feeds,etc in ALL js found
 			in the genereated ${release_dir}.
-	
+
 	src - Take ./${src} and build the ${release_dir}/${project}/${src}_src
 		directory. More or less a copy of the source files, documentation and
 		all.
-	
+
 	docs - builds documentation in all formats from ./${src} and place it in ${release_docs_dir}
-	
+
 	test - builds and runs command line unit tests
-			
+
 	testScripting - tests the JS and Jython integration in the build process
-			
-	buildFlash - compiles a Flash ActionScript 2 file to use dojo.flash.comm; provide 
+
+	buildFlash - compiles a Flash ActionScript 2 file to use dojo.flash.comm; provide
 	relative path to file using -Ddojo.flash.file.
-			
+
 	buildDojoFlash - compiles the dojo.flash package, including its testing
 	and example files.
-			
+
 	buildDojoStorage - compiles the dojo.storage package
 
 	**** all following build types can take an optional parameter in the form of: -Dversion='currentVer'
@@ -125,7 +125,7 @@ build targets:
 					args.push(arguments[x]);
 				}
 				java.lang.System.out.println.apply(java.lang.System.out, args);
-				
+
 			}
 
 			function echo(msg, parentTask){
@@ -142,7 +142,7 @@ build targets:
 				}
 			}
 			*/
-			
+
 			print("foo");
 			echo("JavaScript (Rhino) integration is working!", testScripting);
 		]]>
@@ -220,7 +220,7 @@ print "look ma! Jython!"
 	<!-- end -fix-config task -->
 
 	<!-- website task -->
-	<!-- 
+	<!--
 		FIXME: 	need to build docs here and copy the HTML files generated from
 				reST to website/docs/
 	-->
@@ -260,7 +260,7 @@ print "look ma! Jython!"
 		depends="-fix-config"
 		description="'builds' the docs">
 		<!-- first, clobber the docs directory and rebuild it -->
-		<!-- 
+		<!--
 			FIXME: how best can we check for staleness here? Shouldn't Ant be
 			doing this for us? Clobbering entire dirs seems a little
 			heavyweight.
@@ -279,7 +279,7 @@ sys.path.append(project.resolveFile(".").getPath())
 import os
 from buildUtil import *
 
-buildRestFiles( dojo.getProperty("articles_dir"), 
+buildRestFiles( dojo.getProperty("articles_dir"),
 				dojo.getProperty("release_docs_dir"),
 				dojo.getProperty("rest_style_sheet"),
 				dojo.getProperty("rest_files"))
@@ -287,7 +287,7 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		</script>
 
 		<!-- fix body tags -->
-		<replaceregexp match="^&lt;body&gt;$" byline="true" 
+		<replaceregexp match="^&lt;body&gt;$" byline="true"
 			replace="&lt;body class=&quot;docs&quot;&gt;" flags="g">
 			<fileset dir="${release_docs_dir}">
 				<exclude name="**/.svn*" />
@@ -304,26 +304,26 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		<delete dir="${release_dir}"/>
 	</target>
 	<!-- end clean task -->
-	
+
 	<!-- gen-strip-docs task -->
 	<target name="gen-strip-docs">
-		
+
 		<!-- strip /* */ (multiline) comments -->
 		<replaceregexp match="\/\*(.*?)\*\/" replace="" byline="false" flags="sg">
 			<fileset dir="${release_dir}" includes="**/*.js"/>
 		</replaceregexp>
-		
+
 		<!-- strip // comments -->
 		<replaceregexp byline="false"  flags="g">
 			<regexp pattern="([^:(&quot;.'\\])(\/\/.*)|^\/\/.*"/>
 			<substitution expression="\1"/>
 			<fileset dir="${release_dir}" includes="**/*.js"/>
 		</replaceregexp>
-		
+
 		<replaceregexp match="^[ \t]+|[ \t]+$" replace="" byline="false"  flags="mg">
 			<fileset dir="${release_dir}" includes="**/*.js"/>
 		</replaceregexp>
-		
+
 		<!-- clobber leading and trailing DocBook comment -->
 		<replaceregexp match="^&lt;\!--" replace="" byline="false" flags="g">
 			<fileset dir="${release_dir}" includes="**/*.js"/>
@@ -331,15 +331,15 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		<replaceregexp match="--&gt;$" replace="" byline="false" flags="g">
 			<fileset dir="${release_dir}" includes="**/*.js"/>
 		</replaceregexp>
-		
+
 		<replaceregexp match="(\r)" replace="" byline="false" flags="g">
 			<fileset dir="${release_dir}" includes="**/*.js"/>
 		</replaceregexp>
-		
+
 		<replaceregexp match="\n+" replace="NWNEWLINEHERE" byline="false" flags="g">
 			<fileset dir="${release_dir}" includes="**/*.js"/>
 		</replaceregexp>
-		
+
 		<!-- add copyright notice -->
 		<!--
 		<replaceregexp match="^" byline="false" replace="${copyright}">
@@ -352,14 +352,14 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 			</fileset>
 		</replaceregexp>
 		-->
-		
+
 		<replace dir="${release_dir}">
 			<include name="**/*.js"/>
 			<replacetoken>NWNEWLINEHERE</replacetoken>
 			<replacevalue><![CDATA[
 ]]></replacevalue>
 		</replace>
-		
+
 		<replaceregexp match=";\n*" replace=";" byline="false" flags="g">
 			<fileset dir="${release_dir}" includes="**/*.js"/>
 		</replaceregexp>
@@ -407,8 +407,8 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 	<!-- -set-profile-deps task -->
 	<target name="-set-profile-deps" depends="-fix-config"
 		description="populates the contents of the dependency list for a given profile">
-		<!-- 
-			FIXME: this is just a stub! need to fill it in! 
+		<!--
+			FIXME: this is just a stub! need to fill it in!
 		-->
 		<script language="javascript">
 			<![CDATA[
@@ -426,13 +426,13 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 				}else{
 					dojo.setNewProperty("profileFile", "getDependencyList.js");
 				}
-			}			
+			}
 		]]>
 		</script>
 
 		<!-- FIXME: need to actually get a list of js files to be processed  -->
 
-		<java jar="./lib/custom_rhino.jar" failonerror="true" 
+		<java jar="./lib/custom_rhino.jar" failonerror="true"
 			fork="true" outputproperty="concatFilesProp" logError="true">
 			<arg value="-opt" />
 			<arg value="-1" />
@@ -440,7 +440,7 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 			<arg value="${profileFile}" />
 			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
-		
+
 		<script language="javascript">
 			<![CDATA[
 			var currentTask = dojo.getTargets().get("-set-profile-deps");
@@ -503,20 +503,20 @@ ${profileDeps}
 			<!--
 		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/dojo.js">
 		-->
-			<filelist 
+			<filelist
 				dir="."
 				files="${profileDeps}" />
 		</concat>
-		<!-- 
+		<!--
 			clobber requireIf and requireAfterIf statements since they
 			aren't applicable in build
 		-->
-		<replaceregexp match="dojo.requireIf\((.*?)\);" 
+		<replaceregexp match="dojo.requireIf\((.*?)\);"
 			byline="true" flags="g" file="${release_dir}/source.__package__.js">
 			<substitution expression=""/>
 		</replaceregexp>
 
-		<replaceregexp match="dojo.requireAfterIf\((.*?)\);" 
+		<replaceregexp match="dojo.requireAfterIf\((.*?)\);"
 			byline="true" flags="g" file="${release_dir}/source.__package__.js">
 			<substitution expression=""/>
 		</replaceregexp>
@@ -546,11 +546,11 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			<param name="buildPrefix" value="dojo" />
 		</antcall>
 
-		<!-- 
+		<!--
 			clobber requireLocalization statements.  They need to be come no-ops since the resources
 			are now prebuilt and also because we do not want dojo.js to trigger XHRs on load
 		-->
-		<replaceregexp match="dojo.requireLocalization\((.*?)\);" 
+		<replaceregexp match="dojo.requireLocalization\((.*?)\);"
 			byline="true" flags="g" file="${release_dir}/source.__package__.js">
 			<substitution expression=""/>
 		</replaceregexp>
@@ -599,7 +599,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 
 	<target name="-rhino-compress" unless="nostrip">
 		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}.uncompressed.js" />
-		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" 
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
 				logerror="true" output="${dstFile}">
 			<arg value="-strict" />
 			<arg value="-opt"/>
@@ -624,8 +624,8 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 				</tokenfilter>
 			</filterchain>
 		</copy>
-		
-		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" 
+
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
 			logError="true" outputproperty="generatedLocales" >
 			<arg value="flattenResources.js" />
 			<arg value="${release_dir}/localizations.tmp.js" />
@@ -634,7 +634,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			<arg value="${locales}" />
 			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
-		
+
 		<delete file="${release_dir}/localizations.tmp.js" />
 		<available property="hasResources" file="${release_dir}/nls" type="dir" />
 		<echo message="Generated flattened resources for prefix ${buildPrefix} in the following locales: ${generatedLocales}."/>
@@ -662,7 +662,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 				}else{
 					dojo.setNewProperty("profileFile", "getDependencyList.js");
 				}
-			}			
+			}
 		]]>
 		</script>
 		<script language="jython">
@@ -717,7 +717,7 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 			</fileset>
 		</copy>
 
-		<!-- 
+		<!--
 			Call our Dojo Flash and Storage tasks
 			in such a way that they won't cause the
 			entire release task to fail if mtasc is not
@@ -730,7 +730,7 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 				echo.setMessage(msg);
 				echo.execute();
 			}
-			
+
 			function antCall(target){
 				var antCall = dojo.createTask("antcall");
 				antCall.setTarget(target);
@@ -835,11 +835,11 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 		<script language="javascript">
 			<![CDATA[
 			var flashFile = dojo.getProperty("dojo.flash.file");
-			
+
 			var matches = flashFile.match(/([A-Za-z0-9_]*)\.as$/);
 			var flashClass = matches[1];
 			dojo.setNewProperty("flashClass", flashClass);
-			
+
 			var flashFileName = matches[0];
 			var endCut = new String(flashFile).length - flashFileName.length;
 			var flashPath = flashFile.substring(0, endCut);
@@ -905,7 +905,7 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 				}else{
 					dojo.setNewProperty("profileFile", "getDependencyList.js");
 				}
-			}			
+			}
 		]]>
 		</script>
 
@@ -916,7 +916,7 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 			<arg value="${profileFile}" />
 			<arg value="${release_dir}" />
 			<arg value="${release_dir}/src" />
-			<arg value="${release_dir}/nls" />		
+			<arg value="${release_dir}/nls" />
 		</java>
 		<echo message="Finished generating xd resource files."/>
 
@@ -933,7 +933,7 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 	<!-- end xdgenRelease task -->
 
 	<!-- xdgenRemove task -->
-	<target name="xdgenRemove" 
+	<target name="xdgenRemove"
 			description="Removes package files that were created by xdgen.">
 		<!-- Hmm. have to repeat this work here even though it was done in -set-profile-deps. I guess script block changes
 		to properties only last within that target? -->
@@ -947,7 +947,7 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 				}else{
 					dojo.setNewProperty("profileFile", "getDependencyList.js");
 				}
-			}			
+			}
 		]]>
 		</script>
 		<!-- Remove .xd.js files -->
@@ -958,10 +958,13 @@ internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPa
 			<arg value="${profileFile}" />
 			<arg value="${release_dir}" />
 			<arg value="${release_dir}/src" />
-			<arg value="${release_dir}/nls" />		
+			<arg value="${release_dir}/nls" />
 		</java>
 		<echo message="Finished removing xd resource files."/>
 	</target>
 	<!-- end xdgenRemove task -->
-
+	<target name="dummy_javac" description="Make eclipse happy to create a project from this build.xml">
+		<javac srcdir="./" failonerror="true" destdir="./" debug="true">
+		</javac>
+	</target>
 </project>

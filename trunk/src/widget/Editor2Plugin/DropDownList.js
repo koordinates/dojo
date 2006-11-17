@@ -26,6 +26,15 @@ dojo.declare("dojo.widget.Editor2ToolbarDropDownButton", dojo.widget.Editor2Tool
 		}
 		dojo.widget.Editor2ToolbarDropDownButton.superclass.destroy.call(this);
 	},
+	enableToolbarItem: function(){
+		this._domNode.disabled = false;
+		dojo.html.removeClass(this._domNode, 'dojoE2TB_SCFieldDisabled');
+	},
+
+	disableToolbarItem: function(){
+		this._domNode.disabled = true;
+		dojo.html.addClass(this._domNode, 'dojoE2TB_SCFieldDisabled');
+	},
 	onDropDownShown: function(){},
 	onDropDownDestroy: function(){}
 });
