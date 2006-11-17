@@ -1,8 +1,3 @@
-/** 
-		FIXME: Write better docs.
-
-		The primary maintainer of this module is Brad Neuberg, bkn3@columbia.edu 
-*/
 dojo.provide("dojo.storage.browser");
 
 dojo.require("dojo.storage");
@@ -11,15 +6,22 @@ dojo.require("dojo.json");
 dojo.require("dojo.uri.*");
 
 
-/** 
-	Storage provider that uses WHAT Working Group features in Firefox 2 
-	to achieve permanent storage. The WHAT WG storage API is documented at 
-	http://www.whatwg.org/specs/web-apps/current-work/#scs-client-side
-	
-		@author JB Boisseau, jb.boisseau@eutech-ssii.com
-		@author Brad Neuberg, bkn3@columbia.edu 
-*/
+
 dojo.storage.browser.WhatWGStorageProvider = function(){
+	// summary:
+	//		Storage provider that uses WHAT Working Group features in Firefox 2 
+	//		to achieve permanent storage.
+	// description: 
+	//		The WHAT WG storage API is documented at 
+	//		http://www.whatwg.org/specs/web-apps/current-work/#scs-client-side
+	//
+	//		You can disable this storage provider with the following djConfig
+	//		variable:
+	//		var djConfig = { disableWhatWGStorage: true };
+	//		
+	//		Authors of this storage provider-	
+	//			JB Boisseau, jb.boisseau@eutech-ssii.com
+	//			Brad Neuberg, bkn3@columbia.edu 
 }
 
 dojo.inherits(dojo.storage.browser.WhatWGStorageProvider, dojo.storage);
@@ -28,7 +30,8 @@ dojo.inherits(dojo.storage.browser.WhatWGStorageProvider, dojo.storage);
 dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 	namespace: "default",
 	initialized: false,
-	domain: null,
+	
+	_domain: null,
 	_available: null,
 	_statusHandler: null,
 	
@@ -38,7 +41,7 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 		}
 		
 		// get current domain
-		this.domain = location.hostname;
+		this._domain = location.hostname;
 		
 		// indicate that this storage provider is now loaded
 		this.initialized = true;
@@ -80,7 +83,7 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 		
 		// try to store the value	
 		try{
-			var myStorage = globalStorage[this.domain];
+			var myStorage = globalStorage[this._domain];
 			myStorage.setItem(key,value);
 		}catch(e){
 			// indicate we failed
@@ -94,7 +97,7 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 			dojo.raise("Invalid key given: " + key);
 		}
 		
-		var myStorage = globalStorage[this.domain];
+		var myStorage = globalStorage[this._domain];
 		
 		var results = myStorage.getItem(key);
 
@@ -118,7 +121,7 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 	},
 
 	getKeys: function(){
-		var myStorage = globalStorage[this.domain];
+		var myStorage = globalStorage[this._domain];
 		var keysArray = new Array();
 		for(i=0; i<myStorage.length;i++){
 			keysArray[i] = myStorage.key(i);
@@ -128,7 +131,7 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 	},
 
 	clear: function(){
-		var myStorage = globalStorage[this.domain];
+		var myStorage = globalStorage[this._domain];
 		var keys = new Array();
 		for(var i = 0; i < myStorage.length; i++){
 			keys[keys.length] = myStorage.key(i);
@@ -140,7 +143,7 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 	},
 	
 	remove: function(key){
-		var myStorage = globalStorage[this.domain];
+		var myStorage = globalStorage[this._domain];
 		myStorage.removeItem(key);
 	},
 	
@@ -172,12 +175,11 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 
 
 
-/** 
-		Storage provider that uses features in Flash to achieve permanent storage.
-		
-		@author Brad Neuberg, bkn3@columbia.edu 
-*/
 dojo.storage.browser.FlashStorageProvider = function(){
+	// summary: Storage provider that uses features in Flash to achieve permanent storage
+	// description:
+	//		Authors of this storage provider-
+	//			Brad Neuberg, bkn3@columbia.edu	
 }
 
 dojo.inherits(dojo.storage.browser.FlashStorageProvider, dojo.storage);
@@ -272,6 +274,11 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	},
 	
 	remove: function(key){
+		// summary: 
+		//		Note- This one method is not implemented on the
+		// 		FlashStorageProvider yet
+		
+		dojo.unimplemented("dojo.storage.browser.FlashStorageProvider.remove");
 	},
 	
 	isPermanent: function(){
@@ -304,26 +311,20 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 		}
 	},
 	
-	/** 
-			The provider name as a string, such as 
-			"dojo.storage.FlashStorageProvider". 
-	*/
 	getType: function(){
 		return "dojo.storage.browser.FlashStorageProvider";
 	},
 	
 	/** Called when the Flash is finished loading. */
 	_flashLoaded: function(){
-		this.initialized = true;
+		this._initialized = true;
 
 		// indicate that this storage provider is now loaded
 		dojo.storage.manager.loaded();
 	},
 	
-	/** 
-			Called if the storage system needs to tell us about the status
-			of a put() request. 
-	*/
+	//	Called if the storage system needs to tell us about the status
+	//	of a put() request. 
 	_onStatus: function(statusResult, key){
 		var ds = dojo.storage;
 		var dfo = dojo.flash.obj;
