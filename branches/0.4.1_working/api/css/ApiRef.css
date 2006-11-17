@@ -2,8 +2,8 @@ BODY {
 	margin:0px;
 }
 
-BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT { 
-	font-family:sans-serif; 
+BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT, A {
+	font-family:sans serif;
 }
 
 /* Nest these inside each other to get content that scrolls cleanly if necessary */
