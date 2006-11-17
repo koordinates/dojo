@@ -65,6 +65,12 @@ if(dojo.render.html.ie){
 				delete dojo.widget._templateCache[name].node;
 			}
 		}
+		
+		while (dojo.dom._ieRemovedNodes.length > 0) {
+			var node = dojo.dom._ieRemovedNodes.pop();
+			dojo.dom._discardElement(node);
+			node = null;
+		}
 
 		try{ window.onload = null; }catch(e){}
 		try{ window.onunload = null; }catch(e){}

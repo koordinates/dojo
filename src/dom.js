@@ -193,6 +193,8 @@ dojo.dom.replaceNode = function(/*Element*/node, /*Element*/newNode){
 	}
 }
 
+dojo.dom._ieRemovedNodes = [];
+
 dojo.dom.removeNode = function(/*Node*/node, /*Boolean*/clean){
 	//	summary:
 	//		if node has a parent, removes node from parent and returns a
@@ -211,8 +213,7 @@ dojo.dom.removeNode = function(/*Node*/node, /*Boolean*/clean){
 		}catch(e){ /* squelch */ }
 
 		if(dojo.render.html.ie){
-			dojo.dom._discardElement(node);
-			return node; // Node
+			dojo.dom._ieRemovedNodes.push(node);
 		}
 
 		// return a ref to the removed child
