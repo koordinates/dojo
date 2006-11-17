@@ -1,65 +1,75 @@
-/** 
-		FIXME: Write better docs.
-
-		The primary maintainer of this module is Brad Neuberg, bkn3@columbia.edu 
-*/
 dojo.provide("dojo.storage");
 
 dojo.require("dojo.lang.*");
 dojo.require("dojo.event.*");
 
 
-dojo.storage.StorageProvider = {};
+dojo.storage = new function(){
+	// summary: A singleton for working with Dojo Storage.
+	// description:
+	//	dojo.storage exposes the current available storage
+	//	provider on this platform. It gives you methods such
+	//	as dojo.storage.put(), dojo.storage.get(), etc.
+	//  
+	//  	For more details on Dojo Storage, see the primary
+	//	documentation page at
+	//	http://manual.dojotoolkit.org/storage.html
+	//
+	//	Note for storage provider developers who are creating
+	//	subclasses-
+	//	This is the base class for all storage providers
+	//	Specific kinds of Storage Providers should subclass this
+	//	and implement these methods. You should avoid initialization
+	//	storage provider subclass's constructor; instead, perform 
+	//	initialization in your initialize() method. 	
+}
 
-/** The base class for all storage providers. */
-
-/** 
-	 The constructor for a storage provider. You should avoid initialization
-	 in the constructor; instead, define initialization in your initialize()
-	 method. 
-*/
 dojo.declare("dojo.storage", null, {
-	/** A put() call to a storage provider was succesful. */
+	// SUCCESS: String
+	//	Flag that indicates a put() call to a 
+	//	storage provider was succesful.
 	SUCCESS: "success",
 	
-	/** A put() call to a storage provider failed. */
+	// FAILED: String
+	//	Flag that indicates a put() call to 
+	//	a storage provider failed.
 	FAILED: "failed",
 	
-	/** A put() call to a storage provider is pending user approval. */
+	// PENDING: String
+	//	Flag that indicates a put() call to a 
+	//	storage provider is pending user approval.
 	PENDING: "pending",
 	
-	/** 
-	  Returned by getMaximumSize() if this storage provider can not determine
-	  the maximum amount of data it can support. 
-	*/
+	// SIZE_NOT_AVAILABLE: String
+	//	Returned by getMaximumSize() if this storage provider can not determine
+	//	the maximum amount of data it can support. 
 	SIZE_NOT_AVAILABLE: "Size not available",
 	
-	/**
-	  Returned by getMaximumSize() if this storage provider has no theoretical
-	  limit on the amount of data it can store. 
-	*/
+	// SIZE_NO_LIMIT: String
+	//	Returned by getMaximumSize() if this storage provider has no theoretical
+	//	limit on the amount of data it can store. 
 	SIZE_NO_LIMIT: "No size limit",
-	
-	/** 
-		The namespace for all storage operations. This is useful if several
-		applications want access to the storage system from the same domain but
-		want different storage silos. 
-	*/
+
+	// namespace: String
+	//	The namespace for all storage operations. This is useful if several
+	//	applications want access to the storage system from the same domain but
+		//want different storage silos. 
 	namespace: "default",
 	
-	/**  
-		If a function is assigned to this property, then when the settings
-		provider's UI is closed this function is called. Useful, for example,
-		if the user has just cleared out all storage for this provider using
-		the settings UI, and you want to update your UI.
-	*/
+	// onHideSettingsUI: Function
+	//	If a function is assigned to this property, then when the settings
+	//	provider's UI is closed this function is called. Useful, for example,
+	//	if the user has just cleared out all storage for this provider using
+	//	the settings UI, and you want to update your UI.
 	onHideSettingsUI: null,
 
 	initialize: function(){
 		// summary: 
 		//		Allows this storage provider to initialize itself. This is
 		//		called after the page has finished loading, so you can not do
-		//		document.writes(). 
+		//		document.writes(). Storage Provider subclasses should initialize
+		//		themselves inside of here rather than in their function
+		//		constructor.
 		dojo.unimplemented("dojo.storage.initialize");
 	},
 	
@@ -69,15 +79,18 @@ dojo.declare("dojo.storage", null, {
 		//		platform. 
 		dojo.unimplemented("dojo.storage.isAvailable");
 	},
-	
-	/**
 
-	*/
 	put: function(	/*string*/ key,
 					/*object*/ value, 
 					/*function*/ resultsHandler){
 		// summary:
 		//		Puts a key and value into this storage system.
+		// description:
+		//		Example-
+		//			var resultsHandler = function(status, key, message){
+		//			  alert("status="+status+", key="+key+", message="+message);
+		//			};
+		//			dojo.storage.put("test", "hello world", resultsHandler);
 		// key:
 		//		A string key to use when retrieving this value in the future.
 		// value:
@@ -97,12 +110,7 @@ dojo.declare("dojo.storage", null, {
 		//		The third argument in the call back is an optional message that
 		//		details possible error messages that might have occurred during
 		//		the storage process.
-
-//	  Example:
-//		var resultsHandler = function(status, key, message){
-//		  alert("status="+status+", key="+key+", message="+message);
-//		};
-//		dojo.storage.put("test", "hello world", resultsHandler);
+		
 		dojo.unimplemented("dojo.storage.put");
 	},
 
@@ -121,14 +129,12 @@ dojo.declare("dojo.storage", null, {
 		return (this.get(key) != null);
 	},
 
-	/**
-	
-	getKeys: function(){ //Array
+	getKeys: function(){ /*Array*/
 		// summary: Enumerates all of the available keys in this storage system.
+		// return: Array of available keys
 		dojo.unimplemented("dojo.storage.getKeys");
 	},
-
-	*/
+	
 	clear: function(){
 		// summary: 
 		//		Completely clears this storage system of all of it's values and
@@ -136,8 +142,8 @@ dojo.declare("dojo.storage", null, {
 		dojo.unimplemented("dojo.storage.clear");
 	},
   
-	/** Removes the given key from the storage system. */
 	remove: function(key){
+		// summary: Removes the given key from this storage system.
 		dojo.unimplemented("dojo.storage.remove");
 	},
 
@@ -148,25 +154,23 @@ dojo.declare("dojo.storage", null, {
 		dojo.unimplemented("dojo.storage.isPermanent");
 	},
 
-	/**
-	  The maximum storage allowed by this provider.
-	
-	  @returns Returns the maximum storage size 
-	           supported by this provider, in 
-	           thousands of bytes (i.e., if it 
-	           returns 60 then this means that 60K 
-	           of storage is supported).
-	    
-	           If this provider can not determine 
-	           it's maximum size, then 
-	           dojo.storage.SIZE_NOT_AVAILABLE is 
-	           returned; if there is no theoretical
-	           limit on the amount of storage 
-	           this provider can return, then
-	           dojo.storage.SIZE_NO_LIMIT is 
-	           returned
-	*/
-	getMaximumSize: function(){
+	getMaximumSize: function(){ /* mixed */
+		// summary: The maximum storage allowed by this provider
+		// returns: 
+		//	Returns the maximum storage size 
+	    //	supported by this provider, in 
+	    //	thousands of bytes (i.e., if it 
+	    //	returns 60 then this means that 60K 
+	    //	of storage is supported).
+	    //
+	    //	If this provider can not determine 
+	    //	it's maximum size, then 
+	    //	dojo.storage.SIZE_NOT_AVAILABLE is 
+	    //	returned; if there is no theoretical
+	    //	limit on the amount of storage 
+	    //	this provider can return, then
+	    //	dojo.storage.SIZE_NO_LIMIT is 
+	    //	returned
 		dojo.unimplemented("dojo.storage.getMaximumSize");
 	},
 
@@ -176,7 +180,8 @@ dojo.declare("dojo.storage", null, {
 	},
 
 	showSettingsUI: function(){
-		// summary: If this provider has a settings UI, it is shown. 
+		// summary: If this provider has a settings UI, determined
+		// by calling hasSettingsUI(), it is shown. 
 		dojo.unimplemented("dojo.storage.showSettingsUI");
 	},
 
@@ -209,17 +214,27 @@ dojo.declare("dojo.storage", null, {
 
 
 
-/**
-	Initializes the storage systems and figures out the best available 
-	storage options on this platform.
-*/
 dojo.storage.manager = new function(){
-	this.currentProvider = null;
-	this.available = false;
-	this.initialized = false;
-	this.providers = [];
+	// summary: A singleton class in charge of the Dojo Storage system
+	// description:
+	//		Initializes the storage systems and figures out the best available 
+	//		storage options on this platform.	
 	
-	// TODO: Provide a way for applications to override the default namespace
+	// currentProvider: Object
+	//	The storage provider that was automagically chosen to do storage
+	//	on this platform, such as dojo.storage.browser.FlashStorageProvider.
+	this.currentProvider = null;
+	
+	// available: Boolean
+	//	Whether storage of some kind is available
+	this.available = false;
+	
+	this._initialized = false;
+	this._providers = [];
+	
+	// namespace: String
+	//	An optional namespace value that can be used by a single application
+	//	to partition storage into seperate units - not well supported yet.
 	this.namespace = "default";
 	
 	this.initialize = function(){
@@ -229,9 +244,6 @@ dojo.storage.manager = new function(){
 		this.autodetect();
 	};
 	
-	/**
-	
-	*/
 	this.register = function(/*string*/ name, /*Object*/ instance) {
 		// summary:
 		//		Registers the existence of a new storage provider; used by
@@ -245,19 +257,16 @@ dojo.storage.manager = new function(){
 		// instance:
 		//		An instance of this provider, which we will use to call
 		//		isAvailable() on. 
-		this.providers[this.providers.length] = instance;
-		this.providers[name] = instance;
+		this._providers[this._providers.length] = instance;
+		this._providers[name] = instance;
 	};
 	
-	/**
-	    
-	*/
 	this.setProvider = function(storageClass){
 		// summary:
 		//		Instructs the storageManager to use the given storage class for
 		//		all storage requests.
 		// description:
-		//		Example:
+		//		Example-
 		//			dojo.storage.setProvider(
 		//				dojo.storage.browser.IEStorageProvider)
 	
@@ -267,14 +276,14 @@ dojo.storage.manager = new function(){
 		// summary:
 		//		Autodetects the best possible persistent storage provider
 		//		available on this platform. 
-		if(this.initialized == true){ // already finished
+		if(this._initialized == true){ // already finished
 			return;
 		}
 			
 		// go through each provider, seeing if it can be used
 		var providerToUse = null;
-		for(var i = 0; i < this.providers.length; i++){
-			providerToUse = this.providers[i];
+		for(var i = 0; i < this._providers.length; i++){
+			providerToUse = this._providers[i];
 			// a flag to force the storage manager to use a particular 
 			// storage provider type, such as 
 			// djConfig = {forceStorageProvider: "dojo.storage.browser.WhatWGStorageProvider"};
@@ -291,7 +300,7 @@ dojo.storage.manager = new function(){
 		}	
 		
 		if(providerToUse == null){ // no provider available
-			this.initialized = true;
+			this._initialized = true;
 			this.available = false;
 			this.currentProvider = null;
 			dojo.raise("No storage provider found for this platform");
@@ -307,7 +316,7 @@ dojo.storage.manager = new function(){
 		// have the provider initialize itself
 		dojo.storage.initialize();
 		
-		this.initialized = true;
+		this._initialized = true;
 		this.available = true;
 	};
 	
@@ -327,14 +336,14 @@ dojo.storage.manager = new function(){
 			&& dojo.flash.ready == false){
 			return false;
 		}else{
-			return this.initialized;
+			return this._initialized;
 		}
 	};
 
-	this.supportsProvider = function(/*string*/ storageClass){
+	this.supportsProvider = function(/*string*/ storageClass){ /* Boolean */
 		// summary: Determines if this platform supports the given storage provider.
 		// description:
-		//		Example:
+		//		Example-
 		//			dojo.storage.manager.supportsProvider(
 		//				"dojo.storage.browser.InternetExplorerStorageProvider");
 
@@ -352,8 +361,8 @@ dojo.storage.manager = new function(){
 		}
 	};
 
-	/** Gets the current provider. */
-	this.getProvider = function(){
+	this.getProvider = function(){ /* Object */
+		// summary: Gets the current provider
 		return this.currentProvider;
 	};
 	
@@ -362,6 +371,14 @@ dojo.storage.manager = new function(){
 		//		The storage provider should call this method when it is loaded
 		//		and ready to be used. Clients who will use the provider will
 		//		connect to this method to know when they can use the storage
-		//		system:
+		//		system.
+		// description:
+		//		Example-
+		//			if(dojo.storage.manager.isInitialized() == false){ 
+		//				dojo.event.connect(dojo.storage.manager, "loaded", TestStorage, 
+	    //				TestStorage.initialize);
+		//			}else{
+		//				dojo.event.connect(dojo, "loaded", TestStorage, TestStorage.initialize);
+		//			}
 	};
 };
