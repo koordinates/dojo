@@ -208,13 +208,13 @@ dojo.dom.removeNode = function(/*Node*/node, /*Boolean*/clobber){
 
 	if(node && node.parentNode){
 		try{
-			if(clean && dojo.evalObjPath("dojo.event.browser.clean", false)){
+			if(clobber && dojo.evalObjPath("dojo.event.browser.clean", false)){
 				dojo.event.browser.clean(node);
 			}
 		}catch(e){ /* squelch */ }
 
 		if(dojo.render.html.ie){
-			if(clean){
+			if(clobber){
 				dojo.dom._discardElement(node);
 			}else{
 				// defer until page unload so that we can continue to use 'node'
@@ -222,7 +222,7 @@ dojo.dom.removeNode = function(/*Node*/node, /*Boolean*/clobber){
 			}
 		}
 
-		if(clean){
+		if(clobber){
 			return null; // null
 		}
 
