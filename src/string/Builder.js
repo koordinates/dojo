@@ -1,5 +1,4 @@
 dojo.provide("dojo.string.Builder");
-dojo.require("dojo.string");
 dojo.require("dojo.lang.common");
 
 // NOTE: testing shows that direct "+=" concatenation is *much* faster on
