@@ -93,10 +93,10 @@ var ApiRef = {
 		this.showNotice(msg);
 		this.startProfile("cacheParserData:"+parserFile);
 
-		// first assign the whole shebang to the 'package' object
+		// first assign the whole shebang to the 'resource' object
 		var item = this.getItem(parserFile);
 		if (item) {
-			item.pkgData = data;
+			item.resourceData = data;
 //			if (item.data == null) item.data = [];
 //			item.data.push(data);
 		}
@@ -140,7 +140,7 @@ var ApiRef = {
 				if (item.data == null) item.data = [];
 				//dojo.debug("assigning:",dataItem, "to", item);
 		
-				if (item.isClass && item.constructor && name == item.name && dataItem.meta && dataItem.meta.functions == null) {
+				if (item.isConstructable && item.constructor && name == item.name && dataItem.meta && dataItem.meta.functions == null) {
 					//	dojo.debug("Setting up constructor " + item.name);
 					if (item.constructor.data == null) item.constructor.data = [];
 					item.constructor.data.push(dataItem.meta);
@@ -156,6 +156,10 @@ var ApiRef = {
 			if (dataItem.functions) {
 			//dojo.debug("recursing into functions:",dataItem.functions);
 				this._parseDataObject(dataItem.functions, name, parserFile);
+			}
+			if (dataItem.objects) {
+			//dojo.debug("recursing into functions:",dataItem.functions);
+				this._parseDataObject(dataItem.objects, name, parserFile);
 			}
 		}
 	},
@@ -178,7 +182,7 @@ var ApiRef = {
 		}
 	},
 	
-	_url : (window.inLocalMode ? dojo.uri.dojoUri("docscripts") : dojo.uri.dojoUri("")),
+	_url : dojo.uri.dojoUri("docscripts"),
 	loadParserFile: function(/*String*/ filename, /*bool*/ sync) {
 		if (filename == null) return dojo.debug("dojo.dojcs.loadParserFile(): you must pass a file name to load");
 		this.startProfile("ApiRef.loadParserFile('" + filename + "')");
@@ -191,7 +195,7 @@ var ApiRef = {
 				ApiRef.endProfile("ApiRef.loadParserFile('" + filename + "')");
 
 				if(parts[0] != "function_names") {
-					// MOW: this was messing up loading of packages
+					// MOW: this was messing up loading of resources
 					//	for(var i = 0, part; part = parts[i]; i++){
 					//		data = data[part];
 					//	}
@@ -209,7 +213,7 @@ var ApiRef = {
 
 		if(size){
 			if(parts[0] == "function_names"){
-				args.url = [this._url, "output/local/json", "function_names"].join("/");
+				args.url = [this._url, "/output/local/json", "function_names"].join("/");
 			}else{
 				var dirs = parts[0].split(".");
 				args.url = [this._url, "output/local/json", dirs[0]].join("/");
@@ -421,12 +425,13 @@ var ApiRef = {
 		var item = this.getItem(name);
 		if (item.typeString) return item.typeString;
 		return item.typeString = [
-			(item.isPackage		|| "-"),
+			(item.isResource		|| "-"),
 			(item.isModule		|| "-"),
-			(item.isClass		|| "-"),
+			(item.isConstructable		|| "-"),
 			(item.isObject		|| "-"),
 			(item.hasChildren	|| "-"),
 			(item.isMethod	|| "-"),
+			(item.isCurly || "-")
 		].join("");
 	},
 
@@ -435,10 +440,10 @@ var ApiRef = {
 		
 		if (item.itemType != null && recheck == null) return item.itemType;
 		var type = "Method";
-		if (item.isClass) type =  "Class";
+		if (item.isConstructable) type =  "Class";
 		else if (item.isObject) type =  "Object";
 		else if (item.isModule) type = "Module";
-		else if (item.isPackage) type =  "Package";	// package is LAST
+		else if (item.isResource) type =  "Resource";	// resource is LAST
 		
 		return (item.itemType = type);
 	},
@@ -448,9 +453,9 @@ var ApiRef = {
 		return (item ? item.parserFile : null);
 	},
 
-	getItemPackage : function(name) {
+	getItemResource : function(name) {
 		var item = this.getItem(name);
-		return (item ? item.pkg : null);
+		return (item ? item.resource : null);
 	},
 
 	getItemTreeNode : function(name) {
@@ -735,7 +740,7 @@ var ApiRef = {
 			
 			case "Constructor" 	: return this.outputMethodHeader(item.constructor, showDetails, type, data);
 			
-			case "Package" 		: return this.outputPackageHeader(item, showDetails, type, data);
+			case "Resource" 		: return this.outputResourceHeader(item, showDetails, type, data);
 			
 			case "Module" 		: return this.outputModuleHeader(item, showDetails, type, data);
 			
@@ -772,7 +777,7 @@ var ApiRef = {
 		}
 		
 		switch (type) {
-			case "Package" 	: return this.outputPackageBody(item, type, data);
+			case "Resource" 	: return this.outputResourceBody(item, type, data);
 			
 			case "Module" 	: //return this.outputModuleBody(item, type, data);
 			case "Object" 	: return this.outputObjectBody(item, type, data);
@@ -788,7 +793,7 @@ var ApiRef = {
 		return this.outputObjectHeader.apply(this, arguments);
 	},
 
-	outputPackageHeader : function(item, showDetails, type, data) {
+	outputResourceHeader : function(item, showDetails, type, data) {
 		return this.outputObjectHeader.apply(this, arguments);
 	},
 
@@ -818,7 +823,7 @@ var ApiRef = {
 	outputModuleBody : function(item, type, data) {
 		var output = [];
 
-		output.push(this.outputPackages(item, type));
+		output.push(this.outputResources(item, type));
 
 		// if the module has "methods", output it as an object
 		if (item.methods) {
@@ -844,7 +849,7 @@ var ApiRef = {
 		return output.join("\n");
 	},
 	
-	outputPackageBody : function(item, type, data) {
+	outputResourceBody : function(item, type, data) {
 		var output = [];
 
 //dojo.debug("oPB:",item.name,this.getItemMetaData(item, "requires"));
@@ -854,11 +859,11 @@ var ApiRef = {
 		var constructor = (methods && methods[item.name] ? methods[item.name].meta : null);
 
 		if (constructor) {
-			if (type == "Package") {
-				// HACK: if there's a constructor with the same name as the package
+			if (type == "Resource") {
+				// HACK: if there's a constructor with the same name as the resource
 				//	output a header for it here.
 				output.push("<div id='", item.name,"-header' class='", type, "Header'>",
-					this.outputObjectHeader(item, false, (item.isClass ? "Class" : "Object"), constructor),
+					this.outputObjectHeader(item, false, (item.isConstructable ? "Class" : "Object"), constructor),
 					"</div>"
 				);
 			}
@@ -882,7 +887,7 @@ var ApiRef = {
 		if (data == null) data = (item.data ? item.data[0] : null);
 		var output = [];
 
-		output.push(this.outputPackages(item, type));
+		output.push(this.outputResources(item, type));
 
 		var extra = this.getItemDataPart(item, "extra");
 		if (extra && extra.variables) {
@@ -911,7 +916,12 @@ var ApiRef = {
 		if (data == null) data = (item.data ? item.data[0] : null);
 		var output = [];
 
-		output.push(this.outputPackages(item, type));
+		output.push(this.outputResources(item, type));
+
+		var extra = this.getItemDataPart(item, "extra");
+		if (extra && extra.variables) {
+			output.push(this.outputObjectProperties(item, type, extra.variables, "Variables"));
+		}
 
 		var constructor = (item.constructor && item.constructor.data ? item.constructor.data[0] : null);
 		
@@ -1030,13 +1040,13 @@ var ApiRef = {
 			output.push("???)", this.outputClickToLoad(item)); 
 		}
 		output.push("</td><td>");
-		output.push(this.outputPackageList(item, type, item.pkg));		
+		output.push(this.outputResourceList(item, type, item.resource));		
 		output.push("</td></tr></table>");
 		return output.join("");
 	},
 	
 	outputMethodBody : function(item, showDetails, type, data) {
-		// TODO: we may have data from more than one package -- figure that out here...   Context?
+		// TODO: we may have data from more than one resource -- figure that out here...   Context?
 		if (data == null) {
 			data = item.data ? item.data[0] : null;
 		}
@@ -1068,7 +1078,7 @@ var ApiRef = {
 		output.push("<div class='MethodDetails'>");
 
 		// output interesting 		
-//		output.push(this.outputPackages(item, type));
+//		output.push(this.outputResources(item, type));
 		if (type != "Constructor") output.push(this.outputProperty(item, type, data.summary, "Summary"));
 		if (type != "Constructor") output.push(this.outputProperty(item, type, data.description, "Description"));
 		output.push(this.outputParameters(item, type, data.parameters));
@@ -1098,31 +1108,31 @@ var ApiRef = {
 		return this.outputItemLabel(item, type, title) + this.outputItemValue(item, type, value, title);
 	},
 
-	outputPackages : function(item, type, pkgs, title) {
-		if (pkgs == null) pkgs = item.pkg;
-		if (pkgs == null) return "";
+	outputResources : function(item, type, resources, title) {
+		if (resources == null) resources = item.resource;
+		if (resources == null) return "";
 		if (title == null) title = "Defined in";
 		
-		var pkgOut = [];
-		for (var i = 0; i < pkgs.length; i++) {
-			pkgOut.push([" <span class='fileLink inlineIconLeft jsFileIcon' style='float:left;padding-right:10px;' onclick=\"ApiRef.openFile('", pkgs[i], "')\">", 
-				pkgs[i], 
+		var resourceOut = [];
+		for (var i = 0; i < resources.length; i++) {
+			resourceOut.push([" <span class='fileLink inlineIconLeft jsFileIcon' style='float:left;padding-right:10px;' onclick=\"ApiRef.openFile('", resources[i], "')\">", 
+				resources[i], 
 			"</span>"].join(""));
-//			pkgOut.push(this.outputItemLink(pkgs[i]));
+//			resourceOut.push(this.outputItemLink(resources[i]));
 		}
-		return this.outputProperty(item, type, pkgOut.join("") + "<div style='clear:both;height:5px;'></div>", title);
+		return this.outputProperty(item, type, resourceOut.join("") + "<div style='clear:both;height:5px;'></div>", title);
 	},
 
-	outputPackageList : function(item, type, pkgs) {
-		if (pkgs == null) pkgs = item.pkg;
-		if (pkgs == null) return "";
+	outputResourceList : function(item, type, resources) {
+		if (resources == null) resources = item.resource;
+		if (resources == null) return "";
 		
-		if (!dojo.lang.isArrayLike(pkgs)) pkgs = [pkgs];
-		var pkgOut = [];
-		for (var i = 0; i < pkgs.length; i++) {
-			pkgOut.push([" <div class='", type, "ResourceFile itemResourceFile inlineIconLeft jsFileIcon' onclick=\"ApiRef.openFile('", pkgs[i], "')\">", pkgs[i], "</div>"].join(""));
+		if (!dojo.lang.isArrayLike(resources)) resources = [resources];
+		var resourceOut = [];
+		for (var i = 0; i < resources.length; i++) {
+			resourceOut.push([" <div class='", type, "ResourceFile itemResourceFile inlineIconLeft jsFileIcon' onclick=\"ApiRef.openFile('", resources[i], "')\">", resources[i], "</div>"].join(""));
 		}
-		return pkgOut.join("");//this.outputProperty(item, type, pkgOut.join(", "), "Defined in");
+		return resourceOut.join("");//this.outputProperty(item, type, resourceOut.join(", "), "Defined in");
 	},
 
 	outputItemLabel : function(item, type, title, rightFloat) {
@@ -1378,16 +1388,6 @@ var ApiRef = {
 	//
 	//	event handling
 	//
-	searchBoxKeyPress : function(event, el) {
-		if (event.which == 13) {
-			setTimeout(function(){
-							el.onblur();
-							el.select();
-						}, 0);
-		}
-	},
-	
-	
 	
 	//
 	//	set up the search combobox
@@ -1404,7 +1404,7 @@ var ApiRef = {
 		// and assign this as the data for the searchBox provider
 		provider.setData(optionList);
 
-		// override the startSearch routine to look at local data rather than going to a server page
+/*		// override the startSearch routine to look at local data rather than going to a server page
 		provider.startSearch = function(searchStr) {
 			var searchLength = searchStr.length;
 			var searchType = "SUBSTRING";
@@ -1417,7 +1417,7 @@ var ApiRef = {
 //			if(searchLength > 2) {
 //				searchBox.downArrowNode.style.visibility = "visible";
 //			}
-			this._preformSearch(searchStr, searchType);			
+			this._performSearch(searchStr, searchType);			
 		}
 
 		// set up the "selectOption" event to run the search		
@@ -1427,6 +1427,7 @@ var ApiRef = {
 				ApiRef.showItem(name);
 			}
 		);
+*/
 		
 //dojo.debug("Done initializing searchBox");
 	},
@@ -1447,9 +1448,9 @@ var ApiRef = {
 	//
 	
 	
-	initTreeWidget : function(packageMap) {
+	initTreeWidget : function(resourceMap) {
 		this.startProfile("initTreeWidget");
-		this.packageMap = packageMap;
+		this.resourceMap = resourceMap;
 	
 		try {
 			// make the map of nodes, which also figures out their types
@@ -1472,14 +1473,14 @@ var ApiRef = {
 	},
 
 	buildFunctionMap : function() {
-		// summary: Build the data structures from the "packageMap" file needed to display things.
+		// summary: Build the data structures from the "resourceMap" file needed to display things.
 		// description:
 		//	Populates two objects:
 		//		ApiRef.functionList	: a sorted array of all of the functions the parser told us about
 		//		ApiRef.functionMap	: an object listing each function, and its:
-		//				.type		: "module" "package" "class" or "method"
+		//				.type		: "module" "resource" "class" or "method"
 		//				.parserFile	: output/local/json file it comes from
-		//				.pkg	: high-level object it can be found in (ie: for 'nested classes' listed under superclass)
+		//				.resource	: high-level object it can be found in (ie: for 'nested classes' listed under superclass)
 
 		this.startProfile("buildFunctionMap");
 
@@ -1492,23 +1493,23 @@ var ApiRef = {
 	initFunctionMap : function() {
 		this.startProfile("initFunctionMap");
 
-		var packageMap = this.packageMap;
+		var resourceMap = this.resourceMap;
 				
-		for (var packageName in packageMap) {
-			var fnList = packageMap[packageName],
-				nameSplit = packageName.split("."),
+		for (var resourceName in resourceMap) {
+			var fnList = resourceMap[resourceName],
+				nameSplit = resourceName.split("."),
 				leafName = nameSplit[nameSplit.length - 1]
 			;
 
-			// get the parserFile, which is the first two items of the packageName
+			// get the parserFile, which is the first two items of the resourceName
 			//  XXX I'm not sure this is always correct
 			var parserFile = nameSplit.slice(0,2).join(".");
 
-			// if entry ends with "_", it's a __package__ file -- strip off the "_"
-			var itemName = packageName;//(leafName != "_" ? packageName : nameSplit.slice(0, nameSplit.length - 1).join(".")+".*");
+			// if entry ends with "_", it's a __resource__ file -- strip off the "_"
+			var itemName = resourceName;//(leafName != "_" ? resourceName : nameSplit.slice(0, nameSplit.length - 1).join(".")+".*");
 
-			// add the package item itself to the map
-			this.addFunctionToMap("isPackage", itemName, packageName, parserFile);
+			// add the resource item itself to the map
+			this.addFunctionToMap("isResource", itemName, resourceName, parserFile);
 
 			for (var i = 0; i < fnList.length; i++) {
 				var fn = fnList[i];
@@ -1519,22 +1520,27 @@ var ApiRef = {
 				}
 				
 				var typeFlag = "isMethod";
-				this.addFunctionToMap(typeFlag, fn, packageName, parserFile);
+				this.addFunctionToMap(typeFlag, fn, resourceName, parserFile);
 				continue;
 			}
 		}
 		this.endProfile("initFunctionMap");	
 	},
 
-	addFunctionToMap : function(typeFlag, name, pkg, parserFile) {
+	addFunctionToMap : function(typeFlag, name, resource, parserFile) {
 		// NOTE: this adds the items to the map in lower case, to speed sorting
 		//	converted back to mixed-case in buildFunctionMap by looking at node.name
 		if (!name) return;
 
+		var hasCurlyBraces = name.match(/{(..*)}/);
+		if (hasCurlyBraces) {
+			name = name.substr(1,name.length-2);
+		}
+
 		// handle case where an object is passed in
 		//	(this indicates something that was pre-seeded in the list and being normalized)
-		if (typeof pkg == "object") {
-			this.functionMap[name] = pkg;
+		if (typeof resource == "object") {
+			this.functionMap[name] = resource;
 			return;
 		}
 
@@ -1554,7 +1560,7 @@ var ApiRef = {
 				ancestor = this.functionMap[ancestorName] = {
 					name : ancestorName,
 					title : this.getTitle(ancestorName),
-					pkg : [(ancestorName == "dojo" ? "dojo" : pkg)],		// TOTAL HACK
+					resource : [(ancestorName == "dojo" ? "dojo" : resource)],		// TOTAL HACK
 					parserFile : (ancestorName == "dojo" ? "dojo" : parserFile),		// TOTAL HACK
 					parentName : (lastAncestor ? lastAncestor.name : null)
 				}
@@ -1562,9 +1568,9 @@ var ApiRef = {
 				if (this._looksLikeAClass(ancestorName)) this._setUpClass(ancestor);
 
 			} else {
-				// note that an item was installed from this pkg
+				// note that an item was installed from this resource
 // TOO SPAMMY -- ONLY ADD TO DIRECT ANCESTORS?
-//				this._addPackage(ancestor.pkg, pkg);
+//				this._addResource(ancestor.resource, resource);
 				
 			}
 			ancestor.hasChildren = "K";
@@ -1572,7 +1578,7 @@ var ApiRef = {
 			lastAncestor = ancestor;
 		}
 
-//		if (lastAncestor) this._addPackage(lastAncestor.pkg, pkg);
+//		if (lastAncestor) this._addResource(lastAncestor.resource, resource);
 
 		// now add the item itself
 		var item = this.functionMap[name];
@@ -1581,7 +1587,7 @@ var ApiRef = {
 			item = this.functionMap[name] = {
 				name : name,
 				title : this.getTitle(name),
-				pkg : [pkg],
+				resource : [resource],
 				parserFile : parserFile,
 				parentName : (lastAncestor ? lastAncestor.name : null)
 			}
@@ -1589,22 +1595,22 @@ var ApiRef = {
 		} else {
 //dojo.debug(name,item);
 			// the item was already found
-			// note that it was found in the specified package
-			this._addPackage(item.pkg, pkg);
-
-			//if (name != item.name) dojo.debug("!!! _add(",name,pkg,parserFile,"): item name was ",item.name);
-			//if (pkg != item.pkg) dojo.debug("!!! _add(",name,pkg,parserFile,"): item pkg was ",item.pkg);
-			//if (parserFile != item.parserFile) dojo.debug("!!! _add(",name,pkg,parserFile,"): item parserFile was ",item.parserFile);
+			// note that it was found in the specified resource
+			this._addResource(item.resource, resource);
+	
+			//if (name != item.name) dojo.debug("!!! _add(",name,resource,parserFile,"): item name was ",item.name);
+			//if (resource != item.resource) dojo.debug("!!! _add(",name,resource,parserFile,"): item resource was ",item.resource);
+			//if (parserFile != item.parserFile) dojo.debug("!!! _add(",name,resource,parserFile,"): item parserFile was ",item.parserFile);
 		}
 		item[typeFlag] = (typeFlag == "isMethod" ? "F" : typeFlag.charAt(2));
-		
+		if (hasCurlyBraces) item.isCurly = "{";	
 	},
 	
-	_addPackage : function(pkgList, pkg) {
-		for (var i = 0, it; it = pkgList[i]; i++) {
-			if (it == pkg) return;
+	_addResource : function(resourceList, resource) {
+		for (var i = 0, it; it = resourceList[i]; i++) {
+			if (it == resource) return;
 		}
-		pkgList.push(pkg);
+		resourceList.push(resource);
 	},
 
 
@@ -1650,7 +1656,8 @@ var ApiRef = {
 		this.functionMap = sortedMap;
 		this.endProfile("sortFunctionMap");
 	},
-
+	
+//	_treeObjectCount : 0,
 	makeFunctionTree : function() {
 		// summary: Make the function tree from the sorted list of functions.
 		
@@ -1680,7 +1687,8 @@ var ApiRef = {
 					fnParent.methods.push(item);
 				}
 				
-			} else if (item.isClass || item.hasChildren) {
+			} else if (item.isConstructable || item.hasChildren) {
+//this._treeObjectCount++;
 				var objParent = (item.parentName ? sortedMap[item.parentName] : null);
 				if (objParent) {
 					if (objParent.children == null) objParent.children = [];
@@ -1695,6 +1703,7 @@ var ApiRef = {
 				}
 			}
 		}
+//dojo.debug("put " + this._treeObjectCount + " things in the tree");
 		this.endProfile("makeFunctionTree");	
 	},
 
@@ -1706,11 +1715,11 @@ var ApiRef = {
 	},
 	
 	_setUpClass : function(item) {
-		item.isClass = "C";
+		item.isConstructable = "N";
 		item.constructor = {
 			name : item.name,
 			title : item.title,
-			pkg : item.pkg,
+			resource : item.resource,
 			parserFile : item.parserFile,
 			parentName : item.parentName,
 			isMethod : "F"
@@ -1775,8 +1784,8 @@ var ApiRef = {
 		dojo.debug("Profiling is now " + (this._profile ? "on." : "off."));
 	},
 		
-	debug_showPackageMap : function() {
-		this.debug_show("<H2>Package to function map (from output/local/json/function_names)</h2>"+ApiRef.objectToHtml(ApiRef.packageMap, true, null));
+	debug_showResourceMap : function() {
+		this.debug_show("<H2>Resource to function map (from output/local/json/function_names)</h2>"+ApiRef.objectToHtml(ApiRef.resourceMap, true, null));
 	},
 
 	debug_showKnownFunctions : function() {
@@ -1796,7 +1805,7 @@ var ApiRef = {
 			var map = this.functionMap;	
 		}
 
-		var fieldList = ["type","parentName","parserFile","pkg"]
+		var fieldList = ["type","parentName","parserFile","resource"]
 			getRowClassFn = function(prop, item) {
 				var type = ApiRef.getItemTypeString(item);
 				item.type = "<tt>"+type+"</tt>";
@@ -1861,7 +1870,9 @@ var ApiRef = {
 			dojo.io.cookie.setCookie("ApiRef_lastItem", itemName);
 		}
 		var item = this.getItem(itemName);
-		dojo.debug(item);
+// BROKEN IN FIREBUG IN FF2
+		dojo.debug(itemName, item);
+//		ApiRef.debug_show(ApiRef.objectToHtml(item));
 	},
 	
 	debug_showTodo : function() {
