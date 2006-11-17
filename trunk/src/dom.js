@@ -195,25 +195,35 @@ dojo.dom.replaceNode = function(/*Element*/node, /*Element*/newNode){
 
 dojo.dom._ieRemovedNodes = [];
 
-dojo.dom.removeNode = function(/*Node*/node, /*Boolean*/clean){
+dojo.dom.removeNode = function(/*Node*/node, /*Boolean*/clobber){
 	//	summary:
 	//		if node has a parent, removes node from parent and returns a
 	//		reference to the removed child.
 	//	node:
 	//		the node to remove from its parent.
-	//	clean:
+	//	clobber:
 	//		if in an HTML environment and true, this variable ensures that
-	//		potential leaks are handled correctly
+	//		potential leaks are handled correctly.  The node may no longer
+	//		be usable and a value of 'null' will be returned.
 
 	if(node && node.parentNode){
 		try{
-			if(clean && dojo.evalObjPath("dojo.event.browser.clean", false)){
+			if(clobber && dojo.evalObjPath("dojo.event.browser.clean", false)){
 				dojo.event.browser.clean(node);
 			}
 		}catch(e){ /* squelch */ }
 
 		if(dojo.render.html.ie){
-			dojo.dom._ieRemovedNodes.push(node);
+			if(clobber){
+				dojo.dom._discardElement(node);
+			}else{
+				// defer until page unload so that we can continue to use 'node'
+				dojo.dom._ieRemovedNodes.push(node);
+			}
+		}
+
+		if(clobber){
+			return null; // null
 		}
 
 		// return a ref to the removed child
