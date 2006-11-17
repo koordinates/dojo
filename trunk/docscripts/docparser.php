@@ -18,7 +18,7 @@ foreach ($files as $file) {
   echo "Parsing  $file ...\n";
 
   // NOTE: if the output dies on a particular file, you can skip it by uncommenting the below
-//if ($file == 'src/widget/RichText.js') continue;
+if ($file == 'src/widget/RichText.js') continue;
 
   $package = new DojoPackage($dojo, $file);
   $package_name = $package->getPackageName();
