@@ -60,7 +60,7 @@ dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
 		_deprecated = function(cmd, plugin){
 			if(!dojo.widget.Editor2Plugin[plugin]){
 				dojo.deprecated('Toolbar item '+name+" is now defined in plugin dojo.widget.Editor2Plugin."+plugin+". It shall be required explicitly", "0.6");
-				dojo.require("dojo.widget.Editor2Plugin."+plugin); //avoid loading by the build
+				dojo['require']("dojo.widget.Editor2Plugin."+plugin); //avoid loading by the build
 			}
 		}
 		if(name == 'forecolor' || name == 'hilitecolor'){
