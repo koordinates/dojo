@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.Editor2Plugin.TableOperation");
 
-dojo.require("dojo.widget.Editor2");
+dojo.require("dojo.widget.Editor2Plugin.DialogCommands");
 
 //subscribe to dojo.widget.RichText::init, not onLoad because after onLoad
 //the stylesheets for the editing areas are already applied and the prefilters

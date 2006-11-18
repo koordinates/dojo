@@ -496,7 +496,7 @@ dojo.widget.defineWidget(
 		
 		//dojo.debug("editLabelStart editor open "+node);
 		
-		this.editor.open(node);		
+		this.editor.open(node);
 	},
 	
 	doEditLabelFinish: function(save, server_data) {

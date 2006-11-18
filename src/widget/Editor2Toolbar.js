@@ -57,12 +57,16 @@ dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
 			}
 		}
 
+		_deprecated = function(cmd, plugin){
+			if(!dojo.widget.Editor2Plugin[plugin]){
+				dojo.deprecated('Toolbar item '+name+" is now defined in plugin dojo.widget.Editor2Plugin."+plugin+". It shall be required explicitly", "0.6");
+				dojo.require("dojo.widget.Editor2Plugin."+plugin); //avoid loading by the build
+			}
+		}
 		if(name == 'forecolor' || name == 'hilitecolor'){
-			dojo.deprecated('Toolbar item '+name+" is now defined in plugin dojo.widget.Editor2Plugin.ColorPicker. It shall be required explicitly", "0.6");
-			dojo['require']("dojo.widget.Editor2Plugin.ColorPicker"); //avoid loading by the build
+			_deprecated(name, 'ColorPicker')
 		}else if(name == 'formatblock' || name == 'fontsize' || name == 'fontname'){
-			dojo.deprecated('Toolbar item '+name+" is now defined in plugin dojo.widget.Editor2Plugin.DropDownList. It shall be required explicitly", "0.6");
-			dojo['require']("dojo.widget.Editor2Plugin.DropDownList"); //avoid loading by the build
+			_deprecated(name, 'DropDownList')
 		}
 
 		switch(name){

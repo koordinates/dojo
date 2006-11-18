@@ -8,8 +8,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.TreeEditor",
 	dojo.widget.HtmlWidget,
 {
-		
-	editorCssUri: dojo.uri.dojoUri( "src/widget/templates/TreeEditor.css" ), // editor stylesheet URI
 	singleLineMode: false, // enter saves
 	saveOnBlur: true, // blur or new edit saves current
 	sync: false,  // finish editing in sync/async mode
@@ -19,10 +17,8 @@ dojo.widget.defineWidget(
 		
 	node: null,
 	
-	richTextParams: {},
-	
-	
-	
+	richTextParams: {styleSheets: 'src/widget/templates/TreeEditor.css'},
+
 	getContents: function() {
 		return this.richText.getEditorContent();
 	},
@@ -38,8 +34,7 @@ dojo.widget.defineWidget(
 			
 		if (!this.richText) {
 			this.richText = dojo.widget.createWidget("RichText", this.richTextParams, node.labelNode);
-			
-			this.richText.addStyleSheet( this.editorCssUri );
+
 			dojo.event.connect("around", this.richText, "onKeyDown", this, "richText_onKeyDown" );
 			dojo.event.connect(this.richText, "onBlur", this, "richText_onBlur" );
 			
