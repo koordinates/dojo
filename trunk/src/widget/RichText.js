@@ -51,10 +51,6 @@ dojo.widget.defineWidget(
 		//		post content dom filter function register array
 		this.contentDomPostFilters = [];
 
-		// styleSheets: String
-		//		semicolon (";") separated list of css files for the editing area
-		this.styleSheets = "";
-
 		// editingAreaStyleSheets: Array
 		//		array to store all the stylesheets applied to the editing area
 		this.editingAreaStyleSheets=[];
@@ -83,6 +79,10 @@ dojo.widget.defineWidget(
 		//		leave this page can come back, or if the editor is not properly closed after
 		//		editing has started.
 		saveName: "",
+
+		// styleSheets: String
+		//		semicolon (";") separated list of css files for the editing area
+		styleSheets: "",
 
 		// _content: String
 		//		temporary content storage
@@ -638,6 +638,7 @@ dojo.widget.defineWidget(
 			var files = [];
 			if(this.styleSheets){
 				files = this.styleSheets.split(';');
+				this.styleSheets = '';
 			}
 
 			//empty this.editingAreaStyleSheets here, as it will be filled in addStyleSheet
@@ -648,7 +649,7 @@ dojo.widget.defineWidget(
 				for(var i=0;i<files.length;i++){
 					var url = files[i];
 					if(url){
-						this.addStyleSheet(new dojo.uri.Uri(url));
+						this.addStyleSheet(dojo.uri.dojoUri(url));
 	 				}
 	 			}
 			}
