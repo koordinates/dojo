@@ -80,7 +80,7 @@ function test_combobox_dataprovider(){
 	jum.assertTrue(comboData.length > 40);
 	
 	var provider = new dojo.widget.basicComboBoxDataProvider();
-	provider._setData(comboData);
+	provider.setData(comboData);
 	
 	jum.assertEquals(30, provider.searchLimit);
 
