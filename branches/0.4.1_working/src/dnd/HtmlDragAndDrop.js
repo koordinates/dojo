@@ -98,18 +98,26 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 		var node = this.domNode.cloneNode(true);
 		if(this.dragClass) { dojo.html.addClass(node, this.dragClass); }
 		if(this.opacity < 1) { dojo.html.setOpacity(node, this.opacity); }
-		if(node.tagName.toLowerCase() == "tr"){
+		var ltn = node.tagName.toLowerCase();
+		var isTr = (ltn == "tr");
+		if((isTr)||(ltn == "tbody")){
 			// dojo.debug("Dragging table row")
 			// Create a table for the cloned row
 			var doc = this.domNode.ownerDocument;
 			var table = doc.createElement("table");
-			var tbody = doc.createElement("tbody");
-			table.appendChild(tbody);
-			tbody.appendChild(node);
+			if(isTr){
+				var tbody = doc.createElement("tbody");
+				table.appendChild(tbody);
+				tbody.appendChild(node);
+			}else{
+				table.appendChild(node);
+			}
 
 			// Set a fixed width to the cloned TDs
-			var domTds = this.domNode.childNodes;
-			var cloneTds = node.childNodes;
+			var tmpSrcTr = ((isTr) ? this.domNode : this.domNode.firstChild);
+			var tmpDstTr = ((isTr) ? node : node.firstChild);
+			var domTds = tdp.childNodes;
+			var cloneTds = tmpDstTr.childNodes;
 			for(var i = 0; i < domTds.length; i++){
 			    if((cloneTds[i])&&(cloneTds[i].style)){
 				    cloneTds[i].style.width = dojo.html.getContentBox(domTds[i]).width + "px";
