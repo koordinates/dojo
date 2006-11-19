@@ -437,7 +437,8 @@ dojo.event = new function(){
 			ao.srcFunc = "onkeypress";
 		}
 		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
-		return mjp.removeAdvice(ao.adviceObj, ao.adviceFunc, ao.adviceType, ao.once); // a MethodJoinPoint object
+		mjp.removeAdvice(ao.adviceObj, ao.adviceFunc, ao.adviceType, ao.once); // a MethodJoinPoint object
+		return mjp;
 	}
 
 	this.kwDisconnect = function(kwArgs){
