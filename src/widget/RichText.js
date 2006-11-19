@@ -258,15 +258,15 @@ dojo.widget.defineWidget(
 			this.savedContent = this.domNode.innerHTML;
 			this.domNode.innerHTML = '';
 
-			this.editingArea = dojo.doc().createElement("div");
-			this.domNode.appendChild(this.editingArea);
-
 			// If we're a list item we have to put in a blank line to force the
 			// bullet to nicely align at the top of text
 			if(	(this.domNode["nodeName"])&&
 				(this.domNode.nodeName == "LI")){
 				this.domNode.innerHTML = " <br>";
 			}
+
+			this.editingArea = dojo.doc().createElement("div");
+			this.domNode.appendChild(this.editingArea);
 
 			if(this.saveName != ""){
 				var saveTextarea = dojo.doc().getElementById("dojo.widget.RichText.savedContent");
