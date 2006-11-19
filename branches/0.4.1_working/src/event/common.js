@@ -436,7 +436,8 @@ dojo.event = new function(){
 			}
 			ao.srcFunc = "onkeypress";
 		}
-		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
+		if(!ao.srcObj[ao.srcFunc]){ return null; } // prevent un-necessaray joinpoint creation
+		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc, true);
 		mjp.removeAdvice(ao.adviceObj, ao.adviceFunc, ao.adviceType, ao.once); // a MethodJoinPoint object
 		return mjp;
 	}
