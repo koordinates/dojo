@@ -29,6 +29,7 @@ dojo.declare(
 		this._cache = {};
 	
 		this._inFlight = false;
+		this._lastRequest = null;
 	
 		// allowCache: Boolean
 		//	Setting to use/not use cache for previously seen values
@@ -60,7 +61,7 @@ dojo.declare(
 			var tss = encodeURIComponent(searchStr);
 			var realUrl = dojo.string.substituteParams(this.searchUrl, {"searchString": tss});
 			var _this = this;
-			var request = dojo.io.bind({
+			var request = this._lastRequest = dojo.io.bind({
 				url: realUrl,
 				method: "get",
 				mimetype: "text/json",
@@ -74,7 +75,9 @@ dojo.declare(
 						data = arrData;
 					}
 					_this._addToCache(searchStr, data);
-					callback(data);
+					if (request == _this._lastRequest){
+						callback(data);
+					}
 				}
 			});
 			this._inFlight = true;
