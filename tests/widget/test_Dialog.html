@@ -11,8 +11,10 @@
 
 <script type="text/javascript">
 var dlg;
+var secDlg;
 function init(e) {
 	dlg = dojo.widget.byId("DialogContent");
+	secDlg = dojo.widget.byId("SecondDialog");
 }
 dojo.addOnLoad(init);
 
@@ -179,7 +181,7 @@ turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
 consectetuer dapibus eros. Aliquam nisl.
 </p>
 
-<a href="javascript:dlg.show()">Show</a>
+<a href="javascript:secDlg.show()">Show</a>
 <p>
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
 semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
@@ -273,6 +275,34 @@ tempus. Nunc euismod nisl id dolor tristique tincidunt. Nullam placerat
 turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
 consectetuer dapibus eros. Aliquam nisl.
 </p>
+
+<div dojoType="dialog" id="SecondDialog" bgColor="black" closeNode="hider">
+	<form onsubmit="return false;">
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Location:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Description:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Location:</td>
+				<td><input type="file"></td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center">
+					<input type="button" id="closeButton" value="OK"></td>
+			</tr>
+		</table>
+	</form>
+</div>
+
 </body>
 </html>
 
