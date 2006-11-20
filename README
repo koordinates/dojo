@@ -120,7 +120,7 @@ repository are available at:
 
 Anonymous Subversion access is also available:
 
-    %> svn co http://svn.dojotoolkit.org/dojo/trunk/dojo
+    %> svn co http://svn.dojotoolkit.org/dojo/trunk/ dojo
 
 Each of these sources will include some extra directories not included in the
 pre-packaged editions, including command-line tests and build tools for
