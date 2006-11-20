@@ -456,7 +456,16 @@ dojo.html.insertCssText = function(/* string */cssStr, /* HTMLDocument? */doc, /
 		head.appendChild(style);
 	}
 	if(style.styleSheet){// IE
-		style.styleSheet.cssText = cssStr;
+		var setFunc = function(){ 
+			try{
+				style.styleSheet.cssText = cssStr;
+			}catch(e){ dojo.debug(e); }
+		};
+		if(style.styleSheet.disabled){
+			setTimeout(setFunc, 10);
+		}else{
+			setFunc();
+		}
 	}else{ // w3c
 		var cssText = doc.createTextNode(cssStr);
 		style.appendChild(cssText);
