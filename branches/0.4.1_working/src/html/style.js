@@ -1,4 +1,5 @@
 dojo.provide("dojo.html.style");
+dojo.require("dojo.html.common");
 dojo.require("dojo.uri.Uri");
 
 dojo.html.getClass = function(/* HTMLElement */node){
@@ -398,7 +399,7 @@ dojo.html.insertCssFile = function(/* string */URI, /* HTMLDocument? */doc, /* b
 	if(!URI){ return; }
 	if(!doc){ doc = document; }
 	var cssStr = dojo.hostenv.getText(URI, false, fail_ok);
-	if(cssStr===null){ return; } 
+	if(cssStr===null){ return; }
 	cssStr = dojo.html.fixPathsInCssText(cssStr, URI);
 
 	if(checkDuplicates){
@@ -455,7 +456,16 @@ dojo.html.insertCssText = function(/* string */cssStr, /* HTMLDocument? */doc, /
 		head.appendChild(style);
 	}
 	if(style.styleSheet){// IE
-		style.styleSheet.cssText = cssStr;
+		var setFunc = function(){ 
+			try{
+				style.styleSheet.cssText = cssStr;
+			}catch(e){ dojo.debug(e); }
+		};
+		if(style.styleSheet.disabled){
+			setTimeout(setFunc, 10);
+		}else{
+			setFunc();
+		}
 	}else{ // w3c
 		var cssText = doc.createTextNode(cssStr);
 		style.appendChild(cssText);
