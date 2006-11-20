@@ -761,6 +761,7 @@ dojo.widget.defineWidget(
 			//		return true
 			if(!this._native2LocalFormatNames['p']){
 				var obj = this.object;
+				var error = false;
 				if(!obj){
 					//create obj temporarily
 					try{
@@ -768,24 +769,26 @@ dojo.widget.defineWidget(
 						obj.classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
 						dojo.body().appendChild(obj);
 						obj.DocumentHTML = "<html><head></head><body></body></html>";
-					}catch(e){
-						return false;
-					}
+					}catch(e){ error = true; }
 				}
-				var oNamesParm = new ActiveXObject("DEGetBlockFmtNamesParam.DEGetBlockFmtNamesParam");
-				obj.ExecCommand(this._activeX.command['getblockformatnames'], 0, oNamesParm);
-				var vbNamesArray = new VBArray(oNamesParm.Names);
-				var localFormats = vbNamesArray.toArray();
-				var nativeFormats = ['p', 'pre', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'ul', '', '', '','','div'];
-				for(var i=0;i<nativeFormats.length;++i){
-					if(nativeFormats[i].length>0){
-						this._local2NativeFormatNames[localFormats[i]] = nativeFormats[i];
-						this._native2LocalFormatNames[nativeFormats[i]] = localFormats[i];
+				try{
+					var oNamesParm = new ActiveXObject("DEGetBlockFmtNamesParam.DEGetBlockFmtNamesParam");
+					obj.ExecCommand(this._activeX.command['getblockformatnames'], 0, oNamesParm);
+					var vbNamesArray = new VBArray(oNamesParm.Names);
+					var localFormats = vbNamesArray.toArray();
+					var nativeFormats = ['p', 'pre', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'ul', '', '', '','','div'];
+					for(var i=0;i<nativeFormats.length;++i){
+						if(nativeFormats[i].length>0){
+							this._local2NativeFormatNames[localFormats[i]] = nativeFormats[i];
+							this._native2LocalFormatNames[nativeFormats[i]] = localFormats[i];
+						}
 					}
-				}
-				if(!this.object){
-					//delete the temporary obj
-					dojo.body().removeChild(obj);
+				}catch(e){ error = true; }
+				if(error){
+					if(obj && !this.object){
+						//delete the temporary obj
+						dojo.body().removeChild(obj);
+					}
 				}
 			}
 			return true;
