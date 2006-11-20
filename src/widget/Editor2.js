@@ -3,8 +3,12 @@ dojo.provide("dojo.widget.Editor2");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.RichText");
 dojo.require("dojo.widget.Editor2Toolbar");
+dojo.require("dojo.i18n.common");
+dojo.requireLocalization("dojo.widget", "Editor2");
+dojo.requireLocalization("dojo.widget", "Editor2BrowserCommand");
 
-dojo.widget.Editor2Manager = new dojo.widget.HandlerManager;
+dojo.widget.Editor2Manager = new dojo.widget.HandlerManager();
+
 dojo.lang.mixin(dojo.widget.Editor2Manager,
 {
 	// summary: Manager of current focused Editor2 Instance and available editor2 commands
@@ -39,6 +43,7 @@ dojo.lang.mixin(dojo.widget.Editor2Manager,
 				dojo['require']("dojo.widget.Editor2Plugin.DialogCommands"); //avoid loading by the build
 			}
 		}
+		var resources = dojo.i18n.getLocalization("dojo.widget", "Editor2");
 		switch(name){
 			case 'htmltoggle':
 				//Editor2 natively provide the htmltoggle functionalitity
@@ -57,13 +62,13 @@ dojo.lang.mixin(dojo.widget.Editor2Manager,
 				oCommand = new dojo.widget.Editor2DialogCommand(editor, name,
 						{contentFile: "dojo.widget.Editor2Plugin.CreateLinkDialog",
 							contentClass: "Editor2CreateLinkDialog",
-							title: "Insert/Edit Link", width: "300px", height: "200px"});
+							title: resources.createLinkDialogTitle, width: "300px", height: "200px"});
 				break;
 			case 'insertimage':
 				oCommand = new dojo.widget.Editor2DialogCommand(editor, name,
 						{contentFile: "dojo.widget.Editor2Plugin.InsertImageDialog",
 							contentClass: "Editor2InsertImageDialog",
-							title: "Insert/Edit Image", width: "400px", height: "270px"});
+							title: resources.insertImageDialogTitle, width: "400px", height: "270px"});
 				break;
 			// By default we assume that it is a builtin simple command.
 			default:
@@ -119,49 +124,14 @@ dojo.lang.declare("dojo.widget.Editor2Command",null,
 	}
 );
 
-dojo.widget.Editor2BrowserCommandNames={
-			'bold': 'Bold',
-			'copy': 'Copy',
-			'cut': 'Cut',
-			'Delete': 'Delete',
-			'indent': 'Indent',
-			'inserthorizontalrule': 'Horizental Rule',
-			'insertorderedlist': 'Numbered List',
-			'insertunorderedlist': 'Bullet List',
-			'italic': 'Italic',
-			'justifycenter': 'Align Center',
-			'justifyfull': 'Justify',
-			'justifyleft': 'Align Left',
-			'justifyright': 'Align Right',
-			'outdent': 'Outdent',
-			'paste': 'Paste',
-			'redo': 'Redo',
-			'removeformat': 'Remove Format',
-			'selectall': 'Select All',
-			'strikethrough': 'Strikethrough',
-			'subscript': 'Subscript',
-			'superscript': 'Superscript',
-			'underline': 'Underline',
-			'undo': 'Undo',
-			'unlink': 'Remove Link',
-			'createlink': 'Create Link',
-			'insertimage': 'Insert Image',
-			'htmltoggle': 'HTML Source',
-			'forecolor': 'Foreground Color',
-			'hilitecolor': 'Background Color',
-			'plainformatblock': 'Paragraph Style',
-			'formatblock': 'Paragraph Style',
-			'fontsize': 'Font Size',
-			'fontname': 'Font Name'//,
-}
-
 dojo.lang.declare("dojo.widget.Editor2BrowserCommand", dojo.widget.Editor2Command, 
 	function(editor,name){
 		// summary:
 		//		dojo.widget.Editor2BrowserCommand is the base class for all the browser built
 		//		in commands
 
-		var text = dojo.widget.Editor2BrowserCommandNames[name.toLowerCase()];
+		var browserCommandNames = dojo.i18n.getLocalization("dojo.widget", "Editor2BrowserCommand");
+		var text = browserCommandNames[name.toLowerCase()];
 		if(text){
 			this._text = text;
 		}
@@ -336,7 +306,7 @@ dojo.widget.defineWidget(
 					return;
 				}
 			}
-			dojo.debug("dojo.widget.Editor2.unregisterLoadedPlugin: unknow plugin object: "+obj);
+			dojo.debug("dojo.widget.Editor2.unregisterLoadedPlugin: unknown plugin object: "+obj);
 		},
 
 		//overload the original ones to provide extra commands
