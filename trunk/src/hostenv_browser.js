@@ -321,11 +321,10 @@ if(typeof window != 'undefined'){
 	//	Note that this has changed because the build process strips all comments--including conditional
 	//		ones.
 	if(dojo.render.html.ie && dojo.render.os.win){
-		document.attachEvent("onreadystatechange", function(e){
-			if(document.readyState == "complete"){
-				dj_load_init();
-			}
-		});
+		document.write('<scr'+'ipt defer src="//:" '
+			+ 'onreadystatechange="if(this.readyState==\'complete\'){dj_load_init();}">'
+			+ '</scr'+'ipt>'
+		);
 	}
 
 	if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
