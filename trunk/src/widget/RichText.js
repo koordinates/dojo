@@ -784,14 +784,12 @@ dojo.widget.defineWidget(
 						}
 					}
 				}catch(e){ error = true; }
-				if(error){
-					if(obj && !this.object){
-						//delete the temporary obj
-						dojo.body().removeChild(obj);
-					}
+				if(obj){
+					//delete the temporary obj
+					dojo.body().removeChild(obj);
 				}
 			}
-			return true;
+			return !error;
 		},
 	/* Event handlers
 	 *****************/
