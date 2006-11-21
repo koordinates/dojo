@@ -58,18 +58,22 @@ if(dojo.render.html.ie){
 		}catch(e){}
 
 		// Workaround for IE leak recommended in ticket #1727 by schallm
-		for(var name in dojo.widget._templateCache){
-			if(dojo.widget._templateCache[name].node){
-				dojo.dom.removeNode(dojo.widget._templateCache[name].node);
-				dojo.widget._templateCache[name].node = null;
-				delete dojo.widget._templateCache[name].node;
+		if(dojo.widget){
+			for(var name in dojo.widget._templateCache){
+				if(dojo.widget._templateCache[name].node){
+					dojo.dom.removeNode(dojo.widget._templateCache[name].node);
+					dojo.widget._templateCache[name].node = null;
+					delete dojo.widget._templateCache[name].node;
+				}
 			}
 		}
-		
-		while (dojo.dom._ieRemovedNodes.length > 0) {
-			var node = dojo.dom._ieRemovedNodes.pop();
-			dojo.dom._discardElement(node);
-			node = null;
+
+		if(dojo.dom){	
+			while (dojo.dom._ieRemovedNodes.length > 0) {
+				var node = dojo.dom._ieRemovedNodes.pop();
+				dojo.dom._discardElement(node);
+				node = null;
+			}
 		}
 
 		try{ window.onload = null; }catch(e){}
