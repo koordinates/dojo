@@ -57,6 +57,7 @@ dojo.widget.html.layout = function(/*DomNode*/ container, /*Object[]*/ children,
 
 	// set positions/sizes
 	dojo.lang.forEach(children, function(child){
+		if((!child)||(!child["domNode"])){ return; }
 		var elm=child.domNode;
 		var pos=child.layoutAlign;
 		// set elem to upper left corner of unused space; may move it later
