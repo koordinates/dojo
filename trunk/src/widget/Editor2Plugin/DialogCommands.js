@@ -1,4 +1,7 @@
 dojo.provide("dojo.widget.Editor2Plugin.DialogCommands");
+dojo.require("dojo.i18n.common");
+dojo.requireLocalization("dojo.widget", "common");
+dojo.requireLocalization("dojo.widget", "Editor2");
 
 dojo.require("dojo.widget.FloatingPane");
 dojo.widget.defineWidget(
@@ -124,6 +127,12 @@ dojo.widget.defineWidget(
 	//		This class should be subclassed to provide the content.
 
 	widgetsInTemplate: true,
+
+	postMixInProperties: function(){
+		dojo.widget.HtmlWidget.superclass.postMixInProperties.apply(this, arguments);
+		this.editorStrings = dojo.i18n.getLocalization("dojo.widget", "Editor2", this.lang);
+		this.commonStrings = dojo.i18n.getLocalization("dojo.widget", "common", this.lang);
+	},
 
 	loadContent:function(){
 		// summary: Load the content. Called by Editor2Dialog when first shown

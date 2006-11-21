@@ -32,7 +32,7 @@ dojo.widget.defineWidget(
 		}else{
 			var html = dojo.withGlobal(curInst.window, "getSelectedText", dojo.html.selection);
 			if(html == null || html.length == 0){
-				var resource = dojo.i18n.getLocalization("dojo.widget", "Editor2");
+				var resource = dojo.i18n.getLocalization("dojo.widget", "Editor2", this.lang);
 				alert(resource.createLinkDialogSelectError);
 				return false;//do not show the dialog
 			}
