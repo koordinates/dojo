@@ -43,7 +43,7 @@ dojo.lang.mixin(dojo.widget.Editor2Manager,
 				dojo['require']("dojo.widget.Editor2Plugin.DialogCommands"); //avoid loading by the build
 			}
 		}
-		var resources = dojo.i18n.getLocalization("dojo.widget", "Editor2");
+		var resources = dojo.i18n.getLocalization("dojo.widget", "Editor2", this.lang);
 		switch(name){
 			case 'htmltoggle':
 				//Editor2 natively provide the htmltoggle functionalitity
@@ -62,13 +62,15 @@ dojo.lang.mixin(dojo.widget.Editor2Manager,
 				oCommand = new dojo.widget.Editor2DialogCommand(editor, name,
 						{contentFile: "dojo.widget.Editor2Plugin.CreateLinkDialog",
 							contentClass: "Editor2CreateLinkDialog",
-							title: resources.createLinkDialogTitle, width: "300px", height: "200px"});
+							title: resources.createLinkDialogTitle, width: "300px", height: "200px",
+							lang: this.lang});
 				break;
 			case 'insertimage':
 				oCommand = new dojo.widget.Editor2DialogCommand(editor, name,
 						{contentFile: "dojo.widget.Editor2Plugin.InsertImageDialog",
 							contentClass: "Editor2InsertImageDialog",
-							title: resources.insertImageDialogTitle, width: "400px", height: "270px"});
+							title: resources.insertImageDialogTitle, width: "400px", height: "270px",
+							lang: this.lang});
 				break;
 			// By default we assume that it is a builtin simple command.
 			default:
@@ -129,8 +131,7 @@ dojo.lang.declare("dojo.widget.Editor2BrowserCommand", dojo.widget.Editor2Comman
 		// summary:
 		//		dojo.widget.Editor2BrowserCommand is the base class for all the browser built
 		//		in commands
-
-		var browserCommandNames = dojo.i18n.getLocalization("dojo.widget", "Editor2BrowserCommand");
+		var browserCommandNames = dojo.i18n.getLocalization("dojo.widget", "Editor2BrowserCommand", editor.lang);
 		var text = browserCommandNames[name.toLowerCase()];
 		if(text){
 			this._text = text;
@@ -257,7 +258,7 @@ dojo.widget.defineWidget(
 					}
 				}
 				if(!this.toolbarWidget){
-						var tbOpts = {shareGroup: this.toolbarGroup, parent: this};
+						var tbOpts = {shareGroup: this.toolbarGroup, parent: this, lang: this.lang};
 						tbOpts.templatePath = this.toolbarTemplatePath;
 						if(this.toolbarTemplateCssPath){
 							tbOpts.templateCssPath = this.toolbarTemplateCssPath;
