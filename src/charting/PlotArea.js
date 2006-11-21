@@ -181,5 +181,5 @@ dojo.extend(dojo.charting.PlotArea, {
 	}
 });
 
-dojo["requireIf"](dojo.render.svg.capable, "dojo.charting.svg.PlotArea");
-dojo["requireIf"](!dojo.render.svg.capable && dojo.render.vml.capable, "dojo.charting.vml.PlotArea");
+dojo.requireIf(dojo.render.svg.capable, "dojo.charting.svg.PlotArea");
+dojo.requireIf(dojo.render.vml.capable, "dojo.charting.vml.PlotArea");
