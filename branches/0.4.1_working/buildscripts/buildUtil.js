@@ -127,6 +127,10 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 		}
 		return deps;
 	}
+
+	if(dependencies["dojoLoaded"]){
+		dependencies["dojoLoaded"]();
+	}
 	
 	for(var x=0; x<dependencies.length; x++){
 		try{
