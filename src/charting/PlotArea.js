@@ -137,6 +137,9 @@ dojo.extend(dojo.charting.PlotArea, {
 			|| !this.nodes.axes
 		){ this.initialize(); }
 
+		//	do any size fixes.
+		this.resize();
+
 		//	plot it.
 		for(var i=0; i<this.plots.length; i++){
 			var plot=this.plots[i];
