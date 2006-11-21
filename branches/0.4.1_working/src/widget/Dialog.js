@@ -17,9 +17,6 @@ dojo.declare(
 
 		isContainer: true,
 
-		// static variables
-		shared: {bg: null, bgIframe: null, onClickCatcher: null},
-
 		// focusElement: String
 		//	provide a focusable element or element id if you need to
 		//	work around FF's tendency to send focus into outer space on hide
@@ -39,7 +36,7 @@ dojo.declare(
 
 		// closeOnBackgroundClick: Boolean
 		//	clicking anywhere on the background will close the dialog
-		closeOnBackgroundClick: true,
+		closeOnBackgroundClick: false,
 
 		trapTabs: function(/*Event*/ e){
 			// summary
@@ -100,36 +97,32 @@ dojo.declare(
 			var b = dojo.body();
 			b.appendChild(this.domNode);
 
-			if(!this.shared.bg){
-				this.shared.bg = document.createElement("div");
-				this.shared.bg.className = "dialogUnderlay";
-				with(this.shared.bg.style){
-					position = "absolute";
-					left = top = "0px";
-					zIndex = 998;
-					display = "none";
-				}
-				this.setBackgroundColor(this.bgColor);
-				b.appendChild(this.shared.bg);
-				this.shared.bgIframe = new dojo.html.BackgroundIframe(this.shared.bg);
+			// make background (which sits behind the dialog but above the normal text)
+			this.bg = document.createElement("div");
+			this.bg.className = "dialogUnderlay";
+			with(this.bg.style){
+				position = "absolute";
+				left = top = "0px";
+				zIndex = 998;
+				display = "none";
+			}
+			this.setBackgroundColor(this.bgColor);
+			b.appendChild(this.bg);
+			this.bgIframe = new dojo.html.BackgroundIframe(this.bg);
 
-				if(this.closeOnBackgroundClick){
-					// on IE6 the click events to close the dialog (when there is no assigned close button)
-					// go the the iframe rather than the dialogUnderlay
-					var onClickCatcher = this.shared.bgIframe.iframe ? 
-						this.shared.bgIframe.iframe.contentWindow.document : this.shared.bg;
-					dojo.event.kwConnect({srcObj: onClickCatcher, srcFunc: "onclick",
-						adviceObj: this, adviceFunc: "onBackgroundClick", once: true});
-				}
+			if(this.closeOnBackgroundClick){
+				// on IE6 the click events to close the dialog (when there is no assigned close button)
+				// go the the iframe rather than the dialogUnderlay
+				var onClickCatcher = this.bgIframe.iframe ? 
+					this.bgIframe.iframe.contentWindow.document : this.bg;
+				dojo.event.kwConnect({srcObj: onClickCatcher, srcFunc: "onclick",
+					adviceObj: this, adviceFunc: "onBackgroundClick", once: true});
 			}
 		},
 
 		uninitialize: function(){
-			// if we're the last one, clobber the shared things
-			if(dojo.widget.byType("Dialog").length <= 1){
-				this.shared.bgIframe.remove();
-				dojo.html.removeNode(this.shared.bg, true);
-			}
+			this.bgIframe.remove();
+			dojo.html.removeNode(this.bg, true);
 		},
 
 		setBackgroundColor: function(/*String*/ color) {
@@ -143,7 +136,7 @@ dojo.declare(
 			} else {
 				color = new dojo.gfx.color.Color(color);
 			}
-			this.shared.bg.style.backgroundColor = color.toString();
+			this.bg.style.backgroundColor = color.toString();
 			return this.bgColor = color;	// String: the color
 		},
 
@@ -151,9 +144,9 @@ dojo.declare(
 			// summary
 			//	changes background opacity set by "bgOpacity" parameter
 			if(arguments.length == 0) { op = this.bgOpacity; }
-			dojo.html.setOpacity(this.shared.bg, op);
+			dojo.html.setOpacity(this.bg, op);
 			try {
-				this.bgOpacity = dojo.html.getOpacity(this.shared.bg);
+				this.bgOpacity = dojo.html.getOpacity(this.bg);
 			} catch (e) {
 				this.bgOpacity = op;
 			}
@@ -166,24 +159,24 @@ dojo.declare(
 				var viewport = dojo.html.getViewport();
 				var h = viewport.height;
 				var w = viewport.width;
-				with(this.shared.bg.style){
+				with(this.bg.style){
 					width = w + "px";
 					height = h + "px";
 				}
 				var scroll_offset = dojo.html.getScroll().offset;
-				this.shared.bg.style.top = scroll_offset.y + "px";
-				this.shared.bg.style.left = scroll_offset.x + "px";
+				this.bg.style.top = scroll_offset.y + "px";
+				this.bg.style.left = scroll_offset.x + "px";
 				// process twice since the scroll bar may have been removed
 				// by the previous resizing
 				var viewport = dojo.html.getViewport();
-				if (viewport.width != w) { this.shared.bg.style.width = viewport.width + "px"; }
-				if (viewport.height != h) { this.shared.bg.style.height = viewport.height + "px"; }
+				if (viewport.width != w) { this.bg.style.width = viewport.width + "px"; }
+				if (viewport.height != h) { this.bg.style.height = viewport.height + "px"; }
 			}
 		},
 
 		_showBackground: function() {
 			if(this.bgOpacity > 0) {
-				this.shared.bg.style.display = "block";
+				this.bg.style.display = "block";
 			}
 		},
 
@@ -265,8 +258,8 @@ dojo.declare(
 				dojo.byId(this.focusElement).blur();
 			}
 
-			this.shared.bg.style.display = "none";
-			this.shared.bg.style.width = this.shared.bg.style.height = "1px";
+			this.bg.style.display = "none";
+			this.bg.style.width = this.bg.style.height = "1px";
 
 			dojo.event.disconnect(document.documentElement, "onkey", this, "_onKey");
 			if (this._scrollConnected){
@@ -277,8 +270,8 @@ dojo.declare(
 
 		_onScroll: function(){
 			var scroll_offset = dojo.html.getScroll().offset;
-			this.shared.bg.style.top = scroll_offset.y + "px";
-			this.shared.bg.style.left = scroll_offset.x + "px";
+			this.bg.style.top = scroll_offset.y + "px";
+			this.bg.style.left = scroll_offset.x + "px";
 			this.placeModalDialog();
 		},
 
@@ -391,7 +384,6 @@ dojo.widget.defineWidget(
 			//	If no close node is specified then clicking anywhere on the screen will close the dialog.
 			this.closeNode = dojo.byId(node);
 			dojo.event.connect(this.closeNode, "onclick", this, "hide");
-			this.closeOnBackgroundClick = false;
 		},
 
 		setShowControl: function(/*String|DomNode*/ node) {
