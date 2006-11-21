@@ -220,6 +220,9 @@ dojo.declare("dojo.widget.Widget", null,
 		//		tear-down?
 
 		// FIXME: this is woefully incomplete
+		if(this.parent){
+			this.parent.removeChild(this);
+		}
 		this.destroyChildren();
 		this.uninitialize();
 		this.destroyRendering(finalize);
@@ -551,6 +554,7 @@ dojo.declare("dojo.widget.Widget", null,
 		for(var x=0; x<this.children.length; x++){
 			if(this.children[x] === widget){
 				this.children.splice(x, 1);
+				widget.parent=null;
 				break;
 			}
 		}
