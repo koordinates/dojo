@@ -37,7 +37,8 @@ dojo.event = new function(){
 			once: false,
 			delay: null,
 			rate: 0,
-			adviceMsg: false
+			adviceMsg: false,
+			maxCalls: -1
 		};
 
 		switch(args.length){
@@ -136,6 +137,7 @@ dojo.event = new function(){
 				ao.delay = args[8];
 				ao.rate = args[9];
 				ao.adviceMsg = args[10];
+				ao.maxCalls = (!isNaN(parseInt(args[11]))) ? args[11] : -1;
 				break;
 		}
 
@@ -268,6 +270,7 @@ dojo.event = new function(){
 				ao.delay = args[8];
 				ao.rate = args[9];
 				ao.adviceMsg = args[10];
+				ao.maxCalls = args[11];
 		*/
 		if(arguments.length == 1){
 			var ao = arguments[0];
@@ -368,6 +371,15 @@ dojo.event = new function(){
 		//	 	the "once" flag will always be set to "true"
 		var ao = interpolateArgs(arguments, true);
 		ao.once = true;
+		return this.connect(ao); // a MethodJoinPoint object
+	}
+
+	this.connectRunOnce = function(){
+		// summary:
+		//	 	takes the same parameters as dojo.event.connect(), except that
+		//	 	the "maxCalls" flag will always be set to 1
+		var ao = interpolateArgs(arguments, true);
+		ao.maxCalls = 1;
 		return this.connect(ao); // a MethodJoinPoint object
 	}
 
@@ -541,7 +553,6 @@ dojo.event.MethodJoinPoint.getForMethod = function(/*Object*/obj, /*String*/func
 		obj[jpfuncname] = ofn;
 		// joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, funcName);
 		joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, jpfuncname);
-		// return { kwAddAdvice: function(){} };
 		// joinpoint = obj[jpname] = { kwAddAdvice: function(){} };
 		if(!isNode){
 			obj[funcName] = function(){ 
@@ -639,6 +650,13 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 			var aroundObj = marr[2]||dj_global;
 			var aroundFunc = marr[3];
 			var msg = marr[6];
+			var maxCount = marr[7];
+			if(maxCount > -1){
+				if(maxCount == 0){
+					return;
+				}
+				marr[7]--;
+			}
 			var undef;
 
 			var to = {
@@ -774,17 +792,19 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		//			- delay
 		//			- rate
 		//			- adviceMsg
+		//			- maxCalls
 		this.addAdvice(	args["adviceObj"], args["adviceFunc"], 
 						args["aroundObj"], args["aroundFunc"], 
 						args["adviceType"], args["precedence"], 
 						args["once"], args["delay"], args["rate"], 
-						args["adviceMsg"]);
+						args["adviceMsg"], args["maxCalls"]);
 	},
 
 	addAdvice: function(	thisAdviceObj, thisAdvice, 
 							thisAroundObj, thisAround, 
 							adviceType, precedence, 
-							once, delay, rate, asMessage){
+							once, delay, rate, asMessage,
+							maxCalls){
 		// summary:
 		//		add advice to this joinpoint using positional parameters
 		// thisAdviceObj:
@@ -813,12 +833,16 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		// adviceMsg:
 		//		boolean. Should the listener have all the parameters passed in
 		//		as a single argument?
+		// maxCalls:
+		//		Integer. The maximum number of times this connection can be
+		//		used before being auto-disconnected. -1 signals that the
+		//		connection should never be disconnected.
 		var arr = this.getArr(adviceType);
 		if(!arr){
 			dojo.raise("bad this: " + this);
 		}
 
-		var ao = [thisAdviceObj, thisAdvice, thisAroundObj, thisAround, delay, rate, asMessage];
+		var ao = [thisAdviceObj, thisAdvice, thisAroundObj, thisAround, delay, rate, asMessage, maxCalls];
 		
 		if(once){
 			if(this.hasAdvice(thisAdviceObj, thisAdvice, adviceType, arr) >= 0){
