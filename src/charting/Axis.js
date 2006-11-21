@@ -132,5 +132,5 @@ dojo.extend(dojo.charting.Axis, {
 	}
 });
 
-dojo["requireIf"](dojo.render.svg.capable, "dojo.charting.svg.Axis");
-dojo["requireIf"](!dojo.render.svg.capable && dojo.render.vml.capable, "dojo.charting.vml.Axis");
+dojo.requireIf(dojo.render.svg.capable, "dojo.charting.svg.Axis");
+dojo.requireIf(dojo.render.vml.capable, "dojo.charting.vml.Axis");
