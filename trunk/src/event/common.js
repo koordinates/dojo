@@ -497,7 +497,6 @@ dojo.event.MethodJoinPoint = function(/*Object*/obj, /*String*/funcName){
 	this.object = obj||dj_global;
 	this.methodname = funcName;
 	this.methodfunc = this.object[funcName];
-	this.squelch = false;
 	// this.before = [];
 	// this.after = [];
 	// this.around = [];
@@ -512,14 +511,15 @@ dojo.event.MethodJoinPoint.getForMethod = function(/*Object*/obj, /*String*/func
 	// funcName:
 	//		the name of the function to return a MethodJoinPoint for
 	if(!obj){ obj = dj_global; }
-	if(!obj[funcName]){
+	var ofn = obj[funcName];
+	if(!ofn){
 		// supply a do-nothing method implementation
-		obj[funcName] = function(){};
+		ofn = obj[funcName] = function(){};
 		if(!obj[funcName]){
 			// e.g. cannot add to inbuilt objects in IE6
 			dojo.raise("Cannot set do-nothing method on that object "+funcName);
 		}
-	}else if((!dojo.lang.isFunction(obj[funcName]))&&(!dojo.lang.isAlien(obj[funcName]))){
+	}else if((typeof ofn != "function")&&(!dojo.lang.isFunction(ofn))&&(!dojo.lang.isAlien(ofn))){
 		// FIXME: should we throw an exception here instead?
 		return null; 
 	}
@@ -537,43 +537,56 @@ dojo.event.MethodJoinPoint.getForMethod = function(/*Object*/obj, /*String*/func
 				dojo.event.browser.addClobberNodeAttrs(obj, [jpname, jpfuncname, funcName]);
 			}
 		}
-		var origArity = obj[funcName].length;
-		obj[jpfuncname] = obj[funcName];
+		var origArity = ofn.length;
+		obj[jpfuncname] = ofn;
 		// joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, funcName);
 		joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, jpfuncname);
-		obj[funcName] = function(){ 
-			var args = [];
+		// return { kwAddAdvice: function(){} };
+		// joinpoint = obj[jpname] = { kwAddAdvice: function(){} };
+		if(!isNode){
+			obj[funcName] = function(){ 
+				// var args = [];
+				// for(var x=0; x<arguments.length; x++){
+					// args.push(arguments[x]);
+				// }
+				// return joinpoint.run.apply(joinpoint, args); 
+				return joinpoint.run.apply(joinpoint, arguments); 
+			}
+		}else{
+			obj[funcName] = function(){ 
+				var args = [];
 
-			if((isNode)&&(!arguments.length)){
-				var evt = null;
-				try{
-					if(obj.ownerDocument){
-						evt = obj.ownerDocument.parentWindow.event;
-					}else if(obj.documentElement){
-						evt = obj.documentElement.ownerDocument.parentWindow.event;
-					}else if(obj.event){ //obj is a window
-						evt = obj.event;
-					}else{
+				if(!arguments.length){
+					var evt = null;
+					try{
+						if(obj.ownerDocument){
+							evt = obj.ownerDocument.parentWindow.event;
+						}else if(obj.documentElement){
+							evt = obj.documentElement.ownerDocument.parentWindow.event;
+						}else if(obj.event){ //obj is a window
+							evt = obj.event;
+						}else{
+							evt = window.event;
+						}
+					}catch(e){
 						evt = window.event;
 					}
-				}catch(e){
-					evt = window.event;
-				}
 
-				if(evt){
-					args.push(dojo.event.browser.fixEvent(evt, this));
-				}
-			}else{
-				for(var x=0; x<arguments.length; x++){
-					if((x==0)&&(isNode)&&(dojo.event.browser.isEvent(arguments[x]))){
-						args.push(dojo.event.browser.fixEvent(arguments[x], this));
-					}else{
-						args.push(arguments[x]);
+					if(evt){
+						args.push(dojo.event.browser.fixEvent(evt, this));
+					}
+				}else{
+					for(var x=0; x<arguments.length; x++){
+						if((x==0)&&(dojo.event.browser.isEvent(arguments[x]))){
+							args.push(dojo.event.browser.fixEvent(arguments[x], this));
+						}else{
+							args.push(arguments[x]);
+						}
 					}
 				}
+				// return joinpoint.run.apply(joinpoint, arguments); 
+				return joinpoint.run.apply(joinpoint, args); 
 			}
-			// return joinpoint.run.apply(joinpoint, arguments); 
-			return joinpoint.run.apply(joinpoint, args); 
 		}
 		obj[funcName].__preJoinArity = origArity;
 	}
@@ -581,6 +594,8 @@ dojo.event.MethodJoinPoint.getForMethod = function(/*Object*/obj, /*String*/func
 }
 
 dojo.lang.extend(dojo.event.MethodJoinPoint, {
+	squelch: false,
+
 	unintercept: function(){
 		// summary: 
 		//		destroy the connection to all listeners that may have been
