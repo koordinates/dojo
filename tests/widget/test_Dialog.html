@@ -34,9 +34,10 @@ form {
 </style>
 </head>
 <body>
-<a href="javascript:dlg.show()">Show</a>
+<a href="javascript:dlg.show()">Show First Dialog</a>
 
 <div dojoType="dialog" id="DialogContent" bgColor="white" bgOpacity="0.5" toggle="fade" toggleDuration="250" closeNode="hider">
+	<h3>First Dialog</h3>
 	<form onsubmit="return false;">
 		<table>
 			<tr>
@@ -181,7 +182,7 @@ turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
 consectetuer dapibus eros. Aliquam nisl.
 </p>
 
-<a href="javascript:secDlg.show()">Show</a>
+<a href="javascript:secDlg.show()">Show Second Dialog</a>
 <p>
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
 semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
@@ -277,6 +278,7 @@ consectetuer dapibus eros. Aliquam nisl.
 </p>
 
 <div dojoType="dialog" id="SecondDialog" bgColor="black" closeNode="closeButton">
+	<h3>Second Dialog</h3>
 	<form onsubmit="return false;">
 		<table>
 			<tr>
