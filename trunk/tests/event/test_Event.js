@@ -320,3 +320,23 @@ function test_event_disconnectFP(){
 	jum.assertEquals("test43", obj2.funcCallCount, 1);
 }
 
+function test_event_maxCalls(){
+	var obj1 = new testObjectClass();
+
+	// test to see if "after" gets set as the default type
+	dojo.event.kwConnect({
+		srcObj: obj1, 
+		srcFunc: "func1", 
+		adviceObj: obj1, 
+		adviceFunc: "func2",
+		maxCalls: 1
+	});
+
+	jum.assertTrue(obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertEquals(obj1.funcCallCount, 2);
+	jum.assertEquals(obj1.secondLastReturn, "func1, arg1: 1, arg2: 2");
+	jum.assertEquals(obj1.lastReturn, "func2, arg1: 1, arg2: 2");
+	obj1.func1("1", "2");
+	jum.assertEquals(obj1.funcCallCount, 3);
+}
+
