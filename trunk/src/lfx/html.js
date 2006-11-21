@@ -309,9 +309,18 @@ dojo.lfx.html.wipeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Functi
 		
 		// get node height, either it's natural height or it's height specified via style or class attributes
 		// (for FF, the node has to be (temporarily) rendered to measure height)
-		dojo.html.show(node);
+		// TODO: should this offscreen code be part of dojo.html, so that getBorderBox() works on hidden nodes?
+		var origTop, origLeft, origPosition;
+		with(node.style){
+			origTop=top; origLeft=left; origPosition=position;
+			top="-9999px"; left="-9999px"; position="absolute";
+			display="";
+		}
 		var height = dojo.html.getBorderBox(node).height;
-		dojo.html.hide(node);
+		with(node.style){
+			top=origTop; left=origLeft; position=origPosition;
+			display="none";
+		}
 
 		var anim = dojo.lfx.propertyAnimation(node,
 			{	"height": {
