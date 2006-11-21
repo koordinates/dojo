@@ -11,8 +11,10 @@
 
 <script type="text/javascript">
 var dlg;
+var secDlg;
 function init(e) {
 	dlg = dojo.widget.byId("DialogContent");
+	secDlg = dojo.widget.byId("SecondDialog");
 }
 dojo.addOnLoad(init);
 
@@ -32,9 +34,10 @@ form {
 </style>
 </head>
 <body>
-<a href="javascript:dlg.show()">Show</a>
+<a href="javascript:dlg.show()">Show First Dialog</a>
 
 <div dojoType="dialog" id="DialogContent" bgColor="white" bgOpacity="0.5" toggle="fade" toggleDuration="250" closeNode="hider">
+	<h3>First Dialog</h3>
 	<form onsubmit="return false;">
 		<table>
 			<tr>
@@ -179,7 +182,7 @@ turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
 consectetuer dapibus eros. Aliquam nisl.
 </p>
 
-<a href="javascript:dlg.show()">Show</a>
+<a href="javascript:secDlg.show()">Show Second Dialog</a>
 <p>
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
 semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
@@ -273,6 +276,34 @@ tempus. Nunc euismod nisl id dolor tristique tincidunt. Nullam placerat
 turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
 consectetuer dapibus eros. Aliquam nisl.
 </p>
+
+<div dojoType="dialog" id="SecondDialog" bgColor="black" closeNode="closeButton">
+	<h3>Second Dialog</h3>
+	<form onsubmit="return false;">
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Location:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Description:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Location:</td>
+				<td><input type="file"></td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center">
+					<input type="button" id="closeButton" value="OK"></td>
+			</tr>
+		</table>
+	</form>
+</div>
+
 </body>
 </html>
-
