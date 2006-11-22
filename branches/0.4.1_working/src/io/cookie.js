@@ -1,6 +1,7 @@
 dojo.provide("dojo.io.cookie");
 
-dojo.io.cookie.setCookie = function(name, value, days, path, domain, secure) {
+dojo.io.cookie.setCookie = function(/*String*/name, /*String*/value, /*Number?*/days, /*String?*/path, /*String?*/domain, /*boolean?*/secure) {
+	//summary: sets a cookie.
 	var expires = -1;
 	if(typeof days == "number" && days >= 0) {
 		var d = new Date();
@@ -17,7 +18,9 @@ dojo.io.cookie.setCookie = function(name, value, days, path, domain, secure) {
 
 dojo.io.cookie.set = dojo.io.cookie.setCookie;
 
-dojo.io.cookie.getCookie = function(name) {
+dojo.io.cookie.getCookie = function(/*String*/name) {
+	//summary: Gets a cookie with the given name.
+
 	// FIXME: Which cookie should we return?
 	//        If there are cookies set for different sub domains in the current
 	//        scope there could be more than one cookie with the same name.
@@ -30,16 +33,25 @@ dojo.io.cookie.getCookie = function(name) {
 	if(end == -1) { end = value.length; }
 	value = value.substring(0, end);
 	value = unescape(value);
-	return value;
+	return value; //String
 }
 
 dojo.io.cookie.get = dojo.io.cookie.getCookie;
 
-dojo.io.cookie.deleteCookie = function(name) {
+dojo.io.cookie.deleteCookie = function(/*String*/name) {
+	//summary: Deletes a cookie with the given name.
 	dojo.io.cookie.setCookie(name, "-", 0);
 }
 
-dojo.io.cookie.setObjectCookie = function(name, obj, days, path, domain, secure, clearCurrent) {
+dojo.io.cookie.setObjectCookie = function(/*String*/name, /*Object*/obj, /*Number?*/days, /*String?*/path, /*String?*/domain, /*boolean?*/secure, /*boolean?*/clearCurrent) {
+	//summary: Takes an object, serializes it to a cookie value, and either
+	//sets a cookie with the serialized value.
+	//description: If clearCurrent is true, then any current cookie value
+	//for this object will be replaced with the the new serialized object value.
+	//If clearCurrent is false, then the existing cookie value will be modified
+	//with any changes from the new object value.
+	//Objects must be simple name/value pairs where the value is either a string
+	//or a number. Any other value will be ignored.
 	if(arguments.length == 5) { // for backwards compat
 		clearCurrent = domain;
 		domain = null;
@@ -65,7 +77,9 @@ dojo.io.cookie.setObjectCookie = function(name, obj, days, path, domain, secure,
 	dojo.io.cookie.setCookie(name, value, days, path, domain, secure);
 }
 
-dojo.io.cookie.getObjectCookie = function(name) {
+dojo.io.cookie.getObjectCookie = function(/*String*/name) {
+	//summary: Gets an object value for the given cookie name. The complement of
+	//dojo.io.cookie.setObjectCookie().
 	var values = null, cookie = dojo.io.cookie.getCookie(name);
 	if(cookie) {
 		values = {};
@@ -81,6 +95,7 @@ dojo.io.cookie.getObjectCookie = function(name) {
 }
 
 dojo.io.cookie.isSupported = function() {
+	//summary: Tests the browser to see if cookies are enabled.
 	if(typeof navigator.cookieEnabled != "boolean") {
 		dojo.io.cookie.setCookie("__TestingYourBrowserForCookieSupport__",
 			"CookiesAllowed", 90, null);
@@ -91,7 +106,7 @@ dojo.io.cookie.isSupported = function() {
 			this.deleteCookie("__TestingYourBrowserForCookieSupport__");
 		}
 	}
-	return navigator.cookieEnabled;
+	return navigator.cookieEnabled; //boolean
 }
 
 // need to leave this in for backwards-compat from 0.1 for when it gets pulled in by dojo.io.*
