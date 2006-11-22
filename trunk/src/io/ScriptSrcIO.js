@@ -393,6 +393,8 @@ dojo.io.ScriptSrcTransport = new function(){
 }
 
 //Define callback handler.
+if(typeof window != "undefined"){
+	
 window.onscriptload = function(event){
 	var state = null;
 	var transport = dojo.io.ScriptSrcTransport;
@@ -446,3 +448,5 @@ window.onscriptload = function(event){
 
 	transport._finish(state, callbackName, event);
 };
+
+} // end if typeof window != "undefined"
