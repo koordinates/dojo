@@ -27,7 +27,7 @@ dojo.io.formHasFile = function(/*DOMNode*/formNode){
 	return dojo.io.checkChildrenForFile(formNode); //boolean
 }
 
-dojo.io.updateNode = function(node, urlOrArgs){
+dojo.io.updateNode = function(/*DOMNode*/node, /*String or Object*/urlOrArgs){
 	//summary: Updates a DOMnode with the result of a dojo.io.bind() call.
 	//node: DOMNode
 	//urlOrArgs: String or Object
@@ -62,7 +62,7 @@ dojo.io.formFilter = function(/*DOMNode*/node) {
 }
 
 // TODO: Move to htmlUtils
-dojo.io.encodeForm = function(formNode, encoding, formFilter){
+dojo.io.encodeForm = function(/*DOMNode*/formNode, /*String?*/encoding, /*Function?*/formFilter){
 	//summary: Converts the names and values of form elements into an URL-encoded
 	//string (name=value&name=value...).
 	//formNode: DOMNode
@@ -118,7 +118,7 @@ dojo.io.encodeForm = function(formNode, encoding, formFilter){
 	return values.join("&") + "&"; //String
 }
 
-dojo.io.FormBind = function(args) {
+dojo.io.FormBind = function(/*DOMNode or Object*/args) {
 	//summary: constructor for a dojo.io.FormBind object. See the Dojo Book for
 	//some information on usage: http://manual.dojotoolkit.org/WikiHome/DojoDotBook/Book23
 	//args: DOMNode or Object
