@@ -56,7 +56,7 @@ dojo.widget.defineWidget(
 		invalidSpan: null,
 		missingSpan: null,
 		rangeSpan: null,
-	
+
 		getValue: function() {
 			return this.textbox.value;
 		},
@@ -168,7 +168,6 @@ dojo.widget.defineWidget(
 			}, this);
 		},
 	
-		// FIXME: why are there to fillInTemplate methods defined here?
 		fillInTemplate: function() {
 			dojo.widget.ValidationTextbox.superclass.fillInTemplate.apply(this, arguments);
 
