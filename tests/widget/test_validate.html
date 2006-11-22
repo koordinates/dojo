@@ -164,20 +164,21 @@
 
 <script>
 	// See if we can make a widget in script and attach it to the DOM ourselves.
-
-	var name = "IntegerTextbox";
-	var props = {
-		name: "population",
-		value: "1,500,000",
-		trim: "true",
-		required: "true",
-		signed: "false",
-		separator: ",",
-		invalidMessage: "Invalid population.  Be sure to use commas."
-	};
-	var refNode = document.getElementById("attach-here");
-
-	var w = dojo.widget.createWidget(name, props, refNode);
+	dojo.addOnLoad(function(){
+		var name = "IntegerTextbox";
+		var props = {
+			name: "population",
+			value: "1,500,000",
+			trim: "true",
+			required: "true",
+			signed: "false",
+			separator: ",",
+			invalidMessage: "Invalid population.  Be sure to use commas."
+		};
+		var refNode = document.getElementById("attach-here");
+	
+		var w = dojo.widget.createWidget(name, props, refNode);
+	});
 </script>
 
 			<div class="formQuestion">
