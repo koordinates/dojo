@@ -64,7 +64,12 @@ dojo.widget.defineWidget(
 		// textbox DomNode:
 		//		our DOM node
 		textbox: null,
-	
+
+		fillInTemplate() {
+			// assign value programatically in case it has a quote in it
+			this.textbox.value = this.value;
+		},
+
 		filter: function() {
 			// summary: Apply various filters to textbox value
 			if (this.trim) {
