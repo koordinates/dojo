@@ -5,6 +5,9 @@ dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
+dojo.require("dojo.i18n.common");
+dojo.requireLocalization("dojo.widget", "common");
+dojo.requireLocalization("dojo.widget", "Wizard");
 
 // TODO: base this on PageContainer
 dojo.widget.defineWidget(
@@ -23,20 +26,20 @@ dojo.widget.defineWidget(
 	selected: null,
 
 	// nextButtonLabel: String
-	//		Label for the "Next" button.
-	nextButtonLabel: "next",
+	//		Label override for the "Next" button.
+	nextButtonLabel: "",
 
 	// previousButtonLabel: String
-	//		Label for the "Previous" button.
-	previousButtonLabel: "previous",
+	//		Label override for the "Previous" button.
+	previousButtonLabel: "",
 
 	// cancelButtonLabel: String
-	//		Label for the "Cancel" button.
-	cancelButtonLabel: "cancel",
+	//		Label override for the "Cancel" button.
+	cancelButtonLabel: "",
 
 	// doneButtonLabel: String
-	//		Label for the "Done" button.
-	doneButtonLabel: "done",
+	//		Label override for the "Done" button.
+	doneButtonLabel: "",
 
 	// cancelButtonLabel: FunctionName
 	//		Name of function to call if user presses cancel button.
@@ -48,6 +51,12 @@ dojo.widget.defineWidget(
 	//		"WizardButtonDisabled" CSS class
 	hideDisabledButtons: false,
 
+	postMixInProperties: function(){
+		dojo.widget.LayoutContainer.superclass.postMixInProperties.apply(this, arguments);
+		this.commonMessages = dojo.i18n.getLocalization("dojo.widget", "common", this.lang);
+		this.messages = dojo.i18n.getLocalization("dojo.widget", "Wizard", this.lang);
+	},
+
 	fillInTemplate: function(args, frag){
 		dojo.event.connect(this.nextButton, "onclick", this, "_onNextButtonClick");
 		dojo.event.connect(this.previousButton, "onclick", this, "_onPreviousButtonClick");
@@ -57,10 +66,14 @@ dojo.widget.defineWidget(
 			this.cancelButton.style.display = "none";
 		}
 		dojo.event.connect(this.doneButton, "onclick", this, "done");
-		this.nextButton.value = this.nextButtonLabel;
-		this.previousButton.value = this.previousButtonLabel;
-		this.cancelButton.value = this.cancelButtonLabel;
-		this.doneButton.value = this.doneButtonLabel;
+	},
+
+	postCreate: function(){
+		dojo.widget.LayoutContainer.superclass.postCreate.apply(this, arguments);
+		if(this.nextButtonLabel){this.nextButton.value = this.nextButtonLabel;}
+		if(this.previousButtonLabel){this.previousButton.value = this.previousButtonLabel;}
+		if(this.cancelButtonLabel){this.cancelButton.value = this.cancelButtonLabel;}
+		if(this.doneButtonLabel){this.doneButton.value = this.doneButtonLabel;}
 	},
 
 	_checkButtons: function(){
