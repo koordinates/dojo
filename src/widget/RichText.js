@@ -230,7 +230,7 @@ dojo.widget.defineWidget(
 				// this.domNode.innerHTML = html;
 
 				if(this.textarea.form){
-					dojo.event.connect(this.textarea.form, "onsubmit",
+					dojo.event.connect('before', this.textarea.form, "onsubmit",
 						// FIXME: should we be calling close() here instead?
 						dojo.lang.hitch(this, function(){
 							this.textarea.value = this.getEditorContent();
