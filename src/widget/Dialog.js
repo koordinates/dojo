@@ -129,6 +129,7 @@ dojo.declare(
 			if(dojo.widget.byType("Dialog").length <= 1){
 				this.shared.bgIframe.remove();
 				dojo.html.removeNode(this.shared.bg, true);
+				this.shared.bg = null;
 			}
 		},
 
