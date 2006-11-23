@@ -13,21 +13,10 @@
 			preventBackButtonFix: false 
 		};
 	</script>
-	<script type='text/javascript'>
-		// if we're accessing from the local disk, dojo is in a different place
-		// TODO: I'm sure there is a smarter way to do this...
-		if (window.location.href.indexOf("file:") == 0 || window.location.href.indexOf("localhost") > -1) {
-			window.inLocalMode = true;
-			djConfig.baseScriptURI = "..";
-			// debug: write "LOCAL" up there so we can tell we're on local mode
-			window.document.title = "===LOCAL=== " + window.document.title;
-		} else {
-			window.inLocalMode = false;
-			djConfig.baseScriptURI = ".";
-		}
-		document.write("<"+"script type='text/javascript' src='"+djConfig.baseScriptURI+"/dojo.js'><"+"/script>");
-	</script>
-
+	<!-- NOTE: 	We now assume that for every install of the api ref, dojo is at ../dojo.js .
+				This means that to host the ref, you should check out the entire source tree
+				and sym-link /api to /checkout/api		-->
+	<script type="text/javascript" src="../dojo.js"></script>
 	<script type="text/javascript">
 		dojo.require("dojo.debug.console");
 		dojo.require("dojo.io.*");

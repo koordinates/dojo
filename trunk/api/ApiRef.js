@@ -1,25 +1,99 @@
-var ApiRef = {
-	_debug : false,
+/*
+	Dojo Api Reference - Copyright (c) 2006 Dojo Foundation
+	Authors:  Owen Williams
 
-	_showMethodsInTree : false,				// set to true to show individual function entries in the fucntion tree
-												//	NOTE: setting this to true makes building the tree VERY slow
-	_maxTreeNodes : 40,							// maximum number of top-level tree nodes to output (useful when _showMethodsInTree is true)
+	Terminology/Data structures:
+
+	* every distinct thing the parser outputs is known as an "item"
+		(Eg a function, object like dojo.html, etc)
 	
-	showInherited : true,						// set to true to show inherited methods and properties
-	showPrivate : false,						// set to true to show private variables and functions
-	showDeprecated : true,						// set to true to show deprecated variables and functions	-- DOESNT WORK YET
-	showExperimental : true,					// set to true to show experimental variables and functions	-- DOESNT WORK YET
+	* as an item can be many different things, a function, a class, an object
+		each item has a number of properties that indicate what we know about it
+			item.isResource			-- 	there is a resource (source) file with that name
+			item.isMethod			-- 	item is a function
+			item.isObject			-- 	item is an Object
+			item.isModule			-- 	item is a module (eg: "dojo" or "dojo.html"
+			item.isConstructable	-- 	item is a function that we expect to be instantiated with new()
+			item.hasChildren		--  item has children (functions and objects)
+			item.isCurly			-- 	item was defined by the parser with curly braces around it (eg: {dojo})
 
-	defaultReferenceId: "content",				// default element.id where showItem*() puts its output
 
-	// initialize the data structures we'll be building below
-	functionList : [],
-	functionMap : {},
+	Basic overview:
+	
+	* body.onload calls ApiRef.init()
+	* init():
+		- sets up display parameters and debugging flags from cookies set last time
+		- loads the file "/docscripts/output/local/json/function_names,
+			which is the list of names of all functions and top-level objects in the system
+		- upon callback, calls ApiRef.onAfterInit()
+	* onAfterInit()
+		- initObjectList() parses the function_names:
+			- initFunctionMap() does the actual parsing of function_names, 
+				yielding ApiRef.functionList and ApiRef.functionMap (see below)
+			- initFunctionTree() takes the functionList and makes the ApiRef.functionTree (below)
+				which is both the hierarchical listing of all of the displayable items
+				as well as the data structure used as data for the Tree widgets
+		- initTreeWidget() takes the functionTree and sets up the Tree widget for the interface
+		- initSearchBox() sets up the ComboBox that allows you to search for items
+		- getInitialSearch() figures out the initial search from a cookie or URL hash
 
+	* when an item is clicked or an entry is found in the search box, it calls
+		- showItem() which:
+			- loads data for the item if necessary
+			- and (in showItemCallback) updates the display with output about the item
+	
+	* if they click the "+" button, that calls expandItem(), which devolves down to showItem()
+		or collapseItem() to go back to the summary state
+
+	* There are lots of methods to find/deal with items:
+		- getItem()
+		- itemIsMethod()
+		- getItemType()
+		- 	etc.
+		
+	* There are lots of outputX routines, used to output HTML to the display
+		- outputItem()
+			- outputItemHeader()
+			- outputItemBody()
+				- outputMethodList()
+				- outputSuperMethods()
+				- outputProptery()
+				- outpuerItemLabel()
+				- 	etc.
+
+
+*/
+
+
+//
+//	set up the onload handler
+//
+dojo.addOnLoad(function(){ApiRef.init()});
+
+
+var ApiRef = {
+	_debug : false,					// if true, we output debug information
+	_profile : false,				// if true, we output profiling information
+	
+	showInherited : true,			// set to true to show inherited methods and properties
+	showPrivate : false,			// set to true to show private variables and functions
+	showDeprecated : true,			// set to true to show deprecated variables and functions	-- DOESNT WORK YET
+	showExperimental : true,		// set to true to show experimental variables and functions	-- DOESNT WORK YET
+
+	defaultReferenceId: "content",	// default element.id where showItem*() puts its output
+
+	parserDataCache : {},			// cache of parser data already loaded
+	docscriptsUrl : dojo.uri.dojoUri("docscripts"),
+									//	base URL for parser data output
+
+	functionList : [],				// sorted list of "item" (functions and objects) names
+	functionMap : {},				// mape of item name to internal data representation of the item
+	functionTree : [],				// tree of all functions, look in the "all", "methods" and "children" properties for kids
+	objectTree : [],				// tree of only non-function items -- look in the "children" property for kids
 	
 	init : function() {
 		// summary
-		//	initialize the entire app
+		//	initialize the entire app -- called by body.onload event
 
 		// set up debugging and profiling, based on cookie values
 		//	use the debug menu to turn this on and off
@@ -38,43 +112,30 @@ var ApiRef = {
 		// load the list of functions and start everything going when that's done
 		this.showNotice("Loading API index...");
 		this.functionNameLoader = this.loadParserFile("function_names");
-		this.functionNameLoader.callback = function(data){ApiRef.initTreeWidget(data)};
+		this.functionNameLoader.callback = function(function_names){ApiRef.onAfterInit(function_names)};
 	},
 
-	onAfterInit : function() {
+	onAfterInit : function(function_names) {
 		// summary
 		//	Called when initialization (eg: loading of tree widget) has finished.
 		//	Responsible for showing the initial reference item, based on the URL fragment or a cookie, if set.
+	
+		// NOTE: implementations are toward the bottom of this file
+	
+		// initialize the list of function/object names
+		this.initObjectList(function_names);
+	
+		// set up the tree widget for the UI
+		this.initTreeWidget()
 	
 		// hook up the search combobox values
 		this.initSearchBox();
 
 		// figre out what to show initially, from hash, cookie or default of "dojo"
-		
-		var initialItem = "dojo";
-		var hash = window.location.hash;
-		if (hash != null && hash.charAt(0) == "#") {
-			// strip off the leading "#"
-			initialItem = hash.substr(1);
-		} else {
-			var cookieItem = dojo.io.cookie.getCookie("ApiRef_lastItem");
-			if (cookieItem != null) initialItem = cookieItem;
-		}
-		if (initialItem == null) initialItem = "dojo";
-
-		// split into "name:type"
-		initialItem = initialItem.split(":");
-
-		// set the initial page state to the cookie sate
-		dojo.undo.browser.setInitialState(new ApiRef.BookmarkState(initialItem[0], initialItem[1]));
-
-		// call showItem, but don't record the state since we just setInitialState
-		ApiRef.showItem(initialItem[0], initialItem[1], null, false);
+		this.getInitialSearch();		
 
 		this.clearNotice();
 	},
-
-	
 
 	
 	//
@@ -82,13 +143,14 @@ var ApiRef = {
 	//
 	
 
-	parserDataCache : {},
 	getParserData : function(parserFile) {
+		// summary: return the cached data from a partcular parserFile
 		return this.parserDataCache[parserFile];
 	},
 
 	cacheParserData : function(parserFile, data, msg) {
-//		if (this._debug) this.debug_showParserData(parserFile, data);
+		// summary: when data is loaded, this routine caches it for later display
+		
 		if (!msg) msg = "Integrating data for module "+parserFile;
 		this.showNotice(msg);
 		this.startProfile("cacheParserData:"+parserFile);
@@ -97,8 +159,6 @@ var ApiRef = {
 		var item = this.getItem(parserFile);
 		if (item) {
 			item.resourceData = data;
-//			if (item.data == null) item.data = [];
-//			item.data.push(data);
 		}
 		this._parseDataObject(data, parserFile, parserFile);
 		this.parserDataCache[parserFile] = data;
@@ -107,6 +167,9 @@ var ApiRef = {
 	},
 	
 	_parseDataObject : function(dataObj, ref, parserFile) {
+		// take data from the parser output and integrate it 
+		//	with each corresponding item in the functionMap
+		
 		for (var name in dataObj) {
 			var dataItem = dataObj[name];
 			//	if (dataItem && dataItem.meta && dataItem.extras == null) dataItem = dataItem.meta;
@@ -165,6 +228,11 @@ var ApiRef = {
 	},
 	
 	loadParserData : function(parserFile, callback, msg) {
+		// summary: load data from particular file of parser data.  When it returns:
+		//	call cacheParserData() to remember it, and
+		//	call whatever callback was passed in to this function
+		//		(generally involved with showItem() )
+		
 		if (!msg) msg = "Loading data for module "+ parserFile;
 		this.showNotice(msg);
 		
@@ -182,8 +250,9 @@ var ApiRef = {
 		}
 	},
 	
-	_url : dojo.uri.dojoUri("docscripts"),
 	loadParserFile: function(/*String*/ filename, /*bool*/ sync) {
+		// summary: actually load the data from the parser file with a dojo.Deferred
+		
 		if (filename == null) return dojo.debug("dojo.dojcs.loadParserFile(): you must pass a file name to load");
 		this.startProfile("ApiRef.loadParserFile('" + filename + "')");
 		var parts = filename.split("/");
@@ -193,13 +262,6 @@ var ApiRef = {
 			mimetype: "text/json",
 			load: function(type, data){
 				ApiRef.endProfile("ApiRef.loadParserFile('" + filename + "')");
-
-				if(parts[0] != "function_names") {
-					// MOW: this was messing up loading of resources
-					//	for(var i = 0, part; part = parts[i]; i++){
-					//		data = data[part];
-					//	}
-				}
 				deferred.callback(data);
 			},
 			error: function(){
@@ -213,10 +275,10 @@ var ApiRef = {
 
 		if(size){
 			if(parts[0] == "function_names"){
-				args.url = [this._url, "/output/local/json", "function_names"].join("/");
+				args.url = [this.docscriptsUrl, "/output/local/json", "function_names"].join("/");
 			}else{
 				var dirs = parts[0].split(".");
-				args.url = [this._url, "output/local/json", dirs[0]].join("/");
+				args.url = [this.docscriptsUrl, "/output/local/json", dirs[0]].join("/");
 				if(dirs.length > 1){
 					args.url = [args.url, dirs[1]].join(".");
 				}
@@ -231,30 +293,34 @@ var ApiRef = {
 
 	
 	
-	//
-	//
-	//
-	
-	openFile : function(fileName) {
+	openSourceFile : function(fileName) {
+		// summary: Open a dojo source file for viewing
+		//	todo: make this do a pretty-print on the file after it loads
+		
 		fileName = fileName.split(".");
 		if (fileName[0] == "dojo") fileName = fileName.slice(1);
 		fileName = fileName.join("/") + ".js";
 		window.open(djConfig.baseScriptURI + "/src/" + fileName, "_blank");
 	},
+
+
 	
 	//
 	//	showing a particular reference (eg: "dojo.html.layout.foo()"
 	//
 	
 	
-	onTreeSelect : function(message) {
-		var item = message.node,
-			name = item.name
-		;
-		this.showItem(name);
-	},
-	
 	showItem : function(name, type, elementId, recordState) {
+		// summary:  Show a particulare item by name, loading the data if necessary.
+		//			 Actual display comes in _showItemCallback()
+		//
+		//			If type is specified, that indicates how it should be shown
+		//				(for items that are both a file and a method, etc)
+		//			If elementId is specified, displays in that DOM element
+		//				(default is defaultReferenceId -- "content")
+		//			recordState if not false, indicates that they should be able to hit
+		//				the browser back button to get back to this state
+	
 		if (name == null) name = dojo.io.cookie.getCookie("ApiRef_lastItem");
 
 		var item = this.getItem(name),
@@ -277,6 +343,9 @@ var ApiRef = {
 	},
 	
 	_showItemCallback : function (name, elementId, type) {
+		// summary: routine to actually show the display of an item, which is assumed to
+		//				already be loaded.  Uses outputX() routines to get the HTML.
+		
 		var item = this.getItem(name);
 //dojo.debug(name, item);
 		if (this._debug) dojo.debug("ApiRef._showItemCallback("+name+","+elementId+"): type is " + this.getItemTypeString(item));
@@ -300,9 +369,9 @@ var ApiRef = {
 		this.setSearchBoxValue(name);
 	},
 
-	// show the body of an item, loading it if necessary
+	
 	expandItem : function(name, type) {
-//dojo.debug("expandItem("+name+","+type+")");
+		// summary: show the body of an item, loading it if necessary
 
 		var item = this.getItem(name);
 		item.isExpanded = true;
@@ -327,7 +396,8 @@ var ApiRef = {
 	
 
 	collapseItem : function(name, type) {
-		//dojo.debug("collapseItem("+name+","+type+")");
+		// summary: go back to the summary view of an item
+		
 		var item = this.getItem(name);
 		delete item.isExpanded;
 		
@@ -340,6 +410,23 @@ var ApiRef = {
 			this.wipeReplace(bodyEl, this.outputItemBody(item, false, type), 500, 200);
 		}
 	},
+
+
+	onTreeSelect : function(message) {
+		// summary: event called when a tree node is selected.
+		//		Shows the appropriate item.
+		
+		var item = message.node,
+			name = item.name
+		;
+		this.showItem(name);
+	},
+	
+
+	//
+	//	set/toggle application display flags:  inherited, private, deprecated, experimental
+	//
+
 
 	toggleInherited : function() {
 		this.setShowInherited(this.showInherited ? false : true);
@@ -412,16 +499,19 @@ var ApiRef = {
 	//
 	
 	getItem : function(name) {
+		// summary: return the item with a particular name
+		//	If you pass in a non-string, assumes this is a pointer to an item.
 		if (typeof name != "string") return name;
-//		if (this._debug && this.functionMap[name] == null) dojo.debug("getItem("+name+"): name not found");
 		return this.functionMap[name];
 	},
 
 	itemIsMethod : function(name) {
+		// summary: return true if the item specified is a method (and not an object, class, etc)
 		return (this.getItemType(name) == "Method");
 	},
 
 	getItemTypeString : function(name) {
+		// summary: return the type string for an item, used for debugging
 		var item = this.getItem(name);
 		if (item.typeString) return item.typeString;
 		return item.typeString = [
@@ -436,6 +526,7 @@ var ApiRef = {
 	},
 
 	getItemType : function (name, recheck) {
+		// summary: return the primary "type" of an item or item name
 		var item = this.getItem(name);
 		
 		if (item.itemType != null && recheck == null) return item.itemType;
@@ -449,27 +540,32 @@ var ApiRef = {
 	},
 	
 	getItemParserFile : function(name) {
+		// summary: return the parser file name for an item or item name
 		var item = this.getItem(name);
 		return (item ? item.parserFile : null);
 	},
 
 	getItemResource : function(name) {
+		// summary: return the resource (source) file name for an item or item name
 		var item = this.getItem(name);
 		return (item ? item.resource : null);
 	},
 
 	getItemTreeNode : function(name) {
+		// summary: return the tree node for an item or item name
 		var item = this.getItem(name);
 		return (item ? item.node : null);
 	},
 
 	getItemData : function(name) {
+		// summary: return the parser data we've already loaded for an item or item name
 		var item = this.getItem(name);
 		if (item.data) return item.data;
 		return dojo.debug("getItemData("+name+"): no data found!");
 	},
 
 	getItemMetaData : function(item, property) {
+		// summary: return the parser "meta" data (or meta data property) for an item or item name
 		if (item.data != null) {
 			for (var i = 0, datum; datum = item.data[i]; i++) {
 				if (datum.meta) {
@@ -484,7 +580,8 @@ var ApiRef = {
 		return null;
 	},
 
-	getItemDataPart : function(item, prop) {
+	getItemDataProp : function(item, prop) {
+		// summary: return item data with a particular name from the parser output
 		if (item.data != null) {
 			for (var i = 0, datum; datum = item.data[i]; i++) {
 				if (datum[prop]) return datum[prop];
@@ -493,24 +590,14 @@ var ApiRef = {
 		return null;		
 	},
 	
-	_getDataProperty : function(data, prop) {
-		if (data == null) return null;
-		for (var i = 0, datum; datum = data[i]; i++) {
-			if (datum[prop]) return datum[prop];
-			if (datum.meta && datum.meta[prop]) return datum.meta[prop];
-		}
-		return null;
-	},
 	
 	
 	//
-	//	special purpose accessors
+	//	accessors for item superclasses
 	//
-//	getItemSuperclass : function(item) {
-//		return this._getDataProperty(item.constructor ? item.constructor.data : item.data, "prototype_chain");
-//	},
 	
 	getItemSupers : function(item) {
+		// summary: return the names of the superclasses of an item
 		if (item._supers != null) return item._supers;
 		var inherits = this._getDataProperty(item.constructor ? item.constructor.data : item.data, "prototype_chain");
 		if (inherits == null) return null;
@@ -528,7 +615,19 @@ var ApiRef = {
 		return list;
 	},
 	
+	_getDataProperty : function(data, prop) {
+		// summary: internal method, returns data.prop from data object explicitly passed in
+		if (data == null) return null;
+		for (var i = 0, datum; datum = data[i]; i++) {
+			if (datum[prop]) return datum[prop];
+			if (datum.meta && datum.meta[prop]) return datum.meta[prop];
+		}
+		return null;
+	},
+
+	
 	getItemSupersProp : function(item, prop, includeItem) {
+		// summary: return data property from all of the supers of an item
 		var list = [];
 		if (includeItem == true && item[prop] != null) {
 			list.push(item[prop]);
@@ -548,22 +647,16 @@ var ApiRef = {
 	
 	
 	getItemSuperMethods : function(item) {
+		// summary: get list of methods from all superclasses of this item
 		var all = {};
 		var allNames = {};
 
 		var supers = [item.name].concat(this.getItemSupers(item));
 
 		var methodLists = this.getItemSupersProp(item, "methods", true);
-//dojo.debug(methodLists);
 		for (var i = 0, list; list = methodLists[i]; i++) {
 			var parent = this.getItem(supers[i]);
-//dojo.debug("processing " + parent.name);			
 			for (var m = 0, method; method = list[m]; m++) {
-//				if (method.name.indexOf(parent.name) != 0) {
-//dojo.debug("skipping " + method.name);
-//					continue;
-//				}
-
 				var leaf = this.getLeafName(method.name);
 				if (allNames[leaf] == null) {
 					allNames[leaf] = method;
@@ -572,13 +665,13 @@ var ApiRef = {
 			}
 		}
 		var sortedList = this._sortProperties(allNames, "array");
-//		for (var i = 0; i < sortedList.length; i++) {
-//			dojo.debug(sortedList[i].name);
-//		}
 		return sortedList;
 	},
 	
 	_sortProperties : function(obj, returnType) {
+		// summary: sort property names of an object (lowercase, descending)
+		// returnType: if "array", returns an array,
+		//				otherwise returns an object whose properties are in the proper order
 		var names = [];
 		for (var prop in obj) {
 			names.push(prop.toLowerCase() + "|"+prop);
@@ -610,25 +703,28 @@ var ApiRef = {
 	//
 	
 	getTitle : function(name) {
+		// summary: return the title (leaf name) of an item
 		var title = this.getLeafName(name);
 		if (title == "_") title = "*";
-// ITEM ISN'T DEFINED HERE... :-(
-//		if (this._debug) title += " <span class='tinyGray'>"+this.getItemTypeString(item)+"</span>";
 		return title;	
 	},
 	
 	getLeafName : function(name) {
+		// summary: return the leaf name of a.dotted.name ("name")
 		name = name.split(".");
 		return name[name.length - 1];
 	},
 	
 	getParentName : function(name) {
+		// summary: return the beginning part of a.dotted.name ("a.dotted")
 		name = name.split(".");
 		return name.slice(0, name.length - 1).join(".");
 	},
 
 	
 	getAncestors : function(name) {
+		// summary: return an array of the 'ancestors' of a.dotted.name
+		//			["a", "a.dotted"]
 		name = name.split(".");
 		if (name.length == 1) return [];
 
@@ -639,17 +735,16 @@ var ApiRef = {
 		return list;
 	},
 	
+
+
+	//
+	//	set/replace display content and messages
+	//
 	
-	showNotice : function(msg) {
-		this.setContent(msg + "<br>", true);
-	},
-	
-	clearNotice : function(msg) {
-//		this.setContent("");
-	},
 
 	setContent : function(html, el, add) {
-		if (el == null) el = "content";
+		// summary: set html of the main "content" div
+		if (el == null) el = this.defaultReferenceId;
 		el = dojo.byId(el);
 
 		if (add == true) {
@@ -661,6 +756,7 @@ var ApiRef = {
 	},
 
 	wipeReplace : function(node, newHtml, outTime, inTime) {
+		// summary: change content of a DOM node with a wipe in/out effect
 		if (outTime == null) outTime = 200;
 		if (inTime == null) inTime = 500;
 		
@@ -672,30 +768,25 @@ var ApiRef = {
 		dojo.lfx.wipeOut(node, outTime, null, replaceCallback).play();
 	},
 
-	wipeInReplace : function(node, newHtml, time) {
-		if (time == null) time = 500;
-		var replaceCallback = function() {
-			node.innerHTML = newHtml;
-		}
-		dojo.lfx.wipeIn(node, time, null, replaceCallback).play();
-	},
-
-	wipeOutReplace : function(node, newHtml, time) {
-		if (time == null) time = 500;
-		var replaceCallback = function() {
-			node.innerHTML = newHtml;
-		}
-		dojo.lfx.wipeOut(node, time, null, replaceCallback).play();
-	},
-
 	
+	showNotice : function(msg) {
+		// summary: show a notice to the user while loading, etc.
+		//	todo: make this more visually appealing
+		this.setContent(msg + "<br>", true);
+	},
+	
+	clearNotice : function(msg) {
+		// summary: clear the user notice
+//		this.setContent("");
+	},
 	
 	//
 	//	output routines
 	//
 
-	// pass an explicit type and data to output in that way
 	outputItem : function(item, showDetails, type, data) {
+		// summary: output a particular item (by name or reference)
+		// pass an explicit type to output in that manner
 		item = this.getItem(item);
 		showDetails = showDetails || (item.isExpanded == true);
 		
@@ -718,6 +809,7 @@ var ApiRef = {
 	},
 
 	outputItemContainer : function(item, type, headerHtml, bodyHtml) {
+		// summary: output the container for an item, encompassing its header and body
 		var output = ["<div id='", item.name,"-outer' class='"+type+ (type != "Method" ? " Container" : ""), "'>",
 						"<div id='", item.name,"-header-",type,"' class='", type, "Header'>",
 							headerHtml,
@@ -732,18 +824,16 @@ var ApiRef = {
 
 	
 	outputItemHeader : function(item, showDetails, type, data) {
+		// summary: output the header for an item, based on its type
 		item = this.getItem(item);
 		if (type == null) type = this.getItemType(item);
 
 		switch (type) {
 			case "Method" 		: return this.outputMethodHeader(item, showDetails, type, data);
-			
 			case "Constructor" 	: return this.outputMethodHeader(item.constructor, showDetails, type, data);
 			
-			case "Resource" 		: return this.outputResourceHeader(item, showDetails, type, data);
-			
-			case "Module" 		: return this.outputModuleHeader(item, showDetails, type, data);
-			
+			case "Resource" 	:
+			case "Module" 		:
 			case "Class"		: 		
 			case "Object" 		: return this.outputObjectHeader(item, showDetails, type, data);
 		}
@@ -753,8 +843,9 @@ var ApiRef = {
 
 	
 	outputItemBody : function(item, showDetails, type, data) {
+		// summary: output the body of an item, based on its type
+		//	note: assumes the data files has already been loaded
 		item = this.getItem(item);
-//dojo.debug("outputItemBody(",item.name,")",type,data);
 
 		if (type == null) type = this.getItemType(item);
 		if (type == "Method") {
@@ -769,17 +860,17 @@ var ApiRef = {
 		}
 
 		// TODO: if not loaded, print a message and load it
-		if (item.isLoaded != true) {
-// TODO: have a "loading" so we don't get into a loop... ?
-// this.itemParserDataIsLoaded(item) ???
-//			this.showItem(item.name, null, item.name + "-container");
-//			return this.outputClickToLoad(item);
-		}
+		// TODO: have a "loading" so we don't get into a loop... ?
+		//if (item.isLoaded != true) {
+		//		this.itemParserDataIsLoaded(item) ???
+		//		this.showItem(item.name, null, item.name + "-container");
+		//		return this.outputClickToLoad(item);
+		//}
 		
 		switch (type) {
-			case "Resource" 	: return this.outputResourceBody(item, type, data);
+			case "Resource" : return this.outputResourceBody(item, type, data);
 			
-			case "Module" 	: //return this.outputModuleBody(item, type, data);
+			case "Module" 	:
 			case "Object" 	: return this.outputObjectBody(item, type, data);
 			
 			case "Class" 	: return this.outputClassBody(item, type, data);
@@ -789,27 +880,9 @@ var ApiRef = {
 	},
 
 
-	outputModuleHeader : function(item, showDetails, type, data) {
-		return this.outputObjectHeader.apply(this, arguments);
-	},
-
-	outputResourceHeader : function(item, showDetails, type, data) {
-		return this.outputObjectHeader.apply(this, arguments);
-	},
-
 	outputObjectHeader : function(item, showDetails, type, data) {
+		// summary: output the header for an object (Class, Object, Module or Resource)
 		var output = [];
-/*		if (showDetails) {
-			output.push(
-				"<div class='toggleDisplayLink' onclick='ApiRef.togglePrivate()'>",
-					(this.showPrivate ? "(Hide Private)" : "(Show Private)"),
-				"</div>",
-				"<div class='toggleDisplayLink' onclick='ApiRef.toggleInherited()'>",
-					(this.showInherited ? "(Hide Inherited)" : "(Show Inherited)"),
-				"</div>"
-			);
-		}
-*/
 		output.push(	
 			this.outputItemExpander(item, showDetails, type, "itemHeaderLink", type),
 				": ",
@@ -819,40 +892,11 @@ var ApiRef = {
 	},
 
 
-
-	outputModuleBody : function(item, type, data) {
-		var output = [];
-
-		output.push(this.outputResources(item, type));
-
-		// if the module has "methods", output it as an object
-		if (item.methods) {
-			var headerHtml = this.outputObjectHeader(item, true, "Object");
-
-			var bodyOutput = [];
-			bodyOutput.push(this.outputItemLabel(item, "Object", "Methods"));
-			for (var i = 0, len = item.methods.length; i < len; i++) {
-				var child = item.methods[i];
-				bodyOutput.push(this.outputItem(child, false));
-			}
-			output.push(this.outputItemContainer(item, "Object", headerHtml, bodyOutput.join("")));
-		}
-
-		// output the child objects as normal objects, outside the context of the top-level object
-		if (item.children) {
-			for (var i = 0, len = item.children.length; i < len; i++) {
-				var child = item.children[i];
-				output.push(this.outputItem(child, false));
-			}
-		}
-
-		return output.join("\n");
-	},
-	
 	outputResourceBody : function(item, type, data) {
+		// summary: output body for a resource file
+		//	NOTE: I don't think this is currently being used (MOW)
 		var output = [];
 
-//dojo.debug("oPB:",item.name,this.getItemMetaData(item, "requires"));
 		output.push(this.outputRequires(item, type, this.getItemMetaData(item, "requires")));
 
 		var methods = this.getItemMetaData(item, "functions");
@@ -877,19 +921,19 @@ var ApiRef = {
 			output.push(this.outputItemLabel(item, type, "Constructor", "Resource File"));
 			output.push(this.outputItem(item, false, "Constructor", constructor));
 		}
-// TODO: other things to output here?
 		output.push(this.outputAllMethods(item, type, data));
 
 		return output.join("");
 	},
 	
 	outputObjectBody : function(item, type, data) {
+		// summary: output body for an Object
 		if (data == null) data = (item.data ? item.data[0] : null);
 		var output = [];
 
-		output.push(this.outputResources(item, type));
+		output.push(this.outputResourceFiles(item, type));
 
-		var extra = this.getItemDataPart(item, "extra");
+		var extra = this.getItemDataProp(item, "extra");
 		if (extra && extra.variables) {
 			output.push(this.outputObjectProperties(item, type, extra.variables, "Variables"));
 		}
@@ -913,12 +957,13 @@ var ApiRef = {
 	},
 
 	outputClassBody : function(item, type, data) {
+		// summary:  output body for a "Class"
 		if (data == null) data = (item.data ? item.data[0] : null);
 		var output = [];
 
-		output.push(this.outputResources(item, type));
+		output.push(this.outputResourceFiles(item, type));
 
-		var extra = this.getItemDataPart(item, "extra");
+		var extra = this.getItemDataProp(item, "extra");
 		if (extra && extra.variables) {
 			output.push(this.outputObjectProperties(item, type, extra.variables, "Variables"));
 		}
@@ -953,6 +998,7 @@ var ApiRef = {
 	},
 	
 	outputMethodList : function(item, type, list) {
+		// summary: output list of methods for an item
 		var output = [];
 		// output methods in the "all" array (which are sorted, and don't include the constructor)
 		output.push(this.outputItemLabel(item, type, "Methods"));
@@ -969,8 +1015,8 @@ var ApiRef = {
 
 	
 	outputAllMethods : function(item, type, data) {
+		// summary: output methods in the "all" array (which are sorted, and don't include the constructor)
 		var output = [];
-		// output methods in the "all" array (which are sorted, and don't include the constructor)
 		output.push(this.outputItemLabel(item, type, "Methods"));
 
 		if (item.all != null && item.all.length > 0) {
@@ -984,6 +1030,7 @@ var ApiRef = {
 	},
 
 	outputSuperMethods : function(item, type) {
+		// summary: output methods from this object and its superclasses
 		var supers = this.getItemSupers(item);
 		if (supers == null || supers.length == 0) return "";
 
@@ -1003,9 +1050,10 @@ var ApiRef = {
 	},
 	
 
-	// note: this can be called before the method has actually been loaded
-	//	we do NOT recusively do a showItem in this case, because our parent has almost certainly already done so... ???
 	outputMethodHeader : function(item, showDetails, type, data) {
+		// summary: output the header for an individual method
+		// note: this can be called before the method has actually been loaded
+		//	we do NOT recusively do a showItem in this case, because our parent has almost certainly already done so... ???
 		if (data == null) {
 			data = item.data ? item.data[0] : null;
 		}
@@ -1040,12 +1088,14 @@ var ApiRef = {
 			output.push("???)", this.outputClickToLoad(item)); 
 		}
 		output.push("</td><td>");
-		output.push(this.outputResourceList(item, type, item.resource));		
+		output.push(this.outputResourceFilesAsList(item, type, item.resource));		
 		output.push("</td></tr></table>");
 		return output.join("");
 	},
 	
 	outputMethodBody : function(item, showDetails, type, data) {
+		// summary: output the body for one particular method
+		//	outputs a summary or the full body, depending on "showDetails"
 		// TODO: we may have data from more than one resource -- figure that out here...   Context?
 		if (data == null) {
 			data = item.data ? item.data[0] : null;
@@ -1065,6 +1115,7 @@ var ApiRef = {
 	},
 
 	outputMethodSummary : function(item, type, data) {
+		// summary: output the summary only for a method
 		var output = [];
 		if (data.summary) {
 			output.push("<div class=MethodSummary>", data.summary, "</div>");
@@ -1074,11 +1125,10 @@ var ApiRef = {
 
 	
 	outputMethodDetails : function(item, type, data) {
+		// summary: output the full body of a method
 		var output = [];
 		output.push("<div class='MethodDetails'>");
 
-		// output interesting 		
-//		output.push(this.outputResources(item, type));
 		if (type != "Constructor") output.push(this.outputProperty(item, type, data.summary, "Summary"));
 		if (type != "Constructor") output.push(this.outputProperty(item, type, data.description, "Description"));
 		output.push(this.outputParameters(item, type, data.parameters));
@@ -1095,52 +1145,55 @@ var ApiRef = {
 	//	
 	
 	
-	
 	outputClickToLoad : function(item, type) {
+		// summary: output the "click to load" message for a function
 		return [" <span class='",type,"ClickToLoad itemClickToLoad' onclick=\"ApiRef.expandItem('", item.name, "')\">Click to load...</span>"].join("");
 	},
 
 
 
 	outputProperty : function(item, type, value, title) {
+		// summary: output value of a particular property of an item
 		if (value == null || value == "") return "";
 		
 		return this.outputItemLabel(item, type, title) + this.outputItemValue(item, type, value, title);
 	},
 
-	outputResources : function(item, type, resources, title) {
+	outputResourceFiles : function(item, type, resources, title) {
+		// summary: output the list of resource files for an Object
 		if (resources == null) resources = item.resource;
 		if (resources == null) return "";
 		if (title == null) title = "Defined in";
 		
 		var resourceOut = [];
 		for (var i = 0; i < resources.length; i++) {
-			resourceOut.push([" <span class='fileLink inlineIconLeft jsFileIcon' style='float:left;padding-right:10px;' onclick=\"ApiRef.openFile('", resources[i], "')\">", 
+			resourceOut.push([" <span class='fileLink inlineIconLeft jsFileIcon' style='float:left;padding-right:10px;' onclick=\"ApiRef.openSourceFile('", resources[i], "')\">", 
 				resources[i], 
 			"</span>"].join(""));
-//			resourceOut.push(this.outputItemLink(resources[i]));
 		}
 		return this.outputProperty(item, type, resourceOut.join("") + "<div style='clear:both;height:5px;'></div>", title);
 	},
 
-	outputResourceList : function(item, type, resources) {
+	outputResourceFilesAsList : function(item, type, resources) {
+		// summary: output the list of resources for a method (different presentation)
 		if (resources == null) resources = item.resource;
 		if (resources == null) return "";
 		
 		if (!dojo.lang.isArrayLike(resources)) resources = [resources];
 		var resourceOut = [];
 		for (var i = 0; i < resources.length; i++) {
-			resourceOut.push([" <div class='", type, "ResourceFile itemResourceFile inlineIconLeft jsFileIcon' onclick=\"ApiRef.openFile('", resources[i], "')\">", resources[i], "</div>"].join(""));
+			resourceOut.push([" <div class='", type, "ResourceFile itemResourceFile inlineIconLeft jsFileIcon' onclick=\"ApiRef.openSourceFile('", resources[i], "')\">", resources[i], "</div>"].join(""));
 		}
 		return resourceOut.join("");//this.outputProperty(item, type, resourceOut.join(", "), "Defined in");
 	},
 
 	outputItemLabel : function(item, type, title, rightFloat) {
-//		rightFloat = (rightFloat != null ? ["<div class='", type, "RightFloat itemRightFloat'>", rightFloat, "<div>"].join("") : "");
+		// summary: output the label for an Object or Resource, etc.
 		return ["<div class='", type, "Label itemLabel'>", title,":</div>"].join("");
 	},
 
 	outputItemValue : function(item, type, value, title) {
+		// summary: output the value for a particular item
 		return [
 			"<div class='", type, title, " item", title, " ", type,"Value'>",
 				value,
@@ -1150,6 +1203,7 @@ var ApiRef = {
 
 
 	outputObjectProperties : function(item, type, object, title) {
+		// summary: output a list of properties of an object
 		if (object == null) return "";
 		
 		var output = [];
@@ -1165,6 +1219,7 @@ var ApiRef = {
 
 
 	outputSupers : function(item, type) {
+		// summary: output the list of supers for an item
 		var supers = this.getItemSupers(item);
 		if (supers == null) return "";
 	
@@ -1179,6 +1234,7 @@ var ApiRef = {
 	},
 
 	outputRequires : function(item, type, requiresObj) {
+		// summary: output the requires for an object
 		if (requiresObj == null) return "";
 
 		var output = [];
@@ -1194,6 +1250,7 @@ var ApiRef = {
 	},
 
 	outputSrc : function(item, type, data, src) {
+		// summary: output src code for an item
 		if (src == null || src == "") return "";
 
 		// add the method signature
@@ -1213,7 +1270,7 @@ var ApiRef = {
 	},
 	
 	outputParameters : function(item, type, params, filteredList, title) {
-//dojo.debug("outputParameters():",item.name,type,params,filteredList);
+		// summary: output the list of parameters for a function
 		if (params == null) return "";
 
 		var output = [];
@@ -1222,21 +1279,22 @@ var ApiRef = {
 
 		if (filteredList == null) {
 			for (var name in params) {
-				output.push(this.outputParameter(params[name], name));
+				output.push(this._outputParameter(params[name], name));
 			}
 		} else {
 			for (var i = 0; i < filteredList.length; i++) {
 				var name = filteredList[i];
-				output.push(this.outputParameter(params[name], name));
+				output.push(this._outputParameter(params[name], name));
 			}
 		}
 		output.push("</table>");
-//dojo.debug(output.join("\n"));
+
 		if (title == null) title = "Parameters";
 		return this.outputProperty(item, type, output.join(""), title);
 	},
 	
-	outputParameter : function(param, name) {
+	_outputParameter : function(param, name) {
+		// summary: output a single parameter
 		var isPrivate = name.indexOf("_") == 0;
 		if (isPrivate && !this.showPrivate) {
 			if (this._debug) dojo.debug("skipping private parameter " + name);
@@ -1274,6 +1332,7 @@ var ApiRef = {
 	
 	
 	outputProtoVariables : function(item, type, protoVars) {
+		// summary: output the protoytpe variables for an item
 		if (protoVars == null) return "";
 		
 		var output = [];
@@ -1302,6 +1361,7 @@ var ApiRef = {
 
 	
 	outputItemExpander : function(item, isOpen, type, className, title) {
+		// summary: output the expand/collapse link for an item or method
 		if (type == null) type = this.getItemType(item);
 		if (title == null) title = item.name;
 		if (className == null) className = "itemLink";
@@ -1312,16 +1372,12 @@ var ApiRef = {
 	},
 
 	outputItemLink : function(name, type, linkMethod, className, title) {
+		// summary: output an item name as a link (generally to show the item)
 		if (name == null) return "";
 		if (typeof name != "string") {
 			if (name.length) {
 				// TODO: make this output a list of names
 				name = name[0];
-//				var output = [];
-//				for (var i = 0, it; it = name[i]; it++) {
-//					output.push(this.outputItemLink(it, type, linkMethod, className, title));
-//				}
-//				return output.join(", ");
 			} else {
 				// else assume it is an item, use item.name
 				name = name.name;
@@ -1353,6 +1409,7 @@ var ApiRef = {
 	},
 	
 	prettyPrintJs : function(src) {
+		// summary: pretty print some JS source
 		src = src.split("\t").join("  ");
 		src = dojo.string.escape("html", src);
 		var targets = this._jsColorizeTargets;
@@ -1365,7 +1422,6 @@ var ApiRef = {
 		return src;
 	},
 	_jsColorizeTargets : [
-//		{re:/\t/g, replacement:"    "},
 		{re:/'(.*?)'/g, replacement:"<span class='sourceString'>'$1'</span>"},
 		{re:/"(.*?)"/g, replacement:"<span class='sourceString'>\"$1\"</span>"},
 		{re:/(dojo[\.\w]*)/g, replacement:"<span class='sourceDojoRef' onclick=\"ApiRef.showItem('$1')\">$1</span>"},
@@ -1375,6 +1431,7 @@ var ApiRef = {
 	
 	
 	filterParams : function (params, filter) {
+		// summary: filter an object, returning only items for which the filter function returns true
 		var output = [];
 		for (var name in params) {
 			if (filter(name) == true) output.push(name);
@@ -1383,96 +1440,39 @@ var ApiRef = {
 		return output;
 	},
 	
-	
-	
-	//
-	//	event handling
-	//
-	
-	//
-	//	set up the search combobox
-	//
-	initSearchBox : function() {
-		var searchBox = this.searchBox = dojo.widget.byId("searchBox");
-		
-		var provider = searchBox.dataProvider;
-		// munge the functionlist into [  [name,name], ... ]
-		var optionList = [];
-		for (var i = 0, name; name = this.functionList[i]; i++) {
-			optionList[i] = [name, name];
-		}
-		// and assign this as the data for the searchBox provider
-		provider.setData(optionList);
 
-/*		// override the startSearch routine to look at local data rather than going to a server page
-		provider.startSearch = function(searchStr) {
-			var searchLength = searchStr.length;
-			var searchType = "SUBSTRING";
-			if("dojo.".match(new RegExp("^" + searchStr)) || searchStr.match(new RegExp("^dojo\."))){
-				var searchType = "STARTSTRING";
-				searchLength -= 4;
-			}
-			var searchBox = dojo.widget.byId("searchBox");
-//			searchBox.downArrowNode.style.visibility = "hidden";
-//			if(searchLength > 2) {
-//				searchBox.downArrowNode.style.visibility = "visible";
-//			}
-			this._performSearch(searchStr, searchType);			
-		}
 
-		// set up the "selectOption" event to run the search		
-		dojo.event.connect(searchBox, "selectOption", 
-			function(event) {
-				var name = ApiRef.getSearchBoxValue();
-				ApiRef.showItem(name);
-			}
-		);
-*/
-		
-//dojo.debug("Done initializing searchBox");
+	//
+	//	Initialization stuff
+	//
+
+
+
+	initObjectList : function(function_names) {
+		// summary: Initialize the list of function/object names from the function_names file
+		this.startProfile("initObjectList");
+		this.resourceMap = function_names;
+		try {
+			// make the map of nodes, which also figures out their types
+			this.showNotice("Parsing API index...");
+			this.initFunctionMap();	
+
+			// hook the function items up into an tree, that we will use as nodes in the tree widget
+			this.initFunctionTree();
+
+		} catch (error) {
+			dojo.debug(error);
+		}
+		this.endProfile("initObjectList");
 	},
 	
-	getSearchBoxValue : function() {
-		// summary:  return the value currently displayed by the search box
-		return this.searchBox.textInputNode.value;
-	},
-		
-	setSearchBoxValue : function(value) {
-		// summary: set the value currently displayed by the search box
-		this.searchBox.textInputNode.value = value;
-	},
 		
 
 	//
 	//	routines to build the tree of objects
 	//
 	
-	
-	initTreeWidget : function(resourceMap) {
-		this.startProfile("initTreeWidget");
-		this.resourceMap = resourceMap;
-	
-		try {
-			// make the map of nodes, which also figures out their types
-			this.showNotice("Parsing API index...");
-			this.buildFunctionMap();
-	
-			this.showNotice("Creating API Tree...");
-			// hook the function items up into an tree, that we will use as nodes in the tree widget
-			this.makeFunctionTree();
-			this.buildTreeWidget();
-			
-			
-		} catch (error) {
-			dojo.debug(error);
-		}
-
-		this.endProfile("initTreeWidget");
-		
-		this.onAfterInit();
-	},
-
-	buildFunctionMap : function() {
+	initFunctionMap : function() {
 		// summary: Build the data structures from the "resourceMap" file needed to display things.
 		// description:
 		//	Populates two objects:
@@ -1482,15 +1482,6 @@ var ApiRef = {
 		//				.parserFile	: output/local/json file it comes from
 		//				.resource	: high-level object it can be found in (ie: for 'nested classes' listed under superclass)
 
-		this.startProfile("buildFunctionMap");
-
-		this.initFunctionMap();		
-		this.sortFunctionMap();
-
-		this.endProfile("buildFunctionMap");
-	},
-	
-	initFunctionMap : function() {
 		this.startProfile("initFunctionMap");
 
 		var resourceMap = this.resourceMap;
@@ -1524,12 +1515,16 @@ var ApiRef = {
 				continue;
 			}
 		}
+
+		this.sortFunctionMap();
+		
 		this.endProfile("initFunctionMap");	
 	},
 
 	addFunctionToMap : function(typeFlag, name, resource, parserFile) {
+		// summary: add a particular item to the function map
 		// NOTE: this adds the items to the map in lower case, to speed sorting
-		//	converted back to mixed-case in buildFunctionMap by looking at node.name
+		//	converted back to mixed-case in initFunctionMap by looking at node.name
 		if (!name) return;
 
 		var hasCurlyBraces = name.match(/{(..*)}/);
@@ -1543,7 +1538,7 @@ var ApiRef = {
 			this.functionMap[name] = resource;
 			return;
 		}
-
+		
 		// make sure the ancestors have been added
 		var ancestors = this.getAncestors(name),
 			lastAncestor = null
@@ -1606,16 +1601,39 @@ var ApiRef = {
 		if (hasCurlyBraces) item.isCurly = "{";	
 	},
 	
-	_addResource : function(resourceList, resource) {
+
+	_looksLikeAClass : function (name) {
+		// summary: return true if this item appears to be constructable
+		if (name.constructor == String) name = name.split(".");
+		var firstChar = name[name.length - 1].charAt(0);
+		return (firstChar != "_" && firstChar.toLowerCase() != firstChar  && isNaN(parseInt(firstChar)));
+	},
+
+	_addResource : function (resourceList, resource) {
+		// summary: add a resource to the resource list if it is not already present
 		for (var i = 0, it; it = resourceList[i]; i++) {
 			if (it == resource) return;
 		}
 		resourceList.push(resource);
 	},
 
+	_setUpClass : function (item) {
+		// summary: set up a class object
+		item.isConstructable = "N";
+		item.constructor = {
+			name : item.name,
+			title : item.title,
+			resource : item.resource,
+			parserFile : item.parserFile,
+			parentName : item.parentName,
+			isMethod : "F"
+		}
+	},
+
+	
 
 	sortFunctionMap : function() {
-		// summary: Sort names of all functions in the unsortedMap and sort them
+		// summary: Sort the functionMap, case insensitive
 		this.endProfile("sortFunctionMap");
 		
 		var unsortedMap = this.functionMap;
@@ -1629,7 +1647,7 @@ var ApiRef = {
 			sortFnList.push(fn.toLowerCase() + " " + fn);
 		}
 		this.endProfile("sortFunctionMap:getList");
-		if (this._debug) dojo.debug("buildFunctionMap(): found " + sortFnList.length + " items");
+		if (this._debug) dojo.debug("initFunctionMap(): found " + sortFnList.length + " items");
 
 
 		this.startProfile("sortFunctionMap:sort");
@@ -1657,11 +1675,10 @@ var ApiRef = {
 		this.endProfile("sortFunctionMap");
 	},
 	
-//	_treeObjectCount : 0,
-	makeFunctionTree : function() {
+	initFunctionTree : function() {
 		// summary: Make the function tree from the sorted list of functions.
 		
-		this.startProfile("makeFunctionTree");
+		this.startProfile("initFunctionTree");
 		var sortedList = this.functionList;
 		var sortedMap = this.functionMap;
 
@@ -1688,7 +1705,6 @@ var ApiRef = {
 				}
 				
 			} else if (item.isConstructable || item.hasChildren) {
-//this._treeObjectCount++;
 				var objParent = (item.parentName ? sortedMap[item.parentName] : null);
 				if (objParent) {
 					if (objParent.children == null) objParent.children = [];
@@ -1703,32 +1719,14 @@ var ApiRef = {
 				}
 			}
 		}
-//dojo.debug("put " + this._treeObjectCount + " things in the tree");
-		this.endProfile("makeFunctionTree");	
+		this.endProfile("initFunctionTree");	
 	},
 
 	
-	_looksLikeAClass : function(name) {
-		if (name.constructor == String) name = name.split(".");
-		var firstChar = name[name.length - 1].charAt(0);
-		return (firstChar != "_" && firstChar.toLowerCase() != firstChar  && isNaN(parseInt(firstChar)));
-	},
-	
-	_setUpClass : function(item) {
-		item.isConstructable = "N";
-		item.constructor = {
-			name : item.name,
-			title : item.title,
-			resource : item.resource,
-			parserFile : item.parserFile,
-			parentName : item.parentName,
-			isMethod : "F"
-		}
-	},
-	
 
-	buildTreeWidget : function() {
-		this.startProfile("buildTreeWidget");
+	initTreeWidget : function() {
+		// summary: initialize the tree widget and its subsidiary classes
+		this.startProfile("initTreeWidget");
 		
 		// create the tree and controller
 		var controller = this.treeController = dojo.widget.createWidget("TreeBasicControllerV3");
@@ -1750,7 +1748,87 @@ var ApiRef = {
 		displayEl.innerHTML = "";
 		displayEl.appendChild(treeWidget.domNode);
 		
-		this.endProfile("buildTreeWidget");
+		this.endProfile("initTreeWidget");
+	},
+
+
+
+	getInitialSearch : function() {
+		// summary: get the initial search from the hash or cookie, defaults to "dojo"
+		var initialItem = "dojo";
+		var hash = window.location.hash;
+		if (hash != null && hash.charAt(0) == "#") {
+			// strip off the leading "#"
+			initialItem = hash.substr(1);
+		} else {
+			var cookieItem = dojo.io.cookie.getCookie("ApiRef_lastItem");
+			if (cookieItem != null) initialItem = cookieItem;
+		}
+		if (initialItem == null) initialItem = "dojo";
+
+		// split into "name:type"
+		initialItem = initialItem.split(":");
+
+		// set the initial page state to the cookie sate
+		dojo.undo.browser.setInitialState(new ApiRef.BookmarkState(initialItem[0], initialItem[1]));
+
+		// call showItem, but don't record the state since we just setInitialState
+		ApiRef.showItem(initialItem[0], initialItem[1], null, false);	
+	},
+
+	
+	//
+	// search combobox 
+	//
+	initSearchBox : function() {	
+		// summary: initialize the search comboBox
+		var searchBox = this.searchBox = dojo.widget.byId("searchBox");
+		
+		var provider = searchBox.dataProvider;
+		// munge the functionlist into [  [name,name], ... ]
+		var optionList = [];
+		for (var i = 0, name; name = this.functionList[i]; i++) {
+			optionList[i] = [name, name];
+		}
+		// and assign this as the data for the searchBox provider
+		provider.setData(optionList);
+
+/*		// override the startSearch routine to look at local data rather than going to a server page
+		provider.startSearch = function(searchStr) {
+			var searchLength = searchStr.length;
+			var searchType = "SUBSTRING";
+			if("dojo.".match(new RegExp("^" + searchStr)) || searchStr.match(new RegExp("^dojo\."))){
+				var searchType = "STARTSTRING";
+				searchLength -= 4;
+			}
+			var searchBox = dojo.widget.byId("searchBox");
+//			searchBox.downArrowNode.style.visibility = "hidden";
+//			if(searchLength > 2) {
+//				searchBox.downArrowNode.style.visibility = "visible";
+//			}
+			this._performSearch(searchStr, searchType);			
+		}
+
+		// set up the "selectOption" event to run the search		
+		dojo.event.connect(searchBox, "selectOption", 
+			function(event) {
+				var name = ApiRef.getSearchBoxValue();
+				ApiRef.showItem(name);
+			}
+		);
+*/
+		
+//dojo.debug("Done initializing searchBox");
+	},
+	
+	getSearchBoxValue : function() {
+		// summary:  return the value currently displayed by the search box
+		return this.searchBox.textInputNode.value;
+	},
+		
+	setSearchBoxValue : function(value) {
+		// summary: set the value currently displayed by the search box
+		this.searchBox.textInputNode.value = value;
 	},
 
 	
@@ -1805,7 +1883,7 @@ var ApiRef = {
 			var map = this.functionMap;	
 		}
 
-		var fieldList = ["type","parentName","parserFile","resource"]
+		var fieldList = ["itemType","type","parentName","parserFile","resource"]
 			getRowClassFn = function(prop, item) {
 				var type = ApiRef.getItemTypeString(item);
 				item.type = "<tt>"+type+"</tt>";
@@ -1885,6 +1963,7 @@ var ApiRef = {
 //
 //	back-forward state
 //
+
 // NOTE: declaring this inline below was hosing safari
 var fn = function init(name, type) {
 	//dojo.debug("CREATING STATE: ", this.name, this.type);
@@ -1910,7 +1989,6 @@ dojo.lang.declare(
 );
 
 
-dojo.addOnLoad(dojo.lang.hitch(ApiRef, ApiRef.init));
 
 
 // mix in the profiling helper code
@@ -2021,14 +2099,15 @@ ApiRef.objectToTable = function(object, outputFields, getRowClassFn) {
 	return tableOutput.join("");
 }
 
-
+/*
 // hack up ComoboBox._handleKeyEvents to make return and tab do the same thing
 // I'm sure this could be done with aspect oriented programming, but I don't know how to do it...
 dojo.widget.ComboBox.prototype.__handleKeyEvents = dojo.widget.ComboBox.prototype._handleKeyEvents;
-dojo.widget.ComboBox.prototype._handleKeyEvents = function(/*Event*/ evt){
+dojo.widget.ComboBox.prototype._handleKeyEvents = function(evt){
 	var key = evt.key;
 	if (key == dojo.event.browser.keys.KEY_ENTER) {
 		evt.key = dojo.event.browser.keys.KEY_TAB;
 	}
 	return this.__handleKeyEvents(evt);
 }
+*/
