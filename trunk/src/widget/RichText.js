@@ -1501,6 +1501,7 @@ dojo.widget.defineWidget(
 				this.editNode.innerHTML = html;
 			}else if((this.window && this.window.getSelection) || (this.document && this.document.selection)){ // Moz/IE
 				this.execCommand("selectall");
+				if(dojo.render.html.moz && !html){ html = "&nbsp;" }
 				this.execCommand("inserthtml", html);
 			}
 		},
