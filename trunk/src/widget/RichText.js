@@ -923,8 +923,8 @@ dojo.widget.defineWidget(
 				var handlers = this._keyHandlers[e.key], i = 0, handler;
 				while (handler = handlers[i++]) {
 					if (modifiers == handler.modifiers) {
-						handler.handler.call(this);
 						e.preventDefault();
+						handler.handler.call(this);
 						break;
 					}
 				}
