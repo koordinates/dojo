@@ -113,11 +113,13 @@ dojo.declare(
 				b.appendChild(this.shared.bg);
 				this.setBackgroundColor(this.bgColor);
 				this.shared.bgIframe = new dojo.html.BackgroundIframe();
-				with(this.shared.bgIframe.iframe.style){
-					position = "absolute";
-					left = top = "0px";
-					zIndex = 90;
-					display = "none";
+                if(this.shared.bgIframe.iframe){
+					with(this.shared.bgIframe.iframe.style){
+						position = "absolute";
+						left = top = "0px";
+						zIndex = 90;
+						display = "none";
+					}
 				}
 
 				if(this.closeOnBackgroundClick){
@@ -189,7 +191,9 @@ dojo.declare(
 		_showBackground: function() {
 			if(this.bgOpacity > 0) {
 				this.shared.bg.style.display = "block";
-				this.shared.bgIframe.iframe.style.display = "block";
+				if(this.shared.bgIframe.iframe){
+					this.shared.bgIframe.iframe.style.display = "block";
+				}
 			}
 		},
 
@@ -275,7 +279,9 @@ dojo.declare(
 
 			this.shared.bg.style.display = "none";
 			this.shared.bg.style.width = this.shared.bg.style.height = "1px";
-			this.shared.bgIframe.iframe.style.display = "none";
+            if(this.shared.bgIframe.iframe){
+				this.shared.bgIframe.iframe.style.display = "none";
+			}
 	
 			dojo.event.disconnect(document.documentElement, "onkey", this, "_onKey");
 			if (this._scrollConnected){
