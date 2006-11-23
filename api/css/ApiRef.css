@@ -1,9 +1,9 @@
-BODY {
-	margin:0px;
+* {
+	font-size:12px;
 }
 
-BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT { 
-	font-family:sans-serif; 
+BODY {
+	margin:0px;
 }
 
 /* Nest these inside each other to get content that scrolls cleanly if necessary */
@@ -80,7 +80,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 	height:28px;
 	padding:5px;
 	font-weight:bold;
-	font-size:x-large;
+	font-size:1.5em;
 	line-height:23px;
 	margin:0px;
 }
@@ -116,7 +116,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 
 	padding:2px 5px 5px 5px;
 	font-weight:bold;
-	font-size:large;
+	font-size:1.2em;
 	line-height:150%;
 	margin:0px;
 	
@@ -135,10 +135,13 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .PackageValue,
 .ClassValue,
 .ObjectValue {
-	font-size:smaller;
+	font-size:.75em;
 	margin-left:10px;
 }
 
+.itemHeaderLink {
+	font-weight:bold;
+}
 
 .fileLink,
 .itemLink,
@@ -163,7 +166,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 
 
 .toggleDisplayLink {
-	font-size:smaller;
+	font-size:.75em;
 	font-weight:normal;
 	margin-right:5px;
 	line-height:19px;
@@ -176,6 +179,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .itemLinkCollapsed, .itemLinkExpanded,
 .itemHeaderLinkCollapsed, .itemHeaderLinkExpanded {
 	background-repeat:no-repeat;
+	display:inline-block;
 	padding-left:17px;
 }
 
@@ -196,7 +200,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .PackageHeader  .itemHeaderLink,
 .ClassHeader  .itemHeaderLink,
 .ObjectHeader  .itemHeaderLink {
-	background-position:0% 75%;
+	background-position:0% 80%;
 }
 
 .PackageHeader .icon {
@@ -225,7 +229,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 
 .itemRequires {
 	margin-left:30px;
-	font-size:smaller;
+	font-size:.75em;
 }
 
 .Method,
@@ -250,17 +254,17 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 
 .MethodSummary,
 .ConstructorSummary {
-	font-size:small;
+	font-size:.9em;
 }
 
 .MethodDetails,
 .ConstructorDetails {
-	font-size: small;
+	font-size: .9em;
 }
 
 .Method .itemLink,
 .Constructor .itemLink {
-	background-position:0px -1px;
+	background-position:0px -3px;
 }
 
 .MethodHeaderTable {
@@ -287,7 +291,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .itemResourceFile {
 	float:right;
 	text-align:right;
-	font-size:small;
+	font-size:.9em;
 	padding:2px;
 	padding-right:10px;
 	margin-left:10px;
@@ -306,20 +310,22 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 
 .MethodValue,
 .ConstructorValue {
-	font-size: small;
+	font-size: .9em;
 	padding-left:20px;
 }
 
 
+
+PRE,
 .MethodSource,
 .ConstructorSource, 
 .sourceKeyword,
 .sourceString,
 .sourceDojoRef,
-.sourceComment {
-	white-space:pre;
+.sourceComment{
 	font-family:monospace;
-	font-size:small;
+	white-space:pre;
+	font-size:11px;
 }
 .sourceKeyword {
 	color:darkblue;
@@ -346,13 +352,13 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .MethodSummaryContainer,
 .MethodDescription {
 	color:#666666;
-	font-size:small;
+	font-size:.9em;
 	margin:2px 10px 4px 10px;
 }
 
 .emptyMethods {
 	font-style:italic;
-	font-size:small;
+	font-size:.9em;
 	color:#666666;
 }
 
@@ -373,7 +379,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 }
 
 .param {
-	font-size:small;
+	font-size:.9em;
 }
 
 .paramName,
@@ -382,7 +388,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .paramHeader,
 .paramProtected,
 .paramOptional {
-	font-size:small;
+	font-size:.9em;
 }
 .paramHeader {
 	font-weight:bold;
@@ -407,12 +413,12 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 	font-weight:bold;
 }
 .stripe .smallLabel {
-	font-size:smaller;
+	font-size:.75em;
 	color
 }
 .searchBox {
 	width:220px;
-	font-size:small;
+	font-size:.9em;
 	padding-left:3px;
 	font-weight:normal;
 }
@@ -421,7 +427,7 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 .debugMenu {
 	border:1px solid;
 	border-color:#666666 #eeeeee #eeeeee #666666;
-	font-size:small;
+	font-size:.9em;
 	margin-right:5px;
 	font-weight:normal;
 }
@@ -440,14 +446,14 @@ BODY, DIV, P, SPAN, TD, LI, INPUT, SELECT {
 }
 
 .loadingPrompt {
-	font-size:x-large;
+	font-size:1.5em;
 	font-weight:bold;
 	padding:20px;
 }
 
 .tiny,
 .tinyGray {
-	font-size:x-small;
+	font-size:x-.9em;
 }
 .tinyGray {
 	color:#cccccc;
@@ -497,7 +503,7 @@ img.dojoComboBox {
 
 
 .objectOutput {
-	font-size:x-small;
+	font-size:x-.9em;
 }
 
 
