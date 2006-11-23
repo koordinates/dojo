@@ -109,16 +109,19 @@ dojo.declare(
 					zIndex = 998;
 					display = "none";
 				}
-				this.setBackgroundColor(this.bgColor);
+
 				b.appendChild(this.shared.bg);
-				this.shared.bgIframe = new dojo.html.BackgroundIframe(this.shared.bg);
+				this.setBackgroundColor(this.bgColor);
+				this.shared.bgIframe = new dojo.html.BackgroundIframe();
+				with(this.shared.bgIframe.iframe.style){
+					position = "absolute";
+					left = top = "0px";
+					zIndex = 90;
+					display = "none";
+				}
 
 				if(this.closeOnBackgroundClick){
-					// on IE6 the click events to close the dialog (when there is no assigned close button)
-					// go the the iframe rather than the dialogUnderlay
-					var onClickCatcher = this.shared.bgIframe.iframe ? 
-						this.shared.bgIframe.iframe.contentWindow.document : this.shared.bg;
-					dojo.event.kwConnect({srcObj: onClickCatcher, srcFunc: "onclick",
+					dojo.event.kwConnect({srcObj: this.shared.bg, srcFunc: "onclick",
 						adviceObj: this, adviceFunc: "onBackgroundClick", once: true});
 				}
 			}
@@ -179,12 +182,14 @@ dojo.declare(
 				var viewport = dojo.html.getViewport();
 				if (viewport.width != w) { this.shared.bg.style.width = viewport.width + "px"; }
 				if (viewport.height != h) { this.shared.bg.style.height = viewport.height + "px"; }
+				this.shared.bgIframe.size(this.shared.bg);
 			}
 		},
 
 		_showBackground: function() {
 			if(this.bgOpacity > 0) {
 				this.shared.bg.style.display = "block";
+				this.shared.bgIframe.iframe.style.display = "block";
 			}
 		},
 
@@ -270,7 +275,8 @@ dojo.declare(
 
 			this.shared.bg.style.display = "none";
 			this.shared.bg.style.width = this.shared.bg.style.height = "1px";
-
+			this.shared.bgIframe.iframe.style.display = "none";
+	
 			dojo.event.disconnect(document.documentElement, "onkey", this, "_onKey");
 			if (this._scrollConnected){
 				this._scrollConnected = false;
