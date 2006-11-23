@@ -21,6 +21,13 @@ dojo.declare("dojo.widget.Editor2ToolbarColorPaletteButton", dojo.widget.Editor2
 			dojo.event.connect(this._dropdown, "close", this, 'enableToolbarItem');
 		}
 	},
+	enableToolbarItem: function(){
+		dojo.widget.Editor2ToolbarButton.prototype.enableToolbarItem.call(this);
+	},
+
+	disableToolbarItem: function(){
+		dojo.widget.Editor2ToolbarButton.prototype.disableToolbarItem.call(this);
+	},
 	setColor: function(color){
 		this._dropdown.close();
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
