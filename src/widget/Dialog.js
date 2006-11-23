@@ -251,10 +251,14 @@ dojo.declare(
 			this._sizeBackground();
 			this._showBackground();
 			this._fromTrap = true; 
+
 			// set timeout to allow the browser to render dialog 
 			setTimeout(dojo.lang.hitch(this, function(){
-				this.tabStart.focus();
+				try{
+					this.tabStart.focus();
+				}catch(e){}
 			}), 50);
+
 		},
 
 		hideModalDialog: function(){
