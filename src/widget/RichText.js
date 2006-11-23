@@ -230,7 +230,7 @@ dojo.widget.defineWidget(
 				// this.domNode.innerHTML = html;
 
 				if(this.textarea.form){
-					dojo.event.connect(this.textarea.form, "onsubmit",
+					dojo.event.connect('before', this.textarea.form, "onsubmit",
 						// FIXME: should we be calling close() here instead?
 						dojo.lang.hitch(this, function(){
 							this.textarea.value = this.getEditorContent();
@@ -923,8 +923,8 @@ dojo.widget.defineWidget(
 				var handlers = this._keyHandlers[e.key], i = 0, handler;
 				while (handler = handlers[i++]) {
 					if (modifiers == handler.modifiers) {
-						handler.handler.call(this);
 						e.preventDefault();
+						handler.handler.call(this);
 						break;
 					}
 				}
@@ -1501,6 +1501,7 @@ dojo.widget.defineWidget(
 				this.editNode.innerHTML = html;
 			}else if((this.window && this.window.getSelection) || (this.document && this.document.selection)){ // Moz/IE
 				this.execCommand("selectall");
+				if(dojo.render.html.moz && !html){ html = "&nbsp;" }
 				this.execCommand("inserthtml", html);
 			}
 		},
