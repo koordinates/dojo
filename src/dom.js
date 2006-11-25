@@ -187,7 +187,7 @@ dojo.dom.replaceNode = function(/*Element*/node, /*Element*/newNode){
 	//		replaces node with newNode and returns a reference to the removed node
 	if(dojo.render.html.ie){
 		node.parentNode.insertBefore(newNode, node);
-		return dojo.dom.destroyNode(node); // Node
+		return dojo.dom.removeNode(node); // Node
 	}else{
 		return node.parentNode.replaceChild(newNode, node); // Node
 	}
