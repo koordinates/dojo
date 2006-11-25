@@ -72,7 +72,7 @@ dojo.extend(dojo.charting.Series, {
 		}
 
 		//	sort by the x axis, if available.
-		if(typeof(ret[0].x) != "undefined"){
+		if(ret.length>0 && typeof(ret[0].x) != "undefined"){
 			ret.sort(function(a,b){
 				if(a.x > b.x) return 1;
 				if(a.x < b.x) return -1;
