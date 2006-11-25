@@ -69,6 +69,7 @@ dojo.extend(dojo.charting.Axis, {
 	},
 	initializeLabels: function(){
 		//	Translate the labels if needed.
+		this._labels = [];	//	what we really use to draw things.
 		if(this.labels.length == 0){
 			this.showLabels = false;
 			this.showLines = false;
