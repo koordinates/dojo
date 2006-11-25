@@ -244,6 +244,7 @@ dojo.dom._discardElement = function(element){
 	// move the element to the garbage bin
 	garbageBin.appendChild(element);
 	garbageBin.innerHTML = '';
+	element = null;
 }
 
 dojo.dom.getAncestors = function(/*Node*/node, /*function?*/filterFunction, /*boolean?*/returnFirstHit){
@@ -449,37 +450,27 @@ dojo.dom.insertAtPosition = function(/*Node*/node, /*Node*/ref, /*string*/positi
 dojo.dom.insertAtIndex = function(/*Node*/node, /*Element*/containingNode, /*number*/insertionIndex){
 	//	summary:
 	//		insert node into child nodes nodelist of containingNode at
-	//		insertionIndex.
+	//		insertionIndex. insertionIndex should be between 0 and 
+	//		the number of the childNodes in containingNode. insertionIndex
+	//		specifys after how many childNodes in containingNode the node
+	//		shall be inserted. If 0 is given, node will be appended to 
+	//		containingNode.
 	var siblingNodes = containingNode.childNodes;
 
 	// if there aren't any kids yet, just add it to the beginning
 
-	if (!siblingNodes.length){
+	if (!siblingNodes.length || siblingNodes.length == insertionIndex){
 		containingNode.appendChild(node);
 		return true;	//	boolean
 	}
 
+	if(insertionIndex == 0){
+		return dojo.dom.prependChild(node, containingNode);	//	boolean
+	}
 	// otherwise we need to walk the childNodes
 	// and find our spot
 
-	var after = null;
-
-	for(var i=0; i<siblingNodes.length; i++){
-
-		var sibling_index = siblingNodes.item(i)["getAttribute"] ? parseInt(siblingNodes.item(i).getAttribute("dojoinsertionindex")) : -1;
-
-		if (sibling_index < insertionIndex){
-			after = siblingNodes.item(i);
-		}
-	}
-
-	if (after){
-		// add it after the node in {after}
-		return dojo.dom.insertAfter(node, after);	//	boolean
-	}else{
-		// add it to the start
-		return dojo.dom.insertBefore(node, siblingNodes.item(0));	//	boolean
-	}
+	return dojo.dom.insertAfter(node, siblingNodes[insertionIndex-1]);	//	boolean
 }
 	
 dojo.dom.textContent = function(/*Node*/node, /*string*/text){
