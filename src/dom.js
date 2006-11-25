@@ -178,7 +178,7 @@ dojo.dom.removeChildren = function(/*Element*/node){
 	//	summary:
 	//		removes all children from node and returns the count of children removed.
 	var count = node.childNodes.length;
-	while(node.hasChildNodes()){ dojo.dom.removeNode(node.firstChild); }
+	while(node.hasChildNodes()){ dojo.dom.destroyNode(node.firstChild); }
 	return count; // int
 }
 
@@ -187,64 +187,34 @@ dojo.dom.replaceNode = function(/*Element*/node, /*Element*/newNode){
 	//		replaces node with newNode and returns a reference to the removed node
 	if(dojo.render.html.ie){
 		node.parentNode.insertBefore(newNode, node);
-		return dojo.dom.removeNode(node); // Node
+		return dojo.dom.destroyNode(node); // Node
 	}else{
 		return node.parentNode.replaceChild(newNode, node); // Node
 	}
 }
 
-dojo.dom._ieRemovedNodes = [];
+dojo.dom.destroyNode = function(/*Node*/node){
+	// summary:
+	//		destory a node (it can not be used any more). For IE, this is the
+	//		right function to call to prevent memory leaks. While for other
+	//		browsers, this is identical to dojo.dom.removeNode
+	node = dojo.dom.removeNode(node);
+	if(dojo.render.html.ie){
+		node.outerHTML=''; //prevent ugly IE mem leak
+	}
+}
 
-dojo.dom.removeNode = function(/*Node*/node, /*Boolean*/clobber){
-	//	summary:
+dojo.dom.removeNode = function(/*Node*/node){
+	// summary:
 	//		if node has a parent, removes node from parent and returns a
 	//		reference to the removed child.
 	//	node:
 	//		the node to remove from its parent.
-	//	clobber:
-	//		if in an HTML environment and true, this variable ensures that
-	//		potential leaks are handled correctly.  The node may no longer
-	//		be usable and a value of 'null' will be returned.
 
 	if(node && node.parentNode){
-		try{
-			if(clobber && dojo.evalObjPath("dojo.event.browser.clean", false)){
-				dojo.event.browser.clean(node);
-			}
-		}catch(e){ /* squelch */ }
-
-		if(dojo.render.html.ie){
-			if(clobber){
-				dojo.dom._discardElement(node);
-			}else{
-				// defer until page unload so that we can continue to use 'node'
-				dojo.dom._ieRemovedNodes.push(node);
-			}
-		}
-
-		if(clobber){
-			return null; // null
-		}
-
 		// return a ref to the removed child
-		return node.parentNode.removeChild(node); // Node
+		return node.parentNode.removeChild(node); //Node
 	}
-}
-
-dojo.dom._discardElement = function(element){
-	// summary: workaround for IE leak recommended in ticket #1727 by schallm
-	var garbageBin = document.getElementById('IELeakGarbageBin');
-	if (!garbageBin){
-		garbageBin = document.createElement('DIV');
-		garbageBin.id = 'IELeakGarbageBin';
-		garbageBin.style.display = 'none';
-		document.body.appendChild(garbageBin);
-	}
-
-	// move the element to the garbage bin
-	garbageBin.appendChild(element);
-	garbageBin.innerHTML = '';
-	element = null;
 }
 
 dojo.dom.getAncestors = function(/*Node*/node, /*function?*/filterFunction, /*boolean?*/returnFirstHit){

@@ -494,6 +494,11 @@ dojo.widget.defineWidget(
 				}
 			}
 			return days[dateObj.getDay()]; // Number: 0..6 where 0=Sunday
+		},
+
+		destroy: function(){
+			dojo.widget.DatePicker.superclass.destroy.apply(this, arguments);
+			dojo.html.destroyNode(this.weekTemplate);
 		}
 	}
 );
