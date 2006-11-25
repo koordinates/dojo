@@ -13,6 +13,7 @@ dojo.charting.Axis = function(/* string? */label, /* string? */scale, /* array? 
 	this.showTicks = false;		//	if you want tick marks on the axis.
 	this.range = { upper : 0, lower : 0 };	//	range of individual axis.
 	this.origin = "min"; 			//	this can be any number, "min" or "max". min/max is translated on init.
+	this._origin = null;		//	this is the original origin, we preserve on init.
 
 	this.labels = labels || [];
 	this._labels = [];	//	what we really use to draw things.
@@ -51,12 +52,16 @@ dojo.extend(dojo.charting.Axis, {
 		}
 	},
 	initializeOrigin: function(drawAgainst, plane){
+		if(this._origin == null){
+			this._origin = this.origin;	//	preserve the original.
+		}
+		
 		//	figure out the origin value.
-		if(isNaN(this.origin)){
-			if(this.origin.toLowerCase() == "max"){ 
+		if(isNaN(this._origin)){
+			if(this._origin.toLowerCase() == "max"){ 
 				this.origin = drawAgainst.range[(plane=="y")?"upper":"lower"]; 
 			}
-			else if (this.origin.toLowerCase() == "min"){ 
+			else if (this._origin.toLowerCase() == "min"){ 
 				this.origin = drawAgainst.range[(plane=="y")?"lower":"upper"]; 
 			}
 			else { this.origin=0; }
