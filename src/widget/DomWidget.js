@@ -516,7 +516,7 @@ dojo.declare("dojo.widget.DomWidget",
 
 		removeChild: function(/*Widget*/ widget){
 			// summary: detach child domNode from parent domNode
-			dojo.dom.removeNode(widget.domNode);
+			dojo.dom.destroyNode(widget.domNode);
 
 			// remove child widget from parent widget 
 			return dojo.widget.DomWidget.superclass.removeChild.call(this, widget); // Widget
