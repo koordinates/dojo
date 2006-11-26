@@ -937,7 +937,7 @@ dojo.widget.defineWidget(
 		dojo.event.connect(this.store, "onUpdateField", function(obj, fieldPath, val){
 			var row = self.getRow(obj);
 			var idx = self.getColumnIndex(fieldPath);
-			if(row && row.cells[idx] && self.columns[idx]){
+			if(idx>-1 && row && row.cells[idx] && self.columns[idx]){
 				self.fillCell(row.cells[idx], self.columns[idx], val);
 			}
 		});
