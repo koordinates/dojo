@@ -246,7 +246,6 @@ dojo.widget.defineWidget(
 
 	_movePanel: function(/*Widget*/ panel, pos, size){
 		if (this.isHorizontal){
-			dojo.debug("AccordionContainer: resizing " + panel.widgetId + ":" + panel.widgetType + " to size " + size);
 			panel.domNode.style.left = pos + 'px';
 			panel.domNode.style.top = 0;
 			panel.resizeTo(size, this.paneHeight);
