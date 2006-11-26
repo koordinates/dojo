@@ -91,6 +91,44 @@ dojo.html.getCachedFontMeasurements = function(recalculate){
 	return dojo.html._fontMeasurements;
 };
 
+//	onFontResize function placeholder.
+dojo.html.onFontResize = function(){ };
+dojo.html._fontresize = function(){
+	dojo.html.onFontResize();
+};
+dojo.html.initOnFontResize = function(){
+	//	summary
+	//	Sets up a document to fire a custom onFontResize event.  Based on Morris'
+	//	metrics code.
+
+	//	fire once, to init IE if needed.
+	dojo.html.getFontMeasurements();
+
+	//	create the element that will fire the event.
+	dojo.html._metrics={};
+	dojo.html._metrics.iframeNode = document.createElement('iframe');
+	var s=dojo.html._metrics.iframeNode.style;
+	s.position="absolute";
+	s.width="5em";
+	s.height="10em";
+	s.top="-10000px";
+
+	if(dojo.render.html.ie){
+		dojo.html._metrics.iframeNode.onreadystatechange = function(){
+			if(dojo.html._metrics.iframeNode.contentWindow.document.readyState == "complete"){
+				dojo.html._metrics.iframeNode.onresize = Function('window.parent.dojo.html._fontresize()');
+			}
+		};
+	} else {
+		dojo.html._metrics.iframeNode.onload = function(){
+			dojo.html._metrics.iframeNode.contentWindow.onresize = Function('window.parent.dojo.html._fontresize()');
+		};
+	}
+	
+	//	Opera note: detects zoom change, but zoom is irrelevant to metrics.
+	dojo.body().appendChild(dojo.html._metrics.iframeNode);
+};
+
 dojo.html.measureFragment = function(/* HTMLElement */node, /* string */html, /* string? */boxType){
 	//	summary
 	//	get the dimensions of passed node if it were populated with passed html.
