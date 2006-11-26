@@ -31,6 +31,16 @@ dojo.collections.Store = function(/* array? */jsonArray){
 		//	Get the internal data object by index.
 		return data[idx]; 	// object
 	};
+	this.getIndexOf = function(/* string */key){
+		//	summary
+		//	return the index of the object at key
+		for(var i=0; i<data.length; i++){
+			if(data[i].key==key){
+				return i;	//	number
+			}
+		}
+		return -1;	//	number
+	};
 	
 	this.getData = function(){
 		//	summary
@@ -50,6 +60,16 @@ dojo.collections.Store = function(/* array? */jsonArray){
 			}
 		}
 		return null;	//	null
+	};
+	this.getIndexOfData = function(/* object */obj){
+		//	summary
+		//	return the internal index of obj, if it exists in the store.
+		for(var i=0; i<data.length; i++){
+			if(data[i].src==obj){
+				return i;
+			}
+		}
+		return -1;	//	number
 	};
 	this.getDataByIndex = function(/*number*/idx){ 
 		//	summary
@@ -132,7 +152,7 @@ dojo.collections.Store = function(/* array? */jsonArray){
 		}
 	};
 
-	this.addData = function(/*obj*/obj,/*string?*/key, /* boolean? */bDontFire){ 
+	this.addData = function(/*obj*/object, /*string?*/key, /* boolean? */bDontFire){ 
 		//	summary
 		//	Add an object with optional key to the internal data array.
 		var k = key || obj[this.keyField];
@@ -166,6 +186,44 @@ dojo.collections.Store = function(/* array? */jsonArray){
 			this.onAddDataRange(objects);
 		}
 	};
+	this.addDataByIndex = function(/* object */obj, /* number */idx, /* string? */key, /* boolean? */bDontFire){
+		//	summary
+		//	Add an object with optional key to the internal data array at index idx.
+		//	If the key exists in the store, it is removed and reinserted into the data array.
+		var k = key || obj[this.keyField];
+		if(this.getByKey(k)){
+			var i=this.getIndexOf(k);
+			var o=data.splice(i, 1);
+			o.src = obj;
+		} else {
+			var o={ key:k, src:obj };
+		}
+		data.splice(idx, 0, o);
+		if(!bDontFire){
+			this.onAddData(o);
+		}
+	};
+	this.addDataRangeByIndex = function(/* array */arr, /* number */idx, /* boolean? */bDontFire){
+		//	summary
+		//	Add a range of objects to the internal data array, beginning at idx.  If any of
+		//	the objects already exist in the store, they are removed and reinserted into the data array.
+		var objects=[];
+		for(var i=0; i<arr.length; i++){
+			var k = arr[i][this.keyField];
+			if(this.getByKey(k)){
+				var j=this.getIndexOf(k);
+				var o=data.splice(j, 1);
+				o.src=arr[i];
+			} else {
+				var o={ key:k, src:arr[i] };
+			}
+			objects.push(o);
+		}
+		data.splice(idx, 0, objects);
+		if(!bDontFire){
+			this.onAddDataRange(objects);
+		}
+	};
 	
 	this.removeData = function(/*obj*/obj, /* boolean? */bDontFire){
 		//	summary
@@ -185,6 +243,15 @@ dojo.collections.Store = function(/* array? */jsonArray){
 		if(idx>-1){
 			data.splice(idx,1);
 		}
+	};
+	this.removeDataRange = function(/* number */idx, /* number */range, /* boolean? */bDontFire){
+		//	summary
+		//	Remove a range of objects from the internal array, beginning at idx and removing range objects.
+		var ret = data.splice(idx, range);
+		if(!bDontFire){
+			this.onRemoveDataRange(ret);
+		}
+		return ret;	//	array
 	};
 	this.removeDataByKey = function(/*string*/key, /* boolean? */bDontFire){
 		//	summary
@@ -277,5 +344,6 @@ dojo.extend(dojo.collections.Store, {
 	onAddData:function(obj){ },
 	onAddDataRange:function(arr){ },
 	onRemoveData:function(obj){ },
+	onRemoveDataRange:function(arr){ },
 	onUpdateField:function(obj, field, val){ }
 });
