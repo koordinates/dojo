@@ -649,12 +649,15 @@ dojo.widget.defineWidget(
 				if(dojo.html.hasAttribute(rowA,"emptyRow")){ return 1; }
 				if(dojo.html.hasAttribute(rowB,"emptyRow")){ return -1; }
 
-				//	TODO: check for markup and compare by rendered text.
 				var a = self.store.getField(self.getDataByRow(rowA), field);
 				var b = self.store.getField(self.getDataByRow(rowB), field);
-				var ret = 0;
-				if(a > b) ret = 1;
-				if(a < b) ret = -1;
+				if(field.sortFunction!=null){
+					var ret = field.sortFunction(a, b);
+				} else {
+					var ret = 0;
+					if(a > b) ret = 1;
+					if(a < b) ret = -1;
+				}
 				return dir * ret;
 			}
 		}
