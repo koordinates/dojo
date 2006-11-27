@@ -213,6 +213,14 @@ function test_date_parse() {
 	//day of month typo rolls over to the next month
 	jum.assertEquals(name(), null, dojo.date.parse("Aug 32, 2006", {formatLength:'medium', locale:'en'}));
 
+	//German (de)
+	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("11.08.06", {formatLength:'short', locale:'de'}));
+	jum.assertEquals(name(), null, dojo.date.parse("11.8/06", {formatLength:'short', locale:'de'}));
+	jum.assertEquals(name(), null, dojo.date.parse("11.8x06", {formatLength:'short', locale:'de'}));
+	jum.assertEquals(name(), null, dojo.date.parse("11.13.06", {formatLength:'short', locale:'de'}));
+	jum.assertEquals(name(), null, dojo.date.parse("11.0.06", {formatLength:'short', locale:'de'}));
+	jum.assertEquals(name(), null, dojo.date.parse("32.08.06", {formatLength:'short', locale:'de'}));
+
 	//Spanish (es)
 	//es: 'short' fmt: d/MM/yy
 	jum.assertEquals(name(), aug_11_2006, dojo.date.parse("11/08/06", {formatLength:'short', locale:'es'}));
