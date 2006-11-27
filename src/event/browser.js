@@ -236,7 +236,7 @@ dojo.event.browser = new function(){
 
 		// FIXME: event detection hack ... could test for additional attributes
 		// if necessary
-		return (typeof obj != "undefined")&&(typeof Event != "undefined")&&(obj.eventPhase); // Boolean
+		return (typeof obj != "undefined")&&(obj)&&(typeof Event != "undefined")&&(obj.eventPhase); // Boolean
 		// Event does not support instanceof in Opera, otherwise:
 		//return (typeof Event != "undefined")&&(obj instanceof Event);
 	}
