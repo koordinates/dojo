@@ -152,7 +152,7 @@ dojo.collections.Store = function(/* array? */jsonArray){
 		}
 	};
 
-	this.addData = function(/*obj*/object, /*string?*/key, /* boolean? */bDontFire){ 
+	this.addData = function(/* object */obj, /*string?*/key, /* boolean? */bDontFire){ 
 		//	summary
 		//	Add an object with optional key to the internal data array.
 		var k = key || obj[this.keyField];
