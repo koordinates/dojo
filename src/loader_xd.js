@@ -247,8 +247,8 @@ dojo.hostenv.xdLoadFlattenedBundle = function(/*String*/moduleName, /*String*/bu
 
 dojo.hostenv.xdBundleMap = {};
 
-dojo.xdRequireLocalization = function(/*String*/moduleName, /*String*/bundleName, /*String?*/locale, /*String*/availableLocales){
-	var locales = availableLocales.split(",");
+dojo.xdRequireLocalization = function(/*String*/moduleName, /*String*/bundleName, /*String?*/locale, /*String*/availableFlatLocales){
+	var locales = availableFlatLocales.split(",");
 	
 	//Find the best-match locale to load.
 	var jsLoc = dojo.hostenv.normalizeLocale(locale);
@@ -283,6 +283,27 @@ dojo.xdRequireLocalization = function(/*String*/moduleName, /*String*/bundleName
 		dojo.require(moduleName + ".nls" + (bestLocale ? "." + bestLocale : "") + "." + bundleName);
 	}
 }
+
+;(function(){
+	// Simulate the extra locale work that dojo.requireLocalization does.
+
+	var extra = djConfig.extraLocale;
+	if(extra){
+		if(!extra instanceof Array){
+			extra = [extra];
+		}
+
+		dojo._xdReqLoc = dojo.xdRequireLocalization;
+		dojo.xdRequireLocalization = function(m, b, locale, fLocales){
+			dojo._xdReqLoc(m,b,locale, fLocales);
+			if(locale){return;}
+			for(var i=0; i<extra.length; i++){
+				dojo._xdReqLoc(m,b,extra[i], fLocales);
+			}
+		};
+	}
+})();
+
 
 //This is a bit brittle: it has to know about the dojo methods that deal with dependencies
 //It would be ideal to intercept the actual methods and do something fancy at that point,
