@@ -48,12 +48,9 @@ for(var i = 3; i < arguments.length; i++){
 }
 
 //Get the resource prefixes from the profile and add them to the search list.
-var prefixes = buildUtilXd.getPrefixesFromProfile(profileFile);
+var prefixes = buildUtil.configPrefixes(profileFile);
 if(prefixes && prefixes.length > 0){
 	for(i = 0; i < prefixes.length; i++){
-		//Register prefixes with dojo so the flattening of external i18n bundles will work.
-		dojo.registerModulePath(prefixes[i][0], prefixes[i][1]);
-
 		//Add to list of directories to scan.
 		print("Adding module resource dir: " + djConfig.baseRelativePath + prefixes[i][1]);
 		srcDirs.push({prefix: prefixes[i][0], prefixPath: djConfig.baseRelativePath + prefixes[i][1]});
