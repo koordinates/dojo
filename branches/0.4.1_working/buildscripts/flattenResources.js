@@ -8,15 +8,18 @@
 // will be modified to download exactly one of these files, whichever is closest to the user's
 // locale.
 
+// The input {releaseDir} is the release directory for the build.
 // The input {reqFile} is the list of dojo.requireLocalization() commands grepped from a build.
 // A list of locales to build is loaded.  Any applicable locales plus all partial locales will
 // be generated in the appropriate files at {destDir}/{prefix}_{locale}.js.  Lastly, the list of
 // actual translations found and processed is returned as an array in stdout.
 
-var reqFile = arguments[0];
-var destDir = arguments[1];
-var prefix = arguments[2];
-var localeList = arguments[3].split(',');
+var releaseDir = arguments[0];
+var profileFile = arguments[1];
+var reqFile = arguments[2];
+var destDir = arguments[3];
+var prefix = arguments[4];
+var localeList = arguments[5].split(',');
 
 djConfig={
 	locale: 'xx',
@@ -26,8 +29,10 @@ djConfig={
 
 load('../dojo.js');
 
+dojo.require("dojo.string.extras");
 dojo.require("dojo.i18n.common");
 dojo.require("dojo.json");
+load("buildUtil.js");
 
 var djLoadedBundles = [];
 
@@ -57,6 +62,7 @@ for (var i = 0; i < djLoadedBundles.length; i++){
 
 localeList = [];
 
+//Save flattened bundles used by dojo.js.
 var mkdir = false;
 var dir = new java.io.File(destDir);
 for (jsLocale in djBundlesByLocale){
@@ -83,6 +89,28 @@ for (jsLocale in djBundlesByLocale){
 		os.close();
 	}
 	localeList.push(locale);
+}
+
+//Flatten all bundles and modifying dojo.requireLocalization calls.
+var prefixes = buildUtil.configPrefixes(profileFile);
+var fileList = buildUtil.getFilteredFileList(releaseDir + "/src", /\.js$/, true);
+
+for(var i= 0; i < fileList.length; i++){
+	//Use new String so we get a JS string and not a Java string.
+	var jsFileName = new String(fileList[i]);
+	var fileContents = null;
+	
+	//Files in nls directories (except for the top level one in Dojo that has multiple
+	//bundles flattened) need to have special xd contents.
+	if(jsFileName.match(/\/nls\//) && jsFileName.indexOf(releaseDir + "/nls/") == -1){
+		fileContents = "(" + buildUtil.makeFlatBundleContents("dojo", djConfig.baseRelativePath + "/src", jsFileName) + ")";			
+	}else{
+		fileContents = buildUtil.modifyRequireLocalization(readText(jsFileName), djConfig.baseRelativePath, prefixes);
+	}
+	
+	if(fileContents){
+		buildUtil.saveUtf8File(jsFileName, fileContents);
+	}
 }
 
 print(dojo.json.serialize(localeList));
