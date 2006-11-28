@@ -196,6 +196,254 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 }
 
 
+buildUtil.getPrefixesFromProfile = function(profileFile){
+	//summary: Load the profile file to get resource paths for external modules.
+	//Use new String to make sure we have a JS string (not a Java string)
+	//readText is from hostenv_rhino.js, so be sure to load Dojo before calling this function.
+	var profileText = new String(readText(profileFile));
+	var result = null;
+	
+	//Extract only dependencies.prefixes.
+	var dependencies = {
+		prefixes: []
+	};
+	
+	//Get rid of CR and LFs since they seem to mess with the regexp match.
+	//Using the "m" option on the regexp was not enough.
+	profileText = profileText.replace(/\r/g, "");
+	profileText = profileText.replace(/\n/g, "");
+	
+	var matches = profileText.match(/(dependencies\.prefixes\s*=\s*\[.*\]\s*\;)/m);
+	if(matches && matches.length > 0){
+		eval(matches[0]);
+		if(dependencies && dependencies.prefixes && dependencies.prefixes.length > 0){
+			result = dependencies.prefixes;
+		}
+	}
+
+	return result; //Array of arrays
+}
+
+buildUtil.configPrefixes = function(profileFile){
+	//summary: Get the resource prefixes from the profile and registers the prefixes with Dojo.
+	var prefixes = this.getPrefixesFromProfile(profileFile);
+	if(prefixes && prefixes.length > 0){
+		for(i = 0; i < prefixes.length; i++){
+			dojo.registerModulePath(prefixes[i][0], prefixes[i][1]);
+		}
+	}
+	return prefixes; //Array of arrays
+}
+
+//The regular expressions that will help find dependencies in the file contents.
+buildUtil.masterDependencyRegExpString = "dojo.(requireLocalization|require|requireIf|requireAll|provide|requireAfterIf|requireAfter|kwCompoundRequire|conditionalRequire|hostenv\\.conditionalLoadModule|.hostenv\\.loadModule|hostenv\\.moduleLoaded)\\(([\\w\\W]*?)\\)";
+buildUtil.globalDependencyRegExp = new RegExp(buildUtil.masterDependencyRegExpString, "mg");
+buildUtil.dependencyPartsRegExp = new RegExp(buildUtil.masterDependencyRegExpString);
+
+buildUtil.masterRequireLocalizationRegExpString = "dojo.(requireLocalization)\\(([\\w\\W]*?)\\)";
+buildUtil.globalRequireLocalizationRegExp = new RegExp(buildUtil.masterRequireLocalizationRegExpString, "mg");
+buildUtil.requireLocalizationRegExp = new RegExp(buildUtil.masterRequireLocalizationRegExpString);
+
+buildUtil.modifyRequireLocalization = function(fileContents, baseRelativePath, prefixes){
+	//summary: Modifies any dojo.requireLocalization calls in the fileContents to have the
+	//list of supported locales as part of the call. This allows the i18n loading functions
+	//to only make request(s) for locales that actually exist on disk.
+	var dependencies = [];
+	
+	//Make sure we have a JS string, and not a Java string.
+	fileContents = String(fileContents);
+	
+	var modifiedContents = null;
+	
+	if(fileContents.match(buildUtil.globalRequireLocalizationRegExp)){
+		modifiedContents = fileContents.replace(buildUtil.globalRequireLocalizationRegExp, function(matchString){
+			var replacement = matchString;
+			var partMatches = matchString.match(buildUtil.requireLocalizationRegExp);
+			var depCall = partMatches[1];
+			var depArgs = partMatches[2];
+	
+			if(depCall == "requireLocalization"){
+				//Need to find out what locales are available so the dojo loader
+				//only has to do one script request for the closest matching locale.
+				var reqArgs = buildUtil.getRequireLocalizationArgsFromString(depArgs);
+				if(reqArgs.moduleName){
+					//Find the list of locales supported by looking at the path names.
+					var locales = buildUtil.getLocalesForBundle(reqArgs.moduleName, reqArgs.bundleName, baseRelativePath, prefixes);
+	
+					//Add the supported locales to the requireLocalization arguments.
+					if(!reqArgs.localeName){
+						depArgs += ", null";
+					}
+	
+					depArgs += ', "' + locales.join(",") + '"';
+					
+					replacement = "dojo." + depCall + "(" + depArgs + ")";
+				}
+			}
+			return replacement;		
+		});
+	}	
+	return modifiedContents;
+}
+
+buildUtil.makeFlatBundleContents = function(prefix, prefixPath, srcFileName){
+	//summary: Given a nls file name, flatten the bundles from parent locales into the nls bundle.
+	var bundleParts = buildUtil.getBundlePartsFromFileName(prefix, prefixPath, srcFileName);
+	if(!bundleParts){
+		return null;
+	}
+	var moduleName = bundleParts.moduleName;
+	var bundleName = bundleParts.bundleName;
+	var localeName = bundleParts.localeName;
+
+	//print("## moduleName: " + moduleName + ", bundleName: " + bundleName + ", localeName: " + localeName);
+	dojo.requireLocalization(moduleName, bundleName, localeName);
+	
+	//Get the generated, flattened bundle.
+	var module = dojo.evalObjPath(moduleName);
+	var bundleLocale = localeName ? localeName.replace(/-/g, "_") : "ROOT";
+	var flattenedBundle = module.nls[bundleName][bundleLocale];
+	//print("## flattenedBundle: " + flattenedBundle);
+	if(!flattenedBundle){
+		throw "Cannot create flattened bundle for src file: " + srcFileName;
+	}
+
+	return dojo.json.serialize(flattenedBundle);
+}
+
+//Given a module and bundle name, find all the supported locales.
+buildUtil.getLocalesForBundle = function(moduleName, bundleName, baseRelativePath, prefixes){
+	//Build a path to the bundle directory and ask for all files that match
+	//the bundle name.
+	var filePath = this.mapResourceToPath(moduleName, baseRelativePath, prefixes);
+	
+	var bundleRegExp = new RegExp("nls[/]?([\\w\\-]*)/" + bundleName + ".js$");
+	var bundleFiles = buildUtil.getFilteredFileList(filePath + "nls/", bundleRegExp, true);
+	
+	//Find the list of locales supported by looking at the path names.
+	var locales = [];
+	for(var j = 0; j < bundleFiles.length; j++){
+		var bundleParts = bundleFiles[j].match(bundleRegExp);
+		if(bundleParts && bundleParts[1]){
+			locales.push(bundleParts[1]);
+		}else{
+			locales.push("ROOT");
+		}
+	}
+
+	return locales;
+}
+
+buildUtil.getRequireLocalizationArgsFromString = function(argString){
+	//summary: Given a string of the arguments to a dojo.requireLocalization
+	//call, separate the string into individual arguments.
+	var argResult = {
+		moduleName: null,
+		bundleName: null,
+		localeName: null
+	};
+	
+	var l10nMatches = argString.split(/\,\s*/);
+	if(l10nMatches && l10nMatches.length > 1){
+		argResult.moduleName = l10nMatches[0] ? l10nMatches[0].replace(/\"/g, "") : null;
+		argResult.bundleName = l10nMatches[1] ? l10nMatches[1].replace(/\"/g, "") : null;
+		argResult.localeName = l10nMatches[2];
+	}
+	return argResult;
+}
+
+buildUtil.getBundlePartsFromFileName = function(prefix, prefixPath, srcFileName){
+	//Pull off any ../ values from prefix path to make matching easier.
+	var prefixPath = prefixPath.replace(/\.\.\//g, "");
+
+	//Strip off the prefix path so we can find the real resource and bundle names.
+	var prefixStartIndex = srcFileName.indexOf(prefixPath);
+	if(prefixStartIndex != -1){
+		var startIndex = prefixStartIndex + prefixPath.length;
+		
+		//Need to add one if the prefiPath does not include an ending /. Otherwise,
+		//We'll get extra dots in our bundleName.
+		if(prefixPath.charAt(prefixPath.length) != "/"){
+			startIndex += 1;
+		}
+		srcFileName = srcFileName.substring(startIndex, srcFileName.length);
+	}
+	
+	//var srcIndex = srcFileName.indexOf("src/");
+	//srcFileName = srcFileName.substring(srcIndex + 4, srcFileName.length);
+	var parts = srcFileName.split("/");
+
+	//Split up the srcFileName into arguments that can be used for dojo.requireLocalization()
+	var moduleParts = [prefix];
+	for(var i = 0; parts[i] != "nls"; i++){
+		moduleParts.push(parts[i]);
+	}
+	var moduleName = moduleParts.join(".");
+	if(parts[i+1].match(/\.js$/)){
+		var localeName = "";
+		var bundleName = parts[i+1];
+	}else{
+		var localeName = parts[i+1];
+		var bundleName = parts[i+2];	
+	}
+
+	if(!bundleName || bundleName.indexOf(".js") == -1){
+		//Not a valid bundle. Could be something like a README file.
+		return null;
+	}else{
+		bundleName = bundleName.replace(/\.js/, "");
+	}
+
+	return {moduleName: moduleName, bundleName: bundleName, localeName: localeName};
+}
+
+buildUtil.mapResourceToPath = function(resourceName, baseRelativePath, prefixes){
+	//summary: converts a resourceName to a path.
+	//resourceName: String: like dojo.foo or mymodule.bar
+	//baseRelativePath: String: the relative path to Dojo. All resource paths are relative to dojo.
+	//                  it always ends in with a slash.
+	//prefixes: Array: Actually an array of arrays. Comes from profile js file.
+	//          dependencies.prefixes = [["mymodule.foo", "../mymoduledir"]];
+	
+	var bestPrefix = "";
+	var bestPrefixPath = "";
+	if(prefixes){
+		for(var i = 0; i < prefixes.length; i++){
+			//Prefix must match from the start of the resourceName string.
+			if(resourceName.indexOf(prefixes[i][0]) == 0){
+				if(prefixes[i][0].length > bestPrefix.length){
+					bestPrefix = prefixes[i][0];
+					bestPrefixPath = prefixes[i][1];
+				}
+			}
+		}
+	}
+
+	if(bestPrefixPath == "" && resourceName.indexOf("dojo.") == 0){
+		bestPrefix = "dojo";
+		bestPrefixPath = "src/";
+	}
+	
+	//Get rid of matching prefix from resource name.
+	resourceName = resourceName.replace(bestPrefix, "");
+	
+	if(resourceName.charAt(0) == '.'){
+		resourceName = resourceName.substring(1, resourceName.length);
+	}
+	
+	resourceName = resourceName.replace(/\./g, "/");
+
+	var finalPath = baseRelativePath + bestPrefixPath;
+	if(finalPath.charAt(finalPath.length - 1) != "/"){
+		finalPath += "/";
+	}
+	if (resourceName){
+		finalPath += resourceName + "/";
+	}
+	
+	return finalPath;
+}
+
 //Recurses startDir and finds matches to the files that match regExpFilter.
 //Ignores files/directories that start with a period (.).
 buildUtil.getFilteredFileList = function(startDir, regExpFilter, makeUnixPaths, startDirIsJavaObject){
