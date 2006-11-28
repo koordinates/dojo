@@ -410,13 +410,17 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	this.bind = function(/*dojo.io.Request*/kwArgs){
 		//summary: function that sends the request to the server.
-		//description: This function will attach an abort() function to the kwArgs dojo.io.Request object,
+
+		//This function will attach an abort() function to the kwArgs dojo.io.Request object,
 		//so if you need to abort the request, you can call that method on the request object.
 		//The following are acceptable properties in kwArgs (a dojo.io.Request object).
 		//url: String: URL the server URL to use for the request.
 		//transport: String: specify "XMLHTTPTransport" to force the use of this XMLHttpRequest transport.
 		//formNode: DOMNode: a form element node. This should not normally be used. Use new dojo.io.FormBind() instead.
 		//method: String: the HTTP method to use (GET, POST, etc...).
+		//mimetype: Specifies what format the result data should be given to the load/handle callback. Valid values are:
+		//		text/javascript, text/json, application/json, application/xml, text/xml. Any other mimetype will give back a text
+		//		string.
 		//file: Object or Array of Objects: an object simulating a file to be uploaded. file objects should have the following properties:
 		//		name or fileName: the name of the file
 		//		contentType: the MIME content type for the file.
