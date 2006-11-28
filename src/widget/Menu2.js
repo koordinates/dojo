@@ -10,7 +10,10 @@ dojo.widget.defineWidget(
 		//	provides a menu that can be used as a context menu (typically shown by right-click),
 		//	or as the drop down on a DropDownButton, ComboButton, etc.
 
-		this.targetNodeIds = []; // fill this with nodeIds upon widget creation and it becomes context menu for those nodes
+		// targetNodeIds: String[]
+		//	Array of dom node ids of nodes to attach to.
+		//	Fill this with nodeIds upon widget creation and it becomes context menu for those nodes.
+		this.targetNodeIds = [];
 	
 		this.eventNames =  {
 			open: ""
@@ -32,10 +35,6 @@ dojo.widget.defineWidget(
 	//	number of milliseconds before hovering (without clicking) causes the submenu to automatically open
 	submenuDelay: 500,
 	
-	// disabledClass: String
-	//  CSS class for disabled nodes
-	disabledClass: 'dojoMenuItem2Disabled',
-	
 	// submenuOverlap: Integer
 	//	a submenu usually appears to the right, but slightly overlapping, it's parent menu;
 	//	this controls the number of pixels the two menus overlap.
@@ -45,10 +44,6 @@ dojo.widget.defineWidget(
 	//	if true, right clicking anywhere on the window will cause this context menu to open;
 	//	if false, must specify targetNodeIds
 	contextMenuForWindow: false,
-
-	// targetNodeIds: String[]
-	//	Array of dom node ids of nodes to attach to
-	targetNodeIds: [],
 
 	initialize: function(args, frag) {
 		if (this.eventNaming == "default") {
@@ -347,32 +342,36 @@ dojo.widget.defineWidget(
 	// options
 	//
 
-	// String
+	// caption: String
 	//	text of the menu item
 	caption: 'Untitled',
 	
-	// String
+	// accelKey: String
 	//	accelerator key (not supported yet!)
 	accelKey: '',
 	
-	// String
+	// iconSrc: String
 	//	path to icon to display to the left of the menu text
 	iconSrc: '',
 	
-	// String
+	// disabledClass: String
+	//  CSS class for disabled nodes
+	disabledClass: 'dojoMenuItem2Disabled',
+	
+	// iconClass: String
 	//	CSS class name to use for menu item (if CSS class specifies a background image then iconSrc is not necessary)
 	iconClass: 'dojoMenuItem2Icon',
 	
-	// String
+	// submenuId: String
 	//	widget ID of Menu2 widget to open when this menu item is clicked
 	submenuId: '',
 	
-	// String
+	// eventNaming: String
 	//	event names for announcing when menu item is clicked.
 	//	if "default", then use the default name, based on the widget ID
 	eventNaming: "default",
 	
-	// String
+	// highlightClass: String
 	//	CSS class for menu item when it's hovered over
 	highlightClass: 'dojoMenuItem2Hover',
 
