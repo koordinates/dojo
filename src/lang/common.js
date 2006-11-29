@@ -2,7 +2,7 @@ dojo.provide("dojo.lang.common");
 
 dojo.lang.inherits = function(/*Function*/subclass, /*Function*/superclass){
 	// summary: Set up inheritance between two classes.
-	if(dojo.lang.isFunction(superclass)){ 
+	if(!dojo.lang.isFunction(superclass)){ 
 		dojo.raise("dojo.inherits: superclass argument ["+superclass+"] must be a function (subclass: ["+subclass+"']");
 	}
 	subclass.prototype = new superclass();
