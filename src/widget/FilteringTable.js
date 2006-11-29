@@ -651,7 +651,7 @@ dojo.widget.defineWidget(
 
 				var a = self.store.getField(self.getDataByRow(rowA), field);
 				var b = self.store.getField(self.getDataByRow(rowB), field);
-				if(field.sortFunction!=null){
+				if(meta.sortFunction!=null){
 					var ret = field.sortFunction(a, b);
 				} else {
 					var ret = 0;
