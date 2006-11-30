@@ -1,4 +1,5 @@
 dojo.provide("dojo.debug.console");
+dojo.require("dojo.lang.*");
 dojo.require("dojo.logging.ConsoleLogger");
 
 // summary:
