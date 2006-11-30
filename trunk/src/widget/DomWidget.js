@@ -557,7 +557,7 @@ dojo.declare("dojo.widget.DomWidget",
 			} else if (sourceNodeRef){
 				// Do in-place replacement of the my source node with my generated dom
 				if(this.domNode && (this.domNode !== sourceNodeRef)){
-					dojo.dom.replaceNode(sourceNodeRef, this.domNode);
+					this._sourceNodeRef = dojo.dom.replaceNode(sourceNodeRef, this.domNode);
 				}
 			}
 
@@ -873,8 +873,14 @@ dojo.declare("dojo.widget.DomWidget",
 		destroyRendering: function(){
 			// summary: UI destructor.  Destroy the dom nodes associated w/this widget.
 			try{
+				dojo.dom.destroyNode(this.domNode);
 				delete this.domNode;
 			}catch(e){ /* squelch! */ }
+			if(this._sourceNodeRef){
+				try{
+					dojo.dom.destroyNode(this._sourceNodeRef);
+				}catch(e){ /* squelch! */ }
+			}
 		},
 
 		createNodesFromText: function(){
