@@ -6,6 +6,7 @@ dojo.require("dojo.html.iframe");
 
 // This is mostly taken from Jesse Kuhnert's MessageNotifier.
 // Modified by Bryan Forbes to support topics and a variable delay.
+//Modified by Karl Tiedt to support 0 duration messages that require user interaction and message stacking
 
 dojo.widget.defineWidget(
 	"dojo.widget.Toaster",
@@ -21,7 +22,7 @@ dojo.widget.defineWidget(
 		// messageTopic: String
 		//		Name of topic; anything published to this topic will be displayed as a message.
 		//		Message format is either String or an object like
-		//		{message: "hello word", type: "ERROR", delay: 500}
+		//		{message: "hello word", type: "ERROR", duration: 500}
 		messageTopic: "",
 		
 		// messageTypes: Enumeration
@@ -57,12 +58,23 @@ dojo.widget.defineWidget(
 		//		Possible values for positionDirection parameter
 		positionDirectionTypes: ["br-up", "br-left", "bl-up", "bl-right", "tr-down", "tr-left", "tl-down", "tl-right"],
 		
-		// showDelay: Integer
-		//		Number of milliseconds to show message
-		// TODO: this is a strange name.  "duration" makes more sense
-		showDelay: 2000,
-
+		initializer: function(){
+			// duration: Integer
+			//		Number of milliseconds to show message
+			this.duration = 2000;
+			// showDelay: Integer
+			//		Deprecated and replaced by Duration -- Number of milliseconds to show message
+			this.showDelay = 2000;
+			//separator: String
+			//		String used to separate messages if consecutive calls are made to setContent before previous messages go away
+			this.separator = "<hr>";
+		},
+		
 		postCreate: function(){
+			if(this.showDelay){
+				dojo.deprecated("dojo.widget.Toaster", "use 'duration' instead of 'showDelay'", "0.6");
+				this.duration = this.showDelay;
+			}
 			this.hide();
 			dojo.html.setClass(this.clipNode, this.clipCssClass);
 			dojo.html.addClass(this.containerNode, this.containerCssClass);
@@ -79,21 +91,21 @@ dojo.widget.defineWidget(
 			if(dojo.lang.isString(msg)){
 				this.setContent(msg);
 			}else{
-				this.setContent(msg["message"], msg["type"], msg["delay"]);
+				this.setContent(msg["message"], msg["type"], msg["duration"]);
 			}
 		},
 
-		setContent: function(msg, messageType, delay){
+		setContent: function(msg, messageType, duration){
 			// summary
 			//		sets and displays the given message and show duration
 			// msg: String
 			//		the message
 			// messageType: Enumeration
 			//		type of message; possible values in messageTypes array ("MESSAGE", "WARNING", "ERROR", "FATAL")
-			// delay: Integer
-			//		number of milliseconds to display message
+			// duraton: Integer
+			//		duration in milliseconds to display message before removing it
 
-			var delay = delay||this.showDelay;
+			var duration = duration||this.duration;
 			// sync animations so there are no ghosted fades and such
 			if(this.slideAnim && this.slideAnim.status() == "playing"){
 				dojo.lang.setTimeout(50, dojo.lang.hitch(this, function(){
@@ -102,8 +114,14 @@ dojo.widget.defineWidget(
 				return;
 			}else if(this.slideAnim){
 				this.slideAnim.stop();
-				if(this.fadeAnim) this.fadeAnim.stop();
+				if(this.fadeAnim && this.fadeAnim.status() == "playing"){
+					dojo.lang.setTimeout(50, dojo.lang.hitch(this, function(){
+						this.setContent(msg, messageType);
+					}));
+					return;
+				}
 			}
+
 			if(!msg){
 				dojo.debug(this.widgetId + ".setContent() incoming content was null, ignoring.");
 				return;
@@ -121,13 +139,18 @@ dojo.widget.defineWidget(
 			dojo.html.clearOpacity(this.containerNode);
 			
 			if(msg instanceof String || typeof msg == "string"){
-				this.contentNode.innerHTML = msg;
+				var tmpMsg = msg;
 			}else if(dojo.html.isNode(msg)){
-				this.contentNode.innerHTML = dojo.html.getContentAsString(msg);
+				var tmpMsg = dojo.html.getContentAsString(msg);
 			}else{
 				dojo.raise("Toaster.setContent(): msg is of unknown type:" + msg);
 			}
-
+			var curMsg = this.contentNode.innerHTML
+			if(tmpMsg&&this.isVisible){
+				this.contentNode.innerHTML = curMsg + "<br>" + this.separator + "<br>" + tmpMsg;
+			}else{
+				this.contentNode.innerHTML = tmpMsg
+			}
 			switch(messageType){
 				case this.messageTypes.WARNING:
 					dojo.html.addClass(this.containerNode, this.warningCssClass);
@@ -147,38 +170,35 @@ dojo.widget.defineWidget(
 			// now do funky animation of widget appearing from
 			// bottom right of page and up
 			this.show();
-
 			var nodeSize = dojo.html.getMarginBox(this.containerNode);
-
-			// sets up initial position of container node and slide-out direction
-			if(this.positionDirection.indexOf("-up") >= 0){
-				this.containerNode.style.left=0+"px";
-				this.containerNode.style.top=nodeSize.height + 10 + "px";
-			}else if(this.positionDirection.indexOf("-left") >= 0){
-				this.containerNode.style.left=nodeSize.width + 10 +"px";
-				this.containerNode.style.top=0+"px";
-			}else if(this.positionDirection.indexOf("-right") >= 0){
-				this.containerNode.style.left = 0 - nodeSize.width - 10 + "px";
-				this.containerNode.style.top = 0+"px";
-			}else if(this.positionDirection.indexOf("-down") >= 0){
-				this.containerNode.style.left = 0+"px";
-				this.containerNode.style.top = 0 - nodeSize.height - 10 + "px";
+			
+			if(this.isVisible){
+				this._placeClip();
 			}else{
-				dojo.raise(this.widgetId + ".positionDirection is an invalid value: " + this.positionDirection);
-			}
+				// sets up initial position of container node and slide-out direction
+				if(this.positionDirection.indexOf("-up") >= 0){
+					this.containerNode.style.left=0+"px";
+					this.containerNode.style.top=nodeSize.height + 10 + "px";
+				}else if(this.positionDirection.indexOf("-left") >= 0){
+					this.containerNode.style.left=nodeSize.width + 10 +"px";
+					this.containerNode.style.top=0+"px";
+				}else if(this.positionDirection.indexOf("-right") >= 0){
+					this.containerNode.style.left = 0 - nodeSize.width - 10 + "px";
+					this.containerNode.style.top = 0+"px";
+				}else if(this.positionDirection.indexOf("-down") >= 0){
+					this.containerNode.style.left = 0+"px";
+					this.containerNode.style.top = 0 - nodeSize.height - 10 + "px";
+				}else{
+					dojo.raise(this.widgetId + ".positionDirection is an invalid value: " + this.positionDirection);
+				}
 
-			this.slideAnim = dojo.lfx.html.slideTo(
-				this.containerNode,
-				{ top: 0, left: 0 },
-				450,
-				null,
-				dojo.lang.hitch(this, function(nodes, anim){
-					dojo.lang.setTimeout(dojo.lang.hitch(this, function(evt){
-						// we must hide the iframe in order to fade
-						// TODO: figure out how to fade with a BackgroundIframe
-						if(this.bgIframe){
-							this.bgIframe.hide();
-						}
+				this.slideAnim = dojo.lfx.html.slideTo(
+					this.containerNode,
+					{ top: 0, left: 0 },
+					450,
+					null,
+					dojo.lang.hitch(this, function(nodes, anim){
+						//we build the fadeAnim here so we dont have to duplicate it later
 						// can't do a fadeHide because we're fading the
 						// inner node rather than the clipping node
 						this.fadeAnim = dojo.lfx.html.fadeOut(
@@ -186,10 +206,30 @@ dojo.widget.defineWidget(
 							1000,
 							null,
 							dojo.lang.hitch(this, function(evt){
+								this.isVisible = false;
 								this.hide();
-							})).play();
-					}), delay);
-				})).play();
+							}));
+						//if duration == 0 we keep the message displayed until clicked
+						if(this.duration>0){
+							dojo.lang.setTimeout(dojo.lang.hitch(this, function(evt){
+								// we must hide the iframe in order to fade
+								// TODO: figure out how to fade with a BackgroundIframe
+								if(this.bgIframe){
+									this.bgIframe.hide();
+								}
+								this.fadeAnim.play();
+							}), duration);
+						}else{
+							dojo.event.connect(
+								this,
+								'onSelect',
+								dojo.lang.hitch(this, function(evt){
+									this.fadeAnim.play();
+								}));
+						}
+						this.isVisible = true;
+					})).play();
+				}
 		},
 
 		_placeClip: function(){
