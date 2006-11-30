@@ -1796,7 +1796,6 @@ var ApiRef = {
 		dojo.event.connect(searchBox, "onValueChanged", 
 			function(event) {
 				var name = ApiRef.getSearchBoxValue();
-console.log(name);
 				ApiRef.showItem(name);
 			}
 		);
