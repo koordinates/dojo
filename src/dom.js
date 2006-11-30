@@ -195,12 +195,12 @@ dojo.dom.replaceNode = function(/*Element*/node, /*Element*/newNode){
 
 dojo.dom.destroyNode = function(/*Node*/node){
 	// summary:
-	//		destory a node (it can not be used any more). For IE, this is the
+	//		destroy a node (it can not be used any more). For IE, this is the
 	//		right function to call to prevent memory leaks. While for other
 	//		browsers, this is identical to dojo.dom.removeNode
 	node = dojo.dom.removeNode(node);
 	if(dojo.render.html.ie){
-		node.outerHTML=''; //prevent ugly IE mem leak
+		node.outerHTML=''; //prevent ugly IE mem leak associated with Node.removeChild (ticket #1727)
 	}
 }
 
