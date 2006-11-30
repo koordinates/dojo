@@ -210,7 +210,8 @@ dojo.widget.defineWidget(
 								this.hide();
 							}));
 						//if duration == 0 we keep the message displayed until clicked
-						if(this.duration>0){
+						//TODO: fix so that if a duration > 0 is displayed when a duration==0 is appended to it, the fadeOut is canceled
+						if(duration>0){
 							dojo.lang.setTimeout(dojo.lang.hitch(this, function(evt){
 								// we must hide the iframe in order to fade
 								// TODO: figure out how to fade with a BackgroundIframe
