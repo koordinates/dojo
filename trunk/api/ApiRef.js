@@ -1791,16 +1791,17 @@ var ApiRef = {
 		provider.setData(data);
 		provider.searchType="SUBSTRING";
 
-/*
+
 		// set up the "selectOption" event to run the search		
-		dojo.event.connect(searchBox, "selectOption", 
+		dojo.event.connect(searchBox, "onValueChanged", 
 			function(event) {
 				var name = ApiRef.getSearchBoxValue();
+console.log(name);
 				ApiRef.showItem(name);
 			}
 		);
-*/
-		
+
+	
 //dojo.debug("Done initializing searchBox");
 	},
 	
