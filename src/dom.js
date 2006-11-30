@@ -197,8 +197,8 @@ dojo.dom.removeChildren = function(/*Element*/node){
 dojo.dom.replaceNode = function(/*Element*/node, /*Element*/newNode){
 	//	summary:
 	//		replaces node with newNode and returns a reference to the removed node.
-	//		To prevent IE memory leak, call destroyNode on the replaced no after it
-	//		is not used anymore.
+	//		To prevent IE memory leak, call destroyNode on the returned node when
+	//		it is no longer needed.
 	return node.parentNode.replaceChild(newNode, node); // Node
 }
 
@@ -222,6 +222,8 @@ dojo.dom.removeNode = function(/*Node*/node){
 	// summary:
 	//		if node has a parent, removes node from parent and returns a
 	//		reference to the removed child.
+	//		To prevent IE memory leak, call destroyNode on the returned node when
+	//		it is no longer needed.
 	//	node:
 	//		the node to remove from its parent.
 
