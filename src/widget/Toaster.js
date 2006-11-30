@@ -62,9 +62,6 @@ dojo.widget.defineWidget(
 			// duration: Integer
 			//		Number of milliseconds to show message
 			this.duration = 2000;
-			// showDelay: Integer
-			//		Deprecated and replaced by Duration -- Number of milliseconds to show message
-			this.showDelay = 2000;
 			//separator: String
 			//		String used to separate messages if consecutive calls are made to setContent before previous messages go away
 			this.separator = "<hr>";
