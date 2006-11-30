@@ -18,6 +18,8 @@ dojo.charting.Axis = function(/* string? */label, /* string? */scale, /* array? 
 	this.labels = labels || [];
 	this._labels = [];	//	what we really use to draw things.
 	this.nodes={ main: null, axis: null, label: null, labels: null, lines: null, ticks: null };
+
+	this._rerender = false;	//	hidden switch to force re-rendering.
 };
 dojo.charting.Axis.count = 0;
 
