@@ -62,13 +62,16 @@ dojo.widget.defineWidget(
 			// duration: Integer
 			//		Number of milliseconds to show message
 			this.duration = 2000;
+			// showDelay: Integer
+			//		Deprecated and replaced by Duration -- Number of milliseconds to show message
+			this.showDelay = '';
 			//separator: String
 			//		String used to separate messages if consecutive calls are made to setContent before previous messages go away
 			this.separator = "<hr>";
 		},
 		
 		postCreate: function(){
-			if(this.showDelay){
+			if(this.showDelay!=''){
 				dojo.deprecated("dojo.widget.Toaster", "use 'duration' instead of 'showDelay'", "0.6");
 				this.duration = this.showDelay;
 			}
