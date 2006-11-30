@@ -196,7 +196,9 @@ dojo.dom.removeChildren = function(/*Element*/node){
 
 dojo.dom.replaceNode = function(/*Element*/node, /*Element*/newNode){
 	//	summary:
-	//		replaces node with newNode and returns a reference to the removed node
+	//		replaces node with newNode and returns a reference to the removed node.
+	//		To prevent IE memory leak, call destroyNode on the replaced no after it
+	//		is not used anymore.
 	return node.parentNode.replaceChild(newNode, node); // Node
 }
 
@@ -205,7 +207,9 @@ dojo.dom.destroyNode = function(/*Node*/node){
 	//		destroy a node (it can not be used any more). For IE, this is the
 	//		right function to call to prevent memory leaks. While for other
 	//		browsers, this is identical to dojo.dom.removeNode
-	node = dojo.dom.removeNode(node);
+	if(node.parentNode){
+		node = dojo.dom.removeNode(node);
+	}
 	if(dojo.evalObjPath("dojo.event.browser.clean", false)){
 		dojo.event.browser.clean(node);
 	}
