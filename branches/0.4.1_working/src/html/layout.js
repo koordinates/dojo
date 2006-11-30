@@ -248,9 +248,9 @@ dojo.html.getBoxSizing = function(/* HTMLElement */node){
 	//	Returns which box model the passed element is working with
 	var h = dojo.render.html;
 	var bs = dojo.html.boxSizing;
-	if((h.ie)||(h.opera)){ 
+	if(((h.ie)||(h.opera)) && node.nodeName!="IMG"){ 
 		var cm = document["compatMode"];
-		if((cm == "BackCompat")||(cm == "QuirksMode")){ 
+		if((cm == "BackCompat")||(cm == "QuirksMode")){
 			return bs.BORDER_BOX; 	//	string
 		}else{
 			return bs.CONTENT_BOX; 	//	string
