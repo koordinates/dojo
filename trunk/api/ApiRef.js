@@ -1784,31 +1784,14 @@ var ApiRef = {
 		// summary: initialize the search comboBox
 		var searchBox = this.searchBox = dojo.widget.byId("searchBox");
 		
-		var provider = searchBox.dataProvider;
 		// munge the functionlist into [  [name,name], ... ]
-		var optionList = [];
-		for (var i = 0, name; name = this.functionList[i]; i++) {
-			optionList[i] = [name, name];
-		}
 		// and assign this as the data for the searchBox provider
-		provider.setData(optionList);
+		var data = dojo.lang.map(this.functionList, function(name){ return [name, name];});
+		var provider = searchBox.dataProvider;
+		provider.setData(data);
+		provider.searchType="SUBSTRING";
 
-/*		// override the startSearch routine to look at local data rather than going to a server page
-		provider.startSearch = function(searchStr) {
-			var searchLength = searchStr.length;
-			var searchType = "SUBSTRING";
-			if("dojo.".match(new RegExp("^" + searchStr)) || searchStr.match(new RegExp("^dojo\."))){
-				var searchType = "STARTSTRING";
-				searchLength -= 4;
-			}
-			var searchBox = dojo.widget.byId("searchBox");
-//			searchBox.downArrowNode.style.visibility = "hidden";
-//			if(searchLength > 2) {
-//				searchBox.downArrowNode.style.visibility = "visible";
-//			}
-			this._performSearch(searchStr, searchType);			
-		}
-
+/*
 		// set up the "selectOption" event to run the search		
 		dojo.event.connect(searchBox, "selectOption", 
 			function(event) {
