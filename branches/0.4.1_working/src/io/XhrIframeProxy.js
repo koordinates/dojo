@@ -17,6 +17,16 @@ setting a src on the iframe element.
 */
 
 dojo.io.XhrIframeProxy = new function(){
+	//summary: Object that implements the iframe handling for XMLHttpRequest
+	//IFrame Proxying.
+	//description: Do not use this object directly. See the Dojo Book page
+	//on XMLHttpRequest IFrame Proxying:
+	//http://manual.dojotoolkit.org/WikiHome/DojoDotBook/Book75
+	//Usage of XHR IFrame Proxying does not work from local disk in Safari, and
+	//it might generate a "loading unsecure items on a secure page"
+	//popup in browsers if it is called on a https page, because it does not
+	//set a src on the iframe element.
+	
 	this.xipClientUrl = dojo.uri.dojoUri("src/io/xip_client.html");
 
 	this._state = {};
@@ -35,7 +45,7 @@ dojo.io.XhrIframeProxy = new function(){
 		};
 	}
 	
-	this.receive = function(stateId, urlEncodedData){
+	this.receive = function(/*String*/stateId, /*String*/urlEncodedData){
 		/* urlEncodedData should have the following params:
 				- responseHeaders
 				- status
@@ -77,7 +87,7 @@ dojo.io.XhrIframeProxy = new function(){
 		this.destroyState(stateId);
 	}
 
-	this.clientFrameLoaded = function(stateId){
+	this.clientFrameLoaded = function(/*String*/stateId){
 		var state = this._state[stateId];
 		var facade = state.facade;
 		var clientWindow = dojo.html.iframeContentWindow(state.clientFrame);
@@ -103,7 +113,7 @@ dojo.io.XhrIframeProxy = new function(){
 		clientWindow.send(stateId, facade._ifpServerUrl, dojo.io.argsFromMap(requestData, "utf8"));
 	}
 	
-	this.destroyState = function(stateId){
+	this.destroyState = function(/*String*/stateId){
 		var state = this._state[stateId];
 		if(state){
 			delete this._state[stateId];
@@ -134,6 +144,11 @@ dojo.hostenv.getXmlhttpObject = dojo.io.XhrIframeProxy.createFacade;
 	not use it.
 */
 dojo.io.XhrIframeFacade = function(ifpServerUrl){
+	//summary: XMLHttpRequest facade object used by dojo.io.XhrIframeProxy.
+	
+	//description: Do not use this object directly. See the Dojo Book page
+	//on XMLHttpRequest IFrame Proxying:
+	//http://manual.dojotoolkit.org/WikiHome/DojoDotBook/Book75
 	this._requestHeaders = {};
 	this._allResponseHeaders = null;
 	this._responseHeaders = {};
@@ -152,18 +167,18 @@ dojo.io.XhrIframeFacade = function(ifpServerUrl){
 
 dojo.lang.extend(dojo.io.XhrIframeFacade, {
 	//The open method does not properly reset since Dojo does not reuse XHR objects.
-	open: function(method, uri){
+	open: function(/*String*/method, /*String*/uri){
 		this._method = method;
 		this._uri = uri;
 
 		this.readyState = 1;
 	},
 	
-	setRequestHeader: function(header, value){
+	setRequestHeader: function(/*String*/header, /*String*/value){
 		this._requestHeaders[header] = value;
 	},
 	
-	send: function(stringData){
+	send: function(/*String*/stringData){
 		this._bodyData = stringData;
 		
 		dojo.io.XhrIframeProxy.send(this);
@@ -175,15 +190,14 @@ dojo.lang.extend(dojo.io.XhrIframeFacade, {
 	},
 	
 	getAllResponseHeaders: function(){
-		return this._allResponseHeaders;
-
+		return this._allResponseHeaders; //String
 	},
 	
-	getResponseHeader: function(header){
-		return this._responseHeaders[header];
+	getResponseHeader: function(/*String*/header){
+		return this._responseHeaders[header]; //String
 	},
 	
-	_setResponseHeaders: function(allHeaders){
+	_setResponseHeaders: function(/*String*/allHeaders){
 		if(allHeaders){
 			this._allResponseHeaders = allHeaders;
 			

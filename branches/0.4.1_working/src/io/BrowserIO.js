@@ -403,7 +403,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		// requests.
 		return hasXmlHttp
 			&& dojo.lang.inArray(["text/plain", "text/html", "application/xml", "text/xml", "text/javascript", "text/json", "application/json"], (kwArgs["mimetype"].toLowerCase()||""))
-			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
+			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) ); //boolean
 	}
 
 	this.multipartBoundary = "45309FFF-BD65-4d50-99C9-36986896A96F";	// unique guid as a boundary value for multipart posts
@@ -413,14 +413,32 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		//This function will attach an abort() function to the kwArgs dojo.io.Request object,
 		//so if you need to abort the request, you can call that method on the request object.
-		//The following are acceptable properties in kwArgs (a dojo.io.Request object).
+		//The following are acceptable properties in kwArgs (in addition to the
+		//normal dojo.io.Request object properties).
 		//url: String: URL the server URL to use for the request.
-		//transport: String: specify "XMLHTTPTransport" to force the use of this XMLHttpRequest transport.
-		//formNode: DOMNode: a form element node. This should not normally be used. Use new dojo.io.FormBind() instead.
 		//method: String: the HTTP method to use (GET, POST, etc...).
 		//mimetype: Specifies what format the result data should be given to the load/handle callback. Valid values are:
 		//		text/javascript, text/json, application/json, application/xml, text/xml. Any other mimetype will give back a text
 		//		string.
+		//transport: String: specify "XMLHTTPTransport" to force the use of this XMLHttpRequest transport.
+		//headers: Object: The object property names and values will be sent as HTTP request header
+		//		names and values.
+		//sendTransport: boolean: If true, then dojo.transport=xmlhttp will be added to the request.
+		//encoding: String: The type of encoding to use when dealing with the content kwArgs property.
+		//content: Object: The content object is converted into a name=value&name=value string, by
+		//		using dojo.io.argsFromMap(). The encoding kwArgs property is passed to dojo.io.argsFromMap()
+		//		for use in encoding the names and values. The resulting string is added to the request.
+		//formNode: DOMNode: a form element node. This should not normally be used. Use new dojo.io.FormBind() instead.
+		//		If formNode is used, then the names and values of the form elements will be converted
+		//		to a name=value&name=value string and added to the request. The encoding kwArgs property is used
+		//		to encode the names and values.
+		//postContent: String: Raw name=value&name=value string to be included as part of the request.
+		//back or backButton: Function: A function to be called if the back button is pressed. If this kwArgs property
+		//		is used, then back button support via dojo.undo.browser will be used. See notes for dojo.undo.browser on usage.
+		//		You need to set djConfig.preventBackButtonFix = false to enable back button support.
+		//changeUrl: boolean or String: Used as part of back button support. See notes for dojo.undo.browser on usage.
+		//user: String: The user name. Used in conjuction with password. Passed to XMLHttpRequest.open().
+		//password: String: The user's password. Used in conjuction with user. Passed to XMLHttpRequest.open().
 		//file: Object or Array of Objects: an object simulating a file to be uploaded. file objects should have the following properties:
 		//		name or fileName: the name of the file
 		//		contentType: the MIME content type for the file.
@@ -429,7 +447,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		//		property is set to true automatically.
 		//sync: boolean: if true, then a synchronous XMLHttpRequest call is done,
 		//		if false (the default), then an asynchronous call is used.
-		//preventCache: boolean. If true, then a cache busting parameter is added to the request URL.
+		//preventCache: boolean: If true, then a cache busting parameter is added to the request URL.
 		//		default value is false.
 		//useCache: boolean: If true, then XMLHttpTransport will keep an internal cache of the server
 		//		response and use that response if a similar request is done again.

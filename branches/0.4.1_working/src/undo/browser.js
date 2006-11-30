@@ -38,7 +38,8 @@ dojo.undo.browser = {
 	//FIXME: is there a slight race condition in moz using change URL with the timer check and when
 	//       the hash gets set? I think I have seen a back/forward call in quick succession, but not consistent.
 	addToHistory: function(args){
-		//summary: adds a state object (args) to the history list.
+		//summary: adds a state object (args) to the history list. You must set
+		//djConfig.preventBackButtonFix = false to use dojo.undo.browser.
 
 		//args: Object
 		//		args can have the following properties:
