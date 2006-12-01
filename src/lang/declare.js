@@ -99,7 +99,8 @@ dojo.lang.declare = function(	/*String*/ className,
 	dojo.lang.extend(ctor, dojo.lang.declare._common);
 	ctor.prototype.constructor = ctor;
 	ctor.prototype.initializer = (ctor.prototype.initializer)||(init)||(function(){});
-	dojo.lang.setObjPathValue(className, ctor, null, true);
+	var created = dojo.parseObjPath(className, null, true);
+	created.obj[created.prop] = ctor;
 	return ctor; // Function
 }
 
