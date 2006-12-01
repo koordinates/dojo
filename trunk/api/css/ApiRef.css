@@ -1,5 +1,5 @@
 * {
-	font-size:12px;
+	font-size: 13px;
 }
 
 BODY {
@@ -40,7 +40,9 @@ BODY {
 	border-width:0px 1px 1px 0px;
 }
 #content {
-	font-family:Verdana;
+	font-family: Tahoma, Verdana;
+	font-size: 13px;
+	line-height: 18px;
 }
 #meta {
 
@@ -254,12 +256,14 @@ BODY {
 
 .MethodSummary,
 .ConstructorSummary {
-	font-size:.9em;
+	font-size: 1.1em;
+	line-height: 1.5em;
 }
 
 .MethodDetails,
 .ConstructorDetails {
-	font-size: .9em;
+	font-size: 1.1em;
+	line-height: 1.5em;
 }
 
 .Method .itemLink,

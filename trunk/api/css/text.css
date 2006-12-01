@@ -5,9 +5,9 @@
 */
 
 /* font definitions */
-body{ font:85% Helvetica, Arial, sans-serif; }
-div, p, span, td, li { font: 1em Helvetica, Arial, sans-serif; }
-h1, h2, h3, h4, h5, h6 { font-family: Georgia,Times,serif; }
+body{ font: Tahoma, Helvetica, Arial, sans-serif; }
+div, p, span, td, li { font: 1em Tahoma, Helvetica, Arial, sans-serif; }
+h1, h2, h3, h4, h5, h6 { font-family: Tahoma, Georgia, Times ,serif; }
 
 /* margin and padding defaults */
 body{ padding:0; margin:0; }
