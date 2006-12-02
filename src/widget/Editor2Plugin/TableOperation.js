@@ -59,17 +59,13 @@ dojo.lang.declare("dojo.widget.Editor2Plugin.toggleTableBorderCommand", dojo.wid
 				this._editor.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
 			}
 		}
+		
 	},
 	getText: function(){
 		return 'Toggle Table Border';
 	},
 	getState: function(){
-		if(this._editor._lastStateTimestamp > this._updateTime || this._state == undefined){
-			this._updateTime = this._editor._lastStateTimestamp;
-			var table = dojo.withGlobal(this._editor.window, "hasAncestorElement", dojo.html.selection, ['table']);
-			this._state = this._showTableBorder ? dojo.widget.Editor2Manager.commandState.Latched : dojo.widget.Editor2Manager.commandState.Enabled;
-		}
-		return this._state;
+		return this._showTableBorder ? dojo.widget.Editor2Manager.commandState.Latched : dojo.widget.Editor2Manager.commandState.Enabled;
 	}
 });
 

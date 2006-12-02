@@ -38,7 +38,7 @@ dojo.lang.mixin(dojo.widget.Editor2Manager,
 			}
 		}
 		if(name == 'createlink' || name == 'insertimage'){
-			if(!dojo.widget.Editor2Plugin.DialogCommands){
+			if(!dojo.widget['Editor2Plugin'] || !dojo.widget.Editor2Plugin['DialogCommands']){
 				dojo.deprecated('Command '+name+" is now defined in plugin dojo.widget.Editor2Plugin.DialogCommands. It shall be required explicitly", "0.6");
 				dojo['require']("dojo.widget.Editor2Plugin.DialogCommands"); //avoid loading by the build
 			}
