@@ -298,7 +298,7 @@ dojo.widget.defineWidget(
 				//won't work: no content is shown. However, add a delay
 				//can workaround this. No clue why.
 				setTimeout(function(){self._drawObject(html);}, 0);
-			}else if(h.ie){ // contentEditable, easy
+			}else if(h.ie || this._safariIsLeopard() || h.opera){ // contentEditable, easy
 				this.iframe = dojo.doc().createElement( 'iframe' ) ;
 				this.iframe.src = 'javascript:void(0)';
 				this.editorObject = this.iframe;
@@ -1136,6 +1136,16 @@ dojo.widget.defineWidget(
 			return command;
 		},
 
+		_safariIsLeopard: function(){
+			var gt420 = false;
+			if(dojo.render.html.safari){
+				var tmp = dojo.render.html.UA.split("AppleWebKit/")[1];
+				var ver = parseFloat(tmp.split(" ")[0]);
+				if(ver >= 420){ gt420 = true; }
+			}
+			return gt420;
+		},
+
 		queryCommandAvailable: function (/*String*/command) {
 			// summary:
 			//		Tests whether a command is supported by the host. Clients SHOULD check
@@ -1148,12 +1158,7 @@ dojo.widget.defineWidget(
 			var opera = 1 << 3;
 			var safari420 = 1 << 4;
 
-			var gt420 = false;
-			if(dojo.render.html.safari){
-				var tmp = dojo.render.html.UA.split("AppleWebKit/")[1];
-				var ver = parseFloat(tmp.split(" ")[0]);
-				if(ver >= 420){ gt420 = true; }
-			}
+			var gt420 = this._safariIsLeopard();
 
 			function isSupportedBy (browsers) {
 				return {
