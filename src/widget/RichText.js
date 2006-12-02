@@ -338,38 +338,37 @@ dojo.widget.defineWidget(
 				// elements have margins set in CSS :-(
 
 				//if the normal way fails, we try the hard way to get the list
-				if(!this._cacheLocalBlockFormatNames()){
-					//in the array below, ul can not come directly after ol, otherwise the queryCommandValue returns Normal for it
-					var formats = ['p', 'pre', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'div', 'ul'];
-					var localhtml = "";
-					for(var i in formats){
-						if(formats[i].charAt(1) != 'l'){
-							localhtml += "<"+formats[i]+"><span>content</span></"+formats[i]+">";
-						}else{
-							localhtml += "<"+formats[i]+"><li>content</li></"+formats[i]+">";
-						}
+				//do not use _cacheLocalBlockFormatNames here, as it will trigger security warning in IE7
+				//in the array below, ul can not come directly after ol, otherwise the queryCommandValue returns Normal for it
+				var formats = ['p', 'pre', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'div', 'ul'];
+				var localhtml = "";
+				for(var i in formats){
+					if(formats[i].charAt(1) != 'l'){
+						localhtml += "<"+formats[i]+"><span>content</span></"+formats[i]+">";
+					}else{
+						localhtml += "<"+formats[i]+"><li>content</li></"+formats[i]+">";
 					}
-					//queryCommandValue returns empty if we hide editNode, so move it out of screen temporary
-					with(this.editNode.style){
-						position = "absolute";
-						left = "-2000px";
-						top = "-2000px";
-					}
-					this.editNode.innerHTML = localhtml;
-					var node = this.editNode.firstChild;
-					while(node){
-						dojo.withGlobal(this.window, "selectElement", dojo.html.selection, [node.firstChild]);
-						var nativename = node.tagName.toLowerCase();
-						this._local2NativeFormatNames[nativename] = this.queryCommandValue("formatblock");
+				}
+				//queryCommandValue returns empty if we hide editNode, so move it out of screen temporary
+				with(this.editNode.style){
+					position = "absolute";
+					left = "-2000px";
+					top = "-2000px";
+				}
+				this.editNode.innerHTML = localhtml;
+				var node = this.editNode.firstChild;
+				while(node){
+					dojo.withGlobal(this.window, "selectElement", dojo.html.selection, [node.firstChild]);
+					var nativename = node.tagName.toLowerCase();
+					this._local2NativeFormatNames[nativename] = this.queryCommandValue("formatblock");
 //						dojo.debug([nativename,this._local2NativeFormatNames[nativename]]);
-						this._native2LocalFormatNames[this._local2NativeFormatNames[nativename]] = nativename;
-						node = node.nextSibling;
-					}
-					with(this.editNode.style){
-						position = "";
-						left = "";
-						top = "";
-					}
+					this._native2LocalFormatNames[this._local2NativeFormatNames[nativename]] = nativename;
+					node = node.nextSibling;
+				}
+				with(this.editNode.style){
+					position = "";
+					left = "";
+					top = "";
 				}
 
 				this.editNode.innerHTML = html;
@@ -784,7 +783,7 @@ dojo.widget.defineWidget(
 						}
 					}
 				}catch(e){ error = true; }
-				if(obj){
+				if(obj && !this.object){
 					//delete the temporary obj
 					dojo.body().removeChild(obj);
 				}
