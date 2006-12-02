@@ -792,9 +792,15 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	/* data may contain an almost ready child, or anything else, suggested to server */
 	/*in Rpc controllers server responds with child data to be inserted */
 	createChild: function(parent, index, data) {
-		return this.runStages(this.canCreateChild, this.prepareCreateChild, this.doCreateChild, this.finalizeCreateChild, this.exposeCreateChild, arguments);		
+		if(!data) {
+			data = {title:parent.tree.defaultChildTitle};
+		}
+		return this.runStages(this.canCreateChild, this.prepareCreateChild, this.doCreateChild, this.finalizeCreateChild, this.exposeCreateChild,
+			[parent, index, data]);		
 	},
 
+	prepareCreateChild: function() { return true; },
+	finalizeCreateChild: function() {},
 
 	doCreateChild: function(parent, index, data) {
 		//dojo.debug("doCreateChild parent "+parent+" index "+index+" data "+data);
