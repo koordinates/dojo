@@ -1,8 +1,7 @@
-
 dojo.provide("dojo.widget.TreeBasicControllerV3");
 
 dojo.require("dojo.event.*");
-dojo.require("dojo.json")
+dojo.require("dojo.json");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.TreeCommon");
 dojo.require("dojo.widget.TreeNodeV3");
@@ -42,7 +41,7 @@ dojo.widget.defineWidget(
 	
 	// Summary: basic filter, so that only widgets are 'listened to'
 	listenNodeFilter: function(elem) {
-		return elem instanceof dojo.widget.Widget
+		return elem instanceof dojo.widget.Widget;
 	},	
 		
 	// Summary: Reference to TreeEditor component to edit nodes
@@ -87,7 +86,9 @@ dojo.widget.defineWidget(
 
 	// down arrow
 	_focusNextVisible: function(nodeWidget) {
-		
+
+		var returnWidget;
+
 		// if this is an expanded folder, get the first child
 		if (nodeWidget.isFolder && nodeWidget.isExpanded && nodeWidget.children.length > 0) {
 			returnWidget = nodeWidget.children[0];			
@@ -98,7 +99,7 @@ dojo.widget.defineWidget(
 			}
 			
 			if (nodeWidget.isTreeNode) {
-				var returnWidget = nodeWidget.parent.children[nodeWidget.getParentIndex()+1];				
+				returnWidget = nodeWidget.parent.children[nodeWidget.getParentIndex()+1];				
 			}
 			
 		}
@@ -116,7 +117,7 @@ dojo.widget.defineWidget(
 		
 		// if younger siblings		
 		if (!nodeWidget.isFirstChild()) {
-			var previousSibling = nodeWidget.parent.children[nodeWidget.getParentIndex()-1]
+			var previousSibling = nodeWidget.parent.children[nodeWidget.getParentIndex()-1];
 
 			nodeWidget = previousSibling;
 			// if the previous nodeWidget is expanded, dive in deep
@@ -311,7 +312,7 @@ dojo.widget.defineWidget(
 		tree.domNode.setAttribute("tabIndex", "0");
 		
 		if (tree.expandLevel) {								
-			this.expandToLevel(tree, tree.expandLevel)
+			this.expandToLevel(tree, tree.expandLevel);
 		}
 		if (tree.loadLevel) {
 			this.loadToLevel(tree, tree.loadLevel);
@@ -335,7 +336,7 @@ dojo.widget.defineWidget(
 		
 		var checkExpandClick = function(el) {
 			return el === node.expandNode;
-		}
+		};
 		
 		if (this.checkPathCondition(domElement, checkExpandClick)) {
 			this.processExpandClick(node);			
@@ -371,7 +372,6 @@ dojo.widget.defineWidget(
 	
 	expandAll: function(nodeOrTree) {		
 		return this.expandToLevel(nodeOrTree, Number.POSITIVE_INFINITY);
-		
 	},
 	
 	
@@ -380,12 +380,12 @@ dojo.widget.defineWidget(
 		
 		var filter = function(elem) {
 			return (elem instanceof dojo.widget.Widget) && elem.isFolder && elem.isExpanded;
-		}
+		};
 		
 		if (nodeOrTree.isTreeNode) {		
 			this.processDescendants(nodeOrTree, filter, this.collapse);
 		} else if (nodeOrTree.isTree) {
-			dojo.lang.forEach(nodeOrTree.children,function(c) { _this.processDescendants(c, filter, _this.collapse) });
+			dojo.lang.forEach(nodeOrTree.children,function(c) { _this.processDescendants(c, filter, _this.collapse); });
 		}
 	},
 	
@@ -393,14 +393,14 @@ dojo.widget.defineWidget(
 	 * expand tree to specific node
 	 */
 	expandToNode: function(node, withSelected) {
-		n = withSelected ? node : node.parent
-		s = []
+		n = withSelected ? node : node.parent;
+		s = [];
 		while (!n.isExpanded) {
-			s.push(n)
-			n = n.parent
+			s.push(n);
+			n = n.parent;
 		}
 				
-		dojo.lang.forEach(s, function(n) { n.expand() })
+		dojo.lang.forEach(s, function(n) { n.expand(); });
 	},
 		
 	/**
@@ -418,8 +418,8 @@ dojo.widget.defineWidget(
 		var callFunc = function(node, iterator) {			
 			 _this.expand(node, true);
 			 iterator.forward();
-		}
-			
+		};
+
 		var iterator = new dojo.widget.TreeTimeoutIterator(nodeOrTree, callFunc, this);
 		iterator.setFilter(filterFunc);
 		
@@ -478,7 +478,7 @@ dojo.widget.defineWidget(
 	
 	// -------------------------- TODO: Inline edit node ---------------------
 	canEditLabel: function(node) {
-		if (node.actionIsDisabledNow(node.actions.EDIT)) return false;
+		if (node.actionIsDisabledNow(node.actions.EDIT)) { return false; }
 
 		return true;
 	},
@@ -495,8 +495,6 @@ dojo.widget.defineWidget(
 		}
 				
 		this.doEditLabelStart(node);
-		
-	
 	},
 	
 	
@@ -555,9 +553,7 @@ dojo.widget.defineWidget(
 			}
 		}
 	},
-	
-	
-		
+
 	makeDefaultNode: function(parent, index) {
 		var data = {title:parent.tree.defaultChildTitle};
 		return dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(this,parent,index,data);
@@ -580,8 +576,7 @@ dojo.widget.defineWidget(
 		}
 		
 		var result = make.apply(this, args);
-		
-		
+
 		if (finalize) {
 			finalize.apply(this,args);			
 		}
@@ -589,8 +584,7 @@ dojo.widget.defineWidget(
 		if (!result) {
 			return result;
 		}
-		
-			
+
 		if (expose) {
 			expose.apply(this, args);
 		}
@@ -611,7 +605,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		}
 		
 		var child = this.doCreateChild(parent, index, data);
-		if (!child) return false;
+		if (!child) { return false; }
 		this.exposeCreateChild(parent, index, data);
 		
 		child.isPhantom = true;
@@ -620,13 +614,9 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 			//dojo.debug("editLabelStart editor open");
 			this.editLabelFinish(this.editor.saveOnBlur);			
 		}
-		
-		
-				
+
 		this.doEditLabelStart(child);		
-	
-	}
-	
+	}	
 });
 
 
@@ -794,7 +784,6 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	//                             Create node stuff
 	// -----------------------------------------------------------------------------
 
-
 	canCreateChild: function(parent, index, data) {
 		if (parent.actionIsDisabledNow(parent.actions.ADDCHILD)) {
 			return false;
@@ -808,9 +797,15 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	/* data may contain an almost ready child, or anything else, suggested to server */
 	/*in Rpc controllers server responds with child data to be inserted */
 	createChild: function(parent, index, data) {
-		return this.runStages(this.canCreateChild, this.prepareCreateChild, this.doCreateChild, this.finalizeCreateChild, this.exposeCreateChild, arguments);		
+		if(!data) {
+			data = {title:parent.tree.defaultChildTitle};
+		}
+		return this.runStages(this.canCreateChild, this.prepareCreateChild, this.doCreateChild, this.finalizeCreateChild, this.exposeCreateChild,
+			[parent, index, data]);		
 	},
 
+	prepareCreateChild: function() { return true; },
+	finalizeCreateChild: function() {},
 
 	doCreateChild: function(parent, index, data) {
 		//dojo.debug("doCreateChild parent "+parent+" index "+index+" data "+data);
@@ -826,6 +821,4 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	exposeCreateChild: function(parent) {
 		return this.expand(parent);
 	}
-
-
 });
