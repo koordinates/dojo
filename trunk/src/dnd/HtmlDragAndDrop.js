@@ -268,16 +268,16 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 					top: this.dragStartPosition.y + 1};
 
 				// animate
-				var anim = dojo.lfx.slideTo(this.dragClone, endCoords, 500, dojo.lfx.easeOut);
+				var anim = dojo.lfx.slideTo(this.dragClone, endCoords, 300);
 				var dragObject = this;
-				dojo.event.connect(anim, "onEnd", function (e) {
+				dojo.event.connect(anim, "onEnd", function(e){
 					// pause for a second (not literally) and disappear
-					dojo.lang.setTimeout(function() {
+					// dojo.lang.setTimeout(function() {
 							dojo.html.removeNode(dragObject.dragClone);
 							// Allow drag clone to be gc'ed
 							dragObject.dragClone = null;
-						},
-						200);
+					// 	},
+					// 	50);
 				});
 				anim.play();
 				break;
