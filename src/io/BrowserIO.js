@@ -41,12 +41,7 @@ dojo.io.updateNode = function(/*DOMNode*/node, /*String or Object*/urlOrArgs){
 	args.mimetype = "text/html";
 	args.load = function(t, d, e){
 		while(node.firstChild){
-			if(dojo["event"]){
-				try{
-					dojo.event.browser.clean(node.firstChild);
-				}catch(e){}
-			}
-			node.removeChild(node.firstChild);
+			dojo.dom.destroyNode(node.firstChild);
 		}
 		node.innerHTML = d;
 	};
