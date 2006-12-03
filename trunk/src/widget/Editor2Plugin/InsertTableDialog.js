@@ -10,6 +10,7 @@ dojo.widget.defineWidget(
 
 	loadContent: function(){
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+		curInst.saveSelection(); //save selection (none-activeX IE)
 		this.tableNode = dojo.withGlobal(curInst.window, "getSelectedElement", dojo.html.selection);
 		if(!this.tableNode || this.tableNode.tagName.toUpperCase() != 'TABLE'){
 			this.tableNode = dojo.withGlobal(curInst.window, "getAncestorElement", dojo.html.selection, ['table']);
@@ -130,6 +131,7 @@ dojo.widget.defineWidget(
 			outertbody += "</tbody>";
 		}
 		html += outertbody+"</table>";
+		curInst.restoreSelection(); //restore previous selection, required for none-activeX IE
 		curInst.execCommand("inserthtml", html);
 
 		this.cancel();
