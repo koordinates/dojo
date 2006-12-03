@@ -230,7 +230,11 @@ dojo.declare(
 			if(this.openedForWindow){
 				this.openedForWindow.focus()
 			}
-			dojo.withGlobal(this.openedForWindow||dojo.global(), "moveToBookmark", dojo.html.selection, [this._bookmark]);
+			try{
+				dojo.withGlobal(this.openedForWindow||dojo.global(), "moveToBookmark", dojo.html.selection, [this._bookmark]);
+			}catch(e){
+				/*squelch IE internal error, see http://trac.dojotoolkit.org/ticket/1984 */
+			}
 		}
 		this._bookmark = null;
 	},
