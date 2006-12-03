@@ -711,10 +711,9 @@ dojo.declare("dojo.widget.DomWidget",
 				dojo.widget._cssFiles[cpath.toString()] = true;
 			}
 		
-			if((this["templateCssString"])&&(!this.templateCssString["loaded"])){
+			if((this["templateCssString"])&&(!dojo.widget._cssStrings[this.templateCssString])){
 				dojo.html.insertCssText(this.templateCssString, null, cpath);
-				if(!this.templateCssString){ this.templateCssString = ""; }
-				this.templateCssString.loaded = true;
+				dojo.widget._cssStrings[this.templateCssString] = true;
 			}
 			if(	
 				(!this.preventClobber)&&(
