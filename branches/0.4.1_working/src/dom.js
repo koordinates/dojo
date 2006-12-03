@@ -210,11 +210,13 @@ dojo.dom.destroyNode = function(/*Node*/node){
 	if(node.parentNode){
 		node = dojo.dom.removeNode(node);
 	}
-	if(dojo.evalObjPath("dojo.event.browser.clean", false)){
-		dojo.event.browser.clean(node);
-	}
-	if(dojo.render.html.ie){
-		node.outerHTML=''; //prevent ugly IE mem leak associated with Node.removeChild (ticket #1727)
+	if(node.nodeType != 3){ // ingore TEXT_NODE
+		if(dojo.evalObjPath("dojo.event.browser.clean", false)){
+			dojo.event.browser.clean(node);
+		}
+		if(dojo.render.html.ie){
+			node.outerHTML=''; //prevent ugly IE mem leak associated with Node.removeChild (ticket #1727)
+		}
 	}
 }
 
