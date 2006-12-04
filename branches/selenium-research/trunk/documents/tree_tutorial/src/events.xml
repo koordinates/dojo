@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Tree events</title>
+    
+    <para>There are many classes of events, published with dojo.event.publish mechanism. Every event has a name and message object,
+        containing more precise information about what happened. You may use events to update your data while tree changes, and
+        to perform additional processing of involved objects.</para>
+    
+    <para>There is a default naming scheme for an event class. E.g for a tree with widgetId='mytree', event of class <property>afterTreeCreate</property>
+        will be named "mytree/afterTreeCreate". You may provide other names in <property>eventNames</property> property of the tree.</para>
+    
+    
+    <section>
+        <title>afterTreeCreate</title>
+        <para>Event occurs after tree creation is complete. There is an alternative to hook on this action by putting your objects in
+            "listeners" property of the tree. The difference is that listeners are guaranteed to hook before nodes get added, and <property>afterTreeCreate</property>
+            is published after Tree widget is created.</para>
+        
+        <variablelist>
+            <varlistentry>
+                <term>source</term>
+                <listitem><simpara>references to tree</simpara></listitem>
+            </varlistentry>
+        </variablelist>
+        
+    </section>
+    
+    <section>
+        <title>beforeTreeDestroy</title>
+        
+        <para>Published right before actual Tree#destroy method is called. Useful for cleanups</para>
+        
+        
+        <variablelist>
+            <varlistentry>
+                <term>source</term>
+                <listitem><simpara>references to tree</simpara></listitem>
+            </varlistentry>
+        </variablelist>
+    </section>
+    
+    <section>
+        <title>beforeNodeDestroy</title>
+        
+        
+        <para>Right before TreeNode#destroy is called. Node is detached after this event fired.</para>
+        
+        <variablelist>
+            <varlistentry>
+                <term>source</term>
+                <listitem><simpara>references to node</simpara></listitem>
+            </varlistentry>
+        </variablelist>
+        
+        
+    </section>
+    
+    
+    <section>        
+        <title>afterChangeTree</title>
+    
+            <para>This event is tightly created with node creation process. It is fired when
+            
+            <itemizedlist>
+                <listitem><simpara>a node is created</simpara></listitem>
+                <listitem><simpara>a node moves to another tree widget</simpara></listitem>
+            </itemizedlist>                
+                
+            </para>
+    
+        <variablelist>
+            <varlistentry>
+                <term>oldTree</term>
+                <listitem><simpara>references previous tree, null if node has been just created</simpara></listitem>                
+            </varlistentry>
+            <varlistentry>
+                <term>newTree</term>
+                <listitem><simpara>new(current) tree</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>node</term>
+                <listitem><simpara>target node</simpara></listitem>
+            </varlistentry>
+            
+            
+        </variablelist>
+        
+    
+    </section>
+    
+    
+    <section>
+        <title>afterSetFolder</title>
+        
+        <para>Fires when a node obtains "folder" state. That may happen when a first child is added to a leaf, or if a node was initially
+            created with isFolder=true</para>
+        
+        
+        <variablelist>
+            <varlistentry>
+                <term>source</term>
+                <listitem><simpara>references to node</simpara></listitem>
+            </varlistentry>
+        </variablelist>
+        
+        
+    </section>
+    
+    
+    <section>
+        <title>afterUnsetFolder</title>
+        
+        <para>Fires when a node obtains looses "folder" state. That may happen when a last child leaves the node, and <property>
+            Tree.unsetFolderOnEmpty</property>is set, or when <property>unsetFolder</property> is called explicitly.</para>
+        
+        
+        <variablelist>
+            <varlistentry>
+                <term>source</term>
+                <listitem><simpara>references to node</simpara></listitem>
+            </varlistentry>
+        </variablelist>
+        
+        
+    </section>
+    
+    
+    <section>
+        <title>(before|after)Move(From|To)</title>
+        
+        <para>These events share same arguments and fire when a node is moved. Move process is considered something special.
+        When you move a node, no detach/addChild events get thrown. That allows to tell situations when a node leaves a tree for some time
+            (detached then attached) from situations when a node is simply moved to another location</para>
+        
+        
+        <variablelist>
+            <varlistentry>
+                <term>oldParent</term>
+                <listitem><simpara>previous parent</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>oldTree</term>
+                <listitem><simpara>previous tree</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>oldIndex</term>
+                <listitem><simpara>previous index among siblings</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>newParent</term>
+                <listitem><simpara>new parent</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>newTree</term>
+                <listitem><simpara>new tree</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>newIndex</term>
+                <listitem><simpara>new index among siblings</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>child</term>
+                <listitem><simpara>target node</simpara></listitem>
+            </varlistentry>
+            
+        </variablelist>
+        
+    </section>
+    
+    <section>
+        <title>afterAddChild</title>
+        
+        <para>Published when a node is attached to parent. This may happen at the end of creation process, or when a node is 
+            lazily instantiated from data object.
+        </para>
+        
+        <variablelist>
+            <varlistentry>
+                <term>child</term>
+                <listitem><simpara>references to node</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>index</term>
+                <listitem><simpara>index among siblings</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>parent</term>
+                <listitem><simpara>current parent who adopted a child</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>childWidgetCreated</term>
+                <listitem><simpara>flag is set if child was laziliy instantiated. That is: it resided as data object in <property>children</property>
+                    array, but user expanded its parent, so node widget came to life.</simpara></listitem>
+            </varlistentry>
+        </variablelist>
+               
+        
+    </section>
+    
+    
+    <section>
+        <title>afterDetach</title>
+        
+        <para>Occurs when a node is detached. This may happen in the process of node destruction.</para>
+        
+                
+        <variablelist>
+            <varlistentry>
+                <term>child</term>
+                <listitem><simpara>references to node</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>parent</term>
+                <listitem><simpara>references to old parent</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>index</term>
+                <listitem><simpara>references to index among children of old parent</simpara></listitem>
+            </varlistentry>
+            
+        </variablelist>
+    </section>
+    
+    
+    <section>
+        <title>after(Expand|Collapse)</title>
+        
+        <para>Fire when a node is expanded/collapsed. Some togglers do nice animation hiding/showing node.
+        This event fires when animation finishes.</para>
+    
+        <variablelist>
+            <varlistentry>
+                <term>source</term>
+                <listitem><simpara>target node</simpara></listitem>
+            </varlistentry>
+        </variablelist>
+        
+        
+    </section>
+    
+    
+    <section>
+        <title>afterSetTitle</title>
+        
+        <para>When a node is edited, or explicit setTitle method is called, this event helps to inform interested parts about changes.</para>
+        
+        <variablelist>
+            <varlistentry>
+                <term>source</term>
+                <listitem><simpara>target node</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>title</term>
+                <listitem><simpara>new node title</simpara></listitem>
+            </varlistentry>
+            
+        </variablelist>
+        
+        </section>
+    
+    
+</section>
+

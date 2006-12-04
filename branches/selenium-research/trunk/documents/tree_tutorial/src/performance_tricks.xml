@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Performance tricks</title>
+    
+    <para>
+    When talking about performance, one should understand, that there are <type>single-node operations</type>
+        
+    that operate on single node... These ones are fast. The examples are: create a node, delete a node,
+     move a node along the tree.
+    </para>
+    
+    <para>... And there are batch operations that touch a lot of nodes. The examples are: 
+        initial tree creation,  moving a node from one tree to another which has different listeners, etc.</para>
+    
+    <para>That performance issues become noticeable at 100-300 tree nodes depending on your trees.
+        All algorithms are linear in worst case, but JS is slow language, DOM is also not that fast. 
+      </para>
+    
+    <para>There is a number of features one could use to get a speedup.</para>
+    
+    <section>
+        <title>Lazy loading</title>
+        
+        <para>A node can be created with <code>isFolder=true</code> flag, but without children.
+            Any node has a <code>state</code>, initially UNCHECKED for empty folder, and used
+            by  TreeLoadingController.</para>
+        
+        <para>When a user presses expand, tree controller (supporting lazy loading) will send a request to server asking for nodes,
+            and parse the answer creating children.</para>
+        
+        <para>The benefit is obvious: you don't have to load/process whole tree at once.
+            You can only load a single node and user will load the rest clicking "expand"</para>
+        
+    </section>
+    
+    <section>
+        <title>Lazy creation</title>
+        
+        <para>
+            Node/tree keeps array of its children in <code>children</code> property. 
+            Lazy creation is somewhat a half-way approach to lazy loading. It allows you to put data objects 
+            into this array and tree will create widgets of them later, when they are expanded.
+        </para>
+        
+        <para>For instance, one can call <code>node.children = [{title:'node1'},{title:'node2'}]</code>.
+            The objects will be set, but no widgets are created. You can also set children to nested array:
+            <code>node.children = [{title:'node1', children:[{title:'node2'}] }]</code>.    
+            
+        </para>
+        
+        <para>You can create tree on server, JSON-serialize it and put to HTML, that is gzip-compressed.
+            Compression will be 6 times or more, so it is not that space hungry. 
+        </para>
+        
+        <para>The benefit comes from postponing almost all real job: widget creation and attaching it to tree will
+        happen in expansion-time.</para>
+            
+        
+        <section>
+            <title>Comparison between lazy creation and lazy loading</title>
+            
+            <itemizedlist>
+                <listitem>You need web-service for lazy loading, not for lazy creation</listitem>
+                <listitem>No network waits for lazy creation</listitem>
+                <listitem>Lazy creation gives you the tree right here. You can search data objects and modify them
+                    without spending time and memory on graphical widgets</listitem>                
+            </itemizedlist>
+                        
+            <para>Sometimes, lazy creation and loading may work together nicely, providing seamless increase
+                in speed and decrease in memory footprint. For instance, server may pass a whole tree branch in JSON
+            to lazy loading controller. Top nodes will be created right along, because user needs them, but the rest
+            of the branch will be postponed relying on lazy creation feature.</para>
+            
+            
+        </section>
+        
+        <para>
+            There are operations, like "expandAll" where such lazy tricks don't help, because all graphical widgets must be processed. That is why
+            widget creation process is well-optimized itself. <code>createSimple</code> is a hacky program-only way
+            to create TreeNodes fast. <code>setChildren</code> is a method to assign (and create if needed)
+            all children at once. It helps to evade some extra work happening when children are added one by one.
+           </para>
+            
+</section>          
+            
+    <section>
+        
+        <title>IE image-reloading fixup (!!!)</title>
+        
+        <para>IE has a well-known bug. If an image was loaded dynamically - with a <code>new Image()</code>, or <code>img.src=</code>
+            assignment, or even as a background of a new node, it will not be cached. So every time when you create a node, all needed icons get loaded
+            from server (or requested at least). A possible solution is to put a special div into HTML (adjust src to your path):
+        <literallayout>&lt;div style="display:none"&gt;
+  &lt;!-- IE has a bug: it reloads all dynamically resolved images, no matter, is it 
+  new Image() or CSS background. If you don't specify images like that,
+  it will reload them every time a new node is created --&gt;
+  &lt;img src="../../../src/widget/templates/images/TreeV3/i.gif"/&gt;
+  &lt;img src="../../../src/widget/templates/images/TreeV3/i_half.gif"/>
+  &lt;img src="../../../src/widget/templates/images/TreeV3/expand_minus.gif"/&gt;
+  &lt;img src="../../../src/widget/templates/images/TreeV3/expand_plus.gif"/&gt;
+  &lt;img src="../../../src/widget/templates/images/TreeV3/expand_leaf.gif"/&gt;
+  &lt;img src="../../../src/widget/templates/images/TreeV3/i_long.gif"/&gt;
+  &lt;img src="../../../src/widget/templates/images/TreeV3/document.gif"/&gt;
+  &lt;img src="../../../src/widget/templates/images/TreeV3/open.gif"/&gt;
+  &lt;img src="../../../src/widget/templates/images/TreeV3/closed.gif"/&gt;
+&lt;/div&gt;</literallayout>
+        
+            </para>
+        
+    </section>
+            
+    
+    
+    
+    
+    
+</section>

@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<title>dojo.behavior.form Tests</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.debug.console");
+			dojo.require("dojo.behavior.form");
+			
+			dojo.addOnLoad(function(){
+				dojo.behavior.form.decorateInputTitles(dojo.byId("testForm"));
+			});
+		</script>
+		
+		<style>
+			input		{padding-left:0.3em}
+			input.title {color:#aaa;font-style: italic;font-weight:normal;font-size:small}
+		</style>
+	</head>
+	<body>
+		<form id="testForm" >
+			<fieldset>
+				<legend>Favorites</legend>
+				<label for="favcharacter">Favorite Character</label>
+				<input type="text" size="32" name="favcharacter" title="Tigger/Winnie the Pooh/etc" />
+				
+				<br/><br/>
+				
+				<label for="timeofday">Time of Day</label>
+				<input type="text" size="40" name="timeofday" title="Morning/Afternoon/Witching hour" />
+			</fieldset>
+			
+			<fieldset>
+				<legend>Non decorated fields</legend>
+				<input type="text" size="40" value="Shouldn't get decorated" />
+			</fieldset>
+		</form>
+	</body>
+</html>
+

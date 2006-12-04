@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section SYSTEM "http://www.docbook.org/xml/4.4/docbookx.dtd" [
+  <!ENTITY introduction SYSTEM "introduction.xml">
+  <!ENTITY components SYSTEM "components.xml">
+   <!ENTITY faq SYSTEM "faq.xml">
+   <!ENTITY whatsnew SYSTEM "whatsnew.xml">
+   <!ENTITY todo SYSTEM "todo.xml">
+   <!ENTITY performance SYSTEM "performance.xml">  
+   <!ENTITY extensions SYSTEM "extensions.xml">     
+   <!ENTITY features SYSTEM "features.xml">  
+   <!ENTITY performance_tricks SYSTEM "performance_tricks.xml">
+   <!ENTITY tree_treenode SYSTEM "tree_treenode.xml">
+   <!ENTITY lazy_loading SYSTEM "lazy_loading.xml">
+   <!ENTITY nodecreation SYSTEM "nodecreation.xml">
+   <!ENTITY events SYSTEM "events.xml">
+   <!ENTITY thanks SYSTEM "thanks.xml">
+]>
+<section>
+    <title>Dojo Tree</title>
+    &introduction;
+    &whatsnew;
+    &features;
+    &todo;
+    
+        
+    &events;
+    &performance;
+    &performance_tricks;
+    &components;
+    &lazy_loading;
+    &extensions;
+    &nodecreation;
+    &faq;
+    &thanks;
+    
+</section>
+

@@ -1,0 +1,554 @@
+# ------------------------------------------------------------------------------------
+# General properties
+# ------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------
+# the list of input source directories
+# can be specified with command line option -d or --sourcedirs
+# value is a comma-separated list of directories
+# optional property, default value is the directory where jsl was started
+#
+# jsl.sources
+
+# ----------------------------------------------------------------
+# the list of input source entities to ignore
+# value is a comma-separated list of file patterns
+# optional property
+#
+# jsl.sources.exclude
+
+# ----------------------------------------------------------------
+# the flag that controls whether excluded files and source files
+# without any defined suffix should be copied over (mirrored) into the output dir
+# value is a boolean
+# optional property (default is false)
+#
+# jsl.sources.mirror
+
+# ----------------------------------------------------------------
+# the flag that controls whether to follow symlinks when calculating the canonical path
+# value is a boolean
+# optional property (default is true)
+# property only makes sense on UNIX systems and has no influence on windows
+#
+# jsl.sources.follow.symlinks
+
+# ----------------------------------------------------------------
+# the web root directory
+# needed to resolve absolute paths in src attributes in html
+# value is a directory
+# optional property, default value is the directory where jsl was started
+#
+# jsl.web.root
+
+# ----------------------------------------------------------------
+# the web maps (webserver url maps)
+# needed to resolve absolute paths in src attributes in html
+# value is a comma-separated list of key-value pairs
+# keys are url prefixes, values are directories on local file system
+# example: 
+# jsl.web.maps = /fw,dig/framework/client/content,/fw/images,dig/images,/music,dig/client/music
+# optional property
+#
+# jsl.web.maps
+
+# ----------------------------------------------------------------
+# the web tokens (set of properties)
+# needed to resolve paths in src attributes in html that include dig tokens in them
+# value is a string
+# the property must end in a token name
+# optional property
+# example: 
+#
+# jsl.web.tokens.brand=aol
+# jsl.web.tokens.locale=chinese
+# 
+# <script src="@brand@/@locale@/Foo.js"></script>
+# will be resolved to aol/chinese/Foo.js
+
+# ----------------------------------------------------------------
+# the list of tasks to execute
+# can be specified with command line option -a or --tasks
+# value is a comma-separated list of task names
+# all task names known so far: print,javadoc,jabber,janitor,muffler
+# required property
+#
+#jsl.tasklist =  import,muffler,janitor,print
+
+jsl.tasklist =  import, require, muffler, janitor, print
+
+# ----------------------------------------------------------------
+# the tool's home directory
+# not used currently
+# can be specified with command line option -j or --homedir
+# value is a directory
+# optional property, default value is user's home directory
+#
+jsl.home.dir =  ../
+
+# ----------------------------------------------------------------
+# the tool's temp directory
+# can be specified with command line option -t or --tempdir
+# value is a directory
+# optional property, default value is system temp directory for current user
+# 
+jsl.temp.dir =  ../tmp
+
+# ----------------------------------------------------------------
+# the tool's log directory
+# can be specified with command line option -l or --logdir
+# value is a directory
+# optional property, default value is a date-stamped jsllog subdir of the temp dir
+#
+jsl.log.dir =  ../log
+
+# ----------------------------------------------------------------
+# flag sets the dojo src root directory
+# 
+jsl.dojo.root = src
+
+
+# ----------------------------------------------------------------
+# the flag that turns metrics collection on/off
+# value is a boolean
+# optional property (default is false)
+#
+# jsl.metrics
+
+# ----------------------------------------------------------------
+# the filename of the file where the metrics collection gets dumped
+# value is a filename
+# optional property (default is a file called jslmetrics.htm in the jsl tmp directory)
+# 
+# jsl.metrics.file
+
+# ----------------------------------------------------------------
+# this property controls the size of the loader table in the metrics output
+# value is one of the strings: small, medium or large
+# optional property (default is small)
+#
+# jsl.metrics.loader.table
+
+# ----------------------------------------------------------------
+# this flag turns on/off the sending of a heartbeat back to dig
+# value is a boolean
+# optional property (default is true)
+#
+# jsl.heartbeat
+
+# ----------------------------------------------------------------
+# this property marks the sources that belong to a framework (vs app)
+# used for the app vs fw breakdown in metrics
+# value is a comma-separated list of filename patterns
+# optional property (by default there is no fw markers and everything belongs to app code)
+#
+# jsl.sources.fw
+
+# ----------------------------------------------------------------
+# this group of properties mark sources as having a specific encoding
+# each property ends with the name of the encoding
+# value is a comma-separated list of filename patterns
+# example:
+# jsl.sources.encodings.big5=**/src/localized/chinese/*
+#
+# jsl.sources.encodings
+
+# ----------------------------------------------------------------
+# this property marks sources as unparsable
+# value is a comma-separated list of filename patterns
+# example:
+# jsl.sources.unparsable=**/src/heavy_jsp/*
+#
+# jsl.sources.unparsable
+
+# ----------------------------------------------------------------
+# this property specifies which suffixes are for html files
+# value is comma-separated list of suffixes
+# optional property (default value is html, htm, jhtml, sxi, jsi, adp, jsp)
+#
+# jsl.sources.html.suffixes
+
+# ----------------------------------------------------------------
+# this property specifies which suffixes are for js files
+# value is comma-separated list of suffixes
+# optional property (default value is js)
+#
+# jsl.sources.js.suffixes
+
+
+# ------------------------------------------------------------------------------------
+# output printing properties
+# ------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------
+# the output directory
+# can be specified with command line option -o or --outputdir
+# value is a directory
+# optional property, default value is a date-stamped jslout subdir of the temp dir
+#
+task.print.output.dir = ../tmp
+
+# ----------------------------------------------------------------
+# printer option if true prints in place
+# value is a boolean
+# optional property, default value is false
+#
+# task.print.inplace
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true strips all newlines, whitespace and comments
+# value is boolean
+# optional property
+#
+#source.js.prettyprinter.strip.all = true
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true strips comments
+# value is boolean
+# optional property
+#
+source.js.prettyprinter.strip.comments = true
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true strips whitespace
+# value is boolean
+# optional property
+#
+source.js.prettyprinter.strip.whitespace = true
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true strips newlines
+# value is boolean
+# optional property
+#
+#source.js.prettyprinter.strip.newlines = true
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true preserves all newlines, whitespace and comments
+# value is boolean
+# optional property
+#
+# source.js.prettyprinter.preserve
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true re-indents
+# value is boolean
+# optional property
+#
+# source.js.prettyprinter.indent
+
+# ----------------------------------------------------------------
+# html pretty-printer option for if true strips comments
+# value is boolean
+# optional property
+#
+# source.html.prettyprinter.strip.comments
+
+
+
+
+# ------------------------------------------------------------------------------------
+# muffler task (removes developer noise like alert and log calls)
+# ------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------
+# the function names that need to be deleted
+# value is comma-separated list of identifiers (wildcards supported)
+# required property for this task
+#
+task.muffler.noise = assert,alert,debug
+
+# ----------------------------------------------------------------
+# the set of properties to declare values for identifiers
+# used in if statement conditional expressions
+# muffler strips code out that cannot be reached if identifiers
+# have those values
+# values are booleans
+# optional property for this task
+#
+# task.muffler.branch
+#
+# example
+# task.muffler.branch.isIE4 = true
+# task.muffler.branch.debug = false
+# etc (for each identifier you want to declare one line with
+# the key being the task.muffler.branch prefix followed by
+# the identifier name and the value being the boolean value
+# you want to assign)
+ task.muffler.branch.debug = false
+
+
+
+
+# ------------------------------------------------------------------------------------
+# janitor task (removes unused code)
+# ------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------
+# the global entry points into the code (things that are used but not called explicitly in code)
+# value is comma-separated list of identifiers, 
+# identifiers can have wildcards in them (supported wildcards are the file system wildcards * and ? with the same meaning)
+# optional property for this task to protect these entries
+# 
+# task.janitor.entries = unloaded, getForMethod, modulesLoaded, makeWidgets, TopicImpl, hasParent, removeNode, provide, $, debug*
+
+task.janitor.entries = provide, getForMethod, addOnLoad, unloaded, modulesLoaded, hasParent, removeNode, debug, $, makeWidgets, TopicImpl 
+
+# ----------------------------------------------------------------
+# the declarations that are fair janitor targets even though not declared in source code
+# value is comma-separated list of identifiers
+# optional property for this task
+#
+# task.janitor.declarations
+
+# ----------------------------------------------------------------
+# the flag that controls whether only js source files which are actually
+# imported by html files are considered when running janitor
+# value is boolean
+# optional property for this task (default is false)
+#
+task.janitor.process.js.imports.only = true
+
+
+# This flag controls how aggresive the linker is in the removing unused code
+# With this flag set to true, janitor will remove all global declarations that 
+# are not in the callgraph 
+#
+task.janitor.process.global = false
+
+
+
+# ------------------------------------------------------------------------------------
+# jabber task (obfuscates code)
+# ------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------
+# the flag that when set to true makes the obfuscation 
+# modify the identifiers but leave them readable
+# this is useful for debugging obfuscation bugs
+# value is a boolean (when true then obfuscation obfuscates in a readable form that's
+# similar to the original identifier values)
+# optional property for this task (default is false)
+#
+# task.jabber.dryrun
+
+# ----------------------------------------------------------------
+# the identifiers that should not be obfuscated
+# value is comma-separated list of identifiers
+# identifiers can have wildcards in them (supported wildcards are the file system wildcards * and ? with the same meaning)
+# optional property for this task
+#
+# task.jabber.tabu
+
+# ----------------------------------------------------------------
+# the file where the obfuscation map and the seed are saved
+# value is file
+# optional property for this task
+#
+# task.jabber.file
+
+# ----------------------------------------------------------------
+# the flag that controls whether local scopes should have different name space when obfuscated
+# value is a boolean (when true then obfuscation uses local name space)
+# optional property for this task (default is false)
+#
+# task.jabber.local
+
+# ----------------------------------------------------------------
+# the seed used to initialize the wocky
+# value is a long number
+# optional property for this task (default is System.currentTimeMillis())
+#
+# task.jabber.seed
+
+# ----------------------------------------------------------------
+# the identifier length for obfuscated identifiers
+# value is a int number
+# optional property for this task (default is 10)
+#
+# task.jabber.length
+
+# ----------------------------------------------------------------
+# the list of attribute names whose values are protected from obfuscation
+# value is a comma-separated list of attribute names (like name,id)
+# optional property for this task (default is name,id)
+#
+# task.jabber.protect.html.attributes
+
+# ----------------------------------------------------------------
+# the flag that controls whether only locals are obfuscated
+# value is a boolean 
+# optional property for this task (default is false)
+#
+# task.jabber.ignore.globals
+
+# ----------------------------------------------------------------
+# the flag that controls whether an identifier whose name appears inside a string literal is protected
+# value is a boolean 
+# optional property for this task (default is false)
+#
+# task.jabber.tabu.in.literal
+
+# ----------------------------------------------------------------
+# the flag that controls whether an identifier whose name equals a string literal is protected
+# value is a boolean 
+# optional property for this task (default is false)
+#
+# task.jabber.tabu.if.literal
+
+
+# ------------------------------------------------------------------------------------
+# vorpal task (unobfuscates code)
+# ------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------
+# the file where the deobfuscation map are saved
+# value is file (use the one generated by task.jabber.file)
+# required property for this task
+#
+# task.vorpal.file
+
+
+
+
+
+# ------------------------------------------------------------------------------------
+# javadoc task (generates documentation - deprecated, use ogredoc)
+# ------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------
+# the default type used in javadoc
+# value is a java type identifier
+# optional property, default value is var
+#
+# task.javadoc.defaulttype
+
+# ----------------------------------------------------------------
+# the type used in javadoc for function that don't return anything
+# value is a java type identifier
+# optional property, default value is void
+#
+# task.javadoc.voidreturntype
+
+# ----------------------------------------------------------------
+# the map used to assign package statements to java classes in javadoc
+# value is a comma-separated list of keys and values (pairs)
+# keys are either directory suffixes if packages.map is directory or class name prefixes if not
+# optional property, if not present javadoc does not produce package statements
+#
+# task.javadoc.packages
+
+# ----------------------------------------------------------------
+# the map type used to assign package statements to java classes in javadoc
+# value is either "directory" or "prefix"
+# optional property, default is "prefix"
+#
+# task.javadoc.packages.map
+
+# ----------------------------------------------------------------
+# the directory used to put the java files
+# value is a directory
+# optional property, default is the jsl temp directory
+#
+# task.javadoc.java.tempdir
+
+# ----------------------------------------------------------------
+# boolean flag controls whether the sun jdk javadoc tool gets invoked
+# value is true or false
+# optional property, default is true
+#
+# task.javadoc.invoke.javadoc
+
+
+
+
+
+# ------------------------------------------------------------------------------------
+# ogredoc task (generates documentation)
+# ------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------
+# the directory used to write out ogredoc documentation
+# value is a directory
+# optional property, default is a subdir named "ogredoc" from the jsl output dir
+#
+# task.ogredoc.outputdir
+
+# ----------------------------------------------------------------
+# the doclet class used to generate ogredoc documentation
+# value is a classname (class has to be loadable by the running vm and has to implement com.aol.dig.codemanic.jsl.ogredoc.Doclet
+# optional property, default is standard doclet
+#
+# task.ogredoc.doclet
+
+# ----------------------------------------------------------------
+# the list of identifiers that are to be considered as having extensions
+# in the source code
+# optional property, default is Array, Date, String
+# task.ogredoc.extensions
+
+# ----------------------------------------------------------------
+# the flag controls if globals that are not nodes, classes, extensions or loaders are documented
+# value is a boolean
+# optional property, default is true
+#
+# task.ogredoc.document.globals
+
+# ----------------------------------------------------------------
+# the standard doclet templates directory
+# value is a directory
+# optional property, default is a subdir of the resources dir in jsl home
+#
+# task.ogredoc.standarddoclet.templates
+
+# ----------------------------------------------------------------
+# the standard doclet documentation build file (a scheme file)
+# value is a scheme file
+# optional property, default is a file in the resources dir in jsl home
+#
+# task.ogredoc.standarddoclet.buildfile
+
+# ----------------------------------------------------------------
+# the standard doclet flag to show private identifiers
+# value is a boolean
+# optional property, default is false
+#
+# task.ogredoc.standarddoclet.show.private
+
+# ----------------------------------------------------------------
+# the standard doclet flag to show inhouse comment tags
+# value is a boolean
+# optional property, default is false
+#
+# task.ogredoc.standarddoclet.show.inhouse
+
+# ----------------------------------------------------------------
+# the standard doclet project name property
+# value is a string
+# optional property
+#
+# task.ogredoc.standarddoclet.project.name
+
+# ----------------------------------------------------------------
+# the standard doclet project copyright message
+# value is a string
+# optional property
+#
+# task.ogredoc.standarddoclet.copyright
+
+# ----------------------------------------------------------------
+# the standard doclet project overview file (file that contains the text for the overview paragraph
+# in the overview page)
+# value is a file path
+# optional property
+#
+# task.ogredoc.standarddoclet.overview.file
+
+
+
+
+
+
+
