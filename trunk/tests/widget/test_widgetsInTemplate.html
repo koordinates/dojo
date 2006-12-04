@@ -2,15 +2,20 @@
 <head>
 
 <script type="text/javascript">
-	var djConfig = {isDebug: true};
+	var djConfig = {
+		// debugAtAllCosts: true,
+		isDebug: true
+	};
 </script>
-<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
-
-<script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
 	dojo.require('dojo.widget.HtmlWidget');
 	dojo.require("dojo.widget.TabContainer");
 	dojo.require("dojo.widget.ContentPane");
 	dojo.require("dojo.widget.Button");
+	// dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
 	dojo.registerNamespace("myown", "myown"); 
 </script>
 </head>
@@ -22,7 +27,7 @@
 
 <!-- xmp is a very special element type - browser ignores all markup until it reaches /xmp tag -->
 <!-- You might want to use a plain javascript string instead -->
-<xmp id="Test1Template" style="display:none">
+<xmp id="Test1Template" style="display:block;">
 	<div>
 		<div dojoAttachPoint="subContainerWidget" dojoType="dojo:TabContainer" doLayout="false" >
 			<div dojoAttachPoint="contentPane1" dojoType="dojo:ContentPane" label="pane 1">
@@ -150,7 +155,7 @@
 
 <!-- TEST 2 -->
 
-<xmp id="Test2Template" style="display:none">
+<xmp id="Test2Template" style="display:block;">
 	<div>
 		<div dojoType="myown:Test2"></div>
 	</div>
@@ -183,7 +188,7 @@ This test is recursive and hangs the browser or maybe even cause a PC problems. 
 <!-- test that can have subcontainers in subcontainers. More attachpoint checks, especially that subwidget attachpoints dont affect this widget -->
 
 
-<xmp id="Test3Template" style="display:none">
+<xmp id="Test3Template" style="display:block;">
 	<div>
 		<div dojoAttachPoint="subContainerWidget" dojoType="myown:Test1" >
 			<div dojoType="dojo:ContentPane" label="pane 3">
