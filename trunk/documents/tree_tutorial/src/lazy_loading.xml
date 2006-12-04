@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    
+    <title>Lazy loading</title>
+    
+    <section>
+        <title>How to load *not* TreeNodes ?</title>
+        
+        <para>Every data object you send is created with <property>Tree#createNode</property> call.</para>
+        
+        <para>You want to pass a special object, specify widgetName in <property>widgetName</property> property of your object.
+        </para>
+        
+        <para>Another option is to change <methodname>defaultChildWidget</methodname> property of the tree.
+            Helpful in case when you have your own widgets and use them elsewhere instead of TreeNode</para>
+    </section>
+    
+    
+</section>

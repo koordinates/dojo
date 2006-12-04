@@ -1,0 +1,27 @@
+
+/*News Items */
+.newsItem {
+	margin-bottom:2em;
+}
+
+.newsItem h1 {
+	font-size:1.25em;
+		border-bottom:1px dotted #a9ccf5;
+}
+
+.newsItem h2 {
+	font-size:1em;
+}
+
+.newsItem h3 {
+	font-size:1em;
+	font-style:italic;
+	margin:0;
+	color:#d6a902;
+}
+
+.newsItem p {
+	text-align:justify;
+	font-size:1em;
+	line-height:1.35em;
+}
