@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<title>Dojo: Test of dojo.html</title>
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+
+dojo.require("dojo.lfx.scroll");
+dojo.require("dojo.event.*");
+</script>
+<style type="text/css"> h2, h3 { font-size: 1em; margin-top: 2.5em; } h3 { color: black; font-weight: normal; font-style: italic; } </style>
+</head>
+<body>
+
+<!---------------------------------------------------------------------------->
+<h2><code>getScroll</code></h2>
+
+<p>Scroll top: <span id="scrollTop">0</span><br>Scroll left: <span id="scrollLeft">0</span></p>
+<table style="position:fixed;top:20px;right:20px;">
+<tr><td><input type="button" id="goToHeader0" value="scroll only the iframe (to a node in iframe)"><br>
+	<input type="button" id="goToHeader" value="scroll only the top window (to a node in iframe)"><br>
+	<input type="button" id="goToHeader1" value="scroll to a node in top window chained with (un)highlight"></td></tr></table>
+
+<script type="text/javascript">
+dojo.event.connect(dojo.byId("goToHeader0"), "onclick", function (e) {
+	var h2s = dojo.html.iframeContentDocument(dojo.byId("embed0")).getElementsByTagName('h2');
+	var h2 = h2s[h2s.length-1];
+	var anm = new dojo.lfx.smoothScroll(h2,dojo.html.iframeContentWindow(dojo.byId("embed0")),null,500);
+	anm.play();
+});
+dojo.event.connect(dojo.byId("goToHeader"), "onclick", function (e) {
+	var h2s = dojo.html.iframeContentDocument(dojo.byId("embed")).getElementsByTagName('h2');
+	var h2 = h2s[h2s.length-1];
+	var anm = new dojo.lfx.smoothScroll(h2,window,null,500);
+	anm.play();
+});
+dojo.require("dojo.lfx.html");
+dojo.event.connect(dojo.byId("goToHeader1"), "onclick", function (e) {
+	var node = dojo.byId('targetHeader1');
+	var anm0 = new dojo.lfx.smoothScroll(node,window,null,500);
+	var anm1 = new dojo.lfx.html.unhighlight(node, '#FFFFA0', 500, dojo.lfx.easeOut);
+	var anm2 = new dojo.lfx.html.highlight(node, '#FFFFA0', 500, dojo.lfx.easeIn);
+	var anm = dojo.lfx.chain(anm0, anm1, anm2); 
+	anm.play();
+});
+</script>
+
+
+<iframe id="embed0" src="../test_html_content.html" width="50%" height="200px"></iframe>
+
+<!---------------------------------------------------------------------------->
+<h2><code>getScroll().offset</code></h2>
+
+<p>Scroll offset x: <span id="scrollOffsetX">0</span><br>Scroll offset y: <span id="scrollOffsetY">0</span></p>
+<p><input type="button" id="updateScrollOffset" value="Update Scroll Values"></p>
+
+
+<!---------------------------------------------------------------------------->
+<h2><code>getViewport</code></h2>
+
+<p>
+	Viewport width: <span id="viewportWidth">0</span><br>
+	Viewport height: <span id="viewportHeight">0</span><br>
+	Viewport size: <span id="viewportSize">0</span>
+</p>
+<p><input type="button" id="updateViewport" value="Update Size Values"></p>
+
+
+
+<!---------------------------------------------------------------------------->
+<h2><code>getParentByType</code></h2>
+
+<p>This <b id="bold">is <u>some <i id="italic">crazy <span style="color:red;" id="redChild">text</span></i></u></b></p>
+
+
+<iframe id="embed" src="../test_html_content.html" width="50%" height="1200px"></iframe>
+
+<!---------------------------------------------------------------------------->
+<h2 id='targetHeader1'><code>getElementsByClass</code></h2>
+
+<div style="font-weight: bold; color: red;">
+
+<h3>default (ContainsAll)</h3>
+<p class="foo1 bar1">this should be green</p>
+<p class="foo1">this should be red</p>
+<p class="bar1">this should be red</p>
+
+<h3>ContainsAll</h3>
+<p class="foo2 bar2">this should be green</p>
+<p class="foo2">this should be green</p>
+<p class="bar2">this should be red</p>
+
+
+<h3>ContainsOnly</h3>
+<p class="foo3 bar3">this should be green</p>
+<p class="foo3 bar3 baz3">this should be red</p>
+<p class="foo3">this should be red</p>
+
+
+<h3>ContainsOnly</h3>
+<p class="foo4">this should be green</p>
+<p class="foo4 bar4">this should be red</p>
+<p class="bar4">this should be red</p>
+
+
+<h3 id='targetHeader2'>ContainsAny</h3>
+<p class="foo5">this should be green</p>
+<p class="foo0 bar5">this should be green</p>
+<p class="bar0 foo0">this should be red</p>
+
+</body></html>

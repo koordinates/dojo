@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Node creation</title>
+    
+    <para>There are few code paths that lead to same purpose: to create a tree node.
+        They differ in effeciency and use patterns</para>
+    
+    <section>
+        <title>Markup creation</title>
+        
+        <para>You specity a tree and its nodes in HTML, relying upon dojo to parse it and turn into widgets.
+            That is a slowest way, but nice for small trees or if only tree top is specified and the rest is created
+            later.
+        </para>
+        
+        <para>dojo widget parser walks DOM and creates a special structure. The next pass creates
+            widgets from the structure.
+        </para>
+        
+        <section>
+            <title>widget.create</title>
+            
+            <para>The generic widget creation routine. It basically runs the operations in order:
+            
+            <orderedlist>
+                <listitem>Mix in widget properties from parameters/markup</listitem>
+                <listitem>Register widget in widget.Manager</listitem>
+                <listitem>Call <code>buildRendering</code> to make fill template and create domNode</listitem>
+                <listitem>Call <code>initialize</code></listitem>
+                <listitem>Call <code>postInitialize</code>. registers widget as a child of its parent
+                    and after it creates all subwidgets</listitem>
+                <listitem>Call <code>postCreate</code></listitem>
+            </orderedlist>
+               
+                Note that <code>initialize</code> is called in pre-order: parent is initialized before children, <code>postInitialize</code> is called
+                in post-order: a child is postCreated before its parent.
+                
+            </para>
+            
+            
+            
+            
+        </section>
+        
+    </section>
+    <section>
+        <title>Manual creation</title>
+        
+        <para>If you create nodes with javascript, then you run create calls manyally. So parents are naturally created (and
+            postCreated) before children</para>
+        
+        <para>There seem to be no good way to distinguish betwen markup creation and manual creation.
+            From the one hand its seems good, because allows reuse of generic creation code.
+            From the other hand code paths going through this code are subtly different.
+        </para>
+        
+        
+        <para>The reliable thing is that <code>initialize</code> will process widget after
+            its domNode is built, BUT it should not assume anything about children.</para>
+        
+       <para>nodeCreate event is fired on initialization also. If you want to know anything about children
+       and do something at this point - check addChild, but not node creation.</para>
+        
+    </section>
+    
+    
+    <section>
+        <title>Input parameters</title>
+        
+        
+        <para><code>children</code> array may be
+        <itemizedlist>
+            <listitem>empty</listitem>
+            <listitem>contain widgets, e.g if created from markup, or someone created them before parent and
+                pushed in</listitem>
+            <listitem>contain data objects, that will be turned into widgets when parent expands.</listitem>
+        </itemizedlist>
+            
+        </para>
+        
+        <para><code>isFolder</code> comes into play only when there are no children. It allows creation
+        of empty folders, with UNCHECKED state that can be filled later.</para>
+        
+    
+</section>
+    
+    </section>
