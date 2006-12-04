@@ -1,0 +1,54 @@
+<config>
+  <calls>
+    <call name="dojo.require" type="meta">
+      <parameter type="string" key="requires.common"/>
+    </call>
+
+    <call name="dojo.requireAfterIf,dojo.requireIf" type="meta">
+      <parameter type="string"/>
+      <parameter type="string" key="requires.{$1}"/>
+    </call>
+
+    <call name="dojo.kwCompoundRequire" type="meta" key="requires"/>
+
+    <call name="dojo.declare" type="declare">
+      <signature>
+        <parameter type="string" name="{$1}"/>
+        <parameter type="variable" chain="prototype,call"/>
+        <parameter type="function" constructor="true"/>
+        <parameter type="object" mixins="prototype" optional="true"/>
+      </signature>
+      <signature>
+        <parameter type="string" name="{$1}"/>
+        <parameter type="array" chain="prototype,call" super="0"/>
+        <parameter type="function" constructor="true"/>
+        <parameter type="object" mixins="prototype" optional="true"/>
+      </signature>
+    </call>
+
+    <call name="dojo.widget.defineWidget" type="declare">
+      <signature>
+        <parameter type="string" name="{$1}"/>
+        <parameter type="variable" chain="prototype,call"/>
+        <parameter type="object" mixins="prototype"/>
+        <parameter type="string"/>
+        <parameter type="function" constructor="true"/>
+      </signature>
+    </call>
+
+    <call name="dojo.inherits" type="oo">
+      <parameter type="variable" parent="true"/>
+      <parameter type="variable" chain="prototype,call"/>
+    </call>
+
+    <call name="dojo.extend,dojo.lang.extend" type="oo">
+      <parameter type="variable" parent="true"/>
+      <parameter type="object" mixins="prototype"/>
+    </call>
+
+    <call name="dojo.mixin,dojo.lang.mixin" type="oo">
+      <parameter type="variable" parent="true"/>
+      <parameter type="object" mixins="variable"/>
+    </call>
+  </calls>
+</config>
