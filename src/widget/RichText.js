@@ -984,6 +984,29 @@ dojo.widget.defineWidget(
 //					this.window.getSelection().collapseToStart();
 				}
 			}
+			/*
+			// FIXME: attempted (but ultimately unworkable) solution for #2066
+			if(dojo.render.html.safari){
+				var sel = this.window.getSelection();
+				dojo.debug(dojo.dom.isDescendantOf(sel.focusNode, this.document.body));
+
+				var isLastNode = (sel.focusNode == this.document.body.lastChild);
+				if(!isLastNode){ return; }
+				var isText = (sel.focusNode.nodeType == 3); 
+				if(!isText){ return; }
+				var isLastChar = (sel.focusOffset == sel.focusNode.nodeValue.length);
+				if(!isLastChar){ return; }
+				dojo.debug(sel.focusOffset, sel.focusNode.nodeValue.length);
+				if(isLastNode && isText && isLastChar){
+					this.document.body.appendChild(this.document.createTextNode(" "));
+					this.document.body.appendChild(this.document.createElement("br"));
+					this.document.body.appendChild(this.document.createElement("p"));
+					this.document.body.appendChild(this.document.createElement("p"));
+					sel.collapse(sel.focusNode, sel.focusOffset-1);
+					sel.collapse(sel.focusNode, sel.focusOffset+1);
+				}
+			}
+			*/
 		},
 
 		blur: function () {
