@@ -583,7 +583,7 @@ dojo.declare("dojo.widget.DomWidget",
 //						break;
 					}
 					if(subnodes[i].getAttribute('dojoType')){
-						subnodes[i].setAttribute('_isSubWidget', true);
+						subnodes[i].setAttribute('isSubWidget', true);
 					}
 				}
 				if (this.isContainer && !this.containerNode){
@@ -614,7 +614,7 @@ dojo.declare("dojo.widget.DomWidget",
 				while((w = stack.pop())){
 					for(var i = 0; i < w.children.length; i++){
 						var cwidget = w.children[i];
-						if(cwidget._processedSubWidgets || !cwidget.extraArgs['_issubwidget']){ continue; }
+						if(cwidget._processedSubWidgets || !cwidget.extraArgs['issubwidget']){ continue; }
 						subwidgets.push(cwidget);
 						if(cwidget.isContainer){
 							stack.push(cwidget);
