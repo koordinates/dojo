@@ -66,6 +66,13 @@ dojo.a11y = {
 		}
 		return this.accessible; /* Boolean */
 	},
+
+	setAccessible: function(/* Boolean */ bAccessible) {
+	// summary:
+	// 		Force accessibility mode on or off without performing the check.
+	// 		bAccessible: Boolean - true to force accessible mode; false to prevent accessible mode
+		this.accessible=bAccessible;
+	},
 	
 	setCheckAccessible: function(/* Boolean */ bTest){ 
 	// summary: 
