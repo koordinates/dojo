@@ -168,7 +168,7 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 	},
 	
 	getType: function(){
-		return "dojo.storage.browser.WhatWGProvider";
+		return "dojo.storage.browser.WhatWGStorageProvider";
 	}
 });
 
