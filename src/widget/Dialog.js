@@ -244,7 +244,7 @@ dojo.declare(
 				this._scrollConnected = true;
 				dojo.event.connect(window, "onscroll", this, "_onScroll");
 			}
-			dojo.event.connect(document.documentElement, "onkey", this, "_onKey");
+			dojo.event.connect("around", document.documentElement, "onkey", this, "_onKey");
 
 			this.placeModalDialog();
 			this.setBackgroundOpacity();
@@ -277,7 +277,7 @@ dojo.declare(
 				this.bgIframe.iframe.style.display = "none";
 			}
 
-			dojo.event.disconnect(document.documentElement, "onkey", this, "_onKey");
+			dojo.event.disconnect("around", document.documentElement, "onkey", this, "_onKey");
 			if (this._scrollConnected){
 				this._scrollConnected = false;
 				dojo.event.disconnect(window, "onscroll", this, "_onScroll");
