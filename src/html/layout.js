@@ -184,30 +184,39 @@ dojo.html.isPositionAbsolute = function(/* HTMLElement */node){
 	return (dojo.html.getComputedStyle(node, 'position') == 'absolute');	//	boolean
 }
 
-dojo.html._sumPixelValues = function(/* HTMLElement */node, selectors, autoIsZero){
-	var total = 0;
-	for(var x=0; x<selectors.length; x++){
-		total += dojo.html.getPixelValue(node, selectors[x], autoIsZero);
+//dojo.html._sumPixelValues = function(/* HTMLElement */node, selectors, autoIsZero){
+//	var total = 0;
+//	for(var x=0; x<selectors.length; x++){
+//		total += dojo.html.getPixelValue(node, selectors[x], autoIsZero);
+//	}
+//	return total;
+//}
+
+dojo.html._getComponentPixelValues = function(/* HTMLElement */node, /* String */componentPrefix,
+                                                /* Function */getPixels, /* Boolean */autoIsZero){
+	var sides = ["top", "bottom", "left", "right"];
+	var obj = {};
+	for (var i in sides){
+		side = sides[i];
+		obj[side] = getPixels(node, componentPrefix+side, autoIsZero);
 	}
-	return total;
+	obj.width = obj.left + obj.right;
+	obj.height = obj.top + obj.bottom;
+	return obj;
 }
 
 dojo.html.getMargin = function(/* HTMLElement */node){
-	//	summary
-	//	Returns the width and height of the passed node's margin
-	return {
-		width: dojo.html._sumPixelValues(node, ["margin-left", "margin-right"], (dojo.html.getComputedStyle(node, 'position') == 'absolute')),
-		height: dojo.html._sumPixelValues(node, ["margin-top", "margin-bottom"], (dojo.html.getComputedStyle(node, 'position') == 'absolute'))
-	};	//	object
+	//      summary
+	//      Returns the width and height of the passed node's margin in pixels
+	//              and the top, bottom, left, and right component margin sizes in pixels
+	return dojo.html._getComponentPixelValues(node, "margin-", dojo.html.getPixelValue, dojo.html.isPositionAbsolute(node));
 }
 
 dojo.html.getBorder = function(/* HTMLElement */node){
-	//	summary
-	//	Returns the width and height of the passed node's border
-	return {
-		width: dojo.html.getBorderExtent(node, 'left') + dojo.html.getBorderExtent(node, 'right'),
-		height: dojo.html.getBorderExtent(node, 'top') + dojo.html.getBorderExtent(node, 'bottom')
-	};	//	object
+	//      summary
+	//      Returns the width and height of the passed node's border in pixels
+	//              and the top, bottom, left, and right component border sizes in pixels
+	return dojo.html._getComponentPixelValues(node, "", dojo.html.getBorderExtent);
 }
 
 dojo.html.getBorderExtent = function(/* HTMLElement */node, /* string */side){
@@ -219,22 +228,20 @@ dojo.html.getBorderExtent = function(/* HTMLElement */node, /* string */side){
 dojo.html.getMarginExtent = function(/* HTMLElement */node, /* string */side){
 	//	summary
 	//	returns the width of the requested margin
-	return dojo.html._sumPixelValues(node, ["margin-" + side], dojo.html.isPositionAbsolute(node));	//	integer
+	return dojo.html.getPixelValue(node, "margin-" + side, dojo.html.isPositionAbsolute(node));	//	integer
 }
 
 dojo.html.getPaddingExtent = function(/* HTMLElement */node, /* string */side){
 	//	summary
 	//	Returns the width of the requested padding 
-	return dojo.html._sumPixelValues(node, ["padding-" + side], true);	//	integer
+	return dojo.html.getPixelValue(node, "padding-" + side, true);	//	integer
 }
 
 dojo.html.getPadding = function(/* HTMLElement */node){
-	//	summary
-	//	Returns the width and height of the passed node's padding
-	return {
-		width: dojo.html._sumPixelValues(node, ["padding-left", "padding-right"], true),
-		height: dojo.html._sumPixelValues(node, ["padding-top", "padding-bottom"], true)
-	};	//	object
+	//      summary
+	//      Returns the width and height of the passed node's padding in pixels
+	//              and the top, bottom, left, and right component padding sizes in pixels
+	return dojo.html._getComponentPixelValues(node, "padding-", dojo.html.getPixelValue, true);
 }
 
 dojo.html.getPadBorder = function(/* HTMLElement */node){
