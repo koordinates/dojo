@@ -169,7 +169,7 @@ dojo.widget.defineWidget(
 		
 		var returnWidget = node;
 		
-		// if not expanded, expand, else move to 1st child
+		// if not collapsed, collapse, else move to parent
 		if (node.isFolder && node.isExpanded) {
 			this.collapse(node);
 		} else {
@@ -239,11 +239,12 @@ dojo.widget.defineWidget(
 		dojo.event.connectOnce(labelNode, "onfocus", this, "onFocusNode");
 		// set focus so that the label wil be voiced using screen readers
 		labelNode.focus();
+		
 			
 	},
 	
-	onKey: function(e) {
-		if (!e.key || e.ctrkKey || e.altKey) { return; }
+	onKey: function(e) { 
+		if (!e.key || e.altKey) { return; }
 		// pretend the key was directed toward the current focused node (helps opera out)
 		
 		var nodeWidget = this.domElement2TreeNode(e.target);
@@ -256,7 +257,7 @@ dojo.widget.defineWidget(
 		if (treeWidget.lastFocused && treeWidget.lastFocused.labelNode) {
 			nodeWidget = treeWidget.lastFocused;
 		}
-		
+		var actionWidget = null;
 		switch(e.key) {
 			case e.KEY_TAB:
 				if (e.shiftKey) {
@@ -265,22 +266,31 @@ dojo.widget.defineWidget(
 					treeWidget.domNode.setAttribute("tabIndex", "-1");
 				}
 				break;
+			case e.KEY_ENTER: 
+				if(nodeWidget.isFolder){
+					this.processExpandClick(nodeWidget);
+				}				
+				break;
 			case e.KEY_RIGHT_ARROW:
-				this._focusZoomIn(nodeWidget);
+				actionWidget = this._focusZoomIn(nodeWidget);
 				dojo.event.browser.stopEvent(e);
 				break;
 			case e.KEY_LEFT_ARROW:
-				this._focusZoomOut(nodeWidget);
+				actionWidget = this._focusZoomOut(nodeWidget);
 				dojo.event.browser.stopEvent(e);
 				break;
 			case e.KEY_UP_ARROW:
-				this._focusPreviousVisible(nodeWidget);
+				actionWidget = this._focusPreviousVisible(nodeWidget);
 				dojo.event.browser.stopEvent(e);
 				break;
 			case e.KEY_DOWN_ARROW:
-				this._focusNextVisible(nodeWidget);
+				actionWidget = this._focusNextVisible(nodeWidget);
 				dojo.event.browser.stopEvent(e);
 				break;
+		}
+		if (actionWidget && !e.ctrlKey){
+			// handle selection
+			dojo.event.topic.publish(actionWidget.tree.eventNames.afterNavigate, { node: actionWidget, event: e} );
 		}
 	},
 	
@@ -297,6 +307,8 @@ dojo.widget.defineWidget(
 					nodeWidget = treeWidget.lastFocused;
 				}
 				this._focusLabel(nodeWidget);
+				dojo.event.topic.publish(nodeWidget.tree.eventNames.afterNavigate, { node: nodeWidget, event: e} );
+				
 			}
 		}
 		catch(e) {}

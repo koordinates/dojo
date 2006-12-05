@@ -64,7 +64,8 @@ dojo.widget.defineWidget(
 		beforeExpand: "beforeExpand",
 		afterSetTitle: "afterSetTitle",		
 		afterCollapse: "afterCollapse",	
-		beforeCollapse: "beforeCollapse"
+		beforeCollapse: "beforeCollapse",
+		afterNavigate: "afterNavigate"
 	},
 
 	classPrefix: "Tree",
@@ -128,10 +129,12 @@ dojo.widget.defineWidget(
 		
 		var domNode = document.createElement("div");
 		dojo.html.setClass(domNode, this.classPrefix+"Node "+this.classPrefix+"ExpandLeaf "+this.classPrefix+"ChildrenNo");		
+		dojo.widget.wai.setAttr(domNode, "waiRole", "role", "presentation");
 		this.nodeTemplate = domNode;
 		
 		var expandNode = document.createElement("div");
 		var clazz = this.classPrefix+"Expand";
+		dojo.widget.wai.setAttr(expandNode, "waiRole", "role", "presentation");
 		if (dojo.render.html.ie) {
 			clazz = clazz + ' ' + this.classPrefix+"IEExpand";
 		}
@@ -143,9 +146,11 @@ dojo.widget.defineWidget(
 		// div for multiline support, span for styling exactly the text, not whole line
 		var labelNode = document.createElement("span");
 		dojo.html.setClass(labelNode, this.classPrefix+"Label");
+		dojo.widget.wai.setAttr(labelNode, "waiRole", "role", "treeitem");
 		this.labelNodeTemplate = labelNode;
 		
 		var contentNode = document.createElement("div");
+		dojo.widget.wai.setAttr(contentNode, "waiRole", "role", "presentation");
 		var clazz = this.classPrefix+"Content";
 		
 		/**
@@ -174,7 +179,7 @@ dojo.widget.defineWidget(
 		var div = document.createElement('div');
 		div.style.display = 'none';			
 		dojo.html.setClass(div, this.classPrefix+"Container");
-		
+		dojo.widget.wai.setAttr(div, "waiRole", "role", "presentation");
 		this.containerNodeTemplate = div;
 		
 	},
@@ -255,6 +260,7 @@ dojo.widget.defineWidget(
 		this.containerNode = this.domNode;
 		
 		dojo.html.setClass(this.domNode, this.classPrefix+"Container");
+		dojo.widget.wai.setAttr(this.domNode, "waiRole", "role", "tree");
 		
 		var _this = this;
 			
@@ -266,11 +272,6 @@ dojo.widget.defineWidget(
 				t.listenTree(_this)				
 			}
 		);
-		
-
-		
-		
-
 	},
 
 	

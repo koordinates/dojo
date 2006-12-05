@@ -16,7 +16,7 @@ dojo.widget.defineWidget(
 {
 	// TODO: add multiselect
 
-	listenTreeEvents: ["afterTreeCreate","afterCollapse","afterChangeTree", "afterDetach", "beforeTreeDestroy"],
+	listenTreeEvents: ["afterTreeCreate","afterCollapse","afterChangeTree", "afterDetach", "beforeTreeDestroy", "afterNavigate"],
 	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},	
 	
 	allowedMulti: true,
@@ -39,25 +39,25 @@ dojo.widget.defineWidget(
 			dojo.event.browser.addListener(tree.domNode, "ondblclick", dojo.lang.hitch(this, this.onTreeDblClick));
 		}
 		dojo.event.browser.addListener(tree.domNode, "onKey", dojo.lang.hitch(this, this.onKey));
-		
+	
 	},
 	
 	
 	onKey: function(e) {
-		if (!e.key || e.ctrkKey || e.altKey) { return; }
+		if (!e.key || e.altKey) { return; }
 		
-		switch(e.key) {
-			case e.KEY_ENTER:
-				var node = this.domElement2TreeNode(e.target);
-				if (node) {
-					this.processNode(node, e);
-				}
-		
+		if (e.key == ' ') {
+			var node = this.domElement2TreeNode(e.target);
+			if (node){
+				this.processNode(node, e);
+			}
 		}
 	},
 	
+	onAfterNavigate: function(message) {
+		this.processNode(message.node, message.event);
+	},
 	
-		
 	onAfterChangeTree: function(message) {
 		
 		if (!message.oldTree && message.node.selected) {
@@ -102,7 +102,7 @@ dojo.widget.defineWidget(
 		this.onTreeClick(event);			
 	},		
 		
-	checkSpecialEvent: function(event) {		
+	checkSpecialEvent: function(event) {
 		return event.shiftKey || event.ctrlKey;
 	},
 	
@@ -135,7 +135,7 @@ dojo.widget.defineWidget(
 	 *
 	 * press on unselected with ctrl => add it to selection
 	 *
-	 * event may be both mouse & keyboard enter
+	 * event may be both mouse & keyboard ctrl + space
 	 */
 	processNode: function(node, event) {
 		

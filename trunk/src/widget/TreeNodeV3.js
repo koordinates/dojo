@@ -188,6 +188,11 @@ dojo.widget.defineWidget(
 	setFolder: function() {
 		//dojo.debug("SetFolder in "+this);
 		this.isFolder = true;
+		var setExpand="false";
+		if (this.isExpanded){
+			setExpand="true";
+		}
+		dojo.widget.wai.setAttr(this.labelNode, "waiState", "expanded", setExpand);
 		this.viewSetExpand();
 		if (!this.containerNode) { // maybe this node was unfolderized and still has container
 			this.viewAddContainer(); // all folders have container.
@@ -646,7 +651,9 @@ dojo.widget.defineWidget(
 		
 		
 		this.isExpanded = true;
-
+		dojo.widget.wai.setAttr(this.labelNode, "waiState", "expanded", "true");
+		dojo.widget.wai.setAttr(this.containerNode, "waiRole", "role", "group");
+		
 		this.viewSetExpand();
 
 		//dojo.profile.start("expand - showChildren "+this);
@@ -669,6 +676,7 @@ dojo.widget.defineWidget(
 		if (!this.isExpanded) return;
 		
 		this.isExpanded = false;
+		dojo.widget.wai.setAttr(this.labelNode, "waiState", "expanded", "false");
 		
 		this.hideChildren();
 	},
