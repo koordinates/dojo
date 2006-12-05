@@ -96,12 +96,14 @@
 		}
 
 		var addCount = 0;
+		var id=27;
 		function addRow(){
 			var w=dojo.widget.byId("parsedFromHtml");
 			w.store.addData({
+				Id:""+id++,
 				Name:names[addCount%names.length],
-				DateAdded:dates[addCount+2%dates.length],
-				DateModified:dates[addCount%dates.length],
+				DateAdded:new Date(dates[addCount+2%dates.length]),
+				DateModified:new Date(dates[addCount%dates.length]),
 				Label:"<i>This is an <strong>added</strong> row</i>."
 			});
 			addCount++;	
