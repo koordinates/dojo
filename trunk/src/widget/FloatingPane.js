@@ -12,6 +12,7 @@ dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.dnd.HtmlDragMove");
 dojo.require("dojo.widget.Dialog");		// for ModalFloatingPane
 dojo.require("dojo.widget.ResizeHandle");
+dojo.require("dojo.widget.LayoutContainer");
 
 dojo.declare(
 	"dojo.widget.FloatingPaneBase",
