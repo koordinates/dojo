@@ -5,6 +5,7 @@ dojo.require("dojo.html.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.storage.*");
 
+
 var TestStorage = {
 	currentProvider: "default",
 	
@@ -31,6 +32,15 @@ var TestStorage = {
 		dojo.event.connect(keyNameField, "onfocus", function(evt){
 			directory.selectedIndex = -1;
 		}); 		
+		
+		// disable the test book and test XML links if we
+		// are on IE 7.0 and being served from the file:// URL;
+		// XHR won't work in this scenario
+		if(dojo.render.html.ie70 == true
+			&& window.location.protocol.indexOf("file") != -1){
+			dojo.byId("saveTestBook").disabled = true;
+			dojo.byId("saveTestXML").disabled = true;		
+		}
 											 
 		// add onclick listeners to all of our buttons
 		var buttonContainer = dojo.byId("buttonContainer");
@@ -195,6 +205,16 @@ var TestStorage = {
 	},
 	
 	saveBook: function(evt){
+		if(!dojo.lang.isUndefined(evt) && evt != null){
+			evt.preventDefault();
+			evt.stopPropagation();
+		}
+		
+		// is the save test book hyperlink disabled?
+		if(dojo.byId("saveTestBook").disabled == true){
+			return false;
+		}
+	
 		this._printStatus("Loading book...");
 		var self = this;
 		dojo.io.bind({
@@ -209,15 +229,20 @@ var TestStorage = {
 				mimetype: "text/plain"
 		});
 		
+		return false;
+	},
+	
+	saveXML: function(evt){
 		if(!dojo.lang.isUndefined(evt) && evt != null){
 			evt.preventDefault();
 			evt.stopPropagation();
 		}
 		
-		return false;
-	},
+		// is the save test XML hyperlink disabled?
+		if(dojo.byId("saveTestXML").disabled == true){
+			return false;
+		}
 	
-	saveXML: function(evt){
 		this._printStatus("Loading XML...");
 		var self = this;
 		dojo.io.bind({
@@ -232,11 +257,6 @@ var TestStorage = {
 				mimetype: "text/plain"
 		});
 		
-		if(!dojo.lang.isUndefined(evt) && evt != null){
-			evt.preventDefault();
-			evt.stopPropagation();
-		}
-		
 		return false;
 	},
 	
@@ -245,8 +265,12 @@ var TestStorage = {
 		var self = this;
 		var saveHandler = function(status, keyName){
 			if(status == dojo.storage.FAILED){
-				alert("You do not have permission to store data for this web site. "
-			        + "Press the Configure button to grant permission.");
+				var msg = "You do not have permission to store data for this web site.";
+				if(dojo.storage.hasSettingsUI()){
+					msg += " Press the Configure button to grant permission.";
+				}
+			
+				alert(msg);
 			}else if(status == dojo.storage.SUCCESS){
 				// clear out the old value
 				dojo.byId("storageKey").value = "";
