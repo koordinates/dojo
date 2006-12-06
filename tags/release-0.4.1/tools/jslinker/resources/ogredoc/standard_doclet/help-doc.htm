@@ -1,0 +1,94 @@
+<HTML>
+<head>
+<title>FOM node sample</title>
+<style type="text/css">
+<!--
+-->
+</style>
+
+<link rel="stylesheet" href="ogredoc.css" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF">
+<table id=navBar>
+  <tr> <td>
+      <p>Ogredoc</p>
+      </td>
+    <td align="right">&nbsp;&nbsp;&nbsp;<a href="overview.htm" class="navItem">Main</a><span class="navSeparator"> 
+      &#149; </span><a href="overview-nodes.htm" class="navItem">Nodes</a><span class="navSeparator">
+	  &#149; </span><a href="overview-extensions.htm" class="navItem">Extensions</a><span class="navSeparator"> 
+      &#149; </span><a href="overview-classes.htm" class="navItem">Classes</a><span class="navSeparator">
+      &#149; </span><a href="overview-loaders.htm" class="navItem">Loaders</a><span class="navSeparator"> 
+      &#149; </span><a href="index-1.htm" class="navItem">Index</a><span class="navSeparator">
+	  &#149; </span><a href="help-doc.htm" class="navItem">Help</a> 
+    </td>
+  </tr>
+</table>
+<p>
+<CENTER>
+  <H1> How Ogredoc Is Organized</H1>
+</CENTER>
+Ogredoc has pages corresponding to the items in the navigation bar, described 
+as follows: 
+<H3> Main</H3>
+<BLOCKQUOTE>
+
+<P>
+The <A HREF="overview.htm">Main</A> page is the front page of this API document and provides a list of all documented elements with a summary for each.  This page also contains an overall description of the API.</BLOCKQUOTE>
+<H3>
+Nodes</H3>
+<BLOCKQUOTE>
+
+<P>
+A <b>Node</b> is a logical grouping of functionality. Each node has a page that contains a list of its methods, constants, event handlers and attributes, with detailed description for each.</BLOCKQUOTE>
+<H3>
+Extensions</H3>
+
+<BLOCKQUOTE>
+  <P> An <b>Extension</b> adds functionality to a native object (e.g. <code>String.escapeForHTML</code>). 
+    Each extension has its own separate page. Each of these pages has a list of 
+    methods with a detailed description for each.
+</BLOCKQUOTE>
+
+<H3>
+Classes</H3>
+<BLOCKQUOTE> A <b>Class</b> defines the API of objects returned by factory methods 
+  (e.g. <code>dig.pipe.create</code>). Each class has its own page which describes 
+  in detail all its methods, attributes, constants and event handlers.</BLOCKQUOTE>
+
+<H3>
+Loaders</H3>
+<BLOCKQUOTE> 
+  <p>A <b>Loader</b> is a method that activates functionality in Ogre. The API 
+    in Ogre is grouped into nodes and each node needs activation before it can 
+    be used. The loader functions perform this activation. Loader functions cannot 
+    be called directly. They need to be called by using the <code>dig.load</code> 
+    function which takes a string as an argument. The string is the name of the 
+    loader to be called. 
+  <p>
+
+For example:
+  <p> Assume we want to use the <code>dig.css.addStyle()</code> function. It is 
+    defined as being part of the <code>dig.css</code> node. The loaders entry 
+    in the Ogredoc documentation of the <code>dig.css</code> node lists 'css' 
+    as a loader. That means that before we can use the function, we need to call 
+    <code>dig.load('css'); </code> <br><br>Sometimes more than one loader is listed in 
+    the Ogredoc documentation of a node (or class or extension). In that case 
+    any of the loaders will activate that node. A loader loads more than just 
+    the node currently displayed. To decide which loader to use, go to each loader's 
+    Ogredoc entry and look at all the things activated by that loader. The first 
+    loader in the loader list is in bolded style because it is the minimal loader. 
+    All the other loaders implicitly call this loader.
+</BLOCKQUOTE>
+
+<H3>
+Index</H3>
+<BLOCKQUOTE> The <A HREF="index-1.htm">Index</A> contains an alphabetic list of 
+  all nodes, extensions, classes, loaders, methods, and attributes.</BLOCKQUOTE>
+
+<p><i><b>Note: </b>JavaScript allows optional parameters to functions. These are 
+  documented in Ogredoc with a slightly different appearance (italicized and gray) 
+  than normal parameters.</i> </p>
+</BODY>
+</HTML>
+

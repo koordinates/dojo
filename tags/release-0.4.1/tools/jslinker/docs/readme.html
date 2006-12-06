@@ -1,0 +1,792 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><title>JSL Readme</title>
+
+
+
+<link rel="stylesheet" href="css/nn4.css" type="text/css" media="screen"><!--link before import prevents Flash Of Unstyled Content in ie6pc -->
+
+
+<style type="text/css" media="screen">@import url("css/real.css");</style><!-- import with quotes and brackets hides css from:
+Netscape 4.x
+Win IE 3
+Win IE 4
+Mac IE 4.01
+Mac IE 4.5
+Konqueror 2.1.2
+Win Amaya 5.1
+isn't that nice to know? -->
+
+
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<meta http-equiv="expires" content="-1">
+<meta http-equiv="pragma" content="no-cache">
+<meta name="robots" content="all">
+<meta name="author" content="Satish Sekharan">
+<meta name="description" content="JavaScript Linker Readme"></head>
+<body>
+
+<div class="mainbar">&nbsp;</div>
+
+<!-- end Logo bar -->
+
+<table id="hometopmenu">
+  <tbody><tr>
+    <td class="leftCell">
+	</td>
+  </tr>
+</tbody></table>
+
+<div id="content"> 
+  <br>
+  <h2 id="pageName"> JavaScript Linker (JSL) - Alpha 1 : Readme</h2>
+  <hr size="1" noshade><br> 
+  Copyright (c) 2004-2006, The Dojo Foundation, All Rights Reserved<br/><br/>
+
+  <br>
+  <h3>Contents</h3>
+  <ul class="tofc">
+    <li><a href="#Overview"><b>1.0 Overview</b></a></li>
+	<li><a href="#Requirements"><b>2.0 Requirements</b></a></li>
+	<li><a href="#Installation">3.0 Installation Instructions</a></li>
+	<li><a href="#Documentation">4.0 Documentation</a></li>
+  </ul>
+
+  <br>
+
+<h3><a name="Overview">1.0 Overview</a></h3> 
+
+<p>The JavaScript source code can be represented in different levels of granularity. The JavaScript Linker uses the Abstract Syntax Trees (ASTs) representation, which represents the lowest level of detail, to model the source code. One of the main task for this project was to write a JavaCC compatible grammar that strictly follows the ECMA Specification. JavaCC uses this grammar to build a custom parser than can read and analyze the JavaScript source, which in turn, is used to build the JavaScript Linker.</p>
+
+<p>The purpose of JavaScript Linker is to process HTML/JavaScript code base to prepare code for deployment by reducing file size, create source code documentation, obfuscate source code to protect intellectual property, and help gather source code metrics for source code analysis & improvements. The source code modifications can either be made in place by overwriting the input files, or can be saved to a user-specified output directory. </p>
+
+<p>This latest alpha release of the JavaScript Linker uses the new ECMA grammar <i>(supports ECMA-262 Standard 3rd edition)</i>. This release is meant for testing purposes only.</p>
+
+
+
+
+<p>&nbsp;</p>
+<h4>Currently Supported Tasks</h4> <p>This is the list of JavaScript Linker tasks supported in this release: </p>
+
+
+<ol> 
+
+<li>
+  <p>
+	<b>Import</b> -  Import JavaScript file from Html documents
+  </p>
+  <p>
+	Import task finds and imported all input source files which have not been explicitly declared by the user, but are referenced with src attributes in HTML. 
+  </p>
+</li>
+
+
+<li>
+  <p>
+	<b>Require</b> -  Import source files specified by the require statements included in the Dojo source code.
+  </p>
+  <p>
+	Require task helps process require statements referenced in the Dojo source code. This task, like the ant build scripts included with Dojo, helps in constructing a custom profile which includes only those modules used by your application. This tool automatically processess the require statements from the Dojo source without any intervention from the user.
+  </p>
+</li>
+
+
+	<li>
+		<p><b>Janitor</b> - unused function removal via dependency analysis</p>
+		<p>Janitor task is used to strip out unused functions from the JavaScript source code. Janitor performs a static code analysis constructing a function call graph for all global functions. Entry points are also calculated from all source files that have imported after processing the Dojo require statements. Every function not reachable from the graph is considered unused and gets removed.</p>
+	
+	    <p> There are two cases where the analysis needs help from the user: Functions that are only called by the server (through the pipe), and functions that 
+	    are composed with string concatenation of the function name which then gets passed to eval or similar reflective functionality. The user can enumerate 
+		the function names in these cases in a property that declares them protected from removal.</p>
+	    <p> The entry points are calculated from all global statements in all JavaScript source code visible to the tool in that run. This might not be desirable, 
+		so there is a property that when set to true makes the task only consider JavaScript code that was actually imported in an import statement in an HTML 
+	    file.
+		</p>
+
+		<ul>
+			<b>Known Issues:</b>
+			<li>
+				<p>
+				The current version of the code is not very aggressive in removing unsed function. It always errs on the side of caution. However, you can control how aggresive Janitor is by changing a property called <i>'task.janitor.process.global'</i> in the project file. Setting this property helps remove more unused functions but it also has the potential to break some test cases. 
+				</p>
+			</li>
+			<li>
+				<p>HTML event handlers are <b>ignored</b> and they are <b>not used</b> as entry points into the call graph. This feature is disabled because the html parser used with the earlier version had a incompatible licence. This feature will be supported after the work on new html grammar is complete. </p>
+			</li>
+	   </ul>
+
+	<p>Janitor task will be improved incrementally in the later releases.</p>
+</li>
+
+
+
+<li><p><b>Muffler</b> - assert/alert, developer "noise" removal</P>
+
+<p>Muffler is used to remove developer noise, like alert and assert statements. For specified identifiers that match declared global functions, the function declarations themselves are removed. Examples of statements that are removed are: 
+<pre id="noteTable">
+	assert( foo < 3 );
+
+	alert( "this is a fire drill" );
+</pre>
+
+<p>It can also removes code that cannot be reached if certain specified identifiers have declared Boolean values. For example, by declaring the identifier debug = false, the code inside the following if-statement cannot be reached, and so is stripped:</p>
+<pre id="noteTable">
+	if( debug ) {
+
+		alert( "here" );
+
+	} 
+</pre>
+<p>&nbsp;</p>
+</li>
+
+<li>
+<p><b>Pretty Printer </b> – Writing back the results from other tasks</p>
+<p>
+Print writes out the result from the other tasks and strips out whitespace, newlines and/or comments if desired. If this task is omitted from the task list, then the run is like a dry-run that won't write out anything. The user can look in the log files to check that the run is doing what is expected, and then add this task to the task list to do the actual writing out of the results. 
+</p>
+
+  <p> The print result is written out in an output directory and the files are 
+    written in a directory tree structure that is identical to the input directory 
+    structure. Since the input can be a list of input directories, the output 
+    tree structure will start at the point where the input directories differ 
+    (the common prefix is not mirrored). The output can also be done in place 
+    by specifying a property.</p>
+  <p> By specifying pretty-printing properties, one can control the stripping 
+    of newlines, whitespace and comments.</p>
+
+	<ul>
+		<b>Known Issues:</b>
+		<li>
+			<p>
+				This version does not support stripping of newline characters
+			</p>
+		</li>
+	</ul>
+
+</li>
+
+</ol>
+
+<p>&nbsp;</p>
+<h4>Additional Tasks</h4>
+<p>This is a list of JavaScript Linker tasks that will supported in future releases: </p>
+
+<ol> 
+<li>
+  <p>
+	<b>Metrics</b> – Source code metric analysis during a JavaScript Linker run
+  </p>
+</li>
+<li>
+  <p>
+	<b>Lint</b> - Checks JavaScript and HTML input for known problems
+  </p>
+</li>
+<li>
+  <p>
+	<b>Jammer </b> - concatenates individual JavaScript files for custom builds/packaging
+  </p>
+</li>
+<li>
+  <p>
+	<b>Jabber</b> - Obfuscate JavaScript source code
+  </p>
+</li>
+<li>
+  <p>
+	<b>Vorpal</b> - Deobfuscate previously obfuscated source code
+  </p>
+</li>
+<li>
+  <p>
+	<b>Ogredoc</b> - Generates HTML documentation from the JavaScript source code
+  </p>
+</li>
+</ol>
+
+<p>&nbsp;</p>
+
+<h3><a name="Requirements">2.0 Requirements</a></h3> 
+	
+<ol>
+  <li>JDK 1.5.x installed with <b>JAVA_HOME</b> pointing to that JDK.</li>
+   <li> You will need Apache Ant 1.6.x installed with <b>ANT_HOME</b> set.</li>
+</ol>
+
+<p>&nbsp;</p>  
+<h3><a name="Installation">3.0 Installation Instructions</a></h3>
+<ol>
+
+  <li>Download JSL from the SVN Repository:</li>
+  <blockquote> 
+    <ul>
+      <li>svn co http://svn.dojotoolkit.org/dojo/trunk/tools/jslinker</li>
+    </ul>
+  </blockquote>
+  <p/>
+  <li> Edit the included build.properties and set the location for the <b>ANT_HOME</b> property</li>
+  <p/>
+  <li>Then build the project using: 
+  <pre id="noteTable">
+
+	ant dist
+  </pre>
+  </li>
+  <p/>
+  <li>There are 8 test cases bundled with this release. To run each test case using ant, navigate to <b>'jsl/bin'</b> and type:
+  
+  <pre id="noteTable">
+
+	ant test1
+  </pre>
+
+  Test cases test1 through test8 are available for testing.
+  </li>
+  <p/>
+  <li>To run the tasks from the command line, navigate to <b>'jsl/bin'</b> and type:
+  <pre id="noteTable">
+
+	java -Xms8m -Xmx200m -cp jsl.jar;sisc.jar;bcel.jar org.dojo.jsl.top.Top --verbose --prj jsl.prj --sources ../tests/test_Colorspace.html
+  </pre>
+  </li>
+  <p/>
+  <li>You can also use the included shell script:
+ <pre id="noteTable">
+
+	jsc/bin/jsl --verbose --prj jsl.prj --sources ../tests/test_Colorspace.html
+ </pre>
+  </li>
+  <p/> 
+  <li>After the JavaScript Linker run, by default: 
+	<ul>
+		<li>Modified files are written to the <b>'jsl/tmp'</b> directory.</li>
+		<li>Log files are written to the <b>'jsl/log'</b> directory.</li>
+	</ul>
+  </li> 
+
+</ol>
+
+<p>&nbsp;</p>
+
+<h3><a name="Documentation">4.0 Documentation</a></h3>
+
+<h3>JSL Options</h3> 
+<p>The following options are supported: <br>
+  <br>
+      <table border="1" cellspacing="0" cellpadding="0" width="591" height="369" >
+        <tr> 
+          <td height="362"> 
+            <blockquote> 
+              <p><b>JSL command line options:</b></p>
+              <p><b>-s or --sources</b><br>
+              </p>
+              <blockquote> comma-separated list of directories or files <br>
+                (optional argument, default value is current directory, wildcards 
+                * and <b>?</b> are supported)<br>
+              </blockquote>
+              <b>-e or --exclude</b><br>
+              <blockquote> comma-separated list of path suffixes<br>
+                input source files that are ignored <br>
+                (wildcards <b>*</b> and <b>?</b> are supported)<br>
+              </blockquote>
+              <b>-o or --outputdir</b><br>
+              <blockquote> 
+                <p>output directory <br>
+                </p>
+                <p>(optional argument, default value is current directory) </p>
+              </blockquote>
+              <b>-t or --tempdir</b><br>
+              <blockquote> temp directory <br>
+                (optional argument, default value is system temp directory)<br>
+              </blockquote>
+              <b>-l or --logdir</b><br>
+              <blockquote> log directory <br>
+                (optional argument, default value is current directory)<br>
+              </blockquote>
+              <b>-j or --homedir</b><br>
+              <blockquote> jsl home directory <br>
+                (optional argument, default value is user home directory)<br>
+              </blockquote>
+              <b>-a or --tasks</b><br>
+              <blockquote> comma-separated list of <a href="#Tasks"> tasks</a><br>
+                (required argument if argument <b>-p</b> is not present)<br>
+              </blockquote>
+              <b>-p or --prj</b><br>
+              <blockquote> 
+                <p>name of <a href="http://dig.netscape.com/public-doc/frameworks/template.prj" target="newwindow"> 
+                  property file</a><br>
+                  (required argument if argument <b>-a</b> is not present, if
+                  there<br>is a file called &quot;jsl.prj&quot; in the current directory it will be used<br>in case -p is not specified)<br>
+                    </p>
+                </blockquote>
+              <b>-P or --prop</b><br>
+              <blockquote> property key value pair separated by <b>=</b><br>
+              </blockquote>
+              <b>-v or --verbose</b><br>
+              <blockquote> verbose mode (e.g. more output during tool run)<br>
+              </blockquote>
+              <b>-h or --help</b><br>
+              <blockquote> 
+                <p>prints this help message</p>
+              </blockquote>
+            </blockquote>
+          </td>
+        </tr>
+      </table>
+<p>&nbsp;</p>
+<p>It is recommended for normal project deployment use to create a property <b>.prj</b> file that defines all the properties and customizes the tool for the  project. This is less awkward than creating long command lines with  multiple properties. A <a href="template.prj" target="newwindow">template.prj</a> file is provided for convenience. All the available properties are described there as well as in this document. At minimum one should define a list of input directories, an output directory and a list of tasks. If you name your property file &quot;jsl.prj&quot; and start jsl from the directory where that file lives it will pick it up automatically without needing a -p option
+at startup.</p>
+<p>&nbsp;</p>
+<p><b>Setting Up a Project File</b></p>
+<p>Open the <a href="template.prj" target="newwindow"> 
+  template.prj</a> file and set values for the properties defined there. The values 
+  you set will control what <a href="#SpecifyingInput"> input</a> gets processed, 
+  what <a href="#Tasks">tasks</a> get executed, and tailors the individual tasks 
+  to the needs of your project. The documentation for each property specifies 
+  valid property values, and default values when no value is specified. </p>
+<p><b><i>Note:</i></b><i> Don't use quotes for any specified values.</i> </p>
+<p>&nbsp;</p>
+<p> <b>Specifying Input</b> </p>
+<p>The input HTML and JavaScript files should contain valid JavaScript and HTML (i.e. follow standards). If it happens that the tool cannot parse a certain file, it can be excluded from the run.</p> 
+<p>Here are all the properties that specify input to the tool:<br>
+  <br>
+      <table border="1" cellspacing="0" cellpadding="3" width="591">
+        <tr> 
+          <td height="362"> 
+            <blockquote> 
+              <p><b>JSL Input Properties:</b></p>
+              <p><b>jsl.sources</b><br>
+                The list of input source directories and files. <br>
+                (optional property, default value is the directory where JSL was 
+                started)<br>
+                <br>
+              </p>
+              <blockquote> 
+                <p><b>specified with</b> command line option <b>-s</b> or <b>--sources</b><br>
+                  <b>value</b> is a comma-separated list of directories and files 
+                  <br>
+                  <br>
+                  <b>Example:</b> </p>
+                
+                  <p><b><pre>jsl.source.dirs = /projects/framework/content,/projects/music/content/script</pre></b></p>
+                
+              </blockquote>
+              <p><b>jsl.sources.encodings</b><br>
+                Marks sources as having a specific encoding. Each property ends 
+                with the name of the encoding. </p>
+              <blockquote> 
+                <p><b>value</b> is a comma-separated list of filename patterns.</p>
+                <p><b>Example:</b></p>
+                <blockquote> 
+                  <p><b>jsl.sources.encodings.Big5=**/src/localized/chinese/*</b></p>
+                </blockquote>
+              </blockquote>
+	      <p><b>jsl.sources.unparsable</b><br>
+                Marks sources as unparsable by jsl. This means that jsl will not attempt to parse them
+		but will consider them as immutable input when executing tasks (for example things referenced in those files 
+		are still protected from janitor deletion).</p>
+              <blockquote> 
+                <p><b>value</b> is a comma-separated list of filename patterns.</p>
+                <p><b>Example:</b></p>
+                <blockquote> 
+                  <p><b><pre>jsl.sources.unparsable=**/src/heavy_jsp/*</pre></b></p>
+                </blockquote>
+              </blockquote>
+              <p><b>jsl.sources.html.suffixes</b><br>
+                Specifies which suffixes are used for HTML files.<br>
+                (optional property, default value is html, htm, jhtml, sxi, jsi, adp. jsp)</p>
+              <blockquote> 
+                <p><b>value</b> is a comma-separated list of suffixes.</p>
+              </blockquote>
+              <p><b>jsl.sources.js.suffixes</b><br>
+                Specifies which suffixes are used for JavaScript files.<br>
+                (optional property, default value is <code>js</code>).</p>
+              <blockquote>
+                <p><b>value</b> is a comma-separated list of suffixes.</p>
+              </blockquote>
+              <p><b>jsl.sources.exclude</b><br>
+                The list of input source entities to ignore.<br>
+                (optional property)<br>
+                <br>
+              </p>
+              <blockquote> 
+                <p><b>value</b> is a comma-separated list of filename patterns<br>
+                  <br>
+                  <b>Example:</b> </p>
+                <blockquote> 
+                  <p><b><pre>jsl.source.exclude = main.adp,header.adp</pre></b></p>
+                </blockquote>
+              </blockquote>
+              <p>Both these properties support the standard file system wildcards 
+                <b>*</b> and <b>?</b>. <br>
+                For the first property, only the last part of a path can have 
+                wildcards. <br>
+                For the second property, any part can have wildcards.</p>
+              <p>For certain tasks it is desirable to only consider HTML files 
+                and the files that those <br>
+                HTML files import with src attributes (jammer2 and janitor can 
+                operate in this <br>
+                mode). To resolve paths specified in src attributes in HTML to 
+                real files on local <br>
+                disks, the tool needs to know the Web root directory specified 
+                with this property:</p>
+              <p><b>jsl.web.root</b><br>
+                The Web root directory; needed to resolve absolute paths in src 
+                attributes<br>
+                in HTML.<br>
+                (optional property, default value is the directory where JSL was 
+                started) </p>
+              <blockquote> 
+                <p> <b>value</b> is a directory<br>
+                  <br>
+                  <b>Example:</b> </p>
+                <blockquote> 
+                  <p><b><pre>jsl.web.root = /projects/framework/content</pre></b></p>
+                </blockquote>
+              </blockquote>
+              <p><br>
+                For cases where the Web structure has url mappings to several 
+                directories,<br>
+                the following property can be used:<br>
+                <br>
+                <b>jsl.web.maps</b><br>
+                Resolves absolute paths in src attributes in HTML. <br>
+                (optional property)</p>
+              <blockquote> 
+                <p><b> value</b> is a comma-separated list of key-value pairs<br>
+                  <b>keys</b> are url prefixes, <b>values</b> are directories 
+                  on the local file system<br>
+                  <br>
+                  <b>Example:</b> <br>
+                </p>
+                <blockquote> <b><pre>jsl.web.maps = /fw,dig/framework/client/content,/fw/images,dig/images,/</pre><br>
+                  music,dig/client/music</b> </blockquote>
+              </blockquote>
+          </td>
+        </tr>
+      </table>
+<br>
+<p>&nbsp;</p>
+<b>File Patterns</b>
+  <p>File patterns as property values are very useful to conveniently declare 
+    a set of files without having to list each file in the set. JSL supports the 
+    classic file system patterns <code>*</code> and <code>?</code> and also supports 
+    the <code>**</code> pattern. The <a href="#ANT"><b>ANT</b></a> documentation 
+    explains patterns best:</p>
+<p>&nbsp;</p>
+<p><b>Patterns</b></p>
+  <p>Patterns are used for inclusion and exclusion. These patterns look very much 
+    like the patterns used in DOS and UNIX:</p>
+  <p><code>*</code> matches zero or more characters, <code>?</code> matches one character.</p>
+  <blockquote>
+    <p><b>Examples</b>:</p>
+    <p><code><b>*.java</b></code> matches <code>.java</code>, <code>x.java</code>and 
+      <code>FooBar.java</code>, but not <code>FooBar.xml</code> (does not end 
+      with .java).</p>
+    <p><code><b>?.java</b></code> matches <code>x.java</code>, <code>A.java</code>, 
+      but not <code>.java</code> or <code>xyz.java</code> (both don't have one 
+      character before <code>.java</code>).</p>
+    <p>Combinations of *'s and ?'s are allowed.</p>
+  </blockquote>
+  <p>Matching is done per-directory. This means that the first directory in the 
+    pattern is matched against the first directory in the path to match, then 
+    the second directory is matched, and so on. For example, if the pattern is 
+    <code>/?abc/*/*.java</code> and the path is <code>/xabc/foobar/test.java</code>, 
+    the first <code>?abc</code> is matched with <code>xabc</code>, then <code>*</code> 
+    is matched with <code>foobar</code>, and finally <code>*.java</code> is matched 
+    with <code>test.java</code>. They all match, so the path matches the pattern.</p>
+  <p>To make things a bit more flexible, we add one extra feature, which makes 
+    it possible to match multiple directory levels. This can be used to match 
+    a complete directory tree, or a file anywhere in the directory tree. To do 
+    this, <code>**</code> must be used as the name of a directory. When <code>**</code> is used as the name 
+    of a directory in the pattern, it matches zero or more directories. For example: 
+    <code>/test/**</code> matches all files/directories under <code>/test/</code>, such as <code>/test/x.java</code>, 
+    or <code>/test/foo/bar/xyz.html</code>, but not <code>/xyz.xml</code>.</p>
+  <p>The properties that accept values with file patterns are:<br>
+  </p>
+  <blockquote> 
+    <p><b>jsl.sources</b> (X)<br>
+      <b>jsl.sources.exclude<br>
+      jsl.sources.fw<br>
+      jsl.sources.encodings</b> </p>
+  </blockquote>
+  <p>(X) <i><b>Note:</b> This property can only have <code>*</code> and <code>?</code> 
+    in the last directory part and no <code>**</code> pattern.</i></p>
+<p>&nbsp;</p>
+ <br><b>File Encodings</b>
+  <p>JSL reads an application's source code with the standard ISO-8859-1 encoding. 
+    This is usually sufficient for correctly interpreting the data in the files, 
+    and correctly writing the results out after processing. However, international 
+    application source code can have files localized for particular languages 
+    that need different encodings. JSL supports these encodings by correctly reading 
+    the files using them, and respecting the encoding when writing out. Because 
+    it is impossible to guess the encoding of a text file from the stream of data 
+    the file contains, it is necessary to specify to JSL with a set of properties 
+    any file encoding that differs from the default ISO-8859-1 encoding. For example, 
+    to specify a group of files having the chinese encoding <code>Big5</code> 
+    the encodings property would be set as follows:</p>
+  <p><code>jsl.sources.encodings.Big5=**/src/localized/chinese/*</code></p>
+  <p>All the charset encoding names supported by java j2se 1.5 are legal encoding 
+    names (see <a href="http://java.sun.com/j2se/1.4/docs/guide/intl/encoding.doc.html" target="newwindow"> 
+    Encoding in JDK 1.5</a>).</p>
+
+<br>
+<h3>Tasks</h3>
+<p>The list of tasks includes: <a href="#Import">import</a>, <a href="#Require">require</a>, <a href="#Print">print</a>, <a href="#Janitor">janitor</a> , <a href="#Muffler">muffler</a>. More tasks will follow.</p>
+<p> The <a href="#Print"> print</a> task writes out the results. The <a href="#Import">import</a> 
+  task finds input source files which have not been explicitly declared by the 
+  user, but are referenced with src attributes in HTML. The import task is usually 
+  the first, and the print task is usually the last. The order in which the tasks 
+  are specified is important because the tasks form a pipeline, and the output 
+  of one task is the input to the next.</p>
+<p>The <b>-a</b> option (or the <b>jsl.tasklist</b> property ) should 
+  be a comma-separated list of task names.<br>
+  <br>
+</p>
+<blockquote><b> Example command line:</b> 
+  <blockquote> 
+    <p><b>-a import,muffler,janitor,jammer2,jabber,print </b></p>
+  </blockquote>
+</blockquote>
+<p>The task list can also be specified in the property file:</p>
+<blockquote> 
+  <p><b>jsl.tasklist</b> property<br>
+    Tasks to be executed by JSL in this run<br>
+    (required property)<br>
+    <br>
+  </p>
+  <blockquote> 
+    <p><b>value</b> is a comma-separated list of task names<br>
+      <br>
+      <b>Example:</b> </p>
+    <blockquote> 
+      <p><b> jsl.tasklist = import,muffler,janitor,jammer2,jabber,print</b> 
+      </p>
+    </blockquote>
+  </blockquote>
+</blockquote>
+
+<br/><br/>
+<b>Short description of each task and its properties.</b><br/>
+
+<p><b>Import<a name="Import"></a></b></p>
+<p>Import task finds input source files which have not been explicitly declared by the user, but are referenced with src attributes in HTML. <br>
+</p>
+
+
+<p><b>Require<a name="Require"></a></b></p>
+<p>Require task helps process require statements referenced in the Dojo source code. This task, like the ant build scripts included with Dojo, helps in constructing a custom profile which includes only those modules used by your application. This tool automatically processess the require statements from the Dojo source without any intervention from the user.<br>
+</p>
+
+<br>
+
+<b>Janitor<a name="Janitor"></a></b> 
+  <p> Use janitor task to strip out unused functions from the JavaScript source code. Janitor performs a static code analysis constructing a function call 
+    graph for all global functions. Global statements are considered entry points into the call graph. Every function not reachable from the graph is considered unused and gets removed. 
+  </p>
+
+  <p> There are two cases where the analysis needs help from the user: Functions that are only called by the server (through the pipe), and functions that 
+    are composed with string concatenation of the function name which then gets passed to eval or similar reflective functionality. The user can enumerate 
+    the function names in these cases in a property that declares them protected from removal.</p>
+  <p> The entry points are calculated from all global statements in all JavaScript source code visible to the tool in that run. This might not be desirable, 
+    so there is a property that when set to true makes the task only consider JavaScript code that was actually imported in an import statement in an HTML 
+    file.</p>
+
+  <p> Here are all the properties for the janitor task that can be specified in 
+    a property file:</p>
+      <table border="1" cellspacing="0" cellpadding="3" width="591" height="369">
+          <tbody> 
+          <tr> 
+            <td height="362"> 
+              <blockquote><br>
+                <p><b> Janitor Properties:</b></p>
+                <p><b> task.janitor.entries</b><br>
+                      The global entry points into the code (things that are used, 
+                      but not called explicitly in code). These are the identifiers 
+                      that should be protected from removal but won't get revealed 
+                      as such by the call graph analysis. Entries should be simple 
+                      identifiers, not composite names. For example to protect 
+                      <code>MUMusic.render</code> the entry <code>render</code> 
+                      should be added to the list. Simple wildcards are supported: 
+                      * and ?. They have the same meaning as in file system wildcards.<br>
+                  (optional property) </p>
+                    <blockquote><b> value</b> is comma-separated list of identifiers 
+                      or identifier wildcards<br>
+                  <br>
+                  <b>Example:</b> 
+                      <blockquote><b> task.janitor.entries = foo,bar,handle*,</b></blockquote>
+                </blockquote>
+                <br>
+                <b>task.janitor.process.js.imports.only</b><br>
+                The flag that controls whether only JavaScript source files which 
+                are actually imported by HTML files are considered when running 
+                janitor<br>
+                (optional property, default is false) 
+                <blockquote><b> value</b> is true or false<br>
+                </blockquote>
+                <p><b><i> Note:</i></b><i> When setting the second property to 
+                  true, the tool will need the webroot property set to a valid 
+                  directory.</i></p>
+                <blockquote>&nbsp; </blockquote>
+              </blockquote>
+            </td>
+          </tr>
+          </tbody> 
+        </table>
+   <br>
+   <br>
+  <b>Muffler<a name="Muffler"></a></b> 
+  <p>Muffler task removes developer noise like alert and assert statements. 
+    For now, only explicit function calls are being removed. For specified identifiers 
+    that match declared global functions, the function declarations themselves 
+    are removed. Examples of statements that are removed are:</p>
+  <pre id="noteTable"> 
+	assert(foo < 3);
+
+	alert("this is a fire drill");
+  </pre>
+  <br/>
+  The identifiers can be composite names like <b>dig.debug.log</b> and can have 
+  wildcards in them. The wildcard syntax is the familiar syntax from file system 
+  wildcards, with <b>*</b> and <b>?</b> augmented with an additional wildcard 
+  pattern <b>**</b> for any number of segments in a composite identifier. 
+  <blockquote> 
+    <p><b> Example:</b></p>
+    <blockquote> 
+      <p><b> dig.log.** matches dig.log.foo, dig.log.info, dig.log.info.warning 
+        etc.</b></p>
+    </blockquote>
+  </blockquote>
+  <p> Muffler also removes code that cannot be reached if certain specified identifiers 
+    have declared Boolean values. For example, by declaring the identifier <b>debug 
+    = false</b>, the code inside the following if-statement cannot be reached, 
+    and so is stripped:</p>
+  <pre id="noteTable"> 
+	if ( debug ) {
+
+		alert ( "here" );
+
+	}
+  </pre>
+  <br/>
+  Here are all the properties for the muffler task that can be specified in a 
+  property file:<br>
+  <br>
+
+        <table border="1" cellspacing="0" cellpadding="3" width="591" height="369">
+          <tbody> 
+          <tr> 
+            <td height="362"> 
+              <blockquote><br>
+                <p><b> Muffler Properties:</b></p>
+                <p><b> task.muffler.noise</b><br>
+                  The function names that need to be deleted<br>
+                  (required property for this task<br>
+                  <br>
+                </p>
+                <blockquote> 
+                  <p><b> value</b> is comma-separated list of identifiers <br>
+                    <br>
+                    <b>Example:</b></p>
+                  <blockquote> 
+                    <p><b> task.muffler.noise = assert,alert</b></p>
+                  </blockquote>
+                </blockquote>
+                <br>
+               </blockquote>
+            </td>
+          </tr>
+          </tbody> 
+        </table>
+
+<p>&nbsp;</p>
+
+<b>Print<a name="Print"></a></b> 
+  <p>Print task writes out the result, stripping whitespace, newlines and/or 
+    comments if desired. If this task is omitted from the task list, then the 
+    run is like a dry-run that won't write out anything. The user can look in 
+    the log files to check that the run is doing what is expected, and then add 
+    this task to the task list to do the actual writing out of the results. The 
+    exception is the ogredoc task that generates output without the help of this 
+    task.</p>
+  <p> The print result is written out in an output directory and the files are 
+    written in a directory tree structure that is identical to the input directory 
+    structure. Since the input can be a list of input directories, the output 
+    tree structure will start at the point where the input directories differ 
+    (the common prefix is not mirrored). The output can also be done in place 
+    by specifying a property.</p>
+  <p> By specifying pretty-printing properties, one can control the stripping 
+    of newlines, whitespace and comments.</p>
+  <p> Here are all the properties for the print task that can be specified in 
+    a property file:<br>
+    <br>
+          <table border="1" cellspacing="0" cellpadding="3" width="591" height="369">
+          <tbody> 
+          <tr> 
+            <td height="362"> 
+              <blockquote> 
+                <p><b> JSL Print Properties:</b></p>
+                <p><b> jsl.source.mirror</b><br>
+                  The flag that controls whether excluded files and source files 
+                  without any defined suffix should be copied over (mirrored) 
+                  into the output directory (e.g. files that the tool normally 
+                  doesn't process such as jpg, gif images etc.)<br>
+                  (optional property, default is false)<br>
+                  <br>
+                </p>
+                <blockquote> <b>value</b> is a Boolean <br>
+                </blockquote>
+                <br>
+                <b>task.print.output.dir</b><br>
+                The output directory<br>
+                (optional property, default value is a date-stamped jslout subdir 
+                of the temp dir) <br>
+                <blockquote><b> specified with</b> command line option <b>-o</b> 
+                  or<b> --outputdir</b><br>
+                  <b>value</b> is a directory<br>
+                </blockquote>
+                <br>
+                <b>task.print.inplace</b><br>
+                If true, prints in place<br>
+                (optional property, default value is false) 
+                <blockquote><b> value</b> is a Boolean<br>
+                </blockquote>
+                <br>
+                The following properties are the Boolean properties for pretty-printing 
+                files of a certain suffix. Their meaning should be obvious from 
+                their name. 
+                <blockquote> 
+                  <p><b> source.js.prettyprinter.strip.all<br>
+                    <br>
+                    source.js.prettyprinter.strip.comments<br>
+                    <br>
+                    source.js.prettyprinter.strip.whitespace<br>
+                    <br>
+                    source.js.prettyprinter.strip.newlines<br>
+                    <br>
+                    source.js.prettyprinter.preserve<br>
+                    <br>
+                    source.js.prettyprinter.indent<br>
+                    <br>
+                    source.html.prettyprinter.strip.comments</b><br>
+                  </p>
+                </blockquote>
+              </blockquote>
+            </td>
+          </tr>
+          </tbody> 
+        </table>
+
+  <br>
+
+<p/>&nbsp;<p/>   
+  <hr size="1" noshade><br> 
+<b>Last Update:</b> 2006/08/25 23:49:07<br/><br/>
+<b>Author:</b> Satish Sekharan  <br>
+<!--end content --> 
+</div> 
+<p><br>
+</p>
+<p>&nbsp;</p>
+</body></html>
