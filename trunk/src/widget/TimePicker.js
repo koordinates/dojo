@@ -48,6 +48,10 @@ dojo.widget.defineWidget(
 		//	set the following to true to set default minutes to current time, false to // use zero
 		this.useDefaultMinutes = false;
 		
+		// roundUpMinutes: Boolean
+		//	set the following to true, if you want to round up minutes to 5-min intervals (default behavior)
+		this.roundUpMinutes = true;
+		
 		// storedTime: String
 		//	rfc 3339 time
 		this.storedTime = "";
@@ -116,12 +120,12 @@ dojo.widget.defineWidget(
 		// FIXME: should normalize against whitespace on storedTime... for now 
 		// just a lame hack
 		if(this.storedTime.indexOf("T")!=-1 && this.storedTime.split("T")[1] && this.storedTime!=" " && this.storedTime.split("T")[1]!="any"){
-			this.time = dojo.widget.TimePicker.util.fromRfcDateTime(this.storedTime, this.useDefaultMinutes, this.selectedTime.anyTime);
+			this.time = dojo.widget.TimePicker.util.fromRfcDateTime(this.storedTime, this.useDefaultMinutes, this.selectedTime.anyTime, !this.roundUpMinutes);
 		}else if(this.useDefaultTime){
-			this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", this.useDefaultMinutes, this.selectedTime.anyTime);
+			this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", this.useDefaultMinutes, this.selectedTime.anyTime, !this.roundUpMinutes);
 		}else{
 			this.selectedTime.anyTime = true;
-			this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", 0, 1);
+			this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", 0, 1, !this.roundUpMinutes);
 		}
 	},
 
@@ -132,9 +136,16 @@ dojo.widget.defineWidget(
 			var hour = amPmHour[0];
 			var isAm = amPmHour[1];
 			var minute = this.time.getMinutes();
-			var minuteIndex = parseInt(minute/5);
-			this.onSetSelectedHour(this.hourIndexMap[hour]);
-			this.onSetSelectedMinute(this.minuteIndexMap[minuteIndex]);
+			var minuteIndex = Math.floor(minute / 5);
+			// set hour
+			this.onClearSelectedHour();
+			this.setSelectedHour(this.hourIndexMap[hour]);
+			// set minutes
+			this.onClearSelectedMinute();
+			this.setSelectedMinute(this.minuteIndexMap[minuteIndex]);
+			if(!this.roundUpMinutes){
+				this.selectedTime["minute"] = minute < 10 ? "0" + minute.toString() : minute.toString();
+			}
 			this.onSetSelectedAmPm(isAm);
 		} else {
 			this.onSetSelectedAnyTime();
@@ -173,7 +184,7 @@ dojo.widget.defineWidget(
 		this.clearSelectedAnyTime();
 		if(this.selectedTime.anyTime) {
 			this.selectedTime.anyTime = false;
-			this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", this.useDefaultMinutes);
+			this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", this.useDefaultMinutes, 0, !this.roundUpMinutes);
 			this.initUI();
 		}
 	},
@@ -344,12 +355,16 @@ dojo.widget.TimePicker.util = new function() {
 		return dojo.date.strftime(jsDate, "%Y-%m-%dT%H:%M:00%z"); //FIXME: use dojo.date.toRfc3339 instead
 	}
 
-	this.fromRfcDateTime = function(rfcDate, useDefaultMinutes, isAnyTime) {
+	this.fromRfcDateTime = function(rfcDate, useDefaultMinutes, isAnyTime, dontRoundUpMinutes) {
 		//summary: constructs a Date object from RFC 3339 string
 		var tempDate = new Date();
 		if(!rfcDate || rfcDate.indexOf("T")==-1) {
 			if(useDefaultMinutes) {
-				tempDate.setMinutes(Math.floor(tempDate.getMinutes()/5)*5);
+				if(dontRoundUpMinutes){
+					tempDate.setMinutes(tempDate.getMinutes());
+				}else{
+					tempDate.setMinutes(Math.floor(tempDate.getMinutes()/5)*5);
+				}
 			} else {
 				tempDate.setMinutes(0);
 			}

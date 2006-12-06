@@ -116,6 +116,9 @@ dojo.widget.defineWidget(
 			}
 			
 			var tpArgs = { widgetContainerId: this.widgetId, lang: this.lang, value: value };
+			if("roundupminutes" in arguments[0]){
+				tpArgs.roundUpMinutes = eval("(" + arguments[0]["roundupminutes"] + ")");
+			}
 			this.timePicker = dojo.widget.createWidget("TimePicker", tpArgs, this.containerNode, "child");
 			
 			dojo.event.connect(this.timePicker, "onValueChanged", this, "_updateText");
