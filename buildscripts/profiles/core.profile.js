@@ -12,7 +12,7 @@ var dependencies = [
 	"dojo.event",
 	"dojo.string.common",
 	"dojo.string.extras",
-	"dojo.io",
+	"dojo.io.*",
 	"dojo.io.BrowserIo",
 	"dojo.io.cookie",
 	"dojo.json",
