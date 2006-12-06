@@ -256,11 +256,10 @@ dojo.widget.defineWidget(
 			}
 
 			this.clipNode.style.clip = "rect(0px, " + nodeSize.width + "px, " + nodeSize.height + "px, 0px)";
-
 			if(dojo.render.html.ie){
 				if(!this.bgIframe){
-					this.bgIframe = new dojo.html.BackgroundIframe(this.containerNode);
-					this.bgIframe.setZIndex(this.containerNode);
+					this.bgIframe = new dojo.html.BackgroundIframe(this.clipNode);
+					this.bgIframe.setZIndex(this.clipNode);
 				}
 				this.bgIframe.onResized();
 				this.bgIframe.show();
