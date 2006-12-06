@@ -841,7 +841,6 @@ available in src/storage/java/ without rebuilding it.
 		             includes="*.class"/>
 		 </jar>
 	</target>
-	
 	<!-- end buildFileStorageProvider task -->
 
 	<!-- buildDojoFlash task -->
