@@ -16,8 +16,8 @@ function init() {
 //	dlg = dojo.widget.byId("DialogContent");
 	dlgProg = dojo.widget.createWidget("dojo:Dialog",{toggle:"fade",toggleDuration:250}, dojo.byId("dialogNode"));
 	dojo.debug(dlgProg.domNode.innerHTML);
-//	var btn2 = document.getElementById("hider2");
-//	dlgProg.setCloseControl(btn2);
+	var btn2 = document.getElementById("hider2");
+	dlgProg.setCloseControl(btn2);
 }
 dojo.addOnLoad(init);
 
