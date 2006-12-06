@@ -58,6 +58,7 @@ dojo.declare("dojo.dnd.HtmlDragManager", dojo.dnd.DragManager, {
 
 	selectedSources: [],
 	dragObjects: [],
+	dragSources: [],
 
 	// mouse position properties
 	currentX: null,
