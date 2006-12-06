@@ -4,48 +4,57 @@ dojo.require("dojo.experimental");
 dojo.experimental("dojo.io.XhrIframeProxy");
 
 dojo.require("dojo.io.IframeIO");
-dojo.require("dojo.html.iframe");
 dojo.require("dojo.dom");
 dojo.require("dojo.uri.Uri");
 
-/*
-TODO: This page might generate a "loading unsecure items on a secure page"
-popup in browsers if it is served on a https URL, given that we are not
-setting a src on the iframe element.
-//TODO: Document that it doesn't work from local disk in Safari.
-
-*/
-
-dojo.io.XhrIframeProxy = new function(){
+dojo.io.XhrIframeProxy = {
 	//summary: Object that implements the iframe handling for XMLHttpRequest
 	//IFrame Proxying.
 	//description: Do not use this object directly. See the Dojo Book page
 	//on XMLHttpRequest IFrame Proxying:
 	//http://manual.dojotoolkit.org/WikiHome/DojoDotBook/Book75
-	//Usage of XHR IFrame Proxying does not work from local disk in Safari, and
-	//it might generate a "loading unsecure items on a secure page"
-	//popup in browsers if it is called on a https page, because it does not
-	//set a src on the iframe element.
-	
-	this.xipClientUrl = dojo.uri.dojoUri("src/io/xip_client.html");
+	//Usage of XHR IFrame Proxying does not work from local disk in Safari.
 
-	this._state = {};
-	this._stateIdCounter = 0;
+	xipClientUrl: djConfig["xipClientUrl"] || dojo.uri.dojoUri("src/io/xip_client.html"),
 
-	this.send = function(facade){		
+	_state: {},
+	_stateIdCounter: 0,
+
+	needFrameRecursion: function(){
+		return (true == dojo.render.html.ie70);
+	},
+
+	send: function(facade){		
 		var stateId = "XhrIframeProxy" + (this._stateIdCounter++);
 		facade._stateId = stateId;
+
+
+		var frameUrl = this.xipClientUrl + "#0:init:id=" + stateId + "&server=" 
+			+ encodeURIComponent(facade._ifpServerUrl) + "&fr=false";
+		if(this.needFrameRecursion()){
+			//IE7 hack. Need to load server URL, and have that load the xip_client.html.
+			//Also, this server URL needs to different from the one eventually loaded by xip_client.html
+			//Otherwise, IE7 will not load it. Funky.
+			var fullClientUrl = window.location.href.substring(0, window.location.href.lastIndexOf("/") + 1);
+			fullClientUrl += this.xipClientUrl;
+		
+			var serverUrl = facade._ifpServerUrl
+				+ (facade._ifpServerUrl.indexOf("?") == -1 ? "?" : "&") + "dojo.fr=1";
+
+			frameUrl = serverUrl + "#0:init:id=" + stateId + "&client=" 
+				+ encodeURIComponent(fullClientUrl) + "&fr=" + this.needFrameRecursion(); //fr is for Frame Recursion
+		}
 
 		this._state[stateId] = {
 			facade: facade,
 			stateId: stateId,
-			clientFrame: dojo.io.createIFrame(stateId,
-				"dojo.io.XhrIframeProxy.clientFrameLoaded('" + stateId + "');",
-				this.xipClientUrl)
+			clientFrame: dojo.io.createIFrame(stateId, "", frameUrl)
 		};
-	}
+		
+		return stateId;
+	},
 	
-	this.receive = function(/*String*/stateId, /*String*/urlEncodedData){
+	receive: function(/*String*/stateId, /*String*/urlEncodedData){
 		/* urlEncodedData should have the following params:
 				- responseHeaders
 				- status
@@ -85,13 +94,18 @@ dojo.io.XhrIframeProxy = new function(){
 		facade.readyState = 4;
 		
 		this.destroyState(stateId);
-	}
+	},
 
-	this.clientFrameLoaded = function(/*String*/stateId){
+	clientFrameLoaded: function(/*String*/stateId){
 		var state = this._state[stateId];
 		var facade = state.facade;
-		var clientWindow = dojo.html.iframeContentWindow(state.clientFrame);
-		
+
+		if(this.needFrameRecursion()){
+			var clientWindow = window.open("", state.stateId + "_clientEndPoint");
+		}else{
+			var clientWindow = state.clientFrame.contentWindow;
+		}
+
 		var reqHeaders = [];
 		for(var param in facade._requestHeaders){
 			reqHeaders.push(param + ": " + facade._requestHeaders[param]);
@@ -110,10 +124,10 @@ dojo.io.XhrIframeProxy = new function(){
 			requestData.data = facade._bodyData;
 		}
 
-		clientWindow.send(stateId, facade._ifpServerUrl, dojo.io.argsFromMap(requestData, "utf8"));
-	}
+		clientWindow.send(dojo.io.argsFromMap(requestData, "utf8"));
+	},
 	
-	this.destroyState = function(/*String*/stateId){
+	destroyState: function(/*String*/stateId){
 		var state = this._state[stateId];
 		if(state){
 			delete this._state[stateId];
@@ -122,9 +136,9 @@ dojo.io.XhrIframeProxy = new function(){
 			state.clientFrame = null;
 			state = null;
 		}
-	}
+	},
 
-	this.createFacade = function(){
+	createFacade: function(){
 		if(arguments && arguments[0] && arguments[0]["iframeProxyUrl"]){
 			return new dojo.io.XhrIframeFacade(arguments[0]["iframeProxyUrl"]);
 		}else{
@@ -181,7 +195,7 @@ dojo.lang.extend(dojo.io.XhrIframeFacade, {
 	send: function(/*String*/stringData){
 		this._bodyData = stringData;
 		
-		dojo.io.XhrIframeProxy.send(this);
+		this._stateId = dojo.io.XhrIframeProxy.send(this);
 		
 		this.readyState = 2;
 	},
