@@ -6,13 +6,14 @@
 	<script type="text/javascript">
 		var djConfig = {
 			isDebug: true,
-      debugAtAllCosts: false,
-      parseWidgets: true
+			debugAtAllCosts: false,
+			parseWidgets: true
 		};
  	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
 	<script type="text/javascript">
 		dojo.require ("dojo.widget.*");
+		dojo.require ("dojo.widget.Slider");
 	</script>
 </head>
 
@@ -38,10 +39,10 @@ Red, blue, and green borders shown to test the correct placement of slider compo
 	buttonStyle="top:1px;"
 	backgroundStyle="padding:8px 4px 8px 4px;border:1px solid red;"
 	backgroundSize="width:100px;height:5px;"
-	backgroundSrc="../../src/widget/templates/images/blank.gif"
-	progressBackgroundSrc="../../src/widget/templates/images/slider-bg.gif"
+	backgroundSrc="src/widget/templates/images/blank.gif"
+	progressBackgroundSrc="src/widget/templates/images/slider-bg.gif"
 	handleStyle="top:0px;width:13px;height:18px;"
-	handleSrc="../../src/widget/templates/images/slider.gif"
+	handleSrc="src/widget/templates/images/slider.gif"
 	style="border:solid blue;border-width:16px 12px 8px 4px;padding:4px 8px 12px 16px;margin:9px;"
    ></div>[after]</td>
 <td rowspan="2" style="border:2px solid green;line-height:0px;white-space:nowrap;vertical-align:middle;">
@@ -62,9 +63,9 @@ Red, blue, and green borders shown to test the correct placement of slider compo
   	onValueChanged="dojo.byId('verticalSliderValue').value = arguments[0];"
 	buttonStyle="width:28px;height:16px;"
 	backgroundStyle="padding:8px 8px 8px 8px;border:1px solid red;background-color:yellow;"
-	progressBackgroundSrc="../../src/widget/templates/images/slider-bg-progress-vert.gif"
+	progressBackgroundSrc="src/widget/templates/images/slider-bg-progress-vert.gif"
 	handleStyle="left:2px;top:-1px;"
-	handleSrc="../../src/widget/templates/images/slider-button-vert.png"
+	handleSrc="src/widget/templates/images/slider-button-vert.png"
 	flip="true"
    ></div>[after]</td></tr>
 </table>
