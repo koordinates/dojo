@@ -63,13 +63,13 @@ dojo.declare("dojo.dnd.HtmlDragSource", dojo.dnd.DragSource, {
 	*	// add a single element
 	*	dragSource.addDragObjects(dojo.byId('id1'));
 	*	// add multiple elements to drag along
-	*	dragSource.addDragObjects(dojo.byId('id2'), dojo.byId('id3'));
+	*	dragSource.addDragObjects('id2', dojo.byId('id3'));
 	*
 	* el A dom node to add to the drag list.
 	*/
-	addDragObjects: function(/*DOMNode*/ el) {
-		for (var i=0; i<arguments.length; i++) {
-			this.dragObjects.push(arguments[i]);
+	addDragObjects: function(/*DOMNode*/ el){
+		for(var i=0; i<arguments.length; i++){
+			this.dragObjects.push(dojo.byId(arguments[i]));
 		}
 	}
 }, function(node, type){
