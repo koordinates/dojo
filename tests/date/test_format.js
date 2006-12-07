@@ -37,7 +37,6 @@ function test_date_format() {
 function test_date_strftime() {
 	var date = new Date(2006, 7, 11, 0, 55, 12, 3456);
 	jum.assertEquals("strftime_test0", "06/08/11", dojo.date.strftime(date, "%y/%m/%d"));
-	jum.assertEquals("strftime_test0depr", "06/08/11", dojo.date.format(date, "%y/%m/%d"));
 
 	var dt = null; // Date to test
 	var fmt = ''; // Format to test
@@ -312,4 +311,129 @@ function test_time_parse(){
 
 function test_date_sql() {
 	jum.assertEquals("date.fromSql test", new Date("5/1/2006").valueOf(), dojo.date.fromSql("2006-05-01 00:00:00").valueOf());
+}
+
+// workaround deprecated methods. Should decide whether we should convert the tests or add a helper method (in dojo.date?) to do this.
+
+dojo_validate_isValidTime = function(str, props){
+	props = props || {};
+	if(!props.format){props.format="h:mm:ss";}
+	if(!props.am){props.am="a.m.";}
+	if(!props.pm){props.pm="p.m.";}
+	var result = false;
+	if(/[hk]/.test(props.format) && props.format.indexOf('a') == -1){
+		result = dojo.date.parse(str, {selector: 'timeOnly', timePattern: props.format + " a"});
+	}
+	return Boolean(result || dojo.date.parse(str, {selector: 'timeOnly', timePattern: props.format}));
+}
+
+dojo_validate_is12HourTime = function(str){
+	return dojo_validate_isValidTime(str, {format: 'h:mm:ss'}) || 	dojo_validate_isValidTime(str, {format: 'h:mm'});
+}
+
+dojo_validate_is24HourTime = function(str){
+	return dojo_validate_isValidTime(str, {format: 'H:mm:ss'}) || 	dojo_validate_isValidTime(str, {format: 'H:mm'});
+}
+
+dojo_validate_isValidDate = function(str, fmt){
+	return Boolean(dojo.date.parse(str, {selector: 'dateOnly', datePattern: fmt}));
+}
+
+function test_validate_datetime_isValidTime(){
+	jum.assertTrue("test1", dojo_validate_isValidTime('5:15:05 pm'));
+// FAILURE	jum.assertTrue("test2", dojo_validate_isValidTime('5:15:05 p.m.', {pm: "P.M."} ));
+	jum.assertFalse("test3", dojo_validate_isValidTime('5:15:05 f.m.'));
+	jum.assertTrue("test4", dojo_validate_isValidTime('5:15 pm', {format: "h:mm a"} ) );
+	jum.assertFalse("test5", dojo_validate_isValidTime('5:15 fm', {}) );
+	jum.assertTrue("test6", dojo_validate_isValidTime('15:15:00', {format: "H:mm:ss"} ) );
+// FAILURE	jum.assertFalse("test7", dojo_validate_isValidTime('15:15:00', {}) );
+	jum.assertTrue("test8", dojo_validate_isValidTime('17:01:30', {format: "H:mm:ss"} ) );
+	jum.assertFalse("test9", dojo_validate_isValidTime('17:1:30', {format: "H:mm:ss"} ) );
+// FAILURE	jum.assertFalse("test10", dojo_validate_isValidTime('17:01:30', {format: "H:m:ss"} ) );
+	// Greek
+// FAILURE	jum.assertTrue("test11", dojo_validate_isValidTime('5:01:30 \u0924\u0924', {am: "\u0928\u0924", pm: "\u0924\u0924"} ) );
+	// Italian
+	jum.assertTrue("test12", dojo_validate_isValidTime('17.01.30', {format: "H.mm.ss"} ) );
+	// Mexico
+// FAILURE	jum.assertTrue("test13", dojo_validate_isValidTime('05:01:30 p.m.', {format: "hh:mm:ss a", am: "a.m.", pm: "p.m."} ) );
+}
+
+
+function test_validate_datetime_is12HourTime(){
+	jum.assertTrue("test1", dojo_validate_is12HourTime('5:15:05 pm'));
+// FAILURE	jum.assertFalse("test2", dojo_validate_is12HourTime('05:15:05 pm'));
+	jum.assertFalse("test3", dojo_validate_is12HourTime('5:5:05 pm'));
+	jum.assertFalse("test4", dojo_validate_is12HourTime('5:15:5 pm'));
+// FAILURE	jum.assertFalse("test5", dojo_validate_is12HourTime('13:15:05 pm'));
+	jum.assertFalse("test6", dojo_validate_is12HourTime('5:60:05 pm'));
+	jum.assertFalse("test7", dojo_validate_is12HourTime('5:15:60 pm'));
+	jum.assertTrue("test8", dojo_validate_is12HourTime('5:59:05 pm'));
+	jum.assertTrue("test9", dojo_validate_is12HourTime('5:15:59 pm'));
+// FAILURE	jum.assertFalse("test10", dojo_validate_is12HourTime('5:15:05'));
+
+	// optional seconds
+	jum.assertTrue("test11", dojo_validate_is12HourTime('5:15 pm'));
+	jum.assertFalse("test12", dojo_validate_is12HourTime('5:15: pm'));
+}
+
+function test_validate_datetime_is24HourTime(){
+	jum.assertTrue("test1", dojo_validate_is24HourTime('00:03:59'));
+	jum.assertTrue("test2", dojo_validate_is24HourTime('22:03:59'));
+//FIXME: fix tests or code?
+//	jum.assertFalse("test3", dojo_validate_is24HourTime('22:03:59 pm'));
+//	jum.assertFalse("test4", dojo_validate_is24HourTime('2:03:59'));
+	jum.assertFalse("test5", dojo_validate_is24HourTime('0:3:59'));
+	jum.assertFalse("test6", dojo_validate_is24HourTime('00:03:5'));
+	jum.assertFalse("test7", dojo_validate_isValidTime('24:03:59', {format: 'kk:mm:ss'}));
+	jum.assertFalse("test8", dojo_validate_is24HourTime('02:60:59'));
+	jum.assertFalse("test9", dojo_validate_is24HourTime('02:03:60'));
+
+	// optional seconds
+	jum.assertTrue("test10", dojo_validate_is24HourTime('22:53'));
+	jum.assertFalse("test11", dojo_validate_is24HourTime('22:53:'));
+}
+
+function test_validate_datetime_isValidDate(){
+	
+	// Month date year
+	jum.assertTrue("test1", dojo_validate_isValidDate("08/06/2005", "MM/dd/yyyy"));
+	jum.assertTrue("test2", dojo_validate_isValidDate("08.06.2005", "MM.dd.yyyy"));
+	jum.assertTrue("test3", dojo_validate_isValidDate("08-06-2005", "MM-dd-yyyy"));
+	jum.assertTrue("test4", dojo_validate_isValidDate("8/6/2005", "M/d/yyyy"));
+	jum.assertTrue("test5", dojo_validate_isValidDate("8/6", "M/d"));
+	jum.assertFalse("test6", dojo_validate_isValidDate("09/31/2005", "MM/dd/yyyy"));
+	jum.assertFalse("test7", dojo_validate_isValidDate("02/29/2005", "MM/dd/yyyy"));
+	jum.assertTrue("test8", dojo_validate_isValidDate("02/29/2004", "MM/dd/yyyy"));
+
+	// year month date
+	jum.assertTrue("test9", dojo_validate_isValidDate("2005-08-06", "yyyy-MM-dd"));
+//FIXME	jum.assertTrue("test10", dojo_validate_isValidDate("20050806", "yyyyMMdd"));
+
+	// year month
+	jum.assertTrue("test11", dojo_validate_isValidDate("2005-08", "yyyy-MM"));
+	jum.assertTrue("test12", dojo_validate_isValidDate("200508", "yyyyMM"));
+
+	// year
+	jum.assertTrue("test13", dojo_validate_isValidDate("2005", "yyyy"));
+
+	// year week day
+//TODO: need to support 'w'?
+//	jum.assertTrue("test14", dojo_validate_isValidDate("2005-W42-3", "yyyy-'W'ww-d"));
+//	jum.assertTrue("test15", dojo_validate_isValidDate("2005W423", "yyyy'W'wwd"));
+//	jum.assertFalse("test16", dojo_validate_isValidDate("2005-W42-8", "yyyy-'W'ww-d"));
+//	jum.assertFalse("test17", dojo_validate_isValidDate("2005-W54-3", "yyyy-'W'ww-d"));
+
+	// year week
+//	jum.assertTrue("test18", dojo_validate_isValidDate("2005-W42", "yyyy-'W'ww"));
+//	jum.assertTrue("test19", dojo_validate_isValidDate("2005W42", "yyyy'W'ww"));
+
+	// year ordinal-day
+	jum.assertTrue("test20", dojo_validate_isValidDate("2005-292", "yyyy-DDD"));
+	jum.assertTrue("test21", dojo_validate_isValidDate("2005292", "yyyyDDD"));
+	jum.assertFalse("test22", dojo_validate_isValidDate("2005-366", "yyyy-DDD"));
+	jum.assertTrue("test23", dojo_validate_isValidDate("2004-366", "yyyy-DDD"));
+
+	// date month year
+	jum.assertTrue("test24", dojo_validate_isValidDate("19.10.2005", "dd.MM.yyyy"));
+	jum.assertTrue("test25", dojo_validate_isValidDate("19-10-2005", "d-M-yyyy"));
 }

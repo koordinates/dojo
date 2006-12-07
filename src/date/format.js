@@ -267,7 +267,6 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 	if(!options.selector){ options.selector = 'dateOnly'; }
 	var datePattern = options.datePattern || info["dateFormat-" + formatLength];
 	var timePattern = options.timePattern || info["timeFormat-" + formatLength];
-
 	var pattern;
 	if(options.selector == 'dateOnly'){
 		pattern = datePattern;
@@ -383,10 +382,17 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 					dojo.debug("dojo.date.parse: Could not parse weekday name: '" + v + "'.");
 					return null;
 				}
-				break;	
+				break;
 			case 'd':
 				result.setDate(v);
 				expected.date = v;
+				break;
+			case 'D':
+				dojo.date.setDayOfYear(result, v); //FIXME: need to defer this until after the year is set for leap-year?
+				break;
+			case 'w':
+				var firstDay = 0;
+				dojo.date.setWeekOfYear(dateObject, v, firstDay);
 				break;
 			case 'a': //am/pm
 				var am = options.am || info.am;
@@ -439,15 +445,15 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 
 	//validate parse date fields versus input date fields
 	if(expected.year && result.getFullYear() != expected.year){
-		dojo.debug("Parsed year: '" + result.getFullYear() + "' did not match input year: '" + expected.year + "'.");
+		dojo.debug("dojo.date.parse: Parsed year: '" + result.getFullYear() + "' did not match input year: '" + expected.year + "'.");
 		return null;
 	}
 	if(expected.month && result.getMonth() != expected.month){
-		dojo.debug("Parsed month: '" + result.getMonth() + "' did not match input month: '" + expected.month + "'.");
+		dojo.debug("dojo.date.parse: Parsed month: '" + result.getMonth() + "' did not match input month: '" + expected.month + "'.");
 		return null;
 	}
 	if(expected.date && result.getDate() != expected.date){
-		dojo.debug("Parsed day of month: '" + result.getDate() + "' did not match input day of month: '" + expected.date + "'.");
+		dojo.debug("dojo.date.parse: Parsed day of month: '" + result.getDate() + "' did not match input day of month: '" + expected.date + "'.");
 		return null;
 	}
 
@@ -493,6 +499,9 @@ function _buildDateTimeRE(groups, info, options, pattern){
 				break;
 			case 'M':
 				s = (l>2) ? '\\S+' : '\\d{1,2}';
+				break;
+			case 'D':
+				s = '\\d{1,3}';
 				break;
 			case 'd':
 				s = '\\d{1,2}';
