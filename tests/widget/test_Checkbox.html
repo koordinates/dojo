@@ -21,7 +21,9 @@ function outputValues(form){
 	for(var i=0;i<form.elements.length;i++){
 		var e = form.elements[i];
 		if(e.type=="submit") break;
-		str += "submit: name="+e.name+" id="+e.id+" value="+e.value +" disabled="+e.disabled+" checked=" + e.checked + "<br>";
+		if(e.checked){
+			str += "submit: name="+e.name+" id="+e.id+" value="+e.value+ "<br>";
+		}
 	}
 	dojo.byId("result").innerHTML = str;
 	return false;
@@ -39,7 +41,6 @@ dojo.addOnLoad(function(){
 Here are some checkboxes.  Try clicking, and hovering:
 </p>
 
-<p>
 <form onSubmit="return outputValues(this);">
 	<input type="checkbox" name="cb0" id="cb0" />
 		<label for="cb0">cb0: Vanilla (non-dojo) checkbox (for comparison purposes)</label>
@@ -62,9 +63,36 @@ Here are some checkboxes.  Try clicking, and hovering:
 	<div id="checkboxContainer"></div>
 		<label for="checkboxContainer">cb6: instantiated from script</label>
 	<br>
+	<p>
+		<span>Radio group #1:</span>
+		<input type="radio" name="g1" id="g1rb1" value="news" dojoType="RadioButton">
+		<label for="g1rb1">news</label>
+		<input type="radio" name="g1" id="g1rb2" value="talk" dojoType="RadioButton" checked="checked"/>
+		<label for="g1rb2">talk</label>
+		<input type="radio" name="g1" id="g1rb3" value="weather" dojoType="RadioButton" disabled="disabled"/>
+		<label for="g1rb3">weather</label>
+	</p>
+	<p>
+		<span>Radio group #2:</span>
+		<input type="radio" name="g2" id="g2rb1" value="top40" dojoType="RadioButton"/>
+		<label for="g2rb1">top 40</label>
+		<input type="radio" name="g2" id="g2rb2" value="oldies" dojoType="RadioButton"/>
+		<label for="g2rb2">oldies</label>
+		<input type="radio" name="g2" id="g2rb3" value="country" dojoType="RadioButton" disabled="disabled"  checked="checked"/>
+		<label for="g2rb3">country</label>
+	</p>
+	<p>
+		<span>Radio group #3 (native radio buttons):</span>
+		<input type="radio" name="g3" id="g3rb1" value="rock"/>
+		<label for="g3rb1">rock</label>
+		<input type="radio" name="g3" id="g3rb2" value="jazz"/>
+		<label for="g3rb2">jazz</label>
+		<input type="radio" name="g3" id="g3rb3" value="classical" disabled="disabled"  checked="checked"/>
+		<label for="g3rb3">classical</label>
+	</p>
 	<input type="submit" />
 </form>
-</p>
+
 <p>Submitted data:</p>
 <div id="result"></div>
 
