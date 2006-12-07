@@ -64,6 +64,9 @@ dojo.lang.declare = function(	/*String*/ className,
 	if((dojo.lang.isFunction(props))||((!props)&&(!dojo.lang.isFunction(init)))){ 
 		// parameter juggling to support omitting init param (also allows
 		// reordering init and props arguments)
+		if(dojo.lang.isFunction(props)){
+			dojo.deprecated("dojo.lang.declare("+className+"...):", "use class, superclass, initializer, properties argument order", "0.6");
+		}
 		var temp = props;
 		props = init;
 		init = temp;
