@@ -123,8 +123,11 @@ dojo.declare("dojo.dnd.DragObject", null, {
 	ondragover: dojo.lang.forward("onDragOver")
 });
 
-dojo.declare("dojo.dnd.DropTarget", null, {
-
+dojo.declare("dojo.dnd.DropTarget", null, 
+function(){
+	this.acceptedTypes = [];
+},
+{
 	acceptsType: function(/*String*/type){
 		// summary: 
 		//		determines whether or not this DropTarget will accept the given
@@ -187,8 +190,6 @@ dojo.declare("dojo.dnd.DropTarget", null, {
 	onDropEnd: function(){
 		// summary: dropping is over
 	}
-}, function(){
-	this.acceptedTypes = [];
 });
 
 // NOTE: this interface is defined here for the convenience of the DragManager
