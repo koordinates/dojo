@@ -144,12 +144,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 	// Todo: Support dependent and target fields that are radio button groups, or select drop-down lists.
 	// Todo: Make the dependency based on a specific value of the target field.
 	// Todo: allow dependent fields to have several required values, like {checkboxgroup: 3}.
-	if(dojo.lang.isObject(profile.dependencies) || dojo.lang.isObject(profile.dependancies)){
-		if(profile["dependancies"]){
-			dojo.deprecated("dojo.validate.check", "profile 'dependancies' is deprecated, please use "
-							+ "'dependencies'", "0.5");
-			profile.dependencies=profile.dependancies;
-		}
+	if(dojo.lang.isObject(profile.dependencies)){
 		// properties of dependencies object are the names of dependent fields to be checked
 		for(name in profile.dependencies){
 			var elem = form[name];	// the dependent element
