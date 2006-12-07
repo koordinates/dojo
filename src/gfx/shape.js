@@ -4,11 +4,10 @@ dojo.require("dojo.lang.declare");
 
 dojo.require("dojo.gfx.common");
 
-dojo.declare("dojo.gfx.Shape", null, {
-	// summary: a Shape object, which knows how to apply 
-	// graphical attributes and transformations
-
-	initializer: function(){
+dojo.declare("dojo.gfx.Shape", null,
+	function(){
+		// summary: a Shape object, which knows how to apply 
+		// graphical attributes and transformations
 	
 		// rawNode: Node: underlying node
 		this.rawNode = null;
@@ -53,7 +52,7 @@ dojo.declare("dojo.gfx.Shape", null, {
 		//	a transformation matrix inherited from the parent
 		this.parentMatrix = null;
 	},
-
+{
 	// trivial getters
 	getNode: function(){
 		// summary: returns the current DOM Node or null
@@ -222,17 +221,18 @@ dojo.declare("dojo.gfx.Shape", null, {
 	}
 });
 
-dojo.declare("dojo.gfx.shape.VirtualGroup", dojo.gfx.Shape, {
-	// summary: a virtual group of shapes, which can be used 
-	//	as a foundation for renderer-specific groups, or as a way 
-	//	to logically group shapes (e.g, to propagate matricies)
+dojo.declare("dojo.gfx.shape.VirtualGroup", dojo.gfx.Shape,
 
-	initializer: function() {
+	function() {
+		// summary: a virtual group of shapes, which can be used 
+		//	as a foundation for renderer-specific groups, or as a way 
+		//	to logically group shapes (e.g, to propagate matricies)
 	
 		// children: Array: a list of children
 		this.children = [];
 	},
-	
+
+{
 	// group management
 	
 	add: function(shape){
@@ -274,31 +274,29 @@ dojo.declare("dojo.gfx.shape.VirtualGroup", dojo.gfx.Shape, {
 	}
 });
 
-dojo.declare("dojo.gfx.shape.Rect", dojo.gfx.Shape, {
-	// summary: a generic rectangle
+dojo.declare("dojo.gfx.shape.Rect", dojo.gfx.Shape,
 	
-	initializer: function(rawNode) {
-		// summary: creates a rectangle
+	function(rawNode) {
+		// summary: a generic rectangle
 		// rawNode: Node: a DOM Node
 		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultRect, true);
 		this.attach(rawNode);
 	},
-	
+{
 	getBoundingBox: function(){
 		// summary: returns the bounding box (its shape in this case)
 		return this.shape;	// dojo.gfx.Rectangle
 	}
 });
 
-dojo.declare("dojo.gfx.shape.Ellipse", dojo.gfx.Shape, {
+dojo.declare("dojo.gfx.shape.Ellipse", dojo.gfx.Shape,
+function(rawNode) {
 	// summary: a generic ellipse
-	
-	initializer: function(rawNode) {
-		// summary: creates an ellipse
-		// rawNode: Node: a DOM Node
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultEllipse, true);
-		this.attach(rawNode);
-	},
+	// rawNode: Node: a DOM Node
+	this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultEllipse, true);
+	this.attach(rawNode);
+},
+{
 	getBoundingBox: function(){
 		// summary: returns the bounding box
 		if(!this.bbox){
@@ -310,16 +308,15 @@ dojo.declare("dojo.gfx.shape.Ellipse", dojo.gfx.Shape, {
 	}
 });
 
-dojo.declare("dojo.gfx.shape.Circle", dojo.gfx.Shape, {
+dojo.declare("dojo.gfx.shape.Circle", dojo.gfx.Shape,
+function(rawNode) {
 	// summary: a generic circle
-	//	(this is a helper object, which is defined for convinience)
-
-	initializer: function(rawNode) {
-		// summary: creates a circle
-		// rawNode: Node: a DOM Node
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultCircle, true);
-		this.attach(rawNode);
-	},
+	//	(this is a helper object, which is defined for convenience)
+	// rawNode: Node: a DOM Node
+	this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultCircle, true);
+	this.attach(rawNode);
+},
+{
 	getBoundingBox: function(){
 		// summary: returns the bounding box
 		if(!this.bbox){
@@ -331,16 +328,15 @@ dojo.declare("dojo.gfx.shape.Circle", dojo.gfx.Shape, {
 	}
 });
 
-dojo.declare("dojo.gfx.shape.Line", dojo.gfx.Shape, {
+dojo.declare("dojo.gfx.shape.Line", dojo.gfx.Shape,
+function(rawNode) {
 	// summary: a generic line
-	//	(this is a helper object, which is defined for convinience)
-
-	initializer: function(rawNode) {
-		// summary: creates a line
-		// rawNode: Node: a DOM Node
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultLine, true);
-		this.attach(rawNode);
-	},
+	//	(this is a helper object, which is defined for convenience)
+	// rawNode: Node: a DOM Node
+	this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultLine, true);
+	this.attach(rawNode);
+},
+{
 	getBoundingBox: function(){
 		// summary: returns the bounding box
 		if(!this.bbox){
@@ -356,16 +352,15 @@ dojo.declare("dojo.gfx.shape.Line", dojo.gfx.Shape, {
 	}
 });
 
-dojo.declare("dojo.gfx.shape.Polyline", dojo.gfx.Shape, {
+dojo.declare("dojo.gfx.shape.Polyline", dojo.gfx.Shape,
+function(rawNode) {
 	// summary: a generic polyline/polygon
-	//	(this is a helper object, which is defined for convinience)
-
-	initializer: function(rawNode) {
-		// summary: creates a line
-		// rawNode: Node: a DOM Node
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPolyline, true);
-		this.attach(rawNode);
-	},
+	//	(this is a helper object, which is defined for convenience)
+	// rawNode: Node: a DOM Node
+	this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPolyline, true);
+	this.attach(rawNode);
+},
+{
 	getBoundingBox: function(){
 		// summary: returns the bounding box
 		if(!this.bbox && this.shape.points.length){
@@ -391,16 +386,15 @@ dojo.declare("dojo.gfx.shape.Polyline", dojo.gfx.Shape, {
 	}
 });
 
-dojo.declare("dojo.gfx.shape.Image", dojo.gfx.Shape, {
+dojo.declare("dojo.gfx.shape.Image", dojo.gfx.Shape,
+function(rawNode) {
 	// summary: a generic image
-	//	(this is a helper object, which is defined for convinience)
-
-	initializer: function(rawNode) {
-		// summary: creates an image
-		// rawNode: Node: a DOM Node
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultImage, true);
-		this.attach(rawNode);
-	},
+	//	(this is a helper object, which is defined for convenience)
+	// rawNode: Node: a DOM Node
+	this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultImage, true);
+	this.attach(rawNode);
+},
+{
 	getBoundingBox: function(){
 		// summary: returns the bounding box
 		if(!this.bbox){
