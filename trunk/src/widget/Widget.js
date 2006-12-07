@@ -609,22 +609,6 @@ dojo.widget.lcArgsCache = {};
 // TODO: parse subcomponents
 // TODO: copy/clone raw markup fragments/nodes as appropriate
 dojo.widget.tags = {};
-dojo.widget.tags.addParseTreeHandler = function(/*String*/type){
-	// summary: deprecated!
-	dojo.deprecated("addParseTreeHandler", ". ParseTreeHandlers are now reserved for components. Any unfiltered DojoML tag without a ParseTreeHandler is assumed to be a widget", "0.5");
-	/*
-	var ltype = type.toLowerCase();
-	this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex, localProps){
-		var _ltype = ltype;
-		dojo.profile.start(_ltype);
-		var n = dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex, localProps);
-		dojo.profile.end(_ltype);
-		return n;
-	}
-	*/
-}
-
-//dojo.widget.tags.addParseTreeHandler("dojo:widget");
 
 dojo.widget.tags["dojo:propertyset"] = function(fragment, widgetParser, parentComp){
 	// FIXME: Is this needed?

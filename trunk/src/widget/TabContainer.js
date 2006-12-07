@@ -32,22 +32,6 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/TabContainer.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TabContainer.css"),
 
-	// selectedTab: String
-	//	initially selected tab (widgetId)
-	//	DEPRECATED: use selectedChild instead.
-	selectedTab: "",
-
-	postMixInProperties: function() {
-		if(this.selectedTab){
-			dojo.deprecated("selectedTab deprecated, use selectedChild instead, will be removed in", "0.5");
-			this.selectedChild=this.selectedTab;
-		}
-		if(this.closeButton!="none"){
-			dojo.deprecated("closeButton deprecated, use closable='true' on each child instead, will be removed in", "0.5");
-		}
-		dojo.widget.TabContainer.superclass.postMixInProperties.apply(this, arguments);
-	},
-
 	fillInTemplate: function() {
 		// create the tab list that will have a tab (a.k.a. tab button) for each tab panel
 		this.tablist = dojo.widget.createWidget("TabController",

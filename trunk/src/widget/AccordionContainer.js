@@ -87,11 +87,6 @@ dojo.require("dojo.widget.PageContainer");
 		_addChild: function(/*Widget*/ widget){
 			// summary
 			//		Internal call to add child, used during postCreate() and by the real addChild() call
-			if(widget.open){
-				dojo.deprecated("open parameter deprecated, use 'selected=true' instead will be removed in ", "0.5");
-				dojo.debug(widget.widgetId + ": open == " + widget.open);
-				widget.selected=true;
-			}
 			if (widget.widgetType != "AccordionPane") {
 				var wrapper=dojo.widget.createWidget("AccordionPane",{label: widget.label, selected: widget.selected, labelNodeClass: this.labelNodeClass, containerNodeClass: this.containerNodeClass, allowCollapse: this.allowCollapse });
 				wrapper.addChild(widget);
