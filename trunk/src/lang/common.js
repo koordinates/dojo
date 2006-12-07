@@ -86,14 +86,7 @@ dojo.lang.find = function(	/*Array*/		array,
 	// examples:
 	//		find(array, value[, identity [findLast]]) // recommended
  	//		find(value, array[, identity [findLast]]) // deprecated
-							
-	// support both (array, value) and (value, array)
-	if(!dojo.lang.isArrayLike(array) && dojo.lang.isArrayLike(value)) {
-		dojo.deprecated('dojo.lang.find(value, array)', 'use dojo.lang.find(array, value) instead', "0.5");
-		var temp = array;
-		array = value;
-		value = temp;
-	}
+
 	var isString = dojo.lang.isString(array);
 	if(isString) { array = array.split(""); }
 
