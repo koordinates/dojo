@@ -55,6 +55,7 @@ dojo.require("dojo.ns");
 			"pagecontroller": "dojo.widget.PageContainer",
 			"popupcontainer": "dojo.widget.PopupContainer",
 			"progressbar": "dojo.widget.ProgressBar",
+			"radiobutton": "dojo.widget.Checkbox",
 			"radiogroup": "dojo.widget.RadioGroup",
 			"realnumbertextbox": "dojo.widget.RealNumberTextbox",
 			"regexptextbox": "dojo.widget.RegexpTextbox",
