@@ -1716,10 +1716,6 @@ dojo.widget.defineWidget(
 			dojo.event.disconnect(targetObj, targetFunc, this, thisFunc);
 		},
 
-		disconnectAllWithRoot: function (targetObj) {
-			dojo.deprecated("disconnectAllWithRoot", "is deprecated. No need to disconnect manually", "0.5");
-		},
-
 		_fixContentForMoz: function(html){
 			// summary:
 			//		Moz can not handle strong/em tags correctly, correct them here

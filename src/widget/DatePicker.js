@@ -65,10 +65,6 @@ dojo.widget.defineWidget(
 		//	adjusts the first day of the week 0==Sunday..6==Saturday
 		weekStartsOn: "",
 
-		// storedDate: String
-		//	deprecated use value instead
-		storedDate: "",
-
 		// staticDisplay: Boolean
 		//	disable all incremental controls, must pick a date in the current display
 		staticDisplay: false,
@@ -97,10 +93,6 @@ dojo.widget.defineWidget(
 			// summary: see dojo.widget.DomWidget
 
 			dojo.widget.DatePicker.superclass.postMixInProperties.apply(this, arguments);
-			if(this.storedDate){
-				dojo.deprecated("dojo.widget.DatePicker", "use 'value' instead of 'storedDate'", "0.5");
-				this.value=this.storedDate;
-			}
 			this.startDate = dojo.date.fromRfc3339(this.startDate);
 			this.endDate = dojo.date.fromRfc3339(this.endDate);
 			this.startDate.setHours(0,0,0,0); //adjust startDate to be exactly midnight
