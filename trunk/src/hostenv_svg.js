@@ -54,7 +54,7 @@ dojo.hostenv.println = function(s){
 dojo.hostenv.name_ = "svg";
 
 //	expected/defined by bootstrap1.js
-dojo.hostenv.setModulePrefix = function(module, prefix){ };
+dojo.hostenv.registerModulePath = function(module, prefix){ };
 dojo.hostenv.getModulePrefix = function(module){ };
 dojo.hostenv.getTextStack = [];
 dojo.hostenv.loadUriStack = [];

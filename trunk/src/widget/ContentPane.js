@@ -451,7 +451,7 @@ dojo.widget.defineWidget(
 				var regexSrc = /src=(['"]?)([^"']*)\1/i;
 				var regexDojoJs = /.*(\bdojo\b\.js(?:\.uncompressed\.js)?)$/;
 				var regexInvalid = /(?:var )?\bdjConfig\b(?:[\s]*=[\s]*\{[^}]+\}|\.[\w]*[\s]*=[\s]*[^;\n]*)?;?|dojo\.hostenv\.writeIncludes\(\s*\);?/g;
-				var regexRequires = /dojo\.(?:(?:require(?:After)?(?:If)?)|(?:widget\.(?:manager\.)?registerWidgetPackage)|(?:(?:hostenv\.)?setModulePrefix|registerModulePath)|defineNamespace)\((['"]).*?\1\)\s*;?/;
+				var regexRequires = /dojo\.(?:(?:require(?:After)?(?:If)?)|(?:widget\.(?:manager\.)?registerWidgetPackage)|(?:(?:hostenv\.)?registerModulePath)|defineNamespace)\((['"]).*?\1\)\s*;?/;
 
 				while(match = regex.exec(s)){
 					if(this.executeScripts && match[1]){
