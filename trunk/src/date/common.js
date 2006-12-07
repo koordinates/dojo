@@ -19,9 +19,8 @@ dojo.date.getDayOfYear = function(/*Date*/dateObject){
 		lastDayOfPrevYear.getTime()) / 86400000); // Number
 }
 
-
 dojo.date.setWeekOfYear = function(/*Date*/dateObject, /*Number*/week, /*Number*/firstDay){
-	if(arguments.length == 1){ firstDay = 0; } // Sunday
+	if(arguments.length == 2){ firstDay = 0; } // Sunday
 	dojo.unimplemented("dojo.date.setWeekOfYear");
 }
 
@@ -40,7 +39,7 @@ dojo.date.getWeekOfYear = function(/*Date*/dateObject, /*Number*/firstDay){
 
 dojo.date.setIsoWeekOfYear = function(/*Date*/dateObject, /*Number*/week, /*Number*/firstDay){
 	// summary: unimplemented
-	if (arguments.length == 1) { firstDay = 1; } // Monday
+	if (arguments.length == 2) { firstDay = 1; } // Monday
 	dojo.unimplemented("dojo.date.setIsoWeekOfYear");
 }
 

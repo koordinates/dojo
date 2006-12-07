@@ -1,10 +1,10 @@
 dojo.require("dojo.validate");
 dojo.require("dojo.validate.check");
-dojo.require("dojo.validate.datetime");
 dojo.require("dojo.validate.de");
 dojo.require("dojo.validate.jp");
 dojo.require("dojo.validate.us");
 dojo.require("dojo.validate.web");
+
 
 function test_validate_isText(){
 	jum.assertTrue("test1", dojo.validate.isText('            x'));
@@ -280,9 +280,9 @@ function test_validate_isCurrency(){
 	// Iceland
 	jum.assertTrue("test6", dojo.validate.isCurrency('123.456.789,00 kr.', {separator:".", decimal: ",", symbol:"kr.", placement:"after"} ));
 	// Indoneasia
-	jum.assertTrue("test7", dojo.validate.isCurrency('Rp123.456.789', {separator:".", cents: false, symbol:"Rp"} ));
+	jum.assertTrue("test7", dojo.validate.isCurrency('Rp123.456.789', {separator:".", fractional: false, symbol:"Rp"} ));
 	// Japan
-	jum.assertTrue("test8", dojo.validate.isCurrency('\u00a5123,456,789', {cents: false, symbol:"\u00a5"} ));
+	jum.assertTrue("test8", dojo.validate.isCurrency('\u00a5123,456,789', {fractional: false, symbol:"\u00a5"} ));
 	// Kazakh
 	jum.assertTrue("test9", dojo.validate.isCurrency('-T123 456 789-00', {separator:" ", decimal: "-", symbol:"T"} ));
 	// Peru
@@ -301,7 +301,7 @@ function test_validate_us_isCurrency(){
 	jum.assertTrue("test9", dojo.validate.us.isCurrency('1,000.25', {symbol: ["", "$"]}));
 	jum.assertFalse("test10", dojo.validate.us.isCurrency('1,000.25', {symbol: ["?", "$"]})); //FIXME
 	jum.assertTrue("test11", dojo.validate.us.isCurrency('1000.25', {symbol: "", separator: ""}));
-	jum.assertFalse("test12", dojo.validate.us.isCurrency('$1,000.25', {cents: false}));
+	jum.assertFalse("test12", dojo.validate.us.isCurrency('$1,000.25', {fractional: false}));
 	jum.assertFalse("test13", dojo.validate.us.isCurrency('$1,000.25', {signed: true}));
 	jum.assertFalse("test14", dojo.validate.us.isCurrency('-$1,000.25', {signed: false}));
 }
@@ -323,102 +323,6 @@ function test_validate_isJapaneseCurrency(){
 	jum.assertTrue("test4", dojo.validate.isJapaneseCurrency('- \u00a510,000,000'));
 	jum.assertTrue("test5", dojo.validate.isJapaneseCurrency('\u00a5100,000,000'));
 	jum.assertFalse("test6", dojo.validate.isJapaneseCurrency('\u00a51000'));
-}
-function test_validate_datetime_isValidTime(){
-	jum.assertTrue("test1", dojo.validate.isValidTime('5:15:05 pm'));
-	jum.assertTrue("test2", dojo.validate.isValidTime('5:15:05 p.m.', {pmSymbol: "P.M."} ));
-	jum.assertFalse("test3", dojo.validate.isValidTime('5:15:05 p.m.', {} ));
-	jum.assertTrue("test4", dojo.validate.isValidTime('5:15 pm', {format: "h:mm t"} ) );
-	jum.assertFalse("test5", dojo.validate.isValidTime('5:15 pm', {}) );
-	jum.assertTrue("test6", dojo.validate.isValidTime('15:15:00', {format: "H:mm:ss"} ) );
-	jum.assertFalse("test7", dojo.validate.isValidTime('15:15:00', {}) );
-	jum.assertTrue("test8", dojo.validate.isValidTime('17:01:30', {format: "H:mm:ss"} ) );
-	jum.assertFalse("test9", dojo.validate.isValidTime('17:1:30', {format: "H:mm:ss"} ) );
-	jum.assertFalse("test10", dojo.validate.isValidTime('17:01:30', {format: "H:m:ss"} ) );
-	// Greek
-	jum.assertTrue("test11", dojo.validate.isValidTime('5:01:30 ��', {amSymbol: "p�", pmSymbol: "��"} ) ); //FIXME and use \u escapes to avoid encoding problems
-	// Italian
-	jum.assertTrue("test12", dojo.validate.isValidTime('17.01.30', {format: "H.mm.ss"} ) );
-	// Mexico
-	jum.assertTrue("test13", dojo.validate.isValidTime('05:01:30 p.m.', {format: "hh:mm:ss t", amSymbol: "a.m.", pmSymbol: "p.m."} ) );
-}
-
-
-function test_validate_datetime_is12HourTime(){
-	jum.assertTrue("test1", dojo.validate.is12HourTime('5:15:05 pm'));
-	jum.assertFalse("test2", dojo.validate.is12HourTime('05:15:05 pm'));
-	jum.assertFalse("test3", dojo.validate.is12HourTime('5:5:05 pm'));
-	jum.assertFalse("test4", dojo.validate.is12HourTime('5:15:5 pm'));
-	jum.assertFalse("test5", dojo.validate.is12HourTime('13:15:05 pm'));
-	jum.assertFalse("test6", dojo.validate.is12HourTime('5:60:05 pm'));
-	jum.assertFalse("test7", dojo.validate.is12HourTime('5:15:60 pm'));
-	jum.assertTrue("test8", dojo.validate.is12HourTime('5:59:05 pm'));
-	jum.assertTrue("test9", dojo.validate.is12HourTime('5:15:59 pm'));
-	jum.assertFalse("test10", dojo.validate.is12HourTime('5:15:05'));
-
-	// optional seconds
-	jum.assertTrue("test11", dojo.validate.is12HourTime('5:15 pm'));
-	jum.assertFalse("test12", dojo.validate.is12HourTime('5:15: pm'));
-}
-
-function test_validate_datetime_is24HourTime(){
-	jum.assertTrue("test1", dojo.validate.is24HourTime('00:03:59'));
-	jum.assertTrue("test2", dojo.validate.is24HourTime('22:03:59'));
-	jum.assertFalse("test3", dojo.validate.is24HourTime('22:03:59 pm'));
-	jum.assertFalse("test4", dojo.validate.is24HourTime('2:03:59'));
-	jum.assertFalse("test5", dojo.validate.is24HourTime('0:3:59'));
-	jum.assertFalse("test6", dojo.validate.is24HourTime('00:03:5'));
-	jum.assertFalse("test7", dojo.validate.is24HourTime('24:03:59'));
-	jum.assertFalse("test8", dojo.validate.is24HourTime('02:60:59'));
-	jum.assertFalse("test9", dojo.validate.is24HourTime('02:03:60'));
-
-	// optional seconds
-	jum.assertTrue("test10", dojo.validate.is24HourTime('22:53'));
-	jum.assertFalse("test11", dojo.validate.is24HourTime('22:53:'));
-}
-
-function test_validate_datetime_isValidDate(){
-	
-	// Month date year
-	jum.assertTrue("test1", dojo.validate.isValidDate("08/06/2005", "MM/DD/YYYY"));
-	jum.assertTrue("test2", dojo.validate.isValidDate("08.06.2005", "MM.DD.YYYY"));
-	jum.assertTrue("test3", dojo.validate.isValidDate("08-06-2005", "MM-DD-YYYY"));
-	jum.assertTrue("test4", dojo.validate.isValidDate("8/6/2005", "M/D/YYYY"));
-	jum.assertTrue("test5", dojo.validate.isValidDate("8/6", "M/D"));
-	jum.assertFalse("test6", dojo.validate.isValidDate("09/31/2005", "MM/DD/YYYY"));
-	jum.assertFalse("test7", dojo.validate.isValidDate("02/29/2005", "MM/DD/YYYY"));
-	jum.assertTrue("test8", dojo.validate.isValidDate("02/29/2004", "MM/DD/YYYY"));
-
-	// year month date
-	jum.assertTrue("test9", dojo.validate.isValidDate("2005-08-06", "YYYY-MM-DD"));
-	jum.assertTrue("test10", dojo.validate.isValidDate("20050806", "YYYYMMDD"));
-
-	// year month
-	jum.assertTrue("test11", dojo.validate.isValidDate("2005-08", "YYYY-MM"));
-	jum.assertTrue("test12", dojo.validate.isValidDate("200508", "YYYYMM"));
-
-	// year
-	jum.assertTrue("test13", dojo.validate.isValidDate("2005", "YYYY"));
-
-	// year week day
-	jum.assertTrue("test14", dojo.validate.isValidDate("2005-W42-3", "YYYY-Www-d"));
-	jum.assertTrue("test15", dojo.validate.isValidDate("2005W423", "YYYYWwwd"));
-	jum.assertFalse("test16", dojo.validate.isValidDate("2005-W42-8", "YYYY-Www-d"));
-	jum.assertFalse("test17", dojo.validate.isValidDate("2005-W54-3", "YYYY-Www-d"));
-
-	// year week
-	jum.assertTrue("test18", dojo.validate.isValidDate("2005-W42", "YYYY-Www"));
-	jum.assertTrue("test19", dojo.validate.isValidDate("2005W42", "YYYYWww"));
-
-	// year ordinal-day
-	jum.assertTrue("test20", dojo.validate.isValidDate("2005-292", "YYYY-DDD"));
-	jum.assertTrue("test21", dojo.validate.isValidDate("2005292", "YYYYDDD"));
-	jum.assertFalse("test22", dojo.validate.isValidDate("2005-366", "YYYY-DDD"));
-	jum.assertTrue("test23", dojo.validate.isValidDate("2004-366", "YYYY-DDD"));
-
-	// date month year
-	jum.assertTrue("test24", dojo.validate.isValidDate("19.10.2005", "DD.MM.YYYY"));
-	jum.assertTrue("test25", dojo.validate.isValidDate("19-10-2005", "D-M-YYYY"));
 }
 
 function test_validate_us_datetime_isPhoneNumber(){
@@ -610,7 +514,7 @@ function test_validate_check(){
 					"cb3", "s1", "s2", "s3",
 			{"doubledip":2}, {"tripledip":3}, {"doublea":2} ],
 		// dependant/conditional fields
-		dependancies:	{
+		dependencies:	{
 			cc_exp: "cc_no",
 			cc_type: "cc_no"
 		},
