@@ -1,12 +1,6 @@
 dojo.provide("dojo.lang.type");
 dojo.require("dojo.lang.common");
 
-dojo.lang.whatAmI = function(value) {
-	dojo.deprecated("dojo.lang.whatAmI", "use dojo.lang.getType instead", "0.5");
-	return dojo.lang.getType(value);
-}
-dojo.lang.whatAmI.custom = {};
-
 dojo.lang.getType = function(/* anything */ value){
 	// summary: Attempts to determine what type value is.
 	// value: Any literal value or object instance.

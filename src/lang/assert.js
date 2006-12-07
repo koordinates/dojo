@@ -50,9 +50,6 @@ dojo.lang.assertType = function(/* anything */ value, /* misc. */ type, /* objec
 	 *   dojo.lang.assertType(null, Array, {optional: true});
 	 * throws: Throws an Error if 'value' is not of type 'type'.
 	 */
-	if (dojo.lang.isString(keywordParameters)) {
-		dojo.deprecated('dojo.lang.assertType(value, type, "message")', 'use dojo.lang.assertType(value, type) instead', "0.5");
-	}
 	if(!dojo.lang.isOfType(value, type, keywordParameters)){
 		if(!dojo.lang.assertType._errorMessage){
 			dojo.lang.assertType._errorMessage = "Type mismatch: dojo.lang.assertType() failed.";
