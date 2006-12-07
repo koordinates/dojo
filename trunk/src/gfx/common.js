@@ -79,15 +79,14 @@ dojo.lang.mixin(dojo.gfx, {
 	pathRegExp: /([A-Za-z]+)|(\d+(\.\d+)?)|(\.\d+)|(-\d+(\.\d+)?)|(-\.\d+)/g
 });
 
-dojo.declare("dojo.gfx.Surface", null, {
+dojo.declare("dojo.gfx.Surface", null,
+function(){
 	// summary: a surface object to be used for drawings
 	
-	initializer: function(){
-		// summary: a constructor
-		
-		// underlying node
-		this.rawNode = null;
-	},
+	// underlying node
+	this.rawNode = null;
+},
+{
 	getEventSource: function(){
 		// summary: returns a node, which can be used to attach event listeners
 		

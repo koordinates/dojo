@@ -5,36 +5,37 @@ dojo.require("dojo.lang.common");
 dojo.require("dojo.math");
 
 dojo.declare("dojo.selection.Selection", null,
-	{
-		initializer: function(items, isCollection){
-			this.items = [];
-			this.selection = [];
-			this._pivotItems = [];
-			this.clearItems();
+	function(items, isCollection){
+		this.items = [];
+		this.selection = [];
+		this._pivotItems = [];
+		this.clearItems();
 
-			if(items) {
-				if(isCollection) {
-					this.setItemsCollection(items);
-				} else {
-					this.setItems(items);
-				}
+		if(items) {
+			if(isCollection) {
+				this.setItemsCollection(items);
+			} else {
+				this.setItems(items);
 			}
-		},
-
-		// Array: items to select from, order matters for growable selections
+		}
+	},
+	{
+		// items: Array: items to select from, order matters for growable selections
 		items: null,
 
-		// Array: items selected, aren't stored in order (see sorted())
+		// selection: Array: items selected, aren't stored in order (see sorted())
 		selection: null, 
-		lastSelected: null, // last item selected
+		
+		// lastSelected: Object: last item selected
+		lastSelected: null,
 
-		// Boolean: if true, grow selection will start from 0th item when nothing is selected
+		// allowImplicit: Boolean: if true, grow selection will start from 0th item when nothing is selected
 		allowImplicit: true, 
 
-		// Integer: number of *selected* items
+		// length: Integer: number of *selected* items
 		length: 0, 
 
-		// Boolean:
+		// isGrowable: Boolean:
 		//		if true, the selection is treated as an in-order and can grow
 		//		by ranges, not just by single item
 		isGrowable: true,

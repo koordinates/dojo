@@ -70,7 +70,10 @@ dojo.lang.declare = function(	/*String*/ className,
 		var temp = props;
 		props = init;
 		init = temp;
-	}	
+	}
+	if(props && props.initializer){
+		dojo.deprecated("dojo.lang.declare("+className+"...):", "specify initializer as third argument, not as an element in properties", "0.6");
+	}
 	var mixins = [ ];
 	if(dojo.lang.isArray(superclass)){
 		mixins = superclass;

@@ -4,19 +4,17 @@ dojo.require("dojo.math");
 
 dojo.require("dojo.gfx.shape");
 
-dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape, {
+dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
+function(rawNode){
 	// summary: a generalized path shape
-	
-	initializer: function(rawNode){
-		// summary: a constructor of a path shape object
-		// rawNode: Node: a DOM node to be used by this path object
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPath, true);
-		this.segments = [];
-		this.absolute = true;
-		this.last = {};
-		this.attach(rawNode);
-	},
-	
+	// rawNode: Node: a DOM node to be used by this path object
+	this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPath, true);
+	this.segments = [];
+	this.absolute = true;
+	this.last = {};
+	this.attach(rawNode);
+},
+{	
 	// mode manipulations
 	setAbsoluteMode: function(mode){
 		// summary: sets an absolute or relative mode for path points

@@ -424,22 +424,22 @@ dojo.logging.log.getLevel = function(/*string*/name){
 	return null;
 }
 
-// a default handler class, it simply saves all of the handle()'d records in
-// memory. Useful for attaching to with dojo.event.connect()
-
 dojo.declare("dojo.logging.MemoryLogHandler", 
 	dojo.logging.LogHandler,
+	function(level, recordsToKeep, postType, postInterval){
+		// summary: a default handler class, it simply saves all of the handle()'d records in
+		// memory. Useful for attaching to with dojo.event.connect()
+
+		// mixin style inheritance
+		dojo.logging.LogHandler.call(this, level);
+		// default is unlimited
+		this.numRecords = (typeof djConfig['loggingNumRecords'] != 'undefined') ? djConfig['loggingNumRecords'] : ((recordsToKeep) ? recordsToKeep : -1);
+		// 0=count, 1=time, -1=don't post TODO: move this to a better location for prefs
+		this.postType = (typeof djConfig['loggingPostType'] != 'undefined') ? djConfig['loggingPostType'] : ( postType || -1);
+		// milliseconds for time, interger for number of records, -1 for non-posting,
+		this.postInterval = (typeof djConfig['loggingPostInterval'] != 'undefined') ? djConfig['loggingPostInterval'] : ( postType || -1);
+	},
 	{
-		initializer: function(level, recordsToKeep, postType, postInterval){
-			// mixin style inheritance
-			dojo.logging.LogHandler.call(this, level);
-			// default is unlimited
-			this.numRecords = (typeof djConfig['loggingNumRecords'] != 'undefined') ? djConfig['loggingNumRecords'] : ((recordsToKeep) ? recordsToKeep : -1);
-			// 0=count, 1=time, -1=don't post TODO: move this to a better location for prefs
-			this.postType = (typeof djConfig['loggingPostType'] != 'undefined') ? djConfig['loggingPostType'] : ( postType || -1);
-			// milliseconds for time, interger for number of records, -1 for non-posting,
-			this.postInterval = (typeof djConfig['loggingPostInterval'] != 'undefined') ? djConfig['loggingPostInterval'] : ( postType || -1);
-		},
 		emit: function(record){
 			if(!djConfig.isDebug){ return; }
 			var logStr = String(dojo.log.getLevelName(record.level)+": "
