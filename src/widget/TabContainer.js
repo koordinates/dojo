@@ -78,11 +78,6 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 		}
 	},
 
-	selectTab: function(tab, callingWidget){
-		dojo.deprecated("use selectChild() rather than selectTab(), selectTab() will be removed in", "0.5");
-		this.selectChild(tab, callingWidget);
-	},
-
 	onKey: function(e){
 		// summary
 		//	Keystroke handling for keystrokes on the tab panel itself (that were bubbled up to me)
