@@ -60,7 +60,7 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	if(dependencies["prefixes"]){
 		var tmp = dependencies.prefixes;
 		for(var x=0; x<tmp.length; x++){
-			dojo.setModulePrefix(tmp[x][0], tmp[x][1]);
+			dojo.registerModulePath(tmp[x][0], tmp[x][1]);
 		}
 	}
 	

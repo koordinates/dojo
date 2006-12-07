@@ -1,5 +1,5 @@
 dojo.require("dojo.uuid.*");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.common");
 
 function OFF_test_uuid_performance() {
 	var start = new Date();

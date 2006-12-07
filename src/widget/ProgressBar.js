@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.ProgressBar");
 
 dojo.require("dojo.widget.*"); 
-dojo.require("dojo.event");
+dojo.require("dojo.event.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 dojo.require("dojo.string.*");

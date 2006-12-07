@@ -25,7 +25,7 @@
 			dojo: {name: "dojo", value: "src"}
 		},
 
-		setModulePrefix: function(/*String*/module, /*String*/prefix){
+		registerModulePath: function(/*String*/module, /*String*/prefix){
 			// summary: establishes module/prefix pair
 			this.modulePrefixes_[module] = {name: module, value: prefix};
 		},
@@ -505,13 +505,7 @@ dojo.registerModulePath = function(/*String*/module, /*String*/prefix){
 	// description: An unregistered module is given the default path of ../<module>,
 	//	relative to Dojo root. For example, module acme is mapped to ../acme.
 	//	If you want to use a different module name, use dojo.registerModulePath. 
-	return dojo.hostenv.setModulePrefix(module, prefix);
-}
-
-dojo.setModulePrefix = function(/*String*/module, /*String*/prefix){
-	// summary: maps a module name to a path
-	dojo.deprecated('dojo.setModulePrefix("' + module + '", "' + prefix + '")', "replaced by dojo.registerModulePath", "0.5");
-	return dojo.registerModulePath(module, prefix);
+	return dojo.hostenv.registerModulePath(module, prefix);
 }
 
 dojo.exists = function(/*Object*/obj, /*String*/name){

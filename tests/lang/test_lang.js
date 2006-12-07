@@ -1,4 +1,4 @@
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.common");
 
 function test_lang_mixin(){
 	var src = {
