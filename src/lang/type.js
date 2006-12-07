@@ -194,9 +194,6 @@ dojo.lang.isOfType = function(/* anything */ value, /* function */ type, /* obje
 			case null:
 			case "null":
 				return (value === null);	//	boolean
-			case "optional":
-				dojo.deprecated('dojo.lang.isOfType(value, [type, "optional"])', 'use dojo.lang.isOfType(value, type, {optional: true} ) instead', "0.5");
-				return ((value === null) || dojo.lang.isUndefined(value));	//	boolean
 			default:
 				if(dojo.lang.isFunction(type)){
 					return (value instanceof type);	//	boolean
