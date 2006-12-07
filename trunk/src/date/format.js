@@ -45,11 +45,6 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 //		locale- override the locale used to determine formatting rules
 //
 
-	if(typeof options == "string"){
-		dojo.deprecated("dojo.date.format", "To format dates with POSIX-style strings, please use dojo.date.strftime instead", "0.5");
-		return dojo.date.strftime(dateObject, options);
-	}
-
 	// Format a pattern without literals
 	function formatPattern(dateObject, pattern){
 		return pattern.replace(/([a-z])\1*/ig, function(match){
