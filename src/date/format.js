@@ -504,6 +504,7 @@ function _buildDateTimeRE(groups, info, options, pattern){
 				s = '\\d{1,3}';
 				break;
 			case 'd':
+			case 'w':
 				s = '\\d{1,2}';
 				break;
 		    case 'E':
