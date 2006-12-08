@@ -160,10 +160,10 @@
 				<span class="emphasise">Education level</span>
 			</div>
 			<div class="formAnswer">
-				<input type="checkbox" name="education" id="rb1" dojoType="RadioButton" value="hs"/> <label for="cb1">high school</label>
-				<input type="checkbox" name="education" id="rb2" dojoType="RadioButton" value="bachelors"/> <label for="cb2">college</label>
-				<input type="checkbox" name="education" id="rb3" dojoType="RadioButton" value="masters"/> <label for="cb3">master's degree</label>
-				<input type="checkbox" name="education" id="rb4" dojoType="RadioButton" value="phd"/> <label for="cb4">PhD</label>
+				<input type="checkbox" name="education" id="rb1" dojoType="RadioButton" value="hs"/> <label for="rb1">high school</label>
+				<input type="checkbox" name="education" id="rb2" dojoType="RadioButton" value="bachelors"/> <label for="rb2">college</label>
+				<input type="checkbox" name="education" id="rb3" dojoType="RadioButton" value="masters"/> <label for="rb3">master's degree</label>
+				<input type="checkbox" name="education" id="rb4" dojoType="RadioButton" value="phd"/> <label for="rb4">PhD</label>
 			</div>
 
 			<div class="formQuestion">
@@ -173,8 +173,8 @@
 			<div class="formAnswer">
 				Work experience: <div id="horizontalSlider" dojoType="SliderHorizontal" 
 					initialValue="5" minimum="0" maximum="40" snapValues="41" activeDrag="true"
-				   	onValueChanged="dojo.byId('horizontalSliderValue').innerHTML = arguments[0];"></div>
-				<span id="horizontalSliderValue" style="border: solid black 1px; margin-right: 3em;">5</span>
+				   	onValueChanged="dojo.byId('horizontalSliderValue').innerHTML = arguments[0]<10? ('0'+arguments[0]) : arguments[0];"></div>
+				<span id="horizontalSliderValue" style="border: solid gray 1px; color: gray; margin-left: 1em; margin-right: 3em;">05</span>
 				Related work experience: <input dojoType="IntegerSpinner" 
 					value="1" 
 					delta="1" 
