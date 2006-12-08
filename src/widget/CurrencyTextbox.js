@@ -40,9 +40,6 @@ dojo.widget.defineWidget(
 			// Get properties from markup attributes, and assign to flags object.
 			if(localProperties.fractional){
 				this.flags.fractional = (localProperties.fractional == "true");
-			}else if(localProperties.cents){
-				dojo.deprecated("dojo.widget.IntegerTextbox", "use fractional attr instead of cents", "0.5");
-				this.flags.fractional = (localProperties.cents == "true");
 			}
 			if(localProperties.symbol){
 				this.flags.symbol = localProperties.symbol;
