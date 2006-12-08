@@ -265,19 +265,6 @@ dojo.widget.manager = new function(){
 			if(impl){return(imps[lowerCaseWidgetName] = impl)};
 		}
 	
-		// this is an error condition under new rules
-		dojo.deprecated('dojo.widget.Manager.getImplementationName', 
-			'Could not locate widget implementation for "' + widgetName + '" in "' + nsObj.module + '" registered to namespace "' + nsObj.name + '". '										
-			+ "Developers must specify correct namespaces for all non-Dojo widgets", "0.5");
-
-		// backward compat: if the user has not specified any namespace and their widget is not in dojo.widget.*
-		// search registered widget packages [sic]
-		// note: registerWidgetPackage itself is now deprecated 
-		for(var i=0; i<widgetPackages.length; i++){
-			impl = findImplementation(lowerCaseWidgetName, widgetPackages[i]);
-			if(impl){return(imps[lowerCaseWidgetName] = impl)};
-		}
-		
 		throw new Error('Could not locate widget implementation for "' + widgetName + '" in "' + nsObj.module + '" registered to namespace "' + nsObj.name + '"');
 	}
 
