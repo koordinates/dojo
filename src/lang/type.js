@@ -1,6 +1,11 @@
 dojo.provide("dojo.lang.type");
 dojo.require("dojo.lang.common");
 
+dojo.lang.whatAmI = {};
+dojo.lang.whatAmI.custom = {
+	// summary: contains mapping of objects to custom type names
+};
+
 dojo.lang.getType = function(/* anything */ value){
 	// summary: Attempts to determine what type value is.
 	// value: Any literal value or object instance.
