@@ -23,7 +23,7 @@ dojo.widget.defineWidget(
 		this.selector = dojo.widget.byId(this.selector);
 		this.controller = dojo.widget.byId(this.controller);
 		
-		dojo.event.topic.subscribe(this.selector.eventNames.select, this, "onSelect");	
+		dojo.event.topic.subscribe(this.selector.eventNames.select, this, "onSelectEvent");	
 	},
 
 	
