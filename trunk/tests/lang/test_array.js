@@ -34,6 +34,17 @@ function test_lang_isEmpty(){
 	jum.assertFalse("522", dojo.lang.isEmpty(tArr));
 	tObj.foo = "bar";
 	jum.assertFalse("523", dojo.lang.isEmpty(tObj));
+
+	var arrayLikeObject = { length: 0, myProperty: "foo"};
+	jum.assertTrue("524", dojo.lang.isEmpty(arrayLikeObject));
+	jum.assertFalse("525", dojo.lang.isEmpty({length: 1, myProperty: "foo"}));
+
+	var array = [];
+	array.myProperty = "foo";
+	jum.assertTrue("526", dojo.lang.isEmpty(array));
+
+	array.push("foo");
+	jum.assertFalse("527", dojo.lang.isEmpty(array));
 }
 
 function test_lang_forEach(){

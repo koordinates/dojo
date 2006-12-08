@@ -2,10 +2,11 @@ dojo.provide("dojo.lang.array");
 
 dojo.require("dojo.lang.common");
 
-// FIXME: Is this worthless since you can do: if(name in obj)
-// is this the right place for this?
 
 dojo.lang.mixin(dojo.lang, {
+
+	// FIXME: Is this worthless since you can do: if(name in obj)
+	// is this the right place for this?
 	has: function(/*Object*/obj, /*String*/name){
 		// summary: is there a property with the passed name in obj?
 		try{
@@ -15,37 +16,39 @@ dojo.lang.mixin(dojo.lang, {
 
 	isEmpty: function(/*Object*/obj){
 		// summary:
-		//		can be used to determine if the passed object is "empty". In
-		//		the case of array-like objects, the length, property is
+		//		determines if the passed object is "empty".
+		// description:
+		//		In the case of array-like objects, the length property is
 		//		examined, but for other types of objects iteration is used to
 		//		examine the iterable "surface area" to determine if any
 		//		non-prototypal properties have been assigned. This iteration is
 		//		prototype-extension safe.
-		if(dojo.lang.isObject(obj)){
+		if(dojo.lang.isArrayLike(obj) || dojo.lang.isString(obj)){
+			return obj.length === 0; // Boolean
+		}else if(dojo.lang.isObject(obj)){
 			var tmp = {};
-			var count = 0;
 			for(var x in obj){
 				if(obj[x] && (!tmp[x])){
-					count++;
-					break;
+					return false;
 				} 
 			}
-			return count == 0; // boolean
-		}else if(dojo.lang.isArrayLike(obj) || dojo.lang.isString(obj)){
-			return obj.length == 0; // boolean
+			return true; // Boolean
 		}
 	},
 
 	map: function(/*Array*/arr, /*Object|Function*/obj, /*Function?*/unary_func){
 		// summary:
-		//		returns a new array constituded from the return values of
+		//		applies a function to each element of an Array and creates
+		//		an Array with the results
+		// description:
+		//		returns a new array constituted from the return values of
 		//		passing each element of arr into unary_func. The obj parameter
 		//		may be passed to enable the passed function to be called in
-		//		that scope. In environments that support JavaScript 1.6, this
+		//		that scope.  In environments that support JavaScript 1.6, this
 		//		function is a passthrough to the built-in map() function
 		//		provided by Array instances. For details on this, see:
 		// 			http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:map
-		// examples:
+		// usage:
 		//		dojo.lang.map([1, 2, 3, 4], function(item){ return item+1 });
 		//		// returns [2, 3, 4, 5]
 		var isString = dojo.lang.isString(arr);
@@ -70,9 +73,9 @@ dojo.lang.mixin(dojo.lang, {
 				outArr.push(unary_func.call(obj, arr[i]));
 			}
 		}
-		if(isString) {
+		if(isString){
 			return outArr.join(""); // String
-		} else {
+		}else{
 			return outArr; // Array
 		}
 	},
@@ -89,7 +92,7 @@ dojo.lang.mixin(dojo.lang, {
 		// 		reversed. The default order of the obj and binary_func argument
 		// 		will probably be reversed in a future release, and this call
 		// 		order is supported today.
-		// examples:
+		// usage:
 		//		dojo.lang.reduce([1, 2, 3, 4], function(last, next){ return last+next});
 		//		returns 10
 		var reducedValue = initialValue;
@@ -128,7 +131,9 @@ dojo.lang.mixin(dojo.lang, {
 	forEach: function(/*Array*/anArray, /*Function*/callback, /*Object?*/thisObject){
 		// summary:
 		//		for every item in anArray, call callback with that item as its
-		//		only parameter. Return values are ignored. This funciton
+		//		only parameter.
+		// description:
+		//		Return values are ignored. This function
 		//		corresponds (and wraps) the JavaScript 1.6 forEach method. For
 		//		more details, see:
 		//			http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:forEach
@@ -180,7 +185,7 @@ dojo.lang.mixin(dojo.lang, {
 		//		from the JavaScript 1.6 Array.every() function. More
 		//		information on this can be found here:
 		//			http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:every
-		// examples:
+		// usage:
 		//		dojo.lang.every([1, 2, 3, 4], function(item){ return item>1; });
 		//		// returns false
 		//		dojo.lang.every([1, 2, 3, 4], function(item){ return item>0; });
