@@ -167,6 +167,7 @@ function test_lang_isOfTypeToo() {
 		var matchingTypes = example.types;
 		
 		var getTypeResult = dojo.lang.getType(value);
+		jum.assertFalse("300a: " + getTypeResult, getTypeResult=="unknown");
 		jum.assertTrue("300: " + i, dojo.lang.isOfType(value, getTypeResult));
 		
 		for (var j in matchingTypes) {
