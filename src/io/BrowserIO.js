@@ -448,17 +448,6 @@ dojo.io.XMLHTTPTransport = new function(){
 		//		response and use that response if a similar request is done again.
 		//		A similar request is one that has the same URL, query string and HTTP method value.
 		//		default is false.
-		if(!kwArgs["url"]){
-			// are we performing a history action?
-			if( !kwArgs["formNode"]
-				&& (kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeUrl"] || kwArgs["watchForURL"])
-				&& (!djConfig.preventBackButtonFix)) {
-        dojo.deprecated("Using dojo.io.XMLHTTPTransport.bind() to add to browser history without doing an IO request",
-        				"Use dojo.undo.browser.addToHistory() instead.", "0.4");
-				dojo.undo.browser.addToHistory(kwArgs);
-				return true;
-			}
-		}
 
 		// build this first for cache purposes
 		var url = kwArgs.url;

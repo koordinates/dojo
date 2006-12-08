@@ -340,7 +340,6 @@ dojo.regexp.currency = function(/*Object?*/flags){
 	//    flags.placement  The symbol can come "before" the number or "after" the number.  Default is "before".
 	//    flags.signPlacement  The sign can come "before" the number or "after" the sign,
 	//      "around" to put parentheses around negative values, or "end" for the final char.  Default is "before".
-	//    flags.cents  deprecated, in favor of flags.fractional
 	//    flags in regexp.realNumber can be applied except exponent, eSigned.
 
 	// assign default values to missing paramters
@@ -350,10 +349,6 @@ dojo.regexp.currency = function(/*Object?*/flags){
 	if(typeof flags.placement != "string"){ flags.placement = "before"; }
 	if(typeof flags.signPlacement != "string"){ flags.signPlacement = "before"; }
 	if(typeof flags.separator == "undefined"){ flags.separator = ","; }
-	if(typeof flags.fractional == "undefined" && typeof flags.cents != "undefined"){
-		dojo.deprecated("dojo.regexp.currency: flags.cents", "use flags.fractional instead", "0.5");
-		flags.fractional = flags.cents;
-	}
 	if(typeof flags.decimal != "string"){ flags.decimal = "."; }
 
 	// build sign RE
