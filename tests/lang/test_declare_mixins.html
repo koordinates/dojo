@@ -59,26 +59,28 @@
 		});
 				
 		dojo.debug("> dojo.declare('my.classes.bar', [my.classes.foo, mixin]...");
-		dojo.declare('my.classes.bar', [my.classes.foo, mixin], {
-			initializer: function(arg) {
+		dojo.declare('my.classes.bar', [my.classes.foo, mixin],
+			function(arg) {
 				dojo.debug('bar: initializing instance' + (arg ? ' [' + arg + ']' : '')); 
 				this.id = 'bar';
 			},
-			method: function() {
-				return "A method in bar";
-			}
-		});
+			{
+				method: function() {
+					return "A method in bar";
+				}
+			});
 		
 		dojo.debug("> dojo.declare('my.classes.zot', [null, mixinBase, mixin]...");
-		dojo.declare('my.classes.zot', [null, mixinBase, mixin], {
-			initializer: function(arg) {
+		dojo.declare('my.classes.zot', [null, mixinBase, mixin],
+			function(arg) {
 				dojo.debug('zot: initializing instance' + (arg ? ' [' + arg + ']' : '')); 
 				this.id = 'zot';
 			},
-			method: function() {
-				return "A method in zot";
-			}
-		});
+			{
+				method: function() {
+					return "A method in zot";
+				}
+			});
 		
 		dojo.debug('> ------------------------');
 		dojo.debug('> b = new my.classes.bar()');
