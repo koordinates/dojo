@@ -57,11 +57,15 @@ dojo.lang.extend = function(/*Object*/ constructor, /*Object...*/ props){
 	return constructor; // Object
 }
 
-dojo.lang._delegate = function(obj){
+dojo.lang._delegate = function(obj, props){
 	// crockford delegation
 	function TMP(){};
 	TMP.prototype = obj;
-	return new TMP();
+	var tmp = new TMP();
+	if(props){
+		dojo.lang.mixin(tmp, props);
+	}
+	return tmp;
 }
 
 // Promote to dojo module
