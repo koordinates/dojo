@@ -343,7 +343,7 @@ dojo.event = new function(){
 				argsStr.push(arguments[x]);
 			}
 			dojo.debug("("+kwArgs.srcObj+")."+kwArgs.srcFunc, ":", argsStr.join(", "));
-		}
+		};
 		this.kwConnect(kwArgs);
 	}
 
@@ -720,7 +720,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 					}
 				}
 			}
-		}
+		};
 
 		var unRollSquelch = function(){
 			if(this.squelch){
@@ -732,7 +732,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 			}else{
 				return unrollAdvice.apply(this, arguments);
 			}
-		}
+		};
 
 		if((this["before"])&&(this.before.length>0)){
 			// pass a cloned array, if this event disconnects this event forEach on this.before wont work
