@@ -146,10 +146,10 @@ system.
 		</javac>
 	</target>
 
-	<taskdef resource="testngtasks" classpath="lib/testng-5.1-jdk15.jar" />
-
 	<target name="test" depends="compile-test" description="Tests the dojo ant tasks.">
-
+		
+		<taskdef resource="testngtasks" classpath="lib/testng-5.1-jdk15.jar" />
+		
 		<path id="compile.cp">
 			<fileset dir="${lib.dir}">
 				<include name="testng-5.1-jdk15.jar" />
