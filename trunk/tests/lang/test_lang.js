@@ -1,4 +1,4 @@
-dojo.require("dojo.lang.common");
+dojo.require("dojo.lang.*");
 
 function test_lang_mixin(){
 	var src = {
@@ -84,4 +84,22 @@ function test_lang_isUndefined(){
 	jum.assertFalse("93", dojo.lang.isUndefined(true));
 	var undef3 = null;
 	jum.assertFalse("94", dojo.lang.isUndefined(undef3));
+}
+
+function test_lang_hitch(){
+	var scope = { foo: "bar" };
+	var scope2 = { foo: "baz" };
+	function thinger(){
+		return [this.foo, arguments.length];
+	}
+	
+	var st1 = dojo.lang.hitch(scope, thinger);
+	jum.assertEquals("bar", st1()[0]);
+	jum.assertEquals(0, st1()[1]);
+	var st2 = dojo.lang.hitch(scope, thinger, "foo", "bar");
+	jum.assertEquals("bar", st2()[0]);
+	jum.assertEquals(2, st2()[1]);
+	var st3 = dojo.lang.hitch(scope2, thinger, "foo", "bar");
+	jum.assertEquals("baz", st3()[0]);
+	jum.assertEquals(2, st3()[1]);
 }
