@@ -7,30 +7,30 @@ dojo.require("dojo.validate.web");
 
 
 function test_validate_isText(){
-	jum.assertTrue("test1", dojo.validate.isText('            x'));
-	jum.assertTrue("test2", dojo.validate.isText('x             '));
-	jum.assertTrue("test3", dojo.validate.isText('        x     '));
-	jum.assertFalse("test4", dojo.validate.isText('   '));
-	jum.assertFalse("test5", dojo.validate.isText(''));
+	jum.assertTrue(dojo.validate.isText('            x'));
+	jum.assertTrue(dojo.validate.isText('x             '));
+	jum.assertTrue(dojo.validate.isText('        x     '));
+	jum.assertFalse(dojo.validate.isText('   '));
+	jum.assertFalse(dojo.validate.isText(''));
 
 	// test lengths
-	jum.assertTrue("test6", dojo.validate.isText('123456', {length: 6} ));
-	jum.assertFalse("test7", dojo.validate.isText('1234567', {length: 6} ));
-	jum.assertTrue("test8", dojo.validate.isText('1234567', {minlength: 6} ));
-	jum.assertTrue("test9", dojo.validate.isText('123456', {minlength: 6} ));
-	jum.assertFalse("test10", dojo.validate.isText('12345', {minlength: 6} ));
-	jum.assertFalse("test11", dojo.validate.isText('1234567', {maxlength: 6} ));
-	jum.assertTrue("test12", dojo.validate.isText('123456', {maxlength: 6} ));
+	jum.assertTrue(dojo.validate.isText('123456', {length: 6} ));
+	jum.assertFalse(dojo.validate.isText('1234567', {length: 6} ));
+	jum.assertTrue(dojo.validate.isText('1234567', {minlength: 6} ));
+	jum.assertTrue(dojo.validate.isText('123456', {minlength: 6} ));
+	jum.assertFalse(dojo.validate.isText('12345', {minlength: 6} ));
+	jum.assertFalse(dojo.validate.isText('1234567', {maxlength: 6} ));
+	jum.assertTrue(dojo.validate.isText('123456', {maxlength: 6} ));
 }
 
 function test_validate_web_isIpAddress(){
-	jum.assertTrue("test1", dojo.validate.isIpAddress('24.17.155.40'));
-	jum.assertFalse("test2", dojo.validate.isIpAddress('024.17.155.040'));
-	jum.assertTrue("test3", dojo.validate.isIpAddress('255.255.255.255'));
-	jum.assertFalse("test4", dojo.validate.isIpAddress('256.255.255.255'));
-	jum.assertFalse("test5", dojo.validate.isIpAddress('255.256.255.255'));
-	jum.assertFalse("test6", dojo.validate.isIpAddress('255.255.256.255'));
-	jum.assertFalse("test7", dojo.validate.isIpAddress('255.255.255.256'));
+	jum.assertTrue(dojo.validate.isIpAddress('24.17.155.40'));
+	jum.assertFalse(dojo.validate.isIpAddress('024.17.155.040'));
+	jum.assertTrue(dojo.validate.isIpAddress('255.255.255.255'));
+	jum.assertFalse(dojo.validate.isIpAddress('256.255.255.255'));
+	jum.assertFalse( dojo.validate.isIpAddress('255.256.255.255'));
+	jum.assertFalse(dojo.validate.isIpAddress('255.255.256.255'));
+	jum.assertFalse(dojo.validate.isIpAddress('255.255.255.256'));
 
 	// test dotted hex
 	jum.assertTrue("test8", dojo.validate.isIpAddress('0x18.0x11.0x9b.0x28'));
@@ -165,37 +165,38 @@ function test_validate_web_getEmailAddressList(){
 
 function test_validate_isInRange(){
 	// test integers
-	jum.assertFalse("test1", dojo.validate.isInRange( '0', {min: 1, max: 100} ));
-	jum.assertTrue("test2", dojo.validate.isInRange( '1', {min: 1, max: 100} ));
-	jum.assertFalse("test3", dojo.validate.isInRange( '-50', {min: 1, max: 100} ));
-	jum.assertTrue("test4", dojo.validate.isInRange( '+50', {min: 1, max: 100} ));
-	jum.assertTrue("test5", dojo.validate.isInRange( '100', {min: 1, max: 100} ));
-	jum.assertFalse("test6", dojo.validate.isInRange( '101', {min: 1, max: 100} ));
+	jum.assertFalse(dojo.validate.isInRange( '0', {min: 1, max: 100} ));
+	jum.assertTrue(dojo.validate.isInRange( '1', {min: 1, max: 100} ));
+	jum.assertFalse(dojo.validate.isInRange( '-50', {min: 1, max: 100} ));
+	jum.assertTrue(dojo.validate.isInRange( '+50', {min: 1, max: 100} ));
+	jum.assertTrue(dojo.validate.isInRange( '100', {min: 1, max: 100} ));
+	jum.assertFalse(dojo.validate.isInRange( '101', {min: 1, max: 100} ));
 
 	//test real numbers
-	jum.assertFalse("test7", dojo.validate.isInRange( '0.9', {min: 1.0, max: 10.0} ));
-	jum.assertTrue("test8", dojo.validate.isInRange( '1.0', {min: 1.0, max: 10.0} ));
-	jum.assertFalse("test9", dojo.validate.isInRange( '-5.0', {min: 1.0, max: 10.0} ));
-	jum.assertTrue("test10", dojo.validate.isInRange( '+5.50', {min: 1.0, max: 10.0} ));
-	jum.assertTrue("test11", dojo.validate.isInRange( '10.0', {min: 1.0, max: 10.0} ));
-	jum.assertFalse("test12", dojo.validate.isInRange( '10.1', {min: 1.0, max: 10.0} ));
-	jum.assertFalse("test13", dojo.validate.isInRange( '5.566e28', {min: 5.567e28, max: 6.000e28} ));
-	jum.assertTrue("test14", dojo.validate.isInRange( '5.7e28', {min: 5.567e28, max: 6.000e28} ));
-	jum.assertFalse("test15", dojo.validate.isInRange( '6.00000001e28', {min: 5.567e28, max: 6.000e28} ));
-	jum.assertFalse("test16", dojo.validate.isInRange( '10.000.000,12345e-5', {decimal: ",", max: 10000000.1e-5} ));
-	jum.assertFalse("test17", dojo.validate.isInRange( '10.000.000,12345e-5', {decimal: ",", min: 10000000.2e-5} ));
-	jum.assertTrue("test18", dojo.validate.isInRange('1,500,000', {separator: ',', min: 0}));
+	jum.assertFalse(dojo.validate.isInRange( '0.9', {min: 1.0, max: 10.0} ));
+	jum.assertTrue(dojo.validate.isInRange( '1.0', {min: 1.0, max: 10.0} ));
+	jum.assertFalse(dojo.validate.isInRange( '-5.0', {min: 1.0, max: 10.0} ));
+	jum.assertTrue(dojo.validate.isInRange( '+5.50', {min: 1.0, max: 10.0} ));
+	jum.assertTrue(dojo.validate.isInRange( '10.0', {min: 1.0, max: 10.0} ));
+	jum.assertFalse(dojo.validate.isInRange( '10.1', {min: 1.0, max: 10.0} ));
+	jum.assertFalse(dojo.validate.isInRange( '5.566e28', {min: 5.567e28, max: 6.000e28} ));
+	jum.assertTrue(dojo.validate.isInRange( '5.7e28', {min: 5.567e28, max: 6.000e28} ));
+	jum.assertFalse(dojo.validate.isInRange( '6.00000001e28', {min: 5.567e28, max: 6.000e28} ));
+	jum.assertFalse(dojo.validate.isInRange( '10.000.000,12345e-5', {decimal: ",", max: 10000000.1e-5} ));
+	jum.assertFalse(dojo.validate.isInRange( '10.000.000,12345e-5', {decimal: ",", min: 10000000.2e-5} ));
+	jum.assertTrue(dojo.validate.isInRange('1,500,000', {separator: ',', min: 0}));
+	jum.assertFalse(dojo.validate.isInRange('1,500,000', {separator: ',', min: 1000, max: 20000}));
 
 	// test currency
-	jum.assertFalse("test19", dojo.validate.isInRange('\u20AC123,456,789', {max: 123456788, symbol: '\u20AC'} ));
-	jum.assertFalse("test20", dojo.validate.isInRange('\u20AC123,456,789', { min: 123456790, symbol: '\u20AC'} ));
-	jum.assertFalse("test21", dojo.validate.isInRange('$123,456,789.07', { max: 123456789.06} ));
-	jum.assertFalse("test22", dojo.validate.isInRange('$123,456,789.07', { min: 123456789.08} ));
-	jum.assertFalse("test23", dojo.validate.isInRange('123.456.789,00 \u20AC',  {max: 123456788, decimal: ",", symbol: '\u20AC'} ));
-	jum.assertFalse("test24", dojo.validate.isInRange('123.456.789,00 \u20AC',  {min: 123456790, decimal: ",", symbol: '\u20AC'} ));
-	jum.assertFalse("test25", dojo.validate.isInRange('- T123 456 789-00', {decimal: "-", min:0} ));
-	jum.assertTrue("test26", dojo.validate.isInRange('\u20AC123,456,789', { max: 123456790, symbol: '\u20AC'} ));
-	jum.assertTrue("test27", dojo.validate.isInRange('$123,456,789.07', { min: 123456789.06} ));
+	jum.assertFalse(dojo.validate.isInRange('\u20AC123,456,789', {max: 123456788, symbol: '\u20AC'} ));
+	jum.assertFalse(dojo.validate.isInRange('\u20AC123,456,789', { min: 123456790, symbol: '\u20AC'} ));
+	jum.assertFalse(dojo.validate.isInRange('$123,456,789.07', { max: 123456789.06} ));
+	jum.assertFalse(dojo.validate.isInRange('$123,456,789.07', { min: 123456789.08} ));
+	jum.assertFalse(dojo.validate.isInRange('123.456.789,00 \u20AC',  {max: 123456788, decimal: ",", symbol: '\u20AC'} ));
+	jum.assertFalse(dojo.validate.isInRange('123.456.789,00 \u20AC',  {min: 123456790, decimal: ",", symbol: '\u20AC'} ));
+	jum.assertFalse(dojo.validate.isInRange('- T123 456 789-00', {decimal: "-", min:0} ));
+	jum.assertTrue(dojo.validate.isInRange('\u20AC123,456,789', { max: 123456790, symbol: '\u20AC'} ));
+	jum.assertTrue(dojo.validate.isInRange('$123,456,789.07', { min: 123456789.06} ));
 
 	// test non number
 	//jum.assertFalse("test25", dojo.validate.isInRange( 'a'));
