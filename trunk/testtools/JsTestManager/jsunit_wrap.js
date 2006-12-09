@@ -668,8 +668,11 @@ function jum_arg_to_boolean(args, ind) {
 }
 
 var jum_uneval;
-if (typeof burst != 'undefined' && typeof burst.Lang != 'undefined') jum_uneval = burst.Lang.uneval;
-else if (typeof [].toSource != 'undefined') jum_uneval = function(o) {return o.toSource()};
+if (typeof burst != 'undefined' && typeof burst.Lang != 'undefined') {
+	jum_uneval = burst.Lang.uneval;
+} else if (typeof []["toSource"] != 'undefined') {
+	jum_uneval = function(o) {return !o ? null : o.toSource()};
+}
 
 // utility to uneval all members of args, replacing them with String.
 // alters args and returns it too.
