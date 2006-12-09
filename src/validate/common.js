@@ -95,8 +95,9 @@ dojo.validate.isInRange = function(/*String*/value, /*Object?*/flags){
 
 	//stripping the separator allows NaN to perform as expected, if no separator, we assume ','
 	//once i18n support is ready for this, instead of assuming, we default to i18n's recommended value
-	value = value.replace(dojo.lang.has(flags,'separator')?flags.separator:',', '', 'g').
-		replace(dojo.lang.has(flags,'symbol')?flags.symbol:'$', '');
+	value = value.replace(new RegExp(dojo.lang.has(flags,'separator')?flags.separator:',', 'g'), '');
+	value = value.replace(dojo.lang.has(flags,'symbol')?flags.symbol:'$', '');
+	
 	if(isNaN(value)){
 		return false; // Boolean
 	}
