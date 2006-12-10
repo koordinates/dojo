@@ -11,7 +11,8 @@ function test_number_format() {
 	jum.assertEquals("num_0_2", "-12,34,567.89012", dojo.number.format(-1234567.890123, {pattern: "#,##,##0.000##"}));
 	jum.assertEquals("num_0_3", "(1,234,567.89012)", dojo.number.format(-1234567.890123, {pattern: "#,##0.000##;(#,##0.000##)"}));
 	jum.assertEquals("num_0_4", "(1,234,567.89012)", dojo.number.format(-1234567.890123, {pattern: "#,##0.000##;(#)"}));
-	jum.assertEquals("num_0_5", "50.1%", dojo.number.format(0.501, {pattern: "0.#%"}));
+	jum.assertEquals("num_0_5", "50.1%", dojo.number.format(0.501, {pattern: "#0.#%"}));
+	jum.assertEquals("num_0_6", "98", dojo.number.format(1998, {pattern: "00"}));
 
 	jum.assertEquals("num_1_0", "-12", dojo.number.format(-12.3, {places:0, locale: "en-us"}));
 	jum.assertEquals("num_1_1", "-1,234,567.89", dojo.number.format(-1234567.89, {locale: "en-us"}));
