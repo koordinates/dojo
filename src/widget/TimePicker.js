@@ -7,7 +7,7 @@ dojo.require("dojo.date.format");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 
-dojo.requireLocalization("dojo.i18n.calendar", "gregorian");
+dojo.requireLocalization("dojo.i18n.cldr", "gregorian");
 dojo.requireLocalization("dojo.widget", "TimePicker");
 
 
@@ -90,7 +90,7 @@ dojo.widget.defineWidget(
 	postMixInProperties: function(localProperties, frag) {
 		// summary: see dojo.widget.DomWidget
 		dojo.widget.TimePicker.superclass.postMixInProperties.apply(this, arguments);
-		this.calendar = dojo.i18n.getLocalization("dojo.i18n.calendar", "gregorian", this.lang); // "am","pm"
+		this.calendar = dojo.i18n.getLocalization("dojo.i18n.cldr", "gregorian", this.lang); // "am","pm"
 		this.widgetStrings = dojo.i18n.getLocalization("dojo.widget", "TimePicker", this.lang); // "any"
 	},
 

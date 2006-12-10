@@ -3,7 +3,7 @@ dojo.provide("dojo.number");
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.number");
 dojo.require("dojo.i18n.common");
-dojo.requireLocalization("dojo.i18n.calendar", "number"); //TODO: refactor calendar->cldr
+dojo.requireLocalization("dojo.i18n.cldr", "number");
 dojo.require("dojo.string.common");
 
 dojo.number.format = function(/*Number*/value, /*Object?*/options){
@@ -26,7 +26,7 @@ dojo.number.format = function(/*Number*/value, /*Object?*/options){
 
 	options = options || {};
 	var locale = dojo.hostenv.normalizeLocale(options.locale);
-	var bundle = dojo.i18n.getLocalization("dojo.i18n.calendar", "number", locale);
+	var bundle = dojo.i18n.getLocalization("dojo.i18n.cldr", "number", locale);
 	var pattern = options.pattern || bundle[(options.type || "decimal") + "Format"];
 	return dojo.number.applyPattern(value, pattern, {symbols: bundle, places: options.places, round: options.round}); // String //TODO
 };
@@ -169,7 +169,7 @@ dojo.number.parse = function(/*String*/expression, /*Object?*/options){
 
 	options = options || {};
 	var locale = dojo.hostenv.normalizeLocale(options.locale);
-	var bundle = dojo.i18n.getLocalization("dojo.i18n.calendar", "number", locale);
+	var bundle = dojo.i18n.getLocalization("dojo.i18n.cldr", "number", locale);
 	var pattern = options.pattern || bundle[(options.type || "decimal") + "Format"];
 	var group = bundle.group;
 	var decimal = bundle.decimal;
