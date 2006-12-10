@@ -1,7 +1,7 @@
 // can't set djConfig.extraLocale before bootstrapping unit tests, so manually load resources here for specific locales:
-dojo.requireLocalization("dojo.i18n.calendar","number","en-us");
-dojo.requireLocalization("dojo.i18n.calendar","number","en-in");
-dojo.requireLocalization("dojo.i18n.calendar","number","fr-fr");
+dojo.requireLocalization("dojo.i18n.cldr","number","en-us");
+dojo.requireLocalization("dojo.i18n.cldr","number","en-in");
+dojo.requireLocalization("dojo.i18n.cldr","number","fr-fr");
 
 dojo.require("dojo.number");
 
