@@ -101,13 +101,13 @@ dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Obje
 	if(options.places){
 		valueParts[1] = dojo.string.pad(fractional.substr(0, options.places), options.places, '0', -1);
 	}else if(patternParts[1] && options.places !== 0){
-		// Pad with trailing zeros
+		// Pad fractional with trailing zeros
 		var pad = patternParts[1].lastIndexOf("0") + 1;
 		if(pad > fractional.length){
 			valueParts[1] = dojo.string.pad(fractional, pad, '0', -1);
 		}
 
-		// Truncate
+		// Truncate fractional
 		var places = patternParts[1].length;
 		if(places < fractional.length){
 			valueParts[1] = fractional.substr(0, places);
@@ -116,12 +116,17 @@ dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Obje
 		if(valueParts[1]){ valueParts.pop(); }
 	}
 
-	// Pad with leading zeros
+	// Pad whole with leading zeros
 	var patternDigits = patternParts[0].replace(',','');
 	pad = patternDigits.indexOf("0");
 	if(pad != -1){ pad = patternDigits.length - pad; }
 	if(pad > valueParts[0].length){
 		valueParts[0] = dojo.string.pad(valueParts[0], pad);
+	}
+
+	// Truncate whole
+	if(patternDigits.indexOf("#") == -1){
+		valueParts[0] = valueParts[0].substr(-pad);
 	}
 
 	// Add group separators
