@@ -81,7 +81,7 @@ dojo.widget.Parse = function(/*Object*/fragment){
 			if(frag && typeof frag == "object"
 				&&(frag!=fragment.nodeRef)
 				&&(frag!=fragment.tagName)
-				&&(!dojo.dom.isNode(frag))){// needed in IE when we have event.connected to the domNode
+				&&(item.indexOf('$')==-1)){// needed in IE when we have event.connected to the domNode
 				comps = comps.concat(this.createComponents(frag, parentComp));
 			}
 		}
