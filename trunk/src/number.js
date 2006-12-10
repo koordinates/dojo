@@ -117,7 +117,7 @@ dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Obje
 	}
 
 	// Pad whole with leading zeros
-	var patternDigits = patternParts[0].replace(',','');
+	var patternDigits = patternParts[0].replace(',', '');
 	pad = patternDigits.indexOf("0");
 	if(pad != -1){ pad = patternDigits.length - pad; }
 	if(pad > valueParts[0].length){
@@ -126,7 +126,7 @@ dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Obje
 
 	// Truncate whole
 	if(patternDigits.indexOf("#") == -1){
-		valueParts[0] = valueParts[0].substr(-pad);
+		valueParts[0] = valueParts[0].substr(valueParts[0].length - pad);
 	}
 
 	// Add group separators

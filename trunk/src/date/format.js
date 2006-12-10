@@ -64,7 +64,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 						case 1:
 							break;
 						case 2:
-							s = String(s).substr(-2);
+							s = String(s); s = s.substr(s.length - 2);
 							break;
 						default:
 							pad = true;
