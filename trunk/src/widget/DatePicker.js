@@ -1,4 +1,4 @@
-	dojo.provide("dojo.widget.DatePicker");
+dojo.provide("dojo.widget.DatePicker");
 dojo.require("dojo.date.common");
 dojo.require("dojo.date.format");
 dojo.require("dojo.date.serialize");
@@ -235,7 +235,8 @@ dojo.widget.defineWidget(
 				//this is our new UI loop... one loop to rule them all, and in the datepicker bind them
 				currentCalendarNode = calendarNodes.item(i);
 				currentCalendarNode.innerHTML = nextDate.getDate();
-				var curClass = (nextDate.getMonth()<this.curMonth.getMonth())?'previous':(nextDate.getMonth()==this.curMonth.getMonth())?'current':'next';
+				currentCalendarNode.setAttribute("djDateValue",nextDate.valueOf());
+				var curClass = (nextDate.getMonth() != this.curMonth.getMonth() && Number(nextDate) < Number(this.curMonth))?'previous':(nextDate.getMonth()==this.curMonth.getMonth())?'current':'next';
 				var mappedClass = curClass;
 				if(this._isDisabledDate(nextDate)){
 					var classMap={previous:"disabledPrevious",current:"disabledCurrent",next:"disabledNext"};
@@ -434,8 +435,10 @@ dojo.widget.defineWidget(
 			if(eventTarget.nodeType != dojo.dom.ELEMENT_NODE){eventTarget = eventTarget.parentNode;}
 			dojo.event.browser.stopEvent(evt);
 			this.selectedIsUsed = this.todayIsUsed = false;
-			var month = this.curMonth.getMonth();
-			var year = this.curMonth.getFullYear();
+			var tmp = dojo.html.getAttribute(eventTarget,'djDateValue');
+			var tmpDate = new Date(Number(tmp));
+			var month = tmpDate.getMonth();
+			var year = tmpDate.getFullYear();
 			if(dojo.html.hasClass(eventTarget, this.classNames["disabledPrevious"])||dojo.html.hasClass(eventTarget, this.classNames["disabledCurrent"])||dojo.html.hasClass(eventTarget, this.classNames["disabledNext"])){
 				return; //this date is disabled... ignore it
 			}else if (dojo.html.hasClass(eventTarget, this.classNames["next"])) {
@@ -446,7 +449,7 @@ dojo.widget.defineWidget(
 				if(month==11){--year;}
 			}
 			this.clickedNode = eventTarget;
-			this.setDate(new Date(year, month, eventTarget.innerHTML));
+			this.setDate(new Date(tmpDate));
 		},
 		
 		onValueChanged: function(/*Date*/date) {
