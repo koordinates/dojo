@@ -124,7 +124,7 @@ dojo.widget.defineWidget(
 
 			// Insert localized day names in the template
 			var dayLabels = dojo.lang.unnest(dojo.date.getNames('days', this.dayWidth, 'standAlone', this.lang)); //if we dont use unnest, we risk modifying the dayLabels array inside of dojo.date and screwing up other calendars on the page
-			if(this.weekStartsOn > 0){
+			if(this.weekStartsOn>0){
 				//adjust dayLabels for different first day of week. ie: Monday or Thursday instead of Sunday
 				for(var i=0;i<this.weekStartsOn;i++){
 					dayLabels.push(dayLabels.shift());
