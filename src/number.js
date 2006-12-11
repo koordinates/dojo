@@ -119,14 +119,16 @@ dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Obje
 	// Pad whole with leading zeros
 	var patternDigits = patternParts[0].replace(',', '');
 	pad = patternDigits.indexOf("0");
-	if(pad != -1){ pad = patternDigits.length - pad; }
-	if(pad > valueParts[0].length){
-		valueParts[0] = dojo.string.pad(valueParts[0], pad);
-	}
+	if(pad != -1){
+		pad = patternDigits.length - pad;
+		if(pad > valueParts[0].length){
+			valueParts[0] = dojo.string.pad(valueParts[0], pad);
+		}
 
-	// Truncate whole
-	if(patternDigits.indexOf("#") == -1){
-		valueParts[0] = valueParts[0].substr(valueParts[0].length - pad);
+		// Truncate whole
+		if(patternDigits.indexOf("#") == -1){
+			valueParts[0] = valueParts[0].substr(valueParts[0].length - pad);
+		}
 	}
 
 	// Add group separators
@@ -134,7 +136,7 @@ dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Obje
 	var groupSize, groupSize2;
 	if(index != -1){
 		groupSize = patternParts[0].length - index - 1;
-		var remainder = patternParts[0].substr(0,index);
+		var remainder = patternParts[0].substr(0, index);
 		index = remainder.lastIndexOf(',');
 		if(index != -1){
 			groupSize2 = remainder.length - index - 1;
@@ -142,8 +144,9 @@ dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Obje
 	}
 	var pieces = [];
 	for(var whole = valueParts[0]; whole;){
-		pieces.push(whole.substr(-groupSize));
-		whole = whole.slice(0, -groupSize);
+		var off = whole.length - groupSize;
+		pieces.push((off > 0) ? whole.substr(off) : whole);
+		whole = (off > 0) ? whole.slice(0, off) : "";
 		if(groupSize2){
 			groupSize = groupSize2;
 			delete groupSize2;
