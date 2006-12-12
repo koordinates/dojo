@@ -387,7 +387,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 				break;
 			case 'w':
 				var firstDay = 0;
-				dojo.date.setWeekOfYear(dateObject, v, firstDay);
+				dojo.date.setWeekOfYear(result, v, firstDay);
 				break;
 			case 'a': //am/pm
 				var am = options.am || info.am;
