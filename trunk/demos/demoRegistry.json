@@ -371,6 +371,14 @@
 			description: "Tree widget featuring lazy loading of data, drag & drop, etc."
 		},
 
+		"Lightstreamer": {
+			url: "http://app.lightstreamer.com/DojoDemo/",
+			author: "Lightstreamer and SitePen, Inc.",
+			thumbnail: "screenshots/test_LightstreamerThumb.gif",
+			screenShot: "",
+			description: "A demonstration of the integration between the Lightstreamer Server and the Dojo toolkit (opens in a new window.)"
+		},
+
 		"Moxie": {
 			url: "storage/editor.html",
 			author: "Brad Neuburg",
