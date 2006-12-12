@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+	<title>dojo, the Javascript Toolkit: brought to you by the Dojo Foundation</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="css/common.css" />
+	<link rel="stylesheet" type="text/css" href="css/text.css" />
+	<link rel="stylesheet" type="text/css" href="css/index.css" />
+
+	<script type="text/javascript">
+		djConfig = { isDebug: false};
+	</script>
+	<script type="text/javascript" src="dojo/dojo.js"></script>
+	<script type="text/javascript">	
+		//dojo.require("dojo.debug.Firebug");
+		dojo.require("dojo.widget.LinkPane");
+		dojo.require("dojo.widget.ContentPane");
+		dojo.require("dojo.widget.demoEngine.*");
+		dojo.require("dojo.widget.*");
+		tabs=function() {};
+		dojo.addOnLoad(function(){
+
+			demoApp = dojo.widget.byId("demoAppTab");
+			demoApp.hide();
+			help = dojo.widget.byId("helpTab");
+			help.hide();
+			news = dojo.widget.byId("newsTab");
+			tabs["demo"] = dojo.byId("seeItInAction");
+			tabs["help"] = dojo.byId("getHelp");
+			tabs["news"] = dojo.byId("newsT");
+
+			dojo.event.connect(dojo.byId("index-logo"),"onclick",function(){
+				help.hide();
+				dojo.html.removeClass(tabs.help,"current");
+				demoApp.hide();
+				dojo.html.removeClass(tabs.demo,"current");
+				news.show();
+				dojo.html.addClass(tabs.news,"current");
+
+			});
+
+			dojo.event.connect(tabs.demo,"onclick", function(e) {
+				help.hide();
+				dojo.html.removeClass(tabs.help,"current");
+				news.hide();
+				dojo.html.removeClass(tabs.news,"current");
+				demoApp.show();	
+				dojo.html.addClass(tabs.demo,"current");
+			});
+
+			dojo.event.connect(tabs.news,"onclick", function(e) {
+				help.hide();
+				dojo.html.removeClass(tabs.help,"current");
+				demoApp.hide();
+				dojo.html.removeClass(tabs.demo,"current");
+				news.show();
+				dojo.html.addClass(tabs.news,"current");
+			});
+
+			dojo.event.connect(tabs.help,"onclick", function(e) {
+				news.hide();
+				dojo.html.removeClass(tabs.news,"current");
+				demoApp.hide();	
+				dojo.html.removeClass(tabs.demo,"current");
+				help.show();
+				dojo.html.addClass(tabs.help,"current");
+			});
+		});
+	</script>
+</head>
+<body>
+	<div id="foundation-header">
+		<div id="header-links">
+			<ul>
+				<li><a href="./developers/" id="header-developers">Developers</a></li>
+				<li><a href="http://trac.dojotoolkit.org/" id="header-bugtracking">Bug Tracking</a></li>
+				<li><a href="http://dojo.jot.com/" id="header-wiki">Wiki</a></li>
+				<li><a href="http://blog.dojotoolkit.org/" id="header-blog">Blog</a></li>
+				<li><a href="./foundation/" id="header-about">About the Dojo Foundation</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="index-header">
+		<h1 id="index-logo">Dojo, the Javascript Toolkit</h1>
+		<p id="index-download">
+		<a href="http://download.dojotoolkit.org/release-0.4.1/dojo-0.4.1-ajax.zip">Now serving version 0.4.1</a>
+		</p>
+	</div>
+	<div id="index-subheader">
+		<div class="tab-wrapper">
+			<div class="tab" id="seeItInAction">
+				<span>see it in action</span>
+			</div>
+
+			<div class="tab" id="getHelp">
+				<span>get help</span>
+			</div>
+			<div class="tab current" id="newsT">
+				<span>news &amp; announcements</span>
+			</div>
+		</div>
+	</div>
+	<div id="body">
+		<div id="sidebar">
+			<p class="blurb">
+				Dojo is the Open Source Javascript toolkit that makes professional web development better, easier, and faster.
+			</p>
+			<p class="license">
+				<a href="./foundation/#license">Dojo is licensed freely under the AFL and BSD.  See what that means for you.</a>
+			</p>
+			<ul>
+				<li>Developers: <a href="./developers/">click here for Dojo development resources</a>, such as bug tracking and the wiki.</li>
+				<li>To hear more about Dojo, <a href="http://blog.dojotoolkit.org/">visit our blog</a>.</li>
+				<li>Keep abreast of Dojo by <a href="http://dojotoolkit.org/mailman/listinfo/dojo-interest">subscribing to our mailing list</a>.</li>
+			</ul>
+			<div style="margin:auto;width:169px;">
+				<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+					<input type="hidden" name="cmd" value="_s-xclick">
+					<input type="image" src="img/dojo-donate.gif" border="0" name="submit" alt="Donate to the Dojo Foundation through PayPal!"> 
+					<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+					<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----">
+				</form>
+			</div>
+		</div>
+		<div id="content"> 
+			<div id="demoAppTab" dojoType="DemoNavigator" demoRegistryUrl="demoRegistry.json" returnImage="img/dojoDemos.gif" viewDemoImage="img/viewDemo.png"></div> 
+			<div id="helpTab" dojoType="ContentPane" href="help.html" parseContent="true" executeScripts="true"></div>
+			<div id="newsTab" dojoType="ContentPane" href="newsItems.html" parseContent="true" executeScripts="true"></div>
+		</div>
+	</div>
+	<div id="footer">
+		<div class="links">
+			<span><a href="./">Home</a></span>
+			<span><a href="./developers/">Developers</a></span>
+			<span><a href="http://dojo.jot.com/">Wiki</a></span>
+			<span><a href="http://trac.dojotoolkit.org/">Bug Tracking</a></span>
+			<span><a href="./foundation/">About the Foundation</a></span>
+		</div>
+		<div id="copyright">&copy;The Dojo Foundation, all rights reserved.</div>
+	</div>
+</body>
+</html>
