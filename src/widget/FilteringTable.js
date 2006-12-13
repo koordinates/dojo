@@ -723,7 +723,7 @@ dojo.widget.defineWidget(
 				} else {
 					cell.innerHTML = val;
 				}
-			} else if ("Number number int Integer float Float".indexOf(meta.getType())>-1){
+			} else if ("Number number int Integer float Float".indexOf(meta.sortType)>-1){
 				//	TODO: number formatting
 				if(val.length == 0){
 					val="0";
