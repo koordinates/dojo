@@ -116,7 +116,6 @@ dojo.gfx.color.blendHex = function(a, b, weight) {
 
 // get RGB array from css-style color declarations
 dojo.gfx.color.extractRGB = function(color) {
-	var hex = "0123456789abcdef";
 	color = color.toLowerCase();
 	if( color.indexOf("rgb") == 0 ) {
 		var matches = color.match(/rgba*\((\d+), *(\d+), *(\d+)/i);
