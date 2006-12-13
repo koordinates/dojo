@@ -5,7 +5,6 @@
 // the variable "hostenvType" (defaults to "browser").
 var dependencies = [
 		"api.ApiRef",
-		"api.ProfileHelper",
 		"dojo.widget.ComboBox",
 		"dojo.widget.ContentPane",
 		"dojo.widget.Menu2",
