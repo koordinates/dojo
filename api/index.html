@@ -19,35 +19,21 @@
 				and sym-link /api to /checkout/api		-->
 	<script type="text/javascript" src="../dojo.js"></script>
 	<script type="text/javascript">
-		dojo.require("dojo.debug.console");
-		dojo.require("dojo.io.*");
-		dojo.require("dojo.io.BrowserIO");
-		dojo.require("dojo.io.cookie");
-		dojo.require("dojo.uri.*");
-		dojo.require("dojo.Deferred");
-		dojo.require("dojo.DeferredList");
-		dojo.require("dojo.dom");
-		dojo.require("dojo.lang.common");
 		dojo.require("dojo.widget.*");
-		dojo.require("dojo.widget.ComboBox");
-		dojo.require("dojo.widget.TreeV3");
-		dojo.require("dojo.widget.TreeNodeV3");
-		dojo.require("dojo.widget.TreeBasicControllerV3");
-		dojo.require("dojo.widget.TreeSelectorV3");
-		dojo.require("dojo.widget.TreeEmphasizeOnSelect");
-		dojo.require("dojo.widget.SplitContainer");
-		dojo.require("dojo.lfx.html");
-		dojo.require("dojo.undo.browser");
+
+		dojo.registerModulePath("api", "api");
+		dojo.require("api.ApiRef");
 	</script>
 
 
 <!-- the following are items that I hacked and haven't been approved yet
-		TODO: move these into the base build -->
+		TODO: move these into the base build
 	<script type="text/javascript" src="profile.js"></script>
 	<script type="text/javascript" src="ProfileHelper.js"></script>
-
-<!-- script that does all the heavy lifting -->
+-->
+<!-- script that does all the heavy lifting
 	<script type="text/javascript" src="ApiRef.js"></script>
+-->
 
 </head>
 <body>
