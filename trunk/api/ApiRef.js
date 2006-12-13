@@ -64,6 +64,27 @@
 
 */
 
+dojo.provide("api.ApiRef");
+
+dojo.require("api.ProfileHelper");
+dojo.require("dojo.debug.console");
+
+dojo.require("dojo.io.*");
+dojo.require("dojo.io.BrowserIO");
+dojo.require("dojo.io.cookie");
+dojo.require("dojo.uri.*");
+dojo.require("dojo.Deferred");
+//dojo.require("dojo.DeferredList");
+//dojo.require("dojo.dom");
+dojo.require("dojo.lang.common");
+dojo.require("dojo.widget.TreeV3");
+dojo.require("dojo.widget.TreeNodeV3");
+dojo.require("dojo.widget.TreeBasicControllerV3");
+dojo.require("dojo.widget.TreeSelectorV3");
+dojo.require("dojo.widget.TreeEmphasizeOnSelect");
+dojo.require("dojo.lfx.html");
+dojo.require("dojo.undo.browser");
+
 
 //
 //	set up the onload handler
@@ -243,7 +264,7 @@ var ApiRef = {
 				ApiRef.cacheParserData(parserFile, parserData);
 				ApiRef.clearNotice();
 			}
-			deferred.addCallback(cacheCallback)
+			deferred.addCallback(cacheCallback);
 			deferred.addCallback(callback);
 		} else {
 			callback(parserData);
@@ -514,7 +535,7 @@ var ApiRef = {
 		// summary: return the type string for an item, used for debugging
 		var item = this.getItem(name);
 		if (item.typeString) return item.typeString;
-		return item.typeString = [
+		return (item.typeString = [
 			(item.isResource		|| "-"),
 			(item.isModule		|| "-"),
 			(item.isConstructable		|| "-"),
@@ -522,7 +543,7 @@ var ApiRef = {
 			(item.hasChildren	|| "-"),
 			(item.isMethod	|| "-"),
 			(item.isCurly || "-")
-		].join("");
+		].join(""));
 	},
 
 	getItemType : function (name, recheck) {
