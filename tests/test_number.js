@@ -57,6 +57,11 @@ function test_number_parse() {
 //	jum.assertEquals("num_3_10", -1234567, dojo.number.parse("  -1,234,567  ", {locale: "en-us"}));
 
 //	jum.assertTrue("num_3_11", dojo.number.parse("9.1093826E-31"));
+
+	jum.assertEquals("num_4_0", 123.4, dojo.number.parse("123.4", {pattern: "#0.#"}));
+	jum.assertEquals("num_4_1", -123.4, dojo.number.parse("-123.4", {pattern: "#0.#"}));
+	jum.assertEquals("num_4_2", 123.4, dojo.number.parse("123.4", {pattern: "#0.#;(#0.#)"}));
+	jum.assertEquals("num_4_3", -123.4, dojo.number.parse("(123.4)", {pattern: "#0.#;(#0.#)"}));
 }
 
 

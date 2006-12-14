@@ -5,6 +5,7 @@ dojo.experimental("dojo.number");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.i18n.cldr", "number");
 dojo.require("dojo.string.common");
+dojo.require("dojo.regexp"); // should we eliminate this dependency or try to make use of regexp number routines?
 
 dojo.number.format = function(/*Number*/value, /*Object?*/options){
 // summary:
@@ -21,6 +22,7 @@ dojo.number.format = function(/*Number*/value, /*Object?*/options){
 // options: object {pattern: String?, type: String?, places: Number?, round: Boolean?, locale: String?}
 //		pattern- override formatting pattern with this string (see dojo.number.applyPattern)
 //		type- choose a format type based on the locale from the following: decimal, scientific, percent, currency. decimal by default.
+//		places- fixed number of decimal places to show.  This overrides any information in the provided pattern.
 //		round- whether to round the number.  false by default //TODO
 //		locale- override the locale used to determine formatting rules
 
@@ -182,32 +184,37 @@ dojo.number.parse = function(/*String*/expression, /*Object?*/options){
 	var group = bundle.group;
 	var decimal = bundle.decimal;
 
-	//TODO: escape regexp chars in pattern
-	//TODO: handle escapes
+	//TODO: handle quoted escapes
 	var patternList = pattern.split(';');
-	var positivePattern = patternList[0];
-	pattern = "-?" + positivePattern;
-//TODO: handle negative pattern.  build a compound regexp with positive and negative?
+	if (patternList.length == 1){
+		patternList.push("-" + patternList[0]); // substitute negative sign?
+	}
 
 	if(options.strict && !dojo.number._buildNumberFormatRE(pattern, {/*TODO*/}).test(expression)){
 		return NaN; //NaN
 	}
 
-	var re = pattern.replace(dojo.number._numberPatternRE, "([\\d\\"+group+"]+(?:\\"+decimal+"\\d+)?)"); // also handle .###
+	var re = dojo.regexp.buildGroupRE(patternList, function(pattern){
+		pattern = dojo.regexp.group(dojo.regexp.escape(pattern, '.'), true);
+		return pattern.replace(dojo.number._numberPatternRE, "([\\d\\"+group+"]+(?:\\"+decimal+"\\d+)?)"); // also handle .### with no leading integer?
+	}, true);
+
 //TODO: substitute currency symbol, percent/permille/etc.
 	var results = (new RegExp("^"+re+"$")).exec(expression);
 	if(!results){
 		return NaN; //NaN
 	}
-
 	var numberExpression = results[1];
+	if(typeof numberExpression == 'undefined'){
+		// matched the negative pattern
+		var negative = true;
+		numberExpression = results[2];
+	}
 	numberExpression = numberExpression.replace(group, "", "g").replace(decimal, ".");
 	value = Number(numberExpression);
 
 	if(!isNaN(value)){
-		if(expression.indexOf("-") != -1){ // substitute negative sign?
-			value = -value;
-		}
+		if(negative){ value = -value; }
 		//TODO: handle percent, per mille
 		//TODO: handle exponent
 	}
