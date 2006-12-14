@@ -14,31 +14,55 @@ dojo.lfx.toggle.plain = {
 }
 
 dojo.lfx.toggle.fade = {
+	anim: null,
+
 	show: function(node, duration, easing, callback){
-		dojo.lfx.fadeShow(node, duration, easing, callback).play();
+		if(this.anim && this.anim.status() != "stopped"){
+			this.anim.stop();
+		}
+		this.anim = dojo.lfx.fadeShow(node, duration, easing, callback).play();
 	},
 
 	hide: function(node, duration, easing, callback){
-		dojo.lfx.fadeHide(node, duration, easing, callback).play();
+		if(this.anim && this.anim.status() != "stopped"){
+			this.anim.stop();
+		}
+		this.anim = dojo.lfx.fadeHide(node, duration, easing, callback).play();
 	}
 }
 
 dojo.lfx.toggle.wipe = {
+	anim: null,
+
 	show: function(node, duration, easing, callback){
-		dojo.lfx.wipeIn(node, duration, easing, callback).play();
+		if(this.anim && this.anim.status() != "stopped"){
+			this.anim.stop();
+		}
+		this.anim = dojo.lfx.wipeIn(node, duration, easing, callback).play();
 	},
 
 	hide: function(node, duration, easing, callback){
-		dojo.lfx.wipeOut(node, duration, easing, callback).play();
+		if(this.anim && this.anim.status() != "stopped"){
+			this.anim.stop();
+		}
+		this.anim = dojo.lfx.wipeOut(node, duration, easing, callback).play();
 	}
 }
 
 dojo.lfx.toggle.explode = {
+	anim: null,
+
 	show: function(node, duration, easing, callback, explodeSrc){
-		dojo.lfx.explode(explodeSrc||{x:0,y:0,width:0,height:0}, node, duration, easing, callback).play();
+		if(this.anim && this.anim.status() != "stopped"){
+			this.anim.stop();
+		}
+		this.anim = dojo.lfx.explode(explodeSrc||{x:0,y:0,width:0,height:0}, node, duration, easing, callback).play();
 	},
 
 	hide: function(node, duration, easing, callback, explodeSrc){
-		dojo.lfx.implode(node, explodeSrc||{x:0,y:0,width:0,height:0}, duration, easing, callback).play();
+		if(this.anim && this.anim.status() != "stopped"){
+			this.anim.stop();
+		}
+		this.anim = dojo.lfx.implode(node, explodeSrc||{x:0,y:0,width:0,height:0}, duration, easing, callback).play();
 	}
 }
