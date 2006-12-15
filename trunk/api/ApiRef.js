@@ -785,7 +785,11 @@ var ApiRef = {
 		node = dojo.byId(node);
 		var replaceCallback = function() {
 			node.innerHTML = newHtml;
-			setTimeout(function(){dojo.lfx.wipeIn(node, inTime).play()},100);
+			wipeInFunc = function(){
+				node.style.height = '';		//  necessary to make sure item resets to smaller size
+				dojo.lfx.wipeIn(node, inTime).play()
+			};
+			setTimeout(wipeInFunc,100);
 		}
 		dojo.lfx.wipeOut(node, outTime, null, replaceCallback).play();
 	},
