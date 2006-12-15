@@ -211,22 +211,41 @@ dojo.widget.defineWidget (
 			if(!evt.key){ return; }
 
 			if(!evt.ctrlKey && !evt.altKey){
-				switch(evt.key){
+			var isXOnly = this.isEnableX && !this.isEnableY;
+			var isYOnly = this.isEnableY && !this.isEnableX;
+			
+				switch(evt.key){ 
 					case evt.KEY_LEFT_ARROW:
 						dojo.event.browser.stopEvent(evt);
-						this._leftButtonPressed(evt);
+						if (isYOnly){
+							this._bottomButtonPressed(evt);
+						}else{
+							this._leftButtonPressed(evt);
+						}
 						return;
 					case evt.KEY_RIGHT_ARROW:
 						dojo.event.browser.stopEvent(evt);
-						this._rightButtonPressed(evt);
+						if (isYOnly){
+							this._topButtonPressed(evt);
+						}else{
+							this._rightButtonPressed(evt);
+						}
 						return;
 					case evt.KEY_DOWN_ARROW:
 						dojo.event.browser.stopEvent(evt);
-						this._bottomButtonPressed(evt);
+						if (isXOnly){
+							this._leftButtonPressed(evt);
+						}else{
+							this._bottomButtonPressed(evt);
+						}
 						return;
 					case evt.KEY_UP_ARROW:
 						dojo.event.browser.stopEvent(evt);
-						this._topButtonPressed(evt);
+						if (isXOnly){
+							this._rightButtonPressed(evt);
+						}else{
+							this._topButtonPressed(evt);
+						}
 						return;
 				}
 			}

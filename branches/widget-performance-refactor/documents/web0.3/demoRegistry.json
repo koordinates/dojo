@@ -4,7 +4,8 @@
 				name: "Demo Applications",
 				demos: [
 						"Mail",
-						"Moxie"
+						"Moxie",
+						"Lightstreamer"
 					]
 			},
 
@@ -85,6 +86,13 @@
 			thumbnail: "dojo/demos/screenshots/test_JSONRPCThumb.gif",
 			screenShot: "",
 			description: "Example of using Dojo's JSON-RPC Client. Lighweight JSON is ideal for marshalling RPC in webapps."
+		},
+		"Lightstreamer": {
+			url: "http://app.lightstreamer.com/DojoDemo/",
+			author: "Lightstreamer and SitePen, Inc.",
+			thumbnail: "screenshots/test_LightstreamerThumb.gif",
+			screenShot: "",
+			description: "A demonstration of the integration between the Lightstreamer Server and the Dojo toolkit (opens in a new window.)"
 		},
 		"DragDrop": {
 			url: "dojo/tests/dnd/test_simple.html",

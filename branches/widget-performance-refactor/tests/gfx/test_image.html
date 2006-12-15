@@ -12,9 +12,15 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.gfx.*");
 
 var image = null;
+var grid_size = 500;
+var grid_step = 50;
 
 makeShapes = function(){
 	var surface = dojo.gfx.createSurface("test", 800, 600);
+	for(var i = 0; i <= grid_size; i += grid_step){
+		surface.createLine({x1: 0, x2: grid_size, y1: i, y2: i}).setStroke("black");
+		surface.createLine({y1: 0, y2: grid_size, x1: i, x2: i}).setStroke("black");
+	}
     image = surface.createImage({width: 319, height: 95, src: "http://dojotoolkit.org/img/header-downloads.png"});
     dojo.event.connect(image.getEventSource(), "onclick", function(){ alert("You didn't expect a download, did you?"); });
 };
@@ -32,7 +38,14 @@ transformImage = function(){
 	}else if(radio[4].checked){
         image.setTransform([dojo.gfx.matrix.rotateg(-15), dojo.gfx.matrix.skewXg(30)]);
 	}
+	var cb = document.getElementById("r2");
+	if(cb.checked && !image.getShape().x){
+		image.setShape({x: 100, y: 50});
+	}else if(!cb.checked && image.getShape().x){
+		image.setShape({x: 0, y: 0});
+	}
 };
+
 dojo.addOnLoad(makeShapes);
 
 </script>
@@ -45,6 +58,7 @@ dojo.addOnLoad(makeShapes);
 <input type="radio" name="switch" id="r1_scale" onclick="transformImage()" /><label for="r1_scale">Scale Image</label><br />
 <input type="radio" name="switch" id="r1_skew" onclick="transformImage()" /><label for="r1_skew">Skew Image</label><br />
 </p>
+<p><input type="checkbox" id="r2" onclick="transformImage()" /><label for="r2">Offset image by (100, 50)</label></p>
 <div id="test"></div>
 <p>That's all Folks!</p>
 </body>

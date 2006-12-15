@@ -166,22 +166,25 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			return this;
 		}
 		// normalize the stroke
-		this.strokeStyle = dojo.gfx.makeParameters(dojo.gfx.defaultStroke, stroke);
-		this.strokeStyle.color = dojo.gfx.normalizeColor(this.strokeStyle.color);
+		if(typeof stroke == "string"){
+			stroke = {color: stroke};
+		}
+		var s = this.strokeStyle = dojo.gfx.makeParameters(dojo.gfx.defaultStroke, stroke);
+		s.color = dojo.gfx.normalizeColor(s.color);
 		// generate attributes
-		var s = this.strokeStyle;
-		this.rawNode.stroked = true;
-		this.rawNode.strokecolor = s.color.toCss();
-		this.rawNode.strokeweight = s.width + "px";	// TODO: should we assume that the width is always in pixels?
-		if(this.rawNode.stroke) {
-			this.rawNode.stroke.opacity = s.color.a;
-			this.rawNode.stroke.endcap = this._translate(this._capMap, s.cap);
+		var rn = this.rawNode;
+		rn.stroked = true;
+		rn.strokecolor = s.color.toCss();
+		rn.strokeweight = s.width + "px";	// TODO: should we assume that the width is always in pixels?
+		if(rn.stroke) {
+			rn.stroke.opacity = s.color.a;
+			rn.stroke.endcap = this._translate(this._capMap, s.cap);
 			if(typeof(s.join) == "number") {
-				this.rawNode.stroke.joinstyle = "miter";
-				this.rawNode.stroke.miterlimit = s.join;
+				rn.stroke.joinstyle = "miter";
+				rn.stroke.miterlimit = s.join;
 			}else{
-				this.rawNode.stroke.joinstyle = s.join;
-				// this.rawNode.stroke.miterlimit = s.width;
+				rn.stroke.joinstyle = s.join;
+				// rn.stroke.miterlimit = s.width;
 			}
 		}
 		return this;	// self
@@ -666,14 +669,14 @@ dojo.declare("dojo.gfx.Image", dojo.gfx.shape.Image, {
 	_applyTransform: function() {
 		var matrix = this._getRealMatrix();
 		if(!matrix) return this;
-		with(this.rawNode.filters["DXImageTransform.Microsoft.Matrix"]){
-			M11 = matrix.xx;
-			M12 = matrix.xy;
-			M21 = matrix.yx;
-			M22 = matrix.yy;
-			Dx  = matrix.dx;
-			Dy  = matrix.dy;
-		}
+		matrix = dojo.gfx.matrix.multiply(matrix, {dx: this.shape.x, dy: this.shape.y});
+		var f = this.rawNode.filters["DXImageTransform.Microsoft.Matrix"];
+		f.M11 = matrix.xx;
+		f.M12 = matrix.xy;
+		f.M21 = matrix.yx;
+		f.M22 = matrix.yy;
+		f.Dx  = matrix.dx;
+		f.Dy  = matrix.dy;
 		return this;
 	}
 });

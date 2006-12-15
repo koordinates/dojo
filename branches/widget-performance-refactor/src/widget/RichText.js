@@ -1645,6 +1645,7 @@ dojo.widget.defineWidget(
 
 			if (this.iframe) {
 				// FIXME: should keep iframe around for later re-use
+				dojo.html.destroyNode(this.iframe);
 				delete this.iframe;
 			}
 
