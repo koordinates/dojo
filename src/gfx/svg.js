@@ -92,10 +92,12 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			return this;
 		}
 		// normalize the stroke
-		this.strokeStyle = dojo.gfx.makeParameters(dojo.gfx.defaultStroke, stroke);
-		this.strokeStyle.color = dojo.gfx.normalizeColor(this.strokeStyle.color);
+		if(typeof stroke == "string"){
+			stroke = {color: stroke};
+		}
+		var s = this.strokeStyle = dojo.gfx.makeParameters(dojo.gfx.defaultStroke, stroke);
+		s.color = dojo.gfx.normalizeColor(s.color);
 		// generate attributes
-		var s = this.strokeStyle;
 		var rn = this.rawNode;
 		if(s){
 			rn.setAttribute("stroke", s.color.toCss());

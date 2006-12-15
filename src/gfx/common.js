@@ -15,7 +15,7 @@ dojo.lang.mixin(dojo.gfx, {
 	defaultEllipse:  {type: "ellipse",  cx: 0, cy: 0, rx: 200, ry: 100},
 	defaultCircle:   {type: "circle",   cx: 0, cy: 0, r: 100},
 	defaultLine:     {type: "line",     x1: 0, y1: 0, x2: 100, y2: 100},
-	defaultImage:    {type: "image",    width: 0, height: 0, src: ""},
+	defaultImage:    {type: "image",    x: 0, y: 0, width: 0, height: 0, src: ""},
 
 	// default geometric attributes (a stroke, and fills)
 	defaultStroke: {color: "black", width: 1, cap: "butt", join: 4},
