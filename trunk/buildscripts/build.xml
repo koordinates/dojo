@@ -67,6 +67,8 @@ build targets:
 
 	docs - builds documentation in all formats from ./${src} and place it in ${release_docs_dir}
 
+	api - builds release (optimized) api reference application
+
 	test - builds and runs command line unit tests
 
 	testScripting - tests the JS and Jython integration in the build process
@@ -125,7 +127,6 @@ build targets:
 					args.push(arguments[x]);
 				}
 				java.lang.System.out.println.apply(java.lang.System.out, args);
-
 			}
 
 			function echo(msg, parentTask){
@@ -297,6 +298,24 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 	</target>
 	<!-- end docs task -->
+
+	<!-- api task -->
+	<target name="api"
+		description="Builds a release (optimized) api reference application">
+		<antcall>
+			<param name="profileFile" location="${root}/api/api.profile.js" />
+			<target name="clean" />
+			<target name="release" />
+			<target name="intern-strings" />
+		</antcall>
+		<copy todir="${release_dir}/api" includeEmptyDirs="false" preservelastmodified="true">
+			<fileset dir="${root}/api" />
+		</copy>
+		<copy todir="${release_dir}/docscripts/output/local/json" includeEmptyDirs="false" preservelastmodified="true">
+			<fileset dir="${root}/docscripts/output/local/json" />
+		</copy>
+	</target>
+	<!-- end api task -->
 
 	<!-- clean task -->
 	<target name="clean"
@@ -522,7 +541,15 @@ ${profileDeps}
 				dir="."
 				files="${profileDeps}" />
 		</concat>
-		<!--
+
+		<!-- remove UTF-8 BOM sequence
+		<replaceregexp match="\u00ef\u00bb\u00bf" encoding="utf-8" 
+			byline="true" flags="g" file="${release_dir}/source.__package__.js">
+			<substitution expression="BOM!"/>
+		</replaceregexp>
+		-->
+
+		<!-- 
 			clobber requireIf and requireAfterIf statements since they
 			aren't applicable in build
 		-->
