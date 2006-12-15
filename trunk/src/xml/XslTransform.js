@@ -1,6 +1,6 @@
 dojo.provide("dojo.xml.XslTransform");
 
-dojo.xml.XslTransform = function(/*String*/xsltUri){
+dojo.xml.XslTransform = function(/*String*/xsltUri, /*Boolean*/loadAsync){
 	//	summary:
 	//		dojo.xml.XslTransform is a convenience object that takes the URI
 	//		String of an XSL file as a constructor argument. After each
@@ -11,6 +11,8 @@ dojo.xml.XslTransform = function(/*String*/xsltUri){
 	// xsltUri:
 	//		Url of the xslt document to transform nodes with. Transformation is
 	//		acheived with the transformTo* methods on instances of this class.
+	// loadAsync:
+	//		Should we try to defer loading resources?
 
 	dojo.debug("XslTransform is supported by Internet Explorer and Mozilla, with limited support in Opera 9 (no document function support).");
 	var IS_IE = dojo.render.html.ie;
@@ -60,6 +62,7 @@ dojo.xml.XslTransform = function(/*String*/xsltUri){
 		xsltDocument = document.implementation.createDocument("", "", null);
 		xsltDocument.addEventListener("load", onXslLoad, false);
 	}
+	xsltDocument.async = (!!loadAsync);
 	xsltDocument.load(xsltUri);
 
 	if(IS_IE){
