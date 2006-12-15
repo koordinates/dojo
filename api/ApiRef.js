@@ -96,6 +96,8 @@ var ApiRef = {
 	_debug : false,					// if true, we output debug information
 	_profile : false,				// if true, we output profiling information
 	
+	undoIsWorking : true,//(dojo.render.html.ie != true),	// undo is broken in IE all of a sudden
+
 	showInherited : true,			// set to true to show inherited methods and properties
 	showPrivate : false,			// set to true to show private variables and functions
 	showDeprecated : true,			// set to true to show deprecated variables and functions	-- DOESNT WORK YET
@@ -358,8 +360,7 @@ var ApiRef = {
 		this.loadParserData(parserFile, callback);
 
 		// remember the bookmark state so we can go back if necessary
-		if (recordState != false) dojo.undo.browser.addToHistory(new ApiRef.BookmarkState(item.name, type));
-		
+		if (this.undoIsWorking && recordState != false) dojo.undo.browser.addToHistory(new ApiRef.BookmarkState(item.name, type));
 //		dojo.byId("title").innerHTML = "Dojo API Reference: " + name;
 	},
 	
@@ -1079,7 +1080,8 @@ var ApiRef = {
 			data = item.data ? item.data[0] : null;
 		}
 
-		var output = ["<table class='MethodHeaderTable' cellspacing=0 cellpadding=0 border=0><tr><td class='MethodHeaderName'><nobr>"];
+		var output = [];
+		output.push("<table class='MethodHeaderTable' cellspacing=0 cellpadding=0 border=0><tr><td class='MethodHeaderName'><nobr>");
 		output.push(this.outputItemExpander(item, showDetails, type, null, this.getLeafName(item.name)));
 		output.push("</nobr></td><td class='MethodHeaderParams'>(");
 
@@ -1109,7 +1111,7 @@ var ApiRef = {
 			output.push("???)", this.outputClickToLoad(item)); 
 		}
 		output.push("</td><td>");
-		output.push(this.outputResourceFilesAsList(item, type, item.resource));		
+		output.push(this.outputResourceFilesAsList(item, type, item.resource));
 		output.push("</td></tr></table>");
 		return output.join("");
 	},
@@ -1203,7 +1205,7 @@ var ApiRef = {
 		if (!dojo.lang.isArrayLike(resources)) resources = [resources];
 		var resourceOut = [];
 		for (var i = 0; i < resources.length; i++) {
-			resourceOut.push([" <div class='", type, "ResourceFile itemResourceFile inlineIconLeft jsFileIcon' onclick=\"ApiRef.openSourceFile('", resources[i], "')\">", resources[i], "</div>"].join(""));
+ 			resourceOut.push([" <div class='", type, "ResourceFile itemResourceFile inlineIconLeft jsFileIcon' onclick=\"ApiRef.openSourceFile('", resources[i], "')\">", resources[i], "</div>"].join(""));
 		}
 		return resourceOut.join("");//this.outputProperty(item, type, resourceOut.join(", "), "Defined in");
 	},
@@ -1791,7 +1793,7 @@ var ApiRef = {
 		initialItem = initialItem.split(":");
 
 		// set the initial page state to the cookie sate
-		dojo.undo.browser.setInitialState(new ApiRef.BookmarkState(initialItem[0], initialItem[1]));
+		if (this.undoIsWorking) dojo.undo.browser.setInitialState(new ApiRef.BookmarkState(initialItem[0], initialItem[1]));
 
 		// call showItem, but don't record the state since we just setInitialState
 		ApiRef.showItem(initialItem[0], initialItem[1], null, false);	
