@@ -64,6 +64,27 @@
 
 */
 
+dojo.provide("api.ApiRef");
+
+dojo.require("api.ProfileHelper");
+dojo.require("dojo.debug.console");
+
+dojo.require("dojo.io.*");
+dojo.require("dojo.io.BrowserIO");
+dojo.require("dojo.io.cookie");
+dojo.require("dojo.uri.*");
+dojo.require("dojo.Deferred");
+//dojo.require("dojo.DeferredList");
+//dojo.require("dojo.dom");
+dojo.require("dojo.lang.common");
+dojo.require("dojo.widget.TreeV3");
+dojo.require("dojo.widget.TreeNodeV3");
+dojo.require("dojo.widget.TreeBasicControllerV3");
+dojo.require("dojo.widget.TreeSelectorV3");
+dojo.require("dojo.widget.TreeEmphasizeOnSelect");
+dojo.require("dojo.lfx.html");
+dojo.require("dojo.undo.browser");
+
 
 //
 //	set up the onload handler
@@ -75,6 +96,8 @@ var ApiRef = {
 	_debug : false,					// if true, we output debug information
 	_profile : false,				// if true, we output profiling information
 	
+	undoIsWorking : true,//(dojo.render.html.ie != true),	// undo is broken in IE all of a sudden
+
 	showInherited : true,			// set to true to show inherited methods and properties
 	showPrivate : false,			// set to true to show private variables and functions
 	showDeprecated : true,			// set to true to show deprecated variables and functions	-- DOESNT WORK YET
@@ -243,7 +266,7 @@ var ApiRef = {
 				ApiRef.cacheParserData(parserFile, parserData);
 				ApiRef.clearNotice();
 			}
-			deferred.addCallback(cacheCallback)
+			deferred.addCallback(cacheCallback);
 			deferred.addCallback(callback);
 		} else {
 			callback(parserData);
@@ -337,8 +360,7 @@ var ApiRef = {
 		this.loadParserData(parserFile, callback);
 
 		// remember the bookmark state so we can go back if necessary
-		if (recordState != false) dojo.undo.browser.addToHistory(new ApiRef.BookmarkState(item.name, type));
-		
+		if (this.undoIsWorking && recordState != false) dojo.undo.browser.addToHistory(new ApiRef.BookmarkState(item.name, type));
 //		dojo.byId("title").innerHTML = "Dojo API Reference: " + name;
 	},
 	
@@ -514,7 +536,7 @@ var ApiRef = {
 		// summary: return the type string for an item, used for debugging
 		var item = this.getItem(name);
 		if (item.typeString) return item.typeString;
-		return item.typeString = [
+		return (item.typeString = [
 			(item.isResource		|| "-"),
 			(item.isModule		|| "-"),
 			(item.isConstructable		|| "-"),
@@ -522,7 +544,7 @@ var ApiRef = {
 			(item.hasChildren	|| "-"),
 			(item.isMethod	|| "-"),
 			(item.isCurly || "-")
-		].join("");
+		].join(""));
 	},
 
 	getItemType : function (name, recheck) {
@@ -763,7 +785,11 @@ var ApiRef = {
 		node = dojo.byId(node);
 		var replaceCallback = function() {
 			node.innerHTML = newHtml;
-			setTimeout(function(){dojo.lfx.wipeIn(node, inTime).play()},100);
+			wipeInFunc = function(){
+				node.style.height = '';		//  necessary to make sure item resets to smaller size
+				dojo.lfx.wipeIn(node, inTime).play()
+			};
+			setTimeout(wipeInFunc,100);
 		}
 		dojo.lfx.wipeOut(node, outTime, null, replaceCallback).play();
 	},
@@ -1058,7 +1084,8 @@ var ApiRef = {
 			data = item.data ? item.data[0] : null;
 		}
 
-		var output = ["<table class='MethodHeaderTable' cellspacing=0 cellpadding=0 border=0><tr><td class='MethodHeaderName'><nobr>"];
+		var output = [];
+		output.push("<table class='MethodHeaderTable' cellspacing=0 cellpadding=0 border=0><tr><td class='MethodHeaderName'><nobr>");
 		output.push(this.outputItemExpander(item, showDetails, type, null, this.getLeafName(item.name)));
 		output.push("</nobr></td><td class='MethodHeaderParams'>(");
 
@@ -1088,7 +1115,7 @@ var ApiRef = {
 			output.push("???)", this.outputClickToLoad(item)); 
 		}
 		output.push("</td><td>");
-		output.push(this.outputResourceFilesAsList(item, type, item.resource));		
+		output.push(this.outputResourceFilesAsList(item, type, item.resource));
 		output.push("</td></tr></table>");
 		return output.join("");
 	},
@@ -1182,7 +1209,7 @@ var ApiRef = {
 		if (!dojo.lang.isArrayLike(resources)) resources = [resources];
 		var resourceOut = [];
 		for (var i = 0; i < resources.length; i++) {
-			resourceOut.push([" <div class='", type, "ResourceFile itemResourceFile inlineIconLeft jsFileIcon' onclick=\"ApiRef.openSourceFile('", resources[i], "')\">", resources[i], "</div>"].join(""));
+ 			resourceOut.push([" <div class='", type, "ResourceFile itemResourceFile inlineIconLeft jsFileIcon' onclick=\"ApiRef.openSourceFile('", resources[i], "')\">", resources[i], "</div>"].join(""));
 		}
 		return resourceOut.join("");//this.outputProperty(item, type, resourceOut.join(", "), "Defined in");
 	},
@@ -1770,7 +1797,7 @@ var ApiRef = {
 		initialItem = initialItem.split(":");
 
 		// set the initial page state to the cookie sate
-		dojo.undo.browser.setInitialState(new ApiRef.BookmarkState(initialItem[0], initialItem[1]));
+		if (this.undoIsWorking) dojo.undo.browser.setInitialState(new ApiRef.BookmarkState(initialItem[0], initialItem[1]));
 
 		// call showItem, but don't record the state since we just setInitialState
 		ApiRef.showItem(initialItem[0], initialItem[1], null, false);	

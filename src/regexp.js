@@ -182,8 +182,8 @@ dojo.regexp.url = function(/*Object?*/flags){
 	return protocolRE + dojo.regexp.host(flags) + pathRE;
 }
 
-
 dojo.regexp.emailAddress = function(/*Object?*/flags){
+
 	// summary: Builds a regular expression that matches an email address
 	//
 	//flags: An object
@@ -519,7 +519,7 @@ dojo.regexp.numberFormat = function(/*Object?*/flags){
 	// Converts a number format to RE.
 	var digitRE = function(format){
 		// escape all special characters, except '?'
-		format = format.replace( /([.$*!=:|{}\(\)\[\]\\\/^])/g, "\\$1");
+		format = dojo.regexp.escape(format, "?");
 
 		// Now replace '?' with Regular Expression
 		format = format.replace(/\?/g, "\\d?");
@@ -535,7 +535,8 @@ dojo.regexp.numberFormat = function(/*Object?*/flags){
 }
 
 
-dojo.regexp.buildGroupRE = function(/*value or Array of values*/a, /*Function(x) returns a regular expression as a String*/re){
+dojo.regexp.buildGroupRE = function(/*value or Array of values*/a, /*Function(x) returns a regular expression as a String*/re,
+	/*Boolean?*/nonCapture){
 	// summary: Builds a regular expression that groups subexpressions
 	// description: A utility function used by some of the RE generators.
 	//  The subexpressions are constructed by the function, re, in the second parameter.
@@ -544,6 +545,7 @@ dojo.regexp.buildGroupRE = function(/*value or Array of values*/a, /*Function(x)
 	//
 	// a:  A single value or an array of values.
 	// re:  A function.  Takes one parameter and converts it to a regular expression. 
+	// nonCapture: If true, uses non-capturing match, otherwise matches are retained by regular expression. 
 
 	// case 1: a is a single value.
 	if(!(a instanceof Array)){
@@ -558,5 +560,22 @@ dojo.regexp.buildGroupRE = function(/*value or Array of values*/a, /*Function(x)
 	}
 
 	 // join the REs as alternatives in a RE group.
-	return "(" + b.join("|") + ")"; // String
+	return dojo.regexp.group(b.join("|"), nonCapture); // String
+}
+
+dojo.regexp.escape = function(/*String*/expression, /*String?*/except){
+	// summary: escape all special characters
+	// except: a String with special characters to be left unescaped
+	return expression.replace(/([.$?*!=:|{}\(\)\[\]\\\/^])/g, function(ch){
+		if(except && except.indexOf(ch) != -1){
+			return ch;
+		}
+		return "\\" + ch;
+	}); // String
+}
+
+dojo.regexp.group = function(/*String*/expression, /*Boolean?*/nonCapture){
+	// summary: adds group match to expression
+	// nonCapture: If true, uses non-capturing match, otherwise matches are retained by regular expression. 
+	return "(" + (nonCapture ? "?:":"") + expression + ")"; // String
 }

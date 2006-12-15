@@ -152,9 +152,13 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 				})).play();
 			}
 
-			this.demoContainer.loadDemo(this.registry.definitions[e.target.name].url);
-			this.demoContainer.setName(e.target.name);
-			this.demoContainer.setSummary(this.registry.definitions[e.target.name].description);
+			if(this.registry.definitions[e.target.name].url.indexOf("http://")>-1){
+				window.open(this.registry.definitions[e.target.name].url, e.target.name);
+			} else {
+				this.demoContainer.loadDemo(this.registry.definitions[e.target.name].url);
+				this.demoContainer.setName(e.target.name);
+				this.demoContainer.setSummary(this.registry.definitions[e.target.name].description);
+			}
 		}
 		
 	},

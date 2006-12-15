@@ -1,4 +1,4 @@
-dojo.provide("dojo.profile.ProfileHelper");
+dojo.provide("api.ProfileHelper");
 
 dojo.require("dojo.lang.*");
 dojo.require("dojo.profile");

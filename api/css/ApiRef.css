@@ -32,9 +32,8 @@ HTML, BODY {
 #content {
 	background-color:white;
 	border:1px solid #bea83b;	
-	font-family: Tahoma, Verdana;
+	font-family: Arial, Verdana, Tahoma;
 	font-size: 13px;
-	line-height: 18px;
 	overflow:auto;
 	padding:5px;
 	margin:0px 2px 2px 0px;
@@ -56,6 +55,7 @@ BODY .dojoSplitContainerSizerV {
 
 
 .itemLabel {
+	z-index:1000;
 	color: #666666;
 	font-weight:bold;
 	padding-bottom:2px;
@@ -103,7 +103,7 @@ BODY .dojoSplitContainerSizerV {
 .Class,
 .Object {
 	border:1px solid #91B6E8;
-	background-color:white;
+	OXbackground-color:white;
 	-moz-border-radius:5px 5px 1px 1px;
 	margin-bottom:10px;
 	padding-bottom:1px;
@@ -114,6 +114,7 @@ BODY .dojoSplitContainerSizerV {
 .PackageHeader,
 .ClassHeader,
 .ObjectHeader {
+	z-index:1000;
 	background-image:url(../img/blue-stripe.gif);
 	background-repeat:repeat-x;
 
@@ -130,7 +131,7 @@ BODY .dojoSplitContainerSizerV {
 .ClassBody,
 .ObjectBody {
 	padding:0px 10px 5px 10px;
-	background-color:white;
+	OXbackground-color:white;
 }
 
 
@@ -270,7 +271,6 @@ BODY .dojoSplitContainerSizerV {
 }
 
 .MethodHeaderTable {
-	width:100%;
 	margin-left:10px;
 }
 
@@ -290,7 +290,10 @@ BODY .dojoSplitContainerSizerV {
 	padding:2px;
 }
 
+
+
 .itemResourceFile {
+	clear:both;
 	float:right;
 	text-align:right;
 	font-size:.9em;
@@ -298,7 +301,6 @@ BODY .dojoSplitContainerSizerV {
 	padding-right:10px;
 	margin-left:10px;
 	font-weight:normal;
-	
 }
 
 
