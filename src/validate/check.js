@@ -86,7 +86,9 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 			if(!dojo.lang.isString(profile.required[i])){ continue; }
 			var elem = form[profile.required[i]];
 			// Are textbox, textarea, or password fields blank.
-			if(!dj_undef("type", elem) && (elem.type == "text" || elem.type == "textarea" || elem.type == "password") && /^\s*$/.test(elem.value)){	
+			if(!dj_undef("type", elem) 
+				&& (elem.type == "text" || elem.type == "textarea" || elem.type == "password" || elem.type == "file") 
+				&& /^\s*$/.test(elem.value)){	
 				missing[missing.length] = elem.name;
 			}
 			// Does drop-down box have option selected.
