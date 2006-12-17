@@ -310,7 +310,12 @@ function test_time_parse(){
 }
 
 function test_date_sql() {
-	jum.assertEquals("date.fromSql test", new Date("5/1/2006").valueOf(), dojo.date.fromSql("2006-05-01 00:00:00").valueOf());
+	var d = new Date(2006, 5, 1, 12, 30);
+	//FIXME: lame comparison of hours only to avoid timezone issues with valueof.  Need a better comparison method
+	jum.assertEquals("date.fromSql test", d.getHours(), dojo.date.fromSql("2006-05-01 12:30:00").getHours());
+	jum.assertEquals("date.toSql test1", "2006-06-01 12:30:00", dojo.date.toSql(d));
+	jum.assertEquals("date.toSql test2", "2006-06-01", dojo.date.toSql(d, true));
+	jum.assertEquals("date.toSql test3", "2006-06-01 12:30:00", dojo.date.toSql(d, false));
 }
 
 // workaround deprecated methods. Should decide whether we should convert the tests or add a helper method (in dojo.date?) to do this.
