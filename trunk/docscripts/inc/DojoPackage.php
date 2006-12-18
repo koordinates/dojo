@@ -248,7 +248,11 @@ class DojoPackage
           }
         }
         elseif ($in_single_string !== false || $in_double_string !== false) {
-          if (preg_match('%(?<!\\\)([\'"])\s*([+.)\]},|&;:?]|$)%', $line, $match, PREG_OFFSET_CAPTURE, $position)) {
+					while (($pos = strpos($line, '\\\\', $position)) !== false || ($pos = strpos($line, '\\"', $position)) !== false || ($pos = strpos($line, "\\'", $position)) !== false) {
+						$position = $pos + 2;
+					}
+					$test = substr($line, $position);
+          if (preg_match('%([\'"])\s*([+.)\]},|&;:?]|$)%', $line, $match, PREG_OFFSET_CAPTURE, $position)) {
             $matches[$match[0][1]] = $match[1][0];
           }
         }

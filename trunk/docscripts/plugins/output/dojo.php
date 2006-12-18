@@ -1,6 +1,11 @@
 <?php
 
-function dojo_local_json($data)
+function dojo_remote_json($by_resource, $by_object)
+{
+	
+}
+
+function dojo_local_json($data, $by_object)
 {
   $output = array();
   if (isset($data['function_names'])) {
@@ -24,7 +29,7 @@ function dojo_local_json($data)
   return $output;
 }
 
-function dojo_storage_xml($output)
+function dojo_storage_xml($output, $by_object)
 {
 	$document = new DomDocument();
 	$flat_list = array();
@@ -54,7 +59,7 @@ function dojo_storage_xml($output)
 	return array('documentation.xml' => $document);
 }
 
-function dojo_local_xml($output)
+function dojo_local_xml($output, $by_object)
 {
   $document = new DomDocument();
   $dojo = $document->appendChild($document->createElement('dojo'));
