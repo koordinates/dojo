@@ -101,7 +101,6 @@ dojo.widget.defineWidget(
 			if(this.disabled == false){
 				this.setValue(!this.checked);
 			}
-			e.preventDefault();
 			e.stopPropagation();
 			this.onClick();
 		},
@@ -196,13 +195,6 @@ dojo.widget.defineWidget(
 			this._register();
 		},
 
-		_onClick: function(/*Event*/ e){
-			if(this.disabled == false){
-				this.setValue(!this.checked);
-			}
-			this.onClick();
-		},
-
 		_setValue: function(/*Boolean*/ bool){
 			// summary:
 			//	internal function to set checkbox value
@@ -227,6 +219,14 @@ dojo.declare(
 
 		_type: "radio",
 		
+		_onClick: function(/*Event*/ e){
+			if(!this.disabled && !this.checked){
+				this.setValue(true);
+			}
+			e.stopPropagation();
+			this.onClick();
+		},
+
 		setValue: function(/*boolean*/ bool){
 			this._setValue(bool);
 
@@ -257,5 +257,6 @@ dojo.widget.defineWidget(
 	{
 		// summary
 		//	variation on RadioButton widget to be display on monitors in high-contrast mode (that don't display CSS background images)
+
 	}
 );
