@@ -13,7 +13,7 @@ class Plugins
     $this->json = new Services_JSON();
   }
 
-  public function write($output)
+  public function write($by_resource, $by_object)
   {
     $dir = $this->dir . '/plugins/output/';
     $output_dir = $this->dir . '/output/';
@@ -37,8 +37,8 @@ class Plugins
               if (!file_exists("{$output_dir}{$type}/{$format}")) {
                 mkdir("{$output_dir}{$type}/{$format}", 0777);
               }
-              
-              $data = call_user_func($function, $output);
+
+              $data = call_user_func($function, $by_resource, $by_object);
               foreach ($data as $file => $contents) {
                 $file = "{$output_dir}{$type}/{$format}/{$file}";
                 if ($format == 'json') {
