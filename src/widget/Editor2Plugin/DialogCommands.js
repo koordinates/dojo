@@ -64,18 +64,21 @@ dojo.widget.defineWidget(
 		},
 		createContent: function(){
 			if(!this.contentWidget && this.contentClass){
-				this.contentWidget = dojo.widget.createWidget(this.contentClass);
+				this.contentWidget = dojo.widget.createWidget(this.contentClass,{parent:this});
+				//buggy IE: if the dialog is hidden, the button widgets
+				//in the dialog can not be shown, so append this to
+				//body first (off screen of course), and then add it back
+				this.contentWidget.domNode.style.top="-10000px";
+				this.contentWidget.domNode.style.position="absolute";
+				dojo.body().appendChild(this.contentWidget.domNode);
 				this.addChild(this.contentWidget);
+				this.contentWidget.domNode.style.top="";
+				this.contentWidget.domNode.style.position="";
 			}
 		},
 		show: function(){
 			if(!this.contentWidget){
-				//buggy IE: if the dialog is hidden, the button widgets
-				//in the dialog can not be shown, so show it temporary (as the
-				//dialog may decide not to show it in loadContent() later)
-				dojo.widget.Editor2Dialog.superclass.show.apply(this, arguments);
 				this.createContent();
-				dojo.widget.Editor2Dialog.superclass.hide.call(this);
 			}
 
 			if(!this.contentWidget || !this.contentWidget.loadContent()){
@@ -85,8 +88,6 @@ dojo.widget.defineWidget(
 			dojo.widget.Editor2Dialog.superclass.show.apply(this, arguments);
 			if(this.modal){
 				this.showModalDialog();
-			}
-			if(this.modal){
 				//place the background div under this modal pane
 				this.bg.style.zIndex = this.domNode.style.zIndex-1;
 			}
@@ -158,7 +159,7 @@ dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2Browser
 				alert("contentFile and contentClass should be set for dojo.widget.Editor2DialogCommand.dialogParas!");
 				return;
 			}
-			this.dialog = dojo.widget.createWidget("Editor2Dialog", this.dialogParas);
+			this.dialog = dojo.widget.createWidget(this.dialogParas.dialogClass?this.dialogParas.dialogClass:"Editor2Dialog", this.dialogParas);
 
 			dojo.body().appendChild(this.dialog.domNode);
 
