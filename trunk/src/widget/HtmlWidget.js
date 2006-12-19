@@ -42,8 +42,8 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 		if(this.lang === ""){this.lang = null;}
 		// now that we know the setting for toggle, get toggle object
 		// (default to plain toggler if user specified toggler not present)
-		this.toggleObj =
-			dojo.lfx.toggle[this.toggle.toLowerCase()] || dojo.lfx.toggle.plain;
+		this.toggleObj = dojo.lang.shallowCopy(
+			dojo.lfx.toggle[this.toggle.toLowerCase()] || dojo.lfx.toggle.plain);
 	},
 
 	createNodesFromText: function(txt, wrap){
