@@ -3,14 +3,23 @@ dojo.require("dojo.data.core.Read");
 dojo.require("dojo.lang.declare");
 dojo.require("dojo.experimental");
 
-/* summary:
- *   This is an abstract API that data provider implementations conform to.  
- *   This file defines methods signatures and intentionally leaves all the
- *   methods unimplemented.
- */
 dojo.experimental("dojo.data.core.Write");
- 
-dojo.declare("dojo.data.core.Write", dojo.data.core.Read, {
+
+dojo.declare("dojo.data.core.Write", dojo.data.core.Read, null, {
+	/* summary:
+	 *   This is an abstract API that data provider implementations conform to.
+	 *   This file defines methods signatures and intentionally leaves all the
+	 *   methods unimplemented.
+	 */
+	getFeatures: function() {
+		// summary: See dojo.data.core.Read.getFeatures()
+		var features = {
+			 'dojo.data.core.Read': true,
+			 'dojo.data.core.Write': true
+		};
+		return features;
+	},
+	
 	newItem: function(/* object? */ keywordArgs) {
 		/* summary:
 		 *   Returns a newly created item.  Sets the attributes of the new

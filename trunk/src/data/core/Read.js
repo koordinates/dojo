@@ -3,15 +3,17 @@ dojo.require("dojo.data.core.Result");
 dojo.require("dojo.lang.declare");
 dojo.require("dojo.experimental");
 
-/* summary:
- *   This is an abstract API that data provider implementations conform to.  
- *   This file defines methods signatures and intentionally leaves all the
- *   methods unimplemented.
- */
 dojo.experimental("dojo.data.core.Read");
- 
-dojo.declare("dojo.data.core.Read", null, {
-	get: function(/* item */ item, /* attribute || attribute-name-string */ attribute, /* value? */ defaultValue) {
+
+dojo.declare("dojo.data.core.Read", null, null, {
+	/* summary:
+	 *   This is an abstract API that data provider implementations conform to.  
+	 *   This file defines methods signatures and intentionally leaves all the
+	 *   methods unimplemented.  More documentation here --
+	 *     http://manual.dojotoolkit.org/Book105
+	 */
+
+	getValue: function(/* item */ item, /* attribute || attribute-name-string */ attribute, /* value? */ defaultValue) {
 		/* summary:
 		 *   Returns a single attribute value.
 		 *   Returns defaultValue if *item* does not have a value for *attribute*.
@@ -24,23 +26,23 @@ dojo.declare("dojo.data.core.Read", null, {
 		 *   It is an oxymoron to say "that attribute is present but has no values" 
 		 *   or "the item has that attribute but does not have any attribute values".
 		 *   If store.hasAttribute(item, attribute) returns false, then
-		 *   store.get(item, attribute) will return undefined.
+		 *   store.getValue(item, attribute) will return undefined.
 		 */
 		 
 		/* exceptions:
 		 *   Conforming implementations should throw an exception if *item* is not
 		 *   an item, or *attribute* is neither an attribute object or a string.
 		 * examples:
-		 *   var darthVader = store.get(lukeSkywalker, "father");
+		 *   var darthVader = store.getValue(lukeSkywalker, "father");
 		 */
-		dojo.unimplemented('dojo.data.core.Read.get');
+		dojo.unimplemented('dojo.data.core.Read.getValue');
 		var attributeValue = null;
 		return attributeValue; // a literal, an item, null, or undefined (never an array)
 	},
 	
 	getValues: function(/* item */ item, /* attribute || attribute-name-string */ attribute) {
 		/* summary:
-		 *   This getValues() method works just like the get() method, but getValues()
+		 *   This getValues() method works just like the getValue() method, but getValues()
 		 *   always returns an array rather than a single attribute value.  The array
 		 *   may be empty, may contain a single attribute value, or may contain many
 		 *   attribute values.
@@ -53,7 +55,7 @@ dojo.declare("dojo.data.core.Read", null, {
 		 *   Throws an exception if *item* is not an item, or *attribute* is neither an 
 		 *   attribute object or a string.
 		 * examples:
-		 *   var friendsOfLuke = store.get(lukeSkywalker, "friends");
+		 *   var friendsOfLuke = store.getValues(lukeSkywalker, "friends");
 		 */
 		dojo.unimplemented('dojo.data.core.Read.getValues');
 		var array = null;
@@ -94,7 +96,7 @@ dojo.declare("dojo.data.core.Read", null, {
 	
 	containsValue: function(/* item */ item, /* attribute || attribute-name-string */ attribute, /* anything */ value) {
 		/* summary:
-		 *   Returns true if the given *value* is one of the values that getValue()
+		 *   Returns true if the given *value* is one of the values that getValues()
 		 *   would return.
 		 */
 		 
@@ -122,20 +124,36 @@ dojo.declare("dojo.data.core.Read", null, {
 		return false; // boolean
 	},
 	
-	isItemAvailable: function(/* anything */ something) {
+	isItemLoaded: function(/* anything */ something) {
 		/* summary:
 		 *   Returns false if isItem(something) is false.  Returns false if
-		 *   if isItem(something) is true but the the item is not yet available
-		 *   in local memory (for example, if the item has not yet been fully
-		 *   loaded from the server).
+		 *   if isItem(something) is true but the the item is not yet loaded
+		 *   in local memory (for example, if the item has not yet been read
+		 *   from the server).
 		 */
 		 
 		/* examples:
-		 *   var yes = store.isItemAvailable(store.newItem());
-		 *   var no  = store.isItemAvailable("green");
+		 *   var yes = store.isItemLoaded(store.newItem());
+		 *   var no  = store.isItemLoaded("green");
 		 */
-		dojo.unimplemented('dojo.data.core.Read.isItemAvailable');
+		dojo.unimplemented('dojo.data.core.Read.isItemLoaded');
 		return false; // boolean
+	},
+	
+	loadItem: function(/* item */ item) {
+		/* summary:
+		 *   Given an item, this method loads the item so that a subsequent call
+		 *   to store.isItemLoaded(item) will return true.  If a call to
+		 *   to isItemLoaded() returns true before loadItem() is even called,
+		 *   then loadItem() need not do any work at all.  A call to loadItem()
+		 *   will block until the loadItem() implementation has loaded the item.
+		 */
+		if (this.isItemLoaded(item)) {
+			return item;
+		} else {
+			dojo.unimplemented('dojo.data.core.Read.loadItem');
+			return item; // item
+		}
 	},
 	
 	find: function(/* object? || dojo.data.core.Result */ keywordArgs) {
@@ -261,51 +279,22 @@ dojo.declare("dojo.data.core.Read", null, {
 		return result; // a dojo.data.core.Result object
 	},
 	
-	getIdentity: function(/* item */ item) {
+	getFeatures: function() {
 		/* summary:
-		 *   Returns a unique identifer for an item.  The return value will be
-		 *   either a string or something that has a toString() method (such as,
-		 *   for example, a dojo.uuid.Uuid object).
-		 * description:
-		 * ISSUE - 
-		 *   Should we move this method out of dojo.data.core.Read, and put it somewhere
-		 *   else, like maybe dojo.data.core.Identity?
+		 *   The getFeatures() method returns an simple keyword values object 
+		 *   that specifies what interface features the datastore implements.  
+		 *   A simple CsvStore may be read-only, and the only feature it 
+		 *   implements will be the 'dojo.data.core.Read' interface, so the
+		 *   getFeatures() method will return an object like this one:
+		 *   {'dojo.data.core.Read': true}.
+		 *   A more sophisticated datastore might implement a variety of
+		 *   interface features, like 'dojo.data.core.Read', 'dojo.data.core.Write', 
+		 *   'dojo.data.core.Identity', and 'dojo.data.core.Attribution'.
 		 */
-		 
-		/* exceptions:
-		 *   Conforming implementations may throw an exception or return null if
-		 *   item is not an item.
-		 * examples:
-		 *   var itemId = store.getIdentity(kermit);
-		 *   assert(kermit === store.findByIdentity(store.getIdentity(kermit)));
-		 */
-		dojo.unimplemented('dojo.data.core.Read.getIdentity');
-		var itemIdentifyString = null;
-		return itemIdentifyString; // string
-	},
-	
-	findByIdentity: function(/* string */ identity) {
-		/* summary:
-		 *   Given the identity of an item, this method returns the item that has 
-		 *   that identity.  Conforming implementations should return null if there 
-		 *   is no item with the given identity.  Implementations of findByIdentity() 
-		 *   may sometimes return an item from a local cache and may sometimes 
-		 *   fetch an item from a remote server, in which case the call to 
-		 *   findByIdentity() will block until the findByIdentity() implementation 
-		 *   has the item to return.
-		 * description:
-		 * FIXME - 
-		 *   In our meeting on 2006-10-03 we resolved to move the findByIdentity()
-		 *   method out of the Read.js API and into the Identity.js API, as soon
-		 *   as we have an Identity.js API.
-		 */
-		 
-		/* examples:
-		 *   var alaska = store.getByIdentity("AK");
-		 *   assert("AK" == store.getIdentity(store.getByIdentity("AK")));
-		 */
-		dojo.unimplemented('dojo.data.core.Read.getByIdentity');
-		var item = null;
-		return item; // item
+		 var features = {
+			 'dojo.data.core.Read': true
+		 };
+		 return features;
 	}
+
 });

@@ -8,20 +8,12 @@ dojo.require("dojo.lang.declare");
 dojo.require("dojo.json");
 dojo.require("dojo.io.*");
 
-/* summary:
- *   RemoteStore is an implemention the dojo.data.core.Read and Write APIs. 
- *   It is designed to serve as a base class for dojo.data stores which interact 
- *   with stateless web services that can querying and modifying record-oriented 
- *   data.  Its features include asynchronous and synchronous querying and saving; 
- *   caching of queries; transactions; and datatype mapping.
- */
-
 /**************************************************************************
   Classes derived from RemoteStore should implement the following three 
   methods, which are each described in the documentation below:
-    _setupQueryRequest(result, requestKw) 
-    _resultToQueryData(responseData) 
-    _setupSaveRequest(saveKeywordArgs, requestKw)
+	_setupQueryRequest(result, requestKw) 
+	_resultToQueryData(responseData) 
+	_setupSaveRequest(saveKeywordArgs, requestKw)
   
   Data Consistency Guarantees
   
@@ -31,7 +23,7 @@ dojo.require("dojo.io.*");
   * If server queries are made while there are uncommitted changes, no attempt is made to evaluate whether the modifications would change the query result, e.g. add any uncommitted new items that match the query.
   * However, uncomitted deleted items are removed from the query result.
   * The transaction isolation level is equivalent to JDBC's "Read Committed":
-    each store instance is treated as separate transaction; since there is no row or table locking so nonrepeatable and phantom reads are possible.
+	each store instance is treated as separate transaction; since there is no row or table locking so nonrepeatable and phantom reads are possible.
   
   Memory Usage
   
@@ -43,7 +35,7 @@ dojo.require("dojo.io.*");
   
   RemoteStore makes some assumptions about the nature of the remote store, things may break if these aren't true:
   * that the items contained in a query response include all the attributes of the item (e.g. all the columns of a row).   
-    (to fix: changes need to record add and removes and fix self._data[key] = [ attributeDict, refCount]; )
+	(to fix: changes need to record add and removes and fix self._data[key] = [ attributeDict, refCount]; )
   * the query result may contain references to items that are not available to the client; use isItem() to test for the presence of the item.
   * that modification to an item's attributes won't change it's primary key.
   
@@ -55,16 +47,9 @@ dojo.require("dojo.io.*");
 
 dojo.experimental("dojo.data.core.RemoteStore");
 
-dojo.lang.declare("dojo.data.core.RemoteStore", [dojo.data.core.Read, dojo.data.core.Write], {
-
-	_datatypeMap: {
-		//map datatype strings to constructor function
-	},
-
-	//set to customize json serialization
-	_jsonRegistry: dojo.json.jsonRegistry,
-
-	initializer: function(/* object */ kwArgs) {
+dojo.lang.declare("dojo.data.core.RemoteStore", null, 
+	function(/* object */ kwArgs) {
+		// summary: initializer
 		if (!kwArgs) {
 			kwArgs = {};
 		}
@@ -73,19 +58,33 @@ dojo.lang.declare("dojo.data.core.RemoteStore", [dojo.data.core.Read, dojo.data.
 				
 		this._deleted = {}; // deleted items {id: 1}	
 		this._changed = {}; // {id: {attr: [new values]}} // [] if attribute is removed
-		this._added = {};   // {id: 1} list of added items
+		this._added = {};	// {id: 1} list of added items
 		this._results = {}; // {query: [ id1, ]};	// todo: make MRUDict of queries
 		/* data is a dictionary that conforms to this format: 
-		  { id-string: { attribute-string: [ value1, value2 ] } }
-		  where value is either an atomic JSON data type or 
-		  { 'id': string } for references to items
-		  or 
-		  { 'type': 'name', 'value': 'value' } for user-defined datatypes
+			{ id-string: { attribute-string: [ value1, value2 ] } }
+			where value is either an atomic JSON data type or 
+			{ 'id': string } for references to items
+			or 
+			{ 'type': 'name', 'value': 'value' } for user-defined datatypes
 		*/ 
 		this._data = {}; // {id: [values, refcount]} // todo: handle refcount
 		this._numItems = 0;
-	},
+	}, {
+	/* summary:
+	 *	 RemoteStore is an implemention the dojo.data.core.Read and Write APIs. 
+	 *	 It is designed to serve as a base class for dojo.data stores which interact 
+	 *	 with stateless web services that can querying and modifying record-oriented 
+	 *	 data.	Its features include asynchronous and synchronous querying and saving; 
+	 *	 caching of queries; transactions; and datatype mapping.
+	 */
 	
+	_datatypeMap: {
+		//map datatype strings to constructor function
+	},
+
+	//set to customize json serialization
+	_jsonRegistry: dojo.json.jsonRegistry,
+
 	_setupQueryRequest: function(/* dojo.data.core.Result */ result, /* object */ requestKw) { 
 		/* summary:
 		 *   Classes derived from RemoteStore should override this method to
@@ -118,7 +117,7 @@ dojo.lang.declare("dojo.data.core.RemoteStore", [dojo.data.core.Read, dojo.data.
 		 *   Classes derived from RemoteStore should override this method to
 		 *   provide their own implementations.
 		 *   Converts the server response data into the internal data structure 
-		 *   used by RemoteStore.  
+		 *   used by RemoteStore.	 
 		 * returns:
 		 *   The RemoteStore implementation requires _resultToQueryData() to 
 		 *   return an object that looks like:
@@ -127,20 +126,20 @@ dojo.lang.declare("dojo.data.core.RemoteStore", [dojo.data.core.Read, dojo.data.
 		 *   	attribute2-string: [ value3, value4, ... ], 
 		 *   	...
 		 *   	},
-		 *    item2-identifier-string: { 
+		 *	item2-identifier-string: { 
 		 *   	attribute1-string: [ value10, value11, ... ], 
 		 *   	attribute2-string: [ value12, value13, ... ], 
 		 *   	...
 		 *   	}
 		 *   }
 		 *   where value is either an atomic JSON data type or 
-		 *     {'id': string } for references to items
+		 *	 {'id': string } for references to items
 		 *   or 
-		 *    {'type': 'name', 'value': 'value' } for user-defined datatypes
+		 *	{'type': 'name', 'value': 'value' } for user-defined datatypes
 		 * data:
 		 *   This simple default implementation assumes that the *serverResponseData* 
 		 *   argument is an object that looks like:
-		 *     { data:{ ... }, format:'format identifier', other metadata }
+		 *	 { data:{ ... }, format:'format identifier', other metadata }
 		 *   
 		 */
 		return serverResponseData.data;
@@ -175,25 +174,28 @@ dojo.lang.declare("dojo.data.core.RemoteStore", [dojo.data.core.Read, dojo.data.
 			return dojo.json.serialize(query);
 	},
 
-	_assertIsItem: function(/* item */ item) {
-		if (!this.isItem(item)) { 
+	_assertIsIdentity: function(id) {
+		if (!id) { 
 			throw new Error("dojo.data.RemoteStore: a function was passed an item argument that was not an item");
 		}
 	},
-	
-	get: function(/* item */ item, /* attribute || string */ attribute, /* value? */ defaultValue) {
-		// summary: See dojo.data.core.Read.get()
+
+/***************************************
+     dojo.data.core.Read API
+***************************************/
+	getValue: function(/* item */ item, /* attribute || string */ attribute, /* value? */ defaultValue) {
+		// summary: See dojo.data.core.Read.getValue()
 		var valueArray = this.getValues(item, attribute);
 		if (valueArray.length == 0) {
 			return defaultValue;
 		}
-		return valueArray[0];  // value
+		return valueArray[0];	 // value
 	},
 
-	getValues: function(/* item */ item, /* attribute || string */ attribute) {				
+	getValues: function(/* item */ item, /* attribute || string */ attribute) {	
 		// summary: See dojo.data.core.Read.getValues()
 		var itemIdentity = this.getIdentity(item);
-		this._assertIsItem(itemIdentity);
+		this._assertIsIdentity(itemIdentity);
 		var changes = this._changed[itemIdentity];
 		if (changes) {
 			var newvalues = changes[attribute]; 
@@ -239,17 +241,47 @@ dojo.lang.declare("dojo.data.core.RemoteStore", [dojo.data.core.Read, dojo.data.
 		}
 		return false; // Boolean
 	},
-		
+
 	isItem: function(/* anything */ something) {
 		// summary: See dojo.data.core.Read.isItem()
-		if (!something) { return false; }
-		var itemIdentity = something;
-		// var id = something.id ? something.id : something; 
-		// if (!id) { return false; }
-		if (this._deleted[itemIdentity]) { return false; } //todo: do this?
+		if (!something) {
+			return false;
+		}
+		if (typeof something.id == "string" || something.id instanceof String) {
+			return true;
+		}
+		return false;
+	},
+
+	isItemDeleted: function(/* anything */ something) {
+		var itemIdentity = this.getIdentity(something);
+		if (!itemIdentity) { 
+			return false; 
+		}
+		if (this._deleted[itemIdentity]) { 
+			return true; 
+		} 
+	},
+			
+	isItemLoaded: function(/* anything */ something) {
+		// summary: See dojo.data.core.Read.isItemLoaded()
+		var itemIdentity = this.getIdentity(something);
+		if (!itemIdentity) { 
+			return false; 
+		}
 		if (this._data[itemIdentity]) { return true; } 
 		if (this._added[itemIdentity]) { return true; }
 		return false; // Boolean
+	},
+
+	loadItem: function(item) {
+		var item = this.getIdentity(item);
+		this._assertIsIdentity(item);
+		if (this.isItemLoaded(item)) {
+			return item;
+		} else {
+			return this.findByIdentity( item );
+		}
 	},
 
 	find: function(/* object? || dojo.data.core.Result */ keywordArgs) {
@@ -287,7 +319,7 @@ dojo.lang.declare("dojo.data.core.RemoteStore", [dojo.data.core.Read, dojo.data.
 				var resultData = []; 
 				var newItemCount = 0;
 				for (var key in dataDict) {
-					if (result._aborted)  {
+					if (result._aborted) {
 						break;
 					}
 					if (!self._deleted[key]) { //skip deleted items
@@ -343,28 +375,43 @@ dojo.lang.declare("dojo.data.core.RemoteStore", [dojo.data.core.Read, dojo.data.
 		return result; 
 	},
 
-	getIdentity: function(item) {
-		// summary: See dojo.data.core.Read.getIdentity()
-		if (!this.isItem(item)) {
-			return null;
-		}
-		return (item.id ? item.id : item); // Identity
+	getFeatures: function() {
+		// summary: See dojo.data.core.Read.getFeatures()
+		var features = {
+			 'dojo.data.core.Read': true,
+			 'dojo.data.core.Identity': true,
+			 'dojo.data.core.Write': true
+		};
+		return features;
 	},
 
-/*
-	findByIdentity: function(id) {
-		var item = this._latestData[id];
+/***************************************
+     dojo.data.core.Identity API
+***************************************/
+	getIdentity: function(/* item */ item) {
+		// summary: See dojo.data.core.Identity.getIdentity()
+		var id = item.id ? item.id : item; 
+		if (typeof id == "string" 
+			|| id instanceof String) {
+			return id; // Identity
+		}
+		return null; // null
+	},
+
+	findByIdentity: function(/* string */ id) {
+		// summary: See dojo.data.core.Identity.findByIdentity()
 		var idQuery = "/" + "*[.='"+id+"']";
-		//if (!item) item = this.find(idQuery, {async=0}); //todo: support bind(async=0)
-		if (item)
-			return new _Item(id, item, this); 
+		result = this.find({query:idQuery, sync:true});
+		if (result.items && result.items.length) {
+			return result.items[0];
+		}
 		return null;
 	},
-*/
 
-/****
-Write API
-***/
+	
+/***************************************
+     dojo.data.core.Write API
+***************************************/
 	newItem: function(/* object? */ attributes, /* object? */ keywordArgs) {
 		var itemIdentity = keywordArgs['identity'];
 		if (this._deleted[itemIdentity]) {
