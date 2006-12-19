@@ -21,6 +21,7 @@
 	<description>build the Dojo toolkit</description>
 
 	<!-- project properties -->
+	<!-- FIXME: use location instead of value where appropriate? -->
 	<property name="project" value="dojo"/>
 	<property name="build_dir" value="../build"/>
 	<property name="root" value=".."/>
@@ -38,8 +39,9 @@
 	<property name="website_dir" value="${docs_dir}/website"/>
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
 	<property name="profile" value=""/>
-	<property name="locales" value="en-gb,en-us,de-de,es-es,fr-fr,it-it,pt-br,ko-kr,zh-tw,zh-cn,ja-jp"/>
-	<!-- FIXME: where should this list come from? -->
+	<property name="locales" value="en-gb,en-us,de-de,es-es,fr-fr,it-it,pt-br,ko-kr,zh-tw,zh-cn,ja-jp"/> 	<!-- FIXME: where should this list come from? -->
+	<property name="cldrIn" location="${root}/cldr"/>
+	<property name="cldrOut" location="${src}/i18n/cldr"/>
 
 	<loadfile property="copyright" srcFile="./copyright.txt"/>
 	<loadfile property="build_notice" srcFile="./build_notice.txt"/>
@@ -316,6 +318,100 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		</copy>
 	</target>
 	<!-- end api task -->
+
+	<!-- docparser task -->
+	<target name="docparser"
+		description="Runs the doc parser against the source tree to generate JSON">
+		<exec dir="${root}/docscripts" executable="php5" failonerror="true">
+			<arg line="-d memory_limit=100M" />
+			<arg line="-d error_reporting=2039" />
+			<arg file="docparser.php" />
+		</exec>
+	</target>
+	<!-- end docparser task -->
+
+	<!-- ldml task -->
+	<target name="ldml" depends="-ldml-check" unless="ldmlUnpacked"
+		description="Unpack CLDR repository">
+		<mkdir dir="${cldrIn}/ldml" />
+		<unzip src="${cldrIn}/core.zip" dest="${cldrIn}/ldml" />
+	</target>
+	<target name="-ldml-check">
+			<available property="ldmlUnpacked" file="${cldrIn}/ldml" type="dir" />
+	</target>
+	<!-- end ldml task -->
+
+	<!-- cldr task -->
+	<target name="cldr" depends="ldml"
+		description="Transforms CLDR (localization data) into JSON">
+		<!-- clean directory? -->
+		<script language="javascript">
+			<![CDATA[
+
+	// Access to Ant-Properties by their names
+	srcDir = dojo.getProperty("cldrIn")+"/ldml/main";
+//	destDir = dojo.getProperty("cldrOut")+"/nls";
+	destDir = "/tmp/out";
+
+	// Create a <fileset dir="" includes=""/>
+	fs = dojo.createDataType("fileset");
+	fs.setDir( new java.io.File(srcDir) );
+	fs.setIncludes("**/*.xml");
+
+	// Get the files (array) of that fileset
+	ds = fs.getDirectoryScanner(dojo);
+	srcFiles = ds.getIncludedFiles();
+
+	// iterate over that array
+	for (i=0; i<srcFiles.length; i++) {
+
+		// get the values via Java API
+		var basedir  = fs.getDir(project);
+		var filename = srcFiles[i];
+		var locale = filename.substring(0, filename.indexOf(".")).replace("_","-");
+
+		var outDir = new java.io.File(destDir+"/"+locale);
+		var mkdir = dojo.createTask("mkdir");
+		mkdir.setDir(outDir);
+		mkdir.perform();
+
+/*
+// XSLT tasks run for a while, then hang. Perhaps there's a file handle leak?  Run as separate JVM processes instead to be safe.
+		var xslt = dojo.createTask("xslt");
+		xslt.setBasedir(basedir);
+		xslt.setDestdir(outDir);
+//		xslt.setIn(new java.io.File(basedir+"/"+filename));
+		xslt.setIncludes(filename);
+		xslt.setExtension(".out");
+//		xslt.setOut(new java.io.File(basedir+"/"+filename+"out.xml")); // can we supress output entirely?
+		xslt.setStyle("../../../buildscripts/cldrCalendar.xsl"); // KLUDGE
+		var saxonPath = xslt.createClasspath();
+		saxonPath.setPath("./lib/saxon8.jar")
+		xslt.setClasspath(saxonPath);
+		try{
+			xslt.init(); // surprise: you have to call init() on xslt tasks or they don't work!
+			xslt.perform();
+		}catch(e){
+			java.lang.System.out.println(e);
+//			e.printStackTrace();
+		}
+*/
+		var xslt = dojo.createTask("java");
+		xslt.setFork(true);
+		xslt.setJar(new java.io.File("./lib/saxon8.jar"));
+		xslt.setDir(outDir);
+// Reference the DTD locally to speed things up
+//		xslt.createArg().setLine("-r org.apache.xml.resolver.tools.CatalogResolver");
+//		xslt.createArg().setLine("-x org.apache.xml.resolver.tools.ResolvingXMLReader");
+//		xslt.createArg().setLine("-y org.apache.xml.resolver.tools.ResolvingXMLReader");
+		xslt.createArg().setFile(new java.io.File(basedir+"/"+filename));
+		xslt.createArg().setFile(new java.io.File("cldrCalendar.xsl"));
+		xslt.perform();
+	}
+			]]>
+		</script>
+	</target>
+	<!-- end cldr task -->
 
 	<!-- clean task -->
 	<target name="clean"
@@ -879,8 +975,7 @@ available in src/storage/java/ without rebuilding it.
 				failonerror="false"/>
 
 		<jar destfile="${root}/DojoFileStorageProvider.jar">
-			<fileset dir="${root}/src/storage/java/"
-		             includes="*.class"/>
+			<fileset dir="${root}/src/storage/java/" includes="*.class"/>
 		</jar>
 	</target>
 	<!-- end buildFileStorageProvider task -->
