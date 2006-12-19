@@ -5,7 +5,7 @@ dojo.require("dojo.html.display");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lang.func");
-dojo.require("dojo.lfx.toggle");
+dojo.require("dojo.lfx.toggler");
 
 dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {								 
 	// summary
@@ -40,10 +40,9 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 
 	postMixInProperties: function(args, frag){
 		if(this.lang === ""){this.lang = null;}
-		// now that we know the setting for toggle, get toggle object
+		// now that we know the setting for toggler, get toggler object
 		// (default to plain toggler if user specified toggler not present)
-		this.toggleObj = dojo.lang.shallowCopy(
-			dojo.lfx.toggle[this.toggle.toLowerCase()] || dojo.lfx.toggle.plain);
+		this.toggleObj = new (dojo.lfx.toggler[this.toggle.toLowerCase()] || dojo.lfx.toggler.plain);
 	},
 
 	createNodesFromText: function(txt, wrap){
