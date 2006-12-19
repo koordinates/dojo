@@ -3,7 +3,7 @@ dojo.require("dojo.data.core.RemoteStore");
 dojo.require("dojo.lang.declare");
 dojo.require("dojo.io.ScriptSrcIO");
 
-dojo.declare("dojo.data.YahooStore", dojo.data.core.RemoteStore, {
+dojo.declare("dojo.data.YahooStore", dojo.data.core.RemoteStore, null, {
 	/* Summary:
 	 *	  The YahooStore implements the dojo.data.core.Read API. 
 	 */	
@@ -38,6 +38,15 @@ dojo.declare("dojo.data.YahooStore", dojo.data.core.RemoteStore, {
 			data[ arrayIndex.toString() ] = item;
 		}
 		return data;
+	},
+
+	getFeatures: function() {
+		// summary: See dojo.data.core.Read.getFeatures()
+		 var features = {
+			 'dojo.data.core.Read': true
+		 };
+		 return features;
 	}
+
 });
 

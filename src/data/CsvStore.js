@@ -2,7 +2,7 @@ dojo.provide("dojo.data.CsvStore");
 dojo.require("dojo.data.core.RemoteStore");
 dojo.require("dojo.lang.assert");
 
-dojo.declare("dojo.data.CsvStore", dojo.data.core.RemoteStore, {
+dojo.declare("dojo.data.CsvStore", dojo.data.core.RemoteStore, null, {
 	/* summary:
 	 *   The CsvStore subclasses dojo.data.core.RemoteStore to implement
 	 *   the dojo.data.core.Read API.  
@@ -66,7 +66,7 @@ dojo.declare("dojo.data.CsvStore", dojo.data.core.RemoteStore, {
 		var arrayOfOutputRecords = [];
 		
 		var arrayOfInputLines = csvFileContents.split(lineEndingCharacters);
-		for (var i in arrayOfInputLines) {
+		for (var i = 0; i < arrayOfInputLines.length; ++i) {
 			var singleLine = arrayOfInputLines[i];
 			if (singleLine.length > 0) {
 				var listOfFields = singleLine.split(',');
@@ -125,7 +125,7 @@ dojo.declare("dojo.data.CsvStore", dojo.data.core.RemoteStore, {
 			for (var i = 1; i < arrayOfArrays.length; ++i) {
 				var row = arrayOfArrays[i];
 				var item = {};
-				for (var j in row) {
+				for (var j = 0; j < row.length; ++j) {
 					var value = row[j];
 					var key = arrayOfKeys[j];
 					item[key] = value;
@@ -162,6 +162,15 @@ dojo.declare("dojo.data.CsvStore", dojo.data.core.RemoteStore, {
 			output[i] = object;
 		}
 		return output; // Object
+	},
+	
+	getFeatures: function() {
+		// summary: See dojo.data.core.Read.getFeatures()
+		 var features = {
+			 'dojo.data.core.Read': true,
+			 'dojo.data.core.Write': false
+		 };
+		 return features;
 	},
 
 	// CsvStore implements the dojo.data.core.Read API, but does not yet  
