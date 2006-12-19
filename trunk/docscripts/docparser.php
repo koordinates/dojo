@@ -239,13 +239,58 @@ foreach (array_keys($output['function_names']) as $package_name) {
   sort($output['function_names'][$package_name]);
 }
 
+$output_by_object = array();
+foreach ($output as $package_name => $package_meta) {
+	if (array_key_exists('meta', $package_meta)) {
+		$package_meta = $package_meta['meta'];
+		foreach (array('functions', 'objects') as $type) {
+			if (array_key_exists($type, $package_meta)) {
+				$package_functions = $package_meta[$type];
+				foreach ($package_functions as $function_name => $function_meta) {
+					$output_by_object[$function_name]['type'] = substr($type, 0, strlen($type) - 1);
+					$output_by_object[$function_name]['resources'][] = $package_name;
+					$output_by_object[$function_name]['resources'] = array_unique($output_by_object[$function_name]['resources']);
+					if (array_key_exists('extra', $function_meta)) {
+						$function_extra = $function_meta['extra'];
+						foreach ($function_extra as $key => $value) {
+							if (is_array($value)) {
+								if (empty($output_by_object[$function_name][$key])) {
+									$output_by_object[$function_name][$key] = array();
+								}
+								$output_by_object[$function_name][$key] = array_unique(array_merge($value, $output_by_object[$function_name][$key]));
+							}
+							else {
+								$output_by_object[$function_name][$key] = $value;
+							}
+						}
+					}
+					if (array_key_exists('meta', $function_meta)) {
+						$function_meta = $function_meta['meta'];
+						foreach ($function_meta as $key => $value) {
+							if (is_array($value)) {
+								if (empty($output_by_object[$function_name][$key])) {
+									$output_by_object[$function_name][$key] = array();
+								}
+								$output_by_object[$function_name][$key] = array_unique(array_merge($value, $output_by_object[$function_name][$key]));
+							}
+							else {
+								$output_by_object[$function_name][$key] = $value;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 $timer->setMarker("Main Processing finished");
 
 //header("Content-type: text/plain");
 //print_r($output);
 
 $plugins = new Plugins('.');
-$plugins->write($output, array());
+$plugins->write($output, $output_by_object);
 
 $timer->stop();
 if (isset($_GET['benchmark'])) {

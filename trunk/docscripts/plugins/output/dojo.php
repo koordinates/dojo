@@ -2,7 +2,87 @@
 
 function dojo_remote_json($by_resource, $by_object)
 {
+	$output = array();
+	foreach ($by_object as $function_name => $meta) {
+		$parts = explode('.', $function_name);
+		$last = array_pop($parts);
+		$parent = implode('.', $parts);
+		if ($parts) {
+			array_pop($parts);
+			$super_parent = implode('.', $parts);
+			$output[$super_parent . '.js']['children'][$parent] = $parent;
+		}
 	
+		if (!$parent) {
+			$parent = '_global_';
+		}
+		else {
+			$parent_meta = $by_object[$parent];
+			unset($parent_meta['src']);
+			unset($parent_meta['type']);
+		}
+	
+		if ($meta['type'] == 'object') {
+			$function_name = '{' . $function_name . '}';
+		}
+		unset($meta['src']);
+		unset($meta['type']);
+		
+		$output[$parent . '.js']['children'][$function_name] = $meta;
+		if ($parent_meta) {
+			$output[$parent . '.js'] = array_merge($output[$parent . '.js'], $parent_meta);
+		}
+	}
+	
+	function insensitive($a, $b) {
+		return strcasecmp($a, $b);
+	}
+	
+	function dive(&$output, $array, &$pos, $in_group = false) {
+		$parent = $array[$pos];
+		if (!$parent) {
+			++$pos;
+			return;
+		}
+	
+		$group = array();
+		for ($i = $pos + 1; $i < count($array); $i++) {
+			if (strpos($array[$i], $parent . '.') === 0) {
+				$group[] = $array[$i];
+				$groups = dive($output, $array, $i, true);
+				if ($groups) {
+					$group[] = $groups;
+				}
+			}
+			elseif ($group && $in_group) {
+				$pos = $i;
+				return $group;
+			}
+			else {
+				$pos = $i;
+				if (!$in_group || $group) {
+					$output[] = $parent;
+				}
+				if ($group) {
+					$output[] = $group;
+				}
+				return;
+			}
+		}
+		
+		++$pos;
+	}
+	
+	$pos = 0;
+	$output['item_names.js'] = array();
+	$item_names = array_keys($by_object);
+	usort($item_names, "insensitive");
+	while ($pos < count($item_names)) {
+		dive($output['item_names.js'], $item_names, $pos);
+	}
+	//header('Content-type: text/plain');
+	//print_r($output['item_names']);
+	return $output;
 }
 
 function dojo_local_json($data, $by_object)
