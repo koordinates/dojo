@@ -25,17 +25,7 @@
                 <xsl:when test="compare(name(),'calendars')=0">
                     <!-- calendars -->
                     <xsl:for-each select="calendar">       
-                        <xsl:result-document href="{concat(@type,'.js')}" >/*
-        Copyright (c) 2004-2006, The Dojo Foundation
-        All Rights Reserved.
-        
-        Licensed under the Academic Free License version 2.1 or above OR the
-        modified BSD license. For more information on Dojo licensing, see:
-        
-                http://dojotoolkit.org/community/licensing.shtml
-*/
-
-({            
+                        <xsl:result-document href="{concat(@type,'.js')}" >({            
         //calendar type = <xsl:value-of select="./@type"/>
                            <xsl:call-template name="calendar"></xsl:call-template>
 
@@ -82,9 +72,9 @@
 </xsl:template>
     
 <!-- process months -->
-    <xsl:template name="months_days_quarters" match="months | days | quarters">	
-    <xsl:param name="width" select="@type"></xsl:param>
-    <xsl:variable name="ctx" select="../@type"/>		
+    <xsl:template name="months_days_quarters" match="months | days | quarters">
+    <xsl:param name="width" select="@type"/>
+    <xsl:variable name="ctx" select="../@type"/>
     <xsl:choose>       
         <xsl:when test="count(./alias)>0">
             <!-- Handle Alias -->
@@ -108,13 +98,24 @@
                     <xsl:call-template name="months_days_quarters"></xsl:call-template>
                 </xsl:for-each>
             </xsl:if>
-            <xsl:if test="compare(name(),'monthWidth')=0">
-        'months-<xsl:value-of select="concat($ctx,'-',$width)"></xsl:value-of><xsl:text>':</xsl:text>
-                <xsl:call-template name="subSelect"> <xsl:with-param name="name" select="month"></xsl:with-param></xsl:call-template>            
-            </xsl:if>
-            <xsl:if test="compare(name(),'dayWidth')=0">
-        'days-<xsl:value-of select="concat($ctx,'-',$width)"></xsl:value-of><xsl:text>':</xsl:text>
-                <xsl:call-template name="subSelect"> <xsl:with-param name="name" select="day"></xsl:with-param></xsl:call-template>        
+            <xsl:if test="name()='monthWidth' or name()='dayWidth'">
+                <xsl:variable name="item" select="substring-before(name(), 'Width')"/>
+                <xsl:text>	'</xsl:text>
+                <xsl:value-of select="$item"/>
+                <xsl:text>s-</xsl:text>
+                <xsl:call-template name="camel_case">
+                    <xsl:with-param name="name"><xsl:value-of select="$ctx"></xsl:value-of></xsl:with-param>
+                </xsl:call-template>
+                <xsl:choose>
+                	<xsl:when test="$width='abbreviated'"><xsl:text>-abbr</xsl:text></xsl:when>
+                	<xsl:otherwise>
+                       <xsl:value-of select="concat('-',$width)"></xsl:value-of>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:text>':</xsl:text>
+                <xsl:call-template name="subSelect"><xsl:with-param name="name" select="./*[name()=$item]"></xsl:with-param></xsl:call-template>
+                <xsl:text>
+</xsl:text>
             </xsl:if>
             <xsl:if test="compare(name(),'quarterWidth')=0">
         'quarters-<xsl:value-of select="concat($ctx,'-',$width)"></xsl:value-of> <xsl:text>':</xsl:text>
@@ -150,40 +151,43 @@
     </xsl:choose>
 </xsl:template>    
     
-<!-- process ears -->
-    <xsl:template match="eras" name="eras">
-       <xsl:choose>
-           <xsl:when test="count(./alias)>0">
-               <!-- Handle Alias -->  
-               <xsl:for-each select="./alias">
-                   <xsl:call-template name="alias_template">
-                       <xsl:with-param name="templateToCall">eras</xsl:with-param>
-                       <xsl:with-param name="source" select="@source"></xsl:with-param>
-                       <xsl:with-param name="xpath" select="@path"></xsl:with-param>
-                   </xsl:call-template>
-               </xsl:for-each>       
-           </xsl:when>
-           <xsl:otherwise>
-            <xsl:choose>
-                <xsl:when test="compare(name(),'eras')=0">
-                    <xsl:if test="count(./alias)=0">
-                        <xsl:text>
-                        </xsl:text>
-                    </xsl:if>
-                    <xsl:for-each select="*">
-                        <xsl:call-template name="eras"></xsl:call-template>
-                    </xsl:for-each>
-                </xsl:when>
-                <xsl:otherwise>
-        'ears-<xsl:for-each select=".">
-                        <xsl:value-of select="name()"></xsl:value-of>
-                        <xsl:text>':</xsl:text>
-                        <xsl:call-template name="subSelect"> <xsl:with-param name="name" select="era"></xsl:with-param></xsl:call-template>
-                    </xsl:for-each>
-                </xsl:otherwise>
-                </xsl:choose>      
-           </xsl:otherwise>
-       </xsl:choose>
+<!-- process eras -->
+<xsl:template match="eras" name="eras">
+	<xsl:choose>
+		<xsl:when test="count(./alias)>0">
+			<!-- Handle Alias -->  
+			<xsl:for-each select="./alias">
+				<xsl:call-template name="alias_template">
+					<xsl:with-param name="templateToCall">eras</xsl:with-param>
+					<xsl:with-param name="source" select="@source"></xsl:with-param>
+					<xsl:with-param name="xpath" select="@path"></xsl:with-param>
+				</xsl:call-template>
+			</xsl:for-each>	   
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:choose>
+				<xsl:when test="name()='eras'">
+					<xsl:if test="count(./alias)=0">
+						<xsl:text>
+						</xsl:text>
+					</xsl:if>
+					<xsl:for-each select="*">
+						<xsl:call-template name="eras"></xsl:call-template>
+					</xsl:for-each>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:for-each select=".">
+						<xsl:text>'</xsl:text>
+						<xsl:value-of select="name()"></xsl:value-of>
+						<xsl:text>':</xsl:text>
+						<xsl:call-template name="subSelect">
+							<xsl:with-param name="name" select="era"></xsl:with-param>
+						</xsl:call-template>
+					</xsl:for-each>
+				</xsl:otherwise>
+				</xsl:choose>	  
+		</xsl:otherwise>
+	</xsl:choose>
 </xsl:template>
  
 <!-- process dateFormat & timeFormat -->   
@@ -320,6 +324,24 @@
     <xsl:if test="$num=1">
         <xsl:text>"</xsl:text><xsl:value-of select="$name"/><xsl:text>",</xsl:text>
     </xsl:if>
+</xsl:template>
+
+<!-- Sub output routine-->
+<xsl:variable name="vLowercaseChars_CONST" select="'abcdefghijklmnopqrstuvwxyz'"/> 
+<xsl:variable name="vUppercaseChars_CONST" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
+<xsl:template name="camel_case">
+    <xsl:param name="name"></xsl:param>
+    <xsl:variable name="words" select="tokenize($name, '-')"></xsl:variable>
+    <xsl:for-each select="$words">
+        <xsl:choose>
+            <xsl:when test="position()=1">
+                <xsl:value-of select="."/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="translate(substring(., 1, 1), $vLowercaseChars_CONST, $vUppercaseChars_CONST)"/><xsl:value-of select="substring(., 2)"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:for-each>
 </xsl:template>
 
 <!-- recursive process for alias -->
