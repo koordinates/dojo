@@ -301,10 +301,7 @@ dojo.declare(
 		
 		onBackgroundClick: function(){
 			// summary
-			//		Callback on background click.
-			//		Clicking anywhere on the background will close the dialog, but only
-			//		if the dialog doesn't have an explicit close button, and only if
-			//		the dialog doesn't have a blockDuration.
+			//		Callback on background click, if closeOnBackgroundClick==true.
 			if(this.lifetime - this.timeRemaining >= this.blockDuration){ return; }
 			this.hide();
 		}
