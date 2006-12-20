@@ -7,6 +7,7 @@ dojo.require("dojo.widget.Parse");
 dojo.require("dojo.xml.Parse");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.common");
+dojo.require("dojo.string.extras");
 
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.widget", "validate");
@@ -68,6 +69,7 @@ dojo.widget.defineWidget(
 		fillInTemplate: function() {
 			// assign value programatically in case it has a quote in it
 			this.textbox.value = this.value;
+			this.filter();
 		},
 
 		filter: function() {
@@ -82,8 +84,7 @@ dojo.widget.defineWidget(
 				this.textbox.value = this.textbox.value.toLowerCase();
 			} 
 			if (this.ucFirst) {
-				this.textbox.value = this.textbox.value.replace(/\b\w+\b/g, 
-					function(word) { return word.substring(0,1).toUpperCase() + word.substring(1).toLowerCase(); });
+				this.textbox.value = dojo.string.capitalize(this.textbox.value);
 			} 
 			if (this.digit) {
 				this.textbox.value = this.textbox.value.replace(/\D/g, "");
