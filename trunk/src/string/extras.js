@@ -34,13 +34,9 @@ dojo.string.capitalize = function(/*string*/str){
 //	Uppercases the first letter of each word
 
 	if(!dojo.lang.isString(str)){ return ""; }
-	if(arguments.length == 0){ str = this; }
-
-	var words = str.split(' ');
-	for(var i=0; i<words.length; i++){
-		words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
-	}
-	return words.join(" "); // string
+	return str.replace(/[^\s]+/g, function(word){
+			return word.substring(0,1).toUpperCase() + word.substring(1);
+		}); // String
 }
 
 dojo.string.isBlank = function(/*string*/str){
@@ -121,6 +117,7 @@ dojo.string.escapeRegExp = function(/*string*/str){
 
 	return str.replace(/\\/gm, "\\\\").replace(/([\f\b\n\t\r[\^$|?*+(){}])/gm, "\\$1"); // string
 }
+
 
 //FIXME: should this one also escape backslash?
 dojo.string.escapeJavaScript = function(/*string*/str){
