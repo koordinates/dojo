@@ -63,7 +63,7 @@ dojo.string.encodeAscii = function(/*string*/str){
 	return ret; // string
 }
 
-dojo.string.escape = function(/*string*/type, /*string*/str){
+dojo.string.escape = function(/*string*/type, /*string*/str /*, ...*/){
 // summary:
 //	Adds escape sequences for special characters according to the convention of 'type'
 //
@@ -111,13 +111,19 @@ dojo.string.escapeSql = function(/*string*/str){
 	return str.replace(/'/gm, "''"); //string
 }
 
-dojo.string.escapeRegExp = function(/*string*/str){
+dojo.string.escapeRegExp = function(/*String*/str, /*String?*/except){
 //summary:
 //	Adds escape sequences for special characters in regular expressions
+// except: a String with special characters to be left unescaped
 
-	return str.replace(/\\/gm, "\\\\").replace(/([\f\b\n\t\r[\^$|?*+(){}])/gm, "\\$1"); // string
+//	return str.replace(/([\f\b\n\t\r[\^$|?*+(){}])/gm, "\\$1"); // string
+	return str.replace(/([\.$?*!=:|{}\(\)\[\]\\\/^])/g, function(ch){
+		if(except && except.indexOf(ch) != -1){
+			return ch;
+		}
+		return "\\" + ch;
+	}); // String
 }
-
 
 //FIXME: should this one also escape backslash?
 dojo.string.escapeJavaScript = function(/*string*/str){
