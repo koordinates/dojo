@@ -1,5 +1,6 @@
 dojo.provide("dojo.regexp");
 dojo.evalObjPath("dojo.regexp.us", true);	// this file also defines stuff in the dojo.regexp.us module (TODO: move to separate file?)
+dojo.require("dojo.string.extras");
 
 // *** Regular Expression Generators ***
 
@@ -519,7 +520,7 @@ dojo.regexp.numberFormat = function(/*Object?*/flags){
 	// Converts a number format to RE.
 	var digitRE = function(format){
 		// escape all special characters, except '?'
-		format = dojo.regexp.escape(format, "?");
+		format = dojo.string.escapeRegExp(format, "?");
 
 		// Now replace '?' with Regular Expression
 		format = format.replace(/\?/g, "\\d?");
@@ -561,17 +562,6 @@ dojo.regexp.buildGroupRE = function(/*value or Array of values*/a, /*Function(x)
 
 	 // join the REs as alternatives in a RE group.
 	return dojo.regexp.group(b.join("|"), nonCapture); // String
-}
-
-dojo.regexp.escape = function(/*String*/expression, /*String?*/except){
-	// summary: escape all special characters
-	// except: a String with special characters to be left unescaped
-	return expression.replace(/([.$?*!=:|{}\(\)\[\]\\\/^])/g, function(ch){
-		if(except && except.indexOf(ch) != -1){
-			return ch;
-		}
-		return "\\" + ch;
-	}); // String
 }
 
 dojo.regexp.group = function(/*String*/expression, /*Boolean?*/nonCapture){
