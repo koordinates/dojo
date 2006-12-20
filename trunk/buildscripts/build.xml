@@ -71,6 +71,8 @@ build targets:
 
 	api - builds release (optimized) api reference application
 
+	cldr - transforms the CLDR localization repository into JSON in the source tree
+
 	test - builds and runs command line unit tests
 
 	testScripting - tests the JS and Jython integration in the build process
@@ -368,38 +370,22 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		// get the values via Java API
 		var basedir  = fs.getDir(project);
 		var filename = srcFiles[i];
-		var locale = filename.substring(0, filename.indexOf(".")).replace("_","-");
+		var locale = filename.substring(0, filename.indexOf(".")).replace("_","-").toLowerCase();
 
 		var outDir = new java.io.File(destDir+"/"+locale);
 		var mkdir = dojo.createTask("mkdir");
 		mkdir.setDir(outDir);
 		mkdir.perform();
 
-/*
-// XSLT tasks run for a while, then hang. Perhaps there's a file handle leak?  Run as separate JVM processes instead to be safe.
-		var xslt = dojo.createTask("xslt");
-		xslt.setBasedir(basedir);
-		xslt.setDestdir(outDir);
-//		xslt.setIn(new java.io.File(basedir+"/"+filename));
-		xslt.setIncludes(filename);
-		xslt.setExtension(".out");
-//		xslt.setOut(new java.io.File(basedir+"/"+filename+"out.xml")); // can we supress output entirely?
-		xslt.setStyle("../../../buildscripts/cldrCalendar.xsl"); // KLUDGE
-		var saxonPath = xslt.createClasspath();
-		saxonPath.setPath("./lib/saxon8.jar")
-		xslt.setClasspath(saxonPath);
-		try{
-			xslt.init(); // surprise: you have to call init() on xslt tasks or they don't work!
-			xslt.perform();
-		}catch(e){
-			java.lang.System.out.println(e);
-//			e.printStackTrace();
-		}
-*/
+		// XSLT ant tasks run for a while, then hang. Perhaps there's a file handle leak?
+		// Run as separate JVM processes instead to be safe.
 		var xslt = dojo.createTask("java");
 		xslt.setFork(true);
 		xslt.setJar(new java.io.File("./lib/saxon8.jar"));
 		xslt.setDir(outDir);
+//		var path = xslt.createClasspath().createPath();
+//		path.setLocation(new java.io.File("./lib/resolver.jar"));
+//		xslt.setClasspath(path);
 // Reference the DTD locally to speed things up
 //		xslt.createArg().setLine("-r org.apache.xml.resolver.tools.CatalogResolver");
 //		xslt.createArg().setLine("-x org.apache.xml.resolver.tools.ResolvingXMLReader");
@@ -407,6 +393,9 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		xslt.createArg().setFile(new java.io.File(basedir+"/"+filename));
 		xslt.createArg().setFile(new java.io.File("cldrCalendar.xsl"));
 		xslt.perform();
+		var echo = dojo.createTask("echo");
+		echo.setMessage("Transformed " + filename + " to " + outDir);
+		echo.execute();
 	}
 			]]>
 		</script>
