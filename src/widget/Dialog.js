@@ -394,7 +394,6 @@ dojo.widget.defineWidget(
 		setCloseControl: function(/*String|DomNode*/ node) {
 			// summary
 			//	Specify which node is the close button for this dialog.
-			//	If no close node is specified then clicking anywhere on the screen will close the dialog.
 			this.closeNode = dojo.byId(node);
 			dojo.event.connect(this.closeNode, "onclick", this, "hide");
 		},
