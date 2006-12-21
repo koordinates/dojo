@@ -812,21 +812,14 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			}
 		]]>
 		</script>
-		<script language="jython">
-			<![CDATA[
-import sys
-# make the python standard library avialable
-sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
-sys.path.append(project.resolveFile(".").getPath())
-
-# import re
-import os
-from buildUtil import *
-
-print "Interning strings for directory: " + dojo.getProperty("release_dir")
-internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPath(), dojo.getProperty("dojoLoader"), project.resolveFile(dojo.getProperty("release_dir")).getPath())
-]]>
-		</script>
+		
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
+			logError="true">
+			<arg value="internStrings.js" />
+			<arg value="${profileFile}" />
+			<arg value="${dojoLoader}" />
+			<arg value="${release_dir}" />
+		</java>
 	</target>
 	<!-- end intern-strings task -->
 
