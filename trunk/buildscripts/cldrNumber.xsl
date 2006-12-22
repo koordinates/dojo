@@ -25,7 +25,7 @@
                 <xsl:if test="name()='ldml'">
                     <!-- numbers -->
                     <xsl:for-each select="numbers">       
-                        <xsl:result-document href="numbers.js" encoding="UTF-8">
+                        <xsl:result-document href="number.js" encoding="UTF-8">
 ({<xsl:call-template name="numbers"></xsl:call-template>
 })
                         </xsl:result-document>
@@ -69,7 +69,7 @@
         </xsl:when>
         <xsl:otherwise>
             <xsl:for-each select="*">
-        'symbols-<xsl:value-of select="name()"></xsl:value-of>
+        '<xsl:value-of select="name()"></xsl:value-of>
                 <xsl:text>':"</xsl:text>
                 <xsl:value-of select="."></xsl:value-of>
                 <xsl:text>",</xsl:text>

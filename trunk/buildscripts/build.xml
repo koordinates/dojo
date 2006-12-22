@@ -347,66 +347,68 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 	<target name="cldr" depends="ldml"
 		description="Transforms CLDR (localization data) into JSON">
 		<!-- clean directory? -->
-		<script language="javascript">
+		<macrodef name="processLdml">
+			<attribute name="in"/>
+			<attribute name="destdir"/>
+
+			<sequential>
+				<mkdir dir="@{destdir}"/>
+				<saxon in="@{in}" style="cldrCalendar.xsl" destdir="@{destdir}"/>
+				<saxon in="@{in}" style="cldrNumber.xsl" destdir="@{destdir}"/>
+				<echo message="Transformed @{in} to @{destDir}"/>				
+			</sequential>
+		</macrodef>
+		<macrodef name="saxon">
+			<attribute name="in"/>
+			<attribute name="style"/>
+			<attribute name="destdir"/>
+
+			<sequential>
+				<!-- XSLT ant tasks run for a while, then hang. Perhaps there's a file handle leak?
+					 Kludge: Run as separate JVM processes instead to be safe. -->
+				<java fork="true" dir="@{destdir}" jar="lib/saxon8.jar">
+<!-- Reference the DTD locally to speed things up -->
+<!--
+	<arg line="-r org.apache.xml.resolver.tools.CatalogResolver"/>
+	<arg line="-x org.apache.xml.resolver.tools.ResolvingXMLReader"/>
+	<arg line="-y org.apache.xml.resolver.tools.ResolvingXMLReader"/>
+-->
+					<arg file="@{in}"/>
+					<arg file="@{style}"/>
+<!--
+					<classpath>
+						<pathelement location="lib/resolver.jar"/>
+					</classpath>
+-->
+				</java>
+			</sequential>
+		</macrodef>
+		<scriptdef name="transformCldr" language="javascript">
+			<attribute name="destdir"/>
+			<element name="fileset" type="fileset"/>
 			<![CDATA[
-
-	// Access to Ant-Properties by their names
-	srcDir = dojo.getProperty("cldrIn")+"/ldml/main";
-	destDir = dojo.getProperty("cldrOut")+"/nls";
-
-	// Create a <fileset dir="" includes=""/>
-	fs = dojo.createDataType("fileset");
-	fs.setDir( new java.io.File(srcDir) );
-	fs.setIncludes("**/*.xml");
-
-	// Get the files (array) of that fileset
-	ds = fs.getDirectoryScanner(dojo);
+	var fs = elements.get("fileset").get(0);
+	ds = fs.getDirectoryScanner(project);
 	srcFiles = ds.getIncludedFiles();
+	var basedir = fs.getDir(project);
+	var destDir = attributes.get("destdir");
 
-	// iterate over that array
 	for (i=0; i<srcFiles.length; i++) {
-
-		// get the values via Java API
-		var basedir  = fs.getDir(project);
 		var filename = srcFiles[i];
 		var locale = filename.substring(0, filename.indexOf(".")).replace("_","-").toLowerCase();
+		var outDir = new java.io.File(locale == "root" ? destDir : destDir+"/"+locale);
 
-		var outDir = new java.io.File(destDir+"/"+locale);
-		var mkdir = dojo.createTask("mkdir");
-		mkdir.setDir(outDir);
-		mkdir.perform();
-
-		// XSLT ant tasks run for a while, then hang. Perhaps there's a file handle leak?
-		// Run as separate JVM processes instead to be safe.
-		var xslt = dojo.createTask("java");
-		xslt.setFork(true);
-		xslt.setJar(new java.io.File("./lib/saxon8.jar"));
-		xslt.setDir(outDir);
-//		var path = xslt.createClasspath().createPath();
-//		path.setLocation(new java.io.File("./lib/resolver.jar"));
-//		xslt.setClasspath(path);
-// Reference the DTD locally to speed things up
-//		xslt.createArg().setLine("-r org.apache.xml.resolver.tools.CatalogResolver");
-//		xslt.createArg().setLine("-x org.apache.xml.resolver.tools.ResolvingXMLReader");
-//		xslt.createArg().setLine("-y org.apache.xml.resolver.tools.ResolvingXMLReader");
-		xslt.createArg().setFile(new java.io.File(basedir+"/"+filename));
-		xslt.createArg().setFile(new java.io.File("cldrCalendar.xsl"));
-		xslt.perform();
-
-		var xslt2 = dojo.createTask("java");
-		xslt2.setFork(true);
-		xslt2.setJar(new java.io.File("./lib/saxon8.jar"));
-		xslt2.setDir(outDir);
-		xslt2.createArg().setFile(new java.io.File(basedir+"/"+filename));
-		xslt2.createArg().setFile(new java.io.File("cldrNumber.xsl"));
-		xslt2.perform();
-
-		var echo = dojo.createTask("echo");
-		echo.setMessage("Transformed " + filename + " to " + outDir);
-		echo.execute();
+		var ldml = project.createTask("processLdml");
+		ldml.setDynamicAttribute("in", new java.io.File(basedir+"/"+filename));
+		ldml.setDynamicAttribute("destdir", outDir);
+		ldml.perform();
 	}
 			]]>
-		</script>
+		</scriptdef>
+
+		<transformCldr destdir="${cldrOut}/nls">
+			<fileset dir="${cldrIn}/ldml/main" includes="**/*.xml" />
+		</transformCldr>
 	</target>
 	<!-- end cldr task -->
 
