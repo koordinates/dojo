@@ -225,7 +225,7 @@
                      </xsl:for-each>
                  </xsl:when>
                  <xsl:otherwise>
-                     <xsl:if test="compare(name(),'default')!=0">                         
+                     <xsl:if test="name()!='default'">                         
                      <xsl:for-each select=".//pattern">
         '<xsl:value-of select="name(..)"></xsl:value-of>
                          <xsl:text>-</xsl:text>
