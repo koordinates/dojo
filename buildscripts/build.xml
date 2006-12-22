@@ -41,7 +41,7 @@
 	<property name="profile" value=""/>
 	<property name="locales" value="en-gb,en-us,de-de,es-es,fr-fr,it-it,pt-br,ko-kr,zh-tw,zh-cn,ja-jp"/> 	<!-- FIXME: where should this list come from? -->
 	<property name="cldrIn" location="${root}/cldr"/>
-	<property name="cldrOut" location="${src}/i18n/cldr"/>
+	<property name="cldrOut" location="${root}/${src}/i18n/cldr"/>
 
 	<loadfile property="copyright" srcFile="./copyright.txt"/>
 	<loadfile property="build_notice" srcFile="./build_notice.txt"/>
@@ -352,8 +352,7 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 	// Access to Ant-Properties by their names
 	srcDir = dojo.getProperty("cldrIn")+"/ldml/main";
-//	destDir = dojo.getProperty("cldrOut")+"/nls";
-	destDir = "/tmp/out";
+	destDir = dojo.getProperty("cldrOut")+"/nls";
 
 	// Create a <fileset dir="" includes=""/>
 	fs = dojo.createDataType("fileset");
@@ -393,6 +392,15 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		xslt.createArg().setFile(new java.io.File(basedir+"/"+filename));
 		xslt.createArg().setFile(new java.io.File("cldrCalendar.xsl"));
 		xslt.perform();
+
+		var xslt2 = dojo.createTask("java");
+		xslt2.setFork(true);
+		xslt2.setJar(new java.io.File("./lib/saxon8.jar"));
+		xslt2.setDir(outDir);
+		xslt2.createArg().setFile(new java.io.File(basedir+"/"+filename));
+		xslt2.createArg().setFile(new java.io.File("cldrNumber.xsl"));
+		xslt2.perform();
+
 		var echo = dojo.createTask("echo");
 		echo.setMessage("Transformed " + filename + " to " + outDir);
 		echo.execute();
