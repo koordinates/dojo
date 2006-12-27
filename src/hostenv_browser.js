@@ -354,7 +354,6 @@ if(typeof window != 'undefined'){
 	}
 
 	dj_addNodeEvtHdlr(window, "unload", function(){
-		dojo.hostenv.unloaded();
 		if((!dojo.render.html.ie)||(dojo.render.html.ie && dojo.hostenv._unloading)){
 			dojo.hostenv.unloaded();
 		}
