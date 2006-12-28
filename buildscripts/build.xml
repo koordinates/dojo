@@ -344,7 +344,7 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 	<!-- end ldml task -->
 
 	<!-- cldr task -->
-	<target name="cldr" depends="ldml"
+	<target name="cldr" depends="-fix-config, ldml"
 		description="Transforms CLDR (localization data) into JSON">
 		<!-- clean directory? -->
 		<macrodef name="processLdml">
@@ -369,20 +369,23 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 				<java fork="true" dir="@{destdir}" jar="lib/saxon8.jar">
 <!-- Reference the DTD locally to speed things up -->
 <!--
-	<arg line="-r org.apache.xml.resolver.tools.CatalogResolver"/>
-	<arg line="-x org.apache.xml.resolver.tools.ResolvingXMLReader"/>
-	<arg line="-y org.apache.xml.resolver.tools.ResolvingXMLReader"/>
+					<arg line="-r org.apache.xml.resolver.tools.CatalogResolver"/>
+					<arg line="-x org.apache.xml.resolver.tools.ResolvingXMLReader"/>
+					<arg line="-y org.apache.xml.resolver.tools.ResolvingXMLReader"/>
 -->
 					<arg file="@{in}"/>
 					<arg file="@{style}"/>
 <!--
 					<classpath>
 						<pathelement location="lib/resolver.jar"/>
+						<!-- for CatalogManager.properties -->
+						<pathelement location="${cldrIn}"/>
 					</classpath>
 -->
 				</java>
 			</sequential>
 		</macrodef>
+		
 		<scriptdef name="transformCldr" language="javascript">
 			<attribute name="destdir"/>
 			<element name="fileset" type="fileset"/>
