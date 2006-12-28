@@ -78,8 +78,9 @@ dojo.declare(
 					for(var k=0; k<attrs.length; k++){
 						var attr=attrs.item(k);
 						var bIgnore=false;
+						var lower = attr.nodeName.toLowerCase();
 						for (var l=0; l<ignore.length; l++){
-							if (attr.nodeName.toLowerCase()==ignore[l]){
+							if (lower==ignore[l]){
 								bIgnore=true;
 								break;
 							}
