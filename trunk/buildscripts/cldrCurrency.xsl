@@ -26,10 +26,10 @@
                     <!-- currencies -->
                     <xsl:for-each select="currency">
                         <xsl:value-of select="@type"></xsl:value-of>
-                        <!--xsl:result-document href="{concat(@type,'.js')}" encoding="UTF-8"-->
+                        <xsl:result-document href="{concat(@type,'.js')}" encoding="UTF-8">
 ({                            <xsl:call-template name="currency"></xsl:call-template>                        
 })
-                        <!--/xsl:result-document-->
+                        </xsl:result-document>
                     </xsl:for-each>
                 </xsl:when>
                 <xsl:otherwise>
