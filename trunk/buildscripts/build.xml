@@ -355,8 +355,8 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 			<sequential>
 				<mkdir dir="@{destdir}"/>
-				<saxon in="@{in}" style="cldrCalendar.xsl" destdir="@{destdir}"/>
-				<saxon in="@{in}" style="cldrNumber.xsl" destdir="@{destdir}"/>
+				<saxon in="@{in}" style="${cldrIn}/ldml/main/cldrCalendar.xsl" destdir="@{destdir}"/>
+				<saxon in="@{in}" style="${cldrIn}/ldml/main/cldrNumber.xsl" destdir="@{destdir}"/>
 				<echo level="info" message="Transformed @{in} to @{destDir}" taskName="cldr"/>				
 			</sequential>
 		</macrodef>
@@ -408,6 +408,14 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 	}
 			]]>
 		</scriptdef>
+
+		<!-- kludge to fix the "Fail to load **.xml" exception which occurs in IBM JDK 1.4.2
+			where saxon uses wrong base with relative URIs -->
+		<copy todir="${cldrIn}/ldml/main">
+		   <fileset dir=".">
+		     <include name="**/cldr*.xsl"/>
+		   </fileset>
+		</copy>	
 
 		<transformCldr destdir="${cldrOut}/nls">
 			<fileset dir="${cldrIn}/ldml/main" includes="**/*.xml" />
