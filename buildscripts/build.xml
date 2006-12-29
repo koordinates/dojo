@@ -372,7 +372,7 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 					<!-- Reference the DTD locally to speed things up -->
 					<!-- resolver and CatalogManager.properties have to be on the bootclasspath, apparently
 						 in order for JAXP to find them -->
-					<jvmarg value="-Xbootclasspath/a:/Users/peller/Documents/workspace-dojo/trunk/buildscripts/lib/resolver.jar:${cldrIn}"/>
+					<jvmarg value="-Xbootclasspath/a:${cldrIn}/../buildscripts/lib/resolver.jar"/>
 					<jvmarg value="-Xbootclasspath/a:${cldrIn}"/>
 					<arg value="-r"/>
 					<arg value="org.apache.xml.resolver.tools.CatalogResolver"/>
