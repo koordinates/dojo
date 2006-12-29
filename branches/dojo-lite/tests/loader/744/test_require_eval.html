@@ -1,0 +1,32 @@
+<html>
+<head>
+<script>
+djConfig = { isDebug: true };
+
+</script>
+<script src="../../../dojo.js"></script>
+<script> 
+dojo.registerModulePath("foo", "tests/loader/744/foo");
+dojo.require("foo.bar");
+
+dojo.addOnLoad(function(){
+	dojo.debug(getBarMessage());
+	dojo.debug(barMessage);
+});
+
+</script>
+</head>
+<body>
+<p>
+Defining global variables/functions in a module that is loaded via dojo.require()
+(meaning that XHR is used to load the text of the file and then eval the text) does
+not seem to define the global variables/functions on window.
+</p>
+
+<p>
+The test succeeds if you see "It Worked" below this text.
+</p>
+
+</body>
+</html>
+

@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<title>Parser benchmark</title>
+
+<script type="text/javascript">
+	var djConfig = {
+		isDebug: false
+	};
+</script>
+<script type="text/javascript" src="../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.xml.Parse");
+</script>
+
+<style type="text/css">
+
+tbody th { text-align: right; font-weight: normal; }
+th, td { padding: 0 0.4em; }
+
+</style>
+
+<script type="text/javascript">
+
+function bench () {
+	var div = document.createElement("div");
+	var span = "<span><" + "/span>";
+	// order 2^n, so 2^20 = 1 048 576
+	for (var i = 0; i < 11; i++) { span += span; }
+	div.innerHTML = span;
+
+	// first hit all the elements to turn them into JS objects for a fair test
+	var el, i = 0, els = div.childNodes;
+	while (el = els[i++]) { }
+
+	// test just looping, searching for domnodes
+	tic();
+	var parser = new dojo.xml.Parse();
+	var frag = parser.parseElement(div, null, true);
+	toc("calling parseElement() on a flat array (no dojoType declarations)");
+}
+
+function tic () {
+	tic.time = new Date();
+}
+
+function toc (str) {
+	var time = new Date().getTime() - tic.time.getTime();
+	var p = document.createElement("p");
+	p.appendChild(document.createTextNode(time + " - " + str));
+	document.body.appendChild(p);
+}
+
+</script>
+
+<h1>XML Parser Benchmark</h1>
+
+<p><a href="javascript:bench()">Run benchmarks</a>
+
+<h2>Results</h2>
+
+<p>The results should not be compared between browsers for they are run on different systems, however results for the same browser are relative to each other.
+

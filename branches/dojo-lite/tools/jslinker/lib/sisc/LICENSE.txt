@@ -1,0 +1,5 @@
+SISC (Second Interpreter of Scheme Code):
+http://sisc.sourceforge.net/
+
+It is distributed under the Mozilla Public License v1.1:
+http://www.opensource.org/licenses/mozilla1.1.php

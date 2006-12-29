@@ -1,0 +1,60 @@
+<html>
+<head>
+	<script>
+		var djConfig = {isDebug: true};
+	</script>
+	<script src="../../dojo.js"></script>
+	<script>
+		dojo.require("dojo.widget.*");
+		dojo.require("dojo.xml.Parse");
+
+		function handleClicks(evt){
+			// could, for example, handle link clicks
+			// and relay them to another ContentPane
+			dojo.debug(evt.type);
+		}
+
+		dojo.addOnLoad(function(){
+			var testNode = dojo.byId("testNode");
+			dojo.event.connect(testNode, "onclick", 'handleClicks');
+
+			var err = null;
+			var parser = new dojo.xml.Parse();
+			var frag = parser.parseElement(testNode, null, true);
+
+			try{
+				dojo.widget.getParser().createSubComponents(frag, this);
+			}catch(e){
+				err = e;
+			}
+			var doc = dojo.doc();
+			var div = doc.createElement("div");
+			div.appendChild(doc.createTextNode(err ? "FAILED test": "SUCCESS, test passed!!"));
+			dojo.body().appendChild(div);
+			div.style.backgroundColor = err ? "red" : "green"
+
+			if(err){
+				dojo.debugShallow(err);
+			}
+		});
+	</script>
+</head>
+<body>	<div dojoType="DebugConsole" title="Debug Console" id="debug" displayCloseAction="true" style="width: 700px; height: 500px; top:200px; left: 200px;"></div>
+	<script>
+		dojo.addOnLoad(
+			function(){
+				dojo.event.connect(dojo, "debug", function(){
+					dojo.widget.byId('debug').containerNode.style.height="450px";
+				});
+			}
+		);
+	</script>
+	<div id="testNode" dojoType="ContentPane"><!--for some reason the error only shows if we already parsed this DOM leaf once, setting it to ContentPane for that reason-->
+
+		<h1>Please test me in IE, shouldn't generate any errors<h1>
+		<div dojoType="button">Test button, <br/>should become a dojo button</div>
+	</div>
+	<h2>This is a testcase for #2154</h2>
+
+</body>
+</html>
