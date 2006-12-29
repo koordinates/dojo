@@ -23,6 +23,7 @@ doBuild(){
 	# cp -r ../tests/* ../release/dojo/tests/
 
 	cd ../release
+	rm -f dojo/src/widget/templates/images/hue.png dojo/tests/widget/test_HslColorPicker.xhtml dojo/tests/widget/test_HslColorPicker.xml dojo/src/widget/svg/HslColorPicker.js dojo/src/widget/HslColorPicker.js dojo/src/widget/templates/HslColorPicker.svg
 	mv dojo $proName
 	tar -zcf $proName.tar.gz $proName/
 	zip -rq $proName.zip $proName/
