@@ -12,8 +12,9 @@ dojo.html.show = function(/* HTMLElement */node){
 	//	Show the passed element by reverting display property set by dojo.html.hide
 	node = dojo.byId(node);
 	if(dojo.html.getStyleProperty(node, 'display')=='none'){
-		dojo.html.setStyle(node, 'display', (node.dojoDisplayCache||''));
-		node.dojoDisplayCache = undefined;	// cannot use delete on a node in IE6
+		var djDisplayCache = dojo.html.getAttribute('djDisplayCache');
+		dojo.html.setStyle(node, 'display', (djDisplayCache||''));
+		node.removeAttribute('djDisplayCache');
 	}
 }
 
@@ -21,10 +22,11 @@ dojo.html.hide = function(/* HTMLElement */node){
 	//	summary
 	//	Hide the passed element by setting display:none
 	node = dojo.byId(node);
-	if(typeof node["dojoDisplayCache"] == "undefined"){ // it could == '', so we cannot say !node.dojoDisplayCount
+	var djDisplayCache = dojo.html.getAttribute('djDisplayCache');
+	if(djDisplayCache == null){ // it could == '', so we cannot say !djDisplayCache
 		var d = dojo.html.getStyleProperty(node, 'display')
 		if(d!='none'){
-			node.dojoDisplayCache = d;
+			node.setAttribute('djDisplayCache', d);
 		}
 	}
 	dojo.html.setStyle(node, 'display', 'none');

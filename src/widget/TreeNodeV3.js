@@ -409,7 +409,7 @@ dojo.widget.defineWidget(
 		
 				
 		// HtmlWidget.postMixIn 
-		treeNode.toggleObj = dojo.lfx.toggle[treeNode.toggle.toLowerCase()] || dojo.lfx.toggle.plain;
+		treeNode.toggleObj = new (dojo.lfx.toggler[treeNode.toggle.toLowerCase()] || dojo.lfx.toggler.plain);
 
 		//dojo.profile.start(this.widgetType + " manager");
 		dojo.widget.manager.add(treeNode);

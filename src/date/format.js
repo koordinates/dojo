@@ -197,7 +197,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 				case 'F':
 				case 'g':
 				case 'A':
-					dojo.debug(match+" modifier not yet implemented");
+//					dojo.debug(match+" modifier not yet implemented");
 					s = "?";
 					break;
 				default:
@@ -346,7 +346,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 						}
 					}
 					if(j==months.length){
-						dojo.debug("dojo.date.parse: Could not parse month name: '" + v + "'.");
+//						dojo.debug("dojo.date.parse: Could not parse month name: '" + v + "'.");
 						return null;
 					}
 				}else{
@@ -374,7 +374,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 					}
 				}
 				if(j==days.length){
-					dojo.debug("dojo.date.parse: Could not parse weekday name: '" + v + "'.");
+//					dojo.debug("dojo.date.parse: Could not parse weekday name: '" + v + "'.");
 					return null;
 				}
 				break;
@@ -398,7 +398,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 					pm = pm.replace(/\./g,'').toLowerCase();
 				}
 				if(options.strict && v != am && v != pm){
-					dojo.debug("dojo.date.parse: Could not parse am/pm part.");
+//					dojo.debug("dojo.date.parse: Could not parse am/pm part.");
 					return null;
 				}
 				var hours = result.getHours();
@@ -416,7 +416,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 			case 'k': //hour (0-11)
 				//TODO: strict bounds checking, padding
 				if(v>23){
-					dojo.debug("dojo.date.parse: Illegal hours value");
+//					dojo.debug("dojo.date.parse: Illegal hours value");
 					return null;
 				}
 
@@ -440,15 +440,15 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 
 	//validate parse date fields versus input date fields
 	if(expected.year && result.getFullYear() != expected.year){
-		dojo.debug("dojo.date.parse: Parsed year: '" + result.getFullYear() + "' did not match input year: '" + expected.year + "'.");
+//		dojo.debug("dojo.date.parse: Parsed year: '" + result.getFullYear() + "' did not match input year: '" + expected.year + "'.");
 		return null;
 	}
 	if(expected.month && result.getMonth() != expected.month){
-		dojo.debug("dojo.date.parse: Parsed month: '" + result.getMonth() + "' did not match input month: '" + expected.month + "'.");
+//		dojo.debug("dojo.date.parse: Parsed month: '" + result.getMonth() + "' did not match input month: '" + expected.month + "'.");
 		return null;
 	}
 	if(expected.date && result.getDate() != expected.date){
-		dojo.debug("dojo.date.parse: Parsed day of month: '" + result.getDate() + "' did not match input day of month: '" + expected.date + "'.");
+//		dojo.debug("dojo.date.parse: Parsed day of month: '" + result.getDate() + "' did not match input day of month: '" + expected.date + "'.");
 		return null;
 	}
 
@@ -902,7 +902,7 @@ dojo.date.toSql = function(/*Date*/dateObject, /*Boolean?*/noTime){
 //	Convert a Date to a SQL string
 // noTime: whether to ignore the time portion of the Date.  Defaults to false.
 
-	return dojo.date.strftime(dateObject, "%F" + !noTime ? " %T" : ""); // String
+	return dojo.date.strftime(dateObject, "%F" + (noTime ? "" : " %T")); // String
 };
 
 dojo.date.fromSql = function(/*String*/sqlDate){

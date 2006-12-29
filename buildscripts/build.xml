@@ -21,6 +21,7 @@
 	<description>build the Dojo toolkit</description>
 
 	<!-- project properties -->
+	<!-- FIXME: use location instead of value where appropriate? -->
 	<property name="project" value="dojo"/>
 	<property name="build_dir" value="../build"/>
 	<property name="root" value=".."/>
@@ -38,8 +39,9 @@
 	<property name="website_dir" value="${docs_dir}/website"/>
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
 	<property name="profile" value=""/>
-	<property name="locales" value="en-gb,en-us,de-de,es-es,fr-fr,it-it,pt-br,ko-kr,zh-tw,zh-cn,ja-jp"/>
-	<!-- FIXME: where should this list come from? -->
+	<property name="locales" value="en-gb,en-us,de-de,es-es,fr-fr,it-it,pt-br,ko-kr,zh-tw,zh-cn,ja-jp"/> 	<!-- FIXME: where should this list come from? -->
+	<property name="cldrIn" location="${root}/cldr"/>
+	<property name="cldrOut" location="${root}/${src}/i18n/cldr"/>
 
 	<loadfile property="copyright" srcFile="./copyright.txt"/>
 	<loadfile property="build_notice" srcFile="./build_notice.txt"/>
@@ -66,6 +68,10 @@ build targets:
 		all.
 
 	docs - builds documentation in all formats from ./${src} and place it in ${release_docs_dir}
+
+	api - builds release (optimized) api reference application
+
+	cldr - transforms the CLDR localization repository into JSON in the source tree
 
 	test - builds and runs command line unit tests
 
@@ -125,7 +131,6 @@ build targets:
 					args.push(arguments[x]);
 				}
 				java.lang.System.out.println.apply(java.lang.System.out, args);
-
 			}
 
 			function echo(msg, parentTask){
@@ -297,6 +302,118 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 	</target>
 	<!-- end docs task -->
+
+	<!-- api task -->
+	<target name="api"
+		description="Builds a release (optimized) api reference application">
+		<antcall>
+			<param name="profileFile" location="${root}/api/api.profile.js" />
+			<target name="clean" />
+			<target name="release" />
+			<target name="intern-strings" />
+		</antcall>
+		<copy todir="${release_dir}/api" includeEmptyDirs="false" preservelastmodified="true">
+			<fileset dir="${root}/api" />
+		</copy>
+		<copy todir="${release_dir}/docscripts/output/local/json" includeEmptyDirs="false" preservelastmodified="true">
+			<fileset dir="${root}/docscripts/output/local/json" />
+		</copy>
+	</target>
+	<!-- end api task -->
+
+	<!-- docparser task -->
+	<target name="docparser"
+		description="Runs the doc parser against the source tree to generate JSON">
+		<exec dir="${root}/docscripts" executable="php5" failonerror="true">
+			<arg value="-d" />
+			<arg value="memory_limit=100M" />
+			<arg value="-d" />
+			<arg value="error_reporting=2039" />
+			<arg file="docparser.php" />
+		</exec>
+	</target>
+	<!-- end docparser task -->
+
+	<!-- ldml task -->
+	<target name="ldml" depends="-ldml-check" unless="ldmlUnpacked"
+		description="Unpack CLDR repository">
+		<mkdir dir="${cldrIn}/ldml" />
+		<unzip src="${cldrIn}/core.zip" dest="${cldrIn}/ldml" />
+	</target>
+	<target name="-ldml-check">
+			<available property="ldmlUnpacked" file="${cldrIn}/ldml" type="dir" />
+	</target>
+	<!-- end ldml task -->
+
+	<!-- cldr task -->
+	<target name="cldr" depends="-fix-config, ldml"
+		description="Transforms CLDR (localization data) into JSON">
+		<!-- clean directory? -->
+		<macrodef name="processLdml">
+			<attribute name="in"/>
+			<attribute name="destdir"/>
+
+			<sequential>
+				<mkdir dir="@{destdir}"/>
+				<saxon in="@{in}" style="cldrCalendar.xsl" destdir="@{destdir}"/>
+				<saxon in="@{in}" style="cldrNumber.xsl" destdir="@{destdir}"/>
+				<echo level="info" message="Transformed @{in} to @{destDir}" taskName="cldr"/>				
+			</sequential>
+		</macrodef>
+		<macrodef name="saxon">
+			<!-- XSLT ant tasks run for a while, then hang. Perhaps there's a file handle leak?
+				 Kludge: Run as separate JVM processes instead to be safe. -->
+			<attribute name="in"/>
+			<attribute name="style"/>
+			<attribute name="destdir"/>
+
+			<sequential>
+				<java fork="true" dir="@{destdir}" jar="lib/saxon8.jar">
+					<!-- Reference the DTD locally to speed things up -->
+					<!-- resolver and CatalogManager.properties have to be on the bootclasspath, apparently
+						 in order for JAXP to find them -->
+					<jvmarg value="-Xbootclasspath/a:${cldrIn}/../buildscripts/lib/resolver.jar"/>
+					<jvmarg value="-Xbootclasspath/a:${cldrIn}"/>
+					<arg value="-r"/>
+					<arg value="org.apache.xml.resolver.tools.CatalogResolver"/>
+					<arg value="-x"/>
+					<arg value="org.apache.xml.resolver.tools.ResolvingXMLReader"/>
+					<arg value="-y"/>
+					<arg value="org.apache.xml.resolver.tools.ResolvingXMLReader"/>
+					<arg file="@{in}"/>
+					<arg file="@{style}"/>
+				</java>
+			</sequential>
+		</macrodef>
+		
+		<scriptdef name="transformCldr" language="javascript">
+			<attribute name="destdir"/>
+			<element name="fileset" type="fileset"/>
+			<![CDATA[
+	var fs = elements.get("fileset").get(0);
+	ds = fs.getDirectoryScanner(project);
+	srcFiles = ds.getIncludedFiles();
+	var basedir = fs.getDir(project);
+	var destDir = attributes.get("destdir");
+
+	for (i=0; i<srcFiles.length; i++) {
+		var filename = srcFiles[i];
+		var locale = filename.substring(0, filename.indexOf(".")).replace("_","-").toLowerCase();
+		var outDir = new java.io.File(locale == "root" ? destDir : destDir+"/"+locale);
+
+		var ldml = project.createTask("processLdml");
+		ldml.setDynamicAttribute("in", new java.io.File(basedir+"/"+filename));
+		ldml.setDynamicAttribute("destdir", outDir);
+		ldml.perform();
+	}
+			]]>
+		</scriptdef>
+
+		<transformCldr destdir="${cldrOut}/nls">
+			<fileset dir="${cldrIn}/ldml/main" includes="**/*.xml" />
+		</transformCldr>
+	</target>
+	<!-- end cldr task -->
 
 	<!-- clean task -->
 	<target name="clean"
@@ -522,7 +639,15 @@ ${profileDeps}
 				dir="."
 				files="${profileDeps}" />
 		</concat>
-		<!--
+
+		<!-- remove UTF-8 BOM sequence
+		<replaceregexp match="\u00ef\u00bb\u00bf" encoding="utf-8" 
+			byline="true" flags="g" file="${release_dir}/source.__package__.js">
+			<substitution expression="BOM!"/>
+		</replaceregexp>
+		-->
+
+		<!-- 
 			clobber requireIf and requireAfterIf statements since they
 			aren't applicable in build
 		-->
@@ -672,7 +797,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 
 		<delete file="${release_dir}/localizations.tmp.js" />
 		<available property="hasResources" file="${release_dir}/nls" type="dir" />
-		<echo message="Generated flattened resources for prefix ${buildPrefix} in the following locales: ${generatedLocales}."/>
+		<echo level="info" message="Generated flattened resources for prefix ${buildPrefix} in the following locales: ${generatedLocales}."/>
 	</target>
 
 	<target name="-preload-resources" depends="-flatten-resources" if="hasResources"
@@ -700,21 +825,14 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			}
 		]]>
 		</script>
-		<script language="jython">
-			<![CDATA[
-import sys
-# make the python standard library avialable
-sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
-sys.path.append(project.resolveFile(".").getPath())
-
-# import re
-import os
-from buildUtil import *
-
-print "Interning strings for directory: " + dojo.getProperty("release_dir")
-internTemplateStrings(project.resolveFile(dojo.getProperty("profileFile")).getPath(), dojo.getProperty("dojoLoader"), project.resolveFile(dojo.getProperty("release_dir")).getPath())
-]]>
-		</script>
+		
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
+			logError="true">
+			<arg value="internStrings.js" />
+			<arg value="${profileFile}" />
+			<arg value="${dojoLoader}" />
+			<arg value="${release_dir}" />
+		</java>
 	</target>
 	<!-- end intern-strings task -->
 
@@ -852,8 +970,7 @@ available in src/storage/java/ without rebuilding it.
 				failonerror="false"/>
 
 		<jar destfile="${root}/DojoFileStorageProvider.jar">
-			<fileset dir="${root}/src/storage/java/"
-		             includes="*.class"/>
+			<fileset dir="${root}/src/storage/java/" includes="*.class"/>
 		</jar>
 	</target>
 	<!-- end buildFileStorageProvider task -->

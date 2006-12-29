@@ -90,7 +90,7 @@ function _test_rdf_data(sync) {
 		jum.assertTrue("200", result != null);
 		jum.assertTrue("201", result.length == numItems);
 	
-		jum.assertTrue("212", rhizomeStore.get(rdfTestData.testId, rdfTestData.testAttr) == rdfTestData.testValue);
+		jum.assertTrue("212", rhizomeStore.getValue(rdfTestData.testId, rdfTestData.testAttr) == rdfTestData.testValue);
 		//jum.assertTrue("202", result.inProgress() == false);
 		jum.assertTrue("203", result.store == rhizomeStore);
 		callbackCalled = true;
@@ -98,17 +98,17 @@ function _test_rdf_data(sync) {
 	
 	var forEachCallbackCalled = 0;
 	var foreachCallback = function(item, result) {
-		jum.assertTrue("210", rhizomeStore.isItem(item) );
-		//var identity = rhizomeStore.getIdentity(item);
-		//jum.assertTrue("211", identity != null);
+		//jum.assertTrue("210", rhizomeStore.isItem(item) );
+		var identity = rhizomeStore.getIdentity(item);
+		jum.assertTrue("211", identity != null);
 		
-		//var itemToo = rhizomeStore.getByIdentity(identity);
-		//jum.assertTrue("212", item === itemToo);
+		var itemToo = rhizomeStore.loadItem(identity);
+		jum.assertTrue("212", item === itemToo);
 		
 		var attributes = rhizomeStore.getAttributes(item);
 		for (var i in attributes) {
 			var attribute = attributes[i];
-			var value = rhizomeStore.get(item, attribute);
+			var value = rhizomeStore.getValue(item, attribute);
 			var values = rhizomeStore.getValues(item, attribute);
 			var valueToo = values[0];
 			jum.assertTrue("213", value == valueToo);
@@ -151,10 +151,10 @@ function test_data_rdf_revert() {
 	var testAttr = rdfTestData.testAttr;
 	
 	var result = _load_rdf_data(rhizomeStore, true, {}); //sync
-	jum.assertTrue('isItem check for ' + testId, rhizomeStore.isItem(testId));
-	jum.assertTrue('310',rhizomeStore.get(testId, testAttr) == rdfTestData.testValue);
+	//jum.assertTrue('isItem check for ' + testId, rhizomeStore.isItem(testId));
+	jum.assertTrue('310',rhizomeStore.getValue(testId, testAttr) == rdfTestData.testValue);
 	jum.assertTrue('311',rhizomeStore.set(testId, testAttr, 2001));
-	jum.assertTrue('312',rhizomeStore.get(testId, testAttr) ==	 2001);
+	jum.assertTrue('312',rhizomeStore.getValue(testId, testAttr) ==	 2001);
 	jum.assertTrue('313',rhizomeStore.isDirty() );
 	jum.assertTrue('314',rhizomeStore.isDirty(testId) );
 
@@ -163,7 +163,7 @@ function test_data_rdf_revert() {
 	jum.assertFalse('315',rhizomeStore.isDirty() );
 	jum.assertFalse('316',rhizomeStore.isDirty(testId) );
 
-	jum.assertTrue('317',rhizomeStore.get(testId, testAttr) == rdfTestData.testValue);
+	jum.assertTrue('317',rhizomeStore.getValue(testId, testAttr) == rdfTestData.testValue);
 }
 
 function test_data_rdf_save() {
@@ -176,10 +176,10 @@ function test_data_rdf_save() {
 	var testAttr = rdfTestData.testAttr;
 	
 	var result = _load_rdf_data(rhizomeStore, true, {}); //sync
-	jum.assertTrue('isItem check for ' + testId, rhizomeStore.isItem(testId));
-	jum.assertTrue('301',rhizomeStore.get(testId, testAttr) == rdfTestData.testValue);
+	//jum.assertTrue('isItem check for ' + testId, rhizomeStore.isItem(testId));
+	jum.assertTrue('301',rhizomeStore.getValue(testId, testAttr) == rdfTestData.testValue);
 	jum.assertTrue('302',rhizomeStore.set(testId, testAttr, 2001));
-	jum.assertTrue('303',rhizomeStore.get(testId, testAttr) ==	 2001);
+	jum.assertTrue('303',rhizomeStore.getValue(testId, testAttr) ==	 2001);
 
 	jum.assertTrue('304',rhizomeStore.isDirty() );
 	jum.assertTrue('305',rhizomeStore.isDirty(testId) );
@@ -189,5 +189,5 @@ function test_data_rdf_save() {
 	jum.assertFalse('306', rhizomeStore.isDirty() );
 	jum.assertFalse('307', rhizomeStore.isDirty(testId) );
 
-	jum.assertTrue('308', rhizomeStore.get(testId, testAttr) == 2001);
+	jum.assertTrue('308', rhizomeStore.getValue(testId, testAttr) == 2001);
 }

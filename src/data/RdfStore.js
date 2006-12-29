@@ -4,21 +4,6 @@ dojo.require("dojo.lang.declare");
 dojo.require("dojo.data.core.RemoteStore");
 dojo.require("dojo.experimental");
 
-/* summary:
- * RdfStore provides a dojo.data Store for querying and updating a server 
- * that supports the SPARQL Query Result JSON format.
- * (see http://www.w3.org/TR/rdf-sparql-json-res/)
- * 
- * It also maps RDF datatypes to Javascript objects.
- * 
- * RdfStore makes following assumptions about the Result JSON:
- * (1) The result always contains 3 bound variables named "s","p", and "o", 
- *     and each result binding is treated as an RDF statement.
- * (2) When saving changes to the store, the JSON "results" object will also 
- *     contain a "deleted" key whose value is a list of deleted RDF resources.
- *
- */
-
 dojo.data.RdfDatatypeSerializer = function(/* JavaScript type */type, /* function */convertFunc, /* RDF datatype URI */uri) {
 	/* summary:
 	This class serializes a javascript object into a RDF datatype literal.
@@ -31,7 +16,20 @@ dojo.data.RdfDatatypeSerializer = function(/* JavaScript type */type, /* functio
 	};
 }
 
-dojo.declare("dojo.data.RdfStore", dojo.data.core.RemoteStore, {
+dojo.declare("dojo.data.RdfStore", dojo.data.core.RemoteStore, null, {
+	/* summary:
+	 * RdfStore provides a dojo.data Store for querying and updating a server 
+	 * that supports the SPARQL Query Result JSON format.
+	 * (see http://www.w3.org/TR/rdf-sparql-json-res/)
+	 * 
+	 * It also maps RDF datatypes to Javascript objects.
+	 * 
+	 * RdfStore makes following assumptions about the Result JSON:
+	 * (1) The result always contains 3 bound variables named "s","p", and "o", 
+	 *     and each result binding is treated as an RDF statement.
+	 * (2) When saving changes to the store, the JSON "results" object will also 
+	 *     contain a "deleted" key whose value is a list of deleted RDF resources.
+	 */
 
 	_datatypeMap: {
 		//map datatype strings to constructor function
@@ -210,18 +208,18 @@ dojo.declare("dojo.data.RdfStore", dojo.data.core.RemoteStore, {
 	}
 });
 
-dojo.declare("dojo.data.RhizomeStore", dojo.data.RdfStore, {
+dojo.declare("dojo.data.RhizomeStore", dojo.data.RdfStore, 
+	function(kwArgs) {
+		// summary: initializer
+		this._serverQueryUrl = kwArgs.baseUrl + 'search?view=json&searchType=RxPath&search=';
+		this._serverSaveUrl = kwArgs.baseUrl + 'save-metadata';
+	}, {
 	/* summary:
 	 *   RhizomeStore is a subclass of RdfStore that works with
 	 *   the Rhizome semantic wiki (see http://www.liminalzone.org)
 	 *   Rhizome understands the RemoteStore's "native" json format
 	 *   so it doesn't need to convert it to the SPARQL Query Result format.
 	 */
-
-	initializer: function(kwArgs) {
-		this._serverQueryUrl = kwArgs.baseUrl + 'search?view=json&searchType=RxPath&search=';
-		this._serverSaveUrl = kwArgs.baseUrl + 'save-metadata';
-	},
 
 	_resultToQueryMetadata: function(json) {
 		return json;
