@@ -78,18 +78,18 @@ function _test_data_core_movies(sync) {
 	
 	var forEachCallbackCalled = 0;
 	var foreachCallback = function(item, result) {
-		jum.assertTrue("210", remoteStore.isItem(item) );
-		//var identity = remoteStore.getIdentity(item);
-		//jum.assertTrue("211", identity != null);
+		//jum.assertTrue("210 " + item, remoteStore.isItem(item) );
+		var identity = remoteStore.getIdentity(item);
+		jum.assertTrue("211", identity != null);
 		
-		//var itemToo = remoteStore.getByIdentity(identity);
-		//jum.assertTrue("212", item === itemToo);
-		jum.assertTrue("212", remoteStore.get('1', 'Year') == 2002);
+		var itemToo = remoteStore.loadItem(identity);
+		jum.assertTrue("211.5: " + item + ' ' + itemToo, item === itemToo);
+		jum.assertTrue("212", remoteStore.getValue('1', 'Year') == 2002);
 		
 		var attributes = remoteStore.getAttributes(item);
-		for (var i in attributes) {
+		for (var i = 0; i < attributes.length; ++i) {
 			var attribute = attributes[i];
-			var value = remoteStore.get(item, attribute);
+			var value = remoteStore.getValue(item, attribute);
 			var values = remoteStore.getValues(item, attribute);
 			var valueToo = values[0];
 			jum.assertTrue("213", value == valueToo);
@@ -103,8 +103,8 @@ function _test_data_core_movies(sync) {
 	};
 
 	var result = _test_data_core_load_movies(remoteStore, sync, 
-					{ oncompleted : callback,
-					  onnext : foreachCallback });
+					{ oncompleted: callback,
+					  onnext: foreachCallback });
 
 	jum.assertTrue('204 ' + sync + ' ' + callbackCalled, sync == callbackCalled);
 	
@@ -127,9 +127,9 @@ function _test_data_core_movies(sync) {
 function test_data_core_movies_revert() {
 	var remoteStore = _test_data_core_newStore();
 	var result = _test_data_core_load_movies(remoteStore, true, {}); //sync
-	jum.assertTrue(remoteStore.get('1', 'Year') == 2002);
+	jum.assertTrue(remoteStore.getValue('1', 'Year') == 2002);
 	jum.assertTrue(remoteStore.set('1', 'Year',	 2001));
-	jum.assertTrue(remoteStore.get('1', 'Year') ==	2001);
+	jum.assertTrue(remoteStore.getValue('1', 'Year') ==	2001);
 	jum.assertTrue(remoteStore.isDirty() );
 	jum.assertTrue(remoteStore.isDirty('1') );
 
@@ -138,7 +138,7 @@ function test_data_core_movies_revert() {
 	jum.assertFalse(remoteStore.isDirty() );
 	jum.assertFalse(remoteStore.isDirty('1') );
 
-	jum.assertTrue(remoteStore.get('1', 'Year') == 2002);
+	jum.assertTrue(remoteStore.getValue('1', 'Year') == 2002);
 }
 
 function test_data_core_movies_save() {
@@ -146,9 +146,9 @@ function test_data_core_movies_save() {
 	tests.MockXMLHttpRequest.wrap(remoteStore, 'save', "save succeded", 100);	
 
 	var result = _test_data_core_load_movies(remoteStore, true, {}); //sync
-	jum.assertTrue(remoteStore.get('1', 'Year') == 2002);
+	jum.assertTrue(remoteStore.getValue('1', 'Year') == 2002);
 	jum.assertTrue(remoteStore.set('1', 'Year',	 2001));
-	jum.assertTrue(remoteStore.get('1', 'Year') ==	2001);
+	jum.assertTrue(remoteStore.getValue('1', 'Year') ==	2001);
 
 	jum.assertTrue(remoteStore.isDirty() );
 	jum.assertTrue(remoteStore.isDirty('1') );
@@ -158,5 +158,5 @@ function test_data_core_movies_save() {
 	jum.assertFalse('306', remoteStore.isDirty() );
 	jum.assertFalse('307', remoteStore.isDirty('1') );
 			
-	jum.assertTrue('308', remoteStore.get('1', 'Year') == 2001);
+	jum.assertTrue('308', remoteStore.getValue('1', 'Year') == 2001);
 }

@@ -301,10 +301,7 @@ dojo.declare(
 		
 		onBackgroundClick: function(){
 			// summary
-			//		Callback on background click.
-			//		Clicking anywhere on the background will close the dialog, but only
-			//		if the dialog doesn't have an explicit close button, and only if
-			//		the dialog doesn't have a blockDuration.
+			//		Callback on background click, if closeOnBackgroundClick==true.
 			if(this.lifetime - this.timeRemaining >= this.blockDuration){ return; }
 			this.hide();
 		}
@@ -397,7 +394,6 @@ dojo.widget.defineWidget(
 		setCloseControl: function(/*String|DomNode*/ node) {
 			// summary
 			//	Specify which node is the close button for this dialog.
-			//	If no close node is specified then clicking anywhere on the screen will close the dialog.
 			this.closeNode = dojo.byId(node);
 			dojo.event.connect(this.closeNode, "onclick", this, "hide");
 		},

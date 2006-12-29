@@ -5,6 +5,7 @@ dojo.experimental("dojo.number");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.i18n.cldr", "number");
 dojo.require("dojo.string.common");
+dojo.require("dojo.string.extras");
 dojo.require("dojo.regexp"); // should we eliminate this dependency or try to make use of regexp number routines?
 
 dojo.number.format = function(/*Number*/value, /*Object?*/options){
@@ -195,7 +196,7 @@ dojo.number.parse = function(/*String*/expression, /*Object?*/options){
 	}
 
 	var re = dojo.regexp.buildGroupRE(patternList, function(pattern){
-		pattern = dojo.regexp.group(dojo.regexp.escape(pattern, '.'), true);
+		pattern = dojo.regexp.group(dojo.string.escape('regexp', pattern, '.'), true);
 		return pattern.replace(dojo.number._numberPatternRE, "([\\d\\"+group+"]+(?:\\"+decimal+"\\d+)?)"); // also handle .### with no leading integer?
 	}, true);
 

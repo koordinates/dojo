@@ -9,15 +9,15 @@ tests.data.displayFilteringTable = function(datastore, query, tableElement) {
 		var object = {};
 		var attributes = datastore.getAttributes(item);
 		object["Identity"] = item;
-		for (var i in attributes) {
+		for (var i = 0; i < attributes.length; ++i) {
 			var attribute = attributes[i];
-			var value = datastore.get(item, attribute);
+			var value = datastore.getValue(item, attribute);
 			object[attribute] = value;
 		}
 		dataInSimpleStoreFormat.push(object);
 		if (!columnsInFilteringTableFormat) {
 			columnsInFilteringTableFormat = [];
-			for (var i in attributes) {
+			for (i = 0; i < attributes.length; ++i) {
 				var attribute = attributes[i];
 				columnsInFilteringTableFormat.push({field: attribute});
 			}
@@ -28,7 +28,7 @@ tests.data.displayFilteringTable = function(datastore, query, tableElement) {
 	
 	var filteringTable = dojo.widget.createWidget("dojo:FilteringTable", {valueField:"Identity"}, tableElement);
 
-	for (var i in columnsInFilteringTableFormat) {
+	for (i = 0; i < columnsInFilteringTableFormat.length; ++i) {
 		var column = columnsInFilteringTableFormat[i];
 		filteringTable.columns.push(filteringTable.createMetaData(column));
 	}

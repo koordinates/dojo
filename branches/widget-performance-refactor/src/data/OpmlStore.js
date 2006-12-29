@@ -8,7 +8,15 @@ dojo.require("dojo.experimental");
 dojo.experimental("dojo.data.OpmlStore");
 // FIXME: The OpmlStore works in Firefox but does not yet work in IE.
 
-dojo.declare("dojo.data.OpmlStore", dojo.data.core.Read, {
+dojo.declare("dojo.data.OpmlStore", null,
+	function(/* object */ keywordParameters) {
+		// summary: initializer
+		// keywordParameters: {url: String}
+		this._arrayOfTopLevelItems = [];
+		this._metadataNodes = null;
+		this._loadFinished = false;
+		this._opmlFileUrl = keywordParameters["url"];
+	}, {
 	/* summary:
 	 *   The OpmlStore implements the dojo.data.core.Read API.  
 	 */
@@ -17,14 +25,6 @@ dojo.declare("dojo.data.OpmlStore", dojo.data.core.Read, {
 	 *   var opmlStore = new dojo.data.OpmlStore({url:"geography.opml"});
 	 *   var opmlStore = new dojo.data.OpmlStore({url:"http://example.com/geography.opml"});
 	 */
-	initializer: function(/* object */ keywordParameters) {
-		// keywordParameters: {url: String}
-		this._arrayOfTopLevelItems = [];
-		this._metadataNodes = null;
-		this._loadFinished = false;
-		this._opmlFileUrl = keywordParameters["url"];
-	},
-	
 	_assertIsItem: function(/* item */ item) {
 		if (!this.isItem(item)) { 
 			throw new Error("dojo.data.OpmlStore: a function was passed an item argument that was not an item");
@@ -76,8 +76,8 @@ dojo.declare("dojo.data.OpmlStore", dojo.data.core.Read, {
 		}
 	},
 	
-	get: function(/* item */ item, /* attribute || attribute-name-string */ attribute, /* value? */ defaultValue) {
-		// summary: See dojo.data.core.Read.get()
+	getValue: function(/* item */ item, /* attribute || attribute-name-string */ attribute, /* value? */ defaultValue) {
+		// summary: See dojo.data.core.Read.getValue()
 		this._assertIsItem(item);
 		if (attribute == 'children') {
 			return (item.firstChild || defaultValue);
@@ -142,8 +142,13 @@ dojo.declare("dojo.data.OpmlStore", dojo.data.core.Read, {
 				something.tagName == 'outline'); // boolean
 	},
 	
-	isItemAvailable: function(/* anything */ something) {
+	isItemLoaded: function(/* anything */ something) {
 		return this.isItem(something);
+	},
+	
+	loadItem: function(/* item */ item) {
+		this._assertIsItem(item);
+		return item;
 	},
 	
 	find: function(/* object? || dojo.data.core.Result */ keywordArgs) {
@@ -198,17 +203,14 @@ dojo.declare("dojo.data.OpmlStore", dojo.data.core.Read, {
 		return result; // dojo.data.csv.Result
 	},
 	
-	getIdentity: function(/* item */ item) {
-		// summary: See dojo.data.core.Read.getIdentity()
-		dojo.unimplemented('dojo.data.OpmlStore.getIdentity()');
-		return null;
-	},
-	
-	findByIdentity: function(/* string */ identity) {
-		// summary: See dojo.data.core.Read.findByIdentity()
-		dojo.unimplemented('dojo.data.OpmlStore.findByIdentity()');
-		return null;
+	getFeatures: function() {
+		// summary: See dojo.data.core.Read.getFeatures()
+		 var features = {
+			 'dojo.data.core.Read': true
+		 };
+		 return features;
 	}
+	
 });
 
 

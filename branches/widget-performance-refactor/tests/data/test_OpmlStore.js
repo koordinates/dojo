@@ -23,7 +23,7 @@ function showResultViaTreeV3(result) {
 	var rootTreeNode = dojo.widget.createWidget("TreeNodeV3", {title: result.store._opmlFileUrl, tree: tree.widgetId});
 	tree.addChild(rootTreeNode);
 
-	for (var i in result.items) {
+	for (var i = 0; i < result.items.length; ++i) {
 		showItemAsTreeNode(result.store, result.items[i], tree, rootTreeNode);
 	}
 	controller.expandToLevel(tree, 1);
@@ -31,16 +31,16 @@ function showResultViaTreeV3(result) {
 }
 
 function showItemAsTreeNode(store, item, tree, parentTreeNode) {
-	var itemName = store.get(item, 'text');
+	var itemName = store.getValue(item, 'text');
 	var attributes = store.getAttributes(item);
 	var description = '';
-	for (var i in attributes) {
+	for (var i = 0; i < attributes.length; ++i) {
 		var attribute = attributes[i];
 		if (attribute != 'text' && attribute != 'children') {
 			if (description) { 
 				description += ', ';
 			}
-			description += attribute + ': "' + store.get(item, attribute) + '"';
+			description += attribute + ': "' + store.getValue(item, attribute) + '"';
 		}
 	}
 	var treeNodeTitle = itemName;
@@ -50,7 +50,7 @@ function showItemAsTreeNode(store, item, tree, parentTreeNode) {
 	var treeNode = dojo.widget.createWidget("TreeNodeV3", {title: treeNodeTitle, tree: tree.widgetId});
 	parentTreeNode.addChild(treeNode);
 	var children = store.getValues(item, 'children');
-	for (var i in children) {
+	for (var i = 0; i < children.length; ++i) {
 		var childItem = children[i];
 		showItemAsTreeNode(store, childItem, tree, treeNode);
 	}
@@ -58,7 +58,7 @@ function showItemAsTreeNode(store, item, tree, parentTreeNode) {
 
 function showResultViaDojoDebug(result) {
 	dojo.debug(result.items.length + " items returned by store.find()");
-	for (var i in result.items) {
+	for (var i = 0; i < result.items.length; ++i) {
 		showItemViaDojoDebug(result.store, result.items[i]);
 	}
 }
@@ -73,7 +73,7 @@ function showItemViaDojoDebug(store, item, indentLevel) {
 	if (store.hasAttribute(item, 'text')) {
 		var attributes = store.getAttributes(item);
 		var children = store.getValues(item, 'children');
-		dojo.debug(totalIndentString + 'Item: ' + store.get(item, 'text') + 
+		dojo.debug(totalIndentString + 'Item: ' + store.getValue(item, 'text') + 
 			' (' + children.length + ' children)' +
 			' (' + attributes.length + ' attributes)');
 		for (i = 0; i < attributes.length; ++i) {

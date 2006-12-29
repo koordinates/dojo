@@ -15,10 +15,9 @@ $dojo = new Dojo('../');
 $files = $dojo->getFileList();
 
 foreach ($files as $file) {
-  echo "Parsing  $file ...\n";
-
-  // NOTE: if the output dies on a particular file, you can skip it by uncommenting the below
-if ($file == 'src/widget/RichText.js') continue;
+  //echo "Parsing  $file ...<br>\n";
+	//flush();
+	//ob_flush();
 
   $package = new DojoPackage($dojo, $file);
   $package_name = $package->getPackageName();
@@ -240,67 +239,58 @@ foreach (array_keys($output['function_names']) as $package_name) {
   sort($output['function_names'][$package_name]);
 }
 
-$timer->setMarker("Main Processing finished");
-
-//print_r($output);
-//header('Content-type: text/xml');
-
-if (file_exists('wiki')) {
-  $wiki_files = scandir('wiki/WikiHome/DojoDotDoc');
-  foreach ($wiki_files as $wiki_file) {
-    if ($wiki_file{0} == '.') {
-      continue;
-    }
-  
-    $doc = DOMDocument::load('wiki/WikiHome/DojoDotDoc/' . $wiki_file);
-    $xpath = new DOMXPath($doc);
-    $main_property = $xpath->query("//*[@name = 'main/text']")->item(0);
-    $main_text = '';
-    if ($main_property = $main_property->firstChild) {
-      $main_text = preg_replace('%</?html[^>]*>%', '', $doc->saveXML($main_property));
-    }
-    unset($main_property);
-  
-    if (strpos($wiki_file, 'DocPkg') === 0) {
-      $require = $xpath->query("//*[@name = 'DocPkgForm/require']")->item(0)->textContent;
-      $output[$require]['meta']['description'] = $main_text;
-      
-      unset($require);
-    }
-    else if (strpos($wiki_file, 'DocFn') === 0) {
-      $require = $xpath->query("//*[@name = 'DocFnForm/require']")->item(0)->textContent;
-      $name = $xpath->query("//*[@name = 'DocFnForm/name']")->item(0)->textContent;
-      $returns = $xpath->query("//*[@name = 'DocFnForm/returns']")->item(0)->textContent;
-      
-      $output[$require]['meta']['functions'][$name]['meta']['description'] = $main_text;
-      $output[$require]['meta']['functions'][$name]['meta']['returns']['description'] = $returns;
-  
-      unset($require);
-      unset($name);
-      unset($returns);
-    }
-    else if (strpos($wiki_file, 'DocParam') === 0) {
-      list($require, $name) = explode('=>', $xpath->query("//*[@name = 'DocParamForm/fns']")->item(0)->textContent);
-      $parameter = $xpath->query("//*[@name = 'DocParamForm/name']")->item(0)->textContent;
-      $description = $xpath->query("//*[@name = 'DocParamForm/desc']")->item(0)->textContent;
-      
-      $output[$require]['meta']['functions'][$name]['meta']['parameters'][$parameter]['description'] = $description;
-      
-      unset($require);
-      unset($name);
-      unset($parameter);
-      unset($description);
-    }
-  
-    unset($main_text);
-    unset($xpath);
-    unset($doc);
-  }
-  unset($wiki_files);
+$output_by_object = array();
+foreach ($output as $package_name => $package_meta) {
+	if (array_key_exists('meta', $package_meta)) {
+		$package_meta = $package_meta['meta'];
+		foreach (array('functions', 'objects') as $type) {
+			if (array_key_exists($type, $package_meta)) {
+				$package_functions = $package_meta[$type];
+				foreach ($package_functions as $function_name => $function_meta) {
+					$output_by_object[$function_name]['type'] = substr($type, 0, strlen($type) - 1);
+					$output_by_object[$function_name]['resources'][] = $package_name;
+					$output_by_object[$function_name]['resources'] = array_unique($output_by_object[$function_name]['resources']);
+					if (array_key_exists('extra', $function_meta)) {
+						$function_extra = $function_meta['extra'];
+						foreach ($function_extra as $key => $value) {
+							if (is_array($value)) {
+								if (empty($output_by_object[$function_name][$key])) {
+									$output_by_object[$function_name][$key] = array();
+								}
+								$output_by_object[$function_name][$key] = array_unique(array_merge($value, $output_by_object[$function_name][$key]));
+							}
+							else {
+								$output_by_object[$function_name][$key] = $value;
+							}
+						}
+					}
+					if (array_key_exists('meta', $function_meta)) {
+						$function_meta = $function_meta['meta'];
+						foreach ($function_meta as $key => $value) {
+							if (is_array($value)) {
+								if (empty($output_by_object[$function_name][$key])) {
+									$output_by_object[$function_name][$key] = array();
+								}
+								$output_by_object[$function_name][$key] = array_unique(array_merge($value, $output_by_object[$function_name][$key]));
+							}
+							else {
+								$output_by_object[$function_name][$key] = $value;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
+$timer->setMarker("Main Processing finished");
+
+//header("Content-type: text/plain");
+//print_r($output);
+
 $plugins = new Plugins('.');
-$plugins->write($output);
+$plugins->write($output, $output_by_object);
 
 $timer->stop();
 if (isset($_GET['benchmark'])) {

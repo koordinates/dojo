@@ -5,9 +5,9 @@ tests.data.displayViaDojoDebug = function(datastore, query) {
 	var displayItem = function(item, result) {
 		var string = '{';
 		var attributes = datastore.getAttributes(item);
-		for (var i in attributes) {
+		for (var i = 0; i < attributes.length; ++i) {
 			var attribute = attributes[i];
-			var value = datastore.get(item, attribute);
+			var value = datastore.getValue(item, attribute);
 			if (i > 0) {
 				string += ',\n ';
 			}

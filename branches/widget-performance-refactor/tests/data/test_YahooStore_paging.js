@@ -59,9 +59,9 @@ gui = {
 	},
 	
 	displayItem: function(item, result) {
-		var url = this.store.get(item, 'Url');
-		var title = this.store.get(item, 'Title');
-		var summary = this.store.get(item, 'Summary');
+		var url = this.store.getValue(item, 'Url');
+		var title = this.store.getValue(item, 'Title');
+		var summary = this.store.getValue(item, 'Summary');
 		//dojo.debug( dojo.json.serialize(item));
 		//var identity = this.store.getIdentity(item);
 		this.textArray.push('<tr style="border: 2px #FFFFFF solid">');

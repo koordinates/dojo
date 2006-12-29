@@ -10,13 +10,13 @@ dojo.event.topic.subscribe("dojo.widget.Editor2::preLoadingToolbar", function(ed
 	var p = new dojo.widget.Editor2Plugin.ToolbarDndSupport(editor);
 });
 
-dojo.declare("dojo.widget.Editor2Plugin.ToolbarDndSupport", null,{
-	lookForClass: "dojoEditorToolbarDnd TB_ToolbarSet TB_Toolbar",
-	initializer: function(editor){
+dojo.declare("dojo.widget.Editor2Plugin.ToolbarDndSupport", null,
+	function(editor){
 		this.editor = editor;
 		dojo.event.connect(this.editor, "toolbarLoaded", this, "setup");
 		this.editor.registerLoadedPlugin(this);
-	},
+	},{
+	lookForClass: "dojoEditorToolbarDnd TB_ToolbarSet TB_Toolbar",
 
 	setup: function(){
 		dojo.event.disconnect(this.editor, "toolbarLoaded", this, "setup");

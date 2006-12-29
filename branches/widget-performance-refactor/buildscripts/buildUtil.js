@@ -195,38 +195,40 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	return depList;
 }
 
+buildUtil.getDependencyPropertyFromProfile = function(/*String*/profileFile, /*String*/propName){
+	//summary: Gets a dependencies property from the profile file. The value
+	//of the property is assumed to be an array. An array will always be returned,
+	//but it may be an empty array.
 
-buildUtil.getPrefixesFromProfile = function(profileFile){
-	//summary: Load the profile file to get resource paths for external modules.
 	//Use new String to make sure we have a JS string (not a Java string)
 	//readText is from hostenv_rhino.js, so be sure to load Dojo before calling this function.
 	var profileText = new String(readText(profileFile));
-	var result = null;
-	
-	//Extract only dependencies.prefixes.
-	var dependencies = {
-		prefixes: []
-	};
-	
 	//Get rid of CR and LFs since they seem to mess with the regexp match.
 	//Using the "m" option on the regexp was not enough.
 	profileText = profileText.replace(/\r/g, "");
 	profileText = profileText.replace(/\n/g, "");
+
+
+	var result = [];
+	var matchRegExp = new RegExp("(dependencies\\." + propName + "\\s*=\\s*\\[[^;]*\\s*\\])", "m");
+
+	var matches = profileText.match(matchRegExp);
+	//Create a shell object to hold the evaled properties.
+	var dependencies = {};
 	
-	var matches = profileText.match(/(dependencies\.prefixes\s*=\s*\[.*\]\s*\;)/m);
 	if(matches && matches.length > 0){
 		eval(matches[0]);
-		if(dependencies && dependencies.prefixes && dependencies.prefixes.length > 0){
-			result = dependencies.prefixes;
+		if(dependencies && dependencies[propName] && dependencies[propName].length > 0){
+			result = dependencies[propName];
 		}
 	}
 
-	return result; //Array of arrays
+	return result; //Array
 }
 
 buildUtil.configPrefixes = function(profileFile){
 	//summary: Get the resource prefixes from the profile and registers the prefixes with Dojo.
-	var prefixes = this.getPrefixesFromProfile(profileFile);
+	var prefixes = this.getDependencyPropertyFromProfile(profileFile, "prefixes");
 	if(prefixes && prefixes.length > 0){
 		for(i = 0; i < prefixes.length; i++){
 			dojo.registerModulePath(prefixes[i][0], prefixes[i][1]);
