@@ -325,8 +325,10 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 	<target name="docparser"
 		description="Runs the doc parser against the source tree to generate JSON">
 		<exec dir="${root}/docscripts" executable="php5" failonerror="true">
-			<arg line="-d memory_limit=100M" />
-			<arg line="-d error_reporting=2039" />
+			<arg value="-d" />
+			<arg value="memory_limit=100M" />
+			<arg value="-d" />
+			<arg value="error_reporting=2039" />
 			<arg file="docparser.php" />
 		</exec>
 	</target>
@@ -355,33 +357,31 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 				<mkdir dir="@{destdir}"/>
 				<saxon in="@{in}" style="cldrCalendar.xsl" destdir="@{destdir}"/>
 				<saxon in="@{in}" style="cldrNumber.xsl" destdir="@{destdir}"/>
-				<echo message="Transformed @{in} to @{destDir}"/>				
+				<echo level="info" message="Transformed @{in} to @{destDir}" taskName="cldr"/>				
 			</sequential>
 		</macrodef>
 		<macrodef name="saxon">
+			<!-- XSLT ant tasks run for a while, then hang. Perhaps there's a file handle leak?
+				 Kludge: Run as separate JVM processes instead to be safe. -->
 			<attribute name="in"/>
 			<attribute name="style"/>
 			<attribute name="destdir"/>
 
 			<sequential>
-				<!-- XSLT ant tasks run for a while, then hang. Perhaps there's a file handle leak?
-					 Kludge: Run as separate JVM processes instead to be safe. -->
 				<java fork="true" dir="@{destdir}" jar="lib/saxon8.jar">
-<!-- Reference the DTD locally to speed things up -->
-<!--
-					<arg line="-r org.apache.xml.resolver.tools.CatalogResolver"/>
-					<arg line="-x org.apache.xml.resolver.tools.ResolvingXMLReader"/>
-					<arg line="-y org.apache.xml.resolver.tools.ResolvingXMLReader"/>
--->
+					<!-- Reference the DTD locally to speed things up -->
+					<!-- resolver and CatalogManager.properties have to be on the bootclasspath, apparently
+						 in order for JAXP to find them -->
+					<jvmarg value="-Xbootclasspath/a:/Users/peller/Documents/workspace-dojo/trunk/buildscripts/lib/resolver.jar:${cldrIn}"/>
+					<jvmarg value="-Xbootclasspath/a:${cldrIn}"/>
+					<arg value="-r"/>
+					<arg value="org.apache.xml.resolver.tools.CatalogResolver"/>
+					<arg value="-x"/>
+					<arg value="org.apache.xml.resolver.tools.ResolvingXMLReader"/>
+					<arg value="-y"/>
+					<arg value="org.apache.xml.resolver.tools.ResolvingXMLReader"/>
 					<arg file="@{in}"/>
 					<arg file="@{style}"/>
-<!--
-					<classpath>
-						<pathelement location="lib/resolver.jar"/>
-						<!-- for CatalogManager.properties -->
-						<pathelement location="${cldrIn}"/>
-					</classpath>
--->
 				</java>
 			</sequential>
 		</macrodef>
@@ -797,7 +797,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 
 		<delete file="${release_dir}/localizations.tmp.js" />
 		<available property="hasResources" file="${release_dir}/nls" type="dir" />
-		<echo message="Generated flattened resources for prefix ${buildPrefix} in the following locales: ${generatedLocales}."/>
+		<echo level="info" message="Generated flattened resources for prefix ${buildPrefix} in the following locales: ${generatedLocales}."/>
 	</target>
 
 	<target name="-preload-resources" depends="-flatten-resources" if="hasResources"
