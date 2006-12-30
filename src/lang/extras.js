@@ -105,29 +105,3 @@ dojo.lang.getObjPathValue = function(/*String*/objpath, /*Object?*/context, /*Bo
 		return dojo.evalProp(prop, obj, create); // Object
 	}
 }
-
-dojo.lang.setObjPathValue = function(/*String*/objpath, /*anything*/value, /*Object?*/context, /*Boolean?*/create){
-	// summary:
-	//		Sets a value on a reference specified as a string descriptor.
-	//		(e.g. "A.B") in the given context. This is similar to straight
-	//		assignment, except that the object structure in question can
-	//		optionally be created if it does not exist.
-	//	context: if not specified, dj_global is used
-	//	create: if true, undefined objects in the path are created.
-
-	// FIXME: why is this function valuable? It should be scheduled for
-	// removal on the grounds that dojo.parseObjPath does most of it's work and
-	// is more straightforward and has fewer dependencies. Also, the order of
-	// arguments is bone-headed. "context" should clearly come after "create".
-	// *sigh*
-	dojo.deprecated("dojo.lang.setObjPathValue", "use dojo.parseObjPath and the '=' operator", "0.6");
-
-	if(arguments.length < 4){
-		create = true;
-	}
-	with(dojo.parseObjPath(objpath, context, create)){
-		if(obj && (create || (prop in obj))){
-			obj[prop] = value;
-		}
-	}
-}
