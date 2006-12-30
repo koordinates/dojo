@@ -4,7 +4,7 @@
 // but you can change the hostenv file that's included by setting the value of
 // the variable "hostenvType" (defaults to "browser").
 var dependencies = [
-	"dojo.io.*",
+	"dojo.io.common",
 	"dojo.io.BrowserIO",
 	"dojo.event.*",
 	"dojo.lfx.*"
