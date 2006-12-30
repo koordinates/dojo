@@ -435,64 +435,6 @@ dojo.regexp.us.state = function(/*Object?*/flags){
 	return "(" + statesRE + ")"; // String
 }
 
-dojo.regexp.time = function(/*Object?*/flags){
-	// summary: Builds a regular expression to match any International format for time
-	// description: The RE can match one format or one of multiple formats.
-	//
-	//  Format
-	//  h        12 hour, no zero padding.
-	//  hh       12 hour, has leading zero.
-	//  H        24 hour, no zero padding.
-	//  HH       24 hour, has leading zero.
-	//  m        minutes, no zero padding.
-	//  mm       minutes, has leading zero.
-	//  s        seconds, no zero padding.
-	//  ss       seconds, has leading zero.
-	//  t        am or pm, case insensitive.
-	//  All other characters must appear literally in the expression.
-	//
-	//  Example
-	//    "h:m:s t"  ->   2:5:33 PM
-	//    "HH:mm:ss" ->  14:05:33
-	//
-	// flags: An object
-	//    flags.format  A string or an array of strings.  Default is "h:mm:ss t".
-	//    flags.amSymbol  The symbol used for AM.  Default is "AM".
-	//    flags.pmSymbol  The symbol used for PM.  Default is "PM".
-
-	dojo.deprecated("dojo.regexp.time", "Use dojo.date.parse instead", "0.5");
-
-	// assign default values to missing paramters
-	flags = (typeof flags == "object") ? flags : {};
-	if(typeof flags.format == "undefined"){ flags.format = "h:mm:ss t"; }
-	if(typeof flags.amSymbol != "string"){ flags.amSymbol = "AM"; }
-	if(typeof flags.pmSymbol != "string"){ flags.pmSymbol = "PM"; }
-
-	// Converts a time format to a RE
-	var timeRE = function(format){
-		// escape all special characters
-		format = format.replace( /([.$?*!=:|{}\(\)\[\]\\\/^])/g, "\\$1");
-		var amRE = flags.amSymbol.replace( /([.$?*!=:|{}\(\)\[\]\\\/^])/g, "\\$1");
-		var pmRE = flags.pmSymbol.replace( /([.$?*!=:|{}\(\)\[\]\\\/^])/g, "\\$1");
-
-		// replace tokens with Regular Expressions
-		format = format.replace("hh", "(0[1-9]|1[0-2])");
-		format = format.replace("h", "([1-9]|1[0-2])");
-		format = format.replace("HH", "([01][0-9]|2[0-3])");
-		format = format.replace("H", "([0-9]|1[0-9]|2[0-3])");
-		format = format.replace("mm", "([0-5][0-9])");
-		format = format.replace("m", "([1-5][0-9]|[0-9])");
-		format = format.replace("ss", "([0-5][0-9])");
-		format = format.replace("s", "([1-5][0-9]|[0-9])");
-		format = format.replace("t", "\\s?(" + amRE + "|" + pmRE + ")\\s?" );
-
-		return format; // String
-	};
-
-	// build RE for multiple time formats
-	return dojo.regexp.buildGroupRE(flags.format, timeRE); // String
-}
-
 dojo.regexp.numberFormat = function(/*Object?*/flags){
 	// summary: Builds a regular expression to match any sort of number based format
 	// description:
