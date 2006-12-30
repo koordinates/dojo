@@ -3,7 +3,6 @@ dojo.provide("dojo.io.BrowserIO");
 dojo.require("dojo.io.common");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.func");
-dojo.require("dojo.string.extras");
 dojo.require("dojo.dom");
 // undo stack should be manually included
 // dojo["require"]("dojo.undo.browser");
@@ -75,7 +74,7 @@ dojo.io.encodeForm = function(/*DOMNode*/formNode, /*String?*/encoding, /*Functi
 		dojo.raise("Attempted to encode a non-form element.");
 	}
 	if(!formFilter) { formFilter = dojo.io.formFilter; }
-	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
+	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.io._encodeAscii;
 	var values = [];
 
 	for(var i = 0; i < formNode.elements.length; i++){
@@ -267,9 +266,9 @@ dojo.io.XMLHTTPTransport = new function(){
 				ret = {};
 				ret.toString = function(){ return headers; }
 				var values = headers.split(/[\r\n]+/g);
-				for(var i = 0; i < values.length; i++) {
+				for(var i = 0; i < values.length; i++){
 					var pair = values[i].match(/^([^:]+)\s*:\s*(.+)$/i);
-					if(pair) {
+					if(pair){
 						ret[pair[1]] = pair[2];
 					}
 				}
@@ -311,11 +310,11 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	// set headers (note: Content-Type will get overriden if kwArgs.contentType is set)
 	function setHeaders(http, kwArgs){
-		if(kwArgs["headers"]) {
-			for(var header in kwArgs["headers"]) {
-				if(header.toLowerCase() == "content-type" && !kwArgs["contentType"]) {
+		if(kwArgs["headers"]){
+			for(var header in kwArgs["headers"]){
+				if(header.toLowerCase() == "content-type" && !kwArgs["contentType"]){
 					kwArgs["contentType"] = kwArgs["headers"][header];
-				} else {
+				}else{
 					http.setRequestHeader(header, kwArgs["headers"][header]);
 				}
 			}
@@ -461,7 +460,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			query += dojo.io.encodeForm(kwArgs.formNode, kwArgs.encoding, kwArgs["formFilter"]);
 		}
 
-		if(url.indexOf("#") > -1) {
+		if(url.indexOf("#") > -1){
 			dojo.debug("Warning: dojo.io.bind: stripping hash values from url:", url);
 			url = url.split("#")[0];
 		}
@@ -497,7 +496,7 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		var content = kwArgs["content"] || {};
 
-		if(kwArgs.sendTransport) {
+		if(kwArgs.sendTransport){
 			content["dojo.transport"] = "xmlhttp";
 		}
 
@@ -507,7 +506,7 @@ dojo.io.XMLHTTPTransport = new function(){
 				break;
 			}
 
-			if(content) {
+			if(content){
 				query += dojo.io.argsFromMap(content, kwArgs.encoding);
 			}
 			
@@ -619,11 +618,16 @@ dojo.io.XMLHTTPTransport = new function(){
 			}
 		}else{
 			var tmpUrl = url;
-			if(query != "") {
+			if(query != ""){
 				tmpUrl += (tmpUrl.indexOf("?") > -1 ? "&" : "?") + query;
 			}
-			if(preventCache) {
-				tmpUrl += (dojo.string.endsWithAny(tmpUrl, "?", "&")
+			if(preventCache){
+				
+				var lcPos = tmpUrl.length-1;
+				tmpUrl += ((
+					(tmpUrl.lastIndexOf("?") == lcPos)||
+					(tmpUrl.lastIndexOf("&") == lcPos)
+				)
 					? "" : (tmpUrl.indexOf("?") > -1 ? "&" : "?")) + "dojo.preventCache=" + new Date().valueOf();
 			}
 			if (!kwArgs.user) {
