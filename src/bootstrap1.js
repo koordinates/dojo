@@ -114,8 +114,8 @@ dojo.evalProp = function(/*String*/ name, /*Object*/ object, /*Boolean?*/ create
 	// description:
 	//		Returns null if 'object[name]' is not defined and 'create' is not true.
 	// 		Note: 'defined' and 'exists' are not the same concept.
-	if((!object)||(!name)) return undefined; // undefined
-	if(!dj_undef(name, object)) return object[name]; // mixed
+	if((!object)||(!name)){ return undefined; }// undefined
+	if(!dj_undef(name, object)){ return object[name]; }// mixed
 	return (create ? (object[name]={}) : undefined);	// mixed
 }
 
@@ -130,7 +130,7 @@ dojo.parseObjPath = function(/*String*/ path, /*Object?*/ context, /*Boolean?*/ 
 	var object = (context || dojo.global());
 	var names = path.split('.');
 	var prop = names.pop();
-	for (var i=0,l=names.length;i<l && object;i++){
+	for(var i=0,l=names.length;i<l && object;i++){
 		object = dojo.evalProp(names[i], object, create);
 	}
 	return {obj: object, prop: prop};	// Object: {obj: Object, prop: String}
@@ -182,7 +182,11 @@ dojo.raise = function(/*String*/ message, /*Error?*/ exception){
 	}
 
 	// print the message to the user if hostenv.println is defined
-	try { if(djConfig.isDebug){ dojo.hostenv.println("FATAL exception raised: "+message); } } catch (e) {}
+	try{ 
+		if(djConfig.isDebug){
+			dojo.hostenv.println("FATAL exception raised: "+message);
+		}
+	}catch(e){}
 
 	throw exception || Error(message);
 }
@@ -191,7 +195,12 @@ dojo.raise = function(/*String*/ message, /*Error?*/ exception){
 //TODOC:  HOW TO DOC THESE?
 dojo.debug = function(){};
 dojo.debugShallow = function(obj){};
-dojo.profile = { start: function(){}, end: function(){}, stop: function(){}, dump: function(){} };
+dojo.profile = { 
+	start: function(){}, 
+	end: function(){}, 
+	stop: function(){}, 
+	dump: function(){}
+};
 
 function dj_eval(/*String*/ scriptFragment){
 	// summary: Perform an evaluation in the global scope.  Use this rather than calling 'eval()' directly.
@@ -207,7 +216,7 @@ dojo.unimplemented = function(/*String*/ funcname, /*String?*/ extra){
 	// summary: Throw an exception because some function is not implemented.
 	// extra: Text to append to the exception message.
 	var message = "'" + funcname + "' not implemented";
-	if (extra != null) { message += " " + extra; }
+	if(extra != null){ message += " " + extra; }
 	dojo.raise(message);
 }
 
@@ -286,10 +295,11 @@ dojo.hostenv = (function(){
 		parseWidgets: true
 	};
 
-	if (typeof djConfig == "undefined") { djConfig = config; }
-	else {
-		for (var option in config) {
-			if (typeof djConfig[option] == "undefined") {
+	if(typeof djConfig == "undefined"){
+		djConfig = config;
+	}else{
+		for(var option in config){
+			if(typeof djConfig[option] == "undefined"){
 				djConfig[option] = config[option];
 			}
 		}
@@ -336,7 +346,9 @@ dojo.hostenv.getBaseScriptUri = function(){
 	//			uri = djConfig.libraryScriptUri || djConfig.baseRelativePath
 	//		??? Why 'new String(...)'
 	var uri = new String(djConfig.libraryScriptUri||djConfig.baseRelativePath);
-	if (!uri) { dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri); }
+	if(!uri){ 
+		dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri);
+	}
 
 	// MOW: uri seems to not be actually used.  Seems to be hard-coding to djConfig.baseRelativePath... ???
 	var lastslash = uri.lastIndexOf('/');		// MOW ???
