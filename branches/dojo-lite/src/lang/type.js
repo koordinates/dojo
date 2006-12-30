@@ -9,35 +9,23 @@ dojo.lang.whatAmI.custom = {
 dojo.lang.getType = function(/* anything */ value){
 	// summary: Attempts to determine what type value is.
 	// value: Any literal value or object instance.
+	var dl = dojo.lang;
+	var defaultTypes = [
+		"array", "function", "string", "number", "boolean", "alien", "undefined"
+	];
 	try{
-		if(dojo.lang.isArray(value)){ 
-			return "array";	//	string 
-		}
-		if(dojo.lang.isFunction(value)){ 
-			return "function";	//	string 
-		}
-		if(dojo.lang.isString(value)){ 
-			return "string";	//	string 
-		}
-		if(dojo.lang.isNumber(value)){ 
-			return "number";	//	string 
-		}
-		if(dojo.lang.isBoolean(value)){ 
-			return "boolean";	//	string 
-		}
-		if(dojo.lang.isAlien(value)){ 
-			return "alien";	//	string 
-		}
-		if(dojo.lang.isUndefined(value)){ 
-			return "undefined";	//	string 
+		for(var name in defaultTypes){
+			if(defaultTypes["is"+name.substring(0,1).toUpperCase()+name.substring(1)](value)){
+				return name; //	string
+			}
 		}
 		// FIXME: should this go first?
-		for(var name in dojo.lang.whatAmI.custom){
-			if(dojo.lang.whatAmI.custom[name](value)){
+		for(var name in dl.whatAmI.custom){
+			if(dl.whatAmI.custom[name](value)){
 				return name;	//	string
 			}
 		}
-		if(dojo.lang.isObject(value)){ 
+		if(dl.isObject(value)){ 
 			return "object";	//	string 
 		}
 	}catch(e){}
@@ -76,12 +64,13 @@ dojo.lang.isBuiltIn = function(/* anything */ value){
 	//		instance of a built-in type like String, Number, Boolean, Array,
 	//		Function, or Error.  
 	// value: Any literal value or object instance.
+	var dl = dojo.lang;
 	
-	return (dojo.lang.isArray(value)
-		|| dojo.lang.isFunction(value)	
-		|| dojo.lang.isString(value)
-		|| dojo.lang.isNumber(value)
-		|| dojo.lang.isBoolean(value)
+	return (dl.isArray(value)
+		|| dl.isFunction(value)	
+		|| dl.isString(value)
+		|| dl.isNumber(value)
+		|| dl.isBoolean(value)
 		|| (value == null)
 		|| (value instanceof Error)
 		|| (typeof value == "error") 
@@ -147,85 +136,66 @@ dojo.lang.isOfType = function(/* anything */ value, /* function */ type, /* obje
 	 *
 	 *   dojo.lang.isOfType(null, Date, {optional: true} );    // returns true	// description: 
 	 */
+	var dl = dojo.lang;
 	var optional = false;
 	if(keywordParameters){
 		optional = keywordParameters["optional"];
 	}
-	if(optional && ((value === null) || dojo.lang.isUndefined(value))){
+	if(optional && ((value === null) || dl.isUndefined(value))){
 		return true;	//	boolean
 	}
-	if(dojo.lang.isArray(type)){
+	if(dl.isArray(type)){
 		var arrayOfTypes = type;
 		for(var i in arrayOfTypes){
 			var aType = arrayOfTypes[i];
-			if(dojo.lang.isOfType(value, aType)){
+			if(dl.isOfType(value, aType)){
 				return true; 	//	boolean
 			}
 		}
 		return false;	//	boolean
 	}else{
-		if(dojo.lang.isString(type)){
+		if(dl.isString(type)){
 			type = type.toLowerCase();
 		}
 		switch (type) {
 			case Array:
 			case "array":
-				return dojo.lang.isArray(value);	//	boolean
+				return dl.isArray(value);	//	boolean
 			case Function:
 			case "function":
-				return dojo.lang.isFunction(value);	//	boolean
+				return dl.isFunction(value);	//	boolean
 			case String:
 			case "string":
-				return dojo.lang.isString(value);	//	boolean
+				return dl.isString(value);	//	boolean
 			case Number:
 			case "number":
-				return dojo.lang.isNumber(value);	//	boolean
+				return dl.isNumber(value);	//	boolean
 			case "numeric":
-				return dojo.lang.isNumeric(value);	//	boolean
+				return dl.isNumeric(value);	//	boolean
 			case Boolean:
 			case "boolean":
-				return dojo.lang.isBoolean(value);	//	boolean
+				return dl.isBoolean(value);	//	boolean
 			case Object:
 			case "object":
-				return dojo.lang.isObject(value);	//	boolean
+				return dl.isObject(value);	//	boolean
 			case "pureobject":
-				return dojo.lang.isPureObject(value);	//	boolean
+				return dl.isPureObject(value);	//	boolean
 			case "builtin":
-				return dojo.lang.isBuiltIn(value);	//	boolean
+				return dl.isBuiltIn(value);	//	boolean
 			case "alien":
-				return dojo.lang.isAlien(value);	//	boolean
+				return dl.isAlien(value);	//	boolean
 			case "undefined":
-				return dojo.lang.isUndefined(value);	//	boolean
+				return dl.isUndefined(value);	//	boolean
 			case null:
 			case "null":
 				return (value === null);	//	boolean
 			default:
-				if(dojo.lang.isFunction(type)){
+				if(dl.isFunction(type)){
 					return (value instanceof type);	//	boolean
 				}else{
-					dojo.raise("dojo.lang.isOfType() was passed an invalid type");
+					dojo.raise("dl.isOfType() was passed an invalid type");
 				}
 		}
 	}
 	dojo.raise("If we get here, it means a bug was introduced above.");
-}
-
-dojo.lang.getObject=function(/* String */ str){
-	// summary:
-	//   Will return an object, if it exists, based on the name in the passed string.
-	var parts=str.split("."), i=0, obj=dj_global; 
-	do{ 
-		obj=obj[parts[i++]]; 
-	}while(i<parts.length&&obj); 
-	return (obj!=dj_global)?obj:null;	//	Object
-}
-
-dojo.lang.doesObjectExist=function(/* String */ str){
-	// summary:
-	//   Check to see if object [str] exists, based on the passed string.
-	var parts=str.split("."), i=0, obj=dj_global; 
-	do{ 
-		obj=obj[parts[i++]]; 
-	}while(i<parts.length&&obj); 
-	return (obj&&obj!=dj_global);	//	boolean
 }
