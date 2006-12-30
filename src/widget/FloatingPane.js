@@ -423,8 +423,8 @@ dojo.widget.defineWidget(
 		windowState: "minimized",
 		displayCloseAction: true,
 		postCreate: function(){
-			dojo.widget.ModalDialogBase.prototype.postCreate.call(this);
-			dojo.widget.ModalFloatingPane.superclass.postCreate.call(this);
+			this.domNode.style.display="none";
+			dojo.widget.ModalFloatingPane.superclass.postCreate.apply(this, arguments);
 		},
 		show: function(){
 			this.showModalDialog();
