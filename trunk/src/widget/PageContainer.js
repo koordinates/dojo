@@ -30,6 +30,13 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 		// Copy style info from input node to output node
 		var source = this.getFragNodeRef(frag);
 		dojo.html.copyStyle(this.domNode, source);
+
+		// Before instantiating children, mark them as display:none so that (for
+		// ContentPane children) rendering will be deferred until they are displayed
+		for(var child=dojo.html.firstElement(this.containerNode); child; child=dojo.html.nextElement(child)){
+			child.style.display="none";
+		}
+
 		dojo.widget.PageContainer.superclass.fillInTemplate.apply(this, arguments);
 	},
 
