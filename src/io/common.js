@@ -1,5 +1,4 @@
 dojo.provide("dojo.io.common");
-dojo.require("dojo.string");
 dojo.require("dojo.lang.extras");
 
 /******************************************************************************
@@ -374,6 +373,25 @@ dojo.io._dispatchNextQueueBind = function(){
 dojo.io._bindQueue = [];
 dojo.io._queueBindInFlight = false;
 
+// FIXME: 
+//		not sure exactly what _encodeAscii is trying to do, or if it's working
+dojo.io._encodeAscii = function(/*string*/str){
+	// taken from dojo.string.extras. No need to include the entire namespace
+	// for one sub-K function.
+	if(!dojo.lang.isString(str)){ return str; } // unknown
+	var ret = "";
+	var value = escape(str);
+	var match, re = /%u([0-9A-F]{4})/i;
+	while((match = value.match(re))){
+		var num = Number("0x"+match[1]);
+		var newVal = escape("&#" + num + ";");
+		ret += value.substring(0, match.index) + newVal;
+		value = value.substring(match.index+match[0].length);
+	}
+	ret += value.replace(/\+/g, "%2B");
+	return ret; // string
+}
+
 dojo.io.argsFromMap = function(/*Object*/map, /*String?*/encoding, /*String?*/last){
 	// summary:
 	//		Converts name/values pairs in the map object to an URL-encoded string
@@ -386,7 +404,7 @@ dojo.io.argsFromMap = function(/*Object*/map, /*String?*/encoding, /*String?*/la
 	//			dojo.string.encodeAscii is used.
 	//		last: String?
 	//			The last parameter in the list. Helps with final string formatting?
-	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
+	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.io._encodeAscii;
 	var mapped = [];
 	var control = new Object();
 	for(var name in map){
