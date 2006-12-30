@@ -5,7 +5,8 @@ dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.string.extras");
 dojo.require("dojo.dom");
-dojo.require("dojo.undo.browser");
+// undo stack should be manually included
+// dojo["require"]("dojo.undo.browser");
 
 if(!dj_undef("window")) {
 
@@ -489,7 +490,9 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 
 		if(kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeUrl"]){
-			dojo.undo.browser.addToHistory(kwArgs);
+			if(dojo.evalObjPath("dojo.undo.browser")){
+				dojo.undo.browser.addToHistory(kwArgs);
+			}
 		}
 
 		var content = kwArgs["content"] || {};
