@@ -15,8 +15,6 @@ dojo.declare(
 		// summary
 		//	Mixin for widgets implementing a modal dialog
 
-		isContainer: true,
-
 		// focusElement: String
 		//	provide a focusable element or element id if you need to
 		//	work around FF's tendency to send focus into outer space on hide
@@ -83,11 +81,11 @@ dojo.declare(
 			}, 100);
 		},
 
-		postCreate: function() {
+		_setup: function() {
 			// summary
-			//	if the target mixin class already defined postCreate,
-			//	dojo.widget.ModalDialogBase.prototype.postCreate.call(this)
-			//	should be called in its postCreate()
+			//	stuff we need to do before showing the Dialog for the first time
+			//	(but we defer it until right beforehand, for performance reasons)
+
 			with(this.domNode.style){
 				position = "absolute";
 				zIndex = 999;
@@ -126,8 +124,12 @@ dojo.declare(
 		},
 
 		uninitialize: function(){
-			this.bgIframe.remove();
-			dojo.html.removeNode(this.bg, true);
+			if(this.bgIframe){
+				this.bgIframe.remove();
+			}
+			if(this.bg){
+				dojo.html.removeNode(this.bg, true);
+			}
 		},
 
 		setBackgroundColor: function(/*String*/ color) {
@@ -240,6 +242,13 @@ dojo.declare(
 		showModalDialog: function() {
 			// summary
 			//	call this function in show() of subclass before calling superclass.show()
+
+			// first time we show the dialog, there's some initialization stuff to do			
+			if(!this._alreadyInitialized){
+				this._setup();
+				this._alreadyInitialized=true;
+			}
+				
 			if (this.followScroll && !this._scrollConnected){
 				this._scrollConnected = true;
 				dojo.event.connect(window, "onscroll", this, "_onScroll");
@@ -264,6 +273,11 @@ dojo.declare(
 		hideModalDialog: function(){
 			// summary
 			//	call this function in hide() of subclass
+
+			// if we haven't been initialized yet then we aren't showing and we can just return		
+			if(!this._alreadyInitialized){
+				return;
+			}
 
 			// workaround for FF focus going into outer space
 			if (this.focusElement) {
@@ -329,19 +343,17 @@ dojo.widget.defineWidget(
 		//	Id of button or other dom node to click to close this dialog
 		closeNode: "",
 
-		postMixInProperties: function(){
-			dojo.widget.Dialog.superclass.postMixInProperties.apply(this, arguments);
-			if(this.closeNode){
-				this.setCloseControl(this.closeNode);
-			}
-		},
-
 		postCreate: function(){
+			// hide the dialog so it doesnt show up, and also to defer processing of dialog contents
+			// (or href attribute) until the dialog is shown)
+			this.domNode.style.display="none";
 			dojo.widget.Dialog.superclass.postCreate.apply(this, arguments);
-			dojo.widget.ModalDialogBase.prototype.postCreate.apply(this, arguments);
 		},
 
 		show: function() {
+			if(this.closeNode){
+				this.setCloseControl(this.closeNode);
+			}
 			if(this.lifetime){
 				this.timeRemaining = this.lifetime;
 				if(this.timerNode){
@@ -371,10 +383,6 @@ dojo.widget.defineWidget(
 			dojo.widget.Dialog.superclass.onLoad.call(this);
 		},
 		
-		fillInTemplate: function(){
-			// dojo.event.connect(this.domNode, "onclick", this, "killEvent");
-		},
-
 		hide: function(){
 			this.hideModalDialog();
 			dojo.widget.Dialog.superclass.hide.call(this);
@@ -395,7 +403,7 @@ dojo.widget.defineWidget(
 			// summary
 			//	Specify which node is the close button for this dialog.
 			this.closeNode = dojo.byId(node);
-			dojo.event.connect(this.closeNode, "onclick", this, "hide");
+			dojo.event.connectOnce(this.closeNode, "onclick", this, "hide");
 		},
 
 		setShowControl: function(/*String|DomNode*/ node) {
