@@ -9,6 +9,7 @@ var dependencies = [
 	"dojo.event.*",
 	"dojo.lfx.*"
 ];
+dependencies.loader = "stub";
 
 // NOTE: this MUST be included or a list of files must be output via print()
 // manually.
