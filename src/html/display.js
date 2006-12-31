@@ -38,14 +38,14 @@ dojo.html.setShowing = function(/* HTMLElement */node, /* boolean? */showing){
 	dojo.html[(showing ? 'show' : 'hide')](node);
 }
 
-dojo.html.isShowing = function(/* HTMLElement */node){
+dojo.html.isShowing = function(/*HTMLElement*/node){
 	//	summary
 	//	Returns whether the element is displayed or not.
 	// FIXME: returns true if node is bad, isHidden would be easier to make correct
 	return (dojo.html.getStyleProperty(node, 'display') != 'none');	//	boolean
 }
 
-dojo.html.toggleShowing = function(/* HTMLElement */node){
+dojo.html.toggleShowing = function(/*HTMLElement*/node){
 	//	summary
 	// Call setShowing() on node with the complement of isShowing(), then return the new value of isShowing()
 	return dojo.html._toggle(node, dojo.html.isShowing, dojo.html.setShowing);	//	boolean
@@ -55,7 +55,7 @@ dojo.html.toggleShowing = function(/* HTMLElement */node){
 // FIXME: simplistic 
 dojo.html.displayMap = { tr: '', td: '', th: '', img: 'inline', span: 'inline', input: 'inline', button: 'inline' };
 
-dojo.html.suggestDisplayByTagName = function(/* HTMLElement */node){
+dojo.html.suggestDisplayByTagName = function(/*HTMLElement*/node){
 	//	summary
 	// Suggest a value for the display property that will show 'node' based on it's tag
 	node = dojo.byId(node);
@@ -73,17 +73,18 @@ dojo.html.setDisplay = function(/* HTMLElement */node, /* string */display){
 	dojo.html.setStyle(node, 'display', ((display instanceof String || typeof display == "string") ? display : (display ? dojo.html.suggestDisplayByTagName(node) : 'none')));
 }
 
-dojo.html.isDisplayed = function(/* HTMLElement */node){
-	//	summary
-	// 	Is true if the the computed display style for node is not 'none'
+dojo.html.isDisplayed = function(/*HTMLElement*/node){
+	//	summary:
+	// 		Is true if the the computed display style for node is not 'none'
+
 	// 	FIXME: returns true if node is bad, isNotDisplayed would be easier to make correct
 	return (dojo.html.getComputedStyle(node, 'display') != 'none');	//	boolean
 }
 
-dojo.html.toggleDisplay = function(/* HTMLElement */node){
-	//	summary
-	// 	Call setDisplay() on node with the complement of isDisplayed(), then
-	// 	return the new value of isDisplayed()
+dojo.html.toggleDisplay = function(/*HTMLElement*/node){
+	//	summary:
+	//		Call setDisplay() on node with the complement of isDisplayed(),
+	//		then return the new value of isDisplayed()
 	return dojo.html._toggle(node, dojo.html.isDisplayed, dojo.html.setDisplay);	//	boolean
 }
 
@@ -94,23 +95,27 @@ dojo.html.setVisibility = function(/* HTMLElement */node, /* string */visibility
 	dojo.html.setStyle(node, 'visibility', ((visibility instanceof String || typeof visibility == "string") ? visibility : (visibility ? 'visible' : 'hidden')));
 }
 
-dojo.html.isVisible = function(/* HTMLElement */node){
-	//	summary
-	// 	Returns true if the the computed visibility style for node is not 'hidden'
+dojo.html.isVisible = function(/*HTMLElement*/node){
+	//	summary:
+	// 		Returns true if the the computed visibility style for node is not
+	// 		'hidden'
+
 	// 	FIXME: returns true if node is bad, isInvisible would be easier to make correct
 	return (dojo.html.getComputedStyle(node, 'visibility') != 'hidden');	//	boolean
 }
 
 dojo.html.toggleVisibility = function(node){
-	//	summary
-	// Call setVisibility() on node with the complement of isVisible(), then return the new value of isVisible()
+	//	summary:
+	// 		Call setVisibility() on node with the complement of isVisible(),
+	// 		then return the new value of isVisible()
 	return dojo.html._toggle(node, dojo.html.isVisible, dojo.html.setVisibility);	//	boolean
 }
 
-dojo.html.setOpacity = function(/* HTMLElement */node, /* float */opacity, /* boolean? */dontFixOpacity){
-	//	summary
-	//	Sets the opacity of node in a cross-browser way.
-	//	float between 0.0 (transparent) and 1.0 (opaque)
+dojo.html.setOpacity = function(/*HTMLElement*/node, /*float*/opacity, /*boolean?*/dontFixOpacity){
+	//	summary:
+	//		Sets the opacity of node in a cross-browser way.
+	//	opacity:
+	//		float between 0.0 (transparent) and 1.0 (opaque)
 	node = dojo.byId(node);
 	var h = dojo.render.html;
 	if(!dontFixOpacity){
@@ -143,18 +148,18 @@ dojo.html.setOpacity = function(/* HTMLElement */node, /* float */opacity, /* bo
 	}
 }
 
-dojo.html.clearOpacity = function(/* HTMLElement */node){
-	//	summary
-	//	Clears any opacity setting on the passed element.
+dojo.html.clearOpacity = function(/*HTMLElement*/node){
+	//	summary:
+	//		Clears any opacity setting on the passed element.
 	node = dojo.byId(node);
 	var ns = node.style;
 	var h = dojo.render.html;
 	if(h.ie){
-		try {
+		try{
 			if( node.filters && node.filters.alpha ){
 				ns.filter = ""; // FIXME: may get rid of other filter effects
 			}
-		} catch(e) {
+		}catch(e){
 			/*
 			 * IE7 gives error if node.filters not set;
 			 * don't know why or how to workaround (other than this)
