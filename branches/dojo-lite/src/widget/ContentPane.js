@@ -6,7 +6,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.string");
 dojo.require("dojo.string.extras");
 dojo.require("dojo.html.style");
-
+dojo.require("dojo.html.extras");
 
 dojo.widget.defineWidget(
 	"dojo.widget.ContentPane",

@@ -39,6 +39,8 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	}else if(dojoLoader=="xdomain"){
 		dojo.hostenv.loadedUris.push("../src/loader.js");
 		dojo.hostenv.loadedUris.push("../src/loader_xd.js");
+	}else if(dojoLoader=="stub"){
+		dojo.hostenv.loadedUris.push("../src/loader_stub.js");
 	}
 	dojo.hostenv.loadedUris.push("dojoGuardEnd.js");
 	

@@ -4,6 +4,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.io.*");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.extras");
+dojo.require("dojo.html.extras");
 
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.widget.html.loader");

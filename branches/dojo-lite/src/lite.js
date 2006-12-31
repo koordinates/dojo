@@ -4,7 +4,16 @@ dojo.lite.removed = function(){
 	dojo.debug.apply(dojo, ["dojo.lite removal:"].concat(arguments));
 }
 
-dojo.lite.removed("dojo.regexp.time");
-dojo.lite.removed("dojo.lang.setObjPathValue");
-dojo.lite.removed("dojo.lang.getObject");
-dojo.lite.removed("dojo.lang.doesObjectExist");
+with(dojo.lite){
+	removed("dojo.regexp.time");
+	removed("dojo.lang.setObjPathValue");
+	removed("dojo.lang.getObject");
+	removed("dojo.lang.doesObjectExist");
+	removed("dojo.style.setActiveStyleSheet");
+	removed("dojo.style.getActiveStyleSheet");
+	removed("dojo.html.getPreferredStyleSheet");
+	removed("dojo.html.getClasses");
+	removed("dojo.html.replaceClass");
+	removed("dojo.html.toSelectorCase");
+	// removed("");
+}

@@ -1,6 +1,5 @@
 dojo.provide("dojo.html.style");
 dojo.require("dojo.html.common");
-dojo.require("dojo.uri.Uri");
 
 dojo.html.getClass = function(/* HTMLElement */node){
 	//	summary
@@ -15,14 +14,6 @@ dojo.html.getClass = function(/* HTMLElement */node){
 		cs = dojo.html.getAttribute(node, "class");
 	}
 	return cs.replace(/^\s+|\s+$/g, "");	//	string
-}
-
-dojo.html.getClasses = function(/* HTMLElement */node) {
-	//	summary
-	//	Returns an array of CSS classes currently assigned directly to the node in question. 
-	//	Returns an empty array if no classes are found;
-	var c = dojo.html.getClass(node);
-	return (c == "") ? [] : c.split(/\s+/g);	//	array
 }
 
 dojo.html.hasClass = function(/* HTMLElement */node, /* string */classname){
@@ -90,13 +81,6 @@ dojo.html.removeClass = function(/* HTMLElement */node, /* string */classStr, /*
 		dojo.debug("dojo.html.removeClass() failed", e);
 	}
 	return true;	//	boolean
-}
-
-dojo.html.replaceClass = function(/* HTMLElement */node, /* string */newClass, /* string */oldClass) {
-	//	summary
-	//	Replaces 'oldClass' and adds 'newClass' to node
-	dojo.html.removeClass(node, oldClass);
-	dojo.html.addClass(node, newClass);
 }
 
 // Enum type for getElementsByClass classMatchType arg:
@@ -206,12 +190,6 @@ dojo.html.toCamelCase = function(/* string */selector){
 	return cc;	//	string
 }
 
-dojo.html.toSelectorCase = function(/* string */selector){
-	//	summary
-	//	Translates a camel cased string to a selector cased one.
-	return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase();	//	string
-}
-
 dojo.html.getComputedStyle = function(/* HTMLElement */node, /* string */cssSelector, /* integer? */inValue){
 	//	summary
 	//	Returns the computed style of cssSelector on node.
@@ -221,7 +199,7 @@ dojo.html.getComputedStyle = function(/* HTMLElement */node, /* string */cssSele
 	var property = dojo.html.toCamelCase(cssSelector);
 	if(!node || !node.style){
 		return inValue;			
-	} else if (document.defaultView && dojo.html.isDescendantOf(node, node.ownerDocument)){ // W3, gecko, KHTML
+	}else if(document.defaultView && dojo.html.isDescendantOf(node, node.ownerDocument)){ // W3, gecko, KHTML
 		try{
 			// mozilla segfaults when margin-* and node is removed from doc
 			// FIXME: need to figure out a if there is quicker workaround
@@ -232,11 +210,11 @@ dojo.html.getComputedStyle = function(/* HTMLElement */node, /* string */cssSele
 		}catch(e){ // reports are that Safari can throw an exception above
 			if(node.style.getPropertyValue){ // W3
 				return node.style.getPropertyValue(cssSelector);	//	integer
-			} else {
+			}else{
 				return inValue;	//	integer
 			}
 		}
-	} else if(node.currentStyle){ // IE
+	}else if(node.currentStyle){ // IE
 		return node.currentStyle[property];	//	integer
 	}
 	
@@ -471,84 +449,6 @@ dojo.html.insertCssText = function(/* string */cssStr, /* HTMLDocument? */doc, /
 		style.appendChild(cssText);
 	}
 	return style;	//	HTMLStyleElement
-}
-
-dojo.html.fixPathsInCssText = function(/* string */cssStr, /* string */URI){
-	//	summary
-	// usage: cssText comes from dojoroot/src/widget/templates/Foobar.css
-	// 	it has .dojoFoo { background-image: url(images/bar.png);} then uri should point to dojoroot/src/widget/templates/
-	if(!cssStr || !URI){ return; }
-	var match, str = "", url = "", urlChrs = "[\\t\\s\\w\\(\\)\\/\\.\\\\'\"-:#=&?~]+";
-	var regex = new RegExp('url\\(\\s*('+urlChrs+')\\s*\\)');
-	var regexProtocol = /(file|https?|ftps?):\/\//;
-	regexTrim = new RegExp("^[\\s]*(['\"]?)("+urlChrs+")\\1[\\s]*?$");
-	if(dojo.render.html.ie55 || dojo.render.html.ie60){
-		var regexIe = new RegExp("AlphaImageLoader\\((.*)src\=['\"]("+urlChrs+")['\"]");
-		// TODO: need to decide how to handle relative paths and AlphaImageLoader see #1441
-		// current implementation breaks on build with intern_strings
-		while(match = regexIe.exec(cssStr)){
-			url = match[2].replace(regexTrim, "$2");
-			if(!regexProtocol.exec(url)){
-				url = (new dojo.uri.Uri(URI, url).toString());
-			}
-			str += cssStr.substring(0, match.index) + "AlphaImageLoader(" + match[1] + "src='" + url + "'";
-			cssStr = cssStr.substr(match.index + match[0].length);
-		}
-		cssStr = str + cssStr;
-		str = "";
-	}
-
-	while(match = regex.exec(cssStr)){
-		url = match[1].replace(regexTrim, "$2");
-		if(!regexProtocol.exec(url)){
-			url = (new dojo.uri.Uri(URI, url).toString());
-		}
-		str += cssStr.substring(0, match.index) + "url(" + url + ")";
-		cssStr = cssStr.substr(match.index + match[0].length);
-	}
-	return str + cssStr;	//	string
-}
-
-dojo.html.setActiveStyleSheet = function(/* string */title){
-	//	summary
-	//	Activate style sheet with specified title.
-	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
-	while (a = els[i++]) {
-		if(a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")){
-			a.disabled = true;
-			if (a.getAttribute("title") == title) { a.disabled = false; }
-		}
-	}
-}
-
-dojo.html.getActiveStyleSheet = function(){
-	//	summary
-	//	return the title of the currently active stylesheet
-	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
-	while (a = els[i++]) {
-		if (a.getAttribute("rel").indexOf("style") != -1 
-			&& a.getAttribute("title") 
-			&& !a.disabled
-		){
-			return a.getAttribute("title");	//	string 
-		}
-	}
-	return null;	//	string
-}
-
-dojo.html.getPreferredStyleSheet = function(){
-	//	summary
-	//	Return the preferred stylesheet title (i.e. link without alt attribute)
-	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
-	while (a = els[i++]) {
-		if(a.getAttribute("rel").indexOf("style") != -1
-			&& a.getAttribute("rel").indexOf("alt") == -1
-			&& a.getAttribute("title")
-		){ 
-			return a.getAttribute("title"); 	//	string
-		}
-	}
-	return null;	//	string
 }
 
 dojo.html.applyBrowserClass = function(/* HTMLElement */node){
