@@ -20,6 +20,7 @@ dojo.widget.defineWidget(
 		};
 	},
 {
+	isContainer: true,
 	snarfChildDomOutput: true,
 
 	// eventNaming: String

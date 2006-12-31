@@ -17,7 +17,7 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 		];
 	}
 	
-	var dojoLoader = java.lang.System.getProperty("DOJO_LOADER");
+	var dojoLoader = dependencies["loader"]||java.lang.System.getProperty("DOJO_LOADER");
 	if(!dojoLoader || dojoLoader=="null" || dojoLoader==""){
 		dojoLoader = "default";
 	}

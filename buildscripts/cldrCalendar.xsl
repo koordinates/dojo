@@ -226,7 +226,8 @@
                  </xsl:when>
                  <xsl:otherwise>
                      <xsl:if test="name()!='default'">                         
-                     <xsl:for-each select=".//pattern">
+                         <xsl:for-each select=".//pattern[not(@draft)] | 
+                          .//pattern[@draft!='provisional' and @draft!='unconfirmed']">                         
         '<xsl:value-of select="name(..)"></xsl:value-of>
                          <xsl:text>-</xsl:text>
                          <xsl:value-of select='$width'/>': "<xsl:value-of select="."/>
