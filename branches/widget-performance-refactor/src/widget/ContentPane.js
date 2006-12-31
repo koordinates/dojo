@@ -42,7 +42,7 @@ dojo.widget.defineWidget(
 
 	
 	}, {
-		isContainer: true,
+		isContainer: false,		// we'll search for subwidgets manually
 
 		// loading options
 		// adjustPaths: Boolean
@@ -98,11 +98,17 @@ dojo.widget.defineWidget(
 		isLoaded: false,
 
 		postCreate: function(args, frag, parentComp){
+			// if we have a template, then move the source HTML contents to inside my template
+			// (but defer parsing the content until I am displayed)
+			var source = this.getFragNodeRef(frag);
+			if(source != this.domNode){
+				dojo.html.moveChildren(source, this.containerNode || this.domNode);
+			}
 			if (this.handler!==""){
 				this.setHandler(this.handler);
 			}
 			if(this.isShowing() || this.preload){
-				this.loadContents(); 
+				this._prepareForShow(); 
 			}
 		},
 	
@@ -111,21 +117,25 @@ dojo.widget.defineWidget(
 			if(this.refreshOnShow){
 				this.refresh();
 			}else{
-				this.loadContents();
+				this._prepareForShow();
 			}
 			dojo.widget.ContentPane.superclass.show.call(this);
 		},
 	
 		refresh: function(){
 			// summary:
-			//		Force a refresh (re-download) of content, be sure to turn of cache
+			//		Force a refresh (re-download) of content, be sure to turn off cache
 			this.isLoaded=false;
-			this.loadContents();
+			this._prepareForShow();
 		},
 	
-		loadContents: function() {
+		_prepareForShow: function() {
 			// summary:
-			//		Download if isLoaded is false, else ignore
+			//		Called whenever the ContentPane is displayed.  The first time it's called,
+			//		it will download the data from specified URL or handler (if the data isn't
+			//		inlined), and will instantiate subwidgets.  (Note that even if data is
+			//		inlined, we don't scan for and instantiate subwidgets until
+			//		this function is called)
 			if ( this.isLoaded ){
 				return;
 			}
@@ -133,6 +143,12 @@ dojo.widget.defineWidget(
 				this._runHandler();
 			} else if ( this.href != "" ) {
 				this._downloadExternalContent(this.href, this.cacheContent && !this.refreshOnShow);
+			} else {
+				// data is inlined, but we haven't instantiated subwidgets yet; do that now
+				if(this.parseContent){
+					this._createSubWidgets();
+				}
+				this.isLoaded=true;
 			}
 		},
 		
@@ -145,7 +161,7 @@ dojo.widget.defineWidget(
 			this.href = url;
 			this.isLoaded = false;
 			if ( this.preload || this.isShowing() ){
-				this.loadContents();
+				this._prepareForShow();
 			}
 		},
 
@@ -167,11 +183,11 @@ dojo.widget.defineWidget(
 					url: url,
 					mimetype: "text/html",
 					handler: function(type, data, xhr){
-						delete self._ioBindObj; // makes sure abort doesnt clear cache
+						delete self._ioBindObj; // makes sure abort doesn't clear cache
 						if(type=="load"){
 							self.onDownloadEnd.call(self, url, data);
 						}else{
-							// XHR isnt a normal JS object, IE doesnt have prototype on XHR so we cant extend it or shallowCopy it
+							// XHR isnt a normal JS object, IE doesn't have prototype on XHR so we cant extend it or shallowCopy it
 							var e = {
 								responseText: xhr.responseText,
 								status: xhr.status,
@@ -600,11 +616,7 @@ dojo.widget.defineWidget(
 					}
 	
 					if(_self.parseContent){
-						var node = _self.containerNode || _self.domNode;
-						var parser = new dojo.xml.Parse();
-						var frag = parser.parseElement(node, null, true);
-						// createSubComponents not createComponents because frag has already been created
-						dojo.widget.getParser().createSubComponents(frag, _self);
+						_self._createSubWidgets();
 					}
 	
 					_self.onResized();
@@ -617,6 +629,15 @@ dojo.widget.defineWidget(
 					asyncParse();
 				}
 			}
+		},
+
+		_createSubWidgets: function(){
+			// summary: scan my contents and create subwidgets
+			var node = this.containerNode || this.domNode;
+			var parser = new dojo.xml.Parse();
+			var frag = parser.parseElement(node, null, true);
+			// createSubComponents not createComponents because frag has already been created
+			dojo.widget.getParser().createSubComponents(frag, this);
 		},
 
 		setHandler: function(/*Function*/ handler) {

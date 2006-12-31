@@ -45,14 +45,12 @@ dojo.widget.defineWidget(
 			if(this.contentFile){
 				dojo.require(this.contentFile);
 			}
-			if(this.modal){
-				dojo.widget.ModalDialogBase.prototype.postCreate.call(this);
-			}else{
-				with(this.domNode.style) {
-					zIndex = 999;
-					display = "none";
-				}
+
+			with(this.domNode.style) {
+				zIndex = 999;
+				display = "none";
 			}
+
 			dojo.widget.FloatingPaneBase.prototype.postCreate.apply(this, arguments);
 			dojo.widget.Editor2Dialog.superclass.postCreate.call(this);
 			if(this.width && this.height){

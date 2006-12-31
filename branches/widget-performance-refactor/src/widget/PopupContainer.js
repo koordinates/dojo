@@ -24,9 +24,6 @@ dojo.declare(
 	//		dojo.widget.HtmlWidget. Use PopupContainer instead if you want a
 	//		a standalone popup widget
 
-	isContainer: true,
-	templateString: '<div dojoAttachPoint="containerNode" style="display:none;position:absolute;" class="dojoPopupContainer" ></div>',
-
 	// isShowingNow: Boolean: whether this popup is shown
 	isShowingNow: false,
 

@@ -213,6 +213,9 @@ dojo.lang.isOfType = function(/* anything */ value, /* function */ type, /* obje
 dojo.lang.getObject=function(/* String */ str){
 	// summary:
 	//   Will return an object, if it exists, based on the name in the passed string.
+
+	dojo.deprecated("dojo.lang.getObject", "use dojo.evalObjPath", "0.6");
+
 	var parts=str.split("."), i=0, obj=dj_global; 
 	do{ 
 		obj=obj[parts[i++]]; 
@@ -223,6 +226,9 @@ dojo.lang.getObject=function(/* String */ str){
 dojo.lang.doesObjectExist=function(/* String */ str){
 	// summary:
 	//   Check to see if object [str] exists, based on the passed string.
+
+	dojo.deprecated("dojo.lang.getObject", "use dojo.evalObjPath", "0.6");
+
 	var parts=str.split("."), i=0, obj=dj_global; 
 	do{ 
 		obj=obj[parts[i++]]; 

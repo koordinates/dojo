@@ -54,7 +54,6 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateString, 
 			ts = tmplts[wt];
 		}
 	}
-
 	if((!obj.templateString)&&(!avoidCache)){
 		obj.templateString = templateString || ts["string"];
 	}
@@ -427,16 +426,11 @@ dojo.declare("dojo.widget.DomWidget",
 
 			// FIXME: should we support addition at an index in the children arr and
 			// order the display accordingly? Right now we always append.
-			if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
-				dojo.debug("dojo.widget.DomWidget.addChild() attempted on non-container widget");
-				return null;
-			}else{
-				if(insertIndex == undefined){
-					insertIndex = this.children.length;
-				}
-				this.addWidgetAsDirectChild(widget, overrideContainerNode, pos, ref, insertIndex);
-				this.registerChild(widget, insertIndex);
+			if(insertIndex == undefined){
+				insertIndex = this.children.length;
 			}
+			this.addWidgetAsDirectChild(widget, overrideContainerNode, pos, ref, insertIndex);
+			this.registerChild(widget, insertIndex);
 			return widget; // Widget
 		},
 		
