@@ -107,7 +107,8 @@ dojo.xml.Parse = function(){
 	this.parseElement = function(	/*DomNode*/node,
 									/*Boolean*/hasParentNodeSet, 
 									/*Boolean*/optimizeForDojoML, 
-									/*Integer*/thisIdx	){
+									/*Integer*/thisIdx,
+									/*Boolean*/onlyVisit){
 		// summary:
 		//		recursively parse the passed node, returning a normalized data
 		//		structure that represents the "attributes of interest" of said
@@ -146,17 +147,19 @@ dojo.xml.Parse = function(){
 			process = Boolean(dojoTagName);
 		}
 
-		var parsedNodeSet = {};
-		parsedNodeSet[tagName] = [];
-		var pos = tagName.indexOf(":");
-		if(pos>0){
-			var ns = tagName.substring(0,pos);
-			parsedNodeSet["ns"] = ns;
-			// honor user namespace filters
-			if((dojo.ns)&&(!dojo.ns.allow(ns))){process=false;}
+		if(!onlyVisit){
+			var parsedNodeSet = {};
+			parsedNodeSet[tagName] = [];
+			var pos = tagName.indexOf(":");
+			if(pos>0){
+				var ns = tagName.substring(0,pos);
+				parsedNodeSet["ns"] = ns;
+				// honor user namespace filters
+				if((dojo.ns)&&(!dojo.ns.allow(ns))){process=false;}
+			}
 		}
 
-		if(process){
+		if((process)&&(!onlyVisit)){
 			var attributeSet = this.parseAttributes(node);
 			for(var attr in attributeSet){
 				if((!parsedNodeSet[tagName][attr])||(typeof parsedNodeSet[tagName][attr] != "array")){
@@ -178,19 +181,25 @@ dojo.xml.Parse = function(){
 			switch(tcn.nodeType){
 				case  dojo.dom.ELEMENT_NODE: // element nodes, call this function recursively
 					var ctn = getDojoTagName(tcn) || getTagName(tcn);
-					if(!parsedNodeSet[ctn]){
-						parsedNodeSet[ctn] = [];
-					}
-					parsedNodeSet[ctn].push(this.parseElement(tcn, true, optimizeForDojoML, count));
-					if(	(tcn.childNodes.length == 1)&&
-						(tcn.childNodes.item(0).nodeType == dojo.dom.TEXT_NODE)){
-						parsedNodeSet[ctn][parsedNodeSet[ctn].length-1].value = tcn.childNodes.item(0).nodeValue;
+					if(!onlyVisit){
+						if(!parsedNodeSet[ctn]){
+							parsedNodeSet[ctn] = [];
+						}
+						parsedNodeSet[ctn].push(this.parseElement(tcn, true, optimizeForDojoML, count));
+						if(	(tcn.childNodes.length == 1)&&
+							(tcn.childNodes.item(0).nodeType == dojo.dom.TEXT_NODE)){
+							parsedNodeSet[ctn][parsedNodeSet[ctn].length-1].value = tcn.childNodes.item(0).nodeValue;
+						}
+					}else{
+						this.parseElement(tcn, true, optimizeForDojoML, count);
 					}
 					count++;
 					break;
 				case  dojo.dom.TEXT_NODE: // if a single text node is the child, treat it as an attribute
-					if(node.childNodes.length == 1){
-						parsedNodeSet[tagName].push({ value: node.childNodes.item(0).nodeValue });
+					if(!onlyVisit){
+						if(node.childNodes.length == 1){
+							parsedNodeSet[tagName].push({ value: node.childNodes.item(0).nodeValue });
+						}
 					}
 					break;
 				default: break;
@@ -220,7 +229,9 @@ dojo.xml.Parse = function(){
 		}
 		//return (hasParentNodeSet) ? parsedNodeSet[node.tagName] : parsedNodeSet;
 		//if(parsedNodeSet.tagName)dojo.debug("parseElement: RETURNING NODE WITH TAGNAME "+parsedNodeSet.tagName);
-		return parsedNodeSet;
+		if(!onlyVisit){
+			return parsedNodeSet;
+		}
 	};
 
 
