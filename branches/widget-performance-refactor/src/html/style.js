@@ -103,47 +103,60 @@ dojo.html.replaceClass = function(/* HTMLElement */node, /* string */newClass, /
 dojo.html.classMatchType = {
 	ContainsAll : 0, // all of the classes are part of the node's class (default)
 	ContainsAny : 1, // any of the classes are part of the node's class
-	IsOnly : 2 // only all of the classes are part of the node's class
+	IsOnly : 2, // only all of the classes are part of the node's class
+	ClassNameStart: 3 // any of the classes have a substring match on the node's class
 }
 
-
 dojo.html.getElementsByClass = function(
-	/* string */classStr, 
-	/* HTMLElement? */parent, 
-	/* string? */nodeType, 
-	/* integer? */classMatchType, 
-	/* boolean? */useNonXpath
+	/*string*/		classStr, 
+	/*HTMLElement?*/parent, 
+	/*string?*/		nodeType, 
+	/*integer?*/	classMatchType, 
+	/*boolean?*/	useNonXpath
 ){
 	//	summary
 	//	Returns an array of nodes for the given classStr, children of a
 	//	parent, and optionally of a certain nodeType
+
 	// FIXME: temporarily set to false because of several dojo tickets related
 	// to the xpath version not working consistently in firefox.
 	useNonXpath = false;
+
 	var _document = dojo.doc();
 	parent = dojo.byId(parent) || _document;
 	var classes = classStr.split(/\s+/g);
 	var nodes = [];
-	if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
-	var reClass = new RegExp("(\\s|^)((" + classes.join(")|(") + "))(\\s|$)");
-	var srtLength = classes.join(" ").length;
-	var candidateNodes = [];
+	if(
+		(classMatchType != 1)&&
+		(classMatchType != 2)&&
+		(classMatchType != 3)
+	){
+		classMatchType = 0; // make it enum
+	}
+
+	var classMatches = dojo.html.classMatchType;
 	
+	var cnt = (classMatchType == classMatches.ClassNameStart);
 	if(!useNonXpath && _document.evaluate) { // supports dom 3 xpath
+		var candidateNodes = [];
+		var srtLength = classes.join(" ").length;
 		var xpath = ".//" + (nodeType || "*") + "[contains(";
-		if(classMatchType != dojo.html.classMatchType.ContainsAny){
-			xpath += "concat(' ',@class,' '), ' " +
-			classes.join(" ') and contains(concat(' ',@class,' '), ' ") +
-			" ')";
-			if (classMatchType == 2) {
+		if(classMatchType != classMatches.ContainsAny){
+			var cntPadding = (cnt ? "" : " ");
+			xpath += "concat(' ',@class,' '), ' ";
+			xpath += classes.join(cntPadding + "') and contains(concat(' ',@class,' '), ' ");
+			xpath += cntPadding + "')";
+			if(classMatchType == 2){
 				xpath += " and string-length(@class)="+srtLength+"]";
 			}else{
 				xpath += "]";
 			}
+			// dojo.debug(xpath);
 		}else{
 			xpath += "concat(' ',@class,' '), ' " +
 			classes.join(" ') or contains(concat(' ',@class,' '), ' ") +
 			" ')]";
+			// dojo.debug(xpath);
 		}
 		var xpathResult = _document.evaluate(xpath, parent, null, XPathResult.ANY_TYPE, null);
 		var result = xpathResult.iterateNext();
@@ -155,6 +168,14 @@ dojo.html.getElementsByClass = function(
 		}
 		return candidateNodes;	//	NodeList
 	}else{
+
+		var reClass;
+		if(classMatchType == classMatches.ClassNameStart){
+			reClass = new RegExp("(|^)((" + classes.join(")|(") + "))");
+		}else{
+			reClass = new RegExp("(\\s|^)((" + classes.join(")|(") + "))(\\s|$)");
+		}
+		// dojo.debug(reClass);
 		if(!nodeType){
 			nodeType = "*";
 		}
@@ -169,24 +190,27 @@ dojo.html.getElementsByClass = function(
 	
 			for(var j = 0; j < nodeClasses.length; j++){
 				if(reClass.test(nodeClasses[j])){
-					if(classMatchType == dojo.html.classMatchType.ContainsAny){
+					if(
+						(classMatchType == classMatches.ContainsAny)||
+						(classMatchType == classMatches.ClassNameStart)
+					){
 						nodes.push(node);
 						continue outer;
 					}else{
 						matches++;
 					}
 				}else{
-					if(classMatchType == dojo.html.classMatchType.IsOnly){
+					if(classMatchType == classMatches.IsOnly){
 						continue outer;
 					}
 				}
 			}
 	
 			if(matches == classes.length){
-				if(	(classMatchType == dojo.html.classMatchType.IsOnly)&&
+				if(	(classMatchType == classMatches.IsOnly)&&
 					(matches == nodeClasses.length)){
 					nodes.push(node);
-				}else if(classMatchType == dojo.html.classMatchType.ContainsAll){
+				}else if(classMatchType == classMatches.ContainsAll){
 					nodes.push(node);
 				}
 			}
