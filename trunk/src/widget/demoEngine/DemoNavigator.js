@@ -12,8 +12,8 @@ dojo.requireLocalization("dojo.widget", "DemoEngine");
 dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator", 
 	dojo.widget.HtmlWidget, 
 	{
-		templatePath: dojo.uri.dojoUri("src/widget/demoEngine/templates/DemoNavigator.html"),
-		templateCssPath: dojo.uri.dojoUri("src/widget/demoEngine/templates/DemoNavigator.css"),
+		templatePath: dojo.uri.moduleUri("dojo", "widget/demoEngine/templates/DemoNavigator.html"),
+		templateCssPath: dojo.uri.moduleUri("dojo", "widget/demoEngine/templates/DemoNavigator.css"),
 		postMixInProperties: function(){
 			dojo.widget.HtmlWidget.superclass.postMixInProperties.apply(this, arguments);
 			this.messages = dojo.i18n.getLocalization("dojo.widget", "DemoEngine", this.lang);
