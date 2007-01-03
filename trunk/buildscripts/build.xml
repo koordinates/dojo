@@ -224,85 +224,6 @@ print "look ma! Jython!"
 	</target>
 	<!-- end -fix-config task -->
 
-	<!-- website task -->
-	<!--
-		FIXME: 	need to build docs here and copy the HTML files generated from
-				reST to website/docs/
-	-->
-	<target name="website"
-		depends="-fix-config"
-		description="'builds' the website and moves files into the correct directory, taking care to ensure that file permissions are correct">
-
-		<copy todir="${release_website_dir}" overwrite="true">
-			<fileset dir="${website_dir}">
-				<exclude name="**/.svn*" />
-				<include name="**/*" />
-			</fileset>
-		</copy>
-		<antcall target="docs" />
-		<copy todir="${release_website_dir}/docs/" overwrite="true">
-			<fileset dir="${release_docs_dir}">
-				<exclude name="**/.svn*" />
-				<include name="*.html" />
-			</fileset>
-		</copy>
-		<chgrp group="www" type="both">
-			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
-		</chgrp>
-		<chmod perm="g+rwx" type="dir">
-			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
-		</chmod>
-		<chmod perm="g+rw" type="file">
-			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
-		</chmod>
-	</target>
-	<!-- end website task -->
-
-	<!-- FIXME: need to fix this task!! -->
-	<!-- docs task -->
-	<target name="docs"
-		unless="docless"
-		depends="-fix-config"
-		description="'builds' the docs">
-		<!-- first, clobber the docs directory and rebuild it -->
-		<!--
-			FIXME: how best can we check for staleness here? Shouldn't Ant be
-			doing this for us? Clobbering entire dirs seems a little
-			heavyweight.
-		-->
-		<delete dir="${release_docs_dir}"/>
-		<mkdir dir="${release_docs_dir}" />
-		<mkdir dir="${release_docs_dir}/requirements" />
-		<script language="jython" taskName="docs">
-			<![CDATA[
-import sys
-# make the python standard library avialable
-sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
-sys.path.append(project.resolveFile(".").getPath())
-
-# import re
-import os
-from buildUtil import *
-
-buildRestFiles( dojo.getProperty("articles_dir"),
-				dojo.getProperty("release_docs_dir"),
-				dojo.getProperty("rest_style_sheet"),
-				dojo.getProperty("rest_files"))
-]]>
-		</script>
-
-		<!-- fix body tags -->
-		<replaceregexp match="^&lt;body&gt;$" byline="true"
-			replace="&lt;body class=&quot;docs&quot;&gt;" flags="g">
-			<fileset dir="${release_docs_dir}">
-				<exclude name="**/.svn*" />
-				<include name="**/*.html" />
-			</fileset>
-		</replaceregexp>
-
-	</target>
-	<!-- end docs task -->
-
 	<!-- api task -->
 	<target name="api"
 		description="Builds a release (optimized) api reference application">
@@ -913,7 +834,6 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 		-->
 		<antcall target="buildFileStorageProvider" />
 
-		<antcall target="-docs-and-tests" />
 		<antcall target="compress" />
 		<!-- <antcall target="intern-strings" /> -->
 
@@ -930,9 +850,8 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 	</target>
 	<!-- end release task -->
 
-	<target name="-docs-and-tests"
-		unless="docless"
-		description="builds docs, copies in tests, and constructs API outlines">
+	<target name="api-prep"
+		description="Constructs API outlines">
 		<copy todir="${release_dir}/apis" includeEmptyDirs="false" preservelastmodified="true">
 			<fileset dir="${root}/documents/apis">
 				<include name="**" />
@@ -940,8 +859,6 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 				<exclude name="**/.svn*" />
 			</fileset>
 		</copy>
-
-		<antcall target="docs" />
 	</target>
 
 	<!-- zip task -->
