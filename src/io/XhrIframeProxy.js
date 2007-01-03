@@ -15,7 +15,7 @@ dojo.io.XhrIframeProxy = {
 	//http://manual.dojotoolkit.org/WikiHome/DojoDotBook/Book75
 	//Usage of XHR IFrame Proxying does not work from local disk in Safari.
 
-	xipClientUrl: djConfig["xipClientUrl"] || dojo.uri.dojoUri("src/io/xip_client.html"),
+	xipClientUrl: djConfig["xipClientUrl"] || dojo.uri.moduleUri("dojo", "io/xip_client.html"),
 
 	_state: {},
 	_stateIdCounter: 0,

@@ -28,7 +28,7 @@ dojo.declare(
 	eventNaming: "default",
 
 	templateString: '<table class="dojoPopupMenu2" border=0 cellspacing=0 cellpadding=0 style="display: none;"><tbody dojoAttachPoint="containerNode"></tbody></table>',
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Menu2.css"),
+	templateCssPath: dojo.uri.moduleUri("dojo", "widget/templates/Menu2.css"),
 	templateCssString: "",
 
 	// submenuDelay: Integer

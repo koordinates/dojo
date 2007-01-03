@@ -510,7 +510,7 @@ dojo.widget.defineWidget(
 				}
 			}
 			// opera likes this to be outside the with block
-			this.iframe.src = dojo.uri.dojoUri("src/widget/templates/richtextframe.html") + ((dojo.doc().domain != currentDomain) ? ("#"+dojo.doc().domain) : "");
+			this.iframe.src = dojo.uri.moduleUri("dojo", "widget/templates/richtextframe.html") + ((dojo.doc().domain != currentDomain) ? ("#"+dojo.doc().domain) : "");
 			this.iframe.width = this.inheritWidth ? this._oldWidth : "100%";
 			if(this.height){
 				this.iframe.style.height = this.height;
@@ -654,7 +654,7 @@ dojo.widget.defineWidget(
 				for(var i=0;i<files.length;i++){
 					var url = files[i];
 					if(url){
-						this.addStyleSheet(dojo.uri.dojoUri(url));
+						this.addStyleSheet(dojo.uri.moduleUri("dojo", url));
 	 				}
 	 			}
 			}

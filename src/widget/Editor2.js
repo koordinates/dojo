@@ -206,11 +206,11 @@ dojo.widget.defineWidget(
 
 		// toolbarTemplatePath: dojo.uri.Uri
 		//		to specify the template file for the toolbar
-		toolbarTemplatePath: dojo.uri.cache.allow(dojo.uri.dojoUri("src/widget/templates/EditorToolbarOneline.html")),
+		toolbarTemplatePath: dojo.uri.cache.allow(dojo.uri.moduleUri("dojo", "widget/templates/EditorToolbarOneline.html")),
 
 		// toolbarTemplateCssPath: dojo.uri.Uri
 		//		to specify the css file for the toolbar
-		toolbarTemplateCssPath: dojo.uri.cache.allow(dojo.uri.dojoUri("src/widget/templates/EditorToolbar.css")),
+		toolbarTemplateCssPath: dojo.uri.cache.allow(dojo.uri.moduleUri("dojo", "widget/templates/EditorToolbar.css")),
 
 		// toolbarPlaceHolder: String
 		//		element id to specify where to attach the toolbar

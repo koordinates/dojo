@@ -62,6 +62,10 @@ function internTemplateStrings(profileFile, loader, releaseDir, srcRoot){
 	load("buildUtil.js");
 
 	var prefixes = buildUtil.getDependencyPropertyFromProfile(profileFile, "prefixes");
+	//Make sure dojo is in the list.
+	var dojoPath = releaseDir.replace(/^.*(\/|\\)release(\/|\\)/, "release/");
+	prefixes.push(["dojo", dojoPath + "/src"]);
+
 	var skiplist = buildUtil.getDependencyPropertyFromProfile(profileFile, "internSkipList");
 	
 	internTemplateStringsInFile(loader, resourceFile, srcRoot, prefixes, skiplist);
