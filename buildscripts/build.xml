@@ -102,7 +102,7 @@ build targets:
 		ant -Dversion=0.3.0 clean docs
 
 	full build, but without docs:
-		ant -Dversion=0.3.0 -Ddocless=true clean release gen-strip-docs
+		ant -Dversion=0.3.0 clean release gen-strip-docs
 
 		</echo>
 	</target>
