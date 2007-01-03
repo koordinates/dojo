@@ -426,7 +426,7 @@ dojo.declare("dojo.widget.DomWidget",
 
 			// FIXME: should we support addition at an index in the children arr and
 			// order the display accordingly? Right now we always append.
-			if(insertIndex == undefined){
+			if(typeof insertIndex == "undefined"){
 				insertIndex = this.children.length;
 			}
 			this.addWidgetAsDirectChild(widget, overrideContainerNode, pos, ref, insertIndex);
