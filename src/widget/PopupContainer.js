@@ -307,7 +307,12 @@ dojo.declare(
 dojo.widget.defineWidget(
 	"dojo.widget.PopupContainer",
 	[dojo.widget.HtmlWidget, dojo.widget.PopupContainerBase], {
-		// summary: dojo.widget.PopupContainer is the widget version of dojo.widget.PopupContainerBase	
+		// summary: dojo.widget.PopupContainer is the widget version of dojo.widget.PopupContainerBase
+		
+		fillInTemplate: function(){
+			this.applyPopupBasicStyle();
+			dojo.widget.PopupContainer.superclass.fillInTemplate.apply(this, arguments);
+		}
 	});
 
 
