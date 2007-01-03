@@ -1,7 +1,7 @@
 dojo.provide("tests.data.displayViaDojoDebug");
 dojo.require("dojo.data.core.Read");
 
-tests.data.displayViaDojoDebug = function(datastore, query) {
+tests.data.displayViaDojoDebug = function(datastore, query, kwArgs) {
 	var displayItem = function(item, result) {
 		var string = '{';
 		var attributes = datastore.getAttributes(item);
@@ -19,6 +19,11 @@ tests.data.displayViaDojoDebug = function(datastore, query) {
 	};
 	dojo.debug("");
 	dojo.debug("store contents...");
-	var result = datastore.find({query:query, sync:true, onnext:displayItem}); //sync
+	kwArgs = kwArgs || {};
+	if (!"sync" in kwArgs) {
+		kwArgs.sync = true;
+	}
+	kwArgs.query = query;
+	kwArgs.onnext = displayItem;
+	datastore.find(kwArgs); // var result = datastore.find(kwArgs);
 }
-
