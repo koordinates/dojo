@@ -35,9 +35,8 @@
 //		'djConfig' does not exist under 'dojo.*' so that it can be set before the
 //		'dojo' variable exists.
 // note:
-//		Setting any of these variables *after* the library has loaded does nothing at all.
-// TODOC: is this still true?  Release notes for 0.3 indicated they could be set after load.
-//
+//		Setting any of these variables *after* the library has loaded does
+//		nothing at all.
 
 
 //TODOC:  HOW TO DOC THIS?
@@ -109,51 +108,100 @@ dojo.version = {
 	}
 }
 
-dojo.evalProp = function(/*String*/ name, /*Object*/ object, /*Boolean?*/ create){
-	// summary: Returns 'object[name]'.  If not defined and 'create' is true, will return a new Object.
+dojo.getObject = function(/*String*/name, /*Object*/obj, /*Boolean*/create, /*Boolean*/returnWrapper){
+	// summary: 
+	//		gets an object from a dot-separated string, such as "A.B.C"
+	//	description: 
+	//		useful for longer api chains where you have to test each object in
+	//		the chain
+	//	name: 	
+	//		Path to an object, in the form "A.B.C".
+	//	obj:
+	//		Optional. Object to use as root of path. Defaults to
+	//		'dojo.global()'. Null may be passed.
+	//	create: 
+	//		Optional. If true, Objects will be created at any point along the
+	//		'path' that is undefined.
+	//	returnWrapper:
+	//		Optional. Returns an object with two properties, 'obj' and 'prop'.
+	//		'obj[prop]' is the reference indicated by 'name'.
+	var tobj, tprop;
+	if(typeof name != "string"){
+		// clearly an error
+		// FIXME: why is this here?
+		return undefined; // Undefined
+	}
+	tobj = obj;
+	if(!tobj){ tobj = dojo.global(); }
+	var parts=name.split("."), i=0, lobj;
+	do{
+		lobj = tobj;
+		tobj = tobj[parts[i++]];
+	}while(i<parts.length && tobj);
+	tprop = tobj;
+	tobj = lobj;
+	return (returnWrapper) ? { obj: tobj, prop: tprop } : tprop; // Object
+}
+
+dojo.exists = function(/*String*/name, /*Object*/obj){
+	// summary: 
+	//		determine if an object supports a given method
+	// description: 
+	//		useful for longer api chains where you have to test each object in
+	//		the chain
+	// name: 	
+	//		Path to an object, in the form "A.B.C".
+	// obj:
+	//		Optional. Object to use as root of path. Defaults to
+	//		'dojo.global()'. Null may be passed.
+	if(typeof obj == "string"){
+		// back-compat, should be removed at some point
+		dojo.deprecated("dojo.exists(obj, name)", "use dojo.exists(name, obj, /*optional*/create)", "0.6");
+		// swap them
+		var tmp = name;
+		name = obj;
+		obj = tmp;
+	}
+	return (!!dojo.getObject(name, obj)); // Boolean
+}
+
+dojo.evalProp = function(/*String*/name, /*Object*/object, /*Boolean?*/create){
+	// summary: 
+	//		DEPRECATED. Returns 'object[name]'.  If not defined and 'create' is
+	//		true, will return a new Object.
 	// description:
 	//		Returns null if 'object[name]' is not defined and 'create' is not true.
 	// 		Note: 'defined' and 'exists' are not the same concept.
-	if((!object)||(!name)){ return undefined; }// undefined
-	if(!dj_undef(name, object)){ return object[name]; }// mixed
-	return (create ? (object[name]={}) : undefined);	// mixed
+	dojo.deprecated("dojo.evalProp", "just use hash syntax. Sheesh.", "0.6");
+	return object[name] || (create ? (object[name]={}) : undefined);	// mixed
 }
 
 dojo.parseObjPath = function(/*String*/ path, /*Object?*/ context, /*Boolean?*/ create){
-	// summary: Parse string path to an object, and return corresponding object reference and property name.
+	// summary: 
+	//		DEPRECATED. Parse string path to an object, and return
+	//		corresponding object reference and property name.
 	// description:
 	//		Returns an object with two properties, 'obj' and 'prop'.
 	//		'obj[prop]' is the reference indicated by 'path'.
 	// path: Path to an object, in the form "A.B.C".
 	// context: Object to use as root of path.  Defaults to 'dojo.global()'.
-	// create: If true, Objects will be created at any point along the 'path' that is undefined.
-	var object = (context || dojo.global());
-	var names = path.split('.');
-	var prop = names.pop();
-	for(var i=0,l=names.length;i<l && object;i++){
-		object = dojo.evalProp(names[i], object, create);
-	}
-	return {obj: object, prop: prop};	// Object: {obj: Object, prop: String}
+	// create: 
+	//		If true, Objects will be created at any point along the 'path' that
+	//		is undefined.
+	dojo.deprecated("dojo.parseObjPath", "use dojo.getObject(path, context, create, true)", "0.6");
+	return dojo.getObject(path, context, create, true); // Object: {obj: Object, prop: String}
 }
 
 dojo.evalObjPath = function(/*String*/ path, /*Boolean?*/ create){
-	// summary: Return the value of object at 'path' in the global scope, without using 'eval()'.
+	// summary: 
+	//		DEPRECATED. Return the value of object at 'path' in the global
+	//		scope, without using 'eval()'.
 	// path: Path to an object, in the form "A.B.C".
-	// create: If true, Objects will be created at any point along the 'path' that is undefined.
-	if(typeof path != "string"){
-		return dojo.global();
-	}
-	// fast path for no periods
-	if(path.indexOf('.') == -1){
-		return dojo.evalProp(path, dojo.global(), create);		// mixed
-	}
-
-	//MOW: old 'with' syntax was confusing and would throw an error if parseObjPath returned null.
-	var ref = dojo.parseObjPath(path, dojo.global(), create);
-	if(ref){
-		return dojo.evalProp(ref.prop, ref.obj, create);	// mixed
-	}
-	return null;
+	// create: 
+	//		If true, Objects will be created at any point along the 'path' that
+	//		is undefined.
+	dojo.deprecated("dojo.evalObjPath", "use dojo.getObject(path, null, create)", "0.6");
+	return dojo.getObject(path, null, create); // Object
 }
 
 dojo.errorToString = function(/*Error*/ exception){
@@ -161,6 +209,7 @@ dojo.errorToString = function(/*Error*/ exception){
 
 	// TODO: overriding Error.prototype.toString won't accomplish this?
  	// 		... since natively generated Error objects do not always reflect such things?
+	/*
 	if(!dj_undef("message", exception)){
 		return exception.message;		// String
 	}else if(!dj_undef("description", exception)){
@@ -168,12 +217,15 @@ dojo.errorToString = function(/*Error*/ exception){
 	}else{
 		return exception;				// Error
 	}
+	*/
+	return (exception["message"]||exception["description"]||exception);
 }
 
 dojo.raise = function(/*String*/ message, /*Error?*/ exception){
-	// summary: Common point for raising exceptions in Dojo to enable logging.
-	//	Throws an error message with text of 'exception' if provided, or
-	//	rethrows exception object.
+	// summary:
+	//		Common point for raising exceptions in Dojo to enable logging.
+	//		Throws an error message with text of 'exception' if provided, or
+	//		rethrows exception object.
 
 	if(exception){
 		message = message + ": "+dojo.errorToString(exception);
@@ -203,8 +255,12 @@ dojo.profile = {
 };
 
 function dj_eval(/*String*/ scriptFragment){
-	// summary: Perform an evaluation in the global scope.  Use this rather than calling 'eval()' directly.
-	// description: Placed in a separate function to minimize size of trapped evaluation context.
+	// summary: 
+	//		Perform an evaluation in the global scope.  Use this rather than
+	//		calling 'eval()' directly.
+	// description: 
+	//		Placed in a separate function to minimize size of trapped
+	//		evaluation context.
 	// note:
 	//	 - JSC eval() takes an optional second argument which can be 'unsafe'.
 	//	 - Mozilla/SpiderMonkey eval() takes an optional second argument which is the
@@ -221,9 +277,12 @@ dojo.unimplemented = function(/*String*/ funcname, /*String?*/ extra){
 }
 
 dojo.deprecated = function(/*String*/ behaviour, /*String?*/ extra, /*String?*/ removal){
-	// summary: Log a debug message to indicate that a behavior has been deprecated.
+	// summary: 
+	//		Log a debug message to indicate that a behavior has been
+	//		deprecated.
 	// extra: Text to append to the message.
-	// removal: Text to indicate when in the future the behavior will be removed.
+	// removal: 
+	//		Text to indicate when in the future the behavior will be removed.
 	var message = "DEPRECATED: " + behaviour;
 	if(extra){ message += " " + extra; }
 	if(removal){ message += " -- will be removed in version: " + removal; }
@@ -231,9 +290,44 @@ dojo.deprecated = function(/*String*/ behaviour, /*String?*/ extra, /*String?*/ 
 }
 
 dojo.render = (function(){
-	//TODOC: HOW TO DOC THIS?
-	// summary: Details rendering support, OS and browser of the current environment.
-	// TODOC: is this something many folks will interact with?  If so, we should doc the structure created...
+	//	summary: 
+	//		Builds the dojo.render object which details rendering support, OS
+	//		and browser of the current environment.
+	//	description:
+	//		commonly used properties of dojo.render (in HTML environments)
+	//		include:
+	//
+	//			dojo.render.html.ie
+	//			dojo.render.html.opera
+	//			dojo.render.html.khtml
+	//			dojo.render.html.safari
+	//			dojo.render.html.moz
+	//			dojo.render.html.mozilla
+	//
+	//		additional objects are provided to detail support for other types
+	//		of media and environments. For instance, the following determines
+	//		if there's native SVG support in a browser:
+	//			
+	//			if(dojo.render.svg.capable && dojo.render.svg.builtin){
+	//				...
+	//			}
+	//
+	//		Other properties of note:
+	//
+	//			dojo.render.os.win
+	//			dojo.render.os.osx
+	//			dojo.render.os.linux
+	//			dojo.render.html.UA (navigator.userAgent)
+	//			dojo.render.html.AV (navigator.appVersion)
+	//			dojo.render.html.ie50 (MSIE 5.0)
+	//			dojo.render.html.ie55 (MSIE 5.5)
+	//			dojo.render.html.ie60 (MSIE 6.0)
+	//			dojo.render.html.ie70 (MSIE 7.0)
+	//
+	//		All reasonable measures are taken to ensure that the values in
+	//		dojo.render represent the real environment and not, say, a browser
+	//		"masquerading" as a different browser version. Only supported
+	//		environments and browsers will likely have entires in dojo.render.
 	function vscaffold(prefs, names){
 		var tmp = {
 			capable: false,
@@ -275,10 +369,12 @@ dojo.render = (function(){
  */
 dojo.hostenv = (function(){
 	// TODOC:  HOW TO DOC THIS?
-	// summary: Provides encapsulation of behavior that changes across different 'host environments'
-	//			(different browsers, server via Rhino, etc).
-	// description: None of these methods should ever be called directly by library users.
-	//				Use public methods such as 'loadModule' instead.
+	// summary: 
+	//		Provides encapsulation of behavior that changes across different
+	//		'host environments' (different browsers, server via Rhino, etc).
+	// description: 
+	//		None of these methods should ever be called directly by library
+	//		users.  Use public methods such as 'loadModule' instead.
 
 	// default configuration options
 	var config = {
@@ -322,11 +418,12 @@ dojo.hostenv = (function(){
 		},
 
 		getText: function(/*String*/ uri){
-			// summary:	Read the plain/text contents at the specified 'uri'.
-			// description:
-			//			If 'getText()' is not implemented, then it is necessary to override
-			//			'loadUri()' with an implementation that doesn't rely on it.
-
+			//	summary:	
+			//		Read the plain/text contents at the specified 'uri'.
+			//	description:
+			//		If 'getText()' is not implemented, then it is necessary to
+			//		override 'loadUri()' with an implementation that doesn't
+			//		rely on it.
 			dojo.unimplemented('getText', "uri=" + uri);
 		}
 	};
@@ -334,10 +431,15 @@ dojo.hostenv = (function(){
 
 
 dojo.hostenv.getBaseScriptUri = function(){
-	// summary: Return the base script uri that other scripts are found relative to.
-	// TODOC: HUH?  This comment means nothing to me.  What other scripts? Is this the path to other dojo libraries?
+	// summary: 
+	//		Return the base script uri that other scripts are found relative to.
 	//		MAYBE:  Return the base uri to scripts in the dojo library.	 ???
 	// return: Empty string or a path ending in '/'.
+
+
+	// TODOC: 
+	//		HUH? This comment means nothing to me. What other scripts? Is
+	//		this the path to other dojo libraries?
 	if(djConfig.baseScriptUri.length){
 		return djConfig.baseScriptUri;
 	}
@@ -349,9 +451,11 @@ dojo.hostenv.getBaseScriptUri = function(){
 	if(!uri){ 
 		dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri);
 	}
+	// MOW: 
+	//		uri seems to not be actually used.  Seems to be hard-coding to
+	//		djConfig.baseRelativePath... ???
 
-	// MOW: uri seems to not be actually used.  Seems to be hard-coding to djConfig.baseRelativePath... ???
-	var lastslash = uri.lastIndexOf('/');		// MOW ???
 	djConfig.baseScriptUri = djConfig.baseRelativePath;
 	return djConfig.baseScriptUri;	// String
 }
+// vim:ai:ts=4:noet:textwidth=80
