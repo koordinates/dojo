@@ -1,8 +1,7 @@
-dojo.provide("dojo.widget.svg.HslColorPicker");
+dojo.provide("dojo.widget.HslColorPicker");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.widget.HslColorPicker");
 dojo.require("dojo.math");
 dojo.require("dojo.svg");
 dojo.require("dojo.gfx.color");
