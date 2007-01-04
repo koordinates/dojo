@@ -1,8 +1,9 @@
 dojo.provide("tests.data.displayFilteringTable");
 dojo.require("dojo.data.core.Read");
 dojo.require("dojo.widget.FilteringTable");
+dojo.require("dojo.collections.Store");
 
-tests.data.displayFilteringTable = function(datastore, query, tableElement) {
+tests.data.displayFilteringTable = function(datastore, query, tableElement, kwArgs) {
 	var dataInSimpleStoreFormat = [];
 	var columnsInFilteringTableFormat = null;
 	var addRow = function(item, result) {
@@ -24,14 +25,21 @@ tests.data.displayFilteringTable = function(datastore, query, tableElement) {
 		}
 	};
 
-	var result = datastore.find({query:query, sync:true, onnext:addRow});
-	
-	var filteringTable = dojo.widget.createWidget("dojo:FilteringTable", {valueField:"Identity"}, tableElement);
+	var displayTable = function(result) {
+		var filteringTable = dojo.widget.createWidget("dojo:FilteringTable", {valueField: "Identity"}, tableElement);
+		for (var i in columnsInFilteringTableFormat) {
+			var column = columnsInFilteringTableFormat[i];
+			filteringTable.columns.push(filteringTable.createMetaData(column));
+		}
+		filteringTable.store.setData(dataInSimpleStoreFormat);
+	};
 
-	for (i = 0; i < columnsInFilteringTableFormat.length; ++i) {
-		var column = columnsInFilteringTableFormat[i];
-		filteringTable.columns.push(filteringTable.createMetaData(column));
+	kwArgs = kwArgs || {};
+	if (!"sync" in kwArgs) {
+		kwArgs.sync = true;
 	}
-
-	filteringTable.store.setData(dataInSimpleStoreFormat);
+	kwArgs.query = query;
+	kwArgs.onnext = addRow;
+	kwArgs.oncompleted = displayTable;
+	datastore.find(kwArgs); // var result = datastore.find(kwArgs);
 }

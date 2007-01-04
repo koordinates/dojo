@@ -363,15 +363,24 @@ dojo.lang.declare("dojo.data.core.RemoteStore", null,
 			}
 		};
 
-		var bindKw = keywordArgs.bindArgs || {};
+		var bindKw = keywordArgs ? (keywordArgs.bindArgs || {}) : {};
 		bindKw.sync = result.sync;
 		bindKw.handle = bindfunc;
 
 		this._setupQueryRequest(result, bindKw);
+		var waitForIt = false;
+		if ((bindKw.transport == "ScriptSrcTransport") && (bindKw.sync == true)) {
+			waitForIt = true;
+			bindKw.sync = false;
+		}
 		var request = dojo.io.bind(bindKw);
 		//todo: error if not bind success
 		//dojo.debug( "bind success " + request.bindSuccess);
-		result._abortFunc = request.abort;	 
+		result._abortFunc = request.abort;
+		if (waitForIt) {
+			// FIXME -- dojo.lang.setTimeout(timeoutCallback, 100);
+			dojo.debug("ERROR in dojo.data.core.RemoteStore.find() -- find() was called with 'sync==true', but we're using 'transport==ScriptSrcTransport', and dojo.io.bind() only supports sync==false for ScriptSrcTransport.  We need to call dojo.io.bind() with sync=false, but then wait to return from find() until we hear back from bind()");
+		}
 		return result; 
 	},
 
@@ -516,10 +525,10 @@ dojo.lang.declare("dojo.data.core.RemoteStore", null,
 		 *   store.save({sync:false});
 		 */
 		keywordArgs = keywordArgs || {};
-		var result = new dojo.Deferred();			 
+		var result = new dojo.Deferred();
 		var self = this;
 
-		var bindfunc = function(type, data, evt) {			
+		var bindfunc = function(type, data, evt) {
 			if(type == "load"){ 
 				if (result.fired == 1) {
 					//it seems that mysteriously "load" sometime 

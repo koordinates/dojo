@@ -11,7 +11,7 @@ dojo.widget.defineWidget(
 		// summary:
 		//		Provides a Dialog which can be modal or normal for the Editor2.
 
-		templatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorDialog.html"),
+		templatePath: dojo.uri.moduleUri("dojo", "widget/templates/Editor2/EditorDialog.html"),
 
 		// modal: Boolean: Whether this is a modal dialog. True by default.
 		modal: true,
@@ -45,14 +45,12 @@ dojo.widget.defineWidget(
 			if(this.contentFile){
 				dojo.require(this.contentFile);
 			}
-			if(this.modal){
-				dojo.widget.ModalDialogBase.prototype.postCreate.call(this);
-			}else{
-				with(this.domNode.style) {
-					zIndex = 999;
-					display = "none";
-				}
+
+			with(this.domNode.style) {
+				zIndex = 999;
+				display = "none";
 			}
+
 			dojo.widget.FloatingPaneBase.prototype.postCreate.apply(this, arguments);
 			dojo.widget.Editor2Dialog.superclass.postCreate.call(this);
 			if(this.width && this.height){

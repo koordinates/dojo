@@ -14,8 +14,7 @@ function run_all_tests() {
 }
 
 function showResultViaTreeV3(result) {
-	// This doesn't quite work yet -- almost
-	var controller = dojo.widget.createWidget("TreeBasicControllerV3");		
+	var controller = dojo.widget.createWidget("TreeBasicControllerV3");
 	var tree = dojo.widget.createWidget("TreeV3", {listeners:[controller.widgetId]});
 	var treeDiv = dojo.byId("treeDiv");
 	treeDiv.appendChild(tree.domNode);

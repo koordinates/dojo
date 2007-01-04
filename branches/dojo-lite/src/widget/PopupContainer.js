@@ -24,9 +24,6 @@ dojo.declare(
 	//		dojo.widget.HtmlWidget. Use PopupContainer instead if you want a
 	//		a standalone popup widget
 
-	isContainer: true,
-	templateString: '<div dojoAttachPoint="containerNode" style="display:none;position:absolute;" class="dojoPopupContainer" ></div>',
-
 	// isShowingNow: Boolean: whether this popup is shown
 	isShowingNow: false,
 
@@ -310,7 +307,12 @@ dojo.declare(
 dojo.widget.defineWidget(
 	"dojo.widget.PopupContainer",
 	[dojo.widget.HtmlWidget, dojo.widget.PopupContainerBase], {
-		// summary: dojo.widget.PopupContainer is the widget version of dojo.widget.PopupContainerBase	
+		// summary: dojo.widget.PopupContainer is the widget version of dojo.widget.PopupContainerBase
+		
+		fillInTemplate: function(){
+			this.applyPopupBasicStyle();
+			dojo.widget.PopupContainer.superclass.fillInTemplate.apply(this, arguments);
+		}
 	});
 
 

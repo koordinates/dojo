@@ -35,29 +35,31 @@ dojo.widget.defineWidget(
 		//		(When user hovers over specified dom node, the tooltip will appear.)
 		connectId: "",
 
-		templateCssPath: dojo.uri.dojoUri("src/widget/templates/TooltipTemplate.css"),
+		templateCssPath: dojo.uri.moduleUri("dojo", "widget/templates/TooltipTemplate.css"),
 
-		fillInTemplate: function(args, frag){
+		postCreate: function(args, frag){
+			this._connectNode = dojo.byId(this.connectId);
+			dojo.event.connect(this._connectNode, "onmouseover", this, "_onMouseOver");
+
+			// apply the necessary css rules to the node so that it can popup
+			// (and also hide it so it doesn't show up initially and so loading/parsing is deferred)
+			this.applyPopupBasicStyle();
+			dojo.widget.Tooltip.superclass.postCreate.call(this, args, frag);
+		},
+
+		_prepareForShow: function() {
+			// summary:
+			//		Called before the Tooltip is displayed.  Defer as much processing as possible to
+			//		here, to speedup tooltip creation.
+			if(this.isLoaded){
+				return;
+			}
 			if(this.caption != ""){
 				this.domNode.appendChild(document.createTextNode(this.caption));
 			}
-			this._connectNode = dojo.byId(this.connectId);
-			dojo.widget.Tooltip.superclass.fillInTemplate.call(this, args, frag);
-
-			this.addOnLoad(this, "_loadedContent");
 			dojo.html.addClass(this.domNode, "dojoTooltip");
-
-			//copy style from input node to output node
-			var source = this.getFragNodeRef(frag);
-			dojo.html.copyStyle(this.domNode, source);
-
-			//apply the necessary css rules to the node so that it can popup
-			this.applyPopupBasicStyle();
-		},
-
-		postCreate: function(args, frag){
-			dojo.event.connect(this._connectNode, "onmouseover", this, "_onMouseOver");
-			dojo.widget.Tooltip.superclass.postCreate.call(this, args, frag);
+			this.addOnLoad(this, "_loadedContent");
+			dojo.widget.Tooltip.superclass._prepareForShow.apply(this, arguments);
 		},
 
 		_onMouseOver: function(e){

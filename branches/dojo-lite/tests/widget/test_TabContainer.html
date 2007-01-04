@@ -43,6 +43,16 @@ function testClose(pane,tab) {
   return confirm("Please confirm that you want tab "+tab.label+" closed");
 }
 </script>
+<script type="text/javascript">
+startTime = new Date();
+dojo.addOnLoad(function(){
+	var elapsed = new Date().getTime() - startTime;
+	var p = document.createElement("p");
+	p.appendChild(document.createTextNode("Widgets loaded in " + elapsed + "ms"));
+	document.body.appendChild(p);
+});
+</script>
+
 </head>
 
 <body>
@@ -145,4 +155,11 @@ function testClose(pane,tab) {
 	</div>
 
 </body>
+
+<h3>Typical rendering time</h3>
+<table border=1>
+  <tr><th>IE</th><th>Firefox (mac)</th></tr>
+  <tr><td>1719</td><td>922</td></tr>
+</table>  
+<h3>Rendering time</h3>
 </html>
