@@ -7,9 +7,9 @@ var dependencies = [
 	"dojo.io.common",
 	"dojo.io.BrowserIO",
 	"dojo.event.*",
-	"dojo.lfx.*"
+	// "dojo.lfx.*"
 ];
-dependencies.loader = "stub";
+// dependencies.loader = "stub";
 
 // NOTE: this MUST be included or a list of files must be output via print()
 // manually.
