@@ -97,7 +97,17 @@ dojo.widget.defineWidget(
 		//		Tells loading status
 		isLoaded: false,
 
+		// class: String
+		//		Class name to apply to ContentPane dom nodes
+		"class": "dojoContentPane",
+
+		templateCssPath: dojo.uri.moduleUri("dojo", "widget/templates/ContentPane.css"),
+
 		postCreate: function(args, frag, parentComp){
+			// for programatically created ContentPane (with <span> tag), need to muck w/CSS
+			// or it's as though overflow:visible is set
+			dojo.html.addClass(this.domNode, this["class"]);
+
 			// if we have a template, then move the source HTML contents to inside my template
 			// (but defer parsing the content until I am displayed)
 			var source = this.getFragNodeRef(frag);
