@@ -510,7 +510,13 @@ dojo.widget.defineWidget(
 				}
 			}
 			// opera likes this to be outside the with block
-			this.iframe.src = dojo.uri.moduleUri("dojo", "widget/templates/richtextframe.html") + ((dojo.doc().domain != currentDomain) ? ("#"+dojo.doc().domain) : "");
+			if(djConfig["useXDomain"] && !djConfig["dojoRichTextFrameUrl"]){
+				dojo.debug("dojo.widget.RichText: When using cross-domain Dojo builds,"
+					+ " please save src/widget/templates/richtextframe.html to your domain and set djConfig.dojoRichTextFrameUrl"
+					+ " to the path on your domain to richtextframe.html");
+			}
+			this.iframe.src = (djConfig["dojoRichTextFrameUrl"] || dojo.uri.moduleUri("dojo", "widget/templates/richtextframe.html")) 
+				+ ((dojo.doc().domain != currentDomain) ? ("#"+dojo.doc().domain) : "");
 			this.iframe.width = this.inheritWidth ? this._oldWidth : "100%";
 			if(this.height){
 				this.iframe.style.height = this.height;
