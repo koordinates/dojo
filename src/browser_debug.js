@@ -80,7 +80,7 @@ dojo.clobberLastObject = function(objpath){
 	}
 
 	var syms = objpath.split(/\./);
-	var base = dojo.evalObjPath(syms.slice(0, -1).join("."), false);
+	var base = dojo.getObject(syms.slice(0, -1).join("."), false);
 	var child = syms[syms.length-1];
 	if(!dj_undef(child, base)){
 		// alert(objpath);
