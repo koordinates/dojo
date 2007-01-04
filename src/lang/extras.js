@@ -58,6 +58,8 @@ dojo.lang.getNameInObj = function(/*Object*/ns, /*unknown*/item){
 dojo.lang.shallowCopy = function(/*Object*/obj, /*Boolean?*/deep){
 	// summary:
 	//		copies object obj one level deep, or full depth if deep is true
+
+	// FIXME: why is this called "shallowCopy" if it *can* do a deep copy?
 	var i, ret;	
 
 	if(obj === null){ /*obj: null*/ return null; } // null
@@ -97,10 +99,11 @@ dojo.lang.firstValued = function(/* ... */){
 
 dojo.lang.getObjPathValue = function(/*String*/objpath, /*Object?*/context, /*Boolean?*/create){
 	// summary:
-	//		Gets a value from a reference specified as a string descriptor,
-	//		(e.g. "A.B") in the given context.
+	//		DEPRECATED. Gets a value from a reference specified as a string
+	//		descriptor, (e.g. "A.B") in the given context.
 	// context: if not specified, dj_global is used
 	// create: if true, undefined objects in the path are created.
+	dojo.deprecated("dojo.lang.getObjPathValue", "use dojo.getObject", "0.6");
 	with(dojo.parseObjPath(objpath, context, create)){
 		return dojo.evalProp(prop, obj, create); // Object
 	}
@@ -108,20 +111,14 @@ dojo.lang.getObjPathValue = function(/*String*/objpath, /*Object?*/context, /*Bo
 
 dojo.lang.setObjPathValue = function(/*String*/objpath, /*anything*/value, /*Object?*/context, /*Boolean?*/create){
 	// summary:
-	//		Sets a value on a reference specified as a string descriptor.
-	//		(e.g. "A.B") in the given context. This is similar to straight
-	//		assignment, except that the object structure in question can
-	//		optionally be created if it does not exist.
+	//		DEPRECATED. Sets a value on a reference specified as a string
+	//		descriptor.  (e.g. "A.B") in the given context. This is similar to
+	//		straight assignment, except that the object structure in question
+	//		can optionally be created if it does not exist.
 	//	context: if not specified, dj_global is used
 	//	create: if true, undefined objects in the path are created.
 
-	// FIXME: why is this function valuable? It should be scheduled for
-	// removal on the grounds that dojo.parseObjPath does most of it's work and
-	// is more straightforward and has fewer dependencies. Also, the order of
-	// arguments is bone-headed. "context" should clearly come after "create".
-	// *sigh*
 	dojo.deprecated("dojo.lang.setObjPathValue", "use dojo.parseObjPath and the '=' operator", "0.6");
-
 	if(arguments.length < 4){
 		create = true;
 	}
