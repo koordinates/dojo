@@ -642,7 +642,7 @@ dojo.lang.extend(dojo.storage.browser.FileStorageProvider, {
 	},
 	
 	_writeApplet: function(){
-		var archive = dojo.uri.dojoUri("DojoFileStorageProvider.jar").toString();
+		var archive = dojo.uri.moduleUri("dojo", "../DojoFileStorageProvider.jar").toString();
 		var tag = "<applet "
 					+ "id='" + dojo.storage.browser.FileStorageProvider._APPLET_ID + "' "
 					+ "style='position: absolute; top: -500px; left: -500px; width: 1px; height: 1px;' "
@@ -852,8 +852,8 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 			dojo.storage._flashLoaded();
 		}
 		dojo.flash.addLoadedListener(loadedListener);
-		var swfloc6 = dojo.uri.dojoUri("Storage_version6.swf").toString();
-		var swfloc8 = dojo.uri.dojoUri("Storage_version8.swf").toString();
+		var swfloc6 = dojo.uri.moduleUri("dojo", "../Storage_version6.swf").toString();
+		var swfloc8 = dojo.uri.moduleUri("dojo", "../Storage_version8.swf").toString();
 		dojo.flash.setSwf({flash6: swfloc6, flash8: swfloc8, visible: false});
 	},
 	

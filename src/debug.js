@@ -72,7 +72,7 @@ dojo.debugDeep = function(/*Object*/obj){
 	var idx = dojo.debugDeep.debugVars.length;
 	dojo.debugDeep.debugVars.push(obj);
 	// dojo.undo.browser back and forward breaks relpaths
-	var url = new dojo.uri.Uri(location, dojo.uri.dojoUri("src/debug/deep.html?var="+idx)).toString();
+	var url = new dojo.uri.Uri(location, dojo.uri.moduleUri("dojo", "debug/deep.html?var="+idx)).toString();
 	var win = window.open(url, '_blank', 'width=600, height=400, resizable=yes, scrollbars=yes, status=yes');
 	try{
 		win.debugVar = obj;

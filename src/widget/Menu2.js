@@ -2,13 +2,12 @@ dojo.provide("dojo.widget.Menu2");
 
 dojo.require("dojo.widget.PopupContainer");
 
-dojo.widget.defineWidget(
-	"dojo.widget.PopupMenu2",
-	dojo.widget.PopupContainer,
+dojo.declare(
+	"dojo.widget.MenuBase",
+	null,
 	function(){
 		// summary
-		//	provides a menu that can be used as a context menu (typically shown by right-click),
-		//	or as the drop down on a DropDownButton, ComboButton, etc.
+		//		Base class for PopupMenu and MenuBar
 
 		// targetNodeIds: String[]
 		//	Array of dom node ids of nodes to attach to.
@@ -20,6 +19,7 @@ dojo.widget.defineWidget(
 		};
 	},
 {
+	isContainer: true,
 	snarfChildDomOutput: true,
 
 	// eventNaming: String
@@ -28,7 +28,7 @@ dojo.widget.defineWidget(
 	eventNaming: "default",
 
 	templateString: '<table class="dojoPopupMenu2" border=0 cellspacing=0 cellpadding=0 style="display: none;"><tbody dojoAttachPoint="containerNode"></tbody></table>',
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Menu2.css"),
+	templateCssPath: dojo.uri.moduleUri("dojo", "widget/templates/Menu2.css"),
 	templateCssString: "",
 
 	// submenuDelay: Integer
@@ -308,8 +308,16 @@ dojo.widget.defineWidget(
 	}
 });
 
-// summary
-//	A line item in a Menu2
+dojo.widget.defineWidget(
+	"dojo.widget.PopupMenu2",
+	[dojo.widget.HtmlWidget, dojo.widget.MenuBase, dojo.widget.PopupContainerBase],
+	{
+		// summary
+		//	provides a menu that can be used as a context menu (typically shown by right-click),
+		//	or as the drop down on a DropDownButton, ComboButton, etc.
+	}
+);
+
 dojo.widget.defineWidget(
 	"dojo.widget.MenuItem2",
 	dojo.widget.HtmlWidget,
@@ -319,6 +327,9 @@ dojo.widget.defineWidget(
 		};
 	},
 {
+	// summary
+	//	A line item in a Menu2
+
 	// Make 4 columns
 	//   icon, label, accelerator-key, and right-arrow indicating sub-menu
 	templateString:
@@ -566,7 +577,7 @@ dojo.widget.defineWidget(
 //	A menu bar, listing menu choices horizontally, like the "File" menu in most desktop applications
 dojo.widget.defineWidget(
 	"dojo.widget.MenuBar2",
-	dojo.widget.PopupMenu2,
+	[dojo.widget.HtmlWidget, dojo.widget.MenuBase],
 {
 	menuOverlap: 2,
 

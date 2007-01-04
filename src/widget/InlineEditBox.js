@@ -21,8 +21,8 @@ dojo.widget.defineWidget(
 		this.history = [];
 	},
 {
-	templatePath: dojo.uri.dojoUri("src/widget/templates/InlineEditBox.html"),
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/InlineEditBox.css"),
+	templatePath: dojo.uri.moduleUri("dojo", "widget/templates/InlineEditBox.html"),
+	templateCssPath: dojo.uri.moduleUri("dojo", "widget/templates/InlineEditBox.css"),
 
 	// mode: String
 	//		"text" is the default, and means that the node will convert it into a (single-line) <input>

@@ -7,7 +7,6 @@ dojo.require("dojo.data.YahooStore");
 dojo.require("dojo.data.RdfStore");
 dojo.require("dojo.lang.type");
 dojo.require("dojo.io.*");
-dojo.require("dojo.debug");
 dojo.require("dojo.lang.declare");
 
 function test_data_compatibility() {

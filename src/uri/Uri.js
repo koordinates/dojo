@@ -10,10 +10,22 @@ dojo.uri = new function() {
 		// summary: returns a Uri object relative to a module
 		// description: Examples: dojo.uri.moduleUri("dojo","Editor"), or dojo.uri.moduleUri("acme","someWidget")
 		var loc = dojo.hostenv.getModuleSymbols(module).join('/');
-		//var loc = dojo.hostenv.getModulePrefix(module);
-		if(!loc){return null;}
-		if(loc.lastIndexOf("/") != loc.length-1){loc += "/";}
-		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri()+loc,uri);
+		if(!loc){
+			return null;
+		}
+		if(loc.lastIndexOf("/") != loc.length-1){
+			loc += "/";
+		}
+		
+		//If the path is an absolute path (starts with a / or is on another domain/xdomain)
+		//then don't add the baseScriptUri.
+		var colonIndex = loc.indexOf(":");
+		var slashIndex = loc.indexOf("/");
+		if(loc.charAt(0) != "/" && (colonIndex == -1 || colonIndex > slashIndex)){
+			loc = dojo.hostenv.getBaseScriptUri() + loc;
+		}
+
+		return new dojo.uri.Uri(loc,uri);
 	}
 
 	this.Uri = function (/*dojo.uri.Uri||String...*/) {

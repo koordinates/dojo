@@ -53,41 +53,6 @@ def removeRequires(fileName):
 	pfd.write(newContents)
 	pfd.close() # flush is implicit
 
-def buildRestFiles(docDir, docOutDir, styleSheetFile, restFiles=""):
-	docFiles = []
-
-	# start in docDir and add all the reST files in the directory to the
-	# list
-	docDir = os.path.normpath(os.path.abspath(docDir))
-	styleSheetFile = os.path.normpath(os.path.abspath(styleSheetFile))
-	docOutDir = os.path.normpath(os.path.abspath(docOutDir))
-
-	if not len(restFiles):
-		docFiles = glob.glob1(docDir, "*.rest")
-	else:
-		docFiles = map(lambda x: x.strip(), restFiles.split(","))
-
-	for name in docFiles:
-		x = docDir+os.sep+name
-		if x.find(os.sep+".svn") == -1:
-			# print x
-			cmdStr = "rst2html.py --no-doc-info --no-doc-title --embed-stylesheet --stylesheet-path=%s %s %s" % \
-				(styleSheetFile, x, docOutDir+os.sep+(name[0:-5])+".html")
-
-			# I'd much rather be using popen3, but it doesn't appear to be
-			# available from either the os.* or popen2.* modules in a useable
-			# way. The source of popen2.py leads me to believe that this is an
-			# underlying Java issue.
-			os.system("echo `which rst2html.py`")
-			os.system(cmdStr)
-			# java.lang.Runtime.exec(??)
-
-	if not len(restFiles):
-		for name in os.listdir(docDir):
-			tn = os.path.normpath(docDir+os.sep+name)
-			if os.path.isdir(tn) and not name == ".svn":
-				buildRestFiles(tn, docOutDir+os.sep+name, styleSheetFile)
-
 def norm(path):
 	path = os.path.normpath(os.path.abspath(path))
 	if os.sep == '\\':

@@ -13,7 +13,7 @@ dojo.rpc.YahooService = function(appId){
 					"application ID. Using the default may cause problems during",
 					"deployment of your application");
 	}
-	this.connect(dojo.uri.dojoUri("src/rpc/yahoo.smd"));
+	this.connect(dojo.uri.moduleUri("dojo", "rpc/yahoo.smd"));
 	this.strictArgChecks = false;
 }
 
