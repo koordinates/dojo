@@ -108,7 +108,7 @@ dojo.version = {
 	}
 }
 
-dojo.getObject = function(/*String*/name, /*Object*/obj, /*Boolean*/create, /*Boolean*/returnWrapper){
+dojo.getObject = function(/*String*/name, /*Boolean*/create, /*Object*/obj, /*Boolean*/returnWrapper){
 	// summary: 
 	//		gets an object from a dot-separated string, such as "A.B.C"
 	//	description: 
@@ -136,11 +136,12 @@ dojo.getObject = function(/*String*/name, /*Object*/obj, /*Boolean*/create, /*Bo
 	var parts=name.split("."), i=0, lobj, tmp;
 	do{
 		lobj = tobj;
-		tmp = tobj[parts[i++]];
+		tmp = tobj[parts[i]];
 		if((create)&&(!tmp)){
-			tmp = tobj[parts[i++]] = {};
+			tmp = tobj[parts[i]] = {};
 		}
 		tobj = tmp;
+		i++;
 	}while(i<parts.length && tobj);
 	tprop = tobj;
 	tobj = lobj;
@@ -166,7 +167,7 @@ dojo.exists = function(/*String*/name, /*Object*/obj){
 		name = obj;
 		obj = tmp;
 	}
-	return (!!dojo.getObject(name, obj)); // Boolean
+	return (!!dojo.getObject(name, false, obj)); // Boolean
 }
 
 dojo.evalProp = function(/*String*/name, /*Object*/object, /*Boolean?*/create){
@@ -192,8 +193,8 @@ dojo.parseObjPath = function(/*String*/ path, /*Object?*/ context, /*Boolean?*/ 
 	// create: 
 	//		If true, Objects will be created at any point along the 'path' that
 	//		is undefined.
-	dojo.deprecated("dojo.parseObjPath", "use dojo.getObject(path, context, create, true)", "0.6");
-	return dojo.getObject(path, context, create, true); // Object: {obj: Object, prop: String}
+	dojo.deprecated("dojo.parseObjPath", "use dojo.getObject(path, create, context, true)", "0.6");
+	return dojo.getObject(path, create, context, true); // Object: {obj: Object, prop: String}
 }
 
 dojo.evalObjPath = function(/*String*/ path, /*Boolean?*/ create){
@@ -205,7 +206,7 @@ dojo.evalObjPath = function(/*String*/ path, /*Boolean?*/ create){
 	//		If true, Objects will be created at any point along the 'path' that
 	//		is undefined.
 	dojo.deprecated("dojo.evalObjPath", "use dojo.getObject(path, null, create)", "0.6");
-	return dojo.getObject(path, null, create); // Object
+	return dojo.getObject(path, create); // Object
 }
 
 dojo.errorToString = function(/*Error*/ exception){

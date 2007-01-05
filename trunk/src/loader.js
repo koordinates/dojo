@@ -395,7 +395,7 @@ dojo.hostenv.startPackage = function(/*String*/packageName){
 		syms.pop();
 		strippedPkgName = syms.join(".");
 	}
-	var evaledPkg = dojo.evalObjPath(strippedPkgName, true);
+	var evaledPkg = dojo.getObject(strippedPkgName, true);
 	this.loaded_modules_[fullPkgName] = evaledPkg;
 	this.loaded_modules_[strippedPkgName] = evaledPkg;
 	
