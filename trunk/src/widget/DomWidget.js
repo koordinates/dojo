@@ -793,7 +793,7 @@ dojo.declare("dojo.widget.DomWidget",
 					for(var i = 0; i < matches.length; i++) {
 						var key = matches[i];
 						key = key.substring(2, key.length-1);
-						var kval = (key.substring(0, 5) == "this.") ? dojo.lang.getObjPathValue(key.substring(5), this) : hash[key];
+						var kval = (key.substring(0, 5) == "this.") ? dojo.getObject(key.substring(5), false, this) : hash[key];
 						var value;
 						if((kval)||(dojo.lang.isString(kval))){
 							value = new String((dojo.lang.isFunction(kval)) ? kval.call(this, key, this.templateString) : kval);
