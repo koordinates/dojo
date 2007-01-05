@@ -280,7 +280,7 @@ dojo.xdRequireLocalization = function(/*String*/moduleName, /*String*/bundleName
 
 	var fixedBestLocale = bestLocale.replace('-', '_');
 	//See if the bundle we are going to use is already loaded.
- 	var bundlePackage = dojo.evalObjPath([moduleName, "nls", bundleName].join("."));
+ 	var bundlePackage = dojo.getObject([moduleName, "nls", bundleName].join("."));
 	if(bundlePackage && bundlePackage[fixedBestLocale]){
 		bundle[jsLoc.replace('-', '_')] = bundlePackage[fixedBestLocale];
 	}else{

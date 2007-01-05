@@ -211,7 +211,7 @@ dojo.dom.destroyNode = function(/*Node*/node){
 		node = dojo.dom.removeNode(node);
 	}
 	if(node.nodeType != 3){ // ignore TEXT_NODE
-		if(dojo.evalObjPath("dojo.event.browser.clean", false)){
+		if(dojo.exists("dojo.event.browser.clean")){
 			dojo.event.browser.clean(node);
 		}
 		if(dojo.render.html.ie){

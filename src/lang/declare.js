@@ -80,7 +80,7 @@ dojo.lang.declare = function(	/*String*/ className,
 		superclass = mixins.shift();
 	}
 	if(!init){
-		init = dojo.evalObjPath(className, false);
+		init = dojo.getObject(className, false);
 		if((init)&&(!dojo.lang.isFunction(init))){ init = null };
 	}
 	var ctor = dojo.lang.declare._makeConstructor();
@@ -105,7 +105,7 @@ dojo.lang.declare = function(	/*String*/ className,
 	dojo.lang.extend(ctor, dojo.lang.declare._common);
 	ctor.prototype.constructor = ctor;
 	ctor.prototype.initializer = (ctor.prototype.initializer)||(init)||(function(){});
-	var created = dojo.parseObjPath(className, null, true);
+	var created = dojo.getObject(className, true, null, true);
 	created.obj[created.prop] = ctor;
 	return ctor; // Function
 }
