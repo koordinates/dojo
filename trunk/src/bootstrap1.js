@@ -133,10 +133,14 @@ dojo.getObject = function(/*String*/name, /*Object*/obj, /*Boolean*/create, /*Bo
 	}
 	tobj = obj;
 	if(!tobj){ tobj = dojo.global(); }
-	var parts=name.split("."), i=0, lobj;
+	var parts=name.split("."), i=0, lobj, tmp;
 	do{
 		lobj = tobj;
-		tobj = tobj[parts[i++]];
+		tmp = tobj[parts[i++]];
+		if((create)&&(!tmp)){
+			tmp = tobj[parts[i++]] = {};
+		}
+		tobj = tmp;
 	}while(i<parts.length && tobj);
 	tprop = tobj;
 	tobj = lobj;
