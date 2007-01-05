@@ -444,7 +444,7 @@ dojo.declare("dojo.widget.Widget", null,
 						// argument that contains no punctuation other than . is 
 						// considered a function spec, not code
 						if(args[x].search(/[^\w\.]+/i) == -1){
-							this[x] = dojo.evalObjPath(args[x], false);
+							this[x] = dojo.getObject(args[x], false);
 						}else{
 							var tn = dojo.lang.nameAnonFunc(new Function(args[x]), this);
 							dojo.event.kwConnect({
