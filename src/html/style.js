@@ -1,5 +1,6 @@
 dojo.provide("dojo.html.style");
 dojo.require("dojo.html.common");
+dojo.require("dojo.html.extras");
 
 dojo.html.getClass = function(/* HTMLElement */node){
 	//	summary
@@ -195,7 +196,7 @@ dojo.html.getComputedStyle = function(/* HTMLElement */node, /* string */cssSele
 	//	Returns the computed style of cssSelector on node.
 	node = dojo.byId(node);
 	// cssSelector may actually be in camel case, so force selector version
-	var cssSelector = dojo.html.toSelectorCase(cssSelector);
+	var cssSelector = cssSelector.replace(/([A-Z])/g, "-$1" ).toLowerCase();
 	var property = dojo.html.toCamelCase(cssSelector);
 	if(!node || !node.style){
 		return inValue;			
