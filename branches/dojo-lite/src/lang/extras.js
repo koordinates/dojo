@@ -58,6 +58,8 @@ dojo.lang.getNameInObj = function(/*Object*/ns, /*unknown*/item){
 dojo.lang.shallowCopy = function(/*Object*/obj, /*Boolean?*/deep){
 	// summary:
 	//		copies object obj one level deep, or full depth if deep is true
+
+	// FIXME: why is this called "shallowCopy" if it *can* do a deep copy?
 	var i, ret;	
 
 	if(obj === null){ /*obj: null*/ return null; } // null
@@ -97,10 +99,11 @@ dojo.lang.firstValued = function(/* ... */){
 
 dojo.lang.getObjPathValue = function(/*String*/objpath, /*Object?*/context, /*Boolean?*/create){
 	// summary:
-	//		Gets a value from a reference specified as a string descriptor,
-	//		(e.g. "A.B") in the given context.
+	//		DEPRECATED. Gets a value from a reference specified as a string
+	//		descriptor, (e.g. "A.B") in the given context.
 	// context: if not specified, dj_global is used
 	// create: if true, undefined objects in the path are created.
+	dojo.deprecated("dojo.lang.getObjPathValue", "use dojo.getObject", "0.6");
 	with(dojo.parseObjPath(objpath, context, create)){
 		return dojo.evalProp(prop, obj, create); // Object
 	}

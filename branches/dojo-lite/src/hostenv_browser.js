@@ -180,7 +180,7 @@ if(typeof window != 'undefined'){
 
 		if(async_cb){
 			var _this = this, timer = null, gbl = dojo.global();
-			var xhr = dojo.evalObjPath("dojo.io.XMLHTTPTransport");
+			var xhr = dojo.getObject("dojo.io.XMLHTTPTransport");
 			http.onreadystatechange = function(){
 				if(timer){ gbl.clearTimeout(timer); timer = null; }
 				if(_this._blockAsync || (xhr && xhr._blockAsync)){
@@ -371,7 +371,7 @@ if(typeof window != 'undefined'){
 		}
 
 		if((djConfig.parseWidgets)||(sids.length > 0)){
-			if(dojo.evalObjPath("dojo.widget.Parse")){
+			if(dojo.getObject("dojo.widget.Parse")){
 				// we must do this on a delay to avoid:
 				//	http://www.shaftek.org/blog/archives/000212.html
 				// (IE bug)

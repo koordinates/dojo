@@ -48,7 +48,9 @@
 		loadUriStack: [],
 		loadedUris: [],
 	
-		//WARNING: This variable is referenced by packages outside of bootstrap: FloatingPane.js and undo/browser.js
+		//WARNING: 
+		//		This variable is referenced by packages outside of bootstrap:
+		//		FloatingPane.js and undo/browser.js
 		post_load_: false,
 		
 		//Egad! Lots of test files push on this directly instead of using dojo.addOnLoad.
@@ -64,23 +66,28 @@
 })();
 
 dojo.hostenv.loadPath = function(/*String*/relpath, /*String?*/module, /*Function?*/cb){
-// summary:
-//	Load a Javascript module given a relative path
-//
-// description:
-//	Loads and interprets the script located at relpath, which is relative to the
-//	script root directory.  If the script is found but its interpretation causes
-//	a runtime exception, that exception is not caught by us, so the caller will
-//	see it.  We return a true value if and only if the script is found.
-//
-//	For now, we do not have an implementation of a true search path.  We
-//	consider only the single base script uri, as returned by getBaseScriptUri().
-//
-// relpath: A relative path to a script (no leading '/', and typically
-// 	ending in '.js').
-// module: A module whose existance to check for after loading a path.
-//	Can be used to determine success or failure of the load.
-// cb: a callback function to pass the result of evaluating the script
+	// 	summary:
+	//		Load a Javascript module given a relative path
+	//
+	//	description:
+	//		Loads and interprets the script located at relpath, which is
+	//		relative to the script root directory.  If the script is found but
+	//		its interpretation causes a runtime exception, that exception is
+	//		not caught by us, so the caller will see it.  We return a true
+	//		value if and only if the script is found.
+	//
+	//		For now, we do not have an implementation of a true search path.
+	//		We consider only the single base script uri, as returned by
+	//		getBaseScriptUri().
+	//
+	// relpath: 
+	//		A relative path to a script (no leading '/', and typically ending
+	//		in '.js').
+	// module: 
+	//		A module whose existance to check for after loading a path.  Can be
+	//		used to determine success or failure of the load.
+	// cb: 
+	//		a callback function to pass the result of evaluating the script
 
 	var uri;
 	if(relpath.charAt(0) == '/' || relpath.match(/^\w+:/)){
@@ -101,17 +108,18 @@ dojo.hostenv.loadPath = function(/*String*/relpath, /*String?*/module, /*Functio
 }
 
 dojo.hostenv.loadUri = function(/*String (URL)*/uri, /*Function?*/cb){
-// summary:
-//	Loads JavaScript from a URI
-//
-// description:
-//	Reads the contents of the URI, and evaluates the contents.  This is used to load modules as well
-//	as resource bundles.  Returns true if it succeeded. Returns false if the URI reading failed.
-//	Throws if the evaluation throws.
-//
-// uri: a uri which points at the script to be loaded
-// cb: a callback function to process the result of evaluating the script as an expression, typically
-//	used by the resource bundle loader to load JSON-style resources
+	//	summary:
+	//		Loads JavaScript from a URI
+	//	description:
+	//		Reads the contents of the URI, and evaluates the contents.  This is
+	//		used to load modules as well as resource bundles. Returns true if
+	//		it succeeded. Returns false if the URI reading failed.  Throws if
+	//		the evaluation throws.
+	//	uri: a uri which points at the script to be loaded
+	//	cb: 
+	//		a callback function to process the result of evaluating the script
+	//		as an expression, typically used by the resource bundle loader to
+	//		load JSON-style resources
 
 	if(this.loadedUris[uri]){
 		return true; // Boolean
@@ -195,11 +203,10 @@ dojo.addOnLoad = function(/*Object?*/obj, /*String|Function*/functionName) {
 }
 
 dojo.addOnUnload = function(/*Object?*/obj, /*String|Function?*/functionName){
-// summary: registers a function to be triggered when the page unloads
-//
-// usage:
-//	dojo.addOnLoad(functionPointer)
-//	dojo.addOnLoad(object, "functionName")
+	// summary: registers a function to be triggered when the page unloads
+	// usage:
+	//		dojo.addOnLoad(functionPointer)
+	//		dojo.addOnLoad(object, "functionName")
 	var dh = dojo.hostenv;
 	if(arguments.length == 1){
 		dh.unloadListeners.push(obj);
@@ -230,8 +237,9 @@ dojo.hostenv.callLoaded = function(){
 }
 
 dojo.hostenv.getModuleSymbols = function(/*String*/modulename){
-// summary:
-//	Converts a module name in dotted JS notation to an array representing the path in the source tree
+	// summary:
+	//		Converts a module name in dotted JS notation to an array
+	//		representing the path in the source tree
 	var syms = modulename.split(".");
 	for(var i = syms.length; i>0; i--){
 		var parentModule = syms.slice(0, i).join(".");
@@ -250,36 +258,38 @@ dojo.hostenv.getModuleSymbols = function(/*String*/modulename){
 }
 
 dojo.hostenv._global_omit_module_check = false;
-dojo.hostenv.loadModule = function(/*String*/moduleName, /*Boolean?*/exactOnly, /*Boolean?*/omitModuleCheck){
-// summary:
-//	loads a Javascript module from the appropriate URI
-//
-// description:
-//	loadModule("A.B") first checks to see if symbol A.B is defined. 
-//	If it is, it is simply returned (nothing to do).
-//	
-//	If it is not defined, it will look for "A/B.js" in the script root directory,
-//	followed by "A.js".
-//	
-//	It throws if it cannot find a file to load, or if the symbol A.B is not
-//	defined after loading.
-//	
-//	It returns the object A.B.
-//	
-//	This does nothing about importing symbols into the current package.
-//	It is presumed that the caller will take care of that. For example, to import
-//	all symbols:
-//	
-//	   with (dojo.hostenv.loadModule("A.B")) {
-//	      ...
-//	   }
-//	
-//	And to import just the leaf symbol:
-//	
-//	   var B = dojo.hostenv.loadModule("A.B");
-//	   ...
-//	
-//	dj_load is an alias for dojo.hostenv.loadModule
+
+dojo.hostenv.loadModule = function(	/*String*/moduleName, 
+									/*Boolean?*/exactOnly, 
+									/*Boolean?*/omitModuleCheck){
+	//	summary:
+	//		loads a Javascript module from the appropriate URI
+	//	description:
+	//		loadModule("A.B") first checks to see if symbol A.B is defined. If
+	//		it is, it is simply returned (nothing to do).
+	//	
+	//		If it is not defined, it will look for "A/B.js" in the script root
+	//		directory, followed by "A.js".
+	//	
+	//		It throws if it cannot find a file to load, or if the symbol A.B is
+	//		not defined after loading.
+	//	
+	//		It returns the object A.B.
+	//	
+	//		This does nothing about importing symbols into the current package.
+	//		It is presumed that the caller will take care of that. For example,
+	//		to import all symbols:
+	//	
+	//			with (dojo.hostenv.loadModule("A.B")) {
+	//				...
+	//			}
+	//	
+	//		And to import just the leaf symbol:
+	//	
+	//			var B = dojo.hostenv.loadModule("A.B");
+	//	   		...
+	//	
+	//		dj_load is an alias for dojo.hostenv.loadModule
 
 	if(!moduleName){ return; }
 	omitModuleCheck = this._global_omit_module_check || omitModuleCheck;
@@ -367,14 +377,14 @@ dojo.hostenv.loadModule = function(/*String*/moduleName, /*Boolean?*/exactOnly, 
 }
 
 dojo.hostenv.startPackage = function(/*String*/packageName){
-// summary:
-//	Creates a JavaScript package
-//
-// description:
-//	startPackage("A.B") follows the path, and at each level creates a new empty
-//	object or uses what already exists. It returns the result.
-//
-// packageName: the package to be created as a String in dot notation
+	// summary:
+	//		Creates a JavaScript package
+	// description:
+	//		startPackage("A.B") follows the path, and at each level creates a
+	//		new empty object or uses what already exists. It returns the
+	//		result.
+	// packageName: 
+	//		the package to be created as a String in dot notation
 
 	//Make sure we have a string.
 	var fullPkgName = String(packageName);
@@ -385,7 +395,7 @@ dojo.hostenv.startPackage = function(/*String*/packageName){
 		syms.pop();
 		strippedPkgName = syms.join(".");
 	}
-	var evaledPkg = dojo.evalObjPath(strippedPkgName, true);
+	var evaledPkg = dojo.getObject(strippedPkgName, true);
 	this.loaded_modules_[fullPkgName] = evaledPkg;
 	this.loaded_modules_[strippedPkgName] = evaledPkg;
 	
@@ -393,12 +403,14 @@ dojo.hostenv.startPackage = function(/*String*/packageName){
 }
 
 dojo.hostenv.findModule = function(/*String*/moduleName, /*Boolean?*/mustExist){
-// summary:
-//	Returns the Object representing the module, if it exists, otherwise null.
-//
-// moduleName A fully qualified module including package name, like 'A.B'.
-// mustExist Optional, default false. throw instead of returning null
-//	if the module does not currently exist.
+	//	summary:
+	//		Returns the Object representing the module, if it exists, otherwise
+	//		null.
+	//	moduleName: 
+	//		A fully qualified module including package name, like 'A.B'.
+	//	mustExist: 
+	//		Optional, default false. throw instead of returning null if the
+	//		module does not currently exist.
 
 	var lmn = String(moduleName);
 
@@ -415,24 +427,26 @@ dojo.hostenv.findModule = function(/*String*/moduleName, /*Boolean?*/mustExist){
 //Start of old bootstrap2:
 
 dojo.kwCompoundRequire = function(/*Object containing Arrays*/modMap){
-// description:
-//	This method taks a "map" of arrays which one can use to optionally load dojo
-//	modules. The map is indexed by the possible dojo.hostenv.name_ values, with
-//	two additional values: "default" and "common". The items in the "default"
-//	array will be loaded if none of the other items have been choosen based on
-//	the hostenv.name_ item. The items in the "common" array will _always_ be
-//	loaded, regardless of which list is chosen.  Here's how it's normally
-//	called:
-//	
-//	dojo.kwCompoundRequire({
-//		browser: [
-//			["foo.bar.baz", true, true], // an example that passes multiple args to loadModule()
-//			"foo.sample.*",
-//			"foo.test,
-//		],
-//		default: [ "foo.sample.*" ],
-//		common: [ "really.important.module.*" ]
-//	});
+	//	description:
+	//		This method taks a "map" of arrays which one can use to optionally
+	//		load dojo modules. The map is indexed by the possible
+	//		dojo.hostenv.name_ values, with two additional values: "default"
+	//		and "common". The items in the "default" array will be loaded if
+	//		none of the other items have been choosen based on the
+	//		hostenv.name_ item. The items in the "common" array will _always_
+	//		be loaded, regardless of which list is chosen.  Here's how it's
+	//		normally called:
+	//	
+	//			dojo.kwCompoundRequire({
+	//				// an example that passes multiple args to loadModule()
+	//				browser: [
+	//					["foo.bar.baz", true, true], 
+	//					"foo.sample.*",
+	//					"foo.test,
+	//				],
+	//				default: [ "foo.sample.*" ],
+	//				common: [ "really.important.module.*" ]
+	//			});
 
 	var common = modMap["common"]||[];
 	var result = modMap[dojo.hostenv.name_] ? common.concat(modMap[dojo.hostenv.name_]||[]) : common.concat(modMap["default"]||[]);
@@ -448,24 +462,27 @@ dojo.kwCompoundRequire = function(/*Object containing Arrays*/modMap){
 }
 
 dojo.require = function(/*String*/ resourceName){
-	// summary
-	//	Ensure that the given resource (ie, javascript
-	//	source file) has been loaded.
-	// description
-	//	dojo.require() is similar to C's #include command or java's "import" command.
-	//	You call dojo.require() to pull in the resources (ie, javascript source files)
-	//	that define the functions you are using. 
+	//	summary:
+	//		Ensure that the given resource (ie, javascript source file) has
+	//		been loaded.
+	//	description:
+	//		dojo.require() is similar to C's #include command or java's
+	//		"import" command. You call dojo.require() to pull in the resources
+	//		(ie, javascript source files) that define the functions you are
+	//		using. 
 	//
-	//	Note that in the case of a build, many resources have already been included
-	//	into dojo.js (ie, many of the javascript source files have been compressed and
-	//	concatened into dojo.js), so many dojo.require() calls will simply return
-	//	without downloading anything.
+	//		Note that in the case of a build, many resources have already been
+	//		included into dojo.js (ie, many of the javascript source files have
+	//		been compressed and concatened into dojo.js), so many
+	//		dojo.require() calls will simply return without downloading
+	//		anything.
 	dojo.hostenv.loadModule.apply(dojo.hostenv, arguments);
 }
 
 dojo.requireIf = function(/*Boolean*/ condition, /*String*/ resourceName){
-	// summary
-	//	If the condition is true then call dojo.require() for the specified resource
+	// summary:
+	//		If the condition is true then call dojo.require() for the specified
+	//		resource
 	var arg0 = arguments[0];
 	if((arg0 === true)||(arg0=="common")||(arg0 && dojo.render[arg0].capable)){
 		var args = [];
@@ -477,54 +494,50 @@ dojo.requireIf = function(/*Boolean*/ condition, /*String*/ resourceName){
 dojo.requireAfterIf = dojo.requireIf;
 
 dojo.provide = function(/*String*/ resourceName){
-	// summary
-	//	Each javascript source file must have (exactly) one dojo.provide()
-	//	call at the top of the file, corresponding to the file name.
-	//	For example, dojo/src/foo.js must have dojo.provide("dojo.foo"); at the top of the file.
-	//
-	// description
-	//	Each javascript source file is called a resource.  When a resource
-	//	is loaded by the browser, dojo.provide() registers that it has
-	//	been loaded.
+	//	summary:
+	//		Each javascript source file must have (exactly) one dojo.provide()
+	//		call at the top of the file, corresponding to the file name.  For
+	//		example, dojo/src/foo.js must have dojo.provide("dojo.foo"); at the
+	//		top of the file.
+	//	description:
+	//		Each javascript source file is called a resource.  When a resource
+	//		is loaded by the browser, dojo.provide() registers that it has been
+	//		loaded.
 	//	
-	//	For backwards compatibility reasons, in addition to registering the resource,
-	//	dojo.provide() also ensures that the javascript object for the module exists.  For
-	//	example, dojo.provide("dojo.html.common"), in addition to registering that common.js
-	//	is a resource for the dojo.html module, will ensure that the dojo.html javascript object
-	//	exists, so that calls like dojo.html.foo = function(){ ... } don't fail.
+	//		For backwards compatibility reasons, in addition to registering the
+	//		resource, dojo.provide() also ensures that the javascript object
+	//		for the module exists.  For example,
+	//		dojo.provide("dojo.html.common"), in addition to registering that
+	//		common.js is a resource for the dojo.html module, will ensure that
+	//		the dojo.html javascript object exists, so that calls like
+	//		dojo.html.foo = function(){ ... } don't fail.
 	//
-	//	In the case of a build (or in the future, a rollup), where multiple javascript source
-	//	files are combined into one bigger file (similar to a .lib or .jar file), that file
-	//	will contain multiple dojo.provide() calls, to note that it includes
-	//	multiple resources.
+	//		In the case of a build (or in the future, a rollup), where multiple
+	//		javascript source files are combined into one bigger file (similar
+	//		to a .lib or .jar file), that file will contain multiple
+	//		dojo.provide() calls, to note that it includes multiple resources.
 	return dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
 }
 
 dojo.registerModulePath = function(/*String*/module, /*String*/prefix){
-	// summary: maps a module name to a path
-	// description: An unregistered module is given the default path of ../<module>,
-	//	relative to Dojo root. For example, module acme is mapped to ../acme.
-	//	If you want to use a different module name, use dojo.registerModulePath. 
+	//	summary: 
+	//		maps a module name to a path
+	//	description: 
+	//		An unregistered module is given the default path of ../<module>,
+	//		relative to Dojo root. For example, module acme is mapped to
+	//		../acme.  If you want to use a different module name, use
+	//		dojo.registerModulePath. 
 	return dojo.hostenv.registerModulePath(module, prefix);
-}
-
-dojo.exists = function(/*Object*/obj, /*String*/name){
-	// summary: determine if an object supports a given method
-	// description: useful for longer api chains where you have to test each object in the chain
-	var p = name.split(".");
-	for(var i = 0; i < p.length; i++){
-		if(!obj[p[i]]){ return false; } // Boolean
-		obj = obj[p[i]];
-	}
-	return true; // Boolean
 }
 
 // Localization routines
 
 dojo.hostenv.normalizeLocale = function(/*String?*/locale){
-//	summary:
-//		Returns canonical form of locale, as used by Dojo.  All variants are case-insensitive and are separated by '-'
-//		as specified in RFC 3066. If no locale is specified, the user agent's default is returned.
+	//	summary:
+	//		Returns canonical form of locale, as used by Dojo.  All variants
+	//		are case-insensitive and are separated by '-' as specified in RFC
+	//		3066. If no locale is specified, the user agent's default is
+	//		returned.
 
 	var result = locale ? locale.toLowerCase() : dojo.locale;
 	if(result == "root"){
@@ -534,10 +547,11 @@ dojo.hostenv.normalizeLocale = function(/*String?*/locale){
 };
 
 dojo.hostenv.searchLocalePath = function(/*String*/locale, /*Boolean*/down, /*Function*/searchFunc){
-//	summary:
-//		A helper method to assist in searching for locale-based resources.  Will iterate through
-//		the variants of a particular locale, either up or down, executing a callback function.
-//		For example, "en-us" and true will try "en-us" followed by "en" and finally "ROOT".
+	//	summary:
+	//		A helper method to assist in searching for locale-based resources.
+	//		Will iterate through the variants of a particular locale, either up
+	//		or down, executing a callback function.  For example, "en-us" and
+	//		true will try "en-us" followed by "en" and finally "ROOT".
 
 	locale = dojo.hostenv.normalizeLocale(locale);
 
@@ -561,15 +575,17 @@ dojo.hostenv.searchLocalePath = function(/*String*/locale, /*Boolean*/down, /*Fu
 dojo.hostenv.localesGenerated /***BUILD:localesGenerated***/; // value will be inserted here at build time, if necessary
 
 dojo.hostenv.registerNlsPrefix = function(){
-// summary:
-//	Register module "nls" to point where Dojo can find pre-built localization files
+	// summary:
+	//		Register module "nls" to point where Dojo can find pre-built
+	//		localization files
 	dojo.registerModulePath("nls","nls");	
 }
 
 dojo.hostenv.preloadLocalizations = function(){
-// summary:
-//	Load built, flattened resource bundles, if available for all locales used in the page.
-//	Execute only once.  Note that this is a no-op unless there is a build.
+	// summary:
+	//		Load built, flattened resource bundles, if available for all
+	//		locales used in the page. Execute only once. Note that this is a
+	//		no-op unless there is a build.
 
 	if(dojo.hostenv.localesGenerated){
 		dojo.hostenv.registerNlsPrefix();
@@ -596,62 +612,80 @@ dojo.hostenv.preloadLocalizations = function(){
 }
 
 dojo.requireLocalization = function(/*String*/moduleName, /*String*/bundleName, /*String?*/locale, /*String?*/availableFlatLocales){
-// summary:
-//	Declares translated resources and loads them if necessary, in the same style as dojo.require.
-//	Contents of the resource bundle are typically strings, but may be any name/value pair,
-//	represented in JSON format.  See also dojo.i18n.getLocalization.
-//
-// moduleName: name of the package containing the "nls" directory in which the bundle is found
-// bundleName: bundle name, i.e. the filename without the '.js' suffix
-// locale: the locale to load (optional)  By default, the browser's user locale as defined by dojo.locale
-// availableFlatLocales: A comma-separated list of the available, flattened locales for this bundle.
-// This argument should only be set by the build process.
-//
-// description:
-//	Load translated resource bundles provided underneath the "nls" directory within a package.
-//	Translated resources may be located in different packages throughout the source tree.  For example,
-//	a particular widget may define one or more resource bundles, structured in a program as follows,
-//	where moduleName is mycode.mywidget and bundleNames available include bundleone and bundletwo:
-//	...
-//	mycode/
-//	 mywidget/
-//	  nls/
-//	   bundleone.js (the fallback translation, English in this example)
-//	   bundletwo.js (also a fallback translation)
-//	   de/
-//	    bundleone.js
-//	    bundletwo.js
-//	   de-at/
-//	    bundleone.js
-//	   en/
-//	    (empty; use the fallback translation)
-//	   en-us/
-//	    bundleone.js
-//	   en-gb/
-//	    bundleone.js
-//	   es/
-//	    bundleone.js
-//	    bundletwo.js
-//	  ...etc
-//	...
-//	Each directory is named for a locale as specified by RFC 3066, (http://www.ietf.org/rfc/rfc3066.txt),
-//	normalized in lowercase.  Note that the two bundles in the example do not define all the same variants.
-//	For a given locale, bundles will be loaded for that locale and all more general locales above it, including
-//	a fallback at the root directory.  For example, a declaration for the "de-at" locale will first
-//	load nls/de-at/bundleone.js, then nls/de/bundleone.js and finally nls/bundleone.js.  The data will
-//	be flattened into a single Object so that lookups will follow this cascading pattern.  An optional build
-//	step can preload the bundles to avoid data redundancy and the multiple network hits normally required to
-//	load these resources.
+	// summary:
+	//		Declares translated resources and loads them if necessary, in the
+	//		same style as dojo.require.  Contents of the resource bundle are
+	//		typically strings, but may be any name/value pair, represented in
+	//		JSON format.  See also dojo.i18n.getLocalization.
+	// moduleName: 
+	//		name of the package containing the "nls" directory in which the
+	//		bundle is found
+	// bundleName: 
+	//		bundle name, i.e. the filename without the '.js' suffix
+	// locale: 
+	//		the locale to load (optional)  By default, the browser's user
+	//		locale as defined by dojo.locale
+	// availableFlatLocales: 
+	//		A comma-separated list of the available, flattened locales for this
+	//		bundle. This argument should only be set by the build process.
+	// description:
+	//		Load translated resource bundles provided underneath the "nls"
+	//		directory within a package.  Translated resources may be located in
+	//		different packages throughout the source tree.  For example, a
+	//		particular widget may define one or more resource bundles,
+	//		structured in a program as follows, where moduleName is
+	//		mycode.mywidget and bundleNames available include bundleone and
+	//		bundletwo:
+	//
+	//			...
+	//			mycode/
+	//			 mywidget/
+	//			  nls/
+	//			   bundleone.js (the fallback translation, English in this example)
+	//			   bundletwo.js (also a fallback translation)
+	//			   de/
+	//			    bundleone.js
+	//			    bundletwo.js
+	//			   de-at/
+	//			    bundleone.js
+	//			   en/
+	//			    (empty; use the fallback translation)
+	//			   en-us/
+	//			    bundleone.js
+	//			   en-gb/
+	//			    bundleone.js
+	//			   es/
+	//			    bundleone.js
+	//			    bundletwo.js
+	//			  ...etc
+	//			...
+	//
+	//		Each directory is named for a locale as specified by RFC 3066,
+	//		(http://www.ietf.org/rfc/rfc3066.txt), normalized in lowercase.
+	//		Note that the two bundles in the example do not define all the same
+	//		variants.  For a given locale, bundles will be loaded for that
+	//		locale and all more general locales above it, including a fallback
+	//		at the root directory.  For example, a declaration for the "de-at"
+	//		locale will first load nls/de-at/bundleone.js, then
+	//		nls/de/bundleone.js and finally nls/bundleone.js.  The data will be
+	//		flattened into a single Object so that lookups will follow this
+	//		cascading pattern.  An optional build step can preload the bundles
+	//		to avoid data redundancy and the multiple network hits normally
+	//		required to load these resources.
 
 	dojo.hostenv.preloadLocalizations();
 	var targetLocale = dojo.hostenv.normalizeLocale(locale);
  	var bundlePackage = [moduleName, "nls", bundleName].join(".");
-//NOTE: When loading these resources, the packaging does not match what is on disk.  This is an
-// implementation detail, as this is just a private data structure to hold the loaded resources.
-// e.g. tests/hello/nls/en-us/salutations.js is loaded as the object tests.hello.nls.salutations.en_us={...}
-// The structure on disk is intended to be most convenient for developers and translators, but in memory
-// it is more logical and efficient to store in a different order.  Locales cannot use dashes, since the
-// resulting path will not evaluate as valid JS, so we translate them to underscores.
+	// NOTE: 
+	//		When loading these resources, the packaging does not match what is
+	//		on disk.  This is an implementation detail, as this is just a
+	//		private data structure to hold the loaded resources.  e.g.
+	//		tests/hello/nls/en-us/salutations.js is loaded as the object
+	//		tests.hello.nls.salutations.en_us={...} The structure on disk is
+	//		intended to be most convenient for developers and translators, but
+	//		in memory it is more logical and efficient to store in a different
+	//		order.  Locales cannot use dashes, since the resulting path will
+	//		not evaluate as valid JS, so we translate them to underscores.
 	
 	//Find the best-match locale to load if we have available flat locales.
 	var bestLocale = "";
@@ -730,9 +764,12 @@ dojo.requireLocalization = function(/*String*/moduleName, /*String*/bundleName, 
 };
 
 (function(){
-	// If other locales are used, dojo.requireLocalization should load them as well, by default.
-	// Override dojo.requireLocalization to do load the default bundle, then iterate through the
-	// extraLocale list and load those translations as well, unless a particular locale was requested.
+	// If other locales are used, dojo.requireLocalization should load them as
+	// well, by default. 
+	// 
+	// Override dojo.requireLocalization to do load the default bundle, then
+	// iterate through the extraLocale list and load those translations as
+	// well, unless a particular locale was requested.
 
 	var extra = djConfig.extraLocale;
 	if(extra){
@@ -750,3 +787,4 @@ dojo.requireLocalization = function(/*String*/moduleName, /*String*/bundleName, 
 		};
 	}
 })();
+// vim:ai:ts=4:noet:textwidth=80
