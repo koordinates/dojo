@@ -204,7 +204,7 @@ dojo.widget.manager = new function(){
 
 	var findImplementation = function(lowerCaseWidgetName, moduleName){
 		// locate registered widget module
-		var module = dojo.evalObjPath(moduleName, false);
+		var module = dojo.getObject(moduleName, false);
 		// locate a widget implementation in the registered module for our current rendering environment
 		return (module ? findImplementationInModule(lowerCaseWidgetName, module) : null);
 	}
