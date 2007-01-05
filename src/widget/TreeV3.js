@@ -20,7 +20,7 @@ dojo.require("dojo.widget.TreeNodeV3");
 dojo.widget.defineWidget(
 	"dojo.widget.TreeV3",
 	[dojo.widget.HtmlWidget, dojo.widget.TreeWithNode],
-	function() {
+	function(){
 		this.eventNames = {};
 		
 		this.DndAcceptTypes = [];
@@ -43,7 +43,7 @@ dojo.widget.defineWidget(
 	
 	eagerWidgetInstantiation: false,
 	
-	eventNamesDefault: {
+	eventNamesDefault:{
 
 		// tree created.. Perform tree-wide actions if needed
 		afterTreeCreate: "afterTreeCreate",
@@ -101,22 +101,21 @@ dojo.widget.defineWidget(
 	
 	
 
-	createNode: function(data) {
+	createNode: function(data){
 			
 		data.tree = this.widgetId;		
 		
-		if (data.widgetName) {
+		if(data.widgetName){
 			// TODO: check if such widget has createSimple			
 			return dojo.widget.createWidget(data.widgetName, data);		
-		} else if (this.defaultChildWidget.prototype.createSimple) {			
-			return this.defaultChildWidget.prototype.createSimple(data);					
-		} else {
+		}else if(this.defaultChildWidget.prototype.createSimple){
+			return this.defaultChildWidget.prototype.createSimple(data);
+		}else{
 			var ns = this.defaultChildWidget.prototype.ns; 
 			var wt = this.defaultChildWidget.prototype.widgetType; 
 
 			return dojo.widget.createWidget(ns + ":" + wt, data); 
 		}
- 	    	
 	},
 				
 
@@ -125,7 +124,7 @@ dojo.widget.defineWidget(
 	// you can add unselectable if you want both in postCreate of tree and in this template
 
 	// create new template and put into prototype
-	makeNodeTemplate: function() {
+	makeNodeTemplate: function(){
 		
 		var domNode = document.createElement("div");
 		dojo.html.setClass(domNode, this.classPrefix+"Node "+this.classPrefix+"ExpandLeaf "+this.classPrefix+"ChildrenNo");		
@@ -135,7 +134,7 @@ dojo.widget.defineWidget(
 		var expandNode = document.createElement("div");
 		var clazz = this.classPrefix+"Expand";
 		dojo.widget.wai.setAttr(expandNode, "waiRole", "role", "presentation");
-		if (dojo.render.html.ie) {
+		if (dojo.render.html.ie){
 			clazz = clazz + ' ' + this.classPrefix+"IEExpand";
 		}
 		dojo.html.setClass(expandNode, clazz);
@@ -158,7 +157,7 @@ dojo.widget.defineWidget(
 		 * on this hack
 		 * FIXME: do it in CSS only
 		 */
-		if (dojo.render.html.ie && !dojo.render.html.ie70) {
+		if(dojo.render.html.ie && !dojo.render.html.ie70){
 			clazz = clazz + ' ' + this.classPrefix+"IEContent";
 		}	
 		
@@ -174,14 +173,12 @@ dojo.widget.defineWidget(
 		
 	},
 
-	makeContainerNodeTemplate: function() {
-		
+	makeContainerNodeTemplate: function(){
 		var div = document.createElement('div');
 		div.style.display = 'none';			
 		dojo.html.setClass(div, this.classPrefix+"Container");
 		dojo.widget.wai.setAttr(div, "waiRole", "role", "presentation");
 		this.containerNodeTemplate = div;
-		
 	},
 
 	
@@ -190,7 +187,7 @@ dojo.widget.defineWidget(
 	},
 
 
-	getInfo: function() {
+	getInfo: function(){
 		var info = {
 			widgetId: this.widgetId,
 			objectId: this.objectId
@@ -199,28 +196,27 @@ dojo.widget.defineWidget(
 		return info;
 	},
 
-	adjustEventNames: function() {
-		
-		for(var name in this.eventNamesDefault) {
-			if (dojo.lang.isUndefined(this.eventNames[name])) {
+	adjustEventNames: function(){
+		for(var name in this.eventNamesDefault){
+			if(dojo.lang.isUndefined(this.eventNames[name])){
 				this.eventNames[name] = this.widgetId+"/"+this.eventNamesDefault[name];
 			}
 		}
 	},
 
 	
-	adjustDndMode: function() {
+	adjustDndMode: function(){
 		var _this = this;
-		
 		
 		var DndMode = 0;
 		dojo.lang.forEach(this.DndMode.split(';'),
-			function(elem) {
+			function(elem){
 				var mode = _this.DndModes[dojo.string.trim(elem).toUpperCase()];
-				if (mode) DndMode = DndMode | mode;
+				if(mode){
+					DndMode = DndMode | mode;
+				}
 			}
 		 );
-	
 		
 		this.DndMode = DndMode;
 
@@ -229,7 +225,7 @@ dojo.widget.defineWidget(
 	/**
 	 * publish destruction event so that any listeners should stop listening
 	 */
-	destroy: function() {
+	destroy: function(){
 		dojo.event.topic.publish(this.tree.eventNames.beforeTreeDestroy, { source: this } );
 
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
@@ -239,16 +235,16 @@ dojo.widget.defineWidget(
 		
 		this.domNode.widgetId = this.widgetId;
 		
-		for(var i=0; i<this.actionsDisabled.length;i++) {
+		for(var i=0; i<this.actionsDisabled.length; i++){
 			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
 		}
 		
 		//dojo.debug(args.defaultChildWidget ? true : false)
 		
-		if (!args.defaultChildWidget) {
+		if(!args.defaultChildWidget){
 			this.defaultChildWidget = dojo.widget.TreeNodeV3;
-		} else {
-			this.defaultChildWidget = dojo.lang.getObjPathValue(args.defaultChildWidget);
+		}else{
+			this.defaultChildWidget = dojo.getObject(args.defaultChildWidget);
 		}
 		
 		this.adjustEventNames();
@@ -267,7 +263,7 @@ dojo.widget.defineWidget(
 		//dojo.html.disableSelection(this.domNode)
 				
 		dojo.lang.forEach(this.listeners,
-			function(elem) {
+			function(elem){
 				var t = dojo.lang.isString(elem) ? dojo.widget.byId(elem) : elem;
 				t.listenTree(_this)				
 			}
@@ -275,7 +271,7 @@ dojo.widget.defineWidget(
 	},
 
 	
-	postCreate: function() {						
+	postCreate: function(){
 		dojo.event.topic.publish(this.eventNames.afterTreeCreate, { source: this } );
 	},
 	
@@ -287,9 +283,9 @@ dojo.widget.defineWidget(
 	 * Called by target, saves source in event.
 	 * events are published for BOTH trees AFTER update.
 	*/
-	move: function(child, newParent, index) {
+	move: function(child, newParent, index){
 		
-		if (!child.parent) {
+		if(!child.parent){
 			dojo.raise(this.widgetType+": child can be moved only while it's attached");
 		}
 		
@@ -301,9 +297,9 @@ dojo.widget.defineWidget(
 		var newIndex = index;
 
 		var message = {
-				oldParent: oldParent, oldTree: oldTree, oldIndex: oldIndex,
-				newParent: newParent, newTree: newTree, newIndex: newIndex,
-				child: child
+			oldParent: oldParent, oldTree: oldTree, oldIndex: oldIndex,
+			newParent: newParent, newTree: newTree, newIndex: newIndex,
+			child: child
 		};
 
 		dojo.event.topic.publish(oldTree.eventNames.beforeMoveFrom, message);
@@ -320,7 +316,7 @@ dojo.widget.defineWidget(
 
 
 	/* do actual parent change here. Write remove child first */
-	doMove: function(child, newParent, index) {
+	doMove: function(child, newParent, index){
 		//dojo.debug("MOVE "+child+" to "+newParent+" at "+index);
 
 		//var parent = child.parent;
@@ -331,8 +327,7 @@ dojo.widget.defineWidget(
 		newParent.doAddChild(child, index);
 	},
 
-	toString: function() {
+	toString: function(){
 		return "["+this.widgetType+" ID:"+this.widgetId	+"]"
 	}
-
 });
