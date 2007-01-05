@@ -133,9 +133,10 @@ dojo.getObject = function(/*String*/name, /*Boolean*/create, /*Object*/obj, /*Bo
 	}
 	tobj = obj;
 	if(!tobj){ tobj = dojo.global(); }
-	var parts=name.split("."), i=0, lobj, tmp;
+	var parts=name.split("."), i=0, lobj, tmp, tname;
 	do{
 		lobj = tobj;
+		tname = parts[i];
 		tmp = tobj[parts[i]];
 		if((create)&&(!tmp)){
 			tmp = tobj[parts[i]] = {};
@@ -145,7 +146,7 @@ dojo.getObject = function(/*String*/name, /*Boolean*/create, /*Object*/obj, /*Bo
 	}while(i<parts.length && tobj);
 	tprop = tobj;
 	tobj = lobj;
-	return (returnWrapper) ? { obj: tobj, prop: tprop } : tprop; // Object
+	return (returnWrapper) ? { obj: tobj, prop: tname } : tprop; // Object
 }
 
 dojo.exists = function(/*String*/name, /*Object*/obj){
@@ -197,7 +198,7 @@ dojo.parseObjPath = function(/*String*/ path, /*Object?*/ context, /*Boolean?*/ 
 	return dojo.getObject(path, create, context, true); // Object: {obj: Object, prop: String}
 }
 
-dojo.evalObjPath = function(/*String*/ path, /*Boolean?*/ create){
+dojo.evalObjPath = function(/*String*/path, /*Boolean?*/create){
 	// summary: 
 	//		DEPRECATED. Return the value of object at 'path' in the global
 	//		scope, without using 'eval()'.
@@ -205,7 +206,7 @@ dojo.evalObjPath = function(/*String*/ path, /*Boolean?*/ create){
 	// create: 
 	//		If true, Objects will be created at any point along the 'path' that
 	//		is undefined.
-	dojo.deprecated("dojo.evalObjPath", "use dojo.getObject(path, null, create)", "0.6");
+	dojo.deprecated("dojo.evalObjPath", "use dojo.getObject(path, create)", "0.6");
 	return dojo.getObject(path, create); // Object
 }
 
