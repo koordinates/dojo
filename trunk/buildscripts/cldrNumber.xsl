@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:saxon="http://saxon.sf.net/" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+<xsl:stylesheet xmlns:saxon="http://saxon.sf.net/" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" extension-element-prefixes="saxon" version="2.0">
 <xsl:output method="text" indent="yes"/>
-<!--xsl:strip-space elements="*"/--> 
-    
+<!-- list the data elements whose spaces should be preserved
+       it seems listing only the parent node doesn't work -->
+<xsl:preserve-space elements="decimal group list pattern currencyMatch surroundingMatch insertBetween"/>
+<xsl:strip-space elements="*"/> 
+
+<xsl:variable name="first" select="true()" saxon:assignable="yes"/>
+
 <xsl:template match="/">
      <xsl:apply-templates/>
 </xsl:template>
-  
+
 <!-- process ldml,numbers-->
 <xsl:template name="top" match="/ldml">
     <xsl:choose>
@@ -18,21 +23,21 @@
                     <xsl:with-param name="source" select="@source"></xsl:with-param>
                     <xsl:with-param name="xpath" select="@path"></xsl:with-param>
                 </xsl:call-template>     
-                </xsl:for-each>
+            </xsl:for-each>
         </xsl:when>
         <xsl:otherwise>
                 <!-- ldml -->
                 <xsl:if test="name()='ldml'">
                     <!-- numbers -->
-                    <xsl:for-each select="numbers">       
-                        <xsl:result-document href="number.js" encoding="UTF-8">
+                    <xsl:for-each select="numbers">
+                        <xsl:result-document href="number.js" encoding="UTF-8"><!--<xsl:value-of select="codepoints-to-string(65279)"/>-->// generated from cldr/ldml/main/*.xml, xpath: ldml/numbers
 ({<xsl:call-template name="numbers"></xsl:call-template>
 })
-                        </xsl:result-document>
+</xsl:result-document>
                     </xsl:for-each>
                 </xsl:if>
          </xsl:otherwise>
-    </xsl:choose>        
+    </xsl:choose>
 </xsl:template>
 
 <!-- process numbers-->
@@ -69,10 +74,11 @@
         </xsl:when>
         <xsl:otherwise>
             <xsl:for-each select="*">
+                <xsl:call-template name="insert_comma"/>
         '<xsl:value-of select="name()"></xsl:value-of>
                 <xsl:text>':"</xsl:text>
                 <xsl:value-of select="."></xsl:value-of>
-                <xsl:text>",</xsl:text>
+                <xsl:text>"</xsl:text>
                 <!--xsl:if test="count(following-sibling::*)>0
                     or count(parent::node()/following-sibling::*)>0">
                     <xsl:text>,</xsl:text>
@@ -108,13 +114,14 @@
                         <xsl:if test="name()='currencySpacing'">
                                 <xsl:call-template name="currencySpacing"></xsl:call-template>
                         </xsl:if><xsl:for-each select=".//pattern">
+			                <xsl:call-template name="insert_comma"/>
         '<xsl:value-of select="name(..)"></xsl:value-of>                            
                             <xsl:if test="string-length($width)>0">
                                 <xsl:text>-</xsl:text>
                                 <xsl:value-of select="$width"></xsl:value-of>
                             </xsl:if>
                             <xsl:text>':"</xsl:text><xsl:value-of select="."/>
-                            <xsl:text>",</xsl:text>
+                            <xsl:text>"</xsl:text>
                             <!--xsl:if test="count(parent::node()/parent::node()/following-sibling::*)>0
                                 or count(parent::node()/parent::node()/parent::node()/following-sibling::*)>0">
                                    <xsl:text>,</xsl:text>
@@ -150,6 +157,7 @@
                     </xsl:for-each>
                 </xsl:when>
                 <xsl:otherwise>
+	                <xsl:call-template name="insert_comma"/>
         '<xsl:value-of select="name(../..)"></xsl:value-of>
                     <xsl:text>-</xsl:text>
                     <xsl:value-of select="name(..)"></xsl:value-of>
@@ -157,7 +165,7 @@
                     <xsl:value-of select="name()"></xsl:value-of>
                      <xsl:text>':"</xsl:text>                   
                      <xsl:value-of select="." ></xsl:value-of>
-                     <xsl:text>",</xsl:text>
+                     <xsl:text>"</xsl:text>
                     <!--xsl:if test="count(following-sibling::*)>0
                         or count(parent::node()/following-sibling::*)>0
                         or count(parent::node()/parent::node()/following-sibling::*)>0
@@ -182,7 +190,7 @@
   
     <xsl:choose>
         <!-- source="locale" -->
-        <xsl:when test="compare($source,'locale')=0">
+        <xsl:when test="$source='locale'">
             <xsl:for-each select="saxon:evaluate(concat('../',$xpath))">   
                 <xsl:call-template name="invoke_template_by_name">
                     <xsl:with-param name="templateName" select="$templateToCall"></xsl:with-param>
@@ -211,22 +219,33 @@
  <xsl:template name="invoke_template_by_name">
      <xsl:param name="templateName"></xsl:param>     
      <xsl:param name="width"></xsl:param>
-     <xsl:if test="compare($templateName,'top')=0">
+     <xsl:if test="$templateName='top'">
          <xsl:call-template name="top"></xsl:call-template>
      </xsl:if>
-     <xsl:if test="compare($templateName,'numbers')=0">
+     <xsl:if test="$templateName='numbers'">
          <xsl:call-template name="numbers"></xsl:call-template>
      </xsl:if>
-     <xsl:if test="compare($templateName,'symbols')=0">
+     <xsl:if test="$templateName='symbols'">
          <xsl:call-template name="symbols"></xsl:call-template>
      </xsl:if>
-     <xsl:if test="compare($templateName,'formats')=0">
+     <xsl:if test="$templateName='formats'">
          <xsl:call-template name="formats">
              <xsl:with-param name="width" select="$width"></xsl:with-param>
          </xsl:call-template>
      </xsl:if>
-     <xsl:if test="compare($templateName,'currencySpacing')=0">
+     <xsl:if test="$templateName='currencySpacing'">
          <xsl:call-template name="currencySpacing"></xsl:call-template>
      </xsl:if>
-  </xsl:template>   
+ </xsl:template>
+    
+<xsl:template name="insert_comma">
+	<xsl:choose>
+		<xsl:when test="$first">
+			<saxon:assign name="first" select="false()"/>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:text>,</xsl:text>
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:template>
 </xsl:stylesheet>
