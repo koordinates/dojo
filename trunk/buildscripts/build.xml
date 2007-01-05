@@ -269,7 +269,62 @@ print "look ma! Jython!"
 	<!-- cldr task -->
 	<target name="cldr" depends="-fix-config, ldml"
 		description="Transforms CLDR (localization data) into JSON">
-		<!-- clean directory? -->
+
+		<scriptdef name="removeEmptyOutput" language="javascript">
+			<attribute name="dir"/>
+			<![CDATA[
+		function isEmpty(o){
+			for(x in o){
+				return false;
+			}
+			return true;
+		}
+		
+		var delTask = project.createTask("delete");
+		function deleteResource(f){
+			f.isDirectory() ? delTask.setDir(f) : delTask.setFile(f);
+			delTask.perform();
+		}
+
+	var fs = project.createDataType("fileset");
+	var dir = new java.io.File(attributes.get("dir"));
+	fs.setDir(dir);
+	fs.setIncludes("*.js");
+	ds = fs.getDirectoryScanner(project);
+	jsFiles = ds.getIncludedFiles();
+
+	var load = project.createTask("loadfile");
+	load.setEncoding("UTF8");
+	for (var i=0; i<jsFiles.length; i++) {
+		var srcFile = java.io.File(dir, jsFiles[i]);
+		load.setSrcFile(srcFile);
+		//FIXME: spawn task as separate ant process to avoid stale properties, collisions?
+		var uniqueId = "removeEmptyOutput.json."+dir+"."+i;
+		load.setProperty(uniqueId);
+		load.perform();
+	
+		var contents = String(project.getProperty(uniqueId));
+		if(contents.charCodeAt(0) == 0xfeff){ contents = contents.substring(1); } // JDK bug workaround
+
+		try{
+			var value = eval(contents);
+		}catch(e){
+			java.lang.System.out.print("Syntax error in "+srcFile.getCanonicalPath());
+			throw e;
+		}
+		if(isEmpty(value)){
+			deleteResource(srcFile);
+		}
+	}
+
+	// delete the directory if empty
+	ds.scan();
+	if(!ds.getIncludedFilesCount()){
+		deleteResource(dir);
+	}
+			]]>
+		</scriptdef>
+
 		<macrodef name="processLdml">
 			<attribute name="in"/>
 			<attribute name="destdir"/>
@@ -278,7 +333,8 @@ print "look ma! Jython!"
 				<mkdir dir="@{destdir}"/>
 				<saxon in="@{in}" style="${cldrIn}/ldml/main/cldrCalendar.xsl" destdir="@{destdir}"/>
 				<saxon in="@{in}" style="${cldrIn}/ldml/main/cldrNumber.xsl" destdir="@{destdir}"/>
-				<echo level="info" message="Transformed @{in} to @{destDir}" taskName="cldr"/>				
+				<echo level="info" message="Transformed @{in} to @{destDir}" taskName="cldr"/>
+				<removeEmptyOutput dir="@{destdir}" />
 			</sequential>
 		</macrodef>
 		<macrodef name="saxon">
@@ -306,7 +362,7 @@ print "look ma! Jython!"
 				</java>
 			</sequential>
 		</macrodef>
-		
+
 		<scriptdef name="transformCldr" language="javascript">
 			<attribute name="destdir"/>
 			<element name="fileset" type="fileset"/>
@@ -338,6 +394,7 @@ print "look ma! Jython!"
 		   </fileset>
 		</copy>	
 
+		<delete dir="${cldrOut}/nls" includeemptydirs="yes"/>
 		<transformCldr destdir="${cldrOut}/nls">
 			<fileset dir="${cldrIn}/ldml/main" includes="**/*.xml" />
 		</transformCldr>
