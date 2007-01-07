@@ -2,6 +2,8 @@ dojo.provide("dojo.widget.Toolbar");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.html.style");
+dojo.require("dojo.widget.PopupContainer");
+dojo.require("dojo.widget.ColorPalette");
 
 /* ToolbarContainer
  *******************/
@@ -684,6 +686,19 @@ dojo.widget.defineWidget(
 	"dojo.widget.ToolbarDialog",
 	dojo.widget.ToolbarButton,
 {
+	// containerToggle: String: toggle property of the dropdown
+	containerToggle: "plain",
+
+	// containerToggleDuration: Integer: toggle duration property of the dropdown
+	containerToggleDuration: 150,
+
+	attachTemplateNodes: function(){
+		// summary: use attachTemplateNodes to specify containerNode, as fillInTemplate is too late for this
+		dojo.widget.ToolbarDialog.superclass.attachTemplateNodes.apply(this, arguments);
+		this.popup = dojo.widget.createWidget("PopupContainer", {toggle: this.containerToggle, toggleDuration: this.containerToggleDuration});
+		this.containerNode = this.popup.domNode;
+	},
+
 	fillInTemplate: function (args, frag) {
 		dojo.widget.ToolbarDialog.superclass.fillInTemplate.call(this, args, frag);
 		dojo.event.connect(this, "onSelect", this, "showDialog");
@@ -691,10 +706,12 @@ dojo.widget.defineWidget(
 	},
 
 	showDialog: function (e) {
+		this.popup.open(this.domNode, this, this.domNode);
 		dojo.lang.setTimeout(dojo.event.connect, 1, document, "onmousedown", this, "deselect");
 	},
 
 	hideDialog: function (e) {
+		this.popup.close();
 		dojo.event.disconnect(document, "onmousedown", this, "deselect");
 	}
 
@@ -909,8 +926,7 @@ dojo.widget.defineWidget(
 
 	fillInTemplate: function (args, frag) {
 		dojo.widget.ToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
-		this.dialog = dojo.widget.createWidget("ColorPalette", {palette: this.palette});
-		this.dialog.domNode.style.position = "absolute";
+		this.dialog = dojo.widget.createWidget("ColorPalette", {palette: this.palette}, this.containerNode, "child");
 
 		dojo.event.connect(this.dialog, "onColorSelect", this, "_setValue");
 	},
@@ -918,17 +934,5 @@ dojo.widget.defineWidget(
 	_setValue: function(color) {
 		this._value = color;
 		this._fireEvent("onSetValue", color);
-	},
-
-	showDialog: function (e) {
-		dojo.widget.ToolbarColorDialog.superclass.showDialog.call(this, e);
-		var abs = dojo.html.getAbsolutePosition(this.domNode, true);
-		var y = abs.y + dojo.html.getBorderBox(this.domNode).height;
-		this.dialog.showAt(abs.x, y);
-	},
-
-	hideDialog: function (e) {
-		dojo.widget.ToolbarColorDialog.superclass.hideDialog.call(this, e);
-		this.dialog.hide();
 	}
 });
