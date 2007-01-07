@@ -6,6 +6,7 @@ dojo.require("dojo.lfx.html");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.widget.html.layout");
 dojo.require("dojo.widget.PageContainer");
+dojo.require("dojo.html.iframe");
 
 
 /**
@@ -200,6 +201,9 @@ dojo.widget.defineWidget(
 		dojo.widget.AccordionPane.superclass.fillInTemplate.call(this);
 		dojo.html.disableSelection(this.labelNode);
 		this.setSelected(this.selected);
+
+		// Prevent IE bleed-through problem
+		this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
 	},
 
 	setLabel: function(/*String*/ label) {
@@ -246,14 +250,4 @@ dojo.widget.defineWidget(
 			}
 		}
 	}
-});
-
-// These arguments can be specified for the children of an AccordionContainer
-// Since any widget can be specified as a child, mix them
-// into the base widget class.  (This is a hack, but it's effective.)
-dojo.lang.extend(dojo.widget.Widget, {
-	// open: String
-	//	is this the selected child?
-	//	DEPRECATED: will be removed in 0.5.  Used "selected" attribute instead.
-	open: false
 });
