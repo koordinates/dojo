@@ -75,7 +75,7 @@ build targets:
 
 	test - builds and runs command line unit tests
 
-	testScripting - tests the JS and Jython integration in the build process
+	testScripting - tests the JS integration in the build process
 
 	buildFlash - compiles a Flash ActionScript 2 file to use dojo.flash.comm; provide
 	relative path to file using -Ddojo.flash.file.
@@ -122,7 +122,7 @@ build targets:
 	<!-- test-scripting task -->
 	<target name="testScripting"
 		depends="-fix-config"
-		description="runs minimal test on our BSF+JS+Jython integration">
+		description="runs minimal test on our BSF+JS integration">
 		<script language="javascript">
 			<![CDATA[
 			function print(){
@@ -152,21 +152,6 @@ build targets:
 			echo("JavaScript (Rhino) integration is working!", testScripting);
 		]]>
 		</script>
-		<script language="jython">
-			<![CDATA[
-import sys
-# make the python standard library avialable
-sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
-
-# import re
-
-echo = dojo.createTask("echo")
-testScripting.addTask(echo)
-echo.setMessage("Jython integration is working!");
-
-print "look ma! Jython!"
-]]>
-		</script>
 	</target>
 	<!-- end testScripting task -->
 
@@ -175,15 +160,11 @@ print "look ma! Jython!"
 		description="checks to make sure than we're sane before doing anything else">
 		<available property="bsf_ok" file="${user.home}/.ant/lib/bsf.jar" />
 		<available property="ant_bsf_ok" file="${user.home}/.ant/lib/ant-apache-bsf.jar" />
-		<available property="jython_ok" file="${user.home}/.ant/lib/jython.jar" />
-		<available property="jython_libs_ok" file="${user.home}/.ant/lib/pyLib.zip" />
 
 		<condition property="config_ok">
 			<and>
 				<isset property="bsf_ok" />
 				<isset property="ant_bsf_ok" />
-				<isset property="jython_ok" />
-				<isset property="jython_libs_ok" />
 			</and>
 		</condition>
 
@@ -199,8 +180,6 @@ print "look ma! Jython!"
 			preservelastmodified="true">
 			<fileset dir="lib/">
 				<include name="bsf.jar"/>
-				<include name="jython.jar"/>
-				<include name="pyLib.zip"/>
 				<include name="js.jar"/>
 				<include name="ant-apache-bsf.jar"/>
 			</fileset>
@@ -522,22 +501,15 @@ print "look ma! Jython!"
 	</target>
 	<!-- end src task -->
 
-	<!-- -set-profile-deps task -->
-	<target name="-set-profile-deps" depends="-fix-config"
-		description="populates the contents of the dependency list for a given profile">
-		<!--
-			FIXME: this is just a stub! need to fill it in!
-		-->
+
+	<!-- -set-profileFile task -->
+	<target name="-set-profileFile" depends="-fix-config"
+		description="Configures profileFile property.">
+		<!-- Set up the profileFile property. -->
 		<script language="javascript">
 			<![CDATA[
-			function echo(msg){
-							var echo = dojo.createTask("echo");
-							echo.setMessage(msg);
-							echo.execute();
-						}
 			var pf = dojo.getProperty("profileFile");
 			if((!pf)||(pf=="null")||(pf=="")){
-				// echo("profile: "+dojo.getProperty("profile"), compress);
 				var prof = dojo.getProperty("profile");
 				if((prof)&&(prof!="null")&&(prof!="")){
 					dojo.setNewProperty("profileFile", "profiles/"+prof+".profile.js");
@@ -547,122 +519,41 @@ print "look ma! Jython!"
 			}
 		]]>
 		</script>
-
-		<!-- FIXME: need to actually get a list of js files to be processed  -->
-
-		<java jar="./lib/custom_rhino.jar" failonerror="true"
-			fork="true" outputproperty="concatFilesProp" logError="true">
-			<arg value="-opt" />
-			<arg value="-1" />
-			<arg value="-f" />
-			<arg value="${profileFile}" />
-			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
-		</java>
-
-		<script language="javascript">
-			<![CDATA[
-			var currentTask = dojo.getTargets().get("-set-profile-deps");
-			var files = dojo.getProperty("concatFilesProp");
-			dojo.setNewProperty("profileDeps", files);
-		]]>
-		</script>
 	</target>
-	<!-- end -set-profile-deps task -->
+	<!-- end -set-profileFile task -->
 
 	<!-- list-profile-deps task -->
-	<target name="list-profile-deps" depends="-fix-config, -set-profile-deps"
-		description="lists out the contents of the file dependencies">
-		<echo level="info" taskName="list-profile-deps">${profileDeps}</echo>
+	<target name="list-profile-deps" depends="-fix-config, -set-profileFile"
+		description="Lists the files that will be included in dojo.js for a given profile">
+		<!-- Call the JS script that will generate the file list. -->
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
+			logError="true">
+			<arg value="listProfileDeps.js" />
+			<arg value="${profileFile}" />
+			<arg value="${version}" />
+			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
+		</java>
 	</target>
 	<!-- end list-profile-deps task -->
 
-	<!-- list-profile-sizes task -->
-	<target name="list-profile-sizes" depends="-fix-config, -set-profile-deps"
-		description="lists out the contents of the file dependencies">
-		<script language="javascript">
-			<![CDATA[
-			function echo(msg){
-				var echo = dojo.createTask("echo");
-				echo.setMessage(msg);
-				echo.setTaskName("list-profile-sizes");
-				echo.execute();
-			}
-
-			var files = new String(dojo.getProperty("profileDeps"));
-			var outparts = files.split("\n");
-			for(var x=0; x<outparts.length; x++){
-				if(outparts[x][outparts[x].length-1]==","){
-					outparts[x] = outparts[x].substring(0, outparts[x].length-1);
-				}
-				var flen  = parseInt(new java.io.File(new java.lang.String(outparts[x])).length());
-				echo(((flen>=1024) ? parseInt(flen/1024)+"K" : flen+"B") +": \t"+ outparts[x]);
-			}
-		]]></script>
-		<!-- <echo>${profileDeps}</echo> -->
-	</target>
-	<!-- end list-profile-sizes task -->
-
 	<!-- compress task -->
-	<target name="compress" depends="-fix-config, list-profile-deps"
+	<target name="compress" depends="-fix-config, -set-profileFile"
 		description="runs compression code over release JS files">
-		<echo level="info" taskName="compress">profileFile: ${profileFile}</echo>
-
 		<!-- Create the release dir if it doesn't exist. -->
 		<mkdir dir="${release_dir}"/>
-		<!-- write the list of files included to the release directory -->
-		<echo file="${release_dir}/build.txt">Files baked into this package:
 
-${profileDeps}</echo>
+		<echo level="info" taskName="compress">profileFile: ${profileFile}</echo>
 
-		<!-- now write 'em all to a single file -->
-		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/source.__package__.js">
-			<!--
-		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/dojo.js">
-		-->
-			<filelist
-				dir="."
-				files="${profileDeps}" />
-		</concat>
-
-		<!-- remove UTF-8 BOM sequence
-		<replaceregexp match="\u00ef\u00bb\u00bf" encoding="utf-8" 
-			byline="true" flags="g" file="${release_dir}/source.__package__.js">
-			<substitution expression="BOM!"/>
-		</replaceregexp>
-		-->
-
-		<!-- 
-			clobber requireIf and requireAfterIf statements since they
-			aren't applicable in build
-		-->
-		<replaceregexp match="dojo.requireIf\((.*?)\);"
-			byline="true" flags="g" file="${release_dir}/source.__package__.js">
-			<substitution expression=""/>
-		</replaceregexp>
-
-		<replaceregexp match="dojo.requireAfterIf\((.*?)\);"
-			byline="true" flags="g" file="${release_dir}/source.__package__.js">
-			<substitution expression=""/>
-		</replaceregexp>
-
-		<!-- Set the version number -->
-		<script language="jython" taskName="compress">
-			<![CDATA[
-import sys
-# make the python standard library avialable
-sys.path.append(project.resolveFile("lib/pyLib.zip").getPath())
-sys.path.append(project.resolveFile(".").getPath())
-
-# import re
-import os
-from buildUtil import *
-
-print "Setting version for Dojo to: " + dojo.getProperty("version")
-replaceVersion(project.resolveFile(dojo.getProperty("release_dir") + "/source.__package__.js").getPath(), dojo.getProperty("version"))
-print "Removing dojo.require calls in source.__package__.js."
-removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__package__.js").getPath())
-]]>
-		</script>
+		<!-- Call the JS script that will generate the raw dojo.js file -->
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
+			logError="true">
+			<arg value="makeDojoJs.js" />
+			<arg value="${profileFile}" />
+			<arg value="${release_dir}" />
+			<arg value="source.__package__.js" />
+			<arg value="${version}" />
+			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
+		</java>
 
 		<antcall target="-preload-resources">
 			<param name="srcFile" value="${release_dir}/source.__package__.js" />
@@ -739,7 +630,7 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}" />
 	</target>
 
-	<target name="-flatten-resources"
+	<target name="-flatten-resources" depends="-set-profileFile"
 		description="loads all localization bundles in the build for a particular locale, flattens the object, and outputs a preloaded version">
 		<!-- FIXME: should also remove dojo.requireLocalization() calls from the build? -->
 		<copy overwrite="true" file="${srcFile}" tofile="${release_dir}/localizations.tmp.js">
@@ -750,21 +641,6 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 			</filterchain>
 		</copy>
 
-		<!-- Hmm. have to repeat this work here even though it was done in -set-profile-deps. I guess script block changes
-		to properties only last within that target? -->
-		<script language="javascript">
-			<![CDATA[
-			var pf = dojo.getProperty("profileFile");
-			if((!pf)||(pf=="null")||(pf=="")){
-				var prof = dojo.getProperty("profile");
-				if((prof)&&(prof!="null")&&(prof!="")){
-					dojo.setNewProperty("profileFile", "profiles/"+prof+".profile.js");
-				}else{
-					dojo.setNewProperty("profileFile", "getDependencyList.js");
-				}
-			}
-		]]>
-		</script>
 		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
 			logError="true" outputproperty="generatedLocales" >
 			<!--java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
@@ -791,25 +667,9 @@ removeRequires(project.resolveFile(dojo.getProperty("release_dir") + "/source.__
 	</target>
 
 	<!-- intern-strings task -->
-	<target name="intern-strings" depends="-fix-config"
+	<target name="intern-strings" depends="-fix-config, -set-profileFile"
 		description="pulls template paths specified in prototypes into templateStrings which can be used to speed up widget construction">
 
-		<!-- Hmm. have to repeat this work here even though it was done in -set-profile-deps. I guess script block changes
-		to properties only last within that target? -->
-		<script language="javascript" taskName="intern-strings">
-			<![CDATA[
-			var pf = dojo.getProperty("profileFile");
-			if((!pf)||(pf=="null")||(pf=="")){
-				var prof = dojo.getProperty("profile");
-				if((prof)&&(prof!="null")&&(prof!="")){
-					dojo.setNewProperty("profileFile", "profiles/"+prof+".profile.js");
-				}else{
-					dojo.setNewProperty("profileFile", "getDependencyList.js");
-				}
-			}
-		]]>
-		</script>
-		
 		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
 			logError="true">
 			<arg value="internStrings.js" />
@@ -1052,23 +912,7 @@ available in src/storage/java/ without rebuilding it.</echo>
 	<!-- end buildFlash task -->
 
 	<!-- xdgenRelease task -->
-	<target name="xdgenRelease" if="xdgenRun" depends="xdgenRemove">
-		<!-- Hmm. have to repeat this work here even though it was done in -set-profile-deps. I guess script block changes
-		to properties only last within that target? -->
-		<script language="javascript">
-			<![CDATA[
-			var pf = dojo.getProperty("profileFile");
-			if((!pf)||(pf=="null")||(pf=="")){
-				var prof = dojo.getProperty("profile");
-				if((prof)&&(prof!="null")&&(prof!="")){
-					dojo.setNewProperty("profileFile", "profiles/"+prof+".profile.js");
-				}else{
-					dojo.setNewProperty("profileFile", "getDependencyList.js");
-				}
-			}
-		]]>
-		</script>
-
+	<target name="xdgenRelease" if="xdgenRun" depends="xdgenRemove, -set-profileFile">
 		<echo level="info" message="Generating xd resource files..." taskName="xdgenRelease"/>
 		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" logError="true">
 			<arg value="xdgen.js" />
@@ -1083,23 +927,8 @@ available in src/storage/java/ without rebuilding it.</echo>
 	<!-- end xdgenRelease task -->
 
 	<!-- xdgenRemove task -->
-	<target name="xdgenRemove"
+	<target name="xdgenRemove" depends="-set-profileFile"
 			description="Removes package files that were created by xdgen.">
-		<!-- Hmm. have to repeat this work here even though it was done in -set-profile-deps. I guess script block changes
-		to properties only last within that target? -->
-		<script language="javascript">
-			<![CDATA[
-			var pf = dojo.getProperty("profileFile");
-			if((!pf)||(pf=="null")||(pf=="")){
-				var prof = dojo.getProperty("profile");
-				if((prof)&&(prof!="null")&&(prof!="")){
-					dojo.setNewProperty("profileFile", "profiles/"+prof+".profile.js");
-				}else{
-					dojo.setNewProperty("profileFile", "getDependencyList.js");
-				}
-			}
-		]]>
-		</script>
 		<!-- Remove .xd.js files -->
 		<echo level="info" message="Removing xd resource files..." taskName="xdgenRemove"/>
 		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" logError="true">
