@@ -10,6 +10,7 @@ dojo.require("dojo.widget.TreeV3");
 dojo.require("dojo.widget.TreeNodeV3");
 dojo.require("dojo.widget.TreeBasicControllerV3");
 dojo.require("tests.data.bindings.HtmlTextarea");
+dojo.require("tests.data.bindings.TreeV3");
 
 
 gui = {
@@ -110,8 +111,9 @@ gui = {
 			}
 			var setClickHander = function(checkbox, binding) {
 				checkbox.onclick = function(e) {
-					alert("clicked on " + binding.name);
+					// alert("clicked on " + binding.name);
 					binding.selected = !(binding.selected);
+					gui._displayViews();
 				};
 			};
 			setClickHander(checkbox, binding);
@@ -163,6 +165,10 @@ gui = {
 		for (i in selectedBindings) {
 			binding = selectedBindings[i];
 			var bindingClass = binding.bindingClass;
+			var h3 = document.createElement('h3');
+			var h3TextNode = document.createTextNode(binding.name);
+			h3.appendChild(h3TextNode);			
+			outputDiv.appendChild(h3);			
 			var bindingInstance = new bindingClass(result, outputDiv);
 		}
 		
