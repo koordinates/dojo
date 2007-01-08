@@ -419,12 +419,14 @@ dojo.widget.defineWidget(
 			this._bookmark = null;
 			this._bookmark = dojo.withGlobal(this.window, dojo.html.selection.getBookmark);
 		},
-		restoreSelection: function(){
+		restoreSelection: function(/*Boolean*/keepbookmark){
 			// summary: restore the last saved selection
 			if(this._bookmark){
 				this.focus(); //require for none-activeX IE
 				dojo.withGlobal(this.window, "moveToBookmark", dojo.html.selection, [this._bookmark]);
-				this._bookmark = null;
+				if(keepbookmark){
+					this._bookmark = null;
+				}
 			}else{
 				dojo.debug("restoreSelection: no saved selection is found!");
 			}
