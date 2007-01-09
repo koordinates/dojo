@@ -18,5 +18,8 @@ with(dojo.lite){
 	removed("dojo.html.replaceClass");
 	removed("dojo.html.toSelectorCase");
 	removed("dojo.logging.*");
+	removed("dojo.evalObjPath");
+	removed("dojo.evalProp");
+	removed("dojo.parseObjPath");
 	// removed("");
 }
