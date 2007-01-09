@@ -213,8 +213,11 @@ dojo.lang.mixin(dojo.html.selection, {
 		// summary:
 		//		Return the parent element of the current selection which is of type tagName (or one of the other specified tagName)
 		var node = dojo.html.selection.getSelectedElement() || dojo.html.selection.getParentElement();
-		while(node /*&& node.tagName.toLowerCase() != 'body'*/){
-			if(dojo.html.selection.isTag(node, arguments).length>0){
+		return dojo.html.selection.getParentOfType(node, arguments);
+	},
+	getParentOfType: function(/*DomNode*/node, /*Array*/tags){
+		while(node){
+			if(dojo.html.selection.isTag(node, tags).length>0){
 				return node;
 			}
 			node = node.parentNode;
@@ -347,9 +350,7 @@ dojo.lang.mixin(dojo.html.selection, {
 		}else{
 			var selection = dojo.global().getSelection();
 
-			for ( var i = 0; i < selection.rangeCount; i++ ){
-				selection.getRangeAt(i).deleteContents();
-			}
+			selection.deleteFromDocument();
 		
 			return selection;
 		}

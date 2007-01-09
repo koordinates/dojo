@@ -18,6 +18,10 @@ dojo.declare("tests.data.bindings.HtmlTextarea", null,
 	},
 	
 	displayItems: function(result) {
+		if (!result) {
+			this.printline();
+			return;
+		}
 		var items = result.items;
 		this.printline("number of items: " + items.length);
 		this.printline();
