@@ -171,45 +171,6 @@ dojo.exists = function(/*String*/name, /*Object*/obj){
 	return (!!dojo.getObject(name, false, obj)); // Boolean
 }
 
-dojo.evalProp = function(/*String*/name, /*Object*/object, /*Boolean?*/create){
-	// summary: 
-	//		DEPRECATED. Returns 'object[name]'.  If not defined and 'create' is
-	//		true, will return a new Object.
-	// description:
-	//		Returns null if 'object[name]' is not defined and 'create' is not true.
-	// 		Note: 'defined' and 'exists' are not the same concept.
-	dojo.deprecated("dojo.evalProp", "just use hash syntax. Sheesh.", "0.6");
-	return object[name] || (create ? (object[name]={}) : undefined);	// mixed
-}
-
-dojo.parseObjPath = function(/*String*/ path, /*Object?*/ context, /*Boolean?*/ create){
-	// summary: 
-	//		DEPRECATED. Parse string path to an object, and return
-	//		corresponding object reference and property name.
-	// description:
-	//		Returns an object with two properties, 'obj' and 'prop'.
-	//		'obj[prop]' is the reference indicated by 'path'.
-	// path: Path to an object, in the form "A.B.C".
-	// context: Object to use as root of path.  Defaults to 'dojo.global()'.
-	// create: 
-	//		If true, Objects will be created at any point along the 'path' that
-	//		is undefined.
-	dojo.deprecated("dojo.parseObjPath", "use dojo.getObject(path, create, context, true)", "0.6");
-	return dojo.getObject(path, create, context, true); // Object: {obj: Object, prop: String}
-}
-
-dojo.evalObjPath = function(/*String*/path, /*Boolean?*/create){
-	// summary: 
-	//		DEPRECATED. Return the value of object at 'path' in the global
-	//		scope, without using 'eval()'.
-	// path: Path to an object, in the form "A.B.C".
-	// create: 
-	//		If true, Objects will be created at any point along the 'path' that
-	//		is undefined.
-	dojo.deprecated("dojo.evalObjPath", "use dojo.getObject(path, create)", "0.6");
-	return dojo.getObject(path, create); // Object
-}
-
 dojo.errorToString = function(/*Error*/ exception){
 	// summary: Return an exception's 'message', 'description' or text.
 
