@@ -1,5 +1,4 @@
 dojo.provide("dojo.io.common");
-dojo.require("dojo.lang.extras");
 
 /******************************************************************************
  *	Notes about dojo.io design:
@@ -198,6 +197,15 @@ dojo.lang.extend(dojo.io.Request, {
 	fromKwArgs: function(/*Object*/ kwArgs){
 		// summary:
 		//		Creates a dojo.io.Request from a simple object (kwArgs object).
+
+		var _firstValued = function(){
+			for(var i = 0; i < arguments.length; i++){
+				if(typeof arguments[i] != "undefined"){
+					return arguments[i]; // Object
+				}
+			}
+			return undefined; // undefined
+		}
 
 		// normalize args
 		if(kwArgs["url"]){ kwArgs.url = kwArgs.url.toString(); }
