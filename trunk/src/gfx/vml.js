@@ -383,7 +383,14 @@ var zIndex = {
 	},
 	moveToBack: function(){
 		// summary: moves a shape to back of its parent's list of shapes (VML)
-		this.rawNode.parentNode.insertBefore(this.rawNode, this.rawNode.parentNode.firstChild);
+		var r = this.rawNode;
+		var p = r.parentNode;
+		var n = p.firstChild;
+		p.insertBefore(r, n);
+		if(n.tagName.toLower() == "v:rect"){
+			// surface has a background rectangle, which position should be preserved
+			n.swapNode(r);
+		}
 		return this;
 	}
 };
@@ -1251,6 +1258,8 @@ dojo.lang.extend(dojo.gfx.Surface, {
 		this.rawNode.style.width = width;
 		this.rawNode.style.height = height;
 		this.rawNode.coordsize = width + " " + height;
+		this.bgNode.style.width = width;
+		this.bgNode.style.height = height;
 		return this;	// self
 	},
 	getDimensions: function(){
@@ -1300,6 +1309,14 @@ dojo.gfx.createSurface = function(parentNode, width, height){
 		: "100% 100%";
 	s.rawNode.coordorigin = "0 0";
 	dojo.byId(parentNode).appendChild(s.rawNode);
+	// create a background rectangle, which is required to show all other shapes
+	var r = document.createElement("v:rect");
+	r.style.left = r.style.top = 0;
+	r.style.width  = s.rawNode.style.width;
+	r.style.height = s.rawNode.style.height;
+	r.filled = r.stroked = false;
+	s.rawNode.appendChild(r);
+	s.bgNode = r;
 	return s;	// dojo.gfx.Surface
 };
 
@@ -1308,5 +1325,10 @@ dojo.gfx.attachSurface = function(node){
 	// node: Node: an VML node
 	var s = new dojo.gfx.Surface();
 	s.rawNode = node;
+	var r = node.firstChild;
+	if(!r || r.tagName.toLower() != "v:rect"){
+		return null;	// dojo.gfx.Surface
+	}
+	s.bgNode = r;
 	return s;	// dojo.gfx.Surface
 };
