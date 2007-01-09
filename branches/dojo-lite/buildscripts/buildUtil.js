@@ -68,6 +68,14 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	
 	dojo.hostenv.name_ = hostenvType;
 	
+	//Override dojo.provide to get a list of resource providers.
+	var provideList = [];
+	dojo._provide = dojo.provide;
+	dojo.provide = function(resourceName){
+		provideList.push(resourceName);
+		dojo._provide(resourceName);
+	}
+	
 	function removeComments(contents){
 		// if we get the contents of the file from Rhino, it might not be a JS
 		// string, but rather a Java string, which will cause the replace() method
@@ -194,8 +202,134 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	dj_global['djConfig'] = undefined;
 	delete dj_global;
 		
-	return depList;
+	return {
+		depList: depList,
+		provideList: provideList
+	};
 }
+
+buildUtil.loadDependencyList = function(/*String*/profileFile){
+	var dependencies = null;
+	var hostenvType = null;
+	var profileText = readFile(profileFile);
+	
+	//Remove the call to getDependencyList.js because we want to call it manually.
+	profileText = profileText.replace(/load\(("|')getDependencyList.js("|')\)/, "");
+	eval(profileText);
+	if(hostenvType){
+		hostenvType.join(",\n");
+	}
+	var depResult = buildUtil.getDependencyList(dependencies, hostenvType);
+	depResult.dependencies = dependencies;
+	
+	return depResult;
+}
+
+buildUtil.makeDojoJs = function(/*String*/profileFile, /*String*/version){
+	//summary: Makes the uncompressed contents for dojo.js.
+
+	//Get the profileFile text.
+	var lineSeparator = java.lang.System.getProperty("line.separator");
+	
+	//Remove the call to getDependencyList.js because we want to call it manually.
+	var depLists = buildUtil.loadDependencyList(profileFile);
+	var depList = depLists.depList;
+
+	//Concat the files together, and mark where we should insert all the
+	//provide statements.
+	var dojoContents = "";
+	var insertedProvideMarker = false;
+	for(var i = 0; i < depList.length; i++){
+		//Make sure we have a JS string and not a Java string by using new String().
+		dojoContents += new String(readFile(depList[i])) + "\r\n";
+		if(!insertedProvideMarker && depList[i].indexOf("bootstrap2.js") != -1){
+			dojoContents += "__DOJO_PROVIDE_INSERTION__";
+			insertedProvideMarker = true;
+		}
+	}
+	
+	//Move all the dojo.provide calls to the top, and remove any matching dojo.require calls.
+	//Sort the provide list alphabetically to make it easy to read. Order of provide statements
+	//do not matter.
+	var provideList = depLists.provideList.sort(); 
+	var depRegExpString = "";
+	for(var i = 0; i < provideList.length; i++){
+		if(i != 0){
+			depRegExpString += "|";
+		}
+		depRegExpString += '("' + provideList[i] + '")';
+	}
+		
+	//If we have a string for a regexp, do the dojo.require() removal now.
+	if(depRegExpString){
+		var depRegExp = new RegExp("dojo\\.(provide|require)\\((" + depRegExpString + ")\\)(;?)", "g");
+		dojoContents = dojoContents.replace(depRegExp, "");
+	}
+
+	//Insert all the provide statements at the provide insertion marker.
+	var provideString = "";
+	for(var i = 0; i < provideList.length; i++){
+		provideString += 'dojo.provide("' + provideList[i] + '");' + lineSeparator;
+	}
+	dojoContents = dojoContents.replace(/__DOJO_PROVIDE_INSERTION__/, provideString);
+
+	//Set version number.
+	//First, break apart the version string.
+	var verSegments = version.split(".");
+	var majorValue = 0;
+	var minorValue = 0;
+	var patchValue = 0;
+	var flagValue = "";
+	
+	if(verSegments.length > 0 && verSegments[0]){
+		majorValue = verSegments[0];
+	}
+	if(verSegments.length > 1 && verSegments[1]){
+		minorValue = verSegments[1];
+	}
+	if(verSegments.length > 2 && verSegments[2]){
+		//If the patchValue has a string in it, split
+		//it off and store it in the flagValue.
+		var patchSegments = verSegments[2].split(/\D/);
+		patchValue = patchSegments[0];
+		if(patchSegments.length > 1){
+			flagValue = verSegments[2].substring(patchValue.length, verSegments[2].length);
+		}
+	}
+	if(verSegments.length > 3 && verSegments[3]){
+		flagValue = verSegments[3];
+	}
+	
+	//Do the final version replacement.
+	dojoContents = dojoContents.replace(
+		/major:\s*\d*,\s*minor:\s*\d*,\s*patch:\s*\d*,\s*flag:\s*".*?"\s*,/g,
+		"major: " + majorValue + ", minor: " + minorValue + ", patch: " + patchValue + ", flag: \"" + flagValue + "\","
+	);
+	
+	//Return the dependency list, since it is used for other things in the ant file.
+	return {
+		resourceDependencies: depList,
+		dojoContents: dojoContents
+	};
+
+	//Things to consider for later:
+
+	//preload resources?
+	//Remove requireLocalization calls?
+	
+	//compress (or minify?)
+	//Name changes to dojo.js here
+	
+	//no compress if nostrip = true
+	//Name changes to dojo.js here
+	
+	//Add build notice
+	
+	//Add copyright notice
+	
+	//Remove ${release_dir}/source.__package__.js
+}
+
 
 buildUtil.getDependencyPropertyFromProfile = function(/*String*/profileFile, /*String*/propName){
 	//summary: Gets a dependencies property from the profile file. The value
@@ -491,11 +625,20 @@ buildUtil.ensureEndSlash = function(path){
 	return path;
 }
 
-buildUtil.saveUtf8File = function(fileName, fileContents){
+buildUtil.saveUtf8File = function(/*String*/fileName, /*String*/fileContents){
+	buildUtil.saveFile(fileName, fileContents, "utf-8");
+}
+
+buildUtil.saveFile = function(/*String*/fileName, /*String*/fileContents, /*String?*/encoding){
 	var outFile = new java.io.File(fileName);
-	var os = new java.io.BufferedWriter(
-		new java.io.OutputStreamWriter(new java.io.FileOutputStream(outFile), "utf-8")
-	);
+	var outWriter;
+	if(encoding){
+		outWriter = new java.io.OutputStreamWriter(new java.io.FileOutputStream(outFile), encoding);
+	}else{
+		outWriter = new java.io.OutputStreamWriter(new java.io.FileOutputStream(outFile));
+	}
+
+	var os = new java.io.BufferedWriter(outWriter);
 	try{
 		os.write(fileContents);
 	}finally{

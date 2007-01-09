@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:saxon="http://saxon.sf.net/" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+<xsl:stylesheet xmlns:saxon="http://saxon.sf.net/" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" extension-element-prefixes="saxon" version="2.0">
 <xsl:output method="text" indent="yes"/>
+<!-- list the data elements whose spaces should be preserved
+   it seems listing only the parent node doesn't work -->
+<xsl:preserve-space elements="month day quarter am pm era pattern dateFormatItem appendItem displayName"/>
 <xsl:strip-space elements="*"/> 
+
+<xsl:variable name="first" select="true()" saxon:assignable="yes"/>
     
 <xsl:template match="/">
      <xsl:apply-templates/>
@@ -24,13 +29,14 @@
             <xsl:choose>
                 <xsl:when test="name()='calendars'">
                     <!-- calendars -->
-                    <xsl:for-each select="calendar">       
-                        <xsl:result-document href="{concat(@type,'.js')}" encoding="UTF-8">({            
-        //calendar type = <xsl:value-of select="./@type"/>
+                    <xsl:for-each select="calendar">
+                        <saxon:assign name="first" select="true()"/>
+                        <xsl:result-document href="{concat(@type,'.js')}" encoding="UTF-8"><!--<xsl:value-of select="codepoints-to-string(65279)"/>-->// generated from cldr/ldml/main/*.xml, xpath: ldml/calendars
+({
                            <xsl:call-template name="calendar"></xsl:call-template>
 
 })
-                        </xsl:result-document>
+</xsl:result-document>
                     </xsl:for-each>
                 </xsl:when>
                 <xsl:otherwise>                    
@@ -90,17 +96,14 @@
             <xsl:if test="name()='months' or name()='monthContext'
                        or name()='days' or name()='dayContext'
                        or name()='quarters' or name()='quarterContext'">
-                <xsl:if test="contains(name(),'s') and count(./alias)=0">
-                <xsl:text>
-                </xsl:text>
-                </xsl:if>
                 <xsl:for-each select="*">
                     <xsl:call-template name="months_days_quarters"></xsl:call-template>
                 </xsl:for-each>
             </xsl:if>
             <xsl:if test="name()='monthWidth' or name()='dayWidth'">
                 <xsl:variable name="item" select="substring-before(name(), 'Width')"/>
-                <xsl:if test="count(*[not(@draft)])>0 or count(*[@draft!='provisional' and @draft!='unconfirmed'])>0"> 
+                <xsl:if test="count(*[not(@draft)])>0 or count(*[@draft!='provisional' and @draft!='unconfirmed'])>0">
+                    <xsl:call-template name="insert_comma"/>
         '<xsl:value-of select="$item"/>
                 <xsl:text>s-</xsl:text>
                 <xsl:call-template name="camel_case">
@@ -114,12 +117,11 @@
                 </xsl:choose>
                 <xsl:text>':</xsl:text>
                 <xsl:call-template name="subSelect"><xsl:with-param name="name" select="./*[name()=$item]"></xsl:with-param></xsl:call-template>
-                <xsl:text>
-</xsl:text>
                 </xsl:if>
                 </xsl:if>
             <xsl:if test="name()='quarterWidth'">
-             <xsl:if test="count(*[not(@draft)])>0 or count(*[@draft!='provisional' and @draft!='unconfirmed'])>0"> 
+             <xsl:if test="count(*[not(@draft)])>0 or count(*[@draft!='provisional' and @draft!='unconfirmed'])>0">
+                 <xsl:call-template name="insert_comma"/>
         'quarters-<xsl:value-of select="concat($ctx,'-',$width)"></xsl:value-of> <xsl:text>':</xsl:text>
                 <xsl:call-template name="subSelect"> <xsl:with-param name="name" select="quarter"></xsl:with-param></xsl:call-template>            
              </xsl:if> 
@@ -142,14 +144,14 @@
             </xsl:for-each>            
         </xsl:when>
         <xsl:otherwise>            
-        <xsl:if test="not(@draft) or @draft!='provisional' and @draft!='unconfirmed'">                
+        <xsl:if test="not(@draft) or @draft!='provisional' and @draft!='unconfirmed'">
+            <xsl:call-template name="insert_comma"/>
         <xsl:if test="name()='am'">
-
         'am</xsl:if>
             <xsl:if test="name()='pm'">
         'pm</xsl:if>
             <xsl:text>':"</xsl:text>
-            <xsl:value-of select="."/><xsl:text>",</xsl:text>
+            <xsl:value-of select="."/><xsl:text>"</xsl:text>
         </xsl:if>
         </xsl:otherwise>
     </xsl:choose>
@@ -172,10 +174,6 @@
 		<xsl:otherwise>
 			<xsl:choose>
 				<xsl:when test="name()='eras'">
-        				         <xsl:if test="count(./alias)=0">
-        <xsl:text>                             
-        </xsl:text>
-        				           </xsl:if>
 					<xsl:for-each select="*">
 						<xsl:call-template name="eras"></xsl:call-template>
 					</xsl:for-each>
@@ -183,10 +181,9 @@
 				<xsl:otherwise>
 					<xsl:for-each select=".">
 					    <xsl:if test="count(*[not(@draft)])>0 
-					        or count(*[@draft!='provisional' and @draft!='unconfirmed'])>0"> 
-						<xsl:text>
-        '</xsl:text>
-						<xsl:value-of select="$name"></xsl:value-of>
+					        or count(*[@draft!='provisional' and @draft!='unconfirmed'])>0">
+					        <xsl:call-template name="insert_comma"/>
+        '<xsl:value-of select="$name"></xsl:value-of>
 						<xsl:text>':</xsl:text>
 						<xsl:call-template name="subSelect">
 							<xsl:with-param name="name" select="era"></xsl:with-param>
@@ -216,10 +213,6 @@
          <xsl:otherwise>
              <xsl:choose>
                  <xsl:when test="name()='dateFormats' or name()='timeFormats'">
-                     <xsl:if test="count(./alias)=0">
-                         <xsl:text>
-                         </xsl:text>
-                     </xsl:if>
                      <xsl:for-each select="*">
                          <xsl:call-template name="date_time_Formats"></xsl:call-template>
                      </xsl:for-each>
@@ -227,11 +220,12 @@
                  <xsl:otherwise>
                      <xsl:if test="name()!='default'">                         
                          <xsl:for-each select=".//pattern[not(@draft)] | 
-                          .//pattern[@draft!='provisional' and @draft!='unconfirmed']">                         
+                          .//pattern[@draft!='provisional' and @draft!='unconfirmed']">
+                             <xsl:call-template name="insert_comma"/>
         '<xsl:value-of select="name(..)"></xsl:value-of>
                          <xsl:text>-</xsl:text>
-                         <xsl:value-of select='$width'/>': "<xsl:value-of select="."/>
-                         <xsl:text>",</xsl:text>
+                         <xsl:value-of select='$width'/>': "<xsl:value-of select="replace(.,'&quot;', '\\&quot;')"/>
+                         <xsl:text>"</xsl:text>
                      </xsl:for-each>
                      </xsl:if>
                  </xsl:otherwise>
@@ -257,10 +251,6 @@
     <xsl:otherwise>
        <xsl:choose>
             <xsl:when test="name()='dateTimeFormats'">
-                <xsl:if test="count(./alias)=0">
-                    <xsl:text>
-                    </xsl:text>
-                </xsl:if>
                 <xsl:for-each select="*">
                     <xsl:call-template name="dateTimeFormats"></xsl:call-template>
                 </xsl:for-each>
@@ -269,29 +259,32 @@
         <xsl:if test="name()!='default'">
         <!-- patterns -->
         <xsl:for-each select=".//pattern[not(@draft)] | 
-            .//pattern[@draft!='provisional' and @draft!='unconfirmed']">    
+            .//pattern[@draft!='provisional' and @draft!='unconfirmed']">
+            <xsl:call-template name="insert_comma"/>
         '<xsl:value-of select="name(..)"></xsl:value-of>
          <xsl:if test="string-length($width) > 0">
          	<xsl:text>-</xsl:text>
                       <xsl:value-of select='$width'/>
           </xsl:if>
            <xsl:text>': "</xsl:text>
-           <xsl:value-of select="."/><xsl:text>", </xsl:text>          
+           <xsl:value-of select="."/><xsl:text>" </xsl:text>          
         </xsl:for-each>
         <!-- availableFormats -->
         <xsl:if test="name()='availableFormats'">
          <xsl:if test="count(*[not(@draft)])>0 or 
-                count(*[@draft!='provisional' and @draft!='unconfirmed'])>0">    
+                count(*[@draft!='provisional' and @draft!='unconfirmed'])>0">
+             <xsl:call-template name="insert_comma"/>
         'dateTimeAvailableFormats':<xsl:call-template name="subSelect"><xsl:with-param name="name" select="dateFormatItem"></xsl:with-param></xsl:call-template>
         </xsl:if>
         </xsl:if>
         <!-- appendItems -->
             <xsl:for-each select=".//appendItem[not(@draft)] | 
                 .//appendItem[@draft!='provisional' and @draft!='unconfirmed']">
+                <xsl:call-template name="insert_comma"/>
         'dateTimeFormats-appendItem-<xsl:value-of select="@request"></xsl:value-of>
             <xsl:text>':"</xsl:text>
             <xsl:value-of select="."></xsl:value-of>
-            <xsl:text>",</xsl:text>
+            <xsl:text>"</xsl:text>
         </xsl:for-each>
      </xsl:if>
     </xsl:otherwise>
@@ -317,21 +310,18 @@
         <xsl:otherwise>
             <xsl:choose>
                 <xsl:when test="name()='fields'">
-                    <xsl:if test="count(./alias)=0">
-                        <xsl:text>
-                        </xsl:text>
-                    </xsl:if>
                     <xsl:for-each select="*">
                         <xsl:call-template name="fields"></xsl:call-template>
                     </xsl:for-each>
                 </xsl:when>
                 <xsl:otherwise>
             <xsl:for-each select=".//displayName[not(@draft)] | 
-                .//displayName[@draft!='provisional' and @draft!='unconfirmed']">            
+                .//displayName[@draft!='provisional' and @draft!='unconfirmed']">
+                <xsl:call-template name="insert_comma"/>
         'field-<xsl:value-of select="$width"></xsl:value-of>
                <xsl:text>':"</xsl:text>
                <xsl:value-of select="."/>
-                <xsl:text>",</xsl:text>
+                <xsl:text>"</xsl:text>
             </xsl:for-each>                    
                 </xsl:otherwise>
             </xsl:choose> 
@@ -347,19 +337,17 @@
         <xsl:text>[</xsl:text>
         <xsl:for-each select="$name[not(@draft)] | $name[@draft!='provisional' and @draft!='unconfirmed']">
             <xsl:text>"</xsl:text>
-            <xsl:value-of select="."/>
+            <xsl:value-of select="replace(.,'&quot;', '\\&quot;')"/>
+            <xsl:text>"</xsl:text>
             <xsl:if test="$num>position()">
-                <xsl:text>",</xsl:text>
+                <xsl:text>,</xsl:text>
             </xsl:if>            
-            <xsl:if test="$num=position()">
-                <xsl:text>"</xsl:text>
-            </xsl:if>           
         </xsl:for-each>
-        <xsl:text>],</xsl:text>
+        <xsl:text>]</xsl:text>
     </xsl:if>
     <xsl:if test="$num=1">
-        <xsl:text>"</xsl:text><xsl:value-of select="$name[not(@draft)] 
-            | $name[@draft!='provisional' and @draft!='unconfirmed']"/><xsl:text>",</xsl:text>
+        <xsl:text>"</xsl:text><xsl:value-of select="replace($name[not(@draft)] 
+            | $name[@draft!='provisional' and @draft!='unconfirmed'],'&quot;', '\\&quot;')"/><xsl:text>"</xsl:text>
     </xsl:if>
 </xsl:template>
 
@@ -392,7 +380,7 @@
     
     <xsl:choose>
         <!-- source="locale" -->
-        <xsl:when test="compare($source,'locale')=0">
+        <xsl:when test="$source='locale'">
             <xsl:for-each select="saxon:evaluate(concat('../',$xpath))">   
                 <xsl:call-template name="invoke_template_by_name">
                     <xsl:with-param name="templateName" select="$templateToCall"></xsl:with-param>
@@ -424,39 +412,51 @@
      <xsl:param name="templateName"></xsl:param>
      <xsl:param name="name"></xsl:param> 
      <xsl:param name="width"></xsl:param>
-     <xsl:if test="compare($templateName,'top')=0">
+     <xsl:if test="$templateName='top'">
          <xsl:call-template name="top"></xsl:call-template>
      </xsl:if>
-     <xsl:if test="compare($templateName,'calendar')=0">
+     <xsl:if test="$templateName='calendar'">
          <xsl:call-template name="calendar"></xsl:call-template>
      </xsl:if>
-     <xsl:if test="compare($templateName,'months_days_quarters')=0">
+     <xsl:if test="$templateName='months_days_quarters'">
          <xsl:call-template name="months_days_quarters">
               <xsl:with-param name="width" select="$width"></xsl:with-param>
           </xsl:call-template>
       </xsl:if>
-     <xsl:if test="compare($templateName,'apm')=0">
+     <xsl:if test="$templateName='apm'">
          <xsl:call-template name="apm"></xsl:call-template>
      </xsl:if>
-     <xsl:if test="compare($templateName,'eras')=0">
+     <xsl:if test="$templateName='eras'">
          <xsl:call-template name="eras">
              <xsl:with-param name="name" select="$name"></xsl:with-param>
          </xsl:call-template>
      </xsl:if>
-     <xsl:if test="compare($templateName,'date_time_Formats')=0">
+     <xsl:if test="$templateName='date_time_Formats'">
          <xsl:call-template name="date_time_Formats">
              <xsl:with-param name="width" select="$width"></xsl:with-param>
          </xsl:call-template>
      </xsl:if>
-     <xsl:if test="compare($templateName,'dateTimeFormats')=0">
+     <xsl:if test="$templateName='dateTimeFormats'">
          <xsl:call-template name="dateTimeFormats">
              <xsl:with-param name="width" select="$width"></xsl:with-param>
          </xsl:call-template>
      </xsl:if>
-     <xsl:if test="compare($templateName,'fields')=0">
+     <xsl:if test="$templateName='fields'">
          <xsl:call-template name="fields">
              <xsl:with-param name="width" select="$width"></xsl:with-param>
          </xsl:call-template>
      </xsl:if>     
- </xsl:template>   
+ </xsl:template>
+    
+<xsl:template name="insert_comma">
+    <xsl:choose>
+        <xsl:when test="$first">
+            <saxon:assign name="first" select="false()"/>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:text>,</xsl:text>
+        </xsl:otherwise>
+    </xsl:choose>
+</xsl:template>
+    
 </xsl:stylesheet>
