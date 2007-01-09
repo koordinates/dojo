@@ -17,5 +17,6 @@ with(dojo.lite){
 	removed("dojo.html.getClasses");
 	removed("dojo.html.replaceClass");
 	removed("dojo.html.toSelectorCase");
+	removed("dojo.logging.*");
 	// removed("");
 }
