@@ -3,6 +3,7 @@
 //properly, particularly with the using the closure below to do all the work.
 ;(function(){
 	//Don't do this work if dojo.js has already done it.
+	/*
 	if(typeof dj_usingBootstrap != "undefined"){
 		return;
 	}
@@ -46,4 +47,5 @@
 			}
 		}
 	}
+	*/
 })();
