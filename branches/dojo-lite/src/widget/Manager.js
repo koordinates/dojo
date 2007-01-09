@@ -309,9 +309,8 @@ dojo.widget.manager = new function(){
 (function(){
 	var dw = dojo.widget;
 	var dwm = dw.manager;
-	var h = dojo.lang.curry(dojo.lang, "hitch", dwm);
 	var g = function(oldName, newName){
-		dw[(newName||oldName)] = h(oldName);
+		dw[(newName||oldName)] = dojo.lang.hitch(dwm, oldName);
 	}
 	// copy the methods from the default manager (this) to the widget namespace
 	g("add", "addWidget");
