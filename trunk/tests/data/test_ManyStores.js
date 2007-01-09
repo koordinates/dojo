@@ -5,40 +5,22 @@ dojo.require("dojo.data.DeliciousStore");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.type");
 dojo.require("dojo.io.*");
-dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.TreeV3");
-dojo.require("dojo.widget.TreeNodeV3");
-dojo.require("dojo.widget.TreeBasicControllerV3");
-dojo.require("tests.data.bindings.HtmlTextarea");
+dojo.require("tests.data.bindings.FilteringTable");
 dojo.require("tests.data.bindings.TreeV3");
-
+dojo.require("tests.data.bindings.HtmlTextarea");
 
 gui = {
 	_availableBindings: [
-		{name: "HTML textarea",  bindingClass: tests.data.bindings.HtmlTextarea},
-		{name: "HTML table",     bindingClass: tests.data.bindings.HtmlTable},
 		{name: "FilteringTable", bindingClass: tests.data.bindings.FilteringTable},
-		{name: "TreeV3",         bindingClass: tests.data.bindings.TreeV3}
+		{name: "TreeV3",         bindingClass: tests.data.bindings.TreeV3},
+		{name: "HTML textarea",  bindingClass: tests.data.bindings.HtmlTextarea},
+		{name: "HTML table",     bindingClass: tests.data.bindings.HtmlTable}
 	],
 	
 	_availableDatastores: {
 		'none': {
 			description: '-- none --',
 			constructor: null
-		},
-		'geography.opml': {
-			description: 'OPML store -- geography.opml',
-			constructor: dojo.data.OpmlStore,
-			constructorArg: {url:"geography.opml"},
-			findKeywordArgs: null,
-			nameAttribute: 'text'
-		},
-		'rss_feeds.opml': {
-			description: 'OPML store -- rss_feeds.opml',
-			constructor: dojo.data.OpmlStore,
-			constructorArg: {url:"rss_feeds.opml"},
-			findKeywordArgs: null,
-			nameAttribute: 'text'
 		},
 		'books.csv': {
 			description: 'CSV store -- books.csv',
@@ -74,6 +56,20 @@ gui = {
 			constructorArg: null,
 			findKeywordArgs: {query: "gumption", count: 5},
 			nameAttribute: 'Description'
+		},
+		'geography.opml': {
+			description: 'OPML store -- geography.opml',
+			constructor: dojo.data.OpmlStore,
+			constructorArg: {url:"geography.opml"},
+			findKeywordArgs: null,
+			nameAttribute: 'text'
+		},
+		'rss_feeds.opml': {
+			description: 'OPML store -- rss_feeds.opml',
+			constructor: dojo.data.OpmlStore,
+			constructorArg: {url:"rss_feeds.opml"},
+			findKeywordArgs: null,
+			nameAttribute: 'text'
 		}
 	},
 	
