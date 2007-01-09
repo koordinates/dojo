@@ -11,6 +11,7 @@ with(dojo.lite){
 	removed("dojo.lang.doesObjectExist");
 	removed("dojo.lang.curry");
 	removed("dojo.lang.curryAguments");
+	removed("dojo.lang.getObjPathValue");
 	removed("dojo.style.setActiveStyleSheet");
 	removed("dojo.style.getActiveStyleSheet");
 	removed("dojo.html.getPreferredStyleSheet");

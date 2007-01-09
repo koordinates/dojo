@@ -1,7 +1,6 @@
 dojo.provide("dojo.event.common");
 
 dojo.require("dojo.lang.array");
-dojo.require("dojo.lang.extras");
 dojo.require("dojo.lang.func");
 
 // TODO: connection filter functions
@@ -681,7 +680,8 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 							clearTimeout(marr.delayTimer);
 						}
 						var tod = parseInt(rate*2); // is rate*2 naive?
-						var mcpy = dojo.lang.shallowCopy(marr);
+						// var mcpy = dojo.lang.shallowCopy(marr);
+						var mcpy = [].concat(marr);
 						marr.delayTimer = setTimeout(function(){
 							// FIXME: on IE at least, event objects from the
 							// browser can go out of scope. How (or should?) we
