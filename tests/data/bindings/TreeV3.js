@@ -6,19 +6,23 @@ dojo.require("dojo.widget.TreeNodeV3");
 dojo.require("dojo.widget.TreeBasicControllerV3");
 
 dojo.declare("tests.data.bindings.TreeV3", null,
-	function(result, outerDiv) {
-		var textarea = document.createElement('textarea');
+	function(result, outerDiv, datastoreInfo) {
 		var controller = dojo.widget.createWidget("TreeBasicControllerV3");
 		var tree = dojo.widget.createWidget("TreeV3", {listeners:[controller.widgetId]});
 		outerDiv.appendChild(tree.domNode);
-		var rootTreeNode = dojo.widget.createWidget("TreeNodeV3", {title: "root", tree: tree.widgetId});
+		var rootNodeName = "root";
+		var rootTreeNode = dojo.widget.createWidget("TreeNodeV3", {title: rootNodeName, tree: tree.widgetId});
 		tree.addChild(rootTreeNode);
 		this._tree = tree;
 		this._rootNode = rootTreeNode;
+		this._nameAttribute = datastoreInfo.nameAttribute;
 		this.displayItems(result, controller);
 	}, {
 	
 	displayItems: function(result, controller) {
+		if (!result) {
+			return;
+		}
 		var items = result.items;
 		for (var i = 0; i < items.length; ++i) {
 			this.displayItem(result.store, items[i], this._tree, this._rootNode);
@@ -27,16 +31,22 @@ dojo.declare("tests.data.bindings.TreeV3", null,
 	},
 	
 	displayItem: function(store, item, tree, parentTreeNode) {
-		var itemName = store.getValue(item, 'text');
+		var itemName;
+		if (this._nameAttribute) {
+			itemName = store.getValue(item, this._nameAttribute);
+		} else {
+			itemName = "untitled";
+		}
 		var attributes = store.getAttributes(item);
 		var description = '';
 		for (var i = 0; i < attributes.length; ++i) {
 			var attribute = attributes[i];
-			if (attribute != 'text' && attribute != 'children') {
+			var value = store.getValue(item, attribute);
+			if (attribute != this._nameAttribute && !store.isItem(value)) {
 				if (description) { 
 					description += ', ';
 				}
-				description += attribute + ': "' + store.getValue(item, attribute) + '"';
+				description += attribute + ': "' + value + '"';
 			}
 		}
 		var treeNodeTitle = itemName;
@@ -45,10 +55,15 @@ dojo.declare("tests.data.bindings.TreeV3", null,
 		}
 		var treeNode = dojo.widget.createWidget("TreeNodeV3", {title: treeNodeTitle, tree: tree.widgetId});
 		parentTreeNode.addChild(treeNode);
-		var children = store.getValues(item, 'children');
-		for (var i = 0; i < children.length; ++i) {
-			var childItem = children[i];
-			this.displayItem(store, childItem, tree, treeNode);
+		for (i = 0; i < attributes.length; ++i) {
+			var attribute = attributes[i];
+			var children = store.getValues(item, attribute);
+			for (var j = 0; j < children.length; ++j) {
+				var childItem = children[j];
+				if (store.isItem(childItem)) {
+					this.displayItem(store, childItem, tree, treeNode);
+				}
+			}
 		}
 	}
 });
