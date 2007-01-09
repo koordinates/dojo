@@ -9,6 +9,8 @@ with(dojo.lite){
 	removed("dojo.lang.setObjPathValue");
 	removed("dojo.lang.getObject");
 	removed("dojo.lang.doesObjectExist");
+	removed("dojo.lang.curry");
+	removed("dojo.lang.curryAguments");
 	removed("dojo.style.setActiveStyleSheet");
 	removed("dojo.style.getActiveStyleSheet");
 	removed("dojo.html.getPreferredStyleSheet");
