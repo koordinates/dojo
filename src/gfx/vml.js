@@ -387,7 +387,7 @@ var zIndex = {
 		var p = r.parentNode;
 		var n = p.firstChild;
 		p.insertBefore(r, n);
-		if(n.tagName.toLower() == "v:rect"){
+		if(n.tagName == "rect"){
 			// surface has a background rectangle, which position should be preserved
 			n.swapNode(r);
 		}
@@ -1326,7 +1326,7 @@ dojo.gfx.attachSurface = function(node){
 	var s = new dojo.gfx.Surface();
 	s.rawNode = node;
 	var r = node.firstChild;
-	if(!r || r.tagName.toLower() != "v:rect"){
+	if(!r || r.tagName != "rect"){
 		return null;	// dojo.gfx.Surface
 	}
 	s.bgNode = r;
