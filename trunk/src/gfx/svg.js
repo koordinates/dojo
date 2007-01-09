@@ -115,10 +115,10 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	},
 
 	_setFillObject: function(f, nodeType){
-		var def_elems = this.rawNode.parentNode.getElementsByTagName("defs");
-		if(def_elems.length == 0){ return this; }
 		this.fillStyle = f;
-		var defs = def_elems[0];
+		var surface = this.parent;
+		for(; !(surface instanceof dojo.gfx.Surface); surface = surface.parent);
+		var defs = surface.defNode;
 		var fill = this.rawNode.getAttribute("fill");
 		var ref  = dojo.gfx.svg.getRef(fill);
 		if(ref){
@@ -622,6 +622,7 @@ dojo.gfx.createSurface = function(parentNode, width, height){
 	var node = document.createElementNS(dojo.svg.xmlns.svg, dojo.gfx.svg.Defines.nodeType); 
 	defs.setRawNode(node);
 	s.rawNode.appendChild(node);
+	s.defNode = node;
 	
 	dojo.byId(parentNode).appendChild(s.rawNode);
 	return s;	// dojo.gfx.Surface
@@ -632,6 +633,11 @@ dojo.gfx.attachSurface = function(node){
 	// node: Node: an SVG node
 	var s = new dojo.gfx.Surface();
 	s.rawNode = node;
+	var def_elems = node.getElementsByTagName("defs");
+	if(def_elems.length == 0){
+		return null;	// dojo.gfx.Surface
+	}
+	s.defNode = def_elems[0];
 	return s;	// dojo.gfx.Surface
 };
 
