@@ -96,15 +96,3 @@ dojo.lang.firstValued = function(/* ... */){
 	}
 	return undefined; // undefined
 }
-
-dojo.lang.getObjPathValue = function(/*String*/objpath, /*Object?*/context, /*Boolean?*/create){
-	// summary:
-	//		DEPRECATED. Gets a value from a reference specified as a string
-	//		descriptor, (e.g. "A.B") in the given context.
-	// context: if not specified, dj_global is used
-	// create: if true, undefined objects in the path are created.
-	dojo.deprecated("dojo.lang.getObjPathValue", "use dojo.getObject", "0.6");
-	with(dojo.parseObjPath(objpath, context, create)){
-		return dojo.evalProp(prop, obj, create); // Object
-	}
-}
