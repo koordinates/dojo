@@ -35,7 +35,7 @@ dojo.html.getViewport = function(){
 		//so we have to check whether it is opera
 		w = _window.innerWidth;
 		h = _window.innerHeight;
-	} else if (!dojo.render.html.opera && dojo.exists(_document, "documentElement.clientWidth")){
+	}else if (!dojo.render.html.opera && dojo.exists("documentElement.clientWidth", _document)){
 		// IE6 Strict
 		var w2 = _document.documentElement.clientWidth;
 		// this lets us account for scrollbars
@@ -43,7 +43,7 @@ dojo.html.getViewport = function(){
 			w = w2;
 		}
 		h = _document.documentElement.clientHeight;
-	} else if (dojo.body().clientWidth){
+	}else if (dojo.body().clientWidth){
 		// IE, Opera
 		w = dojo.body().clientWidth;
 		h = dojo.body().clientHeight;
