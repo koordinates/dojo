@@ -36,6 +36,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		//	dojo.gfx.defaultRadialGradient, 
 		//	dojo.gfx.defaultPattern, 
 		//	or dojo.gfx.color.Color)
+		var h = dojo.render.html;
 		
 		if(!fill){
 			// don't fill
@@ -51,7 +52,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 					var f = dojo.gfx.makeParameters(dojo.gfx.defaultLinearGradient, fill);
 					var gradient = this._setFillObject(f, "linearGradient");
 					dojo.lang.forEach(["x1", "y1", "x2", "y2"], function(x){
-						gradient.setAttribute(x, f[x].toFixed(8));
+						gradient.setAttribute(x, (h.safari ? parseInt(f[x]) : f[x].toFixed(8)));
 					});
 					break;
 				case "radial":
@@ -153,12 +154,13 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			for(var i = 0; i < f.colors.length; ++i){
 				f.colors[i].color = dojo.gfx.normalizeColor(f.colors[i].color);
 				var t = document.createElementNS(dojo.svg.xmlns.svg, "stop");
-				t.setAttribute("offset",     f.colors[i].offset.toFixed(8));
+				t.setAttribute("offset",     (dojo.render.html.safari ? parseInt(f.colors[i].offset) : f.colors[i].offset.toFixed(8)));
 				t.setAttribute("stop-color", f.colors[i].color.toCss());
 				fill.appendChild(t);
 			}
 		}
 		this.rawNode.setAttribute("fill", "url(#" + fill.getAttribute("id") +")");
+		// this.rawNode.setAttributeNS("xlink", "href", "#" + fill.getAttribute("id") +"");
 		this.rawNode.removeAttribute("fill-opacity");
 		return fill;
 	},
@@ -167,10 +169,17 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		var matrix = this._getRealMatrix();
 		if(matrix){
 			var tm = this.matrix;
-			this.rawNode.setAttribute("transform", "matrix(" +
-				tm.xx.toFixed(8) + "," + tm.yx.toFixed(8) + "," +
-				tm.xy.toFixed(8) + "," + tm.yy.toFixed(8) + "," +
-				tm.dx.toFixed(8) + "," + tm.dy.toFixed(8) + ")");
+			if(dojo.render.html.safari){
+				this.rawNode.setAttribute("transform", "matrix(" +
+					parseInt(tm.xx) + "," + parseInt(tm.yx) + "," +
+					parseInt(tm.xy) + "," + parseInt(tm.yy) + "," +
+					parseInt(tm.dx) + "," + parseInt(tm.dy) + ")");
+			}else{
+				this.rawNode.setAttribute("transform", "matrix(" +
+					tm.xx.toFixed(8) + "," + tm.yx.toFixed(8) + "," +
+					tm.xy.toFixed(8) + "," + tm.yy.toFixed(8) + "," +
+					tm.dx.toFixed(8) + "," + tm.dy.toFixed(8) + ")");
+			}
 		}else{
 			this.rawNode.removeAttribute("transform");
 		}
@@ -376,8 +385,10 @@ dojo.declare("dojo.gfx.Rect", dojo.gfx.shape.Rect, {
 		for(var i in this.shape){
 			if(i != "type" && i != "r"){ this.rawNode.setAttribute(i, this.shape[i]); }
 		}
-		this.rawNode.setAttribute("rx", this.shape.r);
-		this.rawNode.setAttribute("ry", this.shape.r);
+		if(this.shape.r){
+			this.rawNode.setAttribute("ry", this.shape.r);
+			this.rawNode.setAttribute("rx", this.shape.r);
+		}
 		return this;	// self
 	}
 });
@@ -412,8 +423,13 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline, {
 		var attr = [];
 		var p = this.shape.points;
 		for(var i = 0; i < p.length; ++i){
-			attr.push(p[i].x.toFixed(8));
-			attr.push(p[i].y.toFixed(8));
+			if(dojo.render.html.safari){
+				attr.push(parseInt(p[i].x));
+				attr.push(parseInt(p[i].y));
+			}else{
+				attr.push(p[i].x.toFixed(8));
+				attr.push(p[i].y.toFixed(8));
+			}
 		}
 		this.rawNode.setAttribute("points", attr.join(" "));
 		return this;	// self
