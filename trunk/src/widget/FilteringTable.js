@@ -147,7 +147,7 @@ dojo.widget.defineWidget(
 		if(this.multiple){
 			return a;		//	array
 		} else {
-			return a[0];	//	object
+			return a.shift();	//	object
 		}
 	},
 	
