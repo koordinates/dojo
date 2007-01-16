@@ -48,12 +48,34 @@ dojo.lang.nameAnonFunc = function(/*Function*/anonFuncPtr, /*Object*/thisObj, /*
 	//		existing reference to anonFuncPtr in thisObj, and if one is found,
 	//		the existing name will be returned instead. The default is for
 	//		searchForNames to be false.
+	var isIE = (dojo.render.html.capable && dojo.render.html["ie"]);
+	var jpn = "$joinpoint";
 	var nso = (thisObj|| dojo.lang.anon);
+	if(isIE){
+		var cn = anonFuncPtr["__dojoNameCache"];
+		if(cn && nso[cn] === anonFuncPtr){
+			return anonFuncPtr["__dojoNameCache"];
+		}else if(cn){
+			// hack to see if we've been event-system mangled
+			var tindex = cn.indexOf(jpn);
+			if(tindex != -1){
+				return cn.substring(0, tindex);
+			}
+		}
+	}
 	if( (searchForNames) ||
 		((dj_global["djConfig"])&&(djConfig["slowAnonFuncLookups"] == true)) ){
 		for(var x in nso){
 			try{
 				if(nso[x] === anonFuncPtr){
+					if(isIE){
+						anonFuncPtr["__dojoNameCache"] = x;
+						// hack to see if we've been event-system mangled
+						var tindex = x.indexOf(jpn);
+						if(tindex != -1){
+							x = x.substring(0, tindex);
+						}
+					}
 					return x;
 				}
 			}catch(e){} // window.external fails in IE embedded in Eclipse (Eclipse bug #151165)
