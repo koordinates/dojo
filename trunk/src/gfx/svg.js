@@ -238,7 +238,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		var fillStyle = null;
 		if(rawNode){
 			var fill = rawNode.getAttribute("fill");
-			if(fill == "none"){ return; }
+			if(fill == "none"){ return null; }
 			var ref  = dojo.gfx.svg.getRef(fill);
 			if(ref){
 				var gradient = ref;
@@ -290,7 +290,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	attachStroke: function(rawNode){
 		// summary: deduces a stroke style from a Node.
 		// rawNode: Node: an SVG node
-		if(!rawNode){ return; }
+		if(!rawNode){ return null; }
 		var stroke = rawNode.getAttribute("stroke");
 		if(stroke == null || stroke == "none") return null;
 		var strokeStyle = dojo.lang.shallowCopy(dojo.gfx.defaultStroke, true);
@@ -492,7 +492,84 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
 });
 dojo.gfx.Path.nodeType = "path";
 
-dojo.gfx._creators = {
+dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text, {
+	// summary: an anchored text (SVG)
+
+	attachShape: function(rawNode){
+		// summary: builds a text shape from a Node.
+		// rawNode: Node: an SVG node
+		var shape = null;
+		if(rawNode){
+			shape = dojo.lang.shallowCopy(dojo.gfx.defaultText, true);
+			shape.x = rawNode.getAttribute("x");
+			shape.y = rawNode.getAttribute("y");
+			shape.align = rawNode.getAttribute("text-anchor");
+			shape.decoration = rawNode.getAttribute("text-decoration");
+			shape.rotated = parseFloat(rawNode.getAttribute("rotate")) != 0;
+			shape.kerning = rawNode.getAttribute("kerning") == "auto";
+			shape.text = rawNode.firstChild.nodeValue;
+		}
+		return shape;	// dojo.gfx.shape.Text
+	},
+	setShape: function(newShape){
+		// summary: sets a text shape object (SVG)
+		// newShape: Object: a text shape object
+		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.bbox = null;
+		var r = this.rawNode;
+		var s = this.shape;
+		r.setAttribute("x", s.x);
+		r.setAttribute("y", s.y);
+		r.setAttribute("text-anchor", s.align);
+		r.setAttribute("text-decoration", s.decoration);
+		r.setAttribute("rotate", s.rotated ? 90 : 0);
+		r.setAttribute("kerning", s.kerning ? "auto" : 0);
+		r.appendChild(document.createTextNode(s.text));
+		return this;	// self
+	}
+});
+dojo.gfx.Text.nodeType = "text";
+
+dojo.gfx.svg._font = {
+	setFont: function(font){
+		// summary: sets a font object (SVG)
+		// font: Object: a font object (see dojo.gfx.defaultFont) or a string
+		var f = this.fontStyle = typeof font == "string" ? dojo.gfx.splitFontString(font) :
+			dojo.gfx.makeParameters(dojo.gfx.defaultFont, font);
+		// next line doesn't work in Firefox 2 or Opera 9
+		//this.rawNode.setAttribute("font", dojo.gfx.makeFontString(this.fontStyle));
+		this.rawNode.setAttribute("font-style", f.style);
+		this.rawNode.setAttribute("font-variant", f.variant);
+		this.rawNode.setAttribute("font-weight", f.weight);
+		this.rawNode.setAttribute("font-size", f.size);
+		this.rawNode.setAttribute("font-family", f.family);
+	},
+	attachFont: function(rawNode){
+		// summary: deduces a font style from a Node.
+		// rawNode: Node: an SVG node
+		if(!rawNode){ return null; }
+		var fontStyle = dojo.lang.shallowCopy(dojo.gfx.defaultFont, true);
+		fontStyle.style = rawNode.getAttribute("font-style");
+		fontStyle.variant = rawNode.getAttribute("font-variant");
+		fontStyle.weight = rawNode.getAttribute("font-weight");
+		fontStyle.size = rawNode.getAttribute("font-size");
+		fontStyle.family = rawNode.getAttribute("font-family");
+		return fontStyle;	// Object
+	},
+	attach: function(rawNode){
+		// summary: reconstructs all shape parameters from a Node.
+		// rawNode: Node: an SVG node
+		dojo.gfx.Shape.prototype.attach.call(this, rawNode);
+		if(rawNode) {
+			this.fontStyle = this.attachFont(rawNode);
+		}
+	}
+};
+
+dojo.lang.extend(dojo.gfx.Text, dojo.gfx.svg._font);
+delete dojo.gfx.svg._font;
+
+dojo.gfx.svg._creators = {
 	// summary: SVG shape creators
 	createPath: function(path){
 		// summary: creates an SVG path shape
@@ -529,6 +606,11 @@ dojo.gfx._creators = {
 		// summary: creates an SVG image shape
 		// image: Object: an image object (see dojo.gfx.defaultImage)
 		return this.createObject(dojo.gfx.Image, image);	// dojo.gfx.Image
+	},
+	createText: function(text){
+		// summary: creates an SVG text shape
+		// text: Object: a text object (see dojo.gfx.defaultText)
+		return this.createObject(dojo.gfx.Text, text);	// dojo.gfx.Text
 	},
 	createGroup: function(){
 		// summary: creates an SVG group shape
@@ -598,6 +680,9 @@ dojo.gfx.attachNode = function(node){
 		case dojo.gfx.Image.nodeType:
 			s = new dojo.gfx.Image();
 			break;
+		case dojo.gfx.Text.nodeType:
+			s = new dojo.gfx.Text();
+			break;
 		default:
 			dojo.debug("FATAL ERROR! tagName = " + node.tagName);
 	}
@@ -657,10 +742,10 @@ dojo.gfx.attachSurface = function(node){
 	return s;	// dojo.gfx.Surface
 };
 
-dojo.lang.extend(dojo.gfx.Group, dojo.gfx._creators);
-dojo.lang.extend(dojo.gfx.Surface, dojo.gfx._creators);
+dojo.lang.extend(dojo.gfx.Group, dojo.gfx.svg._creators);
+dojo.lang.extend(dojo.gfx.Surface, dojo.gfx.svg._creators);
 
-delete dojo.gfx._creators;
+delete dojo.gfx.svg._creators;
 
 // Gradient and pattern
 

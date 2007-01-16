@@ -46,7 +46,7 @@ dojo.gfx.vml.px2pt = function(len){
 };
 
 dojo.gfx.vml.normalizedLength = function(len) {
-	// summary: converts any length value to points
+	// summary: converts any length value to pixels
 	// len: String: a length, e.g., "12pc"
 	if(len.length == 0) return 0;
 	if(len.length > 2){
@@ -330,6 +330,9 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		if(rawNode){
 			this.rawNode = rawNode;
 			this.shape = this.attachShape(rawNode);
+			if("attachFill" in this){
+				this.fontStyle = this.attachFont(rawNode);
+			}
 			this.fillStyle = this.attachFill(rawNode);
 			this.strokeStyle = this.attachStroke(rawNode);
 			this.matrix = this.attachTransform(rawNode);
@@ -614,7 +617,10 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline,
 });
 dojo.gfx.Polyline.nodeType = "shape";
 
-dojo.declare("dojo.gfx.Image", dojo.gfx.shape.Image, {
+dojo.declare("dojo.gfx.Image", dojo.gfx.shape.Image,
+	function(rawNode){
+		if(rawNode) rawNode.setAttribute("dojoGfxType", "image");
+	}, {
 	// summary: an image (VML)
 	
 	getEventSource: function() {
@@ -687,7 +693,7 @@ dojo.declare("dojo.gfx.Image", dojo.gfx.shape.Image, {
 		return this;
 	}
 });
-dojo.gfx.Image.nodeType = "image";
+dojo.gfx.Image.nodeType = "div";
 
 dojo.gfx.path._calcArc = function(alpha){
 	var cosa  = Math.cos(alpha);
@@ -1128,42 +1134,174 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
 });
 dojo.gfx.Path.nodeType = "shape";
 
+dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text, 
+	function(rawNode){
+		if(rawNode) rawNode.setAttribute("dojoGfxType", "text");
+		this.fontStyle = null;
+	}, {
+	// summary: an anchored text (SVG)
 
-dojo.gfx._creators = {
+	attachShape: function(rawNode){
+		// summary: builds a text shape from a Node.
+		// rawNode: Node: an SVG node
+		var shape = null;
+		/*
+		if(rawNode){
+			shape = dojo.lang.shallowCopy(dojo.gfx.defaultText, true);
+			shape.x = rawNode.getAttribute("x");
+			shape.y = rawNode.getAttribute("y");
+			shape.align = rawNode.getAttribute("text-anchor");
+			shape.decoration = rawNode.getAttribute("text-decoration");
+			shape.rotated = parseFloat(rawNode.getAttribute("rotate")) != 0;
+			shape.text = rawNode.firstChild.nodeValue;
+		}
+		*/
+		return shape;	// dojo.gfx.shape.Text
+	},
+	_alignment: {start: "left", middle: "center", end: "right"},
+	setShape: function(newShape){
+		// summary: sets a text shape object (SVG)
+		// newShape: Object: a text shape object
+		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.bbox = null;
+		var r = this.rawNode;
+		var s = this.shape;
+		var x = s.x;
+		var y = s.y.toFixed();
+		switch(s.align){
+			case "middle":
+				x -= 5;
+				break;
+			case "end":
+				x -= 10;
+				break;
+		}
+		this.rawNode.path.v = "m" + x.toFixed() + "," + y + 
+			"l" + (x + 10).toFixed() + "," + y + "e";
+		// find path and text path
+		var p = null, t = null;
+		var c = r.childNodes;
+		for(var i = 0; i < c.length; ++i){
+			var tag = c[i].tagName;
+			if(tag == "path"){
+				p = c[i];
+				if(t) break;
+			}else if(tag == "textpath"){
+				t = c[i];
+				if(p) break;
+			}
+		}
+		if(!p){
+			p = document.createElement("v:path");
+			r.appendChild(p);
+		}
+		if(!t){
+			t = document.createElement("v:textpath");
+			r.appendChild(t);
+		}
+		p.textPathOk = true;
+		t.on = true;
+		var a = this._alignment[s.align];
+		t.style["v-text-anchor"] = "bottom";
+		t.style["v-text-align"] = a ? a : "left";
+		t.style["text-decoration"] = s.decoration;
+		t.style["v-rotate-letters"] = s.rotated;
+		t.style["v-text-kern"] = s.kerning;
+		t.string = s.text;
+		return this.setTransform(this.matrix);	// self
+	},
+	setFont: function(font){
+		// summary: sets a font object (SVG)
+		// font: Object: a font object (see dojo.gfx.defaultFont) or a string
+		var f = this.fontStyle = typeof font == "string" ? 
+			dojo.gfx.splitFontString(font) :
+			dojo.gfx.makeParameters(dojo.gfx.defaultFont, font);
+		var c = this.rawNode.childNodes;
+		for(var i = 0; i < c.length; ++i){
+			if(c[i].tagName == "textpath"){
+				c[i].style.font = dojo.gfx.makeFontString(f);
+				break;
+			}
+		}
+		return this.setTransform(this.matrix);	// self
+	},
+	attachFont: function(rawNode){
+		// summary: deduces a font style from a Node.
+		// rawNode: Node: an SVG node
+		if(!rawNode){ return null; }
+		var fontStyle = dojo.lang.shallowCopy(dojo.gfx.defaultFont, true);
+		var c = this.rawNode.childNodes;
+		for(var i = 0; i < c.length; ++i){
+			if(c[i].tagName == "textpath"){
+				var s = c[i].style;
+				fontStyle.style = s.fontstyle;
+				fontStyle.variant = s.fontvariant;
+				fontStyle.weight = s.fontweight;
+				fontStyle.size = s.fontsize;
+				fontStyle.family = s.fontfamily;
+				break;
+			}
+		}
+		return fontStyle;	// Object
+	},
+	attachTransform: function(rawNode) {
+		// summary: deduces a transformation matrix from a Node.
+		// rawNode: Node: an VML node
+		var matrix = dojo.gfx.Shape.prototype.attachTransform.call(this);
+		if(matrix){
+			matrix = dojo.gfx.matrix.multiply(matrix, {dy: dojo.gfx.vml.normalizedLength(this.fontStyle.size) * 0.4});
+		}
+		return matrix;	// dojo.gfx.Matrix2D
+	},
+	_getRealMatrix: function(){
+		// summary: returns the cumulative ("real") transformation matrix
+		//	by combining the shape's matrix with its parent's matrix;
+		//	it makes a correction for a font size
+		var matrix = dojo.gfx.Shape.prototype._getRealMatrix.call(this);
+		if(matrix){
+			matrix = dojo.gfx.matrix.multiply(matrix, 
+				{dy: -dojo.gfx.vml.normalizedLength(this.fontStyle ? this.fontStyle.size : "10pt") * 0.4});
+		}
+		return matrix;	// dojo.gfx.Matrix2D
+	}
+});
+dojo.gfx.Text.nodeType = "shape";
+
+dojo.gfx.vml._creators = {
 	// summary: VML shape creators
 	createPath: function(path){
-		// summary: creates an SVG path shape
+		// summary: creates a SVG path shape
 		// path: Object: a path object (see dojo.gfx.defaultPath)
 		return this.createObject(dojo.gfx.Path, path, true);	// dojo.gfx.Path
 	},
 	createRect: function(rect){
-		// summary: creates an VML rectangle shape
+		// summary: creates a VML rectangle shape
 		// rect: Object: a path object (see dojo.gfx.defaultRect)
 		return this.createObject(dojo.gfx.Rect, rect);	// dojo.gfx.Rect
 	},
 	createCircle: function(circle){
-		// summary: creates an VML circle shape
+		// summary: creates a VML circle shape
 		// circle: Object: a circle object (see dojo.gfx.defaultCircle)
 		return this.createObject(dojo.gfx.Circle, circle);	// dojo.gfx.Circle
 	},
 	createEllipse: function(ellipse){
-		// summary: creates an VML ellipse shape
+		// summary: creates a VML ellipse shape
 		// ellipse: Object: an ellipse object (see dojo.gfx.defaultEllipse)
 		return this.createObject(dojo.gfx.Ellipse, ellipse);	// dojo.gfx.Ellipse
 	},
 	createLine: function(line){
-		// summary: creates an VML line shape
+		// summary: creates a VML line shape
 		// line: Object: a line object (see dojo.gfx.defaultLine)
 		return this.createObject(dojo.gfx.Line, line, true);	// dojo.gfx.Line
 	},
 	createPolyline: function(points){
-		// summary: creates an VML polyline/polygon shape
+		// summary: creates a VML polyline/polygon shape
 		// points: Object: a points object (see dojo.gfx.defaultPolyline)
 		//	or an Array of points
 		return this.createObject(dojo.gfx.Polyline, points, true);	// dojo.gfx.Polyline
 	},
 	createImage: function(image){
-		// summary: creates an VML image shape
+		// summary: creates a VML image shape
 		// image: Object: an image object (see dojo.gfx.defaultImage)
 		if(!this.rawNode) return null;
 		var shape = new dojo.gfx.Image();
@@ -1180,8 +1318,13 @@ dojo.gfx._creators = {
 		this.add(shape);
 		return shape;	// dojo.gfx.Image
 	},
+	createText: function(text){
+		// summary: creates a VML text shape
+		// text: Object: a text object (see dojo.gfx.defaultText)
+		return this.createObject(dojo.gfx.Text, text, true);	// dojo.gfx.Text
+	},
 	createGroup: function(){
-		// summary: creates an VML group shape
+		// summary: creates a VML group shape
 		return this.createObject(dojo.gfx.Group, null, true);	// dojo.gfx.Group
 	},
 	createObject: function(shapeType, rawShape, overrideSize) {
@@ -1205,10 +1348,10 @@ dojo.gfx._creators = {
 	}
 };
 
-dojo.lang.extend(dojo.gfx.Group, dojo.gfx._creators);
-dojo.lang.extend(dojo.gfx.Surface, dojo.gfx._creators);
+dojo.lang.extend(dojo.gfx.Group, dojo.gfx.vml._creators);
+dojo.lang.extend(dojo.gfx.Surface, dojo.gfx.vml._creators);
 
-delete dojo.gfx._creators;
+delete dojo.gfx.vml._creators;
 
 dojo.gfx.attachNode = function(node){
 	// summary: creates a shape from a Node
@@ -1235,13 +1378,21 @@ dojo.gfx.attachNode = function(node){
 				case "path":
 					s = new dojo.gfx.Path();
 					break;
+				case "text":
+					s = new dojo.gfx.Text();
+					break;
 			}
 			break;
 		case dojo.gfx.Image.nodeType:
-			s = new dojo.gfx.Image();
+			switch(node.getAttribute("dojoGfxType")){
+				case "image":
+					s = new dojo.gfx.Image();
+					break;
+			}
 			break;
 		default:
 			dojo.debug("FATAL ERROR! tagName = " + node.tagName);
+			return null;	// dojo.gfx.Shape
 	}
 	s.attach(node);
 	return s;	// dojo.gfx.Shape
