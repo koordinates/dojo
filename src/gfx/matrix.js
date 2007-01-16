@@ -394,3 +394,6 @@ dojo.mixin(dojo.gfx.matrix, {
 	// TODO: rect-to-rect mapping, scale-to-fit (isotropic and anisotropic versions)
 	
 });
+
+// propagate Matrix2D up
+dojo.gfx.Matrix2D = dojo.gfx.matrix.Matrix2D;
