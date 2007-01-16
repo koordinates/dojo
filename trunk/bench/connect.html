@@ -8,60 +8,58 @@
 	td { align: left; }
 </style>
 
-<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript">
+	djConfig = { 
+		debugAtAllCosts: true,
+		isDebug: true
+	};
+</script>
 <script type="text/javascript" src="../dojo.js"></script>
 <script>
 	dojo.require("dojo.event.*");
+	dojo.require("dojo.profile");
+	dojo.require("dojo.debug.console");
+	dojo.hostenv.writeIncludes();
 </script>
 
 <script type="text/javascript">
 
-	function click(){ alert("i was clicked"); }
+	function click(){ dojo.debug("i was clicked"); }
 
+	var node;
 	function bench () {
-		var node=document.getElementById("node");
-	
-		tic();
-		for (var i = 0; i < 1000; i++) {
-			dojo.event.connect(node, "onclick", click);
-			dojo.event.disconnect(node, "onclick", click);
-		}
-		toc('dojo.event.connect(node, "onclick", click);');
-	
-		tic();
-		for (var i = 0; i < 1000; i++) {
-			dojo.event.connectOnce(node, "onclick", click);
-			dojo.event.disconnect(node, "onclick", click);
-		}
-		toc('dojo.event.connectOnce(node, "onclick", click);');
-	
-		tic();
-		for (var i = 0; i < 1000; i++) {
-			dojo.event.browser.addListener(node, "onclick", click);
-			dojo.event.browser.removeListener(node, "onclick", click);
-		}
-		toc('dojo.event.addListener(node, "onclick", click);');
-	
-		tic();
-		for (var i = 0; i < 1000; i++) {
-			dojo.event.kwConnect({srcObj: node, srcFunc: "onclick", adviceFunc: click});
-			dojo.event.kwDisconnect({srcObj: node, srcFunc: "onclick", adviceFunc: click});
-		}
-		toc('dojo.event.kwConnect({srcObj: node, srcFunc: "onclick", adviceFunc: click});');
-	
-	}
-	
-	function tic () {
-		tic.time = new Date();
-	}
-	
-	function toc (str) {
-		var time = new Date().getTime() - tic.time.getTime();
-		var p = document.createElement("p");
-		p.appendChild(document.createTextNode(time + " - " + str));
-		document.getElementById("results").appendChild(p);
-	}
+		var iters = 1000;
+		node = dojo.byId("node");
 
+		function _runBench(str, profile){
+			var tf = new Function("node", "click", str);
+			for (var i = 0; i < iters; i++){
+				if(profile !== false){
+					dojo.profile.start(str);
+				}
+				tf(node, click);
+				if(profile !== false){
+					dojo.profile.end(str);
+				}
+			}
+		}
+
+		_runBench('dojo.event.connect(node, "onclick", "click");');
+		_runBench('dojo.event.disconnect(node, "onclick", "click");', false);
+		_runBench('dojo.event.connect(node, "onclick", click);');
+		_runBench('dojo.event.disconnect(node, "onclick", click);', false);
+		_runBench('dojo.event.connectOnce(node, "onclick", click);');
+		_runBench('dojo.event.disconnect(node, "onclick", click);', false);
+		_runBench('dojo.event.browser.addListener(node, "onclick", click);');
+		_runBench('dojo.event.browser.removeListener(node, "onclick", click);', false);
+		_runBench('dojo.event.kwConnect({srcObj: node, srcFunc: "onclick", adviceFunc: click});');
+		_runBench('dojo.event.kwDisconnect({srcObj: node, srcFunc: "onclick", adviceFunc: click});', false);
+		_runBench('dojo.event.kwConnect({srcObj: node, srcFunc: "onclick", adviceFunc: "click"});');
+		_runBench('dojo.event.kwDisconnect({srcObj: node, srcFunc: "onclick", adviceFunc: "click"});', false);
+	
+		dojo.profile.dump(true);
+	}
+	
 </script>
 
 <h1>Test of dojo.event.connect() (and related functions)</h1>
@@ -75,7 +73,7 @@ This is the node which will be connected to
 
 <p>The results should not be compared between browsers for they are run on different systems, however results for the same browser are relative to each other.
 
-<div id="results"></div>
+<div id="profileOutputTable"></div>
 
 <h2>Typical results</h2>
 <table border=1>
