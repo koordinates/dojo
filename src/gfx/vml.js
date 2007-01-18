@@ -1248,8 +1248,9 @@ dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text,
 		// summary: deduces a transformation matrix from a Node.
 		// rawNode: Node: an VML node
 		var matrix = dojo.gfx.Shape.prototype.attachTransform.call(this);
+		// see comments in _getRealMatrix()
 		if(matrix){
-			matrix = dojo.gfx.matrix.multiply(matrix, {dy: dojo.gfx.vml.normalizedLength(this.fontStyle.size) * 0.4});
+			matrix = dojo.gfx.matrix.multiply(matrix, {dy: dojo.gfx.vml.normalizedLength(this.fontStyle.size) * 0.35});
 		}
 		return matrix;	// dojo.gfx.Matrix2D
 	},
@@ -1258,9 +1259,12 @@ dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text,
 		//	by combining the shape's matrix with its parent's matrix;
 		//	it makes a correction for a font size
 		var matrix = dojo.gfx.Shape.prototype._getRealMatrix.call(this);
+		// It appears that text is always aligned vertically at a middle of x-height (???).
+		// It is impossible to obtain these metrics from VML => I try to approximate it with 
+		// more-or-less common value of 0.7 * FontSize, which is typical for European fonts.
 		if(matrix){
 			matrix = dojo.gfx.matrix.multiply(matrix, 
-				{dy: -dojo.gfx.vml.normalizedLength(this.fontStyle ? this.fontStyle.size : "10pt") * 0.4});
+				{dy: -dojo.gfx.vml.normalizedLength(this.fontStyle ? this.fontStyle.size : "10pt") * 0.35});
 		}
 		return matrix;	// dojo.gfx.Matrix2D
 	}
