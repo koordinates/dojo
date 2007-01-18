@@ -36,22 +36,22 @@ makeShapes = function(){
 	var m = dojo.gfx.matrix;
 	surface.createLine({x1: 250, y1: 0, x2: 250, y2: 500}).setStroke("green");
 	makeText(surface, {x: 250, y: 50, text: "Start", align: "start"}, 
-		{family: "serif", size: "36pt", weight: "bold"}, "black", "red")
+		{family: "Times", size: "36pt", weight: "bold"}, "black", "red")
 		.setTransform(m.rotategAt(ROTATION, 250, 50))
 		;
 	makeText(surface, {x: 250, y: 100, text: "Middle", align: "middle"}, 
-		{family: "symbol", size: "24pt"}, "#FFFF00", "black")
+		{family: "Symbol", size: "24pt"}, "#FFFF00", "black")
 		.setTransform(m.rotategAt(ROTATION, 250, 100))
 		;
 	makeText(surface, {x: 250, y: 150, text: "End", align: "end"}, 
-		{family: "sans-serif", style: "italic", size: "18pt", rotated: true}, "#FF8000")
+		{family: "Helvetica", style: "italic", size: "18pt", rotated: true}, "#FF8000")
 		.setTransform(m.rotategAt(ROTATION, 250, 150))
 		;
-	makeText(surface, {x: 250, y: 200, text: "Shuffle Tiff", align: "start", kerning: true}, 
+	makeText(surface, {x: 250, y: 200, text: "Define Shuffle Tiff", align: "middle", kerning: true}, 
 		{family: "serif", size: "36pt"}, "black")
 		.setTransform(m.rotategAt(0, 250, 200))
 		;
-	makeText(surface, {x: 250, y: 250, text: "Shuffle Tiff", align: "start", kerning: false}, 
+	makeText(surface, {x: 250, y: 250, text: "Define Shuffle Tiff", align: "middle", kerning: false}, 
 		{family: "serif", size: "36pt"}, "black")
 		.setTransform(m.rotategAt(0, 250, 250))
 		;
