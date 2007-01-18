@@ -19,10 +19,10 @@ function test_number_format() {
 	jum.assertEquals("num_1_2", "-12,34,567.89", dojo.number.format(-1234567.89, {locale: "en-in"}));
 	jum.assertEquals("num_1_3", "-1,234,567", dojo.number.format(-1234567.89, {places:0, locale: "en-us"}));
 	jum.assertEquals("num_1_4", "-12,34,567", dojo.number.format(-1234567.89, {places:0, locale: "en-in"}));
-	jum.assertEquals("num_1_5", "-1 000,10", dojo.number.format(-1000.1, {places:2, locale: "fr-fr"}));
+	jum.assertEquals("num_1_5", "-1\xa0000,10", dojo.number.format(-1000.1, {places:2, locale: "fr-fr"}));
 	jum.assertEquals("num_1_6", "-1,000.10", dojo.number.format(-1000.1, {places:2, locale: "en-us"}));
 
-	jum.assertEquals("num_1_7", "-1 000,10", dojo.number.format(-1000.1, {places:2, locale: "fr-fr"}));
+	jum.assertEquals("num_1_7", "-1\xa0000,10", dojo.number.format(-1000.1, {places:2, locale: "fr-fr"}));
 	jum.assertEquals("num_1_8", "-1,000.10", dojo.number.format(-1000.1, {places:2, locale: "en-us"}));
 	jum.assertEquals("num_1_9", "123.45%", dojo.number.format(1.23456, {places:2, locale: "en-us", type: "percent"}));
 
@@ -35,7 +35,7 @@ function test_number_format() {
 //	jum.assertEquals("num_2_6", "0.00", dojo.number.format(0, {places:2, round: true, locale: "en-us"}));
 
 	//change decimal places
-	jum.assertEquals("num_2_7", "-1 000,100", dojo.number.format(-1000.1, {places:3, locale: "fr-fr"}));
+	jum.assertEquals("num_2_7", "-1\xa0000,100", dojo.number.format(-1000.1, {places:3, locale: "fr-fr"}));
 	jum.assertEquals("num_2_8", "-1,000.100", dojo.number.format(-1000.1, {places:3, locale: "en-us"}));
 }
 
@@ -46,7 +46,7 @@ function test_number_parse() {
 	jum.assertEquals("num_3_3", -1000, dojo.number.parse("-1000", {locale: "en-us"}));
 	jum.assertEquals("num_3_4", -1000.123, dojo.number.parse("-1000.123", {locale: "en-us"}));
 	jum.assertEquals("num_3_5", -1234567.89, dojo.number.parse("-1,234,567.89", {locale: "en-us"}));
-	jum.assertEquals("num_3_6", -1234567.89, dojo.number.parse("-1 234 567,89", {locale: "fr-fr"}));
+	jum.assertEquals("num_3_6", -1234567.89, dojo.number.parse("-1\xa0234\xa0567,89", {locale: "fr-fr"}));
 	jum.assertEquals("num_3_7", NaN, dojo.number.parse("-1 234 567,89", {locale: "en-us"}));
 
 	//invalid - NaN
