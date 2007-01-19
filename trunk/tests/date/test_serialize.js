@@ -31,6 +31,10 @@ function test_date_fromIso8601() {
 	jum.assertEquals("fromIso8601_test1",2006,date.getFullYear());
 	jum.assertEquals("fromIso8601_test2",1,date.getMonth());
 	jum.assertEquals("fromIso8601_test3",10,date.getUTCDate());
+
+	iso = "20070116T141500+09";
+	date = dojo.date.fromIso8601(iso);
+	jum.assertEquals("fromIso8601_test4",2007,date.getFullYear());
 }
 
 function test_date_fromIso8601Date () {
