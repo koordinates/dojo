@@ -32,7 +32,7 @@ dojo.date.setIso8601Date = function(/*String*/dateObject, /*String*/formattedStr
 	var date = d[6];
 	var dayofyear = d[8];
 	var week = d[10];
-	var dayofweek = d[12] ? d[12] : 1;
+	var dayofweek = d[12] || 1;
 
 	dateObject.setFullYear(year);
 
@@ -43,10 +43,9 @@ dojo.date.setIso8601Date = function(/*String*/dateObject, /*String*/formattedStr
 	else if(week){
 		dateObject.setMonth(0);
 		dateObject.setDate(1);
-		var gd = dateObject.getDay();
-		var day =  gd ? gd : 7;
+		var day = dateObject.getDay() || 7;
 		var offset = Number(dayofweek) + (7 * Number(week));
-		
+	
 		if(day <= 4){ dateObject.setDate(offset + 1 - day); }
 		else{ dateObject.setDate(offset + 8 - day); }
 	} else{
@@ -56,7 +55,7 @@ dojo.date.setIso8601Date = function(/*String*/dateObject, /*String*/formattedStr
 		}
 		if(date){ dateObject.setDate(date); }
 	}
-	
+
 	return dateObject; // Date
 };
 
@@ -75,8 +74,8 @@ dojo.date.setIso8601Time = function(/*Date*/dateObject, /*String*/formattedStrin
 	var offset = 0; // local time if no tz info
 	if(d){
 		if(d[0] != 'Z'){
-			offset = (Number(d[3]) * 60) + Number(d[5]);
-			offset *= ((d[2] == '-') ? 1 : -1);
+			offset = (Number(d[3]) * 60) + Number(d[5] || 0);
+			if(d[2] != '-'){ offset *= -1; }
 		}
 		offset -= dateObject.getTimezoneOffset();
 		formattedString = formattedString.substr(0, formattedString.length - d[0].length);
@@ -90,8 +89,8 @@ dojo.date.setIso8601Time = function(/*Date*/dateObject, /*String*/formattedStrin
 		return null; // null
 	}
 	var hours = d[1];
-	var mins = Number((d[3]) ? d[3] : 0);
-	var secs = (d[5]) ? d[5] : 0;
+	var mins = Number(d[3] || 0);
+	var secs = d[5] || 0;
 	var ms = d[7] ? (Number("0." + d[7]) * 1000) : 0;
 
 	dateObject.setHours(hours);
