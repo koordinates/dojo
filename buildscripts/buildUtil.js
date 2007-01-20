@@ -359,7 +359,7 @@ buildUtil.getBundlePartsFromFileName = function(prefix, prefixPath, srcFileName)
 	var prefixPath = prefixPath.replace(/\.\.\//g, "");
 
 	//Strip off the prefix path so we can find the real resource and bundle names.
-	var prefixStartIndex = srcFileName.indexOf(prefixPath);
+	var prefixStartIndex = srcFileName.lastIndexOf(prefixPath);
 	if(prefixStartIndex != -1){
 		var startIndex = prefixStartIndex + prefixPath.length;
 		
