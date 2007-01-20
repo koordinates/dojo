@@ -1,0 +1,104 @@
+Global thoughts to look across the suite:
+
+1) gratuitious use of dojo.lang.isX:
+		dojo.lang.isFunction(it) => typeof it == "function"
+		dojo.lang.isUndefined(it) => typeof it == "undefined" or
+										it === dojo.undefined
+		
+2) assume in dojo/bootstrap/etc that we're in a browser.   
+	Lots of code in that file that is executing 99% of the time 
+	for the off chance we're in another environment.
+	
+	Have different bootstrap for different environments, eg:
+		dojo.js
+		dojo_rhino.js			<= more generic name?
+		dojo_spidermonkey.js
+	Not a problem for a dev using one of those other systems to include
+		that specifi dojo, "automagic" doesn't buy much in this case.
+		Are we anticipating the same code running on client and server without mods?
+
+3) Rename djConfig => "dojoConfig". Or, better yet, allow user to decorate 
+	the script tag with things automatically applied to djConfig
+
+4) dj_global => dojo.global ? dojo.root ? dojo.window ?  Enforce its usage?
+
+5) dj_currentContext => dojo.context?  dojo.currentContext?  usage?
+
+6) dojo.render => dojo.env? dojo.environment?  dojo.host ?
+	get rid of some of the IE50, etc, use isIE && version > 5
+		vscaffold() function is unclear
+	can we use null instead of false to make number of entries smaller?
+	use a function for uncommon stuff?
+
+7) move hostenv definition of djConfig to beginning?
+
+8) move much of dojo.hostenv.* to dojo.loader.*  (hostenv is something most don't care about)
+
+9) dojo.hostenv._global_omit_module_check => dojo._globalOmitModuleCheck ?  why wierd underscores?
+
+10) Move NLS stuff into separate file from loader.js?
+
+11) dojo.js
+	- lots of if (this["djConfig"] && ...
+		=> define a djConfig up top if one wasn't set before
+
+12) We seem to put a lot of cruft into the window object -- is this necessary?
+
+13) Go to firebug-only debugging.  In bootstrap, if there is no console,
+		or not all methods are implemented, define console.*
+		have debug.console implement some reasonable implementation of each
+		(or auto-load firebug for IE, etc?)
+		
+14) I'm not convinced that layering forEach and enumerators really buy us that much,
+	considering the complexity of having to create closures, wrap Array in another
+	data strucgture, etc.  If we want to extend Array, that makes more sense to me
+	(and fits with us being 'the standard JS library').  
+
+15) ArrayList seems pretty useles to me -- just (relatively slow) wrappers around
+	native JS functionality.  Use case?  Do we use these in the dojo code? 
+	
+16) Similar for Dictionary -- why would I use that over a normal hash?  Why not
+			dojo.hash.forEach(obj, ...)
+		rather than creating a wrapper object which must be quite a bit slower?
+		Dictionary seems SO inefficient -- creating an object for each key:value pair?  Yuck!
+
+17) Need to come up with consistent naming:  is it "hash" or "map" or "kw" or ...
+		My pref is "hash" (although that may imply chaining)
+	
+18) Queue -- array supports most of this stuff natively
+		use dojo.array.X for stuff that it doesn't support or decorate Array
+
+19) Set -- implement as methods on dojo.array
+
+20) dojo.data -- keep .core implementation in dojo -- promote this as standard
+		for other toolkits to use (possibly break out and propose to open ajax).
+		Take dojo.data.core.X methods and put on dojo.DataStore object?
+		
+21) dojo.date -- stuff to deprecate, usage with constants, etc doesn't feel really JS-ey
+		(use strings instead?)
+	
+22) some of the date stuff doesn't seem generally useful, although I suppose folks don't
+	have to include it...
+	
+23) Why is there a DragManager class if there is only ever a Singleton dragManager instance?
+	Consolidate HtmlDragManager into dojo.DragManager
+
+Things to figure out:
+1) Have different paths to dojo for different environments (localhost, etc) eg: 
+	Api Ref which is pushed to different places w/different dojos
+
+2) I think a good peering solution is key, Zimbra is working on it, I have some ideas
+	along those lines...
+
+3) How long does bootstrap code take to execute?  We should set a hard limit for
+	core-core stuff to init as benchmark for success of refactor
+
+
+Code Guidelines:
+1) Clearly distinguish between singletons (objs) and instantiatables (functions)
+2) Don't inline methods in a constructor.
+
+
+
+Specific files:
+
