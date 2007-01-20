@@ -64,6 +64,8 @@ dojo.gfx.vml.normalizedLength = function(len) {
 	return parseFloat(len);	// Number
 };
 
+dojo.gfx.vml._bool = {"t": 1, "true": 1};
+
 dojo.lang.extend(dojo.gfx.Shape, {
 	// summary: VML-specific implementation of dojo.gfx.Shape methods
 
@@ -363,6 +365,14 @@ dojo.declare("dojo.gfx.Group", dojo.gfx.shape.VirtualGroup, {
 			dojo.gfx.Group.superclass.remove.apply(this, arguments);
 		}
 		return this;	// self
+	},
+	clear: function(){
+		// summary: removes all shapes from a group/surface
+		var r = this.rawNode;
+		while(r.lastChild){
+			r.removeChild(r.lastChild);
+		}
+		return dojo.gfx.Group.superclass.clear.call(this);	// self
 	},
 	attach: function(rawNode){
 		// summary: reconstructs all group shape parameters from a Node (VML).
@@ -694,6 +704,159 @@ dojo.declare("dojo.gfx.Image", dojo.gfx.shape.Image,
 	}
 });
 dojo.gfx.Image.nodeType = "div";
+
+dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text, 
+	function(rawNode){
+		if(rawNode) rawNode.setAttribute("dojoGfxType", "text");
+		this.fontStyle = null;
+	}, {
+	// summary: an anchored text (SVG)
+
+	attachShape: function(rawNode){
+		// summary: builds a text shape from a Node.
+		// rawNode: Node: an SVG node
+		var shape = null;
+		if(rawNode){
+			shape = dojo.lang.shallowCopy(dojo.gfx.defaultText, true);
+			var p = rawNode.path.v.match(dojo.gfx.pathRegExp);
+			if(!p || p.length != 7){ return null; }
+			var c = rawNode.childNodes;
+			for(var i = 0; i < c.length; ++i){
+				if(c[i].tagName == "textpath"){
+					var s = c[i].style;
+					shape.text = c[i].string;
+					switch(s["v-text-align"]){
+						case "left":
+							shape.x = parseInt(p[1]);
+							shape.align = "start";
+							break;
+						case "center":
+							shape.x = (parseInt(p[1]) + parseInt(p[4])) / 2;
+							shape.align = "middle";
+							break;
+						case "right":
+							shape.x = parseInt(p[4]);
+							shape.align = "end";
+							break;
+					}
+					shape.y = parseInt(p[2]);
+					shape.decoration = s["text-decoration"];
+					shape.rotated = s["v-rotate-letters"].toLowerCase() in dojo.gfx.vml._bool;
+					shape.kerning = s["v-text-kern"].toLowerCase() in dojo.gfx.vml._bool;
+					break;
+				}
+			}
+		}
+		return shape;	// dojo.gfx.shape.Text
+	},
+	_alignment: {start: "left", middle: "center", end: "right"},
+	setShape: function(newShape){
+		// summary: sets a text shape object (SVG)
+		// newShape: Object: a text shape object
+		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.bbox = null;
+		var r = this.rawNode;
+		var s = this.shape;
+		var x = s.x;
+		var y = s.y.toFixed();
+		switch(s.align){
+			case "middle":
+				x -= 5;
+				break;
+			case "end":
+				x -= 10;
+				break;
+		}
+		this.rawNode.path.v = "m" + x.toFixed() + "," + y + 
+			"l" + (x + 10).toFixed() + "," + y + "e";
+		// find path and text path
+		var p = null, t = null;
+		var c = r.childNodes;
+		for(var i = 0; i < c.length; ++i){
+			var tag = c[i].tagName;
+			if(tag == "path"){
+				p = c[i];
+				if(t) break;
+			}else if(tag == "textpath"){
+				t = c[i];
+				if(p) break;
+			}
+		}
+		if(!p){
+			p = document.createElement("v:path");
+			r.appendChild(p);
+		}
+		if(!t){
+			t = document.createElement("v:textpath");
+			r.appendChild(t);
+		}
+		p.textPathOk = true;
+		t.on = true;
+		var a = this._alignment[s.align];
+		t.style["v-text-align"] = a ? a : "left";
+		t.style["text-decoration"] = s.decoration;
+		t.style["v-rotate-letters"] = s.rotated;
+		t.style["v-text-kern"] = s.kerning;
+		t.string = s.text;
+		return this.setTransform(this.matrix);	// self
+	},
+	_setFont: function(){
+		// summary: sets a font object (VML)
+		var f = this.fontStyle;
+		var c = this.rawNode.childNodes;
+		for(var i = 0; i < c.length; ++i){
+			if(c[i].tagName == "textpath"){
+				c[i].style.font = dojo.gfx.makeFontString(f);
+				break;
+			}
+		}
+		return this.setTransform(this.matrix);	// self
+	},
+	attachFont: function(rawNode){
+		// summary: deduces a font style from a Node.
+		// rawNode: Node: an SVG node
+		if(!rawNode){ return null; }
+		var fontStyle = dojo.lang.shallowCopy(dojo.gfx.defaultFont, true);
+		var c = this.rawNode.childNodes;
+		for(var i = 0; i < c.length; ++i){
+			if(c[i].tagName == "textpath"){
+				var s = c[i].style;
+				fontStyle.style = s.fontstyle;
+				fontStyle.variant = s.fontvariant;
+				fontStyle.weight = s.fontweight;
+				fontStyle.size = s.fontsize;
+				fontStyle.family = s.fontfamily;
+				break;
+			}
+		}
+		return fontStyle;	// Object
+	},
+	attachTransform: function(rawNode) {
+		// summary: deduces a transformation matrix from a Node.
+		// rawNode: Node: an VML node
+		var matrix = dojo.gfx.Shape.prototype.attachTransform.call(this);
+		// see comments in _getRealMatrix()
+		if(matrix){
+			matrix = dojo.gfx.matrix.multiply(matrix, {dy: dojo.gfx.vml.normalizedLength(this.fontStyle.size) * 0.35});
+		}
+		return matrix;	// dojo.gfx.Matrix2D
+	},
+	_getRealMatrix: function(){
+		// summary: returns the cumulative ("real") transformation matrix
+		//	by combining the shape's matrix with its parent's matrix;
+		//	it makes a correction for a font size
+		var matrix = dojo.gfx.Shape.prototype._getRealMatrix.call(this);
+		// It appears that text is always aligned vertically at a middle of x-height (???).
+		// It is impossible to obtain these metrics from VML => I try to approximate it with 
+		// more-or-less common value of 0.7 * FontSize, which is typical for European fonts.
+		if(matrix){
+			matrix = dojo.gfx.matrix.multiply(matrix, 
+				{dy: -dojo.gfx.vml.normalizedLength(this.fontStyle ? this.fontStyle.size : "10pt") * 0.35});
+		}
+		return matrix;	// dojo.gfx.Matrix2D
+	}
+});
+dojo.gfx.Text.nodeType = "shape";
 
 dojo.gfx.path._calcArc = function(alpha){
 	var cosa  = Math.cos(alpha);
@@ -1134,143 +1297,6 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
 });
 dojo.gfx.Path.nodeType = "shape";
 
-dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text, 
-	function(rawNode){
-		if(rawNode) rawNode.setAttribute("dojoGfxType", "text");
-		this.fontStyle = null;
-	}, {
-	// summary: an anchored text (SVG)
-
-	attachShape: function(rawNode){
-		// summary: builds a text shape from a Node.
-		// rawNode: Node: an SVG node
-		var shape = null;
-		/*
-		if(rawNode){
-			shape = dojo.lang.shallowCopy(dojo.gfx.defaultText, true);
-			shape.x = rawNode.getAttribute("x");
-			shape.y = rawNode.getAttribute("y");
-			shape.align = rawNode.getAttribute("text-anchor");
-			shape.decoration = rawNode.getAttribute("text-decoration");
-			shape.rotated = parseFloat(rawNode.getAttribute("rotate")) != 0;
-			shape.text = rawNode.firstChild.nodeValue;
-		}
-		*/
-		return shape;	// dojo.gfx.shape.Text
-	},
-	_alignment: {start: "left", middle: "center", end: "right"},
-	setShape: function(newShape){
-		// summary: sets a text shape object (SVG)
-		// newShape: Object: a text shape object
-		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
-		this.bbox = null;
-		var r = this.rawNode;
-		var s = this.shape;
-		var x = s.x;
-		var y = s.y.toFixed();
-		switch(s.align){
-			case "middle":
-				x -= 5;
-				break;
-			case "end":
-				x -= 10;
-				break;
-		}
-		this.rawNode.path.v = "m" + x.toFixed() + "," + y + 
-			"l" + (x + 10).toFixed() + "," + y + "e";
-		// find path and text path
-		var p = null, t = null;
-		var c = r.childNodes;
-		for(var i = 0; i < c.length; ++i){
-			var tag = c[i].tagName;
-			if(tag == "path"){
-				p = c[i];
-				if(t) break;
-			}else if(tag == "textpath"){
-				t = c[i];
-				if(p) break;
-			}
-		}
-		if(!p){
-			p = document.createElement("v:path");
-			r.appendChild(p);
-		}
-		if(!t){
-			t = document.createElement("v:textpath");
-			r.appendChild(t);
-		}
-		p.textPathOk = true;
-		t.on = true;
-		var a = this._alignment[s.align];
-		t.style["v-text-anchor"] = "bottom";
-		t.style["v-text-align"] = a ? a : "left";
-		t.style["text-decoration"] = s.decoration;
-		t.style["v-rotate-letters"] = s.rotated;
-		t.style["v-text-kern"] = s.kerning;
-		t.string = s.text;
-		return this.setTransform(this.matrix);	// self
-	},
-	setFont: function(font){
-		// summary: sets a font object (SVG)
-		// font: Object: a font object (see dojo.gfx.defaultFont) or a string
-		var f = this.fontStyle = typeof font == "string" ? 
-			dojo.gfx.splitFontString(font) :
-			dojo.gfx.makeParameters(dojo.gfx.defaultFont, font);
-		var c = this.rawNode.childNodes;
-		for(var i = 0; i < c.length; ++i){
-			if(c[i].tagName == "textpath"){
-				c[i].style.font = dojo.gfx.makeFontString(f);
-				break;
-			}
-		}
-		return this.setTransform(this.matrix);	// self
-	},
-	attachFont: function(rawNode){
-		// summary: deduces a font style from a Node.
-		// rawNode: Node: an SVG node
-		if(!rawNode){ return null; }
-		var fontStyle = dojo.lang.shallowCopy(dojo.gfx.defaultFont, true);
-		var c = this.rawNode.childNodes;
-		for(var i = 0; i < c.length; ++i){
-			if(c[i].tagName == "textpath"){
-				var s = c[i].style;
-				fontStyle.style = s.fontstyle;
-				fontStyle.variant = s.fontvariant;
-				fontStyle.weight = s.fontweight;
-				fontStyle.size = s.fontsize;
-				fontStyle.family = s.fontfamily;
-				break;
-			}
-		}
-		return fontStyle;	// Object
-	},
-	attachTransform: function(rawNode) {
-		// summary: deduces a transformation matrix from a Node.
-		// rawNode: Node: an VML node
-		var matrix = dojo.gfx.Shape.prototype.attachTransform.call(this);
-		// see comments in _getRealMatrix()
-		if(matrix){
-			matrix = dojo.gfx.matrix.multiply(matrix, {dy: dojo.gfx.vml.normalizedLength(this.fontStyle.size) * 0.35});
-		}
-		return matrix;	// dojo.gfx.Matrix2D
-	},
-	_getRealMatrix: function(){
-		// summary: returns the cumulative ("real") transformation matrix
-		//	by combining the shape's matrix with its parent's matrix;
-		//	it makes a correction for a font size
-		var matrix = dojo.gfx.Shape.prototype._getRealMatrix.call(this);
-		// It appears that text is always aligned vertically at a middle of x-height (???).
-		// It is impossible to obtain these metrics from VML => I try to approximate it with 
-		// more-or-less common value of 0.7 * FontSize, which is typical for European fonts.
-		if(matrix){
-			matrix = dojo.gfx.matrix.multiply(matrix, 
-				{dy: -dojo.gfx.vml.normalizedLength(this.fontStyle ? this.fontStyle.size : "10pt") * 0.35});
-		}
-		return matrix;	// dojo.gfx.Matrix2D
-	}
-});
-dojo.gfx.Text.nodeType = "shape";
-
 dojo.gfx.vml._creators = {
 	// summary: VML shape creators
 	createPath: function(path){
@@ -1444,6 +1470,14 @@ dojo.lang.extend(dojo.gfx.Surface, {
 				this.rawNode.removeChild(shape.rawNode);
 			}
 			shape._setParent(null, null);
+		}
+		return this;	// self
+	},
+	clear: function(){
+		// summary: removes all shapes from a group/surface
+		var r = this.rawNode;
+		while(r.lastChild){
+			r.removeChild(r.lastChild);
 		}
 		return this;	// self
 	}

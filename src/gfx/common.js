@@ -8,7 +8,7 @@ dojo.require("dojo.dom");
 dojo.lang.mixin(dojo.gfx, {
 	// summary: defines constants, prototypes, and utility functions
 	
-	// default shapes, which is used to fill in missing parameters
+	// default shapes, which are used to fill in missing parameters
 	defaultPath:     {type: "path",     path: ""},
 	defaultPolyline: {type: "polyline", points: []},
 	defaultRect:     {type: "rect",     x: 0, y: 0, width: 100, height: 100, r: 0},
@@ -17,8 +17,9 @@ dojo.lang.mixin(dojo.gfx, {
 	defaultLine:     {type: "line",     x1: 0, y1: 0, x2: 100, y2: 100},
 	defaultImage:    {type: "image",    x: 0, y: 0, width: 0, height: 0, src: ""},
 	defaultText:     {type: "text",     x: 0, y: 0, text: "",
-		align: "left", decoration: "none", rotated: false, kerning: true, spacing: "normal" },
-	defaultTextPath: {type: "textpath", text: ""},
+		align: "left", decoration: "none", rotated: false, kerning: true },
+	defaultTextPath: {type: "textpath", text: "",
+		align: "left", decoration: "none", rotated: false, kerning: true },
 
 	// default geometric attributes
 	defaultStroke: {color: "black", width: 1, cap: "butt", join: 4},
@@ -120,12 +121,12 @@ dojo.lang.mixin(dojo.gfx, {
 });
 
 dojo.declare("dojo.gfx.Surface", null,
-function(){
-	// summary: a surface object to be used for drawings
-	
-	// underlying node
-	this.rawNode = null;
-},
+	function(){
+		// summary: a surface object to be used for drawings
+		
+		// underlying node
+		this.rawNode = null;
+	},
 {
 	getEventSource: function(){
 		// summary: returns a node, which can be used to attach event listeners
