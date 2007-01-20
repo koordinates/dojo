@@ -5,16 +5,15 @@ dojo.require("dojo.math");
 dojo.require("dojo.gfx.shape");
 
 dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
-function(rawNode){
-	// summary: a generalized path shape
-	// rawNode: Node: a DOM node to be used by this path object
-	this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPath, true);
-	this.segments = [];
-	this.absolute = true;
-	this.last = {};
-	this.attach(rawNode);
-},
-{	
+	function(rawNode){
+		// summary: a generalized path shape
+		// rawNode: Node: a DOM node to be used by this path object
+		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPath, true);
+		this.segments = [];
+		this.absolute = true;
+		this.last = {};
+		this.attach(rawNode);
+	}, {	
 	// mode manipulations
 	setAbsoluteMode: function(mode){
 		// summary: sets an absolute or relative mode for path points
@@ -318,4 +317,31 @@ function(rawNode){
 	
 	// useful constant for descendants
 	_2PI: Math.PI * 2
+});
+
+dojo.declare("dojo.gfx.path.TextPath", dojo.gfx.path.Path,
+	function(rawNode){
+		// summary: a generalized TextPath shape
+		// rawNode: Node: a DOM node to be used by this TextPath object
+		if(!("text" in this)){
+			this.text = dojo.lang.shallowCopy(dojo.gfx.defaultTextPath, true);
+		}
+		if(!("fontStyle" in this)){
+			this.fontStyle = dojo.lang.shallowCopy(dojo.gfx.defaultFont, true);
+		}
+	},
+{
+	setText: function(newText){
+		// summary: sets a text to be drawn along the path
+		this.text = dojo.gfx.makeParameters(this.text, 
+			typeof(newText) == "string" ? {text: newText} : newText);
+		this._setText();
+	},
+	setFont: function(newFont){
+		// summary: sets a font for text
+		this.fontStyle = typeof newFont == "string" ? 
+			dojo.gfx.splitFontString(newFont) :
+			dojo.gfx.makeParameters(dojo.gfx.defaultFont, newFont);
+		this._setFont();
+	}
 });

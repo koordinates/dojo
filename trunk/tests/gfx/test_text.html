@@ -17,6 +17,8 @@ dojo.require("dojo.gfx.*");
 
 var ROTATION = -15;
 
+var surface = null;
+
 var placeAnchor = function(surface, x, y){
 	surface.createLine({x1: x - 2, y1: y, x2: x + 2, y2: y}).setStroke("blue");
 	surface.createLine({x1: x, y1: y - 2, x2: x, y2: y + 2}).setStroke("blue");
@@ -32,7 +34,7 @@ var makeText = function(surface, text, font, fill, stroke){
 };
 
 makeShapes = function(){
-	var surface = dojo.gfx.createSurface("test", 500, 500);
+	surface = dojo.gfx.createSurface("test", 500, 500);
 	var m = dojo.gfx.matrix;
 	surface.createLine({x1: 250, y1: 0, x2: 250, y2: 500}).setStroke("green");
 	makeText(surface, {x: 250, y: 50, text: "Start", align: "start"}, 
@@ -64,6 +66,7 @@ dojo.addOnLoad(makeShapes);
 <body>
 <p>Testing text</p>
 <div id="test" style="width: 500px; height: 500px;"></div>
+<div><button onclick="surface.clear();">Clear</button></div>
 <p>That's all Folks!</p>
 </body>
 </html>

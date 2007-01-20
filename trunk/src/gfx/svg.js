@@ -471,27 +471,6 @@ dojo.declare("dojo.gfx.Image", dojo.gfx.shape.Image, {
 });
 dojo.gfx.Image.nodeType = "image";
 
-dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
-	// summary: a path shape (SVG)
-
-	_updateWithSegment: function(segment){
-		// summary: updates the bounding box of path with new segment
-		// segment: Object: a segment
-		dojo.gfx.Path.superclass._updateWithSegment.apply(this, arguments);
-		if(typeof(this.shape.path) == "string"){
-			this.rawNode.setAttribute("d", this.shape.path);
-		}
-	},
-	setShape: function(newShape){
-		// summary: forms a path using a shape (SVG)
-		// newShape: Object: an SVG path string or a path object (see dojo.gfx.defaultPath)
-		dojo.gfx.Path.superclass.setShape.apply(this, arguments);
-		this.rawNode.setAttribute("d", this.shape.path);
-		return this;	// self
-	}
-});
-dojo.gfx.Path.nodeType = "path";
-
 dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text, {
 	// summary: an anchored text (SVG)
 
@@ -530,12 +509,31 @@ dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text, {
 });
 dojo.gfx.Text.nodeType = "text";
 
+dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
+	// summary: a path shape (SVG)
+
+	_updateWithSegment: function(segment){
+		// summary: updates the bounding box of path with new segment
+		// segment: Object: a segment
+		dojo.gfx.Path.superclass._updateWithSegment.apply(this, arguments);
+		if(typeof(this.shape.path) == "string"){
+			this.rawNode.setAttribute("d", this.shape.path);
+		}
+	},
+	setShape: function(newShape){
+		// summary: forms a path using a shape (SVG)
+		// newShape: Object: an SVG path string or a path object (see dojo.gfx.defaultPath)
+		dojo.gfx.Path.superclass.setShape.apply(this, arguments);
+		this.rawNode.setAttribute("d", this.shape.path);
+		return this;	// self
+	}
+});
+dojo.gfx.Path.nodeType = "path";
+
 dojo.gfx.svg._font = {
-	setFont: function(font){
+	_setFont: function(){
 		// summary: sets a font object (SVG)
-		// font: Object: a font object (see dojo.gfx.defaultFont) or a string
-		var f = this.fontStyle = typeof font == "string" ? dojo.gfx.splitFontString(font) :
-			dojo.gfx.makeParameters(dojo.gfx.defaultFont, font);
+		var f = this.fontStyle;
 		// next line doesn't work in Firefox 2 or Opera 9
 		//this.rawNode.setAttribute("font", dojo.gfx.makeFontString(this.fontStyle));
 		this.rawNode.setAttribute("font-style", f.style);
@@ -649,6 +647,14 @@ dojo.gfx.svg._creators = {
 			this.rawNode.removeChild(shape.rawNode);
 		}
 		shape._setParent(null, null);
+		return this;	// self
+	},
+	clear: function(){
+		// summary: removes all shapes from a group/surface
+		var r = this.rawNode;
+		while(r.lastChild){
+			r.removeChild(r.lastChild);
+		}
 		return this;	// self
 	}
 };

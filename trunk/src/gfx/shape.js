@@ -54,6 +54,7 @@ dojo.declare("dojo.gfx.Shape", null,
 	},
 {
 	// trivial getters
+	
 	getNode: function(){
 		// summary: returns the current DOM Node or null
 		return this.rawNode; // Node
@@ -260,6 +261,11 @@ dojo.declare("dojo.gfx.shape.VirtualGroup", dojo.gfx.Shape,
 		}
 		return this;	// self
 	},
+	clear: function(){
+		// summary: removes all shapes from a group/surface
+		this.children = [];
+		return this;
+	},
 	
 	// apply transformation
 	
@@ -416,15 +422,12 @@ dojo.declare("dojo.gfx.shape.Text", dojo.gfx.Shape,
 		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultText, true);
 		this.attach(rawNode);
 	},
-	{}
-);
-
-dojo.gfx._font = {
-	getFont: function(){
-		// summary: returns the current font object or null (see dojo.gfx.defaultFont) 
-		return this.fontStyle;	// Object
+{
+	setFont: function(newFont){
+		// summary: sets a font for text
+		// newFont: Object: a font object (see dojo.gfx.defaultFont) or a font string
+		this.fontStyle = typeof newFont == "string" ? dojo.gfx.splitFontString(newFont) :
+			dojo.gfx.makeParameters(dojo.gfx.defaultFont, newFont);
+		this._setFont();
 	}
-};
-
-dojo.lang.extend(dojo.gfx.shape.Text, dojo.gfx._font);
-delete dojo.gfx._font;
+});
