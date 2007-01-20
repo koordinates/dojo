@@ -11,19 +11,25 @@ dojo.require("dojo.uri.Uri");
 dojo.require("dojo.Deferred");
 
 // used to save content
-if(dojo.hostenv.post_load_){
-	(function(){
-		var savetextarea = dojo.doc().createElement('textarea');
-		savetextarea.id = "dojo.widget.RichText.savedContent";
-		savetextarea.style = "display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;";
-		dojo.body().appendChild(savetextarea);
-	})();
-}else{
-	//dojo.body() is not available before onLoad is fired
-	try {
-		dojo.doc().write('<textarea id="dojo.widget.RichText.savedContent" ' +
-			'style="display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;"></textarea>');
-	}catch(e){ }
+// but do not try doing document.write if we are using xd loading.
+// document.write will only work if RichText.js is included in the dojo.js
+// file. If it is included in dojo.js and you want to allow rich text saving
+// for back/forward actions, then set djConfig.allowXdRichTextSave = true.
+if(!djConfig["useXDomain"] || djConfig["allowXdRichTextSave"]){
+	if(dojo.hostenv.post_load_){
+		(function(){
+			var savetextarea = dojo.doc().createElement('textarea');
+			savetextarea.id = "dojo.widget.RichText.savedContent";
+			savetextarea.style = "display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;";
+			dojo.body().appendChild(savetextarea);
+		})();
+	}else{
+		//dojo.body() is not available before onLoad is fired
+		try {
+			dojo.doc().write('<textarea id="dojo.widget.RichText.savedContent" ' +
+				'style="display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;"></textarea>');
+		}catch(e){ }
+	}
 }
 
 dojo.widget.defineWidget(
@@ -268,7 +274,7 @@ dojo.widget.defineWidget(
 				this.domNode.innerHTML = " <br>";
 			}
 
-			if(this.saveName != ""){
+			if(this.saveName != "" && (!djConfig["useXDomain"] || djConfig["allowXdRichTextSave"])){
 				var saveTextarea = dojo.doc().getElementById("dojo.widget.RichText.savedContent");
 				if (saveTextarea.value != "") {
 					var datas = saveTextarea.value.split(this._SEPARATOR);
