@@ -136,8 +136,9 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 					} // else-if
 				} // for
 			} // for
+			return node;
 		},
-		onAddRow: function(e) {
+		onAddRow: function(e,index) {
 		},
 		addRow: function(/*boolean*/doInit) {
                         if (typeof(doInit) == "undefined") {
@@ -148,6 +149,7 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 			if (node.childNodes.length == 1) {
 				node=node.childNodes[0];
 			}
+			var rowIndex=this.domNode.childNodes.length;
 			this.domNode.appendChild(node);
 			var parser = new dojo.xml.Parse();
 			var frag = parser.parseElement(node, null, true);
@@ -160,7 +162,8 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 				node=new dojo.dnd.HtmlDragSource(node, this.widgetId);
 				dojo.event.connect(node, "onDragEnd", this, "_changeRowPosition");
 			}
-			this.onAddRow(node);
+			this.onAddRow(node, rowIndex);
+			return node;
 		}
 });
 

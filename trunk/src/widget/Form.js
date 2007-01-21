@@ -31,7 +31,8 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 		*/
 
 		isContainer: true,
-   		templateString: "<form dojoAttachPoint='containerNode' dojoAttachEvent='onSubmit:onSubmit'></form>",
+		valid: true,
+   		templateString: "<form dojoAttachPoint='containerNode' dojoAttachEvent='onSubmit:onSubmit' enctype='multipart/form-data'></form>",
 		formElements: [],
 		// ignoreNullValue:
 		//	if true, then only fields that has data is set to form
@@ -48,8 +49,8 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
   		},
 		_createRepeaters: function (/*object*/obj, /*widget*/widget) {
 			for(var i=0; i<widget.children.length; ++i) {
-				  if (widget.children[i].widgetType == "RepeaterContainer") {
-					var rIndex=widget.children[i].index;
+				  if (widget.children[i].widgetType == "Repeater") {
+					var rIndex=widget.children[i].pattern;
 					var rIndexPos=rIndex.indexOf("%{index}");
 					rIndex=rIndex.substr(0,rIndexPos-1);
 					var myObj = this._getObject(obj, rIndex);
@@ -61,12 +62,10 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 						widget.children[i].deleteRow(0);
 					}
 					for (var j=0; j<myObj.length; j++) {
-    					 	widget.children[i].addRow(false);
+    					 	var row=widget.children[i].addRow(false);
 					}
 				}
-				if (widget.children[i].isContainer) {
-					this._createRepeaters(obj, widget.children[i]);
-				}
+				this._createRepeaters(obj, widget.children[i]);
 			}
 		},
  
@@ -131,7 +130,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 				var currentWidget=widget.children[i];
 				if (currentWidget.widgetType == "Repeater") {
         				for(var j=0,len=currentWidget.getRowCount(); j<len; ++j) {
-          					currentWidget._initRow(j);
+          					var foo=currentWidget._initRow(j);
         				}
 				}
 
@@ -153,7 +152,16 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 						break;
 					case "ComboBox":
 						//widget.children[i].setSelectedValue(myObj[name]);
-						continue;
+					case "CurrencyTextbox":
+					case "DateTextbox":
+					case "IntegerTextbox":
+					case "InternetTextbox":
+					case "RegexpTextbox":
+					case "Textbox":
+					case "UsTextbox":
+					case "RealNumberTextbox":
+					case "ValidationTextbox":
+						currentWidget.update();
 						break;
 					default:
 						break;
@@ -172,10 +180,24 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 				var name=namePath[namePath.length-1];
 				for(var j=1,len2=namePath.length;j<len2;++j) {
 					var p=namePath[j - 1];
+					// repeater support block
+					var nameA=p.split("[");
+					if (nameA.length > 1) {
+						if(typeof(myObj[nameA[0]]) == "undefined") {
+							myObj[nameA[0]]=[ ];
+						} // if
+  
+						nameIndex=parseInt(nameA[1]);
+						if(typeof(myObj[nameA[0]][nameIndex]) == "undefined") {
+							myObj[nameA[0]][nameIndex]={};
+						}
+						myObj=myObj[nameA[0]][nameIndex];
+						continue;
+					}  // repeater support ends
 					if(typeof(myObj[p]) == "undefined") {
 						myObj=undefined;
 						break;
-					};
+					}
 					myObj=myObj[p];
 				}
 
@@ -234,7 +256,6 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 						element.value=value;
 						break;
 					default:
-						dojo.debug("Not supported type ("+type+")");
 						break;
 				}
       			}
@@ -299,5 +320,8 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 				name=undefined;
 			} // for
 		return obj;
+	},
+	isValid: function() {
+		return this.valid;
 	}
 });
