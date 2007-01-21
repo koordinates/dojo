@@ -19,6 +19,7 @@ dojo.hostenv.resetXd = function(){
 	this.xdOrderedReqs = [];
 	this.xdDepMap = {};
 	this.xdContents = [];
+	this.xdDefList = [];
 }
 
 //Call reset immediately to set the state.
@@ -406,7 +407,7 @@ dojo.hostenv.xdTraceReqs = function(/*Object*/reqs, /*Array*/reqChain){
 dojo.hostenv.xdEvalReqs = function(/*Array*/reqChain){
 	//summary: Internal xd loader function. 
 	//Does a depth first, breadth second search and eval of required modules.
-	if(reqChain.length > 0){
+	while(reqChain.length > 0){
 		var req = reqChain[reqChain.length - 1];
 		var pkg = this.xdDepMap[req];
 		if(pkg){
@@ -416,10 +417,7 @@ dojo.hostenv.xdEvalReqs = function(/*Array*/reqChain){
 			//Evaluate the package.
 			var contents = this.xdContents[pkg.contentIndex];
 			if(!contents.isDefined){
-				//Evaluate the package to bring it into being.
-				//Pass dojo in so that later, to support multiple versions of dojo
-				//in a page, we can pass which version of dojo to use.
-				contents.content(dojo);
+				this.xdDefList.push(contents.content);
 				contents.isDefined = true;
 			}
 			this.xdDepMap[req] = null;
@@ -430,7 +428,6 @@ dojo.hostenv.xdEvalReqs = function(/*Array*/reqChain){
 
 		//Done with that require. Remove it and go to the next one.
 		reqChain.pop();
-		this.xdEvalReqs(reqChain);
 	}
 }
 
@@ -472,6 +469,14 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	this.clearXdInterval();
 
 	this.xdWalkReqs();
+	
+	var defLength = this.xdDefList.length;
+	for(var i= 0; i < defLength; i++){
+		//Evaluate the package to bring it into being.
+		//Pass dojo in so that later, to support multiple versions of dojo
+		//in a page, we can pass which version of dojo to use.
+		dojo.hostenv.xdDefList[i](dojo);
+	}
 
 	//Evaluate any packages that were not evaled before.
 	//This normally shouldn't happen with proper dojo.provide and dojo.require
