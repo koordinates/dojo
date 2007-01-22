@@ -28,7 +28,7 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
 	
 	getBoundingBox: function(){
 		// summary: returns the bounding box {x, y, width, height} or null
-		return "l" in this.bbox ? {x: this.bbox.l, y: this.bbox.t, width: this.bbox.r - this.bbox.l, height: this.bbox.b - this.bbox.t} : null; // dojo.gfx.Rectangle
+		return (this.bbox && ("l" in this.bbox)) ? {x: this.bbox.l, y: this.bbox.t, width: this.bbox.r - this.bbox.l, height: this.bbox.b - this.bbox.t} : null; // dojo.gfx.Rectangle
 	},
 	
 	getLastPosition: function(){
@@ -43,7 +43,7 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
 		// y: Number: a y coordinate
 		
 		// we use {l, b, r, t} representation of a bbox
-		if("l" in this.bbox){
+		if(this.bbox && ("l" in this.bbox)){
 			if(this.bbox.l > x) this.bbox.l = x;
 			if(this.bbox.r < x) this.bbox.r = x;
 			if(this.bbox.t > y) this.bbox.t = y;
@@ -66,7 +66,7 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
 			case "Q":
 			case "T":
 				for(var i = 0; i < l; i += 2){
-					this._updateBBox(this.bbox, n[i], n[i + 1]);
+					this._updateBBox(n[i], n[i + 1]);
 				}
 				this.last.x = n[l - 2];
 				this.last.y = n[l - 1];
@@ -74,14 +74,14 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
 				break;
 			case "H":
 				for(var i = 0; i < l; ++i){
-					this._updateBBox(this.bbox, n[i], this.last.y);
+					this._updateBBox(n[i], this.last.y);
 				}
 				this.last.x = n[l - 1];
 				this.absolute = true;
 				break;
 			case "V":
 				for(var i = 0; i < l; ++i){
-					this._updateBBox(this.bbox, this.last.x, n[i]);
+					this._updateBBox(this.last.x, n[i]);
 				}
 				this.last.y = n[l - 1];
 				this.absolute = true;
@@ -89,52 +89,52 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
 			case "m":
 				var start = 0;
 				if(!("x" in this.last)){
-					this._updateBBox(this.bbox, this.last.x = n[0], this.last.y = n[1]);
+					this._updateBBox(this.last.x = n[0], this.last.y = n[1]);
 					start = 2;
 				}
 				for(var i = start; i < l; i += 2){
-					this._updateBBox(this.bbox, this.last.x += n[i], this.last.y += n[i + 1]);
+					this._updateBBox(this.last.x += n[i], this.last.y += n[i + 1]);
 				}
 				this.absolute = false;
 				break;
 			case "l":
 			case "t":
 				for(var i = 0; i < l; i += 2){
-					this._updateBBox(this.bbox, this.last.x += n[i], this.last.y += n[i + 1]);
+					this._updateBBox(this.last.x += n[i], this.last.y += n[i + 1]);
 				}
 				this.absolute = false;
 				break;
 			case "h":
 				for(var i = 0; i < l; ++i){
-					this._updateBBox(this.bbox, this.last.x += n[i], this.last.y);
+					this._updateBBox(this.last.x += n[i], this.last.y);
 				}
 				this.absolute = false;
 				break;
 			case "v":
 				for(var i = 0; i < l; ++i){
-					this._updateBBox(this.bbox, this.last.x, this.last.y += n[i]);
+					this._updateBBox(this.last.x, this.last.y += n[i]);
 				}
 				this.absolute = false;
 				break;
 			case "c":
 				for(var i = 0; i < l; i += 6){
-					this._updateBBox(this.bbox, this.last.x + n[i], this.last.y + n[i + 1]);
-					this._updateBBox(this.bbox, this.last.x + n[i + 2], this.last.y + n[i + 3]);
-					this._updateBBox(this.bbox, this.last.x += n[i + 4], this.last.y += n[i + 5]);
+					this._updateBBox(this.last.x + n[i], this.last.y + n[i + 1]);
+					this._updateBBox(this.last.x + n[i + 2], this.last.y + n[i + 3]);
+					this._updateBBox(this.last.x += n[i + 4], this.last.y += n[i + 5]);
 				}
 				this.absolute = false;
 				break;
 			case "s":
 			case "q":
 				for(var i = 0; i < l; i += 4){
-					this._updateBBox(this.bbox, this.last.x + n[i], this.last.y + n[i + 1]);
-					this._updateBBox(this.bbox, this.last.x += n[i + 2], this.last.y += n[i + 3]);
+					this._updateBBox(this.last.x + n[i], this.last.y + n[i + 1]);
+					this._updateBBox(this.last.x += n[i + 2], this.last.y += n[i + 3]);
 				}
 				this.absolute = false;
 				break;
 			case "A":
 				for(var i = 0; i < l; i += 7){
-					this._updateBBox(this.bbox, n[i + 5], n[i + 6]);
+					this._updateBBox(n[i + 5], n[i + 6]);
 				}
 				this.last.x = n[l - 2];
 				this.last.y = n[l - 1];
@@ -142,7 +142,7 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
 				break;
 			case "a":
 				for(var i = 0; i < l; i += 7){
-					this._updateBBox(this.bbox, this.last.x += n[i + 5], this.last.y += n[i + 6]);
+					this._updateBBox(this.last.x += n[i + 5], this.last.y += n[i + 6]);
 				}
 				this.absolute = false;
 				break;
@@ -336,6 +336,7 @@ dojo.declare("dojo.gfx.path.TextPath", dojo.gfx.path.Path,
 		this.text = dojo.gfx.makeParameters(this.text, 
 			typeof(newText) == "string" ? {text: newText} : newText);
 		this._setText();
+		return this;	// self
 	},
 	setFont: function(newFont){
 		// summary: sets a font for text
@@ -343,5 +344,6 @@ dojo.declare("dojo.gfx.path.TextPath", dojo.gfx.path.Path,
 			dojo.gfx.splitFontString(newFont) :
 			dojo.gfx.makeParameters(dojo.gfx.defaultFont, newFont);
 		this._setFont();
+		return this;	// self
 	}
 });
