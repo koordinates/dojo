@@ -18,6 +18,15 @@ dojo.experimental("dojo.gfx.vml");
 // dojo.gfx.vml.xmlns: String: a VML's namespace
 dojo.gfx.vml.xmlns = "urn:schemas-microsoft-com:vml";
 
+// dojo.gfx.vml.text_alignment: Object: mapping from SVG alignment to VML alignment
+dojo.gfx.vml.text_alignment = {start: "left", middle: "center", end: "right"};
+
+// dojo.gfx.vml.pi4: Number: Pi / 4
+dojo.gfx.vml.pi4 = Math.PI / 4;
+
+// dojo.gfx.vml.two_pi: Number: 2 * Pi
+dojo.gfx.vml.two_pi = Math.PI * 2;
+
 dojo.gfx.vml._parseFloat = function(str) {
 	// summary: a helper function to parse VML-specific floating-point values
 	// str: String: a representation of a floating-point number
@@ -332,8 +341,11 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		if(rawNode){
 			this.rawNode = rawNode;
 			this.shape = this.attachShape(rawNode);
-			if("attachFill" in this){
+			if("attachFont" in this){
 				this.fontStyle = this.attachFont(rawNode);
+			}
+			if("attachText" in this){
+				this.text = this.attachText(rawNode);
 			}
 			this.fillStyle = this.attachFill(rawNode);
 			this.strokeStyle = this.attachStroke(rawNode);
@@ -594,7 +606,7 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline,
 		return shape;	// dojo.gfx.shape.Polyline
 	},
 	setShape: function(points, closed){
-		// summary: sets a polyline/polygon shape object (SVG)
+		// summary: sets a polyline/polygon shape object (VML)
 		// points: Object: a polyline/polygon shape object
 		// closed: Boolean?: if true, close the polyline explicitely
 		if(points && points instanceof Array){
@@ -710,11 +722,11 @@ dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text,
 		if(rawNode) rawNode.setAttribute("dojoGfxType", "text");
 		this.fontStyle = null;
 	}, {
-	// summary: an anchored text (SVG)
+	// summary: an anchored text (VML)
 
 	attachShape: function(rawNode){
 		// summary: builds a text shape from a Node.
-		// rawNode: Node: an SVG node
+		// rawNode: Node: an VML node
 		var shape = null;
 		if(rawNode){
 			shape = dojo.lang.shallowCopy(dojo.gfx.defaultText, true);
@@ -751,7 +763,7 @@ dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text,
 	},
 	_alignment: {start: "left", middle: "center", end: "right"},
 	setShape: function(newShape){
-		// summary: sets a text shape object (SVG)
+		// summary: sets a text shape object (VML)
 		// newShape: Object: a text shape object
 		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
 		this.bbox = null;
@@ -792,7 +804,7 @@ dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text,
 		}
 		p.textPathOk = true;
 		t.on = true;
-		var a = this._alignment[s.align];
+		var a = dojo.gfx.vml.text_alignment[s.align];
 		t.style["v-text-align"] = a ? a : "left";
 		t.style["text-decoration"] = s.decoration;
 		t.style["v-rotate-letters"] = s.rotated;
@@ -810,11 +822,11 @@ dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text,
 				break;
 			}
 		}
-		return this.setTransform(this.matrix);	// self
+		this.setTransform(this.matrix);
 	},
 	attachFont: function(rawNode){
 		// summary: deduces a font style from a Node.
-		// rawNode: Node: an SVG node
+		// rawNode: Node: an VML node
 		if(!rawNode){ return null; }
 		var fontStyle = dojo.lang.shallowCopy(dojo.gfx.defaultFont, true);
 		var c = this.rawNode.childNodes;
@@ -873,7 +885,9 @@ dojo.gfx.path._calcArc = function(alpha){
 
 dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
 	function(rawNode){
-		if(rawNode) rawNode.setAttribute("dojoGfxType", "path");
+		if(rawNode && !rawNode.getAttribute("dojoGfxType")){
+			rawNode.setAttribute("dojoGfxType", "path");
+		}
 		this.vmlPath = "";
 		this.lastControl = {};
 	}, {
@@ -1192,7 +1206,6 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
 		this.lastControl.type = "Q";
 		return p;
 	},
-	_PI4: Math.PI / 4,
 	_curvePI4: dojo.gfx.path._calcArc(Math.PI / 8),
 	_calcArcTo: function(path, last, rx, ry, xRotg, large, cw, x, y){
 		var m = dojo.gfx.matrix;
@@ -1231,9 +1244,9 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
 		// size of our arc in radians
 		var theta = cw ? startAngle - endAngle : endAngle - startAngle;
 		if(theta < 0){
-			theta += this._2PI;
-		}else if(theta > this._2PI){
-			theta = this._2PI;
+			theta += dojo.gfx.vml.two_pi;
+		}else if(theta > dojo.gfx.vml.two_pi){
+			theta = dojo.gfx.vml.two_pi;
 		}
 		// calculate our elliptic transformation
 		var elliptic_transform = m.normalize([
@@ -1242,11 +1255,11 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
 			m.scale(rx, ry)
 		]);
 		// draw curve chunks
-		var alpha = this._PI4 / 2;
+		var alpha = dojo.gfx.vml.pi4 / 2;
 		var curve = this._curvePI4;
 		var step  = cw ? -alpha : alpha;
-		for(var angle = theta; angle > 0; angle -= this._PI4){
-			if(angle < this._PI4){
+		for(var angle = theta; angle > 0; angle -= dojo.gfx.vml.pi4){
+			if(angle < dojo.gfx.vml.pi4){
 				alpha = angle / 2;
 				curve = dojo.gfx.path._calcArc(alpha);
 				step  = cw ? -alpha : alpha;
@@ -1297,10 +1310,99 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
 });
 dojo.gfx.Path.nodeType = "shape";
 
+dojo.declare("dojo.gfx.TextPath", dojo.gfx.Path,
+	function(rawNode){
+		if(rawNode) rawNode.setAttribute("dojoGfxType", "textpath");
+		this.fontStyle = null;
+		if(!("text" in this)){
+			this.text = dojo.lang.shallowCopy(dojo.gfx.defaultTextPath, true);
+		}
+		if(!("fontStyle" in this)){
+			this.fontStyle = dojo.lang.shallowCopy(dojo.gfx.defaultFont, true);
+		}
+	}, {
+	// summary: a textpath shape (VML)
+
+	setText: function(newText){
+		// summary: sets a text to be drawn along the path
+		this.text = dojo.gfx.makeParameters(this.text, 
+			typeof(newText) == "string" ? {text: newText} : newText);
+		this._setText();
+		return this;	// self
+	},
+	setFont: function(newFont){
+		// summary: sets a font for text
+		this.fontStyle = typeof newFont == "string" ? 
+			dojo.gfx.splitFontString(newFont) :
+			dojo.gfx.makeParameters(dojo.gfx.defaultFont, newFont);
+		this._setFont();
+		return this;	// self
+	},
+
+	_setText: function(){
+		// summary: sets a text shape object (VML)
+		this.bbox = null;
+		var r = this.rawNode;
+		var s = this.text;
+		// find path and text path
+		var p = null, t = null;
+		var c = r.childNodes;
+		for(var i = 0; i < c.length; ++i){
+			var tag = c[i].tagName;
+			if(tag == "path"){
+				p = c[i];
+				if(t) break;
+			}else if(tag == "textpath"){
+				t = c[i];
+				if(p) break;
+			}
+		}
+		if(!p){
+			p = document.createElement("v:path");
+			r.appendChild(p);
+		}
+		if(!t){
+			t = document.createElement("v:textpath");
+			r.appendChild(t);
+		}
+		p.textPathOk = true;
+		t.on = true;
+		var a = dojo.gfx.vml.text_alignment[s.align];
+		t.style["v-text-align"] = a ? a : "left";
+		t.style["text-decoration"] = s.decoration;
+		t.style["v-rotate-letters"] = s.rotated;
+		t.style["v-text-kern"] = s.kerning;
+		t.string = s.text;
+	},
+	_setFont: function(){
+		// summary: sets a font object (VML)
+		var f = this.fontStyle;
+		var c = this.rawNode.childNodes;
+		for(var i = 0; i < c.length; ++i){
+			if(c[i].tagName == "textpath"){
+				c[i].style.font = dojo.gfx.makeFontString(f);
+				break;
+			}
+		}
+	},
+	attachText: function(rawNode){
+		// summary: builds a textpath shape from a Node.
+		// rawNode: Node: an VML node
+		return dojo.gfx.Text.prototype.attachText.call(this, rawNode);
+	},
+	attachFont: function(rawNode){
+		// summary: deduces a font style from a Node.
+		// rawNode: Node: an VML node
+		return dojo.gfx.Text.prototype.attachFont.call(this, rawNode);
+	}
+});
+dojo.gfx.TextPath.nodeType = "shape";
+
+
 dojo.gfx.vml._creators = {
 	// summary: VML shape creators
 	createPath: function(path){
-		// summary: creates a SVG path shape
+		// summary: creates a VML path shape
 		// path: Object: a path object (see dojo.gfx.defaultPath)
 		return this.createObject(dojo.gfx.Path, path, true);	// dojo.gfx.Path
 	},
@@ -1352,6 +1454,11 @@ dojo.gfx.vml._creators = {
 		// summary: creates a VML text shape
 		// text: Object: a text object (see dojo.gfx.defaultText)
 		return this.createObject(dojo.gfx.Text, text, true);	// dojo.gfx.Text
+	},
+	createTextPath: function(text){
+		// summary: creates an VML text shape
+		// text: Object: a textpath object (see dojo.gfx.defaultTextPath)
+		return this.createObject(dojo.gfx.TextPath, {}, true).setText(text);	// dojo.gfx.TextPath
 	},
 	createGroup: function(){
 		// summary: creates a VML group shape
@@ -1410,6 +1517,9 @@ dojo.gfx.attachNode = function(node){
 					break;
 				case "text":
 					s = new dojo.gfx.Text();
+					break;
+				case "textpath":
+					s = new dojo.gfx.TextPath();
 					break;
 			}
 			break;
