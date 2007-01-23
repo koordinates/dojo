@@ -214,7 +214,7 @@ dojo.lang.extend(dojo.io.FormBind, {
 	connect: function(/*Object*/srcObj, /*Function*/srcFcn, /*Function*/targetFcn) {
 		//summary: internal function used to connect event listeners to form elements
 		//that trigger events. Used in case dojo.event is not loaded.
-		if(dojo.evalObjPath("dojo.event.connect")) {
+		if(dojo.getObject("dojo.event.connect")) {
 			dojo.event.connect(srcObj, srcFcn, this, targetFcn);
 		} else {
 			var fcn = dojo.lang.hitch(this, targetFcn);
