@@ -37,7 +37,7 @@ dojo.html.clearSelection = function(){
 		dojo.debug(e);
 		return false;
 	}
-}
+};
 
 dojo.html.disableSelection = function(/*DomNode*/element){
 	// summary: disable selection on a node
@@ -54,7 +54,7 @@ dojo.html.disableSelection = function(/*DomNode*/element){
 		return false;
 	}
 	return true;
-}
+};
 
 dojo.html.enableSelection = function(/*DomNode*/element){
 	// summary: enable selection on a node
@@ -71,7 +71,7 @@ dojo.html.enableSelection = function(/*DomNode*/element){
 		return false;
 	}
 	return true;
-}
+};
 
 dojo.html.selectInputText = function(/*DomNode*/element){
 	// summary: select all the text in an input element
@@ -89,7 +89,7 @@ dojo.html.selectInputText = function(/*DomNode*/element){
 		element.setSelectionRange(0, element.value.length);
 	}
 	element.focus();
-}
+};
 
 
 dojo.lang.mixin(dojo.html.selection, {

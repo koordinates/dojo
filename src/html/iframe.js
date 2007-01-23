@@ -7,10 +7,10 @@ dojo.html.iframeContentWindow = function(/* HTMLIFrameElement */iframe_el) {
 	//	returns the window reference of the passed iframe
 	var win = dojo.html.getDocumentWindow(dojo.html.iframeContentDocument(iframe_el)) ||
 		// Moz. TODO: is this available when defaultView isn't?
-		dojo.html.iframeContentDocument(iframe_el).__parent__ ||
+		dojo.html.iframeContentDocument(iframe_el)['__parent__'] ||
 		(iframe_el.name && document.frames[iframe_el.name]) || null;
 	return win;	//	Window
-}
+};
 
 dojo.html.iframeContentDocument = function(/* HTMLIFrameElement */iframe_el){
 	//	summary
@@ -20,7 +20,7 @@ dojo.html.iframeContentDocument = function(/* HTMLIFrameElement */iframe_el){
 		|| ((iframe_el.name)&&(document.frames[iframe_el.name])&&(document.frames[iframe_el.name].document)) 
 		|| null;
 	return doc;	//	HTMLDocument
-}
+};
 
 dojo.html.BackgroundIframe = function(/* HTMLElement */node) {
 	//	summary
@@ -45,7 +45,7 @@ dojo.html.BackgroundIframe = function(/* HTMLElement */node) {
 			this.iframe.style.display="none";
 		}
 	}
-}
+};
 dojo.lang.extend(dojo.html.BackgroundIframe, {
 	iframe: null,
 	onResized: function(){

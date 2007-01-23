@@ -15,7 +15,7 @@ dojo.html.getEventTarget = function(/* DOMEvent */evt){
 	var t = (evt.srcElement ? evt.srcElement : (evt.target ? evt.target : null));
 	while((t)&&(t.nodeType!=1)){ t = t.parentNode; }
 	return t;	//	HTMLElement
-}
+};
 
 dojo.html.getViewport = function(){
 	//	summary
@@ -49,7 +49,7 @@ dojo.html.getViewport = function(){
 		h = dojo.body().clientHeight;
 	}
 	return { width: w, height: h };	//	object
-}
+};
 
 dojo.html.getScroll = function(){
 	//	summary
@@ -63,7 +63,7 @@ dojo.html.getScroll = function(){
 		left: left, 
 		offset:{ x: left, y: top }	//	note the change, NOT an Array with added properties. 
 	};	//	object
-}
+};
 
 dojo.html.getParentByType = function(/* HTMLElement */node, /* string */type) {
 	//	summary
@@ -78,7 +78,7 @@ dojo.html.getParentByType = function(/* HTMLElement */node, /* string */type) {
 		parent = parent.parentNode;
 	}
 	return parent;	//	HTMLElement
-}
+};
 
 dojo.html.getAttribute = function(/* HTMLElement */node, /* string */attr){
 	//	summary
@@ -113,13 +113,13 @@ dojo.html.getAttribute = function(/* HTMLElement */node, /* string */attr){
 		return node.getAttribute(ta.toLowerCase());	//	string
 	}
 	return null;	//	string
-}
+};
 	
 dojo.html.hasAttribute = function(/* HTMLElement */node, /* string */attr){
 	//	summary
 	//	Determines whether or not the specified node carries a value for the attribute in question.
 	return dojo.html.getAttribute(dojo.byId(node), attr) ? true : false;	//	boolean
-}
+};
 	
 dojo.html.getCursorPosition = function(/* DOMEvent */e){
 	//	summary
@@ -142,7 +142,7 @@ dojo.html.getCursorPosition = function(/* DOMEvent */e){
 		cursor.y = e.clientY + ((de||db)["scrollTop"]) - ((de||db)["clientTop"]);
 	}
 	return cursor;	//	object
-}
+};
 
 dojo.html.isTag = function(/* HTMLElement */node) {
 	//	summary
@@ -156,7 +156,7 @@ dojo.html.isTag = function(/* HTMLElement */node) {
 		}
 	}
 	return "";	//	string
-}
+};
 
 //define dojo.html.createExternalElement for IE to workaround the annoying activation "feature" in new IE
 //details: http://msdn.microsoft.com/library/default.asp?url=/workshop/author/dhtml/overview/activating_activex.asp
