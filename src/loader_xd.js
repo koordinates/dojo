@@ -1,7 +1,6 @@
 //Cross-domain package loader.
 
 //FIXME: How will xd loading work with debugAtAllCosts? Any bad interactions?
-//FIXME: widgets won't work fully (HTML/CSS) and also because of the requireIf() thing.
 
 dojo.hostenv.resetXd = function(){
 	//summary: Internal xd loader function. Resets the xd state.
@@ -444,7 +443,7 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	//Monitors in-flight requests for xd module resources.
 
 	//Make sure we haven't waited timed out.
-	var waitInterval = (djConfig.xdWaitSeconds || 30) * 1000;
+	var waitInterval = (djConfig.xdWaitSeconds || 15) * 1000;
 
 	if(this.xdStartTime + waitInterval < (new Date()).getTime()){
 		this.clearXdInterval();
