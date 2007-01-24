@@ -9,6 +9,9 @@ dojo.require("dojo.sync");
 
 // configure how we should work offline
 
+// set our application name
+dojo.dot.ui.appName = "Moxie";
+
 // IE 7.0 does not support XHR loading from file:// URLs
 // when loaded from a file:// URL itself - this breaks
 // us for loading all of our Editor2 widget resources.
