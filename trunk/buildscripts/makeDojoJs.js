@@ -8,7 +8,7 @@ var dojoFileName = arguments[2];
 var version = arguments[3];
 var lineSeparator = java.lang.System.getProperty("line.separator");
 
-var result = buildUtil.makeDojoJs(profileFile, version);
+var result = buildUtil.makeDojoJs(buildUtil.loadDependencyList(profileFile), version);
 
 //Save the dojo.js contents.
 buildUtil.saveFile(releaseDir + "/" + dojoFileName, result.dojoContents);
