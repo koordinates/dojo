@@ -1,6 +1,6 @@
 dojo.require("dojo.dom");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html");
+dojo.require("dojo.html.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.widget.Editor2");
 dojo.require("dojo.storage.*");
