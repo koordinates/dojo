@@ -149,7 +149,7 @@ dojo.html.measure = function(){
 dojo.html.measureNode = function(node){
 	//	summary
 	//	Returns an object that has pixel equivilents of standard font size values.
-	//	node: Node: a node which will be used as a model
+	//	node: Node: a node, which will be used as a model and a reference
 
 	node = dojo.byId(node);	
 	return dojo.html._measure(node.parentNode, node, function(div){
@@ -161,6 +161,10 @@ dojo.html.measureNode = function(node){
 dojo.html._defaultFontMeasurements = null;
 
 dojo.html.measureDefaults = function(recalc){
+	//	summary
+	//	Returns an object that has pixel equivilents of standard font size values.
+	//	recalc: Boolean: optional, force recomputations, if true
+
 	if(recalc || !dojo.html._defaultFontMeasurements){
 		dojo.html._defaultFontMeasurements = dojo.html._measure(dojo.body());
 	}
