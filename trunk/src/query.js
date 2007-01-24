@@ -1,11 +1,10 @@
 dojo.provide("dojo.query");
-dojo.require("dojo.lang.array");
 dojo.require("dojo.experimental");
+dojo.require("dojo.debug.console");
 dojo.experimental("dojo.query");
 (function(){
 	var h = dojo.render.html;
 	var d = dojo;
-	// if((false)&&( h.moz || h.opera)){
 
 	////////////////////////////////////////////////////////////////////////
 	// XPath query code
@@ -28,20 +27,15 @@ dojo.experimental("dojo.query");
 			dotIdx = tqp.indexOf(".");
 			bktIdx = tqp.indexOf("[");
 			colIdx = tqp.indexOf(":");
-			var tagNameEnd = getTagNameEnd(tqp, hashIdx, dotIdx, bktIdx, colIdx);
 
 			// get the tag name (if any)
-			var tagName = (tagNameEnd != 0) ? tqp.substr(0, tagNameEnd).toLowerCase() : "*";
+			var tagName = getTagName(tqp, hashIdx, dotIdx, bktIdx, colIdx);
 
 			xpath += prefix + tagName;
 			
 			// check to see if it's got an id. Needs to come first in xpath.
 			if(hashIdx >= 0){
-				var hashEnd = Math.min(
-									Math.max(0, dotIdx), 
-									Math.max(0, bktIdx), 
-									Math.max(0, colIdx) 
-							) || query.length;
+				var hashEnd = getIdEnd(query, hashIdx, dotIdx, bktIdx, colIdx);
 				var idComponent = tqp.substring(hashIdx+1, hashEnd);
 				xpath += "[@id='"+idComponent+"']";
 			}
@@ -53,7 +47,6 @@ dojo.experimental("dojo.query");
 				var padding = " ";
 				if(cn.charAt(cn.length-1) == "*"){
 					padding = ""; cn = cn.substr(0, cn.length-1);
-					// dojo.debug(cn)
 				}
 				xpath += 
 					"[contains(concat(' ',@class,' '), ' "+
@@ -123,46 +116,60 @@ dojo.experimental("dojo.query");
 		}
 	}
 
-	var filterUp = function(elements, queryParts){
-		var ret = [];
-		// at each level, weed out successively
-		var idx = queryParts.length-1;
+	var _filterDown = function(element, queryParts, matchArr, idx){
+		var nidx = idx+1;
+		var isFinal = (queryParts.length == nidx);
 		var tqp = queryParts[idx];
-
 		// dojo.debug(tqp);
-		while(tqp){
-			var parent = false;
-			if(tqp == ">"){
-				parent = true;
-				if(idx > 0){
-					tqp = queryParts[--idx];
-				}else{
-					// FIXME!!!
-				}
+		// var tqparts = queryParts.slice(1);
+		// see if we can constrain our next level to direct children
+		if(tqp == ">"){
+			var ecn = element.childNodes;
+			if(!ecn.length){
+				return;
 			}
-			var ff = getFilterFunc(tqp);
-			// look up the chain to see if we need to modify our look-up mode
+			nidx++;
+			// kinda janky, too much array alloc
+			var isFinal = (queryParts.length == nidx);
+			// dojo.debug(queryParts.length, nidx);
 
-			nextElem:
-			for(var x=elements.length-1, te; x>=0, te=elements[x]; x--){
-				te = te.parentNode;
-				while(te){
-					if(ff(te)){
-						ret.push(te);
-						continue nextElem;
-					}
-					if(!parent){
-						te = te.parentNode;
+			var tf = getFilterFunc(queryParts[idx+1]);
+			for(var x=ecn.length-1, te; x>=0, te=ecn[x]; x--){
+				if(tf(te)){
+					if(isFinal){
+						matchArr.push(te);
 					}else{
-						continue nextElem;
+						_filterDown(te, queryParts, matchArr, nidx);
 					}
 				}
+				if(x==0){
+					break;
+				}
 			}
-			elements = ret;
-			ret = []; // FIXME: how can we avoid array alloc here?
-			tqp = queryParts[--idx];
 		}
-		return elements;
+
+		// otherwise, keep going down, unless we'er at the end
+		var candidates = getElements(tqp, element);
+		if(isFinal){
+			while(candidates.length){
+				matchArr.push(candidates.shift());
+			}
+		}else{
+			// if we're not yet at the bottom, keep going!
+			while(candidates.length){
+				_filterDown(candidates.shift(), queryParts, matchArr, nidx);
+			}
+		}
+	}
+
+	var filterDown = function(elements, queryParts, matchArr){
+		var ret = matchArr||[];
+
+		// for every root, get the elements that match the descendant selector
+		for(var x=elements.length-1, te; x>=0, te=elements[x]; x--){
+			_filterDown(te, queryParts, ret, 0);
+		}
+		return ret;
 	}
 
 	var getTagNameEnd = function(query, hashIdx, dotIdx, bktIdx, colIdx){
@@ -198,6 +205,36 @@ dojo.experimental("dojo.query");
 		}
 	}
 
+	var _tagNameCache = {};
+
+	var getTagName = function(query, hashIdx, dotIdx, bktIdx, colIdx){
+		if(_tagNameCache[query]){ return _tagNameCache[query]; }
+		var tagNameEnd = getTagNameEnd(query, hashIdx, dotIdx, bktIdx, colIdx);
+		return _tagNameCache[query] = ((tagNameEnd > 0) ? query.substr(0, tagNameEnd) : "*");
+	}
+
+	var getIdEnd = function(query, hashIdx, dotIdx, bktIdx, colIdx){
+		// if(dotIdx == 0){
+		// 	return 0;
+		// }else{
+			var idEnd = query.length;
+			if(dotIdx >= 0){
+				// will be to the right of the #
+				if(dotIdx < idEnd){ idEnd = dotIdx; }
+			}
+			if(bktIdx >= 0){
+				if(bktIdx < idEnd){ idEnd = bktIdx; }
+			}
+			if(colIdx >= 0){
+				if(colIdx < idEnd){ idEnd = colIdx; }
+			}
+			if(idEnd < 0){
+				idEnd = query.length;
+			}
+			return idEnd;
+		// }
+	}
+
 	var getFilterFunc = function(query){
 		// note: query can't have spaces!
 		if(_filtersCache[query]){
@@ -208,14 +245,11 @@ dojo.experimental("dojo.query");
 		var dotIdx = query.indexOf(".");
 		var bktIdx = query.indexOf("[");
 		var colIdx = query.indexOf(":");
-		var mainEnd = getTagNameEnd(query, hashIdx, dotIdx, bktIdx, colIdx);
+		var tagName = getTagName(query, hashIdx, dotIdx, bktIdx, colIdx);
 
 		// does it have a tagName component?
-		if(mainEnd > 0){
+		if(tagName != "*"){
 			// tag name match
-			var tagName = query.substr(0, mainEnd).toLowerCase();;
-			// dojo.debug(query, tagName);
-			// dojo.debug("tagName:", tagName, mainEnd, dotIdx, hashIdx, bktIdx, colIdx);
 			ff = agree(ff, 
 				function(elem){
 					var isTn = (
@@ -229,11 +263,7 @@ dojo.experimental("dojo.query");
 
 		// does the node have an ID?
 		if(hashIdx >= 0){
-			var hashEnd = Math.min(
-								Math.max(0, dotIdx), 
-								Math.max(0, bktIdx), 
-								Math.max(0, colIdx) 
-						) || query.length;
+			var hashEnd = getIdEnd(query, hashIdx, dotIdx, bktIdx, colIdx);
 			var idComponent = query.substring(hashIdx+1, hashEnd);
 			ff = agree(ff, 
 				function(elem){
@@ -252,7 +282,6 @@ dojo.experimental("dojo.query");
 				getSimpleFilterFunc(query, dotIdx, bktIdx, colIdx)
 			);
 		}
-		// dojo.debug(ff({ nodeType: 1, tagName: "Th", id: "thbbt" }));
 
 		return _filtersCache[query] = ff;
 	}
@@ -261,9 +290,9 @@ dojo.experimental("dojo.query");
 		// regular expressions are for people who don't understand state machines
 		if(bktIdx > dotIdx){
 			// brackets come before colons
-			return query.substr(dotIdx+1, bktIdx);
+			return query.substring(dotIdx+1, bktIdx);
 		}else if(colIdx > dotIdx){
-			return query.substr(dotIdx+1, colIdx);
+			return query.substring(dotIdx+1, colIdx);
 		}else{
 			return query.substr(dotIdx+1);
 		}
@@ -277,6 +306,14 @@ dojo.experimental("dojo.query");
 
 		var ff = null;
 
+		var hashIdx = query.indexOf("#");
+		var tn = getTagName(query, hashIdx, dotIdx, bktIdx, colIdx).toLowerCase();
+		if(tn != "*"){
+			ff = agree(ff, function(elem){
+				return (elem.tagName.toLowerCase() == tn);
+			});
+		}
+
 		// if there's a class in our query, generate a match function for it
 		if(dotIdx >= 0){
 			// get the class name
@@ -285,17 +322,17 @@ dojo.experimental("dojo.query");
 			if(isWildcard){
 				className = className.substr(0, className.length-1);
 			}
+			var cnl = className.length;
+			var spc = " ";
 			// FIXME: need to make less spammy!!
 			ff = agree(ff, function(elem){
-					var spc = " ";
 					var ecn = elem.className;
 					var ecnl = ecn.length;
 					if(ecnl == 0){ return false; }
 					var cidx = ecn.indexOf(className);
 					if(0 > cidx){ return false; }
-					var cnl = className.length;
-					if((cidx == 0)&&(ecnl == cnl)){
-							return true;
+					if((0 == cidx)&&(ecnl == cnl)){
+						return true;
 					}
 					if(0 == cidx){
 						if(ecn.charAt(cnl) == spc){
@@ -312,11 +349,8 @@ dojo.experimental("dojo.query");
 							}
 						}else{
 							// otherwise, check both sides
-							if(	
-								(ecn.charAt(cidx-1) == spc) && 
-								( 
-									(ecn.charAt(cidxcnl) == spc)||isWildcard
-								)
+							if(	(ecn.charAt(cidx-1) == spc) && 
+								( (ecn.charAt(cidxcnl) == spc)||isWildcard )
 							){
 								return true;
 							}
@@ -338,7 +372,7 @@ dojo.experimental("dojo.query");
 			var pseudoName = query.substr(colIdx+1);
 			var condition = "";
 			var obi = pseudoName.indexOf("(");
-			var cbi = pseudoName.indexOf(")");
+			var cbi = pseudoName.lastIndexOf(")");
 			if(	(0 <= obi)&&
 				(0 <= cbi)&&
 				(cbi > obi)){
@@ -350,75 +384,80 @@ dojo.experimental("dojo.query");
 			// the portable xpath pseudos extensibility plan.
 
 			// http://www.w3.org/TR/css3-selectors/#structural-pseudos
-			switch(pseudoName){
-				case "first-child":
-					ff = agree(ff, 
-						function(elem){
-							var p = elem.parentNode;
-							var fc = p.firstChild;
-							if(!fc){ return false; }
-							while(fc && fc.nodeType != 1){
-								fc = fc.nextSibling;
-							}
-							return (elem === fc);
+			if(pseudoName == "first-child"){
+				ff = agree(ff, 
+					function(elem){
+						var p = elem.parentNode;
+						var fc = p.firstChild;
+						if(!fc){ return false; }
+						while(fc && fc.nodeType != 1){
+							fc = fc.nextSibling;
 						}
-					);
-					break;
-				case "last-child":
-					ff = agree(ff, 
-						function(elem){
-							var p = elem.parentNode;
-							var lc = p.lastChild;
-							if(!lc){ return false; }
-							while(lc && lc.nodeType != 1){
-								lc = lc.previousSibling;
-							}
-							return (elem === lc);
-						}
-					);
-					break;
-				case "empty":
-					ff = agree(ff, 
-						function(elem){
-							var cn = elem.childNodes;
-							var cnl = elem.childNodes.length;
-							// if(!cnl){ return true; }
-							for(var x=cnl-1; x >= 0; x--){
-								var nt = cn[x].nodeType;
-								if((nt == 1)||(nt == 3)){ return false; }
-							}
-							return true;
-						}
-					);
-					break;
-				case "nth-child":
-					if(condition.indexOf("n") == -1){
-						var ncount = parseInt(condition);
-						ff = agree(ff, 
-							function(elem){
-								return (elem.parentNode.childNodes[ncount-1] === elem);
-							}
-						);
-					}else if(condition == "2n"){
-						ff = agree(ff, 
-							function(elem){
-								var sib = elem.previousSibling;
-								if(sib){
-									var scount = 1;
-									while(sib){
-										sib = sib.previousSibling;
-										scount++;
-									}
-									return ((scount % 2) == 0);
-								}else{ 
-									return false; 
-								}
-							}
-						);
+						return (elem === fc);
 					}
-					break;
-				default:
-					break;
+				);
+			}else if(pseudoName == "last-child"){
+				ff = agree(ff, 
+					function(elem){
+						var p = elem.parentNode;
+						var lc = p.lastChild;
+						if(!lc){ return false; }
+						while(lc && lc.nodeType != 1){
+							lc = lc.previousSibling;
+						}
+						return (elem === lc);
+					}
+				);
+			}else if(pseudoName == "empty"){
+				ff = agree(ff, 
+					function(elem){
+						var cn = elem.childNodes;
+						var cnl = elem.childNodes.length;
+						// if(!cnl){ return true; }
+						for(var x=cnl-1; x >= 0; x--){
+							var nt = cn[x].nodeType;
+							if((nt == 1)||(nt == 3)){ return false; }
+						}
+						return true;
+					}
+				);
+			}else if(pseudoName == "contains"){
+				ff = agree(ff, 
+					function(elem){
+						return (elem.innerHTML.indexOf(condition) >= 0);
+					}
+				);
+			}else if(pseudoName == "not"){
+				var ntf = getFilterFunc(condition);
+				ff = agree(ff, 
+					function(elem){
+						return (!ntf(elem));
+					}
+				);
+			}else if(pseudoName == "nth-child"){
+				if(condition == "odd"){
+					ff = agree(ff, 
+						function(elem){
+							return (
+								((elem.nodeIndex+1) % 2) == 1
+							);
+						}
+					);
+				}else if((condition == "2n")||
+					(condition == "even")){
+					ff = agree(ff, 
+						function(elem){
+							return (elem.nodeIndex % 2);
+						}
+					);
+				}else if(condition.indexOf("n") == -1){
+					var ncount = parseInt(condition);
+					ff = agree(ff, 
+						function(elem){
+							return (elem.parentNode.childNodes[ncount-1] === elem);
+						}
+					);
+				}
 			}
 		}
 		if(!ff){
@@ -430,7 +469,6 @@ dojo.experimental("dojo.query");
 	var getElements = function(query, root){
 		// NOTE: this function is in the fast path! not memoized!!!
 
-		// dojo.debug(query);
 		// the query doesn't contain any spaces, so there's only so many
 		// things it could be
 		if(!root){ root = document; }
@@ -438,39 +476,44 @@ dojo.experimental("dojo.query");
 		var bktIdx = query.indexOf("[");
 		var colIdx = query.indexOf(":");
 		var hashIdx = query.indexOf("#");
-		var ret = [];
-		var idOnly = (hashIdx == 0);
-
-		var filterFunc;
-		if(!idOnly){
-			filterFunc = getSimpleFilterFunc(query, dotIdx, bktIdx, colIdx);
+		var id;
+		if(-1 != hashIdx){
+			id = query.substring(hashIdx+1,
+						getIdEnd(query, hashIdx, dotIdx, bktIdx, colIdx) );
+		}
+		if(	
+			(hashIdx == 0) &&
+			(-1 == bktIdx) &&
+			(-1 == colIdx) &&
+			(-1 == dotIdx)
+		){
+			// ID query. Easy.
+			return [ document.getElementById(id) ];
 		}
 
-		if(idOnly){
-			// ID query. Easy.
-			ret.push(document.getElementById(query.substr(1)));
-			return ret;
-		}else if(hashIdx >= 0){
-			// we got a type-filtered ID search (e.g., "h4#thinger")
-			var te = document.getElementById(query.substr(hashIdx+1));
-			if(	(te.nodeType == 1)&&
-				(te.tagName.toLowerCase() == query.substr(0, hashIdx).toLowerCase()) ){
-				ret.push(te);
+		var filterFunc = getSimpleFilterFunc(query, dotIdx, bktIdx, colIdx);
+
+		if(hashIdx >= 0){
+			// we got a filtered ID search (e.g., "h4#thinger")
+			var te = document.getElementById(id);
+			if(filterFunc(te)){
+				return [ te ];
 			}
 		}else{
+			var ret = [];
 			var tret;
-			if( (dotIdx >= 0) || (query == "*") ){
+			if( (dotIdx == 0) || (query == "*") ){
 				// if we're the beginning of a generic class search, we need to
 				// get every element in the root for filtering
 				var elName = ((dotIdx == 0)||(query == "*")) ? "*" : query.substr(0, dotIdx);
 				tret = root.getElementsByTagName(elName);
-			}else if(0 > dotIdx){
+			}else{ //  if(0 > dotIdx){
 				// otherwise we're in node-type query...go get 'em
-				tret = root.getElementsByTagName(query.substr(0, 
-					getTagNameEnd(query, hashIdx, dotIdx, bktIdx, colIdx)));
+				var tn = getTagName(query, hashIdx, dotIdx, bktIdx, colIdx);
+				tret = root.getElementsByTagName(tn);
 			}
 
-			if(0 <= colIdx){
+			if(-1 != colIdx){
 				var pseudoName = (0 <= colIdx) ? query.substr(colIdx+1) : "";
 				switch(pseudoName){
 					case "first":
@@ -502,9 +545,8 @@ dojo.experimental("dojo.query");
 					}
 				}
 			}
+			return ret;
 		}
-
-		return ret;
 	}
 
 	var _partsCache = {};
@@ -516,40 +558,37 @@ dojo.experimental("dojo.query");
 	var _queryFuncCache = {};
 
 
-	var getStepQueryFunc = function(query, sidx){
+	var getStepQueryFunc = function(query){
 		if(_queryFuncCache[query]){ return _queryFuncCache[query]; }
 
-		if(sidx < 0){
+		if(0 > query.indexOf(" ")){
 			_queryFuncCache[query] = function(root){
 				return getElements(query, root);
 			}
 			return _queryFuncCache[query];
 		}
 
+
 		var sqf = function(root){
 			var qparts = query.split(" ");
-			var roots = getElements(qparts.shift());
-			// var roots = getElements((qparts[0].indexOf("#") < 0) ? qparts[0] : qparts.shift());
-			var qpl = qparts.length;
 
-			// now that we have the roots, work backward from the bottom, using
-			// the roots as backstops
-			var stepFiltered = [];
-			dojo.lang.forEach(roots, function(root){
-				if(!root){ return; }
-				// use the root as the jumping off spot for other rules
-				var pMatches = getElements(qparts[qpl-1], root);
-				// dojo.debug(pMatches);
-				if(qpl > 1){
-					// dojo.debug(qparts.slice(0, qpl-1));
-					// pMatches = filterUp(pMatches, qparts);
-					pMatches = filterUp(pMatches, (qparts.slice(0, qpl-1)));
-				}
-				// FIXME: is there a way to avoid this?
-				stepFiltered = stepFiltered.concat(pMatches);
-			});
-
-			return stepFiltered;
+			// see if we can't pop a root off the front
+			var partIndex = 0;
+			var lastRoot;
+			while((partIndex < qparts.length)&&(0 <= qparts[partIndex].indexOf("#"))){
+				lastRoot = root;
+				root = getElements(qparts[partIndex])[0];
+				if(!root){ root = lastRoot; break; }
+				partIndex++;
+			}
+			if(qparts.length == partIndex){
+				return [ root ];
+			}
+			root = root || document;
+			var candidates = getElements(qparts.shift(), root);
+			return filterDown(candidates, qparts);
+			// var candidates = getElements(qparts.pop(), root);
+			// return filterUp(candidates, qparts, root);
 		}
 		_queryFuncCache[query] = sqf;
 		return sqf;
@@ -559,34 +598,43 @@ dojo.experimental("dojo.query");
 		// NOTE: 
 		//		XPath on the Webkit nighlies is slower than it's DOM iteration
 		//		for most test cases
+		// FIXME: 
+		//		we should try to capture some runtime speed data for each query
+		//		function to determine on the fly if we should stick w/ the
+		//		potentially optimized variant or if we should try something
+		//		new.
 		(document["evaluate"] && !dojo.render.html.safari) ? 
-		function(query, sidx){
+		function(query){
 			if(_queryFuncCache[query]){ return _queryFuncCache[query]; }
+			// FIXME: xpath support temporarialy disabled to debug DOM code path
 			// has xpath support
 			var qparts = query.split(" ");
-			if(document["evaluate"]&&(query.indexOf(":") == -1)){
+			if(	(document["evaluate"])&&
+				(query.indexOf(":") == -1) ){
 				// kind of a lame heuristic, but it works
 				var gtIdx = query.indexOf(">")
 				if(	
 					((qparts.length > 2)&&(query.indexOf(">") == -1))||
 					(qparts.length > 3)||
-					((sidx == -1)&&(query.indexOf(".")==0))
+					((0 > query.indexOf(" "))&&(0 == query.indexOf(".")))
 
 				){
 					// FIXME: we might be accepting selectors that we can't handle
 					return _queryFuncCache[query] = getXPathFunc(query);
 				}
 			}
+			/*
+			*/
 
 			// getStepQueryFunc has caching built in
-			return getStepQueryFunc(query, sidx);
+			return getStepQueryFunc(query);
 		} : getStepQueryFunc
 	);
 
-	var getQueryFunc = function(query, sidx){
+	var getQueryFunc = function(query){
 		if(_queryFuncCache[query]){ return _queryFuncCache[query]; }
 		if(0 > query.indexOf(",")){
-			return _queryFuncCache[query] = _getQueryFunc(query, sidx);
+			return _queryFuncCache[query] = _getQueryFunc(query);
 		}else{
 			var parts = query.split(", ");
 			var tf = function(root){
@@ -602,23 +650,34 @@ dojo.experimental("dojo.query");
 		}
 	}
 
+	var _zipIdx = 0;
+	var _zip = function(arr){
+		if(!arr){ return []; }
+		var al = arr.length;
+		if(al < 2){ return arr; }
+		_zipIdx++;
+		var ret = [arr[0]];
+		arr[0]["_zipIdx"] = _zipIdx;
+		for(var x=1; x<arr.length; x++){
+			if(arr[x]["_zipIdx"] != _zipIdx){ 
+				ret.push(arr[x]);
+			}
+			arr[x]["_zipIdx"] = _zipIdx;
+		}
+		// FIXME: should we consider stripping these properties?
+		return ret;
+	}
+
 	d.query = function(query, root){
 		// return is always an array
 		// NOTE: elementsById is not currently supported
 		// NOTE: ignores xpath-ish queries for now
 
-		// the basic shape of the algorithm is:
-		//	- apply shortcuts
-		//	- prune search to container(s)
-		//		- top-level node type
-		//		- constraining ID
-		//	- start bottom-up searches (if applicable)
-		//		- last elements in descendant selector
-		//		- apply filters (:last-child, attr matches, etc.)
-		//	- work the filter chain backward
+		// FIXME: need to do a fast-path to avoid attribute searches for
+		// queries of the form:
+		//		"div span span"
+		// FIXME: should support more methods on the return than the stock array.
 
-		// shortcut for non-chained selectors!
-		return getQueryFunc(query, query.indexOf(" "))(root);
-
+		return _zip(getQueryFunc(query)(root));
 	}
 })();
