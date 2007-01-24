@@ -1,10 +1,25 @@
 var buildUtil = {};
-buildUtil.getDependencyList = function(dependencies, hostenvType) {
-	djConfig = {
-		baseRelativePath: "../"
-		// isDebug: true
-	};
-	
+
+buildUtil.getLineSeparator = function(){
+	//summary: Gives the line separator for the platform.
+	//For web builds override this function.
+	return java.lang.System.getProperty("line.separator");
+}
+
+buildUtil.getDojoLoader = function(/*Object?*/dependencies){
+	//summary: gets the type of Dojo loader for the build. For example default or
+	//xdomain loading. Override for web builds.
+	return (dependencies && dependencies["loader"] ? dependencies["loader"] : java.lang.System.getProperty("DOJO_LOADER"));
+}
+
+buildUtil.getDependencyList = function(/*Object*/dependencies, /*String or Array*/hostenvType, /*boolean?*/isWebBuild){
+	if(!isWebBuild){
+		djConfig = {
+			baseRelativePath: "../"
+			// isDebug: true
+		};
+	}
+
 	if(!dependencies){
 		dependencies = [ 
 			"dojo.event.*",
@@ -16,21 +31,24 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 			"dojo.widget.Button"
 		];
 	}
-	
-	var dojoLoader = java.lang.System.getProperty("DOJO_LOADER");
+
+	var dojoLoader = buildUtil.getDojoLoader(dependencies);
 	if(!dojoLoader || dojoLoader=="null" || dojoLoader==""){
 		dojoLoader = "default";
 	}
-	dj_global = {};
-	
-	load("../src/bootstrap1.js");
-	load("../src/loader.js");
-	load("../src/hostenv_rhino.js");
-	load("../src/bootstrap2.js");
 
-	// FIXME: is this really what we want to say?
-	dojo.render.html.capable = true;
+	if(!isWebBuild){
+		dj_global = {};
+		
+		load("../src/bootstrap1.js");
+		load("../src/loader.js");
+		load("../src/hostenv_rhino.js");
+		load("../src/bootstrap2.js");
 	
+		// FIXME: is this really what we want to say?
+		dojo.render.html.capable = true;
+	}
+
 	dojo.hostenv.loadedUris.push("dojoGuardStart.js");
 	dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
 	
@@ -92,18 +110,27 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	var old_load = load;
 	load = function(uri){
 		try{
-			var text = removeComments(readText(uri));
+			var text = removeComments((isWebBuild ? dojo.hostenv.getText(uri) : readText(uri)));
 			var requires = dojo.hostenv.getRequiresAndProvides(text);
 			eval(requires.join(";"));
 			dojo.hostenv.loadedUris.push(uri);
 			dojo.hostenv.loadedUris[uri] = true;
 			var delayRequires = dojo.hostenv.getDelayRequiresAndProvides(text);
 			eval(delayRequires.join(";"));
-		}catch(e){ 
-			java.lang.System.err.println("error loading uri: " + uri + ", exception: " + e);
-			quit(-1);
+		}catch(e){
+			if(isWebBuild){
+				dojo.debug("error loading uri: " + uri + ", exception: " + e);
+			}else{
+				java.lang.System.err.println("error loading uri: " + uri + ", exception: " + e);
+				quit(-1);
+			}
 		}
 		return true;
+	}
+	
+	if(isWebBuild){
+		dojo.hostenv.oldLoadUri = dojo.hostenv.loadUri;
+		dojo.hostenv.loadUri = load;
 	}
 	
 	dojo.hostenv.getRequiresAndProvides = function(contents){
@@ -193,13 +220,17 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 		}
 	}
 	
-	load = old_load; // restore the original load function
-	dj_eval = old_eval; // restore the original dj_eval function
-	
-	dj_global['dojo'] = undefined;
-	dj_global['djConfig'] = undefined;
-	delete dj_global;
-		
+	if(isWebBuild){
+		dojo.hostenv.loadUri = dojo.hostenv.oldLoadUri;
+	}else{
+		load = old_load; // restore the original load function
+		dj_eval = old_eval; // restore the original dj_eval function
+
+		dj_global['dojo'] = undefined;
+		dj_global['djConfig'] = undefined;
+		delete dj_global;
+	}
+
 	return {
 		depList: depList,
 		provideList: provideList
@@ -223,15 +254,12 @@ buildUtil.loadDependencyList = function(/*String*/profileFile){
 	return depResult;
 }
 
-buildUtil.makeDojoJs = function(/*String*/profileFile, /*String*/version){
-	//summary: Makes the uncompressed contents for dojo.js.
+buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
+	//summary: Makes the uncompressed contents for dojo.js using the object
+	//returned from buildUtil.getDependencyList()
 
-	//Get the profileFile text.
-	var lineSeparator = java.lang.System.getProperty("line.separator");
-	
-	//Remove the call to getDependencyList.js because we want to call it manually.
-	var depLists = buildUtil.loadDependencyList(profileFile);
-	var depList = depLists.depList;
+	var lineSeparator = buildUtil.getLineSeparator();
+	var depList = dependencyResult.depList;
 
 	//Concat the files together, and mark where we should insert all the
 	//provide statements.
@@ -249,7 +277,7 @@ buildUtil.makeDojoJs = function(/*String*/profileFile, /*String*/version){
 	//Move all the dojo.provide calls to the top, and remove any matching dojo.require calls.
 	//Sort the provide list alphabetically to make it easy to read. Order of provide statements
 	//do not matter.
-	var provideList = depLists.provideList.sort(); 
+	var provideList = dependencyResult.provideList.sort(); 
 	var depRegExpString = "";
 	for(var i = 0; i < provideList.length; i++){
 		if(i != 0){
@@ -436,7 +464,7 @@ buildUtil.makeFlatBundleContents = function(prefix, prefixPath, srcFileName){
 	dojo.requireLocalization(moduleName, bundleName, localeName);
 	
 	//Get the generated, flattened bundle.
-	var module = dojo.evalObjPath(moduleName);
+	var module = dojo.getObject(moduleName);
 	var bundleLocale = localeName ? localeName.replace(/-/g, "_") : "ROOT";
 	var flattenedBundle = module.nls[bundleName][bundleLocale];
 	//print("## flattenedBundle: " + flattenedBundle);
