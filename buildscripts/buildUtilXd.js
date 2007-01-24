@@ -1,4 +1,20 @@
+//The functions in this file assume that buildUtil.js have been loaded.
 var buildUtilXd = {};
+
+buildUtilXd.setXdDojoConfig = function(/*String*/fileContents, /*String*/url){
+	//summary: sets sets up xdomain loading for a particular URL.
+	//parameters:
+	//		fileContents: be a built dojo.js (can be uncompressed or compressed).
+	//		url: value should include the /src path for the xdomain dojo.
+	//			Example: "http://some.domain.com/dojo-xdversion/src" (no ending slash)
+	//This function will inject some contents before the dojo.hostenv.resetXd() definition,
+	//so the contents of fileName should have been a dojo.js that includes the contents
+	//of loader_xd.js (specify -DdojoLoader=xdomain in the build command).
+
+	return fileContents.replace(/dojo\.hostenv\.resetXd\s*\=/, "djConfig.useXDomain = true;\ndojo.registerModulePath(\"dojo\", \""
+		+ url
+		+ "\");\ndojo.hostenv.resetXd=");
+}
 
 //START makeXdContents function
 //Function that generates the XD version of the module file's contents
