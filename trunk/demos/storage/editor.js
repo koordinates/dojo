@@ -4,6 +4,8 @@ dojo.require("dojo.html.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.widget.Editor2");
 dojo.require("dojo.storage.*");
+dojo.require("dojo.dot.*");
+dojo.require("dojo.sync");
 
 // IE 7.0 does not support XHR loading from file:// URLs
 // when loaded from a file:// URL itself - this breaks
