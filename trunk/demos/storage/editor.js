@@ -7,6 +7,8 @@ dojo.require("dojo.storage.*");
 dojo.require("dojo.dot.*");
 dojo.require("dojo.sync");
 
+// configure how we should work offline
+
 // IE 7.0 does not support XHR loading from file:// URLs
 // when loaded from a file:// URL itself - this breaks
 // us for loading all of our Editor2 widget resources.
