@@ -38,8 +38,8 @@ dojo.widget.defineWidget(
 		// disabled: Boolean
 		//      disabled attribute for HTML button element
 		disabled: false,
-		templatePath: dojo.uri.moduleUri("dojo", "widget/templates/ButtonTemplate.html"),
-		templateCssPath: dojo.uri.moduleUri("dojo", "widget/templates/ButtonTemplate.css"),
+		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/ButtonTemplate.html"),
+		templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/ButtonTemplate.css"),
 		
 		fillInTemplate: function(args, frag){
 			dojo.widget.Button.superclass.fillInTemplate.apply(this, arguments);
@@ -187,7 +187,7 @@ dojo.widget.defineWidget(
 		// summary
 		//		left side is normal button, right side displays menu
 	
-		templatePath: dojo.uri.moduleUri("dojo", "widget/templates/ComboButtonTemplate.html"),
+		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/ComboButtonTemplate.html"),
 	
 		fillInTemplate: function(){
 			this.focusNode = this.containerNode;

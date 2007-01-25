@@ -100,7 +100,7 @@ dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDr
 dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2ToolbarComboItem, {
 	// summary: dojo.widget.Editor2ToolbarFormatBlockSelect is an improved format block setting item
 
-	href: dojo.uri.cache.allow(dojo.uri.moduleUri("dojo", "widget/templates/Editor2/EditorToolbar_FormatBlock.html")),
+	href: dojo.uri.cache.allow(dojo.uri.moduleUri("dojo.widget", "templates/Editor2/EditorToolbar_FormatBlock.html")),
 
 	setup: function(){
 		dojo.widget.Editor2ToolbarFormatBlockSelect.superclass.setup.call(this);
@@ -171,7 +171,7 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2T
 dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2ToolbarComboItem,{
 	// summary: dojo.widget.Editor2ToolbarFontSizeSelect provides a dropdown list for setting fontsize
 
-	href: dojo.uri.cache.allow(dojo.uri.moduleUri("dojo", "widget/templates/Editor2/EditorToolbar_FontSize.html")),
+	href: dojo.uri.cache.allow(dojo.uri.moduleUri("dojo.widget", "templates/Editor2/EditorToolbar_FontSize.html")),
 
 	setup: function(){
 		dojo.widget.Editor2ToolbarFormatBlockSelect.superclass.setup.call(this);
@@ -239,5 +239,5 @@ dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2Tool
 
 dojo.declare("dojo.widget.Editor2ToolbarFontNameSelect", dojo.widget.Editor2ToolbarFontSizeSelect, {
 	// summary: dojo.widget.Editor2ToolbarFontNameSelect provides a dropdown list for setting fontname
-	href: dojo.uri.cache.allow(dojo.uri.moduleUri("dojo", "widget/templates/Editor2/EditorToolbar_FontName.html"))
+	href: dojo.uri.cache.allow(dojo.uri.moduleUri("dojo.widget", "templates/Editor2/EditorToolbar_FontName.html"))
 });

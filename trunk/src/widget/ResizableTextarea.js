@@ -15,8 +15,8 @@ dojo.widget.defineWidget(
 	// usage
 	//	<textarea dojoType="ResizableTextArea">...</textarea>
 
-	templatePath: dojo.uri.moduleUri("dojo", "widget/templates/ResizableTextarea.html"),
-	templateCssPath: dojo.uri.moduleUri("dojo", "widget/templates/ResizableTextarea.css"),
+	templatePath: dojo.uri.moduleUri("dojo.widget", "templates/ResizableTextarea.html"),
+	templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/ResizableTextarea.css"),
 
 	postMixInProperties: function(){
 		dojo.widget.HtmlWidget.superclass.postMixInProperties.apply(this, arguments);

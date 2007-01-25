@@ -8,7 +8,7 @@ dojo.uri = new function() {
 
 	this.moduleUri = function(/*String*/module, /*dojo.uri.Uri||String*/uri){
 		// summary: returns a Uri object relative to a module
-		// description: Examples: dojo.uri.moduleUri("dojo","Editor"), or dojo.uri.moduleUri("acme","someWidget")
+		// description: Examples: dojo.uri.moduleUri("dojo.widget","templates/template.html"), or dojo.uri.moduleUri("acme","images/small.png")
 		var loc = dojo.hostenv.getModuleSymbols(module).join('/');
 		if(!loc){
 			return null;
