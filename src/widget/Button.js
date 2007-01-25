@@ -20,206 +20,82 @@ dojo.widget.defineWidget(
 		//	Basically the same thing as a normal HTML button, but with special styling.
 
 		isContainer: true,
-
 		// caption: String
 		//	text to display in button
 		caption: "",
-		
+		// name: String
+		//      name attribute for HTML button element
+		name: "",
+		// id: String
+		//      id attribute for HTML button element
+		id: "",
+		// alt: String
+		//      alt attribute for HTML button element
+		alt: "",
+		// type: String
+		//      type attribute for HTML button element
+		type: "button",
+		// disabled: Boolean
+		//      disabled attribute for HTML button element
+		disabled: false,
 		templatePath: dojo.uri.moduleUri("dojo", "widget/templates/ButtonTemplate.html"),
 		templateCssPath: dojo.uri.moduleUri("dojo", "widget/templates/ButtonTemplate.css"),
 		
-		// inactiveImg: Url
-		//	prefix of filename holding images (left, center, right) for button in normal state
-		inactiveImg: "widget/templates/images/soriaButton-",
-		
-		// activeImg: Url
-		//	prefix of filename holding images (left, center, right) for button when it's being hovered over
-		activeImg: "widget/templates/images/soriaActive-",
-
-		// pressedImg: Url
-		//	prefix of filename holding images (left, center, right) for button between mouse-down and mouse-up
-		pressedImg: "widget/templates/images/soriaPressed-",
-
-		// disabledImg: Url
-		//	prefix of filename holding images (left, center, right) for button when it's disabled (aka, grayed-out)
-		disabledImg: "widget/templates/images/soriaDisabled-",
-		
-		// widget2height: Number
-		//	shape of the button's end pieces;
-		//	the height of the end pieces is a function of the button's height (which in turn is a function of the button's content),
-		//	and then the width of the end pieces is relative to their height.
-		width2height: 1.0/3.0,
-
-		fillInTemplate: function(){
+		fillInTemplate: function(args, frag){
+			dojo.widget.Button.superclass.fillInTemplate.apply(this, arguments);
 			if(this.caption){
-				this.containerNode.appendChild(document.createTextNode(this.caption));
+				this.setCaption(this.caption);
 			}
 			dojo.html.disableSelection(this.containerNode);
+			var source = this.getFragNodeRef(frag);
+			// Copy style info from input node to output node
+			dojo.html.copyStyle(this.domNode, source);
+			if (!this.focusNode){
+				this.focusNode = this.domNode;
+			}
 		},
 
 		postCreate: function(){
-			this._sizeMyself();
+			this.setDisabled(this.disabled == true);
 		},
 	
-		_sizeMyself: function(){
-			// we cannot size correctly if any of our ancestors are hidden (display:none),
-			// so temporarily attach to document.body
-			if(this.domNode.parentNode){
-				var placeHolder = document.createElement("span");
-				dojo.html.insertBefore(placeHolder, this.domNode);
-			}
-			dojo.body().appendChild(this.domNode);
-			
-			this._sizeMyselfHelper();
-			
-			// Put this.domNode back where it was originally
-			if(placeHolder){
-				dojo.html.insertBefore(this.domNode, placeHolder);
-				dojo.html.removeNode(placeHolder);
-			}
-		},
-
-		_sizeMyselfHelper: function(){
-			var mb = dojo.html.getMarginBox(this.containerNode);
-			this.height = mb.height;
-			this.containerWidth = mb.width;
-			var endWidth= this.height * this.width2height;
-	
-			this.containerNode.style.left=endWidth+"px";
-	
-			this.leftImage.height = this.rightImage.height = this.centerImage.height = this.height;
-			this.leftImage.width = this.rightImage.width = endWidth+1;
-			this.centerImage.width = this.containerWidth;
-			this.centerImage.style.left=endWidth+"px";
-			this._setImage(this.disabled ? this.disabledImg : this.inactiveImg);
-
-			if ( this.disabled ) {
-				dojo.html.prependClass(this.domNode, "dojoButtonDisabled");
-				this.domNode.removeAttribute("tabIndex");
-				dojo.widget.wai.setAttr(this.domNode, "waiState", "disabled", true);
-			} else {
-				dojo.html.removeClass(this.domNode, "dojoButtonDisabled");
-				this.domNode.setAttribute("tabIndex", "0");
-				dojo.widget.wai.setAttr(this.domNode, "waiState", "disabled", false);
-			}
-				
-			this.domNode.style.height=this.height + "px";
-			this.domNode.style.width= (this.containerWidth+2*endWidth) + "px";
-		},
-	
-		onMouseOver: function(/*Event*/ e){
-			// summary: callback when user mouses-over the button
-			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.buttonNode, "dojoButtonHover");
-			this._setImage(this.activeImg);
-		},
-	
-		onMouseDown: function(/*Event*/ e){
-			// summary: callback when user starts to click the button
-			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.buttonNode, "dojoButtonDepressed");
-			dojo.html.removeClass(this.buttonNode, "dojoButtonHover");
-			this._setImage(this.pressedImg);
-		},
-
-		onMouseUp: function(/*Event*/ e){
-			// summary: callback when the user finishes clicking
-			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.buttonNode, "dojoButtonHover");
-			dojo.html.removeClass(this.buttonNode, "dojoButtonDepressed");
-			this._setImage(this.activeImg);
-		},
-	
-		onMouseOut: function(/*Event*/ e){
-			// summary: callback when the user moves the mouse off the button
-			if( this.disabled ){ return; }
-			if( e.toElement && dojo.html.isDescendantOf(e.toElement, this.buttonNode) ){
-				return; // Ignore IE mouseOut events that dont actually leave button - Prevents hover image flicker in IE
-			}
-			dojo.html.removeClass(this.buttonNode, "dojoButtonHover");
-			dojo.html.removeClass(this.buttonNode, "dojoButtonDepressed");
-			this._setImage(this.inactiveImg);
-		},
-
-		onKey: function(/*Event*/ e){
-			// summary: callback when the user presses a key (on key-down)
-			if (!e.key) { return; }
-			var menu = dojo.widget.getWidgetById(this.menuId);
-			if (e.key == e.KEY_ENTER || e.key == " "){
-				this.onMouseDown(e);
-				this.buttonClick(e);
-				dojo.lang.setTimeout(this, "onMouseUp", 75, e);
-				dojo.event.browser.stopEvent(e);
-			}
-			if(menu && menu.isShowingNow && e.key == e.KEY_DOWN_ARROW){
-				// disconnect onBlur when focus moves into menu
-				dojo.event.disconnect(this.domNode, "onblur", this, "onBlur");
-				// allow event to propagate to menu
-			}
-		},
-
 		onFocus: function(/*Event*/ e){
 			// summary: callback on focus to the button
-			var menu = dojo.widget.getWidgetById(this.menuId);
-			if (menu){
-				dojo.event.connectOnce(this.domNode, "onblur", this, "onBlur");
-			}
-		},
-
-		onBlur: function(/*Event*/ e){
-			// summary: callback when button loses focus
-			var menu = dojo.widget.getWidgetById(this.menuId);
-			if ( !menu ) { return; }
-	
-			if ( menu.close && menu.isShowingNow ){
-				menu.close();
+			if (e.target == this.domNode && this.focusNode != this.domNode){
+			        try { this.focusNode.focus(); return; } catch(e2) {}
 			}
 		},
 
 		buttonClick: function(/*Event*/ e){
-			// summary: internal function for handling button clicks
+			// summary: internal function for handling button clicks via mouse or keybd
 			if(!this.disabled){ 
 				// focus may fail when tabIndex is not supported on div's
 				// by the browser, or when the node is disabled
-				try { this.domNode.focus(); } catch(e2) {};
-				this.onClick(e); 
+				try { this.focusNode.focus(); } catch(e2) {};
+				if (this._shouldNotify(e)){
+					this.onClick(e); 
+				}
 			}
+		},
+
+		_shouldNotify: function(/*Event*/ e) {
+		        // summary: determine if onClick should be called
+		        return true;
 		},
 
 		onClick: function(/*Event*/ e) {
 			// summary: callback for when button is clicked; user can override this function
 		},
 
-		_setImage: function(/*String*/ prefix){
-			this.leftImage.src=dojo.uri.moduleUri("dojo", prefix + "l.gif");
-			this.centerImage.src=dojo.uri.moduleUri("dojo", prefix + "c.gif");
-			this.rightImage.src=dojo.uri.moduleUri("dojo", prefix + "r.gif");
-		},
-		
-		_toggleMenu: function(/*String*/ menuId){
-			var menu = dojo.widget.getWidgetById(menuId); 
-			if ( !menu ) { return; }
-			if ( menu.open && !menu.isShowingNow) {
-				var pos = dojo.html.getAbsolutePosition(this.domNode, false);
-				menu.open(pos.x, pos.y+this.height, this);
-			} else if ( menu.close && menu.isShowingNow ){
-				menu.close();
-			} else {
-				menu.toggle();
-			}
-		},
-		
 		setCaption: function(/*String*/ content){
 			// summary: reset the caption (text) of the button; takes an HTML string
-			this.caption=content;
-			this.containerNode.innerHTML=content;
-			this._sizeMyself();
+			this.containerNode.innerHTML = this.caption = content;
 		},
 		
 		setDisabled: function(/*Boolean*/ disabled){
 			// summary: set disabled state of button
-			this.disabled=disabled;
-			this._sizeMyself();
+			this.domNode.disabled = this.disabled = disabled;
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "disabled", disabled);
 		}
 	});
 
@@ -236,38 +112,64 @@ dojo.widget.defineWidget(
 	{
 		// summary
 		//		push the button and a menu shows up
+
+		isContainer: true,
+
 		// menuId: String
 		//	widget id of the menu that this button should activate
 		menuId: "",
 
-		// downArrow: Url
-		//	path of arrow image to display to the right of the button text
-		downArrow: "src/widget/templates/images/whiteDownArrow.gif",
+		templatePath: dojo.uri.dojoUri("src/widget/templates/DropDownButtonTemplate.html"),
 
-		// disabledDownArray: Url
-		//	path of arrow image to display to the right of the button text, when the button is disabled
-		disabledDownArrow: "src/widget/templates/images/whiteDownArrow.gif",
-	
 		fillInTemplate: function(){
 			dojo.widget.DropDownButton.superclass.fillInTemplate.apply(this, arguments);
-	
-			this.arrow = document.createElement("img");
-			dojo.html.setClass(this.arrow, "downArrow");
-
+			if (!this.popupStateNode){
+				this.popupStateNode = this.domNode;
+			}
+			if (dojo.render.html.opera){
+				this.focusNode = this.domNode; 
+				this.domNode.tabIndex = "0";
+			}
 			dojo.widget.wai.setAttr(this.domNode, "waiState", "haspopup", this.menuId);
 		},
 
-		_sizeMyselfHelper: function(){
-			// draw the arrow (todo: why is the arror in containerNode rather than outside it?)
-			this.arrow.src = dojo.uri.moduleUri("dojo", this.disabled ? this.disabledDownArrow : this.downArrow);
-			this.containerNode.appendChild(this.arrow);
-
-			dojo.widget.DropDownButton.superclass._sizeMyselfHelper.call(this);
+		onKey: function(/*Event*/ e){
+			// summary: callback when the user presses a key (on key-down)
+			if (!e.key || this.disabled) { return; }
+			if(e.key == e.KEY_DOWN_ARROW){
+				if (!this._menu || !this._menu.isShowingNow){
+					this.buttonClick(null);
+					dojo.event.browser.stopEvent(e);
+				}
+			}
 		},
 
-		onClick: function(/*Event*/ e){
+		_shouldNotify: function(/*Event*/ e){
 			// summary: callback when button is clicked; user shouldn't override this function or else the menu won't toggle
-			this._toggleMenu(this.menuId);
+			var menu = dojo.widget.getWidgetById(this.menuId); 
+			if ( !menu ) { return; }
+			if ( menu.open && !menu.isShowingNow) {
+				var pos = dojo.html.getAbsolutePosition(this.domNode, true, dojo.html.boxSizing.BORDER_BOX);
+				menu.open(pos.x, pos.y+dojo.html.getBorderBox(this.domNode).height, this);
+				if (menu.isShowingNow) {
+					this._menu = menu;
+					this.popupStateNode.setAttribute("popupActive", "true");
+					this._oldMenuClose = menu.close;
+					var _this = this;
+					menu.close = function(){
+						_this._menu = null;
+						if (typeof _this._oldMenuClose == "function") {
+							_this.popupStateNode.removeAttribute("popupActive");
+							this.close = _this._oldMenuClose;
+							_this._oldMenuClose = null;
+							this.close();
+						}
+					}
+				}
+			} else if ( menu.close && menu.isShowingNow ){
+				menu.close();
+			}
+			return false;
 		}
 	});
 
@@ -280,142 +182,26 @@ dojo.widget.defineWidget(
  */
 dojo.widget.defineWidget(
 	"dojo.widget.ComboButton",
-	dojo.widget.Button,
+	dojo.widget.DropDownButton,
 	{
 		// summary
 		//		left side is normal button, right side displays menu
-		// menuId: String
-		//	widget id of the menu that this button should activate
-		menuId: "",
 	
 		templatePath: dojo.uri.moduleUri("dojo", "widget/templates/ComboButtonTemplate.html"),
 	
-		// splitWidth: Integer
-		//	# of pixels between left & right part of button
-		splitWidth: 2,
-		
-		// arrowWidth: Integer
-		//	width of segment holding down arrow
-		arrowWidth: 5,
-	
-		_sizeMyselfHelper: function(/*Event*/ e){
-			var mb = dojo.html.getMarginBox(this.containerNode);
-			this.height = mb.height;
-			this.containerWidth = mb.width;
-
-			var endWidth= this.height/3;
-
-			if(this.disabled){
-				dojo.widget.wai.setAttr(this.domNode, "waiState", "disabled", true);
-				this.domNode.removeAttribute("tabIndex");
-			}
-			else {
-				dojo.widget.wai.setAttr(this.domNode, "waiState", "disabled", false);
-				this.domNode.setAttribute("tabIndex", "0");
-			}
-	
-			// left part
-			this.leftImage.height = this.rightImage.height = this.centerImage.height = 
-				this.arrowBackgroundImage.height = this.height;
-			this.leftImage.width = endWidth+1;
-			this.centerImage.width = this.containerWidth;
-			this.buttonNode.style.height = this.height + "px";
-			this.buttonNode.style.width = endWidth + this.containerWidth + "px";
-			this._setImage(this.disabled ? this.disabledImg : this.inactiveImg);
-
-			// right part
-			this.arrowBackgroundImage.width=this.arrowWidth;
-			this.rightImage.width = endWidth+1;
-			this.rightPart.style.height = this.height + "px";
-			this.rightPart.style.width = this.arrowWidth + endWidth + "px";
-			this._setImageR(this.disabled ? this.disabledImg : this.inactiveImg);
-	
-			// outer container
-			this.domNode.style.height=this.height + "px";
-			var totalWidth = this.containerWidth+this.splitWidth+this.arrowWidth+2*endWidth;
-			this.domNode.style.width= totalWidth + "px";
-		},
-	
-		_setImage: function(prefix){
-			this.leftImage.src=dojo.uri.moduleUri("dojo", prefix + "l.gif");
-			this.centerImage.src=dojo.uri.moduleUri("dojo", prefix + "c.gif");
-		},
-	
-		/*** functions on right part of button ***/
-		rightOver: function(/*Event*/ e){
-			// summary:
-			//	callback when mouse-over right part of button;
-			//	onMouseOver() is the callback for the left side of the button.
-			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.rightPart, "dojoButtonHover");
-			this._setImageR(this.activeImg);
-		},
-	
-		rightDown: function(/*Event*/ e){
-			// summary:
-			//	callback when mouse-down right part of button;
-			//	onMouseDown() is the callback for the left side of the button.
-			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.rightPart, "dojoButtonDepressed");
-			dojo.html.removeClass(this.rightPart, "dojoButtonHover");
-			this._setImageR(this.pressedImg);
+		fillInTemplate: function(){
+			this.focusNode = this.containerNode;
+			dojo.widget.ComboButton.superclass.fillInTemplate.apply(this, arguments);
 		},
 
-		rightUp: function(/*Event*/ e){
-			// summary:
-			//	callback when mouse-up right part of button;
-			//	onMouseUp() is the callback for the left side of the button.
-			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.rightPart, "dojoButtonHover");
-			dojo.html.removeClass(this.rightPart, "dojoButtonDepressed");
-			this._setImageR(this.activeImg);
-		},
-	
-		rightOut: function(/*Event*/ e){
-			// summary:
-			//	callback when moving the mouse off of the right part of button;
-			//	onMouseOut() is the callback for the left side of the button.
-			if( this.disabled ){ return; }
-			dojo.html.removeClass(this.rightPart, "dojoButtonHover");
-			dojo.html.removeClass(this.rightPart, "dojoButtonDepressed");
-			this._setImageR(this.inactiveImg);
-		},
-
-		rightClick: function(/*Event*/ e){
-			// summary:
-			//	callback when clicking the right part of button;
-			//	onClick() is the callback for the left side of the button.
-			if( this.disabled ){ return; }
-			// focus may fail when tabIndex is not supported on div's
-			// by the browser, or when the node is disabled
-			try { this.domNode.focus(); } catch(e2) {};
-			this._toggleMenu(this.menuId);
-		},
-	
-		_setImageR: function(prefix){
-			this.arrowBackgroundImage.src=dojo.uri.moduleUri("dojo", prefix + "c.gif");
-			this.rightImage.src=dojo.uri.moduleUri("dojo", prefix + "r.gif");
-		},
-
-		/*** keyboard functions ***/
-		
-		onKey: function(/*Event*/ e){
-			if (!e.key) { return; }
-			var menu = dojo.widget.getWidgetById(this.menuId);
-			if(e.key== e.KEY_ENTER || e.key == " "){
-				this.onMouseDown(e);
-				this.buttonClick(e);
-				dojo.lang.setTimeout(this, "onMouseUp", 75, e);
-				dojo.event.browser.stopEvent(e);
-			} else if (e.key == e.KEY_DOWN_ARROW && e.altKey){
-				this.rightDown(e);
-				this.rightClick(e);
-				dojo.lang.setTimeout(this, "rightUp", 75, e);
-				dojo.event.browser.stopEvent(e);
-			} else if(menu && menu.isShowingNow && e.key == e.KEY_DOWN_ARROW){
-				// disconnect onBlur when focus moves into menu
-				dojo.event.disconnect(this.domNode, "onblur", this, "onBlur");
-				// allow event to propagate to menu
+		_shouldNotify: function(/*Event*/ e){
+			if (e == null || (this._menu && this._menu.isShowingNow) || 
+				dojo.html.getCursorPosition(e).x >= 
+					// workaround for opera bug: getAbsolutePosition on a table cell returns the wrong thing
+					(dojo.html.getAbsolutePosition(this.popupStateNode.parentNode).x+this.containerNode.offsetWidth)){
+				return dojo.widget.ComboButton.superclass._shouldNotify.apply(this, arguments);
+			}else{
+				return dojo.widget.DropDownButton.superclass._shouldNotify.apply(this, arguments);
 			}
 		}
 	});

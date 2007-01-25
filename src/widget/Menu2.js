@@ -192,7 +192,8 @@ dojo.declare(
 				}
 				//fall through
 			case evt.KEY_ESCAPE:
-				dojo.widget.PopupManager.currentMenu.close();
+			case evt.KEY_TAB:
+				this.close(true);
 				rval = true;
 				break;
 		}
@@ -246,7 +247,7 @@ dojo.declare(
 	close: function(/*Boolean*/ force){
 		// summary: close the menu
 		if(this.animationInProgress){
-			dojo.widget.PopupMenu2.superclass.close.apply(this, arguments);
+			dojo.widget.PopupContainerBase.prototype.close.call(this, force);
 			return;
 		}
 
@@ -254,7 +255,7 @@ dojo.declare(
 			this._highlighted_option.onUnhover();
 		}
 
-		dojo.widget.PopupMenu2.superclass.close.apply(this, arguments);
+		dojo.widget.PopupContainerBase.prototype.close.call(this, force);
 	},
 
 	closeSubpopup: function(force){
@@ -303,14 +304,13 @@ dojo.declare(
 		}
 		this.open(x, y, null, [x, y]);
 
-		e.preventDefault();
-		e.stopPropagation();
+		dojo.event.browser.stopEvent(e);
 	}
 });
 
 dojo.widget.defineWidget(
 	"dojo.widget.PopupMenu2",
-	[dojo.widget.HtmlWidget, dojo.widget.MenuBase, dojo.widget.PopupContainerBase],
+	[dojo.widget.HtmlWidget, dojo.widget.PopupContainerBase, dojo.widget.MenuBase],
 	{
 		// summary
 		//	provides a menu that can be used as a context menu (typically shown by right-click),
