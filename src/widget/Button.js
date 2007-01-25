@@ -119,7 +119,7 @@ dojo.widget.defineWidget(
 		//	widget id of the menu that this button should activate
 		menuId: "",
 
-		templatePath: dojo.uri.dojoUri("src/widget/templates/DropDownButtonTemplate.html"),
+		templatePath: dojo.uri.moduleUri("dojo.widget" , "templates/DropDownButtonTemplate.html"),
 
 		fillInTemplate: function(){
 			dojo.widget.DropDownButton.superclass.fillInTemplate.apply(this, arguments);
