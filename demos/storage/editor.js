@@ -12,6 +12,13 @@ dojo.require("dojo.sync");
 // set our application name
 dojo.dot.ui.appName = "Moxie";
 
+// we aren't going to need a durable cache for now;
+// we will just have our server return good HTTP/1.1
+// caching headers and rely on the browser's native
+// cache until Dojo Online has a downloadable durable
+// cache ready in the future
+dojo.dot.requireDurableCache = false;
+
 // IE 7.0 does not support XHR loading from file:// URLs
 // when loaded from a file:// URL itself - this breaks
 // us for loading all of our Editor2 widget resources.
