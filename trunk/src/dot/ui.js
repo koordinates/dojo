@@ -254,6 +254,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var syncButtons = dojo.byId("dot-sync-buttons");
 		var syncingButtons = dojo.byId("dot-syncing-buttons");
 		var roller = dojo.byId("dot-roller");
+		var checkmark = dojo.byId("dot-success-checkmark");
 		
 		if(dojo.sync.isSyncing == true){
 			if(syncButtons){
@@ -266,6 +267,10 @@ dojo.lang.mixin(dojo.dot.ui, {
 			
 			if(roller){
 				roller.style.visibility = "visible";
+			}
+			
+			if(checkmark){
+				checkmark.style.display = "none";
 			}
 		}else{
 			if(syncButtons){
