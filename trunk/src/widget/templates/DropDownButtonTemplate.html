@@ -1,9 +1,10 @@
-<button dojoAttachPoint="button" class="dojoButton dojoButtonNoHover" dojoAttachEvent="onMouseOver: ; onMouseOut: ; onClick: ;">
-  <table dojoAttachPoint="table" style="margin:0 0 0 0;"><tr>
-    <td class="label" dojoAttachPoint="labelCell"></td>
-    <td class="border" dojoAttachPoint="borderCell"></td>
-    <td class="downArrow" dojoAttachPoint="arrowCell">
-      <img dojoAttachPoint="arrow">
-    </td>
-  </tr></table>
-</button>
+<button class=dojoButton tabIndex="-1" type="${this.type}" id="${this.id}" name="${this.name}" alt="${this.alt}" dojoAttachEvent="onClick:buttonClick; onKey; onFocus;"
+	><table dojoAttachPoint="focusNode" tabIndex="0" cellpadding=0 cellspacing=0 cols=2>
+		<tr>
+			<td class="dojoButtonContents dojoButtonContentsDropDown" dojoAttachPoint="containerNode"></td>
+			<td class=dojoButtonDownArrowBackground
+				><div class=dojoButtonDownArrow></div
+			></td>
+		</tr>
+	</table
+></button>

@@ -191,7 +191,7 @@ dojo.event.browser = new function(){
 			if(dojo.render.html.ie){
 				this.addListener(node, "onkeydown", fp, capture, dontFix);
 			}
-			evtName = "onkeypress";
+			evtName = "keypress";
 		}
 
 		if(!dontFix){
