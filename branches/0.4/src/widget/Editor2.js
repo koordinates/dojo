@@ -252,7 +252,7 @@ dojo.widget.defineWidget(
 		// summary:
 		//		Provides a Dialog which can be modal or normal for the Editor2.
 
-		templatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorDialog.html"),
+		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/Editor2/EditorDialog.html"),
 
 		// modal: Boolean: Whether this is a modal dialog. True by default.
 		modal: true,
@@ -442,7 +442,7 @@ dojo.widget.defineWidget(
 
 		// toolbarTemplatePath: dojo.uri.Uri
 		//		to specify the template file for the toolbar
-		toolbarTemplatePath: dojo.uri.cache.allow(dojo.uri.moduleUri("dojo", "widget/templates/EditorToolbarOneline.html")),
+		toolbarTemplatePath: dojo.uri.cache.allow(dojo.uri.moduleUri("dojo.widget", "templates/EditorToolbarOneline.html")),
 
 		// toolbarTemplateCssPath: dojo.uri.Uri
 		//		to specify the css file for the toolbar

@@ -16,7 +16,7 @@ dojo.widget._templateCache = {};
 dojo.widget.defaultStrings = {
 	// summary: a mapping of strings that are used in template variable replacement
 	dojoRoot: dojo.hostenv.getBaseScriptUri(),
-	dojoModuleUri: dojo.uri.moduleUri("dojo"),
+	dojoWidgetModuleUri: dojo.uri.moduleUri("dojo.widget"),
 	baseScriptUri: dojo.hostenv.getBaseScriptUri()
 };
 

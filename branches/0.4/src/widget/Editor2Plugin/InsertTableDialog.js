@@ -4,7 +4,7 @@ dojo.widget.defineWidget(
 	"dojo.widget.Editor2InsertTableDialog",
 	dojo.widget.Editor2DialogContent,
 {
-	templatePath: dojo.uri.moduleUri("dojo", "widget/templates/Editor2/Dialog/inserttable.html"),
+	templatePath: dojo.uri.moduleUri("dojo.widget", "templates/Editor2/Dialog/inserttable.html"),
 
 	editableAttributes: ['summary', 'height', 'cellspacing', 'cellpadding', 'border', 'align'],
 
