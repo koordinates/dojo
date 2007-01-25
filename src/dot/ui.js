@@ -60,17 +60,17 @@ dojo.lang.mixin(dojo.dot.ui, {
 	//	Use in conjunction with dojo.dot.ui.learnHowPath.
 	customLearnHowPath: false,
 	
-	_htmlTemplatePath: "src/dot/ui-template/widget.html",
-	_cssTemplatePath: "src/dot/ui-template/widget.css",
-	_onlineImagePath: "src/dot/ui-template/greenball.png",
-	_offlineImagePath: "src/dot/ui-template/redball.png",
-	_rollerImagePath: "src/dot/ui-template/roller.gif",
+	_htmlTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.html",
+	_cssTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.css",
+	_onlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/greenball.png",
+	_offlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/redball.png",
+	_rollerImagePath: djConfig.baseRelativePath + "src/dot/ui-template/roller.gif",
+	_checkmarkImagePath: djConfig.baseRelativePath + "src/dot/ui-template/checkmark.png",
 	
 	onStart: function(){
 		// summary:
 		//	Updates our UI when synchronization first starts.
 		
-		dojo.debug("sync started");
 		this._updateSyncUI();
 	},
 	
@@ -79,7 +79,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		//	Updates our UI when synchronization starts
 		//	refreshing offline UI resources
 		
-		dojo.debug("onRefreshUI");
+		this._setSyncMessage("Downloading UI...");
 	},
 	
 	onUpload: function(){
@@ -87,7 +87,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		//	Updates our UI when synchronization starts
 		//	uploading locally changed data
 		
-		dojo.debug("onUpload");
+		this._setSyncMessage("Uploading new data...");
 	},
 	
 	onDownload: function(){
@@ -95,7 +95,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		//	Updates our UI when synchronization starts
 		//	download new server data
 		
-		dojo.debug("onDownload");
+		this._setSyncMessage("Downloading new data...");
 	},
 	
 	onFinished: function(){
@@ -103,7 +103,20 @@ dojo.lang.mixin(dojo.dot.ui, {
 		//	Updates our UI when synchronization
 		//	is finished
 		
-		dojo.debug("onFinished");
+		this._updateSyncUI();
+		var checkmark = dojo.byId("dot-success-checkmark");
+		
+		if(dojo.sync.successful == true){
+			this._setSyncMessage("Successful");
+			if(checkmark){
+				checkmark.style.display = "inline";
+			}
+		}else{
+			this._setSyncMessage("Error");
+			if(checkmark){
+				checkmark.style.display = "inline";
+			}
+		}
 	},
 
 	_onPageLoad: function(){
@@ -135,7 +148,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 	
 	_doAutoEmbed: function(){
 		// fetch our HTML for the offline widget
-		var templatePath = djConfig.baseRelativePath + this._htmlTemplatePath;
+		var templatePath = this._htmlTemplatePath;
 		var bindArgs = {
 			url:	 templatePath,
 			sync:		false,
@@ -158,12 +171,15 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var cssLink = document.createElement("link");
 		cssLink.setAttribute("rel", "stylesheet");
 		cssLink.setAttribute("type", "text/css");
-		cssLink.setAttribute("href", djConfig.baseRelativePath + this._cssTemplatePath);
+		cssLink.setAttribute("href", this._cssTemplatePath);
 		head.appendChild(cssLink);
 		
 		// inline our HTML
 		var container = dojo.byId(this.autoEmbedID);
 		container.innerHTML = data;
+		
+		// fill out our image paths
+		this._initImages();
 		
 		// update our network indicator status ball
 		this._updateNetworkIndicator();
@@ -182,20 +198,18 @@ dojo.lang.mixin(dojo.dot.ui, {
 	},
 	
 	_updateNetworkIndicator: function(){
-		var img = dojo.byId("dot-widget-network-indicator-image");
+		var onlineImg = dojo.byId("dot-widget-network-indicator-online");
+		var offlineImg = dojo.byId("dot-widget-network-indicator-offline");
 		
-		if(img == null || typeof img == "undefined"){
-			return;
+		if(onlineImg && offlineImg){
+			if(dojo.dot.isOnline == true){
+				onlineImg.style.display = "inline";
+				offlineImg.style.display = "none";
+			}else{
+				onlineImg.style.display = "none";
+				offlineImg.style.display = "inline";
+			}
 		}
-		
-		var src;
-		if(dojo.dot.isOnline == true){
-			src = djConfig.baseRelativePath + this._onlineImagePath;
-		}else{
-			src = djConfig.baseRelativePath + this._offlineImagePath;
-		}
-
-		img.setAttribute("src", src);
 	},
 	
 	_initLearnHow: function(){
@@ -208,7 +222,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		if(this.customLearnHowPath == false){
 			// add parameters to URL so the Learn How page
 			// can customize itself and display itself
-			// correctly
+			// correctly based on framework settings
 			this.learnHowPath += "?appName=" + encodeURIComponent(this.appName)
 									+ "&requireDurableCache=" + dojo.dot.requireDurableCache
 									+ "&hasDurableCache=" + dojo.dot.hasDurableCache()
@@ -250,11 +264,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 				syncingButtons.style.display = "block";
 			}
 			
-			dojo.debug("roller="+roller);
 			if(roller){
-				var src = djConfig.baseRelativePath + this._rollerImagePath;
-				dojo.debug("src="+src);
-				roller.setAttribute("src", src);
 				roller.style.visibility = "visible";
 			}
 		}else{
@@ -267,7 +277,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 			}
 			
 			if(roller){
-				roller.style.visibility = "none";
+				roller.style.visibility = "hidden";
 			}
 		}
 	},
@@ -278,6 +288,36 @@ dojo.lang.mixin(dojo.dot.ui, {
 		evt.stopPropagation();
 		
 		dojo.sync.synchronize();
+	},
+	
+	_setSyncMessage: function(message){
+		var syncMessage = dojo.byId("dot-sync-messages");
+		
+		if(syncMessage){
+			syncMessage.innerHTML = message;
+		}
+	},
+	
+	_initImages: function(){	
+		var onlineImg = dojo.byId("dot-widget-network-indicator-online");
+		if(onlineImg){
+			onlineImg.setAttribute("src", this._onlineImagePath);
+		}
+		
+		var offlineImg = dojo.byId("dot-widget-network-indicator-offline");
+		if(offlineImg){
+			offlineImg.setAttribute("src", this._offlineImagePath);
+		}
+		
+		var roller = dojo.byId("dot-roller");
+		if(roller){
+			roller.setAttribute("src", this._rollerImagePath);
+		}
+		
+		var checkmark = dojo.byId("dot-success-checkmark");
+		if(checkmark){
+			checkmark.setAttribute("src", this._checkmarkImagePath);
+		}
 	}
 });
 
