@@ -36,7 +36,7 @@ dojo.widget.defineWidget(
 				<input dojoType="DropdownDatePicker">
 		*/
 
-		iconURL: dojo.uri.moduleUri("dojo", "widget/templates/images/dateIcon.gif"),
+		iconURL: dojo.uri.moduleUri("dojo.widget", "templates/images/dateIcon.gif"),
 
 		// formatLength: String
 		// 	Type of formatting used for visual display, appropriate to locale (choice of long, short, medium or full)

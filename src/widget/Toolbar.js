@@ -14,7 +14,7 @@ dojo.widget.defineWidget(
 	isContainer: true,
 
 	templateString: '<div class="toolbarContainer" dojoAttachPoint="containerNode"></div>',
-	templateCssPath: dojo.uri.moduleUri("dojo", "widget/templates/Toolbar.css"),
+	templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/Toolbar.css"),
 
 	getItem: function(name) {
 		if(name instanceof dojo.widget.ToolbarItem) { return name; }
@@ -738,7 +738,7 @@ dojo.widget.defineWidget(
 {
 	templateString: '<span unselectable="on" class="toolbarItem toolbarSeparator"></span>',
 
-	defaultIconPath: new dojo.uri.moduleUri("dojo", "widget/templates/buttons/sep.gif"),
+	defaultIconPath: new dojo.uri.moduleUri("dojo.widget", "templates/buttons/sep.gif"),
 
 	fillInTemplate: function(args, frag, skip) {
 		dojo.widget.ToolbarSeparator.superclass.fillInTemplate.call(this, args, frag);
@@ -833,7 +833,7 @@ dojo.widget.Icon = function(enabled, disabled, hovered, selected){
 				if ((dojo.render.html.ie55 || dojo.render.html.ie60) && img.src && img.src.match(/[.]png$/i) ) {
 					domNode.width = img.width||img.offsetWidth;
 					domNode.height = img.height||img.offsetHeight;
-					domNode.setAttribute("src", dojo.uri.moduleUri("dojo", "widget/templates/images/blank.gif").uri);
+					domNode.setAttribute("src", dojo.uri.moduleUri("dojo.widget", "templates/images/blank.gif").uri);
 					domNode.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+img.src+"',sizingMethod='image')";
 				} else {
 					domNode.setAttribute("src", img.src);

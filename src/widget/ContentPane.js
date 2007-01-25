@@ -101,7 +101,7 @@ dojo.widget.defineWidget(
 		//		Class name to apply to ContentPane dom nodes
 		"class": "dojoContentPane",
 
-		templateCssPath: dojo.uri.moduleUri("dojo", "widget/templates/ContentPane.css"),
+		templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/ContentPane.css"),
 
 		postCreate: function(args, frag, parentComp){
 			// for programatically created ContentPane (with <span> tag), need to muck w/CSS

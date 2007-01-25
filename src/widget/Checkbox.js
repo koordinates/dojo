@@ -13,8 +13,8 @@ dojo.widget.defineWidget(
 		// summary
 		//	Same as an HTML checkbox, but with fancy styling
 
-		templatePath: dojo.uri.moduleUri("dojo", "widget/templates/Checkbox.html"),
-		templateCssPath: dojo.uri.moduleUri("dojo", "widget/templates/Checkbox.css"),
+		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/Checkbox.html"),
+		templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/Checkbox.css"),
 
 		// class: String
 		//	CSS class name for widget
@@ -184,7 +184,7 @@ dojo.widget.defineWidget(
 		// summary
 		//	variation on Checkbox widget to be display on monitors in high-contrast mode (that don't display CSS background images)
 
-		templatePath: dojo.uri.moduleUri("dojo", "widget/templates/CheckboxA11y.html"),
+		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/CheckboxA11y.html"),
 
 		postCreate: function(args, frag){
 			this.inputNode.checked=this.checked;
