@@ -110,7 +110,9 @@ dojo.widget.defineWidget(
 		onMouseOver: function(/*Event*/ e){
 			// summary: callback when user mouses-over the button
 			if( this.disabled ){ return; }
-			dojo.html.prependClass(this.buttonNode, "dojoButtonHover");
+			if (!dojo.html.hasClass(this.buttonNode, "dojoButtonHover")){
+				dojo.html.prependClass(this.buttonNode, "dojoButtonHover");
+			}
 			this._setImage(this.activeImg);
 		},
 	
@@ -202,6 +204,8 @@ dojo.widget.defineWidget(
 			if ( menu.open && !menu.isShowingNow) {
 				var pos = dojo.html.getAbsolutePosition(this.domNode, false);
 				menu.open(pos.x, pos.y+this.height, this);
+				// disconnect onBlur when focus moves into menu
+				dojo.event.disconnect(this.domNode, "onblur", this, "onBlur");
 			} else if ( menu.close && menu.isShowingNow ){
 				menu.close();
 			} else {
@@ -242,11 +246,11 @@ dojo.widget.defineWidget(
 
 		// downArrow: Url
 		//	path of arrow image to display to the right of the button text
-		downArrow: "src/widget/templates/images/whiteDownArrow.gif",
+		downArrow: "widget/templates/images/whiteDownArrow.gif",
 
 		// disabledDownArray: Url
 		//	path of arrow image to display to the right of the button text, when the button is disabled
-		disabledDownArrow: "src/widget/templates/images/whiteDownArrow.gif",
+		disabledDownArrow: "widget/templates/images/whiteDownArrow.gif",
 	
 		fillInTemplate: function(){
 			dojo.widget.DropDownButton.superclass.fillInTemplate.apply(this, arguments);
