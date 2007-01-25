@@ -1,16 +1,19 @@
 ﻿dojo.provide("dojo.html.units");
+dojo.require("dojo.html.style");
 
 dojo.html.units.constants = {
-	cm_in_pt: 72 / 2.54,
-	mm_in_pt: 7.2 / 2.54
+	cm_in_pt: 2.54 / 72,
+	mm_in_pt: 25.4 / 72
 };
 
-dojo.html._getLength = function(len){
+dojo.html._getLength = function(len, passAuto){
 	if(typeof len != "string"){ return len; }
 	if(len.length == 0){ return 0; }
-	var val = parseFloat(len);
-	if(len.length > 2){
-		switch(len.slice(-2)){
+	if(len == "auto"){ return passAuto ? len : 0; }
+	var val  = parseFloat(len);
+	var unit = len.match(/%|[a-zA-Z]{2}\s*$/);
+	if(unit){
+		switch(unit[0]){
 			case "px": return val;
 			case "pt": return val * this.px_in_pt;
 			case "in": return val * 72 * this.px_in_pt;
@@ -19,6 +22,7 @@ dojo.html._getLength = function(len){
 			case "cm": return val / dojo.html.units.constants.cm_in_pt * this.px_in_pt;
 			case "em": return val * this["1em"];
 			case "ex": return val * this["1ex"];
+			case "%":  return val / 100 * this["100%"];
 		}
 	}
 	return val;	// Number
@@ -146,7 +150,7 @@ dojo.html.measure = function(){
 	return heights;
 };
 
-dojo.html.measureNode = function(node){
+dojo.html._measureNode = function(node){
 	//	summary
 	//	Returns an object that has pixel equivilents of standard font size values.
 	//	node: Node: a node, which will be used as a model and a reference
@@ -169,4 +173,115 @@ dojo.html.measureDefaults = function(recalc){
 		dojo.html._defaultFontMeasurements = dojo.html._measure(dojo.body());
 	}
 	return dojo.html._defaultFontMeasurements;
+};
+
+dojo.html._getDefaultLength = function(len, passAuto){
+	if(typeof len != "string"){ return len; }
+	if(len.length == 0){ return 0; }
+	if(len == "auto"){ return passAuto ? len : 0; }
+	var val = parseFloat(len);
+	if(len.length > 2){
+		switch(len.slice(-2)){
+			case "px": return val;
+			case "pt": return val * this.px_in_pt;
+			case "in": return val * 72 * this.px_in_pt;
+			case "pc": return val * 12 * this.px_in_pt;
+			case "mm": return val / dojo.html.units.constants.mm_in_pt * this.px_in_pt;
+			case "cm": return val / dojo.html.units.constants.cm_in_pt * this.px_in_pt;
+			case "em":
+			case "ex":
+			case "%":
+				var t = dojo.html._measureNode(this.node);
+				var empty = {};
+				for(var i in t){
+					if(!(i in empty) && typeof t[i] == "number"){
+						this[i] = t[i];
+					}
+				}
+				this.getLength = dojo.html._getLength;
+				return this.getLength(len, passAuto);
+		}
+	}
+	return val;	// Number
+};
+
+dojo.html.measureNode = function(node){
+	//	summary
+	//	Returns an object that has pixel equivilents of standard font size values.
+	//	node: Node: a node, which will be used as a model and a reference
+
+	var t = dojo.html.measureDefaults();
+	t.node = dojo.byId(node);
+	t.getLength = dojo.html._getDefaultLength;
+	return t;
+};
+
+dojo.html.getStyleValue = function(/* HTMLElement */node, /* string */cssSelector){
+	// summary
+	// Returns the computed style of cssSelector on node.
+	
+	// actually this is a dispatcher function, which is meant to run only once
+	var f;
+	
+	node = dojo.byId(node);
+	if(!node || !node.style){
+		return;	// unknown
+	}
+	if (document.defaultView && dojo.html.isDescendantOf(node, node.ownerDocument)){ // W3, gecko, KHTML
+		if(node.style.getPropertyValue){ // W3
+			f = dojo.html._getStyleValueW3;
+		}else{
+			f = dojo.html._getStyleValueGeckoKhtml;
+		}
+	} else if(node.currentStyle){ // IE
+		f = dojo.html._getStyleValueIe;
+	}
+	dojo.html.getStyleValue = function(node, cssSelector){	
+		return dojo.html._getStyleValueWrapper(node, cssSelector, f);
+	}
+	return dojo.html.getStyleValue(node, cssSelector);
+};
+
+dojo.html._getStyleValueWrapper = function(node, cssSelector, f){
+	// normalize parameters
+	node = dojo.byId(node);
+	if(!node || !node.style){
+		return;
+	}
+	var cssSelector = dojo.html.toSelectorCase(cssSelector);
+	// do the work
+	return f(node, cssSelector);
+};
+
+dojo.html._getStyleValueW3 = function(node, cssSelector){
+	try{
+		// mozilla segfaults when margin-* and node is removed from doc
+		// FIXME: need to figure out a if there is quicker workaround
+		var cs = document.defaultView.getComputedStyle(node, "");
+		if(cs){
+			return cs.getPropertyValue(cssSelector);	// integer
+		} 
+	}catch(e){ // reports are that Safari can throw an exception above
+		// do nothing
+	}
+	return node.style.getPropertyValue(cssSelector);	// integer
+};
+
+dojo.html._getStyleValueGeckoKhtml = function(node, cssSelector){
+	try{
+		// mozilla segfaults when margin-* and node is removed from doc
+		// FIXME: need to figure out a if there is quicker workaround
+		var cs = document.defaultView.getComputedStyle(node, "");
+		if(cs){
+			return cs.getPropertyValue(cssSelector);	// integer
+		} 
+	}catch(e){ // reports are that Safari can throw an exception above
+		// do nothing
+	}
+	return;	// unknown
+};
+
+dojo.html._getStyleValueIe = function(node, cssSelector){
+	var property = dojo.html.toCamelCase(cssSelector);
+	return node.currentStyle[property];	// integer
 };
