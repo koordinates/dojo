@@ -12,7 +12,6 @@
 	padding-bottom: 0.2em;
 }
 
-#dot-widget-network-indicator,
 #dot-widget-title-text{
 	vertical-align: middle;
 }
@@ -37,9 +36,23 @@
 	font-size: 11pt;
 }
 
+#dot-sync-button,
+#dot-syncing{
+	font-size: 14pt;
+}
+
+#dot-recommended,
+#dot-sync-cancel{
+	font-size: 11pt;
+}
+
+#dot-sync-controls{
+	margin-top: 0.8em;
+	margin-bottom: 0.8em;
+}
 
 /** Learn How Page Styles */
-body{
+#dot-learn-how-body{
 	padding: 3em;
 	background-color: #CDDDE9; /* light cold blue */
 }
