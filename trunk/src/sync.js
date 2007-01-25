@@ -47,40 +47,44 @@ dojo.lang.mixin(dojo.sync, {
 	
 		this.isSyncing = true;
 		
+		this.start();
+	},
+	
+	start: function(){
 		if(this.onStart){
 			this.onStart();
 		}
 		
-		var timeout = 10000000;
-		
-		for(var i = 0; i < timeout; i++){
-			var a = 5;
-		}
-		
+		this.refreshUI();
+	},
+	
+	refreshUI: function(){
 		if(this.onRefreshUI){
 			this.onRefreshUI();
 		}
 		
-		for(var i = 0; i < timeout; i++){
-			var a = 5;
-		}
-		
+		window.setTimeout(dojo.lang.hitch(this, this.upload), 2000);
+	},
+	
+	upload: function(){
 		if(this.onUpload){
 			this.onUpload();
 		}
 		
-		for(var i = 0; i < timeout; i++){
-			var a = 5;
-		}
-		
+		window.setTimeout(dojo.lang.hitch(this, this.download), 2000);
+	},
+	
+	download: function(){
 		if(this.onDownload){
 			this.onDownload();
 		}
 		
-		for(var i = 0; i < timeout; i++){
-			var a = 5;
-		}
-		
+		window.setTimeout(dojo.lang.hitch(this, this.finished), 2000);
+	},
+	
+	finished: function(){
+		this.successful = true;
+		this.isSyncing = false;
 		if(this.onFinished){
 			this.onFinished();
 		}
