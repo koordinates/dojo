@@ -66,7 +66,12 @@ dojo.lang.mixin(dojo.sync, {
 	//						"The document 'hello world' was automatically merged"];
 	details: null,
 	
-	synchronize: function(){
+	// lastSync: Date
+	//	The last successful sync that was performed, null
+	//	if none.
+	lastSync: null,
+	
+	synchronize: function(){ /* void */
 		// summary:
 		//	Begin a synchronization session.
 		
@@ -82,7 +87,7 @@ dojo.lang.mixin(dojo.sync, {
 		this.start();
 	},
 	
-	cancel: function(){
+	cancel: function(){ /* void */
 		// summary:
 		//	Attempts to cancel this sync session
 		
@@ -97,7 +102,7 @@ dojo.lang.mixin(dojo.sync, {
 		}
 	},
 	
-	start: function(){
+	start: function(){ /* void */
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -110,7 +115,7 @@ dojo.lang.mixin(dojo.sync, {
 		this.refreshUI();
 	},
 	
-	refreshUI: function(){
+	refreshUI: function(){ /* void */
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -123,7 +128,7 @@ dojo.lang.mixin(dojo.sync, {
 		window.setTimeout(dojo.lang.hitch(this, this.upload), 2000);
 	},
 	
-	upload: function(){
+	upload: function(){ /* void */
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -136,7 +141,7 @@ dojo.lang.mixin(dojo.sync, {
 		window.setTimeout(dojo.lang.hitch(this, this.download), 2000);
 	},
 	
-	download: function(){
+	download: function(){ /* void */
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -149,13 +154,14 @@ dojo.lang.mixin(dojo.sync, {
 		window.setTimeout(dojo.lang.hitch(this, this.finished), 2000);
 	},
 	
-	finished: function(){
+	finished: function(){ /* void */
 		this.isSyncing = false;
 		
 		if(this.cancelled == false){
 			this.successful = true;
 			this.details = ["The document 'foobar' had conflicts - yours was chosen",
 							"The document 'hello world' was automatically merged"];
+			this.lastSync = new Date();
 		}else{
 			this.successful = false;
 		}
@@ -165,14 +171,31 @@ dojo.lang.mixin(dojo.sync, {
 		}
 	},
 	
-	isRecommended: function(){
+	isRecommended: function(){ /* boolean */
 		// summary:
 		//	Whether syncing is recommended or not.
 		// description:
 		//	If the user has local data that has not been
 		//	synced, then we return true.
 		
+		var modifiedItems = this.getNumModifiedItems();
+		if(modifiedItems > 0){
+			return true;
+		}else{
+			return false;
+		}
+	},
+	
+	getNumModifiedItems: function(){ /* int */
+		// summary:
+		//	Returns the number of local modified items
+		// description:
+		//	This method internally determines the number
+		//	of items a user has locally modified, either
+		//	through creation, deletion, or updates.	If thing
+		//	has been modified
+		
 		// FIXME: Implement
-		return false;
+		return 5;
 	}
 });
