@@ -268,6 +268,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var checkmark = dojo.byId("dot-success-checkmark");
 		var syncMessages = dojo.byId("dot-sync-messages");
 		var details = dojo.byId("dot-sync-details");
+		var recommended = dojo.byId("dot-recommended");
 		
 		if(dojo.sync.isSyncing == true){
 			if(syncButtons){
@@ -304,6 +305,14 @@ dojo.lang.mixin(dojo.dot.ui, {
 			
 			if(roller){
 				roller.style.display = "none";
+			}
+			
+			if(recommended){
+				if(dojo.sync.isRecommended()){
+					recommended.style.display = "inline";
+				}else{
+					recommended.style.display = "none";
+				}
 			}
 		}
 	},

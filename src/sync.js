@@ -104,10 +104,21 @@ dojo.lang.mixin(dojo.sync, {
 	finished: function(){
 		this.successful = true;
 		this.isSyncing = false;
-		/*this.details = ["The document 'foobar' had conflicts - yours was chosen",
-						"The document 'hello world' was automatically merged"];*/
+		this.details = ["The document 'foobar' had conflicts - yours was chosen",
+						"The document 'hello world' was automatically merged"];
 		if(this.onFinished){
 			this.onFinished();
 		}
+	},
+	
+	isRecommended: function(){
+		// summary:
+		//	Whether syncing is recommended or not.
+		// description:
+		//	If the user has local data that has not been
+		//	synced, then we return true.
+		
+		// FIXME: Implement
+		return false;
 	}
 });
