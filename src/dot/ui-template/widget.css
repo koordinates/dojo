@@ -109,6 +109,12 @@
 	margin-right: 0.5em; 
 }
 
+a.dot-disabled{
+	text-decoration: none;
+	color: LightGray;
+	cursor: text;
+}
+
 /** Learn How Page Styles */
 #dot-learn-how-body{
 	padding: 3em;
