@@ -206,6 +206,16 @@ dojo.lang.mixin(dojo.dot.ui, {
 		if(syncButton){
 			dojo.event.connect(syncButton, "onclick", this, this._synchronize);
 		}
+		
+		var detailsButton = dojo.byId("dot-sync-details-button");
+		if(detailsButton){
+			dojo.event.connect(detailsButton, "onclick", this, this._showDetails);
+		}
+		
+		var cancelButton = dojo.byId("dot-sync-cancel-button");
+		if(cancelButton){
+			dojo.event.connect(cancelButton, "onclick", this, this._cancel);
+		}
 	},
 	
 	_updateNetworkIndicator: function(){
@@ -353,7 +363,53 @@ dojo.lang.mixin(dojo.dot.ui, {
 		if(checkmark){
 			checkmark.setAttribute("src", this._checkmarkImagePath);
 		}
-	}
+	},
+	
+	_showDetails: function(evt){
+		// cancel the button's default behavior
+		evt.preventDefault();
+		evt.stopPropagation();
+		
+		if(dojo.sync.details == null){
+			return;
+		}
+		
+		// determine our HTML message to display
+		var html = "";
+		html += "<html><head><title>Sync Details</title><head><body>";
+		html += "<h1>Sync Details</h1>\n";
+		html += "<ul>\n";
+		for(var i = 0; i < dojo.sync.details.length; i++){
+			html += "<li>";
+			html += dojo.sync.details[i];
+			html += "</li>";	
+		}
+		html += "</ul>\n";
+		html += "<a href='javascript:window.close()' "
+				 + "style='text-align: right; padding-right: 2em;'>"
+				 + "Close Window"
+				 + "</a>\n";
+		html += "</body></html>";
+		
+		// open a popup window with this message
+		var windowParams = "height=400,width=600,resizable=true,"
+							+ "scrollbars=true,toolbar=no,menubar=no,"
+							+ "location=no,directories=no,dependent=yes";
+		var popup = window.open(null, "Sync Details", windowParams);
+		popup.document.write(html);
+		popup.document.close();
+		
+		// put the focus on the popup window
+		if(popup.focus){
+			popup.focus();
+		}
+},
+	
+	_cancel: function(evt){
+		// cancel the button's default behavior
+		evt.preventDefault();
+		evt.stopPropagation();
+	},
 });
 
 dojo.event.connect(window, "onload", dojo.dot.ui, dojo.dot.ui._onPageLoad);
