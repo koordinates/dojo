@@ -37,6 +37,23 @@ dojo.lang.mixin(dojo.sync, {
 	//	session.
 	isSyncing: false,
 	
+	// successful: boolean
+	//	Whether the last sync was successful or not.
+	//	If false, an error occurred.
+	successful: true,
+	
+	// details: String[]
+	//	Details on the sync. If the sync was successful,
+	//	this will carry any conflict or merging messages
+	//	that might be available; if the sync was 
+	//	unsuccessful, this will have an error message.
+	//	For both of these, this should be an array of Strings,
+	//	where each string carries details on the sync. 
+	//	Example: 
+	//	dojo.sync.details = ["The document 'foobar' had conflicts - yours one",
+	//						"The document 'hello world' was automatically merged"];
+	details: null,
+	
 	synchronize: function(){
 		// summary:
 		//	Begin a synchronization session.
@@ -46,6 +63,8 @@ dojo.lang.mixin(dojo.sync, {
 		}
 	
 		this.isSyncing = true;
+		this.successful = false;
+		this.details = null;
 		
 		this.start();
 	},
@@ -85,6 +104,8 @@ dojo.lang.mixin(dojo.sync, {
 	finished: function(){
 		this.successful = true;
 		this.isSyncing = false;
+		/*this.details = ["The document 'foobar' had conflicts - yours was chosen",
+						"The document 'hello world' was automatically merged"];*/
 		if(this.onFinished){
 			this.onFinished();
 		}
