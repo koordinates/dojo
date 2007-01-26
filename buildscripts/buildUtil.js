@@ -464,7 +464,7 @@ buildUtil.makeFlatBundleContents = function(prefix, prefixPath, srcFileName){
 	dojo.requireLocalization(moduleName, bundleName, localeName);
 	
 	//Get the generated, flattened bundle.
-	var module = dojo.getObject(moduleName);
+	var module = dojo.evalObjPath(moduleName);
 	var bundleLocale = localeName ? localeName.replace(/-/g, "_") : "ROOT";
 	var flattenedBundle = module.nls[bundleName][bundleLocale];
 	//print("## flattenedBundle: " + flattenedBundle);
