@@ -55,6 +55,18 @@
 	display: none;
 }
 
+#dot-roller{
+	display: none;
+}
+
+.dot-sync-error{
+	color: red;
+}
+
+#dot-sync-details{
+	display: none;
+}
+
 /** Learn How Page Styles */
 #dot-learn-how-body{
 	padding: 3em;

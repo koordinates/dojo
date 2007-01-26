@@ -2,7 +2,7 @@ dojo.provide("dojo.dot.ui");
 
 dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
-
+dojo.require("dojo.html.*");
 
 dojo.lang.mixin(dojo.dot.ui, {
 	// appName: String
@@ -105,6 +105,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		
 		this._updateSyncUI();
 		var checkmark = dojo.byId("dot-success-checkmark");
+		var details = dojo.byId("dot-sync-details");
 		
 		if(dojo.sync.successful == true){
 			this._setSyncMessage("Successful");
@@ -113,9 +114,19 @@ dojo.lang.mixin(dojo.dot.ui, {
 			}
 		}else{
 			this._setSyncMessage("Error");
-			if(checkmark){
-				checkmark.style.display = "inline";
+			
+			var messages = dojo.byId("dot-sync-messages");
+			if(messages){
+				dojo.html.addClass(messages, "dot-sync-error");
 			}
+			
+			if(checkmark){
+				checkmark.style.display = "none";
+			}
+		}
+		
+		if(dojo.sync.details != null && details){
+			details.style.display = "inline";
 		}
 	},
 
@@ -255,6 +266,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var syncingButtons = dojo.byId("dot-syncing-buttons");
 		var roller = dojo.byId("dot-roller");
 		var checkmark = dojo.byId("dot-success-checkmark");
+		var syncMessages = dojo.byId("dot-sync-messages");
+		var details = dojo.byId("dot-sync-details");
 		
 		if(dojo.sync.isSyncing == true){
 			if(syncButtons){
@@ -266,11 +279,19 @@ dojo.lang.mixin(dojo.dot.ui, {
 			}
 			
 			if(roller){
-				roller.style.visibility = "visible";
+				roller.style.display = "inline";
 			}
 			
 			if(checkmark){
 				checkmark.style.display = "none";
+			}
+			
+			if(syncMessages){
+				dojo.html.removeClass(syncMessages, "dot-sync-error");
+			}
+			
+			if(details){
+				details.style.display = "none";
 			}
 		}else{
 			if(syncButtons){
@@ -282,7 +303,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 			}
 			
 			if(roller){
-				roller.style.visibility = "hidden";
+				roller.style.display = "none";
 			}
 		}
 	},
