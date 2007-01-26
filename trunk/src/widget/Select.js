@@ -32,8 +32,7 @@ dojo.widget.defineWidget(
 			//	TODO: this doesn't work correctly when a URL is specified, because we can't
 			//	set the label automatically (based on the specified value)
 			this.comboBoxValue.value = value;
-			dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
-			this.onValueChanged(value);
+			this._checkValueChanged();
 		},
 
 		setLabel: function(value){
