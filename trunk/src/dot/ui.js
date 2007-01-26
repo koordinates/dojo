@@ -219,10 +219,6 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// update our sync metadata
 		this._updateSyncMetadata();
 		
-		// update further commands present
-		// at the bottom of the widget
-		this._updateMoreCommands();
-		
 		// register our event listeners for buttons
 		var syncButton = dojo.byId("dot-sync-button");
 		if(syncButton){
@@ -237,6 +233,16 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var cancelButton = dojo.byId("dot-sync-cancel-button");
 		if(cancelButton){
 			dojo.event.connect(cancelButton, "onclick", this, this._cancel);
+		}
+		
+		var onlineButton = dojo.byId("dot-work-online-button");
+		if(onlineButton){
+			dojo.event.connect(onlineButton, "onclick", this, this._workOnline);
+		}
+		
+		var offlineButton = dojo.byId("dot-work-offline-button");
+		if(offlineButton){
+			dojo.event.connect(offlineButton, "onclick", this, this._workOffline);
 		}
 	},
 	
@@ -357,6 +363,11 @@ dojo.lang.mixin(dojo.dot.ui, {
 				}
 			}
 		}
+		
+		// update further commands present
+		// at the bottom of the widget; these
+		// change based on the status of syncing
+		this._updateMoreCommands();
 	},
 	
 	_synchronize: function(evt){
@@ -529,6 +540,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 	_updateMoreCommands: function(){
 		var offlineButton = dojo.byId("dot-work-offline-button");
 		var onlineButton = dojo.byId("dot-work-online-button");
+		var configureButton = dojo.byId("dot-configure-button");
 		
 		if(dojo.dot.isOnline == true){
 			if(offlineButton){
@@ -547,7 +559,45 @@ dojo.lang.mixin(dojo.dot.ui, {
 				onlineButton.style.display = "inline";
 			}
 		}
-	}
+		
+		if(dojo.sync.isSyncing == true){
+			if(offlineButton){
+				dojo.html.addClass(offlineButton, "dot-disabled");
+			}
+			
+			if(onlineButton){
+				dojo.html.addClass(onlineButton, "dot-disabled");
+			}
+			
+			if(configureButton){
+				dojo.html.addClass(configureButton, "dot-disabled");
+			}
+		}else{
+			if(offlineButton){
+				dojo.html.removeClass(offlineButton, "dot-disabled");
+			}
+			
+			if(onlineButton){
+				dojo.html.removeClass(onlineButton, "dot-disabled");
+			}
+			
+			if(configureButton){
+				dojo.html.removeClass(configureButton, "dot-disabled");
+			}
+		}
+	},
+	
+	_workOnline: function(evt){
+		// cancel the button's default behavior
+		evt.preventDefault();
+		evt.stopPropagation();
+	},
+	
+	_workOffline: function(evt){
+		// cancel the button's default behavior
+		evt.preventDefault();
+		evt.stopPropagation();
+	}	
 });
 
 dojo.event.connect(window, "onload", dojo.dot.ui, dojo.dot.ui._onPageLoad);
