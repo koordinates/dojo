@@ -1,14 +1,18 @@
 /** Offline Widget Styles */
 
 #dot-widget-container{
-	width: 217px;
-	height: 215px;
-	border: 2px solid #CDDDE9; /* light cold blue */
+	/** 
+		Keep these as EMs so widget reflows fluidly based on 
+		user-font size settings
+	*/
+	width: 13em;
+	height: 14em;
+	border: 2px solid #CDDDE9; /* light tundra blue */
 	position: relative;
 }
 
 #dot-widget-title-bar{
-	background-color: #CDDDE9; /* light cold blue */
+	background-color: #CDDDE9; /* light tundra blue */
 	padding-top: 0.2em;
 	padding-bottom: 0.2em;
 }
@@ -64,6 +68,7 @@
 
 #dot-roller{
 	display: none;
+	padding-right: 4px;
 }
 
 .dot-sync-error{
@@ -97,6 +102,7 @@
 #dot-more-commands{
 	position: absolute;
 	bottom: 8px;
+	padding-top: 3px;
 }
 
 #dot-configure-button{
@@ -106,7 +112,7 @@
 /** Learn How Page Styles */
 #dot-learn-how-body{
 	padding: 3em;
-	background-color: #CDDDE9; /* light cold blue */
+	background-color: #CDDDE9; /* light tundra blue */
 }
 
 #dot-learn-how-contents{
