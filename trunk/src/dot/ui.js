@@ -395,7 +395,15 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var windowParams = "height=400,width=600,resizable=true,"
 							+ "scrollbars=true,toolbar=no,menubar=no,"
 							+ "location=no,directories=no,dependent=yes";
-		var popup = window.open(null, "Sync Details", windowParams);
+
+		var popup = window.open("", "SyncDetails", windowParams);
+		
+		if(popup == null || typeof popup == "undefined"){ // aggressive popup blocker
+			alert("Please allow popup windows for this domain; can't display sync details window");
+			return;
+		}
+		
+		popup.document.open();
 		popup.document.write(html);
 		popup.document.close();
 		
@@ -403,13 +411,13 @@ dojo.lang.mixin(dojo.dot.ui, {
 		if(popup.focus){
 			popup.focus();
 		}
-},
+	},
 	
 	_cancel: function(evt){
 		// cancel the button's default behavior
 		evt.preventDefault();
 		evt.stopPropagation();
-	},
+	}
 });
 
 dojo.event.connect(window, "onload", dojo.dot.ui, dojo.dot.ui._onPageLoad);
