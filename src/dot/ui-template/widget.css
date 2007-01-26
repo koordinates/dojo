@@ -2,8 +2,9 @@
 
 #dot-widget-container{
 	width: 217px;
-	height: 210px;
+	height: 215px;
 	border: 2px solid #CDDDE9; /* light cold blue */
+	position: relative;
 }
 
 #dot-widget-title-bar{
@@ -37,7 +38,10 @@
 }
 
 #dot-sync-button,
-#dot-syncing{
+#dot-syncing,
+#dot-configure-button,
+#dot-work-online-button,
+#dot-work-offline-button{
 	font-size: 14pt;
 }
 
@@ -84,6 +88,19 @@
 #dot-last-sync,
 #dot-num-modified-items{
 	font-size: 11pt;
+}
+
+#dot-num-modified-items{
+	padding-bottom: 0.3em;
+}
+
+#dot-more-commands{
+	position: absolute;
+	bottom: 8px;
+}
+
+#dot-configure-button{
+	margin-right: 0.5em; 
 }
 
 /** Learn How Page Styles */

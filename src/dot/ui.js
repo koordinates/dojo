@@ -219,6 +219,10 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// update our sync metadata
 		this._updateSyncMetadata();
 		
+		// update further commands present
+		// at the bottom of the widget
+		this._updateMoreCommands();
+		
 		// register our event listeners for buttons
 		var syncButton = dojo.byId("dot-sync-button");
 		if(syncButton){
@@ -359,6 +363,14 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// cancel the button's default behavior
 		evt.preventDefault();
 		evt.stopPropagation();
+		
+		// cause the clicked link to lose focus, so
+		// that when we are finished it won't be 
+		// annoyingly selected by the user
+		var syncButton = dojo.byId("dot-sync-button");
+		if(syncButton && syncButton.blur){
+			syncButton.blur();
+		}
 		
 		dojo.sync.synchronize();
 	},
@@ -512,6 +524,29 @@ dojo.lang.mixin(dojo.dot.ui, {
 		}
 		
 		return hour + ":" + minutes + " " + amPM;	
+	},
+	
+	_updateMoreCommands: function(){
+		var offlineButton = dojo.byId("dot-work-offline-button");
+		var onlineButton = dojo.byId("dot-work-online-button");
+		
+		if(dojo.dot.isOnline == true){
+			if(offlineButton){
+				offlineButton.style.display = "inline";
+			}
+			
+			if(onlineButton){
+				onlineButton.style.display = "none";
+			}
+		}else{
+			if(offlineButton){
+				offlineButton.style.display = "none";
+			}
+			
+			if(onlineButton){
+				onlineButton.style.display = "inline";
+			}
+		}
 	}
 });
 

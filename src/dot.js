@@ -9,7 +9,7 @@ dojo.lang.mixin(dojo.dot, {
 	//	to dojo.dot.goOnline() and dojo.dot.goOffline(),
 	//	or it was set the last time we called
 	//	dojo.dot.isSiteAvailable()
-	isOnline: false,
+	isOnline: true,
 	
 	// requireDurableCache: boolean
 	//	A durable cache is a cache that can correctly and
