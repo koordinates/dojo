@@ -353,14 +353,22 @@ dojo.widget.defineWidget(
 		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/ComboBox.html"),
 		templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/ComboBox.css"),
 
+		_prevValue:null, 
+		_checkValueChanged: function(){ 
+			var value = this.comboBoxValue.value; 
+			if (this._prevValue != value){ 
+				this._prevValue = value; 
+				// only change state and value if a new value is set 
+				dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true); 
+				this.onValueChanged(value); 
+			} 
+		}, 
+
 		setValue: function(/*String*/ value){
 			// summary: Sets the value of the combobox
 			this.comboBoxValue.value = value;
 			if (this.textInputNode.value != value){ // prevent mucking up of selection
 				this.textInputNode.value = value;
-				// only change state and value if a new value is set
-				dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
-				this.onValueChanged(value);
 			}
 		},
 
@@ -827,12 +835,14 @@ dojo.widget.defineWidget(
 
 				// if the input is empty do nothing
 				if(!this.textInputNode.value.length){
+					this._checkValueChanged();
 					return;
 				}
 				tgt = dojo.html.firstElement(this.optionsListNode);
 
 				// user has input value not in option list
 				if(!tgt || !this._isInputEqualToResult(tgt.getAttribute("resultName"))){
+					this._checkValueChanged();
 					return;
 				}
 				// otherwise the user has accepted the autocompleted value
@@ -843,6 +853,7 @@ dojo.widget.defineWidget(
 			while((tgt.nodeType!=1)||(!tgt.getAttribute("resultName"))){
 				tgt = tgt.parentNode;
 				if(tgt === dojo.body()){
+					this._checkValueChanged();
 					return false;
 				}
 			}
@@ -853,6 +864,7 @@ dojo.widget.defineWidget(
 				this._hideResultList();
 				this._setSelectedRange(this.textInputNode, 0, null);
 			}
+			this._checkValueChanged();
 			this._tryFocus();
 		},
 
