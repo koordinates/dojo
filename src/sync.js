@@ -32,10 +32,22 @@ dojo.lang.mixin(dojo.sync, {
 	//	dojo.sync.error for sync details
 	onFinished: null,
 	
+	// onCancel: Function
+	//	Called when canceling has been initiated;
+	//	canceling will be attempted, followed
+	//	by a call to onFinished
+	onCancel: null,
+	
 	// isSyncing: boolean
 	//	Whether we are in the middle of a syncing
 	//	session.
 	isSyncing: false,
+	
+	// cancelled: boolean
+	//	Whether we were cancelled during our last
+	//	sync request or not. If we are cancelled, then
+	//	successful will be false.
+	cancelled: false,
 	
 	// successful: boolean
 	//	Whether the last sync was successful or not.
@@ -65,11 +77,32 @@ dojo.lang.mixin(dojo.sync, {
 		this.isSyncing = true;
 		this.successful = false;
 		this.details = null;
+		this.cancelled = false;
 		
 		this.start();
 	},
 	
+	cancel: function(){
+		// summary:
+		//	Attempts to cancel this sync session
+		
+		if(this.isSyncing == false){
+			return;
+		}
+		
+		this.cancelled = true;
+		
+		if(this.onCancel){
+			this.onCancel();
+		}
+	},
+	
 	start: function(){
+		if(this.cancelled == true){
+			this.finished();
+			return;
+		}
+		
 		if(this.onStart){
 			this.onStart();
 		}
@@ -78,6 +111,11 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	refreshUI: function(){
+		if(this.cancelled == true){
+			this.finished();
+			return;
+		}
+		
 		if(this.onRefreshUI){
 			this.onRefreshUI();
 		}
@@ -86,6 +124,11 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	upload: function(){
+		if(this.cancelled == true){
+			this.finished();
+			return;
+		}
+		
 		if(this.onUpload){
 			this.onUpload();
 		}
@@ -94,6 +137,11 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	download: function(){
+		if(this.cancelled == true){
+			this.finished();
+			return;
+		}
+		
 		if(this.onDownload){
 			this.onDownload();
 		}
@@ -102,10 +150,16 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	finished: function(){
-		this.successful = true;
 		this.isSyncing = false;
-		this.details = ["The document 'foobar' had conflicts - yours was chosen",
-						"The document 'hello world' was automatically merged"];
+		
+		if(this.cancelled == false){
+			this.successful = true;
+			this.details = ["The document 'foobar' had conflicts - yours was chosen",
+							"The document 'hello world' was automatically merged"];
+		}else{
+			this.successful = false;
+		}
+		
 		if(this.onFinished){
 			this.onFinished();
 		}

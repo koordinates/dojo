@@ -102,8 +102,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// summary:
 		//	Updates our UI when synchronization
 		//	is finished
-		
 		this._updateSyncUI();
+		
 		var checkmark = dojo.byId("dot-success-checkmark");
 		var details = dojo.byId("dot-sync-details");
 		
@@ -112,6 +112,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 			if(checkmark){
 				checkmark.style.display = "inline";
 			}
+		}if(dojo.sync.cancelled == true){
+			this._setSyncMessage("Cancelled");
 		}else{
 			this._setSyncMessage("Error");
 			
@@ -119,15 +121,17 @@ dojo.lang.mixin(dojo.dot.ui, {
 			if(messages){
 				dojo.html.addClass(messages, "dot-sync-error");
 			}
-			
-			if(checkmark){
-				checkmark.style.display = "none";
-			}
 		}
 		
 		if(dojo.sync.details != null && details){
 			details.style.display = "inline";
 		}
+	},
+	
+	onCancel: function(){
+		// summary:
+		//	Updates our UI as we attempt sync canceling
+		this._setSyncMessage("Canceling...");
 	},
 
 	_onPageLoad: function(){
@@ -150,6 +154,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		dojo.sync.onUpload = dojo.lang.hitch(this, this.onUpload);
 		dojo.sync.onDownload = dojo.lang.hitch(this, this.onDownload);
 		dojo.sync.onFinished = dojo.lang.hitch(this, this.onFinished);
+		dojo.sync.onCancel = dojo.lang.hitch(this, this.onCancel);
 		
 		// embed the offline widget UI
 		if(this.autoEmbed == true){
@@ -417,6 +422,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// cancel the button's default behavior
 		evt.preventDefault();
 		evt.stopPropagation();
+		
+		dojo.sync.cancel();
 	}
 });
 
