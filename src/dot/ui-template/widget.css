@@ -48,7 +48,10 @@
 
 #dot-sync-controls{
 	margin-top: 0.8em;
-	margin-bottom: 0.8em;
+}
+
+#dot-sync-status{
+	font-size: 11pt;
 }
 
 #dot-success-checkmark{
@@ -66,6 +69,21 @@
 #dot-sync-details{
 	display: none;
 	padding-left: 0.2em;
+}
+
+#dot-sync-status{
+	height: 2em;
+	margin-top: 0.8em;
+	margin-bottom: 0.8em;
+}
+
+#dot-last-sync{
+	line-height: 1.5em;
+}
+
+#dot-last-sync,
+#dot-num-modified-items{
+	font-size: 11pt;
 }
 
 /** Learn How Page Styles */

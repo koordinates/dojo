@@ -112,8 +112,12 @@ dojo.lang.mixin(dojo.dot.ui, {
 			if(checkmark){
 				checkmark.style.display = "inline";
 			}
-		}if(dojo.sync.cancelled == true){
+		}else if(dojo.sync.cancelled == true){
 			this._setSyncMessage("Cancelled");
+			
+			if(checkmark){
+				checkmark.style.display = "none";
+			}
 		}else{
 			this._setSyncMessage("Error");
 			
@@ -121,11 +125,17 @@ dojo.lang.mixin(dojo.dot.ui, {
 			if(messages){
 				dojo.html.addClass(messages, "dot-sync-error");
 			}
+			
+			if(checkmark){
+				checkmark.style.display = "none";
+			}
 		}
 		
 		if(dojo.sync.details != null && details){
 			details.style.display = "inline";
 		}
+		
+		this._updateSyncMetadata();
 	},
 	
 	onCancel: function(){
@@ -206,6 +216,9 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// update our sync UI
 		this._updateSyncUI();
 		
+		// update our sync metadata
+		this._updateSyncMetadata();
+		
 		// register our event listeners for buttons
 		var syncButton = dojo.byId("dot-sync-button");
 		if(syncButton){
@@ -284,6 +297,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var syncMessages = dojo.byId("dot-sync-messages");
 		var details = dojo.byId("dot-sync-details");
 		var recommended = dojo.byId("dot-recommended");
+		var lastSync = dojo.byId("dot-last-sync");
+		var numItems = dojo.byId("dot-num-modified-items");
 		
 		if(dojo.sync.isSyncing == true){
 			if(syncButtons){
@@ -308,6 +323,14 @@ dojo.lang.mixin(dojo.dot.ui, {
 			
 			if(details){
 				details.style.display = "none";
+			}
+			
+			if(lastSync){
+				lastSync.innerHTML = "";
+			}
+			
+			if(numItems){
+				numItems.innerHTML = "";
 			}
 		}else{
 			if(syncButtons){
@@ -424,6 +447,71 @@ dojo.lang.mixin(dojo.dot.ui, {
 		evt.stopPropagation();
 		
 		dojo.sync.cancel();
+	},
+	
+	_updateSyncMetadata: function(){
+		var lastSyncField = dojo.byId("dot-last-sync");
+		var numItemsField = dojo.byId("dot-num-modified-items");
+		
+		if(lastSyncField){
+			if(dojo.sync.lastSync != null){
+				lastSyncField.style.display = "block";
+				
+				var dateStr = this._getDateString(dojo.sync.lastSync);
+				lastSyncField.innerHTML = "Updated " + dateStr;
+			}else{
+				lastSyncField.style.display = "none";
+			}
+		}	
+		
+		if(numItemsField){
+			var numItems = dojo.sync.getNumModifiedItems();
+			if(numItems > 0){
+				numItemsField.style.display = "block";
+				numItemsField.innerHTML = numItems 
+											+ " modified offline items"; 
+			}else{
+				numItemsField.style.display = "none";
+			}
+		}
+	},
+	
+	_getDateString: function(date){
+		var now = new Date();
+		var str;
+		
+		// today?
+		if(now.getFullYear() == date.getFullYear()
+			&& now.getMonth() == date.getMonth()
+			&& now.getDay() == date.getDay()){
+			str = "Today at " + this._getTimeString(date);					
+		}else{
+			str = date.toLocaleString();
+		}
+		
+		return str;
+	},
+	
+	_getTimeString: function(date){
+		var hour = date.getHours();
+		var amPM;
+		
+		if(hour < 12){
+			amPM = "AM";
+		}else if(hour >= 12 && hour < 24){
+			amPM = "PM";
+			hour = hour - 12;
+		}else if(hour == 24){
+			amPM = "AM";
+			hour = hour - 12;
+		}
+		
+		var minutes = date.getMinutes();
+		if(minutes < 10){
+			minutes = "0" + minutes;
+		}
+		
+		return hour + ":" + minutes + " " + amPM;	
 	}
 });
 
