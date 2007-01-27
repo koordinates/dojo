@@ -10,8 +10,7 @@ dojo.hostenv.resetXd = function(){
 	//to evaluate packages in order. If there is a xdomain package followed by a xhr package, we can't load
 	//the xhr package until the one before it finishes loading. The text of the xhr package will be converted
 	//to match the format for a xd package and put in the xd load queue.
-	//You can force all packages to be treated as xd by setting the djConfig.forceXDomain.
-	this.isXDomain = djConfig.forceXDomain || false;
+	this.isXDomain = djConfig.useXDomain || false;
 
 	this.xdTimer = 0;
 	this.xdInFlight = {};
@@ -24,7 +23,7 @@ dojo.hostenv.resetXd = function(){
 //Call reset immediately to set the state.
 dojo.hostenv.resetXd();
 
-dojo.hostenv.createXdPackage = function(/*String*/contents){
+dojo.hostenv.createXdPackage = function(/*String*/contents, /*String*/resourceName, /*String=*/resourcePath){
 	//summary: Internal xd loader function. Creates an xd module source given an
 	//non-xd module contents.
 
@@ -57,7 +56,9 @@ dojo.hostenv.createXdPackage = function(/*String*/contents){
 	//allowing multiple versions of dojo in a page.
 	output.push("\ndefinePackage: function(dojo){");
 	output.push(contents);
-	output.push("\n}});");
+	//Add isLocal property so we know if we have to do something different
+	//in debugAtAllCosts situations.
+	output.push("\n}, resourceName: '" + resourceName + "', resourcePath: '" + resourcePath + "'});");
 	
 	return output.join(""); //String
 }
@@ -160,7 +161,7 @@ dojo.hostenv.loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/curre
 		if(contents == null){ return 0; /*boolean*/}
 		
 		if(this.isXDomain){
-			var pkg = this.createXdPackage(contents);
+			var pkg = this.createXdPackage(contents, module, uri);
 			dj_eval(pkg);
 		}else{
 			if(cb){ contents = '('+contents+')'; }
@@ -223,7 +224,12 @@ dojo.hostenv.packageLoaded = function(/*Object*/pkg){
 		}
 
 		//Save off the package contents for definition later.
-		var contentIndex = this.xdContents.push({content: pkg.definePackage, isDefined: false}) - 1;
+		var contentIndex = this.xdContents.push({
+				content: pkg.definePackage,
+				resourceName: pkg["resourceName"],
+				resourcePath: pkg["resourcePath"],
+				isDefined: false
+			}) - 1;
 
 		//Add provide/requires to dependency map.
 		for(var i = 0; i < provideList.length; i++){
@@ -416,7 +422,10 @@ dojo.hostenv.xdEvalReqs = function(/*Array*/reqChain){
 			//Evaluate the package.
 			var contents = this.xdContents[pkg.contentIndex];
 			if(!contents.isDefined){
-				this.xdDefList.push(contents.content);
+				var content = contents.content;
+				content["resourceName"] = contents["resourceName"];
+				content["resourcePath"] = contents["resourcePath"];
+				this.xdDefList.push(content);
 				contents.isDefined = true;
 			}
 			this.xdDepMap[req] = null;
@@ -471,10 +480,18 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	
 	var defLength = this.xdDefList.length;
 	for(var i= 0; i < defLength; i++){
-		//Evaluate the package to bring it into being.
-		//Pass dojo in so that later, to support multiple versions of dojo
-		//in a page, we can pass which version of dojo to use.
-		dojo.hostenv.xdDefList[i](dojo);
+		var content = dojo.hostenv.xdDefList[i];
+		if(djConfig["debugAtAllCosts"] && content["resourceName"]){
+			if(!this["xdDebugQueue"]){
+				this.xdDebugQueue = [];
+			}
+			this.xdDebugQueue.push({resourceName: content.resourceName, resourcePath: content.resourcePath});
+		}else{
+			//Evaluate the package to bring it into being.
+			//Pass dojo in so that later, to support multiple versions of dojo
+			//in a page, we can pass which version of dojo to use.			
+			content(dojo);
+		}
 	}
 
 	//Evaluate any packages that were not evaled before.
@@ -493,6 +510,14 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	//Clean up for the next round of xd loading.
 	this.resetXd();
 
+	if(this["xdDebugQueue"] && this.xdDebugQueue.length > 0){
+		this.xdDebugFileLoaded();
+	}else{
+		this.xdNotifyLoaded();
+	}
+}
+
+dojo.hostenv.xdNotifyLoaded = function(){
 	//Clear inflight count so we will finally do finish work.
 	this.inFlightCount = 0; 
 	this.callLoaded();
