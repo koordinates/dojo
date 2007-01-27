@@ -1528,12 +1528,8 @@ dojo.widget.defineWidget(
 		getValue: function(){
 			// summary:
 			//		return the current content of the editing area (post filters are applied)
-			if(this.isClosed){
-				if(this.textarea){
-					return this.textarea.value;
-				}else{
-					return this.getNodeChildrenHtml(this.domNode);
-				}
+			if(this.isClosed && this.textarea){
+				return this.textarea.value;
 			}else{
 				return this._postFilterContent();
 			}
@@ -1541,12 +1537,8 @@ dojo.widget.defineWidget(
 		setValue: function(/*String*/html){
 			// summary:
 			//		this function set the content. No undo history is preserved
-			if(this.isClosed){
-				if(this.textarea){
-					this.textarea.value=html;
-				}else{
-					this.editNode.innerHTML = html;
-				}
+			if(this.isClosed && this.textarea){
+				this.textarea.value=html;
 			}else{
 				html = this._preFilterContent(html);
 				this.editNode.innerHTML = html;
