@@ -180,7 +180,7 @@ dojo.declare("dojo.gfx.Shape", null,
 	},
 
 	applyTransform: function(matrix){
-		// summary: a shortcut for dojo.gfx.Shape.applyRight
+		// summary: a shortcut for dojo.gfx.Shape.applyRightTransform
 		// matrix: dojo.gfx.matrix.Matrix: a matrix or a matrix-like object
 		//	(see an argument of dojo.gfx.matrix.Matrix 
 		//	constructor for a list of acceptable arguments)
