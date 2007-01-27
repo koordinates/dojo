@@ -14,11 +14,6 @@ dojo.widget.defineWidget(
 		//	Same as an HTML checkbox, but with fancy styling
 
 		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/Checkbox.html"),
-		templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/Checkbox.css"),
-
-		// class: String
-		//	CSS class name for widget
-		"class": "dojoCheckbox",
 
 		//	Value of "type" attribute for <input>, and waiRole attribute also.
 		//	User probably shouldn't adjust this.
@@ -85,6 +80,24 @@ dojo.widget.defineWidget(
 			this._register();
 		},
 
+		onImageLoad: function(){
+			this.imageLoaded = true;
+			
+			// set span size to just show one sprite
+			this.width = this.imageNode.width/6;
+			this.height = this.imageNode.height/2;
+			this.spacerNode.style.width =  this.width + "px";
+			this.spacerNode.style.height =  this.height + "px";
+			this.spacerNode.style.display = "";
+
+			// Hide the HTML native checkbox and display the image instead
+			this.imageNode.style.display="";
+			this.inputNode.style.display="none";
+
+			// position image to display right sprite
+			this._setValue(this.checked);
+		},
+		
 		uninitialize: function(){
 			this._deregister();
 		},
@@ -138,25 +151,18 @@ dojo.widget.defineWidget(
 
 		mouseOver: function(/*Event*/ e){
 			// summary: callback when user moves mouse over checkbox
-			this._hover(e, true);
+			this.hover=true;
+			this._setValue(this.checked);
 		},
 
 		mouseOut: function(/*Event*/ e){
 			// summary: callback when user moves mouse off of checkbox
-			this._hover(e, false);
+			this.hover=false;
+			this._setValue(this.checked);
 		},
 
-		_hover: function(/*Event*/ e, /*Boolean*/ isOver){
-			if (this.disabled == false){
-				var state = this.checked ? "On" : "Off";
-				var style = this["class"] + state + "Hover";
-				if (isOver){
-					dojo.html.addClass(this.imageNode, style);
-				}else{
-					dojo.html.removeClass(this.imageNode,style);
-				}
-			}
-		},
+		// offset from top of image
+		_topOffset: 0,
 
 		_setValue: function(/*Boolean*/ bool){
 			// summary:
@@ -164,8 +170,6 @@ dojo.widget.defineWidget(
 			//	set state of hidden checkbox node to correspond to given value.
 			//	also set CSS class string according to checked/unchecked and disabled/enabled state
 			this.checked = bool;
-			var state = this["class"] + (this.disabled ? "Disabled" : "") + (this.checked ? "On" : "Off");
-			dojo.html.setClass(this.imageNode, this["class"] + " " + state);
 			this.inputNode.checked = this.checked;
 			if(this.disabled){
 				this.inputNode.setAttribute("disabled",true);
@@ -173,52 +177,30 @@ dojo.widget.defineWidget(
 				this.inputNode.removeAttribute("disabled");
 			}
 			dojo.widget.wai.setAttr(this.domNode, "waiState", "checked", this.checked);
+
+			// show the right sprite, depending on state of checkbox
+			if(this.imageLoaded){
+				var left = (this.checked ? 0 : this.width ) + (this.disabled ? this.width*2 : (this.hover ? this.width*4 : 0 ));
+				var s = this.imageNode.style;
+				s.marginLeft = -1*left + "px";
+				s.marginTop = -1*this._topOffset + "px";
+				// clip is specified as rect(top right bottom left)
+				var clip = "rect(" + this._topOffset + "px, " + (left+this.width) + "px, " + 
+					(this._topOffset+this.height) + "px, " + left + "px)";
+				s.clip =  clip;
+			}
 		}
 	}
 );
-
 dojo.widget.defineWidget(
-	"dojo.widget.a11y.Checkbox",
+	"dojo.widget.RadioButton",
 	dojo.widget.Checkbox,
 	{
 		// summary
-		//	variation on Checkbox widget to be display on monitors in high-contrast mode (that don't display CSS background images)
-
-		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/CheckboxA11y.html"),
-
-		postCreate: function(args, frag){
-			this.inputNode.checked=this.checked;
-			//only set disabled if true since FF interprets any value for disabled as true
-			if (this.disabled){
-				this.inputNode.setAttribute("disabled",true);
-			}
-			this._register();
-		},
-
-		_setValue: function(/*Boolean*/ bool){
-			// summary:
-			//	internal function to set checkbox value
-			//	set state of hidden checkbox node to correspond to given value.
-			//	also set CSS class string according to checked/unchecked and disabled/enabled state
-			this.checked = bool;
-			this.inputNode.checked = bool;
-		}
-	}
-);
-
-dojo.declare(
-	"dojo.widget.RadioButtonBase",
-	null,
-	{
-		// summary
-		//	Base class for radio button widgets
-
-		// class: String
-		//	CSS class name for widget
-		"class": "dojoRadioButton",
+		//	Same as an HTML radio button, but with fancy styling
 
 		_type: "radio",
-		
+
 		_onClick: function(/*Event*/ e){
 			if(!this.disabled && !this.checked){
 				this.setValue(true);
@@ -238,25 +220,12 @@ dojo.declare(
 					}
 				}, this);
 			}
+		},
+
+		onImageLoad: function(){
+			// position to second row of sprites (the radio buttons)
+			this._topOffset = this.imageNode.height/2;
+			dojo.widget.Checkbox.prototype.onImageLoad.call(this);
 		}
-	}
-);
-
-dojo.widget.defineWidget(
-	"dojo.widget.RadioButton",
-	[dojo.widget.Checkbox, dojo.widget.RadioButtonBase],
-	{
-		// summary
-		//	Same as an HTML radio button, but with fancy styling
-	}
-);
-
-dojo.widget.defineWidget(
-	"dojo.widget.a11y.RadioButton",
-	[dojo.widget.a11y.Checkbox, dojo.widget.RadioButtonBase],
-	{
-		// summary
-		//	variation on RadioButton widget to be display on monitors in high-contrast mode (that don't display CSS background images)
-
 	}
 );
