@@ -435,21 +435,11 @@ dojo.widget.defineWidget(
 			if(eventTarget.nodeType != dojo.dom.ELEMENT_NODE){eventTarget = eventTarget.parentNode;}
 			dojo.event.browser.stopEvent(evt);
 			this.selectedIsUsed = this.todayIsUsed = false;
-			var tmp = dojo.html.getAttribute(eventTarget,'djDateValue');
-			var tmpDate = new Date(Number(tmp));
-			var month = tmpDate.getMonth();
-			var year = tmpDate.getFullYear();
 			if(dojo.html.hasClass(eventTarget, this.classNames["disabledPrevious"])||dojo.html.hasClass(eventTarget, this.classNames["disabledCurrent"])||dojo.html.hasClass(eventTarget, this.classNames["disabledNext"])){
 				return; //this date is disabled... ignore it
-			}else if (dojo.html.hasClass(eventTarget, this.classNames["next"])) {
-				month = ++month % 12;
-				if(month===0){++year;}
-			} else if (dojo.html.hasClass(eventTarget, this.classNames["previous"])) {
-				month = --month % 12;
-				if(month==11){--year;}
 			}
 			this.clickedNode = eventTarget;
-			this.setDate(new Date(tmpDate));
+			this.setDate(new Date(Number(dojo.html.getAttribute(eventTarget,'djDateValue'))));
 		},
 		
 		onValueChanged: function(/*Date*/date) {
