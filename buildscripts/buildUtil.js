@@ -43,7 +43,6 @@ buildUtil.getDependencyList = function(/*Object*/dependencies, /*String or Array
 		load("../src/bootstrap1.js");
 		load("../src/loader.js");
 		load("../src/hostenv_rhino.js");
-		load("../src/bootstrap2.js");
 	
 		// FIXME: is this really what we want to say?
 		dojo.render.html.capable = true;
@@ -72,8 +71,6 @@ buildUtil.getDependencyList = function(/*Object*/dependencies, /*String or Array
 	}else{
 		dojo.hostenv.loadedUris.push("../src/hostenv_"+hostenvType+".js");
 	}
-	
-	dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 	
 	if(dependencies["prefixes"]){
 		var tmp = dependencies.prefixes;
@@ -268,7 +265,7 @@ buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
 	for(var i = 0; i < depList.length; i++){
 		//Make sure we have a JS string and not a Java string by using new String().
 		dojoContents += new String(readFile(depList[i])) + "\r\n";
-		if(!insertedProvideMarker && depList[i].indexOf("bootstrap2.js") != -1){
+		if(!insertedProvideMarker && depList[i].indexOf("hostenv_") != -1){
 			dojoContents += "__DOJO_PROVIDE_INSERTION__";
 			insertedProvideMarker = true;
 		}

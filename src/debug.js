@@ -1,3 +1,5 @@
+dojo.provide("dojo.debug");
+
 dojo.debug = function(/*...*/){
 	// summary:
 	//		Produce a line of debug output. Does nothing unless
