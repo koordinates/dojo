@@ -528,3 +528,12 @@ if(typeof window != 'undefined'){
 	}
 
 } //if (typeof window != 'undefined')
+
+//Load debug code if necessary.
+dojo.requireIf((djConfig["isDebug"] || djConfig["debugAtAllCosts"]), "dojo.debug");
+
+//window.widget is for Dashboard detection
+//The full conditionals are spelled out to avoid issues during builds.
+//Builds may be looking for require/requireIf statements and processing them.
+dojo.requireIf(djConfig["debugAtAllCosts"] && !window.widget && !djConfig["useXDomain"], "dojo.browser_debug");
+dojo.requireIf(djConfig["debugAtAllCosts"] && !window.widget && djConfig["useXDomain"], "dojo.browser_debug_xd");
