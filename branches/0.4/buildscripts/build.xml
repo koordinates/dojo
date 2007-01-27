@@ -715,7 +715,7 @@ available in src/storage/java/ without rebuilding it.
 	</target>
 	<!-- end buildFlash task -->
 
-	<!-- intern-strings task -->
+	<!-- xd-dojo-config task -->
 	<target name="xd-dojo-config" depends="-fix-config"
 		description="Sets dojo.js to use xdomain loading and sets dojo module path to a specific URL.">
 		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
@@ -725,7 +725,7 @@ available in src/storage/java/ without rebuilding it.
 			<arg value="${xdDojoUrl}" />
 		</java>
 	</target>
-	<!-- end intern-strings task -->
+	<!-- end xd-dojo-config task -->
 
 	<!-- xdgenRelease task -->
 	<target name="xdgenRelease" if="xdgenRun" depends="xdgenRemove, -set-profileFile">
