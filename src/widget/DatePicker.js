@@ -93,10 +93,6 @@ dojo.widget.defineWidget(
 			// summary: see dojo.widget.DomWidget
 
 			dojo.widget.DatePicker.superclass.postMixInProperties.apply(this, arguments);
-			this.startDate = dojo.date.fromRfc3339(this.startDate);
-			this.endDate = dojo.date.fromRfc3339(this.endDate);
-			this.startDate.setHours(0,0,0,0); //adjust startDate to be exactly midnight
-			this.endDate.setHours(24,0,0,-1); //adjusting endDate to be a fraction of a second before  midnight
 			if(!this.weekStartsOn){
 				this.weekStartsOn=dojo.date.getFirstDayOfWeek(this.lang);
 			}
@@ -188,6 +184,15 @@ dojo.widget.defineWidget(
 
 			//initFirst is to tell _initFirstDay if you want first day of the displayed calendar, or first day of the week for dateObj
 			//initUI tells preInitUI to go ahead and run initUI if set to true
+			if(typeof(this.startDate) == "string"){
+				this.startDate = dojo.date.fromRfc3339(this.startDate);
+			}
+			if(typeof(this.endDate) == "string"){
+				this.endDate = dojo.date.fromRfc3339(this.endDate);
+			}
+			this.startDate.setHours(0,0,0,0); //adjust startDate to be exactly midnight
+			this.endDate.setHours(24,0,0,-1); //adjusting endDate to be a fraction of a second before  midnight
+
 			if(dateObj<this.startDate||dateObj>this.endDate){
 				dateObj = new Date((dateObj<this.startDate)?this.startDate:this.endDate);
 			}
