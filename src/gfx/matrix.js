@@ -8,9 +8,11 @@ dojo.gfx.matrix.Matrix2D = function(arg){
 	// description: Normalizes a 2D matrix-like object. If arrays is passed, 
 	//		all objects of the array are normalized and multiplied sequentially.
 	// arg: Object
-	//		a 2D matrix-like object, or an array of such objects
+	//		a 2D matrix-like object, a number, or an array of such objects
 	if(arg){
-		if(arg instanceof Array){
+		if(typeof arg == "number"){
+			this.xx = this.yy = arg;
+		}else if(arg instanceof Array){
 			if(arg.length > 0){
 				var m = dojo.gfx.matrix.normalize(arg[0]);
 				// combine matrices
