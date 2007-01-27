@@ -560,7 +560,7 @@ dojo.widget.defineWidget(
 		compositionEnd: function(/*Event*/ evt){
 			// summary: When inputting characters using an input method, such as Asian
 			// languages, it will generate this event instead of onKeyDown event
-			evt.key = evt.keyCode;
+			evt.key = evt.charCode = -1;
 			this._handleKeyEvents(evt);
 		},
 
