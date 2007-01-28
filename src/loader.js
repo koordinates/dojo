@@ -508,6 +508,12 @@ dojo.registerModulePath = function(/*String*/module, /*String*/prefix){
 	return dojo.hostenv.setModulePrefix(module, prefix);
 }
 
+if(djConfig["modulePaths"]){
+	for(var param in djConfig["modulePaths"]){
+		dojo.registerModulePath(param, djConfig["modulePaths"][param]);
+	}
+}
+
 dojo.setModulePrefix = function(/*String*/module, /*String*/prefix){
 	// summary: maps a module name to a path
 	dojo.deprecated('dojo.setModulePrefix("' + module + '", "' + prefix + '")', "replaced by dojo.registerModulePath", "0.5");
