@@ -20,7 +20,6 @@ dojo.declare(
 	},
 {
 	isContainer: true,
-	snarfChildDomOutput: true,
 
 	// eventNaming: String
 	//	if "default" event names are based on widget id, otherwise user must define
