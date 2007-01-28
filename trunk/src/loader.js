@@ -530,6 +530,12 @@ dojo.registerModulePath = function(/*String*/module, /*String*/prefix){
 	return dojo.hostenv.registerModulePath(module, prefix);
 }
 
+if(djConfig["modulePaths"]){
+	for(var param in djConfig["modulePaths"]){
+		dojo.registerModulePath(param, djConfig["modulePaths"][param]);
+	}
+}
+
 // Localization routines
 
 dojo.hostenv.normalizeLocale = function(/*String?*/locale){
