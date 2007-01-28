@@ -14,7 +14,6 @@
 	dojo.require("dojo.widget.TreeV3");
 	dojo.require("dojo.widget.TreeNodeV3");
 	dojo.require("dojo.widget.TreeBasicControllerV3");
-	dojo.require("dojo.widget.TreeDocIconExtension");
 	dojo.hostenv.writeIncludes();
 </script>
 
@@ -31,10 +30,8 @@
 	
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
 
-<div dojoType="TreeDocIconExtension" widgetId="docIcons"></div>
-
 <div style="width:150px;border:1px solid black;overflow:auto">
-<div dojoType="TreeV3" listeners="controller;docIcons">
+<div dojoType="TreeV3" listeners="controller">
 	<div dojoType="TreeNodeV3" labelClass="nowrap" title="Item 1 blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla" widgetId="Item 1">
 		<div dojoType="TreeNodeV3" title="Item 1.1 here is my very long title it should wrap what you think ?" widgetId="Item 1.1"></div>
 		<div dojoType="TreeNodeV3" title="Item 1.2" widgetId="Item 1.2"></div>
