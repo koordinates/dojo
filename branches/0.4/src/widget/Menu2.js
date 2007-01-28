@@ -20,7 +20,7 @@ dojo.widget.defineWidget(
 		};
 	},
 {
-	snarfChildDomOutput: true,
+	isContainer: true,
 
 	// eventNaming: String
 	//	if "default" event names are based on widget id, otherwise user must define
