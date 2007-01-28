@@ -42,7 +42,7 @@ dojo.widget.defineWidget(
 
 	
 	}, {
-		isContainer: false,		// we'll search for subwidgets manually
+		isContainer: true,
 
 		// loading options
 		// adjustPaths: Boolean
@@ -108,12 +108,6 @@ dojo.widget.defineWidget(
 			// or it's as though overflow:visible is set
 			dojo.html.addClass(this.domNode, this["class"]);
 
-			// if we have a template, then move the source HTML contents to inside my template
-			// (but defer parsing the content until I am displayed)
-			var source = this.getFragNodeRef(frag);
-			if(source != this.domNode){
-				dojo.html.moveChildren(source, this.containerNode || this.domNode);
-			}
 			if (this.handler!==""){
 				this.setHandler(this.handler);
 			}
@@ -143,9 +137,7 @@ dojo.widget.defineWidget(
 			// summary:
 			//		Called whenever the ContentPane is displayed.  The first time it's called,
 			//		it will download the data from specified URL or handler (if the data isn't
-			//		inlined), and will instantiate subwidgets.  (Note that even if data is
-			//		inlined, we don't scan for and instantiate subwidgets until
-			//		this function is called)
+			//		inlined), and will instantiate subwidgets.
 			if ( this.isLoaded ){
 				return;
 			}
@@ -153,12 +145,6 @@ dojo.widget.defineWidget(
 				this._runHandler();
 			} else if ( this.href != "" ) {
 				this._downloadExternalContent(this.href, this.cacheContent && !this.refreshOnShow);
-			} else {
-				// data is inlined, but we haven't instantiated subwidgets yet; do that now
-				if(this.parseContent){
-					this._createSubWidgets();
-				}
-				this.isLoaded=true;
 			}
 		},
 		
@@ -197,7 +183,7 @@ dojo.widget.defineWidget(
 						if(type=="load"){
 							self.onDownloadEnd.call(self, url, data);
 						}else{
-							// XHR isnt a normal JS object, IE doesn't have prototype on XHR so we cant extend it or shallowCopy it
+							// XHR isn't a normal JS object, IE doesnt have prototype on XHR so we can't extend it or shallowCopy it
 							var e = {
 								responseText: xhr.responseText,
 								status: xhr.status,
