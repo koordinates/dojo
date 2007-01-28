@@ -56,7 +56,7 @@ dojo.widget.defineWidget(
 			this.showSpan()
 		},
 		
-		onSelectBlur: function(/*Event*/ evt){
+		onSelectBlur: function(/*Event*/ evt){			
 			this.showSpan()
 		},
 		
@@ -74,6 +74,7 @@ dojo.widget.defineWidget(
 			}
 			this.spanNode.style.display = 'none'
 			this.selectNode.style.display = ''
+			this.selectNode.focus()
 		},
 		
 		
