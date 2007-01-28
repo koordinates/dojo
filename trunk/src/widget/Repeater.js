@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.Repeater");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.string");
+dojo.require("dojo.string.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.widget.Repeater");
@@ -43,7 +43,13 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 			var node = this.getFragNodeRef(frag);
 			node.removeAttribute("dojotype");
 			this.setRow(dojo.string.trim(node.innerHTML), {});
-			node.innerHTML="";
+			if (node.nodeName == "TBODY") {
+				if (node.childNodes.length == 1) {
+					node.removeChild(node.childNodes[0]);
+				}
+			} else {
+				node.innerHTML="";
+			}
 			frag=null;
 		},
 
@@ -55,10 +61,18 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 		},
 
 		_reIndexRows: function() {
-			for(var i=0,len=this.domNode.childNodes.length; i<len;i++) {
+			var children=this.getChildrenOfType("RepeaterRow",false);
+			var childNodes=this.domNode.childNodes;
+
+			for(var i=0,len=childNodes.length; i<len;i++) {
+				for (j=0,len=children.length;j<len;++j) {
+					if (children[j].domNode === childNodes[i]) {
+						children[j].row=i;
+					}
+				}
 				var elems = ["INPUT", "SELECT", "TEXTAREA"];
 				for (var k=0; k < elems.length; k++) {
-					var list = this.domNode.childNodes[i].getElementsByTagName(elems[k]);
+					var list = childNodes[i].getElementsByTagName(elems[k]);
 					for (var j=0,len2=list.length; j<len2; j++) {
 						var name = list[j].name;
 						var index=dojo.string.escape("regexp", this.pattern);
@@ -91,22 +105,37 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 		},
 
 		deleteRow: function(/*integer*/idx) {
-			this.domNode.removeChild(this.domNode.childNodes[idx]);
+			var children = this.getChildrenOfType("RepeaterRow",false);
+			for(var i=0,len=children.length; i<len;++i) {
+				var child=children[i];
+				if (child.row == idx) {
+					child.destroy();
+					break;
+				}
+			}
 			this._reIndexRows();
 		},
 
 		_changeRowPosition: function(e) {
+			var children=this.getChildrenOfType("RepeaterRow",false);
 			if (e.dragStatus == "dropFailure") {
-				this.domNode.removeChild(e["dragSource"].domNode);
+				var target=e["dragSource"].domNode;
+				for (var i=0,len=children.length;i<len;++i) {
+					if(children[i].domNode === target) {
+						this.deleteRow(i);
+					}
+				}
+				//this.domNode.removeChild(e["dragSource"].domNode);
 			} else if (e.dragStatus == "dropSuccess") {
+				this._reIndexRows();
 				//  nothing to do
 			} // else-if
-			this._reIndexRows();
 		},
 		setRow: function(/*string*/template, /*object*/myObject) {
 			//template = dojo.string.substituteParams(template, {"index": "0"});
 			template= template.replace(/\%\{(index)\}/g, "0");
 			this.rowTemplate=template;
+			if (myObject == null) { myObject = {}; }
 			this.myObject = myObject;
 		},
 		getRow: function() {
@@ -114,11 +143,11 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 		},
 		_initRow: function(/*integer or dom node*/node) {
 			if (typeof(node) == "number") {
-                           node=this.domNode.childNodes[node];
+                           node=this.getChildrenOfType("RepeaterRow",false)[node];
 			} // if
 			var elems = ["INPUT", "SELECT", "IMG"];
 			for (var k=0; k < elems.length; k++) {
-				var list = node.getElementsByTagName(elems[k]);
+				var list = node.domNode.getElementsByTagName(elems[k]);
 				for(var i=0, len=list.length; i<len; i++) {
 					var child = list[i];
 					if(child.nodeType != 1) {continue};
@@ -130,7 +159,7 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 						} // ifelse
 					} else if (child.getAttribute("rowAction") != null) {
 						if(child.getAttribute("rowAction") == "delete") {
-							child.name=dojo.string.substituteParams(this.pattern, {"index": "" + (this.getRowCount() - 1)});
+							child.name=dojo.string.substituteParams(this.pattern, {"index": "" + node.row})+".delete";
 							dojo.event.connect(child, "onclick", this, "onDeleteRow");
 						} // if
 					} // else-if
@@ -144,27 +173,37 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
                         if (typeof(doInit) == "undefined") {
 				doInit=true;
                         }
-			var node = document.createElement('span');
-			node.innerHTML=this.getRow();
-			if (node.childNodes.length == 1) {
-				node=node.childNodes[0];
+			var node=document.createElement("span");
+			if (this.domNode.nodeName=="TBODY") {
+				node.innerHTML="<table>"+this.getRow()+"</table>";
+				node=node.getElementsByTagName("TR")[0];
+			} else {
+				node.innerHTML=this.getRow();
+				if (node.childNodes.length == 1) {
+					node=node.childNodes[0];
+				}
 			}
-			var rowIndex=this.domNode.childNodes.length;
-			this.domNode.appendChild(node);
+			var rowIndex=this.getChildrenOfType("RepeaterRow",false).length;
+			node = dojo.widget.createWidget("RepeaterRow", {row: rowIndex}, node);
+			this.addChild(node);
 			var parser = new dojo.xml.Parse();
-			var frag = parser.parseElement(node, null, true);
-			dojo.widget.getParser().createSubComponents(frag, this);
+			var frag = parser.parseElement(node.domNode, null, true);
+			dojo.widget.getParser().createSubComponents(frag, node);
 			this._reIndexRows();
 			if (doInit) {
 				this._initRow(node);
 			}
 			if (this.useDnd) { // bind to DND
-				node=new dojo.dnd.HtmlDragSource(node, this.widgetId);
-				dojo.event.connect(node, "onDragEnd", this, "_changeRowPosition");
+				var node2=new dojo.dnd.HtmlDragSource(node.domNode, this.widgetId);
+				dojo.event.connect(node2, "onDragEnd", this, "_changeRowPosition");
 			}
 			this.onAddRow(node, rowIndex);
 			return node;
 		}
 });
 
-
+dojo.widget.defineWidget("dojo.widget.RepeaterRow", dojo.widget.HtmlWidget,
+	{
+		row: 0
+	}
+);
