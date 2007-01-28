@@ -31,7 +31,6 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 		*/
 
 		isContainer: true,
-		valid: true,
    		templateString: "<form dojoAttachPoint='containerNode' dojoAttachEvent='onSubmit:onSubmit' enctype='multipart/form-data'></form>",
 		formElements: [],
 		// ignoreNullValue:
@@ -62,7 +61,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 						widget.children[i].deleteRow(0);
 					}
 					for (var j=0; j<myObj.length; j++) {
-    					 	var row=widget.children[i].addRow(false);
+    					 	widget.children[i].addRow(false);
 					}
 				}
 				this._createRepeaters(obj, widget.children[i]);
@@ -128,23 +127,23 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 		_setToContainers: function (/*object*/obj,/*widget*/widget) {
 			for(var i=0, len=widget.children.length; i<len; ++i) {
 				var currentWidget=widget.children[i];
+				if (currentWidget == null) { continue; }
 				if (currentWidget.widgetType == "Repeater") {
         				for(var j=0,len=currentWidget.getRowCount(); j<len; ++j) {
           					var foo=currentWidget._initRow(j);
         				}
 				}
 
-				if (currentWidget.isContainer) {
-					this._setToContainers (obj, currentWidget);
-					continue;
-				}
+				this._setToContainers (obj, currentWidget);
 
 				switch(currentWidget.widgetType) {
 					case "Checkbox":
 						currentWidget.setValue(currentWidget.inputNode.checked);
 						break;
 					case "DropdownDatePicker":
-						currentWidget.setValue(currentWidget.getValue());
+						if (currentWidget.getValue() != '') {
+							currentWidget.setValue(currentWidget.getValue());
+						}
 						break;
 					case "Select":
 						//widget.children[i].setValue(myObj[name]);
@@ -152,12 +151,12 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 						break;
 					case "ComboBox":
 						//widget.children[i].setSelectedValue(myObj[name]);
+						break;
 					case "CurrencyTextbox":
 					case "DateTextbox":
 					case "IntegerTextbox":
 					case "InternetTextbox":
 					case "RegexpTextbox":
-					case "Textbox":
 					case "UsTextbox":
 					case "RealNumberTextbox":
 					case "ValidationTextbox":
@@ -180,24 +179,25 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 				var name=namePath[namePath.length-1];
 				for(var j=1,len2=namePath.length;j<len2;++j) {
 					var p=namePath[j - 1];
-					// repeater support block
-					var nameA=p.split("[");
-					if (nameA.length > 1) {
-						if(typeof(myObj[nameA[0]]) == "undefined") {
-							myObj[nameA[0]]=[ ];
-						} // if
+                                       // repeater support block
+                                       var nameA=p.split("[");
+                                       if (nameA.length > 1) {
+                                               if(typeof(myObj[nameA[0]]) == "undefined") {
+                                                       myObj[nameA[0]]=[ ];
+                                               } // if
   
-						nameIndex=parseInt(nameA[1]);
-						if(typeof(myObj[nameA[0]][nameIndex]) == "undefined") {
-							myObj[nameA[0]][nameIndex]={};
-						}
-						myObj=myObj[nameA[0]][nameIndex];
-						continue;
-					}  // repeater support ends
+                                               nameIndex=parseInt(nameA[1]);
+                                               if(typeof(myObj[nameA[0]][nameIndex]) == "undefined") {
+                                                       myObj[nameA[0]][nameIndex]={};
+                                               }
+                                               myObj=myObj[nameA[0]][nameIndex];
+                                               continue;
+                                       }  // repeater support ends
+
 					if(typeof(myObj[p]) == "undefined") {
 						myObj=undefined;
 						break;
-					}
+					};
 					myObj=myObj[p];
 				}
 
@@ -321,7 +321,29 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 			} // for
 		return obj;
 	},
-	isValid: function() {
-		return this.valid;
+ 	isValid: function() {
+ 		var stack=[];
+ 		stack[0]=this;
+ 		while(stack.length > 0) {
+ 			var widget=stack.pop();
+ 			for(var i=0;i<widget.children.length;++i) {
+ 				stack.push(widget.children[i]);
+ 			}
+ 			switch(widget.widgetType) {
+ 				case "CurrencyTextbox":
+ 				case "DateTextbox":
+ 				case "IntegerTextbox":
+ 				case "InternetTextbox":
+ 				case "RegexpTextbox":
+ 				case "UsTextbox":
+ 				case "RealNumberTextbox":
+ 				case "ValidationTextbox":
+ 					if (!widget.isValid()) {
+ 						return false;
+ 					}
+ 					break;
+ 			} // switch
+ 		} // while
+ 		return true;
 	}
 });
