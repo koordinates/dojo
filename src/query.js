@@ -298,6 +298,58 @@ dojo.experimental("dojo.query");
 		}
 	}
 
+	var getNodeIndex = function(node){
+		// NOTE: we could have a more accurate caching mechanism by
+		// invalidating caches after the query has finished, but I think that'd
+		// lead to significantly more cache churn than the cache would provide
+		// value for in the common case. Generally, we're more conservative
+		// (and therefore, more accurate) than jQuery and DomQuery WRT node
+		// node indexes, but there may be corner cases in which we fall down.
+		// How much we care about them is TBD.
+
+		var pn = node.parentNode;
+		var pnc = pn.childNodes;
+
+		// check to see if we can trust the cache. If not, re-key the whole
+		// thing and return our node match from that.
+
+		var nidx = -1;
+		var child = pn.firstChild;
+		if(!child){
+			return nidx;
+		}
+
+		var ci = node["__cachedIndex"];
+		var cl = pn["__cachedLength"];
+
+		// only handle cache building if we've gone out of sync
+		if(((typeof cl == "number")&&(cl != pnc.length))||(typeof ci != "number")){
+			// rip though the whole set, building cache indexes as we go
+			pn["__cachedLength"] = pnc.length;
+			var idx = 1;
+			do{
+				// we only assign indexes for nodes with nodeType == 1, as per:
+				//		http://www.w3.org/TR/css3-selectors/#nth-child-pseudo
+				// only elements are counted in the search order, and they
+				// begin at 1 for the first child's index
+
+				if(child === node){
+					nidx = idx;
+				}
+				if(child.nodeType == 1){
+					child["__cachedIndex"] = idx;
+					idx++;
+				}
+				child = child.nextSibling;
+			}while(child);
+		}else{
+			// FIXME: could be incorrect in some cases (node swaps involving
+			// the passed node, etc.), but we ignore those for now.
+			nidx = ci;
+		}
+		return nidx;
+	}
+
 	var firedCount = 0;
 
 	var getSimpleFilterFunc = function(query, dotIdx, bktIdx, colIdx){
@@ -307,11 +359,14 @@ dojo.experimental("dojo.query");
 		var ff = null;
 
 		var hashIdx = query.indexOf("#");
-		var tn = getTagName(query, hashIdx, dotIdx, bktIdx, colIdx).toLowerCase();
-		if(tn != "*"){
-			ff = agree(ff, function(elem){
-				return (elem.tagName.toLowerCase() == tn);
-			});
+		// the only case where we'll need the tag name is if we came from an ID query
+		if(hashIdx >= 0){
+			var tn = getTagName(query, hashIdx, dotIdx, bktIdx, colIdx).toLowerCase();
+			if(tn != "*"){
+				ff = agree(ff, function(elem){
+					return (elem.tagName.toLowerCase() == tn);
+				});
+			}
 		}
 
 		// if there's a class in our query, generate a match function for it
@@ -325,6 +380,14 @@ dojo.experimental("dojo.query");
 			var cnl = className.length;
 			var spc = " ";
 			// FIXME: need to make less spammy!!
+			/*
+			// this is a possible replacement, although I dislike the regex
+			// thing, even if memozied in a cache
+			var re = new RegExp("(?:^|\\s)("+className+")(?:\\s|$)");
+			ff = agree(ff, function(elem){
+				return re.test(elem.className);
+			});
+			*/
 			ff = agree(ff, function(elem){
 					var ecn = elem.className;
 					var ecnl = ecn.length;
@@ -361,6 +424,7 @@ dojo.experimental("dojo.query");
 			);
 		}
 		if(bktIdx >= 0){
+			var lBktIdx = query.lastIndexOf("]");
 			ff = agree(ff, 
 				function(elem){
 					return true;
@@ -387,30 +451,31 @@ dojo.experimental("dojo.query");
 			if(pseudoName == "first-child"){
 				ff = agree(ff, 
 					function(elem){
-						var p = elem.parentNode;
-						var fc = p.firstChild;
-						if(!fc){ return false; }
-						while(fc && fc.nodeType != 1){
-							fc = fc.nextSibling;
+						// check to see if any of the previous siblings are elements
+						var fc = elem.previousSibling;
+						while(fc && (fc.nodeType != 1)){
+							fc = fc.previousSibling;
 						}
-						return (elem === fc);
+						return (!fc);
 					}
 				);
 			}else if(pseudoName == "last-child"){
 				ff = agree(ff, 
 					function(elem){
-						var p = elem.parentNode;
-						var lc = p.lastChild;
-						if(!lc){ return false; }
-						while(lc && lc.nodeType != 1){
-							lc = lc.previousSibling;
+						// check to see if any of the next siblings are elements
+						var nc = elem.nextSibling;
+						while(nc && (nc.nodeType != 1)){
+							nc = nc.nextSibling;
 						}
-						return (elem === lc);
+						return (!nc);
 					}
 				);
 			}else if(pseudoName == "empty"){
 				ff = agree(ff, 
 					function(elem){
+						// DomQuery and jQuery get this wrong, oddly enough.
+						// The CSS 3 selectors spec is pretty explicit about
+						// it, too.
 						var cn = elem.childNodes;
 						var cnl = elem.childNodes.length;
 						// if(!cnl){ return true; }
@@ -424,6 +489,11 @@ dojo.experimental("dojo.query");
 			}else if(pseudoName == "contains"){
 				ff = agree(ff, 
 					function(elem){
+						// FIXME: I dislike this version of "contains", as
+						// whimsical attribute could set it off. An inner-text
+						// based version might be more accurate, but since
+						// jQuery and DomQuery also potentially get this wrong,
+						// I'm leaving it for now.
 						return (elem.innerHTML.indexOf(condition) >= 0);
 					}
 				);
@@ -439,7 +509,7 @@ dojo.experimental("dojo.query");
 					ff = agree(ff, 
 						function(elem){
 							return (
-								((elem.nodeIndex+1) % 2) == 1
+								((getNodeIndex(elem)) % 2) == 1
 							);
 						}
 					);
@@ -447,13 +517,14 @@ dojo.experimental("dojo.query");
 					(condition == "even")){
 					ff = agree(ff, 
 						function(elem){
-							return (elem.nodeIndex % 2);
+							return ((getNodeIndex(elem) % 2) == 0);
 						}
 					);
 				}else if(condition.indexOf("n") == -1){
 					var ncount = parseInt(condition);
 					ff = agree(ff, 
 						function(elem){
+							// removeChaffNodes(elem.parentNode);
 							return (elem.parentNode.childNodes[ncount-1] === elem);
 						}
 					);
@@ -466,12 +537,17 @@ dojo.experimental("dojo.query");
 		return _simpleFiltersCache[query] = ff;
 	}
 
-	var getElements = function(query, root){
+
+	var _getElementsFuncCache = {};
+
+	var getElementsFunc = function(query, root){
+		var fHit = _getElementsFuncCache[query];
+		if(fHit){ return fHit; }
 		// NOTE: this function is in the fast path! not memoized!!!
+		var retFunc = null;
 
 		// the query doesn't contain any spaces, so there's only so many
 		// things it could be
-		if(!root){ root = document; }
 		var dotIdx = query.indexOf(".");
 		var bktIdx = query.indexOf("[");
 		var colIdx = query.indexOf(":");
@@ -488,65 +564,107 @@ dojo.experimental("dojo.query");
 			(-1 == dotIdx)
 		){
 			// ID query. Easy.
-			return [ document.getElementById(id) ];
+			retFunc = function(root){
+				return [ document.getElementById(id) ];
+			}
 		}
 
 		var filterFunc = getSimpleFilterFunc(query, dotIdx, bktIdx, colIdx);
 
 		if(hashIdx >= 0){
 			// we got a filtered ID search (e.g., "h4#thinger")
-			var te = document.getElementById(id);
-			if(filterFunc(te)){
-				return [ te ];
+			retFunc = function(root){
+				var te = document.getElementById(id);
+				if(filterFunc(te)){
+					return [ te ];
+				}
 			}
 		}else{
 			var ret = [];
 			var tret;
+			var tn;
 			if( (dotIdx == 0) || (query == "*") ){
 				// if we're the beginning of a generic class search, we need to
 				// get every element in the root for filtering
-				var elName = ((dotIdx == 0)||(query == "*")) ? "*" : query.substr(0, dotIdx);
-				tret = root.getElementsByTagName(elName);
+				tn = ((dotIdx == 0)||(query == "*")) ? "*" : query.substr(0, dotIdx);
 			}else{ //  if(0 > dotIdx){
 				// otherwise we're in node-type query...go get 'em
-				var tn = getTagName(query, hashIdx, dotIdx, bktIdx, colIdx);
-				tret = root.getElementsByTagName(tn);
+				tn = getTagName(query, hashIdx, dotIdx, bktIdx, colIdx);
 			}
 
 			if(-1 != colIdx){
 				var pseudoName = (0 <= colIdx) ? query.substr(colIdx+1) : "";
 				switch(pseudoName){
 					case "first":
-						for(var x=0, te; te = tret[x]; x++){
-							if(filterFunc(te)){
-								return [ te ];
+						retFunc = function(root){
+							var tret = root.getElementsByTagName(tn);
+							for(var x=0, te; te = tret[x]; x++){
+								if(filterFunc(te)){
+									return [ te ];
+								}
 							}
+							return [];
 						}
 						break;
 					case "last":
-						for(var x=tret.length-1, te; te = tret[x]; x--){
-							if(filterFunc(te)){
-								return [ te ];
+						retFunc = function(root){
+							var tret = root.getElementsByTagName(tn);
+							for(var x=tret.length-1, te; te = tret[x]; x--){
+								if(filterFunc(te)){
+									return [ te ];
+								}
 							}
+							return [];
 						}
 						break;
 					default:
-						for(var x=0, te; te = tret[x]; x++){
-							if(filterFunc(te)){
-								ret.push(te);
+						retFunc = function(root){
+							var tret = root.getElementsByTagName(tn);
+							var ret = [];
+							for(var x=0, te; te = tret[x]; x++){
+								if(filterFunc(te)){
+									ret[ret.length] = te;
+									// ret.push(te);
+								}
 							}
+							return ret;
 						}
 						break;
 				}
-			}else{
-				for(var x=0, te; te = tret[x]; x++){
-					if(filterFunc(te)){
+			}else if(
+				(-1 == hashIdx) &&
+				(-1 == bktIdx) &&
+				(-1 == colIdx) &&
+				(-1 == dotIdx)
+			){
+				// it's just a plain-ol elements-by-tag-name query from the root
+				retFunc = function(root){
+					var ret = [];
+					var tret = root.getElementsByTagName(tn);
+					for(var x=0, te; te = tret[x]; x++){
 						ret.push(te);
 					}
+					return ret;
+				}
+			}else{
+				retFunc = function(root){
+					var tret = root.getElementsByTagName(tn);
+					var ret = [];
+					for(var x=0, te; te = tret[x]; x++){
+						if(filterFunc(te)){
+							ret.push(te);
+						}
+					}
+					return ret;
 				}
 			}
-			return ret;
 		}
+		return _getElementsFuncCache[query] = retFunc;
+	}
+
+	var getElements = function(query, root){
+		if(!root){ root = document; }
+		return getElementsFunc(query)(root);
 	}
 
 	var _partsCache = {};
@@ -572,10 +690,17 @@ dojo.experimental("dojo.query");
 		var sqf = function(root){
 			var qparts = query.split(" ");
 
+			// FIXME: need to make root popping more explicit and cache it somehow
+
 			// see if we can't pop a root off the front
 			var partIndex = 0;
 			var lastRoot;
 			while((partIndex < qparts.length)&&(0 <= qparts[partIndex].indexOf("#"))){
+				// FIXME: should we try to cache such that the step function
+				// only ever looks for the last ID-based query part, thereby
+				// avoiding re-runs and potential array alloc?
+
+				// dojo.debug(qparts[partIndex]);
 				lastRoot = root;
 				root = getElements(qparts[partIndex])[0];
 				if(!root){ root = lastRoot; break; }
@@ -587,8 +712,6 @@ dojo.experimental("dojo.query");
 			root = root || document;
 			var candidates = getElements(qparts.shift(), root);
 			return filterDown(candidates, qparts);
-			// var candidates = getElements(qparts.pop(), root);
-			// return filterUp(candidates, qparts, root);
 		}
 		_queryFuncCache[query] = sqf;
 		return sqf;
