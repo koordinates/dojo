@@ -675,6 +675,14 @@ dojo.experimental("dojo.query");
 
 	var _queryFuncCache = {};
 
+	var isTagOnly = function(query){
+		return (	
+			(-1 == query.indexOf(".")) &&
+			(-1 == query.indexOf("[")) &&
+			(-1 == query.indexOf(":")) &&
+			(-1 == query.indexOf("#"))
+		);
+	}
 
 	var getStepQueryFunc = function(query){
 		if(_queryFuncCache[query]){ return _queryFuncCache[query]; }
@@ -710,7 +718,49 @@ dojo.experimental("dojo.query");
 				return [ root ];
 			}
 			root = root || document;
-			var candidates = getElements(qparts.shift(), root);
+			// FIXME: need to handle tight-loop "div div div" style queries
+			// here so as to avoid huge amounts of array alloc in repeated
+			// getElements calls by filterDown
+			var candidates;
+
+			// FIXME: this isn't very generic. It lets us run like a bat outta
+			// hell on queries like:
+			//		div div span
+			// and:
+			//		#thinger span#blah div span span
+			// but we might still fall apart on searches like:
+			//		foo.bar span[blah="thonk"] div div span code.example
+			// in short, we need to move the look-ahead logic into _filterDown()
+
+			if(isTagOnly(qparts[0])){
+				// go as far as we can down the chain without any intermediate
+				// array allocation
+				var searchParts = [];
+				var idx = 0;
+				while(qparts[idx] && isTagOnly(qparts[idx])){
+					searchParts.push(qparts[idx]);
+					idx++;
+				}
+				var curLevelItems = [ root ];
+				var nextLevelItems = [];
+				for(var x=0; x<searchParts.length; x++){
+					var tsp = qparts.shift();
+					for(var y=0; y<curLevelItems.length; y++){
+						var tcol = curLevelItems[y].getElementsByTagName(tsp);
+						for(var z=0; z<tcol.length; z++){
+							nextLevelItems.push(tcol[z]);
+						}
+					}
+					curLevelItems = nextLevelItems;
+					nextLevelItems = [];
+				}
+				candidates = curLevelItems;
+				if(!qparts.length){
+					return candidates;
+				}
+			}else{
+				candidates = getElements(qparts.shift(), root);
+			}
 			return filterDown(candidates, qparts);
 		}
 		_queryFuncCache[query] = sqf;
@@ -746,8 +796,6 @@ dojo.experimental("dojo.query");
 					return _queryFuncCache[query] = getXPathFunc(query);
 				}
 			}
-			/*
-			*/
 
 			// getStepQueryFunc has caching built in
 			return getStepQueryFunc(query);
