@@ -15,16 +15,20 @@
 	
 	<style type="text/css">
 		body { margin: 0em; padding: 1em 1em 1em 1em; }
+		label { font-weight: bold; }
+		
+		#left { vertical-align: top; }
+		#right { vertical-align: top; }
+		#top { margin-bottom: 1em; }
 		#title { font-weight: bold; font-size: 32pt; }
 		#tagline { font-weight: bold; font-size: 14pt; font-style: italic; vertical-align: top; margin-left: 0.5em; }
-		#instructions { margin-top: 0.3em; }
-		#fileContainer { margin-top: 2em; margin-bottom: 1em; }
-		#fileContainer button { vertical-align: middle; }
-		#directory { width: 20em; }
-		#fileContainer label { font-weight: bold; margin-right: 0.5em; }
-		#directoryContainer { margin-left: 2em; }
-		#saveButton { margin-left: 2em; }
-		#configureButton { margin-left: 2em; }
+		#storageKeyContainer { margin-bottom: 1em; }
+		#directoryContainer { margin-bottom: 1em; }
+		#fileButtons { margin-bottom: 1em; }
+		#directory { width: 10em; }
+		#storageKey { width: 10em; }
+		#saveButton { margin-left: 1em; }
+		#configureButton { margin-left: 1em;  }
 		.status { float: right; padding-left: 5px; padding-right: 5px; background: red; color: white; }
 	</style>
 	
@@ -36,44 +40,43 @@
 		<span id="tagline">
 			Web Editor With Persistent Client-Side Storage and Offline Access.
 		</span>
-		<div id="instructions">
-			Drag this link, <a id="offlineLink">Run Moxie</a>, to your favorites toolbar above for offline access. To work offline,
-			on Internet Explorer and Firefox select File > Work Offline; Safari does not need this. Next, click the
-			bookmark you made for this page.
-		</div>
 	</div>
 	
-	<div id="left">
-		<div id="dot-widget"></div>
-	</div>
-		
-	<div id="fileContainer">
-		<span id="storageKeyContainer">
-			<label for="storageKey">
-				File Name:
-			</label>
+	<table>
+		<tr>
+			<td id="left">
+				<div id="storageKeyContainer">
+					<label for="storageKey">
+						File Name:
+					</label>
+					
+					<input type="text" id="storageKey" name="storageKey">
+				</div>
+				
+				<div id="fileButtons">
+					<button id="saveButton">Save</button>
+					<button id="configureButton">Configure</button>
+				</div>
+					
+				<div id="directoryContainer">
+					<label for="storageKey">
+						Load File:
+					</label>
+					
+					<select id="directory" size="1" style="clear: none;"></select>
+				</div>
 			
-			<input type="text" id="storageKey" name="storageKey" size="40">
-		</span>
-		
-		<button id="saveButton">Save</button>
-		
-		<span id="directoryContainer">
-			<label for="storageKey">
-				Load File:
-			</label>
-			
-			<select id="directory" size="1" style="clear: none;"></select>
-		</span>
-		
-		<button id="configureButton">Configure</button>
-	</div>
-    
-    <div id="storageValueContainer">
-		<div id="storageValue" dojoType="Editor2" minHeight="10em" focusOnLoad="true">
-		Click Here to Begin Editing
-		</div>
-	</div>
+				<div id="dot-widget"></div>
+			</td>
+
+			<td id="right">
+			    <div id="storageValue" dojoType="Editor2" minHeight="10em" focusOnLoad="true">
+					Click Here to Begin Editing
+				</div>
+			</td>
+		</tr>
+	</table>
+	
 	<script>
 		if(dojo.render.html.safari){
 			dojo.byId(storageValue).setAttribute("height", "500px");
