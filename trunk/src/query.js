@@ -6,6 +6,23 @@ dojo.experimental("dojo.query");
 	var h = dojo.render.html;
 	var d = dojo;
 
+	var _getIndexes = function(q){
+		return [ q.indexOf("#"), q.indexOf("."), q.indexOf("["), q.indexOf(":") ];
+	}
+
+	var getId = function(query){
+		var i = _getIndexes(query);
+		if(i[0] != -1){
+			return query.substring(i[0]+1, getIdEnd(query));
+		}else{
+			return "";
+		}
+	}
+
+	var getIdEnd = function(query){
+		return _lowestFromIndex(query, 1);
+	}
+
 	////////////////////////////////////////////////////////////////////////
 	// XPath query code
 	////////////////////////////////////////////////////////////////////////
@@ -13,9 +30,9 @@ dojo.experimental("dojo.query");
 	var buildPath = function(query){
 		var xpath = "";
 		var qparts = query.split(" ");
-		var hashIdx, dotIdx, bktIdx, colIdx;
 		while(qparts.length){
 			var tqp = qparts.shift();
+			var i = _getIndexes(tqp);
 			var prefix;
 			if(tqp == ">"){
 				prefix = "/";
@@ -23,26 +40,19 @@ dojo.experimental("dojo.query");
 			}else{
 				prefix = "//";
 			}
-			hashIdx = tqp.indexOf("#");
-			dotIdx = tqp.indexOf(".");
-			bktIdx = tqp.indexOf("[");
-			colIdx = tqp.indexOf(":");
-
 			// get the tag name (if any)
-			var tagName = getTagName(tqp, hashIdx, dotIdx, bktIdx, colIdx);
+			var tagName = getTagName(tqp);
 
 			xpath += prefix + tagName;
 			
 			// check to see if it's got an id. Needs to come first in xpath.
-			if(hashIdx >= 0){
-				var hashEnd = getIdEnd(query, hashIdx, dotIdx, bktIdx, colIdx);
-				var idComponent = tqp.substring(hashIdx+1, hashEnd);
-				xpath += "[@id='"+idComponent+"']";
+			if(i[0] >= 0){
+				xpath += "[@id='"+getId(tqp)+"']";
 			}
 
 			// check the class name component
-			if(0 <= dotIdx){
-				var cn = getClassName(tqp, dotIdx, bktIdx, colIdx);
+			if(0 <= i[1]){
+				var cn = getClassName(tqp);
 				
 				var padding = " ";
 				if(cn.charAt(cn.length-1) == "*"){
@@ -88,6 +98,7 @@ dojo.experimental("dojo.query");
 		return _xpathFuncCache[path] = tf;
 	};
 
+	/*
 	d.xPathMatch = function(query){
 		// XPath based DOM query system. Handles a small subset of CSS
 		// selectors, subset is identical to the non-XPath version of this
@@ -96,6 +107,7 @@ dojo.experimental("dojo.query");
 		// FIXME: need to add support for alternate roots
 		return getXPathFunc(query)();
 	}
+	*/
 
 	////////////////////////////////////////////////////////////////////////
 	// DOM query code
@@ -131,7 +143,6 @@ dojo.experimental("dojo.query");
 			nidx++;
 			// kinda janky, too much array alloc
 			var isFinal = (queryParts.length == nidx);
-			// dojo.debug(queryParts.length, nidx);
 
 			var tf = getFilterFunc(queryParts[idx+1]);
 			for(var x=ecn.length-1, te; x>=0, te=ecn[x]; x--){
@@ -172,67 +183,36 @@ dojo.experimental("dojo.query");
 		return ret;
 	}
 
-	var getTagNameEnd = function(query, hashIdx, dotIdx, bktIdx, colIdx){
-		// spammy and verbose, but fucking fast
-		if((hashIdx == 0)||(dotIdx == 0)){
+	var _lowestFromIndex = function(query, index){
+		// spammy and verbose, but fast
+		var ql = query.length;
+		var i = _getIndexes(query);
+		var end = ql;
+		for(var x=index; x<i.length; x++){
+			if(i[x] >= 0){
+				if(i[x] < end){
+					end = i[x];
+				}
+			}
+		}
+		return (end < 0) ? ql : end;
+	}
+
+	var getTagNameEnd = function(query){
+		var i = _getIndexes(query);
+		if((i[0] == 0)||(i[1] == 0)){
+			// hash or dot at the front, no tagname
 			return 0;
 		}else{
-			var mainEnd = query.length;
-			if(hashIdx >= 0){
-				if(hashIdx < mainEnd){
-					mainEnd = hashIdx;
-				}
-			}
-			if(dotIdx >= 0){
-				if(dotIdx < mainEnd){
-					mainEnd = dotIdx;
-				}
-			}
-			if(bktIdx >= 0){
-				if(bktIdx < mainEnd){
-					mainEnd = bktIdx;
-				}
-			}
-			if(colIdx >= 0){
-				if(colIdx < mainEnd){
-					mainEnd = colIdx;
-				}
-			}
-			if(mainEnd < 0){
-				mainEnd = query.length;
-			}
-			return mainEnd;
+			return _lowestFromIndex(query, 0);
 		}
 	}
 
-	var _tagNameCache = {};
 
-	var getTagName = function(query, hashIdx, dotIdx, bktIdx, colIdx){
-		if(_tagNameCache[query]){ return _tagNameCache[query]; }
-		var tagNameEnd = getTagNameEnd(query, hashIdx, dotIdx, bktIdx, colIdx);
-		return _tagNameCache[query] = ((tagNameEnd > 0) ? query.substr(0, tagNameEnd) : "*");
-	}
-
-	var getIdEnd = function(query, hashIdx, dotIdx, bktIdx, colIdx){
-		// if(dotIdx == 0){
-		// 	return 0;
-		// }else{
-			var idEnd = query.length;
-			if(dotIdx >= 0){
-				// will be to the right of the #
-				if(dotIdx < idEnd){ idEnd = dotIdx; }
-			}
-			if(bktIdx >= 0){
-				if(bktIdx < idEnd){ idEnd = bktIdx; }
-			}
-			if(colIdx >= 0){
-				if(colIdx < idEnd){ idEnd = colIdx; }
-			}
-			if(idEnd < 0){
-				idEnd = query.length;
-			}
-			return idEnd;
-		// }
+	var getTagName = function(query){
+		var tagNameEnd = getTagNameEnd(query);
+		// FIXME: should this be ">=" to account for tags like <a> ?
+		return ((tagNameEnd > 0) ? query.substr(0, tagNameEnd).toLowerCase() : "*");
 	}
 
 	var getFilterFunc = function(query){
@@ -241,11 +221,7 @@ dojo.experimental("dojo.query");
 			return _filtersCache[query];
 		}
 		var ff = null;
-		var hashIdx = query.indexOf("#");
-		var dotIdx = query.indexOf(".");
-		var bktIdx = query.indexOf("[");
-		var colIdx = query.indexOf(":");
-		var tagName = getTagName(query, hashIdx, dotIdx, bktIdx, colIdx);
+		var tagName = getTagName(query);
 
 		// does it have a tagName component?
 		if(tagName != "*"){
@@ -261,10 +237,10 @@ dojo.experimental("dojo.query");
 			);
 		}
 
+		var idComponent = getId(query);
+
 		// does the node have an ID?
-		if(hashIdx >= 0){
-			var hashEnd = getIdEnd(query, hashIdx, dotIdx, bktIdx, colIdx);
-			var idComponent = query.substring(hashIdx+1, hashEnd);
+		if(idComponent.length){
 			ff = agree(ff, 
 				function(elem){
 					return (
@@ -275,26 +251,26 @@ dojo.experimental("dojo.query");
 			);
 		}
 
-		if(	(dotIdx >= 0) ||
-			(bktIdx >= 0) ||
-			(colIdx >= 0) ){
-			ff = agree(ff,
-				getSimpleFilterFunc(query, dotIdx, bktIdx, colIdx)
-			);
+		if(	Math.max.apply(this, _getIndexes(query).slice(1)) >= 0){
+			ff = agree(ff, getSimpleFilterFunc(query));
 		}
 
 		return _filtersCache[query] = ff;
 	}
 
-	var getClassName = function(query, dotIdx, bktIdx, colIdx){
+	var getClassName = function(query){
+		// [ q.indexOf("#"), q.indexOf("."), q.indexOf("["), q.indexOf(":") ];
+		var i = _getIndexes(query);
+		var di = i[1]+1;
+
 		// regular expressions are for people who don't understand state machines
-		if(bktIdx > dotIdx){
+		if(i[2] > i[1]){
 			// brackets come before colons
-			return query.substring(dotIdx+1, bktIdx);
-		}else if(colIdx > dotIdx){
-			return query.substring(dotIdx+1, colIdx);
+			return query.substring(di, i[2]);
+		}else if(i[3] > i[1]){
+			return query.substring(di, i[3]);
 		}else{
-			return query.substr(dotIdx+1);
+			return query.substr(di);
 		}
 	}
 
@@ -352,16 +328,18 @@ dojo.experimental("dojo.query");
 
 	var firedCount = 0;
 
-	var getSimpleFilterFunc = function(query, dotIdx, bktIdx, colIdx){
+	var getSimpleFilterFunc = function(query){
 		var fcHit = (_simpleFiltersCache[query]||_filtersCache[query]);
 		if(fcHit){ return fcHit; }
 
 		var ff = null;
 
-		var hashIdx = query.indexOf("#");
+		// [ q.indexOf("#"), q.indexOf("."), q.indexOf("["), q.indexOf(":") ];
+		var i = _getIndexes(query);
+
 		// the only case where we'll need the tag name is if we came from an ID query
-		if(hashIdx >= 0){
-			var tn = getTagName(query, hashIdx, dotIdx, bktIdx, colIdx).toLowerCase();
+		if(i[0] >= 0){
+			var tn = getTagName(query);
 			if(tn != "*"){
 				ff = agree(ff, function(elem){
 					return (elem.tagName.toLowerCase() == tn);
@@ -370,9 +348,9 @@ dojo.experimental("dojo.query");
 		}
 
 		// if there's a class in our query, generate a match function for it
-		if(dotIdx >= 0){
+		if(i[1] >= 0){
 			// get the class name
-			var className = getClassName(query, dotIdx, bktIdx, colIdx);
+			var className = getClassName(query);
 			var isWildcard = className.charAt(className.length-1) == "*";
 			if(isWildcard){
 				className = className.substr(0, className.length-1);
@@ -423,7 +401,9 @@ dojo.experimental("dojo.query");
 				}
 			);
 		}
-		if(bktIdx >= 0){
+		// [ "#", ".", "[", ":" ];
+		if(i[2] >= 0){
+			// FIXME: need to implement attribute searches!!
 			var lBktIdx = query.lastIndexOf("]");
 			ff = agree(ff, 
 				function(elem){
@@ -431,9 +411,9 @@ dojo.experimental("dojo.query");
 				}
 			);
 		}
-		if(colIdx >= 0){
+		if(i[3]>= 0){
 			// NOTE: we count on the pseudo name being at the end
-			var pseudoName = query.substr(colIdx+1);
+			var pseudoName = query.substr(i[3]+1);
 			var condition = "";
 			var obi = pseudoName.indexOf("(");
 			var cbi = pseudoName.lastIndexOf(")");
@@ -537,6 +517,9 @@ dojo.experimental("dojo.query");
 		return _simpleFiltersCache[query] = ff;
 	}
 
+	var isTagOnly = function(query){
+		return (Math.max.apply(this, _getIndexes(query)) == -1);
+	}
 
 	var _getElementsFuncCache = {};
 
@@ -548,33 +531,22 @@ dojo.experimental("dojo.query");
 
 		// the query doesn't contain any spaces, so there's only so many
 		// things it could be
-		var dotIdx = query.indexOf(".");
-		var bktIdx = query.indexOf("[");
-		var colIdx = query.indexOf(":");
-		var hashIdx = query.indexOf("#");
-		var id;
-		if(-1 != hashIdx){
-			id = query.substring(hashIdx+1,
-						getIdEnd(query, hashIdx, dotIdx, bktIdx, colIdx) );
-		}
-		if(	
-			(hashIdx == 0) &&
-			(-1 == bktIdx) &&
-			(-1 == colIdx) &&
-			(-1 == dotIdx)
-		){
+		// [ q.indexOf("#"), q.indexOf("."), q.indexOf("["), q.indexOf(":") ];
+		var i = _getIndexes(query);
+		var id = getId(query);
+		if(i[0] == 0){
 			// ID query. Easy.
-			retFunc = function(root){
-				return [ document.getElementById(id) ];
+			return _getElementsFuncCache[query] = function(root){
+				return [ d.byId(id) ];
 			}
 		}
 
-		var filterFunc = getSimpleFilterFunc(query, dotIdx, bktIdx, colIdx);
+		var filterFunc = getSimpleFilterFunc(query);
 
-		if(hashIdx >= 0){
+		if(i[0] >= 0){
 			// we got a filtered ID search (e.g., "h4#thinger")
 			retFunc = function(root){
-				var te = document.getElementById(id);
+				var te = d.byId(id);
 				if(filterFunc(te)){
 					return [ te ];
 				}
@@ -582,18 +554,10 @@ dojo.experimental("dojo.query");
 		}else{
 			var ret = [];
 			var tret;
-			var tn;
-			if( (dotIdx == 0) || (query == "*") ){
-				// if we're the beginning of a generic class search, we need to
-				// get every element in the root for filtering
-				tn = ((dotIdx == 0)||(query == "*")) ? "*" : query.substr(0, dotIdx);
-			}else{ //  if(0 > dotIdx){
-				// otherwise we're in node-type query...go get 'em
-				tn = getTagName(query, hashIdx, dotIdx, bktIdx, colIdx);
-			}
+			var tn = getTagName(query);
 
-			if(-1 != colIdx){
-				var pseudoName = (0 <= colIdx) ? query.substr(colIdx+1) : "";
+			if(-1 != i[3]){
+				var pseudoName = (0 <= i[3]) ? query.substr(i[3]+1) : "";
 				switch(pseudoName){
 					case "first":
 						retFunc = function(root){
@@ -631,12 +595,7 @@ dojo.experimental("dojo.query");
 						}
 						break;
 				}
-			}else if(
-				(-1 == hashIdx) &&
-				(-1 == bktIdx) &&
-				(-1 == colIdx) &&
-				(-1 == dotIdx)
-			){
+			}else if(isTagOnly(query)){
 				// it's just a plain-ol elements-by-tag-name query from the root
 				retFunc = function(root){
 					var ret = [];
@@ -674,16 +633,6 @@ dojo.experimental("dojo.query");
 	////////////////////////////////////////////////////////////////////////
 
 	var _queryFuncCache = {};
-
-	var isTagOnly = function(query){
-		return (	
-			(-1 == query.indexOf(".")) &&
-			(-1 == query.indexOf("[")) &&
-			(-1 == query.indexOf(":")) &&
-			(-1 == query.indexOf("#"))
-		);
-	}
-
 	var getStepQueryFunc = function(query){
 		if(_queryFuncCache[query]){ return _queryFuncCache[query]; }
 
@@ -781,6 +730,8 @@ dojo.experimental("dojo.query");
 			if(_queryFuncCache[query]){ return _queryFuncCache[query]; }
 			// FIXME: xpath support temporarialy disabled to debug DOM code path
 			// has xpath support
+			/*
+			*/
 			var qparts = query.split(" ");
 			if(	(document["evaluate"])&&
 				(query.indexOf(":") == -1) ){
