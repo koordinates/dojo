@@ -7,55 +7,55 @@
 	<title>Moxie</title>
 
 	<script type="text/javascript">
-		var djConfig = { isDebug: true };
+		var djConfig = { isDebug: false };
 	</script>
 	
 	<script type="text/javascript" src="../../dojo.js"></script>
 	<script type="text/javascript" src="editor.js"></script>
 	
 	<style type="text/css">
-		body { margin: 0em; padding: 1em 1em 1em 1em; }
+		body, html { padding: 1em; }
 		label { font-weight: bold; }
 		
-		#left { vertical-align: top; }
-		#right { vertical-align: top; }
-		#top { margin-bottom: 1em; }
-		#title { font-weight: bold; font-size: 32pt; }
-		#tagline { font-weight: bold; font-size: 14pt; font-style: italic; vertical-align: top; margin-left: 0.5em; }
+		#title { background-color: #9DADB9; width: 100%; position: absolute; top: 0px; left: 0px; margin: 0px; padding: 6px 0px 0px 6px; border: 0px; height: 1em; }
+		#fileWidget { width: 13em; margin-bottom: 1em; }
+		#content-container { width: 100%; margin-left: -200px; float: right; margin-top: 2em; }
+		#content { margin-left: 200px; padding-left: 30px; }
+		#sidebar { float: left; width: 200px; margin-top: 2em; }
 		#storageKeyContainer { margin-bottom: 1em; }
 		#directoryContainer { margin-bottom: 1em; }
-		#fileButtons { margin-bottom: 1em; }
 		#directory { width: 10em; }
 		#storageKey { width: 10em; }
-		#saveButton { margin-left: 1em; }
-		#configureButton { margin-left: 1em;  }
+		
+		.widget { border: 2px solid #CDDDE9; }
+		.widgetTitleBar { background-color: #CDDDE9; padding-top: 0.2em; padding-bottom: 0.2em; }
+		.widgetTitleText { vertical-align: middle; font-weight: bold; font-size: 14pt; padding-left: 2px; } 
+		.widgetContents { padding: 8px 5px 8px 5px; }
 		.status { float: right; padding-left: 5px; padding-right: 5px; background: red; color: white; }
 	</style>
 	
 </head>
 
 <body>
-	<div id="top">
-		<span id="title">Moxie</span>
-		<span id="tagline">
-			Web Editor With Persistent Client-Side Storage and Offline Access.
-		</span>
-	</div>
-	
-	<table>
-		<tr>
-			<td id="left">
+	<h1 id="title">Moxie</h1>
+		
+	<div id="sidebar">
+		<div id="fileWidget" class="widget">
+			<div class="widgetTitleBar">
+				<span class="widgetTitleText">
+					Files
+				</span>
+			</div>
+			
+			<div class="widgetContents">
 				<div id="storageKeyContainer">
 					<label for="storageKey">
 						File Name:
 					</label>
 					
 					<input type="text" id="storageKey" name="storageKey">
-				</div>
-				
-				<div id="fileButtons">
+					
 					<button id="saveButton">Save</button>
-					<button id="configureButton">Configure</button>
 				</div>
 					
 				<div id="directoryContainer">
@@ -65,17 +65,30 @@
 					
 					<select id="directory" size="1" style="clear: none;"></select>
 				</div>
-			
-				<div id="dot-widget"></div>
-			</td>
-
-			<td id="right">
-			    <div id="storageValue" dojoType="Editor2" minHeight="10em" focusOnLoad="true">
-					Click Here to Begin Editing
+			</div>
+		</div>
+	
+		<!-- Place the Dojo Offline widget here -->
+		<div id="dot-widget"></div>
+	</div>
+	
+	<div id="content-container">
+		<div id="content">
+			<div id="editorWidget" class="widget">
+				<div class="widgetTitleBar">
+					<span class="widgetTitleText">
+						Editor
+					</span>
 				</div>
-			</td>
-		</tr>
-	</table>
+				
+				<div class="widgetContents">
+				    <div id="storageValue" dojoType="Editor2" minHeight="10em" focusOnLoad="true">
+						Click Here to Begin Editing
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	
 	<script>
 		if(dojo.render.html.safari){
