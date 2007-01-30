@@ -6,6 +6,7 @@ dojo.require("dojo.widget.Editor2");
 dojo.require("dojo.storage.*");
 dojo.require("dojo.dot.*");
 dojo.require("dojo.sync");
+dojo.require("dojo.dot.ui");
 
 // configure how we should work offline
 
@@ -14,14 +15,18 @@ dojo.dot.ui.appName = "Moxie";
 
 // we aren't going to need a durable cache for now;
 // we will just have our server return good HTTP/1.1
-// caching headers and rely on the browser's native
-// cache until Dojo Online has a downloadable durable
-// cache ready in the future
+// caching headers and rely on the browser's native cache
 dojo.dot.requireDurableCache = false;
 
 var Moxie = {
+	_initialized: false,
+
 	initialize: function(){
-		//dojo.debug("test_storage.initialize()");
+		if(this._initialized == true){
+			return;
+		}
+		
+		//dojo.debug("Moxie.initialize");
 		
 		// clear out old values
 		dojo.byId("storageKey").value = "";
@@ -34,6 +39,8 @@ var Moxie = {
 		var directory = dojo.byId("directory");
 		dojo.event.connect(directory, "onchange", this, this.directoryChange);
 		dojo.event.connect(dojo.byId("saveButton"), "onclick", this, this.save);
+		
+		this._initialized = true;
 	},
 	
 	directoryChange: function(evt){
@@ -115,6 +122,7 @@ var Moxie = {
 				storageValue.style.display = "block";
 			}
 		};
+		
 		try{
 			dojo.storage.put(key, value, saveHandler);
 		}catch(exp){
