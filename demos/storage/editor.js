@@ -34,9 +34,6 @@ var Moxie = {
 	initialize: function(){
 		//dojo.debug("test_storage.initialize()");
 		
-		// fill out the offline link
-		dojo.byId("offlineLink").href = window.location.href;
-		
 		// clear out old values
 		dojo.byId("storageKey").value = "";
 		dojo.byId("storageValue").value = "";
