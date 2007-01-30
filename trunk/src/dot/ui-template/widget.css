@@ -112,6 +112,13 @@ a.dot-disabled{
 	cursor: text;
 }
 
+.dot-needs-durable-cache{
+	padding-top: 1.5em;
+	font-size: 16pt !important;
+	text-align: center;
+	line-height: 1.2;
+}
+
 /** Learn How Page Styles */
 #dot-learn-how-body{
 	padding: 3em;
