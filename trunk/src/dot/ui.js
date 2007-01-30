@@ -329,6 +329,11 @@ dojo.lang.mixin(dojo.dot.ui, {
 		if(offlineButton){
 			dojo.event.connect(offlineButton, "onclick", this, this._workOffline);
 		}
+		
+		var configureButton = dojo.byId("dot-configure-button");
+		if(configureButton){
+			dojo.event.connect(configureButton, "onclick", this, this._configure);
+		}
 	},
 	
 	_updateNetworkIndicator: function(){
@@ -796,7 +801,70 @@ dojo.lang.mixin(dojo.dot.ui, {
 		if(dotMoreCommands){
 			dotMoreCommands.style.display = "none";
 		}
-		return;		
+	},
+	
+	_configure: function(evt){
+		// cancel the button's default behavior
+		if(evt){
+			evt.preventDefault();
+			evt.stopPropagation();
+		}
+		
+		if(dojo.sync.isSyncing == true){
+			return;
+		}
+		
+		// turn off most of the Offline Widget UI
+		var learnHow = dojo.byId("dot-widget-learn-how");
+		var syncControls = dojo.byId("dot-sync-controls");
+		var syncStatus = dojo.byId("dot-sync-status");
+		var dotMoreCommands = dojo.byId("dot-more-commands");
+		var lastSync = dojo.byId("dot-last-sync");
+		var numItems = dojo.byId("dot-num-modified-items");
+		
+		if(learnHow){
+			learnHow.style.display = "none";
+		}
+		
+		if(syncControls){
+			syncControls.style.display = "none";
+		}
+		
+		if(syncStatus){
+			syncStatus.style.display = "none";
+		}
+		
+		if(dotMoreCommands){
+			dotMoreCommands.style.display = "none";
+		}
+		
+		if(lastSync){
+			lastSync.style.display = "none";
+		}
+		
+		if(numItems){
+			numItems.style.display = "none";
+		}
+		
+		// turn on the configuration UI
+		var configArea = dojo.byId("dot-configure");
+		if(configArea){
+			configArea.style.display = "block";
+		}
+		
+		// fill out default values
+		var enableOfflineField = dojo.byId("dot-enableOffline");
+		var autoSyncField = dojo.byId("dot-autoSync");
+		if(enableOfflineField){
+			enableOfflineField.checked = dojo.dot.enabled;
+		}
+		if(autoSyncField){
+			autoSyncField.checked = dojo.sync.autoSync;
+		}
+		
+		// FIXME: TODO: Allow custom configuration options here
+		
+		
 	}
 });
 

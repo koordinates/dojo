@@ -119,6 +119,29 @@ a.dot-disabled{
 	line-height: 1.2;
 }
 
+#dot-configure{
+	display: none;
+}
+
+#dot-configure a{
+	display: block;
+	margin-bottom: 0.5em;
+}
+
+#dot-configure-buttons{
+	position: absolute;
+	bottom: 8px;
+}
+
+#dot-configure-confirm-buttons{
+	float: right;
+	padding-right: 0.5em;
+}
+
+#dot-configure-cancel-button{
+	margin-right: 0.5em;
+}
+
 /** Learn How Page Styles */
 #dot-learn-how-body{
 	padding: 3em;
