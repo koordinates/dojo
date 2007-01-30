@@ -71,6 +71,12 @@ dojo.lang.mixin(dojo.sync, {
 	//	if none.
 	lastSync: null,
 	
+	// autoSync: boolean
+	//	Whether we do automatically sync on page load
+	//	or when we go online. If true we do, if false syncing
+	//	must be manually initiated. Defaults to true.
+	autoSync: true,
+	
 	synchronize: function(){ /* void */
 		// summary:
 		//	Begin a synchronization session.
