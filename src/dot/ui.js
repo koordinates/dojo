@@ -143,6 +143,82 @@ dojo.lang.mixin(dojo.dot.ui, {
 		//	Updates our UI as we attempt sync canceling
 		this._setSyncMessage("Canceling...");
 	},
+	
+	onOnline: function(){
+		// summary:
+		//	Called when we go online.
+		// description:
+		//	When we go online, this method is called to update
+		//	our UI. Default behavior is to update the Offline
+		//	Widget UI, re-enable any screen elements that were disabled
+		//	when we went offline, and to attempt a synchronization.
+		
+		// update UI
+		this._updateNetworkIndicator();
+		this._updateMoreCommands();
+		
+		// renable our commands
+		var offlineButton = dojo.byId("dot-work-offline-button");
+		var onlineButton = dojo.byId("dot-work-online-button");
+		var configureButton = dojo.byId("dot-configure-button");
+		var syncButton = dojo.byId("dot-sync-button");
+		
+		if(offlineButton){
+			dojo.html.removeClass(offlineButton, "dot-disabled");
+		}
+		
+		if(onlineButton){
+			dojo.html.removeClass(onlineButton, "dot-disabled");
+		}
+		
+		if(configureButton){
+			dojo.html.removeClass(configureButton, "dot-disabled");
+		}
+		
+		if(syncButton){
+			dojo.html.removeClass(syncButton, "dot-disabled");
+		}
+		
+		// TODO: FIXME: Renable previously disabled elements
+		
+		// synchronize, but pause for a few seconds
+		// so that the user can orient themselves -
+		// 3 seconds
+		window.setTimeout(dojo.lang.hitch(this, this._synchronize), 3000);
+	},
+	
+	onOffline: function(){
+		// summary:
+		//	Called when we go offline
+		// description:
+		//	When we go offline, this method is called to update
+		//	our UI. Default behavior is to update the Offline
+		//	Widget UI, and to disable any screen elements that should be disabled
+		//	when we go offline.
+		
+		// update UI
+		this._updateNetworkIndicator();
+		this._updateMoreCommands();
+		
+		// disable sync command
+		var syncButton = dojo.byId("dot-sync-button");
+		if(syncButton){
+			dojo.html.addClass(syncButton, "dot-disabled");
+		}
+		
+		// provide feedback
+		this._setSyncMessage("You are now offline");
+		var checkmark = dojo.byId("dot-success-checkmark");
+		var details = dojo.byId("dot-sync-details");
+		if(checkmark){
+			checkmark.style.display = "inline";
+		}
+		if(details){
+			details.style.display = "none";
+		}
+		
+		// TODO: FIXME: Disable elements in this web app
+	},
 
 	_onPageLoad: function(){
 		// make sure our app name is correct
@@ -157,7 +233,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// set our run link text to its default
 		this.runLinkText = "Run " + this.appName;
 		
-		// setup our event listeners for sync events
+		// setup our event listeners for Dojo Offline events
 		// to update our UI
 		dojo.sync.onStart = dojo.lang.hitch(this, this.onStart);
 		dojo.sync.onRefreshUI = dojo.lang.hitch(this, this.onRefreshUI);
@@ -165,6 +241,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 		dojo.sync.onDownload = dojo.lang.hitch(this, this.onDownload);
 		dojo.sync.onFinished = dojo.lang.hitch(this, this.onFinished);
 		dojo.sync.onCancel = dojo.lang.hitch(this, this.onCancel);
+		dojo.dot.onOnline = dojo.lang.hitch(this, this.onOnline);
+		dojo.dot.onOffline = dojo.lang.hitch(this, this.onOffline);
 		
 		// embed the offline widget UI
 		if(this.autoEmbed == true){
@@ -311,6 +389,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var numItems = dojo.byId("dot-num-modified-items");
 		
 		if(dojo.sync.isSyncing == true){
+			this._setSyncMessage("");
+			
 			if(syncButtons){
 				syncButtons.style.display = "none";
 			}
@@ -372,15 +452,19 @@ dojo.lang.mixin(dojo.dot.ui, {
 	
 	_synchronize: function(evt){
 		// cancel the button's default behavior
-		evt.preventDefault();
-		evt.stopPropagation();
+		if(evt){
+			evt.preventDefault();
+			evt.stopPropagation();
+		}
 		
 		// cause the clicked link to lose focus, so
 		// that when we are finished it won't be 
 		// annoyingly selected by the user
-		var syncButton = dojo.byId("dot-sync-button");
-		if(syncButton && syncButton.blur){
-			syncButton.blur();
+		if(evt){
+			var syncButton = dojo.byId("dot-sync-button");
+			if(syncButton && syncButton.blur){
+				syncButton.blur();
+			}
 		}
 		
 		dojo.sync.synchronize();
@@ -591,13 +675,98 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// cancel the button's default behavior
 		evt.preventDefault();
 		evt.stopPropagation();
+		
+		if(dojo.sync.isSyncing == true){
+			return;
+		}
+		
+		// give the user status feedback
+		var checkmark = dojo.byId("dot-success-checkmark");
+		var roller = dojo.byId("dot-roller");
+		var details = dojo.byId("dot-sync-details");
+		this._setSyncMessage("Going online... "
+							+ dojo.dot.goOnlineTimeout);
+		if(checkmark){
+			checkmark.style.display = "none";
+		}
+		if(roller){
+			roller.style.display = "inline";
+		}
+		if(details){
+			details.style.display = "none";
+		}
+		
+		// disable our commands
+		var offlineButton = dojo.byId("dot-work-offline-button");
+		var onlineButton = dojo.byId("dot-work-online-button");
+		var configureButton = dojo.byId("dot-configure-button");
+		var syncButton = dojo.byId("dot-sync-button");
+		
+		if(offlineButton){
+			dojo.html.addClass(offlineButton, "dot-disabled");
+		}
+		
+		if(onlineButton){
+			dojo.html.addClass(onlineButton, "dot-disabled");
+		}
+		
+		if(configureButton){
+			dojo.html.addClass(configureButton, "dot-disabled");
+		}
+		
+		if(syncButton){
+			dojo.html.addClass(syncButton, "dot-disabled");
+		}
+		
+		// FIXME: TODO: Add CANCEL link
+		
+		// try to go online
+		dojo.dot.goOnline(dojo.lang.hitch(this, this._goOnlineFinished),
+						dojo.lang.hitch(this, this._goOnlineProgress));
+	},
+	
+	_goOnlineFinished: function(isOnline, manuallyCancelled){
+		var roller = dojo.byId("dot-roller");
+		if(roller){
+			roller.style.display = "none";
+		}
+		
+		if(manuallyCancelled == true){
+			this._setSyncMessage("Cancelled");
+			return;
+		}
+		
+		if(isOnline){
+			this._setSyncMessage("You are now online");
+			var checkmark = dojo.byId("dot-success-checkmark");
+			if(checkmark){
+				checkmark.style.display = "inline";
+			}
+			
+			this.onOnline();
+		}else{
+			this._setSyncMessage("Network not available");
+			this.onOffline();
+		}
+	},
+	
+	_goOnlineProgress: function(timer){
+		var secondsLeft = dojo.dot.goOnlineTimeout - timer;
+		this._setSyncMessage("Going online... "
+							+ secondsLeft);
 	},
 	
 	_workOffline: function(evt){
 		// cancel the button's default behavior
 		evt.preventDefault();
 		evt.stopPropagation();
-	}	
+		
+		if(dojo.sync.isSyncing == true){
+			return;
+		}
+		
+		dojo.dot.goOffline();
+	}
 });
 
 dojo.event.connect(window, "onload", dojo.dot.ui, dojo.dot.ui._onPageLoad);
