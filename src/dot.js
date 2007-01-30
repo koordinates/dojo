@@ -51,7 +51,7 @@ dojo.lang.mixin(dojo.dot, {
 		//	will be installed
 	
 		// FIXME: Implement
-		return true;
+		return false;
 	},
 	
 	cancel: function(){

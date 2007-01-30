@@ -291,6 +291,13 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// update our 'Learn How' text
 		this._initLearnHow();
 		
+		// check durable cache settings
+		if(dojo.dot.requireDurableCache == true
+			&& dojo.dot.hasDurableCache() == false){
+			this._needsDurableCache();
+			return;
+		}
+		
 		// update our sync UI
 		this._updateSyncUI();
 		
@@ -766,6 +773,30 @@ dojo.lang.mixin(dojo.dot.ui, {
 		}
 		
 		dojo.dot.goOffline();
+	},
+	
+	_needsDurableCache: function(){
+		var learnHow = dojo.byId("dot-widget-learn-how");
+		var syncControls = dojo.byId("dot-sync-controls");
+		var syncStatus = dojo.byId("dot-sync-status");
+		var dotMoreCommands = dojo.byId("dot-more-commands");
+		
+		if(learnHow){
+			dojo.html.addClass(learnHow, "dot-needs-durable-cache");
+		}
+		
+		if(syncControls){
+			syncControls.style.display = "none";
+		}
+		
+		if(syncStatus){
+			syncStatus.style.display = "none";
+		}
+		
+		if(dotMoreCommands){
+			dotMoreCommands.style.display = "none";
+		}
+		return;		
 	}
 });
 
