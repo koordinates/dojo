@@ -32,7 +32,6 @@ dojo.experimental("dojo.query");
 		var qparts = query.split(" ");
 		while(qparts.length){
 			var tqp = qparts.shift();
-			var i = _getIndexes(tqp);
 			var prefix;
 			if(tqp == ">"){
 				prefix = "/";
@@ -46,14 +45,14 @@ dojo.experimental("dojo.query");
 			xpath += prefix + tagName;
 			
 			// check to see if it's got an id. Needs to come first in xpath.
-			if(i[0] >= 0){
-				xpath += "[@id='"+getId(tqp)+"']";
+			var id = getId(tqp);
+			if(id.length){
+				xpath += "[@id='"+id+"']";
 			}
 
+			var cn = getClassName(tqp);
 			// check the class name component
-			if(0 <= i[1]){
-				var cn = getClassName(tqp);
-				
+			if(cn.length){
 				var padding = " ";
 				if(cn.charAt(cn.length-1) == "*"){
 					padding = ""; cn = cn.substr(0, cn.length-1);
@@ -252,25 +251,40 @@ dojo.experimental("dojo.query");
 		}
 
 		if(	Math.max.apply(this, _getIndexes(query).slice(1)) >= 0){
+			// if we have other query param parts, make sure we add them to the
+			// filter chain
 			ff = agree(ff, getSimpleFilterFunc(query));
 		}
 
 		return _filtersCache[query] = ff;
 	}
 
+	var smallest = function(arr){
+		var ret = -1;
+		for(var x=0; x<arr.length; x++){
+			var ta = arr[x];
+			if(ta >= 0){
+				if((ta > ret)||(ret == -1)){
+					ret = ta;
+				}
+			}
+		}
+		return ret;
+	}
+
 	var getClassName = function(query){
-		// [ q.indexOf("#"), q.indexOf("."), q.indexOf("["), q.indexOf(":") ];
+		// [ "#", ".", "[", ":" ];
 		var i = _getIndexes(query);
+		if(-1 == i[1]){ return ""; } // no class component
 		var di = i[1]+1;
 
-		// regular expressions are for people who don't understand state machines
-		if(i[2] > i[1]){
-			// brackets come before colons
-			return query.substring(di, i[2]);
-		}else if(i[3] > i[1]){
-			return query.substring(di, i[3]);
-		}else{
+		var othersStart = smallest(i.slice(2));
+		if(di < othersStart){
+			return query.substring(di, othersStart);
+		}else if(-1 == othersStart){
 			return query.substr(di);
+		}else{
+			return "";
 		}
 	}
 
@@ -329,6 +343,12 @@ dojo.experimental("dojo.query");
 	var firedCount = 0;
 
 	var getSimpleFilterFunc = function(query){
+		// FIXME: this function currently doesn't support chaining of the same
+		// sub-selector. E.g., we can't yet search on 
+		//		span.thinger.thud 
+		// or
+		//		div:nth-child(even):last-child
+
 		var fcHit = (_simpleFiltersCache[query]||_filtersCache[query]);
 		if(fcHit){ return fcHit; }
 
@@ -348,58 +368,20 @@ dojo.experimental("dojo.query");
 		}
 
 		// if there's a class in our query, generate a match function for it
-		if(i[1] >= 0){
+		var className = getClassName(query);
+		if(className.length){
 			// get the class name
-			var className = getClassName(query);
 			var isWildcard = className.charAt(className.length-1) == "*";
 			if(isWildcard){
 				className = className.substr(0, className.length-1);
 			}
 			var cnl = className.length;
 			var spc = " ";
-			// FIXME: need to make less spammy!!
-			/*
-			// this is a possible replacement, although I dislike the regex
-			// thing, even if memozied in a cache
-			var re = new RegExp("(?:^|\\s)("+className+")(?:\\s|$)");
+			// I dislike the regex thing, even if memozied in a cache, but it's VERY short
+			var re = new RegExp("(?:^|\\s)" + className + (isWildcard ? ".*" : "") + "(?:\\s|$)");
 			ff = agree(ff, function(elem){
 				return re.test(elem.className);
 			});
-			*/
-			ff = agree(ff, function(elem){
-					var ecn = elem.className;
-					var ecnl = ecn.length;
-					if(ecnl == 0){ return false; }
-					var cidx = ecn.indexOf(className);
-					if(0 > cidx){ return false; }
-					if((0 == cidx)&&(ecnl == cnl)){
-						return true;
-					}
-					if(0 == cidx){
-						if(ecn.charAt(cnl) == spc){
-							// it was at the front
-							return true;
-						}
-					}else{
-						var cidxcnl = cidx+cnl;
-						if(ecnl == cidxcnl){
-							// if it's at the end, check to see if we got a
-							// full match up front
-							if(ecn.charAt(cidx-1) == spc){
-								return true;
-							}
-						}else{
-							// otherwise, check both sides
-							if(	(ecn.charAt(cidx-1) == spc) && 
-								( (ecn.charAt(cidxcnl) == spc)||isWildcard )
-							){
-								return true;
-							}
-						}
-					}
-					return false;
-				}
-			);
 		}
 		// [ "#", ".", "[", ":" ];
 		if(i[2] >= 0){
@@ -680,13 +662,13 @@ dojo.experimental("dojo.query");
 			// but we might still fall apart on searches like:
 			//		foo.bar span[blah="thonk"] div div span code.example
 			// in short, we need to move the look-ahead logic into _filterDown()
-
-			if(isTagOnly(qparts[0])){
+			if(isTagOnly(qparts[partIndex]) && (qparts[partIndex+1] != ">")){
 				// go as far as we can down the chain without any intermediate
 				// array allocation
+				qparts = qparts.slice(partIndex);
 				var searchParts = [];
 				var idx = 0;
-				while(qparts[idx] && isTagOnly(qparts[idx])){
+				while(qparts[idx] && isTagOnly(qparts[idx]) && (qparts[idx+1] != ">" )){
 					searchParts.push(qparts[idx]);
 					idx++;
 				}
@@ -730,20 +712,21 @@ dojo.experimental("dojo.query");
 			if(_queryFuncCache[query]){ return _queryFuncCache[query]; }
 			// FIXME: xpath support temporarialy disabled to debug DOM code path
 			// has xpath support
-			/*
-			*/
 			var qparts = query.split(" ");
 			if(	(document["evaluate"])&&
 				(query.indexOf(":") == -1) ){
 				// kind of a lame heuristic, but it works
 				var gtIdx = query.indexOf(">")
 				if(	
+					// a "div div div" style query
 					((qparts.length > 2)&&(query.indexOf(">") == -1))||
+					// or something else with moderate complexity. kinda janky
 					(qparts.length > 3)||
+					// or if it's a ".thinger" query
 					((0 > query.indexOf(" "))&&(0 == query.indexOf(".")))
 
 				){
-					// FIXME: we might be accepting selectors that we can't handle
+					// use get and cache a xpath runner for this selector
 					return _queryFuncCache[query] = getXPathFunc(query);
 				}
 			}
