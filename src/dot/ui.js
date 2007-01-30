@@ -183,8 +183,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 		
 		// synchronize, but pause for a few seconds
 		// so that the user can orient themselves -
-		// 3 seconds
-		window.setTimeout(dojo.lang.hitch(this, this._synchronize), 3000);
+		// 1 seconds
+		window.setTimeout(dojo.lang.hitch(this, this._synchronize), 1000);
 	},
 	
 	onOffline: function(){
