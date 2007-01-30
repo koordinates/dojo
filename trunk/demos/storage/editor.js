@@ -45,7 +45,6 @@ var Moxie = {
 		var directory = dojo.byId("directory");
 		dojo.event.connect(directory, "onchange", this, this.directoryChange);
 		dojo.event.connect(dojo.byId("saveButton"), "onclick", this, this.save);
-		dojo.event.connect(dojo.byId("configureButton"), "onclick", this, this.configure);
 	},
 	
 	directoryChange: function(evt){
@@ -85,38 +84,6 @@ var Moxie = {
 		
 		// do the save
 		this._save(key, value)
-	},
-	
-	configure: function(evt){
-		// cancel the button's default behavior
-		evt.preventDefault();
-		evt.stopPropagation();
-		
-		if(dojo.storage.hasSettingsUI()){
-			// redraw our keys after the dialog is closed, in
-			// case they have all been erased
-			var self = this;
-			dojo.storage.onHideSettingsUI = function(){
-				self._printAvailableKeys();
-				
-				// Reshow the Editor (see below)
-				if(dojo.render.html.moz){
-					var storageValue = dojo.byId("storageValue");
-					storageValue.style.display = "block";
-				}
-			}
-			
-			// The Flash dialog plus the underlying Editor on Firefox
-			// creates screen glitches; temporary
-			// workaround to just hide the Editors while dialog is showing
-			if(dojo.render.html.moz){
-				var storageValue = dojo.byId("storageValue");
-				storageValue.style.display = "none";
-			}
-			
-			// show the dialog
-			dojo.storage.showSettingsUI();
-		}
 	},
 	
 	_save: function(key, value){

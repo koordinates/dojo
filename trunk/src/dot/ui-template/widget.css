@@ -17,10 +17,6 @@
 	padding-bottom: 0.2em;
 }
 
-#dot-widget-title-text{
-	vertical-align: middle;
-}
-
 #dot-widget-network-indicator{
 	height: 8px;
 	width: 8px;
@@ -28,6 +24,7 @@
 }
 
 #dot-widget-title-text{
+	vertical-align: middle;
 	font-weight: bold;
 	font-size: 14pt;
 	padding-left: 2px;
