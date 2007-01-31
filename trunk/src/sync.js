@@ -81,7 +81,9 @@ dojo.lang.mixin(dojo.sync, {
 		// summary:
 		//	Begin a synchronization session.
 		
-		if(this.isSyncing == true){
+		if(this.isSyncing == true
+			|| dojo.dot.goingOnline == true
+			|| dojo.dot.isOnline == false){
 			return;
 		}
 	
