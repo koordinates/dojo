@@ -84,7 +84,7 @@ dojo.widget.defineWidget(
 			next: "nextMonth",
 			disabledNext: "nextMonthDisabled",
 			currentDate: "currentDate",
-			selectedDate: "selectedItem"
+			selectedDate: "selectedDate"
 		},
 		templatePath:  dojo.uri.moduleUri("dojo.widget", "templates/DatePicker.html"),
 		templateCssPath:  dojo.uri.moduleUri("dojo.widget", "templates/DatePicker.css"),
@@ -164,6 +164,7 @@ dojo.widget.defineWidget(
 				dojo.html.removeClass(this.selectedNode,this.classNames.selectedDate);
 			}
 			if(this.clickedNode!=null){
+				dojo.debug('adding selectedDate');
 				dojo.html.addClass(this.clickedNode,this.classNames.selectedDate);
 				this.selectedNode = this.clickedNode;
 			}else{
