@@ -12,17 +12,17 @@ window.onload = function(){
 	appNameSpan.innerHTML = "";
 	appNameSpan.appendChild(document.createTextNode(appName));
 	
-	// get whether we need a durable cache
-	var requireDurableCache = true;
-	matches = href.match(/requireDurableCache=(true|false)/);
+	// get whether we need an offline cache
+	var requireOfflineCache = true;
+	matches = href.match(/requireOfflineCache=(true|false)/);
 	if(matches && matches.length > 0){
-		requireDurableCache = matches[1];
+		requireOfflineCache = matches[1];
 		// transform from string to boolean
-		requireDurableCache = (requireDurableCache == "true") ? true : false;
+		requireOfflineCache = (requireOfflineCache == "true") ? true : false;
 	}
 	
-	// update UI based on whether durable cache is needed
-	if(requireDurableCache == false){
+	// update UI based on whether an offline cache is needed
+	if(requireOfflineCache == false){
 		// delete DOT reference
 		var toolkitInfo = document.getElementById("dot-toolkit-info");
 		toolkitInfo.parentNode.removeChild(toolkitInfo);
@@ -34,16 +34,16 @@ window.onload = function(){
 		installStep.parentNode.removeChild(installStep);
 	}
 	
-	// if we need a durable cache, and we already have one installed,
+	// if we need an offline cache, and we already have one installed,
 	// update the UI
-	matches = href.match(/hasDurableCache=(true|false)/);
-	var hasDurableCache = false;
+	matches = href.match(/hasOfflineCache=(true|false)/);
+	var hasOfflineCache = false;
 	if(matches && matches.length > 0){
-		hasDurableCache = matches[1];
+		hasOfflineCache = matches[1];
 		// convert to boolean
-		hasDurableCache = (hasDurableCache == "true") ? true : false;
+		hasOfflineCache = (hasOfflineCache == "true") ? true : false;
 	}
-	if(requireDurableCache == true && hasDurableCache == true){
+	if(requireOfflineCache == true && hasOfflineCache == true){
 		// delete the download and install steps
 		var downloadStep = document.getElementById("dot-download-step");
 		var installStep = document.getElementById("dot-install-step");
