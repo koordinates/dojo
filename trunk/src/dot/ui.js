@@ -291,10 +291,10 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// update our 'Learn How' text
 		this._initLearnHow();
 		
-		// check durable cache settings
-		if(dojo.dot.requireDurableCache == true
-			&& dojo.dot.hasDurableCache() == false){
-			this._needsDurableCache();
+		// check offline cache settings
+		if(dojo.dot.requireOfflineCache == true
+			&& dojo.dot.hasOfflineCache() == false){
+			this._needsOfflineCache();
 			return;
 		}
 		
@@ -341,8 +341,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 			// can customize itself and display itself
 			// correctly based on framework settings
 			this.learnHowPath += "?appName=" + encodeURIComponent(this.appName)
-									+ "&requireDurableCache=" + dojo.dot.requireDurableCache
-									+ "&hasDurableCache=" + dojo.dot.hasDurableCache()
+									+ "&requireOfflineCache=" + dojo.dot.requireOfflineCache
+									+ "&hasOfflineCache=" + dojo.dot.hasOfflineCache()
 									+ "&runLink=" + encodeURIComponent(this.runLink)
 									+ "&runLinkText=" + encodeURIComponent(this.runLinkText);
 		}
@@ -758,14 +758,14 @@ dojo.lang.mixin(dojo.dot.ui, {
 		dojo.dot.goOffline();
 	},
 	
-	_needsDurableCache: function(){
+	_needsOfflineCache: function(){
 		var learnHow = dojo.byId("dot-widget-learn-how");
 		var syncControls = dojo.byId("dot-sync-controls");
 		var syncStatus = dojo.byId("dot-sync-status");
 		var dotMoreCommands = dojo.byId("dot-more-commands");
 		
 		if(learnHow){
-			dojo.html.addClass(learnHow, "dot-needs-durable-cache");
+			dojo.html.addClass(learnHow, "dot-needs-offline-cache");
 		}
 		
 		if(syncControls){

@@ -112,7 +112,7 @@ a.dot-disabled{
 	cursor: text;
 }
 
-.dot-needs-durable-cache{
+.dot-needs-offline-cache{
 	padding-top: 1.5em;
 	font-size: 16pt !important;
 	text-align: center;

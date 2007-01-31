@@ -3,26 +3,26 @@ dojo.provide("dojo.dot");
 dojo.lang.mixin(dojo.dot, {
 	// enabled: boolean
 	//	Whether offline ability is enabled or not. Defaults to true.
-	enabled: false,
+	enabled: true,
 
 	// isOnline: boolean
 	//	true if we are online, false if not
 	isOnline: true,
 	
-	// requireDurableCache: boolean
-	//	A durable cache is a cache that can correctly and
+	// requireOfflineCache: boolean
+	//	An offline cache is a cache that can correctly and
 	//	truely cache the UI resources of an application for
-	//	offline use, such as its HTML, JavaScript, etc. A
-	//	durable cache won't remove these files from it's
-	//	offline cache, for example. No browser's currently
-	//	support native durable cache's; FireFox 3 has plans
-	//	for one. If true, then we require a durable cache,
+	//	offline use, such as its HTML, JavaScript, etc. An
+	//	offline cache won't remove these files, for example. 
+	//	No browser's currently
+	//	support native offline cache's; FireFox 3 has plans
+	//	for one. If true, then we require an offline cache,
 	//	and must either install one or have one natively
 	//	supported by this browser; if false, then we will
 	//	rely on the browser's ordinary cache, which can be
 	//	made to work but is not always reliable. Defaults to
 	//	true.
-	requireDurableCache: true,
+	requireOfflineCache: true,
 	
 	// availabilityURL: String
 	//	The URL to check for site availability; defaults to
@@ -42,16 +42,16 @@ dojo.lang.mixin(dojo.dot, {
 	
 	_goOnlineCancelled: false,
 	
-	hasDurableCache: function(){ /* boolean */
+	hasOfflineCache: function(){ /* boolean */
 		// summary: 
-		//	Returns whether we have a durable cache available
+		//	Returns whether we have an offline cache available
 		// description:
-		//	Determines if a durable cache is available or installed;
-		//	a durable cache is a facility that can truely cache offline
-		//	resource, such as JavaScript, HTML, etc. in such a way that
+		//	Determines if an offline cache is available or installed;
+		//	an offline cache is a facility that can truely cache offline
+		//	resources, such as JavaScript, HTML, etc. in such a way that
 		//	they won't be removed from the cache inappropriately like
 		//	a browser cache would. If this is false, and 
-		//	dojo.dot.requireDurableCache is true, then a durable cache
+		//	dojo.dot.requireOfflineCache is true, then an offline cache
 		//	will be installed
 	
 		// FIXME: Implement

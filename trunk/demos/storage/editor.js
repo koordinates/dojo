@@ -13,10 +13,10 @@ dojo.require("dojo.dot.ui");
 // set our application name
 dojo.dot.ui.appName = "Moxie";
 
-// we aren't going to need a durable cache for now;
+// we aren't going to need a real offline cache for now;
 // we will just have our server return good HTTP/1.1
 // caching headers and rely on the browser's native cache
-dojo.dot.requireDurableCache = false;
+dojo.dot.requireOfflineCache = false;
 
 var Moxie = {
 	_initialized: false,
