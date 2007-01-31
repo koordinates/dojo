@@ -80,7 +80,6 @@ dojo.lang.mixin(dojo.sync, {
 	synchronize: function(){ /* void */
 		// summary:
 		//	Begin a synchronization session.
-		
 		if(this.isSyncing == true
 			|| dojo.dot.goingOnline == true
 			|| dojo.dot.isOnline == false){
