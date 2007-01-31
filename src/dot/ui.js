@@ -174,7 +174,9 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// synchronize, but pause for a few seconds
 		// so that the user can orient themselves -
 		// 1 second
-		window.setTimeout(dojo.lang.hitch(this, this._synchronize), 1000);
+		if(dojo.sync.autoSync == true){
+			window.setTimeout(dojo.lang.hitch(this, this._synchronize), 1000);
+		}
 	},
 	
 	onOffline: function(){
@@ -302,6 +304,14 @@ dojo.lang.mixin(dojo.dot.ui, {
 		
 		// if offline is disabled, disable everything
 		this._setOfflineEnabled(dojo.dot.enabled);
+		
+		// synchronize, but pause for a few seconds
+		// so that the user can orient themselves -
+		// 1 second
+		if(dojo.dot.enabled == true
+			&& dojo.sync.autoSync == true){
+			window.setTimeout(dojo.lang.hitch(this, this._synchronize), 1000);
+		}
 	},
 	
 	_updateNetworkIndicator: function(){
@@ -432,7 +442,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 	
 	_synchronize: function(evt){
 		// cancel the button's default behavior
-		if(evt){
+		if(evt && evt.preventDefault){
 			evt.preventDefault();
 			evt.stopPropagation();
 		}
