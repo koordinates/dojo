@@ -3,7 +3,7 @@ dojo.provide("dojo.dot");
 dojo.lang.mixin(dojo.dot, {
 	// enabled: boolean
 	//	Whether offline ability is enabled or not. Defaults to true.
-	enabled: true,
+	enabled: false,
 
 	// isOnline: boolean
 	//	true if we are online, false if not

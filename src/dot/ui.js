@@ -309,6 +309,9 @@ dojo.lang.mixin(dojo.dot.ui, {
 		
 		// register our event handlers for the configuration UI
 		this._initConfigEvtHandlers();
+		
+		// if offline is disabled, disable everything
+		this._setOfflineEnabled(dojo.dot.enabled);
 	},
 	
 	_updateNetworkIndicator: function(){
@@ -922,7 +925,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// support that
 		var storageButton = dojo.byId("dot-storage-settings-button");
 		if(storageButton && dojo.storage.hasSettingsUI() == false){
-			dojo.html.addClass(storageButton, "dot-disabled");		
+			dojo.html.addClass(storageButton, "dot-disabled");
+			storageButton.enabled = false;		
 		}
 	},
 	
@@ -957,6 +961,30 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var configUI = dojo.byId("dot-configure");
 		if(configUI){
 			configUI.style.display = "none";
+		}
+		
+		// update our main UI based on whether offline
+		// is enabled or not
+		this._setOfflineEnabled(dojo.dot.enabled);
+	},
+	
+	_setOfflineEnabled: function(enabled){
+		var elems = new Array();
+		elems.push(dojo.byId("dot-sync-controls"));
+		elems.push(dojo.byId("dot-sync-status"));
+		elems.push(dojo.byId("dot-last-sync"));
+		elems.push(dojo.byId("dot-num-modified-items"));
+		elems.push(dojo.byId("dot-work-online-button"));
+		elems.push(dojo.byId("dot-work-offline-button"));
+		
+		for(var i = 0; i < elems.length; i++){
+			if(elems[i]){
+				if(enabled){
+					elems[i].style.visibility = "visible";
+				}else{
+					elems[i].style.visibility = "hidden";
+				}
+			}
 		}
 	}
 });
