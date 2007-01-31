@@ -751,7 +751,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 		evt.preventDefault();
 		evt.stopPropagation();
 		
-		if(dojo.sync.isSyncing == true){
+		if(dojo.sync.isSyncing == true
+			|| dojo.dot.goingOnline == true){
 			return;
 		}
 		
@@ -872,7 +873,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 			evt.stopPropagation();
 		}
 		
-		if(dojo.sync.isSyncing == true){
+		if(dojo.sync.isSyncing == true
+			|| dojo.dot.goingOnline == true){
 			return;
 		}
 		
