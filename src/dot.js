@@ -156,6 +156,22 @@ dojo.lang.mixin(dojo.dot, {
 		this._isSiteAvailable(finishedCallback, progressCallback);
 	},
 	
+	clear: function(){
+		// summary:
+		//	Clears out local data
+		// description:
+		//	This method will clear application-level data
+		//	stored on the client; it will leave data that
+		//	is important for Dojo Offline's functioning
+		//	alone.
+	},
+	
+	save: function(){
+		// summary:
+		//	Causes dojo.dot to save its configuration data
+		//	into local storage.	
+	},
+	
 	_isSiteAvailable: function(finishedCallback, progressCallback){ /* void */
 		// summary:
 		//	Determines if our web application's website

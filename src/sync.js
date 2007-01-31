@@ -203,5 +203,11 @@ dojo.lang.mixin(dojo.sync, {
 		
 		// FIXME: Implement
 		return 5;
+	},
+	
+	save: function(){
+		// summary:
+		//	Causes dojo.sync to save its configuration data
+		//	into local storage.	
 	}
 });
