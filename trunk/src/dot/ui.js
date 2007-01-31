@@ -158,25 +158,15 @@ dojo.lang.mixin(dojo.dot.ui, {
 		this._updateMoreCommands();
 		
 		// renable our commands
-		var offlineButton = dojo.byId("dot-work-offline-button");
-		var onlineButton = dojo.byId("dot-work-online-button");
-		var configureButton = dojo.byId("dot-configure-button");
-		var syncButton = dojo.byId("dot-sync-button");
-		
-		if(offlineButton){
-			dojo.html.removeClass(offlineButton, "dot-disabled");
-		}
-		
-		if(onlineButton){
-			dojo.html.removeClass(onlineButton, "dot-disabled");
-		}
-		
-		if(configureButton){
-			dojo.html.removeClass(configureButton, "dot-disabled");
-		}
-		
-		if(syncButton){
-			dojo.html.removeClass(syncButton, "dot-disabled");
+		var elems = new Array();
+		elems.push(dojo.byId("dot-work-offline-button"));
+		elems.push(dojo.byId("dot-work-online-button"));
+		elems.push(dojo.byId("dot-configure-button"));
+		elems.push(dojo.byId("dot-sync-button"));
+		for(var i = 0; i < elems.length; i++){
+			if(elems[i]){
+				dojo.html.removeClass(elems[i], "dot-disabled");
+			}
 		}
 		
 		// TODO: FIXME: Renable previously disabled elements
@@ -687,28 +677,19 @@ dojo.lang.mixin(dojo.dot.ui, {
 		}
 		
 		// disable our commands
-		var offlineButton = dojo.byId("dot-work-offline-button");
-		var onlineButton = dojo.byId("dot-work-online-button");
-		var configureButton = dojo.byId("dot-configure-button");
-		var syncButton = dojo.byId("dot-sync-button");
-		
-		if(offlineButton){
-			dojo.html.addClass(offlineButton, "dot-disabled");
+		var elems = new Array();
+		elems.push(dojo.byId("dot-work-offline-button"));
+		elems.push(dojo.byId("dot-work-online-button"));
+		elems.push(dojo.byId("dot-configure-button"));
+		elems.push(dojo.byId("dot-sync-button"));
+		for(var i = 0; i < elems.length; i++){
+			if(elems[i]){
+				dojo.html.addClass(elems[i], "dot-disabled");
+			}
 		}
 		
-		if(onlineButton){
-			dojo.html.addClass(onlineButton, "dot-disabled");
-		}
-		
-		if(configureButton){
-			dojo.html.addClass(configureButton, "dot-disabled");
-		}
-		
-		if(syncButton){
-			dojo.html.addClass(syncButton, "dot-disabled");
-		}
-		
-		// FIXME: TODO: Add CANCEL link
+		// FIXME: TODO: Add 'cancel' link for canceling the attempt
+		// to go online
 		
 		// try to go online
 		dojo.dot.goOnline(dojo.lang.hitch(this, this._goOnlineFinished),
@@ -761,24 +742,16 @@ dojo.lang.mixin(dojo.dot.ui, {
 	
 	_needsOfflineCache: function(){
 		var learnHow = dojo.byId("dot-widget-learn-how");
-		var syncControls = dojo.byId("dot-sync-controls");
-		var syncStatus = dojo.byId("dot-sync-status");
-		var dotMoreCommands = dojo.byId("dot-more-commands");
-		
 		if(learnHow){
 			dojo.html.addClass(learnHow, "dot-needs-offline-cache");
 		}
 		
-		if(syncControls){
-			syncControls.style.display = "none";
-		}
-		
-		if(syncStatus){
-			syncStatus.style.display = "none";
-		}
-		
-		if(dotMoreCommands){
-			dotMoreCommands.style.display = "none";
+		var elems = new Array();
+		elems.push(dojo.byId("dot-sync-controls"));
+		elems.push(dojo.byId("dot-sync-status"));
+		elems.push(dojo.byId("dot-more-commands"));
+		for(var i = 0; i < elems.length; i++){
+			elems[i].style.display = "none";
 		}
 	},
 	
@@ -879,29 +852,17 @@ dojo.lang.mixin(dojo.dot.ui, {
 		}
 		
 		// turn off most of the Offline Widget UI
-		var learnHow = dojo.byId("dot-widget-learn-how");
-		var syncControls = dojo.byId("dot-sync-controls");
-		var syncStatus = dojo.byId("dot-sync-status");
-		var dotMoreCommands = dojo.byId("dot-more-commands");
-		var lastSync = dojo.byId("dot-last-sync");
-		var numItems = dojo.byId("dot-num-modified-items");
-		if(learnHow){
-			learnHow.style.display = "none";
-		}
-		if(syncControls){
-			syncControls.style.display = "none";
-		}
-		if(syncStatus){
-			syncStatus.style.display = "none";
-		}
-		if(dotMoreCommands){
-			dotMoreCommands.style.display = "none";
-		}
-		if(lastSync){
-			lastSync.style.display = "none";
-		}
-		if(numItems){
-			numItems.style.display = "none";
+		var elems = new Array();
+		elems.push(dojo.byId("dot-widget-learn-how"));
+		elems.push(dojo.byId("dot-sync-controls"));
+		elems.push(dojo.byId("dot-sync-status"));
+		elems.push(dojo.byId("dot-more-commands"));
+		elems.push(dojo.byId("dot-last-sync"));
+		elems.push(dojo.byId("dot-num-modified-items"));
+		for(var i = 0; i < elems.length; i++){
+			if(elems[i]){
+				elems[i].style.display = "none";
+			}
 		}
 		
 		// turn on the configuration UI
@@ -934,29 +895,17 @@ dojo.lang.mixin(dojo.dot.ui, {
 	
 	_hideConfiguration: function(){
 		// turn on most of the Offline Widget UI
-		var learnHow = dojo.byId("dot-widget-learn-how");
-		var syncControls = dojo.byId("dot-sync-controls");
-		var syncStatus = dojo.byId("dot-sync-status");
-		var dotMoreCommands = dojo.byId("dot-more-commands");
-		var lastSync = dojo.byId("dot-last-sync");
-		var numItems = dojo.byId("dot-num-modified-items");
-		if(learnHow){
-			learnHow.style.display = "block";
-		}
-		if(syncControls){
-			syncControls.style.display = "block";
-		}
-		if(syncStatus){
-			syncStatus.style.display = "block";
-		}
-		if(dotMoreCommands){
-			dotMoreCommands.style.display = "block";
-		}
-		if(lastSync){
-			lastSync.style.display = "block";
-		}
-		if(numItems){
-			numItems.style.display = "block";
+		var elems = new Array();
+		elems.push(dojo.byId("dot-widget-learn-how"));
+		elems.push(dojo.byId("dot-sync-controls"));
+		elems.push(dojo.byId("dot-sync-status"));
+		elems.push(dojo.byId("dot-more-commands"));
+		elems.push(dojo.byId("dot-last-sync"));
+		elems.push(dojo.byId("dot-num-modified-items"));
+		for(var i = 0; i < elems.length; i++){
+			if(elems[i]){
+				elems[i].style.display = "block";
+			}
 		}
 		
 		// turn off config UI
