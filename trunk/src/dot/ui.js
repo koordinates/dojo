@@ -183,7 +183,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		
 		// synchronize, but pause for a few seconds
 		// so that the user can orient themselves -
-		// 1 seconds
+		// 1 second
 		window.setTimeout(dojo.lang.hitch(this, this._synchronize), 1000);
 	},
 	
@@ -304,36 +304,11 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// update our sync metadata
 		this._updateSyncMetadata();
 		
-		// register our event listeners for buttons
-		var syncButton = dojo.byId("dot-sync-button");
-		if(syncButton){
-			dojo.event.connect(syncButton, "onclick", this, this._synchronize);
-		}
+		// register our event listeners for our main buttons
+		this._initMainEvtHandlers();
 		
-		var detailsButton = dojo.byId("dot-sync-details-button");
-		if(detailsButton){
-			dojo.event.connect(detailsButton, "onclick", this, this._showDetails);
-		}
-		
-		var cancelButton = dojo.byId("dot-sync-cancel-button");
-		if(cancelButton){
-			dojo.event.connect(cancelButton, "onclick", this, this._cancel);
-		}
-		
-		var onlineButton = dojo.byId("dot-work-online-button");
-		if(onlineButton){
-			dojo.event.connect(onlineButton, "onclick", this, this._workOnline);
-		}
-		
-		var offlineButton = dojo.byId("dot-work-offline-button");
-		if(offlineButton){
-			dojo.event.connect(offlineButton, "onclick", this, this._workOffline);
-		}
-		
-		var configureButton = dojo.byId("dot-configure-button");
-		if(configureButton){
-			dojo.event.connect(configureButton, "onclick", this, this._configure);
-		}
+		// register our event handlers for the configuration UI
+		this._initConfigEvtHandlers();
 	},
 	
 	_updateNetworkIndicator: function(){
@@ -803,7 +778,91 @@ dojo.lang.mixin(dojo.dot.ui, {
 		}
 	},
 	
-	_configure: function(evt){
+	_initMainEvtHandlers: function(){
+		var syncButton = dojo.byId("dot-sync-button");
+		if(syncButton){
+			dojo.event.connect(syncButton, "onclick", this, this._synchronize);
+		}
+		var detailsButton = dojo.byId("dot-sync-details-button");
+		if(detailsButton){
+			dojo.event.connect(detailsButton, "onclick", this, this._showDetails);
+		}
+		var cancelButton = dojo.byId("dot-sync-cancel-button");
+		if(cancelButton){
+			dojo.event.connect(cancelButton, "onclick", this, this._cancel);
+		}
+		var onlineButton = dojo.byId("dot-work-online-button");
+		if(onlineButton){
+			dojo.event.connect(onlineButton, "onclick", this, this._workOnline);
+		}
+		var offlineButton = dojo.byId("dot-work-offline-button");
+		if(offlineButton){
+			dojo.event.connect(offlineButton, "onclick", this, this._workOffline);
+		}
+		var configureButton = dojo.byId("dot-configure-button");
+		if(configureButton){
+			dojo.event.connect(configureButton, "onclick", this, this._showConfiguration);
+		}
+	},
+	
+	_initConfigEvtHandlers: function(){
+		// setup configuration event handlers
+		var enableOfflineField = dojo.byId("dot-enableOffline");
+		var autoSyncField = dojo.byId("dot-autoSync");
+		var clearButton = dojo.byId("dot-clear-button");
+		var storageButton = dojo.byId("dot-storage-settings-button");
+		var okButton = dojo.byId("dot-configure-ok-button");
+		
+		if(enableOfflineField){
+			dojo.event.connect(enableOfflineField, "onchange", function(evt){
+				// cancel default action
+				evt.preventDefault();
+				evt.stopPropagation();
+				
+				dojo.dot.enabled = !dojo.dot.enabled;
+				dojo.dot.save();
+			});
+		}
+		
+		if(autoSyncField){
+			dojo.event.connect(autoSyncField, "onchange", function(evt){
+				// cancel default action
+				evt.preventDefault();
+				evt.stopPropagation();
+				
+				dojo.sync.autoSync = !dojo.sync.autoSync;
+				dojo.sync.save();
+			});
+		}
+		
+		if(clearButton){
+			dojo.event.connect(clearButton, "onclick", function(evt){
+				// cancel default action
+				evt.preventDefault();
+				evt.stopPropagation();
+				
+				if(confirm("Are you sure?")){
+					dojo.dot.clear();
+				}
+			});	
+		}
+		
+		if(storageButton){
+			dojo.event.connect(storageButton, "onclick", function(evt){
+				// cancel default action
+				evt.preventDefault();
+				evt.stopPropagation();
+				
+				dojo.storage.showSettingsUI();
+			});	
+		}
+		
+		if(okButton){
+			dojo.event.connect(okButton, "onclick", this, this._hideConfiguration);
+		}
+	},
+	
+	_showConfiguration: function(evt){
 		// cancel the button's default behavior
 		if(evt){
 			evt.preventDefault();
@@ -821,27 +880,21 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var dotMoreCommands = dojo.byId("dot-more-commands");
 		var lastSync = dojo.byId("dot-last-sync");
 		var numItems = dojo.byId("dot-num-modified-items");
-		
 		if(learnHow){
 			learnHow.style.display = "none";
 		}
-		
 		if(syncControls){
 			syncControls.style.display = "none";
 		}
-		
 		if(syncStatus){
 			syncStatus.style.display = "none";
 		}
-		
 		if(dotMoreCommands){
 			dotMoreCommands.style.display = "none";
 		}
-		
 		if(lastSync){
 			lastSync.style.display = "none";
 		}
-		
 		if(numItems){
 			numItems.style.display = "none";
 		}
@@ -862,9 +915,49 @@ dojo.lang.mixin(dojo.dot.ui, {
 			autoSyncField.checked = dojo.sync.autoSync;
 		}
 		
-		// FIXME: TODO: Allow custom configuration options here
+		// FIXME: TODO: Fill out custom configuration options 
+		// and UI here
 		
+		// disable storage settings if this platform doesn't
+		// support that
+		var storageButton = dojo.byId("dot-storage-settings-button");
+		if(storageButton && dojo.storage.hasSettingsUI() == false){
+			dojo.html.addClass(storageButton, "dot-disabled");		
+		}
+	},
+	
+	_hideConfiguration: function(){
+		// turn on most of the Offline Widget UI
+		var learnHow = dojo.byId("dot-widget-learn-how");
+		var syncControls = dojo.byId("dot-sync-controls");
+		var syncStatus = dojo.byId("dot-sync-status");
+		var dotMoreCommands = dojo.byId("dot-more-commands");
+		var lastSync = dojo.byId("dot-last-sync");
+		var numItems = dojo.byId("dot-num-modified-items");
+		if(learnHow){
+			learnHow.style.display = "block";
+		}
+		if(syncControls){
+			syncControls.style.display = "block";
+		}
+		if(syncStatus){
+			syncStatus.style.display = "block";
+		}
+		if(dotMoreCommands){
+			dotMoreCommands.style.display = "block";
+		}
+		if(lastSync){
+			lastSync.style.display = "block";
+		}
+		if(numItems){
+			numItems.style.display = "block";
+		}
 		
+		// turn off config UI
+		var configUI = dojo.byId("dot-configure");
+		if(configUI){
+			configUI.style.display = "none";
+		}
 	}
 });
 

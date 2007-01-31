@@ -124,22 +124,17 @@ a.dot-disabled{
 }
 
 #dot-configure a{
-	display: block;
 	margin-bottom: 0.5em;
 }
 
 #dot-configure-buttons{
 	position: absolute;
 	bottom: 8px;
+	width: 95%;
 }
 
-#dot-configure-confirm-buttons{
+#dot-configure-ok-button{
 	float: right;
-	padding-right: 0.5em;
-}
-
-#dot-configure-cancel-button{
-	margin-right: 0.5em;
 }
 
 /** Learn How Page Styles */
