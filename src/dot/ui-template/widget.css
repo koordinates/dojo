@@ -9,6 +9,7 @@
 	height: 14em;
 	border: 2px solid #CDDDE9; /* light tundra blue */
 	position: relative;
+	visibility: visible !important;
 }
 
 #dot-widget-title-bar{

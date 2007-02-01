@@ -1,8 +1,10 @@
 dojo.require("dojo.dom");
-dojo.require("dojo.event.*");
-dojo.require("dojo.html.*");
+dojo.require("dojo.event.common");
+dojo.require("dojo.event.browser");
+dojo.require("dojo.html.common");
+dojo.require("dojo.html.style");
 dojo.require("dojo.lfx.*");
-dojo.require("dojo.widget.Editor2");
+dojo.require("dojo.widget.Editor");
 dojo.require("dojo.storage.*");
 dojo.require("dojo.dot.*");
 dojo.require("dojo.sync");

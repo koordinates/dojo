@@ -7,11 +7,15 @@
 	<title>Moxie</title>
 
 	<script type="text/javascript">
-		var djConfig = { isDebug: false };
+		var djConfig = { isDebug: false, parseWidgets: false, searchIds: ["storageValue"] };
 	</script>
 	
 	<script type="text/javascript" src="../../dojo.js"></script>
 	<script type="text/javascript" src="editor.js"></script>
+	
+	<link	rel="stylesheet" 
+			type="text/css" 
+			href="../../src/dot/ui-template/widget.css"></link>
 	
 	<style type="text/css">
 		body, html { padding: 1em; }
@@ -88,7 +92,11 @@
 					</div>
 					
 					<div class="widgetContents">
-					    <div id="storageValue" dojoType="Editor2" minHeight="10em" focusOnLoad="true">
+					    <div		id="storageValue"
+								dojoType="Editor" 
+								items="textGroup;|;blockGroup;|;justifyGroup;|;colorGroup;|;listGroup;|;indentGroup;|;linkGroup;"
+								minHeight="10em" 
+								focusOnLoad="true">
 							Click Here to Begin Editing
 						</div>
 					</div>

@@ -1,8 +1,11 @@
 dojo.provide("dojo.dot.ui");
 
-dojo.require("dojo.io.*");
-dojo.require("dojo.event.*");
-dojo.require("dojo.html.*");
+dojo.require("dojo.html.common");
+dojo.require("dojo.html.style");
+dojo.require("dojo.event.common");
+dojo.require("dojo.event.browser");
+dojo.require("dojo.io.common");
+dojo.require("dojo.io.BrowserIO");
 
 dojo.lang.mixin(dojo.dot.ui, {
 	// appName: String
@@ -61,7 +64,6 @@ dojo.lang.mixin(dojo.dot.ui, {
 	customLearnHowPath: false,
 	
 	_htmlTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.html",
-	_cssTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.css",
 	_onlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/greenball.png",
 	_offlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/redball.png",
 	_rollerImagePath: djConfig.baseRelativePath + "src/dot/ui-template/roller.gif",
@@ -262,14 +264,6 @@ dojo.lang.mixin(dojo.dot.ui, {
 	},
 	
 	_templateLoaded: function(type, data, evt){
-		// add our CSS
-		var head = document.getElementsByTagName("head")[0];
-		var cssLink = document.createElement("link");
-		cssLink.setAttribute("rel", "stylesheet");
-		cssLink.setAttribute("type", "text/css");
-		cssLink.setAttribute("href", this._cssTemplatePath);
-		head.appendChild(cssLink);
-		
 		// inline our HTML
 		var container = dojo.byId(this.autoEmbedID);
 		container.innerHTML = data;
