@@ -43,10 +43,13 @@ dojo.lang.mixin(dojo.dot, {
 	requireOfflineCache: true,
 	
 	// availabilityURL: String
-	//	The URL to check for site availability; defaults to
-	//	this web application's URL. We do a HEAD request
-	//	on this URL to check for site availability.
-	availabilityURL: window.location.href,
+	//	The URL to check for site availability. 
+	//	We do a GET request
+	//	on this URL to check for site availability. 
+	//	By default we check for a simple text file
+	//	in src/dot/network_check.txt that has one value
+	//	it, the value '1'.
+	availabilityURL: djConfig.baseRelativePath + "src/dot/network_check.txt",
 	
 	// goingOnline: boolean
 	//	True if we are attempting to go online, false otherwise
@@ -410,7 +413,7 @@ dojo.lang.mixin(dojo.dot, {
 		this._availabilityAttempts++;
 		var url = this._getAvailabilityURL();
 		
-		xhr.open("HEAD", url, true);
+		xhr.open("GET", url, true);
 		xhr.onreadystatechange = dojo.lang.hitch(this, function(){
 			if(xhr.readyState == 4){ /* Loaded */
 				if(xhr.status == 200){
@@ -447,80 +450,43 @@ dojo.lang.mixin(dojo.dot, {
 			return;
 		}
 		
-		// the function we use to periodically check
-		// the network status
-		window.setInterval(this._networkInterval, 
-							this.NETWORK_CHECK * 1000);
-	},
-	
-	_networkInterval: function(){
-		dojo.debug("checkfunction");
-		// if we are going online or syncing don't check
-		if(dojo.dot.goingOnline == true ||
-			dojo.sync.isSyncing == true){
-			return;		
-		}
-		
-		// check the availability URL
-		var xhr = dojo.hostenv.getXmlhttpObject();
-		var url = dojo.dot._getAvailabilityURL();
-		xhr.open("HEAD", url, true);
-		var xhrFunc = dojo.dot._xhrFunction;
-		dojo.debug("xhrFunc="+xhrFunc);
-		xhrFunc.xhr = xhr;
-		xhr.onreadystatechange = xhrFunc;
-		xhr.send(null);
-	},
-	
-	_xhrFunction: function(){
-		// 'this' refers to a Function object in the context
-		// of this method, namely this method itself
-		var req = this.xhr;
-		dojo.debug("onreadystatechange");
-		dojo.debug("req="+req);
-		dojo.debug("dojo.dot.isOnline="+dojo.dot.isOnline);
-		dojo.debug("this="+this);
-		for(var i in this){
-			dojo.debug(i);
-		}
-		try{
-			req.status;
-			dojo.debug("req.status="+req.status);
-		}catch(exp){
-			dojo.debug("caught trying to get req.status");
-			return;
-		}
-		dojo.debug("Past exception point");
-		if(req.status == 4){
-			dojo.debug("statuscode="+req.statusCode);
-			// do we have a network?
-			if(req.statusCode == 200){
-				// is this a network status change?
-				if(dojo.dot.isOnline == true){
-					return; // nothing to report; we're already online
-				}else{
-					// we went from having no network
-					// to having a network
-					dojo.dot.isOnline = true;
-					if(dojo.dot.onOnline){
-						dojo.dot.onOnline();
+		window.setInterval(function(){
+			var bindArgs = {
+				url:	 dojo.dot._getAvailabilityURL(),
+				sync:		false,
+				mimetype:	"text/plain",
+				error:		function(type, errObj){
+					// we have no network
+					// is this a network status change?
+					if(dojo.dot.isOnline == false){
+						return; // nothing to report; we're already offline
+					}else{
+						// we went from having a network
+						// to having no network
+						dojo.dot.isOnline = false;
+						if(dojo.dot.onOffline){
+							dojo.dot.onOffline();
+						}
+					}
+				},
+				load:		function(type, data, evt){	
+					// is this a network status change?
+					if(dojo.dot.isOnline == true){
+						return; // nothing to report; we're already online
+					}else{
+						// we went from having no network
+						// to having a network
+						dojo.dot.isOnline = true;
+						if(dojo.dot.onOnline){
+							dojo.dot.onOnline();
+						}
 					}
 				}
-			}else if(req.statusCode == 404){
-				// we have no network
-				// is this a network status change?
-				if(dojo.dot.isOnline == false){
-					return; // nothing to report; we're already offline
-				}else{
-					// we went from having a network
-					// to having no network
-					dojo.dot.isOnline = false;
-					if(dojo.dot.onOffline){
-						dojo.dot.onOffline();
-					}
-				}
-			}
-		} /* end if(req.status == 4) */
+			};
+			
+			// dispatch the request
+			dojo.io.bind(bindArgs);
+		}, this.NETWORK_CHECK * 1000);
 	},
 	
 	_getAvailabilityURL: function(){
