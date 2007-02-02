@@ -20,6 +20,39 @@ dojo.dot.ui.appName = "Moxie";
 // caching headers and rely on the browser's native cache
 dojo.dot.requireOfflineCache = false;
 
+// add our list resources we need offline
+// Moxie resources
+dojo.dot.files.cache([
+					"editor.html",
+					"editor.js"
+					]);
+					
+// Dojo's and the Editor Widget's resources
+dojo.dot.files.cache([
+					djConfig.baseRelativePath + "dojo.js",
+					djConfig.baseRelativePath + "src/widget/templates/Toolbar.css",
+					djConfig.baseRelativePath + "src/widget/templates/images/tab_close.gif",
+					djConfig.baseRelativePath + "src/widget/templates/richtextframe.html",
+					djConfig.baseRelativePath + "src/widget/templates/images/toolbar-bg.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/bold.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/italic.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/underline.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/strikethrough.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/sep.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/justifyleft.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/justifycenter.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/justifyright.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/forecolor.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/hilitecolor.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/insertorderedlist.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/insertunorderedlist.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/outdent.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/indent.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/createlink.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/insertimage.gif",
+					djConfig.baseRelativePath + "src/widget/templates/buttons/inserthorizontalrule.gif"
+					]);
+
 var Moxie = {
 	_initialized: false,
 
