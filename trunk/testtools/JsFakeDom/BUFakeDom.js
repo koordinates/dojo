@@ -416,7 +416,7 @@ BUFakeNode.prototype.setAttribute = function(name, attval) {
   name = this.ownerDocument.norm_case_(name);
   if (name in this.attnodes_by_name_()) {
     this.ownerDocument.update_indexes_(name, this.attnodes_by_name_()[name], attval, this);
-    this.attnodes_by_name_()[name][nodeValue] = attval;
+    this.attnodes_by_name_()[name].nodeValue = attval;
   }
   else {
     this.attributes.push(this.attnodes_by_name_()[name] = this.ownerDocument.createAttribute(name, attval));
