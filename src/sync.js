@@ -137,7 +137,6 @@ dojo.lang.mixin(dojo.sync, {
 		}
 		
 		dojo.dot.files.refresh(dojo.lang.hitch(this, function(error, errorMessage){
-			dojo.debug("Refresh callback");
 			if(error == true){
 				this.error = true;
 				this.successful = false;

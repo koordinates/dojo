@@ -11,7 +11,7 @@ dojo.lang.mixin(dojo.dot, {
 	//	The time in seconds to check for site availability
 	//	when going online before aborting attempt. Default
 	//	is 30 seconds.
-	AVAILABILITY_TIMEOUT: 30,
+	AVAILABILITY_TIMEOUT: 8,
 	
 	// enabled: boolean
 	//	Whether offline ability is enabled or not. Defaults to true.
@@ -19,7 +19,7 @@ dojo.lang.mixin(dojo.dot, {
 
 	// isOnline: boolean
 	//	true if we are online, false if not
-	isOnline: true,
+	isOnline: false,
 	
 	// requireOfflineCache: boolean
 	//	An offline cache is a cache that can correctly and
@@ -320,7 +320,6 @@ dojo.lang.mixin(dojo.dot, {
 		this._siteFound = false;
 		this._availabilityCancelled = false;
 		var availTimer = window.setInterval(dojo.lang.hitch(this, function(){
-			dojo.debug("availtimer, this._timeSoFar="+this._timeSoFar);
 			this._timeSoFar++;
 			
 			// provide feedback
@@ -329,7 +328,6 @@ dojo.lang.mixin(dojo.dot, {
 			}
 			
 			// did we find the site?
-			dojo.debug("this._sitefound="+this._siteFound);
 			if(this._siteFound == true){
 				window.clearInterval(availTimer);
 				this.isOnline = true;
@@ -342,7 +340,7 @@ dojo.lang.mixin(dojo.dot, {
 			}
 			
 			// are we past our timeout?
-			if(this._timeSoFar >= this.AVAILABILITY_TIMEOUT * 1000){
+			if(this._timeSoFar > this.AVAILABILITY_TIMEOUT){
 				window.clearInterval(availTimer);
 				this.isOnline = false;
 				this.goingOnline = false;
@@ -386,21 +384,25 @@ dojo.lang.mixin(dojo.dot, {
 	},
 	
 	_checkSite: function(){
-		dojo.debug("checkSite, availabilityAttempts="+this._availabilityAttempts);	
-	
 		if(this._availabilityAttempts > this.MAX_AVAILABILITY_ATTEMPTS){
 			return;
 		}
 		
-		this._availabilityAttempts++;
-		
 		var xhr = dojo.hostenv.getXmlhttpObject();
-		xhr.open("HEAD", this.availabilityURL, true);
-		dojo.debug("availabilityURL="+this.availabilityURL);
+		this._availabilityAttempts++;
+		var url = this.availabilityURL;
+		// cache bust to make sure we are really talking to
+		// the server
+		if(url.indexOf("?") == -1){
+			url += "?";
+		}else{
+			url += "&";
+		}
+		url += new Date().getTime();
+		
+		xhr.open("HEAD", url, true);
 		xhr.onreadystatechange = dojo.lang.hitch(this, function(){
-			dojo.debug("onreadystatechange, readystate="+xhr.readyState);
 			if(xhr.readyState == 4){ /* Loaded */
-				dojo.debug('xhr.status='+xhr.status);
 				if(xhr.status == 200){
 					this._siteFound = true;
 				}else{
@@ -541,7 +543,6 @@ dojo.dot.files = {
 	},
 	
 	_loadFile: function(url){
-		dojo.debug("loadFile, url="+url);	
 		var xhr = dojo.hostenv.getXmlhttpObject();
 		xhr.url = url;
 		
