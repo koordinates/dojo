@@ -4,7 +4,7 @@
 	'cut': 'Cut',
 	'delete': 'Delete',
 	'indent': 'Indent',
-	'inserthorizontalrule': 'Horizental Rule',
+	'inserthorizontalrule': 'Horizontal Rule',
 	'insertorderedlist': 'Numbered List',
 	'insertunorderedlist': 'Bullet List',
 	'italic': 'Italic',
