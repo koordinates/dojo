@@ -203,7 +203,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		}
 		
 		// provide feedback
-		this._setSyncMessage("You are now offline");
+		this._setSyncMessage("You are offline");
 		var checkmark = dojo.byId("dot-success-checkmark");
 		var details = dojo.byId("dot-sync-details");
 		if(checkmark){
@@ -334,6 +334,10 @@ dojo.lang.mixin(dojo.dot.ui, {
 		this._setOfflineEnabled(dojo.dot.enabled);
 		
 		// try to go online
+		this._testNetwork();
+	},
+	
+	_testNetwork: function(){
 		var finishedCallback = dojo.lang.hitch(this, function(isOnline, manuallyCancelled){
 									// display our online/offline results
 									this._goOnlineFinished(isOnline, manuallyCancelled);
@@ -716,7 +720,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var roller = dojo.byId("dot-roller");
 		var details = dojo.byId("dot-sync-details");
 		this._setSyncMessage("Checking network... "
-							+ dojo.dot.goOnlineTimeout);
+							+ dojo.dot.AVAILABILITY_TIMEOUT);
 		if(checkmark){
 			checkmark.style.display = "none";
 		}
@@ -759,7 +763,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		}
 		
 		if(isOnline){
-			this._setSyncMessage("You are now online");
+			this._setSyncMessage("You are online");
 			var checkmark = dojo.byId("dot-success-checkmark");
 			if(checkmark){
 				checkmark.style.display = "inline";
