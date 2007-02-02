@@ -160,6 +160,9 @@ var Moxie = {
 		// get the value
 		var results = dojo.storage.get(key);
 		
+		// FIXME: The following code is for Editor2
+		/*
+		
 		// set the new Editor widget value
 		var richTextControl = dojo.widget.byId("storageValue")
 		richTextControl.replaceEditorContent(results);
@@ -167,6 +170,13 @@ var Moxie = {
 		// internally; we shouldn't be exposed to this - fix
 		// bug in Editor2
 		richTextControl._updateHeight();
+		*/
+		
+		// FIXME: The following code is for Editor1
+		// set the new Editor widget value
+		var storageValue = dojo.widget.byId("storageValue"); 
+		storageValue._richText.editNode.innerHTML = results;
+		storageValue._richText._updateHeight();
 	
 		// print out that we are done
 		this._printStatus("Loaded '" + key + "'");
