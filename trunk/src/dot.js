@@ -13,6 +13,12 @@ dojo.lang.mixin(dojo.dot, {
 	//	is 30 seconds.
 	AVAILABILITY_TIMEOUT: 8,
 	
+	// NETWORK_CHECK: int
+	//	Time in seconds on how often we should check the
+	//	status of the network with an automatic background
+	//	timer. Defaults to 30.
+	NETWORK_CHECK: 10,
+	
 	// enabled: boolean
 	//	Whether offline ability is enabled or not. Defaults to true.
 	enabled: true,
@@ -52,6 +58,13 @@ dojo.lang.mixin(dojo.dot, {
 	//	flag causes a 'fail fast' condition, turning off offline
 	//	ability.
 	coreSaveFailed: false,
+	
+	// doNetworkChecking: boolean
+	//	Whether to have a timing interval in the background doing
+	//	automatic network checks at regular intervals; the length
+	//	of time between checks is controlled by 
+	//	dojo.dot.NETWORK_CHECK. Defaults to true.
+	doNetworkChecking: true,
 	
 	_onLoadListeners: new Array(),
 	_goOnlineCancelled: false,
@@ -161,7 +174,8 @@ dojo.lang.mixin(dojo.dot, {
 		//	a ticking feedback message UI while a user is waiting,
 		//	for example.
 		
-		if(dojo.sync.isSyncing == true){
+		if(dojo.sync.isSyncing == true
+			|| dojo.dot.goingOnline == true){
 			return;
 		}
 		
@@ -258,6 +272,10 @@ dojo.lang.mixin(dojo.dot, {
 		
 		// load framework data
 		this.load();
+		
+		// kick off a thread to check network status on
+		// a regular basis
+		this._networkChecker();
 		
 		// indicate we are ready to be used
 		for(var i = 0; i < this._onLoadListeners.length; i++){
@@ -390,15 +408,7 @@ dojo.lang.mixin(dojo.dot, {
 		
 		var xhr = dojo.hostenv.getXmlhttpObject();
 		this._availabilityAttempts++;
-		var url = this.availabilityURL;
-		// cache bust to make sure we are really talking to
-		// the server
-		if(url.indexOf("?") == -1){
-			url += "?";
-		}else{
-			url += "&";
-		}
-		url += new Date().getTime();
+		var url = this._getAvailabilityURL();
 		
 		xhr.open("HEAD", url, true);
 		xhr.onreadystatechange = dojo.lang.hitch(this, function(){
@@ -428,6 +438,103 @@ dojo.lang.mixin(dojo.dot, {
 		if(this.onSave){
 			onSave(status, isCoreSave, dataStore, item);
 		}
+	},
+	
+	_networkChecker: function(){
+		// kick off a thread that does periodic
+		// checks on the status of the network
+		if(this.doNetworkChecking == false){
+			return;
+		}
+		
+		// the function we use to periodically check
+		// the network status
+		window.setInterval(this._networkInterval, 
+							this.NETWORK_CHECK * 1000);
+	},
+	
+	_networkInterval: function(){
+		dojo.debug("checkfunction");
+		// if we are going online or syncing don't check
+		if(dojo.dot.goingOnline == true ||
+			dojo.sync.isSyncing == true){
+			return;		
+		}
+		
+		// check the availability URL
+		var xhr = dojo.hostenv.getXmlhttpObject();
+		var url = dojo.dot._getAvailabilityURL();
+		xhr.open("HEAD", url, true);
+		var xhrFunc = dojo.dot._xhrFunction;
+		dojo.debug("xhrFunc="+xhrFunc);
+		xhrFunc.xhr = xhr;
+		xhr.onreadystatechange = xhrFunc;
+		xhr.send(null);
+	},
+	
+	_xhrFunction: function(){
+		// 'this' refers to a Function object in the context
+		// of this method, namely this method itself
+		var req = this.xhr;
+		dojo.debug("onreadystatechange");
+		dojo.debug("req="+req);
+		dojo.debug("dojo.dot.isOnline="+dojo.dot.isOnline);
+		dojo.debug("this="+this);
+		for(var i in this){
+			dojo.debug(i);
+		}
+		try{
+			req.status;
+			dojo.debug("req.status="+req.status);
+		}catch(exp){
+			dojo.debug("caught trying to get req.status");
+			return;
+		}
+		dojo.debug("Past exception point");
+		if(req.status == 4){
+			dojo.debug("statuscode="+req.statusCode);
+			// do we have a network?
+			if(req.statusCode == 200){
+				// is this a network status change?
+				if(dojo.dot.isOnline == true){
+					return; // nothing to report; we're already online
+				}else{
+					// we went from having no network
+					// to having a network
+					dojo.dot.isOnline = true;
+					if(dojo.dot.onOnline){
+						dojo.dot.onOnline();
+					}
+				}
+			}else if(req.statusCode == 404){
+				// we have no network
+				// is this a network status change?
+				if(dojo.dot.isOnline == false){
+					return; // nothing to report; we're already offline
+				}else{
+					// we went from having a network
+					// to having no network
+					dojo.dot.isOnline = false;
+					if(dojo.dot.onOffline){
+						dojo.dot.onOffline();
+					}
+				}
+			}
+		} /* end if(req.status == 4) */
+	},
+	
+	_getAvailabilityURL: function(){
+		var url = this.availabilityURL;
+		// cache bust to make sure we are really talking to
+		// the server
+		if(url.indexOf("?") == -1){
+			url += "?";
+		}else{
+			url += "&";
+		}
+		url += new Date().getTime();
+		
+		return url;
 	}
 });
 
@@ -596,6 +703,10 @@ dojo.dot.files = {
 			this.listOfURLs = list;
 		}
 	}*/
+}
+
+dojo.dot._NetworkChecker = function(){
+	
 }
 
 // wait until the storage system is finished loading
