@@ -60,6 +60,7 @@ dojo.xml.XslTransform = function(/*String*/xsltUri, /*Boolean*/loadAsync){
 	}else{
 		xsltProcessor = new XSLTProcessor();
 		xsltDocument = document.implementation.createDocument("", "", null);
+		xsltDocument.async = false;
 		xsltDocument.addEventListener("load", onXslLoad, false);
 	}
 	xsltDocument.async = (!!loadAsync);
