@@ -42,8 +42,7 @@ dojo.lang.mixin(dojo.dot, {
 	
 	// coreSaveFailed: boolean
 	//	A flag set by the Dojo Offline framework that indicates
-	//	that saving a piece of important core data failed, such
-	//	as our list of files to have available offline. This
+	//	that saving a piece of important core data failed. This
 	//	flag causes a 'fail fast' condition, turning off offline
 	//	ability.
 	coreSaveFailed: false,
@@ -393,27 +392,9 @@ dojo.lang.mixin(dojo.dot, {
 dojo.dot.files = {
 	listOfURLs: new Array(),
 	
-	_STORAGE_KEY: "__dot_listOfURLs",
-	
-	cache: function(listOfURLs){ /* void */
+	cache: function(urlOrList){ /* void */
 		// summary:
-		//	Caches a list of files to be
-		//	available offline. These can either
-		//	be full URLs, such as 
-		//	http://foobar.com/index.html,
-		//	or relative URLs, such as 
-		//	../index.html. These URLs
-		//	are not actually cached until 
-		//	dojo.sync.synchronize() is
-		//	called.
-		// listOfURLs: Array[]
-		//	Array of Strings of URLs to
-		//	cache.
-	},
-	
-	cache: function(url){ /* void */
-		// summary:
-		//	Caches a file to be
+		//	Caches a file or list of files to be
 		//	available offline. This can either
 		//	be a full URL, such as 
 		//	http://foobar.com/index.html,
@@ -422,8 +403,19 @@ dojo.dot.files = {
 		//	is not actually cached until 
 		//	dojo.sync.synchronize() is
 		//	called.
-		// url: String
-		//	A URL of a file to cache.
+		// urlOrList: String or Array[]
+		//	A URL of a file to cache or an
+		//	Array of Strings of files to cache
+		if(dojo.lang.isString(urlOrList)){
+			var url = urlOrList;
+			this.listOfURLs.push(url);
+		}else{
+			var listOfURLs = urlOrList;
+			
+			for(var i = 0; i < listOfURLs.length; i++){
+				this.listOfURLs.push(listOfURLs[i]);	
+			}	
+		}
 	},
 	
 	remove: function(url){ /* void */
@@ -441,6 +433,12 @@ dojo.dot.files = {
 		//	the offline cache
 		// url: String
 		//	The URL to remove
+		for(var i = 0; i < this.listOfURLs.length; i++){
+			if(this.listOfURLs[i] == url){
+				this.listOfURLs = this.listOfURLs.splice(i, 1);
+				break;
+			}
+		}
 	},
 	
 	isAvailable: function(url){ /* boolean */
@@ -449,15 +447,83 @@ dojo.dot.files = {
 		//	is available offline.
 		// url: String
 		//	The URL to check
+		for(var i = 0; i < this.listOfURLs.length; i++){
+			if(this.listOfURLs[i] == url){
+				return true;
+			}
+		}
+		
+		return false;
 	},
 	
-	refresh: function(){ /* void */
+	refresh: function(finishedCallback){ /* void */
 		// summary:
 		//	Refreshes our list of offline resources,
 		//	making them available offline.
-	},
-	
-	save: function(){ /* void */
+		// description:
+		//	dojo.dot.files.refresh() causes an XHR request to 
+		//	be called on each of our URLs that we indicated we want
+		//	to cache with calls to dojo.dot.files.cache(). These
+		//	XHR requests will either cause the browser or offline
+		//	cache to actually talk to the server and get fresh versions
+		//	of these files, or will cause the browser/offline cache
+		//	to simply return it's native, cached version. This is
+		//	dependent on the HTTP/1.1 caching headers applied to these
+		//	files.
+		// finishedCallback: Function
+		//	A callback that receives two arguments: whether an error
+		//	occurred, which is a boolean; and a message concerning this
+		//	error. If no error occured then message is null.
+		
+		// shoot off an XHR request for each file
+		var refreshCounter = 0;
+		var error = false;
+		var errorMessage = null;
+		for(var i = 0; i < this.listOfURLs.length; i++){
+			var url = this.listOfURLs[i];
+			var bindArgs = {
+				url:	 url,
+				sync:		false,
+				error:		function(type, errObj){
+					// FIXME: Should we indicate that this resource is
+					// not available if isAvailable() is called?
+					error = true;
+					errorMessage = "Error loading offline resource " + this.url + ": "
+									+ errObj.message;
+					
+					// see if we are finished
+					refreshCounter++;
+					if(refreshCounter == dojo.dot.files.listOfURLs.length){
+						if(finishedCallback){
+							finishedCallback(error, errorMessage);	
+						}
+					}
+				},
+				load:		function(type, data, evt){
+					// FIXME: As an aid to programmers, check the caching headers
+					// returned and make sure they have correct values if
+					// requireOfflineCache = false
+					
+					// see if we are finished
+					refreshCounter++;
+					if(refreshCounter == dojo.dot.files.listOfURLs.length){
+						if(finishedCallback){
+							finishedCallback(error, errorMessage);	
+						}
+					}
+				}
+			};
+		
+			// dispatch the request
+			dojo.io.bind(bindArgs);
+		}
+	}
+
+	// FIXME: This code is left here for reference;
+	// remove it when we don't need it anymore since
+	// we don't need to load/save dojo.dot.files info
+	/*
+	save: function(){ 
 		try{
 			dojo.storage.put(this._STORAGE_KEY, 
 							 this.listOfURLs, 
@@ -469,12 +535,12 @@ dojo.dot.files = {
 		}
 	},
 	
-	load: function(){ /* void */
+	load: function(){ 
 		var list = dojo.storage.get(this._STORAGE_KEY);
 		if(list != null){
 			this.listOfURLs = list;
 		}
-	}
+	}*/
 }
 
 // wait until the storage system is finished loading

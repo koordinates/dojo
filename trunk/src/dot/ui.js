@@ -64,6 +64,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 	customLearnHowPath: false,
 	
 	_htmlTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.html",
+	_cssTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.css",
 	_onlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/greenball.png",
 	_offlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/redball.png",
 	_rollerImagePath: djConfig.baseRelativePath + "src/dot/ui-template/roller.gif",
@@ -259,6 +260,16 @@ dojo.lang.mixin(dojo.dot.ui, {
 		dojo.sync.onCancel = dojo.lang.hitch(this, this.onCancel);
 		dojo.dot.onOnline = dojo.lang.hitch(this, this.onOnline);
 		dojo.dot.onOffline = dojo.lang.hitch(this, this.onOffline);
+		
+		// cache our default UI resources
+		dojo.dot.files.cache([
+							this._htmlTemplatePath,
+							this._cssTemplatePath,
+							this._onlineImagePath,
+							this._offlineImagePath,
+							this._rollerImagePath,
+							this._checkmarkImagePath
+							]);
 		
 		// embed the offline widget UI
 		if(this.autoEmbed == true){

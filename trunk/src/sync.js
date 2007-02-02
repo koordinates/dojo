@@ -77,6 +77,10 @@ dojo.lang.mixin(dojo.sync, {
 	//	must be manually initiated. Defaults to true.
 	autoSync: true,
 	
+	// error: boolean
+	//	Whether an error occurred during the syncing process.
+	error: false,
+	
 	synchronize: function(){ /* void */
 		// summary:
 		//	Begin a synchronization session.
@@ -132,7 +136,18 @@ dojo.lang.mixin(dojo.sync, {
 			this.onRefreshUI();
 		}
 		
-		window.setTimeout(dojo.lang.hitch(this, this.upload), 2000);
+		dojo.dot.files.refresh(dojo.lang.hitch(this, function(error, errorMessage){
+			if(error == true){
+				this.error = true;
+				this.successful = false;
+				this.details = new Array();
+				this.details.push(errorMessage);
+				
+				this.finished();
+			}else{
+				this.upload();	
+			}
+		}));
 	},
 	
 	upload: function(){ /* void */
@@ -164,7 +179,7 @@ dojo.lang.mixin(dojo.sync, {
 	finished: function(){ /* void */
 		this.isSyncing = false;
 		
-		if(this.cancelled == false){
+		if(this.cancelled == false && this.error == false){
 			this.successful = true;
 			this.details = ["The document 'foobar' had conflicts - yours was chosen",
 							"The document 'hello world' was automatically merged"];
