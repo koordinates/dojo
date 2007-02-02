@@ -192,10 +192,6 @@ var Moxie = {
 	}
 };
 
-// wait until the storage system is finished loading
-if(dojo.storage.manager.isInitialized() == false){ // storage might already be loaded when we get here
-	dojo.event.connect(dojo.storage.manager, "loaded", Moxie, 
-	                  Moxie.initialize);
-}else{
-	dojo.event.connect(dojo, "loaded", Moxie, Moxie.initialize);
-}
+// wait until Dojo Offline and the default Offline Widget are ready
+// before we initialize ourselves
+dojo.dot.ui.onLoad = dojo.lang.hitch(Moxie, Moxie.initialize);
