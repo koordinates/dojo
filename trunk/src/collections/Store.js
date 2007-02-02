@@ -173,7 +173,7 @@ dojo.collections.Store = function(/* array? */jsonArray){
 			var k = arr[i][this.keyField];
 			if(items[k]!=null){
 				var o = items[k];
-				o.src = obj;
+				o.src = arr[i];
 			} else {
 				var o = { key:k, src:arr[i] };
 				data.push(o);
