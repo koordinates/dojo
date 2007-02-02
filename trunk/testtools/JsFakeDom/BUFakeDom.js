@@ -316,7 +316,9 @@ BUFakeNode.prototype.removeAttribute = function(name) {
 }
 
 BUFakeNode.prototype.find_listener_ = function(eventType, listener, useCapture) {
-  return burst.Alg.find(this.listeners_, function(o) {o[0] == eventType && o[1] === listener && o[2] == useCapture});
+  return burst.Alg.find(this.listeners_, function(o) {
+	return o[0] == eventType && o[1] === listener && o[2] == useCapture;
+  });
 }
 
 // void EventTarget.addEventListener(String type, EventListener listener, Boolean useCapture)
