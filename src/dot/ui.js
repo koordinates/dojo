@@ -213,8 +213,30 @@ dojo.lang.mixin(dojo.dot.ui, {
 		
 		// TODO: FIXME: Disable elements in this web app
 	},
+	
+	onSave: function(status, isCoreSave, dataStore, item){
+		if(status == dojo.storage.FAILED
+			&& isCoreSave == true){
+			alert("Please increase the amount of local storage available "
+					+ "to this application");
+			this._showConfiguration();
+			if(dojo.storage.hasSettingsUI()){
+				dojo.storage.showSettingsUI();
+			}		
+			
+			// FIXME: Be able to know if storage size has changed
+		}
+	},
+	
+	onLoad: function(){
+		// summary:
+		//	A function that can be overridden that allows your
+		//	application to know when Dojo Offline, the page, and
+		//	the Offline Widget are all initialized and ready to be
+		//	used.
+	},
 
-	_onPageLoad: function(){
+	_initialize: function(){
 		// make sure our app name is correct
 		if(this._validateAppName(this.appName) == false){
 			alert("You must set dojo.dot.ui.appName; it can only contain "
@@ -305,6 +327,12 @@ dojo.lang.mixin(dojo.dot.ui, {
 		if(dojo.dot.enabled == true
 			&& dojo.sync.autoSync == true){
 			window.setTimeout(dojo.lang.hitch(this, this._synchronize), 1000);
+		}
+		
+		// indicate that our default UI and Dojo Offline are now ready to
+		// be used
+		if(this.onLoad){
+			this.onLoad();
 		}
 	},
 	
@@ -944,4 +972,9 @@ dojo.lang.mixin(dojo.dot.ui, {
 	}
 });
 
-dojo.event.connect(window, "onload", dojo.dot.ui, dojo.dot.ui._onPageLoad);
+// register ourselves to know when failed saves have 
+// occurred
+dojo.dot.onSave = dojo.lang.hitch(dojo.dot.ui, dojo.dot.ui.onSave);
+
+// start our magic when the Dojo Offline framework is ready to go
+dojo.dot.addOnLoad(dojo.lang.hitch(dojo.dot.ui, dojo.dot.ui._initialize));

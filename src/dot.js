@@ -40,7 +40,18 @@ dojo.lang.mixin(dojo.dot, {
 	//	True if we are attempting to go online, false otherwise
 	goingOnline: false,
 	
+	// coreSaveFailed: boolean
+	//	A flag set by the Dojo Offline framework that indicates
+	//	that saving a piece of important core data failed, such
+	//	as our list of files to have available offline. This
+	//	flag causes a 'fail fast' condition, turning off offline
+	//	ability.
+	coreSaveFailed: false,
+	
+	_onLoadListeners: new Array(),
 	_goOnlineCancelled: false,
+	_storageLoaded: false,
+	_pageLoaded: false,
 	
 	hasOfflineCache: function(){ /* boolean */
 		// summary: 
@@ -58,7 +69,7 @@ dojo.lang.mixin(dojo.dot, {
 		return false;
 	},
 	
-	cancel: function(){
+	cancel: function(){ /* void */
 		// summary:
 		//	Cancels an attempt to go online.
 		// description:
@@ -78,7 +89,7 @@ dojo.lang.mixin(dojo.dot, {
 		
 	},
 	
-	onOnline: function(){
+	onOnline: function(){ /* void */
 		// summary:
 		//	Called when we go online.
 		// description:
@@ -90,7 +101,7 @@ dojo.lang.mixin(dojo.dot, {
 		//	if you don't want the default behavior
 	},
 	
-	onOffline: function(){
+	onOffline: function(){ /* void */
 		// summary:
 		//	Called when we go offline.
 		// description: 
@@ -101,9 +112,6 @@ dojo.lang.mixin(dojo.dot, {
 	goOffline: function(){ /* void */
 		// summary:
 		//	Manually goes offline, away from the network.
-		dojo.debug("goOffline");
-		dojo.debug("isSyncing="+dojo.sync.isSyncing);
-		dojo.debug("goingOnline="+this.goingOnline);
 		if(dojo.sync.isSyncing == true
 			|| this.goingOnline == true){
 			return;
@@ -156,7 +164,7 @@ dojo.lang.mixin(dojo.dot, {
 		this._isSiteAvailable(finishedCallback, progressCallback);
 	},
 	
-	clear: function(){
+	clear: function(){ /* void */
 		// summary:
 		//	Clears out local data
 		// description:
@@ -166,13 +174,102 @@ dojo.lang.mixin(dojo.dot, {
 		//	alone.
 	},
 	
-	save: function(){
+	addOnLoad: function(func){ /* void */
 		// summary:
-		//	Causes dojo.dot to save its configuration data
+		//	Adds an onload listener to know when
+		//	Dojo Offline can be used.
+		// description:
+		//	Adds a listener to know when Dojo Offline
+		//	can be used. This ensures that the Dojo
+		//	Offline framework is loaded, that the
+		//	local Dojo Storage system is ready to
+		//	be used, and that the page is finished
+		//	loading. 
+		// func: Function
+		//	A function to call when Dojo Offline
+		//	is ready to go
+		this._onLoadListeners.push(func);
+	},
+	
+	removeOnLoad: function(func){ /* void */
+		// summary:
+		//	Removes the given onLoad listener
+		for(var i = 0; i < this._onLoadListeners.length; i++){
+			if(func == this._onLoadListeners[i]){
+				this._onLoadListeners = this._onLoadListeners.splice(i, 1);
+				break;
+			}
+		}
+	},
+	
+	save: function(){ /* void */
+		// summary:
+		//	Causes the Dojo Offline framework to save its configuration data
 		//	into local storage.	
 	},
 	
-	_isSiteAvailable: function(finishedCallback, progressCallback){ /* void */
+	load: function(){ /* void */
+		// summary:
+		//	Causes the Dojo Offline framework to load its configuration data
+		//	from local storage
+	},
+	
+	onSave: function(status, isCoreSave, dataStore, item){
+		// summary:
+		//	A standard function that can be registered which is
+		//	called when some piece of data is saved locally.
+		// description:
+		//	Applications can override this method to be notified
+		//	when offline data is attempting to be saved. This can
+		//	be used to provide UI feedback while saving, and for
+		//	providing appropriate error feedback if saving fails
+		//	due to a user not allowing the save to occur.
+		// status: dojo.storage.SUCCESS, dojo.storage.PENDING, dojo.storage.FAILED
+		//	Whether the save succeeded, whether it is pending based on a UI dialog
+		//	asking the user for permission, or whether it failed.
+		// isCoreSave: boolean
+		//	If true, then this save was for a core piece of data necessary for
+		//	the functioning of Dojo Offline. If false, then it is a piece of
+		//	normal data being saved for offline access. Dojo Offline will
+		//	'fail fast' if some core piece of data could not be saved, automatically
+		//	setting dojo.dot.coreSaveFailed to 'true' and dojo.dot.enabled to 'false'.
+		// dataStore: dojo.dot.DataStore
+		//	The Dojo Offline DataStore we are trying to save
+		// item: dojo.dot.Item
+		//	The Item we are trying to save
+	},
+	
+	_onLoad: function(){
+		// both local storage and the page are finished loading
+		
+		// load framework data
+		this.load();
+		
+		// indicate we are ready to be used
+		for(var i = 0; i < this._onLoadListeners.length; i++){
+			this._onLoadListeners[i]();
+		}
+	},
+	
+	_onPageLoad: function(){
+		this._pageLoaded = true;
+		
+		if(this._pageLoaded == true
+			&& this._storageLoaded == true){
+			this._onLoad();		
+		}
+	},
+	
+	_onStorageLoad: function(){
+		this._storageLoaded = true;
+		
+		if(this._pageLoaded == true
+			&& this._storageLoaded == true){
+			this._onLoad();		
+		}
+	},
+	
+	_isSiteAvailable: function(finishedCallback, progressCallback){
 		// summary:
 		//	Determines if our web application's website
 		//	is available.
@@ -266,5 +363,122 @@ dojo.lang.mixin(dojo.dot, {
 		}, 1000);
 		
 		// FIXME: Actually kick off the network thread
+	},
+	
+	standardSaveHandler: function(status, isCoreSave, dataStore, item){
+		// summary:
+		//	Called by portions of the Dojo Offline framework
+		//	as a standard way to handle local save's; this method
+		//	is 'package private' and should not be used outside
+		//	of the Dojo Offline package.
+		if(status == dojo.storage.FAILED
+			&& isCoreSave == true){
+			this.coreSaveFailed = true;
+			this.enabled = false;	
+		}
+		
+		if(this.onSave){
+			onSave(status, isCoreSave, dataStore, item);
+		}
 	}
 });
+
+// summary:
+//	Helps maintain resources that should be
+//	available offline, such as CSS files.
+// description:
+//	dojo.dot.files makes it easy to indicate
+//	what resources should be available offline,
+//	such as CSS files, JavaScript, HTML, etc.
+dojo.dot.files = {
+	listOfURLs: new Array(),
+	
+	_STORAGE_KEY: "__dot_listOfURLs",
+	
+	cache: function(listOfURLs){ /* void */
+		// summary:
+		//	Caches a list of files to be
+		//	available offline. These can either
+		//	be full URLs, such as 
+		//	http://foobar.com/index.html,
+		//	or relative URLs, such as 
+		//	../index.html. These URLs
+		//	are not actually cached until 
+		//	dojo.sync.synchronize() is
+		//	called.
+		// listOfURLs: Array[]
+		//	Array of Strings of URLs to
+		//	cache.
+	},
+	
+	cache: function(url){ /* void */
+		// summary:
+		//	Caches a file to be
+		//	available offline. This can either
+		//	be a full URL, such as 
+		//	http://foobar.com/index.html,
+		//	or a relative URL, such as 
+		//	../index.html. This URL
+		//	is not actually cached until 
+		//	dojo.sync.synchronize() is
+		//	called.
+		// url: String
+		//	A URL of a file to cache.
+	},
+	
+	remove: function(url){ /* void */
+		// summary:
+		//	Removes a URL from the list
+		//	of files to cache.
+		// description:
+		//	Removes a URL from the list of
+		//	URLs to cache. Note that this does
+		//	not actually remove the file from
+		//	the offline cache; instead, it just
+		//	prevents us from refreshing this file
+		//	at a later time, so that it will
+		//	naturally time out and be removed from
+		//	the offline cache
+		// url: String
+		//	The URL to remove
+	},
+	
+	isAvailable: function(url){ /* boolean */
+		// summary:
+		//	Determines whether the given resource
+		//	is available offline.
+		// url: String
+		//	The URL to check
+	},
+	
+	refresh: function(){ /* void */
+		// summary:
+		//	Refreshes our list of offline resources,
+		//	making them available offline.
+	},
+	
+	save: function(){ /* void */
+		try{
+			dojo.storage.put(this._STORAGE_KEY, 
+							 this.listOfURLs, 
+							 function(status){
+							 	dojo.dot.standardSaveHandler(status, true);	
+							 });
+		}catch(exp){
+			dojo.dot.standardSaveHandler(dojo.storage.FAILED, true);
+		}
+	},
+	
+	load: function(){ /* void */
+		var list = dojo.storage.get(this._STORAGE_KEY);
+		if(list != null){
+			this.listOfURLs = list;
+		}
+	}
+}
+
+// wait until the storage system is finished loading
+dojo.storage.manager.addOnLoad(dojo.lang.hitch(dojo.dot, dojo.dot._onStorageLoad));
+
+// wait until the page is finished loading
+dojo.event.connect(dojo, "loaded", dojo.dot, dojo.dot._onPageLoad);
