@@ -454,6 +454,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		var query = "";
 		if(kwArgs["formNode"]){
 			var ta = kwArgs.formNode.getAttribute("action");
+			if (typeof(ta)!='string'){ ta = kwArgs.formNode.attributes.action.value; }
 			if((ta)&&(!kwArgs["url"])){ url = ta; }
 			var tp = kwArgs.formNode.getAttribute("method");
 			if((tp)&&(!kwArgs["method"])){ kwArgs.method = tp; }
