@@ -24,7 +24,8 @@ dojo.dot.requireOfflineCache = false;
 // Moxie resources
 dojo.dot.files.cache([
 					"editor.html",
-					"editor.js"
+					"editor.js",
+					"about.html"
 					]);
 					
 // Dojo's and the Editor Widget's resources
