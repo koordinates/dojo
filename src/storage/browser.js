@@ -966,6 +966,18 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 		return "dojo.storage.browser.FlashStorageProvider";
 	},
 	
+	getResourceList: function(){ /* Array[] */
+		var results = 
+				[
+					djConfig.baseRelativePath + "storage_dialog.swf",
+					djConfig.baseRelativePath + "Storage_version6.swf",
+					djConfig.baseRelativePath + "Storage_version8.swf",
+					djConfig.baseRelativePath + "flash6_gateway.swf"
+				];
+				
+		return results;
+	},
+	
 	/** Called when the Flash is finished loading. */
 	_flashLoaded: function(){
 		this._initialized = true;

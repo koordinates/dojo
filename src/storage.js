@@ -208,6 +208,21 @@ dojo.declare("dojo.storage", null, {
 		}
 			
 		return /^[0-9A-Za-z_]*$/.test(keyName);
+	},
+	
+	getResourceList: function(){ /* Array[] */
+		// summary:
+		//	Returns a list of URLs that this
+		//	storage provider might depend on.
+		// description:
+		//	This method returns a list of URLs that this
+		//	storage provider depends on to do its work.
+		//	This list is used by the Dojo Offline Toolkit
+		//	to cache these resources to ensure the machinery
+		//	used by this storage provider is available offline.
+		//	What is returned is an array of URLs.
+		
+		return new Array();
 	}
 });
 

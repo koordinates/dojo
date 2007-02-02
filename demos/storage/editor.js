@@ -8,7 +8,6 @@ dojo.require("dojo.widget.Editor");
 dojo.require("dojo.storage.*");
 dojo.require("dojo.dot.*");
 dojo.require("dojo.sync");
-dojo.require("dojo.dot.ui");
 
 // configure how we should work offline
 
@@ -27,10 +26,14 @@ dojo.dot.files.cache([
 					"editor.js",
 					"about.html"
 					]);
-					
-// Dojo's and the Editor Widget's resources
+
+// Dojo resources
 dojo.dot.files.cache([
-					djConfig.baseRelativePath + "dojo.js",
+					djConfig.baseRelativePath + "dojo.js"
+					]);
+					
+// The Dojo Editor Widget's resources
+dojo.dot.files.cache([
 					djConfig.baseRelativePath + "src/widget/templates/Toolbar.css",
 					djConfig.baseRelativePath + "src/widget/templates/images/tab_close.gif",
 					djConfig.baseRelativePath + "src/widget/templates/richtextframe.html",

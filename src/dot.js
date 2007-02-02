@@ -241,6 +241,11 @@ dojo.lang.mixin(dojo.dot, {
 	_onLoad: function(){
 		// both local storage and the page are finished loading
 		
+		// make sure that resources needed by our underlying
+		// Dojo Storage storage provider will be available
+		// offline
+		dojo.dot.files.cache(dojo.storage.getResourceList());
+		
 		// load framework data
 		this.load();
 		
@@ -485,8 +490,7 @@ dojo.dot.files = {
 				url:	 url,
 				sync:		false,
 				error:		function(type, errObj){
-					// FIXME: Should we indicate that this resource is
-					// not available if isAvailable() is called?
+					// log our error
 					error = true;
 					errorMessage = "Error loading offline resource " + this.url + ": "
 									+ errObj.message;

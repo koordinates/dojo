@@ -69,6 +69,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 	_offlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/redball.png",
 	_rollerImagePath: djConfig.baseRelativePath + "src/dot/ui-template/roller.gif",
 	_checkmarkImagePath: djConfig.baseRelativePath + "src/dot/ui-template/checkmark.png",
+	_learnHowJSPath: djConfig.baseRelativePath + "src/dot/ui-template/learnhow.js",
 	
 	onStart: function(){
 		// summary:
@@ -378,9 +379,15 @@ dojo.lang.mixin(dojo.dot.ui, {
 									+ "&hasOfflineCache=" + dojo.dot.hasOfflineCache()
 									+ "&runLink=" + encodeURIComponent(this.runLink)
 									+ "&runLinkText=" + encodeURIComponent(this.runLinkText);
+			
+			// cache our Learn How JavaScript page						
+			dojo.dot.files.cache(this._learnHowJSPath);
 		}
 		
 		learnHow.setAttribute("href", this.learnHowPath);
+		
+		// cache the full learn how URL
+		dojo.dot.files.cache(this.learnHowPath);
 		
 		var appName = dojo.byId("dot-widget-learn-how-app-name");
 		
