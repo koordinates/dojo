@@ -20,8 +20,20 @@
 		<br>
 		<h1>integer spinner</h1>
 		<br>
-		initial value=+1,000, delta=10, min=9 max=1550, signed=always separator=,<br>
+		initial value=900, no delta specified, no min specified, max=1550, signed=never separator=!<br>
 		<input dojoType="IntegerSpinner" 
+			onValueChanged="dojo.debug('onValueCanged fired for widget id = ' + this.widgetId + ' with value = ' + arguments[0]);"
+			value="900" 
+			max="1550" 
+			signed="never" 
+			separator="!" 
+			maxlength="20" 
+			widgetId="integertextbox2">
+		<br>
+		<br>
+		initial value=+1,000, delta=10, min=9 max=1550, signed=always separator=,<br>
+		with custom styling:before<input dojoType="IntegerSpinner" 
+			style="font-size:30pt;border:1px solid blue;position:relative;left:30px;color:blue;background-color:cyan;"
 			value="+1,000" 
 			delta="10" 
 			min="9" 
@@ -29,17 +41,7 @@
 			signed="always" 
 			separator="," 
 			maxlength="20" 
-			widgetId="integertextbox1">
-		<br>
-		<br>
-		initial value=900, no delta specified, no min specified, max=1550, signed=never separator=!<br>
-		<input dojoType="IntegerSpinner" 
-			value="900" 
-			max="1550" 
-			signed="never" 
-			separator="!" 
-			maxlength="20" 
-			widgetId="integertextbox2">
+			widgetId="integertextbox1">after
 		<br>
 		<br>
 		initial value not specified, delta not specified, min not specified, max not specified, signed not specified, separator not specified<br>
@@ -88,28 +90,22 @@
 		<br>
 		Move the cursor left and right within the input field to see the effect on the spinner.
 		<br>
-		initial value=10:00:00a, delta=1:01:01a, am symbol=a, pm symbol=p, format=h:mm:sst<br>
-		<input dojoType="TimeSpinner"
-			value="10:00:00a"
-			delta="1:01:01a" 
-			amsymbol="a"
-			pmsymbol="p"
-			format="h:mm:sst" 
-			maxlength="20" 
-			widgetId="timetextbox1">
-		<br>
-		<br>
 		initial value=1000, delta=0101, am symbol not specified, pm symbol not specified, format=HHmm<br>
 		<input dojoType="TimeSpinner"
 			value="1000"
 			delta="0101" 
-			format="HHmm" 
+			displayFormat="HHmm" 
 			maxlength="20" 
 			widgetId="timetextbox2">
 		<br>
 		<br>
-		initial value not specified, delta not specified (default is 01:01:01), am symbol not specified (default is AM), pm symbol not specified (default is PM), format not specified (default is h:mm:ss t) <br>
-		[verify no line break just after this text]<input dojoType="TimeSpinner" widgetId="timetextbox3">[verify no line break just before this text]
+		initial value=10:00:00, delta=1:01:01a, format=h:mm:ss<br>
+		<input dojoType="TimeSpinner"
+			value="10:00:00"
+			delta="1:01:01" 
+			displayFormat="h:mm:ss" 
+			maxlength="20" 
+			widgetId="timetextbox1">
 		<br>
 		<br>
 	</body>

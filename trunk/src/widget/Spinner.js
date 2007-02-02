@@ -1,7 +1,5 @@
 dojo.provide("dojo.widget.Spinner");
 
-dojo.require("dojo.io.*");
-dojo.require("dojo.lfx.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.string");
@@ -38,13 +36,9 @@ dojo.declare(
 		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/Spinner.html"),
 		templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/Spinner.css"),
 
-		// incrementSrc: String
-		//      up arrow graphic URL
-		incrementSrc: dojo.uri.moduleUri("dojo.widget", "templates/images/spinnerIncrement.gif"),
-
-		// decrementSrc: String
-		//      down arrow graphic URL
-		decrementSrc: dojo.uri.moduleUri("dojo.widget", "templates/images/spinnerDecrement.gif"),
+		// inputWidget: Object
+		//	widget object managing input validation node
+		inputWidget: null,
 
 		// does the keyboard related stuff
 		_handleKeyEvents: function(/*Event*/ evt){
@@ -70,24 +64,12 @@ dojo.declare(
 			this.onkeyup(evt);
 		},
 
-		// reset button size; this function is called when the input area has changed size
-		_resize: function(){
-			var inputSize = dojo.html.getBorderBox(this.textbox);
-			this.buttonSize = { width: inputSize.height / 2, height: inputSize.height / 2 };
-			if(this.upArrowNode){
-				dojo.html.setMarginBox(this.upArrowNode, this.buttonSize);
-				dojo.html.setMarginBox(this.downArrowNode, this.buttonSize);
-			}
-		},
-
 		_pressButton: function(/*DomNode*/ node){
-			node.style.borderWidth = "1px 0px 0px 1px";
-			node.style.borderStyle = "inset";
+			dojo.html.addClass(node, "dojoSpinnerButtonPushed");
 		},
 
 		_releaseButton: function(/*DomNode*/ node){
-			node.style.borderWidth = "0px 1px 1px 0px";
-			node.style.borderStyle = "outset";
+			dojo.html.removeClass(node, "dojoSpinnerButtonPushed");
 		},
 
 		_arrowPressed: function(/*Event*/ evt, /*Number*/ direction){
@@ -214,18 +196,13 @@ dojo.declare(
 			}catch(e){ /* squelch! */ }
 		},
 
-		_spinnerPostMixInProperties: function(/*Object*/ args, /*Object*/ frag){
-			// summary: the widget's postMixInProperties() method should call this method
-
-			// set image size before instantiating template;
-			// changing it aftwards doesn't work on FF
-			var inputNode = this.getFragNodeRef(frag);
-			var inputSize = dojo.html.getBorderBox(inputNode);
-			this.buttonSize = { width: inputSize.height / 2 - 1, height: inputSize.height / 2 - 1};
-		},
-
-		_spinnerPostCreate: function(/*Object*/ args, /*Object*/ frag){
-			// summary: the widget's postCreate() method should call this method
+		fillInTemplate: function(/*Object*/ args, /*Object*/ frag){
+			if (this.inputWidget){
+				this.inputWidget.prototype.fillInTemplate.call(this, args, frag);
+			}
+			// Copy style info from input node to output node
+			var source = this.getFragNodeRef(frag);
+			dojo.html.copyStyle(this.domNode, source);
 
 			// extra listeners
 			if(this.textbox.addEventListener){
@@ -234,7 +211,19 @@ dojo.declare(
 			}else{
 				dojo.event.connect(this.textbox, "onmousewheel", this, "_mouseWheeled"); // IE + Safari
 			}
-			//dojo.event.connect(window, "onchange", this, "_resize");
+		},
+
+		onValueChanged: function(value){
+		},
+
+		setValue: function(value){
+			if (this._oldValue != value) {
+				this._oldValue = value;
+				if (this.inputWidget){
+					this.inputWidget.prototype.setValue.call(this, value);
+				}
+				this.onValueChanged(value);
+			}
 		}
 	}
 );
@@ -248,16 +237,7 @@ dojo.widget.defineWidget(
 	// delta: Number
 	//	increment amount
 	delta: "1",
-
-	postMixInProperties: function(/*Object*/ args, /*Object*/ frag){
-		dojo.widget.IntegerSpinner.superclass.postMixInProperties.apply(this, arguments);
-		this._spinnerPostMixInProperties(args, frag);
-	},
-
-	postCreate: function(/*Object*/ args, /*Object*/ frag){
-		dojo.widget.IntegerSpinner.superclass.postCreate.apply(this, arguments);
-		this._spinnerPostCreate(args, frag);
-	},
+	inputWidget: dojo.widget.IntegerTextbox,
 
 	adjustValue: function(/*Number*/ direction, /*Number*/ x){
 		// sumary
@@ -301,16 +281,7 @@ dojo.widget.defineWidget(
 	// delta: Number
 	//	amount that pushing a button changes the value?
 	delta: "1e1",
-
-	postMixInProperties: function(/*Object*/ args, /*Object*/ frag){
-		dojo.widget.RealNumberSpinner.superclass.postMixInProperties.apply(this, arguments);
-		this._spinnerPostMixInProperties(args, frag);
-	},
-
-	postCreate: function(/*Object*/ args, /*Object*/ frag){
-		dojo.widget.RealNumberSpinner.superclass.postCreate.apply(this, arguments);
-		this._spinnerPostCreate(args, frag);
-	},
+	inputWidget: dojo.widget.RealNumberTextbox,
 
 	adjustValue: function(/*Number*/ direction, /*Number*/ x){
 			var val = this.getValue().replace(/[^\-+\.eE\d]/g, "");
@@ -411,20 +382,12 @@ dojo.widget.defineWidget(
 	[dojo.widget.TimeTextbox, dojo.widget.Spinner],
 	function(){ dojo.experimental("dojo.widget.TimeSpinner"); },
 {
-	postMixInProperties: function(/*Object*/ args, /*Object*/ frag){
-		dojo.widget.TimeSpinner.superclass.postMixInProperties.apply(this, arguments);
-		this._spinnerPostMixInProperties(args, frag);
-	},
-
-	postCreate: function(/*Object*/ args, /*Object*/ frag){
-		dojo.widget.TimeSpinner.superclass.postCreate.apply(this, arguments);
-		this._spinnerPostCreate(args, frag);
-	},
+	inputWidget: dojo.widget.TimeTextbox,
 
 	adjustValue: function(/*Number*/ direction, /*Number*/ x){
 	//FIXME: formatting should make use of dojo.date.format?
 		var val = this.getValue();
-		var format = (this.flags.format && this.flags.format.search(/[Hhmst]/) >= 0) ? this.flags.format : "hh:mm:ss t";
+		var format = this.flags.format = ((typeof this.displayFormat == "string") && this.displayFormat.length > 0) ? this.displayFormat : "hh:mm:ss t";
 		if(direction == 0 || !val.length || !this.isValid()){ return; }
 		if (!this.flags.amSymbol){
 			this.flags.amSymbol = "AM";
