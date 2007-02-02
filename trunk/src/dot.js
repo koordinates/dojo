@@ -397,6 +397,11 @@ dojo.lang.mixin(dojo.dot, {
 dojo.dot.files = {
 	listOfURLs: new Array(),
 	
+	_refreshCounter: 0,
+	_error: false,
+	_errorMessage: null,
+	_finishedCallback: null,
+	
 	cache: function(urlOrList){ /* void */
 		// summary:
 		//	Caches a file or list of files to be
@@ -481,46 +486,49 @@ dojo.dot.files = {
 		//	error. If no error occured then message is null.
 		
 		// shoot off an XHR request for each file
-		var refreshCounter = 0;
-		var error = false;
-		var errorMessage = null;
+		dojo.dot.files._refreshCounter = 0;
+		dojo.dot.files._error = false;
+		dojo.dot.files._errorMessage = null;
+		dojo.dot.files._finishedCallback = finishedCallback;
 		for(var i = 0; i < this.listOfURLs.length; i++){
 			var url = this.listOfURLs[i];
-			var bindArgs = {
-				url:	 url,
-				sync:		false,
-				error:		function(type, errObj){
-					// log our error
-					error = true;
-					errorMessage = "Error loading offline resource " + this.url + ": "
-									+ errObj.message;
-					
-					// see if we are finished
-					refreshCounter++;
-					if(refreshCounter == dojo.dot.files.listOfURLs.length){
-						if(finishedCallback){
-							finishedCallback(error, errorMessage);	
-						}
-					}
-				},
-				load:		function(type, data, evt){
+			// Firefox can't handle many XHR requests done quickly; do
+			// them on a slight timeout so Firefox doesn't get confused
+			window.setTimeout("dojo.dot.files._loadFile('" + url + "')", 10);
+		}	
+	},
+	
+	_loadFile: function(url){
+		dojo.debug("loadFile, url="+url);	
+		var xhr = dojo.hostenv.getXmlhttpObject();
+		xhr.url = url;
+		
+		xhr.onreadystatechange = function(){
+			if(xhr.readyState == 4 && dojo.dot.files._error != true){ /* Loaded */
+				if(xhr.status == 200){
 					// FIXME: As an aid to programmers, check the caching headers
 					// returned and make sure they have correct values if
 					// requireOfflineCache = false
-					
-					// see if we are finished
-					refreshCounter++;
-					if(refreshCounter == dojo.dot.files.listOfURLs.length){
-						if(finishedCallback){
-							finishedCallback(error, errorMessage);	
-						}
-					}
+				}else{
+					// log our error
+					dojo.dot.files._error = true;
+					dojo.dot.files._errorMessage = 
+									"Error loading offline resource " + xhr.url + ": "
+									+ xhr.statusText;
 				}
-			};
-		
-			// dispatch the request
-			dojo.io.bind(bindArgs);
-		}
+				
+				// see if we are finished with all of
+				// the files
+				dojo.dot.files._refreshCounter++;
+				if(dojo.dot.files._refreshCounter == dojo.dot.files.listOfURLs.length
+					|| dojo.dot.files._error == true){
+					dojo.dot.files._finishedCallback(dojo.dot.files._error,
+													dojo.dot.files._errorMessage);
+				}
+			}
+		};
+		xhr.open("GET", url, true);
+		xhr.send(null);
 	}
 
 	// FIXME: This code is left here for reference;
