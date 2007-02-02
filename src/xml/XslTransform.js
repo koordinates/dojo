@@ -14,6 +14,7 @@ dojo.xml.XslTransform = function(/*String*/xsltUri, /*Boolean*/loadAsync){
 	// loadAsync:
 	//		Should we try to defer loading resources?
 
+	this.async = false;
 	dojo.debug("XslTransform is supported by Internet Explorer and Mozilla, with limited support in Opera 9 (no document function support).");
 	var IS_IE = dojo.render.html.ie;
 	var ACTIVEX_DOMS = [
@@ -56,14 +57,12 @@ dojo.xml.XslTransform = function(/*String*/xsltUri, /*Boolean*/loadAsync){
 	var xsltProcessor = null;
 	if(IS_IE){
 		xsltDocument = new ActiveXObject(getActiveXImpl(ACTIVEX_FT_DOMS));
-		xsltDocument.async = false;
 	}else{
 		xsltProcessor = new XSLTProcessor();
 		xsltDocument = document.implementation.createDocument("", "", null);
-		xsltDocument.async = false;
 		xsltDocument.addEventListener("load", onXslLoad, false);
 	}
-	xsltDocument.async = (!!loadAsync);
+	xsltDocument.async = this.async;
 	xsltDocument.load(xsltUri);
 
 	if(IS_IE){
