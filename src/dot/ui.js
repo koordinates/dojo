@@ -333,19 +333,20 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// if offline is disabled, disable everything
 		this._setOfflineEnabled(dojo.dot.enabled);
 		
-		// synchronize, but pause for a few seconds
-		// so that the user can orient themselves -
-		// 1 second
-		if(dojo.dot.enabled == true
-			&& dojo.sync.autoSync == true){
-			window.setTimeout(dojo.lang.hitch(this, this._synchronize), 1000);
-		}
-		
-		// indicate that our default UI and Dojo Offline are now ready to
-		// be used
-		if(this.onLoad){
-			this.onLoad();
-		}
+		// try to go online
+		var finishedCallback = dojo.lang.hitch(this, function(isOnline, manuallyCancelled){
+									// display our online/offline results
+									this._goOnlineFinished(isOnline, manuallyCancelled);
+									
+									// indicate that our default UI 
+									// and Dojo Offline are now ready to
+									// be used
+									if(this.onLoad){
+										this.onLoad();
+									}
+		});
+		var progressCallback = dojo.lang.hitch(this, this._goOnlineProgress);
+		dojo.dot.goOnline(finishedCallback, progressCallback);
 	},
 	
 	_updateNetworkIndicator: function(){
@@ -714,7 +715,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var checkmark = dojo.byId("dot-success-checkmark");
 		var roller = dojo.byId("dot-roller");
 		var details = dojo.byId("dot-sync-details");
-		this._setSyncMessage("Going online... "
+		this._setSyncMessage("Checking network... "
 							+ dojo.dot.goOnlineTimeout);
 		if(checkmark){
 			checkmark.style.display = "none";
@@ -772,8 +773,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 	},
 	
 	_goOnlineProgress: function(timer){
-		var secondsLeft = dojo.dot.goOnlineTimeout - timer;
-		this._setSyncMessage("Going online... "
+		var secondsLeft = dojo.dot.AVAILABILITY_TIMEOUT - timer;
+		this._setSyncMessage("Checking network... "
 							+ secondsLeft);
 	},
 	

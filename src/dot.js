@@ -1,6 +1,18 @@
 dojo.provide("dojo.dot");
 
 dojo.lang.mixin(dojo.dot, {
+	// MAX_AVAILABILITY_ATTEMPTS: int
+	//	The maximum number of times to attempt contacting
+	//	our availabilityURL to see if the network is available
+	//	before giving up. Default is 3.
+	MAX_AVAILABILITY_ATTEMPTS: 3,
+	
+	// AVAILABILITY_TIMEOUT: int
+	//	The time in seconds to check for site availability
+	//	when going online before aborting attempt. Default
+	//	is 30 seconds.
+	AVAILABILITY_TIMEOUT: 30,
+	
 	// enabled: boolean
 	//	Whether offline ability is enabled or not. Defaults to true.
 	enabled: true,
@@ -26,15 +38,9 @@ dojo.lang.mixin(dojo.dot, {
 	
 	// availabilityURL: String
 	//	The URL to check for site availability; defaults to
-	//	this web application's domain name (ex: http://foobar.com:8080).
-	availabilityURL: window.location.protocol + "://"
-						+ window.location.host + ":"
-						+ window.location.port,
-	
-	// goOnlineTimeout: int
-	//	The time in seconds to check for site availability
-	//	when going online before aborting attempt.
-	goOnlineTimeout: 30,
+	//	this web application's URL. We do a HEAD request
+	//	on this URL to check for site availability.
+	availabilityURL: window.location.href,
 	
 	// goingOnline: boolean
 	//	True if we are attempting to go online, false otherwise
@@ -51,6 +57,10 @@ dojo.lang.mixin(dojo.dot, {
 	_goOnlineCancelled: false,
 	_storageLoaded: false,
 	_pageLoaded: false,
+	_timeSoFar: 0,
+	_siteFound: false,
+	_availabilityCancelled: false,
+	_availabilityAttempts: 0,
 	
 	hasOfflineCache: function(){ /* boolean */
 		// summary: 
@@ -283,7 +293,7 @@ dojo.lang.mixin(dojo.dot, {
 		//	a good proxy for network availability. The URL
 		//	dojo.dot.availabilityURL is used, which defaults
 		//	to this site's domain name (ex: foobar.com). We
-		//	check for dojo.dot.availabilityTimeout (in seconds)
+		//	check for dojo.dot.AVAILABILITY_TIMEOUT (in seconds)
 		//	and abort after that
 		// finishedCallback: Function
 		//	An optional callback function that will receive two arguments;
@@ -306,22 +316,24 @@ dojo.lang.mixin(dojo.dot, {
 		
 		// create a timer to count progress and check
 		// for cancellation
-		var timeSoFar = 0;
-		var siteFound = false;
-		dojo.dot._availabilityCancelled = false;
-		var availTimer = window.setInterval(function(){
-			timeSoFar++;
+		this._timeSoFar = 0;
+		this._siteFound = false;
+		this._availabilityCancelled = false;
+		var availTimer = window.setInterval(dojo.lang.hitch(this, function(){
+			dojo.debug("availtimer, this._timeSoFar="+this._timeSoFar);
+			this._timeSoFar++;
 			
 			// provide feedback
 			if(progressCallback){
-				progressCallback(timeSoFar);	
+				progressCallback(this._timeSoFar);	
 			}
 			
 			// did we find the site?
-			if(siteFound == true){
+			dojo.debug("this._sitefound="+this._siteFound);
+			if(this._siteFound == true){
 				window.clearInterval(availTimer);
-				dojo.dot.isOnline = true;
-				dojo.dot.goingOnline = false;
+				this.isOnline = true;
+				this.goingOnline = false;
 				if(finishedCallback){
 					// callback(siteAvailable, manualCancelled)
 					finishedCallback(true, false);
@@ -330,10 +342,10 @@ dojo.lang.mixin(dojo.dot, {
 			}
 			
 			// are we past our timeout?
-			if(timeSoFar >= (dojo.dot.availabilityTimeout * 1000)){
+			if(this._timeSoFar >= this.AVAILABILITY_TIMEOUT * 1000){
 				window.clearInterval(availTimer);
-				dojo.dot.isOnline = false;
-				dojo.dot.goingOnline = false;
+				this.isOnline = false;
+				this.goingOnline = false;
 				if(finishedCallback){
 					// callback(siteAvailable, manualCancelled)
 					finishedCallback(false, false);
@@ -342,10 +354,10 @@ dojo.lang.mixin(dojo.dot, {
 			}
 			
 			// manual cancellation?
-			if(dojo.dot._goOnlineCancelled == true){
+			if(this._goOnlineCancelled == true){
 				window.clearInterval(availTimer);
-				dojo.dot.isOnline = false;
-				dojo.dot.goingOnline = false;
+				this.isOnline = false;
+				this.goingOnline = false;
 				if(finishedCallback){
 					// callback(siteAvailable, manualCancelled)
 					finishedCallback(false, true);
@@ -353,20 +365,50 @@ dojo.lang.mixin(dojo.dot, {
 				return;
 			}
 			
-			// FIXME: Remove when actually implemented
-			if(timeSoFar >= 3){
+			// have we tried our max number of
+			// availability attempts?
+			if(this._availabilityAttempts > this.MAX_AVAILABILITY_ATTEMPTS
+				&& this._siteFound == false){
 				window.clearInterval(availTimer);
-				dojo.dot.isOnline = true;
-				dojo.dot.goingOnline = false;
+				this.isOnline = false;
+				this.goingOnline = false;
 				if(finishedCallback){
 					// callback(siteAvailable, manualCancelled)
-					finishedCallback(true, false);
+					finishedCallback(false, false);
 				}
-				return;
+				return;	
 			}
-		}, 1000);
+		}), 1000);
 		
-		// FIXME: Actually kick off the network thread
+		// Actually kick off the network thread
+		this._availabilityAttempts = 0;
+		this._checkSite();
+	},
+	
+	_checkSite: function(){
+		dojo.debug("checkSite, availabilityAttempts="+this._availabilityAttempts);	
+	
+		if(this._availabilityAttempts > this.MAX_AVAILABILITY_ATTEMPTS){
+			return;
+		}
+		
+		this._availabilityAttempts++;
+		
+		var xhr = dojo.hostenv.getXmlhttpObject();
+		xhr.open("HEAD", this.availabilityURL, true);
+		dojo.debug("availabilityURL="+this.availabilityURL);
+		xhr.onreadystatechange = dojo.lang.hitch(this, function(){
+			dojo.debug("onreadystatechange, readystate="+xhr.readyState);
+			if(xhr.readyState == 4){ /* Loaded */
+				dojo.debug('xhr.status='+xhr.status);
+				if(xhr.status == 200){
+					this._siteFound = true;
+				}else{
+					this._checkSite();
+				}
+			}
+		});
+		xhr.send(null);
 	},
 	
 	standardSaveHandler: function(status, isCoreSave, dataStore, item){
