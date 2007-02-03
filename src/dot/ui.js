@@ -63,13 +63,13 @@ dojo.lang.mixin(dojo.dot.ui, {
 	//	Use in conjunction with dojo.dot.ui.learnHowPath.
 	customLearnHowPath: false,
 	
-	_htmlTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.html",
-	_cssTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.css",
-	_onlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/greenball.png",
-	_offlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/redball.png",
-	_rollerImagePath: djConfig.baseRelativePath + "src/dot/ui-template/roller.gif",
-	_checkmarkImagePath: djConfig.baseRelativePath + "src/dot/ui-template/checkmark.png",
-	_learnHowJSPath: djConfig.baseRelativePath + "src/dot/ui-template/learnhow.js",
+	htmlTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.html",
+	cssTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.css",
+	onlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/greenball.png",
+	offlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/redball.png",
+	rollerImagePath: djConfig.baseRelativePath + "src/dot/ui-template/roller.gif",
+	checkmarkImagePath: djConfig.baseRelativePath + "src/dot/ui-template/checkmark.png",
+	learnHowJSPath: djConfig.baseRelativePath + "src/dot/ui-template/learnhow.js",
 	
 	onStart: function(){
 		// summary:
@@ -112,7 +112,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var details = dojo.byId("dot-sync-details");
 		
 		if(dojo.sync.successful == true){
-			this._setSyncMessage("Successful");
+			this._setSyncMessage("Sync Successful");
 			if(checkmark){
 				checkmark.style.display = "inline";
 			}
@@ -195,6 +195,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// update UI
 		this._updateNetworkIndicator();
 		this._updateMoreCommands();
+		this._setSyncMessage("You are working offline");
 		
 		// disable sync command
 		var syncButton = dojo.byId("dot-sync-button");
@@ -259,12 +260,12 @@ dojo.lang.mixin(dojo.dot.ui, {
 		
 		// cache our default UI resources
 		dojo.dot.files.cache([
-							this._htmlTemplatePath,
-							this._cssTemplatePath,
-							this._onlineImagePath,
-							this._offlineImagePath,
-							this._rollerImagePath,
-							this._checkmarkImagePath
+							this.htmlTemplatePath,
+							this.cssTemplatePath,
+							this.onlineImagePath,
+							this.offlineImagePath,
+							this.rollerImagePath,
+							this.checkmarkImagePath
 							]);
 		
 		// embed the offline widget UI
@@ -275,7 +276,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 	
 	_doAutoEmbed: function(){
 		// fetch our HTML for the offline widget
-		var templatePath = this._htmlTemplatePath;
+		var templatePath = this.htmlTemplatePath;
 		var bindArgs = {
 			url:	 templatePath,
 			sync:		false,
@@ -295,7 +296,9 @@ dojo.lang.mixin(dojo.dot.ui, {
 	_templateLoaded: function(type, data, evt){
 		// inline our HTML
 		var container = dojo.byId(this.autoEmbedID);
-		container.innerHTML = data;
+		if(container){
+			container.innerHTML = data;
+		}
 		
 		// fill out our image paths
 		this._initImages();
@@ -380,7 +383,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 									+ "&runLinkText=" + encodeURIComponent(this.runLinkText);
 			
 			// cache our Learn How JavaScript page						
-			dojo.dot.files.cache(this._learnHowJSPath);
+			dojo.dot.files.cache(this.learnHowJSPath);
 		}
 		
 		learnHow.setAttribute("href", this.learnHowPath);
@@ -514,22 +517,22 @@ dojo.lang.mixin(dojo.dot.ui, {
 	_initImages: function(){	
 		var onlineImg = dojo.byId("dot-widget-network-indicator-online");
 		if(onlineImg){
-			onlineImg.setAttribute("src", this._onlineImagePath);
+			onlineImg.setAttribute("src", this.onlineImagePath);
 		}
 		
 		var offlineImg = dojo.byId("dot-widget-network-indicator-offline");
 		if(offlineImg){
-			offlineImg.setAttribute("src", this._offlineImagePath);
+			offlineImg.setAttribute("src", this.offlineImagePath);
 		}
 		
 		var roller = dojo.byId("dot-roller");
 		if(roller){
-			roller.setAttribute("src", this._rollerImagePath);
+			roller.setAttribute("src", this.rollerImagePath);
 		}
 		
 		var checkmark = dojo.byId("dot-success-checkmark");
 		if(checkmark){
-			checkmark.setAttribute("src", this._checkmarkImagePath);
+			checkmark.setAttribute("src", this.checkmarkImagePath);
 		}
 	},
 	
