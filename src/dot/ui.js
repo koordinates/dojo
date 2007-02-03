@@ -202,13 +202,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 			dojo.html.addClass(syncButton, "dot-disabled");
 		}
 		
-		// provide feedback
-		this._setSyncMessage("You are offline");
-		var checkmark = dojo.byId("dot-success-checkmark");
+		// clear old details
 		var details = dojo.byId("dot-sync-details");
-		if(checkmark){
-			checkmark.style.display = "inline";
-		}
 		if(details){
 			details.style.display = "none";
 		}
@@ -338,9 +333,9 @@ dojo.lang.mixin(dojo.dot.ui, {
 	},
 	
 	_testNetwork: function(){
-		var finishedCallback = dojo.lang.hitch(this, function(isOnline, manuallyCancelled){
+		var finishedCallback = dojo.lang.hitch(this, function(isOnline){
 									// display our online/offline results
-									this._goOnlineFinished(isOnline, manuallyCancelled);
+									this._goOnlineFinished(isOnline);
 									
 									// indicate that our default UI 
 									// and Dojo Offline are now ready to
@@ -349,8 +344,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 										this.onLoad();
 									}
 		});
-		var progressCallback = dojo.lang.hitch(this, this._goOnlineProgress);
-		dojo.dot.goOnline(finishedCallback, progressCallback);
+		dojo.dot.goOnline(finishedCallback);
 	},
 	
 	_updateNetworkIndicator: function(){
@@ -424,7 +418,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var numItems = dojo.byId("dot-num-modified-items");
 		
 		if(dojo.sync.isSyncing == true){
-			this._setSyncMessage("");
+			this._clearSyncMessage();
 			
 			if(syncButtons){
 				syncButtons.style.display = "none";
@@ -511,6 +505,10 @@ dojo.lang.mixin(dojo.dot.ui, {
 		if(syncMessage){
 			syncMessage.innerHTML = message;
 		}
+	},
+	
+	_clearSyncMessage: function(){
+		this._setSyncMessage("");
 	},
 	
 	_initImages: function(){	
@@ -719,8 +717,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var checkmark = dojo.byId("dot-success-checkmark");
 		var roller = dojo.byId("dot-roller");
 		var details = dojo.byId("dot-sync-details");
-		this._setSyncMessage("Checking network... "
-							+ dojo.dot.AVAILABILITY_TIMEOUT);
+		this._setSyncMessage("Checking network... ");
 		if(checkmark){
 			checkmark.style.display = "none";
 		}
@@ -747,39 +744,22 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// to go online
 		
 		// try to go online
-		dojo.dot.goOnline(dojo.lang.hitch(this, this._goOnlineFinished),
-						dojo.lang.hitch(this, this._goOnlineProgress));
+		dojo.dot.goOnline(dojo.lang.hitch(this, this._goOnlineFinished));
 	},
 	
-	_goOnlineFinished: function(isOnline, manuallyCancelled){
+	_goOnlineFinished: function(isOnline){
 		var roller = dojo.byId("dot-roller");
 		if(roller){
 			roller.style.display = "none";
 		}
 		
-		if(manuallyCancelled == true){
-			this._setSyncMessage("Cancelled");
-			return;
-		}
-		
 		if(isOnline){
-			this._setSyncMessage("You are online");
-			var checkmark = dojo.byId("dot-success-checkmark");
-			if(checkmark){
-				checkmark.style.display = "inline";
-			}
-			
+			this._clearSyncMessage();
 			this.onOnline();
 		}else{
 			this._setSyncMessage("Network not available");
 			this.onOffline();
 		}
-	},
-	
-	_goOnlineProgress: function(timer){
-		var secondsLeft = dojo.dot.AVAILABILITY_TIMEOUT - timer;
-		this._setSyncMessage("Checking network... "
-							+ secondsLeft);
 	},
 	
 	_workOffline: function(evt){

@@ -1,18 +1,6 @@
 dojo.provide("dojo.dot");
 
 dojo.lang.mixin(dojo.dot, {
-	// MAX_AVAILABILITY_ATTEMPTS: int
-	//	The maximum number of times to attempt contacting
-	//	our availabilityURL to see if the network is available
-	//	before giving up. Default is 3.
-	MAX_AVAILABILITY_ATTEMPTS: 3,
-	
-	// AVAILABILITY_TIMEOUT: int
-	//	The time in seconds to check for site availability
-	//	when going online before aborting attempt. Default
-	//	is 30 seconds.
-	AVAILABILITY_TIMEOUT: 8,
-	
 	// NETWORK_CHECK: int
 	//	Time in seconds on how often we should check the
 	//	status of the network with an automatic background
@@ -70,13 +58,8 @@ dojo.lang.mixin(dojo.dot, {
 	doNetworkChecking: true,
 	
 	_onLoadListeners: new Array(),
-	_goOnlineCancelled: false,
 	_storageLoaded: false,
 	_pageLoaded: false,
-	_timeSoFar: 0,
-	_siteFound: false,
-	_availabilityCancelled: false,
-	_availabilityAttempts: 0,
 	
 	hasOfflineCache: function(){ /* boolean */
 		// summary: 
@@ -92,26 +75,6 @@ dojo.lang.mixin(dojo.dot, {
 	
 		// FIXME: Implement
 		return false;
-	},
-	
-	cancel: function(){ /* void */
-		// summary:
-		//	Cancels an attempt to go online.
-		// description:
-		//	If dojo.dot.goOnline() was called,
-		//	this method will manually cancel trying
-		//	to go online. Note this method is not
-		//	implemented yet.
-		
-		// FIXME: TODO: Implement cancelling
-		// going on to the network
-		
-		if(dojo.dot.isSyncing == true 
-			|| this.goingOnline == false){
-			return;		
-		}
-		
-		
 	},
 	
 	onOnline: function(){ /* void */
@@ -143,7 +106,6 @@ dojo.lang.mixin(dojo.dot, {
 		}
 		
 		this.goingOnline = false;
-		this._goOnlineCancelled = false;
 		this.isOnline = false;
 		
 		if(this.onOffline){
@@ -151,7 +113,7 @@ dojo.lang.mixin(dojo.dot, {
 		}
 	},
 	
-	goOnline: function(finishedCallback, progressCallback){ /* void */
+	goOnline: function(finishedCallback){ /* void */
 		// summary:
 		//	Attempts to go online.
 		// description:
@@ -160,22 +122,10 @@ dojo.lang.mixin(dojo.dot, {
 		//	is called asychronously with the result of whether
 		//	we were able to go online or not.
 		// finishedCallback: Function
-		//	An optional callback function that will receive two arguments;
-		//	the first is whether the site is available
-		//	and we are able to go online; the second is whether the request
-		//	was manually cancelled by a call to 
-		//	dojo.dot.cancel() and is boolean
-		//	(true - manually cancelled; false - not 
-		//	manually cancelled)
-		// progressCallback: Function
-		//	An optional Function callback that will be called
-		//	for each second of time that we are waiting for an
-		//	online availability check to finish. This function will have
-		//	one value, 'timer', which starts at 1 and is incremented
-		//	for each second of time that we are waiting for the network
-		//	to finish. This function is appropriate for providing
-		//	a ticking feedback message UI while a user is waiting,
-		//	for example.
+		//	An optional callback function that will receive one argument:
+		//	whether the site is available or not
+		//	and is boolean. If this function is not present we call
+		//	dojo.dot.onOnline instead if we are able to go online.
 		
 		if(dojo.sync.isSyncing == true
 			|| dojo.dot.goingOnline == true){
@@ -183,11 +133,10 @@ dojo.lang.mixin(dojo.dot, {
 		}
 		
 		this.goingOnline = true;
-		this._goOnlineCancelled = false;
 		this.isOnline = false;
 		
 		// see if can reach our web application's web site
-		this._isSiteAvailable(finishedCallback, progressCallback);
+		this._isSiteAvailable(finishedCallback);
 	},
 	
 	clear: function(){ /* void */
@@ -278,7 +227,7 @@ dojo.lang.mixin(dojo.dot, {
 		
 		// kick off a thread to check network status on
 		// a regular basis
-		this._networkChecker();
+		this._startNetworkThread();
 		
 		// indicate we are ready to be used
 		for(var i = 0; i < this._onLoadListeners.length; i++){
@@ -304,7 +253,7 @@ dojo.lang.mixin(dojo.dot, {
 		}
 	},
 	
-	_isSiteAvailable: function(finishedCallback, progressCallback){
+	_isSiteAvailable: function(finishedCallback){
 		// summary:
 		//	Determines if our web application's website
 		//	is available.
@@ -317,113 +266,37 @@ dojo.lang.mixin(dojo.dot, {
 		//	check for dojo.dot.AVAILABILITY_TIMEOUT (in seconds)
 		//	and abort after that
 		// finishedCallback: Function
-		//	An optional callback function that will receive two arguments;
-		//	the first is whether the site is available or not
-		//	and is boolean; the second is whether the request
-		//	was manually cancelled by a call to 
-		//	dojo.dot.cancel() and is boolean
-		//	(true - manually cancelled; false - not 
-		//	manually cancelled). If this method is present,
-		//	we do not call dojo.dot.onOnline.
-		// progressCallback: Function
-		//	An optional Function callback that will be called
-		//	for each second of time that we are waiting for an
-		//	availability check to finish. This function will have
-		//	one value, 'timer', which starts at 1 and is incremented
-		//	for each second of time that we are waiting for the network
-		//	to finish. This function is appropriate for providing
-		//	a ticking feedback message UI while a user is waiting,
-		//	for example.
+		//	An optional callback function that will receive one argument:
+		//	whether the site is available or not
+		//	and is boolean. If this function is not present we call
+		//	dojo.dot.onOnline instead if we are able to go online.
 		
-		// create a timer to count progress and check
-		// for cancellation
-		this._timeSoFar = 0;
-		this._siteFound = false;
-		this._availabilityCancelled = false;
-		var availTimer = window.setInterval(dojo.lang.hitch(this, function(){
-			this._timeSoFar++;
-			
-			// provide feedback
-			if(progressCallback){
-				progressCallback(this._timeSoFar);	
-			}
-			
-			// did we find the site?
-			if(this._siteFound == true){
-				window.clearInterval(availTimer);
-				this.isOnline = true;
-				this.goingOnline = false;
+		var bindArgs = {
+			url:	 dojo.dot._getAvailabilityURL(),
+			sync:		false,
+			mimetype:	"text/plain",
+			error:		function(type, errObj){
+				//dojo.debug("error, type="+type+", errObj="+errObj);
+				dojo.dot.goingOnline = false;
+				dojo.dot.isOnline = false;
 				if(finishedCallback){
-					// callback(siteAvailable, manualCancelled)
-					finishedCallback(true, false);
+					finishedCallback(false);
 				}
-				return;
-			}
-			
-			// are we past our timeout?
-			if(this._timeSoFar > this.AVAILABILITY_TIMEOUT){
-				window.clearInterval(availTimer);
-				this.isOnline = false;
-				this.goingOnline = false;
+			},
+			load:		function(type, data, evt){
+				//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
+				dojo.dot.goingOnline = false;
+				dojo.dot.isOnline = true;
 				if(finishedCallback){
-					// callback(siteAvailable, manualCancelled)
-					finishedCallback(false, false);
+					finishedCallback(true);
+				}else if(dojo.dot.onOnline){
+					dojo.dot.onOnline();
 				}
-				return;
 			}
-			
-			// manual cancellation?
-			if(this._goOnlineCancelled == true){
-				window.clearInterval(availTimer);
-				this.isOnline = false;
-				this.goingOnline = false;
-				if(finishedCallback){
-					// callback(siteAvailable, manualCancelled)
-					finishedCallback(false, true);
-				}
-				return;
-			}
-			
-			// have we tried our max number of
-			// availability attempts?
-			if(this._availabilityAttempts > this.MAX_AVAILABILITY_ATTEMPTS
-				&& this._siteFound == false){
-				window.clearInterval(availTimer);
-				this.isOnline = false;
-				this.goingOnline = false;
-				if(finishedCallback){
-					// callback(siteAvailable, manualCancelled)
-					finishedCallback(false, false);
-				}
-				return;	
-			}
-		}), 1000);
+		};
 		
-		// Actually kick off the network thread
-		this._availabilityAttempts = 0;
-		this._checkSite();
-	},
-	
-	_checkSite: function(){
-		if(this._availabilityAttempts > this.MAX_AVAILABILITY_ATTEMPTS){
-			return;
-		}
-		
-		var xhr = dojo.hostenv.getXmlhttpObject();
-		this._availabilityAttempts++;
-		var url = this._getAvailabilityURL();
-		
-		xhr.open("GET", url, true);
-		xhr.onreadystatechange = dojo.lang.hitch(this, function(){
-			if(xhr.readyState == 4){ /* Loaded */
-				if(xhr.status == 200){
-					this._siteFound = true;
-				}else{
-					this._checkSite();
-				}
-			}
-		});
-		xhr.send(null);
+		// dispatch the request
+		dojo.io.bind(bindArgs);
 	},
 	
 	standardSaveHandler: function(status, isCoreSave, dataStore, item){
@@ -443,14 +316,13 @@ dojo.lang.mixin(dojo.dot, {
 		}
 	},
 	
-	_networkChecker: function(){
-		dojo.debug("_networkChecker");
+	_startNetworkThread: function(){
 		// kick off a thread that does periodic
 		// checks on the status of the network
 		if(this.doNetworkChecking == false){
 			return;
 		}
-		dojo.debug("kicking off");
+		
 		window.setInterval(function(){
 			var bindArgs = {
 				url:	 dojo.dot._getAvailabilityURL(),
@@ -657,10 +529,6 @@ dojo.dot.files = {
 			this.listOfURLs = list;
 		}
 	}*/
-}
-
-dojo.dot._NetworkChecker = function(){
-	
 }
 
 // wait until the storage system is finished loading

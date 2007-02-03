@@ -19,6 +19,8 @@ dojo.dot.ui.appName = "Moxie";
 // caching headers and rely on the browser's native cache
 dojo.dot.requireOfflineCache = false;
 
+dojo.sync.autoSync = false;
+
 // add our list resources we need offline
 // Moxie resources
 dojo.dot.files.cache([
