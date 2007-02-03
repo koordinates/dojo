@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>Dojo Builder Prototype</title>
+	<style type="text/css">
+		#builderFrame {
+			visibility: hidden;
+		}
+		
+		#treeContainer, #buildControls, #output {
+			float: left;
+		}
+
+	</style>
+	<script type="text/javascript">
+		djConfig = {
+			isDebug: true,
+			baseRelativePath: "../../",
+			debugContainerId: "output"
+		};
+	</script>
+	<script src="../../dojo.js" type="text/javascript"></script>
+	<script type="text/javascript" src="treeData.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.TreeV3");
+		dojo.require("dojo.widget.TreeNodeV3");
+		dojo.require("dojo.widget.TreeBasicControllerV3");
+		dojo.require("dojo.widget.TreeSelectorV3");
+		dojo.require("dojo.widget.TreeEmphasizeOnSelect");
+	
+		function output(message){
+			dojo.debug(message);
+		}
+
+		dojo.addOnLoad(function(){
+			// create the tree and controller
+			var controller = dojo.widget.createWidget("TreeBasicControllerV3");
+			var selector = dojo.widget.createWidget("TreeSelectorV3");
+			var hiliter = dojo.widget.createWidget("TreeEmphasizeOnSelect", {selector:selector.widgetId});
+			var treeWidget = dojo.widget.createWidget("TreeV3", {listeners: [selector.widgetId, controller.widgetId]});
+	
+			dojo.event.topic.subscribe(selector.eventNames.select, this, "onTreeSelect")
+	
+			if(typeof treeData == "undefined"){
+				alert("Please run webbuild/makeWebBuildModuleList.js to generate list of modules:\n"
+					+ "cd to webbuild directory and run this command:\n\n"
+					+ "java -jar ../lib/custom_rhino.jar makeWebBuildModuleList.js ../../src treeData.js");
+			}else{
+				treeWidget.setChildren(treeData.children);
+				// expand the tree to the first level
+				controller.expandToLevel(treeWidget, 1);
+		
+				// after expanding, set things up so it'll wipe up and down when opened
+				//BUG:TREE there is a bug in the tree with the wipe toggle where it doesn't reset the height properly on closing
+				//		treeWidget.toggleObj = dojo.lfx.toggle.wipe;
+				var treeContainerNode = dojo.byId("treeContainer");
+				treeContainerNode.innerHTML = "";
+				treeContainerNode.appendChild(treeWidget.domNode);
+			}
+		});
+	</script>
+
+</head>
+
+<body>
+	<h2>Dojo Builder Prototype</h2>
+	<p>
+		(experimental, prototype)
+	</p>
+	<div id="treeContainer">
+		
+	</div>
+	<div id="buildControls">
+		<p>
+			<b>XDomain Dojo path (example: http://some.domain.com/dojo-xdversion/src):</b><br />
+			<input type="text" id="xdDojoPath" value="" size="30" />
+		</p>
+		<p>
+			<b>Modules to include in build (comma-separated list):</b><br />
+			<textarea id="dependencyList" cols="40" rows="20">
+"dojo.io.*",
+"dojo.io.BrowserIO",
+"dojo.event.*",
+"dojo.lfx.*"
+			</textarea>
+		</p>
+		<p>
+			<button onclick="builderFrame.startBuild(dojo.byId('dependencyList').value, '0.4.2dev', dojo.byId('xdDojoPath').value)">Go</button>
+		</p>
+	</div>
+	
+	<div id="output">
+	
+	</div>
+
+	<iframe id="builderFrame" name="builderFrame" src="../webbuild.html" style="visibility: hidden"></iframe>
+</body>
+</html>
