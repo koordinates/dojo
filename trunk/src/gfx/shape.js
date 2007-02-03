@@ -189,7 +189,7 @@ dojo.declare("dojo.gfx.Shape", null,
 	
 	// virtual group methods
 	
-	remove: function(silently){
+	removeShape: function(silently){
 		// summary: removes the shape from its parent's list of shapes
 		// silently: Boolean?: if true, do not redraw a picture yet
 		if(this.parent){

@@ -17,12 +17,12 @@ dojo.lang.mixin(dojo.gfx, {
 	defaultLine:     {type: "line",     x1: 0, y1: 0, x2: 100, y2: 100},
 	defaultImage:    {type: "image",    x: 0, y: 0, width: 0, height: 0, src: ""},
 	defaultText:     {type: "text",     x: 0, y: 0, text: "",
-		align: "left", decoration: "none", rotated: false, kerning: true },
+		align: "start", decoration: "none", rotated: false, kerning: true },
 	defaultTextPath: {type: "textpath", text: "",
-		align: "left", decoration: "none", rotated: false, kerning: true },
+		align: "start", decoration: "none", rotated: false, kerning: true },
 
 	// default geometric attributes
-	defaultStroke: {color: "black", width: 1, cap: "butt", join: 4},
+	defaultStroke: {type: "stroke", color: "black", width: 1, cap: "butt", join: 4},
 	defaultLinearGradient: {type: "linear", x1: 0, y1: 0, x2: 100, y2: 100, 
 		colors: [{offset: 0, color: "black"}, {offset: 1, color: "white"}]},
 	defaultRadialGradient: {type: "radial", cx: 0, cy: 0, r: 100, 
@@ -132,6 +132,22 @@ dojo.declare("dojo.gfx.Surface", null,
 		// summary: returns a node, which can be used to attach event listeners
 		
 		return this.rawNode; // Node
+	},
+	createShape: function(shape){
+		// summary: creates a shape object based on its type
+		// shape: Object: a shape object
+		switch(shape.type){
+			case dojo.gfx.defaultPath.type:		return this.createPath(shape);
+			case dojo.gfx.defaultRect.type:		return this.createRect(shape);
+			case dojo.gfx.defaultCircle.type:	return this.createCircle(shape);
+			case dojo.gfx.defaultEllipse.type:	return this.createEllipse(shape);
+			case dojo.gfx.defaultLine.type:		return this.createLine(shape);
+			case dojo.gfx.defaultPolyline.type:	return this.createPolyline(shape);
+			case dojo.gfx.defaultImage.type:	return this.createImage(shape);
+			case dojo.gfx.defaultText.type:		return this.createText(shape);
+			case dojo.gfx.defaultTextPath.type:	return this.createTextPath(shape);
+		}
+		return null;
 	}
 });
 
