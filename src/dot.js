@@ -17,7 +17,7 @@ dojo.lang.mixin(dojo.dot, {
 	//	Time in seconds on how often we should check the
 	//	status of the network with an automatic background
 	//	timer. Defaults to 30.
-	NETWORK_CHECK: 10,
+	NETWORK_CHECK: 20,
 	
 	// enabled: boolean
 	//	Whether offline ability is enabled or not. Defaults to true.
@@ -444,42 +444,30 @@ dojo.lang.mixin(dojo.dot, {
 	},
 	
 	_networkChecker: function(){
+		dojo.debug("_networkChecker");
 		// kick off a thread that does periodic
 		// checks on the status of the network
 		if(this.doNetworkChecking == false){
 			return;
 		}
-		
+		dojo.debug("kicking off");
 		window.setInterval(function(){
 			var bindArgs = {
 				url:	 dojo.dot._getAvailabilityURL(),
 				sync:		false,
 				mimetype:	"text/plain",
 				error:		function(type, errObj){
-					// we have no network
-					// is this a network status change?
-					if(dojo.dot.isOnline == false){
-						return; // nothing to report; we're already offline
-					}else{
-						// we went from having a network
-						// to having no network
+					//dojo.debug("error, type="+type+", errObj="+errObj);
+					if(dojo.dot.isOnline == true){
 						dojo.dot.isOnline = false;
-						if(dojo.dot.onOffline){
-							dojo.dot.onOffline();
-						}
+						dojo.dot.onOffline();
 					}
 				},
-				load:		function(type, data, evt){	
-					// is this a network status change?
-					if(dojo.dot.isOnline == true){
-						return; // nothing to report; we're already online
-					}else{
-						// we went from having no network
-						// to having a network
+				load:		function(type, data, evt){
+					//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
+					if(dojo.dot.isOnline == false){
 						dojo.dot.isOnline = true;
-						if(dojo.dot.onOnline){
-							dojo.dot.onOnline();
-						}
+						dojo.dot.onOnline();
 					}
 				}
 			};
