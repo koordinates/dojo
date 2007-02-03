@@ -353,6 +353,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 	_updateNetworkIndicator: function(){
 		var onlineImg = dojo.byId("dot-widget-network-indicator-online");
 		var offlineImg = dojo.byId("dot-widget-network-indicator-offline");
+		var titleText = dojo.byId("dot-widget-title-text");
 		
 		if(onlineImg && offlineImg){
 			if(dojo.dot.isOnline == true){
@@ -361,6 +362,14 @@ dojo.lang.mixin(dojo.dot.ui, {
 			}else{
 				onlineImg.style.display = "none";
 				offlineImg.style.display = "inline";
+			}
+		}
+		
+		if(titleText){
+			if(dojo.dot.isOnline == true){
+				titleText.innerHTML = "Online";
+			}else{
+				titleText.innerHTML = "Offline";
 			}
 		}
 	},
