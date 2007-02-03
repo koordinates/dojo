@@ -1,7 +1,7 @@
 //Define some methods that are defined in Rhino, but we need web equivalents
 //in order for the build scripts to work.
 print = function(message){
-	dojo.debug(message);
+	parent.output(message);
 }
 
 readFile = function(uri){
@@ -46,7 +46,7 @@ webbuild = {
 		//Print out the file list.
 		dojo.debug("files in the profile:");
 		for(var i = 0; i < dojoResult.resourceDependencies.length; i++){
-			dojo.debug(dojoResult.resourceDependencies[i]);
+			print(dojoResult.resourceDependencies[i]);
 		}
 		
 		//Return the dojo contents
@@ -58,6 +58,7 @@ webbuild = {
 			webbuild.dojoContents = buildUtilXd.setXdDojoConfig(webbuild.dojoContents, xdDojoPath);
 		}
 
+		parent.dojoContents = webbuild.dojoContents;
 		var outputWindow = window.open("webbuild/dojo.js.html", "dojoOutput");
 		outputWindow.focus();
 
