@@ -154,12 +154,16 @@ dojo.widget.defineWidget(
 
 		setDate: function(/*Date|String*/dateObj) {
 			//summary: set the current date and update the UI
-			if(typeof dateObj=="string"){
+			if(dateObj == ""){
+				this.value = "";
+				this._preInitUI(this.curMonth,false,true);
+			}else if(typeof dateObj=="string"){
 				this.value = dojo.date.fromRfc3339(dateObj);
+				this.value.setHours(0,0,0,0);
 			}else{
 				this.value = new Date(dateObj);
+				this.value.setHours(0,0,0,0);
 			}
-			this.value.setHours(0,0,0,0);
 			if(this.selectedNode!=null){
 				dojo.html.removeClass(this.selectedNode,this.classNames.selectedDate);
 			}
