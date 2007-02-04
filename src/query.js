@@ -1,6 +1,5 @@
 dojo.provide("dojo.query");
 dojo.require("dojo.experimental");
-dojo.require("dojo.debug.console");
 dojo.experimental("dojo.query");
 (function(){
 	var h = dojo.render.html;
@@ -131,8 +130,7 @@ dojo.experimental("dojo.query");
 		var nidx = idx+1;
 		var isFinal = (queryParts.length == nidx);
 		var tqp = queryParts[idx];
-		// dojo.debug(tqp);
-		// var tqparts = queryParts.slice(1);
+
 		// see if we can constrain our next level to direct children
 		if(tqp == ">"){
 			var ecn = element.childNodes;
@@ -342,6 +340,80 @@ dojo.experimental("dojo.query");
 
 	var firedCount = 0;
 
+	var _getAttr = function(elem, attr){
+		var blank = "";
+		if(attr == "class"){
+			return elem.className || blank;
+		}
+		if(attr == "for"){
+			return elem.htmlFor || blank;
+		}
+		return elem.getAttribute(attr) || blank;
+	}
+
+	var attrs = [
+		// FIXME: need to re-order in order of likelyness to be used in matches
+		{
+			key: "|=",
+			getMatcher: function(attr, value){
+				// E[hreflang|="en"]
+				//		an E element whose "hreflang" attribute has a
+				//		hyphen-separated list of values beginning (from the
+				//		left) with "en"
+				var valueDash = value+"-";
+				return function(elem){
+					var ea = elem.getAttribute(attr) || "";
+					return (
+						(ea == value) ||
+						(ea.indexOf(valueDash)==0)
+					);
+				}
+			}
+		},
+		{
+			key: "^=",
+			getMatcher: function(attr, value){
+				return function(elem){
+					return (_getAttr(elem, attr).indexOf(value)==0);
+				}
+			}
+		},
+		{
+			key: "*=",
+			getMatcher: function(attr, value){
+				return function(elem){
+					return (_getAttr(elem, attr).indexOf(value)>=0);
+				}
+			}
+		},
+		{
+			key: "$=",
+			getMatcher: function(attr, value){
+				return function(elem){
+					var ea = _getAttr(elem, attr);
+					return (ea.lastIndexOf(value)==(ea.length-value.length));
+				}
+			}
+		},
+		{
+			key: "!=",
+			getMatcher: function(attr, value){
+				return function(elem){
+					return (_getAttr(elem, attr) != value);
+				}
+			}
+		},
+		// NOTE: the "=" match MUST come last!
+		{
+			key: "=",
+			getMatcher: function(attr, value){
+				return function(elem){
+					return (_getAttr(elem, attr) == value);
+				}
+			}
+		}
+	];
+
 	var getSimpleFilterFunc = function(query){
 		// FIXME: this function currently doesn't support chaining of the same
 		// sub-selector. E.g., we can't yet search on 
@@ -386,14 +458,53 @@ dojo.experimental("dojo.query");
 		// [ "#", ".", "[", ":" ];
 		if(i[2] >= 0){
 			// FIXME: need to implement attribute searches!!
+			// FIXME: need to implement chained attribute searches!!
 			var lBktIdx = query.lastIndexOf("]");
+			var condition = query.substring(i[2]+1, lBktIdx);
+			if(condition.charAt(0) == "@"){
+				condition = condition.slice(1);
+			}
+
+			var matcher = null;
+			// http://www.w3.org/TR/css3-selectors/#attribute-selectors
+			for(var x=0; x<attrs.length; x++){
+				var ta = attrs[x];
+				var tci = condition.indexOf(ta.key);
+				if(tci >= 0){
+					var attr = condition.substring(0, tci);
+					var value = condition.substring(tci+ta.key.length);
+					if(	(value.charAt(0) == "\"")||
+						(value.charAt(0) == "\'")){
+						value = value.substring(1, value.length-1);
+					}
+					matcher = ta.getMatcher(attr, value);
+					break;
+				}
+			}
+			/*
 			ff = agree(ff, 
 				function(elem){
 					return true;
 				}
 			);
+			*/
+			if((!matcher)&&(condition.length)){
+				if(dojo.render.html.ie){
+					matcher = function(elem){
+						return elem[condition];
+					}
+				}else{
+					matcher = function(elem){
+						return elem.hasAttribute(condition);
+					}
+				}
+			}
+			if(matcher){
+				ff = agree(ff, matcher);
+			}
 		}
 		if(i[3]>= 0){
+			// FIXME: need to implement chained pseudo searches!!
 			// NOTE: we count on the pseudo name being at the end
 			var pseudoName = query.substr(i[3]+1);
 			var condition = "";
@@ -413,6 +524,7 @@ dojo.experimental("dojo.query");
 			if(pseudoName == "first-child"){
 				ff = agree(ff, 
 					function(elem){
+						if(elem.nodeType != 1){ return false; }
 						// check to see if any of the previous siblings are elements
 						var fc = elem.previousSibling;
 						while(fc && (fc.nodeType != 1)){
@@ -424,6 +536,7 @@ dojo.experimental("dojo.query");
 			}else if(pseudoName == "last-child"){
 				ff = agree(ff, 
 					function(elem){
+						if(elem.nodeType != 1){ return false; }
 						// check to see if any of the next siblings are elements
 						var nc = elem.nextSibling;
 						while(nc && (nc.nodeType != 1)){
@@ -480,6 +593,23 @@ dojo.experimental("dojo.query");
 					ff = agree(ff, 
 						function(elem){
 							return ((getNodeIndex(elem) % 2) == 0);
+						}
+					);
+				}else if(condition.indexOf("0n+") == 0){
+					var ncount = parseInt(condition.substr(3));
+					ff = agree(ff, 
+						function(elem){
+							return (elem.parentNode.childNodes[ncount-1] === elem);
+						}
+					);
+				}else if(	(condition.indexOf("n+") > 0) &&
+							(condition.length > 3) ){
+					var tparts = condition.split("n+", 2);
+					var pred = parseInt(tparts[0]);
+					var idx = parseInt(tparts[1]);
+					ff = agree(ff, 
+						function(elem){
+							return ((getNodeIndex(elem) % pred) == idx);
 						}
 					);
 				}else if(condition.indexOf("n") == -1){
@@ -639,7 +769,6 @@ dojo.experimental("dojo.query");
 				// only ever looks for the last ID-based query part, thereby
 				// avoiding re-runs and potential array alloc?
 
-				// dojo.debug(qparts[partIndex]);
 				lastRoot = root;
 				root = getElements(qparts[partIndex])[0];
 				if(!root){ root = lastRoot; break; }
@@ -782,7 +911,6 @@ dojo.experimental("dojo.query");
 		// queries of the form:
 		//		"div span span"
 		// FIXME: should support more methods on the return than the stock array.
-
 		return _zip(getQueryFunc(query)(root));
 	}
 })();
