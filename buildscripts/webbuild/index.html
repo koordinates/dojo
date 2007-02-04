@@ -61,6 +61,12 @@
 				treeContainerNode.innerHTML = "";
 				treeContainerNode.appendChild(treeWidget.domNode);
 			}
+			
+			//Set up XD Dojo URL if available.
+			var xdDojoUrl = "@XD_DOJO_URL@";
+			if(xdDojoUrl != ("@" + "XD_DOJO_URL" + "@")){
+				dojo.byId("xdDojoPath").value = xdDojoUrl;
+			}
 		});
 	</script>
 
@@ -69,7 +75,7 @@
 <body>
 	<h2>Dojo Builder Prototype</h2>
 	<p>
-		(experimental, prototype)
+		For Dojo version: @VERSION@ (experimental, prototype)
 	</p>
 	<div id="treeContainer">
 		
