@@ -4,7 +4,7 @@ print = function(message){
 	parent.output(message);
 }
 
-readFile = function(uri){
+readText = readFile = function(uri){
 	return dojo.hostenv.getText(uri);
 }
 
@@ -42,7 +42,10 @@ webbuild = {
 		
 		var dependencyResult = buildUtil.getDependencyList(dependencies, null, true);
 		var dojoResult = buildUtil.makeDojoJs(dependencyResult, version);
-	
+
+		//Intern strings, and add license
+		dojoResult.dojoContents = new String(readFile("copyright.txt")) + buildUtil.interningRegexpMagic("xdomain", dojoResult.dojoContents, djConfig.baseRelativePath, [["dojo", "src"]], []);
+
 		//Print out the file list.
 		dojo.debug("files in the profile:");
 		for(var i = 0; i < dojoResult.resourceDependencies.length; i++){
@@ -58,7 +61,8 @@ webbuild = {
 			webbuild.dojoContents = buildUtilXd.setXdDojoConfig(webbuild.dojoContents, xdDojoPath);
 		}
 
-		parent.dojoContents = webbuild.dojoContents;
+
+
 		var outputWindow = window.open("webbuild/dojo.js.html", "dojoOutput");
 		outputWindow.focus();
 
