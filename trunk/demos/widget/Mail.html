@@ -18,7 +18,10 @@
 
 </head>
 <body>
-<div dojoType="TreeSelector" eventNames="select:listSelected" widgetId="treeSelector"></div>
+<div dojoType="TreeBasicControllerV3" widgetId="treePaneController"></div>
+<div dojoType="TreeDocIconExtension" widgetId="treePaneIcons"></div>
+<div dojoType="TreeSelectorV3" widgetId="treePaneSelector"></div>
+<div dojoType="TreeEmphasizeOnSelect" selector="treePaneSelector"></div>
 <div dojoType="LayoutContainer"
 	layoutChildPriority='top-bottom'
 	id="main"
@@ -53,18 +56,17 @@
 		activeSizing="0"
 		layoutAlign="client"
 	>
-		<div id="treePane" dojoType="Tree" toggle="wipe" toggleDuration="500" selector="treeSelector"
-			sizeMin="20" sizeShare="15">
-			<div dojoType="TreeNode" title="Mail Account" childIconSrc="Mail/mailbox1.gif">
-				<div dojoType="TreeNode" title="Inbox"  childIconSrc="Mail/folder_inbox.gif"></div>
-				<div dojoType="TreeNode" title="Sent Mail" childIconSrc="Mail/folder_sent_mail.gif"></div>
-				<div dojoType="TreeNode" title="Deleted"  childIconSrc="Mail/trashcan_full.gif"></div>
-				<div dojoType="TreeNode" title="Saved Mail" childIconSrc="Mail/folder_documents.gif">
-					<div dojoType="TreeNode" title="Friends" childIconSrc="Mail/folder_documents.gif">
-						<div dojoType="TreeNode" title="Bob" childIconSrc="Mail/folder_documents.gif"></div>
-						<div dojoType="TreeNode" title="Jack" childIconSrc="Mail/folder_documents.gif"></div>
+		<div id="treePane" dojoType="TreeV3" toggle="wipe" toggleDuration="500" listeners="treePaneController;treePaneIcons;treePaneSelector" sizeMin="20" sizeShare="15">
+			<div dojoType="TreeNodeV3" title="Mail Account" nodeDocType="FolderMailbox">
+				<div dojoType="TreeNodeV3" title="Inbox" nodeDocType="FolderInbox"></div>
+				<div dojoType="TreeNodeV3" title="Sent Mail" nodeDocType="FolderSentMail"></div>
+				<div dojoType="TreeNodeV3" title="Deleted" nodeDocType="FolderDeleted"></div>
+				<div dojoType="TreeNodeV3" title="Saved Mail" nodeDocType="FolderDocuments">
+					<div dojoType="TreeNodeV3" title="Friends" nodeDocType="FolderDocuments">
+						<div dojoType="TreeNodeV3" title="Bob" nodeDocType="FolderDocuments"></div>
+						<div dojoType="TreeNodeV3" title="Jack" nodeDocType="FolderDocuments"></div>
 					</div>
-					<div dojoType="TreeNode" title="Work" childIconSrc="Mail/folder_documents.gif"></div>
+					<div dojoType="TreeNodeV3" title="Work" nodeDocType="FolderDocuments"></div>
 				</div>
 			</div>
 		</div>
