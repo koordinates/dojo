@@ -1,5 +1,6 @@
 dojo.provide("dojo.behavior.common");
 dojo.require("dojo.event.*");
+dojo.require("dojo.query");
 
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.behavior");
@@ -9,6 +10,8 @@ dojo.behavior = new function(){
 		if(!obj[name]){ obj[name] = []; }
 		return obj[name];
 	}
+
+	var _inc = 0;
 
 	function forIn(obj, scope, func){
 		var tmpObj = {};
@@ -63,24 +66,16 @@ dojo.behavior = new function(){
 		 *		},
 		 *
 		 *		// match the first child node that's an element
-		 *		"#id4 > @firstElement": { ... },
+		 *		"#id4 > :first-child": { ... },
 		 *
 		 *		// match the last child node that's an element
-		 *		"#id4 > @lastElement":  { ... },
+		 *		"#id4 > :last-child":  { ... },
 		 *
 		 *		// all elements of type tagname
 		 *		"tagname": {
 		 *			// ...
 		 *		},
 		 *
-		 *		// maps to roughly:
-		 *		//	dojo.lang.forEach(body.getElementsByTagName("tagname1"), function(node){
-		 *		//		dojo.lang.forEach(node.getElementsByTagName("tagname2"), function(node2){
-		 *		//			dojo.lang.forEach(node2.getElementsByTagName("tagname3", function(node3){
-		 *		//				// apply rules
-		 *		//			});
-		 *		//		});
-		 *		//	});
 		 *		"tagname1 tagname2 tagname3": {
 		 *			// ...
 		 *		},
@@ -115,36 +110,72 @@ dojo.behavior = new function(){
 		var tmpObj = {};
 		forIn(behaviorObj, this, function(behavior, name){
 			var tBehavior = arrIn(this.behaviors, name);
+			if(typeof tBehavior["id"] != "number"){
+				tBehavior.id = _inc++;
+			}
+			var cversion = [];
+			tBehavior.push(cversion);
 			if((dojo.lang.isString(behavior))||(dojo.lang.isFunction(behavior))){
 				behavior = { found: behavior };
 			}
 			forIn(behavior, function(rule, ruleName){
-				arrIn(tBehavior, ruleName).push(rule);
+				arrIn(cversion, ruleName).push(rule);
 			});
 		});
 	}
 
 	this.apply = function(){
 		dojo.profile.start("dojo.behavior.apply");
-		var r = dojo.render.html;
-		// note, we apply one way for fast queries and one way for slow
-		// iteration. So be it.
-		var safariGoodEnough = (!r.safari);
-		if(r.safari){
-			// Anything over release #420 should work the fast way
-			var uas = r.UA.split("AppleWebKit/")[1];
-			if(parseInt(uas.match(/[0-9.]{3,}/)) >= 420){
-				safariGoodEnough = true;
-			}
-		}
-		if((dj_undef("behaviorFastParse", djConfig) ? (safariGoodEnough) : djConfig["behaviorFastParse"])){
-			this.applyFast();
-		}else{
-			this.applySlow();
-		}
+		forIn(this.behaviors, function(tBehavior, id){
+			var elems = dojo.query(id);
+			dojo.lang.forEach(elems, 
+				function(elem){
+					var runFrom = 0;
+					var bid = "_dj_behavior_"+tBehavior.id;
+					if(typeof elem[bid] == "number"){
+						runFrom = elem[bid];
+						if(runFrom == (tBehavior.length-1)){
+							return;
+						}
+					}
+					// run through the versions, applying newer rules at each step
+
+					for(var x=runFrom, tver; tver = tBehavior[x]; x++){
+						forIn(tver, function(ruleSet, ruleSetName){
+							if(dojo.lang.isArray(ruleSet)){
+								dojo.lang.forEach(ruleSet, function(action){
+									dojo.behavior.applyToNode(elem, action, ruleSetName);
+								});
+							}
+						});
+					}
+
+					// ensure that re-application only adds new rules to the node
+					elem[bid] = tBehavior.length-1;
+				}
+			);
+		});
 		dojo.profile.end("dojo.behavior.apply");
 	}
 
+
+	this.applyToNode = function(node, action, ruleSetName){
+		if(typeof action == "string"){
+			dojo.event.topic.registerPublisher(action, node, ruleSetName);
+		}else if(typeof action == "function"){
+			if(ruleSetName == "found"){
+				action(node);
+			}else{
+				dojo.event.connect(node, ruleSetName, action);
+			}
+		}else{
+			action.srcObj = node;
+			action.srcFunc = ruleSetName;
+			dojo.event.kwConnect(action);
+		}
+	}
+
+	/*
 	this.matchCache = {};
 
 	this.elementsById = function(id, handleRemoved){
@@ -176,63 +207,7 @@ dojo.behavior = new function(){
 		});
 		return { "removed": removed, "added": added, "match": this.matchCache[id] };
 	}
-
-	this.applyToNode = function(node, action, ruleSetName){
-		if(typeof action == "string"){
-			dojo.event.topic.registerPublisher(action, node, ruleSetName);
-		}else if(typeof action == "function"){
-			if(ruleSetName == "found"){
-				action(node);
-			}else{
-				dojo.event.connect(node, ruleSetName, action);
-			}
-		}else{
-			action.srcObj = node;
-			action.srcFunc = ruleSetName;
-			dojo.event.kwConnect(action);
-		}
-	}
-
-	this.applyFast = function(){
-		dojo.profile.start("dojo.behavior.applyFast");
-		// fast DOM queries...wheeee!
-		forIn(this.behaviors, function(tBehavior, id){
-			var elems = dojo.behavior.elementsById(id);
-			dojo.lang.forEach(elems.added, 
-				function(elem){
-					forIn(tBehavior, function(ruleSet, ruleSetName){
-						if(dojo.lang.isArray(ruleSet)){
-							dojo.lang.forEach(ruleSet, function(action){
-								dojo.behavior.applyToNode(elem, action, ruleSetName);
-							});
-						}
-					});
-				}
-			);
-		});
-		dojo.profile.end("dojo.behavior.applyFast");
-	}
-	
-	this.applySlow = function(){
-		// iterate. Ugg.
-		dojo.profile.start("dojo.behavior.applySlow");
-		var all = document.getElementsByTagName("*");
-		var allLen = all.length;
-		for(var x=0; x<allLen; x++){
-			var elem = all[x];
-			if((elem.id)&&(!elem["behaviorAdded"])&&(this.behaviors[elem.id])){
-				elem["behaviorAdded"] = true;
-				forIn(this.behaviors[elem.id], function(ruleSet, ruleSetName){
-					if(dojo.lang.isArray(ruleSet)){
-						dojo.lang.forEach(ruleSet, function(action){
-							dojo.behavior.applyToNode(elem, action, ruleSetName);
-						});
-					}
-				});
-			}
-		}
-		dojo.profile.end("dojo.behavior.applySlow");
-	}
+	*/
 }
 
 dojo.addOnLoad(dojo.behavior, "apply");
