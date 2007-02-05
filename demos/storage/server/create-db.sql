@@ -4,7 +4,6 @@
 	To use:
 	mysql < create-db.sql
 	
-	
 	Warning: This script first deletes any possible
 	pre-existing Moxie database before creating it anew.
 
