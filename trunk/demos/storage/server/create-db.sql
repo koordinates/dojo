@@ -2,6 +2,7 @@
 	SQL script to create the Moxie database.
 	This SQL is MySQL specific.
 	To use:
+	mysql < create-db.sql
 	
 	
 	Warning: This script first deletes any possible
