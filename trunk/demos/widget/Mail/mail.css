@@ -64,3 +64,28 @@ body .dojoSplitPane {
 .dojoTabPaneWrapper {
 	padding: 8px 8px 8px 8px;
 }
+
+.TreeLabel {
+  font-size: small;
+}
+
+.TreeIconFolderMailbox {
+  background-image: url(mailbox1.gif);
+}
+
+.TreeIconFolderInbox {
+  background-image: url(folder_inbox.gif);
+}
+
+.TreeIconFolderSentMail {
+  background-image: url(folder_sent_mail.gif);
+}
+
+.TreeIconFolderDeleted {
+  background-image: url(trashcan_full.gif);
+}
+
+.TreeIconFolderDocuments {
+  background-image: url(folder_documents.gif);
+}
+
