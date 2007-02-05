@@ -28,7 +28,6 @@ dojo.declare(
 
 	templateString: '<table class="dojoPopupMenu2" border=0 cellspacing=0 cellpadding=0 style="display: none;"><tbody dojoAttachPoint="containerNode"></tbody></table>',
 	templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/Menu2.css"),
-	templateCssString: "",
 
 	// submenuDelay: Integer
 	//	number of milliseconds before hovering (without clicking) causes the submenu to automatically open
