@@ -21,10 +21,6 @@ public class Document{
 	public Document(Integer id, String fileName, Date createdOn,
 					Date lastUpdated, String content)
 								throws MoxieException{
-		if(fileName == null){
-			throw new MoxieException("File name required");
-		}
-		
 		if(validFileName(fileName) == false){
 			throw new MoxieException("Invalid file name");
 		}
@@ -57,6 +53,10 @@ public class Document{
 	}
 	
 	public static boolean validFileName(String fileName){
+		if(fileName == null || fileName.trim().equals("")){
+			return false;
+		}
+		
 		return Pattern.matches("^[0-9A-Za-z_]*$", fileName); 
 	}
 }
