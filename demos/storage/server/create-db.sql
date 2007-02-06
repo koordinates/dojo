@@ -14,15 +14,13 @@
 
 DROP DATABASE IF EXISTS moxie;
 
-/* Set default character encoding so we are i18n ready */
-CREATE DATABASE moxie 
-	DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+CREATE DATABASE moxie; 
 
 USE moxie;
 
 CREATE TABLE DOCUMENTS (
-	id 				INT(50) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	file_name		VARCHAR(256) UNIQUE NOT NULL,
+	id 			INT(50) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	file_name		VARCHAR(255) UNIQUE NOT NULL,
 	created_on		DATETIME NOT NULL,
 	last_updated		DATETIME NOT NULL,
 	content			TEXT 
