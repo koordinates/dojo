@@ -12,6 +12,23 @@
 			dojo.require("dojo.widget.*");
 			dojo.require("dojo.widget.Spinner"); // must require explicitly, since some widgets are experimental
 		</script>
+		<style>
+			.mySpinner .dojoSpinnerUpArrow {
+				border-bottom-color: blue;
+			}
+			.mySpinner .dojoSpinnerDownArrow {
+				border-top-color: red;
+			}
+			.mySpinner .dojoSpinnerButton {
+				background-color: yellow;
+			}
+			.mySpinner .dojoSpinnerButtonPushed .dojoSpinnerDownArrow {
+				border-top-color: blue;
+			}
+			.mySpinner .dojoSpinnerButtonPushed .dojoSpinnerUpArrow {
+				border-bottom-color: red;
+			}
+		</style>
 	</head>
 
 	<body>
@@ -32,7 +49,7 @@
 		<br>
 		<br>
 		initial value=+1,000, delta=10, min=9 max=1550, signed=always separator=,<br>
-		with custom styling:before<input dojoType="IntegerSpinner" 
+		with custom styling:<input dojoType="IntegerSpinner" class="mySpinner"
 			style="font-size:30pt;border:1px solid blue;position:relative;left:30px;color:blue;background-color:cyan;"
 			value="+1,000" 
 			delta="10" 
@@ -41,7 +58,7 @@
 			signed="always" 
 			separator="," 
 			maxlength="20" 
-			widgetId="integertextbox1">after
+			widgetId="integertextbox1">
 		<br>
 		<br>
 		initial value not specified, delta not specified, min not specified, max not specified, signed not specified, separator not specified<br>
