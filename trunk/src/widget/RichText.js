@@ -1541,7 +1541,11 @@ dojo.widget.defineWidget(
 				this.textarea.value=html;
 			}else{
 				html = this._preFilterContent(html);
-				this.editNode.innerHTML = html;
+				if(this.isClosed){
+					this.domNode.innerHTML = html;
+				}else{
+					this.editNode.innerHTML = html;
+				}
 			}
 		},
 		replaceEditorContent: function(/*String*/html){
@@ -1551,16 +1555,24 @@ dojo.widget.defineWidget(
 		replaceValue: function(/*String*/html){
 			// summary:
 			//		this function set the content while trying to maintain the undo stack
-			html = this._preFilterContent(html);
+			//		(now only works fine with Moz, this is identical to setValue in all 
+			//		other browsers)
 			if(this.isClosed){
-				this.domNode.innerHTML = html;
+				this.setValue(html);
 			}else if(this.window && this.window.getSelection && !dojo.render.html.moz){ // Safari
 				// look ma! it's a totally f'd browser!
-				this.editNode.innerHTML = html;
-			}else if((this.window && this.window.getSelection) || (this.document && this.document.selection)){ // Moz/IE
+				this.setValue(html);
+			}else if(this.window && this.window.getSelection){ // Moz
+				html = this._preFilterContent(html);
 				this.execCommand("selectall");
 				if(dojo.render.html.moz && !html){ html = "&nbsp;" }
 				this.execCommand("inserthtml", html);
+			}else if(this.document && this.document.selection){//IE
+				//In IE, when the first element is not a text node, say
+				//an <a> tag, when replacing the content of the editing 
+				//area, the <a> tag will be around all the content
+				//so for now, use setValue for IE too
+				this.setValue(html);
 			}
 		},
 
