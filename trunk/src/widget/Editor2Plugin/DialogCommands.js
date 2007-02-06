@@ -83,12 +83,13 @@ dojo.widget.defineWidget(
 				return;
 			}
 			this.showFloatingPane();
-			dojo.widget.Editor2Dialog.superclass.show.apply(this, arguments);
+			
 			if(this.modal){
 				this.showModalDialog();
 				//place the background div under this modal pane
 				this.bg.style.zIndex = this.domNode.style.zIndex-1;
 			}
+			dojo.widget.Editor2Dialog.superclass.show.apply(this, arguments);
 		},
 		onShow: function(){
 			dojo.widget.Editor2Dialog.superclass.onShow.call(this);
