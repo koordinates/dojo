@@ -10,16 +10,16 @@
   
 	<servlet>
 		<description>
-			The ability to view Moxie pages
+			The ability to view, create, and update Moxie pages
 		</description>
 		<display-name>
-			ViewServlet
+			MoxieServlet
 		</display-name>
 		<servlet-name>
-			ViewServlet
+			MoxieServlet
 		</servlet-name>
 		<servlet-class>
-			org.dojo.moxie.ViewServlet
+			org.dojo.moxie.MoxieServlet
 		</servlet-class>
 		<init-param>
             <param-name>jdbcURL</param-name>
@@ -41,7 +41,7 @@
 	</servlet>
 	
 	<servlet-mapping>
-		<servlet-name>ViewServlet</servlet-name>
-		<url-pattern>/view/*</url-pattern>
+		<servlet-name>MoxieServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 </web-app>
