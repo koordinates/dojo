@@ -31,12 +31,10 @@
                     <!-- calendars -->
                     <xsl:for-each select="calendar">
                         <saxon:assign name="first" select="true()"/>
-                        <xsl:result-document href="{concat(@type,'.js')}" encoding="UTF-8"><!--<xsl:value-of select="codepoints-to-string(65279)"/>-->// generated from cldr/ldml/main/*.xml, xpath: ldml/calendars
-({
-                           <xsl:call-template name="calendar"></xsl:call-template>
-
+                        <xsl:result-document href="{concat(@type,'.js')}" encoding="UTF-8"><!--<xsl:value-of select="codepoints-to-string(65279)"/>-->// generated from cldr/ldml/main/*.xml, xpath: ldml/calendars/calendar-<xsl:value-of select="./@type"/>
+({<xsl:call-template name="calendar"></xsl:call-template>
 })
-</xsl:result-document>
+                        </xsl:result-document>
                     </xsl:for-each>
                 </xsl:when>
                 <xsl:otherwise>                    
@@ -116,14 +114,15 @@
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:text>':</xsl:text>
-                <xsl:call-template name="subSelect"><xsl:with-param name="name" select="./*[name()=$item]"></xsl:with-param></xsl:call-template>
+                <!--xsl:call-template name="subSelect"><xsl:with-param name="name" select="./*[name()=$item]"></xsl:with-param></xsl:call-template-->
+                <xsl:call-template name="subSelect_in_place"><xsl:with-param name="name" select="$item"></xsl:with-param></xsl:call-template>
                 </xsl:if>
                 </xsl:if>
             <xsl:if test="name()='quarterWidth'">
              <xsl:if test="count(*[not(@draft)])>0 or count(*[@draft!='provisional' and @draft!='unconfirmed'])>0">
                  <xsl:call-template name="insert_comma"/>
         'quarters-<xsl:value-of select="concat($ctx,'-',$width)"></xsl:value-of> <xsl:text>':</xsl:text>
-                <xsl:call-template name="subSelect"> <xsl:with-param name="name" select="quarter"></xsl:with-param></xsl:call-template>            
+                <xsl:call-template name="subSelect_in_place"><xsl:with-param name="name" select="'quarter'"></xsl:with-param></xsl:call-template>            
              </xsl:if> 
              </xsl:if>
         </xsl:otherwise>
@@ -185,9 +184,20 @@
 					        <xsl:call-template name="insert_comma"/>
         '<xsl:value-of select="$name"></xsl:value-of>
 						<xsl:text>':</xsl:text>
-						<xsl:call-template name="subSelect">
-							<xsl:with-param name="name" select="era"></xsl:with-param>
-						</xsl:call-template>
+					           <xsl:choose>
+					               <xsl:when test="name()='eraNarrow'">
+					                   <!-- only one special case for eraNarrow in root.xml - japanese
+					                         index starts from 232,not 0-->
+					                   <xsl:call-template name="subSelect">
+					                       <xsl:with-param name="name" select="era"></xsl:with-param>
+					                   </xsl:call-template>
+					               </xsl:when>
+					               <xsl:otherwise>
+					                   <xsl:call-template name="subSelect_in_place">
+					                       <xsl:with-param name="name" select="'era'"></xsl:with-param>
+					                   </xsl:call-template>
+					               </xsl:otherwise>
+					           </xsl:choose>
 					        </xsl:if>
 					</xsl:for-each>
 				</xsl:otherwise>
@@ -350,7 +360,98 @@
             | $name[@draft!='provisional' and @draft!='unconfirmed'],'&quot;', '\\&quot;')"/><xsl:text>"</xsl:text>
     </xsl:if>
 </xsl:template>
+    
+    
+ <!-- Special sub output routine, only for month, day,quarter,and era, each none
+	"provisional/unconfirmed" draft item should be output in its corresponding place
+	(according to its @type)
 
+	e.g. <month type="5">5</month> should be in the 5th position in the output array,
+	undefined is stuffed for preceding elements-->
+
+<xsl:variable name="last_sibling_type" select="-1" saxon:assignable="yes"/>
+<xsl:variable name="type_value" select="-1" saxon:assignable="yes"/>
+<xsl:variable name="num_expect_preceding_sibling" select="-1" saxon:assignable="yes"/>
+    
+<xsl:template name="subSelect_in_place">
+    <xsl:param name="name"></xsl:param>
+    <!--xsl:variable name="num" select="count(./$name[not(@draft)])+count(./$name[@draft!='provisional' and @draft!='unconfirmed'])"></xsl:variable-->
+    <xsl:variable name="num" select="count(./*[name()=$name and  (not(@draft) or @draft!='provisional' and @draft!='unconfirmed')])"></xsl:variable>
+    <xsl:text>[</xsl:text>
+    <!--xsl:for-each select="$name[not(@draft)] | $name[@draft!='provisional' and @draft!='unconfirmed']"-->
+    <xsl:for-each select="./*[name()=$name and  (not(@draft) or @draft!='provisional' and @draft!='unconfirmed')]">        
+        <xsl:choose>
+            <xsl:when test="$name='day'">
+                <!--TODO: too bad that assign name can not be variable -->
+                <xsl:if test="@type='sun'"><saxon:assign name="type_value" select="1"/> </xsl:if>
+                <xsl:if test="@type='mon'"><saxon:assign name="type_value" select="2"/> </xsl:if>
+                <xsl:if test="@type='tue'"><saxon:assign name="type_value" select="3"/> </xsl:if>
+                <xsl:if test="@type='wed'"><saxon:assign name="type_value" select="4"/> </xsl:if>
+                <xsl:if test="@type='thu'"><saxon:assign name="type_value" select="5"/> </xsl:if>
+                <xsl:if test="@type='fri'"><saxon:assign name="type_value" select="6"/> </xsl:if>
+                <xsl:if test="@type='sat'"><saxon:assign name="type_value" select="7"/> </xsl:if>
+            </xsl:when>
+            <xsl:otherwise><saxon:assign name="type_value" select="@type"/></xsl:otherwise>
+        </xsl:choose>
+        
+        <xsl:choose>
+            <xsl:when test="$name='era'">
+                <!-- index of era starts from  0 -->
+                <saxon:assign name="num_expect_preceding_sibling" select="number($type_value)"/>
+            </xsl:when>
+            <xsl:otherwise><saxon:assign name="num_expect_preceding_sibling" select="number($type_value)-1"/></xsl:otherwise>
+        </xsl:choose>
+        
+        <!--xsl:variable name="num_preceding_sibling" select="count(preceding-sibling::node()[name()=$name and  (not(@draft))])
+            + count(preceding-sibling::node()[name()=$name and @draft!='provisional' and @draft!='unconfirmed'])"></xsl:variable-->
+        <xsl:variable name="num_preceding_sibling" 
+         select="count(preceding-sibling::node()[name()=$name and  (not(@draft) or @draft!='provisional' and @draft!='unconfirmed')])"></xsl:variable>
+        
+        <xsl:if test=" $num_expect_preceding_sibling > $num_preceding_sibling">
+            <xsl:if test="$num_preceding_sibling > 0">
+                <xsl:for-each select="(preceding-sibling::node()[name()=$name and  (not(@draft) or @draft!='provisional' and @draft!='unconfirmed')])[last()]">
+                    <xsl:choose>
+                        <xsl:when test="$name='day'">
+                            <!--TODO: too bad that assign name can not be variable -->
+                            <xsl:if test="@type='sun'"><saxon:assign name="last_sibling_type" select="1"/> </xsl:if>
+                            <xsl:if test="@type='mon'"><saxon:assign name="last_sibling_type" select="2"/> </xsl:if>
+                            <xsl:if test="@type='tue'"><saxon:assign name="last_sibling_type" select="3"/> </xsl:if>
+                            <xsl:if test="@type='wed'"><saxon:assign name="last_sibling_type" select="4"/> </xsl:if>
+                            <xsl:if test="@type='thu'"><saxon:assign name="last_sibling_type" select="5"/> </xsl:if>
+                            <xsl:if test="@type='fri'"><saxon:assign name="last_sibling_type" select="6"/> </xsl:if>
+                            <xsl:if test="@type='sat'"><saxon:assign name="last_sibling_type" select="7"/> </xsl:if>
+                        </xsl:when>
+                        <xsl:otherwise><saxon:assign name="last_sibling_type" select="@type"/></xsl:otherwise>
+                    </xsl:choose>
+                </xsl:for-each>
+                <xsl:call-template name="retain_preceding_positions">
+                    <xsl:with-param name="num" select="number($type_value)-number($last_sibling_type)-1"></xsl:with-param>
+                </xsl:call-template>
+            </xsl:if>
+            <xsl:if test="$num_preceding_sibling = 0">  
+                <xsl:call-template name="retain_preceding_positions">
+                    <xsl:with-param name="num" select="$num_expect_preceding_sibling"></xsl:with-param>
+                </xsl:call-template>
+            </xsl:if>
+        </xsl:if>
+        <xsl:text>"</xsl:text><xsl:value-of select="replace(.,'&quot;', '\\&quot;')"/><xsl:text>"</xsl:text>
+        <xsl:if test="$num>position()">
+            <xsl:text>,</xsl:text>
+        </xsl:if>            
+    </xsl:for-each>
+    <xsl:text>]</xsl:text>
+</xsl:template>    
+    
+<xsl:variable name="i" select="0" saxon:assignable="yes"/>    
+<xsl:template name="retain_preceding_positions">
+    <xsl:param name="num"></xsl:param>
+    <saxon:assign name="i" select="0"/>
+    <saxon:while test="$num > $i">
+        <xsl:text>undefined,</xsl:text>
+        <saxon:assign name="i" select="$i+1"/>
+    </saxon:while>   
+</xsl:template>
+    
 <!-- Sub output routine-->
 <xsl:variable name="vLowercaseChars_CONST" select="'abcdefghijklmnopqrstuvwxyz'"/> 
 <xsl:variable name="vUppercaseChars_CONST" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>

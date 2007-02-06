@@ -372,11 +372,16 @@ build targets:
 		     <include name="**/cldr*.xsl"/>
 		   </fileset>
 		</copy>	
-
+<!--
 		<delete dir="${cldrOut}/nls" includeemptydirs="yes"/>
 		<transformCldr destdir="${cldrOut}/nls">
 			<fileset dir="${cldrIn}/ldml/main" includes="**/*.xml" />
-		</transformCldr>
+		</transformCldr>-->
+		<java jar="lib/js.jar" failonerror="true" fork="true" logError="true" >
+			<arg value="cldrArrayInherit.js" />
+			<arg value="${cldrOut}/nls" />
+			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
+		</java>
 	</target>
 	<!-- end cldr task -->
 
