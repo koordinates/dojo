@@ -26,8 +26,8 @@
                     <!-- currencies -->
                     <xsl:for-each select="currency">
                         <xsl:value-of select="@type"></xsl:value-of>
-                        <xsl:result-document href="{concat(@type,'.js')}" encoding="UTF-8">
-({                            <xsl:call-template name="currency"></xsl:call-template>                        
+                        <xsl:result-document href="{concat(@type,'.js')}" encoding="UTF-8">// generated from cldr/ldml/main/*.xml, xpath: ldml/numbers/currencies
+({<xsl:call-template name="currency"></xsl:call-template>
 })
                         </xsl:result-document>
                     </xsl:for-each>
@@ -67,11 +67,9 @@
         </xsl:when>
         <xsl:otherwise>
             <xsl:for-each select="*[not(@draft)] | *[@draft!='provisional' and @draft!='unconfirmed']">
-        <xsl:text>                    
-        </xsl:text>
-                <xsl:value-of select="name()"></xsl:value-of>
-                <xsl:text>: "</xsl:text> 
-                <xsl:value-of select="."></xsl:value-of>                
+        '<xsl:value-of select="name()"></xsl:value-of>
+                <xsl:text>': "</xsl:text> 
+                <xsl:value-of select="replace(.,'&quot;', '\\&quot;')"></xsl:value-of>                
                 <xsl:text>"</xsl:text>
                 <xsl:if test="count((following-sibling::node())[not(@draft)] 
                            | *[@draft!='provisional' and @draft!='unconfirmed']) > 0 ">
@@ -117,10 +115,10 @@
          error occurs if use <saxson:call-templates($templateToCall)  /> -->
     <xsl:template name="invoke_template_by_name">
         <xsl:param name="templateName"></xsl:param>
-        <xsl:if test="compare($templateName,'top')=0">
+        <xsl:if test="$templateName='top'">
             <xsl:call-template name="top"></xsl:call-template>
         </xsl:if>
-        <xsl:if test="compare($templateName,'currency')=0">
+        <xsl:if test="$templateName='currency'">
             <xsl:call-template name="currency"></xsl:call-template>
         </xsl:if>
     </xsl:template>   
