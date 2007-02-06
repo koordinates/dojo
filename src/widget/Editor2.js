@@ -224,9 +224,6 @@ dojo.widget.defineWidget(
 		//		By default, toolbarGroup is empty and standalone toolbar is used for this instance.
 		toolbarGroup: '',
 
-		// shareToolbar: Boolean: Whether to share toolbar with other instances of Editor2. Deprecated in favor of toolbarGroup
-		shareToolbar: false,
-
 		// contextMenuGroupSet: String: specify which context menu set should be used for this instance. Include ContextMenu plugin to use this
 		contextMenuGroupSet: '',
 
@@ -246,10 +243,6 @@ dojo.widget.defineWidget(
 				//re-add the toolbar to the new domNode (caused by open() on another element)
 				dojo.html.insertBefore(this.toolbarWidget.domNode, this.domNode.firstChild);
 			}else{
-				if(this.shareToolbar){
-					dojo.deprecated("Editor2:shareToolbar is deprecated in favor of toolbarGroup", "0.5");
-					this.toolbarGroup = 'defaultDojoToolbarGroup';
-				}
 				if(this.toolbarGroup){
 					if(dojo.widget.Editor2ToolbarGroups[this.toolbarGroup]){
 						this.toolbarWidget = dojo.widget.Editor2ToolbarGroups[this.toolbarGroup];
@@ -357,7 +350,7 @@ dojo.widget.defineWidget(
 			// summary: toggle between WYSIWYG mode and HTML source mode
 			if(this===dojo.widget.Editor2Manager.getCurrentInstance()){
 				if(!this._inSourceMode){
-					var html = this.getEditorContent();
+					var html = this.getValue();
 					this._inSourceMode = true;
 
 					if(!this._htmlEditNode){
@@ -390,7 +383,7 @@ dojo.widget.defineWidget(
 					}
 					var html = this._htmlEditNode.value;
 
-					dojo.lang.setTimeout(this, "replaceEditorContent", 1, html);
+					dojo.lang.setTimeout(this, "replaceValue", 1, html);
 					this._htmlEditNode.style.display = "none";
 					this.focus();
 				}
@@ -495,19 +488,19 @@ dojo.widget.defineWidget(
 		},
 
 		//overload to support source editing mode
-		getEditorContent: function(){
+		getValue: function(){
 			if(this._inSourceMode){
 				return this._htmlEditNode.value;
 			}
-			return dojo.widget.Editor2.superclass.getEditorContent.call(this);
+			return dojo.widget.Editor2.superclass.getValue.call(this);
 		},
 
-		replaceEditorContent: function(html){
+		replaceValue: function(html){
 			if(this._inSourceMode){
 				this._htmlEditNode.value = html;
 				return;
 			}
-			dojo.widget.Editor2.superclass.replaceEditorContent.apply(this,arguments);
+			dojo.widget.Editor2.superclass.replaceValue.apply(this,arguments);
 		},
 		getCommand: function(/*String*/name){
 			// summary: return a command associated with this instance of editor
@@ -538,27 +531,5 @@ dojo.widget.defineWidget(
 			});
 //			this.addKeyHandler("s", ctrl, function () { this.save(true); });
 		}
-		/*,
-		// FIXME: probably not needed any more with new design, but need to verify
-		_save: function(e){
-			// FIXME: how should this behave when there's a larger form in play?
-			if(!this.isClosed){
-				dojo.debug("save attempt");
-				if(this.saveUrl.length){
-					var content = {};
-					content[this.saveArgName] = this.getEditorContent();
-					dojo.io.bind({
-						method: this.saveMethod,
-						url: this.saveUrl,
-						content: content
-					});
-				}else{
-					dojo.debug("please set a saveUrl for the editor");
-				}
-				if(this.closeOnSave){
-					this.close(e.getName().toLowerCase() == "save");
-				}
-			}
-		}*/
 	}
 );
