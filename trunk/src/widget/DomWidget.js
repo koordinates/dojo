@@ -477,7 +477,7 @@ dojo.declare("dojo.widget.DomWidget",
 					if((pos == "after")&&(ref === cn.lastChild)){
 						cn.appendChild(widget.domNode);
 					}else{
-						dojo.dom.insertAtPosition(widget.domNode, cn, pos);
+						dojo.dom.insertAtPosition(widget.domNode, ref, pos);
 					}
 				}
 			}
