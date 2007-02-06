@@ -95,8 +95,6 @@ for(var i= 0; i < fileList.length; i++){
 	});
 
 	if(hasChanged){
-print(dojo.json.serialize(data));
 		buildUtil.saveUtf8File(jsFileName, dojo.json.serialize(data));
 	}
 }
-
