@@ -4,9 +4,8 @@
 	border:1px solid;
 	border-color:black rgb(200,200,200) rgb(200,200,200) black;
 	padding:0px;
-	background:none;
 	white-space:nowrap !important;
-	font-size:12pt;
+	font-size:10pt;
 }
 
 .dojoSpinnerArrowGroup {
@@ -16,13 +15,13 @@
 	margin: 0px;
 	vertical-align:middle;
 	line-spacing:0px !important;
-	width:expression("0px");/*only IE*/
+	width:1.12em;
 }
 
 .dojoSpinnerArrowGroup fieldset {
 	display:block;
 	padding:.1em;
-	margin: 1px;
+	margin: .08em;
 	vertical-align:middle;
 	line-spacing:0px !important;
 	border:.08em outset;
@@ -30,7 +29,7 @@
 	text-align:center;
 }
 
-fieldset.dojoSpinnerButtonPushed {
+.dojoSpinnerArrowGroup fieldset.dojoSpinnerButtonPushed {
 	border-style:inset;
 	border-color:black rgb(200,200,200) rgb(200,200,200) black;
 	background-color:gray;
@@ -49,7 +48,7 @@ fieldset.dojoSpinnerButtonPushed {
 	font-size:100%;
 }
 
-.dojoSpinner .dojoSpinnerArrow {
+.dojoSpinnerArrow {
 	padding:0px;
 	margin:auto;
 	border:0px;
@@ -66,14 +65,14 @@ fieldset.dojoSpinnerButtonPushed {
 	width:0px;
 }
 
-.dojoSpinnerArrow .dojoSpinnerUpArrow {
+.dojoSpinnerUpArrow {
 	border-width:0em .3em .4em .3em;
 }
 
-.dojoSpinnerArrow .dojoSpinnerDownArrow {
+.dojoSpinnerDownArrow {
 	border-width:.4em .3em 0em .3em;
 }
 
-fieldset.dojoSpinnerButtonPushed div.dojoSpinnerArrow div {
+.dojoSpinnerButtonPushed .dojoSpinnerArrow div {
 	border-color:white transparent;
 }
