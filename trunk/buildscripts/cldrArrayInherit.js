@@ -20,7 +20,7 @@
  *   child locale - "en-us":
  *    // generated from cldr/ldml/main/*.xml, xpath: ldml/calendars/calendar-ethiopic
  *    ({
- *    	'months-format-abbr':["null","null","March","null","null","June"],
+ *    	'months-format-abbr':[undefined,undefined,"March",undefined,undefined,"June"],
  *    	'dateFormat-long': "yyyy-MMMM-d"
  *    })
  *    
@@ -54,6 +54,7 @@ for(var i= 0; i < fileList.length; i++){
 	var jsPath = jsFileName.split("/");
 	var localeIndex = jsPath.length-2;
 	var locale = jsPath[localeIndex];
+	if(locale=="nls"){continue;} // don't run on ROOT resource
 	var hasChanged = false;
 
 	dojo.hostenv.searchLocalePath(locale, true, function(variant) {
@@ -65,7 +66,11 @@ for(var i= 0; i < fileList.length; i++){
 		}else{
 			path[localeIndex] = variant;
 		}
-		var contents = new String(readText(path.join("/"), "utf-8"));
+		try{
+			var contents = new String(readText(path.join("/"), "utf-8"));
+		}catch(e){
+			return false;
+		}
 		var variantData = dojo.json.evalJson(contents);
 		if(!data){
 			data = variantData;
