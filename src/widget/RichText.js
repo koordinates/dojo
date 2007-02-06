@@ -660,7 +660,8 @@ dojo.widget.defineWidget(
 				for(var i=0;i<files.length;i++){
 					var url = files[i];
 					if(url){
-						this.addStyleSheet(dojo.uri.moduleUri("dojo.widget", url));
+						//Use dojoUri, since we want paths relative to baseScriptUri.
+						this.addStyleSheet(dojo.uri.dojoUri(url));
 	 				}
 	 			}
 			}
