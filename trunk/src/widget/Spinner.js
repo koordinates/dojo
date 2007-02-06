@@ -213,6 +213,15 @@ dojo.declare(
 			}
 		},
 
+		postCreate: function(/*Object*/ args, /*Object*/ frag){
+			var arrow = this.downArrowNode.firstChild.firstChild;
+			if (dojo.render.html.moz && (dojo.html.getComputedStyle(arrow, "borderLeftColor") != "transparent")){
+				// high contrast
+				dojo.html.addClass(arrow, "dojoSpinnerArrowHighContrast");
+				dojo.html.addClass(this.upArrowNode.firstChild.firstChild, "dojoSpinnerArrowHighContrast");
+			}
+		},
+
 		onValueChanged: function(value){
 		},
 

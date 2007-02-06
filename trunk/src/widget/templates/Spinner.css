@@ -59,7 +59,10 @@
 
 .dojoSpinnerArrow div {
 	border-style:solid dotted;
-	border-color:gray transparent;
+	border-top-color:gray;
+	border-bottom-color:gray;
+	border-left-color:transparent !important;
+	border-right-color:transparent !important;
 	line-height:0px;
 	height:0px;
 	width:0px;
@@ -71,6 +74,13 @@
 
 .dojoSpinnerDownArrow {
 	border-width:.4em .3em 0em .3em;
+}
+
+.dojoSpinnerArrowHighContrast {
+	-moz-border-top-colors:black;
+	-moz-border-bottom-colors:black;
+	-moz-border-left-colors:white;
+	-moz-border-right-colors:white;
 }
 
 .dojoSpinnerButtonPushed .dojoSpinnerArrow div {
