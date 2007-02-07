@@ -19,8 +19,11 @@ import javax.servlet.http.*;
 	does not exist you will get a 404 (Not Found); if it is an incorrect filename
 	you will get a 403 (Forbidden).
 	
-	To see a list of all page's, simply do a GET on /* - 
-	This will return a simple HTML page that uses an unordered list
+	To see a list of all page's, simply do a GET on /*
+	
+	If your HTTP client has sent "text/html" as one of the things
+	it accepts in it's Accept header, then a simple HTML page 
+	will be returned that uses an unordered list
 	of links to point to all of our pages:
 	
 	<html><body>
@@ -29,6 +32,13 @@ import javax.servlet.http.*;
 			<li><a href="somePageName2">somePageName2</a></li>
 		</ul>
 	</body></html>
+	
+	If your client doesn't send "text/html" but sends "text/javascript"
+	than we return this list of page names as JSON:
+	
+	[
+		"somePageName1", "somePageName2"
+	]
 	
 	To create a new page, do a POST to what the page name will be,
 	such as /aNewPage1. The payload should simply be the HTML
@@ -234,17 +244,14 @@ public class MoxieServlet extends HttpServlet{
 		// get our file names
 		List<Document> allDocs = Documents.list();
 		
-		// loop through each one and write it out as an A tag
-		res.setContentType("text/html");
-		PrintWriter out = res.getWriter();
-		out.write("<html><body><ul>");
-		Iterator<Document> iter = allDocs.iterator();
-		while(iter.hasNext()){
-			Document d = iter.next();
-			out.write("<li><a href=\"" + d.fileName + "\">"
-						+ d.fileName + "</a></li>");
+		// determine what kind of representation to return
+		String accepts = req.getHeader("Accept");
+		if(accepts == null 
+			|| accepts.indexOf("text/html") != -1){ // return HTML
+			listReturnHTML(allDocs, req, res);
+		}else{
+			listReturnJSON(allDocs, req, res);
 		}
-		out.write("</ul></body></html>");
 	}
 	
 	private String getFileName(HttpServletRequest req, HttpServletResponse res) 
@@ -270,6 +277,49 @@ public class MoxieServlet extends HttpServlet{
 		while ((line = requestData.readLine()) != null){
 			stringBuffer.append(line);
 		}
+		
 		return stringBuffer.toString();
    }
+   
+   private void listReturnHTML(List<Document> allDocs, 
+								HttpServletRequest req, 
+								HttpServletResponse res)
+							throws IOException, ServletException, MoxieException{
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
+		out.write("<html><body><ul>");
+		
+		// loop through each file name and write it out as an A tag
+		Iterator<Document> iter = allDocs.iterator();
+		while(iter.hasNext()){
+			Document d = iter.next();
+			out.write("<li><a href=\"" + d.fileName + "\">"
+						+ d.fileName + "</a></li>");
+		}
+		out.write("</ul></body></html>");
+   }
+   
+   private void listReturnJSON(List<Document> allDocs, 
+								HttpServletRequest req, 
+								HttpServletResponse res)
+							throws IOException, ServletException, MoxieException{
+		res.setContentType("text/javascript");
+		PrintWriter out = res.getWriter();
+		
+		out.write("[");
+		
+		// loop through each file name and write it out as an A tag
+		Iterator<Document> iter = allDocs.iterator();
+		while(iter.hasNext()){
+			Document d = iter.next();
+			// FIXME: Use a real JSON serialization library
+			out.write("\"" + d.fileName + "\"");
+			if(iter.hasNext() == true){
+				out.write(", \n");
+			}
+		}
+		
+		out.write("]\n");
+   }
+
 }
