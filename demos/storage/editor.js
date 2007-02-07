@@ -1,8 +1,7 @@
 dojo.require("dojo.dom");
-dojo.require("dojo.event.common");
-dojo.require("dojo.event.browser");
-dojo.require("dojo.html.common");
-dojo.require("dojo.html.style");
+dojo.require("dojo.event.*");
+dojo.require("dojo.io.*");
+dojo.require("dojo.html.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.widget.Editor");
 dojo.require("dojo.storage.*");
@@ -59,6 +58,7 @@ dojo.dot.files.cache([
 
 var Moxie = {
 	_initialized: false,
+	_availableKeys: null,
 
 	initialize: function(){
 		if(this._initialized == true){
@@ -71,13 +71,13 @@ var Moxie = {
 		dojo.byId("storageKey").value = "";
 		dojo.byId("storageValue").value = "";
 		
-		// write out our available keys
-		this._printAvailableKeys();
-		
 		// initialize our event handlers
 		var directory = dojo.byId("directory");
 		dojo.event.connect(directory, "onchange", this, this.directoryChange);
 		dojo.event.connect(dojo.byId("saveButton"), "onclick", this, this.save);
+		
+		// load and write out our available keys
+		this._loadAvailableKeys(dojo.lang.hitch(this, this._printAvailableKeys));
 		
 		this._initialized = true;
 	},
@@ -105,7 +105,16 @@ var Moxie = {
 		// get the new values
 		var key = dojo.byId("storageKey").value;
 		var richTextControl = dojo.widget.byId("storageValue");
-		var value = richTextControl.getEditorContent();
+		// workaround for bug in Editor
+		// FIXME: Find the real root reason for this inside the Editor
+		// component and submit patch back to Dojo
+		var value;
+		if(typeof richTextControl.contentFilters == "undefined"
+			|| typeof richTextControl._richText.contentFilters == "undefined"){
+			value = richTextControl._richText.getEditorContent();
+		}else{
+			value = richTextControl.getEditorContent();
+		}
 		
 		if(key == null || typeof key == "undefined" || key == ""){
 			alert("Please enter a file name");
@@ -169,6 +178,31 @@ var Moxie = {
 		}
 	},
 	
+	_loadAvailableKeys: function(callback){
+		var bindArgs = {
+			url:	 "/moxie/*",
+			sync:		false,
+			mimetype:	"text/javascript",
+			headers:		{ "Accept" : "text/javascript" },
+			error:		function(type, errObj){
+				//dojo.debug("error, type="+type+", errObj="+errObj);
+				alert("Unable to load our list of available keys; "
+						+ "Moxie now requires a server component "
+						+ "to illustrate true offline usage and "
+						+ "server synchronization -- see "
+						+ "demos/storage/server for details");
+			},
+			load:		function(type, data, evt){
+				//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
+				Moxie._availableKeys = data;
+				callback();
+			}
+		};
+		
+		// dispatch the request
+		dojo.io.bind(bindArgs);	
+	},
+	
 	_printAvailableKeys: function(){
 		var directory = dojo.byId("directory");
 		
@@ -182,11 +216,10 @@ var Moxie = {
 		directory.appendChild(optionNode);
 		
 		// add new ones
-		var availableKeys = dojo.storage.getKeys();
-		for (var i = 0; i < availableKeys.length; i++) {
+		for (var i = 0; i < this._availableKeys.length; i++) {
 			var optionNode = document.createElement("option");
-			optionNode.appendChild(document.createTextNode(availableKeys[i]));
-			optionNode.value = availableKeys[i];
+			optionNode.appendChild(document.createTextNode(this._availableKeys[i]));
+			optionNode.value = this._availableKeys[i];
 			directory.appendChild(optionNode);
 		}
 	},
