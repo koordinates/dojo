@@ -227,29 +227,43 @@ var Moxie = {
 	_handleLoad: function(key){
 		this._printStatus("Loading '" + key + "'...");
 		
-		// get the value
-		var results = dojo.storage.get(key);
+		// get the value from the server
+		var bindArgs = {
+			url:	 "/moxie/" + encodeURIComponent(key),
+			sync:		false,
+			mimetype:	"text/html",
+			error:		function(type, errObj){
+				//dojo.debug("error, type="+type+", errObj="+errObj);
+				alert("The file " + key + " is not available: "
+						+ errObj.message);
+			},
+			load:		function(type, data, evt){
+				//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
+				// FIXME: The following code is for Editor2
+				/*
+				
+				// set the new Editor widget value
+				var richTextControl = dojo.widget.byId("storageValue")
+				richTextControl.replaceEditorContent(results);
+				// FIXME: Editor2 should be reflowing this height
+				// internally; we shouldn't be exposed to this - fix
+				// bug in Editor2
+				richTextControl._updateHeight();
+				*/
+				
+				// FIXME: The following code is for Editor
+				// set the new Editor widget value
+				var storageValue = dojo.widget.byId("storageValue"); 
+				storageValue._richText.editNode.innerHTML = data;
+				storageValue._richText._updateHeight();
+			
+				// print out that we are done
+				Moxie._printStatus("Loaded '" + key + "'");
+			}
+		};
 		
-		// FIXME: The following code is for Editor2
-		/*
-		
-		// set the new Editor widget value
-		var richTextControl = dojo.widget.byId("storageValue")
-		richTextControl.replaceEditorContent(results);
-		// FIXME: Editor2 should be reflowing this height
-		// internally; we shouldn't be exposed to this - fix
-		// bug in Editor2
-		richTextControl._updateHeight();
-		*/
-		
-		// FIXME: The following code is for Editor1
-		// set the new Editor widget value
-		var storageValue = dojo.widget.byId("storageValue"); 
-		storageValue._richText.editNode.innerHTML = results;
-		storageValue._richText._updateHeight();
-	
-		// print out that we are done
-		this._printStatus("Loaded '" + key + "'");
+		// dispatch the request
+		dojo.io.bind(bindArgs);	
 	},
 	
 	_printStatus: function(message){
