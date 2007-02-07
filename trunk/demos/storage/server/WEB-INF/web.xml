@@ -31,11 +31,11 @@
         </init-param>
 		<init-param>
             <param-name>userName</param-name>
-            <param-value>root</param-value>
+            <param-value>moxie</param-value>
         </init-param>
 		<init-param>
             <param-name>password</param-name>
-            <param-value>moxie</param-value>
+            <param-value>changeme</param-value>
         </init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>

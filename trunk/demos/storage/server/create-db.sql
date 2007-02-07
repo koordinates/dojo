@@ -25,3 +25,25 @@ CREATE TABLE DOCUMENTS (
 	last_updated		DATETIME NOT NULL,
 	content			TEXT 
 ) ENGINE=MyISAM;
+
+
+/* Create some fake data */
+
+INSERT INTO DOCUMENTS (file_name, created_on, last_updated, content)
+	VALUES ('message', NOW(), NOW(), 'Watson, come quickly!');
+INSERT INTO DOCUMENTS (file_name, created_on, last_updated, content)
+	VALUES ('message2', NOW(), NOW(), 'Hello World!');
+INSERT INTO DOCUMENTS (file_name, created_on, last_updated, content)
+	VALUES ('message3', NOW(), NOW(), 'Goodbye World!');	
+
+
+/* Create our default user - You should change this default password. */
+
+USE mysql;
+DELETE IGNORE FROM user WHERE User = 'moxie';
+INSERT INTO user (User, Host) 
+	VALUES ('moxie', 'localhost');
+FLUSH PRIVILEGES;
+SET PASSWORD FOR moxie@localhost = PASSWORD('changeme');
+GRANT ALL ON moxie.* TO moxie@localhost;
+FLUSH PRIVILEGES;
