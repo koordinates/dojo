@@ -5,34 +5,34 @@ dojo.require("dojo.html.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.widget.Editor2");
 dojo.require("dojo.storage.*");
-dojo.require("dojo.dot.*");
+dojo.require("dojo.off.*");
 dojo.require("dojo.sync");
 
 // configure how we should work offline
 
 // set our application name
-dojo.dot.ui.appName = "Moxie";
+dojo.off.ui.appName = "Moxie";
 
 // we aren't going to need a real offline cache for now;
 // we will just have our server return good HTTP/1.1
 // caching headers and rely on the browser's native cache
-dojo.dot.requireOfflineCache = false;
+dojo.off.requireOfflineCache = false;
 
 // add our list resources we need offline
 // Moxie resources
-dojo.dot.files.cache([
+dojo.off.files.cache([
 					"editor.html",
 					"editor.js",
 					"about.html"
 					]);
 
 // Dojo resources
-dojo.dot.files.cache([
+dojo.off.files.cache([
 					djConfig.baseRelativePath + "dojo.js"
 					]);
 					
 // The Dojo Editor Widget's resources
-dojo.dot.files.cache([
+dojo.off.files.cache([
 					djConfig.baseRelativePath + "src/widget/templates/Toolbar.css",
 					djConfig.baseRelativePath + "src/widget/templates/images/tab_close.gif",
 					djConfig.baseRelativePath + "src/widget/templates/richtextframe.html",
@@ -277,4 +277,4 @@ var Moxie = {
 
 // wait until Dojo Offline and the default Offline Widget are ready
 // before we initialize ourselves
-dojo.dot.ui.onLoad = dojo.lang.hitch(Moxie, Moxie.initialize);
+dojo.off.ui.onLoad = dojo.lang.hitch(Moxie, Moxie.initialize);
