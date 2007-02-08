@@ -456,7 +456,6 @@ APIs in Base:
     dojo.connect()
     dojo.disconnect()
     dojo.addNodeListener()
-    dojo.AdapterRegistry
     dojo.lfx.Animation + PropertyAnimation() from dojo.lfx.html + default easing
     dojo.json
     // some super-trivial subset of dojo.style and dojo.html. These are exposed via NodeList too.
@@ -476,6 +475,7 @@ In Core but not Base:
     dojo.data
     dojo.io.script
     dojo.io.iframe
+    dojo.AdapterRegistry
 
 
 Unsure:
