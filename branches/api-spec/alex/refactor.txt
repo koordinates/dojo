@@ -399,8 +399,19 @@ dojo.event:
         dojox.aop.before()
         dojox.aop.around()
 
+
+dojo.html and dojo.style:
+-------------------------
+
+These namespaces will be radically reduced and trimmed. I'm not sure yet in
+what final form they will appear, but some subset will be made available in the
+base with the rest "whacked" out of existance and some parts potentially moved
+to dojox.
+
+
 The Split:
 ==========
+
 
 APIs in Base:
 -------------
@@ -447,15 +458,6 @@ APIs in Base:
     // some super-trivial subset of dojo.style and dojo.html. These are exposed via NodeList too.
 
 
-dojo.html and dojo.style:
--------------------------
-
-These namespaces will be radically reduced and trimmed. I'm not sure yet in
-what final form they will appear, but some subset will be made available in the
-base with the rest "whacked" out of existance and some parts potentially moved
-to dojox.
-
-
 In Core but not Base:
 ---------------------
 
@@ -500,6 +502,8 @@ Moved to dojox:
     dojo.xml.XsltTransform
     dojo.aop // was dojo.event.connect()
     dojo.selection
+    dojo.io.cometd
+    dojo.io.repubsub // was dojo.io.RepubsubIO
 
 
 Removed:
