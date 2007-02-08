@@ -508,6 +508,7 @@ Moved to dojox:
     dojo.selection
     dojo.io.cometd
     dojo.io.repubsub // was dojo.io.RepubsubIO
+    dojo.io.xip
 
 
 Removed:
