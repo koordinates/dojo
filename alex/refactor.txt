@@ -361,6 +361,7 @@ dojo.uri:
 
         dojo.moduleUri()
 
+
 dojo.query:
 -----------
 
@@ -368,6 +369,35 @@ dojo.query:
     The result of all dojo.query searches will be an object of a new type:
     dojo.NodeList. This class is described in "NodeList.txt", located in this
     directory.
+
+
+dojo.event:
+-----------
+
+    Most of what's currently in dojo.event.connect()'s chain will be moved to
+    dojox.aop. In its place, two simplified functions will be introduced:
+
+        dojo.connect()
+        dojo.disconnect()
+        dojo.addNodeListener()
+
+    dojo.connect() will *only* handle "after advice" and will only take the
+    following call signatures:
+
+        dojo.connect({
+            source: objRef, // optional
+            sourceFunc: "thinger", // string or fp
+            dest: objRef, // optional
+            destFunc: "thinger2" // string or fp
+        });
+
+        dojo.connect(source, "funcName", dest, "funcName");
+
+    Further, dojox.aop.connect() will be broken up into:
+
+        dojox.aop.after()
+        dojox.aop.before()
+        dojox.aop.around()
 
 The Split:
 ==========
@@ -408,14 +438,22 @@ APIs in Base:
         post()
         rawPost()
     dojo.Deferred
-    dojo.event
-        after()
-        attachEvent() // rename?
-    dojo.data.Core
+    dojo.connect()
+    dojo.disconnect()
+    dojo.addNodeListener()
     dojo.AdapterRegistry
     dojo.lfx.Animation + PropertyAnimation() from dojo.lfx.html + default easing
     dojo.json
     // some super-trivial subset of dojo.style and dojo.html. These are exposed via NodeList too.
+
+
+dojo.html and dojo.style:
+-------------------------
+
+These namespaces will be radically reduced and trimmed. I'm not sure yet in
+what final form they will appear, but some subset will be made available in the
+base with the rest "whacked" out of existance and some parts potentially moved
+to dojox.
 
 
 In Core but not Base:
@@ -428,6 +466,8 @@ In Core but not Base:
     dojo.string
     dojo.i18n
     dojo.html and dojo.style extras
+    dojo.topic // was dojo.event.topic
+    dojo.data
 
 
 Unsure:
