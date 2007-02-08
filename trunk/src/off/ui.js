@@ -1,4 +1,4 @@
-dojo.provide("dojo.dot.ui");
+dojo.provide("dojo.off.ui");
 
 dojo.require("dojo.html.common");
 dojo.require("dojo.html.style");
@@ -7,13 +7,13 @@ dojo.require("dojo.event.browser");
 dojo.require("dojo.io.common");
 dojo.require("dojo.io.BrowserIO");
 
-dojo.lang.mixin(dojo.dot.ui, {
+dojo.lang.mixin(dojo.off.ui, {
 	// appName: String
 	//	This application's name, such as "Foobar". Note that
 	//	this is a string, not HTML, so embedded markup will
 	//	not work, including entities. Only the following
 	//	characters are allowed: numbers, letters, and spaces
-	appName: "Define dojo.dot.ui.appName",
+	appName: "Define dojo.off.ui.appName",
 	
 	// autoEmbed: boolean
 	//	Whether to automatically auto-embed the default Dojo Offline
@@ -50,26 +50,26 @@ dojo.lang.mixin(dojo.dot.ui, {
 	// learnHowPath: String
 	//	The path to a web page that has information on 
 	//	how to use this web app offline; defaults to
-	//	src/dot/ui-template/learnhow.html, relative to
+	//	src/off/ui-template/learnhow.html, relative to
 	//	your Dojo installation. Make sure to set
 	//	dojo.to.ui.customLearnHowPath to true if you want
 	//	a custom Learn How page.
 	learnHowPath: djConfig.baseRelativePath
-					+ "src/dot/ui-template/learnhow.html",
+					+ "src/off/ui-template/learnhow.html",
 	
 	// customLearnHowPath: boolean
 	//	Whether the developer is using their own custom page
 	//	for the Learn How instructional page; defaults to false.
-	//	Use in conjunction with dojo.dot.ui.learnHowPath.
+	//	Use in conjunction with dojo.off.ui.learnHowPath.
 	customLearnHowPath: false,
 	
-	htmlTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.html",
-	cssTemplatePath: djConfig.baseRelativePath + "src/dot/ui-template/widget.css",
-	onlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/greenball.png",
-	offlineImagePath: djConfig.baseRelativePath + "src/dot/ui-template/redball.png",
-	rollerImagePath: djConfig.baseRelativePath + "src/dot/ui-template/roller.gif",
-	checkmarkImagePath: djConfig.baseRelativePath + "src/dot/ui-template/checkmark.png",
-	learnHowJSPath: djConfig.baseRelativePath + "src/dot/ui-template/learnhow.js",
+	htmlTemplatePath: djConfig.baseRelativePath + "src/off/ui-template/widget.html",
+	cssTemplatePath: djConfig.baseRelativePath + "src/off/ui-template/widget.css",
+	onlineImagePath: djConfig.baseRelativePath + "src/off/ui-template/greenball.png",
+	offlineImagePath: djConfig.baseRelativePath + "src/off/ui-template/redball.png",
+	rollerImagePath: djConfig.baseRelativePath + "src/off/ui-template/roller.gif",
+	checkmarkImagePath: djConfig.baseRelativePath + "src/off/ui-template/checkmark.png",
+	learnHowJSPath: djConfig.baseRelativePath + "src/off/ui-template/learnhow.js",
 	
 	onStart: function(){
 		// summary:
@@ -238,10 +238,10 @@ dojo.lang.mixin(dojo.dot.ui, {
 	_initialize: function(){
 		// make sure our app name is correct
 		if(this._validateAppName(this.appName) == false){
-			alert("You must set dojo.dot.ui.appName; it can only contain "
+			alert("You must set dojo.off.ui.appName; it can only contain "
 					+ "letters, numbers, and spaces; right now it "
-					+ "is set to " + dojo.dot.ui.appName);
-			dojo.dot.enabled = false;
+					+ "is set to " + dojo.off.ui.appName);
+			dojo.off.enabled = false;
 			return;
 		}
 		
@@ -256,11 +256,11 @@ dojo.lang.mixin(dojo.dot.ui, {
 		dojo.sync.onDownload = dojo.lang.hitch(this, this.onDownload);
 		dojo.sync.onFinished = dojo.lang.hitch(this, this.onFinished);
 		dojo.sync.onCancel = dojo.lang.hitch(this, this.onCancel);
-		dojo.dot.onOnline = dojo.lang.hitch(this, this.onOnline);
-		dojo.dot.onOffline = dojo.lang.hitch(this, this.onOffline);
+		dojo.off.onOnline = dojo.lang.hitch(this, this.onOnline);
+		dojo.off.onOffline = dojo.lang.hitch(this, this.onOffline);
 		
 		// cache our default UI resources
-		dojo.dot.files.cache([
+		dojo.off.files.cache([
 							this.htmlTemplatePath,
 							this.cssTemplatePath,
 							this.onlineImagePath,
@@ -283,7 +283,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 			sync:		false,
 			mimetype:	"text/html",
 			error:		function(type, errObj){
-				dojo.dot.enabled = false;
+				dojo.off.enabled = false;
 				alert("Error loading the Dojo Offline Widget from "
 						+ templatePath + ": " + errObj.message);
 			},
@@ -311,8 +311,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 		this._initLearnHow();
 		
 		// check offline cache settings
-		if(dojo.dot.requireOfflineCache == true
-			&& dojo.dot.hasOfflineCache() == false){
+		if(dojo.off.requireOfflineCache == true
+			&& dojo.off.hasOfflineCache() == false){
 			this._needsOfflineCache();
 			return;
 		}
@@ -330,7 +330,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		this._initConfigEvtHandlers();
 		
 		// if offline is disabled, disable everything
-		this._setOfflineEnabled(dojo.dot.enabled);
+		this._setOfflineEnabled(dojo.off.enabled);
 		
 		// try to go online
 		this._testNetwork();
@@ -348,7 +348,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 										this.onLoad();
 									}
 		});
-		dojo.dot.goOnline(finishedCallback);
+		dojo.off.goOnline(finishedCallback);
 	},
 	
 	_updateNetworkIndicator: function(){
@@ -357,7 +357,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var titleText = dojo.byId("dot-widget-title-text");
 		
 		if(onlineImg && offlineImg){
-			if(dojo.dot.isOnline == true){
+			if(dojo.off.isOnline == true){
 				onlineImg.style.display = "inline";
 				offlineImg.style.display = "none";
 			}else{
@@ -367,7 +367,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		}
 		
 		if(titleText){
-			if(dojo.dot.isOnline == true){
+			if(dojo.off.isOnline == true){
 				titleText.innerHTML = "Online";
 			}else{
 				titleText.innerHTML = "Offline";
@@ -387,19 +387,19 @@ dojo.lang.mixin(dojo.dot.ui, {
 			// can customize itself and display itself
 			// correctly based on framework settings
 			this.learnHowPath += "?appName=" + encodeURIComponent(this.appName)
-									+ "&requireOfflineCache=" + dojo.dot.requireOfflineCache
-									+ "&hasOfflineCache=" + dojo.dot.hasOfflineCache()
+									+ "&requireOfflineCache=" + dojo.off.requireOfflineCache
+									+ "&hasOfflineCache=" + dojo.off.hasOfflineCache()
 									+ "&runLink=" + encodeURIComponent(this.runLink)
 									+ "&runLinkText=" + encodeURIComponent(this.runLinkText);
 			
 			// cache our Learn How JavaScript page						
-			dojo.dot.files.cache(this.learnHowJSPath);
+			dojo.off.files.cache(this.learnHowJSPath);
 		}
 		
 		learnHow.setAttribute("href", this.learnHowPath);
 		
 		// cache the full learn how URL
-		dojo.dot.files.cache(this.learnHowPath);
+		dojo.off.files.cache(this.learnHowPath);
 		
 		var appName = dojo.byId("dot-widget-learn-how-app-name");
 		
@@ -672,7 +672,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var onlineButton = dojo.byId("dot-work-online-button");
 		var configureButton = dojo.byId("dot-configure-button");
 		
-		if(dojo.dot.isOnline == true){
+		if(dojo.off.isOnline == true){
 			if(offlineButton){
 				offlineButton.style.display = "inline";
 			}
@@ -757,7 +757,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		// to go online
 		
 		// try to go online
-		dojo.dot.goOnline(dojo.lang.hitch(this, this._goOnlineFinished));
+		dojo.off.goOnline(dojo.lang.hitch(this, this._goOnlineFinished));
 	},
 	
 	_goOnlineFinished: function(isOnline){
@@ -781,11 +781,11 @@ dojo.lang.mixin(dojo.dot.ui, {
 		evt.stopPropagation();
 		
 		if(dojo.sync.isSyncing == true
-			|| dojo.dot.goingOnline == true){
+			|| dojo.off.goingOnline == true){
 			return;
 		}
 		
-		dojo.dot.goOffline();
+		dojo.off.goOffline();
 	},
 	
 	_needsOfflineCache: function(){
@@ -844,8 +844,8 @@ dojo.lang.mixin(dojo.dot.ui, {
 				evt.preventDefault();
 				evt.stopPropagation();
 				
-				dojo.dot.enabled = !dojo.dot.enabled;
-				dojo.dot.save();
+				dojo.off.enabled = !dojo.off.enabled;
+				dojo.off.save();
 			});
 		}
 		
@@ -867,7 +867,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 				evt.stopPropagation();
 				
 				if(confirm("Are you sure?")){
-					dojo.dot.clear();
+					dojo.off.clear();
 				}
 			});	
 		}
@@ -895,7 +895,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		}
 		
 		if(dojo.sync.isSyncing == true
-			|| dojo.dot.goingOnline == true){
+			|| dojo.off.goingOnline == true){
 			return;
 		}
 		
@@ -923,7 +923,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		var enableOfflineField = dojo.byId("dot-enableOffline");
 		var autoSyncField = dojo.byId("dot-autoSync");
 		if(enableOfflineField){
-			enableOfflineField.checked = dojo.dot.enabled;
+			enableOfflineField.checked = dojo.off.enabled;
 		}
 		if(autoSyncField){
 			autoSyncField.checked = dojo.sync.autoSync;
@@ -964,7 +964,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 		
 		// update our main UI based on whether offline
 		// is enabled or not
-		this._setOfflineEnabled(dojo.dot.enabled);
+		this._setOfflineEnabled(dojo.off.enabled);
 	},
 	
 	_setOfflineEnabled: function(enabled){
@@ -990,7 +990,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 
 // register ourselves to know when failed saves have 
 // occurred
-dojo.dot.onSave = dojo.lang.hitch(dojo.dot.ui, dojo.dot.ui.onSave);
+dojo.off.onSave = dojo.lang.hitch(dojo.off.ui, dojo.off.ui.onSave);
 
 // start our magic when the Dojo Offline framework is ready to go
-dojo.dot.addOnLoad(dojo.lang.hitch(dojo.dot.ui, dojo.dot.ui._initialize));
+dojo.off.addOnLoad(dojo.lang.hitch(dojo.off.ui, dojo.off.ui._initialize));

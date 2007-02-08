@@ -85,8 +85,8 @@ dojo.lang.mixin(dojo.sync, {
 		// summary:
 		//	Begin a synchronization session.
 		if(this.isSyncing == true
-			|| dojo.dot.goingOnline == true
-			|| dojo.dot.isOnline == false){
+			|| dojo.off.goingOnline == true
+			|| dojo.off.isOnline == false){
 			return;
 		}
 	
@@ -136,7 +136,7 @@ dojo.lang.mixin(dojo.sync, {
 			this.onRefreshUI();
 		}
 		
-		dojo.dot.files.refresh(dojo.lang.hitch(this, function(error, errorMessage){
+		dojo.off.files.refresh(dojo.lang.hitch(this, function(error, errorMessage){
 			if(error == true){
 				this.error = true;
 				this.successful = false;

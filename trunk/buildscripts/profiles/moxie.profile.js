@@ -11,7 +11,7 @@ var dependencies = [
 	"dojo.widget.Editor2",
 	"dojo.flash",
 	"dojo.storage.*",
-	"dojo.dot.*",
+	"dojo.off.*",
 	"dojo.sync"
 ];
 
