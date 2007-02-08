@@ -223,6 +223,7 @@ dojo.lang.mixin(dojo.dot.ui, {
 			}		
 			
 			// FIXME: Be able to know if storage size has changed
+			// due to user configuration
 		}
 	},
 	
