@@ -1,39 +1,13 @@
-.dojoComboBoxOuter {
-	border: 0px !important;
-	margin: 0px !important;
-	padding: 0px !important;
-	background: transparent !important;
-	white-space: nowrap !important;
-}
-
 .dojoComboBox {
-	border: 1px inset #afafaf;
-	margin: 0px;
-	padding: 0px;
-	vertical-align: middle !important;
-	float: none !important;
-	position: static !important;
-	display: inline !important;
-}
-
-/* the input box */
-input.dojoComboBox {
-	border-right-width: 0px !important; 
-	margin-right: 0px !important;
-	padding-right: 0px !important;
-}
-
-/* the down arrow */
-img.dojoComboBox {
-	border-left-width: 0px !important;
-	padding-left: 0px !important;
-	margin-left: 0px !important;
-}
-
-/* IE vertical-alignment calculations can be off by +-1 but these margins are collapsed away */
-.dj_ie img.dojoComboBox {
-	margin-top: 1px; 
-	margin-bottom: 1px; 
+	display:inline;
+	vertical-align:middle;
+	border:1px solid;
+	border-color:black rgb(200,200,200) rgb(200,200,200) black;
+	padding:1px;
+	white-space:nowrap !important;
+	font-size:10pt;
+	width:auto !important;
+	height:auto !important;
 }
 
 /* the drop down */
@@ -65,4 +39,72 @@ img.dojoComboBox {
 .dojoComboBoxItemHighlight {
 	background-color: #63709A;
 	color: white;
+}
+
+.dojoComboBoxArrowGroup {
+        display:inline;
+        padding:0px;
+        border:0px;
+        margin:0px 0px 0px 0px;
+        vertical-align:middle;
+        line-spacing:0px !important;
+        width:1.62em;
+        height:1.42em;
+}
+
+.dojoComboBoxArrowGroup fieldset {
+	display:block;
+	padding:.2em;
+	margin:0px;
+	line-spacing:0px !important;
+	border:.16em outset;
+	border-color:rgb(200,200,200) black black rgb(200,200,200);
+	vertical-align:middle;
+	text-align:center;
+}
+
+.dojoComboBoxArrowGroup fieldset.dojoComboBoxButtonPushed {
+	border-style:inset;
+	border-color:black rgb(200,200,200) rgb(200,200,200) black;
+	background-color:gray;
+}
+
+.dojoComboBox input {
+	padding:0px !important;
+	vertical-align:middle !important;
+	margin:auto !important;
+	border:0px !important;
+	position:static !important;
+	display:inline;
+	float:none !important;
+	visibility:visible !important;
+	font-size:100% !important;
+}
+
+.dojoComboBoxArrow {
+	padding:0px;
+	margin:auto;
+	border:0px;
+	overflow:hidden;
+	height:.7em;
+	width:.9em;
+}
+
+.dojoComboBoxDownArrow {
+	border-width:2.1em 1.32em;
+	margin:-1.4em 0px 0px -.88em;
+	border-style:solid dotted;
+	border-color:gray transparent;
+	line-height:0px;
+	height:0px;
+	width:0px;
+}
+
+.dj_ie6 .dojoComboBoxDownArrow {
+	margin: 0px;
+	border-width:.7em .44em 0px .44em;
+}
+
+.dojoComboBoxButtonPushed .dojoComboBoxArrow div {
+        border-color:white transparent;
 }

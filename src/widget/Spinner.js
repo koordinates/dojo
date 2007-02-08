@@ -197,12 +197,16 @@ dojo.declare(
 		},
 
 		fillInTemplate: function(/*Object*/ args, /*Object*/ frag){
+			// there's some browser specific CSS in ComboBox.css
+			dojo.html.applyBrowserClass(this.domNode);
+
 			if (this.inputWidget){
 				this.inputWidget.prototype.fillInTemplate.call(this, args, frag);
 			}
 			// Copy style info from input node to output node
 			var source = this.getFragNodeRef(frag);
 			dojo.html.copyStyle(this.domNode, source);
+			dojo.html.copyStyle(this.textbox, source);
 
 			// extra listeners
 			if(this.textbox.addEventListener){
@@ -210,15 +214,6 @@ dojo.declare(
 				this.textbox.addEventListener('DOMMouseScroll', dojo.lang.hitch(this, "_mouseWheeled"), false); // Mozilla + Firefox + Netscape
 			}else{
 				dojo.event.connect(this.textbox, "onmousewheel", this, "_mouseWheeled"); // IE + Safari
-			}
-		},
-
-		postCreate: function(/*Object*/ args, /*Object*/ frag){
-			var arrow = this.downArrowNode.firstChild.firstChild;
-			if (dojo.render.html.moz && (dojo.html.getComputedStyle(arrow, "borderLeftColor") != "transparent")){
-				// high contrast
-				dojo.html.addClass(arrow, "dojoSpinnerArrowHighContrast");
-				dojo.html.addClass(this.upArrowNode.firstChild.firstChild, "dojoSpinnerArrowHighContrast");
 			}
 		},
 

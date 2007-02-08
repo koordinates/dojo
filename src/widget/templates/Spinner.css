@@ -6,6 +6,8 @@
 	padding:0px;
 	white-space:nowrap !important;
 	font-size:10pt;
+	width:auto !important;
+	height:auto !important;
 }
 
 .dojoSpinnerArrowGroup {
@@ -36,16 +38,15 @@
 }
 
 .dojoSpinner input {
-	padding:0px;
-	vertical-align:middle;
-	margin:auto;
-	border:0px;
-	padding:0px;
-	position:static;
+	padding:0px !important;
+	vertical-align:middle !important;
+	margin:auto !important;
+	border:0px !important;
+	position:static !important;
 	display:inline;
-	float:none;
-	visibility:visible;
-	font-size:100%;
+	float:none !important;
+	visibility:visible !important;
+	font-size:100% !important;
 }
 
 .dojoSpinnerArrow {
@@ -58,29 +59,30 @@
 }
 
 .dojoSpinnerArrow div {
+	border-width:1.2em .9em;
 	border-style:solid dotted;
-	border-top-color:gray;
-	border-bottom-color:gray;
-	border-left-color:transparent !important;
-	border-right-color:transparent !important;
+	border-color:gray transparent;
 	line-height:0px;
 	height:0px;
 	width:0px;
 }
 
 .dojoSpinnerUpArrow {
-	border-width:0em .3em .4em .3em;
+	margin:-1.2em 0px 0px -.6em;
 }
 
 .dojoSpinnerDownArrow {
-	border-width:.4em .3em 0em .3em;
+	margin:-.8em 0px 0px -.6em;
 }
 
-.dojoSpinnerArrowHighContrast {
-	-moz-border-top-colors:black;
-	-moz-border-bottom-colors:black;
-	-moz-border-left-colors:white;
-	-moz-border-right-colors:white;
+.dj_ie6 .dojoSpinnerUpArrow {
+	border-width:0px .3em .4em .3em;
+	margin:0px;
+}
+
+.dj_ie6 .dojoSpinnerDownArrow {
+	border-width:.4em .3em 0px .3em;
+	margin:0px;
 }
 
 .dojoSpinnerButtonPushed .dojoSpinnerArrow div {
