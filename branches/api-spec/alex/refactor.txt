@@ -476,13 +476,12 @@ In Core but not Base:
     dojo.io.script
     dojo.io.iframe
     dojo.AdapterRegistry
-
+    dojo.validate
+    dojo.date
 
 Unsure:
 -------
 
-    dojo.validate (?)
-    dojo.date (?)
     dojo.regex (?)
     dojo.ns
     dojo.dom // most of this NS can be removed, but where does the rest go?
@@ -491,6 +490,7 @@ Unsure:
 Moved to dojox:
 ---------------
 
+    dojo.gfx
     dojo.cal
     dojo.charting
     dojo.storage
