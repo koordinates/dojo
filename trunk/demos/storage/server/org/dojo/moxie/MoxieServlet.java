@@ -157,7 +157,6 @@ public class MoxieServlet extends HttpServlet{
 	
 	private void newItem(HttpServletRequest req, HttpServletResponse res)
 							throws IOException, ServletException, MoxieException{
-		System.out.println("newItem");
 		// get the file name
 		String fileName = getFileName(req, res);
 	

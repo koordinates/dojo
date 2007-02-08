@@ -8,7 +8,7 @@ var dependencies = [
 	"dojo.io.common",
 	"dojo.io.BrowserIO",
 	"dojo.lfx.*",
-	"dojo.widget.Editor",
+	"dojo.widget.Editor2",
 	"dojo.flash",
 	"dojo.storage.*",
 	"dojo.dot.*",
