@@ -1,0 +1,107 @@
+<html>
+<head>
+	<title>Quirks mode benchmark for getBoxObjectFor/getBoundingClientRect</title>
+	<style type="text/css">
+		.border  { border: 1px solid black; }
+		.bg      { background: #ffc; }
+		.pixel   { margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px; }
+		.world   { margin: 10pt 10pt 10pt 10pt; padding: 10pt 10pt 10pt 10pt; }
+		.font    { margin: 1em 1em 1em 1em; padding: 1em 1em 1em 1em; }
+		.percent { margin: 10% 10% 10% 10%; padding: 10% 10% 10% 10%; }
+	</style>
+	<script type="text/javascript">
+		var ITERATIONS_FF = 100000;
+		var ITERATIONS_IE = 10000;
+		var OBJECTS = ["pixel", "world", "font", "percent", "deep"];
+		
+		var dump = function(box, output){
+			output.push("<table border='1'>");
+			var empty = {};
+			for(var i in box){
+				if(i in empty){ continue; }
+				var t = box[i];
+				if(typeof(t) == "number" || typeof(t) == "string"){
+					output.push("<tr><td>" + i + "</td><td>" + typeof(t) + "</td><td>" + t + "</td></tr>");
+				}
+			}
+			output.push("</table>");
+		};
+		
+		var run = function(){
+			var result = document.getElementById("result");
+			var output = [];
+			if("getBoxObjectFor" in document){
+				output.push("<div><strong>" + ITERATIONS_FF.toString() + " ITERATIONS</strong></div>");
+				for(var i = 0; i < OBJECTS.length; ++i){
+					var name = OBJECTS[i];
+					var elem = document.getElementById(name);
+					var box = null;
+					var start = new Date();
+					for(var j = 0; j < ITERATIONS_FF; ++j){
+						box = document.getBoxObjectFor(elem);
+					}
+					var stop = new Date();
+					var ticks = stop.getTime() - start.getTime();
+					output.push("<div><strong>For " + name + " units: " + ticks.toString() + " ticks --- " + (ticks / ITERATIONS_FF) + " ticks/iteration.</strong></div>");
+					dump(box, output);
+				}
+			}else if("getBoundingClientRect" in result){
+				output.push("<div><strong>" + ITERATIONS_IE.toString() + " ITERATIONS</strong></div>");
+				for(var i = 0; i < OBJECTS.length; ++i){
+					var name = OBJECTS[i];
+					var elem = document.getElementById(name);
+					var box = null;
+					var start = new Date();
+					for(var j = 0; j < ITERATIONS_IE; ++j){
+						box = elem.getBoundingClientRect();
+					}
+					var stop = new Date();
+					var ticks = stop.getTime() - start.getTime();
+					output.push("<div><strong>For " + name + " units: " + ticks.toString() + " ticks --- " + (ticks / ITERATIONS_IE) + " ticks/iteration.</strong></div>");
+					dump(box, output);
+				}
+			}else{
+				output.push("This browser doesn't support getBoxObjectFor() nor getBoundingClientRect().");
+			}
+			result.innerHTML = output.join("\n");
+		};
+	</script>
+</head>
+<body>
+	<p>Quirks mode benchmark.</p>
+	<p><button onclick="run();">Run</button></p>
+	<div id="result">No results yet.</div>
+	<p>Below are our test DIVs.</p>
+	<div class="border">
+		<div class="border bg pixel" id="pixel">
+			All units are 10px.
+		</div>
+	</div>
+	<div class="border">
+		<div class="border bg world" id="world">
+			All units are 10pt.
+		</div>
+	</div>
+	<div class="border">
+		<div class="border bg font" id="font">
+			All units are 1em.
+		</div>
+	</div>
+	<div class="border">
+		<div class="border bg percent" id="percent">
+			All units are 10%.
+		</div>
+	</div>
+	<div class="border">
+		<div class="border world">
+			<div class="border world">
+				<div class="border world">
+					<div class="border bg world" id="deep">
+						All units are 10pt. This box is buried deeper than others.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
