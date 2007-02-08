@@ -57,15 +57,10 @@ dojo.off.files.cache([
 					]);
 
 var Moxie = {
-	_initialized: false,
 	_availableKeys: null,
 
 	initialize: function(){
-		if(this._initialized == true){
-			return;
-		}
-		
-		//dojo.debug("Moxie.initialize");
+		dojo.debug("Moxie.initialize");
 		
 		// clear out old values
 		dojo.byId("storageKey").value = "";
