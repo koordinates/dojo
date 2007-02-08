@@ -535,4 +535,4 @@ dojo.dot.files = {
 dojo.storage.manager.addOnLoad(dojo.lang.hitch(dojo.dot, dojo.dot._onStorageLoad));
 
 // wait until the page is finished loading
-dojo.event.connect(dojo, "loaded", dojo.dot, dojo.dot._onPageLoad);
+dojo.event.connect(window, "onload", dojo.dot, dojo.dot._onPageLoad);
