@@ -8,15 +8,15 @@ Intro:
 Dojo is very clearly a success. The entire spectrum of web application needs is
 represented by Dojo's current user base. From high-profile, high-traffic
 installations to enterprise applications, Dojo provides the inventive, modular
-backbone of many applications. This success has created new problems, and Dojo
-0.9 is aimed at addressing these issues while attempting to learn from the
-recent history of Ajax library development in order to continue to deliver the
-very best, most useful, and most comprehensive set of tools for building great
-web experiences.
+backbone of many application UIs. This success has created new problems, and
+Dojo 0.9 is aimed at addressing these issues while attempting to learn from our
+own recent history as well as the history of Ajax library development in order
+to deliver the very best, most useful, and most comprehensive set of tools for
+building great web experiences.
 
-The document only addresses the non-widget namespaces with the understanding
-that all direct widget infrasturcture along with all pruning/splitting of those
-namespaces is the exclusive purview of the Dijit maintainer.
+This document addresses the non-widget namespaces of Dojo with the
+understanding that all widget infrasturcture along with all pruning/splitting
+of those namespaces is the exclusive perview of the Dijit maintainer.
 
 
 Axioms of Dojo 0.9/1.0 API design:
@@ -41,7 +41,7 @@ Axioms of Dojo 0.9/1.0 API design:
 
     * Fewer idioms, better applied
 
-      Today, Dojo has no clear "identity" in it's calling conventions and class
+      Today, Dojo has no clear "identity" in its calling conventions and class
       hierarchies. In many cases, there are too many classes to acheive what
       appear to be single goals. In other cases, there are simple data
       structures/classes operated on by multiple functions but that knowledge
@@ -54,6 +54,7 @@ Axioms of Dojo 0.9/1.0 API design:
 
       In may ways this is subjective, but every K of file size should give
       users something that they can appreciate on a daily basis.
+
 
 Major Proposed Changes:
 =======================
@@ -73,12 +74,12 @@ Neither will happen.
 Many modules are going to be pruned and potentially split up in the creation of
 Dojo 0.9, but critical functionality will not be lost. Additionally, the new
 web-based build system will expose to users the entire spectrum of Dojo (dojo,
-dijit, dojox) functionality as being available at build time. Users will still
-be able to get any, and all, of Dojo.
+dijit, dojox) as being available at build time. Users will still be able to get
+any, and all, of Dojo.
 
 For developers, there will be a new distinction: base vs. core. As outlined
 below, dojo.js will *always* include a useful set of functionality that all web
-applications can take advantage of. This is the base.
+applications can take advantage of. This is the Base.
 
 Dojo Core is a superset of Base. It includes modules which are of exceedingly
 high quality which the Dojo team is committed to maintaining and supporting for
@@ -87,7 +88,7 @@ distribution (dojo.js) will be available in all builds and releases and can
 therefore be relied upon to be available. Users will need to explicitly include
 this functionality via <script> tags or dojo.require() calls, however.
 
-Modules which are experimental must be maintained in dojox.
+Modules which are experimental must be developed and maintained in dojox.
 
 The criteria for inclusion in Dojo Core are:
 
@@ -97,7 +98,7 @@ The criteria for inclusion in Dojo Core are:
         applications
 
 This is essentially a vote+veto structure, creating a higher barrier to entry
-for code into Dojo Core than has previously been sanctioned.
+for code into Dojo Core than has previously been applied.
 
 
 Promotion from dojox to Dojo Core:
@@ -407,10 +408,14 @@ dojo.event:
 dojo.html and dojo.style:
 -------------------------
 
-These namespaces will be radically reduced and trimmed. I'm not sure yet in
-what final form they will appear, but some subset will be made available in the
-base with the rest "whacked" out of existance and some parts potentially moved
-to dojox.
+These namespaces will be radically reduced and trimmed. It's not yet clear what
+form they will appear in, but some subset will be made available in the base
+with the rest "whacked" out of existance and some parts potentially moved to
+dojox.
+
+Some of this design work is contingent on getting answers to the outstanding
+"fast path" box model and style calcuation questions which are being worked on
+by Eugene.
 
 
 The Split:
@@ -456,7 +461,15 @@ APIs in Base:
     dojo.connect()
     dojo.disconnect()
     dojo.addNodeListener()
-    dojo.lfx.Animation + PropertyAnimation() from dojo.lfx.html + default easing
+    dojo.lfx
+        IAnimation
+        Animation
+        PropertyAnimation
+        defaultEasing()
+        fadeIn()
+        fadeOut()
+        slideIn() // new, replaces wipeIn
+        slideOut()  // new, replaces wipeOut
     dojo.json
     // some super-trivial subset of dojo.style and dojo.html. These are exposed via NodeList too.
 
