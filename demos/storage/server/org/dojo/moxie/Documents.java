@@ -223,7 +223,9 @@ public final class Documents{
 			// existing
 			Document compareMe = findByFileName(doc.fileName);
 			if(compareMe != null && compareMe.fileName.equals(doc.fileName)
-				&& compareMe.id != doc.id){
+				&& compareMe.id != null
+				&& doc.id != null
+				&& compareMe.id.equals(doc.id) == false){
 				throw new MoxieException("A different document with the file name "
 										+ "'" + doc.fileName + "' already exists");
 			}
