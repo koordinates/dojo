@@ -288,7 +288,7 @@ and the reality that they expose HTTP verbs:
 
                 // all below are optional, but must be supported in some form by every IO API
                 timeout: 1000, // milliseconds
-                returnAs: "text", // replaces the always-wrong "mimetype"
+                handleAs: "text", // replaces the always-wrong "mimetype"
                 content: { 
                     key: "value"
                 },
