@@ -436,7 +436,7 @@ APIs in Base:
     dojo.version
     dojo.addOnLoad()
     dojo.addOnUnload()
-    dojo.evalStr() // was dj_eval
+    dojo.eval() // was dj_eval
     dojo.hitch() // was dojo.lang.hitch
     dojo.declare() // was dojo.lang.declare() new, lightweight version
     dojo.extend() // was dojo.lang.extend()
