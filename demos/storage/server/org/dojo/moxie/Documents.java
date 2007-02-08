@@ -3,12 +3,16 @@ package org.dojo.moxie;
 import java.util.*;
 import java.sql.*;
 
-// FIXME: We simply synchronize every method in this static class in order
-// to ensure that our JDBC Connection is thread safe. This is fine for our simple
-// uses as a demo app, but if Moxie needs to be used in an environment with lots
-// of accesses it should be rewritten to use a thread-safe JDBC connection 
-// pooling library instead; JDBC Connections are not necessarily thread-safe
-// by default.
+/**
+	FIXME: We simply synchronize every method in this static class in order
+	to ensure that our JDBC Connection is thread safe. This is fine for our simple
+	uses as a demo app, but if Moxie needs to be used in an environment with lots
+	of accesses it should be rewritten to use a thread-safe JDBC connection 
+	pooling library instead; JDBC Connections are not necessarily thread-safe
+	by default.
+	
+	@author Brad Neuberg, bkn3@columbia.edu
+*/
 public final class Documents{
 	private static Connection con;
 	

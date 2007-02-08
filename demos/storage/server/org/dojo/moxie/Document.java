@@ -3,6 +3,9 @@ package org.dojo.moxie;
 import java.util.*;
 import java.util.regex.*;
 
+/**
+	@author Brad Neuberg, bkn3@columbia.edu
+*/
 public class Document{
 	public Integer id;
 	public Integer origID;
