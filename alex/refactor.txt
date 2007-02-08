@@ -14,6 +14,10 @@ recent history of Ajax library development in order to continue to deliver the
 very best, most useful, and most comprehensive set of tools for building great
 web experiences.
 
+The document only addresses the non-widget namespaces with the understanding
+that all direct widget infrasturcture along with all pruning/splitting of those
+namespaces is the exclusive purview of the Dijit maintainer.
+
 
 Axioms of Dojo 0.9/1.0 API design:
 ----------------------------------
