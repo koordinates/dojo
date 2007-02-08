@@ -474,6 +474,8 @@ In Core but not Base:
     dojo.html and dojo.style extras
     dojo.topic // was dojo.event.topic
     dojo.data
+    dojo.io.script
+    dojo.io.iframe
 
 
 Unsure:
