@@ -1,15 +1,18 @@
-<span class="dojoComboBoxOuter"
+<fieldset class="dojoComboBox"
 	><input style="display:none"  tabindex="-1" name="" value="" 
 		dojoAttachPoint="comboBoxValue"
 	><input style="display:none"  tabindex="-1" name="" value="" 
 		dojoAttachPoint="comboBoxSelectionValue"
-	><input type="text" autocomplete="off" class="dojoComboBox"
-		dojoAttachEvent="key:_handleKeyEvents; keyUp: onKeyUp; compositionEnd; onResize;"
+	><input style="display:inline" type="text" autocomplete="off"
+		dojoAttachEvent="key:_handleKeyEvents; keyUp: onKeyUp; compositionEnd; onfocus:_onFocusInput; onblur:_onBlurInput;"
 		dojoAttachPoint="textInputNode"
-	><img hspace="0"
-		vspace="0"
-		class="dojoComboBox"
-		dojoAttachPoint="downArrowNode"
-		dojoAttachEvent="onMouseUp: handleArrowClick; onResize;"
-		src="${this.buttonSrc}"
-></span>
+	><fieldset class="dojoComboBoxArrowGroup"
+		><fieldset class="dojoComboBoxButton"
+			dojoAttachPoint="downArrowNode"
+			dojoAttachEvent="onMouseUp:_arrowClicked; onMouseDown:_arrowPressed; onMouseOut:_arrowIdle;"
+			><div class="dojoComboBoxArrow"
+				><div class="dojoComboBoxDownArrow"></div
+			></div
+		></fieldset
+	></fieldset
+></fieldset>

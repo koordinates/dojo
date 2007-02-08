@@ -342,10 +342,6 @@ dojo.widget.defineWidget(
 		//		The class must match the interface demonstrated by dojo.widget.incrementalComboBoxDataProvider
 		dataProviderClass: "",
 
-		// buttonSrc: URI
-		//		URI for the down arrow icon to the right of the input box.
-		buttonSrc: dojo.uri.moduleUri("dojo.widget", "templates/images/combo_box_arrow.png"),
-
 		// dropdownToggle: String
 		//		Animation effect for showing/displaying drop down box
 		dropdownToggle: "fade",
@@ -355,6 +351,7 @@ dojo.widget.defineWidget(
 
 		_prevValue:null, 
 		_checkValueChanged: function(){ 
+			this._arrowIdle();
 			var value = this.comboBoxValue.value; 
 			if (this._prevValue != value){ 
 				this._prevValue = value; 
@@ -636,18 +633,6 @@ dojo.widget.defineWidget(
 			this._blurOptionNode();
 		},
 
-		onResize: function(){
-			// summary: this function is called when the input area has changed size
-			var inputSize = dojo.html.getContentBox(this.textInputNode);
-			if( inputSize.height <= 0 ){
-				// need more time to calculate size
-				dojo.lang.setTimeout(this, "onResize", 100);
-				return;
-			}
-			var buttonSize = { width: inputSize.height, height: inputSize.height};
-			dojo.html.setContentBox(this.downArrowNode, buttonSize);
-		},
-
 		fillInTemplate: function(/*Object*/ args, /*Object*/ frag){
 			// there's some browser specific CSS in ComboBox.css
 			dojo.html.applyBrowserClass(this.domNode);
@@ -660,11 +645,6 @@ dojo.widget.defineWidget(
 			/* different nodes get different parts of the style */
 			dojo.html.copyStyle(this.domNode, source);
 			dojo.html.copyStyle(this.textInputNode, source);
-			dojo.html.copyStyle(this.downArrowNode, source);
-			with (this.downArrowNode.style){ // calculate these later
-				width = "0px";
-				height = "0px";
-			}
 
 			// Use specified data provider class; if no class is specified
 			// then use comboboxDataProvider or incrmentalComboBoxDataProvider
@@ -875,6 +855,7 @@ dojo.widget.defineWidget(
 		},
 
 		_hideResultList: function(){
+		        this._arrowIdle();
 			this.popupWidget.close();
 		},
 
@@ -904,7 +885,17 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		handleArrowClick: function(){
+		_arrowPressed: function(){
+		        dojo.html.addClass(this.downArrowNode, "dojoComboBoxButtonPushed");
+		},
+
+		_arrowIdle: function(){
+			if(!this.popupWidget.isShowingNow){
+		        	dojo.html.removeClass(this.downArrowNode, "dojoComboBoxButtonPushed");
+			}
+		},
+
+		_arrowClicked: function(){
 			// summary: callback when arrow is clicked
 			this._handleBlurTimer(true, 0);
 			this._tryFocus();
@@ -934,12 +925,6 @@ dojo.widget.defineWidget(
 		},
 
 		postCreate: function(){
-			this.onResize();
-
-			// TODO: add these attach events to template
-			dojo.event.connect(this.textInputNode, "onblur", this, "_onBlurInput");
-			dojo.event.connect(this.textInputNode, "onfocus", this, "_onFocusInput");
-
 			if (this.disabled){
 				this.disable();
 			}
