@@ -40,25 +40,32 @@ import javax.servlet.http.*;
 		"somePageName1", "somePageName2"
 	]
 	
-	To create a new page, do a POST to what the page name will be,
-	such as /aNewPage1. The payload should simply be the HTML
-	for this new page. The server responds with either a 201 (Created) or
-	403 (Forbidden) if the page already exists or has a malformed name.
+	To create a new page or update an existing page, do a POST to 
+	what the page name will be or is,
+	such as /aNewPage1 or /updateMe. The payload can either be URL encoded form
+	values or can be a simple HTML page. If it is a URL encoded
+	form value, the Content-Type header must be 
+	"application/x-www-form-urlencoded"; there should be one form
+	value, with the key name 'content' and the values URL encoded.
 	
-	To update a page, we need to simulate a PUT request to the / URL
-	of the page name, such as /updateMe1. Safari and Opera don't support
-	PUT requests, so we simulate this with a POST request with the custom
-	header 'X-Method-Override: PUT'. Send the payload of the page's new
-	content. Server returns 404 (Not Found) if not found; 403 (Forbidden)
-	if you gave a mangled file name; or 200 OK if the update was
-	successful.
+	If the payload is a simple HTML page, the Content-Type should
+	be "text/html" and the POSt content can just be plain, normal
+	HTML.
+	
+	The server responds with either a 201 (Created); a
+	403 (Forbidden) if the page already exists or has a malformed name,
+	or 200 OK if the update was successful.
 	
 	To delete a page, we need to simulate a DELETE request to the / URL
-	of the page name. Safari and Opera have the same issues here,
+	of the page name. Safari and Opera have issues with the DELETE method,
 	so we use 'X-Method-Override: DELETE' on these. The server 
 	returns a 410 (Gone) request if successful,
 	404 (Not Found) if there was no page there originally, or
 	403 (Not Allowed) if the file name is mangled.
+	
+	If clients can correctly send DELETE requests, you can bypass
+	having to send 'X-Method-Override' and simply do a normal DELETE
+	request as outlined above.
 	
 	@author Brad Neuberg, bkn3@columbia.edu
 */
@@ -91,6 +98,7 @@ public class MoxieServlet extends HttpServlet{
 				viewItem(req, res);
 			}
 		}catch(MoxieException e){
+			e.printStackTrace();
 			throw new ServletException(e);
 		}
 	}
@@ -102,12 +110,20 @@ public class MoxieServlet extends HttpServlet{
 			
 			// dispatch our action
 			if(methodOverride == null){
-				newItem(req, res);
-			}else if(methodOverride.equals("PUT")){
 				updateItem(req, res);
 			}else if(methodOverride.equals("DELETE")){
 				deleteItem(req, res);
 			}
+		}catch(MoxieException e){
+			e.printStackTrace();
+			throw new ServletException(e);
+		}
+	}
+	
+	public void doDelete(HttpServletRequest req, HttpServletResponse res)
+							throws IOException, ServletException{
+		try{
+			deleteItem(req, res);
 		}catch(MoxieException e){
 			throw new ServletException(e);
 		}
@@ -141,6 +157,7 @@ public class MoxieServlet extends HttpServlet{
 	
 	private void newItem(HttpServletRequest req, HttpServletResponse res)
 							throws IOException, ServletException, MoxieException{
+		System.out.println("newItem");
 		// get the file name
 		String fileName = getFileName(req, res);
 	
@@ -150,16 +167,14 @@ public class MoxieServlet extends HttpServlet{
 			res.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
-	
-		// see if the file exists
-		if(Documents.exists(fileName) == true){
-			// HTTP Status Code 404
-			res.sendError(HttpServletResponse.SC_NOT_FOUND);
-			return;
-		}
 		
 		// populate it's Document values
 		String content = getRequestAsString(req);
+		if(content == null){
+			res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+		
 		Document doc = new Document(null, fileName, new Date(), new Date(),
 									content);
 									
@@ -214,19 +229,23 @@ public class MoxieServlet extends HttpServlet{
 			return;
 		}
 	
-		// see if the file exists
+		// see if the file exists; if it doesn't, we 
+		// will create a new document
 		if(Documents.exists(fileName) == false){
-			// HTTP Status Code 404
-			res.sendError(HttpServletResponse.SC_NOT_FOUND);
+			newItem(req, res);
 			return;
 		}
 		
 		// get the original document
 		Document doc = Documents.findByFileName(fileName);
-		
+
 		// get our new content
 		String content = getRequestAsString(req);							
-																							
+		if(content == null){
+			res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+																																												
 		// update our values
 		doc.lastUpdated = new Date();
 		doc.content = content;
@@ -267,18 +286,29 @@ public class MoxieServlet extends HttpServlet{
 	
 	private String getRequestAsString(HttpServletRequest req) 
                                           throws IOException{
-		// FIXME: WARNING: The combination of a wrapped InputStream being
-		// treated as a reader, with the deprecated readLine() method below
-		// might mangle i18n text
-		BufferedReader requestData = new BufferedReader(
-					  new InputStreamReader(req.getInputStream()));
-		StringBuffer stringBuffer = new StringBuffer();
-		String line;
-		while ((line = requestData.readLine()) != null){
-			stringBuffer.append(line);
+		// correctly decode this value
+		String contentType = req.getHeader("Content-Type");
+		if(contentType != null && contentType.equals("text/html")){
+			// basic HTML in POST payload
+			
+			// FIXME: WARNING: The combination of a wrapped InputStream being
+			// treated as a reader, with the deprecated readLine() method below
+			// might mangle i18n text
+			BufferedReader requestData = new BufferedReader(
+						  new InputStreamReader(req.getInputStream()));
+			StringBuffer stringBuffer = new StringBuffer();
+			String line;
+			while ((line = requestData.readLine()) != null){
+				stringBuffer.append(line);
+			}
+			
+			String content = stringBuffer.toString();
+			return content;
+		}else{ // encoded form values -- application/x-www-form-urlencoded
+			String content = req.getParameter("content");
+			
+			return content;
 		}
-		
-		return stringBuffer.toString();
    }
    
    private void listReturnHTML(List<Document> allDocs, 

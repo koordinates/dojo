@@ -133,52 +133,33 @@ var Moxie = {
 	_save: function(key, value){
 		this._printStatus("Saving '" + key + "'...");
 		var self = this;
-		var saveHandler = function(status, keyName){
-			if(status == dojo.storage.PENDING){
-				// The Flash dialog plus the underlying Editor on Firefox
-				// creates screen glitches; temporary
-				// workaround to just hide the Editors while dialog is showing
-				if(dojo.render.html.moz){
-					var storageValue = dojo.byId("storageValue");
-					storageValue.style.display = "none";
-				}
-				
-				return;
-			}
-			
-			if(status == dojo.storage.FAILED){
-				alert("You do not have permission to store data for this web site. "
-			        + "Press the Configure button to grant permission.");
-			}else if(status == dojo.storage.SUCCESS){
-				// clear out the old value
-				dojo.byId("storageKey").value = "";
-				dojo.byId("storageValue").value = "";
+		var bindArgs = {
+			url:	 "/moxie/" + encodeURIComponent(key),
+			sync:		false,
+			method:		"POST",
+			content:		{"content": value},
+			error:		function(type, errObj, http){
+				//dojo.debug("error, type="+type+", errObj="+errObj);
+				alert("Unable to save file " + key + ": " + errObj.message);
+			},
+			load:		function(type, data, evt){
+				//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
 				self._printStatus("Saved '" + key + "'");
 				
+				// add to our list of available keys
+				self._availableKeys.push(key);
+				
 				// update the list of available keys
-				// put this on a slight timeout, because saveHandler is called back
-				// from Flash, which can cause problems in Flash 8 communication
-				// which affects Safari
-				// FIXME: Find out what is going on in the Flash 8 layer and fix it
-				// there
-				window.setTimeout(function(){ self._printAvailableKeys() }, 1);
-			}
-			
-			// Reshow the Editor (see below)
-			if(dojo.render.html.moz){
-				var storageValue = dojo.byId("storageValue");
-				storageValue.style.display = "block";
+				self._printAvailableKeys();
 			}
 		};
 		
-		try{
-			dojo.storage.put(key, value, saveHandler);
-		}catch(exp){
-			alert(exp);
-		}
+		// dispatch the request
+		dojo.io.bind(bindArgs);	
 	},
 	
 	_loadAvailableKeys: function(callback){
+		var self = this;
 		var bindArgs = {
 			url:	 "/moxie/*",
 			sync:		false,
@@ -194,7 +175,7 @@ var Moxie = {
 			},
 			load:		function(type, data, evt){
 				//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
-				Moxie._availableKeys = data;
+				self._availableKeys = data;
 				callback();
 			}
 		};
@@ -228,8 +209,12 @@ var Moxie = {
 		this._printStatus("Loading '" + key + "'...");
 		
 		// get the value from the server
+		var self = this;
+		// FIXME: I'm sure Dojo can do this internal cache busting itself
+		var url = "/moxie/" + encodeURIComponent(key) 
+					+ "?cachebust=" + new Date().getTime(); 
 		var bindArgs = {
-			url:	 "/moxie/" + encodeURIComponent(key),
+			url:	 url,
 			sync:		false,
 			mimetype:	"text/html",
 			error:		function(type, errObj){
@@ -258,7 +243,7 @@ var Moxie = {
 				storageValue._richText._updateHeight();
 			
 				// print out that we are done
-				Moxie._printStatus("Loaded '" + key + "'");
+				self._printStatus("Loaded '" + key + "'");
 			}
 		};
 		

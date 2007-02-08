@@ -23,7 +23,7 @@ CREATE TABLE DOCUMENTS (
 	file_name		VARCHAR(255) UNIQUE NOT NULL,
 	created_on		DATETIME NOT NULL,
 	last_updated		DATETIME NOT NULL,
-	content			TEXT 
+	content			MEDIUMTEXT 
 ) ENGINE=MyISAM;
 
 
