@@ -3,7 +3,7 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.lfx.*");
-dojo.require("dojo.widget.Editor");
+dojo.require("dojo.widget.Editor2");
 dojo.require("dojo.storage.*");
 dojo.require("dojo.dot.*");
 dojo.require("dojo.sync");
@@ -77,7 +77,7 @@ var Moxie = {
 		dojo.event.connect(dojo.byId("saveButton"), "onclick", this, this.save);
 		
 		// load and write out our available keys
-		this._loadAvailableKeys(dojo.lang.hitch(this, this._printAvailableKeys));
+		this._loadAvailableKeys();
 		
 		this._initialized = true;
 	},
@@ -105,16 +105,7 @@ var Moxie = {
 		// get the new values
 		var key = dojo.byId("storageKey").value;
 		var richTextControl = dojo.widget.byId("storageValue");
-		// workaround for bug in Editor
-		// FIXME: Find the real root reason for this inside the Editor
-		// component and submit patch back to Dojo
-		var value;
-		if(typeof richTextControl.contentFilters == "undefined"
-			|| typeof richTextControl._richText.contentFilters == "undefined"){
-			value = richTextControl._richText.getEditorContent();
-		}else{
-			value = richTextControl.getEditorContent();
-		}
+		var value = richTextControl.getEditorContent();
 		
 		if(key == null || typeof key == "undefined" || key == ""){
 			alert("Please enter a file name");
@@ -133,6 +124,17 @@ var Moxie = {
 	_save: function(key, value){
 		this._printStatus("Saving '" + key + "'...");
 		var self = this;
+		var doLoad = function(type, data, evt){
+			//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
+			self._printStatus("Saved '" + key + "'");
+			
+			// add to our list of available keys
+			self._addKey(key);
+			
+			// update the list of available keys
+			self._printAvailableKeys();
+		};
+		
 		var bindArgs = {
 			url:	 "/moxie/" + encodeURIComponent(key),
 			sync:		false,
@@ -140,25 +142,26 @@ var Moxie = {
 			content:		{"content": value},
 			error:		function(type, errObj, http){
 				//dojo.debug("error, type="+type+", errObj="+errObj);
-				alert("Unable to save file " + key + ": " + errObj.message);
+				// FIXME: Safari sometimes incorrectly calls us with an
+				// error even though the post was successful -- we can
+				// determine this because http.status is undefined
+				// in this case. Find the real root cause of this in
+				// dojo.io.BrowserIO and fix.
+				if(typeof http != "undefined" 
+					&& typeof http.status != "undefined"){
+					alert("Unable to save file " + key + ": " + errObj.message);
+				}else{
+					doLoad(); // For our friend Safari....
+				}
 			},
-			load:		function(type, data, evt){
-				//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
-				self._printStatus("Saved '" + key + "'");
-				
-				// add to our list of available keys
-				self._availableKeys.push(key);
-				
-				// update the list of available keys
-				self._printAvailableKeys();
-			}
+			load:		doLoad
 		};
 		
 		// dispatch the request
 		dojo.io.bind(bindArgs);	
 	},
 	
-	_loadAvailableKeys: function(callback){
+	_loadAvailableKeys: function(){
 		var self = this;
 		var bindArgs = {
 			url:	 "/moxie/*",
@@ -167,16 +170,13 @@ var Moxie = {
 			headers:		{ "Accept" : "text/javascript" },
 			error:		function(type, errObj){
 				//dojo.debug("error, type="+type+", errObj="+errObj);
-				alert("Unable to load our list of available keys; "
-						+ "Moxie now requires a server component "
-						+ "to illustrate true offline usage and "
-						+ "server synchronization -- see "
-						+ "demos/storage/server for details");
+				alert("Unable to load our list of available keys from "
+						+ "the server");
 			},
 			load:		function(type, data, evt){
 				//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
 				self._availableKeys = data;
-				callback();
+				self._printAvailableKeys();
 			}
 		};
 		
@@ -205,6 +205,20 @@ var Moxie = {
 		}
 	},
 	
+	_addKey: function(key){
+		var alreadyPresent = false;
+		for(var i = 0; i < this._availableKeys.length; i++){
+			if(this._availableKeys[i] == key){
+				alreadyPresent = true;
+				break;
+			}	
+		}	
+		
+		if(alreadyPresent == false){
+			this._availableKeys.push(key);
+		}
+	},
+	
 	_handleLoad: function(key){
 		this._printStatus("Loading '" + key + "'...");
 		
@@ -224,23 +238,13 @@ var Moxie = {
 			},
 			load:		function(type, data, evt){
 				//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
-				// FIXME: The following code is for Editor2
-				/*
-				
 				// set the new Editor widget value
-				var richTextControl = dojo.widget.byId("storageValue")
-				richTextControl.replaceEditorContent(results);
+				var richTextControl = dojo.widget.byId("storageValue");
+				richTextControl.replaceEditorContent(data);
 				// FIXME: Editor2 should be reflowing this height
 				// internally; we shouldn't be exposed to this - fix
 				// bug in Editor2
 				richTextControl._updateHeight();
-				*/
-				
-				// FIXME: The following code is for Editor
-				// set the new Editor widget value
-				var storageValue = dojo.widget.byId("storageValue"); 
-				storageValue._richText.editNode.innerHTML = data;
-				storageValue._richText._updateHeight();
 			
 				// print out that we are done
 				self._printStatus("Loaded '" + key + "'");

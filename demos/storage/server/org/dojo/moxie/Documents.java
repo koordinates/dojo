@@ -29,7 +29,6 @@ public final class Documents{
 		try {
 			Class.forName(driver).newInstance();
 			con = DriverManager.getConnection(jdbcURL, userName, password);
-			System.out.println("con="+con);
 		}catch(Exception e) {
 		  throw new MoxieException(e);
 		}
