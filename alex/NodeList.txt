@@ -1,0 +1,102 @@
+API outline for a dojo.Elem class:
+
+	dojo.NodeList = function(){
+	}
+
+	dojo.NodeList.prototype = new Array;
+
+	dojo.lang.extend(
+		dojo.NodeList.prototype,
+		{
+			// http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array#Methods
+			// must implement the following JS 1.6 methods:
+			//		forEach()
+			//		every()
+			//		some()
+			//		map()
+			//		filter()
+			//		indexOf()
+			//		lastIndexOf()
+
+			box: function(){
+				// returns a box object for the first element in a node list
+			},
+
+			boxes: function(){
+				// returns the box objects all elements in a node list as an
+				// Array
+			},
+
+			style: function(prop){
+			},
+			style: function(key, value){
+			}
+			style: function(props /*...*/){
+			},
+
+			styles: function(prop){
+			},
+			styles: function(key, value){
+			},
+			styles: function(props /*...*/){
+			},
+
+			place: function(queryOrNode, position){
+				// placement always relative to the first element matched by
+				// queryOrNode
+
+				// position can be one of:
+				//		"last"||"end" (default)
+				//		"first||"start"
+				//		"before"
+				//		"after"
+				// or an offset in the childNodes property
+			},
+
+			orphan: function(filter){
+				// removes elements in this list that match filter from their
+				// parents and returns them as a new NodeList.
+			},
+
+			adopt: function(queryOrListOrNode, position){
+				// places any/all elements in queryOrListOrNode at a position
+				// relative to the first element in this list.
+
+				// position can be one of:
+				//		"last"||"end" (default)
+				//		"first||"start"
+				//		"before"
+				//		"after"
+				// or an offset in the childNodes property
+			},
+
+			// may have name changed to "get" if dojo.query becomes dojo.get
+			// FIXME: do we need this?
+			query: function(queryStr){
+				// returns a new NodeList. Elements of the new NodeList satisfy
+				// the passed query but use elements of the current NodeList as
+				// query roots.
+			},
+
+			filter: function(simpleQuery){
+				// "masks" the built-in javascript filter() method to support
+				// passing a simple string filter in addition to supporting
+				// filtering function objects.
+
+				// simpleQuery may be a CSS class, ID, attribute, or pseudo
+				// selector that further filters the contents of this NodeList.
+				// A new NodeList with the resulting elements is returned.
+			},
+
+			addContent: function(content, position){
+				// position can be one of:
+				//		"last"||"end" (default)
+				//		"first||"start"
+				//		"before"
+				//		"after"
+				// or an offset in the childNodes property
+			}
+		}
+	);
+
+vim:et:ts=4

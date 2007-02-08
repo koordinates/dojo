@@ -1,0 +1,496 @@
+Dojo 0.9
+========
+
+
+Intro:
+------
+
+Dojo is very clearly a success. The entire spectrum of web application needs is
+represented by Dojo's current user base. From high-profile, high-traffic
+installations to enterprise applications, Dojo provides the inventive, modular
+backbone of many applications. This success has created new problems, and Dojo
+0.9 is aimed at addressing these issues while attempting to learn from the
+recent history of Ajax library development in order to continue to deliver the
+very best, most useful, and most comprehensive set of tools for building great
+web experiences.
+
+
+Axioms of Dojo 0.9/1.0 API design:
+----------------------------------
+
+    * Remove the magic
+
+      Too many 0.4.x APIs are magical. Where a plugin system is required, it
+      MUST NOT silently affect existing behavior. Requirement of additional
+      functionality SHOULD have an associated increase in API surface area.
+
+    * Pave the fast paths
+
+      It is our job to expose those things that can be responsibly used to
+      build great experiences. Nothing more. Given the constraints of the
+      browser environment, this means chosing winners.
+
+    * What we leave out is as important as what we put in.
+
+    * Code duplication in the trunk is unacceptable. Code duplication in the
+      leaves is undesireable, but more tollerable.
+
+    * Fewer idioms, better applied
+
+      Today, Dojo has no clear "identity" in it's calling conventions and class
+      hierarchies. In many cases, there are too many classes to acheive what
+      appear to be single goals. In other cases, there are simple data
+      structures/classes operated on by multiple functions but that knowledge
+      or pattern is not shared by the rest of the system. Dojo 0.9 should seek,
+      from naming to class design, to reduce the number of "things" users need
+      to think about in the system. In many cases, this means giving users more
+      ways to take actions on fewer objects.
+
+    * Reward users for using more of Dojo, not less
+
+      In may ways this is subjective, but every K of file size should give
+      users something that they can appreciate on a daily basis.
+
+Major Proposed Changes:
+=======================
+
+
+Base vs. Core:
+--------------
+
+Splitting up the Dojo project has caused much consternation amongst committers
+and users. Contributors and committers are worried that their favorite features
+may not be easily available or that their modules will be moved out to some
+sort of second-class ghetto. Users are worried that Dojo will loose critical
+functionality that their applications depend on.
+
+Neither will happen.
+
+Many modules are going to be pruned and potentially split up in the creation of
+Dojo 0.9, but critical functionality will not be lost. Additionally, the new
+web-based build system will expose to users the entire spectrum of Dojo (dojo,
+dijit, dojox) functionality as being available at build time. Users will still
+be able to get any, and all, of Dojo.
+
+For developers, there will be a new distinction: base vs. core. As outlined
+below, dojo.js will *always* include a useful set of functionality that all web
+applications can take advantage of. This is the base.
+
+Dojo Core is a superset of Base. It includes modules which are of exceedingly
+high quality which the Dojo team is committed to maintaining and supporting for
+the long haul. Modules that are part of Dojo Core that are not part of the Base
+distribution (dojo.js) will be available in all builds and releases and can
+therefore be relied upon to be available. Users will need to explicitly include
+this functionality via <script> tags or dojo.require() calls, however.
+
+Modules which are experimental must be maintained in dojox.
+
+The criteria for inclusion in Dojo Core are:
+
+    1.) a majority of Dojo contributors and commiters view the functionality as
+        necessaray for their applications
+    2.) the Core maintainer is convinced of the utility of the module in most
+        applications
+
+This is essentially a vote+veto structure, creating a higher barrier to entry
+for code into Dojo Core than has previously been sanctioned.
+
+
+Promotion from dojox to Dojo Core:
+----------------------------------
+
+From time to time, modules may be deemed to be of high enough quality to be
+included in Core after a period of gestation in dojox. In order to reduce the
+burden on Dojo users, a compatibility module must be left in place in the dojox
+namespace for an entire major release cycle (1.x). Further migration from Dojo
+Core to dojox after the 0.9 split SHOULD NOT happen. If it does occur, it must
+only happen at major releases marks (1.0, 2.0, etc.). No compatibility shim
+will be required in these cases.
+
+
+dojo.js:
+--------
+
+dojo.js will "mean" one thing in a given environment (web, rhino, etc.).
+Including dojo.js in a runtime will always pull in the same code (all modules
+referenced in dojo.base) and builds will not add or remove from that
+functionality. 
+
+Namespaces which are to be included in Dojo Base will be listed in a new
+"_base.js" file.
+
+
+Packaging and Builds:
+---------------------
+
+The package system is a Good Thing (TM).
+
+Today, though, the Dojo package system leaves little to the imagination about
+how slow synchronous network requests can make an application. There is
+built-in tension between allowing easy inclusion of code, locating that code
+on-disk as a developer, and deployment time performance. This tension has
+caused ongoing headaches for most non-trivial applications. Dojo's current
+approach to solving these problems has evolved over time and is in many ways
+half-finished. For Dojo 0.9 and beyond, the following policies and changes will
+be put in place:
+
+    1.) Files on disk
+
+        Today, files on disk do not always match the object structure that they
+        create. This cannot continue. Many modules have a
+        "src/modulename/common.js" file which includes the basic functionality
+        of a namespace, but there may be other files in a module which augment
+        the namespace. For instance, the following structure exists in dojo.io
+        in 0.4.2:
+
+        [dojo root]/
+            src/
+                io.js
+                io/
+                    __package__.js
+                    BrowserIO.js
+                    cometd.js
+                    common.js
+                    cookie.js
+                    IframeIO.js
+                    RepubsubIO.js
+                    RhinoIO.js
+                    ScriptSrcIO.js
+                    XhrIframeProxy.js
+                    xip_client.html
+                    xip_server.html
+
+        Today, io.js does a call to include io/__package__.js, which then
+        includes environment specific code in this way:
+
+            dojo.kwCompoundRequire({
+                common: ["dojo.io.common"],
+                rhino: ["dojo.io.RhinoIO"],
+                browser: ["dojo.io.BrowserIO", "dojo.io.cookie"],
+                dashboard: ["dojo.io.BrowserIO", "dojo.io.cookie"]
+            });
+            dojo.provide("dojo.io.*");
+
+        The object structure that is created, however, places a single
+        top-level interface into all of this functionality. dojo.io.bind()
+        wraps *most* of the included semantics, save those of dojo.io.cookie.
+        The justifications for this state of affairs hold up in part, but not
+        in whole.
+
+        There is a clear disconnect here. Instead of getting everything or
+        nothing, users must know ahead of time what they're getting when they
+        require a module, and it's possible to require modules that have little
+        or no effect on the callable "surface area" of the toolkit.
+
+        Starting with Dojo 0.9, the following structure will instaed be imposed
+        on this unruly namespace:
+
+        [dojo root]/
+            cookie.js
+            io.js
+            io/
+                _common.js
+                _browser.js
+                _rhino.js
+                cometd.js
+                iframe.js
+                repubsub.js
+                script.js
+                xip.js
+                xip_client.html
+                xip_server.html
+
+        And users will include common-case functionality with:
+
+            dojo.require("dojo.io");
+
+        While io.js may indeed continue in the tradition of __package__.js and
+        include environment-specific implementations of the APIs it exposes
+        (_common.js_, browser.js, _rhino.js, etc.), it will not provide
+        indirection. Note the use of leading underscores to denote files that
+        are "private" to the implementation of a particular namespace. This new
+        convention should be used whenever it is necessaray to defer
+        implementations, possibly in the case of multiple environments, to
+        external locations.
+
+        In Dojo 0.9, Builds will discover require statements in top-level files
+        that delegate down this way and will replace the top-level file with
+        the required code, similar to the way that dojo.js is replaced in build
+        environments today. Some special flag (perhaps in a comment?) may be
+        necessaray in these files to denote that they are "aggregators", but
+        that is an implementation detail.
+
+        The net result of these changes will be that modules which are not part
+        of the Base but which are still part of the Core will be includeable
+        with a single <script> tag. This reduces ambiguity about "what is
+        Dojo?" and allows the straightforward application of stock
+        performance-optimizing techniques to the files distributed with Dojo.
+
+        We should also investigate removing the "sources" of these aggregated
+        files from release distributions.
+
+    2.) ".*" and  "__package__.js" files will no longer be used in Core
+        
+        While support for these special cases may continue in the package
+        system, their use in Dojo Core will cease. The build-step replacement
+        of top-level or "aggregator" files will preform this function and will
+        also serve to remove the ambiguity of the ".*" semantic which today
+        does not actually gaurantee that all modules which reside in a
+        namespace are included.
+
+    3.) New functionality must be exposed on new objects
+
+        As outlined below (in the section "dojo.io"), things that provide new
+        functionality to an existing namespace but are not specified in the
+        core or "aggregator" include MUST implement this new behavior on new
+        namespaces, potentially sub-namespaces of the parent. This convention
+        will ensure symmetry between require() calls and calling conventions.
+
+
+dojo.io:
+--------
+
+The IO system features its own plug-in system which works fine, except that all
+cases where you want to do something different than XHR, you have to know about
+it and throw some semi-magical flags. This is dumb. Also, the design of bind()
+as a bid-directional tansport system was a clear mistake. Cometd does this, but
+bind() cannot and should not.
+
+In dojo 0.9, io transport functions are entirely disconnected from dojo.undo.
+Back-button handling is the responsibility of end developers via dojo.undo.*.
+
+The successors to dojo.io.bind() fully embrace their request/repsonse nature
+and the reality that they expose HTTP verbs:
+
+    dojo.io.bind() -->
+
+        // dojo/io.js
+        dojo.io.get()     // xhrGet ?
+        dojo.io.post()    // xhrPost ?
+        dojo.io.rawPost() // xhrRawPost ?
+
+        // dojo/io/iframe.js
+        dojo.io.iframe.get()
+        dojo.io.iframe.post()
+
+        // dojo/io/script.js
+        dojo.io.script.get()
+
+        // dojo/io/xip.js
+        dojo.io.xip.get()
+        dojo.io.xip.post()
+        ...
+
+        all bind() replacement APIs take the following argument structure:
+
+            {
+                url: "blah.html",
+
+                // all below are optional, but must be supported in some form by every IO API
+                timeout: 1000, // milliseconds
+                returnAs: "text", // replaces the always-wrong "mimetype"
+                content: { 
+                    key: "value"
+                },
+                // browser-specific, MAY be unsupported in non-browser runtimes
+                form: dojo.byId("someForm") 
+            }
+
+        Some of these variants may accept additional fields, but these are
+        specific to each variant. XHR requests, for instance, may include
+        "sync" or "headers" feilds to control the behavior of that particular
+        transport.
+
+        The return of all bind() successor functions MUST be a dojo.Deferred
+        object or a subclass thereof. All return handling is through
+        addCallback() and addErrback() methods of those Deferred objects.
+
+    dojo.io.queueBind() -->
+
+        dojo.io.queue("get", {/*args */})
+
+        dojo.io.queue will accept the name of any other dojo.io.* transport
+        function as its first argument. The result of a call to queue() is a
+        Deferred. 
+
+    dojo.io.encodeForm -->
+
+        dojo.io.formToQuery()
+
+    dojo.io.argsFromMap() -->
+
+        dojo.io.mapToQuery()
+
+    dojo.io.FormBind -->
+
+        dojo.io.wrapForm(formNode)
+
+        wrapForm will need to be moved into its own file.
+
+    dojo.io.cookie.* --> 
+    
+        dojo.cookie.*
+
+        the getCookie() and setCookie() methods will be removed. get() and
+        set() are sufficient. deleteCookie will be renamed to "remove".
+        getObjectCookie() and setObjectCookie() will be modified to simply use
+        dojo.json. Back-compat for "dojo.io.cookies" (plural) will be removed.
+
+    // new I/O functions:
+    dojo.io.formToMap(formNode)
+    dojo.io.formToJson(formNode)
+
+
+dojo.uri:
+---------
+
+    All code in dojo.uri.* that survives the merge will be integrated directly
+    into the package system. The names are being changed to "url" instead of
+    "uri" since everyone knows what the hell a URL is, even if they scratch
+    their heads over the academic differences between URI and URL.
+
+    dojo.uri.Uri -->
+
+        dojo.Url()
+
+    dojo.uri.dojoUri() -->
+
+        dojo.dojoUrl()
+
+    dojo.uri.moduleUri() -->
+
+        dojo.moduleUri()
+
+dojo.query:
+-----------
+
+    An updated version of dojo.query will appear as a core piece of Dojo 0.9.
+    The result of all dojo.query searches will be an object of a new type:
+    dojo.NodeList. This class is described in "NodeList.txt", located in this
+    directory.
+
+The Split:
+==========
+
+APIs in Base:
+-------------
+
+    dojo.require()
+    dojo.provide()
+    dojo.kwCompoundRequire() // rename?
+    dojo.requireLocalization() // need to find a way to make this code smaller
+    dojo.registerModulePath() // or whatever it's called this week
+    dojo.moduleUrl()
+    dojo.dojoUrl()
+    dojo.deprecated()
+    dojo.experimental()
+    dojo.getObject()
+    dojo.exists()
+    dojo.global()
+    dojo.doc()
+    dojo.version
+    dojo.addOnLoad()
+    dojo.addOnUnload()
+    dojo.evalStr() // was dj_eval
+    dojo.hitch() // was dojo.lang.hitch
+    dojo.declare() // was dojo.lang.declare() new, lightweight version
+    dojo.extend() // was dojo.lang.extend()
+    dojo.mixin() // was dojo.lang.mixin
+    dojo.forEach() // was dojo.lang.forEach
+    dojo.every() // was dojo.lang.every
+    dojo.some() // was dojo.lang.some
+    dojo.undefined() // was dj_undef and dojo.lang.isUndefined
+    dojo.byId()
+    dojo.query()
+    dojo.NodeList/dojo.Node (described in "NodeList.txt")
+    dojo.io
+        get()
+        post()
+        rawPost()
+    dojo.Deferred
+    dojo.event
+        after()
+        attachEvent() // rename?
+    dojo.data.Core
+    dojo.AdapterRegistry
+    dojo.lfx.Animation + PropertyAnimation() from dojo.lfx.html + default easing
+    dojo.json
+    // some super-trivial subset of dojo.style and dojo.html. These are exposed via NodeList too.
+
+
+In Core but not Base:
+---------------------
+
+    dojo.undo
+    dojo.dnd // modulo trimming and rework
+    dojo.lfx.html (everything not listed above)
+    dojo.rpc
+    dojo.string
+    dojo.i18n
+    dojo.html and dojo.style extras
+
+
+Unsure:
+-------
+
+    dojo.validate (?)
+    dojo.date (?)
+    dojo.regex (?)
+    dojo.ns
+    dojo.dom // most of this NS can be removed, but where does the rest go?
+
+
+Moved to dojox:
+---------------
+
+    dojo.cal
+    dojo.charting
+    dojo.storage
+    dojo.dot
+    dojo.sync
+    dojo.DeferredList
+    dojo.profile
+    dojo.svg
+    dojo.crypto
+    dojo.flash
+    dojo.math.* (math.js will remain, albiet trimmed)
+    dojo.collections.*
+    dojo.behavior
+    dojo.uuid
+    dojo.xml.XsltTransform
+    dojo.aop // was dojo.event.connect()
+    dojo.selection
+
+
+Removed:
+--------
+
+    dojo.render
+    dojo.animation
+    dojo.graphics
+    dojo.logging
+    dojo.props
+    dojo.debug (replaced by console.*)
+    dojo.xml.Parse
+    dojo.text
+    dojo.docs (?)
+
+
+A Note On Function Movement:
+============================
+
+Dojo committers will note that some functionality that was once left to utility
+namespaces is being migrated directly into the core of the system. This is by
+design.
+
+Today, many namespaces (dojo.a11y, dojo.uri.*, etc.) are assumed to be better
+left alone as utilities because there are scenarios that do not demand them.
+This, generally, is a false assumption. Most non-trivial uses of Dojo require
+many of these functions and in serveral places, "lower level" implementations
+within the bootstrap or in other modules exist in order to provide the same
+behavior to code that needs to run earlier in the lifecycle. Correcting this
+false choice is something that we should take the opportunity to do in 0.9. We
+have enough experience with the existing namespaces to now say what's really
+critical and what's not.
+
+vim:et:ts=4
