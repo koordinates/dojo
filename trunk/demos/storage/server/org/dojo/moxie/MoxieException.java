@@ -1,5 +1,8 @@
 package org.dojo.moxie;
 
+/**
+	@author Brad Neuberg, bkn3@columbia.edu
+*/
 public class MoxieException extends Exception{
 	public MoxieException(){
 		super();
