@@ -41,41 +41,44 @@ webbuild = {
 		dependencies.loader = "xdomain";
 		
 		var dependencyResult = buildUtil.getDependencyList(dependencies, null, true);
-		var dojoResult = buildUtil.makeDojoJs(dependencyResult, version);
-
-		//Intern strings, and add license
-		dojoResult.dojoContents = new String(readFile("copyright.txt")) + buildUtil.interningRegexpMagic("xdomain", dojoResult.dojoContents, djConfig.baseRelativePath, [["dojo", "src"]], []);
-
-		//Print out the file list.
-		dojo.debug("files in the profile:");
-		for(var i = 0; i < dojoResult.resourceDependencies.length; i++){
-			print(dojoResult.resourceDependencies[i]);
-		}
 		
-		//Return the dojo contents
-		webbuild.dojoContents = dojoResult.dojoContents;
-
-		//See if we should add in xd dojo module path.
-		xdDojoPath = dojo.string.trim(xdDojoPath);
-		if(xdDojoPath){
-			webbuild.dojoContents = buildUtilXd.setXdDojoConfig(webbuild.dojoContents, xdDojoPath);
-		}
-
-
-
-		var outputWindow = window.open("webbuild/dojo.js.html", "dojoOutput");
-		outputWindow.focus();
-
-		//FAILED attempts:
-		//Using a javascript: url, FF 2.0 wraps the content in some HTML, so not really
-		//good for file save operations (get HTML in the saved file).
-		//var outputWindow = window.open("javascript:opener.webbuild.getDojoContents()", "dojoOutput");
-
-		//using data: urls seem to add funky text to the beginning of the file, at least in OSX FF 2.0
-		//Same issue if application/octet-stream is used instead of text/javascript.
-		//var outputWindow = window.open("data:text/javascript;" + webbuild.dojoContents, "dojoOutput");
-	},
+		if(location.toString().indexOf("file:") == 0){
+			var dojoResult = buildUtil.makeDojoJs(dependencyResult, version);
 	
+			//Intern strings, and add license
+			dojoResult.dojoContents = new String(readFile("copyright.txt")) + buildUtil.interningRegexpMagic("xdomain", dojoResult.dojoContents, djConfig.baseRelativePath, [["dojo", "src"]], []);
+	
+			//Print out the file list.
+			dojo.debug("files in the profile:");
+			for(var i = 0; i < dojoResult.resourceDependencies.length; i++){
+				print(dojoResult.resourceDependencies[i]);
+			}
+			
+			//Return the dojo contents
+			webbuild.dojoContents = dojoResult.dojoContents;
+	
+			//See if we should add in xd dojo module path.
+			xdDojoPath = dojo.string.trim(xdDojoPath);
+			if(xdDojoPath){
+				webbuild.dojoContents = buildUtilXd.setXdDojoConfig(webbuild.dojoContents, xdDojoPath);
+			}
+
+			var outputWindow = window.open("webbuild/dojo.js.html", "dojoOutput");
+			outputWindow.focus();
+	
+			//FAILED attempts:
+			//Using a javascript: url, FF 2.0 wraps the content in some HTML, so not really
+			//good for file save operations (get HTML in the saved file).
+			//var outputWindow = window.open("javascript:opener.webbuild.getDojoContents()", "dojoOutput");
+	
+			//using data: urls seem to add funky text to the beginning of the file, at least in OSX FF 2.0
+			//Same issue if application/octet-stream is used instead of text/javascript.
+			//var outputWindow = window.open("data:text/javascript;" + webbuild.dojoContents, "dojoOutput");
+		}else{
+			parent.sendDependencyResultToServer(dependencyResult);
+		}
+	},
+
 	getDojoContents: function(){
 		return webbuild.dojoContents;
 			//return "200 OK HTTP/1.0\nContent-type: text/javascript\n"
