@@ -697,7 +697,7 @@ buildUtil.interningGlobalDojoUriRegExp = new RegExp(buildUtil.interningDojoUriRe
 buildUtil.interningLocalDojoUriRegExp = new RegExp(buildUtil.interningDojoUriRegExpString);
 
 //WARNING: This function assumes dojo.string.escapeString() has been loaded.
-buildUtil.interningRegexpMagic = function(loader, resourceContent, srcRoot, prefixes, skiplist){
+buildUtil.interningRegexpMagic = function(loader, resourceContent, srcRoot, prefixes, skiplist, isSilent){
 	return resourceContent.replace(buildUtil.interningGlobalDojoUriRegExp, function(matchString){
 		var parts = matchString.match(buildUtil.interningLocalDojoUriRegExp);
 
@@ -705,22 +705,28 @@ buildUtil.interningRegexpMagic = function(loader, resourceContent, srcRoot, pref
 		var resourceNsName = "";
 		if(parts[5] == "dojo"){
 			if(parts[6].match(/(\.htm|\.html|\.css)$/)){
-				print("Dojo match: " + parts[6]);
+				if(!isSilent){
+					print("Dojo match: " + parts[6]);
+				}
 				filePath = srcRoot + parts[6]
 				resourceNsName = "dojo:" + parts[6];
 			}
 		}else{
-			print("Module match: " + parts[6] + " and " + parts[9]);
+			if(!isSilent){
+				print("Module match: " + parts[6] + " and " + parts[9]);
+			}
 			filePath = makeResourceUri(parts[6], parts[9], srcRoot, prefixes);
 			resourceNsName = parts[6] + ':' + parts[9];		
 		}
 
 		if(!filePath || buildUtil.isValueInArray(resourceNsName, skiplist)){
-			if(filePath){
+			if(filePath && !isSilent){
 				print("Skip intern resource: " + filePath);
 			}
 		}else{
-			print("Interning resource path: " + filePath);
+			if(!isSilent){
+				print("Interning resource path: " + filePath);
+			}
 			//dojo.string.escapeString will add starting and ending double-quotes.
 			var jsEscapedContent = dojo.string.escapeString(new String(readText(filePath)));
 			if(jsEscapedContent){
