@@ -14,7 +14,17 @@ provideList = provideList.split(",");
 var dependencyResult;
 eval('dependencyResult = {depList: ["' + depList.join('","') + '"], provideList: ["' + provideList.join('","') + '"]};');
 
+//Load dojo (needed for string interning)
+djConfig={
+	baseRelativePath: "../"
+};
+load('../dojo.js');
+dojo.require("dojo.string.extras");
+
 var contents = buildUtil.makeDojoJs(dependencyResult, version).dojoContents;
+
+//Add copyright, and intern strings.
+contents = new String(readFile("copyright.txt")) + buildUtil.interningRegexpMagic("xdomain", contents, djConfig.baseRelativePath, [["dojo", "src"]], [], true);
 
 if(xdDojoUrl){
 	contents = buildUtilXd.setXdDojoConfig(contents, xdDojoUrl);
