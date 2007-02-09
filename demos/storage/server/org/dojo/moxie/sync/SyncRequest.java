@@ -38,6 +38,10 @@ public class SyncRequest{
 				String itemType = commandObj.getString("itemType"); 
 				c.setItemType(itemType);
 				
+				long timeoffset = commandObj.getLong("timeoffset");
+				long timestamp = lastSync + timeoffset;
+				c.setTimestamp(new Long(timestamp));
+				
 				// transform our Item JSON string into an 
 				// actual object -- have this application figure
 				// out how to transform this JSON item into an 

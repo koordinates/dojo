@@ -6,18 +6,20 @@ import java.util.*;
 	@author Brad Neuberg, bkn3@columbia.edu
 */
 public class Command{
-	public String CREATE = "create";
-	public String CLEAR = "clear";
-	public String DELETE = "delete";
-	public String UPDATE = "update";
-	public String DELETED = "deleted";
-	public String UPDATED = "updated";
-	public String CREATED = "created";
+	public static String CREATE = "create";
+	public static String CLEAR = "clear";
+	public static String DELETE = "delete";
+	public static String UPDATE = "update";
+	public static String DELETED = "deleted";
+	public static String UPDATED = "updated";
+	public static String CREATED = "created";
 							
 	protected String name;
 	protected String status;
 	protected String itemType;
 	protected Item item;
+	protected Long timestamp;
+	protected Long timeoffset;
 	
 	public String getName(){
 		return this.name;
@@ -51,6 +53,31 @@ public class Command{
 		this.item = item;
 	}
 	
+	/**
+		A timestamp is the total amount of time since the epoch (1970)
+		when this command occurred.
+	*/
+	public void setTimestamp(Long timestamp){
+		this.timestamp = timestamp;
+	}
+	
+	public Long getTimestamp(){
+		return timestamp;
+	}
+	
+	/**
+		A timeoffset is the amount of time, in milliseconds, that this
+		command ocurred. This is relative to the lastSync or serverTimestamp
+		of this command.
+	*/	
+	public void setTimeoffset(Long timeoffset){
+		this.timeoffset = timeoffset;
+	}
+	
+	public Long getTimeoffset(){
+		return this.timeoffset;
+	}
+	
 	public String toString(){
 		StringBuffer results = new StringBuffer();
 		
@@ -60,6 +87,11 @@ public class Command{
 			results.append("status: " + this.status + ", ");
 		}
 		results.append("itemType: " + this.itemType + ", ");
+		if(this.timestamp != null){
+			results.append("timestamp: " + this.timestamp + ", ");
+		}else if(this.timeoffset != null){
+			results.append("timeoffset: " + this.timeoffset + ", ");
+		}
 		results.append("item: " + this.item);
 		results.append("}");
 		

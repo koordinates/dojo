@@ -49,6 +49,14 @@ public class Document implements Item{
 		return this.origID;
 	}
 	
+	public long getCreatedOn(){
+		return this.createdOn.getTime();
+	}
+	
+	public long getLastUpdated(){
+		return this.lastUpdated.getTime();
+	}
+	
 	public String toString(){
 		StringBuffer results = new StringBuffer();
 		results.append("{");

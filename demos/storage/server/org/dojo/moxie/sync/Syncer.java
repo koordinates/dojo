@@ -6,6 +6,13 @@ import java.util.*;
 	@author Brad Neuberg, bkn3@columbia.edu
 */
 public class Syncer{
+	protected SyncRequest syncRequest;
+	protected SyncResponse syncResponse = new SyncResponse();
+	
+	public Syncer(SyncRequest syncRequest){
+		this.syncRequest = syncRequest;
+	}
+
 	protected static Map<String, ItemSyncer> itemSyncers = 
 									new HashMap<String, ItemSyncer>();
 
@@ -18,9 +25,10 @@ public class Syncer{
 	}
 	
 	public void doSync() throws SyncException{
+		syncRequest.log.replay(syncRequest, syncResponse);
 	}
 	
 	public SyncResponse getSyncResponse(){
-		return null;
+		return this.syncResponse;
 	}
 }

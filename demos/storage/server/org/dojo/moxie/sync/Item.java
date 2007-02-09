@@ -6,4 +6,6 @@ package org.dojo.moxie.sync;
 public interface Item{
 	public Integer getID();
 	public Integer getOrigID();
+	public long getCreatedOn();
+	public long getLastUpdated();
 }
