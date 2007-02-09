@@ -24,7 +24,7 @@ public class DocumentSyncer implements ItemSyncer{
 			int counter = 1;
 			boolean renamed = false;
 			while(Documents.exists(fileName) == true){
-				fileName = newDoc.getFileName() + counter;
+				fileName = newDoc.getFileName() + "_" + counter;
 				counter++;
 				renamed = true;
 			}
