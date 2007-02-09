@@ -1,6 +1,7 @@
 package org.dojo.moxie.sync;
 
 import java.util.*;
+import net.sf.json.*;
 
 /**
 	@author Brad Neuberg, bkn3@columbia.edu
@@ -97,4 +98,10 @@ public class Command{
 		
 		return results.toString();
 	}
+	
+	/*
+	public String toJSON(){
+		StringBuffer results = new StringBuffer();
+		
+	}*/
 }

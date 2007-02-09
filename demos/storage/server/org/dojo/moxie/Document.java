@@ -9,12 +9,12 @@ import org.dojo.moxie.sync.*;
 	@author Brad Neuberg, bkn3@columbia.edu
 */
 public class Document implements Item{
-	public Integer id;
-	public Integer origID;
-	public String fileName;
-	public Date createdOn;
-	public Date lastUpdated;
-	public String content;
+	protected Integer id;
+	protected Integer origId;
+	protected String fileName;
+	protected long createdOn;
+	protected long lastUpdated;
+	protected String content;
 	
 	/**
 		@param id The ID of this document; this can either be a positive
@@ -23,15 +23,11 @@ public class Document implements Item{
 		@throws IllegalArgumentException Thrown if fileName,
 		createdOn, or lastUpdated are null or if fileName is invalid.
 	*/
-	public Document(Integer id, String fileName, Date createdOn,
-					Date lastUpdated, String content)
+	public Document(Integer id, String fileName, long createdOn,
+					long lastUpdated, String content)
 								throws MoxieException{
 		if(validFileName(fileName) == false){
 			throw new MoxieException("Invalid file name");
-		}
-		
-		if(createdOn == null || lastUpdated == null){
-			throw new MoxieException("Created On and Last Updated required");
 		}
 		
 		this.id = id;
@@ -41,32 +37,64 @@ public class Document implements Item{
 		this.content = content;
 	}
 	
-	public Integer getID(){
+	public void setId(Integer Id){
+		this.id = id;
+	}
+	
+	public Integer getId(){
 		return this.id;
 	}
 	
-	public Integer getOrigID(){
-		return this.origID;
+	public void setOrigId(Integer origId){
+		this.origId = origId;
+	}
+	
+	public Integer getOrigId(){
+		return this.origId;
+	}
+	
+	public void setFileName(String fileName){
+		this.fileName = fileName;
+	}
+	
+	public String getFileName(){
+		return fileName;
+	}
+	
+	public void setCreatedOn(long createdOn){
+		this.createdOn = createdOn;
 	}
 	
 	public long getCreatedOn(){
-		return this.createdOn.getTime();
+		return this.createdOn;
+	}
+	
+	public void setLastUpdated(long lastUpdated){
+		this.lastUpdated = lastUpdated;
 	}
 	
 	public long getLastUpdated(){
-		return this.lastUpdated.getTime();
+		return this.lastUpdated;
+	}
+	
+	public void setContent(String content){
+		this.content = content;
+	}
+	
+	public String getContent(){
+		return content;
 	}
 	
 	public String toString(){
 		StringBuffer results = new StringBuffer();
 		results.append("{");
 		results.append("id: " + this.id + ", ");
-		if(this.origID != null){
-			results.append("origID: " + this.origID + ", ");
+		if(this.origId != null){
+			results.append("origID: " + this.origId + ", ");
 		}
 		results.append("fileName: '" + this.fileName + "', ");
-		results.append("createdOn: " + this.createdOn.getTime() + ", ");
-		results.append("lastUpdated: " + this.lastUpdated.getTime() + ", ");
+		results.append("createdOn: " + this.createdOn + ", ");
+		results.append("lastUpdated: " + this.lastUpdated + ", ");
 		results.append("content: '" + this.content + "'");
 		results.append("}");
 		

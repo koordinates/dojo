@@ -174,7 +174,7 @@ public class MoxieServlet extends HttpServlet{
 			return;
 		}
 		
-		Document doc = new Document(null, fileName, new Date(), new Date(),
+		Document doc = new Document(null, fileName, new Date().getTime(), new Date().getTime(),
 									content);
 									
 		// create it
@@ -210,7 +210,7 @@ public class MoxieServlet extends HttpServlet{
 		Document doc = Documents.findByFileName(fileName);
 		
 		// delete it
-		Documents.deleteItem(doc.id);
+		Documents.deleteItem(doc.getId());
 		
 		// send back a 410 Gone response
 		res.setStatus(HttpServletResponse.SC_GONE);
@@ -246,8 +246,8 @@ public class MoxieServlet extends HttpServlet{
 		}
 																																												
 		// update our values
-		doc.lastUpdated = new Date();
-		doc.content = content;
+		doc.setLastUpdated(new Date().getTime());
+		doc.setContent(content);
 		
 		// save them
 		Documents.updateItem(doc);

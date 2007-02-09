@@ -20,28 +20,28 @@ public class DocumentSyncer implements ItemSyncer{
 			// see if a document with this file name already exists;
 			// if it does, keep adding a number to the end until we
 			// create a filename that doesn't exist
-			String fileName = newDoc.fileName;
+			String fileName = newDoc.getFileName();
 			int counter = 1;
 			boolean renamed = false;
 			while(Documents.exists(fileName) == true){
-				fileName = newDoc.fileName + counter;
+				fileName = newDoc.getFileName() + counter;
 				counter++;
 				renamed = true;
 			}
 			
 			if(renamed == true){
 				status = "A document with the file name '" 
-							+ newDoc.fileName + "' already exists -- "
+							+ newDoc.getFileName() + "' already exists -- "
 							+ "your document was saved as "
 							+ "'" + fileName + "'";
-				newDoc.fileName = fileName;
+				newDoc.setFileName(fileName);
 			}
 			
 			// save this document
-			Integer origID = newDoc.id;
+			Integer origId = newDoc.getId();
 			Documents.newItem(newDoc);
-			newDoc = Documents.findByFileName(newDoc.fileName);
-			newDoc.origID = origID;
+			newDoc = Documents.findByFileName(newDoc.getFileName());
+			newDoc.setOrigId(origId);
 			
 			// create a command entry for this
 			Command result = new Command();
@@ -73,7 +73,7 @@ public class DocumentSyncer implements ItemSyncer{
 			String status = null;
 			
 			// get the original document
-			Document origDoc = Documents.findByID(updatedDoc.id);
+			Document origDoc = Documents.findByID(updatedDoc.getId());
 			
 			// determine if the original document has had updates
 			// that the updatedDoc doesn't know about
@@ -89,7 +89,7 @@ public class DocumentSyncer implements ItemSyncer{
 				// FIXME: Do an actual merge of these two documents
 				if(origDoc.getLastUpdated() > c.getTimestamp().longValue()){
 					updatedDoc = origDoc;
-					status = "The document '" + updatedDoc.fileName + "' "
+					status = "The document '" + updatedDoc.getFileName() + "' "
 								+ "was modified while you were away from the "
 								+ "network and has newer data -- the server's "
 								+ "version was chosen";
@@ -98,7 +98,7 @@ public class DocumentSyncer implements ItemSyncer{
 			
 			// update this item, then get its newer value
 			Documents.updateItem(updatedDoc);
-			updatedDoc = Documents.findByID(updatedDoc.id);
+			updatedDoc = Documents.findByID(updatedDoc.getId());
 			
 			// generate information on this update
 			Command result = new Command();
@@ -131,15 +131,10 @@ public class DocumentSyncer implements ItemSyncer{
 			long createdOnTime = obj.getLong("createdOn");
 			String content = obj.getString("content");
 			
-			Date lastUpdated = new Date();
-			lastUpdated.setTime(lastUpdatedTime);
-			Date createdOn = new Date();
-			createdOn.setTime(createdOnTime);
-			
 			// create the Document representing the item payload
 			// in this item
-			Document doc = new Document(id, fileName, createdOn,
-										lastUpdated, content);
+			Document doc = new Document(id, fileName, createdOnTime,
+										lastUpdatedTime, content);
 										
 			return (Item)doc;
 		}catch(MoxieException e){

@@ -34,12 +34,12 @@ public class SyncServlet extends HttpServlet{
 				
 				// get our sync response with our sync results
 				SyncResponse syncRes = syncer.getSyncResponse();
-				/*
+				
 				// transform this into JSON to send to the client
-				String returnContent = syncRes.toJSON();*/
+				String returnContent = syncRes.toJSON();
 				
 				// send this to the client
-				sendResponseBody(syncRes.toString(), res);
+				sendResponseBody(returnContent, res);
 			}catch(Exception e){
 				e.printStackTrace();
 				throw new ServletException(e);

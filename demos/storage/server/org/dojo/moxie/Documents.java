@@ -144,28 +144,28 @@ public final class Documents{
 			}
 			
 			// see if we exist yet
-			if(exists(doc.fileName)){
-				throw new MoxieException("The document '" + doc.fileName
+			if(exists(doc.getFileName())){
+				throw new MoxieException("The document '" + doc.getFileName()
 											+ "' already exists");
 			}
 			
 			// setup our SQL values
-			newItemSQL.setString(1, doc.fileName);
+			newItemSQL.setString(1, doc.getFileName());
 			java.sql.Timestamp createdOnTimestamp = 
-					new java.sql.Timestamp(doc.createdOn.getTime());
+					new java.sql.Timestamp(doc.getCreatedOn());
 			java.sql.Timestamp lastUpdatedTimestamp = 
-					new java.sql.Timestamp(doc.lastUpdated.getTime());
+					new java.sql.Timestamp(doc.getLastUpdated());
 			newItemSQL.setTimestamp(2, createdOnTimestamp);
 			newItemSQL.setTimestamp(3, lastUpdatedTimestamp);
-			newItemSQL.setString(4, doc.content);
+			newItemSQL.setString(4, doc.getContent());
 			
 			// execute our insert
 			newItemSQL.executeUpdate();
 			
 			// look the Document back up to get its
 			// new ID
-			Document newDoc = findByFileName(doc.fileName);
-			newDoc.origID = doc.id;
+			Document newDoc = findByFileName(doc.getFileName());
+			newDoc.setOrigId(doc.getId());
 			
 			return newDoc;
 		}catch(Exception e){
@@ -175,7 +175,7 @@ public final class Documents{
 	
 	public synchronized static void deleteItem(Document doc)
 											throws MoxieException{
-		Documents.deleteItem(doc.id);
+		Documents.deleteItem(doc.getId());
 	}
 	
 	/*
@@ -217,32 +217,32 @@ public final class Documents{
 			}
 			
 			// see if we even exist with this ID
-			if(exists(doc.id) == false){
+			if(exists(doc.getId()) == false){
 				return;
 			}
 			
 			// see if this file name is already taken,
 			// just in case it was renamed to something already
 			// existing
-			Document compareMe = findByFileName(doc.fileName);
-			if(compareMe != null && compareMe.fileName.equals(doc.fileName)
-				&& compareMe.id != null
-				&& doc.id != null
-				&& compareMe.id.equals(doc.id) == false){
+			Document compareMe = findByFileName(doc.getFileName());
+			if(compareMe != null && compareMe.getFileName().equals(doc.getFileName())
+				&& compareMe.getId() != null
+				&& doc.getId() != null
+				&& compareMe.getId().equals(doc.getId()) == false){
 				throw new MoxieException("A different document with the file name "
-										+ "'" + doc.fileName + "' already exists");
+										+ "'" + doc.getFileName() + "' already exists");
 			}
 			
 			// setup our SQL values
-			updateItemSQL.setString(1, doc.fileName);
+			updateItemSQL.setString(1, doc.getFileName());
 			java.sql.Timestamp createdOnTimestamp = 
-					new java.sql.Timestamp(doc.createdOn.getTime());
+					new java.sql.Timestamp(doc.getCreatedOn());
 			java.sql.Timestamp lastUpdatedTimestamp = 
-					new java.sql.Timestamp(doc.lastUpdated.getTime());
+					new java.sql.Timestamp(doc.getLastUpdated());
 			updateItemSQL.setTimestamp(2, createdOnTimestamp);
 			updateItemSQL.setTimestamp(3, lastUpdatedTimestamp);
-			updateItemSQL.setString(4, doc.content);
-			updateItemSQL.setInt(5, doc.id);
+			updateItemSQL.setString(4, doc.getContent());
+			updateItemSQL.setInt(5, doc.getId());
 			
 			// execute our insert
 			updateItemSQL.executeUpdate();
@@ -273,12 +273,10 @@ public final class Documents{
 			
 			// convert java.sql.Date objects to java.util.Date objects
 			long createdOnTime = results.getTimestamp("created_on").getTime();
-			java.util.Date createdOn = new java.util.Date(createdOnTime);
 			
 			long lastUpdatedTime = results.getTimestamp("last_updated").getTime();
-			java.util.Date lastUpdated = new java.util.Date(lastUpdatedTime);
 			
-			Document doc = new Document(id, fileName, createdOn, lastUpdated, 
+			Document doc = new Document(id, fileName, createdOnTime, lastUpdatedTime, 
 										content);
 										
 			return doc;
