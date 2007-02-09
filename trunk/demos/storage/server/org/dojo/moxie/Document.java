@@ -3,10 +3,12 @@ package org.dojo.moxie;
 import java.util.*;
 import java.util.regex.*;
 
+import org.dojo.moxie.sync.*;
+
 /**
 	@author Brad Neuberg, bkn3@columbia.edu
 */
-public class Document{
+public class Document implements Item{
 	public Integer id;
 	public Integer origID;
 	public String fileName;
@@ -37,6 +39,14 @@ public class Document{
 		this.createdOn = createdOn;
 		this.lastUpdated = lastUpdated;
 		this.content = content;
+	}
+	
+	public Integer getID(){
+		return this.id;
+	}
+	
+	public Integer getOrigID(){
+		return this.origID;
 	}
 	
 	public String toString(){

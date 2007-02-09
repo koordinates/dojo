@@ -4,15 +4,15 @@ package org.dojo.moxie.sync;
 	@author Brad Neuberg, bkn3@columbia.edu
 */
 public class SyncResponse{
-	protected SyncDate epoch;
+	protected long timestamp;
 	protected CommandLog log;
 	
-	public SyncDate getEpoch(){
-		return this.epoch;
+	public long getTimestamp(){
+		return this.timestamp;
 	}
 	
-	public void setEpoch(SyncDate epoch){
-		this.epoch = epoch;
+	public void setTimestamp(long timestamp){
+		this.timestamp = timestamp;
 	}
 	
 	public CommandLog getCommandLog(){

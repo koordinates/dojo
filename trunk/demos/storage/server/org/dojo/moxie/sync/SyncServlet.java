@@ -10,17 +10,22 @@ import javax.servlet.http.*;
 	@author Brad Neuberg, bkn3@columbia.edu
 */
 public class SyncServlet extends HttpServlet{
+	public void init() throws ServletException{
+		// register our application specific
+		// classes that help deal with synchronization
+		ItemSyncer docSyncer = (ItemSyncer)new DocumentSyncer();
+		Syncer.registerItemSyncer("document", docSyncer);
+	}
+	
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 							throws IOException, ServletException{
 			try{
-				System.out.println("1");
 				// get our JSON payload from the client
 				String responseContent = getRequestBody(req);
-				System.out.println("2");
-				System.out.println("json before="+responseContent);
+				
 				// turn this into a sync request so we can work with it
 				SyncRequest syncReq = SyncRequest.fromJSON(responseContent);
-				System.out.println("3");
+				
 				// actually perform the syncing using the request log and
 				// generating a response log
 				/*Syncer syncer = new Syncer(syncReq);
@@ -33,7 +38,7 @@ public class SyncServlet extends HttpServlet{
 				String returnContent = syncRes.toJSON();*/
 				
 				// send this to the client
-				sendResponseBody("hello world", res);
+				sendResponseBody(syncReq.toString(), res);
 			}catch(Exception e){
 				e.printStackTrace();
 				throw new ServletException(e);

@@ -1,25 +1,23 @@
 package org.dojo.moxie.sync;
 
+import java.util.*;
+
 /**
 	@author Brad Neuberg, bkn3@columbia.edu
 */
 public class Command{
-	public enum CommandType { create, clear, delete, update,
-								deleted, updated, created };
-								
-	protected CommandType commandType;
+	public String CREATE = "create";
+	public String CLEAR = "clear";
+	public String DELETE = "delete";
+	public String UPDATE = "update";
+	public String DELETED = "deleted";
+	public String UPDATED = "updated";
+	public String CREATED = "created";
+							
 	protected String name;
 	protected String status;
 	protected String itemType;
 	protected Item item;
-	
-	public CommandType getCommandType(){
-		return this.commandType;
-	}
-	
-	public void setCommandType(CommandType commandType){
-		this.commandType = commandType;
-	}
 	
 	public String getName(){
 		return this.name;
@@ -51,5 +49,20 @@ public class Command{
 	
 	public void setItem(Item item){
 		this.item = item;
+	}
+	
+	public String toString(){
+		StringBuffer results = new StringBuffer();
+		
+		results.append("\n{");
+		results.append("name: " + this.name + ", ");
+		if(this.status != null){
+			results.append("status: " + this.status + ", ");
+		}
+		results.append("itemType: " + this.itemType + ", ");
+		results.append("item: " + this.item);
+		results.append("}");
+		
+		return results.toString();
 	}
 }
