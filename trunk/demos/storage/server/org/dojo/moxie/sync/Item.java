@@ -1,9 +1,9 @@
-package org.moxie.sync;
+package org.dojo.moxie.sync;
 
 /**
 	@author Brad Neuberg, bkn3@columbia.edu
 */
-public interface Item extends java.io.Serializable{
+public interface Item{
 	public Integer getID();
 	public Integer getOrigID();
 	public long getTimestamp();

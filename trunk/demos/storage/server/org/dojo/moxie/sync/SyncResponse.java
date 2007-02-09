@@ -1,11 +1,9 @@
-package org.moxie.sync;
-
-import java.io.*;
+package org.dojo.moxie.sync;
 
 /**
 	@author Brad Neuberg, bkn3@columbia.edu
 */
-public class SyncResponse implements java.io.Serializable{
+public class SyncResponse{
 	protected SyncDate epoch;
 	protected CommandLog log;
 	

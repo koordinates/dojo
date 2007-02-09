@@ -12,11 +12,32 @@ import javax.servlet.http.*;
 public class SyncServlet extends HttpServlet{
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 							throws IOException, ServletException{
-			String responseContent = getRequestBody(req);
-			
-			// send this to the client
-			String returnContent = "{responseContent: '" + responseContent + "'}";
-			sendResponseBody(returnContent, res);
+			try{
+				System.out.println("1");
+				// get our JSON payload from the client
+				String responseContent = getRequestBody(req);
+				System.out.println("2");
+				System.out.println("json before="+responseContent);
+				// turn this into a sync request so we can work with it
+				SyncRequest syncReq = SyncRequest.fromJSON(responseContent);
+				System.out.println("3");
+				// actually perform the syncing using the request log and
+				// generating a response log
+				/*Syncer syncer = new Syncer(syncReq);
+				syncer.doSync();
+				
+				// get our sync response with our sync results
+				SyncResponse syncRes = syncer.getSyncResponse();
+				
+				// transform this into JSON to send to the client
+				String returnContent = syncRes.toJSON();*/
+				
+				// send this to the client
+				sendResponseBody("hello world", res);
+			}catch(Exception e){
+				e.printStackTrace();
+				throw new ServletException(e);
+			}
 	}
 	
 	private String getRequestBody(HttpServletRequest req) 
@@ -25,7 +46,6 @@ public class SyncServlet extends HttpServlet{
 		String contentType = req.getHeader("Content-Type");
 		if(contentType != null && contentType.equals("text/javascript")){
 			// basic JavaScript in POST payload
-			
 			BufferedReader requestData = new BufferedReader(
 						  new InputStreamReader(req.getInputStream()));
 			StringBuffer stringBuffer = new StringBuffer();

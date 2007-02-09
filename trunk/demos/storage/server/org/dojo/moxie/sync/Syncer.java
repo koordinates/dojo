@@ -1,4 +1,4 @@
-package org.moxie.sync;
+package org.dojo.moxie.sync;
 
 import java.util.*;
 
