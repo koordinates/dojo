@@ -6,11 +6,15 @@ import java.util.*;
 	@author Brad Neuberg, bkn3@columbia.edu
 */
 public class Syncer{
-	public void registerItemSyncer(String itemType, ItemSyncer itemSyncer){
+	protected static Map<String, ItemSyncer> itemSyncers = 
+									new HashMap<String, ItemSyncer>();
+
+	public static void registerItemSyncer(String itemType, ItemSyncer itemSyncer){
+		itemSyncers.put(itemType, itemSyncer);
 	}
 	
-	public ItemSyncer getItemSyncer(String itemType){
-		return null;
+	public static ItemSyncer getItemSyncer(String itemType){
+		return itemSyncers.get(itemType);
 	}
 	
 	public void doSync() throws SyncException{
