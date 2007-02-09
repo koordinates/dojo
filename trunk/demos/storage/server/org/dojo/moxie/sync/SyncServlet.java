@@ -28,17 +28,18 @@ public class SyncServlet extends HttpServlet{
 				
 				// actually perform the syncing using the request log and
 				// generating a response log
-				/*Syncer syncer = new Syncer(syncReq);
+				Syncer syncer = new Syncer(syncReq);
 				syncer.doSync();
+				
 				
 				// get our sync response with our sync results
 				SyncResponse syncRes = syncer.getSyncResponse();
-				
+				/*
 				// transform this into JSON to send to the client
 				String returnContent = syncRes.toJSON();*/
 				
 				// send this to the client
-				sendResponseBody(syncReq.toString(), res);
+				sendResponseBody(syncRes.toString(), res);
 			}catch(Exception e){
 				e.printStackTrace();
 				throw new ServletException(e);

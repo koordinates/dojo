@@ -5,7 +5,7 @@ package org.dojo.moxie.sync;
 */
 public class SyncResponse{
 	protected long serverTime;
-	protected CommandLog log;
+	protected CommandLog log = new CommandLog();
 	
 	public long getServerTime(){
 		return this.serverTime;
@@ -17,5 +17,16 @@ public class SyncResponse{
 	
 	public CommandLog getCommandLog(){
 		return this.log;
+	}
+	
+	public String toString(){
+		StringBuffer results = new StringBuffer();
+		
+		results.append("{\n");
+		results.append("serverTime: " + this.serverTime + ",\n");
+		results.append("log: " + this.log);
+		results.append("\n}");
+		
+		return results.toString();
 	}
 }
