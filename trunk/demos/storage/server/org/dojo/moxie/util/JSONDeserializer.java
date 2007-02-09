@@ -1,4 +1,4 @@
-package org.moxie.util;
+package org.dojo.moxie.util;
 
 import java.io.*;
 
