@@ -2,7 +2,7 @@
 
 # Define variables used for rest of the script
 version=0.4.2ALPHA
-xdDojoUrl=http://dojotoolkit.org/~jburke/$version
+xdDojoUrl=http://dojotoolkit.org/~jburke/webbuild/$version
 versionSuffix=xdomain
 
 #Clean up from a previous run.
@@ -17,7 +17,7 @@ cd ./0.4/buildscripts
 
 #Do xdajax build.
 #Mark the dojo.js has an xdomain build, complete with xdomain path for Dojo.
-ant -Dprofile=ajax -DreleaseName=$version-xdajax -Dversion=$version$versionSuffix -DxdDojoUrl=$xdDojoUrl clean release intern-strings xd-dojo-config
+ant -Dprofile=ajax -DreleaseName=$version -DdojoLoader=xdomain -Dversion=$version$versionSuffix -DxdDojoUrl=$xdDojoUrl clean release intern-strings xd-dojo-config
 
 #src folders/buildscripts for the webbuild stuff.
 mkdir ../release
@@ -35,11 +35,9 @@ cp -r ../../storage_dialog.swf .
 cp -r ../../Storage_version6.swf .
 cp -r ../../Storage_version8.swf .
 
-#Stamp the web build with the xd Dojo URL.
-#xxx
-
+#Stamp the web build with the xd Dojo URL and version.
 cd buildscripts/webbuild
-cat index.html | sed "s/@VERSION@/$version/g" | sed "s/@XD_DOJO_URL@/$xdDojoUrl/g" > index.out.html
+cat index.html | sed "s/@VERSION@/$version/g" | sed "s|@XD_DOJO_URL@|$xdDojoUrl|g" > index.out.html
 mv index.out.html index.html
 
 #Generate the list of modules for the web build process.
@@ -48,7 +46,7 @@ java -jar ../lib/custom_rhino.jar makeWebBuildModuleList.js ../../src treeData.j
 cd ../../..
 
 #Now in release folder. Bundle it all up.
-zip -r dojo-$version.zip $version-xdajax/* web/*
+zip -r dojo-$version.zip $version/* web/*
 mv dojo-$version.zip ../..
 
 #Return to start directory.
