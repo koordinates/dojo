@@ -27,7 +27,7 @@ public class DocumentSyncer implements ItemSyncer{
 			
 			// determine when this command occurred and when
 			// it was created
-			timestamp = syncRequest.getTimestamp() + timestamp;
+			timestamp = syncRequest.getLastSync() + timestamp;
 			Date lastUpdated = new Date();
 			lastUpdated.setTime(timestamp);
 			Date createdOn = new Date();
@@ -37,6 +37,8 @@ public class DocumentSyncer implements ItemSyncer{
 			// in this item
 			Document doc = new Document(id, fileName, createdOn,
 										lastUpdated, content);
+										
+			System.out.println("doc="+doc);
 			return (Item)doc;
 		}catch(MoxieException e){
 			throw new SyncException(e);
