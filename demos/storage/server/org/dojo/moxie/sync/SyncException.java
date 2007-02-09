@@ -1,4 +1,4 @@
-package org.moxie.sync;
+package org.dojo.moxie.sync;
 
 /**
 	@author Brad Neuberg, bkn3@columbia.edu

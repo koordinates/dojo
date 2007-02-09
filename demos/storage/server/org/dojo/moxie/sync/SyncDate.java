@@ -1,12 +1,11 @@
-package org.moxie.sync;
+package org.dojo.moxie.sync;
 
 import java.util.*;
-import java.io.*;
 
 /**
 	@author Brad Neuberg, bkn3@columbia.edu
 */
-public class SyncDate implements java.io.Serializable{
+public class SyncDate{
 	public static SyncDate fromString(String dateStr) throws SyncException{
 		return null;
 	}
