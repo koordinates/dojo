@@ -57,8 +57,8 @@ public class Document implements Item{
 			results.append("origID: " + this.origID + ", ");
 		}
 		results.append("fileName: '" + this.fileName + "', ");
-		results.append("createdOn: " + this.createdOn + ", ");
-		results.append("lastUpdated: " + this.lastUpdated + ", ");
+		results.append("createdOn: " + this.createdOn.getTime() + ", ");
+		results.append("lastUpdated: " + this.lastUpdated.getTime() + ", ");
 		results.append("content: '" + this.content + "'");
 		results.append("}");
 		
