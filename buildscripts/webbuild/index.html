@@ -15,6 +15,9 @@
 			float: left;
 		}
 
+		#xdDojoUrlDisplay {
+			display: none;
+		}
 	</style>
 	<script type="text/javascript">
 		djConfig = {
@@ -31,9 +34,26 @@
 		dojo.require("dojo.widget.TreeBasicControllerV3");
 		dojo.require("dojo.widget.TreeSelectorV3");
 		dojo.require("dojo.widget.TreeEmphasizeOnSelect");
-	
+		dojo.require("dojo.html.iframe");
+
 		function output(message){
 			dojo.debug(message);
+		}
+
+		function sendDependencyResultToServer(dependencyResult){
+			var depListForm = document.depListForm;
+			depListForm.action = "../webbuild.php";
+			depListForm.depList.value = dependencyResult.depList.join(",");
+			depListForm.provideList.value = dependencyResult.provideList.join(",");
+			depListForm.version.value = version;
+			depListForm.xdDojoUrl.value = xdDojoUrl;
+
+			//reset the hidden frame so we can do another build.
+			setTimeout(function(){
+				dojo.html.iframeContentWindow(dojo.byId("builderFrame")).location = "../webbuild.html?random=" + (new Date()).getTime();
+			}, 1000);
+
+			depListForm.submit();
 		}
 
 		dojo.addOnLoad(function(){
@@ -63,10 +83,19 @@
 			}
 			
 			//Set up XD Dojo URL if available.
-			var xdDojoUrl = "@XD_DOJO_URL@";
+			xdDojoUrl = "@XD_DOJO_URL@";
 			if(xdDojoUrl != ("@" + "XD_DOJO_URL" + "@")){
-				dojo.byId("xdDojoPath").value = xdDojoUrl;
+				dojo.byId("xdDojoUrl").innerHTML = xdDojoUrl;
+				dojo.byId("xdDojoUrlDisplay").style.display = "block";
+			}else{
+				xdDojoUrl = "";
 			}
+			
+			version = "@VERSION@";
+			if(xdDojoUrl == ("@" + "VERSION" + "@")){
+				version = "";
+			}
+
 		});
 	</script>
 
@@ -81,9 +110,9 @@
 		
 	</div>
 	<div id="buildControls">
-		<p>
-			<b>XDomain Dojo path (example: http://some.domain.com/dojo-xdversion/src):</b><br />
-			<input type="text" id="xdDojoPath" value="" size="30" />
+		<p id="xdDojoUrlDisplay">
+			<b>XDomain Dojo path:</b><br />
+			<span id="xdDojoUrl"></span>
 		</p>
 		<p>
 			<b>Modules to include in build (comma-separated list):</b><br />
@@ -95,13 +124,21 @@
 			</textarea>
 		</p>
 		<p>
-			<button onclick="builderFrame.startBuild(dojo.byId('dependencyList').value, '0.4.2dev', dojo.byId('xdDojoPath').value)">Go</button>
+			<button onclick="builderFrame.startBuild(dojo.byId('dependencyList').value, version, xdDojoUrl)">Go</button>
 		</p>
 	</div>
 	
 	<div id="output">
 	
 	</div>
+
+	<form name="depListForm" action="" method="POST">
+		<input type="hidden" name="depList" value="" />
+		<input type="hidden" name="provideList" value="" />
+		<input type="hidden" name="version" value="" />		
+		<input type="hidden" name="compress" value="false" />
+		<input type="hidden" name="xdDojoUrl" value="" />
+	</form>
 
 	<iframe id="builderFrame" name="builderFrame" src="../webbuild.html" style="visibility: hidden"></iframe>
 </body>
