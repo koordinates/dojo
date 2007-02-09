@@ -9,12 +9,12 @@ import org.dojo.moxie.sync.*;
 	@author Brad Neuberg, bkn3@columbia.edu
 */
 public class Document implements Item{
-	protected Integer id;
-	protected Integer origId;
-	protected String fileName;
+	protected Integer id = null;
+	protected Integer origId = null;
+	protected String fileName = null;
 	protected long createdOn;
 	protected long lastUpdated;
-	protected String content;
+	protected String content = null;
 	
 	/**
 		@param id The ID of this document; this can either be a positive

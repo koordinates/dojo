@@ -26,7 +26,7 @@ public class SyncRequest{
 			syncRequest.setLastSync(lastSync);
 			
 			// get our list of commands for our CommandLog
-			JSONArray log = jsonObj.getJSONArray("log");
+			JSONArray log = jsonObj.getJSONArray("commandLog");
 			Iterator logIter = log.iterator();
 			while(logIter.hasNext()){
 				JSONObject commandObj = (JSONObject)logIter.next();
