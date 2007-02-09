@@ -13,7 +13,6 @@ public class DocumentSyncer implements ItemSyncer{
 	public void onCreateCommand(Command c, SyncRequest syncRequest,
 									SyncResponse syncResponse)
 										throws SyncException{
-								System.out.println("onCreateCommand");
 		try{
 			Document newDoc = (Document)c.getItem();
 			String status = null;
@@ -61,7 +60,8 @@ public class DocumentSyncer implements ItemSyncer{
 	public void onDeleteCommand(Command c, SyncRequest syncRequest,
 									SyncResponse syncResponse)
 										throws SyncException{
-								System.out.println("onDeleteCommand");
+		// Moxie doesn't currently expose deletes through it's
+		// UI - not supported
 	}
 
 	public void onUpdateCommand(Command c, SyncRequest syncRequest,
@@ -116,7 +116,8 @@ public class DocumentSyncer implements ItemSyncer{
 	public void onOtherCommand(Command c, SyncRequest syncRequest,
 									SyncResponse syncResponse)
 										throws SyncException{
-								System.out.println("onOtherCommand");
+		// Moxie doesn't currently support other, non-standard
+		// command types
 	}
 
 								
