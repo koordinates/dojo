@@ -70,7 +70,7 @@ import javax.servlet.http.*;
 	@author Brad Neuberg, bkn3@columbia.edu
 */
 public class MoxieServlet extends HttpServlet{
-	public void init() throws ServletException {
+	public void init() throws ServletException{
 		// get our JDBC connection information
 		String jdbcURL = getServletConfig().getInitParameter("jdbcURL");
 		String userName = getServletConfig().getInitParameter("userName");
