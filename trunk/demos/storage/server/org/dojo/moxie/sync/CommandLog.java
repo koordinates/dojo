@@ -31,4 +31,20 @@ public class CommandLog
 			}
 		}
 	}
+	/*
+	public String toJSON(){
+		StringBuffer results = new StringBuffer();
+		results.append("[");
+		
+		Iterator<Command> iter = this.iterator();
+		while(iter.hasNext()){
+			Command c = iter.next();
+			results.append(c.toJSON());
+			if(iter.hasNext()){
+				results.append(", ");
+			}
+		}
+		
+		results.append("]");
+	}*/
 }

@@ -1,5 +1,7 @@
 package org.dojo.moxie.sync;
 
+import net.sf.json.*;
+
 /**
 	@author Brad Neuberg, bkn3@columbia.edu
 */
@@ -28,5 +30,18 @@ public class SyncResponse{
 		results.append("\n}");
 		
 		return results.toString();
+	}
+	
+	public String toJSON(){
+		return JSONSerializer.toJSON(this).toString(2);
+		
+		/*StringBuffer results = new StringBuffer();
+		
+		results.append("{\n");
+		results.append("serverTime: " + this.serverTime + ",\n");
+		results.append("log: " + this.log.toJSON());
+		results.append("\n}");
+		
+		return results.toString();*/
 	}
 }
