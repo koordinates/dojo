@@ -15,12 +15,12 @@ public class Command{
 	public static String UPDATED = "updated";
 	public static String CREATED = "created";
 							
-	protected String name;
-	protected String status;
-	protected String itemType;
-	protected Item item;
-	protected Long timestamp;
-	protected Long timeoffset;
+	protected String name = null;
+	protected String status = null;
+	protected String itemType = null;
+	protected Item item = null;
+	protected Long timestamp = null;
+	protected Long timeoffset = null;
 	
 	public String getName(){
 		return this.name;
@@ -98,10 +98,4 @@ public class Command{
 		
 		return results.toString();
 	}
-	
-	/*
-	public String toJSON(){
-		StringBuffer results = new StringBuffer();
-		
-	}*/
 }
