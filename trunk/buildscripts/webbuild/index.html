@@ -44,7 +44,7 @@
 			var depListForm = document.depListForm;
 			depListForm.action = "../webbuild.php";
 			depListForm.depList.value = dependencyResult.depList.join(",");
-			depListForm.provideList.value = dependencyResult.provideList.join(",");
+			depListForm.provideList.value = dependencyResult.provideList && dependencyResult.provideList.length > 0 ? dependencyResult.provideList.join(",") : "null";
 			depListForm.version.value = version;
 			depListForm.xdDojoUrl.value = xdDojoUrl;
 
@@ -53,6 +53,23 @@
 				dojo.html.iframeContentWindow(dojo.byId("builderFrame")).location = "../webbuild.html?random=" + (new Date()).getTime();
 			}, 1000);
 
+
+			//Print out the list of modules included.
+			dojo.debug("Files included in the build:");
+			for(var i = 0; i < dependencyResult.depList.length; i++){
+				output(dependencyResult.depList[i]);
+			}
+			dojo.debug("Modules included in the build:");
+			if(!dependencyResult.provideList || dependencyResult.provideList.length == 0){
+				dojo.debug("[no modules included in the build]");
+			}else{
+				var provideList = dependencyResult.provideList.sort();
+				for(var i = 0; i < provideList.length; i++){
+					output(provideList[i]);
+				}
+			}
+
+			//Submit form to generate custom dojo.js file.
 			depListForm.submit();
 		}
 
