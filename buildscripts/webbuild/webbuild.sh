@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define variables used for rest of the script
-version=0.4.2ALPHA
+version=0.4.2ALPHA2
 xdDojoUrl=http://dojotoolkit.org/~jburke/webbuild/$version
 versionSuffix=xdomain
 
@@ -41,12 +41,12 @@ cat index.html | sed "s/@VERSION@/$version/g" | sed "s|@XD_DOJO_URL@|$xdDojoUrl|
 mv index.out.html index.html
 
 #Generate the list of modules for the web build process.
-cd buildscripts/webbuild
 java -jar ../lib/custom_rhino.jar makeWebBuildModuleList.js ../../src treeData.js
 cd ../../..
 
 #Now in release folder. Bundle it all up.
-zip -r dojo-$version.zip $version/* web/*
+mv web/ $version/
+zip -r dojo-$version.zip $version/*
 mv dojo-$version.zip ../..
 
 #Return to start directory.
