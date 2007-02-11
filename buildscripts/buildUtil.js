@@ -848,3 +848,84 @@ buildUtil.deleteFile = function(fileName){
 		file["delete"]();
 	}
 }
+
+buildUtil.stripComments = function(/*String*/startDir){
+	//summary: strips the JS comments from all the files in "startDir", and all subdirectories.
+	var copyright = new String(readFile("copyright.txt"));
+	var fileList = buildUtil.getFilteredFileList(startDir, /\.js$/, true);
+	if(fileList){
+		for(var i = 0; i < fileList.length; i++){
+			//Don't process dojo.js since it has already been processed.
+			//Don't process dojo.js.uncompressed.js because it is huge.
+			if(!fileList[i].match(/dojo\.js$/) && !fileList[i].match(/dojo\.js\.uncompressed\.js$/)){
+				print("Stripping comments from file: " + fileList[i]);
+				
+				//Read in the file.
+				var fileContents = readFile(fileList[i]);
+				
+				//Look for copyright. If so, maintain it.
+				var singleLineMatches = fileContents.match(/\/\/.*copyright.*$/gi);
+				
+				//Get rid of cr, lf, since it messes up matching.
+				fileContents = fileContents.replace(/\r/g, "__DOJOCARRIAGERETURN__").replace(/\n/g, "__DOJONEWLINE__");
+				var multiLineMatches = fileContents.match(/\/\*.*?copyright.*?\*\//gi);
+
+				//Finalize copyright notice.
+				var copyrightText = "";
+				if((multiLineMatches && multiLineMatches.length > 0) || (singleLineMatches && singleLineMatches.length > 0)){
+					if(multiLineMatches && multiLineMatches.length > 0){
+						copyrightText += multiLineMatches.join("\r\n").replace(/__DOJOCARRIAGERETURN__/g, "\r").replace(/__DOJONEWLINE__/g, "\n");
+					}					
+					if(singleLineMatches && singleLineMatches.length > 0){
+						copyrightText += singleLineMatches.join("\r\n");
+					}
+				}else{
+					copyrightText = copyright;
+				}
+
+				//Remove whitespace.
+				var commandResults = buildUtil.runCommand("java -jar lib/custom_rhinoPrettyPrint.jar -strict -opt -1 -p " + fileList[i]);
+				
+				if(commandResults.error){
+					print("ERROR. Skipping file. Error is: " + commandResults.error);
+				}else{
+					fileContents = commandResults.result;
+	
+					//Replace the spaces with tabs.
+					//Ideally do this in the pretty printer rhino code.
+					fileContents = fileContents.replace(/    /g, "\t");
+					
+					//Write out the file with appropriate copyright.
+					buildUtil.saveUtf8File(fileList[i], copyrightText + buildUtil.getLineSeparator() + fileContents);
+				}
+			}
+		}
+	}
+}
+
+buildUtil.runCommand = function(/*String*/commandLineCommand){
+	//summary: runs a command on the command line.
+	var process = java.lang.Runtime.getRuntime().exec(commandLineCommand);
+	var resultReader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream()));
+	var resultLine = null;
+	var result = "";
+	var lineSeparator = buildUtil.getLineSeparator();
+
+	var error = "";
+	var errorReader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getErrorStream()));
+	//Only read one line of error, since waiting for all of it seems to hang.
+	//TODO: Fix that. There should be a way to get the complete error message.
+	if((resultLine = errorReader.readLine()) != null){
+		error += new String(resultLine) + lineSeparator;
+	}
+
+	if(error){
+		error = error.replace(/^\s*/, "").replace(/\s*$/, "");
+	}else{
+		while((resultLine = resultReader.readLine()) != null){
+			result += new String(resultLine) + lineSeparator;
+		}
+	}
+
+	return {result: result, error: error}; //String
+}
