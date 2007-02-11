@@ -35,10 +35,6 @@ buildUtil.getDojoLoader = function(/*Object?*/dependencies){
 webbuild = {
 	build: function(/*String*/depString, /*String*/version, /*String*/xdDojoPath){
 		depString = depString.replace(/^\s*/, "").replace(/\s*$/, "");
-		if(!depString){
-			alert("Please enter some dependencies");
-			return;
-		}
 
 		var dependencies;
 		eval("dependencies = [" + depString + "];");
