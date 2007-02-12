@@ -291,8 +291,10 @@ buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
 
 	//Insert all the provide statements at the provide insertion marker.
 	var provideString = "";
-	for(var i = 0; i < provideList.length; i++){
-		provideString += 'dojo.provide("' + provideList[i] + '");' + lineSeparator;
+	if(provideList && provideList.length > 0){
+		for(var i = 0; i < provideList.length; i++){
+			provideString += 'dojo.provide("' + provideList[i] + '");' + lineSeparator;
+		}
 	}
 	dojoContents = dojoContents.replace(/__DOJO_PROVIDE_INSERTION__/, provideString);
 
