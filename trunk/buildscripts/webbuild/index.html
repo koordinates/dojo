@@ -158,11 +158,9 @@ SELECT				{	background:#d1c6ae;	}
 		depListForm.submit();
 	}
 
-superMessage = null;
 	function onTreeSelect(message){
 		//summary: event called when a tree node is selected.
 		//Adds item to module list for build.
-		superMessage = message;
 		var treeItem = message.node;
 		var moduleName = treeItem["dojoModuleName"];
 		if(moduleName){
