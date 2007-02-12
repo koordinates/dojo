@@ -158,6 +158,27 @@ SELECT				{	background:#d1c6ae;	}
 		depListForm.submit();
 	}
 
+superMessage = null;
+	function onTreeSelect(message){
+		//summary: event called when a tree node is selected.
+		//Adds item to module list for build.
+		superMessage = message;
+		var treeItem = message.node;
+		var moduleName = treeItem["dojoModuleName"];
+		if(moduleName){
+			var existingDeps = getNormalizedDependencies();
+			var matchRegExp = new RegExp(moduleName.replace('"' + /\./g, "\\.").replace(/\*/g, "\\*") + '"(,|$)');
+			if(!existingDeps.match(matchRegExp)){
+				var depTextArea = dojo.byId("dependencyList");
+				var textValue = depTextArea.value;
+				if(textValue && textValue.charAt(depTextArea.value.length - 1) != "\n"){
+					textValue += "\n";
+				}
+				depTextArea.value = textValue + moduleName + "\n";
+			}
+		}
+	}
+	
 	dojo.addOnLoad(function(){
 		startup();
 		
@@ -170,7 +191,7 @@ SELECT				{	background:#d1c6ae;	}
 		var hiliter = dojo.widget.createWidget("TreeEmphasizeOnSelect", {selector:selector.widgetId});
 		var treeWidget = dojo.widget.createWidget("TreeV3", {listeners: [selector.widgetId, controller.widgetId]});
 
-		dojo.event.topic.subscribe(selector.eventNames.select, this, "onTreeSelect")
+		dojo.event.topic.subscribe(selector.eventNames.dblselect, window, "onTreeSelect")
 
 		if(typeof treeData == "undefined"){
 			alert("Please run webbuild/makeWebBuildModuleList.js to generate list of modules:\n"
@@ -206,7 +227,7 @@ SELECT				{	background:#d1c6ae;	}
 		loadProfile();
 	});
 	
-	function startBuild(){
+	function getNormalizedDependencies(){
 		var deps = dojo.byId('dependencyList').value.replace(/^\s+/, "").replace(/\s+$/, "");
 		
 		//Normalize dependencies.
@@ -223,8 +244,11 @@ SELECT				{	background:#d1c6ae;	}
 			
 			deps = goodParts.join(",");
 		}
-		
-		builderFrame.startBuild(deps, version, xdDojoUrl);
+		return deps;		
+	}
+	
+	function startBuild(){
+		builderFrame.startBuild(getNormalizedDependencies(), version, xdDojoUrl);
 	}
 
 </script>
