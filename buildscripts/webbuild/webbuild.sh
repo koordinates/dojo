@@ -2,7 +2,7 @@
 
 # Define variables used for rest of the script
 version=0.4.2ALPHA2
-xdDojoUrl=http://dojotoolkit.org/~jburke/webbuild/$version
+xdDojoUrl=http://dojotoolkit.org/~jburke/webbuild/$version/src
 versionSuffix=xdomain
 
 #Clean up from a previous run.
