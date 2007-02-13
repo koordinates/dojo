@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+	"http://www.w3.org/TR/html4/DTD/strict.dtd">
+<html>
+<head>
+	<title>Standards sizing test for getBoxObjectFor/getBoundingClientRect</title>
+	<script type="text/javascript">
+		djConfig = { isDebug: true };
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<style type="text/css">
+		.bg      { background: #ffc; }
+		.pixel   {
+					width: 100px; 
+					border: 10px solid black;
+					margin: 10px 10px 10px 10px; 
+					padding: 10px 10px 10px 10px;
+					height: 20px;
+					overflow: auto;
+		}
+	</style>
+	<script type="text/javascript">
+		dojo.require("dojo.debug.console");
+		dojo.addOnLoad(function(){
+			dojo.debug("content width should be: 100px");
+			dojo.debug("content+padding width should be: 120px");
+			dojo.debug("border-box width should be: 140px");
+			dojo.debug("margin-box width should be: 160px");
+			var elem = document.getElementById("pixel");
+			if("getBoxObjectFor" in document){
+				var box = document.getBoxObjectFor(elem);
+				dojo.debug("box width:", box.width);
+			}else if("getBoundingClientRect" in elem){
+				var box = elem.getBoundingClientRect();
+				dojo.debug("box width:", box.right-box.left);
+			}else{
+				dojo.debug("box width:", elem.offsetWidth);
+			}
+		});
+	</script>
+</head>
+<body>
+	<p>Standards mode sizing.</p>
+	<div class="border">
+		<div class="border bg pixel" id="pixel">
+			All units are 10px.
+		</div>
+	</div>
+</body>
+</html>
