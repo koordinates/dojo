@@ -164,6 +164,7 @@ dojo.declare("dojo.data.OpmlStore", null,
 		var bindHandler = function(type, data, evt) {
 			var scope = result.scope || dj_global;
 			if (type == "load") {
+				self._loadFinished = true;
 				self._processRawXmlTree(data);
 				if (result.saveResult) {
 					result.items = self._arrayOfTopLevelItems;
@@ -190,7 +191,9 @@ dojo.declare("dojo.data.OpmlStore", null,
 			}
 		};
 		
-		if (!this._loadFinished) {
+		if (this._loadFinished) {
+			// FIXME:  need to do everything on lines 169 to 183
+		} else {
 			if (this._opmlFileUrl) {
 				var bindRequest = dojo.io.bind({
 					url: this._opmlFileUrl, // "playlist.opml",

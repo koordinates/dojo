@@ -16,10 +16,10 @@ dojo.declare("dojo.data.core.Read", null, null, {
 	getValue: function(/* item */ item, /* attribute || attribute-name-string */ attribute, /* value? */ defaultValue) {
 		/* summary:
 		 *   Returns a single attribute value.
-		 *   Returns defaultValue if *item* does not have a value for *attribute*.
-		 *   Returns null if null was explicitly set as the attribute value.
-		 *   Returns undefined if the item does not have a value for the given 
-		 *   attribute, or if the item does not have the attribute. 
+		 *   Returns defaultValue if and only if *item* does not have a value for *attribute*.
+		 *   Returns null if and only if null was explicitly set as the attribute value.
+		 *   Returns undefined if and only if the item does not have a value for the given 
+		 *   attribute (which is the same as saying the item does not have the attribute). 
 		 * description:
 		 *   Saying that an "item x does not have a value for an attribute y"
 		 *   is identical to saying that an "item x does not have attribute y". 
