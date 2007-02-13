@@ -1,0 +1,53 @@
+<html>
+<head>
+	<title>Quirks sizing test for getBoxObjectFor/getBoundingClientRect</title>
+	<script type="text/javascript">
+		djConfig = { isDebug: true };
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<style type="text/css">
+		.bg      { background: #ffc; }
+		.pixel   {
+					width: 100px; 
+					border: 10px solid black;
+					margin: 10px 10px 10px 10px; 
+					padding: 10px 10px 10px 10px;
+					height: 20px;
+					overflow: auto;
+		}
+	</style>
+	<script type="text/javascript">
+		dojo.require("dojo.debug.console");
+		dojo.addOnLoad(function(){
+			var elem = document.getElementById("pixel");
+			if("getBoundingClientRect" in elem){
+				dojo.debug("content width should be: 60px (IE bug)");
+				dojo.debug("content+padding width should be: 80px (IE bug)");
+				dojo.debug("border-box width should be: 100px (IE bug)");
+				dojo.debug("margin-box width should be: 120px (IE bug)");
+				var box = elem.getBoundingClientRect();
+				dojo.debug("box width:", box.right-box.left);
+			}else{
+				dojo.debug("content width should be: 100px");
+				dojo.debug("content+padding width should be: 120px");
+				dojo.debug("border-box width should be: 140px");
+				dojo.debug("margin-box width should be: 160px");
+				if("getBoxObjectFor" in document){
+					var box = document.getBoxObjectFor(elem);
+					dojo.debug("box width:", box.width);
+				}else{
+					dojo.debug("box width:", elem.offsetWidth);
+				}
+			}
+		});
+	</script>
+</head>
+<body>
+	<p>Quirks mode sizing.</p>
+	<div class="border">
+		<div class="border bg pixel" id="pixel">
+			All units are 10px.
+		</div>
+	</div>
+</body>
+</html>
