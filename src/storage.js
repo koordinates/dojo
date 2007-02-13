@@ -351,7 +351,9 @@ dojo.storage.manager = new function(){
 		//	Offline framework is loaded, that the
 		//	local Dojo Storage system is ready to
 		//	be used, and that the page is finished
-		//	loading. 
+		//	loading. This method is useful if you
+		//	don't want to have a dependency on
+		//	Dojo Events when using Dojo Storage.
 		// func: Function
 		//	A function to call when Dojo Offline
 		//	is ready to go
