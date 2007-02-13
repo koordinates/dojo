@@ -5,6 +5,7 @@ dojo.require("dojo.data.OpmlStore");
 dojo.require("dojo.data.CsvStore");
 dojo.require("dojo.data.YahooStore");
 dojo.require("dojo.data.RdfStore");
+dojo.require("dojo.data.JsonItemStore");
 dojo.require("dojo.lang.type");
 dojo.require("dojo.io.*");
 dojo.require("dojo.lang.declare");
@@ -43,7 +44,18 @@ function test_data_compatibility() {
 			constructor: dojo.data.CsvStore, 
 			constructorArg: null,
 			findQuery: "hobbit spock"
+		},
+		'muppets.json': {
+			constructor: dojo.data.JsonItemStore, 
+			constructorArg: {url:"muppets.json"},
+			findQuery: null
+		},
+		'states.json': {
+			constructor: dojo.data.JsonItemStore, 
+			constructorArg: {url:"countries.json"},
+			findQuery: null
 		}
+		
 	};
 
 	// First create an "EmptyClass" using dojo.declare(), so that we can find 

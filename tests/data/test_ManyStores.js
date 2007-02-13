@@ -2,6 +2,7 @@ dojo.require("dojo.data.OpmlStore");
 dojo.require("dojo.data.CsvStore");
 dojo.require("dojo.data.YahooStore");
 dojo.require("dojo.data.DeliciousStore");
+dojo.require("dojo.data.JsonItemStore");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.type");
 dojo.require("dojo.io.*");
@@ -70,6 +71,20 @@ gui = {
 			constructorArg: {url:"rss_feeds.opml"},
 			findKeywordArgs: null,
 			nameAttribute: 'text'
+		},
+		'muppets.json': {
+			description: 'Item store -- muppets.json',
+			constructor: dojo.data.JsonItemStore,
+			constructorArg: {url:"muppets.json"},
+			findKeywordArgs: null,
+			nameAttribute: 'name'
+		},
+		'countries.json': {
+			description: 'Item store -- countries.json',
+			constructor: dojo.data.JsonItemStore,
+			constructorArg: {url:"countries.json"},
+			findKeywordArgs: null,
+			nameAttribute: 'name'
 		}
 	},
 	
@@ -157,8 +172,9 @@ gui = {
 		}
 	},
 	
-	_displayViews: function() {
-		var result = gui._result;
+	_displayViews: function(result) {
+		// var result = gui._result;
+		gui._result = result;
 		var outputDiv = dojo.byId("output_div");
 		outputDiv.innerHTML = "";
 		var selectedBindings = [];
