@@ -1,5 +1,7 @@
 dojo.provide("dojo.off.files");
 
+// Author: Brad Neuberg, bkn3@columbia.edu, http://codinginparadise.org
+
 // summary:
 //	Helps maintain resources that should be
 //	available offline, such as CSS files.
