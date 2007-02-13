@@ -3,6 +3,11 @@ dojo.provide("dojo.off");
 dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
 
+// Author: Brad Neuberg, bkn3@columbia.edu, http://codinginparadise.org
+
+// summary:
+//	dojo.off is the main object for
+//	offline applications.
 dojo.lang.mixin(dojo.off, {
 	// NETWORK_CHECK: int
 	//	Time in seconds on how often we should check the
@@ -192,7 +197,7 @@ dojo.lang.mixin(dojo.off, {
 		//	from local storage
 	},
 	
-	onSave: function(status, isCoreSave, dataStore, item){
+	onSave: function(isCoreSave, status, namespace, key, value){
 		// summary:
 		//	A standard function that can be registered which is
 		//	called when some piece of data is saved locally.
@@ -202,19 +207,22 @@ dojo.lang.mixin(dojo.off, {
 		//	be used to provide UI feedback while saving, and for
 		//	providing appropriate error feedback if saving fails
 		//	due to a user not allowing the save to occur.
-		// status: dojo.storage.SUCCESS, dojo.storage.PENDING, dojo.storage.FAILED
-		//	Whether the save succeeded, whether it is pending based on a UI dialog
-		//	asking the user for permission, or whether it failed.
 		// isCoreSave: boolean
 		//	If true, then this save was for a core piece of data necessary for
 		//	the functioning of Dojo Offline. If false, then it is a piece of
 		//	normal data being saved for offline access. Dojo Offline will
 		//	'fail fast' if some core piece of data could not be saved, automatically
 		//	setting dojo.off.coreSaveFailed to 'true' and dojo.off.enabled to 'false'.
-		// dataStore: dojo.off.DataStore
-		//	The Dojo Offline DataStore we are trying to save
-		// item: dojo.off.Item
-		//	The Item we are trying to save
+		// status: dojo.storage.SUCCESS, dojo.storage.PENDING, dojo.storage.FAILED
+		//	Whether the save succeeded, whether it is pending based on a UI dialog
+		//	asking the user for permission, or whether it failed.
+		// namespace: String
+		//	The Dojo Storage namespace we are saving this key/value pair
+		//	into, such as "default", "Documents", "Contacts", etc.
+		// key: String
+		//	The key that we are attempting to persist
+		// value: Object
+		//	The object we are trying to persist
 	},
 	
 	_onLoad: function(){

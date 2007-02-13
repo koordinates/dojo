@@ -7,6 +7,14 @@ dojo.require("dojo.event.browser");
 dojo.require("dojo.io.common");
 dojo.require("dojo.io.BrowserIO");
 
+// Author: Brad Neuberg, bkn3@columbia.edu, http://codinginparadise.org
+
+// summary:
+//	dojo.off.ui provides a standard,
+//	default user-interface for a 
+//	Dojo Offline Widget that can easily
+//	be dropped into applications that would
+//	like to work offline.
 dojo.lang.mixin(dojo.off.ui, {
 	// appName: String
 	//	This application's name, such as "Foobar". Note that
