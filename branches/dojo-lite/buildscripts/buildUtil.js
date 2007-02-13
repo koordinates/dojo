@@ -247,6 +247,13 @@ buildUtil.makeDojoJs = function(/*String*/profileFile, /*String*/version){
 			insertedProvideMarker = true;
 		}
 	}
+
+	// dojo.requireLocalization is a special case as it pulls in dojo.i18n.loader at runtime
+	if(dojoContents.match(buildUtil.globalRequireLocalizationRegExp)){
+		depList.push("../src/i18n/loader.js");
+		dojoContents += new String(readFile(depList[depList.length-1]));
+	}
+
 	
 	//Move all the dojo.provide calls to the top, and remove any matching dojo.require calls.
 	//Sort the provide list alphabetically to make it easy to read. Order of provide statements
@@ -438,7 +445,7 @@ buildUtil.makeFlatBundleContents = function(prefix, prefixPath, srcFileName){
 	dojo.requireLocalization(moduleName, bundleName, localeName);
 	
 	//Get the generated, flattened bundle.
-	var module = dojo.evalObjPath(moduleName);
+	var module = dojo.getObject(moduleName);
 	var bundleLocale = localeName ? localeName.replace(/-/g, "_") : "ROOT";
 	var flattenedBundle = module.nls[bundleName][bundleLocale];
 	//print("## flattenedBundle: " + flattenedBundle);

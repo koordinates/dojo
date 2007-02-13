@@ -63,8 +63,7 @@
 
 	var hostenv_phantoms = [
 		"loadPath", "loadUri", "loadUriAndCheck", "unloaded", "loadModule",
-		"preloadLocalizations", "registerNlsPrefix", "preloadLocalizations",
-		"searchLocalePath", "normalizeLocale", "findModule", "getModuleSymbols"
+		"preloadLocalizations", "normalizeLocale", "findModule", "getModuleSymbols"
 	];
 	for(var x = 0; x < hostenv_phantoms.length; x++){
 		dojo.hostenv[hostenv_phantoms[x]] = function(){ return false; }
@@ -245,8 +244,8 @@ dojo.exists = function(/*Object*/obj, /*String*/name){
 	return true; // Boolean
 }
 
-//These two functions are placed outside of preloadLocalizations
-//So that the xd loading can use/override them.
-dojo.hostenv.localesGenerated /***BUILD:localesGenerated***/; // value will be inserted here at build time, if necessary
-
-dojo.requireLocalization = function(){ return false; };
+dojo.requireLocalization = function(/*...*/){
+	//summary: see dojo.i18n.requireLocalization
+	dojo.require("dojo.i18n.loader");
+	dojo.i18n._requireLocalization.apply(dojo.hostenv, arguments);
+}
