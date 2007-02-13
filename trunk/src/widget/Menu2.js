@@ -589,6 +589,10 @@ dojo.widget.defineWidget(
 		this.closeSubpopup(force);
 	},
 
+	closeAll: function(force){
+		this.close(force);
+	},
+
 	processKey: function(/*Event*/ evt){
 		if(evt.ctrlKey || evt.altKey){ return false; }
 
