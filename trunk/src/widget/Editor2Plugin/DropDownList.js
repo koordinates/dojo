@@ -56,11 +56,11 @@ dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDr
 
 	onMouseOver: function(e){
 		if(this._lastState != dojo.widget.Editor2Manager.commandState.Disabled){
-			dojo.html.addClass(e.currentTarget, this._parentToolbar.ToolbarHighlightedSelectStyle);
+			dojo.html.addClass(e.currentTarget, 'ToolbarSelectHighlighted');
 		}
 	},
 	onMouseOut:function(e){
-		dojo.html.removeClass(e.currentTarget, this._parentToolbar.ToolbarHighlightedSelectStyle);
+		dojo.html.removeClass(e.currentTarget, 'ToolbarSelectHighlighted');
 	},
 
 	onDropDownShown: function(){
@@ -89,11 +89,11 @@ dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDr
 	},
 
 	onMouseOverItem: function(e){
-		dojo.html.addClass(e.currentTarget, this._parentToolbar.ToolbarHighlightedSelectItemStyle);
+		dojo.html.addClass(e.currentTarget, 'ToolbarSelectHighlightedItem');
 	},
 
 	onMouseOutItem: function(e){
-		dojo.html.removeClass(e.currentTarget, this._parentToolbar.ToolbarHighlightedSelectItemStyle);
+		dojo.html.removeClass(e.currentTarget, 'ToolbarSelectHighlightedItem');
 	}
 });
 

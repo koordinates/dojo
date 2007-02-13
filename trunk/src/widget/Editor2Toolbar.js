@@ -246,33 +246,33 @@ dojo.declare("dojo.widget.Editor2ToolbarButton", null,
 	latchToolbarItem: function(){
 		this._domNode.disabled = false;
 		this.removeToolbarItemStyle(this._domNode);
-		dojo.html.addClass(this._domNode, this._parentToolbar.ToolbarLatchedItemStyle);
+		dojo.html.addClass(this._domNode, 'ToolbarButtonLatched');
 	},
 
 	enableToolbarItem: function(){
 		this._domNode.disabled = false;
 		this.removeToolbarItemStyle(this._domNode);
-		dojo.html.addClass(this._domNode, this._parentToolbar.ToolbarEnabledItemStyle);
+		dojo.html.addClass(this._domNode, 'ToolbarButtonEnabled');
 	},
 
 	disableToolbarItem: function(){
 		this._domNode.disabled = true;
 		this.removeToolbarItemStyle(this._domNode);
-		dojo.html.addClass(this._domNode, this._parentToolbar.ToolbarDisabledItemStyle);
+		dojo.html.addClass(this._domNode, 'ToolbarButtonDisabled');
 	},
 
 	highlightToolbarItem: function(){
-		dojo.html.addClass(this._domNode, this._parentToolbar.ToolbarHighlightedItemStyle);
+		dojo.html.addClass(this._domNode, 'ToolbarButtonHighlighted');
 	},
 
 	unhighlightToolbarItem: function(){
-		dojo.html.removeClass(this._domNode, this._parentToolbar.ToolbarHighlightedItemStyle);
+		dojo.html.removeClass(this._domNode, 'ToolbarButtonHighlighted');
 	},
 
 	removeToolbarItemStyle: function(){
-		dojo.html.removeClass(this._domNode, this._parentToolbar.ToolbarEnabledItemStyle);
-		dojo.html.removeClass(this._domNode, this._parentToolbar.ToolbarLatchedItemStyle);
-		dojo.html.removeClass(this._domNode, this._parentToolbar.ToolbarDisabledItemStyle);
+		dojo.html.removeClass(this._domNode, 'ToolbarButtonEnabled');
+		dojo.html.removeClass(this._domNode, 'ToolbarButtonLatched');
+		dojo.html.removeClass(this._domNode, 'ToolbarButtonDisabled');
 		this.unhighlightToolbarItem();
 	}
 });
@@ -343,24 +343,6 @@ dojo.widget.defineWidget(
 
 		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/EditorToolbar.html"),
 		templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/EditorToolbar.css"),
-
-		// ToolbarLatchedItemStyle: String: class name for latched toolbar button items
-		ToolbarLatchedItemStyle: "ToolbarButtonLatched",
-
-		// ToolbarEnabledItemStyle: String: class name for enabled toolbar button items
-		ToolbarEnabledItemStyle: "ToolbarButtonEnabled",
-
-		// ToolbarDisabledItemStyle: String: class name for disabled toolbar button items
-		ToolbarDisabledItemStyle: "ToolbarButtonDisabled",
-
-		// ToolbarHighlightedItemStyle: String: class name for highlighted toolbar button items
-		ToolbarHighlightedItemStyle: "ToolbarButtonHighlighted",
-
-		// ToolbarHighlightedSelectStyle: String: class name for highlighted toolbar select items
-		ToolbarHighlightedSelectStyle: "ToolbarSelectHighlighted",
-
-		// ToolbarHighlightedSelectItemStyle: String: class name for highlighted toolbar select dropdown items
-		ToolbarHighlightedSelectItemStyle: "ToolbarSelectHighlightedItem",
 
 //		itemNodeType: 'span', //all the items (with attribute dojoETItemName set) defined in the toolbar should be a of this type
 
