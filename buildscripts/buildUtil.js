@@ -851,9 +851,9 @@ buildUtil.deleteFile = function(fileName){
 	}
 }
 
-buildUtil.stripComments = function(/*String*/startDir){
+buildUtil.stripComments = function(/*String*/startDir, /*boolean*/suppressDojoCopyright){
 	//summary: strips the JS comments from all the files in "startDir", and all subdirectories.
-	var copyright = new String(readFile("copyright.txt"));
+	var copyright = suppressDojoCopyright ? "" : new String(readFile("copyright.txt")) + buildUtil.getLineSeparator();
 	var fileList = buildUtil.getFilteredFileList(startDir, /\.js$/, true);
 	if(fileList){
 		for(var i = 0; i < fileList.length; i++){
@@ -884,6 +884,7 @@ buildUtil.stripComments = function(/*String*/startDir){
 					if(singleLineMatches && singleLineMatches.length > 0){
 						copyrightText += singleLineMatches.join("\r\n");
 					}
+					copyrightText += buildUtil.getLineSeparator();
 				}else{
 					copyrightText = copyright;
 				}
@@ -907,7 +908,7 @@ buildUtil.stripComments = function(/*String*/startDir){
 				fileContents = fileContents.replace(/    /g, "\t");
 				
 				//Write out the file with appropriate copyright.
-				buildUtil.saveUtf8File(fileList[i], copyrightText + buildUtil.getLineSeparator() + fileContents);
+				buildUtil.saveUtf8File(fileList[i], copyrightText + fileContents);
 			}
 		}
 	}
