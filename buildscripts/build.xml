@@ -480,6 +480,16 @@ build targets:
 	</target>
 	<!-- end gen-strip-docs task -->
 
+	<!-- strip-resource-comments -->
+		<target name="strip-resource-comments">
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" 
+				logerror="true">
+			<arg value="stripComments.js" />
+			<arg value="${release_dir}"/>
+		</java>
+	</target>
+	<!-- end strip-resource-comments -->
+
 	<!-- src task -->
 	<target name="src"
 		depends="-fix-config"
