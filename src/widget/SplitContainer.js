@@ -101,9 +101,17 @@ dojo.widget.defineWidget(
 		}
 		this.virtualSizer = document.createElement('div');
 		this.virtualSizer.style.position = 'absolute';
-		this.virtualSizer.style.display = 'none';
-		//this.virtualSizer.style.backgroundColor = 'lime';
-		this.virtualSizer.style.zIndex = 10;
+
+		// #1681: work around the dreaded 'quirky percentages in IE' layout bug
+		// If the splitcontainer's dimensions are specified in percentages, it
+		// will be resized when the virtualsizer is displayed in _showSizingLine
+		// (typically expanding its bounds unnecessarily). This happens because
+		// we use position: relative for .dojoSplitContainer.
+		// The workaround: instead of changing the display style attribute,
+		// switch to changing the zIndex (bring to front/move to back)
+
+		this.virtualSizer.style.display = 'block';
+		this.virtualSizer.style.zIndex = -1;
 		this.virtualSizer.className = this.isHorizontal ? 'dojoSplitContainerVirtualSizerH' : 'dojoSplitContainerVirtualSizerV';
 		this.domNode.appendChild(this.virtualSizer);
 
@@ -460,11 +468,11 @@ dojo.widget.defineWidget(
 			dojo.html.setMarginBox(this.virtualSizer, { width: this.paneWidth, height: this.sizerWidth });
 		}
 
-		this.virtualSizer.style.display = 'block';
+		this.virtualSizer.style.zIndex = 10;
 	},
 
 	_hideSizingLine: function(){
-		this.virtualSizer.style.display = 'none';
+		this.virtualSizer.style.zIndex = -1;
 	},
 
 	_moveSizingLine: function(){
