@@ -51,7 +51,7 @@ dojo.widget.defineWidget(
 		//		post content filter function register array.
 		//		these will be used on the resulting html
 		//		from contentDomPostFilters. The resuling
-		//		content is the final html (returned by getEditorContent())
+		//		content is the final html (returned by getValue())
 		this.contentPostFilters = [];
 
 		// contentDomPreFilters: Array
@@ -245,7 +245,7 @@ dojo.widget.defineWidget(
 					dojo.event.connect('before', this.textarea.form, "onsubmit",
 						// FIXME: should we be calling close() here instead?
 						dojo.lang.hitch(this, function(){
-							this.textarea.value = this.getEditorContent();
+							this.textarea.value = this.getValue();
 						})
 					);
 				}
@@ -311,7 +311,7 @@ dojo.widget.defineWidget(
 				//can workaround this. No clue why.
 				setTimeout(function(){self._drawObject(html);}, 0);
 			}else if(h.ie || this._safariIsLeopard() || h.opera){ // contentEditable, easy
-				this.iframe = dojo.doc().createElement( 'iframe' ) ;
+				this.iframe = dojo.doc().createElement('iframe');
 				this.iframe.src = 'javascript:void(0)';
 				this.editorObject = this.iframe;
 				with(this.iframe.style){
@@ -360,7 +360,7 @@ dojo.widget.defineWidget(
 				//in the array below, ul can not come directly after ol, otherwise the queryCommandValue returns Normal for it
 				var formats = ['p', 'pre', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'div', 'ul'];
 				var localhtml = "";
-				for(var i in formats){
+				for(var i=0; i<formats.length; i++){ 
 					if(formats[i].charAt(1) != 'l'){
 						localhtml += "<"+formats[i]+"><span>content</span></"+formats[i]+">";
 					}else{
@@ -1647,7 +1647,7 @@ dojo.widget.defineWidget(
 			// summary:
 			//		Saves the content in an onunload event if the editor has not been closed
 			var saveTextarea = dojo.doc().getElementById("dojo.widget.RichText.savedContent");
-			saveTextarea.value += this._SEPARATOR + this.saveName + ":" + this.getEditorContent();
+			saveTextarea.value += this._SEPARATOR + this.saveName + ":" + this.getValue();
 		},
 
 		getEditorContent: function(){
@@ -1749,7 +1749,7 @@ dojo.widget.defineWidget(
 			if(this.isClosed){return false; }
 
 			if (arguments.length == 0) { save = true; }
-			this._content = this.getEditorContent();
+			this._content = this.getValue();
 			var changed = (this.savedContent != this._content);
 
 			// line height is squashed for iframes
