@@ -42,7 +42,7 @@ java -jar ../lib/custom_rhino.jar makeWebBuildModuleList.js ../../src treeData.j
 
 #Got to buildscripts dir and run stripComments for web build.
 cd ..
-java -jar lib/custom_rhino.jar stripComments.js ../src
+java -jar lib/custom_rhino.jar stripComments.js ../src true
 
 #Now in release folder. Bundle it all up.
 cd ../../..
