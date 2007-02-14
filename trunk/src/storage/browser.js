@@ -395,9 +395,8 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	
 	getNamespaces: function(){
 		var results = dojo.flash.comm.getNamespaces();
-		dojo.debug("results="+results);
 		if(results == ""){
-			return [];
+			return [dojo.storage.DEFAULT_NAMESPACE];
 		}
 		
 		// the results are returned comma seperated; split them

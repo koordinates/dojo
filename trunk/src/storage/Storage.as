@@ -7,12 +7,7 @@ class Storage {
 	
 	public var so;
 	
-	// FIXME: These two variables should be passed in from our
-	// browser JavaScript so they are not hard coded here
-	private var _DEFAULT_NAMESPACE = "default";
 	private var _NAMESPACE_KEY = "allNamespaces";
-	
-	private var allNamespaces = new Array();
 	
 	public function Storage(){
 		//getURL("javascript:dojo.debug('FLASH:Storage constructor')");
@@ -26,9 +21,6 @@ class Storage {
 		DojoExternalInterface.addCallback("remove", this, remove);
 		DojoExternalInterface.loaded();
 		
-		// load our list of namespaces
-		allNamespaces = getNamespaces();
-		
 		// preload the System Settings finished button movie for offline
 		// access so it is in the cache
 		_root.createEmptyMovieClip("_settingsBackground", 1);
@@ -38,15 +30,13 @@ class Storage {
 
 	// FIXME: This code has gotten ugly -- refactor
 	public function put(keyName, keyValue, namespace){
-		getURL("javascript:dojo.debug('FLASH: put1, namespace="+namespace+"')");
-	
 		// Get the SharedObject for these values and save it
 		so = SharedObject.getLocal(namespace);
 		
 		// prepare a storage status handler
 		var self = this;
 		so.onStatus = function(infoObject:Object){
-			getURL("javascript:dojo.debug('FLASH: onStatus, infoObject="+infoObject.code+"')");
+			//getURL("javascript:dojo.debug('FLASH: onStatus, infoObject="+infoObject.code+"')");
 			
 			// delete the data value if the request was denied
 			if(infoObject.code == "SharedObject.Flush.Failed"){
@@ -69,7 +59,7 @@ class Storage {
 					return;
 				}
 			}
-			getURL("javascript:dojo.debug('FLASH: onStatus, statusResults="+statusResults+"')");
+			//getURL("javascript:dojo.debug('FLASH: onStatus, statusResults="+statusResults+"')");
 			
 			// give the status results to JavaScript
 			DojoExternalInterface.call("dojo.storage._onStatus", null, statusResults, 
@@ -158,37 +148,13 @@ class Storage {
 	}
 	
 	public function getNamespaces(){
-		getURL("javascript:dojo.debug('FLASH: getNamespaces1')");
-		var defaultNS = SharedObject.getLocal(_DEFAULT_NAMESPACE);
-		allNamespaces = defaultNS.data[_NAMESPACE_KEY];
-		getURL("javascript:dojo.debug('FLASH: getNamespaces2, allNamespaces="+allNamespaces+"')");
-		if(allNamespaces == null
-			|| typeof allNamespaces == "undefined"){
-			allNamespaces = new Array();	
+		var allNamespaces = SharedObject.getLocal(_NAMESPACE_KEY);
+		var results = new Array();
+		for(var i in allNamespaces.data){
+			results.push(i);
 		}
-		
-		getURL("javascript:dojo.debug('FLASH: getNamespaces3, allNamespaces="+allNamespaces+"')");
-		// add our default namespace if it is not present
-		if(hasNamespace(_DEFAULT_NAMESPACE) == false){
-			addNamespace(_DEFAULT_NAMESPACE);
-		}
-		
-		getURL("javascript:dojo.debug('FLASH: getNamespaces3.5, allNamespaces[0]="+allNamespaces[0]+"')");
-		getURL("javascript:dojo.debug('FLASH: getNamespaces3.6, typeof allNamespaces="+typeof allNamespaces+"')");
-		
-		// join the keys together in a comma seperated string
-		// Flash on Safari has a problem with join() with the Array returned
-		// from our local shared object!
-		var results = new String();
-		for(var i = 0; i < allNamespaces.length; i++){
-			results += allNamespaces[i];
-			if(i < (allNamespaces.length - 1)){
-				results += ",";
-			}
-		}
-		
-		getURL("javascript:dojo.debug('FLASH: getNamespaces4, results="+results+"')");
-		return results;
+	
+		return results.join(",");
 	}
 	
 	public function remove(keyName, namespace){
@@ -212,9 +178,12 @@ class Storage {
 	}
 	
 	private function hasNamespace(namespace):Boolean{
+		// Get the SharedObject for the namespace list
+		var allNamespaces = SharedObject.getLocal(_NAMESPACE_KEY);
+		
 		var results = false;
-		for(var i = 0; i < allNamespaces.length; i++){
-			if(allNamespaces[i] == namespace){
+		for(var i in allNamespaces.data){
+			if(i == namespace){
 				results = true;
 				break;
 			}
@@ -225,20 +194,18 @@ class Storage {
 	
 	// FIXME: This code has gotten ugly -- refactor
 	private function addNamespace(namespace, keyName){
-		getURL("javascript:dojo.debug('FLASH: addNamespace, namespace="+namespace+"')");	
-	
 		if(hasNamespace(namespace) == true){
 			return;
 		}
 		
-		// Get the SharedObject for the default namespace
-		var defaultNS = SharedObject.getLocal(_DEFAULT_NAMESPACE);
+		// Get the SharedObject for the namespace list
+		var allNamespaces = SharedObject.getLocal(_NAMESPACE_KEY);
 		
 		// prepare a storage status handler if the keyName is
 		// not null
 		if(keyName != null && typeof keyName != "undefined"){
 			var self = this;
-			defaultNS.onStatus = function(infoObject:Object){
+			allNamespaces.onStatus = function(infoObject:Object){
 				// delete the data value if the request was denied
 				if(infoObject.code == "SharedObject.Flush.Failed"){
 					delete self.so.data[keyName];
@@ -260,11 +227,9 @@ class Storage {
 		}
 		
 		// save the namespace list
-		getURL("javascript:dojo.debug('FLASH: addNamespace2, allNamespaces="+allNamespaces+", namespace="+namespace+"')");
-		allNamespaces.push(namespace);
-		defaultNS.data[_NAMESPACE_KEY] = allNamespaces;
-		var flushResults = defaultNS.flush();
-		getURL("javascript:dojo.debug('FLASH: addNamespace3, flushResults="+flushResults+"')");
+		allNamespaces.data[namespace] = true;
+		var flushResults = allNamespaces.flush();
+		
 		// return results of this command to JavaScript
 		if(keyName != null && typeof keyName != "undefined"){
 			var statusResults;
@@ -283,24 +248,16 @@ class Storage {
 	
 	// FIXME: This code has gotten ugly -- refactor
 	private function removeNamespace(namespace){
-		if(hasNamespace(namespace) == false 
-			|| namespace == _DEFAULT_NAMESPACE){
+		if(hasNamespace(namespace) == false){
 			return;
-		}
-		
-		// find this namespace entry and remove it
-		for(var i = 0; i < allNamespaces.length; i++){
-			if(allNamespaces[i] == namespace){
-				allNamespaces.splice(i, 1);
-			}
 		}
 		
 		// try to save the namespace list; don't have a return
 		// callback; if we fail on this, the worst that will happen
 		// is that we have a spurious namespace entry
-		var defaultNS = SharedObject.getLocal(_DEFAULT_NAMESPACE);
-		defaultNS.data[_NAMESPACE_KEY] = allNamespaces;
-		defaultNS.flush();
+		var allNamespaces = SharedObject.getLocal(_NAMESPACE_KEY);
+		delete allNamespaces.data[namespace];
+		allNamespaces.flush();
 	}
 
 	static function main(mc){
