@@ -10,7 +10,7 @@ var TestStorage = {
 	currentNamespace: dojo.storage.DEFAULT_NAMESPACE,
 	
 	initialize: function(){
-		//dojo.debug("test_storage.initialize()");
+		dojo.debug("test_storage.initialize()");
 		
 		// clear out old values and enable input forms
 		dojo.byId("storageNamespace").value = this.currentNamespace;
@@ -137,6 +137,7 @@ var TestStorage = {
 		dojo.storage.clear(this.currentNamespace);
 		
 		this._printAvailableNamespaces();
+		this._printAvailableKeys();
 	},
 	
 	configure: function(evt){
@@ -193,6 +194,9 @@ var TestStorage = {
 		}else{
 			dojo.storage.remove(key, this.currentNamespace);
 		}
+		
+		// update our UI
+		this._printAvailableNamespaces();
 		this._printStatus("Removed '" + key);
 	},
 	
