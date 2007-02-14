@@ -23,7 +23,7 @@ dojo.hostenv.println=function(line){
 	}
 }
 
-dojo.locale = dojo.locale || java.util.Locale.getDefault().toString().replace('_','-').toLowerCase();
+dojo.locale = dojo.locale || String(java.util.Locale.getDefault().toString().replace('_','-').toLowerCase());
 dojo.render.name = dojo.hostenv.name_ = 'rhino';
 dojo.hostenv.getVersion = function() {return version();};
 

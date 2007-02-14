@@ -716,7 +716,7 @@ dojo.requireLocalization = function(/*String*/moduleName, /*String*/bundleName, 
 	var localizedBundle = null;
 	if(bundle){
 		if(djConfig.localizationComplete && bundle._built){return;}
-		var jsLoc = tempLocale.replace('-', '_');
+		var jsLoc = tempLocale.replace('-', '_', 'g');
 		var translationPackage = bundlePackage+"."+jsLoc;
 		localizedBundle = dojo.hostenv.findModule(translationPackage);
 	}
@@ -728,7 +728,7 @@ dojo.requireLocalization = function(/*String*/moduleName, /*String*/bundleName, 
 		var parent;
 
 		dojo.hostenv.searchLocalePath(tempLocale, availableFlatLocales, function(loc){
-			var jsLoc = loc.replace('-', '_');
+			var jsLoc = loc.replace('-', '_', 'g');
 			var translationPackage = bundlePackage + "." + jsLoc;
 			var loaded = false;
 			if(!dojo.hostenv.findModule(translationPackage)){
@@ -765,7 +765,7 @@ dojo.requireLocalization = function(/*String*/moduleName, /*String*/bundleName, 
 	//Save the best locale bundle as the target locale bundle when we know the
 	//the available bundles.
 	if(availableFlatLocales && targetLocale != bestLocale){
-		bundle[targetLocale.replace('-', '_')] = bundle[bestLocale.replace('-', '_')];
+		bundle[targetLocale.replace('-', '_', 'g')] = bundle[bestLocale.replace('-', '_', 'g')];
 	}
 };
 
