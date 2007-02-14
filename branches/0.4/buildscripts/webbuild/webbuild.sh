@@ -17,23 +17,20 @@ cd ./0.4/buildscripts
 
 #Do xdajax build.
 #Mark the dojo.js has an xdomain build, complete with xdomain path for Dojo.
-ant -Dprofile=ajax -DreleaseName=$version -DdojoLoader=xdomain -Dversion=$version$versionSuffix -DxdDojoUrl=$xdDojoUrl clean release intern-strings xd-dojo-config
+ant -Dprofile=ajax -DreleaseName=$version -DdojoLoader=xdomain -Dversion=$version$versionSuffix -DxdDojoUrl=$xdDojoUrl clean release intern-strings xd-dojo-config strip-resource-comments
 
-#src folders/buildscripts for the webbuild stuff.
-mkdir ../release
-
-cd ../release
+cd ../release/$version
 mkdir web
 cd web
-cp -r ../../src .
-cp -r ../../buildscripts .
-cp -r ../../dojo.js .
-cp -r ../../iframe_history.html .
-cp -r ../../flash6_gateway.swf .
-cp -r ../../DojoFileStorageProvider.jar .
-cp -r ../../storage_dialog.swf .
-cp -r ../../Storage_version6.swf .
-cp -r ../../Storage_version8.swf .
+cp -r ../../../src .
+cp -r ../../../buildscripts .
+cp -r ../../../dojo.js .
+cp -r ../../../iframe_history.html .
+cp -r ../../../flash6_gateway.swf .
+cp -r ../../../DojoFileStorageProvider.jar .
+cp -r ../../../storage_dialog.swf .
+cp -r ../../../Storage_version6.swf .
+cp -r ../../../Storage_version8.swf .
 
 #Stamp the web build with the xd Dojo URL and version.
 cd buildscripts/webbuild
@@ -42,12 +39,15 @@ mv index.out.html index.html
 
 #Generate the list of modules for the web build process.
 java -jar ../lib/custom_rhino.jar makeWebBuildModuleList.js ../../src treeData.js
-cd ../../..
+
+#Got to buildscripts dir and run stripComments for web build.
+cd ..
+java -jar lib/custom_rhino.jar stripComments.js ../src
 
 #Now in release folder. Bundle it all up.
-mv web/ $version/
+cd ../../..
 zip -r dojo-$version.zip $version/*
 mv dojo-$version.zip ../..
 
-#Return to start directory.
+#Return to start directory
 cd ../../..
