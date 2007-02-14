@@ -390,23 +390,18 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 		// the results are returned comma seperated; split them
 		results = results.split(",");
 		
-		// remove our key that records our list of namespaces
-		for(var i = 0; i < results.length; i++){
-			if(results[i] == this._NAMESPACES_KEY){
-				results.splice(i, 1);
-				break;
-			}
-		}
-		
 		return results;
 	},
 	
 	getNamespaces: function(){
-		var results = dojo.flash.comm.getNamespaces(namespace);
-		
+		var results = dojo.flash.comm.getNamespaces();
+		dojo.debug("results="+results);
 		if(results == ""){
-			results = [];
+			return [];
 		}
+		
+		// the results are returned comma seperated; split them
+		results = results.split(",");
 		
 		return results;
 	},
