@@ -32,6 +32,7 @@
 		#templates { text-align: center; }
 		#templates a { display: block; margin-top: 1em; }
 		#directory { width: 100%; }
+		#namespaceDirectory { width: 100%; }
 		#storageValue { vertical-align: top; width: 100%; height: 10em; }
 		#buttonContainer { text-align: center; }
 		#currentStorageProvider { font-weight: bold; }
@@ -50,13 +51,16 @@
 	</div>
 	
 	<div id="directoryContainer">
+		<h2>All Namespaces:</h2>
+		<select id="namespaceDirectory" size="3"></select>
+		
 		<h2>All Keys:</h2>
 		<select id="directory" size="10">
 		</select>
 		
 		<div id="templates">
-			<a href="#" id="saveTestBook" onclick="return TestStorage.saveBook()">Save Test Book (238K - Faust by Goethe)</a>
-			<a href="#" id="saveTestXML" onclick="return TestStorage.saveXML()">Save Test XML</a>
+			<a href="#" onclick="return TestStorage.saveBook()">Save Test Book (238K - Faust by Goethe)</a>
+			<a href="#" onclick="return TestStorage.saveXML()">Save Test XML</a>
 		</div>
 	</div>
 	
@@ -114,6 +118,14 @@
 			</div>
 		</div>
 		
+		<div id="storageNamespaceContainer">
+			<label for="storageNamespace">
+				Namespace:
+			</label>
+			
+			<input type="text" id="storageNamespace" name="storageNamespace" size="40" disabled="true">
+		</div>
+		
 		<div id="storageKeyContainer">
 			<label for="storageKey">
 				Key:
@@ -134,7 +146,7 @@
 			<button id="loadButton" disabled="true">Load</button>
 			<button id="saveButton" disabled="true">Save</button>
 			<button id="removeButton" disabled="true">Remove</button>
-			<button id="clearButton" disabled="true">Clear</button>
+			<button id="clearNamespaceButton" disabled="true">Clear Namespace</button>
 			<button id="configureButton" disabled="true">Configure</button>
 		</div>
 	</form>

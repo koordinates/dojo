@@ -7,6 +7,11 @@ class Storage {
 	
 	public var so;
 	
+	// FIXME: The 'default' namespace string should be passed in
+	// from the browser's JavaScript somehow
+	private var _NAMESPACE_KEY = "__default_allNamespaces";
+	private var allNamespaces = new Array();
+	
 	public function Storage(){
 		//getURL("javascript:dojo.debug('FLASH:Storage constructor')");
 		DojoExternalInterface.initialize();
@@ -15,8 +20,12 @@ class Storage {
 		DojoExternalInterface.addCallback("showSettings", this, showSettings);
 		DojoExternalInterface.addCallback("clear", this, clear);
 		DojoExternalInterface.addCallback("getKeys", this, getKeys);
+		DojoExternalInterface.addCallback("getNamespaces", this, getNamespaces);
 		DojoExternalInterface.addCallback("remove", this, remove);
 		DojoExternalInterface.loaded();
+		
+		// load our list of namespaces
+		allNamespaces = this.getNamespaces();
 		
 		// preload the System Settings finished button movie for offline
 		// access so it is in the cache
@@ -126,6 +135,32 @@ class Storage {
 		
 		// save the changes
 		so.flush();
+	}
+	
+	private boolean hasNamespace(namespace){
+		var results = false;
+		for(var i = 0; i < allNamespaces.length; i++){
+			if(allNamespaces[i] == namespace){
+				results = true;
+				break;
+			}
+		}
+		
+		return results;
+	}
+	
+	private void addNamespace(namespace, resultsHandler){
+		if(hasNamespace(namespace) == true){
+			return;
+		}
+		
+		
+	}
+	
+	private void removeNamespace(namespace){
+		if(hasNamespace(namespace) == false){
+			return;
+		}
 	}
 
 	static function main(mc){
