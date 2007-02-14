@@ -19,7 +19,7 @@
 		formDp = dojo.widget.createWidget("DatePicker", {value: '2006-10-31'}, dojo.byId("dpNode")); 
 		dpInput = dojo.byId('dpInput');
 		setDate = dojo.byId('setDate');
-		dojo.event.connect(formDp,'onSetDate','setDpInput');
+		dojo.event.connect(formDp,'onValueChanged','setDpInput');
 		dojo.event.connect(setDate,'onclick','updateDp');
 	};
 	function setDpInput(){
