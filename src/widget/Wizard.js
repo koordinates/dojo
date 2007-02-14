@@ -66,6 +66,13 @@ dojo.widget.defineWidget(
 			this.cancelButton.style.display = "none";
 		}
 		dojo.event.connect(this.doneButton, "onclick", this, "done");
+
+		// #607 if created from markup we should respect any style attributes
+		// Copy style info from input node to output node
+		var source = this.getFragNodeRef(frag);
+		if(source != null){
+			dojo.html.copyStyle(this.domNode, source);
+		}
 	},
 
 	postCreate: function(){
