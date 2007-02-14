@@ -1,2 +1,2 @@
 load("buildUtil.js");
-buildUtil.stripComments(arguments[0]);
+buildUtil.stripComments(arguments[0], arguments[1]);
