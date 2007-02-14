@@ -50,11 +50,11 @@ dojo.declare("dojo.storage", null, {
 	//	limit on the amount of data it can store. 
 	SIZE_NO_LIMIT: "No size limit",
 
-	// namespace: String
+	// DEFAULT_NAMESPACE: String
 	//	The namespace for all storage operations. This is useful if several
 	//	applications want access to the storage system from the same domain but
-		//want different storage silos. 
-	namespace: "default",
+	//	want different storage silos. 
+	DEFAULT_NAMESPACE: "default",
 	
 	// onHideSettingsUI: Function
 	//	If a function is assigned to this property, then when the settings
@@ -82,7 +82,8 @@ dojo.declare("dojo.storage", null, {
 
 	put: function(	/*string*/ key,
 					/*object*/ value, 
-					/*function*/ resultsHandler){
+					/*function*/ resultsHandler,
+					/*string?*/ namespace){
 		// summary:
 		//		Puts a key and value into this storage system.
 		// description:
@@ -110,41 +111,52 @@ dojo.declare("dojo.storage", null, {
 		//		The third argument in the call back is an optional message that
 		//		details possible error messages that might have occurred during
 		//		the storage process.
+		//	namespace:
+		//		Optional string namespace that this value will be placed into;
+		//		if left off, the value will be placed into dojo.storage.DEFAULT_NAMESPACE
 		
 		dojo.unimplemented("dojo.storage.put");
 	},
 
-	get: function(/*string*/ key){ /*Object*/
+	get: function(/*string*/ key, /*string?*/ namespace){ /*Object*/
 		// summary:
 		//		Gets the value with the given key. Returns null if this key is
 		//		not in the storage system.
 		// key:
 		//		A string key to get the value of.
+		//	namespace:
+		//		Optional string namespace that this value will be retrieved from;
+		//		if left off, the value will be retrieved from dojo.storage.DEFAULT_NAMESPACE
 		// return: Returns any JavaScript object type; null if the key is not present
 		dojo.unimplemented("dojo.storage.get");
 	},
 
-	hasKey: function(/*string*/ key){ /*Boolean*/
+	hasKey: function(/*string*/ key, /*string?*/ namespace){ /*Boolean*/
 		// summary: Determines whether the storage has the given key. 
 		return (this.get(key) != null);
 	},
 
-	getKeys: function(){ /*Array*/
+	getKeys: function(/*string?*/ namespace){ /*Array*/
 		// summary: Enumerates all of the available keys in this storage system.
 		// return: Array of available keys
 		dojo.unimplemented("dojo.storage.getKeys");
 	},
 	
-	clear: function(){
+	clear: function(/*string?*/ namespace){
 		// summary: 
 		//		Completely clears this storage system of all of it's values and
-		//		keys. 
+		//		keys. If 'namespace' is provided just clears the keys in that
+		//		namespace.
 		dojo.unimplemented("dojo.storage.clear");
 	},
   
-	remove: function(key){
+	remove: function(/*string*/ key, /*string?*/ namespace){
 		// summary: Removes the given key from this storage system.
 		dojo.unimplemented("dojo.storage.remove");
+	},
+	
+	getNamespaces: function(){ /*string[]*/
+		dojo.unimplemented("dojo.storage.getNamespaces");
 	},
 
 	isPermanent: function(){ /*Boolean*/
@@ -248,11 +260,6 @@ dojo.storage.manager = new function(){
 	this._providers = [];
 	this._onLoadListeners = new Array();
 	
-	// namespace: String
-	//	An optional namespace value that can be used by a single application
-	//	to partition storage into seperate units - not well supported yet.
-	this.namespace = "default";
-	
 	this.initialize = function(){
 		// summary: 
 		//		Initializes the storage system and autodetects the best storage
@@ -348,10 +355,9 @@ dojo.storage.manager = new function(){
 		// description:
 		//	Adds a listener to know when Dojo Offline
 		//	can be used. This ensures that the Dojo
-		//	Offline framework is loaded, that the
+		//	Offline framework is loaded and that the
 		//	local Dojo Storage system is ready to
-		//	be used, and that the page is finished
-		//	loading. This method is useful if you
+		//	be used. This method is useful if you
 		//	don't want to have a dependency on
 		//	Dojo Events when using Dojo Storage.
 		// func: Function

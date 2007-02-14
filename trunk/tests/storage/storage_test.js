@@ -5,23 +5,30 @@ dojo.require("dojo.html.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.storage.*");
 
-
 var TestStorage = {
 	currentProvider: "default",
+	currentNamespace: dojo.storage.DEFAULT_NAMESPACE,
 	
 	initialize: function(){
 		//dojo.debug("test_storage.initialize()");
 		
 		// clear out old values and enable input forms
+		dojo.byId("storageNamespace").value = this.currentNamespace;
+		dojo.byId("storageNamespace").disabled = false;
 		dojo.byId("storageKey").value = "";
 		dojo.byId("storageKey").disabled = false;
 		dojo.byId("storageValue").value = "";
 		dojo.byId("storageValue").disabled = false;
 		
+		// write out our available namespaces
+		this._printAvailableNamespaces();
+		
 		// write out our available keys
 		this._printAvailableKeys();
 		
 		// initialize our event handlers
+		var namespaceDirectory = dojo.byId("namespaceDirectory");
+		dojo.event.connect(namespaceDirectory, "onchange", this, this.namespaceChange);
 		var directory = dojo.byId("directory");
 		dojo.event.connect(directory, "onchange", this, this.directoryChange);
 		var storageValueElem = dojo.byId("storageValue");
@@ -32,15 +39,6 @@ var TestStorage = {
 		dojo.event.connect(keyNameField, "onfocus", function(evt){
 			directory.selectedIndex = -1;
 		}); 		
-		
-		// disable the test book and test XML links if we
-		// are on IE 7.0 and being served from the file:// URL;
-		// XHR won't work in this scenario
-		if(dojo.render.html.ie70 == true
-			&& window.location.protocol.indexOf("file") != -1){
-			dojo.byId("saveTestBook").disabled = true;
-			dojo.byId("saveTestXML").disabled = true;		
-		}
 											 
 		// add onclick listeners to all of our buttons
 		var buttonContainer = dojo.byId("buttonContainer");
@@ -63,6 +61,19 @@ var TestStorage = {
 		if(dojo.storage.hasSettingsUI() == false){
 			dojo.byId("configureButton").disabled = true;	
 		}
+	},
+	
+	namespaceChange: function(evt){
+		var ns = evt.target.value;
+		this.currentNamespace = ns;
+		
+		// update our available keys
+		this._printAvailableKeys();
+		
+		// clear out our key and values
+		dojo.byId("storageNamespace").value = this.currentNamespace;
+		dojo.byId("storageKey").value = "";
+		dojo.byId("storageValue").value = "";
 	},
 	
 	directoryChange: function(evt){
@@ -99,6 +110,7 @@ var TestStorage = {
 		// get the new values
 		var key = dojo.byId("storageKey").value;
 		var value = dojo.byId("storageValue").value;
+		var namespace = dojo.byId("storageNamespace").value;
 		
 		if(key == null || typeof key == "undefined" || key == ""){
 			alert("Please enter a key name");
@@ -114,18 +126,17 @@ var TestStorage = {
 		this.printValueSize(); 
 		
 		// do the save
-		this._save(key, value)
+		this._save(key, value, namespace);
 	},
 	
-	clear: function(evt){
+	clearNamespace: function(evt){
 		// cancel the button's default behavior
 		evt.preventDefault();
 		evt.stopPropagation();
 		
-		dojo.storage.clear();
+		dojo.storage.clear(this.currentNamespace);
 		
-		this._printStatus("Cleared");
-		this._printAvailableKeys();
+		this._printAvailableNamespaces();
 	},
 	
 	configure: function(evt){
@@ -177,7 +188,11 @@ var TestStorage = {
 		
 		// now delete the value
 		this._printStatus("Removing '" + key + "'...");
-		dojo.storage.remove(key);
+		if(this.currentNamespace == dojo.storage.DEFAULT_NAMESPACE){
+			dojo.storage.remove(key);
+		}else{
+			dojo.storage.remove(key, this.currentNamespace);
+		}
 		this._printStatus("Removed '" + key);
 	},
 	
@@ -205,16 +220,6 @@ var TestStorage = {
 	},
 	
 	saveBook: function(evt){
-		if(!dojo.lang.isUndefined(evt) && evt != null){
-			evt.preventDefault();
-			evt.stopPropagation();
-		}
-		
-		// is the save test book hyperlink disabled?
-		if(dojo.byId("saveTestBook").disabled == true){
-			return false;
-		}
-	
 		this._printStatus("Loading book...");
 		var self = this;
 		dojo.io.bind({
@@ -229,20 +234,15 @@ var TestStorage = {
 				mimetype: "text/plain"
 		});
 		
-		return false;
-	},
-	
-	saveXML: function(evt){
 		if(!dojo.lang.isUndefined(evt) && evt != null){
 			evt.preventDefault();
 			evt.stopPropagation();
 		}
 		
-		// is the save test XML hyperlink disabled?
-		if(dojo.byId("saveTestXML").disabled == true){
-			return false;
-		}
+		return false;
+	},
 	
+	saveXML: function(evt){
 		this._printStatus("Loading XML...");
 		var self = this;
 		dojo.io.bind({
@@ -257,37 +257,51 @@ var TestStorage = {
 				mimetype: "text/plain"
 		});
 		
+		if(!dojo.lang.isUndefined(evt) && evt != null){
+			evt.preventDefault();
+			evt.stopPropagation();
+		}
+		
 		return false;
 	},
 	
-	_save: function(key, value){
+	_save: function(key, value, namespace){
 		this._printStatus("Saving '" + key + "'...");
 		var self = this;
 		var saveHandler = function(status, keyName){
 			if(status == dojo.storage.FAILED){
-				var msg = "You do not have permission to store data for this web site.";
-				if(dojo.storage.hasSettingsUI()){
-					msg += " Press the Configure button to grant permission.";
-				}
-			
-				alert(msg);
+				alert("You do not have permission to store data for this web site. "
+			        + "Press the Configure button to grant permission.");
 			}else if(status == dojo.storage.SUCCESS){
 				// clear out the old value
 				dojo.byId("storageKey").value = "";
 				dojo.byId("storageValue").value = "";
 				self._printStatus("Saved '" + key + "'");
 				
-				// update the list of available keys
+				if(typeof namespace != "undefined"
+					&& namespace != null){
+					self.currentNamespace = namespace;
+				}
+				
+				// update the list of available keys and namespaces
 				// put this on a slight timeout, because saveHandler is called back
 				// from Flash, which can cause problems in Flash 8 communication
 				// which affects Safari
 				// FIXME: Find out what is going on in the Flash 8 layer and fix it
 				// there
-				window.setTimeout(function(){ self._printAvailableKeys() }, 1);
+				window.setTimeout(function(){ 
+					self._printAvailableKeys();
+					self._printAvailableNamespaces();
+				}, 1);
 			}
 		};
+		
 		try{
-			dojo.storage.put(key, value, saveHandler);
+			if(namespace == dojo.storage.DEFAULT_NAMESPACE){
+				dojo.storage.put(key, value, saveHandler);
+			}else{
+				dojo.storage.put(key, value, saveHandler, namespace);
+			}
 		}catch(exp){
 			alert(exp);
 		}
@@ -300,7 +314,13 @@ var TestStorage = {
 		directory.innerHTML = "";
 		
 		// add new ones
-		var availableKeys = dojo.storage.getKeys();
+		var availableKeys;
+		if(this.currentNamespace == dojo.storage.DEFAULT_NAMESPACE){
+			availableKeys = dojo.storage.getKeys();
+		}else{
+			availableKeys = dojo.storage.getKeys(this.currentNamespace);
+		}
+		
 		for (var i = 0; i < availableKeys.length; i++){
 			var optionNode = document.createElement("option");
 			optionNode.appendChild(document.createTextNode(availableKeys[i]));
@@ -309,11 +329,33 @@ var TestStorage = {
 		}
 	},
 	
+	_printAvailableNamespaces: function(){
+		var namespacesDir = dojo.byId("namespaceDirectory");
+		
+		// clear out any old namespaces
+		namespacesDir.innerHTML = "";
+		
+		// add new ones
+		var availableNamespaces = dojo.storage.getNamespaces();
+		
+		for (var i = 0; i < availableNamespaces.length; i++){
+			var optionNode = document.createElement("option");
+			optionNode.appendChild(document.createTextNode(availableNamespaces[i]));
+			optionNode.value = availableNamespaces[i];
+			namespacesDir.appendChild(optionNode);
+		}
+	},
+	
 	_handleLoad: function(key){
 		this._printStatus("Loading '" + key + "'...");
 		
 		// get the value
-		var results = dojo.storage.get(key);
+		var results;
+		if(this.currentNamespace == dojo.storage.DEFAULT_NAMESPACE){
+			results = dojo.storage.get(key);
+		}else{
+			results = dojo.storage.get(key, this.currentNamespace);
+		}
 		
 		// print out its value
 		this._printStatus("Loaded '" + key + "'");

@@ -27,12 +27,12 @@ dojo.inherits(dojo.storage.browser.WhatWGStorageProvider, dojo.storage);
 
 // instance methods and properties
 dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
-	namespace: "default",
 	initialized: false,
 	
 	_domain: null,
 	_available: null,
 	_statusHandler: null,
+	_allNamespaces: null,
 	
 	initialize: function(){
 		if(djConfig["disableWhatWGStorage"] == true){
@@ -59,10 +59,13 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 		return this._available;
 	},
 
-	put: function(key, value, resultsHandler){
+	put: function(key, value, resultsHandler, namespace){
 		if(this.isValidKey(key) == false){
 			dojo.raise("Invalid key given: " + key);
-		}			
+		}
+		
+		// get our full key name, which is namespace + key
+		key = this.getFullKey(key, namespace);	
 		
 		this._statusHandler = resultsHandler;
 		
@@ -83,7 +86,7 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 		// try to store the value	
 		try{
 			var myStorage = globalStorage[this._domain];
-			myStorage.setItem(key,value);
+			myStorage.setItem(key, value);
 		}catch(e){
 			// indicate we failed
 			this._statusHandler.call(null, dojo.storage.FAILED, 
@@ -91,10 +94,13 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 		}
 	},
 
-	get: function(key){
+	get: function(key, namespace){
 		if(this.isValidKey(key) == false){
 			dojo.raise("Invalid key given: " + key);
 		}
+		
+		// get our full key name, which is namespace + key
+		key = this.getFullKey(key, namespace);
 		
 		var myStorage = globalStorage[this._domain];
 		
@@ -118,22 +124,93 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 		
 		return results;
 	},
+	
+	getNamespaces: function(){
+		var results = new Array();
+		results.push(dojo.storage.DEFAULT_NAMESPACE);
+		
+		// simply enumerate through our array and save any string
+		// that starts with __
+		var found = new Object();
+		var myStorage = globalStorage[this._domain];
+		var tester = /^__([^_]*)_/;
+		for(var i = 0; i < myStorage.length; i++){
+			var currentKey = myStorage.key(i);
+			if(tester.test(currentKey) == true){
+				var currentNS = currentKey.match(tester)[1];
+				// have we seen this namespace before?
+				if(typeof found[currentNS] == "undefined"){
+					found[currentNS] = true;
+					results.push(currentNS);
+				}
+			}
+		}
+		
+		return results;
+	},
 
-	getKeys: function(){
+	getKeys: function(namespace){
+		if(namespace == null || typeof namespace == "undefined"){
+			namespace = dojo.storage.DEFAULT_NAMESPACE;
+		}
+		
+		if(this.isValidKey(namespace) == false){
+			dojo.raise("Invalid namespace given: " + namespace);
+		}
+		
+		// create a regular expression to test the beginning
+		// of our key names to see if they match our namespace;
+		// if it is the default namespace then test for the presence
+		// of no namespace for compatibility with older versions
+		// of Dojo Storage
+		var namespaceTester;
+		if(namespace == dojo.storage.DEFAULT_NAMESPACE){
+			namespaceTester = new RegExp("^([^_]{2}.*)$");	
+		}else{
+			namespaceTester = new RegExp("^__" + namespace + "_(.*)$");
+		}
+		
 		var myStorage = globalStorage[this._domain];
 		var keysArray = new Array();
-		for(i=0; i<myStorage.length;i++){
-			keysArray[i] = myStorage.key(i);
+		for(var i = 0; i < myStorage.length; i++){
+			var currentKey = myStorage.key(i);
+			if(namespaceTester.test(currentKey) == true){
+				// strip off the namespace portion
+				currentKey = currentKey.match(namespaceTester)[1];
+				keysArray.push(currentKey);
+			}
 		}
 		
 		return keysArray;
 	},
 
-	clear: function(){
+	clear: function(namespace){
+		if(namespace == null || typeof namespace == "undefined"){
+			namespace = dojo.storage.DEFAULT_NAMESPACE;
+		}
+		
+		if(this.isValidKey(namespace) == false){
+			dojo.raise("Invalid namespace given: " + namespace);
+		}
+		
+		// create a regular expression to test the beginning
+		// of our key names to see if they match our namespace;
+		// if it is the default namespace then test for the presence
+		// of no namespace for compatibility with older versions
+		// of Dojo Storage
+		var namespaceTester;
+		if(namespace == dojo.storage.DEFAULT_NAMESPACE){
+			namespaceTester = new RegExp("^[^_]{2}");	
+		}else{
+			namespaceTester = new RegExp("^__" + namespace + "_");
+		}
+		
 		var myStorage = globalStorage[this._domain];
 		var keys = new Array();
 		for(var i = 0; i < myStorage.length; i++){
-			keys[keys.length] = myStorage.key(i);
+			if(namespaceTester.test(myStorage.key(i)) == true){
+				keys[keys.length] = myStorage.key(i);
+			}
 		}
 		
 		for(var i = 0; i < keys.length; i++){
@@ -141,7 +218,10 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 		}
 	},
 	
-	remove: function(key){
+	remove: function(key, namespace){
+		// get our full key name, which is namespace + key
+		key = this.getFullKey(key, namespace);
+		
 		var myStorage = globalStorage[this._domain];
 		myStorage.removeItem(key);
 	},
@@ -168,6 +248,24 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 	
 	getType: function(){
 		return "dojo.storage.browser.WhatWGProvider";
+	},
+	
+	getFullKey: function(key, namespace){
+		if(namespace == null || typeof namespace == "undefined"){
+			namespace = dojo.storage.DEFAULT_NAMESPACE;		
+		}
+		
+		if(this.isValidKey(namespace) == false){
+			dojo.raise("Invalid namespace given: " + namespace);
+		}
+		
+		// don't append a namespace string for the default namespace,
+		// for compatibility with older versions of Dojo Storage
+		if(namespace == dojo.storage.DEFAULT_NAMESPACE){
+			return key;
+		}else{
+			return "__" + namespace + "_" + key;
+		}
 	}
 });
 
@@ -185,8 +283,8 @@ dojo.inherits(dojo.storage.browser.FlashStorageProvider, dojo.storage);
 
 // instance methods and properties
 dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
-	namespace: "default",
 	initialized: false,
+	
 	_available: null,
 	_statusHandler: null,
 	
@@ -197,6 +295,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 		
 		// initialize our Flash
 		var loadedListener = function(){
+			// indicate our Flash subsystem is now loaded
 			dojo.storage._flashLoaded();
 		}
 		dojo.flash.addLoadedListener(loadedListener);
@@ -215,9 +314,17 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 		return this._available;
 	},
 
-	put: function(key, value, resultsHandler){
+	put: function(key, value, resultsHandler, namespace){
 		if(this.isValidKey(key) == false){
 			dojo.raise("Invalid key given: " + key);
+		}
+		
+		if(namespace == null || typeof namespace == "undefined"){
+			namespace = dojo.storage.DEFAULT_NAMESPACE;		
+		}
+		
+		if(this.isValidKey(namespace) == false){
+			dojo.raise("Invalid namespace given: " + namespace);
 		}
 			
 		this._statusHandler = resultsHandler;
@@ -230,15 +337,23 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 			value = dojo.json.serialize(value);
 		}
 		
-		dojo.flash.comm.put(key, value, this.namespace);
+		dojo.flash.comm.put(key, value, namespace);
 	},
 
-	get: function(key){
+	get: function(key, namespace){
 		if(this.isValidKey(key) == false){
 			dojo.raise("Invalid key given: " + key);
 		}
 		
-		var results = dojo.flash.comm.get(key, this.namespace);
+		if(namespace == null || typeof namespace == "undefined"){
+			namespace = dojo.storage.DEFAULT_NAMESPACE;		
+		}
+		
+		if(this.isValidKey(namespace) == false){
+			dojo.raise("Invalid namespace given: " + namespace);
+		}
+		
+		var results = dojo.flash.comm.get(key, namespace);
 
 		if(results == ""){
 			return null;
@@ -257,27 +372,67 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 		return results;
 	},
 
-	getKeys: function(){
-		var results = dojo.flash.comm.getKeys(this.namespace);
+	getKeys: function(namespace){
+		if(namespace == null || typeof namespace == "undefined"){
+			namespace = dojo.storage.DEFAULT_NAMESPACE;		
+		}
+		
+		if(this.isValidKey(namespace) == false){
+			dojo.raise("Invalid namespace given: " + namespace);
+		}
+		
+		var results = dojo.flash.comm.getKeys(namespace);
 		
 		if(results == ""){
 			return [];
 		}
 
 		// the results are returned comma seperated; split them
-		return results.split(",");
-	},
-
-	clear: function(){
-		dojo.flash.comm.clear(this.namespace);
+		results = results.split(",");
+		
+		// remove our key that records our list of namespaces
+		for(var i = 0; i < results.length; i++){
+			if(results[i] == this._NAMESPACES_KEY){
+				results.splice(i, 1);
+				break;
+			}
+		}
+		
+		return results;
 	},
 	
-	remove: function(key){
-		// summary: 
-		//		Note- This one method is not implemented on the
-		// 		FlashStorageProvider yet
+	getNamespaces: function(){
+		var results = dojo.flash.comm.getNamespaces(namespace);
 		
-		dojo.unimplemented("dojo.storage.browser.FlashStorageProvider.remove");
+		if(results == ""){
+			results = [];
+		}
+		
+		return results;
+	},
+
+	clear: function(namespace){
+		if(namespace == null || typeof namespace == "undefined"){
+			namespace = dojo.storage.DEFAULT_NAMESPACE;
+		}
+		
+		if(this.isValidKey(namespace) == false){
+			dojo.raise("Invalid namespace given: " + namespace);
+		}
+		
+		dojo.flash.comm.clear(namespace);
+	},
+	
+	remove: function(key, namespace){
+		if(namespace == null || typeof namespace == "undefined"){
+			namespace = dojo.storage.DEFAULT_NAMESPACE;		
+		}
+		
+		if(this.isValidKey(namespace) == false){
+			dojo.raise("Invalid namespace given: " + namespace);
+		}
+		
+		dojo.flash.comm.remove(key, namespace);
 	},
 	
 	isPermanent: function(){
@@ -328,6 +483,9 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	
 	/** Called when the Flash is finished loading. */
 	_flashLoaded: function(){
+		// get available namespaces
+		this._allNamespaces = this.getNamespaces();
+		
 		this._initialized = true;
 
 		// indicate that this storage provider is now loaded
