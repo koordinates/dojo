@@ -62,11 +62,11 @@ dojo.sync.CommandLog.prototype = {
 	onReplayFinished: null,
 	
 	replay: function(){ /* void */
+		dojo.debug("replay");
 		// summary:
 		//	Replays all of the commands that have been
 		//	cached in this command log when we go back online;
 		//	onCommand will be called for each command we have
-		dojo.debug("replay");
 		dojo.debug("isReplaying="+this.isReplaying);
 		
 		if(this.isReplaying == true){
@@ -145,9 +145,18 @@ dojo.sync.CommandLog.prototype = {
 			throw new String("Programming error: you can not call log.add() while "
 								+ "we are replaying a command log");
 		}
-		
+		dojo.debug("this.commands="+this.commands);
+		dojo.debug("this.commands.push="+this.commands.push);
+		for(var i in this.commands){
+			dojo.debug(i + "=" + this.commands[i]);
+		}
 		this.commands.push(command);
-		this.save();
+		
+		// save our updated state into persistent
+		// storage
+		if(this.autoSave == true){
+			this.save();
+		}
 	},
 	
 	length: function(){ /* Number */
@@ -184,11 +193,16 @@ dojo.sync.CommandLog.prototype = {
 		// save the state of our command log, then
 		// tell anyone who is interested that we are
 		// done when we are finished saving
-		var self = this;
-		this.save(function(){
-			self.isReplaying = false;
-			self.onReplayFinished();
-		});
+		if(this.autoSave == true){
+			var self = this;
+			this.save(function(){
+				self.isReplaying = false;
+				self.onReplayFinished();
+			});
+		}else{
+			this.isReplaying = false;
+			this.onReplayFinished();
+		}
 	},
 	
 	continueReplay: function(){ /* void */
@@ -209,21 +223,32 @@ dojo.sync.CommandLog.prototype = {
 		// shift off the old command we just ran
 		this.commands.shift();
 		
+		dojo.debug("this.commands.length after shifting="+this.commands.length);
+		
 		// are we done?
 		if(this.commands.length == 0){
+			dojo.debug("no more length");
 			// save the state of our command log, then
 			// tell anyone who is interested that we are
 			// done when we are finished saving
-			var self = this;
-			this.save(function(){
-				self.isReplaying = false;
-				self.onReplayFinished();
-			});
-			return;
+			if(this.autoSave == true){
+				var self = this;
+				this.save(function(){
+					dojo.debug("finished saving command log");
+					self.isReplaying = false;
+					self.onReplayFinished();
+				});
+				return;
+			}else{
+				this.isReplaying = false;
+				this.onReplayFinished();
+				return;
+			}
 		}
 		
 		// get the next command
 		var nextCommand = this.commands[0];
+		dojo.debug("nextCommand="+nextCommand);
 		this.onCommand(nextCommand);
 	},
 	
@@ -237,7 +262,11 @@ dojo.sync.CommandLog.prototype = {
 		
 		this.commands = new Array();
 		
-		this.save();
+		// save our updated state into persistent
+		// storage
+		if(this.autoSave == true){
+			this.save();
+		}
 	},
 	
 	save: function(finishedCallback){ /* void */
@@ -251,10 +280,6 @@ dojo.sync.CommandLog.prototype = {
 		//	to add(). See 'autoSave' inside this class for details
 		//	on how to override this behavior for custom applications.	
 		
-		if(this.autoSave == false){
-			return;
-		}
-		
 		try{
 			var self = this;
 			var resultsHandler = function(status, key, message){
@@ -264,7 +289,7 @@ dojo.sync.CommandLog.prototype = {
 					if(finishedCallback){
 						finishedCallback();	
 					}
-				}else if(status == dojjo.storage.SUCCESS){
+				}else if(status == dojo.storage.SUCCESS){
 					if(finishedCallback){
 						finishedCallback();
 					}
@@ -286,11 +311,13 @@ dojo.sync.CommandLog.prototype = {
 		//	you should never have to do this since the Dojo Offline Framework
 		//	takes care of doing this for you.
 		var commands = dojo.storage.get("commandlog", dojo.off.STORAGE_NAMESPACE);
+		
 		if(commands == null || typeof commands == "undefined"){
 			commands = new Array();
 		}
 		
 		this.commands = commands;
+		
 		finishedCallback();
 	},
 
@@ -503,6 +530,7 @@ dojo.lang.mixin(dojo.sync, {
 		// their own implementation of onReplayFinished
 		if(this.log.onReplayFinished == null){
 			this.log.onReplayFinished = function(){
+				dojo.debug("onReplayFinished");
 				self.download();
 			}
 		}

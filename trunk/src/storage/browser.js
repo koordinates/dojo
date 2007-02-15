@@ -33,7 +33,7 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 	_available: null,
 	_statusHandler: null,
 	_allNamespaces: null,
-	_secondEvent: false,
+	_storageEventListener: null,
 	
 	initialize: function(){
 		if(djConfig["disableWhatWGStorage"] == true){
@@ -79,27 +79,24 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 		}
 		
 		// register for successful storage events.
-		
-		// A bug on Firefox 2 sometimes causes _two_
-		// storage events to be fired, when only one has
-		// been fired; detect the second spurious firing
-		// and ignore it.
-		
-		// FIXME: Create a minimized test case for this
-		// bug and submit to Firefox
 		var self = this;
-		this._secondEvent = false;
-		window.addEventListener("storage", function(evt){
-			if(self._secondEvent == true){
-				// ignore
-				return;
-			}
+		var storageListener = function(evt){
+			dojo.debug("storage event, evt="+evt);
 			
-			self._secondEvent = true;
+			// remove any old storage event listener we might have added
+			// to the window on old put() requests; Firefox has a bug
+			// where it can occassionaly go into infinite loops calling
+			// our storage event listener over and over -- this is a 
+			// workaround
+			// FIXME: Simplify this into a test case and submit it
+			// to Firefox
+			window.removeEventListener("storage", storageListener, false);
 			
 			// indicate we succeeded
 			resultsHandler.call(null, dojo.storage.SUCCESS, key);
-		}, false);
+		};
+		
+		window.addEventListener("storage", storageListener, false);
 		
 		// try to store the value	
 		try{
