@@ -33,6 +33,7 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 	_available: null,
 	_statusHandler: null,
 	_allNamespaces: null,
+	_secondEvent: false,
 	
 	initialize: function(){
 		if(djConfig["disableWhatWGStorage"] == true){
@@ -77,8 +78,25 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 			value = dojo.json.serialize(value);
 		}
 		
-		// register for successful storage events
+		// register for successful storage events.
+		
+		// A bug on Firefox 2 sometimes causes _two_
+		// storage events to be fired, when only one has
+		// been fired; detect the second spurious firing
+		// and ignore it.
+		
+		// FIXME: Create a minimized test case for this
+		// bug and submit to Firefox
+		var self = this;
+		this._secondEvent = false;
 		window.addEventListener("storage", function(evt){
+			if(self._secondEvent == true){
+				// ignore
+				return;
+			}
+			
+			self._secondEvent = true;
+			
 			// indicate we succeeded
 			resultsHandler.call(null, dojo.storage.SUCCESS, key);
 		}, false);

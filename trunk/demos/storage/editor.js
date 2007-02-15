@@ -372,12 +372,14 @@ var Moxie = {
 		
 		// setup how we download our data from the server
 		dojo.sync.doDownload = function(){
+			dojo.debug("Moxie.doDownload");
 			// actually download our data
 			self._downloadData();
 		}
 	},
 	
 	_downloadData: function(){
+		dojo.debug("Moxie._downloadData");
 		var self = this;
 		// FIXME: Use Dojo's internal cache busting mechanisms
 		var bindArgs = {
@@ -386,13 +388,13 @@ var Moxie = {
 			mimetype:	"text/javascript",
 			headers:	{ "Accept" : "text/javascript" },
 			error:		function(type, errObj){
-				//dojo.debug("Moxie._downloadData.error, type="+type+", errObj="+errObj.message);
+				dojo.debug("Moxie._downloadData.error, type="+type+", errObj="+errObj.message);
 				var message = "Unable to download our documents from server: "
 								+ errObj.message;
 				dojo.sync.finishedDownloading(false, message);
 			},
 			load:		function(type, data, evt){
-				//dojo.debug("Moxie._downloadData.load, type="+type+", evt="+evt);	
+				dojo.debug("Moxie._downloadData.load, type="+type+", evt="+evt);	
 				self._saveDownloadedData(data);
 			}
 		};
@@ -402,6 +404,7 @@ var Moxie = {
 	},
 	
 	_saveDownloadedData: function(data){
+		dojo.debug("Moxie.saveDownloadedData");
 		// persist the data into Dojo Storage, with the key
 		// "documents". 'data'
 		// is a JSON structure passed to us by the server
@@ -410,7 +413,7 @@ var Moxie = {
 		var self = this;
 		try{
 			dojo.storage.put("documents", data, function(status, key, message){
-				//dojo.debug("_saveDownloadedData.resultHandler, status="+status+", key="+key+", message="+message);
+				dojo.debug("_saveDownloadedData.resultHandler, status="+status+", key="+key+", message="+message);
 				if(status == dojo.storage.SUCCESS){
 					// update our list of available keys
 					self._documents = data;
@@ -426,7 +429,7 @@ var Moxie = {
 				}
 			});	
 		}catch(exp){
-			dojo.sync.log.haltReplay(exp);
+			dojo.sync.finishedDownloading(false, exp.toString());
 		}
 	},
 	

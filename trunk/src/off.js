@@ -127,7 +127,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	goOnline: function(finishedCallback){ /* void */
-		dojo.debug("goOnline");
 		// summary:
 		//	Attempts to go online.
 		// description:
@@ -301,13 +300,12 @@ dojo.lang.mixin(dojo.off, {
 		//	whether the site is available or not
 		//	and is boolean. If this function is not present we call
 		//	dojo.off.onOnline instead if we are able to go online.
-		dojo.debug("isSiteAvailable");
 		var bindArgs = {
 			url:	 dojo.off._getAvailabilityURL(),
 			sync:		false,
 			mimetype:	"text/plain",
 			error:		function(type, errObj){
-				dojo.debug("_isSiteAvailable.error, type="+type+", errObj="+errObj.message);
+				//dojo.debug("_isSiteAvailable.error, type="+type+", errObj="+errObj.message);
 				dojo.off.goingOnline = false;
 				dojo.off.isOnline = false;
 				if(finishedCallback){
@@ -315,7 +313,7 @@ dojo.lang.mixin(dojo.off, {
 				}
 			},
 			load:		function(type, data, evt){
-				dojo.debug("_isSiteAvailable.load, type="+type+", data="+data+", evt="+evt);	
+				//dojo.debug("_isSiteAvailable.load, type="+type+", data="+data+", evt="+evt);	
 				dojo.off.goingOnline = false;
 				dojo.off.isOnline = true;
 				if(finishedCallback){
@@ -360,14 +358,14 @@ dojo.lang.mixin(dojo.off, {
 				sync:		false,
 				mimetype:	"text/plain",
 				error:		function(type, errObj){
-					dojo.debug("dojo.off.networkThread.error, type="+type+", errObj="+errObj);
+					//dojo.debug("dojo.off.networkThread.error, type="+type+", errObj="+errObj);
 					if(dojo.off.isOnline == true){
 						dojo.off.isOnline = false;
 						dojo.off.onOffline();
 					}
 				},
 				load:		function(type, data, evt){
-					dojo.debug("dojo.off.networkThread.load, type="+type+", data="+data+", evt="+evt);	
+					//dojo.debug("dojo.off.networkThread.load, type="+type+", data="+data+", evt="+evt);	
 					if(dojo.off.isOnline == false){
 						dojo.off.isOnline = true;
 						dojo.off.onOnline();
@@ -390,7 +388,7 @@ dojo.lang.mixin(dojo.off, {
 			url += "&";
 		}
 		url += new Date().getTime();
-		dojo.debug("availability url="+url);
+		
 		return url;
 	}
 });
