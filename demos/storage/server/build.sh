@@ -8,3 +8,4 @@ jar -cvf moxie.war WEB-INF/* 1>/dev/null
 cp moxie.war /usr/local/tomcat/webapps
 cp -r ~/dev/dojo/offline/trunk/demos/storage/server ~/dev/dojo/offline/trunk/release/dojo/demos/storage
 rm -fr ~/usr/local/tomcat/webapps/moxie
+
