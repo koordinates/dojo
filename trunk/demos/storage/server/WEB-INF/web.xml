@@ -40,31 +40,8 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
-	<servlet>
-		<description>
-			Our syncing servlet for syncing the client and
-			server for offline use.
-		</description>
-		<display-name>
-			SyncServlet
-		</display-name>
-		<servlet-name>
-			SyncServlet
-		</servlet-name>
-		<servlet-class>
-			org.dojo.moxie.sync.SyncServlet
-		</servlet-class>
-		<!-- Make sure this loads after the MoxieServlet -->
-		<load-on-startup>2</load-on-startup>
-	</servlet>
-	
 	<servlet-mapping>
 		<servlet-name>MoxieServlet</servlet-name>
 		<url-pattern>/*</url-pattern>
-	</servlet-mapping>
-	
-	<servlet-mapping>
-		<servlet-name>SyncServlet</servlet-name>
-		<url-pattern>/sync</url-pattern>
 	</servlet-mapping>
 </web-app>

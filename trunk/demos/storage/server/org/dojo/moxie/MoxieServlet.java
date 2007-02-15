@@ -3,6 +3,7 @@ package org.dojo.moxie;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -67,6 +68,18 @@ import javax.servlet.http.*;
 	having to send 'X-Method-Override' and simply do a normal DELETE
 	request as outlined above.
 	
+	We also expose /download/, called with a GET, which will download
+	a JSON data structure with the contents of all of our documents.
+	This JSON structure is an array of objects, where each object
+	is an object with a 'fileName' member that has the file name
+	of that document, and a 'content' entry with the content of that
+	document. Example:
+	
+	[
+		{fileName: "message1", content: "hello world"},
+		{fileName: "message2", content: "goodbye world"}
+	]
+	
 	@author Brad Neuberg, bkn3@columbia.edu
 */
 public class MoxieServlet extends HttpServlet{
@@ -90,10 +103,11 @@ public class MoxieServlet extends HttpServlet{
 							throws IOException, ServletException{
 		try{
 			String path = req.getPathInfo();
-			
 			// dispatch our action
 			if(path.equals("/*")){
 				list(req, res);
+			}else if(path.equals("/download") || path.equals("/download")){
+				download(req, res);
 			}else{
 				viewItem(req, res);
 			}
@@ -270,6 +284,48 @@ public class MoxieServlet extends HttpServlet{
 		}else{
 			listReturnJSON(allDocs, req, res);
 		}
+	}
+	
+	private void download(HttpServletRequest req, HttpServletResponse res)
+							throws IOException, ServletException, MoxieException{
+		// get our file names
+		List<Document> allDocs = Documents.list();
+		
+		// send our JSON response back
+		res.setContentType("text/javascript");
+		PrintWriter out = res.getWriter();
+		
+		out.write("[\n");
+		
+		// loop through each document
+		Iterator<Document> iter = allDocs.iterator();
+		while(iter.hasNext()){
+			Document d = iter.next();
+			out.write("{");
+			
+			// FIXME: Use a real JSON serialization library
+			// write out the file name
+			out.write("fileName: \"" + d.fileName + "\", ");
+			
+			// escape our double quotes
+			Pattern p = Pattern.compile("[\"]", Pattern.MULTILINE);
+			Matcher m = p.matcher(d.content);
+			String content = m.replaceAll("\\\\\""); 
+			
+			// write out our contents
+			out.write("content: \"" + content + "\"");
+			
+			out.write("}");
+			
+			// add a comma if we are not the last one
+			if(iter.hasNext() == true){
+				out.write(", \n");
+			}else{
+				out.write("\n");
+			}
+		}
+		
+		out.write("]\n");
 	}
 	
 	private String getFileName(HttpServletRequest req, HttpServletResponse res) 

@@ -15,6 +15,11 @@ dojo.lang.mixin(dojo.off, {
 	//	timer. Defaults to 30.
 	NETWORK_CHECK: 20,
 	
+	// STORAGE_NAMESPACE: String
+	//	The namespace we use to save core data into
+	//	Dojo Storage.
+	STORAGE_NAMESPACE: "dojo_offline",
+	
 	// enabled: boolean
 	//	Whether offline ability is enabled or not. Defaults to true.
 	enabled: true,
@@ -122,6 +127,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	goOnline: function(finishedCallback){ /* void */
+		dojo.debug("goOnline");
 		// summary:
 		//	Attempts to go online.
 		// description:
@@ -191,13 +197,14 @@ dojo.lang.mixin(dojo.off, {
 		//	into local storage.	
 	},
 	
-	load: function(){ /* void */
+	load: function(finishedCallback /* Function */){ /* void */
 		// summary:
 		//	Causes the Dojo Offline framework to load its configuration data
 		//	from local storage
+		dojo.sync.load(finishedCallback);
 	},
 	
-	onSave: function(isCoreSave, status, namespace, key, value){
+	onSave: function(isCoreSave, status, key, value, namespace){
 		// summary:
 		//	A standard function that can be registered which is
 		//	called when some piece of data is saved locally.
@@ -216,16 +223,23 @@ dojo.lang.mixin(dojo.off, {
 		// status: dojo.storage.SUCCESS, dojo.storage.PENDING, dojo.storage.FAILED
 		//	Whether the save succeeded, whether it is pending based on a UI dialog
 		//	asking the user for permission, or whether it failed.
-		// namespace: String
-		//	The Dojo Storage namespace we are saving this key/value pair
-		//	into, such as "default", "Documents", "Contacts", etc.
 		// key: String
 		//	The key that we are attempting to persist
 		// value: Object
 		//	The object we are trying to persist
+		// namespace: String
+		//	The Dojo Storage namespace we are saving this key/value pair
+		//	into, such as "default", "Documents", "Contacts", etc. Optional.
+		if(isCoreSave == true && status == dojo.storage.FAILED){
+			dojo.off.coreSaveFailed = true;
+			dojo.off.enabled = false;
+			
+			// FIXME: Stop the background network thread
+		}
 	},
 	
 	_onLoad: function(){
+		dojo.debug("dojo.off._onLoad");
 		// both local storage and the page are finished loading
 		
 		// make sure that resources needed by our underlying
@@ -233,17 +247,23 @@ dojo.lang.mixin(dojo.off, {
 		// offline
 		dojo.off.files.cache(dojo.storage.getResourceList());
 		
-		// load framework data
-		this.load();
+		// load framework data; when we are finished, continue
+		// initializing ourselves
+		var self = this;
+		this.load(function(){
+			dojo.debug("Load finished callback inside of dojo.off._onLoad");
+			// kick off a thread to check network status on
+			// a regular basis
+			self._startNetworkThread();
 		
-		// kick off a thread to check network status on
-		// a regular basis
-		this._startNetworkThread();
-		
-		// indicate we are ready to be used
-		for(var i = 0; i < this._onLoadListeners.length; i++){
-			this._onLoadListeners[i]();
-		}
+			// try to go online
+			self.goOnline(function(){
+				// indicate we are ready to be used
+				for(var i = 0; i < self._onLoadListeners.length; i++){
+					self._onLoadListeners[i]();
+				}
+			});
+		});
 	},
 	
 	_onPageLoad: function(){
@@ -281,13 +301,13 @@ dojo.lang.mixin(dojo.off, {
 		//	whether the site is available or not
 		//	and is boolean. If this function is not present we call
 		//	dojo.off.onOnline instead if we are able to go online.
-		
+		dojo.debug("isSiteAvailable");
 		var bindArgs = {
 			url:	 dojo.off._getAvailabilityURL(),
 			sync:		false,
 			mimetype:	"text/plain",
 			error:		function(type, errObj){
-				//dojo.debug("error, type="+type+", errObj="+errObj);
+				dojo.debug("_isSiteAvailable.error, type="+type+", errObj="+errObj.message);
 				dojo.off.goingOnline = false;
 				dojo.off.isOnline = false;
 				if(finishedCallback){
@@ -295,7 +315,7 @@ dojo.lang.mixin(dojo.off, {
 				}
 			},
 			load:		function(type, data, evt){
-				//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
+				dojo.debug("_isSiteAvailable.load, type="+type+", data="+data+", evt="+evt);	
 				dojo.off.goingOnline = false;
 				dojo.off.isOnline = true;
 				if(finishedCallback){
@@ -340,14 +360,14 @@ dojo.lang.mixin(dojo.off, {
 				sync:		false,
 				mimetype:	"text/plain",
 				error:		function(type, errObj){
-					//dojo.debug("error, type="+type+", errObj="+errObj);
+					dojo.debug("dojo.off.networkThread.error, type="+type+", errObj="+errObj);
 					if(dojo.off.isOnline == true){
 						dojo.off.isOnline = false;
 						dojo.off.onOffline();
 					}
 				},
 				load:		function(type, data, evt){
-					//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
+					dojo.debug("dojo.off.networkThread.load, type="+type+", data="+data+", evt="+evt);	
 					if(dojo.off.isOnline == false){
 						dojo.off.isOnline = true;
 						dojo.off.onOnline();
@@ -370,7 +390,7 @@ dojo.lang.mixin(dojo.off, {
 			url += "&";
 		}
 		url += new Date().getTime();
-		
+		dojo.debug("availability url="+url);
 		return url;
 	}
 });

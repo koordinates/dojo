@@ -58,9 +58,10 @@ dojo.off.files.cache([
 
 var Moxie = {
 	_availableKeys: null,
+	_documents: null,
 
 	initialize: function(){
-		dojo.debug("Moxie.initialize");
+		//dojo.debug("Moxie.initialize");
 		
 		// clear out old values
 		dojo.byId("storageKey").value = "";
@@ -72,7 +73,10 @@ var Moxie = {
 		dojo.event.connect(dojo.byId("saveButton"), "onclick", this, this.save);
 		
 		// load and write out our available keys
-		this._loadAvailableKeys();
+		this._loadKeys();
+		
+		// setup our offline handlers
+		this._initOfflineHandlers();
 		
 		this._initialized = true;
 	},
@@ -89,7 +93,7 @@ var Moxie = {
 			return;
 		}
 		
-		this._handleLoad(key);		
+		this._load(key);		
 	},
 	
 	save: function(evt){
@@ -116,8 +120,17 @@ var Moxie = {
 		this._save(key, value)
 	},
 	
-	_save: function(key, value){
+	_save: function(key, value, log){
 		this._printStatus("Saving '" + key + "'...");
+		
+		if(dojo.off.isOnline == true){
+			this._saveOnline(key, value, log);
+		}else{
+			this._saveOffline(key, value);
+		}
+	},
+	
+	_saveOnline: function(key, value){
 		var self = this;
 		var doLoad = function(type, data, evt){
 			//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
@@ -126,15 +139,19 @@ var Moxie = {
 			// add to our list of available keys
 			self._addKey(key);
 			
-			// update the list of available keys
-			self._printAvailableKeys();
+			if(dojo.sync.log.isReplaying == false){
+				// update the list of available keys
+				self._printAvailableKeys();
+			}else{
+				dojo.sync.log.continueReplay();	
+			}
 		};
 		
 		var bindArgs = {
 			url:	 "/moxie/" + encodeURIComponent(key),
 			sync:		false,
 			method:		"POST",
-			content:		{"content": value},
+			content:	{"content": value},
 			error:		function(type, errObj, http){
 				//dojo.debug("error, type="+type+", errObj="+errObj);
 				// FIXME: Safari sometimes incorrectly calls us with an
@@ -144,7 +161,12 @@ var Moxie = {
 				// dojo.io.BrowserIO and fix.
 				if(typeof http != "undefined" 
 					&& typeof http.status != "undefined"){
-					alert("Unable to save file " + key + ": " + errObj.message);
+					var msg = "Unable to save file " + key + ": " + errObj.message;
+					if(dojo.sync.log.isReplaying == false){
+						alert(msg);
+					}else{
+						dojo.sync.log.haltReplay(msg);
+					}
 				}else{
 					doLoad(); // For our friend Safari....
 				}
@@ -156,7 +178,42 @@ var Moxie = {
 		dojo.io.bind(bindArgs);	
 	},
 	
-	_loadAvailableKeys: function(){
+	_saveOffline: function(key, value){
+		// create a command object to capture this action
+		var command = {name: "save", key: key, value: value};
+		
+		// save it in our command log for replaying when we 
+		// go back online
+		dojo.sync.log.add(command);
+		
+		// also add it to our offline, downloaded data
+		this._documents.push({fileName: key, content: value});
+		var self = this;
+		try{
+			dojo.storage.put("documents", this._documents, function(status, key, message){
+				if(status == dojo.storage.FAILED){
+					alert("Unable to locally save your document: " + message);
+				}
+			});	
+		}catch(exp){
+			alert("Unable to locally save your document: " + exp);
+		}
+		
+		// update our UI
+		this._printStatus("Saved '" + key + "'");
+		this._addKey(key);
+		this._printAvailableKeys();
+	},
+	
+	_loadKeys: function(){
+		if(dojo.off.isOnline == true){
+			this._loadKeysOnline();
+		}else{
+			this._loadKeysOffline();
+		}
+	},
+	
+	_loadKeysOnline: function(){
 		var self = this;
 		var bindArgs = {
 			url:	 "/moxie/*",
@@ -170,6 +227,8 @@ var Moxie = {
 			},
 			load:		function(type, data, evt){
 				//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
+				// 'data' is a JSON array, where each entry is a String filename
+				// of the available keys
 				self._availableKeys = data;
 				self._printAvailableKeys();
 			}
@@ -177,6 +236,11 @@ var Moxie = {
 		
 		// dispatch the request
 		dojo.io.bind(bindArgs);	
+	},
+	
+	_loadKeysOffline: function(){
+		this._loadDownloadedData();
+		this._printAvailableKeys();
 	},
 	
 	_printAvailableKeys: function(){
@@ -214,9 +278,17 @@ var Moxie = {
 		}
 	},
 	
-	_handleLoad: function(key){
+	_load: function(key){
 		this._printStatus("Loading '" + key + "'...");
 		
+		if(dojo.off.isOnline == true){
+			this._loadOnline(key);
+		}else{
+			this._loadOffline(key);
+		}
+	},
+	
+	_loadOnline: function(key){
 		// get the value from the server
 		var self = this;
 		// FIXME: I'm sure Dojo can do this internal cache busting itself
@@ -233,13 +305,7 @@ var Moxie = {
 			},
 			load:		function(type, data, evt){
 				//dojo.debug("load, type="+type+", data="+data+", evt="+evt);	
-				// set the new Editor widget value
-				var richTextControl = dojo.widget.byId("storageValue");
-				richTextControl.replaceEditorContent(data);
-				// FIXME: Editor2 should be reflowing this height
-				// internally; we shouldn't be exposed to this - fix
-				// bug in Editor2
-				richTextControl._updateHeight();
+				self._updateEditorContents(data);
 			
 				// print out that we are done
 				self._printStatus("Loaded '" + key + "'");
@@ -248,6 +314,29 @@ var Moxie = {
 		
 		// dispatch the request
 		dojo.io.bind(bindArgs);	
+	},
+	
+	_loadOffline: function(key){
+		var doc = null;
+		for(var i = 0; i < this._documents.length; i++){
+			var currentDoc = this._documents[i];
+			if(currentDoc.fileName == key){
+				doc = currentDoc;
+				break;
+			}
+		}
+		
+		this._updateEditorContents(doc.content);
+	},
+	
+	_updateEditorContents: function(contents){
+		// set the new Editor widget value
+		var richTextControl = dojo.widget.byId("storageValue");
+		richTextControl.replaceEditorContent(contents);
+		// FIXME: Editor2 should be reflowing this height
+		// internally; we shouldn't be exposed to this - fix
+		// bug in Editor2
+		richTextControl._updateHeight();	
 	},
 	
 	_printStatus: function(message){
@@ -267,6 +356,92 @@ var Moxie = {
 		
 		top.appendChild(status);
 		dojo.lfx.fadeOut(status, 2000).play();
+	},
+	
+	_initOfflineHandlers: function(){
+		// setup what we do when we are replaying our command
+		// log when the network reappears
+		var self = this;
+		dojo.sync.log.onCommand = function(command){
+			dojo.debug("Moxie.onCommand="+command);
+			dojo.debug("command.name="+command.name);
+			if(command.name == "save"){
+				self._save(command.key, command.value);
+			}
+		}
+		
+		// setup how we download our data from the server
+		dojo.sync.doDownload = function(){
+			// actually download our data
+			self._downloadData();
+		}
+	},
+	
+	_downloadData: function(){
+		var self = this;
+		// FIXME: Use Dojo's internal cache busting mechanisms
+		var bindArgs = {
+			url:	 "/moxie/download?cachebust=" + new Date().getTime(),
+			sync:		false,
+			mimetype:	"text/javascript",
+			headers:	{ "Accept" : "text/javascript" },
+			error:		function(type, errObj){
+				//dojo.debug("Moxie._downloadData.error, type="+type+", errObj="+errObj.message);
+				var message = "Unable to download our documents from server: "
+								+ errObj.message;
+				dojo.sync.finishedDownloading(false, message);
+			},
+			load:		function(type, data, evt){
+				//dojo.debug("Moxie._downloadData.load, type="+type+", evt="+evt);	
+				self._saveDownloadedData(data);
+			}
+		};
+		
+		// dispatch the request
+		dojo.io.bind(bindArgs);	
+	},
+	
+	_saveDownloadedData: function(data){
+		// persist the data into Dojo Storage, with the key
+		// "documents". 'data'
+		// is a JSON structure passed to us by the server
+		// that is an array of object literals, where each literal
+		// has a 'fileName' entry and a 'content' entry.
+		var self = this;
+		try{
+			dojo.storage.put("documents", data, function(status, key, message){
+				//dojo.debug("_saveDownloadedData.resultHandler, status="+status+", key="+key+", message="+message);
+				if(status == dojo.storage.SUCCESS){
+					// update our list of available keys
+					self._documents = data;
+					self._availableKeys = new Array();
+					for(var i = 0; i < data.length; i++){
+						var fileName = data[i].fileName;
+						self._availableKeys.push(fileName);
+					}
+					
+					dojo.sync.finishedDownloading(true);
+				}else if(status == dojo.storage.FAILED){
+					dojo.sync.finishedDownloading(false, message);
+				}
+			});	
+		}catch(exp){
+			dojo.sync.log.haltReplay(exp);
+		}
+	},
+	
+	_loadDownloadedData: function(){
+		this._availableKeys = new Array();
+		this._documents = dojo.storage.get("documents");
+		if(this._documents == null
+			|| typeof this._documents == "undefined"){
+			this._documents = new Array();
+		}
+		
+		for(var i = 0; i < this._documents.length; i++){
+			var fileName = this._documents[i].fileName;
+			this._availableKeys.push(fileName);
+		}
 	}
 };
 
