@@ -67,20 +67,24 @@ dojo.sync.CommandLog.prototype = {
 		//	cached in this command log when we go back online;
 		//	onCommand will be called for each command we have
 		dojo.debug("replay");
+		dojo.debug("isReplaying="+this.isReplaying);
 		
 		if(this.isReplaying == true){
 			return;
 		}
 		
 		this.reasonHalted = null;
-		this.isReplaying = true;
 		
 		if(this.commands.length == 0){
+			dojo.debug("no commands to run");
 			this.onReplayFinished();
 			return;
 		}
 		
+		this.isReplaying = true;
+		
 		var nextCommand = this.commands[0];
+		dojo.debug("nextCommand="+nextCommand);
 		this.onCommand(nextCommand);
 	},
 	
@@ -114,6 +118,7 @@ dojo.sync.CommandLog.prototype = {
 	},
 	
 	add: function(command /* Object */){ /* void */
+		dojo.debug("CommandLog.add");
 		// summary:
 		//	Adds an action to our command log
 		// description:
@@ -167,7 +172,7 @@ dojo.sync.CommandLog.prototype = {
 		//	were processed before have their effects retained (i.e. they
 		//	are not rolled back), while the command entry that was halted
 		//	stays in our list of commands to later be replayed.	
-		
+		dojo.debug("commandlog.haltReplay");
 		if(this.isReplaying == false){
 			return;
 		}
@@ -187,6 +192,7 @@ dojo.sync.CommandLog.prototype = {
 	},
 	
 	continueReplay: function(){ /* void */
+		dojo.debug("commandlog.continueReplay");
 		// summary:
 		//	Indicates that we should continue processing out list
 		//	of commands.
@@ -224,12 +230,18 @@ dojo.sync.CommandLog.prototype = {
 	clear: function(){ /* void */
 		// summary:
 		//	Completely clears this command log of its entries
+		
+		if(this.isReplaying == true){
+			return;
+		}
+		
 		this.commands = new Array();
 		
 		this.save();
 	},
 	
 	save: function(finishedCallback){ /* void */
+		dojo.debug("commandlog.save");
 		// summary:
 		//	Saves this command log to persistent, client-side storage
 		// description:
@@ -403,6 +415,7 @@ dojo.lang.mixin(dojo.sync, {
 	log: new dojo.sync.CommandLog(),
 	
 	synchronize: function(){ /* void */
+		dojo.debug("dojo.sync.synchronize");
 		// summary:
 		//	Begin a synchronization session.
 		if(this.isSyncing == true
@@ -435,6 +448,7 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	start: function(){ /* void */
+		dojo.debug("dojo.sync.start");
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -448,6 +462,7 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	refreshUI: function(){ /* void */
+		dojo.debug("dojo.sync.refreshUI");
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -472,6 +487,7 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	upload: function(){ /* void */
+		dojo.debug("dojo.sync.upload");
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -496,6 +512,7 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	download: function(){ /* void */
+		dojo.debug("dojo.sync.download");
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -512,6 +529,7 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	doDownload: function(){ /* void */
+		dojo.debug("dojo.sync.doDownload");
 		// summary:
 		//	Actually downloads the data we need to
 		//	work offline for this application.
@@ -524,6 +542,7 @@ dojo.lang.mixin(dojo.sync, {
 	
 	finishedDownloading: function(successful /* boolean */, 
 									errorMessage /* String */){
+		dojo.debug("dojo.sync.finishedDownloading, successful="+successful+", errorMessage="+errorMessage);
 		// summary:
 		//	Applications call this method from their
 		//	dojo.sync.doDownload() implementationts to
@@ -543,6 +562,7 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	finished: function(){ /* void */
+		dojo.debug("dojo.sync.finished");
 		this.isSyncing = false;
 		
 		if(this.cancelled == false && this.error == false){
