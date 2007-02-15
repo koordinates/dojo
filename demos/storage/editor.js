@@ -380,6 +380,13 @@ var Moxie = {
 			// actually download our data
 			self._downloadData();
 		}
+		
+		// refresh our UI when we are finished syncing
+		dojo.sync.onFinished = function(){
+			dojo.off.ui.onFinished();
+			
+			self._printAvailableKeys();
+		}
 	},
 	
 	_downloadData: function(){
