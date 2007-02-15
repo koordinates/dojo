@@ -1,0 +1,17 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Performance</title><meta name="generator" content="DocBook XSL Stylesheets V1.69.1a"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e1"></a>Performance</h2></div></div><hr></div><div class="toc"><ul><li><span class="section"><a href="#d0e20">Comparison</a></span></li></ul></div><p>Tree was coded with performance in mind. Although, JavaScript itself is a slow language.
+        Flexible model requires some code that slows it down. It's not DOM manipulations, but actually
+        javascript that I couldn't make lighter. Being a part of dojo/widget structure also implies some overhead, but also power.
+    </p><p>        
+        Almost all operations require small constant time when single node is involved. Depending on your
+        application you may notice slowdown when (most common) creating lots of nodes or
+        performing other batch operations.
+    </p><p>
+        In my tests 1000 nodes required 0.7-0.8 sec, growth is linear, depth does not matter, children
+        are created with  <code class="code">createSimple</code> and added to parent all at once with <code class="code">setChildren</code>.                
+    </p><p>Creation from markup or with standard create/addChild routines is  2-3 times slower,
+        because these routines are generic.</p><p>Memory footprint (IE,FF) is about 1M per 100 nodes</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e20"></a>Comparison</h3></div></div></div><p>Fast node creation with dojo tree is 2-3 times slower than xtree 1.7, another tree widget, not
+            so featured, but nicely optimized for performance.
+        </p></div><div class="important" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Important</h3>The results described here refer to operations without any lazy features involved.
+        Most of time you will use lazy creation or lazy loading, or both, and operate with 10000 "virtual" nodes with ease.</div></div></body></html>

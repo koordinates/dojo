@@ -1,0 +1,2 @@
+This test fails with 'task.janitor.process.global' property in project file enabled
+
