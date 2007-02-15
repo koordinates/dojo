@@ -920,11 +920,25 @@ dojo.widget.defineWidget(
 			self.domNode.tBodies[0].appendChild(row);
 			self.render();
 		});
+		dojo.event.connect(this.store, "onUpdateData", function(updatedObject){
+			var oldRow = self.getRow(updatedObject);
+			var newRow = self.createRow(updatedObject);
+			self.domNode.tBodies[0].replaceChild(oldRow, newRow);
+			self.render();
+		});
 		dojo.event.connect(this.store, "onAddDataRange", function(arr){
 			for(var i=0; i<arr.length; i++){
 				arr[i].isSelected=false;
 				var row=self.createRow(arr[i]);
 				self.domNode.tBodies[0].appendChild(row);
+			};
+			self.render();
+		});
+		dojo.event.connect(this.store, "onUpdateDataRange", function(arr){
+			for(var i=0; i<arr.length; i++){
+				var old=self.getRow(arr[i]);
+				var row=self.createRow(arr[i]);
+				self.domNode.tBodies[0].replaceChild(old, row);
 			};
 			self.render();
 		});
