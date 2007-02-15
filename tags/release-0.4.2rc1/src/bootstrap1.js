@@ -100,7 +100,7 @@ dojo.locale  = djConfig.locale;
 //TODOC:  HOW TO DOC THIS?
 dojo.version = {
 	// summary: version number of this instance of dojo.
-	major: 0, minor: 4, patch: 1, flag: "rc3",
+	major: 0, minor: 4, patch: 2, flag: "rc1",
 	revision: Number("$Rev$".match(/[0-9]+/)[0]),
 	toString: function(){
 		with(dojo.version){
