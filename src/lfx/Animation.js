@@ -80,7 +80,7 @@ dojo.lang.extend(dojo.lfx.IAnimation, {
 	duration: 1000,
 	easing: null,
 	repeatCount: 0,
-	rate: 25,
+	rate: 10,
 	
 	// events
 	handler: null,
