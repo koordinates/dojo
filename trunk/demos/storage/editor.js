@@ -255,11 +255,15 @@ var Moxie = {
 		optionNode.value = "";
 		directory.appendChild(optionNode);
 		
+		// sort our available keys alphabetically
+		var keys = this._availableKeys.slice();
+		keys.sort();
+		
 		// add new ones
-		for (var i = 0; i < this._availableKeys.length; i++) {
+		for (var i = 0; i < keys.length; i++) {
 			var optionNode = document.createElement("option");
-			optionNode.appendChild(document.createTextNode(this._availableKeys[i]));
-			optionNode.value = this._availableKeys[i];
+			optionNode.appendChild(document.createTextNode(keys[i]));
+			optionNode.value = keys[i];
 			directory.appendChild(optionNode);
 		}
 	},
