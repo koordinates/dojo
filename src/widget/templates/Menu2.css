@@ -98,7 +98,7 @@
 	padding: 1px;
 }
 
-.dojoMenuBarItem2 {
+.dojoMenuBar2 .dojoMenuItem2 {
 	white-space: nowrap;
 	font: menu;
 	margin: 0;
@@ -109,7 +109,7 @@
 	display: inline;/* needed in khtml to display correctly */
 }
 
-.dojoMenuBarItem2 span {
+.dojoMenuBar2 .dojoMenuItem2 .dojoMenuItem2Label {
 	margin: 0;
 	position: relative;
 	z-index: 2;
@@ -117,10 +117,10 @@
 	cursor:hand;
 }
 
-.dojoMenuBarItem2Hover {
+.dojoMenuBar2 .dojoMenuItem2Hover {
 	background-color:#d2e4fd;
 }
 
-.dojoMenuBarItem2Disabled span {
+.dojoMenuBar2 .dojoMenuItem2Disabled span {
 	color: #4f6582;
 }
