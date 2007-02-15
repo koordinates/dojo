@@ -74,33 +74,6 @@ dojo.collections.Store = function(/* array? */jsonArray){
 		return null; 	//	object
 	};
 
-	this.update = function(/* Object */obj, /* string */fieldPath, /* Object */val, /* boolean? */bDontFire){
-		var parts=fieldPath.split("."), i=0, o=obj, field;
-		if(parts.length>1) {
-			field = parts.pop();
-			do{ 
-				if(parts[i].indexOf("()")>-1){
-					var temp=parts[i++].split("()")[0];
-					if(!o[temp]){
-						dojo.raise("dojo.collections.Store.getField(obj, '" + field + "'): '" + temp + "' is not a property of the passed object.");
-					} else {
-						//	this *will* throw an error if the method in question can't be invoked without arguments.
-						o = o[temp]();
-					}
-				} else {
-					o = o[parts[i++]];
-				}
-			} while (i<parts.length && o != null);
-		} else {
-			field = parts[0];
-		}
-
-		obj[field] = val;
-		if(!bDontFire){
-			this.onUpdateField(obj, fieldPath, val);
-		}
-	};
-
 	this.forEach = function(/* function */fn){
 		//	summary
 		//	Functional iteration directly on the internal data array.
@@ -128,7 +101,7 @@ dojo.collections.Store = function(/* array? */jsonArray){
 	this.setData = function(/*array*/arr, /* boolean? */bDontFire){
 		//	summary
 		//	Set up the internal data.
-		data = []; 	//	don't fire onClearData
+		this.clearData(true);	//	don't fire onClearData
 		for(var i=0; i<arr.length; i++){
 			var o={ key: arr[i][this.keyField], src:arr[i] };
 			data.push(o);
@@ -149,43 +122,82 @@ dojo.collections.Store = function(/* array? */jsonArray){
 		}
 	};
 
-	this.addData = function(/* object */obj, /*string?*/key, /* boolean? */bDontFire){ 
+	this.update = function(/* Object */obj, /* string */fieldPath, /* Object */val, /* boolean? */bDontFire){
+		var parts=fieldPath.split("."), i=0, o=obj, field;
+		if(parts.length>1) {
+			field = parts.pop();
+			do{ 
+				if(parts[i].indexOf("()")>-1){
+					var temp=parts[i++].split("()")[0];
+					if(!o[temp]){
+						dojo.raise("dojo.collections.Store.getField(obj, '" + field + "'): '" + temp + "' is not a property of the passed object.");
+					} else {
+						//	this *will* throw an error if the method in question can't be invoked without arguments.
+						o = o[temp]();
+					}
+				} else {
+					o = o[parts[i++]];
+				}
+			} while (i<parts.length && o != null);
+		} else {
+			field = parts[0];
+		}
+
+		obj[field] = val;
+		if(!bDontFire){
+			this.onUpdateField(obj, fieldPath, val);
+		}
+	};
+
+	this.addData = this.updateData = function(/* object */obj, /*string?*/key, /* boolean? */bDontFire){ 
 		//	summary
 		//	Add an object with optional key to the internal data array.
 		var k = key || obj[this.keyField];
 		if(items[k]!=null){
 			var o = items[k];
 			o.src = obj;
+			if(!bDontFire){
+				this.onUpdateData(o);
+			}
 		} else {
 			var o={ key:k, src:obj };
 			data.push(o);
 			items[o.key] = o;
-		}
-		if(!bDontFire){
-			this.onAddData(o);
+			if(!bDontFire){
+				this.onAddData(o);
+			}
 		}
 	};
-	this.addDataRange = function(/*array*/arr, /* boolean? */bDontFire){
+
+	this.addDataRange = this.updateDataRange = function(/*array*/arr, /* boolean? */bDontFire){
 		//	summary
 		//	Add a range of objects to the internal data array.
-		var objects=[];
+		var newObjects=[];
+		var replacedObjects=[];
 		for(var i=0; i<arr.length; i++){
 			var k = arr[i][this.keyField];
 			if(items[k]!=null){
 				var o = items[k];
 				o.src = arr[i];
+				replacedObjects.push(o);
 			} else {
 				var o = { key:k, src:arr[i] };
 				data.push(o);
 				items[k] = o;
+				newObjects.push(o);
 			}
-			objects.push(o);
 		}
 		if(!bDontFire){
-			this.onAddDataRange(objects);
+			if(replacedObjects.length>0){
+				this.onUpdateDataRange(replacedObjects);
+			}
+			if(newObjects.length>0){
+				this.onAddDataRange(newObjects);
+			}
 		}
 	};
-	this.addDataByIndex = function(/* object */obj, /* number */idx, /* string? */key, /* boolean? */bDontFire){
+
+	this.addDataByIndex = this.updateDataByIndex = function(/* object */obj, /* number */idx, /* string? */key, /* boolean? */bDontFire){
 		//	summary
 		//	Add an object with optional key to the internal data array at index idx.
 		//	If the key exists in the store, it is removed and reinserted into the data array.
@@ -194,35 +206,47 @@ dojo.collections.Store = function(/* array? */jsonArray){
 			var i=this.getIndexOf(k);
 			var o=data.splice(i, 1);
 			o.src = obj;
+			if(!bDontFire){
+				this.onUpdateData(o);
+			}
 		} else {
 			var o={ key:k, src:obj };
 			items[k] = o;
+			if(!bDontFire){
+				this.onAddData(o);
+			}
 		}
 		data.splice(idx, 0, o);
-		if(!bDontFire){
-			this.onAddData(o);
-		}
 	};
-	this.addDataRangeByIndex = function(/* array */arr, /* number */idx, /* boolean? */bDontFire){
+	this.addDataRangeByIndex = this.updateDataRangeByIndex = function(/* array */arr, /* number */idx, /* boolean? */bDontFire){
 		//	summary
 		//	Add a range of objects to the internal data array, beginning at idx.  If any of
 		//	the objects already exist in the store, they are removed and reinserted into the data array.
 		var objects=[];
+		var newObjects=[];
+		var replacedObjects=[];
 		for(var i=0; i<arr.length; i++){
 			var k = arr[i][this.keyField];
 			if(items[k]!=null){
 				var j=this.getIndexOf(k);
 				var o=data.splice(j, 1);
 				o.src=arr[i];
+				replacedObjects.push(o);
 			} else {
 				var o={ key:k, src:arr[i] };
 				items[k]=o;
+				newObjects.push(o);
 			}
 			objects.push(o);
 		}
 		data.splice(idx, 0, objects);
 		if(!bDontFire){
-			this.onAddDataRange(objects);
+			if(replacedObjects.length>0){
+				this.onUpdateDataRange(replacedObjects);
+			}
+			if(newObjects.length>0){
+				this.onAddDataRange(newObjects);
+			}
 		}
 	};
 	
@@ -348,6 +372,8 @@ dojo.extend(dojo.collections.Store, {
 	onClearData:function(){ },
 	onAddData:function(obj){ },
 	onAddDataRange:function(arr){ },
+	onUpdateData:function(obj){ },
+	onUpdateDataRange:function(arr){ },
 	onRemoveData:function(obj){ },
 	onRemoveDataRange:function(arr){ },
 	onUpdateField:function(obj, field, val){ }
