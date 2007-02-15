@@ -88,13 +88,8 @@
 }
 
 .dojoMenuBar2 {
-	/*position: relative;*/
 	background:#85aeec url(images/soriaBarBg.gif) repeat-x top left;
-	border-bottom:1px solid #6b9fec;
-	
-}
-
-.dojoMenuBar2Client {
+	/*border-bottom:1px solid #6b9fec;*/
 	padding: 1px;
 }
 
@@ -107,12 +102,6 @@
 	z-index: 1;
 	padding: 3px 8px;
 	display: inline;/* needed in khtml to display correctly */
-}
-
-.dojoMenuBar2 .dojoMenuItem2 .dojoMenuItem2Label {
-	margin: 0;
-	position: relative;
-	z-index: 2;
 	cursor:pointer;
 	cursor:hand;
 }

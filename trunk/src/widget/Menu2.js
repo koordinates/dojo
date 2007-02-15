@@ -188,7 +188,10 @@ dojo.widget.defineWidget(
 	//	provides a menu that can be used as a context menu (typically shown by right-click),
 	//	or as the drop down on a DropDownButton, ComboButton, etc.
 
-	templateString: '<table class="dojoPopupMenu2" border=0 cellspacing=0 cellpadding=0 style="display: none;"><tbody dojoAttachPoint="containerNode"></tbody></table>',
+	templateString: 
+						'<table class="dojoPopupMenu2" border=0 cellspacing=0 cellpadding=0 style="display: none; position: absolute;">' +
+							'<tbody dojoAttachPoint="containerNode"></tbody>'+
+						'</table>' ,
 
 	// submenuOverlap: Integer
 	//	a submenu usually appears to the right, but slightly overlapping, it's parent menu;
@@ -313,11 +316,21 @@ dojo.widget.defineWidget(
 	
 	_openSubmenu: function(submenu, from_item){
 		// summary: open the submenu to the right of the current menu item
-		submenu._openAsSubmenu(this, from_item.domNode, {'TR': 'TL', 'TL': 'TR'});
+		submenu._openAsSubmenu(this, from_item.arrow, {'TR': 'TL', 'TL': 'TR'});
 
 		this.currentSubmenu = submenu;
 		this.currentSubmenuTrigger = from_item;
 		this.currentSubmenuTrigger.is_open = true;
+	},
+
+	focus: function(){
+		if(this.currentSubmenuTrigger){
+			if(this.currentSubmenuTrigger.caption){
+				try{ this.currentSubmenuTrigger.caption.focus(); } catch(e) { };
+			}else{
+				try{ this.currentSubmenuTrigger.domNode.focus(); } catch(e) { };
+			}
+		}
 	},
 
 	onOpen: function(/*Event*/ e){
@@ -361,9 +374,9 @@ dojo.widget.defineWidget(
 	templateString:
 		 '<tr class="dojoMenuItem2" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick; onKey:onKey;">'
 		+'<td><div class="${this.iconClass}" style="${this.iconStyle}"></div></td>'
-		+'<td tabIndex="-1" class="dojoMenuItem2Label">${this.caption}</td>'
+		+'<td tabIndex="-1" class="dojoMenuItem2Label" dojoAttachPoint="caption">${this.caption}</td>'
 		+'<td class="dojoMenuItem2Accel">${this.accelKey}</td>'
-		+'<td><div class="dojoMenuItem2Submenu" style="display:${this.arrowDisplay};"></div></td>'
+		+'<td><div class="dojoMenuItem2Submenu" style="display:${this.arrowDisplay};" dojoAttachPoint="arrow"></div></td>'
 		+'</tr>',
 
 	//
@@ -609,7 +622,7 @@ dojo.widget.defineWidget(
 
 	menuOverlap: 2,
 
-	templateString: '<div class="dojoMenuBar2" tabIndex="0"><table class="dojoMenuBar2Client"><tr dojoAttachPoint="containerNode"></tr></table></div>',
+	templateString: '<div class="dojoMenuBar2" dojoAttachPoint="containerNode" tabIndex="0"></div>',
 
 	close: function(force){
 		if(this._highlighted_option){
@@ -672,9 +685,7 @@ dojo.widget.defineWidget(
 	dojo.widget.MenuItem2,
 {
 	templateString:
-		 '<td class="dojoMenuItem2" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick;">'
-		+'<span class="dojoMenuItem2Label">${this.caption}</span>'
-		+'</td>'
+		'<span class="dojoMenuItem2" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick;">${this.caption}</span>'
 });
 
 
