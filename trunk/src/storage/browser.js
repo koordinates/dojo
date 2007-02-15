@@ -120,14 +120,19 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 		// get our full key name, which is namespace + key
 		key = this.getFullKey(key, namespace);
 		
+		// sometimes, even if a key doesn't exist, Firefox
+		// will return a blank string instead of a null --
+		// this _might_ be due to have underscores in the
+		// keyname, but I am not sure.
+		// FIXME: Simplify this bug into a testcase and
+		// submit it to Firefox
 		var myStorage = globalStorage[this._domain];
-		
 		var results = myStorage.getItem(key);
-
-		if(results == null){
+		
+		if(results == null || results == ""){
 			return null;
 		}
-	
+		
 		results = results.value;
 		
 		// destringify the content back into a 
