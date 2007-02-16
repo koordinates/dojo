@@ -1586,8 +1586,13 @@ dojo.lang.extend(dojo.gfx.Surface, {
 	clear: function(){
 		// summary: removes all shapes from a group/surface
 		var r = this.rawNode;
-		while(r.lastChild){
-			r.removeChild(r.lastChild);
+		while(r.firstChild != r.lastChild){
+			if(r.firstChild != this.bgNode){
+				r.removeChild(r.firstChild);
+			}
+			if(r.lastChild != this.bgNode){
+				r.removeChild(r.lastChild);
+			}
 		}
 		return this;	// self
 	}
