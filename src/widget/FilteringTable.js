@@ -923,7 +923,7 @@ dojo.widget.defineWidget(
 		dojo.event.connect(this.store, "onUpdateData", function(updatedObject){
 			var oldRow = self.getRow(updatedObject);
 			var newRow = self.createRow(updatedObject);
-			self.domNode.tBodies[0].replaceChild(oldRow, newRow);
+			self.domNode.tBodies[0].replaceChild(newRow, oldRow);
 			self.render();
 		});
 		dojo.event.connect(this.store, "onAddDataRange", function(arr){
@@ -938,7 +938,7 @@ dojo.widget.defineWidget(
 			for(var i=0; i<arr.length; i++){
 				var old=self.getRow(arr[i]);
 				var row=self.createRow(arr[i]);
-				self.domNode.tBodies[0].replaceChild(old, row);
+				self.domNode.tBodies[0].replaceChild(row, old);
 			};
 			self.render();
 		});
