@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # Define variables used for rest of the script
-version=0.4.2ALPHA2
-xdDojoUrl=http://dojotoolkit.org/~jburke/webbuild/$version/src
+version=0.4.2rc1
+xdDojoUrl=http://build.dojotoolkit.org/$version/src
 versionSuffix=xdomain
+svnTopDir=release-0.4.2rc1
 
 #Clean up from a previous run.
 #Make a temp area to do the work.
@@ -12,8 +13,8 @@ mkdir ./webbuildtemp
 cd ./webbuildtemp
 
 #Get the source
-svn export http://svn.dojotoolkit.org/dojo/branches/0.4
-cd ./0.4/buildscripts
+svn export http://svn.dojotoolkit.org/dojo/tags/release-0.4.2rc1
+cd ./$svnTopDir/buildscripts
 
 #Do xdajax build.
 #Mark the dojo.js has an xdomain build, complete with xdomain path for Dojo.
