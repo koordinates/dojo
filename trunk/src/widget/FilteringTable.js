@@ -921,7 +921,7 @@ dojo.widget.defineWidget(
 			self.render();
 		});
 		dojo.event.connect(this.store, "onUpdateData", function(updatedObject){
-			var oldRow = self.getRow(updatedObject);
+			var oldRow = self.getRow(self.store.getDataByKey(updatedObject[self.store.keyField]));
 			var newRow = self.createRow(updatedObject);
 			self.domNode.tBodies[0].replaceChild(newRow, oldRow);
 			self.render();
@@ -936,7 +936,7 @@ dojo.widget.defineWidget(
 		});
 		dojo.event.connect(this.store, "onUpdateDataRange", function(arr){
 			for(var i=0; i<arr.length; i++){
-				var old=self.getRow(arr[i]);
+				var old=self.getRow(self.store.getDataByKey(arr[i][self.store.keyField]));
 				var row=self.createRow(arr[i]);
 				self.domNode.tBodies[0].replaceChild(row, old);
 			};
