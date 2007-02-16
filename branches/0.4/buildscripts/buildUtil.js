@@ -853,7 +853,7 @@ buildUtil.deleteFile = function(fileName){
 
 buildUtil.stripComments = function(/*String*/startDir, /*boolean*/suppressDojoCopyright){
 	//summary: strips the JS comments from all the files in "startDir", and all subdirectories.
-	var copyright = suppressDojoCopyright ? "" : new String(readFile("copyright.txt")) + buildUtil.getLineSeparator();
+	var copyright = suppressDojoCopyright ? "" : (new String(readFile("copyright.txt")) + buildUtil.getLineSeparator());
 	var fileList = buildUtil.getFilteredFileList(startDir, /\.js$/, true);
 	if(fileList){
 		for(var i = 0; i < fileList.length; i++){
