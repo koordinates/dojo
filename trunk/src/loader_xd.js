@@ -369,7 +369,7 @@ dojo.hostenv.unpackXdDependency = function(dep){
 	}
 
 	//The requireAfterIf or requireAfter needs to be evaluated after the current package is evaluated.
-	if(dep[0] == "requireAfterIf"){
+	if(dep[0] == "requireAfterIf" || dep[0] == "requireIf"){
 		newAfterDeps = newDeps;
 		newDeps = null;
 	}
