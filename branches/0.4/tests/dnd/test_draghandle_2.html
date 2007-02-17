@@ -24,7 +24,7 @@
 		drag.setDragTarget(dojo.byId('outer2'));
 	}
 
-	dojo.event.connect(dojo, "loaded", "init");
+	dojo.addOnLoad(init);
 </script>
 <style>
 .outer {
