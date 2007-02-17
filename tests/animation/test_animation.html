@@ -38,11 +38,12 @@
 			dojo.require("dojo.animation.*");
 			dojo.require("dojo.html.display");
 			dojo.require("dojo.event.*");
-			var Line = dojo.math.curves.Line;
-			var Circle = dojo.math.curves.Circle;
-			var Anim = dojo.animation.Animation;
 
 			function init(){
+				Line = dojo.math.curves.Line;
+				Circle = dojo.math.curves.Circle;
+				Anim = dojo.animation.Animation;
+
 				var line = new Line([200,200], [400, 20]);
 				a = new Anim(line, 1000, 0);
 				var mover = document.getElementById("Mover");
