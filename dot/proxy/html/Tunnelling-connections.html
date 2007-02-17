@@ -1,0 +1,64 @@
+<html lang="en">
+<head>
+<title>Tunnelling connections - The Polipo Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Polipo Manual">
+<meta name="generator" content="makeinfo 4.7">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Network.html#Network" title="Network">
+<link rel="prev" href="Tuning-POST-and-PUT.html#Tuning-POST-and-PUT" title="Tuning POST and PUT">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 2003 -- 2006 by Juliusz Chroboczek.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc { font-variant:small-caps }
+  span.roman { font-family: serif; font-weight: normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Tunnelling-connections"></a>Previous:&nbsp;<a rel="previous" accesskey="p" href="Tuning-POST-and-PUT.html#Tuning-POST-and-PUT">Tuning POST and PUT</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Network.html#Network">Network</a>
+<hr><br>
+</div>
+
+<h3 class="section">3.12 Tunnelling connections</h3>
+
+<p><a name="index-tunnel-170"></a><a name="index-tunnelling-proxy-171"></a><a name="index-https-172"></a><a name="index-HTTP_002fSSL-173"></a><a name="index-rsync-174"></a><a name="index-CONNECT-175"></a><a name="index-tunnelAllowedPorts-176"></a>
+Polipo is an HTTP proxy; it proxies HTTP traffic, and clients using
+other protocols should either establish a direct connection to the
+server or use an <em>ad hoc</em> proxy.
+
+   <p>Due to wide-spread brain-damage<a rel="footnote" href="#fn-1" name="fnd-1"><sup>1</sup></a>,
+however, there are some circumstances in which establishing a direct
+connection to the server is not possible.  In such situations, it is
+possible to have Polipo behave as a <em>tunnelling</em> proxy &mdash; a
+proxy that merely forwards traffic between the client and the server
+without understanding it.  Polipo enters tunnel mode when the server
+requests it by using the HTTP <span class="samp">CONNECT</span> method.
+
+   <p>Most web browsers will use this technique for HTTP over SSL if
+configured to use Polipo as their `https proxy'.  OpenSSH can also use
+it to cross misconfigured firewalls.
+
+   <p>The variable <code>tunnelAllowedPorts</code> specifies the set of ports that
+Polipo will accept to tunnel traffic to.  It defaults to <span class="samp">22, 80,
+443, 873</span>, meaning that Polipo will only accept to tunnel ssh, HTTP,
+https and rsync traffic.
+
+   <div class="footnote">
+<hr>
+<h4>Footnotes</h4><p class="footnote"><small>[<a name="fn-1" href="#fnd-1">1</a>]</small> Sometimes known as NAT.</p>
+
+   <p><hr></div>
+
+   </body></html>
+
