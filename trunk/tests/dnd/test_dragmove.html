@@ -27,7 +27,7 @@
 		new dojo.dnd.HtmlDragMoveSource(byId("table1"));
 	}
 
-	dojo.event.connect(dojo, "loaded", "init");
+	dojo.addOnLoad(init);
 </script>
 
 <div id="layer1" style="border: 1px solid black;">

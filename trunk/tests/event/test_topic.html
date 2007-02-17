@@ -16,17 +16,15 @@
                 };
 			}
 
-            var topic1 = dojo.event.topic.getTopic("testTopic1");
-            var topic2 = dojo.event.topic.getTopic("testTopic2");
-            var clickCount = 0;
-
-            function sendMessage1() {
-                topic1.sendMessage("Message " + ++clickCount);
-            }
-
-            function sendMessage2() {
-                topic2.sendMessage("Message " + ++clickCount);
-            }
+			var clickCount = 0;
+	
+			function sendMessage1() {
+					topic1.sendMessage("Message " + ++clickCount);
+			}
+	
+			function sendMessage2() {
+					topic2.sendMessage("Message " + ++clickCount);
+			}
 
 			var subCounter = 0;
 			function addSubscriber(subName){
@@ -39,6 +37,9 @@
 			}
 
 			dojo.addOnLoad(function(){
+				topic1 = dojo.event.topic.getTopic("testTopic1");
+				topic2 = dojo.event.topic.getTopic("testTopic2");
+
 				var sub1 = addSubscriber();
 				var sub2 = addSubscriber();
 
