@@ -26,7 +26,7 @@
 		new dojo.dnd.HtmlDragSource(dojo.byId("layer6"));
 		new dojo.dnd.HtmlDragSource(dojo.byId("layer7"));
 	}
-	dojo.event.connect(dojo, "loaded", "init");
+	dojo.addOnLoad(init);
 </script>
 <p>Make sure that all can be dragged nicely.</p>
 <p>Remember to check that it works when the window is scrolled!</p>

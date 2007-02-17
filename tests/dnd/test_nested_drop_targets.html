@@ -13,7 +13,6 @@
 	dojo.require("dojo.dnd.*");
 	dojo.require("dojo.event.*");
 
-	dojo.dnd.dragManager.nestedTargets = true;
 
 	function byId(id){
 		return dojo.byId(id);
@@ -28,6 +27,8 @@
 	}
 
 	function init(){
+		dojo.dnd.dragManager.nestedTargets = true;
+
 		new dojo.dnd.HtmlDragSource(byId("source"), "source");
 		var dt1 = new dojo.dnd.HtmlDropTarget(byId("outer"), ["*"]);
 		dojo.event.connect(dt1, "onDragOver", outerMove);
