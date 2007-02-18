@@ -140,6 +140,44 @@ dojo.mixin(dojo.gfx.matrix, {
 		// degree: Number: an skewing angle in degrees
 		return dojo.gfx.matrix.skewY(dojo.math.degToRad(degree)); // dojo.gfx.matrix.Matrix2D
 	},
+	reflect: function(a, b){
+		// summary: forms a reflection matrix
+		// description: The resulting matrix is used to reflect points around a vector, 
+		//		which goes through the origin.
+		// a: dojo.gfx.Point: a point-like object, which specifies a vector of reflection
+		// b: null
+		if(arguments.length == 1){
+			b = a.y;
+			a = a.x;
+		}
+		// branch
+		// a: Number: an x coordinate value
+		// b: Number: a y coordinate value
+		
+		// make a unit vector
+		var n2 = a * a + b * b;
+		var xy = 2 * a * b / n2;
+		return new dojo.gfx.matrix.Matrix2D({xx: 2 * a * a / n2 - 1, xy: xy, yx: xy, yy: 2 * b * b / n2 - 1}); // dojo.gfx.matrix.Matrix2D
+	},
+	project: function(a, b){
+		// summary: forms an orthogonal projection matrix
+		// description: The resulting matrix is used to project points orthogonally on a vector, 
+		//		which goes through the origin.
+		// a: dojo.gfx.Point: a point-like object, which specifies a vector of projection
+		// b: null
+		if(arguments.length == 1){
+			b = a.y;
+			a = a.x;
+		}
+		// branch
+		// a: Number: an x coordinate value
+		// b: Number: a y coordinate value
+		
+		// make a unit vector
+		var n2 = a * a + b * b;
+		var xy = a * b / n2;
+		return new dojo.gfx.matrix.Matrix2D({xx: a * a / n2, xy: xy, yx: xy, yy: b * b / n2}); // dojo.gfx.matrix.Matrix2D
+	},
 	
 	// ensure matrix 2D conformance
 	normalize: function(matrix){
