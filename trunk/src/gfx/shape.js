@@ -400,17 +400,8 @@ dojo.declare("dojo.gfx.shape.Image", dojo.gfx.Shape,
 	},
 {
 	getBoundingBox: function(){
-		// summary: returns the bounding box
-		if(!this.bbox){
-			var shape = this.shape;
-			this.bbox = {
-				x:		0,
-				y:		0,
-				width:	shape.width,
-				height:	shape.height
-			};
-		}
-		return this.bbox;	// dojo.gfx.Rectangle
+		// summary: returns the bounding box (its shape in this case)
+		return this.shape;	// dojo.gfx.Rectangle
 	}
 });
 

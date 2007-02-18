@@ -507,7 +507,7 @@ dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text, {
 		r.setAttribute("text-decoration", s.decoration);
 		r.setAttribute("rotate", s.rotated ? 90 : 0);
 		r.setAttribute("kerning", s.kerning ? "auto" : 0);
-		r.appendChild(document.createTextNode(s.text));
+		r.textContent = s.text;
 		return this;	// self
 	},
 	attach: function(rawNode){
