@@ -79,5 +79,10 @@ dojo.widget.defineWidget(
 			this.resizeHandleNode
 		);
 		this.statusBar.addChild(this.resizeHandle);
+	},
+	
+	onResized: function(){
+		dojo.widget.ResizableTextarea.superclass.onResized.call(this);
+		this.rootLayout.onResized();
 	}
 });
