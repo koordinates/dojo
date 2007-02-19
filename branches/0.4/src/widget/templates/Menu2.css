@@ -102,6 +102,7 @@
 	z-index: 1;
 	padding: 3px 8px;
 	display: inline;/* needed in khtml to display correctly */
+	display: -moz-inline-box;/* needed in firefox */
 	cursor:pointer;
 	cursor:hand;
 }
