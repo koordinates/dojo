@@ -19,7 +19,7 @@ pdebug = function(point){
 	dojo.debug("x: " + point.x + ", y: " + point.y);
 };
 
-dojo.event.connect(dojo, "loaded", function(){
+dojo.addOnLoad(function(){
 	var a = new dojo.gfx.matrix.Matrix2D();
 	mdebug(a);
 	a = dojo.gfx.matrix.rotateg(30);

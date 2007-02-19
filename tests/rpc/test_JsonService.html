@@ -86,8 +86,10 @@ None.
 		dojo.debug(obj);
 	}
 
-	var testClass = new dojo.rpc.JsonService("testClass.smd");
-	var erroringClass=new dojo.rpc.JsonService("erroringClass.smd");
+	dojo.addOnLoad(function(){
+		testClass = new dojo.rpc.JsonService("testClass.smd");
+		erroringClass=new dojo.rpc.JsonService("erroringClass.smd");
+	});
 </script>
 </head>
 </html>

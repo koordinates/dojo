@@ -2,7 +2,7 @@
 <head>
 	<title>Dojo Testing Script</title>
 	<script type="text/javascript">
-			var djConfig = {isDebug: true,debugContainerId: "dojoDebug" };
+			var djConfig = {isDebug: true,debugContainerId: "dojoDebug"};
 			//djConfig.debugAtAllCosts = true;
 	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
@@ -19,7 +19,9 @@
 			dojo.byId("ReturnedContent").innerHTML = "<img src="+result.Result+">";
 		}
 
-		var svc = new dojo.rpc.YahooService();
+		dojo.addOnLoad(function(){
+			svc = new dojo.rpc.YahooService();
+		});
 	</script>
 </head>
 
