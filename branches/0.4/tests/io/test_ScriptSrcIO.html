@@ -24,7 +24,11 @@
 		//dojo.hostenv.writeIncludes();
 		
 		var simpleTestPage = "scriptsrc/Test.js";
-		var transport = dojo.io.ScriptSrcTransport;
+		
+		dojo.addOnLoad(function(){
+			//Notice this is a global variable.
+			transport = dojo.io.ScriptSrcTransport;
+		});
 
 		window.onload = function(){
 			transport = dojo.io.ScriptSrcTransport;
