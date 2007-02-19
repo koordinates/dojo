@@ -366,9 +366,20 @@ dojo.declare(
 		checkSize: function() {
 			// summary
 			//	checkSize() is called when the user has resized the browser window,
-			// 	but that doesn't affect this widget (or this widget's children)
-			// 	so it can be safely ignored...
-			// TODO: unless we are maximized.  then we should resize ourself.
+			//  if we are maximized and showing, then we resize to fill the viewport
+			// 	otherwise we can safely ignore this call since it that doesn't affect
+			//  this widget (or its children)
+			if(this.windowState == "maximized" && this.isShowing()){
+				// we want to go through the motions of maximizing without the				
+				// side-effects. Rather than changing the signature or logic of
+				// maximizeWindow, we save our previous remembered locations and parents
+				var savedPrevious = this.previous;
+				var savedParentPrevious = this.parentPrevious;
+				this.maximizeWindow();
+				// restore locations and parent 
+				this.previous = savedPrevious;
+				this.parentPrevious = savedParentPrevious;
+			}
 		},
 		destroyFloatingPane: function() {
 			if(this.resizeHandle){
