@@ -1,9 +1,11 @@
 dojo.provide("dojo.query");
+dojo.require("dojo.NodeList");
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.query");
-(function(){
-	var h = dojo.render.html;
+
+;(function(){
 	var d = dojo;
+	var h = d.render.html;
 
 	var _getIndexes = function(q){
 		return [ q.indexOf("#"), q.indexOf("."), q.indexOf("["), q.indexOf(":") ];
@@ -956,13 +958,14 @@ dojo.experimental("dojo.query");
 		return ret;
 	}
 	*/
+
 	var _zipIdx = 0;
 	var _zip = function(arr){
-		if(!arr){ return []; }
-		var al = arr.length;
-		if(al < 2){ return arr; }
+		var ret = new dojo.NodeList();
+		if(!arr){ return ret; }
+		ret.push(arr[0]);
+		if(arr.length < 2){ return ret; }
 		_zipIdx++;
-		var ret = [arr[0]];
 		arr[0]["_zipIdx"] = _zipIdx;
 		for(var x=1, te; te = arr[x]; x++){
 			if(arr[x]["_zipIdx"] != _zipIdx){ 
