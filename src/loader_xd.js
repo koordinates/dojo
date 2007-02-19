@@ -108,13 +108,6 @@ dojo.hostenv.loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/curre
 
 	//Add the module (package) to the list of modules.
 	if(this.isXDomain){
-		//Curious: is this array going to get whacked with multiple access since scripts
-		//load asynchronously and may be accessing the array at the same time?
-		//JS is single-threaded supposedly, so it should be ok. And we don't need
-		//a precise ordering.
-		this.xdOrderedReqs.push(module);
-
-		//Add to waiting packages.
 		//If this is a __package__.js file, then this must be
 		//a package.* request (since xdomain can only work with the first
 		//path in a package search list. However, .* module names are not
@@ -123,6 +116,9 @@ dojo.hostenv.loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/curre
 			module += ".*";
 		}
 
+		this.xdOrderedReqs.push(module);
+
+		//Add to waiting packages.
 		this.xdInFlight[module] = true;
 
 		//Increment inFlightCount
