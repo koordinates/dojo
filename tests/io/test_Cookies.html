@@ -28,7 +28,7 @@ function objprops(o) {
 	return a.sort().join("<br>");
 }
 
-onload = function() {
+dojo.addOnLoad(function() {
 	var ck = dojo.io.cookie;
 	dojo.debug("obj = " + objprops(obj));
 	ck.setCookie("foo", "bar", 30);
@@ -39,7 +39,7 @@ onload = function() {
 	dojo.debug("obj = " + objprops(ck.getObjectCookie("obj")));
 	ck.deleteCookie("foo");
 	ck.deleteCookie("obj");
-}
+});
 </script>
 </head>
 <body>
