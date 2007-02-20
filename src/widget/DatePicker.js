@@ -414,7 +414,7 @@ dojo.widget.defineWidget(
 			var that = this;
 			function f(n){
 				that[n+"YearLabelNode"].innerHTML =
-					dojo.date.format(new Date(y++, 0), {formatLength:'yearOnly', locale:that.lang});
+					dojo.date.format(new Date(y++, 0), {selector:'yearOnly', locale:that.lang});
 			}
 			f("previous");
 			f("current");

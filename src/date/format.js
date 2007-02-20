@@ -11,7 +11,6 @@ dojo.require("dojo.i18n.common");
 // Load the bundles containing localization information for
 // names and formats
 dojo.requireLocalization("dojo.i18n.cldr", "gregorian");
-dojo.requireLocalization("dojo.i18n.cldr", "gregorianExtras");
 
 //NOTE: Everything in this module assumes Gregorian calendars.
 // Other calendars will be implemented in separate modules.
@@ -28,7 +27,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 //		Formatting patterns are chosen appropriate to the locale.  Different
 //		formatting lengths may be chosen, with "full" used by default.
 //		Custom patterns may be used or registered with translations using
-//		the addCustomBundle method.
+//		the addCustomFormats method.
 //		Formatting patterns are implemented using the syntax described at
 //		http://www.unicode.org/reports/tr35/tr35-4.html#Date_Format_Patterns
 //
@@ -215,6 +214,14 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 	var info = dojo.date._getGregorianBundle(locale);
 	var str = [];
 	var sauce = dojo.lang.curry(this, formatPattern, dateObject);
+	if(options.selector == "yearOnly"){
+		// Special case as this is not yet driven by CLDR data
+		var year = dateObject.getFullYear();
+		if(locale.match(/^zh|^ja/)){
+			year += "\u5E74";
+		}
+		return year;
+	}
 	if(options.selector != "timeOnly"){
 		var datePattern = options.datePattern || info["dateFormat-"+formatLength];
 		if(datePattern){str.push(_processPattern(datePattern, sauce));}
@@ -239,7 +246,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //		Formatting patterns are chosen appropriate to the locale.  Different
 //		formatting lengths may be chosen, with "full" used by default.
 //		Custom patterns may be used or registered with translations using
-//		the addCustomBundle method.
+//		the addCustomFormats method.
 //		Formatting patterns are implemented using the syntax described at
 //		http://www.unicode.org/reports/tr35/#Date_Format_Patterns
 //
@@ -805,7 +812,6 @@ dojo.date._getGregorianBundle = function(/*String*/locale){
 })();
 
 dojo.date.addCustomFormats("dojo.i18n.cldr","gregorian");
-dojo.date.addCustomFormats("dojo.i18n.cldr","gregorianExtras");
 
 dojo.date.getNames = function(/*String*/item, /*String*/type, /*String?*/use, /*String?*/locale){
 //
