@@ -52,7 +52,7 @@ css before url fix
 css after url fix
 <pre id="cssAfter"></pre>
 <script type="text/javascript">
-	
+dojo.addOnLoad(function(){
 	var success = true;
 	var css = '/*css before change*/\r\n'
 		 +'.easy{ background-image:url(images/image.png) }\r\n'
@@ -108,13 +108,14 @@ css after url fix
 	if(success){
 		debug("Success in all test for fixPathsInCssText", "green");
 	}
-
+});
 </script>
 
 <!---------------------------------------------------------------------------->
 
 <span id="insertCssText"/></span>
 <script type="text/javascript">
+dojo.addOnLoad(function(){
 	var success = true;
 	var span = dojo.byId("insertCssText");
 	span.innerHTML = '<h2><code>insertCssText</code></h2>inserts CssText into document<br />'
@@ -137,12 +138,12 @@ css after url fix
 	if(success){
 		debug("Success in all test for insertCssText", "green");
 	}
-
+});
 </script>
 <!---------------------------------------------------------------------------->
 <span id="insertCssFile"></span>
 <script type="text/javascript">
-	
+dojo.addOnLoad(function(){	
 	var success = true;
 	var span = dojo.byId("insertCssFile");
 	span.innerHTML = '<h2><code>insertCssFile</code></h2>'
@@ -164,6 +165,7 @@ css after url fix
 		debug("Success in all test for insertCssFile", "green");
 	}
 	document.body.style.cursor = "default";
+});
 </script>
 
 </body></html>

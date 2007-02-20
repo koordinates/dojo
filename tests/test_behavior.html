@@ -13,42 +13,44 @@
 			dojo.require("dojo.profile");
 			dojo.require("dojo.behavior");
 
-			dojo.behavior.add({
-				"border": function(elem){
-					with(elem.style){
-						border = "3px solid blue";
-						padding = "5px";
-						margin = "5px";
-					}
-				},
-				"clickSet": {
-					"onclick": function(evt){
-						alert("clicked!");
-					}
-				},
-				"topicClickSet": { "onclick": "/foo/bar" },
-				"addNodesButton": { "onclick": function(evt){
-					var tNode = document.createElement("div");
-					tNode.id = "border";
-					document.body.appendChild(tNode);
-					tNode.innerHTML = "this should get a border when you hit the re-apply button";
-
-					tNode = document.createElement("div");
-					tNode.id = "clickSet";
-					document.body.appendChild(tNode);
-					tNode.innerHTML = "this will become clickable when you hit the re-apply button";
-
-				} },
-				"reApplyButton": { "onclick": { targetObj: dojo.behavior, targetFunc: "apply" } }
-			});
-
-			dojo.event.topic.subscribe("/foo/bar", function(){
-				alert("event handled via the /foo/bar topic");
-			});
-
-
-			dojo.event.connect(dojo.behavior, "apply", function(){
-				dojo.profile.dump(true);
+			dojo.addOnLoad(function(){
+				dojo.behavior.add({
+					"border": function(elem){
+						with(elem.style){
+							border = "3px solid blue";
+							padding = "5px";
+							margin = "5px";
+						}
+					},
+					"clickSet": {
+						"onclick": function(evt){
+							alert("clicked!");
+						}
+					},
+					"topicClickSet": { "onclick": "/foo/bar" },
+					"addNodesButton": { "onclick": function(evt){
+						var tNode = document.createElement("div");
+						tNode.id = "border";
+						document.body.appendChild(tNode);
+						tNode.innerHTML = "this should get a border when you hit the re-apply button";
+	
+						tNode = document.createElement("div");
+						tNode.id = "clickSet";
+						document.body.appendChild(tNode);
+						tNode.innerHTML = "this will become clickable when you hit the re-apply button";
+	
+					} },
+					"reApplyButton": { "onclick": { targetObj: dojo.behavior, targetFunc: "apply" } }
+				});
+	
+				dojo.event.topic.subscribe("/foo/bar", function(){
+					alert("event handled via the /foo/bar topic");
+				});
+	
+	
+				dojo.event.connect(dojo.behavior, "apply", function(){
+					dojo.profile.dump(true);
+				});
 			});
 		</script>
 	</head>
