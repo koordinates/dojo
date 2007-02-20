@@ -61,15 +61,6 @@ void initOffline(void){
 	if(offlineFile != NULL){
 		loadOfflineList();
 	}
-	
-	addOfflineHost("good.com");
-	addOfflineHost("bradneuberg.name2");
-	addOfflineHost("3bad");
-	addOfflineHost("bad_bad");
-	addOfflineHost("good.com");
-	removeOfflineHost("bradneuberg.name");
-	fflush(stdout);
-	saveOfflineList();
 }
 
 int isValidHost(char host[]){
