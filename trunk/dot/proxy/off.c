@@ -378,4 +378,4 @@ int isOnline(void){
 	return online_flag;
 }
 
-#endif /* else for NO_OFFLINE_SUPPORT */
+#endif /* if/else for NO_OFFLINE_SUPPORT */
