@@ -44,7 +44,7 @@ static void initOfflineFileName(void){
     }
 
 	if(offlineFile == NULL){
-		do_log(L_INFO, "Unable to open Polipo offline file list");
+		do_log(L_INFO, "Unable to open Polipo offline file list\n");
 	}
 }
 
@@ -130,12 +130,12 @@ int addOfflineHost(char host[]){
 	new_entry_ptr = (struct offline_list_entry *)
 					malloc(sizeof(struct offline_list_entry));
 	if(new_entry_ptr == NULL){
-		do_log(L_ERROR, "No memory");
+		do_log(L_ERROR, "No memory\n");
 		return 0;
 	}
 	new_entry_ptr->host_ptr = (char *)malloc((unsigned) (strlen(host) + 1));
 	if(new_entry_ptr->host_ptr == NULL){
-		do_log(L_ERROR, "No memory");
+		do_log(L_ERROR, "No memory\n");
 		return 0;
 	}
 	memcpy(new_entry_ptr->host_ptr, host, strlen(host) + 1);
@@ -257,7 +257,7 @@ int saveOfflineList(void){
 	/* open the file */
 	file_ptr = fopen(offlineFile->string, "w");
 	if(file_ptr == NULL){
-		sprintf(message, "Unable to open offline list file, errno: %d", errno);
+		sprintf(message, "Unable to open offline list file, errno: %d\n", errno);
 		do_log(L_ERROR, message);
 		return 0; /* failure */
 	}
@@ -308,7 +308,7 @@ int loadOfflineList(void){
 	/* try to open the file */
 	file_ptr = fopen(offlineFile->string, "r");
 	if(file_ptr == NULL){
-		sprintf(message, "Unable to open offline list file, errno: %d", errno);
+		sprintf(message, "Unable to open offline list file, errno: %d\n", errno);
 		do_log(L_ERROR, message);
 		return 0; /* failure */
 	}
@@ -334,12 +334,12 @@ int loadOfflineList(void){
 		new_entry_ptr = (struct offline_list_entry *)
 						malloc(sizeof(struct offline_list_entry));
 		if(new_entry_ptr == NULL){
-			do_log(L_ERROR, "No memory");
+			do_log(L_ERROR, "No memory\n");
 			return 0; /* failure */
 		}
 		new_entry_ptr->host_ptr = (char *)malloc((unsigned) (strlen(line) + 1));
 		if(new_entry_ptr->host_ptr == NULL){
-			do_log(L_ERROR, "No memory");
+			do_log(L_ERROR, "No memory\n");
 			return 0; /* failure */
 		}
 		memcpy(new_entry_ptr->host_ptr, line, strlen(line) + 1);
