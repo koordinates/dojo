@@ -62,19 +62,71 @@ void initOffline(void){
 		loadOfflineList();
 	}
 	
-	addOfflineHost("bradneuberg.name");
-	printf("Is new site offline: %d\n", isHostAvailableOffline("bradneuberg.name"));
+	addOfflineHost("bradneuberg.name2");
+	addOfflineHost("3bad");
+	addOfflineHost("bad_bad");
+	addOfflineHost("good.com");
 	fflush(stdout);
 	saveOfflineList();
 }
 
 int isValidHost(char host[]){
-	return 0;
+	int index;
+	char c;
+	int valid;
+	
+	if(host == NULL || strlen(host) == 0){
+		return 0; /* invalid */
+	}
+	
+	/** 
+		Whitelist allowed host characters according to RFC 1034.
+		What is allowed: A-Z a-z 0-9 dash space dot. The first
+		character MUST be A-Z or a-z.
+	*/
+	
+	for(index = 0; index < strlen(host); index++){
+		c = host[index];
+		valid = 0;
+		
+		/* A-Z */
+		if(c >= 65 && c <= 90){
+			valid = 1;
+		}
+		
+		/* a-z */
+		if(c >= 97 && c <= 122){
+			valid = 1;
+		}
+		
+		/* 0-9 */
+		if(c >= 48 && c <= 57 && index != 0){
+			valid = 1;
+		}
+		
+		/* dash, period, or space */
+		if((c == 45 || c == 46 || c == 32) && index != 0){
+			valid = 1;
+		}
+		
+		if(valid == 0){
+			/* failed the whitelist! */
+			return 0; /* invalid */
+		}
+	}
+		
+	return 1; /* success */
 }
 
 int addOfflineHost(char host[]){
 	struct offline_list_entry *entry_ptr;
 	struct offline_list_entry *new_entry_ptr;
+	
+	if(isValidHost(host) == 0){ /* invalid host */
+		do_log(L_FORBIDDEN, 
+				"off.c:addOflineHost: Illegal host name\n");
+		return 0; /* failed */
+	}
 	
 	if(isHostAvailableOffline(host) == 1){
 		/* already registered to be available offline */
@@ -118,8 +170,10 @@ int removeOfflineHost(char host[]){
 int isHostAvailableOffline(char host[]){
 	struct offline_list_entry *entry_ptr;
 	
-	if(host == NULL){
-		return 0; /* not available offline */
+	if(isValidHost(host) == 0){ /* invalid host */
+		do_log(L_FORBIDDEN, 
+				"off.c:isHostAvailableOffline: Illegal host name\n");
+		return 0; /* failed */
 	}
 	
 	entry_ptr = offline_list_ptr;
