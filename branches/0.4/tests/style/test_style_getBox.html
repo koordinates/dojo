@@ -8,8 +8,6 @@
 
 dojo.require("dojo.html.layout");
 dojo.require("dojo.event");
-function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : id; }
-
 </script>
 <style type="text/css"> 
 body { cursor: wait; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; }
@@ -29,11 +27,13 @@ For browsers that support box-sizing or -moz-box-sizing) styles (not IE).
 <p class="test" id="borderBox" style="-moz-box-sizing: border-box; box-sizing: border-box;"></p>
 
 <script type="text/javascript">
-var contentBox = document.getElementById('contentBox');
-contentBox.innerHTML = 'ASSERT content-box == ' + dojo.html.getBoxSizing(contentBox);
-
-var borderBox = document.getElementById('borderBox');
-borderBox.innerHTML = 'ASSERT border-box == ' + dojo.html.getBoxSizing(borderBox);
+dojo.addOnLoad(function(){
+	var contentBox = document.getElementById('contentBox');
+	contentBox.innerHTML = 'ASSERT content-box == ' + dojo.html.getBoxSizing(contentBox);
+	
+	var borderBox = document.getElementById('borderBox');
+	borderBox.innerHTML = 'ASSERT border-box == ' + dojo.html.getBoxSizing(borderBox);
+});
 </script>
 
 <!---------------------------------------------------------------------------->
@@ -56,6 +56,8 @@ borderBox.innerHTML = 'ASSERT border-box == ' + dojo.html.getBoxSizing(borderBox
 <div id="boxTests"></div>
 
 <script type="text/javascript">
+dojo.addOnLoad(function(){
+
 var sizes = [ '', 'width: auto; height: auto;', 'width: 450px; height: 80px;', 'width: 15em; height: 6em;' ];
 var margins = [ '', 'margin: 0;', 'margin: auto;', 'margin: 8px;', 'margin: 1em;' ];
 var paddings = [ '', 'padding: 8px;', 'padding: 1em;' ];
@@ -179,7 +181,7 @@ function dumpMetrics(node)
 	];
 	return '<pre>' + metrics.join('<br>') + '</pre>';
 }
+});
 </script>
 
-</script>
 

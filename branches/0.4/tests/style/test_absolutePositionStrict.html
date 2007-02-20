@@ -29,6 +29,10 @@
 			dojo.byId("s").innerHTML=
 				scroll.left + ", " + scroll.top;
 		}
+		
+		dojo.addOnLoad(function(){
+			dojo.event.connect(document.documentElement, "onmousemove", "onMouseMove");
+		});
 	</script>
 </head>
 <body>
@@ -68,9 +72,6 @@ by event.clientX/Y if the mouse were directly over the top/left of this node.
 <tr><td>dojo.html.overElement(btn, e)</td><td id="o"></td></tr>
 <tr><td>dojo.html.getScrollLeft()/Top()</td><td id="s"></td></tr>
 </table>
-<script>
-	dojo.event.connect(document.documentElement, "onmousemove", "onMouseMove");
-</script>
 <p>HTML after</p>
 <p>HTML after</p>
 <p>HTML after</p>
