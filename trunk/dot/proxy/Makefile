@@ -74,7 +74,7 @@ SRCS = util.c event.c io.c chunk.c atom.c object.c log.c diskcache.c main.c \
 OBJS = util.o event.o io.o chunk.o atom.o object.o log.o diskcache.o main.o \
        config.o local.o http.o client.o server.o auth.o tunnel.o \
        http_parse.o parse_time.o dns.o forbidden.o \
-       md5import.o ftsimport.o socks.o mingw.o off.h
+       md5import.o ftsimport.o socks.o mingw.o off.o
 
 polipo$(EXE): $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o polipo$(EXE) $(OBJS) $(MD5LIBS) $(LDLIBS)

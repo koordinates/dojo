@@ -208,6 +208,10 @@ THE SOFTWARE.
 #include "auth.h"
 #include "tunnel.h"
 
+#ifndef NO_OFFLINE_SUPPORT
+#include "off.h"
+#endif /* NO_OFFLINE_SUPPORT */
+
 extern AtomPtr configFile;
 extern int daemonise;
 extern AtomPtr pidFile;

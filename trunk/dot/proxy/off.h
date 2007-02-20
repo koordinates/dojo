@@ -12,7 +12,8 @@
 	The special host name that web applications use
 	to interact with the offline infrastructure itself.
 */
-#define BOOTSTRAP_HOST "offline.web.app"
+#define OFF_BOOTSTRAP_HOST "offline.web.app"
+
 
 /** 
 	We save our list of offline-enabled web apps
@@ -27,13 +28,18 @@ struct offline_list_entry{
 } *offline_list_ptr;
 
 
+/**
+	Initializes the offline web app support.
+*/
+void initOffline(void);
+
 /** 
 	Makes the given host offline-enabled.
 	
 	Returns 1 if the host was added successfully,
 	0 otherwise.
 */
-int off_add_host(char host[]);
+int addOfflineHost(char host[]);
 
 /** 
 	Removes the given host from being offline-enabled.
@@ -42,18 +48,25 @@ int off_add_host(char host[]);
 	0 otherwise. If this host was never part of the offline
 	list, 1 is returned.
 */
-int off_remove_host(char host[]);
+int removeOfflineHost(char host[]);
 
 /**
 	Returns 1 if the given host is offline-enabled, 0 otherwise.
 */
-int off_is_host_enabled(char host[]);
+int isHostAvailableOffline(char host[]);
 
 /** Saves our list of offline-enabled sites. */
-int off_save(void);
+int saveOfflineList(void);
 
 /** Loads our list of offline-enabled sites. */
-int off_load(void);
+int loadOfflineList(void);
+
+/**
+	Sets our full path filename to our list of offline-enabled web sites. 
+	This is the full path to our file that stores our list of offline
+	enabled web apps, such as "/Users/foobar/.polipo/offline_list.txt".
+*/
+void setOfflineFileName(char *name_ptr);
 
 /* 
 	Goes online; note that this just sets a flag
@@ -61,10 +74,10 @@ int off_load(void);
 	attempt to see if we actually have a network
 	available.
 */
-void off_go_online(void);
+void goOnline(void);
 
 /* Goes offline */
-void off_go_offline(void);
+void goOffline(void);
 
 /* 
 	Returns 1 if we are in online mode, 0 otherwise.
@@ -73,7 +86,7 @@ void off_go_offline(void);
 	off_go_online() or off_go_offline() have been
 	called.
 */
-int off_is_online(void);
+int isOnline(void);
 
 #endif /* NO_OFFLINE_SUPPORT */
 #endif /* __off_h */
