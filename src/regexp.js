@@ -331,7 +331,7 @@ dojo.regexp.realNumber = function(/*Object?*/flags){
 	);
 
 	// real number RE
-	return integerRE + decimalRE + exponentRE; // String
+	return "(?:(?:"+ integerRE + decimalRE + ")|(?:" + decimalRE + "))" + exponentRE; // String
 }
 
 dojo.regexp.currency = function(/*Object?*/flags){
