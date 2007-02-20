@@ -62,10 +62,12 @@ void initOffline(void){
 		loadOfflineList();
 	}
 	
+	addOfflineHost("good.com");
 	addOfflineHost("bradneuberg.name2");
 	addOfflineHost("3bad");
 	addOfflineHost("bad_bad");
 	addOfflineHost("good.com");
+	removeOfflineHost("bradneuberg.name");
 	fflush(stdout);
 	saveOfflineList();
 }
@@ -124,7 +126,7 @@ int addOfflineHost(char host[]){
 	
 	if(isValidHost(host) == 0){ /* invalid host */
 		do_log(L_FORBIDDEN, 
-				"off.c:addOflineHost: Illegal host name\n");
+				"off.c:addOfflineHost: Illegal host name\n");
 		return 0; /* failed */
 	}
 	
@@ -164,7 +166,63 @@ int addOfflineHost(char host[]){
 }
 
 int removeOfflineHost(char host[]){
-	return 0;
+	struct offline_list_entry *entry_ptr, *prev_ptr,
+								*found_ptr;
+								
+	found_ptr = NULL;
+	prev_ptr = NULL;
+	entry_ptr = NULL;
+	
+	if(isValidHost(host) == 0){ /* invalid host */
+		do_log(L_FORBIDDEN, 
+				"off.c:removeOfflineHost: Illegal host name\n");
+		return 0; /* failed */
+	}
+	
+	if(isHostAvailableOffline(host) == 0){
+		/* host was never available offline */
+		return 0; /* failed */
+	}
+	
+	/* locate this entry */
+	entry_ptr = offline_list_ptr;
+	while(entry_ptr != NULL){
+		if(strcmp(entry_ptr->host_ptr, host) == 0){
+			break;
+		}
+		
+		prev_ptr = entry_ptr;
+		entry_ptr = entry_ptr->next_ptr;
+	}
+	
+	if(entry_ptr == NULL){
+		return 0; /* failed */
+	}
+	
+	found_ptr = entry_ptr;
+	
+	/* was our found entry at the beginning? */
+	if(prev_ptr == NULL){
+		offline_list_ptr = found_ptr->next_ptr;
+		free(found_ptr);
+		return 1; /* success */
+	}
+	
+	/* was our found entry at the end? */
+	if(found_ptr->next_ptr == NULL){
+		prev_ptr->next_ptr = NULL;
+		free(found_ptr);
+		return 1; /* success */
+	}
+	
+	/* was our found entry in the middle? */
+	if(prev_ptr != NULL && found_ptr->next_ptr != NULL){
+		prev_ptr->next_ptr = found_ptr->next_ptr;
+		free(found_ptr);
+		return 1; /* success */
+	}
+	
+	return 0; /* failed */
 }
 
 int isHostAvailableOffline(char host[]){
