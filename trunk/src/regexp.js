@@ -255,22 +255,24 @@ dojo.regexp.integer = function(/*Object?*/flags){
 	}
 	// build sign RE
 	var signRE = dojo.regexp.buildGroupRE(flags.signed,
-		function(q) { return q ? "[-+]" : ""; }
+		function(q) { return q ? "[-+]" : ""; },
+		true
 	);
 
 	// number RE
 	var numberRE = dojo.regexp.buildGroupRE(flags.separator,
 		function(sep){ 
-			if(sep == ""){ 
-				return "(0|[1-9]\\d*)";
+			if(!sep){ 
+				return "(?:0|[1-9]\\d*)";
 			}
 			var grp = flags.groupSize, grp2 = flags.groupSize2;
-			if(typeof grp2 != "undefined"){
-				var grp2RE = "(0|[1-9]\\d{0," + (grp2-1) + "}([" + sep + "]\\d{" + grp2 + "})*[" + sep + "]\\d{" + grp + "})";
-				return ((grp-grp2) > 0) ? "(" + grp2RE + "|(0|[1-9]\\d{0," + (grp-1) + "}))" : grp2RE;
+			if(grp2){
+				var grp2RE = "(?:0|[1-9]\\d{0," + (grp2-1) + "}(?:[" + sep + "]\\d{" + grp2 + "})*[" + sep + "]\\d{" + grp + "})";
+				return ((grp-grp2) > 0) ? "(?:" + grp2RE + "|(?:0|[1-9]\\d{0," + (grp-1) + "}))" : grp2RE;
 			}
-			return  "(0|[1-9]\\d{0," + (grp-1) + "}([" + sep + "]\\d{" + grp + "})*)";
-		}
+			return "(?:0|[1-9]\\d{0," + (grp-1) + "}(?:[" + sep + "]\\d{" + grp + "})*)";
+		},
+		true
 	);
 
 	// integer RE
@@ -281,7 +283,7 @@ dojo.regexp.realNumber = function(/*Object?*/flags){
 	// summary: Builds a regular expression to match a real number in exponential notation
 	//
 	// flags:An object
-	//    flags.places  The integer number of decimal places.
+	//    flags.places  The integer number of decimal places or a range given as "n,m"
 	//      If not given, the decimal part is optional and the number of places is unlimited.
 	//    flags.decimal  A string for the character used as the decimal point.  Default is ".".
 	//    flags.fractional  Whether decimal places are allowed.
@@ -294,7 +296,7 @@ dojo.regexp.realNumber = function(/*Object?*/flags){
 
 	// assign default values to missing paramters
 	flags = (typeof flags == "object") ? flags : {};
-	if(typeof flags.places != "number"){ flags.places = Infinity; }
+	if(typeof flags.places == "undefined"){ flags.places = Infinity; }
 	if(typeof flags.decimal != "string"){ flags.decimal = "."; }
 	if(typeof flags.fractional == "undefined"){ flags.fractional = [true, false]; }
 	if(typeof flags.exponent == "undefined"){ flags.exponent = [true, false]; }
@@ -307,17 +309,17 @@ dojo.regexp.realNumber = function(/*Object?*/flags){
 	var decimalRE = dojo.regexp.buildGroupRE(flags.fractional,
 		function(q){
 			var re = "";
-			if(q && (flags.places > 0)){
+			if(q && (flags.places!==0)){
 				re = "\\" + flags.decimal;
 				if(flags.places == Infinity){ 
-					re = "(" + re + "\\d+)?"; 
-				}else{ 
-					re = re + "\\d{" + flags.places + "}"; 
+					re = "(?:" + re + "\\d+)?"; 
+				}else{
+					re += "\\d{" + flags.places + "}"; 
 				}
 			}
-
 			return re;
-		}
+		},
+		true
 	);
 
 	// exponent RE

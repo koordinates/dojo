@@ -6,7 +6,7 @@ dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.i18n.cldr", "number");
 dojo.require("dojo.string.common");
 dojo.require("dojo.string.extras");
-dojo.require("dojo.regexp"); // should we eliminate this dependency or try to make use of regexp number routines?
+dojo.require("dojo.regexp");
 
 dojo.number.format = function(/*Number*/value, /*Object?*/options){
 // summary:
@@ -34,7 +34,8 @@ dojo.number.format = function(/*Number*/value, /*Object?*/options){
 	return dojo.number.applyPattern(value, pattern, {symbols: bundle, places: options.places, round: options.round}); // String //TODO
 };
 
-dojo.number._numberPatternRE = /(?:[#0]*,?)*[#0]+(?:\.0*#*)?/; // not precise, but good enough
+//dojo.number._numberPatternRE = /(?:[#0]*,?)*[#0](?:\.0*#*)?/; // not precise, but good enough
+dojo.number._numberPatternRE = /[#0,]*[#0](?:\.0*#*)?/; // not precise, but good enough
 
 dojo.number.applyPattern = function(/*Number*/value, /*String*/pattern, /*Object?*/options){
 	// summary: Apply pattern to format value as a string using options. Gives no consideration to local customs.
@@ -160,6 +161,75 @@ dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Obje
 	return valueParts.join(options.decimal || ".");
 };
 
+dojo.number.regexp = function(/*Object?*/options){
+//
+// summary:
+//		Builds the regular needed to parse a number
+//
+// description:
+//		returns regular expression with positive and negative match, group and decimal separators
+//
+// options: object {pattern: String, type: String locale: String, strict: Boolean, places: mixed}
+//		pattern- override pattern with this string
+//		type- choose a format type based on the locale from the following: decimal, scientific, percent, currency. decimal by default.
+//		locale- override the locale used to determine formatting rules
+//		strict- strict parsing, false by default
+//		places- number of decimal places to accept: Infinity, a positive number, or a range "n,m"
+	return dojo.number._parseInfo(options).regexp; // String
+}
+
+dojo.number._parseInfo = function(/*Object?*/options){
+	options = options || {};
+	var locale = dojo.hostenv.normalizeLocale(options.locale);
+	var bundle = dojo.i18n.getLocalization("dojo.i18n.cldr", "number", locale);
+	var pattern = options.pattern || bundle[(options.type || "decimal") + "Format"];
+//TODO: memoize?
+	var group = bundle.group;
+//	if(!options.strict){ group = [group,""]; }
+	var decimal = bundle.decimal;
+
+	//TODO: handle quoted escapes
+	var patternList = pattern.split(';');
+	if (patternList.length == 1){
+		patternList.push("-" + patternList[0]); // substitute negative sign?
+	}
+
+	var re = dojo.regexp.buildGroupRE(patternList, function(pattern){
+		pattern = "(?:"+dojo.string.escape('regexp', pattern, '.')+")";
+		return pattern.replace(dojo.number._numberPatternRE, function(format){
+			var flags = {
+				signed: false,
+				separator: options.strict ? group : [group,""],
+				decimal: decimal,
+				exponent: false};
+			var parts = format.split('.');
+			if(parts.length == 1){parts.fractional = false;}
+			else{
+				var places = options.places;
+				if(typeof places == "undefined"){ places = parts[1].lastIndexOf('0')+1; }
+				if(places){parts.fractional = true;} // required fraction
+				flags.places = places;
+				if(places < parts[1].length){ flags.places += "," + parts[1].length; }
+			}
+			var groups = parts[0].split(',');
+			if(groups.length>1){
+				flags.groupSize = groups.pop().length;
+				if(groups.length>1){
+					flags.groupSize2 = groups.pop().length;
+				}
+			}
+			return "("+dojo.regexp.realNumber(flags)+")";
+		});
+	}, true);
+
+	if(!options.strict){
+		// TODO: handle .### with no leading integer?
+		//TODO: !strict: make currency symbol too
+	}
+
+	return {regexp: re, group: group, decimal: decimal}; // Object
+}
+
 dojo.number.parse = function(/*String*/expression, /*Object?*/options){
 //
 // summary:
@@ -175,30 +245,14 @@ dojo.number.parse = function(/*String*/expression, /*Object?*/options){
 //
 // options: object {pattern: string, locale: string, strict: boolean}
 //		pattern- override pattern with this string
+//		type- choose a format type based on the locale from the following: decimal, scientific, percent, currency. decimal by default.
 //		locale- override the locale used to determine formatting rules
 //		strict- strict parsing, false by default
 
-	options = options || {};
-	var locale = dojo.hostenv.normalizeLocale(options.locale);
-	var bundle = dojo.i18n.getLocalization("dojo.i18n.cldr", "number", locale);
-	var pattern = options.pattern || bundle[(options.type || "decimal") + "Format"];
-	var group = bundle.group;
-	var decimal = bundle.decimal;
-
-	//TODO: handle quoted escapes
-	var patternList = pattern.split(';');
-	if (patternList.length == 1){
-		patternList.push("-" + patternList[0]); // substitute negative sign?
-	}
-
-	if(options.strict && !dojo.number._buildNumberFormatRE(pattern, {/*TODO*/}).test(expression)){
-		return NaN; //NaN
-	}
-
-	var re = dojo.regexp.buildGroupRE(patternList, function(pattern){
-		pattern = dojo.regexp.group(dojo.string.escape('regexp', pattern, '.'), true);
-		return pattern.replace(dojo.number._numberPatternRE, "([\\d\\"+group+"]+(?:\\"+decimal+"\\d+)?)"); // also handle .### with no leading integer?
-	}, true);
+	var info = dojo.number._parseInfo(options);
+	var group = info.group;
+	var decimal = info.decimal;
+	var re = info.regexp;
 
 //TODO: substitute currency symbol, percent/permille/etc.
 	var results = (new RegExp("^"+re+"$")).exec(expression);
@@ -219,23 +273,5 @@ dojo.number.parse = function(/*String*/expression, /*Object?*/options){
 		//TODO: handle percent, per mille
 		//TODO: handle exponent
 	}
-
 	return value;
-};
-
-dojo.number._buildNumberFormatRE = function(/*String*/pattern, /*Object*/options){
-//TODO: sign
-//TODO: currency
-//TODO: exp?
-//TODO: number groups
-	dojo.unimplemented("dojo.number._buildNumberFormatRE");
-	var numberPatternRE = dojo.number._numberPatternRE;
-	var numberPattern = pattern.match(numberPatternRE);
-	if(!numberPattern){
-		dojo.raise("unable to find a number expression in pattern: "+pattern);
-	}
-	//TODO: escape special chars in regexp
-	pattern = pattern.replace(numberPatternRE, "\\d...");
-	return new RegExp("^" + pattern + "$"); // RegExp
-//TODO: memoize?
 };
