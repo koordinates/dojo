@@ -61,6 +61,11 @@ void initOffline(void){
 	if(offlineFile != NULL){
 		loadOfflineList();
 	}
+	
+	addOfflineHost("bradneuberg.name");
+	printf("Is new site offline: %d\n", isHostAvailableOffline("bradneuberg.name"));
+	fflush(stdout);
+	saveOfflineList();
 }
 
 int isValidHost(char host[]){
@@ -69,6 +74,7 @@ int isValidHost(char host[]){
 
 int addOfflineHost(char host[]){
 	struct offline_list_entry *entry_ptr;
+	struct offline_list_entry *new_entry_ptr;
 	
 	if(isHostAvailableOffline(host) == 1){
 		/* already registered to be available offline */
@@ -76,31 +82,33 @@ int addOfflineHost(char host[]){
 	}
 	
 	/* instantiate an entry for this host */
-	entry_ptr = (struct offline_list_entry *)
+	new_entry_ptr = (struct offline_list_entry *)
 					malloc(sizeof(struct offline_list_entry));
-	if(entry_ptr == NULL){
+	if(new_entry_ptr == NULL){
 		do_log(L_ERROR, "No memory");
 		return 0;
 	}
-	entry_ptr->host_ptr = (char *)malloc((unsigned) (strlen(host) + 1));
-	if(entry_ptr->host_ptr == NULL){
+	new_entry_ptr->host_ptr = (char *)malloc((unsigned) (strlen(host) + 1));
+	if(new_entry_ptr->host_ptr == NULL){
 		do_log(L_ERROR, "No memory");
 		return 0;
 	}
-	memcpy(entry_ptr->host_ptr, host, strlen(host) + 1);
-	entry_ptr->next_ptr = NULL;
+	memcpy(new_entry_ptr->host_ptr, host, strlen(host) + 1);
+	new_entry_ptr->next_ptr = NULL;
 	
 	/* add it in the right place */
 	if(offline_list_ptr == NULL){
-		offline_list_ptr = entry_ptr;
+		offline_list_ptr = new_entry_ptr;
 	}else{
 		/* shuffle along the list until we get to the end */
 		entry_ptr = offline_list_ptr;
 		while(entry_ptr->next_ptr != NULL){
 			entry_ptr = entry_ptr->next_ptr;
 		}
-		entry_ptr->next_ptr = entry_ptr;
+		entry_ptr->next_ptr = new_entry_ptr;
 	}
+	
+	return 1; /* success */
 }
 
 int removeOfflineHost(char host[]){
