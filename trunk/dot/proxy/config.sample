@@ -156,4 +156,5 @@
 
 # Uncomment to assign a custom location for where the list of
 # offline enabled web applications is located
-#offlineFile = /some/custom/location 
+
+# offlineFile = /some/custom/location 
