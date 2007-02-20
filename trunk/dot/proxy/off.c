@@ -68,7 +68,39 @@ int isValidHost(char host[]){
 }
 
 int addOfflineHost(char host[]){
-	return 0;
+	struct offline_list_entry *entry_ptr;
+	
+	if(isHostAvailableOffline(host) == 1){
+		/* already registered to be available offline */
+		return 1; /* success */
+	}
+	
+	/* instantiate an entry for this host */
+	entry_ptr = (struct offline_list_entry *)
+					malloc(sizeof(struct offline_list_entry));
+	if(entry_ptr == NULL){
+		do_log(L_ERROR, "No memory");
+		return 0;
+	}
+	entry_ptr->host_ptr = (char *)malloc((unsigned) (strlen(host) + 1));
+	if(entry_ptr->host_ptr == NULL){
+		do_log(L_ERROR, "No memory");
+		return 0;
+	}
+	memcpy(entry_ptr->host_ptr, host, strlen(host) + 1);
+	entry_ptr->next_ptr = NULL;
+	
+	/* add it in the right place */
+	if(offline_list_ptr == NULL){
+		offline_list_ptr = entry_ptr;
+	}else{
+		/* shuffle along the list until we get to the end */
+		entry_ptr = offline_list_ptr;
+		while(entry_ptr->next_ptr != NULL){
+			entry_ptr = entry_ptr->next_ptr;
+		}
+		entry_ptr->next_ptr = entry_ptr;
+	}
 }
 
 int removeOfflineHost(char host[]){
@@ -76,6 +108,22 @@ int removeOfflineHost(char host[]){
 }
 
 int isHostAvailableOffline(char host[]){
+	struct offline_list_entry *entry_ptr;
+	
+	if(host == NULL){
+		return 0; /* not available offline */
+	}
+	
+	entry_ptr = offline_list_ptr;
+	while(entry_ptr != NULL){
+		if(strcmp(entry_ptr->host_ptr, host) == 0){
+			return 1; /* the host is available offline */
+		}
+		
+		entry_ptr = entry_ptr->next_ptr;
+	}
+	
+	/* host not available offlne */
 	return 0;
 }
 
@@ -92,7 +140,7 @@ int saveOfflineList(void){
 		sprintf(message, "We don't have permission to write out the offline list: %s\n", 
 				offlineFile->string);
 		do_log(L_ERROR, message);
-		return 0;
+		return 0; /* failure */
     }
 
 	/* open the file */
@@ -100,7 +148,7 @@ int saveOfflineList(void){
 	if(file_ptr == NULL){
 		sprintf(message, "Unable to open offline list file, errno: %d", errno);
 		do_log(L_ERROR, message);
-		return 0;
+		return 0; /* failure */
 	}
 
 	/* go through each of our host entries, writing them out to the file */
@@ -115,7 +163,7 @@ int saveOfflineList(void){
 	
 	fclose(file_ptr);
 	
-	return 1;
+	return 1; /* success */
 }
 
 int loadOfflineList(void){
@@ -135,7 +183,7 @@ int loadOfflineList(void){
 		sprintf(message, "Offline list file does not exist: %s\n", 
 				offlineFile->string);
 		do_log(L_INFO, message);
-		return 1;
+		return 1; /* success */
 	}
 	
 	/* see if we have permission to access our offline file */
@@ -143,7 +191,7 @@ int loadOfflineList(void){
 		sprintf(message, "We don't have permission to read the offline list: %s\n", 
 				offlineFile->string);
 		do_log(L_ERROR, message);
-		return 0;
+		return 0; /* failure */
     }
 
 	/* try to open the file */
@@ -151,7 +199,7 @@ int loadOfflineList(void){
 	if(file_ptr == NULL){
 		sprintf(message, "Unable to open offline list file, errno: %d", errno);
 		do_log(L_ERROR, message);
-		return 0;
+		return 0; /* failure */
 	}
 	
 	/* read each entry */
@@ -174,7 +222,15 @@ int loadOfflineList(void){
 		/* instantiate an entry for this host */
 		new_entry_ptr = (struct offline_list_entry *)
 						malloc(sizeof(struct offline_list_entry));
+		if(new_entry_ptr == NULL){
+			do_log(L_ERROR, "No memory");
+			return 0; /* failure */
+		}
 		new_entry_ptr->host_ptr = (char *)malloc((unsigned) (strlen(line) + 1));
+		if(new_entry_ptr->host_ptr == NULL){
+			do_log(L_ERROR, "No memory");
+			return 0; /* failure */
+		}
 		memcpy(new_entry_ptr->host_ptr, line, strlen(line) + 1);
 		new_entry_ptr->next_ptr = NULL;
 		
@@ -192,7 +248,7 @@ int loadOfflineList(void){
 	
 	fclose(file_ptr);
 	
-	return 1;
+	return 1; /* success */
 }
 
 void setOfflineFileName(char *name_ptr){
