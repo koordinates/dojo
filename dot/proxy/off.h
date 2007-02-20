@@ -27,6 +27,7 @@ struct offline_list_entry{
 	struct offline_list_entry *next_ptr;
 } *offline_list_ptr;
 
+void preinitOffline(void);
 
 /**
 	Initializes the offline web app support.
@@ -62,9 +63,8 @@ int saveOfflineList(void);
 int loadOfflineList(void);
 
 /**
-	Sets our full path filename to our list of offline-enabled web sites. 
-	This is the full path to our file that stores our list of offline
-	enabled web apps, such as "/Users/foobar/.polipo/offline_list.txt".
+	Sets our the path + filename to our list of offline-enabled web sites, 
+	such as "/Users/foobar/.polipo/offline_list.txt".
 */
 void setOfflineFileName(char *name_ptr);
 

@@ -5,12 +5,59 @@
 
 #include "polipo.h"
 
+#ifdef NO_OFFLINE_SUPPORT /* compile out offline support */
+
+void preinitOffline(){
+    return;
+}
+
+void initOffline(){
+    return;
+}
+
+#else
+
 /* 1 if we are online, 0 if we are offline. */
 int online_flag = 1;
 
 AtomPtr offlineFile = NULL;
 
+static int atomSetterOffline(ConfigVariablePtr var, 
+								void *value){
+    initOffline();
+    return configAtomSetter(var, value);
+}
+
+void preinitOffline(void){
+	CONFIG_VARIABLE_SETTABLE(offlineFile, CONFIG_ATOM, atomSetterOffline,
+                             "File specifying the path to our offline file list");
+}
+
 void initOffline(void){
+	/* get the correct filename to our offline file list */
+	if(offlineFile){
+        offlineFile = expandTilde(offlineFile);
+	}
+
+    if(offlineFile == NULL){
+        offlineFile = expandTilde(internAtom("~/.polipo-offline"));
+		printf("offlineFile: %s\n", offlineFile->string);
+    }
+
+    if(offlineFile == NULL){
+        if(access("/etc/polipo/offline", F_OK) >= 0){
+            offlineFile = internAtom("/etc/polipo/offline");
+		}
+    }
+
+	if(offlineFile == NULL){
+		do_log(L_INFO, "Unable to open Polipo offline file list");
+	}
+	
+	/* load our list of offline enabled hosts */
+	if(offlineFile != NULL){
+		loadOfflineList();
+	}
 }
 
 int isValidHost(char host[]){
@@ -29,36 +76,6 @@ int isHostAvailableOffline(char host[]){
 	return 0;
 }
 
-FILE *openOfflineFile(char mode[]){
-	if(offlineFile){
-        offlineFile = expandTilde(offlineFile);
-	}
-
-    if(offlineFile == NULL){
-        offlineFile = expandTilde(internAtom("~/.polipo-offline"));
-        if(offlineFile){
-            if(access(offlineFile->string, F_OK) < 0){
-                releaseAtom(offlineFile);
-                offlineFile = NULL;
-            }
-        }
-    }
-
-    if(offlineFile == NULL){
-        if(access("/etc/polipo/offline", F_OK) >= 0){
-            offlineFile = internAtom("/etc/polipo/offline");
-		}
-    }
-
-	if(offlineFile == NULL){
-		do_log(L_INFO, "Unable to open Polipo offline file list");
-		return NULL;
-	}
-	
-	FILE *file_ptr = fopen(offlineFile->string, mode);
-	return file_ptr;
-}
-
 int saveOfflineList(void){
 	return 0;
 }
@@ -68,17 +85,33 @@ int loadOfflineList(void){
 	char line[1024];
 	char *line_ptr;
 	char host[1024];
+	char message[1024];
 	
 	assert(offlineFile != NULL);
 	
+	/* see if we even have an offline file yet */
+	if(access(offlineFile->string, F_OK) < 0){
+		/* no saved list yet */
+		sprintf(message, "Offline list file does not exist: %s\n", 
+				offlineFile->string);
+		do_log(L_INFO, message);
+		return 1;
+	}
+	
+	/* see if we have permission to access our offline file */
+	if(access(offlineFile->string, R_OK) < 0){
+		sprintf(message, "We don't have permission to read the offline list: %s\n", 
+				offlineFile->string);
+		do_log(L_ERROR, message);
+		return 0;
+    }
+
 	/* try to open the file */
 	file_ptr = fopen(offlineFile->string, "r");
 	if(file_ptr == NULL){
-		/* no saved list yet */
-		fprintf(stderr, 
-				"Offline list file does not exist: %s\n", 
-				offlineFile->string);
-		return 1;
+		sprintf(message, "Unable to open offline list file, errno: %d", errno);
+		do_log(L_ERROR, message);
+		return 0;
 	}
 	
 	/* read each entry */
@@ -102,6 +135,7 @@ int loadOfflineList(void){
 		strcpy(host, line);
 		
 		printf("Host: %s\n", host);
+		fflush(stdout);
 	}
 	
 	fclose(file_ptr);
@@ -144,3 +178,5 @@ int main(){
 	return(0);
 }
 #endif
+
+#endif /* else for NO_OFFLINE_SUPPORT */
