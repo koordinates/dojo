@@ -46,8 +46,7 @@ int addOfflineHost(char host[]);
 	Removes the given host from being offline-enabled.
 
 	Returns 1 if the host was remove successfully,
-	0 otherwise. If this host was never part of the offline
-	list, 1 is returned.
+	0 otherwise.
 */
 int removeOfflineHost(char host[]);
 
