@@ -28,20 +28,13 @@ static int atomSetterOffline(ConfigVariablePtr var,
     return configAtomSetter(var, value);
 }
 
-void preinitOffline(void){
-	CONFIG_VARIABLE_SETTABLE(offlineFile, CONFIG_ATOM, atomSetterOffline,
-                             "File specifying the path to our offline file list");
-}
-
-void initOffline(void){
-	/* get the correct filename to our offline file list */
+static void initOfflineFileName(void){
 	if(offlineFile){
         offlineFile = expandTilde(offlineFile);
 	}
 
     if(offlineFile == NULL){
         offlineFile = expandTilde(internAtom("~/.polipo-offline"));
-		printf("offlineFile: %s\n", offlineFile->string);
     }
 
     if(offlineFile == NULL){
@@ -53,6 +46,16 @@ void initOffline(void){
 	if(offlineFile == NULL){
 		do_log(L_INFO, "Unable to open Polipo offline file list");
 	}
+}
+
+void preinitOffline(void){
+	CONFIG_VARIABLE_SETTABLE(offlineFile, CONFIG_ATOM, atomSetterOffline,
+                             "File specifying the path to our offline file list");
+}
+
+void initOffline(void){
+	/* get the correct filename to our offline file list */
+	initOfflineFileName();
 	
 	/* load our list of offline enabled hosts */
 	if(offlineFile != NULL){
@@ -84,8 +87,9 @@ int loadOfflineList(void){
 	FILE *file_ptr;
 	char line[1024];
 	char *line_ptr;
-	char host[1024];
 	char message[1024];
+	struct offline_list_entry *new_entry_ptr;
+	struct offline_list_entry *entry_ptr;
 	
 	assert(offlineFile != NULL);
 	
@@ -131,11 +135,23 @@ int loadOfflineList(void){
 			continue;
 		}
 		
-		/* get our host name */
-		strcpy(host, line);
+		/* instantiate an entry for this host */
+		new_entry_ptr = (struct offline_list_entry *)
+						malloc(sizeof(struct offline_list_entry));
+		new_entry_ptr->host_ptr = (char *)malloc((unsigned) (strlen(line) + 1));
+		memcpy(new_entry_ptr->host_ptr, line, strlen(line) + 1);
+		new_entry_ptr->next_ptr = NULL;
 		
-		printf("Host: %s\n", host);
-		fflush(stdout);
+		if(offline_list_ptr == NULL){
+			offline_list_ptr = new_entry_ptr;
+		}else{
+			/* shuffle along the list until we get to the end */
+			entry_ptr = offline_list_ptr;
+			while(entry_ptr->next_ptr != NULL){
+				entry_ptr = entry_ptr->next_ptr;
+			}
+			entry_ptr->next_ptr = new_entry_ptr;
+		}
 	}
 	
 	fclose(file_ptr);
@@ -158,25 +174,5 @@ void goOffline(void){
 int isOnline(void){
 	return online_flag;
 }
-
-#ifdef HIDE_ME
-int main(){
-	char full_path[256] = "~/.polipo-cache/offline_list.txt";
-	char *name_ptr;
-	int load_status;
-	
-	name_ptr = (char *)malloc((unsigned) strlen(full_path) + 1);
-	if(name_ptr == NULL){
-		fprintf(stderr, "Unable to create memory");
-		exit(8);
-	}
-	strcpy(name_ptr, full_path);
-	
-	off_set_file_name(name_ptr);
-	load_status = off_load();
-	
-	return(0);
-}
-#endif
 
 #endif /* else for NO_OFFLINE_SUPPORT */

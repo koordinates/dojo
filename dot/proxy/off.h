@@ -23,7 +23,7 @@
 */
 
 struct offline_list_entry{
-	char *domain_ptr;
+	char *host_ptr;
 	struct offline_list_entry *next_ptr;
 } *offline_list_ptr;
 
