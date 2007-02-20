@@ -80,7 +80,42 @@ int isHostAvailableOffline(char host[]){
 }
 
 int saveOfflineList(void){
-	return 0;
+	FILE *file_ptr;
+	struct offline_list_entry *entry_ptr;
+	char message[1024];
+	
+	/* make sure we have an actual file name */
+	assert(offlineFile != NULL);
+	
+	/* see if we have permission to access our offline file */
+	if(access(offlineFile->string, W_OK) < 0){
+		sprintf(message, "We don't have permission to write out the offline list: %s\n", 
+				offlineFile->string);
+		do_log(L_ERROR, message);
+		return 0;
+    }
+
+	/* open the file */
+	file_ptr = fopen(offlineFile->string, "w");
+	if(file_ptr == NULL){
+		sprintf(message, "Unable to open offline list file, errno: %d", errno);
+		do_log(L_ERROR, message);
+		return 0;
+	}
+
+	/* go through each of our host entries, writing them out to the file */
+	entry_ptr = offline_list_ptr;
+	while(entry_ptr != NULL){
+		/* write out this host name */
+		fprintf(file_ptr, "%s\n", entry_ptr->host_ptr);
+		
+		/* get the next entry */
+		entry_ptr = entry_ptr->next_ptr;
+	}
+	
+	fclose(file_ptr);
+	
+	return 1;
 }
 
 int loadOfflineList(void){
@@ -91,6 +126,7 @@ int loadOfflineList(void){
 	struct offline_list_entry *new_entry_ptr;
 	struct offline_list_entry *entry_ptr;
 	
+	/* make sure we have an actual file name */
 	assert(offlineFile != NULL);
 	
 	/* see if we even have an offline file yet */
