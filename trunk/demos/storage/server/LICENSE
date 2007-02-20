@@ -1,0 +1,11 @@
+License Disclaimer:
+
+All contents of this directory are Copyright (c) the Dojo Foundation, with the
+following exceptions:
+-------------------------------------------------------------------------------
+
+lib/servlet-api.jar
+	* Copyright Sun Microsystems
+	  This is a fully redistributable JAR used for compiling servlets.
+	  Many open source projects redistribute it, including Jetty, Tomcat,
+	  and Apache.
