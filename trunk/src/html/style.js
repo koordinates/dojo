@@ -314,7 +314,7 @@ if (dojo.render.html.ie) {
 	// IE branch
 	dojo.html.toPixelValue = function(/* HTMLElement */element, /* String */styleValue){
 		// summary
-		//  Extract value in pixels from style value 'avalue' (IE version).
+		//  Extract value in pixels from styleValue (IE version).
 		//  If a value cannot be extracted, zero is returned.
 		if(styleValue.slice(-2) == 'px'){return parseFloat(styleValue);}
 		var pixelValue = 0;
@@ -328,7 +328,7 @@ if (dojo.render.html.ie) {
 				style.left = sLeft;
 				runtimeStyle.left = rsLeft;
 			}catch(e){
-				// FIXME: it's possible for 'avalue' to be incompatible with
+				// FIXME: it's possible for styleValue to be incompatible with
 				// style.left. In particular, border width values of 
 				// "thick", "medium", or "thin" will provoke an exception.
 			}
@@ -339,7 +339,7 @@ if (dojo.render.html.ie) {
 	// non-IE branch
 	dojo.html.toPixelValue = function(/* HTMLElement */element, /* String */styleValue){
 		// summary
-		//  Extract value in pixels from style value 'styleValue' (non-IE version).
+		//  Extract value in pixels from styleValue (non-IE version).
 		//  If a value cannot be extracted, zero is returned.
 		return (styleValue.slice(-2) == 'px' ? parseFloat(styleValue) : 0); // Number
 	}
