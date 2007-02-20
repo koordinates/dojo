@@ -17,13 +17,13 @@
 	dojo.hostenv.writeIncludes();
 </script>
 <script>
-var tests = [
-	{ name: "outer size", func: dojo.html.getMarginBox, expected: { w: 110, h: 60 } },	
-	{ name: "inner size", func: dojo.html.getBorderBox, expected: { w: 100, h: 50 } },	
-	{ name: "content size", func: dojo.html.getContentBox, expected: { w: 80, h: 30 } }
-];
 
 function onLoad(){
+	var tests = [
+		{ name: "outer size", func: dojo.html.getMarginBox, expected: { w: 110, h: 60 } },	
+		{ name: "inner size", func: dojo.html.getBorderBox, expected: { w: 100, h: 50 } },	
+		{ name: "content size", func: dojo.html.getContentBox, expected: { w: 80, h: 30 } }
+	];
 	var objNames = [ "mytable", "mydiv" ];
 	for(var on=0; on<objNames.length; on++) {
 		var objName = objNames[on];
