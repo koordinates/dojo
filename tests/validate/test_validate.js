@@ -256,6 +256,8 @@ function test_validate_isRealNumber(){
 
 	//test places
 	jum.assertTrue("test29", dojo.validate.isRealNumber( '100.25', {places: 2} ));
+	jum.assertTrue("test29", dojo.validate.isRealNumber( '0.25', {places: 2} ));
+	jum.assertTrue("test29", dojo.validate.isRealNumber( '.25', {places: 2} ));
 	jum.assertFalse("test30", dojo.validate.isRealNumber( '100.2', {places: 2} ));
 	jum.assertFalse("test31", dojo.validate.isRealNumber( '100.250', {places: 2} ));
 
