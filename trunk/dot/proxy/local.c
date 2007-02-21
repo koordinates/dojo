@@ -26,6 +26,7 @@ int disableLocalInterface = 0;
 int disableConfiguration = 0;
 int disableIndexing = 1;
 int disableServersList = 1;
+int disableOfflineSupport = 1;
 
 AtomPtr atomInitForbidden;
 AtomPtr atomReopenLog;
@@ -51,6 +52,8 @@ preinitLocal()
                     "Disable indexing of the local cache.");
     CONFIG_VARIABLE(disableServersList, CONFIG_BOOLEAN,
                     "Disable the list of known servers.");
+    CONFIG_VARIABLE(disableOfflineSupport, CONFIG_BOOLEAN,
+                    "Disable support for offline web applications.");
 }
 
 static void fillSpecialObject(ObjectPtr, void (*)(FILE*, char*), void*);
@@ -148,7 +151,7 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
                    HTTPRequestPtr requestor, void *closure)
 {
     char buffer[1024];
-    int hlen;
+    int hlen = 0;
 
     if(method >= METHOD_POST) {
         return httpSpecialSideRequest(object, method, from, to,
@@ -163,9 +166,6 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
         return 1;
     }
 
-    hlen = snnprintf(buffer, 0, 1024,
-                     "\r\nServer: polipo"
-                     "\r\nContent-Type: text/html");
     object->date = current_time.tv_sec;
     object->age = current_time.tv_sec;
     object->headers = internAtomN(buffer, hlen);
@@ -173,6 +173,16 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
     object->message = internAtom("Okay");
     object->flags &= ~OBJECT_INITIAL;
     object->flags |= OBJECT_DYNAMIC;
+
+	if(disableOfflineSupport == 0 && matchUrl("/polipo/offline", object)){
+		hlen = snnprintf(buffer, 0, 1024,
+                     "\r\nServer: polipo"
+                     "\r\nContent-Type: text/javascript");
+	}else{
+        hlen = snnprintf(buffer, 0, 1024,
+                     "\r\nServer: polipo"
+                     "\r\nContent-Type: text/html");
+    }
 
     if(object->key_size == 8 && memcmp(object->key, "/polipo/", 8) == 0) {
         objectPrintf(object, 0,
@@ -191,20 +201,11 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
 #endif
                      "</body></html>\n");
         object->length = object->size;
-#ifndef NO_OFFLINE_SUPPORT
-    } else if(matchUrl("/polipo/offline", object)) {
-	    fprintf(stderr, "/polipo/offline was called!");
-	    fflush(stderr);
+    } else if(disableOfflineSupport == 0 && 
+              matchUrl("/polipo/offline", object)) {
 	    objectPrintf(object, 0,
-					"<!DOCTYPE HTML PUBLIC "
-                     "\"-//W3C//DTD HTML 4.01 Transitional//EN\" "
-                     "\"http://www.w3.org/TR/html4/loose.dtd\">\n"
-                     "<html><head>\n"
-                     "<title>Hello World</title>\n"
-                     "</head><body>\n"
-                     "<h1>Hello from the Polipo world!!!!! This is exciting!</h1>\n");
+					"alert(\"Hello from content type world\")");
         object->length = object->size;
-#endif
     } else if(matchUrl("/polipo/status", object)) {
         objectPrintf(object, 0,
                      "<!DOCTYPE HTML PUBLIC "
