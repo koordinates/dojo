@@ -1,7 +1,8 @@
 dojo.provide("dojo.data.JsonItemStore");
 
 dojo.require("dojo.data.core.SimpleBaseStore");
-dojo.require("dojo.io");
+dojo.require("dojo.lang.declare");
+dojo.require("dojo.io.common");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.data.JsonItemStore");
@@ -10,9 +11,11 @@ dojo.declare("dojo.data.JsonItemStore", dojo.data.core.SimpleBaseStore,
 	function(/* object */ keywordParameters) {
 		// summary: initializer
 		// keywordParameters: {url: String}
-		this._arrayOfItems = [];
+		// keywordParameters: {data: jsonObject}
+		this._arrayOfAllItems = [];
 		this._loadFinished = false;
 		this._jsonFileUrl = keywordParameters.url;
+		this._jsonData = keywordParameters.data;
 		this._features = { 'dojo.data.core.Read': true };
 		this._itemsByIdentity = null;
 	}, {
@@ -42,7 +45,8 @@ dojo.declare("dojo.data.JsonItemStore", dojo.data.core.SimpleBaseStore,
 	getValues: function(/* item */ item, /* attribute || attribute-name-string */ attribute) {
 		// summary: See dojo.data.core.Read.getValues()
 		this._assertIsItem(item);
-		return item[attribute];
+		var arrayOfValues = item[attribute] || [];
+		return arrayOfValues;
 	},
 	
 	getAttributes: function(/* item */ item) {
@@ -74,8 +78,8 @@ dojo.declare("dojo.data.JsonItemStore", dojo.data.core.SimpleBaseStore,
 	
 	isItem: function(/* anything */ something) {
 		// summary: See dojo.data.core.Read.isItem()
-		for (var i = 0; i < this._arrayOfItems.length; ++i) {
-			var possibleItem = this._arrayOfItems[i];
+		for (var i = 0; i < this._arrayOfAllItems.length; ++i) {
+			var possibleItem = this._arrayOfAllItems[i];
 			if (something == possibleItem) {
 				return true;
 			}
@@ -105,28 +109,60 @@ dojo.declare("dojo.data.JsonItemStore", dojo.data.core.SimpleBaseStore,
 	
 	_findItems: function(/* object? */ keywordArgs, /* function */ findCallback, /* function */ errorCallback) {
 		var self = this;
+		var filter = function(keywordArgs, arrayOfAllItems) {
+			if (keywordArgs.query) {
+				var items = [];
+				for (var i = 0; i < arrayOfAllItems.length; ++i) {
+					var match = true;
+					var candidateItem = arrayOfAllItems[i];
+					for (var key in keywordArgs.query) {
+						var value = keywordArgs.query[key];
+						if (!self.containsValue(candidateItem, key, value)) {
+							match = false;
+						}
+					}
+					if (match) {
+						items.push(candidateItem);
+					}
+				}
+				keywordArgs.items = items;
+				findCallback(keywordArgs);
+			} else {
+				keywordArgs.items = self._arrayOfAllItems;
+				findCallback(keywordArgs);
+			}
+		};
 		var bindHandler = function(type, data, evt) {
 			if (type == "load") {
 				self._loadFinished = true;
-				self._arrayOfItems = self._getItemsFromLoadedData(data);
-				keywordArgs.items = self._arrayOfItems;
-				findCallback(keywordArgs);
+				self._arrayOfAllItems = self._getItemsFromLoadedData(data);
+				filter(keywordArgs, self._arrayOfAllItems);
 			} else if(type == "error" || type == 'timeout') {
 				var errorObject = data;
 				errorCallback(errorObject);
 			}
 		};
 		if (this._loadFinished) {
-			keywordArgs.items = self._arrayOfItems;
-			findCallback(keywordArgs);
+			filter(keywordArgs, this._arrayOfAllItems)
 		} else {
 			if (this._jsonFileUrl) {
-				var bindRequest = dojo.io.bind({
+				var bindArgs = {
 					url: this._jsonFileUrl, // example: "muppets.json",
 					handle: bindHandler,
-					mimetype: "text/json",
-					sync: false });
+					mimetype: "text/json"
+					};
+				if (keywordArgs.sync) {
+					bindArgs.sync = keywordArgs.sync; 
+				}
+				var bindRequest = dojo.io.bind(bindArgs);
 				keywordArgs.abort = bindRequest.abort;
+			} else if (this._jsonData) {
+				this._loadFinished = true;
+				this._arrayOfAllItems = this._getItemsFromLoadedData(this._jsonData);
+				this._jsonData = null;
+				filter(keywordArgs, this._arrayOfAllItems);
+			} else {
+				// FIXME: error condition?
 			}
 		}
 	},
@@ -140,8 +176,8 @@ dojo.declare("dojo.data.JsonItemStore", dojo.data.core.SimpleBaseStore,
 		
 		// Step 1: We walk through all the attribute values of all the items, 
 		// and replace single values with arrays.  For example, we change this:
-        //     { name:'Miss Piggy', pets:'Foo-Foo'}
-        // into this:
+		//     { name:'Miss Piggy', pets:'Foo-Foo'}
+		// into this:
 		//     { name:['Miss Piggy'], pets:['Foo-Foo']}
 		
 		for (var i = 0; i < arrayOfItems.length; ++i) {
@@ -154,7 +190,23 @@ dojo.declare("dojo.data.JsonItemStore", dojo.data.core.SimpleBaseStore,
 			}
 		}
 		
-		// Step 2: We walk through all the attribute values of all the items,
+		// Step 2: Some data files specify an optional 'identifier', which is 
+		// the name of an attribute that holds the identity of each item.  If 
+		// this data file specified an identifier attribute, then build an 
+		// hash table of items keyed by the identity of the items.
+		var identifier = dataObject.identifier;
+		if (identifier) {
+			this._features['dojo.data.core.Identity'] = identifier;
+			this._itemsByIdentity = {};
+			for (i = 0; i < arrayOfItems.length; ++i) {
+				item = arrayOfItems[i];
+				arrayOfValues = item[identifier];
+				identity = arrayOfValues[0];
+				this._itemsByIdentity[identity] = item;
+			}
+		}
+
+		// Step 3: We walk through all the attribute values of all the items,
 		// and replace references with pointers to items.  For example, we change:
         //     { name:['Kermit'], friends:[{reference:{name:'Miss Piggy'}}] }
 		// into this:
@@ -168,16 +220,24 @@ dojo.declare("dojo.data.JsonItemStore", dojo.data.core.SimpleBaseStore,
 					value = arrayOfValues[j]; // example: {reference:{name:'Miss Piggy'}}
 					if (typeof value == "object" && value.reference) {
 						var referenceDescription = value.reference; // example: {name:'Miss Piggy'}
-						for (var k = 0; k < arrayOfItems.length; ++k) {
-							var candidateItem = arrayOfItems[k];
-							var found = true;
-							for (var refKey in referenceDescription) {
-								if (candidateItem[refKey] != referenceDescription[refKey]) { 
-									found = false; 
+						if (dojo.lang.isString(referenceDescription)) {
+							// example: 'Miss Piggy'
+							// from an item like: { name:['Kermit'], friends:[{reference:'Miss Piggy'}]}
+							arrayOfValues[j] = this._itemsByIdentity[referenceDescription];
+						} else {
+							// example: {name:'Miss Piggy'}
+							// from an item like: { name:['Kermit'], friends:[{reference:{name:'Miss Piggy'}}] }
+							for (var k = 0; k < arrayOfItems.length; ++k) {
+								var candidateItem = arrayOfItems[k];
+								var found = true;
+								for (var refKey in referenceDescription) {
+									if (candidateItem[refKey] != referenceDescription[refKey]) { 
+										found = false; 
+									}
 								}
-							}
-							if (found) { 
-								arrayOfValues[j] = candidateItem; 
+								if (found) { 
+									arrayOfValues[j] = candidateItem; 
+								}
 							}
 						}
 					}
@@ -185,22 +245,6 @@ dojo.declare("dojo.data.JsonItemStore", dojo.data.core.SimpleBaseStore,
 			}
 		}
 		
-		// Some data files specify an optional 'identifier', which is the name
-		// of an attribute that holds the identity of each item.  If this data
-		// file specified an identifier attribute, then build an identifer
-		// 
-		var identifier = dataObject.identifier;
-		if (identifier) {
-			this._features['dojo.data.core.Identity'] = identifier;
-			this._itemsByIdentity = {};
-			for (i = 0; i < arrayOfItems.length; ++i) {
-				item = arrayOfItems[i];
-				arrayOfValues = item[identifier];
-				identity = arrayOfValues[0];
-				this._itemsByIdentity[identity] = item;
-			}
-		}
-
 		return arrayOfItems;
 	},
 	
@@ -215,7 +259,7 @@ dojo.declare("dojo.data.JsonItemStore", dojo.data.core.SimpleBaseStore,
 		// summary: See dojo.data.core.Identity.findByIdentity()
 		return this._itemsByIdentity[identity];
 	}
-
+	
 });
 
 
