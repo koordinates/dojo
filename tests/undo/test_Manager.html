@@ -8,8 +8,8 @@
 			};
 		</script>
 		<script type="text/javascript" src="../../dojo.js"></script>
-		<script type="text/javascript" src="../../src/undo/Manager.js"></script>
 		<script type="text/javascript">
+			dojo.require("dojo.undo.Manager");
 			function foo(n) {
 				return function() {
 					dojo.debug(n);
