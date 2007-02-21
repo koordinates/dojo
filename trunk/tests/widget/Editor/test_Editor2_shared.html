@@ -4,7 +4,10 @@
 <head>
 	<title>Dojo Editor2 shared Toolbar and ContextMenu Test</title>
 	<script type="text/javascript">
-		var djConfig = { isDebug: true };
+		djConfig = {
+			isDebug: true,
+			dojoRichTextFrameUrl: "../../../src/widget/templates/richtextframe.html" //for xdomain
+		};
 	</script>
 
 	<script type="text/javascript" src="../../../dojo.js"></script>
@@ -14,8 +17,10 @@
 		dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands");
 		dojo.require("dojo.widget.Editor2Plugin.DialogCommands");
 		dojo.require("dojo.widget.Editor2Plugin.ColorPicker");
-		dojo.widget.Editor2Plugin.ContextMenuManager.registerGroupSet('menugroup1',['Generic'])
-	</script>
+		dojo.addOnLoad(function(){
+			dojo.widget.Editor2Plugin.ContextMenuManager.registerGroupSet('menugroup1',['Generic']);
+		});
+</script>
 </head>
 <body bgcolor="white">
 <p>the first two Editor2 instances share the same toolbar, while the last two share another one.</p>

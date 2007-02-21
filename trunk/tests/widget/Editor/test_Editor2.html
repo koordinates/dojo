@@ -4,7 +4,10 @@
 <head>
 	<title>Dojo Editor2 Test</title>
 	<script type="text/javascript">
-		var djConfig = { isDebug: true };
+		var djConfig = {
+			isDebug: true,
+			dojoRichTextFrameUrl: "../../../src/widget/templates/richtextframe.html" //for xdomain
+		};
 	</script>
 
 	<script type="text/javascript" src="../../../dojo.js"></script>
@@ -61,12 +64,14 @@ text above the second editor instance. This second editor shares a toolbar with 
 	build and editor below
 </button>
 <script>
-	dojo.event.connect(dojo.byId("onDemandButton"), "onclick", function(){
-		dojo.widget.createWidget("Editor2", 
-			{ 	shareToolbar: false, 
-				toolbarAlwaysVisible: true,
-				focusOnLoad: false 
-			}, dojo.byId("onDemandEditor"));
+	dojo.addOnLoad(function(){
+		dojo.event.connect(dojo.byId("onDemandButton"), "onclick", function(){
+			dojo.widget.createWidget("Editor2", 
+				{ 	shareToolbar: false, 
+					toolbarAlwaysVisible: true,
+					focusOnLoad: false 
+				}, dojo.byId("onDemandEditor"));
+		});
 	});
 </script>
 <div id="onDemandEditor">
