@@ -32,8 +32,10 @@
 		dojo.byId("previous2").disabled = page.isFirstChild;
 		dojo.byId("next2").disabled = page.isLastChild;
 	}
-	dojo.event.topic.subscribe("myPageContainer-selectChild", selected);
-	// TODO: if someone removes the first or last page have to disable the previous/next buttons */
+	dojo.addOnLoad(function(){
+		dojo.event.topic.subscribe("myPageContainer-selectChild", selected);
+		// TODO: if someone removes the first or last page have to disable the previous/next buttons */
+	});
 </script>
 </head>
 

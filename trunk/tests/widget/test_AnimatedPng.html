@@ -17,6 +17,10 @@
 	dojo.require("dojo.widget.AnimatedPng");
 	//dojo.hostenv.writeIncludes();
 
+	dojo.addOnLoad(function(){
+		var params = {src: "images/animatedpng_static.gif", aniSrc: "images/animatedpng_frames.gif", width: 20, height: 20, interval: 50};
+		var widget = dojo.widget.createWidget("AnimatedPng", params, document.getElementById("pngContainer"));	
+	});
 </script>
 <style>
 
@@ -39,10 +43,5 @@
 
 <h3>Instantiation from Script:</h3>
 <div id="pngContainer"></div>
-<script type="text/javascript">
-	var params = {src: "images/animatedpng_static.gif", aniSrc: "images/animatedpng_frames.gif", width: 20, height: 20, interval: 50};
-	var widget = dojo.widget.createWidget("AnimatedPng", params, document.getElementById("pngContainer"));
-</script>
-	
 </body>
 </html>
