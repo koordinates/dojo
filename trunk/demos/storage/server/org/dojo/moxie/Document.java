@@ -3,12 +3,10 @@ package org.dojo.moxie;
 import java.util.*;
 import java.util.regex.*;
 
-import org.dojo.moxie.sync.*;
-
 /**
 	@author Brad Neuberg, bkn3@columbia.edu
 */
-public class Document implements Item{
+public class Document{
 	protected Integer id = null;
 	protected Integer origId = null;
 	protected String fileName = null;
