@@ -1,5 +1,6 @@
 dojo.provide("dojo.data.core.SimpleBaseStore");
 
+dojo.require("dojo.lang.declare");
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.data.core.SimpleBaseStore");
 
