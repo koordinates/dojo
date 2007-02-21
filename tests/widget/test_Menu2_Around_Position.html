@@ -87,13 +87,15 @@
 		menu.aroundBox = dojo.byId("aroundBoxSelect").value;
 		menu.open(e.currentTarget, null, e.currentTarget);
 	}
-	dojo.addOnLoad(function(){menu=dojo.widget.byId("test3");});
-	dojo.event.connect(dojo.byId("test0"), "onclick", testAroundPlace);
-	dojo.event.connect(dojo.byId("test0IE"), "onclick", testAroundPlace);
-	
-	dojo.event.connect(dojo.byId("test1"), "onclick", testAroundPlace);
-	dojo.event.connect(dojo.byId("test2"), "onclick", testAroundPlace);
-	dojo.event.connect(dojo.byId("test3"), "onclick", testAroundPlace);
+	dojo.addOnLoad(function(){
+		menu=dojo.widget.byId("test3");
+		dojo.event.connect(dojo.byId("test0"), "onclick", testAroundPlace);
+		dojo.event.connect(dojo.byId("test0IE"), "onclick", testAroundPlace);
+		
+		dojo.event.connect(dojo.byId("test1"), "onclick", testAroundPlace);
+		dojo.event.connect(dojo.byId("test2"), "onclick", testAroundPlace);
+		dojo.event.connect(dojo.byId("test3"), "onclick", testAroundPlace);
+	});
 </script>
 </div>
 </body>

@@ -4,7 +4,7 @@
 <title>Dojo Button Widget Test</title>
 	<link rel="stylesheet" type="text/css" href="css/demos.css" />
 <script type="text/javascript">
-	var djConfig = {isDebug: true , debugAtAllCosts: false };
+	var djConfig = {isDebug: true , baseScriptUri: "../../", debugAtAllCosts: false };
 </script>
 
 <script type="text/javascript" src="../../dojo.js"></script>
@@ -206,8 +206,10 @@ Here's an example:</p>
 <h3>Instantiation from Script:</h3>
 <div id="buttonContainer"></div>
 <script type="text/javascript">
-	var params = {caption: "script test"};
-	var widget = dojo.widget.createWidget("Button", params, document.getElementById("buttonContainer"));
+	dojo.addOnLoad(function(){
+		var params = {caption: "script test"};
+		var widget = dojo.widget.createWidget("Button", params, document.getElementById("buttonContainer"));
+	});
 </script>
 
 </body>
