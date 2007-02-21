@@ -4,7 +4,10 @@
 <head>
 	<title>Dojo Editor2 shared Toolbar and ContextMenu Test</title>
 	<script type="text/javascript">
-		var djConfig = { isDebug: true };
+		djConfig = {
+			isDebug: true,
+			dojoRichTextFrameUrl: "../../../src/widget/templates/richtextframe.html" //for xdomain
+		};
 	</script>
 
 	<script type="text/javascript" src="../../../dojo.js"></script>
@@ -12,7 +15,9 @@
 		dojo.require("dojo.widget.Editor2");
 		dojo.require("dojo.widget.Editor2Plugin.ContextMenu");
 		dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands");
-		dojo.widget.Editor2Plugin.ContextMenuManager.registerGroupSet('menugroup1',['Generic'])
+		dojo.addOnLoad(function(){
+			dojo.widget.Editor2Plugin.ContextMenuManager.registerGroupSet('menugroup1',['Generic']);
+		});
 	</script>
 </head>
 <body bgcolor="white">
