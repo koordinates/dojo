@@ -10,10 +10,12 @@
 		<script type="text/javascript"><![CDATA[
 			dojo.require("dojo.widget.svg.HslColorPicker");
 			dojo.require("dojo.event.topic");
-			dojo.event.topic.subscribe("/colorPicker/setStoredColor", window, "setColorSwatch");
-			function setColorSwatch(evt) {
-				document.getElementById("colorSwatch").style.backgroundColor = dojo.widget.getWidgetById("colorPicker").getStoredColor();
-			}
+			dojo.addOnLoad(function(){
+				dojo.event.topic.subscribe("/colorPicker/setStoredColor", window, "setColorSwatch");
+				function setColorSwatch(evt) {
+					document.getElementById("colorSwatch").style.backgroundColor = dojo.widget.getWidgetById("colorPicker").getStoredColor();
+				}
+			});
 		//]]></script>
 	</head>
 	<body>
