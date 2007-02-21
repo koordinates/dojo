@@ -25,10 +25,15 @@ dojo.widget.defineWidget(
 	// member variables/functions
 	{
 		// override background images
-		inactiveImg: "tests/widget/acme/user-",
-		activeImg: "tests/widget/acme/userActive-",
-		pressedImg: "tests/widget/acme/userPressed-",
-		disabledImg: "tests/widget/acme/userPressed-",
-		width2height: 1.3
+		inactiveImg: "user-",
+		activeImg: "userActive-",
+		pressedImg: "userPressed-",
+		disabledImg: "userPressed-",
+		width2height: 1.3,
+		_setImage: function(/*String*/ prefix){
+			this.leftImage.src=dojo.uri.moduleUri("acme", prefix + "l.gif");
+			this.centerImage.src=dojo.uri.moduleUri("acme", prefix + "c.gif");
+			this.rightImage.src=dojo.uri.moduleUri("acme", prefix + "r.gif");
+		}
 	}
 );

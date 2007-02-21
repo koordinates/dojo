@@ -34,10 +34,12 @@
 	    };
 	}
 
-	var displayer = new DisplayTreeContent();
+	dojo.addOnLoad(function(){
+		displayer = new DisplayTreeContent();
 
-	var nodeSelectionTopic = dojo.event.topic.getTopic("nodeSelected");
-	nodeSelectionTopic.subscribe(displayer, "update");
+		var nodeSelectionTopic = dojo.event.topic.getTopic("nodeSelected");
+		nodeSelectionTopic.subscribe(displayer, "update");
+	});
 
 	// display custom loadError or use built in
 	// works best from live server instead of filesystem

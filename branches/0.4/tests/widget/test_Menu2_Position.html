@@ -117,7 +117,9 @@
 		document.body.appendChild(NestedMenu.domNode);
 		menu.bindDomNode("embed");
 	}
-	dojo.event.connect(dojo.byId("embed"), "onload", attachMenu);
+	dojo.addOnLoad(function(){
+		dojo.event.connect(dojo.byId("embed"), "onload", attachMenu);
+	});
 </script>
 </div>
 
