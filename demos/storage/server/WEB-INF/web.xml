@@ -23,7 +23,7 @@
 		</servlet-class>
 		<init-param>
             <param-name>jdbcURL</param-name>
-            <param-value>jdbc:mysql://localhost/moxie</param-value>
+            <param-value>jdbc:mysql://localhost/moxie?autoReconnect=true</param-value>
         </init-param>
 		<init-param>
             <param-name>driver</param-name>
