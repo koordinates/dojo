@@ -137,7 +137,7 @@ TAGS: $(SRCS)
 .PHONY: clean
 
 clean:
-	-rm -f polipo$(EXE) *.o *~ core TAGS gmon.out
+	-rm -f polipo polipo.exe *.o *~ core TAGS gmon.out
 	-rm -f polipo.cp polipo.fn polipo.log polipo.vr
 	-rm -f polipo.cps polipo.info* polipo.pg polipo.toc polipo.vrs
 	-rm -f polipo.aux polipo.dvi polipo.ky polipo.ps polipo.tp
