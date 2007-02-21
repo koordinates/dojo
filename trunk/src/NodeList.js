@@ -1,5 +1,6 @@
 dojo.provide("dojo.NodeList");
 dojo.require("dojo.lang.*");
+dojo.require("dojo.dom");
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.NodeList");
 
@@ -42,12 +43,15 @@ dojo.experimental("dojo.NodeList");
 
 			box: (h.ie) ? function(){
 				// returns a box object for the first element in a node list
+				dojo.debug("dojo.NodeList.box is unimplemented");
 			} : function(){
+				dojo.debug("dojo.NodeList.box is unimplemented");
 			},
 
 			boxes: function(){
 				// returns the box objects all elements in a node list as an
 				// Array
+				dojo.debug("dojo.NodeList.boxes is unimplemented");
 			},
 
 			style: function(prop){
@@ -70,11 +74,24 @@ dojo.experimental("dojo.NodeList");
 				//		"before"
 				//		"after"
 				// or an offset in the childNodes property
+				var item = dojo.query(queryOrNode)[0];
+				position = position||"last";
+
+				for(var x=0; x<this.length; x++){
+					dojo.dom.insertAtPosition(this[x], item, position);
+				}
 			},
 
-			orphan: function(filter){
-				// removes elements in this list that match filter from their
-				// parents and returns them as a new NodeList.
+			orphan: function(simpleFilter){
+				// removes elements in this list that match the simple filter
+				// from their parents and returns them as a new NodeList.
+				var orphans = dojo._filterQueryResult(this, simpleFilter);
+				orphans.forEach(function(item){
+					if(item["parentNode"]){
+						item.parentNode.removeChild(item);
+					}
+				});
+				return orphans;
 			},
 
 			adopt: function(queryOrListOrNode, position){
@@ -87,6 +104,13 @@ dojo.experimental("dojo.NodeList");
 				//		"before"
 				//		"after"
 				// or an offset in the childNodes property
+				var item = this[0];
+				position = position||"last";
+				var adoptees = dojo.query(queryOrListOrNode);
+
+				for(var x=0; x<adoptees.length; x++){
+					dojo.dom.insertAtPosition(adoptees[x], item, position);
+				}
 			},
 
 			// may have name changed to "get" if dojo.query becomes dojo.get
@@ -95,9 +119,18 @@ dojo.experimental("dojo.NodeList");
 				// returns a new NodeList. Elements of the new NodeList satisfy
 				// the passed query but use elements of the current NodeList as
 				// query roots.
+
+				// FIXME: probably slow
+				var ret = new dojo.NodeList();
+				this.forEach(function(item){
+					dojo.query(queryStr, item).forEach(ret.push, ret);
+				});
+				return ret;
 			},
 
 			filter: function(simpleQuery){
+				//			(callback, [thisObject])
+				//			(simpleQuery, callback, [thisObject])
 				// "masks" the built-in javascript filter() method to support
 				// passing a simple string filter in addition to supporting
 				// filtering function objects.
@@ -105,6 +138,15 @@ dojo.experimental("dojo.NodeList");
 				// simpleQuery may be a CSS class, ID, attribute, or pseudo
 				// selector that further filters the contents of this NodeList.
 				// A new NodeList with the resulting elements is returned.
+				/*
+				var orphans = dojo._filterQueryResult(this, simpleFilter);
+				orphans.forEach(function(item){
+					if(item["parentNode"]){
+						item.parentNode.removeChild(item);
+					}
+				});
+				return orphans;
+				*/
 			},
 
 			addContent: function(content, position){
