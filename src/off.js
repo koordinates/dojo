@@ -238,7 +238,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_onLoad: function(){
-		dojo.debug("dojo.off._onLoad");
+		//dojo.debug("dojo.off._onLoad");
 		// both local storage and the page are finished loading
 		
 		// make sure that resources needed by our underlying
@@ -250,7 +250,6 @@ dojo.lang.mixin(dojo.off, {
 		// initializing ourselves
 		var self = this;
 		this.load(function(){
-			dojo.debug("Load finished callback inside of dojo.off._onLoad");
 			// kick off a thread to check network status on
 			// a regular basis
 			self._startNetworkThread();

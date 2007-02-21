@@ -62,12 +62,10 @@ dojo.sync.CommandLog.prototype = {
 	onReplayFinished: null,
 	
 	replay: function(){ /* void */
-		dojo.debug("replay");
 		// summary:
 		//	Replays all of the commands that have been
 		//	cached in this command log when we go back online;
 		//	onCommand will be called for each command we have
-		dojo.debug("isReplaying="+this.isReplaying);
 		
 		if(this.isReplaying == true){
 			return;
@@ -76,7 +74,6 @@ dojo.sync.CommandLog.prototype = {
 		this.reasonHalted = null;
 		
 		if(this.commands.length == 0){
-			dojo.debug("no commands to run");
 			this.onReplayFinished();
 			return;
 		}
@@ -84,7 +81,6 @@ dojo.sync.CommandLog.prototype = {
 		this.isReplaying = true;
 		
 		var nextCommand = this.commands[0];
-		dojo.debug("nextCommand="+nextCommand);
 		this.onCommand(nextCommand);
 	},
 	
@@ -114,11 +110,9 @@ dojo.sync.CommandLog.prototype = {
 		//	onCommand will probably be asynchronous, since it will be talking on 
 		//	the network, and you should call one of these two methods based on 
 		//	the result of your network call.
-		dojo.debug("default onCommand");
 	},
 	
 	add: function(command /* Object */){ /* void */
-		dojo.debug("CommandLog.add");
 		// summary:
 		//	Adds an action to our command log
 		// description:
@@ -145,11 +139,7 @@ dojo.sync.CommandLog.prototype = {
 			throw new String("Programming error: you can not call log.add() while "
 								+ "we are replaying a command log");
 		}
-		dojo.debug("this.commands="+this.commands);
-		dojo.debug("this.commands.push="+this.commands.push);
-		for(var i in this.commands){
-			dojo.debug(i + "=" + this.commands[i]);
-		}
+		
 		this.commands.push(command);
 		
 		// save our updated state into persistent
@@ -181,7 +171,6 @@ dojo.sync.CommandLog.prototype = {
 		//	were processed before have their effects retained (i.e. they
 		//	are not rolled back), while the command entry that was halted
 		//	stays in our list of commands to later be replayed.	
-		dojo.debug("commandlog.haltReplay");
 		if(this.isReplaying == false){
 			return;
 		}
@@ -206,7 +195,6 @@ dojo.sync.CommandLog.prototype = {
 	},
 	
 	continueReplay: function(){ /* void */
-		dojo.debug("commandlog.continueReplay");
 		// summary:
 		//	Indicates that we should continue processing out list
 		//	of commands.
@@ -223,18 +211,14 @@ dojo.sync.CommandLog.prototype = {
 		// shift off the old command we just ran
 		this.commands.shift();
 		
-		dojo.debug("this.commands.length after shifting="+this.commands.length);
-		
 		// are we done?
 		if(this.commands.length == 0){
-			dojo.debug("no more length");
 			// save the state of our command log, then
 			// tell anyone who is interested that we are
 			// done when we are finished saving
 			if(this.autoSave == true){
 				var self = this;
 				this.save(function(){
-					dojo.debug("finished saving command log");
 					self.isReplaying = false;
 					self.onReplayFinished();
 				});
@@ -248,7 +232,6 @@ dojo.sync.CommandLog.prototype = {
 		
 		// get the next command
 		var nextCommand = this.commands[0];
-		dojo.debug("nextCommand="+nextCommand);
 		this.onCommand(nextCommand);
 	},
 	
@@ -270,7 +253,6 @@ dojo.sync.CommandLog.prototype = {
 	},
 	
 	save: function(finishedCallback){ /* void */
-		dojo.debug("commandlog.save");
 		// summary:
 		//	Saves this command log to persistent, client-side storage
 		// description:
@@ -305,7 +287,6 @@ dojo.sync.CommandLog.prototype = {
 	},
 	
 	load: function(finishedCallback){ /* void */
-		dojo.debug("CommandLog load!");
 		// summary:
 		//	Loads our command log from reliable, persistent local storage;
 		//	you should never have to do this since the Dojo Offline Framework
@@ -442,7 +423,6 @@ dojo.lang.mixin(dojo.sync, {
 	log: new dojo.sync.CommandLog(),
 	
 	synchronize: function(){ /* void */
-		dojo.debug("dojo.sync.synchronize");
 		// summary:
 		//	Begin a synchronization session.
 		if(this.isSyncing == true
@@ -475,7 +455,6 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	start: function(){ /* void */
-		dojo.debug("dojo.sync.start");
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -489,7 +468,6 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	refreshUI: function(){ /* void */
-		dojo.debug("dojo.sync.refreshUI");
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -514,7 +492,6 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	upload: function(){ /* void */
-		dojo.debug("dojo.sync.upload");
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -530,7 +507,6 @@ dojo.lang.mixin(dojo.sync, {
 		// their own implementation of onReplayFinished
 		if(this.log.onReplayFinished == null){
 			this.log.onReplayFinished = function(){
-				dojo.debug("onReplayFinished");
 				self.download();
 			}
 		}
@@ -540,7 +516,6 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	download: function(){ /* void */
-		dojo.debug("dojo.sync.download");
 		if(this.cancelled == true){
 			this.finished();
 			return;
@@ -557,7 +532,6 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	doDownload: function(){ /* void */
-		dojo.debug("dojo.sync.doDownload");
 		// summary:
 		//	Actually downloads the data we need to
 		//	work offline for this application.
@@ -570,7 +544,6 @@ dojo.lang.mixin(dojo.sync, {
 	
 	finishedDownloading: function(successful /* boolean */, 
 									errorMessage /* String */){
-		dojo.debug("dojo.sync.finishedDownloading, successful="+successful+", errorMessage="+errorMessage);
 		// summary:
 		//	Applications call this method from their
 		//	dojo.sync.doDownload() implementationts to
@@ -590,7 +563,6 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	finished: function(){ /* void */
-		dojo.debug("dojo.sync.finished");
 		this.isSyncing = false;
 		
 		if(this.cancelled == false && this.error == false){
@@ -649,9 +621,7 @@ dojo.lang.mixin(dojo.sync, {
 		//	from local storage.	You should not have to call this,
 		//	as it is handle automatically by the Dojo Offline
 		//	framework.
-		dojo.debug("dojo.sync.load, log="+this.log);
 		this.log.load(function(){
-			dojo.debug("!!!Loaded log, log="+dojo.sync.log);
 			finishedCallback();
 		});
 	}
