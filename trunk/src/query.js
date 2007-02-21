@@ -981,8 +981,21 @@ dojo.experimental("dojo.query");
 		// return is always an array
 		// NOTE: elementsById is not currently supported
 		// NOTE: ignores xpath-ish queries for now
+		if(typeof query != "string"){
+			return new dojo.NodeList(query);
+		}
 
 		// FIXME: should support more methods on the return than the stock array.
 		return _zip(getQueryFunc(query)(root||document));
+	}
+
+	d._filterQueryResult = function(nodeList, simpleFilter){
+		var tnl = new dojo.NodeList();
+		var ff = (simpleFilter) ? getFilterFunc(simpleFilter) : function(){ return true; };
+		dojo.debug(ff);
+		for(var x=0, te; te = nodeList[x]; x++){
+			if(ff(te)){ tnl.push(te); }
+		}
+		return tnl;
 	}
 })();
