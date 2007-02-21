@@ -191,6 +191,20 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
 #endif
                      "</body></html>\n");
         object->length = object->size;
+#ifndef NO_OFFLINE_SUPPORT
+    } else if(matchUrl("/polipo/offline", object)) {
+	    fprintf(stderr, "/polipo/offline was called!");
+	    fflush(stderr);
+	    objectPrintf(object, 0,
+					"<!DOCTYPE HTML PUBLIC "
+                     "\"-//W3C//DTD HTML 4.01 Transitional//EN\" "
+                     "\"http://www.w3.org/TR/html4/loose.dtd\">\n"
+                     "<html><head>\n"
+                     "<title>Hello World</title>\n"
+                     "</head><body>\n"
+                     "<h1>Hello from the Polipo world!!!!! This is exciting!</h1>\n");
+        object->length = object->size;
+#endif
     } else if(matchUrl("/polipo/status", object)) {
         objectPrintf(object, 0,
                      "<!DOCTYPE HTML PUBLIC "
