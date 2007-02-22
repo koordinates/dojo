@@ -99,45 +99,44 @@
 											 
 		/** Find out when the page is finished loading */
 		var pageReady = false;
-		var pageLoaded = function(){
+
+		dojo.addOnLoad(function(){
+			/** 
+					Load our test data files used to test saving XML and for testing
+					the performance of serializing large data sets 
+			*/
+			testXML = null;
+			testBook = null;
+	
+			dojo.io.bind({
+					url: "resources/test.xml",
+					load: function(type, data, evt){ 
+						dojo.debug("Test XML data loaded");
+						testXML = data;
+					},
+					error: function(type, error){ 
+						Test.assertFailed("Unable to load test.xml");
+						Test.finished();
+					},
+					mimetype: "text/plain"
+			});
+	
+			dojo.io.bind({
+					url: "resources/testBook.txt",
+					load: function(type, data, evt){ 
+						dojo.debug("Test large data file loaded");
+						testBook = data;
+					},
+					error: function(type, error){ 
+						Test.assertFailed("Unable to load testBook.txt");
+						Test.finished();
+					},
+					mimetype: "text/plain"
+			});
+
 			pageReady = true;
-		}
-		dojo.event.connect(dojo, "loaded", "pageLoaded");
+		});
 		
-		/** 
-				Load our test data files used to test saving XML and for testing
-				the performance of serializing large data sets 
-		*/
-		var testXML = null;
-		var testBook = null;
-
-		dojo.io.bind({
-				url: "resources/test.xml",
-				load: function(type, data, evt){ 
-					dojo.debug("Test XML data loaded");
-					testXML = data;
-				},
-				error: function(type, error){ 
-					Test.assertFailed("Unable to load test.xml");
-					Test.finished();
-				},
-				mimetype: "text/plain"
-		});
-
-		dojo.io.bind({
-				url: "resources/testBook.txt",
-				load: function(type, data, evt){ 
-					dojo.debug("Test large data file loaded");
-					testBook = data;
-				},
-				error: function(type, error){ 
-					Test.assertFailed("Unable to load testBook.txt");
-					Test.finished();
-				},
-				mimetype: "text/plain"
-		});
-
-
 		// setup an interval that keeps checking to see if our resources are
 		// all ready for testing; once they are, we can run the unit tests
 		var resourcesReadyID = window.setInterval(resourcesReady, 200);

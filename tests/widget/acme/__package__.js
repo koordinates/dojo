@@ -1,2 +1,2 @@
-alert("in acme/__package__.js");
+//alert("in acme/__package__.js");
 dojo.provide("foo.*");
