@@ -203,13 +203,13 @@ dojo.number._parseInfo = function(/*Object?*/options){
 				decimal: decimal,
 				exponent: false};
 			var parts = format.split('.');
-			if(parts.length == 1){parts.fractional = false;}
+			var places = options.places;
+			if(parts.length == 1 || places === 0){flags.fractional = false;}
 			else{
-				var places = options.places;
 				if(typeof places == "undefined"){ places = parts[1].lastIndexOf('0')+1; }
-				if(places){parts.fractional = true;} // required fraction
+				if(places){flags.fractional = true;} // required fraction
+				if(!options.places && (places < parts[1].length)){ places += "," + parts[1].length; }
 				flags.places = places;
-				if(places < parts[1].length){ flags.places += "," + parts[1].length; }
 			}
 			var groups = parts[0].split(',');
 			if(groups.length>1){
@@ -223,7 +223,7 @@ dojo.number._parseInfo = function(/*Object?*/options){
 	}, true);
 
 	if(!options.strict){
-		// TODO: handle .### with no leading integer?
+		//TODO: handle .### with no leading integer as a strict option only?
 		//TODO: !strict: make currency symbol too
 	}
 
@@ -259,14 +259,14 @@ dojo.number.parse = function(/*String*/expression, /*Object?*/options){
 	if(!results){
 		return NaN; //NaN
 	}
-	var numberExpression = results[1];
-	if(typeof numberExpression == 'undefined'){
+	var absoluteMatch = results[1];
+	if(typeof absoluteMatch == 'undefined'){
 		// matched the negative pattern
 		var negative = true;
-		numberExpression = results[2];
+		absoluteMatch = results[2];
 	}
-	numberExpression = numberExpression.replace(group, "", "g").replace(decimal, ".");
-	value = Number(numberExpression);
+	absoluteMatch = absoluteMatch.replace(group, "", "g").replace(decimal, ".");
+	value = Number(absoluteMatch);
 
 	if(!isNaN(value)){
 		if(negative){ value = -value; }
