@@ -9,7 +9,8 @@
 		<script type="text/javascript">
 			dojo.require("dojo.string.*");
 			dojo.require("dojo.widget.Button");
-
+			dojo.registerModulePath("acme", "tests/widget/acme");
+			dojo.require("acme.widget.Button");
 			//
 			// Normal tests
 			//
@@ -27,12 +28,12 @@
 			//
 			// Test auto-load
 			//	
-			dojo.registerModulePath("acme", "tests/widget/acme");
+			/* Commented out to support xdomain loading.
 			dojo.registerNamespace("acme", "acme.widget", 
 				function(name){ 
 						return "acme."+dojo.string.capitalize(name);
 			});
-			
+			*/
 			dojo.addOnLoad(function() {
 				var w = dojo.widget.createWidget("acme:Button", { caption: "Created with auto-require as acme:Button" });
 				dojo.byId("al").appendChild(w.domNode);
