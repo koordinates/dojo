@@ -1608,6 +1608,7 @@ dojo.gfx.createSurface = function(parentNode, width, height){
 	s.rawNode = document.createElement("v:group");
 	s.rawNode.style.width  = width  ? width  : "100%";
 	s.rawNode.style.height = height ? height : "100%";
+	s.rawNode.style.position = "relative";
 	s.rawNode.coordsize = (width && height)
 		? (parseFloat(width) + " " + parseFloat(height))
 		: "100% 100%";
