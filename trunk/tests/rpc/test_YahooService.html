@@ -2,7 +2,10 @@
 <head>
 	<title>Dojo Testing Script</title>
 	<script type="text/javascript">
-			var djConfig = {isDebug: true,debugContainerId: "dojoDebug"};
+			var djConfig = {
+				isDebug: true,
+				yahooServiceSmdUrl: "../../src/rpc/yahoo.smd", //for xdomain
+				debugContainerId: "dojoDebug"};
 			//djConfig.debugAtAllCosts = true;
 	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
