@@ -114,6 +114,7 @@ dojo.widget.defineWidget(
 			if(this.disabled == false){
 				this.setValue(!this.checked);
 			}
+			e.preventDefault();
 			e.stopPropagation();
 			this.onClick();
 		},
