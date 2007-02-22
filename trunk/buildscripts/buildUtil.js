@@ -261,19 +261,16 @@ buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
 	//Concat the files together, and mark where we should insert all the
 	//provide statements.
 	var dojoContents = "";
-	var insertedProvideMarker = false;
 	for(var i = 0; i < depList.length; i++){
 		//Make sure we have a JS string and not a Java string by using new String().
 		dojoContents += new String(readFile(depList[i])) + "\r\n";
-		if(!insertedProvideMarker && depList[i].indexOf("hostenv_") != -1){
-			dojoContents += "__DOJO_PROVIDE_INSERTION__";
-			insertedProvideMarker = true;
-		}
 	}
 	
-	//Move all the dojo.provide calls to the top, and remove any matching dojo.require calls.
-	//Sort the provide list alphabetically to make it easy to read. Order of provide statements
-	//do not matter.
+	//Construct a string of all the dojo.provide statements.
+	//This string will be used to construct the regexp that will be
+	//used to remove matching dojo.require statements.
+	//Sort the provide list alphabetically to make it easy to read.
+	//Order of provide statements do not matter.
 	var provideList = dependencyResult.provideList.sort(); 
 	var depRegExpString = "";
 	for(var i = 0; i < provideList.length; i++){
@@ -285,18 +282,9 @@ buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
 		
 	//If we have a string for a regexp, do the dojo.require() removal now.
 	if(depRegExpString){
-		var depRegExp = new RegExp("dojo\\.(provide|require)\\((" + depRegExpString + ")\\)(;?)", "g");
+		var depRegExp = new RegExp("dojo\\.(require)\\((" + depRegExpString + ")\\)(;?)", "g");
 		dojoContents = dojoContents.replace(depRegExp, "");
 	}
-
-	//Insert all the provide statements at the provide insertion marker.
-	var provideString = "";
-	if(provideList && provideList.length > 0){
-		for(var i = 0; i < provideList.length; i++){
-			provideString += 'dojo.provide("' + provideList[i] + '");' + lineSeparator;
-		}
-	}
-	dojoContents = dojoContents.replace(/__DOJO_PROVIDE_INSERTION__/, provideString);
 
 	//Set version number.
 	//First, break apart the version string.
