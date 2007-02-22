@@ -103,7 +103,7 @@ dojo.declare(
 				break;
 			case " ": //fall through
 			case evt.KEY_ENTER: 
-				if(rval = this._selectCurrentItem(evt)){
+				if((rval = this._selectCurrentItem(evt))){
 					break;
 				}
 				//fall through
@@ -137,7 +137,7 @@ dojo.declare(
 	_highlightOption: function(dir){
 		var item;
 		// || !this._highlighted_option.parentNode
-		if((!this._highlighted_option)){
+		if(!this._highlighted_option){
 			item = this._findValidItem(dir);
 		}else{
 			item = this._findValidItem(dir, this._highlighted_option);
@@ -162,7 +162,7 @@ dojo.declare(
 
 	closeSubmenu: function(force){
 		// summary: close the currently displayed submenu
-		if (this.currentSubmenu == null){ return; }
+		if(!this.currentSubmenu){ return; }
 
 		this.currentSubmenu.close(force);
 		this.currentSubmenu = null;
@@ -208,11 +208,15 @@ dojo.widget.defineWidget(
 	parentMenu: null,
 
 	postCreate: function(){
-		if (this.contextMenuForWindow){
+		if(this.contextMenuForWindow){
 			var doc = dojo.body();
 			this.bindDomNode(doc);
-		} else if ( this.targetNodeIds.length > 0 ){
+		}else if(this.targetNodeIds.length > 0){
 			dojo.lang.forEach(this.targetNodeIds, this.bindDomNode, this);
+		}
+
+		if(!dojo.html.isLeftToRight(this.domNode)){
+			dojo.html.addClass(this.containerNode, "dojoRTL");
 		}
 
 		this._subscribeSubitemsOnOpen();
@@ -222,7 +226,7 @@ dojo.widget.defineWidget(
 		var subItems = this.getChildrenOfType(dojo.widget.MenuItem2);
 
 		for(var i=0; i<subItems.length; i++) {
-			dojo.event.topic.subscribe(this.eventNames.open, subItems[i], "menuOpen")
+			dojo.event.topic.subscribe(this.eventNames.open, subItems[i], "menuOpen");
 		}
 	},
 
@@ -284,7 +288,7 @@ dojo.widget.defineWidget(
 		//		Typically the MenuItem.domNode that the user clicked
 		// orient:
 		//		Location to place ourselves relative to explodeSrc
-		if (this.isShowingNow){ return; }
+		if(this.isShowingNow){ return; }
 		this.parentMenu = parent;
 		this.open(explodeSrc, parent, explodeSrc, orient);
 	},
@@ -315,8 +319,9 @@ dojo.widget.defineWidget(
 	},
 	
 	_openSubmenu: function(submenu, from_item){
-		// summary: open the submenu to the right of the current menu item
-		submenu._openAsSubmenu(this, from_item.arrow, {'TR': 'TL', 'TL': 'TR'});
+		// summary: open the submenu to the side of the current menu item
+		var orient = dojo.html.isLeftToRight(from_item.arrow) ? {'TR': 'TL', 'TL': 'TR'} : {'TL': 'TR', 'TR': 'TL'};
+		submenu._openAsSubmenu(this, from_item.arrow, orient);
 
 		this.currentSubmenu = submenu;
 		this.currentSubmenuTrigger = from_item;
@@ -324,11 +329,13 @@ dojo.widget.defineWidget(
 	},
 
 	focus: function(){
-		if(this.currentSubmenuTrigger){
-			if(this.currentSubmenuTrigger.caption){
-				try{ this.currentSubmenuTrigger.caption.focus(); } catch(e) { };
-			}else{
-				try{ this.currentSubmenuTrigger.domNode.focus(); } catch(e) { };
+		var trigger = this.currentSubmenuTrigger;
+		if(trigger){
+			try{
+				var element = trigger.caption || trigger.domNode;
+				element.focus();
+			}catch(e){
+				//squelch
 			}
 		}
 	},
@@ -336,11 +343,7 @@ dojo.widget.defineWidget(
 	onOpen: function(/*Event*/ e){
 		// summary: callback when menu is opened
 		this.openEvent = e;
-		if(e["target"]){
-			this.openedForWindow = dojo.html.getElementWindow(e.target);
-		}else{
-			this.openedForWindow = null;
-		}
+		this.openedForWindow = e.target ? dojo.html.getElementWindow(e.target) : null;
 		var x = e.pageX, y = e.pageY;
 
 		var win = dojo.html.getElementWindow(e.target);
@@ -370,7 +373,7 @@ dojo.widget.defineWidget(
 	//	A line item in a Menu2
 
 	// Make 4 columns
-	//   icon, label, accelerator-key, and right-arrow indicating sub-menu
+	//   icon, label, accelerator-key, and arrow (BiDi-dependent) indicating sub-menu
 	templateString:
 		 '<tr class="dojoMenuItem2" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick; onKey:onKey;">'
 		+'<td><div class="${this.iconClass}" style="${this.iconStyle}"></div></td>'
@@ -394,7 +397,7 @@ dojo.widget.defineWidget(
 
 	// caption: String
 	//	text of the menu item
-	caption: 'Untitled',
+	caption: 'Untitled', // TODO: i18n?
 	
 	// accelKey: String
 	//	accelerator key (not supported yet!)
@@ -427,8 +430,8 @@ dojo.widget.defineWidget(
 
 	postMixInProperties: function(){
 		this.iconStyle="";
-		if (this.iconSrc){
-			if ((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4) == ".png") && (dojo.render.html.ie55 || dojo.render.html.ie60)){
+		if(this.iconSrc){
+			if((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4) == ".png") && (dojo.render.html.ie55 || dojo.render.html.ie60)){
 				this.iconStyle="filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+this.iconSrc+"', sizingMethod='image')";
 			}else{
 				this.iconStyle="background-image: url("+this.iconSrc+")";
@@ -441,12 +444,12 @@ dojo.widget.defineWidget(
 	fillInTemplate: function(){
 		dojo.html.disableSelection(this.domNode);
 
-		if (this.disabled){
+		if(this.disabled){
 			this.setDisabled(true);
 		}
 
-		if (this.eventNaming == "default") {
-			for (var eventName in this.eventNames) {
+		if(this.eventNaming == "default") {
+			for(var eventName in this.eventNames) {
 				this.eventNames[eventName] = this.widgetId+"/"+eventName;
 			}
 		}
@@ -458,8 +461,8 @@ dojo.widget.defineWidget(
 		//this is to prevent some annoying behavior when both mouse and keyboard are used
 		this.onUnhover();
 
-		if (this.is_hovering){ return; }
-		if (this.is_open){ return; }
+		if(this.is_hovering){ return; }
+		if(this.is_open){ return; }
 
 		if(this.parent._highlighted_option){
 			this.parent._highlighted_option.onUnhover();
@@ -470,7 +473,7 @@ dojo.widget.defineWidget(
 
 		this._highlightItem();
 
-		if (this.is_hovering){ this._stopSubmenuTimer(); }
+		if(this.is_hovering){ this._stopSubmenuTimer(); }
 		this.is_hovering = true;
 		this._startSubmenuTimer();
 	},
@@ -493,10 +496,10 @@ dojo.widget.defineWidget(
 	_onClick: function(focus){
 		// summary: internal function for clicks
 		var displayingSubMenu = false;
-		if (this.disabled){ return false; }
+		if(this.disabled){ return false; }
 
-		if (this.submenuId){
-			if (!this.is_open){
+		if(this.submenuId){
+			if(!this.is_open){
 				this._stopSubmenuTimer();
 				this._openSubmenu();
 			}
@@ -515,7 +518,6 @@ dojo.widget.defineWidget(
 		if(displayingSubMenu && focus){
 			dojo.widget.getWidgetById(this.submenuId)._highlightOption(1);
 		}
-		return;
 	},
 
 	onClick: function() {
@@ -537,29 +539,29 @@ dojo.widget.defineWidget(
 	_startSubmenuTimer: function(){
 		this._stopSubmenuTimer();
 
-		if (this.disabled){ return; }
+		if(this.disabled){ return; }
 
 		var self = this;
-		var closure = function(){ return function(){ self._openSubmenu(); } }();
+		var closure = function(){ return function(){ self._openSubmenu(); }; }();
 
 		this.hover_timer = dojo.lang.setTimeout(closure, this.parent.submenuDelay);
 	},
 
 	_stopSubmenuTimer: function(){
-		if (this.hover_timer){
+		if(this.hover_timer){
 			dojo.lang.clearTimeout(this.hover_timer);
 			this.hover_timer = null;
 		}
 	},
 
 	_openSubmenu: function(){
-		if (this.disabled){ return; }
+		if(this.disabled){ return; }
 
 		// first close any other open submenu
 		this.parent.closeSubmenu();
 
 		var submenu = dojo.widget.getWidgetById(this.submenuId);
-		if (submenu){
+		if(submenu){
 			this.parent._openSubmenu(submenu, this);
 		}
 	},
@@ -572,7 +574,7 @@ dojo.widget.defineWidget(
 		// summary: enable or disable this menu item
 		this.disabled = value;
 
-		if (this.disabled){
+		if(this.disabled){
 			dojo.html.addClass(this.domNode, this.disabledClass);
 		}else{
 			dojo.html.removeClass(this.domNode, this.disabledClass);
@@ -654,7 +656,7 @@ dojo.widget.defineWidget(
 				rval = this._moveToPrevious(evt);
 				break;
 			default:
-				rval = 	dojo.widget.MenuBar2.superclass.processKey.apply(this, arguments);
+				rval = dojo.widget.MenuBar2.superclass.processKey.apply(this, arguments);
 				break;
 		}
 
@@ -667,10 +669,11 @@ dojo.widget.defineWidget(
 	},
 
 	_openSubmenu: function(submenu, from_item){
-		// summary: open the specified menu below this node (rather than to our right)
+		// summary: open the specified menu below this node (rather than to our side)
 		// submenu: Widget
 		// from_item: Widget
-		submenu._openAsSubmenu(this, from_item.domNode, {'BL': 'TL', 'TL': 'BL'});
+		var orient = dojo.html.isLeftToRight(from_item.domNode) ? {'BL': 'TL', 'TL': 'BL'} : {'BR': 'TR', 'TR': 'BR'};
+		submenu._openAsSubmenu(this, from_item.domNode, orient);
 
 		this.currentSubmenu = submenu;
 		this.currentSubmenuTrigger = from_item;
@@ -706,7 +709,7 @@ dojo.widget.Menu2.OperaAndKonqFixer = new function(){
  		dojo.doc().oncontextmenu = function(){
  			implement = false;
  			delfunc = true;
- 		}
+ 		};
  	}
 
  	if (dojo.doc().createEvent){ // moz, safari has contextmenu event, need to do livecheck on this env.
@@ -737,7 +740,7 @@ dojo.widget.Menu2.OperaAndKonqFixer = new function(){
  		if (implement){
  			// attach stub oncontextmenu function
  			if (!dojo.lang.isFunction(node.oncontextmenu)){
- 				node.oncontextmenu = function(e){/*stub*/}
+ 				node.oncontextmenu = function(e){/*stub*/};
  			}
 
  			// attach control function for oncontextmenu

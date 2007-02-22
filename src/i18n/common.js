@@ -45,9 +45,9 @@ dojo.i18n.getLocalization = function(/*String*/packageName, /*String*/bundleName
 	dojo.raise("Bundle not found: " + bundleName + " in " + packageName+" , locale=" + locale);
 };
 
-dojo.i18n.isLTR = function(/*String?*/locale){
+dojo.i18n.isLeftToRight = function(/*String?*/locale){
 //	summary:
-//		Is the language read left-to-right?  Most exceptions are for middle eastern languages.
+//		Is the language read left-to-right for the given locale?  Most exceptions are for middle eastern languages.
 //
 //	locale: a string representing the locale.  By default, the locale defined by the
 //		host environment: dojo.locale

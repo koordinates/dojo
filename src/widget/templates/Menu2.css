@@ -60,12 +60,27 @@
 	height: 9px;
 	padding-left: 3px;
 }
+
+.dojoRTL .dojoMenuItem2Submenu {
+	background-image: url(images/submenu_off_rtl.gif);
+	padding-left: 0px;
+	padding-right: 3px;
+}
+
 .dojoMenuItem2Hover .dojoMenuItem2Submenu {
 	background-image: url(images/submenu_on.gif);
 }
 
+.dojoRTL .dojoMenuItem2Hover .dojoMenuItem2Submenu {
+	background-image: url(images/submenu_on_rtl.gif);
+}
+
 .dojoMenuItem2Disabled .dojoMenuItem2Submenu {
 	background-image: url(images/submenu_disabled.gif);
+}
+
+.dojoRTL .dojoMenuItem2Disabled .dojoMenuItem2Submenu {
+	background-image: url(images/submenu_disabled_rtl.gif);
 }
 
 .dojoMenuSeparator2 {
