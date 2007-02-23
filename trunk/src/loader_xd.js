@@ -120,7 +120,7 @@ dojo.hostenv.loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/curre
 
 		//Add to waiting packages.
 		//Only add it if not a non-xdomain i18n resource bundle.
-		if(!currentIsXDomain && uri.indexOf("/nls/") == -1){
+		if(currentIsXDomain && uri.indexOf("/nls/") == -1){
 			this.xdInFlight[module] = true;
 		}
 
