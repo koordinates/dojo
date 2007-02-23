@@ -725,9 +725,13 @@ httpClientRequest(HTTPRequestPtr request, AtomPtr url)
     int body_len, body_te;
     AtomPtr headers;
     CacheControlRec cache_control;
-    AtomPtr via, expect, auth;
+    AtomPtr via, expect, auth, referer;
     HTTPConditionPtr condition;
     HTTPRangeRec range;
+
+	printf("httpClientRequest\n");
+	
+	referer = NULL;
 
     assert(!request->chandler);
     assert(connection->reqbuf);
@@ -737,7 +741,7 @@ httpClientRequest(HTTPRequestPtr request, AtomPtr url)
                          &headers, &body_len, 
                          &cache_control, &condition, &body_te,
                          NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-                         &expect, &range, NULL, NULL, &via, &auth);
+                         &expect, &range, NULL, NULL, &via, &auth, &referer);
     if(i < 0) {
         releaseAtom(url);
         do_log(L_ERROR, "Couldn't parse client headers.\n");
@@ -795,6 +799,7 @@ httpClientRequest(HTTPRequestPtr request, AtomPtr url)
     request->to = range.to;
     request->cache_control = cache_control;
     request->via = via;
+    request->referer = referer;
     request->headers = headers;
     request->condition = condition;
     request->object = NULL;

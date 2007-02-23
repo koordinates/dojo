@@ -114,6 +114,176 @@ printConfig(FILE *out, char *dummy)
     fprintf(out, "</body></html>\n");
 }
 
+static int
+matchUrl(char *base, ObjectPtr object)
+{
+    int n = strlen(base);
+    if(object->key_size < n)
+        return 0;
+    if(memcmp(base, object->key, n) != 0)
+        return 0;
+    return (object->key_size == n) || (((char*)object->key)[n] == '?');
+}
+
+#ifndef NO_OFFLINE_SUPPORT
+
+static int getHost(AtomPtr referer, char **host_results){
+	int cut_start = -1, cut_end = -1, cut_length;
+	int index;
+	char *cut_ptr;
+	char *host_ptr;
+	
+	/* get the host name */
+	/* find where the host name begins */
+	for(index = 0; index < strlen(referer->string); index++){
+       if(referer->string[index] == '/'
+          && (index + 1) < strlen(referer->string)
+          && referer->string[index + 1] == '/'){
+	      index = index + 2;
+          break;
+       }
+	}
+	
+	if(index == strlen(referer->string)){
+       /* nothing left to process */
+       return -1;	
+    }
+
+    /* find the end cut for where the host name is */
+    cut_start = index;
+    while(index < strlen(referer->string)){
+       if(referer->string[index] == '/' 
+            || referer->string[index] == '?'
+            || referer->string[index] == ':'
+            || (index + 1) == strlen(referer->string)){
+          cut_end = index - 1;	
+          break;
+       }
+       index++;
+    }
+
+    if(cut_end == -1){
+      return -1;
+    }
+
+    /*  
+        +1 for index arrays starting at 0,
+        another +1 for end of string null character
+    */
+    cut_length = (cut_end - cut_start) + 2;
+    host_ptr = (char *)malloc((unsigned) cut_length);
+    cut_ptr = host_ptr;
+    for(index = cut_start; index <= cut_end 
+                             && index < strlen(referer->string); index++){
+	  *cut_ptr = referer->string[index];
+	  cut_ptr++;
+    }
+    *cut_ptr = '\0';
+
+    if(strlen(host_ptr) == 0){
+      return -1;
+    }
+
+    *host_results = host_ptr;
+    return 1;
+}
+
+static void
+handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
+{
+	AtomPtr referer;
+	char *host_ptr = NULL;
+	int safe_scheme = 0;
+	int status;
+	
+	if(requestor->referer == NULL 
+          || requestor->referer->string == NULL
+          || strlen(requestor->referer->string) == 0) {
+          goto fail;
+	}
+	
+	referer = requestor->referer;
+	
+	/* make sure we have a scheme we know how to work with */
+	if(strlen(referer->string) >= 4 
+       && lwrcmp(referer->string, "http", 4) == 0) {
+      safe_scheme = 1; 
+    }else if(strlen(referer->string) >= 5 
+       && lwrcmp(referer->string, "https", 5) == 0) {
+      safe_scheme = 1; 
+    } 
+    
+	if(safe_scheme == 0){
+		goto fail;
+	}
+	
+	/* get the host inside of the referer header */
+	status = getHost(referer, &host_ptr);
+	if(status == -1){
+		goto fail;
+	}
+	
+	/* 
+       get the type of API request desired:
+	   addOfflineHost, removeOfflineHost, isHostAvailableOffline,
+	   isRunning, getVersion
+    */
+	printf("results=%s\n", host_ptr);
+	if(matchUrl("/polipo/offline?addOfflineHost", object)){
+      status = addOfflineHost(host_ptr);
+      objectPrintf(object, 0,
+                 "%s('addOfflineHost', %s);",
+                 OFF_JAVASCRIPT_CALLBACK,
+                 (status == 1) ? "true" : "false");
+      object->length = object->size;
+    }else if(matchUrl("/polipo/offline?removeOfflineHost", object)){
+      status = removeOfflineHost(host_ptr);
+      objectPrintf(object, 0,
+                 "%s('removeOfflineHost', %s);",
+                 OFF_JAVASCRIPT_CALLBACK,
+                 (status == 1) ? "true" : "false");
+      object->length = object->size;	
+    }else if(matchUrl("/polipo/offline?isHostAvailableOffline", object)){
+      status = isHostAvailableOffline(host_ptr);
+      objectPrintf(object, 0,
+                 "%s('isHostAvailableOffline', %s);",
+                 OFF_JAVASCRIPT_CALLBACK,
+                 (status == 1) ? "true" : "false");
+      object->length = object->size;	
+    }else if(matchUrl("/polipo/offline?isRunning", object)){
+      objectPrintf(object, 0,
+                 "%s('isRunning', true);",
+                 OFF_JAVASCRIPT_CALLBACK);
+      object->length = object->size;	
+    }else if(matchUrl("/polipo/offline?getVersion", object)){
+      objectPrintf(object, 0,
+                 "%s('getVersion', '%s');",
+                 OFF_JAVASCRIPT_CALLBACK,
+                 OFF_OFFLINE_VERSION);
+      object->length = object->size;
+    }else{
+      goto fail;
+    }
+
+    if(host_ptr){
+      free(host_ptr);	
+    }
+
+    return;
+
+    fail:
+       objectPrintf(object, 0,
+                  "%s('UnknownMethod', null);",
+                  OFF_JAVASCRIPT_CALLBACK);
+       object->length = object->size;
+
+       if(host_ptr){
+         free(host_ptr);	
+       }
+}
+
+#endif
+
 #ifndef NO_DISK_CACHE
 
 static void
@@ -133,17 +303,6 @@ static void
 serversList(FILE *out, char *dummy)
 {
     listServers(out);
-}
-
-static int
-matchUrl(char *base, ObjectPtr object)
-{
-    int n = strlen(base);
-    if(object->key_size < n)
-        return 0;
-    if(memcmp(base, object->key, n) != 0)
-        return 0;
-    return (object->key_size == n) || (((char*)object->key)[n] == '?');
 }
     
 int 
@@ -201,11 +360,11 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
 #endif
                      "</body></html>\n");
         object->length = object->size;
+#ifndef NO_OFFLINE_SUPPORT
     } else if(disableOfflineSupport == 0 && 
               matchUrl("/polipo/offline", object)) {
-	    objectPrintf(object, 0,
-					"alert(\"Hello from content type world\")");
-        object->length = object->size;
+	    handleOfflineAPI(object, requestor);
+#endif
     } else if(matchUrl("/polipo/status", object)) {
         objectPrintf(object, 0,
                      "<!DOCTYPE HTML PUBLIC "

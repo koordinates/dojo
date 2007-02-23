@@ -38,6 +38,7 @@ typedef struct _HTTPRequest {
     CacheControlRec cache_control;
     HTTPConditionPtr condition;
     AtomPtr via;
+    AtomPtr referer;
     struct _ConditionHandler *chandler;
     ObjectPtr can_mutate;
     int error_code;

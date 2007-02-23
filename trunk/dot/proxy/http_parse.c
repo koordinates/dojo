@@ -738,7 +738,7 @@ httpParseHeaders(int client, AtomPtr url,
                  int *age_return, char **etag_return, AtomPtr *expect_return,
                  HTTPRangePtr range_return, HTTPRangePtr content_range_return,
                  char **location_return, AtomPtr *via_return,
-                 AtomPtr *auth_return)
+                 AtomPtr *auth_return, AtomPtr *referer_return)
 {
     int local = url ? urlIsLocal(url->string, url->length) : 0;
     char hbuf_small[512];
@@ -761,6 +761,7 @@ httpParseHeaders(int client, AtomPtr url,
     AtomPtr via = NULL;
     AtomPtr auth = NULL;
     AtomPtr expect = NULL;
+    AtomPtr referer = NULL;
     HTTPConditionPtr condition;
     time_t ims = -1, inms = -1;
     char *im = NULL, *inm = NULL;
@@ -798,7 +799,6 @@ httpParseHeaders(int client, AtomPtr url,
             continue;
 
         name = internAtomLowerN(buf + name_start, name_end - name_start);
-
         if(name == atomConnection) {
             j = getNextTokenInList(buf, value_start, 
                                    &token_start, &token_end, NULL, NULL,
@@ -916,6 +916,15 @@ httpParseHeaders(int client, AtomPtr url,
             }
         } else if(name == atomReferer) {
             int h;
+
+            if(referer_return) {
+				referer = internAtomN(buf + value_start, value_end - value_start);
+				if(referer == NULL) {
+	                do_log(L_ERROR, "Couldn't allocate referer.\n");
+	                goto fail;
+	            }
+            }
+
             if(censorReferer == 0 || 
                (censorReferer == 1 && url != NULL &&
                 urlSameHost(url->string, url->length,
@@ -1347,6 +1356,12 @@ httpParseHeaders(int client, AtomPtr url,
     else {
         if(expect)
             releaseAtom(expect);
+    }
+    if(referer_return)
+        *referer_return = referer;
+    else {
+        if(referer)
+            releaseAtom(referer);
     }
     if(auth_return)
         *auth_return = auth;
