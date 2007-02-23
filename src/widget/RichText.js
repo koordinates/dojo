@@ -20,7 +20,13 @@ if(!djConfig["useXDomain"] || djConfig["allowXdRichTextSave"]){
 		(function(){
 			var savetextarea = dojo.doc().createElement('textarea');
 			savetextarea.id = "dojo.widget.RichText.savedContent";
-			savetextarea.style = "display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;";
+			var s = savetextarea.style;
+			s.display='none';
+			s.position='absolute';
+			s.top="-100px";
+			s.left="-100px"
+			s.height="3px";
+			s.width="3px";
 			dojo.body().appendChild(savetextarea);
 		})();
 	}else{
@@ -301,6 +307,7 @@ dojo.widget.defineWidget(
 				dojo.debug("activeX in ie70 is not currently supported, useActiveX is ignored for now.");
 				this.useActiveX = false;
 			}
+			this.isClosed = false;
 			// Safari's selections go all out of whack if we do it inline,
 			// so for now IE is our only hero
 			//if (typeof document.body.contentEditable != "undefined") {
@@ -408,8 +415,6 @@ dojo.widget.defineWidget(
 			// TODO: this is a guess at the default line-height, kinda works
 			if (this.domNode.nodeName == "LI") { this.domNode.lastChild.style.marginTop = "-1.2em"; }
 			dojo.html.addClass(this.domNode, "RichTextEditable");
-
-			this.isClosed = false;
 		},
 
 		_hasCollapseableMargin: function(/*DomNode*/element, /*String*/side) {
