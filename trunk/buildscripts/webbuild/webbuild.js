@@ -10,7 +10,7 @@ print = function(message){
 	parent.output(message);
 }
 
-readText = readFile = function(uri){
+buildUtil.readFile = readText = readFile = function(uri){
 	return dojo.hostenv.getText(uri);
 }
 
