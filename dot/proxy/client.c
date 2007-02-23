@@ -728,6 +728,8 @@ httpClientRequest(HTTPRequestPtr request, AtomPtr url)
     AtomPtr via, expect, auth, referer;
     HTTPConditionPtr condition;
     HTTPRangeRec range;
+
+    printf("httpClientRequest, url=%s\n", url->string);
 	
 	referer = NULL;
 

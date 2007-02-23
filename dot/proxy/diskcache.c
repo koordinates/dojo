@@ -937,7 +937,7 @@ validateEntry(ObjectPtr object, int fd,
                           &date, &last_modified, &expires, &polipo_age,
                           &polipo_access, &body_offset,
                           NULL, &etag, NULL,
-                          NULL, NULL, &location, &via, NULL);
+                          NULL, NULL, &location, &via, NULL, NULL);
     if(rc < 0) {
         releaseAtom(message);
         goto fail;
@@ -1867,7 +1867,8 @@ readDiskObject(char *filename, struct stat *sb)
                               NULL, &length, NULL, NULL, NULL, 
                               &date, &last_modified, &expires, &age,
                               &atime, &body_offset, NULL,
-                              NULL, NULL, NULL, NULL, &location, NULL, NULL);
+                              NULL, NULL, NULL, NULL, &location, NULL, NULL, 
+                              NULL);
         if(rc < 0 || location == NULL)
             goto fail;
         if(body_offset < 0)
