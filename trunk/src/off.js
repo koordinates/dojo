@@ -488,6 +488,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_talkToOfflineCache: function(methodName, resultsCallback){
+		dojo.debug("talkToOfflineCache, methodName="+methodName);
 		var head = document.getElementsByTagName("head")[0];
 		var script = document.createElement("script");
 		var url = this._OFFLINE_CACHE_URL + methodName;

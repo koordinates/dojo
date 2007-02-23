@@ -21,10 +21,10 @@ void initOffline(){
 int online_flag = 1;
 
 AtomPtr offlineFile = NULL;
+AtomPtr offlinePACFile = NULL;
 
 static int atomSetterOffline(ConfigVariablePtr var, 
 								void *value){
-    initOffline();
     return configAtomSetter(var, value);
 }
 
@@ -48,14 +48,38 @@ static void initOfflineFileName(void){
 	}
 }
 
+static void initOfflinePACFileName(void){
+	if(offlinePACFile){
+        offlinePACFile = expandTilde(offlinePACFile);
+	}
+
+    if(offlinePACFile == NULL){
+        offlinePACFile = expandTilde(internAtom("~/.polipo-offline-pac"));
+    }
+
+    if(offlinePACFile == NULL){
+        if(access("/etc/polipo/offline-pac", F_OK) >= 0){
+            offlinePACFile = internAtom("/etc/polipo/offline-pac");
+		}
+    }
+
+	if(offlinePACFile == NULL){
+		do_log(L_INFO, "Unable to open generated Polipo "
+		               "offline Proxy AutoConfig (PAC) file\n");
+	}
+}
+
 void preinitOffline(void){
 	CONFIG_VARIABLE_SETTABLE(offlineFile, CONFIG_ATOM, atomSetterOffline,
                              "File specifying the path to our offline file list");
+    CONFIG_VARIABLE_SETTABLE(offlinePACFile, CONFIG_ATOM, atomSetterOffline,
+                             "File specifying the path to our generated PAC file");
 }
 
 void initOffline(void){
-	/* get the correct filename to our offline file list */
+	/* get the correct filename to our offline file list and PAC file */
 	initOfflineFileName();
+	initOfflinePACFileName();
 	
 	/* load our list of offline enabled hosts */
 	if(offlineFile != NULL){
@@ -75,8 +99,13 @@ int isValidHost(char host[]){
 	/** 
 		Whitelist allowed host characters according to RFC 1034.
 		What is allowed: A-Z a-z 0-9 dash space dot. The first
-		character MUST be A-Z or a-z.
+		character MUST be A-Z or a-z according to RFC 1034, but
+		we allow numbers because the host could be an IP address.
 	*/
+	
+	if(strncmp("127.0.0.1", host, 9) == 0){
+		return 0; /* invalid */
+	}
 	
 	for(index = 0; index < strlen(host); index++){
 		c = host[index];
@@ -93,7 +122,7 @@ int isValidHost(char host[]){
 		}
 		
 		/* 0-9 */
-		if(c >= 48 && c <= 57 && index != 0){
+		if(c >= 48 && c <= 57){
 			valid = 1;
 		}
 		
@@ -111,12 +140,76 @@ int isValidHost(char host[]){
 	return 1; /* success */
 }
 
+/**
+     Generates and saves a Proxy AutoConfig (PAC) file 
+     from our list of offline-enabled hosts. Returns 1
+     if successful, 0 if not.
+*/
+int generatePACFile(){
+	FILE *out_file;
+	struct offline_list_entry *entry_ptr;
+	int first = 1;
+	
+	assert(offlinePACFile != NULL);
+	assert(offlinePACFile->string != NULL);
+	
+	/* open the file we will write the PAC contents to */
+	out_file = fopen(offlinePACFile->string, "w");
+	if(out_file == NULL){
+		do_log(L_ERROR, "Unable to open PAC file: %s\n", 
+		       offlinePACFile->string);
+        return 0; /* failed */
+	}
+	
+	fprintf(out_file, "function FindProxyForURL(url, host){\n");
+	
+	if(offline_list_ptr != NULL){ /* do we even have any sites? */
+		fprintf(out_file, "   if("); /* beginning of list of sites */
+	
+		/* go through each site and write it out */
+		entry_ptr = offline_list_ptr;
+		while(entry_ptr != NULL){
+		   if(isValidHost(entry_ptr->host_ptr) == 1){ /* be extra careful */
+		      if(first == 0){
+		         fprintf(out_file, "\t\t|| ");	
+		      }else{
+			     first = 0;
+			  }
+		
+		      fprintf(out_file, "shExpMatch(url, \"http://%s*\")\n", 
+		              entry_ptr->host_ptr);  
+		   }
+		
+		   entry_ptr = entry_ptr->next_ptr;
+		}
+	
+		fprintf(out_file, "\t\t){\n"); /* end of list of sites */
+	
+	    /* FIXME: Don't hard code the proxy port here */
+		/*fprintf(out_file, "      return \"PROXY 127.0.0.1:%d; DIRECT\";\n"*/
+		fprintf(out_file, "      return \"PROXY 127.0.0.1:8123\";\n"
+	                      "   }else{\n"
+	                      "      return \"DIRECT\";\n"
+	                      "   }\n"
+	                      "}\n");
+    }else{
+	    fprintf(out_file, "   return \"DIRECT\";\n"
+                          "}\n");
+	}
+
+    fclose(out_file);
+
+    return 1;	
+}
+
 int addOfflineHost(char host[]){
 	struct offline_list_entry *entry_ptr;
 	struct offline_list_entry *new_entry_ptr;
 	int status;
+	printf("addOfflineHost, host=%s\n", host);
 	
 	if(isValidHost(host) == 0){ /* invalid host */
+		printf("invalid host given\n");
 		do_log(L_FORBIDDEN, 
 				"off.c:addOfflineHost: Illegal host name\n");
 		return 0; /* failed */
@@ -132,12 +225,12 @@ int addOfflineHost(char host[]){
 					malloc(sizeof(struct offline_list_entry));
 	if(new_entry_ptr == NULL){
 		do_log(L_ERROR, "No memory\n");
-		return 0;
+		return 0; /* failed */
 	}
 	new_entry_ptr->host_ptr = (char *)malloc((unsigned) (strlen(host) + 1));
 	if(new_entry_ptr->host_ptr == NULL){
 		do_log(L_ERROR, "No memory\n");
-		return 0;
+		return 0; /* failed */
 	}
 	memcpy(new_entry_ptr->host_ptr, host, strlen(host) + 1);
 	new_entry_ptr->next_ptr = NULL;
@@ -156,6 +249,9 @@ int addOfflineHost(char host[]){
 	
 	/* try to save the offline list */
 	status = saveOfflineList();
+	
+	/* try to generate and save a new Proxy AutoConfig (PAC) file */
+	status = generatePACFile();
 	
 	return status;
 }
@@ -223,6 +319,10 @@ int removeOfflineHost(char host[]){
 	}else{
 		/* try to save the offline list */		
         successful = saveOfflineList();
+
+        /* try to generate and save a new Proxy AutoConfig (PAC) file */
+	    successful = generatePACFile();
+	    
 	    return successful;
 	}
 }
@@ -258,7 +358,8 @@ int saveOfflineList(void){
 	assert(offlineFile != NULL);
 	
 	/* see if we have permission to access our offline file */
-	if(access(offlineFile->string, W_OK) < 0){
+	if(access(offlineFile->string, F_OK) > 0
+	   && access(offlineFile->string, W_OK) < 0){
 		sprintf(message, "We don't have permission to write out the offline list: %s\n", 
 				offlineFile->string);
 		do_log(L_ERROR, message);

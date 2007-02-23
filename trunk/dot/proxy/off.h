@@ -35,6 +35,7 @@
 */
 #define OFF_OFFLINE_VERSION "0.01"
 
+
 /** 
 	We save our list of offline-enabled web apps
 	in a link list, with each list link entry being
@@ -106,6 +107,8 @@ void goOffline(void);
 	called.
 */
 int isOnline(void);
+
+extern int proxyPort; /* from http.h */
 
 #endif /* NO_OFFLINE_SUPPORT */
 #endif /* __off_h */

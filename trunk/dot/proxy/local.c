@@ -195,11 +195,11 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
 	char *host_ptr = NULL;
 	int safe_scheme = 0;
 	int status;
-	
+	printf("handleOfflineAPI\n");
 	if(requestor->referer == NULL 
           || requestor->referer->string == NULL
           || strlen(requestor->referer->string) == 0) {
-          goto fail;
+       goto fail;
 	}
 	
 	referer = requestor->referer;
@@ -208,11 +208,8 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
 	if(strlen(referer->string) >= 4 
        && lwrcmp(referer->string, "http", 4) == 0) {
       safe_scheme = 1; 
-    }else if(strlen(referer->string) >= 5 
-       && lwrcmp(referer->string, "https", 5) == 0) {
-      safe_scheme = 1; 
-    } 
-    
+    }
+    printf("safe_scheme=%d\n", safe_scheme);
 	if(safe_scheme == 0){
 		goto fail;
 	}
@@ -222,6 +219,7 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
 	if(status == -1){
 		goto fail;
 	}
+	printf("host=%s\n", host_ptr);
 	
 	/* 
        get the type of API request desired:
@@ -263,6 +261,9 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
     }else{
       goto fail;
     }
+
+    /* make sure the browser doesn't cache our JavaScript response */
+    object->cache_control = CACHE_NO;
 
     if(host_ptr){
       free(host_ptr);	
@@ -310,7 +311,7 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
 {
     char buffer[1024];
     int hlen = 0;
-
+    printf("httpSpecialRequest\n");
     if(method >= METHOD_POST) {
         return httpSpecialSideRequest(object, method, from, to,
                                       requestor, closure);

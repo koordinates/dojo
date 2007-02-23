@@ -624,6 +624,7 @@ httpMakeRequest()
     request->cache_control = no_cache_control;
     request->condition = NULL;
     request->via = NULL;
+    request->referer = NULL;
     request->chandler = NULL;
     request->can_mutate = NULL;
     request->error_code = 0;
