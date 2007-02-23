@@ -123,7 +123,11 @@ dojo.experimental("dojo.NodeList");
 				// FIXME: probably slow
 				var ret = new dojo.NodeList();
 				this.forEach(function(item){
-					dojo.query(queryStr, item).forEach(ret.push, ret);
+					dojo.query(queryStr, item).forEach(function(subItem){
+						if(typeof subItem != "undefined"){
+							ret.push(subItem);
+						}
+					});
 				});
 				return ret;
 			},
@@ -135,18 +139,14 @@ dojo.experimental("dojo.NodeList");
 				// passing a simple string filter in addition to supporting
 				// filtering function objects.
 
-				// simpleQuery may be a CSS class, ID, attribute, or pseudo
-				// selector that further filters the contents of this NodeList.
-				// A new NodeList with the resulting elements is returned.
-				/*
-				var orphans = dojo._filterQueryResult(this, simpleFilter);
-				orphans.forEach(function(item){
-					if(item["parentNode"]){
-						item.parentNode.removeChild(item);
+				var items = this;
+				if(typeof arguments[0] == "string"){
+					items = dojo._filterQueryResult(this, arguments[0]);
+					if(arguments.length == 1){
+						return items;
 					}
-				});
-				return orphans;
-				*/
+				}
+				return dojo.lang.filter(items, arguments[1], arguments[2]);
 			},
 
 			addContent: function(content, position){
@@ -167,6 +167,37 @@ dojo.experimental("dojo.NodeList");
 	//		http://dean.edwards.name/weblog/2006/11/hooray/?full
 	//		http://www.hedgerwow.com/360/dhtml/js-array2.html
 	if(h.ie){
+		var dl = d.lang;
+		// make sure that it has all the JS 1.6 things we need before we subclass
+		dl.extend(dojo.NodeList,
+			{
+				// http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array#Methods
+				// must implement the following JS 1.6 methods:
+
+				// fixme: we can't use hitch here as it binds to an object,
+				// which we don't want. Time for a real partial() ?
+				forEach: function(callback, thisObj){
+					return dl.forEach(this, callback, thisObj);
+				},
+
+				every: function(callback, thisObj){
+					return dl.every(this, callback, thisObj);
+				},
+
+				some: function(callback, thisObj){
+					return dl.some(this, callback, thisObj);
+				},
+
+				map: function(obj, unary_func){
+					return dl.map(this, obj, unary_func);
+				}
+
+				// NOTE: filter() is handled in NodeList by default
+			}
+		);
+
+
+
 		var subClassStr = function(className){
 			return (
 				// "parent.dojo.debug('setting it up...'); " +
@@ -181,7 +212,10 @@ dojo.experimental("dojo.NodeList");
 		// Hedger's excellent invention
 		var popup = window.createPopup()
 		popup.document.write("<script>"+scs+"</script>");
+		// our fix to ensure that we don't hit strange scoping/timing issues
+		// insisde of setTimeout() blocks
 		popup.show(1, 1, 1, 1);
+
 	}
 	// look, ma, it's synchronous!
 	/*
