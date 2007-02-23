@@ -224,7 +224,7 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
 	/* 
        get the type of API request desired:
 	   addOfflineHost, removeOfflineHost, isHostAvailableOffline,
-	   isRunning, getVersion
+	   isRunning, getVersion, goOnline, goOffline
     */
 	if(matchUrl("/polipo/offline?addOfflineHost", object)){
       status = addOfflineHost(host_ptr);
@@ -257,6 +257,18 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
                  "%s('getVersion', '%s');",
                  OFF_JAVASCRIPT_CALLBACK,
                  OFF_OFFLINE_VERSION);
+      object->length = object->size;
+    }else if(matchUrl("/polipo/offline?goOnline", object)){
+	  goOnline();
+      objectPrintf(object, 0,
+                 "%s('goOnline', null);",
+                 OFF_JAVASCRIPT_CALLBACK);
+      object->length = object->size;
+    }else if(matchUrl("/polipo/offline?goOffline", object)){
+	  goOffline();
+      objectPrintf(object, 0,
+                 "%s('goOffline', null);",
+                 OFF_JAVASCRIPT_CALLBACK);
       object->length = object->size;
     }else{
       goto fail;
