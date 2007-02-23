@@ -48,7 +48,7 @@ if(isInputOk){
 	var contents = buildUtil.makeDojoJs(dependencyResult, version).dojoContents;
 	
 	//Add copyright, and intern strings.
-	contents = new String(readFile("copyright.txt")) + buildUtil.interningRegexpMagic("xdomain", contents, djConfig.baseRelativePath, [["dojo", "src"]], [], true);
+	contents = new String(buildUtil.readFile("copyright.txt")) + buildUtil.interningRegexpMagic("xdomain", contents, djConfig.baseRelativePath, [["dojo", "src"]], [], true);
 	
 	if(xdDojoUrl){
 		contents = buildUtilXd.setXdDojoConfig(contents, xdDojoUrl);

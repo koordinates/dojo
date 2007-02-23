@@ -237,7 +237,7 @@ buildUtil.getDependencyList = function(/*Object*/dependencies, /*String or Array
 buildUtil.loadDependencyList = function(/*String*/profileFile){
 	var dependencies = null;
 	var hostenvType = null;
-	var profileText = readFile(profileFile);
+	var profileText = new String(buildUtil.readFile(profileFile));
 	
 	//Remove the call to getDependencyList.js because we want to call it manually.
 	profileText = profileText.replace(/load\(("|')getDependencyList.js("|')\)/, "");
@@ -263,7 +263,7 @@ buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
 	var dojoContents = "";
 	for(var i = 0; i < depList.length; i++){
 		//Make sure we have a JS string and not a Java string by using new String().
-		dojoContents += new String(readFile(depList[i])) + "\r\n";
+		dojoContents += new String(buildUtil.readFile(depList[i])) + "\r\n";
 	}
 	
 	//Construct a string of all the dojo.provide statements.
@@ -811,6 +811,24 @@ buildUtil.ensureEndSlash = function(path){
 	return path;
 }
 
+buildUtil.readFile = function(/*String*/path, /*String?*/encoding){
+	encoding = encoding || "utf-8";
+	var file = new java.io.File(path);
+	var lineSeparator = buildUtil.getLineSeparator();
+	var input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), encoding));
+	try {
+		var stringBuffer = new java.lang.StringBuffer();
+		var line = "";
+		while((line = input.readLine()) !== null){
+			stringBuffer.append(line);
+			stringBuffer.append(lineSeparator);
+		}
+		return stringBuffer.toString();
+	} finally {
+		input.close();
+	}
+}
+
 buildUtil.saveUtf8File = function(/*String*/fileName, /*String*/fileContents){
 	buildUtil.saveFile(fileName, fileContents, "utf-8");
 }
@@ -841,7 +859,7 @@ buildUtil.deleteFile = function(fileName){
 
 buildUtil.stripComments = function(/*String*/startDir, /*boolean*/suppressDojoCopyright){
 	//summary: strips the JS comments from all the files in "startDir", and all subdirectories.
-	var copyright = suppressDojoCopyright ? "" : (new String(readFile("copyright.txt")) + buildUtil.getLineSeparator());
+	var copyright = suppressDojoCopyright ? "" : (new String(buildUtil.readFile("copyright.txt")) + buildUtil.getLineSeparator());
 	var fileList = buildUtil.getFilteredFileList(startDir, /\.js$/, true);
 	if(fileList){
 		for(var i = 0; i < fileList.length; i++){
@@ -853,9 +871,9 @@ buildUtil.stripComments = function(/*String*/startDir, /*boolean*/suppressDojoCo
 				&& !fileList[i].match(/buildscripts/)){
 				print("Stripping comments from file: " + fileList[i]);
 				
-				//Read in the file.
-				var fileContents = readFile(fileList[i]);
-				
+				//Read in the file. Make sure we have a JS string.
+				var fileContents = new String(buildUtil.readFile(fileList[i]));
+
 				//Look for copyright. If so, maintain it.
 				var singleLineMatches = fileContents.match(/\/\/.*copyright.*$/gi);
 				
@@ -894,7 +912,7 @@ buildUtil.stripComments = function(/*String*/startDir, /*boolean*/suppressDojoCo
 				//Replace the spaces with tabs.
 				//Ideally do this in the pretty printer rhino code.
 				fileContents = fileContents.replace(/    /g, "\t");
-				
+
 				//Write out the file with appropriate copyright.
 				buildUtil.saveUtf8File(fileList[i], copyrightText + fileContents);
 			}
