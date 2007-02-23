@@ -13,11 +13,6 @@ dojo.require("dojo.sync");
 // set our application name
 dojo.off.ui.appName = "Moxie";
 
-// we aren't going to need a real offline cache for now;
-// we will just have our server return good HTTP/1.1
-// caching headers and rely on the browser's native cache
-dojo.off.requireOfflineCache = false;
-
 // add our list resources we need offline
 // Moxie resources
 dojo.off.files.cache([
@@ -367,8 +362,6 @@ var Moxie = {
 		// log when the network reappears
 		var self = this;
 		dojo.sync.log.onCommand = function(command){
-			dojo.debug("Moxie.onCommand="+command);
-			dojo.debug("command.name="+command.name);
 			if(command.name == "save"){
 				self._save(command.key, command.value);
 			}
@@ -376,7 +369,6 @@ var Moxie = {
 		
 		// setup how we download our data from the server
 		dojo.sync.doDownload = function(){
-			dojo.debug("Moxie.doDownload");
 			// actually download our data
 			self._downloadData();
 		}

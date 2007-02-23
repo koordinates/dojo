@@ -70,25 +70,21 @@ dojo.lang.mixin(dojo.off, {
 	//	dojo.off.NETWORK_CHECK. Defaults to true.
 	doNetworkChecking: true,
 	
+	// hasOfflineCache: boolean
+	//  Determines if an offline cache is available or installed;
+	//	an offline cache is a facility that can truely cache offline
+	//	resources, such as JavaScript, HTML, etc. in such a way that
+	//	they won't be removed from the cache inappropriately like
+	//	a browser cache would. If this is false, and 
+	//	dojo.off.requireOfflineCache is true, then an offline cache
+	//	will be installed
+	hasOfflineCache: null,
+	
+	_OFFLINE_CACHE_URL: "http://localhost:8123/polipo/offline?",
+	
 	_onLoadListeners: new Array(),
 	_storageLoaded: false,
 	_pageLoaded: false,
-	
-	hasOfflineCache: function(){ /* boolean */
-		// summary: 
-		//	Returns whether we have an offline cache available
-		// description:
-		//	Determines if an offline cache is available or installed;
-		//	an offline cache is a facility that can truely cache offline
-		//	resources, such as JavaScript, HTML, etc. in such a way that
-		//	they won't be removed from the cache inappropriately like
-		//	a browser cache would. If this is false, and 
-		//	dojo.off.requireOfflineCache is true, then an offline cache
-		//	will be installed
-	
-		// FIXME: Implement
-		return false;
-	},
 	
 	onOnline: function(){ /* void */
 		// summary:
@@ -237,6 +233,99 @@ dojo.lang.mixin(dojo.off, {
 		}
 	},
 	
+	addOfflineHost: function(resultsCallback /* Function(successful) */){
+		// summary:
+		//	Makes the this web application's host name, such as 
+		//  "sitepen.com", offline-enabled with a true offline cache.
+		// description:
+		//  If a true offline cache is available on this platform, this
+		//  means this hosts resources are made truly available
+		//  offline and will not disappear from the offline cache
+		//  as it might from a browser cache. The host name this
+		//  page was served from is the host that is used, such
+		//  as "sitepen.com".
+		// resultsCallback:
+		//  A Function that will be called with the results of this
+		//  add attempt; if it was successful, you will get true; if
+		//  not, you will receive false
+		if(this.requireOfflineCache == false){
+			resultsCallback(true);
+		}
+		
+		if(this.hasOfflineCache != true){
+			resultsCallback(false);
+		}
+		
+		this._talkToOfflineCache("addOfflineHost", resultsCallback);
+	},
+	
+	removeOfflineHost: function(resultsCallback /* Function(successful) */){
+		// summary:
+		//	Removes this web application's host name, such as "sitepen.com",
+		//  from being offline enabled.
+		// description:
+		//  If a true offline cache is available on this platform, this
+		//  means this hosts resources are made truly available
+		//  offline and will not disappear from the offline cache
+		//  as it might from a browser cache. The host name this
+		//  page was served from is the host that is used, such
+		//  as "sitepen.com".
+		// resultsCallback:
+		//  A Function that will be called with the results of this
+		//  remove attempt; if it was successful, you will get true; if
+		//  not, you will receive false
+		if(this.requireOfflineCache == false){
+			resultsCallback(true);
+		}
+		
+		if(this.hasOfflineCache != true){
+			resultsCallback(false);
+		}
+		
+		this._talkToOfflineCache("removeOfflineHost", resultsCallback);
+	},
+	
+	standardSaveHandler: function(status, isCoreSave, dataStore, item){
+		// summary:
+		//	Called by portions of the Dojo Offline framework
+		//	as a standard way to handle local save's; this method
+		//	is 'package private' and should not be used outside
+		//	of the Dojo Offline package.
+		if(status == dojo.storage.FAILED
+			&& isCoreSave == true){
+			this.coreSaveFailed = true;
+			this.enabled = false;	
+		}
+		
+		if(this.onSave){
+			onSave(status, isCoreSave, dataStore, item);
+		}
+	},
+	
+	_checkOfflineCacheAvailable: function(finishedCallback){
+		var self = this;
+		
+		// is an true, offline cache running on this machine as a
+		// local web proxy distributed with DOT?
+		if(this.requireOfflineCache == false){
+			self.hasOfflineCache = false;
+			resultsCallback();
+			return;
+		}
+		
+		// give the local proxy 200 milliseconds to respond
+		var timer = setTimeout(function(){
+			self.hasOfflineCache = false;
+			finishedCallback();
+		}, 200);
+		
+		this._talkToOfflineCache("isRunning", function(results){
+			self.hasOfflineCache = true;
+			window.clearTimeout(timer);
+			finishedCallback();
+		});
+	},
+	
 	_onLoad: function(){
 		//dojo.debug("dojo.off._onLoad");
 		// both local storage and the page are finished loading
@@ -248,19 +337,43 @@ dojo.lang.mixin(dojo.off, {
 		
 		// load framework data; when we are finished, continue
 		// initializing ourselves
-		var self = this;
-		this.load(function(){
-			// kick off a thread to check network status on
-			// a regular basis
-			self._startNetworkThread();
+		this.load(dojo.lang.hitch(this, this._onFrameworkDataLoaded));
+	},
+	
+	_onFrameworkDataLoaded: function(){
+		// this method is part of our _onLoad series of startup tasks
 		
-			// try to go online
-			self.goOnline(function(){
-				// indicate we are ready to be used
-				for(var i = 0; i < self._onLoadListeners.length; i++){
-					self._onLoadListeners[i]();
-				}
-			});
+		// see if we have an offline cache; when done, move
+		// on to the rest of our startup tasks
+		this._checkOfflineCacheAvailable(dojo.lang.hitch(this, this._onOfflineCacheChecked));
+	},
+	
+	_onOfflineCacheChecked: function(){
+		// this method is part of our _onLoad series of startup tasks
+		
+		// if we have an offline cache, try to add ourselves to this list of available
+		// offline web apps
+		if(this.hasOfflineCache == true){
+			this.addOfflineHost(dojo.lang.hitch(this, this._finishStartingUp));
+		}else{
+			this._finishStartingUp();
+		}
+	},
+	
+	_finishStartingUp: function(){
+		// this method is part of our _onLoad series of startup tasks
+		
+		// kick off a thread to check network status on
+		// a regular basis
+		this._startNetworkThread();
+
+		// try to go online
+		var self = this;
+		this.goOnline(function(){
+			// indicate we are ready to be used
+			for(var i = 0; i < self._onLoadListeners.length; i++){
+				self._onLoadListeners[i]();
+			}
 		});
 	},
 	
@@ -327,23 +440,6 @@ dojo.lang.mixin(dojo.off, {
 		dojo.io.bind(bindArgs);
 	},
 	
-	standardSaveHandler: function(status, isCoreSave, dataStore, item){
-		// summary:
-		//	Called by portions of the Dojo Offline framework
-		//	as a standard way to handle local save's; this method
-		//	is 'package private' and should not be used outside
-		//	of the Dojo Offline package.
-		if(status == dojo.storage.FAILED
-			&& isCoreSave == true){
-			this.coreSaveFailed = true;
-			this.enabled = false;	
-		}
-		
-		if(this.onSave){
-			onSave(status, isCoreSave, dataStore, item);
-		}
-	},
-	
 	_startNetworkThread: function(){
 		// kick off a thread that does periodic
 		// checks on the status of the network
@@ -389,6 +485,27 @@ dojo.lang.mixin(dojo.off, {
 		url += new Date().getTime();
 		
 		return url;
+	},
+	
+	_talkToOfflineCache: function(methodName, resultsCallback){
+		var head = document.getElementsByTagName("head")[0];
+		var script = document.createElement("script");
+		var url = this._OFFLINE_CACHE_URL + methodName;
+		script.setAttribute("src", url);
+		window.offlineCacheCallback = function(name, results){
+			if(name == "UnknownMethod"){
+				dojo.raise("Programming error in dojo.off._talkToOfflineCache: " + name);
+				return;
+			}
+			
+			// avoid memory leaks on IE
+			head = null;
+			script = null;
+			
+			resultsCallback(results);
+		}
+		
+		head.appendChild(script);
 	}
 });
 
