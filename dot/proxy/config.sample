@@ -83,8 +83,6 @@
 # Uncomment this if you want to enable offline support for web
 # applications
 
-# disableOfflineSupport = false
-
 disableOfflineSupport = false;
 
 ### Domain Name System

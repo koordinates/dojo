@@ -645,6 +645,7 @@ httpDestroyRequest(HTTPRequestPtr request)
     if(request->condition)
         httpDestroyCondition(request->condition);
     releaseAtom(request->via);
+    releaseAtom(request->referer);
     assert(request->chandler == NULL);
     releaseAtom(request->error_message);
     releaseAtom(request->headers);

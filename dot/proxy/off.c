@@ -114,6 +114,7 @@ int isValidHost(char host[]){
 int addOfflineHost(char host[]){
 	struct offline_list_entry *entry_ptr;
 	struct offline_list_entry *new_entry_ptr;
+	int status;
 	
 	if(isValidHost(host) == 0){ /* invalid host */
 		do_log(L_FORBIDDEN, 
@@ -153,12 +154,16 @@ int addOfflineHost(char host[]){
 		entry_ptr->next_ptr = new_entry_ptr;
 	}
 	
-	return 1; /* success */
+	/* try to save the offline list */
+	status = saveOfflineList();
+	
+	return status;
 }
 
 int removeOfflineHost(char host[]){
 	struct offline_list_entry *entry_ptr, *prev_ptr,
 								*found_ptr;
+	int successful = 0;
 								
 	found_ptr = NULL;
 	prev_ptr = NULL;
@@ -196,24 +201,30 @@ int removeOfflineHost(char host[]){
 	if(prev_ptr == NULL){
 		offline_list_ptr = found_ptr->next_ptr;
 		free(found_ptr);
-		return 1; /* success */
+		successful = 1;
 	}
 	
 	/* was our found entry at the end? */
 	if(found_ptr->next_ptr == NULL){
 		prev_ptr->next_ptr = NULL;
 		free(found_ptr);
-		return 1; /* success */
+		successful = 1;
 	}
 	
 	/* was our found entry in the middle? */
 	if(prev_ptr != NULL && found_ptr->next_ptr != NULL){
 		prev_ptr->next_ptr = found_ptr->next_ptr;
 		free(found_ptr);
-		return 1; /* success */
+		successful = 1;
 	}
 	
-	return 0; /* failed */
+	if(successful == 0){
+		return 0; /* failed */
+	}else{
+		/* try to save the offline list */		
+        successful = saveOfflineList();
+	    return successful;
+	}
 }
 
 int isHostAvailableOffline(char host[]){

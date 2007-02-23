@@ -14,6 +14,26 @@
 */
 #define OFF_BOOTSTRAP_HOST "offline.web.app"
 
+/*
+    The JavaScript callback function name that will receive
+    the results of a call to the offline API. Two arguments
+    will be given: the API function that was called, such as
+    "isRunning", and the results of this call, which is call
+    dependent. If an unknown method was called then the
+    method name is "UnknownMethod".
+
+    Example:
+
+      durableCacheCallback("isRunning", true);
+*/
+#define OFF_JAVASCRIPT_CALLBACK "durableCacheCallback"
+
+/*
+    The version of our offline system. This is not the same as
+    our Polipo version, since the offline architecture could
+    potentially include other components such as SQLite.
+*/
+#define OFF_OFFLINE_VERSION "0.01"
 
 /** 
 	We save our list of offline-enabled web apps

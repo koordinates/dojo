@@ -1898,7 +1898,7 @@ httpServerHandlerHeaders(int eof,
                           &headers, &len, &cache_control, NULL, &te,
                           &date, &last_modified, &expires, NULL, NULL, NULL,
                           &age, &etag, NULL, NULL, &content_range,
-                          NULL, &via, NULL);
+                          NULL, &via, NULL, NULL);
     if(rc < 0) {
         do_log(L_ERROR, "Couldn't parse server headers\n");
         releaseAtom(url);
