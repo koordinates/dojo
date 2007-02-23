@@ -344,6 +344,7 @@ and the reality that they expose HTTP verbs:
     // new I/O functions:
     dojo.io.formToMap(formNode)
     dojo.io.formToJson(formNode)
+    dojo.io.queryToMap(str)
 
 
 dojo.uri:
@@ -364,7 +365,7 @@ dojo.uri:
 
     dojo.uri.moduleUri() -->
 
-        dojo.moduleUri()
+        dojo.moduleUrl()
 
 
 dojo.query:
@@ -428,13 +429,13 @@ APIs in Base:
     dojo.require()
     dojo.provide()
     dojo.kwCompoundRequire() // rename?
-    dojo.requireLocalization() // need to find a way to make this code smaller
+    dojo.requireLocalization() // need to find a way to make this code smaller, perhaps move to i18n?
     dojo.registerModulePath() // or whatever it's called this week
     dojo.moduleUrl()
     dojo.dojoUrl()
     dojo.deprecated()
     dojo.experimental()
-    dojo.getObject()
+    dojo.getObject() // strToObj() ?
     dojo.exists()
     dojo.global()
     dojo.doc()
@@ -453,25 +454,74 @@ APIs in Base:
     dojo.byId()
     dojo.query()
     dojo.NodeList/dojo.Node (described in "NodeList.txt")
+    // some super-trivial subset of dojo.style and dojo.html. These are exposed via NodeList too.
+    /* FIXME: these don't seem right. Also, should they be on the top-level object?
+
+    dojo.getBorderBox()
+    dojo.setBorderBox()
+    dojo.getMarginBox()
+    dojo.setMarginBox()
+    dojo.getBox()
+
+    dojo.style.getValue() // was getPixelValue
+    dojo.style.setValue()
+
+    */
     dojo.io
         get()
         post()
         rawPost()
+        queue("get", {/*args */})
+        formToQuery()
+        mapToQuery()
+        wrapForm(formNode) // was FormBind
+        formToMap(formNode)
+        formToJson(formNode)
+        queryToMap(str)
     dojo.Deferred
     dojo.connect()
     dojo.disconnect()
     dojo.addNodeListener()
     dojo.lfx
-        IAnimation
-        Animation
-        PropertyAnimation
-        defaultEasing()
+        // internal stuff that was previously public
+        _IAnimation
+        _Animation
+        _Chain
+        _Combine
+        _PropertyAnimation
+        _defaultEasing()
+        // things users might actually use
+        chain()
+        combine()
         fadeIn()
         fadeOut()
         slideIn() // new, replaces wipeIn
         slideOut()  // new, replaces wipeOut
+        propertyAnimation()
     dojo.json
-    // some super-trivial subset of dojo.style and dojo.html. These are exposed via NodeList too.
+        serialize()
+        deserialize()
+    dojo.color // required by lfx
+        extracRGB()
+        rgb2hex()
+        hex2rgb()
+    dojo.cookie // alternately we can have this be 1 func w/ 3 arg sets
+        get()
+        set()
+        remove()
+    // environment test variables:
+    dojo.isBrowser
+    dojo.isRhino
+    dojo.isSpidermonkey
+    dojo.isWSH
+    // browser test variables
+    dojo.isIE
+    dojo.isIE55
+    dojo.isIE60
+    dojo.isIE70
+    dojo.isKhtml
+    dojo.isSafari
+    dojo.isOpera
 
 
 In Core but not Base:
@@ -519,7 +569,7 @@ Moved to dojox:
     dojo.behavior
     dojo.uuid
     dojo.xml.XsltTransform
-    dojo.aop // was dojo.event.connect()
+    dojo.advice // was dojo.event.connect()
     dojo.selection
     dojo.io.cometd
     dojo.io.repubsub // was dojo.io.RepubsubIO
