@@ -989,6 +989,9 @@ dojo.experimental("dojo.query");
 		return _zip(getQueryFunc(query)(root||document));
 	}
 
+	d.query.attrs = attrs;
+	d.query.pseudos = pseudos;
+
 	d._filterQueryResult = function(nodeList, simpleFilter){
 		var tnl = new dojo.NodeList();
 		var ff = (simpleFilter) ? getFilterFunc(simpleFilter) : function(){ return true; };
