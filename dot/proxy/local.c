@@ -228,7 +228,6 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
 	   addOfflineHost, removeOfflineHost, isHostAvailableOffline,
 	   isRunning, getVersion
     */
-	printf("results=%s\n", host_ptr);
 	if(matchUrl("/polipo/offline?addOfflineHost", object)){
       status = addOfflineHost(host_ptr);
       objectPrintf(object, 0,

@@ -24,9 +24,9 @@
 
     Example:
 
-      durableCacheCallback("isRunning", true);
+      window.offlineCacheCallback("isRunning", true);
 */
-#define OFF_JAVASCRIPT_CALLBACK "durableCacheCallback"
+#define OFF_JAVASCRIPT_CALLBACK "window.offlineCacheCallback"
 
 /*
     The version of our offline system. This is not the same as

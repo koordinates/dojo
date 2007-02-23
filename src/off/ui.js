@@ -320,7 +320,7 @@ dojo.lang.mixin(dojo.off.ui, {
 		
 		// check offline cache settings
 		if(dojo.off.requireOfflineCache == true
-			&& dojo.off.hasOfflineCache() == false){
+			&& dojo.off.hasOfflineCache == false){
 			this._needsOfflineCache();
 			return;
 		}
@@ -396,7 +396,7 @@ dojo.lang.mixin(dojo.off.ui, {
 			// correctly based on framework settings
 			this.learnHowPath += "?appName=" + encodeURIComponent(this.appName)
 									+ "&requireOfflineCache=" + dojo.off.requireOfflineCache
-									+ "&hasOfflineCache=" + dojo.off.hasOfflineCache()
+									+ "&hasOfflineCache=" + dojo.off.hasOfflineCache
 									+ "&runLink=" + encodeURIComponent(this.runLink)
 									+ "&runLinkText=" + encodeURIComponent(this.runLinkText);
 			

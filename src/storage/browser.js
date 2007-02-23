@@ -81,8 +81,6 @@ dojo.lang.extend(dojo.storage.browser.WhatWGStorageProvider, {
 		// register for successful storage events.
 		var self = this;
 		var storageListener = function(evt){
-			dojo.debug("storage event, evt="+evt);
-			
 			// remove any old storage event listener we might have added
 			// to the window on old put() requests; Firefox has a bug
 			// where it can occassionaly go into infinite loops calling
