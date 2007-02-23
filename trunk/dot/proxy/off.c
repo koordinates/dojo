@@ -479,10 +479,12 @@ void setOfflineFileName(char *name_ptr){
 }
 
 void goOnline(void){
+	printf("goOnline\n");
 	online_flag = 1;
 }
 
 void goOffline(void){
+	printf("goOffline\n");
 	online_flag = 0;
 }
 
