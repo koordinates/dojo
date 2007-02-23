@@ -99,6 +99,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	onOffline: function(){ /* void */
+		dojo.debug("origin onOffline called");
 		// summary:
 		//	Called when we go offline.
 		// description: 
@@ -107,6 +108,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	goOffline: function(){ /* void */
+		dojo.debug("goOffline");
 		// summary:
 		//	Manually goes offline, away from the network.
 		if(dojo.sync.isSyncing == true
@@ -117,12 +119,13 @@ dojo.lang.mixin(dojo.off, {
 		this.goingOnline = false;
 		this.isOnline = false;
 		
-		if(this.onOffline){
-			this.onOffline();
-		}
+		// if we have a local proxy tell it our new network
+		// status
+		this._tellCacheNetworkStatus(false, this.onOffline);
 	},
 	
 	goOnline: function(finishedCallback){ /* void */
+		dojo.debug("goOnline");
 		// summary:
 		//	Attempts to go online.
 		// description:
@@ -361,6 +364,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_finishStartingUp: function(){
+		dojo.debug("finishStartingUp");
 		// this method is part of our _onLoad series of startup tasks
 		
 		// kick off a thread to check network status on
@@ -396,6 +400,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_isSiteAvailable: function(finishedCallback){
+		dojo.debug("isSiteAvailable");
 		// summary:
 		//	Determines if our web application's website
 		//	is available.
@@ -412,27 +417,33 @@ dojo.lang.mixin(dojo.off, {
 		//	whether the site is available or not
 		//	and is boolean. If this function is not present we call
 		//	dojo.off.onOnline instead if we are able to go online.
+		var self = this;
 		var bindArgs = {
 			url:	 dojo.off._getAvailabilityURL(),
 			sync:		false,
 			mimetype:	"text/plain",
 			error:		function(type, errObj){
 				//dojo.debug("_isSiteAvailable.error, type="+type+", errObj="+errObj.message);
-				dojo.off.goingOnline = false;
-				dojo.off.isOnline = false;
+				self.goingOnline = false;
+				self.isOnline = false;
 				if(finishedCallback){
 					finishedCallback(false);
 				}
 			},
 			load:		function(type, data, evt){
 				//dojo.debug("_isSiteAvailable.load, type="+type+", data="+data+", evt="+evt);	
-				dojo.off.goingOnline = false;
-				dojo.off.isOnline = true;
-				if(finishedCallback){
-					finishedCallback(true);
-				}else if(dojo.off.onOnline){
-					dojo.off.onOnline();
-				}
+				self.goingOnline = false;
+				self.isOnline = true;
+				
+				// if we have a local proxy tell it our new network
+				// status
+				self._tellCacheNetworkStatus(true, function(){
+					if(finishedCallback){
+						finishedCallback(true);
+					}else if(self.onOnline){
+						self.onOnline();
+					}
+				});
 			}
 		};
 		
@@ -456,14 +467,22 @@ dojo.lang.mixin(dojo.off, {
 					//dojo.debug("dojo.off.networkThread.error, type="+type+", errObj="+errObj);
 					if(dojo.off.isOnline == true){
 						dojo.off.isOnline = false;
-						dojo.off.onOffline();
+						// if we have a local proxy tell it our new network
+						// status
+						dojo.debug("startNetworkThread, error, dojo.off.onOffline="+dojo.off.onOffline);
+						dojo.off._tellCacheNetworkStatus(false, 
+										dojo.lang.hitch(dojo.off, dojo.off.onOffline));
 					}
 				},
 				load:		function(type, data, evt){
 					//dojo.debug("dojo.off.networkThread.load, type="+type+", data="+data+", evt="+evt);	
 					if(dojo.off.isOnline == false){
 						dojo.off.isOnline = true;
-						dojo.off.onOnline();
+						// if we have a local proxy tell it our new network
+						// status
+						dojo.debug("startNetworkThread, load, dojo.off.onOnline="+dojo.off.onOnline);
+						dojo.off._tellCacheNetworkStatus(true, 
+										dojo.lang.hitch(dojo.off, dojo.off.onOnline));
 					}
 				}
 			};
@@ -487,8 +506,37 @@ dojo.lang.mixin(dojo.off, {
 		return url;
 	},
 	
+	_tellCacheNetworkStatus: function(isOnline, finishedCallback){
+		dojo.debug("tellCacheNetworkStatus, isOnline="+isOnline+", finishedCallback="+finishedCallback);
+		if(this.requireOfflineCache == false
+			|| this.hasOfflineCache == false){
+			if(finishedCallback){
+				finishedCallback();
+			}
+			return;
+		}
+		
+		var methodName;
+		
+		// tell our local proxy what our network status is
+		if(isOnline == true){ /* we just went online */
+			methodName = "goOnline";
+		}else{ /* we just went offline */
+			methodName = "goOffline";
+		}
+		
+		this._talkToOfflineCache(methodName, function(method, results){
+			if(finishedCallback){
+				finishedCallback();
+			}
+		});
+	},
+	
 	_talkToOfflineCache: function(methodName, resultsCallback){
 		dojo.debug("talkToOfflineCache, methodName="+methodName);
+		// causes us to talk to our local proxy that is running on
+		// localhost, communicating to it through it's API that
+		// is exposed by us calling it through JSONP
 		var head = document.getElementsByTagName("head")[0];
 		var script = document.createElement("script");
 		var url = this._OFFLINE_CACHE_URL + methodName;

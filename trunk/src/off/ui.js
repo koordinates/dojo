@@ -784,6 +784,7 @@ dojo.lang.mixin(dojo.off.ui, {
 	},
 	
 	_workOffline: function(evt){
+		dojo.debug("_workOffline");
 		// cancel the button's default behavior
 		evt.preventDefault();
 		evt.stopPropagation();
@@ -792,6 +793,8 @@ dojo.lang.mixin(dojo.off.ui, {
 			|| dojo.off.goingOnline == true){
 			return;
 		}
+		
+		dojo.debug("at bottom, dojo.off.goOffline="+dojo.off.goOffline);
 		
 		dojo.off.goOffline();
 	},
