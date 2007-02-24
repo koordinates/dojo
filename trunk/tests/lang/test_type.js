@@ -192,6 +192,6 @@ function test_lang_isOfTypeToo() {
 }
 
 function test_lang_type(){
-	jum.assertEquals("dojo.lang.getObject", dojo.lang.getType, dojo.getObject("dojo.lang.getType")); 
-	jum.assertEquals("dojo.lang.doesObjectExist", true, dojo.exists("dojo.lang.getType"));
+	jum.assertEquals("dojo.getObject", dojo.lang.getType, dojo.getObject("dojo.lang.getType")); 
+	jum.assertEquals("dojo.exists", true, dojo.exists("dojo.lang.getType"));
 }
