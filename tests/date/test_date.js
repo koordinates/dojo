@@ -28,13 +28,103 @@ function test_date_getWeekOfYear () {
 
 
 function test_date_setIsoWeekOfYear () {
-	//dojo.date.setIsoWeekOfYear(new Date(2006,2,1), 34);
-	//dojo.date.setIsoWeekOfYear(new Date(2006,2,1), 34, 1);
+	var date = new Date(2006,10,10);
+	var result = dojo.date.setIsoWeekOfYear(date, 1);
+	jum.assertEquals("1st week of 2006", new Date(2006,0,6), result);
+	result = dojo.date.setIsoWeekOfYear(date, 10);
+	result = dojo.date.setIsoWeekOfYear(date, 2);
+	jum.assertEquals("2nd week of 2006", new Date(2006,0,13), result);
+	result = dojo.date.setIsoWeekOfYear(date, 10);
+	jum.assertEquals("10th week of 2006", new Date(2006,2,10), result);
+	result = dojo.date.setIsoWeekOfYear(date, 52);
+	jum.assertEquals("52nd week of 2006", new Date(2006,11,29), result);
+	var result = dojo.date.setIsoWeekOfYear(date, -1);
+	jum.assertEquals("-1st week of 2006", new Date(2006,11,29), result);
+	var result = dojo.date.setIsoWeekOfYear(date, -2);
+	jum.assertEquals("-2nd week of 2006", new Date(2006,11,22), result);
+	var result = dojo.date.setIsoWeekOfYear(date, -10);
+	jum.assertEquals("-10th week of 2006", new Date(2006,9,27), result);
+	
+	date = new Date(2004,10,10);
+	result = dojo.date.setIsoWeekOfYear(date, 1);
+	jum.assertEquals("1st week of 2004", new Date(2003,11,31), result);
+	result = dojo.date.setIsoWeekOfYear(date, 2);
+	jum.assertEquals("2nd week of 2004", new Date(2004,0,7), result);
+	result = dojo.date.setIsoWeekOfYear(date, -1);
+	jum.assertEquals("-1st week of 2004", new Date(2004,11,29), result);
 }
 
 function test_date_getIsoWeekOfYear () {
-	//dojo.date.getIsoWeekOfYear(new Date(2006,1,1));
-	//dojo.date.getIsoWeekOfYear(new Date(2006,1,1), 1);
+	var week = dojo.date.getIsoWeekOfYear(new Date(2006,0,1));
+	jum.assertEquals("52nd week of 2006", 52, week);
+	week = dojo.date.getIsoWeekOfYear(new Date(2006,0,4));
+	jum.assertEquals("1st week of 2006", 1, week);
+	week = dojo.date.getIsoWeekOfYear(new Date(2006,11,31));
+	jum.assertEquals("52nd week of 2006", 52, week);
+	week = dojo.date.getIsoWeekOfYear(new Date(2007,0,1));
+	jum.assertEquals("1st week of 2007", 1, week);
+	week = dojo.date.getIsoWeekOfYear(new Date(2007,11,31));
+	jum.assertEquals("53rd week of 2007", 53, week);
+	week = dojo.date.getIsoWeekOfYear(new Date(2008,0,1));
+	jum.assertEquals("1st week of 2008", 1, week);
+	week = dojo.date.getIsoWeekOfYear(new Date(2007,11,31));
+	jum.assertEquals("53rd week of 2008", 53, week);
+}
+
+
+function test_date_getStartOfWeek() {
+	var weekStart;
+	
+	// Monday
+	var date = new Date(2007, 0, 1);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 1), 1);
+	jum.assertEquals("Check Monday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 2), 1);
+	jum.assertEquals("Check Tuesday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 3), 1);
+	jum.assertEquals("Check Wednesday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 4), 1);
+	jum.assertEquals("Check Thursday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 5), 1);
+	jum.assertEquals("Check Friday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 6), 1);
+	jum.assertEquals("Check Saturday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 7), 1);
+	jum.assertEquals("Check Sunday", date, weekStart);
+
+	// Sunday
+	date = new Date(2007, 0, 7);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 7), 0);
+	jum.assertEquals("Check Sunday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 8), 0);
+	jum.assertEquals("Check Monday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 9), 0);
+	jum.assertEquals("Check Tuesday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 10), 0);
+	jum.assertEquals("Check Wednesday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 11), 0);
+	jum.assertEquals("Check Thursday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 12), 0);
+	jum.assertEquals("Check Friday", date, weekStart);
+	weekStart = dojo.date.getStartOfWeek(new Date(2007, 0, 13), 0);
+	jum.assertEquals("Check Saturday", date, weekStart);
+}
+
+function test_date_getIsoWeeksInYear () {
+	// 44 long years in a 400 year cycle.
+	var longYears = [4, 9, 15, 20, 26, 32, 37, 43, 48, 54, 60, 65, 71, 76, 82, 
+		88,	93, 99, 105, 111, 116, 122, 128, 133, 139, 144, 150, 156, 161, 167,
+		172, 178, 184, 189, 195, 201, 207, 212, 218, 224, 229, 235, 240, 246, 
+		252, 257, 263, 268, 274, 280, 285, 291, 296, 303, 308, 314, 320, 325,
+		331, 336, 342, 348, 353, 359, 364, 370, 376, 381, 387, 392, 398];
+
+	var i, j, weeks, result;
+	for(i=0; i < 400; i++) {
+		weeks = 52;
+		if(i == longYears[0]) { weeks = 53; longYears.shift(); }
+		result = dojo.date.getIsoWeeksInYear(new Date(2000 + i, 0, 1));
+		jum.assertEquals(weeks +" weeks in "+ (2000+i), weeks, result);
+	}
 }
 
 

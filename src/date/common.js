@@ -37,16 +37,59 @@ dojo.date.getWeekOfYear = function(/*Date*/dateObject, /*Number*/firstDay){
 		firstDayOfYear.getTime()) / 604800000);
 }
 
-dojo.date.setIsoWeekOfYear = function(/*Date*/dateObject, /*Number*/week, /*Number*/firstDay){
-	// summary: unimplemented
-	if (arguments.length == 2) { firstDay = 1; } // Monday
-	dojo.unimplemented("dojo.date.setIsoWeekOfYear");
+dojo.date.setIsoWeekOfYear = function(/*Date*/dateObject, /*Number*/week){
+	// summary: Set the ISO8601 week number of the given date.
+	//   The week containing January 4th is the first week of the year.
+	// week:
+	//   can be positive or negative: -1 is the year's last week.
+	if(!week){ return dateObject; }
+	var currentWeek = dojo.date.getIsoWeekOfYear(dateObject);
+	var offset = week - currentWeek;
+	if(week < 0){
+		var weeks = dojo.date.getIsoWeeksInYear(dateObject);
+		offset = (weeks + week + 1) - currentWeek;
+	}
+	return dojo.date.add(dateObject, dojo.date.dateParts.WEEK, offset); // Date
 }
 
-dojo.date.getIsoWeekOfYear = function(/*Date*/dateObject, /*Number*/firstDay) {
-	// summary: unimplemented
-	if (arguments.length == 1) { firstDay = 1; } // Monday
-	dojo.unimplemented("dojo.date.getIsoWeekOfYear");
+dojo.date.getIsoWeekOfYear = function(/*Date*/dateObject){
+	// summary: Get the ISO8601 week number of the given date.
+	//   The week containing January 4th is the first week of the year.
+	//   See http://en.wikipedia.org/wiki/ISO_week_date
+	var weekStart = dojo.date.getStartOfWeek(dateObject, 1);
+	var yearStart = new Date(dateObject.getFullYear(), 0, 4); // January 4th
+	yearStart = dojo.date.getStartOfWeek(yearStart, 1);
+	var diff = weekStart.getTime() - yearStart.getTime();
+	if(diff < 0){ return dojo.date.getIsoWeeksInYear(weekStart); } // Integer
+	return Math.ceil(diff / 604800000) + 1; // Integer
+}
+
+dojo.date.getStartOfWeek = function(/*Date*/dateObject, /*Number*/firstDay){
+	// summary: Return a date object representing the first day of the given
+	//   date's week.
+	var date = new Date(dateObject.getFullYear(), dateObject.getMonth(), 
+		dateObject.getDate());
+	if(isNaN(firstDay)){
+		firstDay = dojo.date.getFirstDayOfWeek ? dojo.date.getFirstDayOfWeek() : 0;
+	}
+	var offset = firstDay;
+	if(dateObject.getDay() >= firstDay){
+		offset -= dateObject.getDay();
+	}else{
+		offset -= (7 - dateObject.getDay());
+	}
+	return dojo.date.add(date, dojo.date.dateParts.DAY, offset); // Date
+}
+
+dojo.date.getIsoWeeksInYear = function(/*Date*/dateObject) {
+	// summary: Determine the number of ISO8601 weeks in the year of the given 
+	//   date. Most years have 52 but some have 53.
+	//   See http://www.phys.uu.nl/~vgent/calendar/isocalendar_text3.htm	
+	function p(y) {
+		return y + Math.floor(y/4) - Math.floor(y/100) + Math.floor(y/400);
+	}
+	var y = dateObject.getFullYear();
+	return ( p(y) % 7 == 4 || p(y-1) % 7 == 3 ) ? 53 : 52;
 }
 
 
