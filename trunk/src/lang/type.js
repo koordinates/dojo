@@ -227,7 +227,7 @@ dojo.lang.doesObjectExist=function(/* String */ str){
 	// summary:
 	//   Check to see if object [str] exists, based on the passed string.
 
-	dojo.deprecated("dojo.lang.getObject", "use dojo.exists", "0.6");
+	dojo.deprecated("dojo.lang.doesObjectExist", "use dojo.exists", "0.6");
 
 	var parts=str.split("."), i=0, obj=dj_global; 
 	do{ 
