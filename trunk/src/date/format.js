@@ -264,9 +264,9 @@ dojo.date._parseInfo = function(/*Object?*/options){
 		pattern = datePattern + ' ' + timePattern; //TODO: use locale-specific pattern to assemble date + time
 	}
 
-	var groups = [];
-	var re = _processPattern(pattern, dojo.lang.curry(this, _buildDateTimeRE, groups, bundle, options));
-	return {regexp: re, groups: groups, bundle: bundle};
+	var tokens = [];
+	var re = _processPattern(pattern, dojo.lang.curry(this, _buildDateTimeRE, tokens, bundle, options));
+	return {regexp: re, tokens: tokens, bundle: bundle};
 }
 
 dojo.date.parse = function(/*String*/value, /*Object?*/options){
@@ -298,7 +298,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //
 
 	var info = dojo.date._parseInfo(options);
-	var groups = info.groups, bundle = info.bundle;
+	var tokens = info.tokens, bundle = info.bundle;
 	var re = new RegExp("^" + info.regexp + "$");
 	var match = re.exec(value);
 	if(!match){ return null;}
@@ -309,10 +309,10 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 	var result = new Date(1972, 0);
 	var expected = {};
 	for(var i=1; i<match.length; i++){
-		var grp=groups[i-1];
-		var l=grp.length;
+		var token=tokens[i-1];
+		var l=token.length;
 		var v=match[i];
-		switch(grp.charAt(0)){
+		switch(token.charAt(0)){
 			case 'y':
 				if(l != 2){
 					//interpret year literally, so '5' would be 5 A.D.
@@ -451,7 +451,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 				result.setMilliseconds(v);
 				break;
 			default:
-				dojo.unimplemented("dojo.date.parse: unsupported pattern char=" + grp.charAt(0));
+				dojo.unimplemented("dojo.date.parse: unsupported pattern char=" + token.charAt(0));
 		}
 	}
 
@@ -498,50 +498,56 @@ function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
 	return applyAll(chunks.join(''));
 }
 
-function _buildDateTimeRE(groups, bundle, options, pattern){
+function _buildDateTimeRE(tokens, bundle, options, pattern){
 	return dojo.string.escapeRegExp(pattern).replace(/([a-z])\1*/ig, function(match){
-		// Build a simple regexp without parenthesis, which would ruin the match list
+		// Build a simple regexp.  Avoid captures, which would ruin the tokens list
 		var s;
 		var c = match.charAt(0);
 		var l = match.length;
+		var p2 = '', p3 = '';
+		if(options.strict){
+			if(l > 1){ p2 = '0' + '{'+(l-1)+'}'; }
+			if(l > 2){ p3 = '0' + '{'+(l-2)+'}'; }
+		}else{
+			p2 = '0?', p3 = '0{0,2}';
+		}
 		switch(c){
 			case 'y':
-				s = '\\d' + ((l==2) ? '{2,4}' : '{0,4}');
+				s = '\\d{2,4}'
 				break;
 			case 'M':
-				s = (l>2) ? '\\S+' : '(?:(?:0*[1-9])|(?:1[0-2]))';
+				s = (l>2) ? '\\S+' : p2+'[1-9]|1[0-2]';
 				break;
 			case 'D':
-				s = '\\d{1,3}';
+				s = p2+'[1-9]|'+p3+'[1-9][0-9]|[12][0-9][0-9]|3[0-5][0-9]|36[0-6]';
 				break;
 			case 'd':
-				s = '(?:(?:0*[1-9])|(?:[12]\\d)|(?:3[01]))';
+				s = p2+'[1-9]|[12]\\d|3[01]';
 				break;
 			case 'w':
-				s = '\\d{1,2}';
+				s = p2+'[1-9]|[1-4][0-9]|5[0-3]';
 				break;
 		    case 'E':
 				s = '\\S+';
 				break;
-
 			case 'h': //hour (1-12)
-				s = '(?:(?:0*[1-9])|(?:1[0-2]))';
+				s = p2+'[1-9]|1[0-2]';
 				break;
 			case 'k': //hour (0-11)
-				s = '(?:(?:0*\\d)|(?:1[01]))';
+				s = p2+'\\d|1[01]';
 				break;
 			case 'H': //hour (0-23)
-				s = '(?:(?:0*\\d)|(?:1\\d)|(?:2[0-3]))';
+				s = p2+'\\d|1\\d|2[0-3]';
 				break;
 			case 'K': //hour (1-24)
-				s = '(?:(?:0*[1-9])|(?:1\\d)|(?:2[0-4]))';
+				s = p2+'[1-9]|1\\d|2[0-4]';
 				break;
 			case 'm':
 			case 's':
 				s = '[0-5]\\d';
 				break;
 			case 'S':
-				s = '\\d{1,3}';
+				s = '\\d{'+l+'}';
 				break;
 			case 'a':
 				var am = options.am || bundle.am || 'AM';
@@ -549,17 +555,16 @@ function _buildDateTimeRE(groups, bundle, options, pattern){
 				if(options.strict){
 					s = am + '|' + pm;
 				}else{
-					s = am;
-					s += (am != am.toLowerCase()) ? '|' + am.toLowerCase() : '';
-					s += '|';
-					s += (pm != pm.toLowerCase()) ? pm + '|' + pm.toLowerCase() : pm;
+					s = am + '|' + pm;
+					if(am != am.toLowerCase()){ s += '|' + am.toLowerCase(); }
+					if(pm != pm.toLowerCase()){ s += '|' + pm.toLowerCase(); }
 				}
 				break;
 			default:
 				dojo.unimplemented("parse of date format, pattern=" + pattern);
 		}
 
-		if(groups){ groups.push(match); }
+		if(tokens){ tokens.push(match); }
 
 //FIXME: replace whitespace within final regexp with more flexible whitespace match instead?
 		//tolerate whitespace
@@ -568,7 +573,6 @@ function _buildDateTimeRE(groups, bundle, options, pattern){
 }
 })();
 
-//TODO: try to common strftime and format code somehow?
 
 dojo.date.strftime = function(/*Date*/dateObject, /*String*/format, /*String?*/locale){
 //
