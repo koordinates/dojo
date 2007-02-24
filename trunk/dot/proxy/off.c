@@ -163,6 +163,10 @@ int generatePACFile(){
 	
 	fprintf(out_file, "function FindProxyForURL(url, host){\n");
 	
+	fprintf(out_file, "   if(/cachebust/.test(url)){\n"
+                      "      return \"DIRECT\";\n"
+                      "   }\n\n");
+	
 	if(offline_list_ptr != NULL){ /* do we even have any sites? */
 		fprintf(out_file, "   if("); /* beginning of list of sites */
 	
@@ -186,8 +190,7 @@ int generatePACFile(){
 		fprintf(out_file, "\t\t){\n"); /* end of list of sites */
 	
 	    /* FIXME: Don't hard code the proxy port here */
-		/*fprintf(out_file, "      return \"PROXY 127.0.0.1:%d; DIRECT\";\n"*/
-		fprintf(out_file, "      return \"PROXY 127.0.0.1:8123\";\n"
+		fprintf(out_file, "      return \"PROXY 127.0.0.1:8123; DIRECT\";\n"
 	                      "   }else{\n"
 	                      "      return \"DIRECT\";\n"
 	                      "   }\n"
@@ -481,11 +484,13 @@ void setOfflineFileName(char *name_ptr){
 void goOnline(void){
 	printf("goOnline\n");
 	online_flag = 1;
+	proxyOffline = 0; /* 0 means take proxy online */
 }
 
 void goOffline(void){
 	printf("goOffline\n");
 	online_flag = 0;
+	proxyOffline = 1; /* 1 means take proxy offline */
 }
 
 int isOnline(void){

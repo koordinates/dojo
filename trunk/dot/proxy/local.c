@@ -195,7 +195,7 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
 	char *host_ptr = NULL;
 	int safe_scheme = 0;
 	int status;
-	printf("handleOfflineAPI\n");
+	printf("handleOfflineAPI, key=%s\n", (char *)object->key);
 	if(requestor->referer == NULL 
           || requestor->referer->string == NULL
           || strlen(requestor->referer->string) == 0) {
@@ -211,6 +211,7 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
     }
     printf("safe_scheme=%d\n", safe_scheme);
 	if(safe_scheme == 0){
+		printf("unsafe scheme; returning\n");
 		goto fail;
 	}
 	
