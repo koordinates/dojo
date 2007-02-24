@@ -55,7 +55,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 			switch(c){
 				case 'G':
 					if(l>3){dojo.unimplemented("Era format not implemented");}
-					s = info.eras[dateObject.getFullYear() < 0 ? 1 : 0];
+					s = bundle.eras[dateObject.getFullYear() < 0 ? 1 : 0];
 					break;
 				case 'y':
 					s = dateObject.getFullYear();
@@ -96,7 +96,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 					if(width){
 						var type = (c == "L") ? "standalone" : "format";
 						var prop = ["months",type,width].join("-");
-						s = info[prop][m];
+						s = bundle[prop][m];
 					}
 					break;
 				case 'w':
@@ -132,12 +132,12 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 					if(width){
 						var type = (c == "c") ? "standalone" : "format";
 						var prop = ["days",type,width].join("-");
-						s = info[prop][d];
+						s = bundle[prop][d];
 					}
 					break;
 				case 'a':
 					var timePeriod = (dateObject.getHours() < 12) ? 'am' : 'pm';
-					s = info[timePeriod];
+					s = bundle[timePeriod];
 					break;
 				case 'h':
 				case 'H':
@@ -211,7 +211,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 
 	var locale = dojo.hostenv.normalizeLocale(options.locale);
 	var formatLength = options.formatLength || 'full';
-	var info = dojo.date._getGregorianBundle(locale);
+	var bundle = dojo.date._getGregorianBundle(locale);
 	var str = [];
 	var sauce = dojo.lang.curry(this, formatPattern, dateObject);
 	if(options.selector == "yearOnly"){
@@ -223,16 +223,50 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 		return year;
 	}
 	if(options.selector != "timeOnly"){
-		var datePattern = options.datePattern || info["dateFormat-"+formatLength];
+		var datePattern = options.datePattern || bundle["dateFormat-"+formatLength];
 		if(datePattern){str.push(_processPattern(datePattern, sauce));}
 	}
 	if(options.selector != "dateOnly"){
-		var timePattern = options.timePattern || info["timeFormat-"+formatLength];
+		var timePattern = options.timePattern || bundle["timeFormat-"+formatLength];
 		if(timePattern){str.push(_processPattern(timePattern, sauce));}
 	}
 	var result = str.join(" "); //TODO: use locale-specific pattern to assemble date + time
 	return result; /*String*/
 };
+
+dojo.date.regexp = function(/*Object?*/options){
+//
+// summary:
+//		Builds the regular needed to parse a localized date
+//
+// options: object {selector: string, formatLength: string, datePattern: string, timePattern: string, locale: string, strict: boolean}
+//		selector- choice of timeOnly, dateOnly, dateTime (default: dateOnly)
+//		formatLength- choice of long, short, medium or full (plus any custom additions).  Defaults to 'full'
+//		datePattern,timePattern- override pattern with this string
+//		locale- override the locale used to determine formatting rules
+
+	return dojo.date._parseInfo(options).regexp; // String
+};
+
+dojo.date._parseInfo = function(/*Object?*/options){
+	options = options || {};
+	var locale = dojo.hostenv.normalizeLocale(options.locale);
+	var bundle = dojo.date._getGregorianBundle(locale);
+	var formatLength = options.formatLength || 'full';
+	if(!options.selector){ options.selector = 'dateOnly'; }
+	var datePattern = options.datePattern || bundle["dateFormat-" + formatLength];
+	var timePattern = options.timePattern || bundle["timeFormat-" + formatLength];
+	var pattern = datePattern;
+	if(options.selector == 'timeOnly'){
+		pattern = timePattern;
+	}else if(options.selector == 'dateTime'){
+		pattern = datePattern + ' ' + timePattern; //TODO: use locale-specific pattern to assemble date + time
+	}
+
+	var groups = [];
+	var re = _processPattern(pattern, dojo.lang.curry(this, _buildDateTimeRE, groups, bundle, options));
+	return {regexp: re, groups: groups, bundle: bundle};
+}
 
 dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //
@@ -262,36 +296,11 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //		strict- strict parsing, off by default
 //
 
-	options = options || {};
-	var locale = dojo.hostenv.normalizeLocale(options.locale);
-	var info = dojo.date._getGregorianBundle(locale);
-	var formatLength = options.formatLength || 'full';
-	if(!options.selector){ options.selector = 'dateOnly'; }
-	var datePattern = options.datePattern || info["dateFormat-" + formatLength];
-	var timePattern = options.timePattern || info["timeFormat-" + formatLength];
-	var pattern;
-	if(options.selector == 'dateOnly'){
-		pattern = datePattern;
-	}
-	else if(options.selector == 'timeOnly'){
-		pattern = timePattern;
-	}else if(options.selector == 'dateTime'){
-		pattern = datePattern + ' ' + timePattern; //TODO: use locale-specific pattern to assemble date + time
-	}else{
-		var msg = "dojo.date.parse: Unknown selector param passed: '" + options.selector + "'.";
-		msg += " Defaulting to date pattern.";
-		dojo.debug(msg);
-		pattern = datePattern;
-	}
-
-	var groups = [];
-	var dateREString = _processPattern(pattern, dojo.lang.curry(this, _buildDateTimeRE, groups, info, options));
-	var dateRE = new RegExp("^" + dateREString + "$");
-
-	var match = dateRE.exec(value);
-	if(!match){
-		return null;
-	}
+	var info = dojo.date._parseInfo(options);
+	var groups = info.groups, bundle = info.bundle;
+	var re = new RegExp("^" + info.regexp + "$");;
+	var match = re.exec(value);
+	if(!match){ return null;}
 
 	var widthList = ['abbr', 'wide', 'narrow'];
 	//1972 is a leap year.  We want to avoid Feb 29 rolling over into Mar 1,
@@ -340,7 +349,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 						//Case-insensitive
 						v = v.toLowerCase();
 					}
-					var months = info['months-format-' + widthList[l-3]].concat();
+					var months = bundle['months-format-' + widthList[l-3]].concat();
 					for (var j=0; j<months.length; j++){
 						if(!options.strict){
 							//Case-insensitive
@@ -367,7 +376,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 					//Case-insensitive
 					v = v.toLowerCase();
 				}
-				var days = info['days-format-' + widthList[l-3]].concat();
+				var days = bundle['days-format-' + widthList[l-3]].concat();
 				for (var j=0; j<days.length; j++){
 					if(!options.strict){
 						//Case-insensitive
@@ -397,8 +406,8 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 				dojo.date.setWeekOfYear(result, v, firstDay);
 				break;
 			case 'a': //am/pm
-				var am = options.am || info.am;
-				var pm = options.pm || info.pm;
+				var am = options.am || bundle.am;
+				var pm = options.pm || bundle.pm;
 				if(!options.strict){
 					v = v.replace(/\./g,'').toLowerCase();
 					am = am.replace(/\./g,'').toLowerCase();
@@ -461,7 +470,6 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 
 	//TODO: implement a getWeekday() method in order to test 
 	//validity of input strings containing 'EEE' or 'EEEE'...
-
 	return result; /*Date*/
 };
 
@@ -489,7 +497,7 @@ function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
 	return applyAll(chunks.join(''));
 }
 
-function _buildDateTimeRE(groups, info, options, pattern){
+function _buildDateTimeRE(groups, bundle, options, pattern){
 	return pattern.replace(/([a-z])\1*/ig, function(match){
 		// Build a simple regexp without parenthesis, which would ruin the match list
 		var s;
@@ -497,26 +505,35 @@ function _buildDateTimeRE(groups, info, options, pattern){
 		var l = match.length;
 		switch(c){
 			case 'y':
-				s = '\\d' + ((l==2) ? '{2,4}' : '+');
+				s = '\\d' + ((l==2) ? '{2,4}' : '{4}');
 				break;
 			case 'M':
-				s = (l>2) ? '\\S+' : '\\d{1,2}';
+				s = (l>2) ? '\\S+' : '(?:(?:0*[1-9])|(?:1[0-2]))';
 				break;
 			case 'D':
 				s = '\\d{1,3}';
 				break;
 			case 'd':
+				s = '(?:(?:0*[1-9])|(?:[12]\\d)|(?:3[01]))';
+				break;
 			case 'w':
 				s = '\\d{1,2}';
 				break;
 		    case 'E':
 				s = '\\S+';
 				break;
-			case 'h': 
-			case 'H': 
-			case 'K': 
-			case 'k':
-				s = '\\d{1,2}';
+
+			case 'h': //hour (1-12)
+				s = '(?:(?:0*[1-9])|(?:1[0-2]))';
+				break;
+			case 'k': //hour (0-11)
+				s = '(?:(?:0*\\d)|(?:1[01]))';
+				break;
+			case 'H': //hour (0-23)
+				s = '(?:(?:0*\\d)|(?:1\\d)|(?:2[0-3]))';
+				break;
+			case 'K': //hour (1-24)
+				s = '(?:(?:0*[1-9])|(?:1\\d)|(?:2[0-4]))';
 				break;
 			case 'm':
 			case 's':
@@ -526,8 +543,8 @@ function _buildDateTimeRE(groups, info, options, pattern){
 				s = '\\d{1,3}';
 				break;
 			case 'a':
-				var am = options.am || info.am || 'AM';
-				var pm = options.pm || info.pm || 'PM';
+				var am = options.am || bundle.am || 'AM';
+				var pm = options.pm || bundle.pm || 'PM';
 				if(options.strict){
 					s = am + '|' + pm;
 				}else{
@@ -566,7 +583,7 @@ dojo.date.strftime = function(/*Date*/dateObject, /*String*/format, /*String?*/l
 		return dojo.string.pad(s, n || 2, padChar || "0");
 	}
 
-	var info = dojo.date._getGregorianBundle(locale);
+	var bundle = dojo.date._getGregorianBundle(locale);
 
 	function $(property){
 		switch (property){
@@ -652,7 +669,7 @@ dojo.date.strftime = function(/*Date*/dateObject, /*String*/format, /*String?*/l
 
 			case "p": // either `am' or `pm' according to the given time value,
 				      // or the corresponding strings for the current locale
-				return info[dateObject.getHours() < 12 ? "am" : "pm"];
+				return bundle[dateObject.getHours() < 12 ? "am" : "pm"];
 				
 			case "r": // time in a.m. and p.m. notation
 				return $("I") + ":" + $("M") + ":" + $("S") + " " + $("p");

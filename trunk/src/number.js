@@ -1,7 +1,5 @@
 dojo.provide("dojo.number");
 
-dojo.require("dojo.experimental");
-dojo.experimental("dojo.number");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.i18n.cldr", "number");
 dojo.require("dojo.string.common");
