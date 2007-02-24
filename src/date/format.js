@@ -6,6 +6,7 @@ dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.string.common");
+dojo.require("dojo.string.extras");
 dojo.require("dojo.i18n.common");
 
 // Load the bundles containing localization information for
@@ -298,7 +299,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 
 	var info = dojo.date._parseInfo(options);
 	var groups = info.groups, bundle = info.bundle;
-	var re = new RegExp("^" + info.regexp + "$");;
+	var re = new RegExp("^" + info.regexp + "$");
 	var match = re.exec(value);
 	if(!match){ return null;}
 
@@ -498,14 +499,14 @@ function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
 }
 
 function _buildDateTimeRE(groups, bundle, options, pattern){
-	return pattern.replace(/([a-z])\1*/ig, function(match){
+	return dojo.string.escapeRegExp(pattern).replace(/([a-z])\1*/ig, function(match){
 		// Build a simple regexp without parenthesis, which would ruin the match list
 		var s;
 		var c = match.charAt(0);
 		var l = match.length;
 		switch(c){
 			case 'y':
-				s = '\\d' + ((l==2) ? '{2,4}' : '{4}');
+				s = '\\d' + ((l==2) ? '{2,4}' : '{0,4}');
 				break;
 			case 'M':
 				s = (l>2) ? '\\S+' : '(?:(?:0*[1-9])|(?:1[0-2]))';
