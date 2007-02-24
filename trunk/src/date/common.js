@@ -172,39 +172,42 @@ dojo.date.compareTypes={
 	//	bitmask for comparison operations.
 	DATE:1, TIME:2 
 };
-dojo.date.compare=function(/* Date */ dateA, /* Date */ dateB, /* dojo.date.compareTypes */ options){
+dojo.date.compare=function(/*Date|Number*/date1, /*Date|Number?*/date2, /*dojo.date.compareTypes?*/type){
 	//	summary
-	//	Compare two date objects by date, time, or both.  Returns 0 if equal, positive if a > b, else negative.
-	var dA=dateA;
-	var dB=dateB||new Date();
-	var now=new Date();
-	//FIXME: shorten this code
-	with(dojo.date.compareTypes){
-		var opt=options||(DATE|TIME);
-		var d1=new Date(
-			(opt&DATE)?dA.getFullYear():now.getFullYear(), 
-			(opt&DATE)?dA.getMonth():now.getMonth(),
-			(opt&DATE)?dA.getDate():now.getDate(),
-			(opt&TIME)?dA.getHours():0,
-			(opt&TIME)?dA.getMinutes():0,
-			(opt&TIME)?dA.getSeconds():0
-		);
-		var d2=new Date(
-			(opt&DATE)?dB.getFullYear():now.getFullYear(),
-			(opt&DATE)?dB.getMonth():now.getMonth(),
-			(opt&DATE)?dB.getDate():now.getDate(),
-			(opt&TIME)?dB.getHours():0,
-			(opt&TIME)?dB.getMinutes():0,
-			(opt&TIME)?dB.getSeconds():0
-		);
+	//	Compare two date objects by date, time, or both.
+	//
+	//  description
+	//  Returns 0 if equal, positive if a > b, else negative.
+	//
+	//	date1
+	//		Date object or Number equivalent
+	//
+	//	date2
+	//		Date object or Number equivalent.  If not specified, the current Date is used.
+	//
+	//	type
+	//		A constant representing DATE or TIME.  Compares DATE and TIME by default.
+	//		See dojo.date.compareTypes.
+
+	date2 = date2 || new Date();
+	
+	if(type && type != dojo.date.compareTypes.DATE | dojo.date.compareTypes.TIME){
+		date1 = new Date(date1);
+		date2 = new Date(date2);
+		if(type == dojo.date.compareTypes.DATE){
+			// Ignore times and compare dates.
+			date1.setHours(0, 0, 0, 0);
+			date2.setHours(0, 0, 0, 0);
+		}else if(type == dojo.date.compareTypes.TIME){
+			// Ignore dates and compare times.
+			date1.setFullYear(0, 0, 0);
+			date2.setFullYear(0, 0, 0);
+		}
 	}
-	if(d1.valueOf()>d2.valueOf()){
-		return 1;	//	int
-	}
-	if(d1.valueOf()<d2.valueOf()){
-		return -1;	//	int
-	}
-	return 0;	//	int
+	
+	if(date1 > date2){ return 1; } // int
+	if(date1 < date2){ return -1; } // int
+	return 0; // int
 }
 
 dojo.date.dateParts={ 
@@ -213,34 +216,34 @@ dojo.date.dateParts={
 	YEAR:0, MONTH:1, DAY:2, HOUR:3, MINUTE:4, SECOND:5, MILLISECOND:6, QUARTER:7, WEEK:8, WEEKDAY:9
 };
 
-dojo.date.add = function(/* Date */ dt, /* dojo.date.dateParts */ interv, /* int */ incr){
-//	summary:
+dojo.date.add = function(/*Date|Number*/date, /*dojo.date.dateParts*/interval, /*int?*/incr){
+//	summary
 //		Add to a Date in intervals of different size, from milliseconds to years
 //
-//	dt:
-//		A Javascript Date object to start with
+//	date
+//		Date object to start with, or Number equivalent
 //
-//	interv:
+//	interval
 //		A constant representing the interval, e.g. YEAR, MONTH, DAY.  See dojo.date.dateParts.
 //
-//	incr:
-//		How much to add to the date
+//	incr
+//		How much to add to the date.  Defaults to 1.
 
-	if(typeof dt == 'number'){dt = new Date(dt);} // Allow timestamps
-//FIXME: what's the reason behind this?	incr = incr || 1;
+	if(typeof date == 'number'){date = new Date(date);}
+	incr = incr || 1;
 
 	function fixOvershoot(){
-		if (sum.getDate() < dt.getDate()){
+		if (sum.getDate() < date.getDate()){
 			sum.setDate(0);
 		}
 	}
 	
-	var sum = new Date(dt);
+	var sum = new Date(date);
 
 	with(dojo.date.dateParts){
-		switch(interv){
+		switch(interval){
 			case YEAR:
-				sum.setFullYear(dt.getFullYear()+incr);
+				sum.setFullYear(date.getFullYear()+incr);
 				// Keep increment/decrement from 2/29 out of March
 				fixOvershoot();
 				break;
@@ -249,7 +252,7 @@ dojo.date.add = function(/* Date */ dt, /* dojo.date.dateParts */ interv, /* int
 				incr*=3;
 				// fallthrough...
 			case MONTH:
-				sum.setMonth(dt.getMonth()+incr);
+				sum.setMonth(date.getMonth()+incr);
 				// Reset to last day of month if you overshoot
 				fixOvershoot();
 				break;
@@ -257,11 +260,11 @@ dojo.date.add = function(/* Date */ dt, /* dojo.date.dateParts */ interv, /* int
 				incr*=7;
 				// fallthrough...
 			case DAY:
-				sum.setDate(dt.getDate() + incr);
+				sum.setDate(date.getDate() + incr);
 				break;
 			case WEEKDAY:
 				//FIXME: assumes Saturday/Sunday weekend, but even this is not fixed.  There are CLDR entries to localize this.
-				var dat = dt.getDate();
+				var dat = date.getDate();
 				var weeks = 0;
 				var days = 0;
 				var strt = 0;
@@ -281,7 +284,7 @@ dojo.date.add = function(/* Date */ dt, /* dojo.date.dateParts */ interv, /* int
 					weeks = parseInt(incr/5);
 				}
 				// Get weekday value for orig date param
-				strt = dt.getDay();
+				strt = date.getDay();
 				// Orig date is Sat / positive incrementer
 				// Jump over Sun
 				if (strt == 6 && incr > 0) {
@@ -293,7 +296,7 @@ dojo.date.add = function(/* Date */ dt, /* dojo.date.dateParts */ interv, /* int
 					adj = -1;
 				}
 				// Get weekday val for the new date
-				trgt = (strt + days);
+				trgt = strt + days;
 				// New date is on Sat or Sun
 				if (trgt == 0 || trgt == 6) {
 					adj = (incr > 0) ? 2 : -2;
@@ -323,26 +326,26 @@ dojo.date.add = function(/* Date */ dt, /* dojo.date.dateParts */ interv, /* int
 	return sum; // Date
 };
 
-dojo.date.diff = function(/* Date */ dtA, /* Date */ dtB, /* dojo.date.dateParts */ interv){
-//	summary:
+dojo.date.diff = function(/*Date|Number*/date1, /*Date|Number*/date2, /*dojo.date.dateParts*/interval){
+//	summary
 //		Get the difference in a specific unit of time (e.g., number of months, weeks,
 //		days, etc.) between two dates.
 //
-//	dtA:
-//		A Javascript Date object
+//	date1
+//		Date object or Number equivalent
 //
-//	dtB:
-//		A Javascript Date object
+//	date2
+//		Date object or Number equivalent
 //
-//	interv:
+//	interval
 //		A constant representing the interval, e.g. YEAR, MONTH, DAY.  See dojo.date.dateParts.
 
 	// Accept timestamp input
-	if(typeof dtA == 'number'){dtA = new Date(dtA);}
-	if(typeof dtB == 'number'){dtB = new Date(dtB);}
-	var yeaDiff = dtB.getFullYear() - dtA.getFullYear();
-	var monDiff = (dtB.getMonth() - dtA.getMonth()) + (yeaDiff * 12);
-	var msDiff = dtB.getTime() - dtA.getTime(); // Millisecs
+	if(typeof date1 == 'number'){date1 = new Date(date1);}
+	if(typeof date2 == 'number'){date2 = new Date(date2);}
+	var yeaDiff = date2.getFullYear() - date1.getFullYear();
+	var monDiff = (date2.getMonth() - date1.getMonth()) + (yeaDiff * 12);
+	var msDiff = date2.getTime() - date1.getTime(); // Millisecs
 	var secDiff = msDiff/1000;
 	var minDiff = secDiff/60;
 	var houDiff = minDiff/60;
@@ -351,19 +354,19 @@ dojo.date.diff = function(/* Date */ dtA, /* Date */ dtB, /* dojo.date.dateParts
 	var delta = 0; // Integer return value
 
 	with(dojo.date.dateParts){
-		switch(interv){
+		switch(interval){
 			case YEAR:
 				delta = yeaDiff;
 				break;
 			case QUARTER:
-				var mA = dtA.getMonth();
-				var mB = dtB.getMonth();
+				var m1 = date1.getMonth();
+				var m2 = date2.getMonth();
 				// Figure out which quarter the months are in
-				var qA = Math.floor(mA/3) + 1;
-				var qB = Math.floor(mB/3) + 1;
+				var q1 = Math.floor(m1/3) + 1;
+				var q2 = Math.floor(m2/3) + 1;
 				// Add quarters for any year difference between the dates
-				qB += (yeaDiff * 4);
-				delta = qB - qA;
+				q2 += (yeaDiff * 4);
+				delta = q2 - q1;
 				break;
 			case MONTH:
 				delta = monDiff;
@@ -382,27 +385,25 @@ dojo.date.diff = function(/* Date */ dtA, /* Date */ dtB, /* dojo.date.dateParts
 				var mod = days % 7;
 
 				// Even number of weeks
-				if (mod == 0) {
+				if(mod == 0){
 					days = weeks*5;
-				}
-				// Weeks plus spare change (< 7 days)
-				else {
+				}else{
+					// Weeks plus spare change (< 7 days)
 					var adj = 0;
-					var aDay = dtA.getDay();
-					var bDay = dtB.getDay();
+					var aDay = date1.getDay();
+					var bDay = date2.getDay();
 	
 					weeks = parseInt(days/7);
 					mod = days % 7;
 					// Mark the date advanced by the number of
 					// round weeks (may be zero)
-					var dtMark = new Date(dtA);
+					var dtMark = new Date(date1);
 					dtMark.setDate(dtMark.getDate()+(weeks*7));
 					var dayMark = dtMark.getDay();
+
 					// Spare change days -- 6 or less
-					// ----------
-					// Positive diff
-					if (dayDiff > 0) {
-						switch (true) {
+					if(dayDiff > 0){
+						switch(true){
 							// Range starts on Sat
 							case aDay == 6:
 								adj = -1;
@@ -427,9 +428,7 @@ dojo.date.diff = function(/* Date */ dtA, /* Date */ dtB, /* dojo.date.dateParts
 								// Do nothing
 								break;
 						}
-					}
-					// Negative diff
-					else if (dayDiff < 0) {
+					}else if(dayDiff < 0){
 						switch (true) {
 							// Range starts on Sat
 							case aDay == 6:
