@@ -1,8 +1,6 @@
-// generated from cldr v1.4 main/
-// xpath: ldml/numbers
-
+// generated from cldr/ldml/main/*.xml, xpath: ldml/numbers
 ({
-decimalFormat: '#,##,##0.###',
-percentFormat: '#,##,##0%',
-currencyFormat: '\u00a4 #,##,##0.00'
+        'decimalFormat':"#,##,##0.###",
+        'percentFormat':"#,##,##0%",
+        'currencyFormat':"¤ #,##,##0.00"
 })

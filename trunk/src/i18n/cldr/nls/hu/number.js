@@ -2,6 +2,6 @@
 ({
         'decimal':",",
         'group':" ",
-        'percentFormat':"#,##0 %",
+        'decimalFormat':"#,##0.###",
         'currencyFormat':"#,##0.00 ¤"
 })

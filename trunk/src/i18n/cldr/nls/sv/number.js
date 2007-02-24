@@ -2,6 +2,8 @@
 ({
         'decimal':",",
         'group':" ",
-        'percentFormat':"#,##0 %",
+        'minusSign':"−",
+        'nan':"¤¤¤",
+        'percentFormat':"#,##0 %",
         'currencyFormat':"#,##0.00 ¤"
 })
