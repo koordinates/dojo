@@ -412,7 +412,7 @@ function test_validate_datetime_isValidDate(){
 
 	// year month date
 	jum.assertTrue("test9", dojo_validate_isValidDate("2005-08-06", "yyyy-MM-dd"));
-//FIXME	jum.assertTrue("test10", dojo_validate_isValidDate("20050806", "yyyyMMdd"));
+	jum.assertTrue("test10", dojo_validate_isValidDate("20050806", "yyyyMMdd"));
 
 	// year month
 	jum.assertTrue("test11", dojo_validate_isValidDate("2005-08", "yyyy-MM"));
