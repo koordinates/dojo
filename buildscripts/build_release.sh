@@ -10,15 +10,15 @@ doBuild(){
 	version=$2
 	loader=$3
 	proName=dojo-$version-$profile
-	extraAntTasks=""
+	extraAntTasks="strip-resource-comments"
 	if [ "$loader" == "xdomain" ]; then
 		proName=dojo-$version-xdomain-$profile
 		version=$version"xdomain"
-		extraAntTasks="intern-strings"
+		extraAntTasks="intern-strings $extraAntTasks"
 	fi
 
 	echo Building profile: $profile
-	CLASSPATH="/home/alex/.ant/lib/js.jar:/home/alex/.ant/lib/jython.jar" ant -q -Dversion=$version -Ddocless=true -Dprofile=$profile -DdojoLoader=$loader release $extraAntTasks
+	CLASSPATH="./lib/js.jar" ant -q -Dversion=$version -Dprofile=$profile -DdojoLoader=$loader release $extraAntTasks
 	# the release task now includes tests by default
 	# cp -r ../tests/* ../release/dojo/tests/
 
@@ -41,3 +41,15 @@ done
 
 # Make one xdomain build, for ajax.
 doBuild "ajax.profile.js" $1 "xdomain"
+
+# Make a src package.
+srcVersion=$1
+srcName=dojo-$srcVersion-src
+cd ../release
+svn export http://svn.dojotoolkit.org/dojo/tags/release-$srcVersion
+mv release-$srcVersion $srcName
+tar -zcf $srcName.tar.gz $srcName/
+zip -rq $srcName.zip $srcName/
+rm -rf $srcName/
+cd ../buildscripts
+
