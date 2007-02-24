@@ -856,6 +856,8 @@ httpClientRequestContinue(int forbidden_code, AtomPtr url,
     RequestFunction requestfn;
     ObjectPtr object = NULL;
 
+    printf("httpClientRequestContinue, url=%s\n", url->string);
+
     if(forbidden_code < 0) {
         releaseAtom(url);
         httpClientDiscardBody(connection);
@@ -917,6 +919,7 @@ httpClientRequestContinue(int forbidden_code, AtomPtr url,
         if(object)
             object->flags |= OBJECT_LINEAR;
     } else {
+        printf("trying to find object\n");
         object = findObject(OBJECT_HTTP, url->string, url->length);
         if(!object)
             object = makeObject(OBJECT_HTTP, url->string, url->length, 1, 1,
