@@ -3,5 +3,5 @@
         'decimal':",",
         'group':" ",
         'percentFormat':"#,##0 %",
-        'currencyFormat':"#,##0.00 ¤"
+        'currencyFormat':"#,##0.00 ¤"
 })

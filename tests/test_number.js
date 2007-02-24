@@ -1,7 +1,7 @@
 // can't set djConfig.extraLocale before bootstrapping unit tests, so directly load resources here for specific locales:
 
 //TODO: move all extra locale references out into separate test file
-var partLocaleList = (["en-us", "fr-fr", "en-in", "hi-in"]);
+var partLocaleList = (["en-us", "fr-fr", "en-in"]);
 
 /**
  * Load all the required locales
@@ -266,7 +266,7 @@ function test_number_format_perMill(){
 
 
 /**
- * Only test en-us and hi-in 
+ * Only test en-us and en-in 
  * Refer to ICU4J's NumberFormatTest.TestSecondaryGrouping()
  */
 function test_number_format_grouping(){
@@ -283,12 +283,12 @@ function test_number_format_grouping(){
 	//TODO: sencondary grouping not implemented yet ?
 	//Pattern "#,###" and secondaryGroupingSize=4 should format 123456789 to "12,3456,789"			
 	
-	//Special case for "hi-in" locale
-	//1876543210 should be formated as 1,87,65,43,210 in "hi-in" (India)
+	//Special case for "en-in" locale
+	//1876543210 should be formated as 1,87,65,43,210 in "en-in" (India)
 	sourceInput = 1876543210;
 	expectResult = "1,87,65,43,210";
-	var result = dojo.number.format(sourceInput,{locale:"hi-in"});
-	jum.assertEquals(("FAIL: in \"hi-in\" locale,1876543210 should  be formated to 1,87,65,43,210; " +
+	var result = dojo.number.format(sourceInput,{locale:"en-in"});
+	jum.assertEquals(("FAIL: in \"en-in\" locale,1876543210 should  be formated to 1,87,65,43,210; " +
   		" but" + result + " instead"),expectResult,result);   
 	//print("test_number_format_Grouping() end..............\n");    
 }
