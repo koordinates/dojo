@@ -1,5 +1,6 @@
 dojo.require("dojo.validate");
 dojo.require("dojo.validate.check");
+dojo.require("dojo.validate.datetime");
 dojo.require("dojo.validate.de");
 dojo.require("dojo.validate.jp");
 dojo.require("dojo.validate.us");
