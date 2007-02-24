@@ -216,7 +216,7 @@ dojo.date.dateParts={
 	YEAR:0, MONTH:1, DAY:2, HOUR:3, MINUTE:4, SECOND:5, MILLISECOND:6, QUARTER:7, WEEK:8, WEEKDAY:9
 };
 
-dojo.date.add = function(/*Date|Number*/date, /*dojo.date.dateParts*/interval, /*int?*/incr){
+dojo.date.add = function(/*Date|Number*/date, /*dojo.date.dateParts*/interval, /*int*/incr){
 //	summary
 //		Add to a Date in intervals of different size, from milliseconds to years
 //
@@ -227,10 +227,9 @@ dojo.date.add = function(/*Date|Number*/date, /*dojo.date.dateParts*/interval, /
 //		A constant representing the interval, e.g. YEAR, MONTH, DAY.  See dojo.date.dateParts.
 //
 //	incr
-//		How much to add to the date.  Defaults to 1.
+//		How much to add to the date.
 
 	if(typeof date == 'number'){date = new Date(date);}
-	incr = incr || 1;
 
 	function fixOvershoot(){
 		if (sum.getDate() < date.getDate()){
