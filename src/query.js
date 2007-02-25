@@ -79,7 +79,6 @@ dojo.experimental("dojo.query");
 		var parent = dojo.body(); // FIXME
 		// FIXME: don't need to memoize. The closure scope handles it for us.
 		var xpath = buildPath(path);
-		// dojo.debug(xpath);
 
 		var tf = function(){
 			// XPath query strings are memoized.
@@ -875,7 +874,6 @@ dojo.experimental("dojo.query");
 				}
 				candidates = curLevelItems;
 				if(!qparts.length){
-					// dojo.debug(query);
 					return candidates;
 				}
 			}else{
@@ -922,7 +920,7 @@ dojo.experimental("dojo.query");
 		} : getStepQueryFunc
 	);
 	// FIXME: disable XPath for testing and tuning the DOM path
-	_getQueryFunc = getStepQueryFunc;
+	// _getQueryFunc = getStepQueryFunc;
 
 	var getQueryFunc = function(query){
 		if(_queryFuncCache[query]){ return _queryFuncCache[query]; }
@@ -999,7 +997,7 @@ dojo.experimental("dojo.query");
 	d._filterQueryResult = function(nodeList, simpleFilter){
 		var tnl = new dojo.NodeList();
 		var ff = (simpleFilter) ? getFilterFunc(simpleFilter) : function(){ return true; };
-		dojo.debug(ff);
+		// dojo.debug(ff);
 		for(var x=0, te; te = nodeList[x]; x++){
 			if(ff(te)){ tnl.push(te); }
 		}
