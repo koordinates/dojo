@@ -1,6 +1,6 @@
 dojo.require("dojo.validate");
 dojo.require("dojo.validate.check");
-dojo.require("dojo.validate.datetime");
+dojo.require("dojo.date.format");
 dojo.require("dojo.validate.de");
 dojo.require("dojo.validate.jp");
 dojo.require("dojo.validate.us");
@@ -526,8 +526,8 @@ function test_validate_check(){
 		constraints: {
 			tx1: dojo.validate.isInteger,
 			tx2: dojo.validate.isInteger,
-			tx3: [dojo.validate.isValidDate, "MM/DD/YYYY"],
-			tx4: [dojo.validate.isValidDate, "YYYY.MM.DD"],
+			tx3: [dojo.date.parse, {locale: 'en-us'}],
+			tx4: [dojo.date.parse, {locale: 'fr-fr'}],
 			tx5: [dojo.validate.isEmailAddress],
 			tx6: [dojo.validate.isEmailAddress, {allowLocal: true}],
 			tx7: [dojo.validate.isEmailAddress, {allowCruft: true}],

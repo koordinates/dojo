@@ -39,7 +39,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 //
 // options: object {selector: string, formatLength: string, datePattern: string, timePattern: string, locale: string}
 //		selector- choice of timeOnly,dateOnly (default: date and time)
-//		formatLength- choice of long, short, medium or full (plus any custom additions).  Defaults to 'full'
+//		formatLength- choice of long, short, medium or full (plus any custom additions).  Defaults to 'short'
 //		datePattern,timePattern- override pattern with this string
 //		am,pm- override strings for am/pm in times
 //		locale- override the locale used to determine formatting rules
@@ -211,7 +211,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 	options = options || {};
 
 	var locale = dojo.hostenv.normalizeLocale(options.locale);
-	var formatLength = options.formatLength || 'full';
+	var formatLength = options.formatLength || 'short';
 	var bundle = dojo.date._getGregorianBundle(locale);
 	var str = [];
 	var sauce = dojo.lang.curry(this, formatPattern, dateObject);
@@ -242,7 +242,7 @@ dojo.date.regexp = function(/*Object?*/options){
 //
 // options: object {selector: string, formatLength: string, datePattern: string, timePattern: string, locale: string, strict: boolean}
 //		selector- choice of timeOnly, dateOnly, dateTime (default: dateOnly)
-//		formatLength- choice of long, short, medium or full (plus any custom additions).  Defaults to 'full'
+//		formatLength- choice of long, short, medium or full (plus any custom additions).  Defaults to 'short'
 //		datePattern,timePattern- override pattern with this string
 //		locale- override the locale used to determine formatting rules
 
@@ -253,7 +253,7 @@ dojo.date._parseInfo = function(/*Object?*/options){
 	options = options || {};
 	var locale = dojo.hostenv.normalizeLocale(options.locale);
 	var bundle = dojo.date._getGregorianBundle(locale);
-	var formatLength = options.formatLength || 'full';
+	var formatLength = options.formatLength || 'short';
 	if(!options.selector){ options.selector = 'dateOnly'; }
 	var datePattern = options.datePattern || bundle["dateFormat-" + formatLength];
 	var timePattern = options.timePattern || bundle["timeFormat-" + formatLength];
@@ -290,7 +290,7 @@ dojo.date.parse = function(/*String*/value, /*Object?*/options){
 //
 // options: object {selector: string, formatLength: string, datePattern: string, timePattern: string, locale: string, strict: boolean}
 //		selector- choice of timeOnly, dateOnly, dateTime (default: dateOnly)
-//		formatLength- choice of long, short, medium or full (plus any custom additions).  Defaults to 'full'
+//		formatLength- choice of long, short, medium or full (plus any custom additions).  Defaults to 'short'
 //		datePattern,timePattern- override pattern with this string
 //		am,pm- override strings for am/pm in times
 //		locale- override the locale used to determine formatting rules
@@ -509,11 +509,11 @@ function _buildDateTimeRE(tokens, bundle, options, pattern){
 			if(l > 1){ p2 = '0' + '{'+(l-1)+'}'; }
 			if(l > 2){ p3 = '0' + '{'+(l-2)+'}'; }
 		}else{
-			p2 = '0?', p3 = '0{0,2}';
+			p2 = '0?'; p3 = '0{0,2}';
 		}
 		switch(c){
 			case 'y':
-				s = '\\d{2,4}'
+				s = '\\d{2,4}';
 				break;
 			case 'M':
 				s = (l>2) ? '\\S+' : p2+'[1-9]|1[0-2]';
@@ -607,7 +607,7 @@ dojo.date.strftime = function(/*Date*/dateObject, /*String*/format, /*String?*/l
 				
 			case "c": // preferred date and time representation for the current
 				      // locale
-				return dojo.date.format(dateObject, {locale: locale});
+				return dojo.date.format(dateObject, {formatLength: 'full', locale: locale});
 
 			case "C": // century number (the year divided by 100 and truncated
 				      // to an integer, range 00 to 99)
@@ -717,11 +717,11 @@ dojo.date.strftime = function(/*Date*/dateObject, /*String*/format, /*String?*/l
 
 			case "x": // preferred date representation for the current locale
 				      // without the time
-				return dojo.date.format(dateObject, {selector:'dateOnly', locale:locale});
+				return dojo.date.format(dateObject, {selector:'dateOnly', formatLength: 'full', locale:locale});
 
 			case "X": // preferred time representation for the current locale
 				      // without the date
-				return dojo.date.format(dateObject, {selector:'timeOnly', locale:locale});
+				return dojo.date.format(dateObject, {selector:'timeOnly', formatLength: 'full', locale:locale});
 
 			case "y": // year as a decimal number without a century (range 00 to
 				      // 99)
