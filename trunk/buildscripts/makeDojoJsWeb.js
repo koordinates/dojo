@@ -7,6 +7,13 @@ var depList = new String(arguments[0]);
 var provideList = new String(arguments[1]);
 var version = new String(arguments[2]);
 var xdDojoUrl = new String(arguments[3]);
+var doCompression = new String(arguments[4]);
+
+if(typeof(doCompression) != "undefined" && doCompression == "true"){
+	doCompression = true;
+}else{
+	doCompression = false;
+}
 
 depList = depList.split(",");
 
@@ -45,22 +52,38 @@ if(isInputOk){
 	load('../dojo.js');
 	dojo.require("dojo.string.extras");
 	
-	var contents = buildUtil.makeDojoJs(dependencyResult, version).dojoContents;
-	var prefixes = [["dojo", "src"]];
+	var contents = "";
+	try{
+		contents = buildUtil.makeDojoJs(dependencyResult, version).dojoContents;
+		var prefixes = [["dojo", "src"]];
+	
+		//Make sure any dojo.requireLocalization calls are modified
+		//so that they inform the loader of valid locales that can be loaded.
+		contents = buildUtil.modifyRequireLocalization(contents, djConfig.baseRelativePath, prefixes);
+		
+		//Convert requireLocalization calls into xdRequireLocalization calls.
+		contents = contents.replace(/dojo\.requireLocalization\s*\(/g, "dojo.xdRequireLocalization(");
+		
+		//Intern strings.
+		contents = buildUtil.interningRegexpMagic("xdomain", contents, djConfig.baseRelativePath, prefixes, [], true);
+		
+		//Set the xdomain dojo url
+		if(xdDojoUrl){
+			contents = buildUtilXd.setXdDojoConfig(contents, xdDojoUrl);
+		}
 
-	//Make sure any dojo.requireLocalization calls are modified
-	//so that they inform the loader of valid locales that can be loaded.
-	contents = buildUtil.modifyRequireLocalization(contents, djConfig.baseRelativePath, prefixes);
-	
-	//Convert requireLocalization calls into xdRequireLocalization calls.
-	contents = contents.replace(/dojo\.requireLocalization\s*\(/g, "dojo.xdRequireLocalization(");
-	
-	//Add copyright, and intern strings.
-	contents = new String(buildUtil.readFile("copyright.txt")) + buildUtil.interningRegexpMagic("xdomain", contents, djConfig.baseRelativePath, prefixes, [], true);
-	
-	if(xdDojoUrl){
-		contents = buildUtilXd.setXdDojoConfig(contents, xdDojoUrl);
+		//Compress code, if desired.
+		if(doCompression){
+			contents = buildUtil.optimizeJs("dojo.js", contents, "", doCompression);
+		}
+
+		//Add copyright
+		contents = new String(buildUtil.readFile("copyright.txt"))
+			+ new String(buildUtil.readFile("build_notice.txt"))
+			+ contents;
+	}catch(e){
+		contents = "dojo.js build error: " + e;	
 	}
-	
+
 	print(contents);
 }
