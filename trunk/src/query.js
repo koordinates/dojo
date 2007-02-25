@@ -180,7 +180,9 @@ dojo.experimental("dojo.query");
 		ret = [];
 
 		// for every root, get the elements that match the descendant selector
-		for(var x=elements.length-1, te; x>=0, te=elements[x]; x--){
+		// for(var x=elements.length-1, te; x>=0, te=elements[x]; x--){
+		var x=elements.length-1, te;
+		while(te=elements[x--]){
 			_filterDown(te, queryParts, ret, 0);
 		}
 		return ret;
@@ -738,8 +740,9 @@ dojo.experimental("dojo.query");
 				switch(pseudoName){
 					case "first":
 						retFunc = function(root){
-							var tret = root.getElementsByTagName(tn);
-							for(var x=0, te; te = tret[x]; x++){
+							// for(var x=0, te; te = tret[x]; x++){
+							var te, x=0, tret = root.getElementsByTagName(tn);
+							while(te=tret[x++]){
 								if(filterFunc(te)){
 									return [ te ];
 								}
@@ -750,7 +753,8 @@ dojo.experimental("dojo.query");
 					case "last":
 						retFunc = function(root){
 							var tret = root.getElementsByTagName(tn);
-							for(var x=tret.length-1, te; te = tret[x]; x--){
+							var te, x=tret.length-1;
+							while(te=tret[x--]){
 								if(filterFunc(te)){
 									return [ te ];
 								}
@@ -760,9 +764,9 @@ dojo.experimental("dojo.query");
 						break;
 					default:
 						retFunc = function(root){
-							var tret = root.getElementsByTagName(tn);
 							var ret = [];
-							for(var x=0, te; te = tret[x]; x++){
+							var te, x=0, tret = root.getElementsByTagName(tn);
+							while(te=tret[x++]){
 								if(filterFunc(te)){
 									ret[ret.length] = te;
 									// ret.push(te);
@@ -776,17 +780,17 @@ dojo.experimental("dojo.query");
 				// it's just a plain-ol elements-by-tag-name query from the root
 				retFunc = function(root){
 					var ret = [];
-					var tret = root.getElementsByTagName(tn);
-					for(var x=0, te; te = tret[x]; x++){
+					var te, x=0, tret = root.getElementsByTagName(tn);
+					while(te=tret[x++]){
 						ret.push(te);
 					}
 					return ret;
 				}
 			}else{
 				retFunc = function(root){
-					var tret = root.getElementsByTagName(tn);
 					var ret = [];
-					for(var x=0, te; te = tret[x]; x++){
+					var te, x=0, tret = root.getElementsByTagName(tn);
+					while(te=tret[x++]){
 						if(filterFunc(te)){
 							ret.push(te);
 						}
@@ -862,9 +866,9 @@ dojo.experimental("dojo.query");
 					nextLevelItems = [];
 					var tsp = qparts.shift();
 					for(var y=0; y<curLevelItems.length; y++){
-						var tcol = curLevelItems[y].getElementsByTagName(tsp);
-						for(var z=0; z<tcol.length; z++){
-							nextLevelItems.push(tcol[z]);
+						var tze, z=0, tcol = curLevelItems[y].getElementsByTagName(tsp);
+						while(tze=tcol[z++]){
+							nextLevelItems.push(tze);
 						}
 					}
 					curLevelItems = nextLevelItems;
