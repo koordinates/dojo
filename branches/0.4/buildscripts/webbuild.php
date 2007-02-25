@@ -4,6 +4,7 @@
 	$provideList = isset($_POST['provideList']) ? $_POST['provideList'] : 'null';
 	$version = isset($_POST['version']) ? $_POST['version'] : '0.0.0dev';
 	$xdDojoUrl = isset($_POST['xdDojoUrl']) ? $_POST['xdDojoUrl'] : '';
+	$doCompression = isset($_POST['doCompression']) ? $_POST['doCompression'] : 'false';
 
 	if(!isset($depList)){
 ?>
@@ -15,7 +16,7 @@
 		header("Content-Type: application/x-javascript");
 		header("Content-disposition: attachment; filename=dojo.js");
 		
-		$dojoContents = `/usr/bin/java -jar $buildScriptsDir/lib/custom_rhino.jar $buildScriptsDir/makeDojoJsWeb.js $depList $provideList $version $xdDojoUrl`;
+		$dojoContents = `/usr/bin/java -jar $buildScriptsDir/lib/custom_rhino.jar $buildScriptsDir/makeDojoJsWeb.js $depList $provideList $version $xdDojoUrl $doCompression`;
 
 		print($dojoContents);
 	}
