@@ -404,7 +404,7 @@ buildUtil.modifyRequireLocalization = function(fileContents, baseRelativePath, p
 	//Make sure we have a JS string, and not a Java string.
 	fileContents = String(fileContents);
 	
-	var modifiedContents = null;
+	var modifiedContents = fileContents;
 	
 	if(fileContents.match(buildUtil.globalRequireLocalizationRegExp)){
 		modifiedContents = fileContents.replace(buildUtil.globalRequireLocalizationRegExp, function(matchString){
@@ -857,6 +857,59 @@ buildUtil.deleteFile = function(fileName){
 	}
 }
 
+buildUtil.optimizeJs = function(/*String fileName*/fileName, /*String*/fileContents, /*String*/copyright, /*boolean*/doCompression){
+	//summary: either strips comments from string or compresses it.
+
+	//Look for copyright. If so, maintain it.
+	//If no copyright text passed in, assume want a really stripped
+	//version.
+	copyright = copyright || "";
+	var copyrightText = "";
+	if(copyright){
+		var singleLineMatches = fileContents.match(/\/\/.*copyright.*$/gi);
+		
+		//Get rid of cr, lf, since it messes up matching.
+		var copyrightFileContents = fileContents.replace(/\r/g, "__DOJOCARRIAGERETURN__").replace(/\n/g, "__DOJONEWLINE__");
+		var multiLineMatches = copyrightFileContents.match(/\/\*.*?copyright.*?\*\//gi);
+	
+		//Finalize copyright notice.
+		if((multiLineMatches && multiLineMatches.length > 0) || (singleLineMatches && singleLineMatches.length > 0)){
+			if(multiLineMatches && multiLineMatches.length > 0){
+				copyrightText += multiLineMatches.join("\r\n").replace(/__DOJOCARRIAGERETURN__/g, "\r").replace(/__DOJONEWLINE__/g, "\n");
+			}					
+			if(singleLineMatches && singleLineMatches.length > 0){
+				copyrightText += singleLineMatches.join("\r\n");
+			}
+			copyrightText += buildUtil.getLineSeparator();
+		}else{
+			copyrightText = copyright;
+		}
+	}
+
+	//Use rhino to help do minifying/compressing.
+	var context = Packages.org.mozilla.javascript.Context.enter();
+	try{
+		// Use the interpreter for interactive input (copied this from Main rhino class).
+		context.setOptimizationLevel(-1);
+		
+		var script = context.compileString(fileContents, fileName, 1, null);
+		if(doCompression){
+			//Apply compression using custom compression call in Dojo-modified rhino.
+			fileContents = new String(context.compressScript(script, 0, fileContents, 1));
+		}else{
+			//Strip comments
+			fileContents = new String(context.decompileScript(script, 0));
+			//Replace the spaces with tabs.
+			//Ideally do this in the pretty printer rhino code.
+			fileContents = fileContents.replace(/    /g, "\t");
+		}
+	}finally{
+		Packages.org.mozilla.javascript.Context.exit();
+	}
+
+	return copyrightText + fileContents;
+}
+
 buildUtil.stripComments = function(/*String*/startDir, /*boolean*/suppressDojoCopyright){
 	//summary: strips the JS comments from all the files in "startDir", and all subdirectories.
 	var copyright = suppressDojoCopyright ? "" : (new String(buildUtil.readFile("copyright.txt")) + buildUtil.getLineSeparator());
@@ -874,49 +927,18 @@ buildUtil.stripComments = function(/*String*/startDir, /*boolean*/suppressDojoCo
 				//Read in the file. Make sure we have a JS string.
 				var fileContents = new String(buildUtil.readFile(fileList[i]));
 
-				//Look for copyright. If so, maintain it.
-				var singleLineMatches = fileContents.match(/\/\/.*copyright.*$/gi);
-				
-				//Get rid of cr, lf, since it messes up matching.
-				copyrightFileContents = fileContents.replace(/\r/g, "__DOJOCARRIAGERETURN__").replace(/\n/g, "__DOJONEWLINE__");
-				var multiLineMatches = copyrightFileContents.match(/\/\*.*?copyright.*?\*\//gi);
-
-				//Finalize copyright notice.
-				var copyrightText = "";
-				if((multiLineMatches && multiLineMatches.length > 0) || (singleLineMatches && singleLineMatches.length > 0)){
-					if(multiLineMatches && multiLineMatches.length > 0){
-						copyrightText += multiLineMatches.join("\r\n").replace(/__DOJOCARRIAGERETURN__/g, "\r").replace(/__DOJONEWLINE__/g, "\n");
-					}					
-					if(singleLineMatches && singleLineMatches.length > 0){
-						copyrightText += singleLineMatches.join("\r\n");
-					}
-					copyrightText += buildUtil.getLineSeparator();
-				}else{
-					copyrightText = copyright;
-				}
-
-				//Remove whitespace.
-				var context = Packages.org.mozilla.javascript.Context.enter();
+				//Do comment removal.
 				try{
-					// Use the interpreter for interactive input (copied this from Main rhino class).
-					context.setOptimizationLevel(-1);
-					
-					var script = context.compileString(fileContents, fileList[i], 1, null);
-					fileContents = new String(context.decompileScript(script, 0));
+					fileContents = buildUtil.optimizeJs(fileList[i], fileContents, copyright, false);
 				}catch(e){
-					print("Could not strip comments for file: " + fileList[i]);
-				}finally{
-					Packages.org.mozilla.javascript.Context.exit();
+					print("Could not strip comments for file: " + fileList[i] + ", error: " + e);
 				}
-				
-				//Replace the spaces with tabs.
-				//Ideally do this in the pretty printer rhino code.
-				fileContents = fileContents.replace(/    /g, "\t");
 
 				//Write out the file with appropriate copyright.
-				buildUtil.saveUtf8File(fileList[i], copyrightText + fileContents);
+				buildUtil.saveUtf8File(fileList[i], fileContents);
 			}
 		}
 	}
 }
+
 

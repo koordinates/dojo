@@ -132,6 +132,7 @@ SELECT				{	background:#d1c6ae;	}
 		depListForm.provideList.value = dependencyResult.provideList && dependencyResult.provideList.length > 0 ? dependencyResult.provideList.join(",") : "null";
 		depListForm.version.value = version;
 		depListForm.xdDojoUrl.value = xdDojoUrl;
+		depListForm.doCompression.value = document.masterForm.doCompression[1].checked ? true : false;
 
 		//reset the hidden frame so we can do another build.
 		setTimeout(function(){
@@ -374,7 +375,7 @@ function loadProfile(){
 <form name="masterForm" onsubmit="return false">
 
 <table id="outerTable">
-	<tr><td colspan=3><h2>Dojo Builder (highly experimental)
+	<tr><td colspan=3><h2>Dojo Builder (experimental)
 							<div id="version">for version @VERSION@</div>
 						</h2></td></tr>
 	<tr><td colspan=3 class="labelRow outsetBorder" id="startRow_label"  onclick="toggleRow('startRow')">
@@ -526,7 +527,7 @@ function loadProfile(){
 	<tr><td colspan=3 class="labelRow outsetBorder" id="dependencyRow_label" onclick="toggleRow('dependencyRow')">
 			<table class="labelRow_table" width=100% cellpadding=1><tr>
 				<td id="dependencyRow_Arrow" class="labelRow_toggler"><div id="dependencyRow_toggler" class="toggler">&ndash;</div></td>
-				<td id="dependencyRow_Title" class="labelRow_title">Modules to include:</td>
+				<td id="dependencyRow_Title" class="labelRow_title">Resources to include:</td>
 				<td id="dependencyRow_Arrow" class="labelRow_values"></td>
 			</tr></table>
 		</td>
@@ -547,8 +548,8 @@ function loadProfile(){
 					<td class="colSpacer">&nbsp;</td>
 					<td class="tree"><div id="treeContainer"></div></td>
 				</tr>			
-				<tr><td class="underLabel">Enter module names separated by line returns and/or commas. <br> 
-											"Quotes" around module names are optional.</td>
+				<tr><td class="underLabel">Enter resource names separated by line returns and/or commas. <br> 
+											"Quotes" around resource names are optional.</td>
 					<td class="colSpacer">&nbsp;</td>
 					<td class="underLabel">Double click items above to add them to the list.</td>
 				</tr>			
@@ -557,8 +558,8 @@ function loadProfile(){
 		<td class="colSpacer">&nbsp;</td>
 	</tr>
 
-	<tr style="display:none"><td colspan=3 class="rowSpacer">&nbsp;</td></tr>
-	<tr style="display:none"><td colspan=3 class="labelRow outsetBorder" id="optionsRow_label" onclick="toggleRow('optionsRow')">
+	<tr><td colspan=3 class="rowSpacer">&nbsp;</td></tr>
+	<tr><td colspan=3 class="labelRow outsetBorder" id="optionsRow_label" onclick="toggleRow('optionsRow')">
 			<table class="labelRow_table" width=100% cellpadding=1><tr>
 				<td id="optionsRow_Arrow" class="labelRow_toggler"><div id="optionsRow_toggler" class="toggler">&ndash;</div></td>
 				<td id="optionsRow_Title" class="labelRow_title">Options</td>
@@ -566,29 +567,17 @@ function loadProfile(){
 			</tr></table>
 		</td>
 	</tr>
-	<tr id="optionsRow" style="display:none">
+	<tr id="optionsRow">
 		<td class="colSpacer">&nbsp;</td>
 		<td>
 			<table>
-				<tr><td class="fieldLabel">Profile name:</td>
-					<td class="field"><input id="profileName"></td>
-					<td class="colSpacer">&nbsp;</td>
-					<td class="check"><input id="tellDojo" type="checkbox"></td>
-					<td class="checkLabel"><label for="tellDojo">Let dojo know about this profile</label><br>
-																	<span class="note">(anonymous, for usage pattern info gathering only)</span></td>
+				<tr><td class="radio"><input id="minify" name="doCompression" type="radio" value="false" CHECKED></td>
+					<td class="radioLabel"><label for="minify">Minify <span class="underLabel">Removes comments, but code is still readable for debugging</span></label></td>
 				</tr>			
 
-				<tr><td class="check"><input id="strip" type="checkbox"></td>
-					<td class="checkLabel"><label for="strip">Strip whitespace</label></td>
-				</tr>			
-
-				<tr><td class="check"><input id="removeComments" type="checkbox"></td>
-					<td class="checkLabel"><label for="removeComments">Remove comments</label></td>
-				</tr>			
-
-				<tr><td class="check"><input id="compress" type="checkbox"></td>
-					<td class="checkLabel"><label for="compress">Compress the contents (very slow)</label></td>
-				</tr>			
+				<tr><td class="radio" style="vertical-align: top"><input id="compress" name="doCompression" type="radio" value="false"></td>
+					<td class="radioLabel"><label for="compress">Compress <span class="underLabel">Modifies code to shrink size, but is harder to debug. Gives about a 10% file reduction when comparing its gzipped size to the gzipped size of the Minify option (tool does not do gzipping, you must do it yourself)</span></label></td>
+				</tr>
 <!--
 -->
 			</table>
@@ -633,9 +622,9 @@ function loadProfile(){
 <form name="depListForm" action="" method="POST">
 	<input type="hidden" name="depList" value="" />
 	<input type="hidden" name="provideList" value="" />
-	<input type="hidden" name="version" value="" />		
-	<input type="hidden" name="compress" value="false" />
+	<input type="hidden" name="version" value="" />
 	<input type="hidden" name="xdDojoUrl" value="" />
+	<input type="hidden" name="doCompression" value="" />
 </form>
 
 <iframe id="builderFrame" name="builderFrame" src="../webbuild.html" style="visibility: hidden"></iframe>
