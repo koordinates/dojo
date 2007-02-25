@@ -138,6 +138,9 @@ dojo.declare(
 
 			// add a drop shadow
 			if(this.hasShadow){
+				// #2472 shadow effects depend on having overflow: visible. We need
+				// to set it in code due to the way the css cascade works
+				this.domNode.style.overflow = 'visible';
 				this.shadow=new dojo.lfx.shadow(this.domNode);
 			}
 
