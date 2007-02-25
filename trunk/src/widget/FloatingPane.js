@@ -193,7 +193,7 @@ dojo.declare(
 				this.resizeTo(content.width, content.height);
 			}
 			this.maximizeAction.style.display="none";
-			this.restoreAction.style.display="";
+			this.restoreAction.style.display= this.displayMaximizeAction ? "" : "none";
 
 			//disable resize and drag
 			if(this.resizeHandle){
