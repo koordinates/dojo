@@ -28,17 +28,19 @@ dojo.lang.declare("dojo.widget.HandlerManager", null,
 	},
 	removeHandler: function(func){
 		// summary: remove a registered handler
-		for(var i=0;i<this._registeredHandlers.length;i++){
-			if(func === this._registeredHandlers[i]){
-				delete this._registeredHandlers[i];
+		var i=0,handle,handles=this._registeredHandlers;
+		while(handle=handles[i++]){
+			if(func === handle){
+				delete this._registeredHandlers[--i];
 				return;
 			}
 		}
 		dojo.debug("HandlerManager handler "+func+" is not registered, can not remove.");
 	},
 	destroy: function(){
-		for(var i=0;i<this._registeredHandlers.length;i++){
-			delete this._registeredHandlers[i];
+		var i=this._registeredHandlers.length-1,handles=this._registeredHandlers;
+		while(handles[i--]){
+			delete this._registeredHandlers[i+1];
 		}
 	}
 });
@@ -50,8 +52,9 @@ dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
 		// summary: return a toobar item with the given name
 		var item;
 		name = name.toLowerCase();
-		for(var i=0;i<this._registeredHandlers.length;i++){
-			item = this._registeredHandlers[i](name);
+		var i=0, handle, handles=this._registeredHandlers;
+		while(handle=handles[i++]){
+			item = handle(name);
 			if(item){
 				return item;
 			}
@@ -180,9 +183,9 @@ dojo.declare("dojo.widget.Editor2ToolbarButton", null,
 	disableSelection: function(/*DomNode*/rootnode){
 		// summary: disable selection on the passed node and all its children
 		dojo.html.disableSelection(rootnode);
-		var nodes = rootnode.all || rootnode.getElementsByTagName("*");
-		for(var x=0; x<nodes.length; x++){
-			dojo.html.disableSelection(nodes[x]);
+		var i=0,node,nodes = rootnode.all || rootnode.getElementsByTagName("*");
+		while(node=nodes[i++]){
+			dojo.html.disableSelection(node);
 		}
 	},
 	onMouseOver: function(){
@@ -347,11 +350,10 @@ dojo.widget.defineWidget(
 //		itemNodeType: 'span', //all the items (with attribute dojoETItemName set) defined in the toolbar should be a of this type
 
 		postCreate: function(){
-			var nodes = dojo.html.getElementsByClass("dojoEditorToolbarItem", this.domNode/*, this.itemNodeType*/);
+			var i=0,node,nodes = dojo.html.getElementsByClass("dojoEditorToolbarItem", this.domNode/*, this.itemNodeType*/);
 
 			this.items = {};
-			for(var x=0; x<nodes.length; x++){
-				var node = nodes[x];
+			while(node=nodes[i++]){
 				var itemname = node.getAttribute("dojoETItemName");
 				if(itemname){
 					var item = dojo.widget.Editor2ToolbarItemManager.getToolbarItem(itemname);

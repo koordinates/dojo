@@ -32,8 +32,9 @@ dojo.lang.mixin(dojo.widget.Editor2Manager,
 		// name: name of the command (case insensitive)
 		var oCommand;
 		name = name.toLowerCase();
-		for(var i=0;i<this._registeredHandlers.length;i++){
-			oCommand = this._registeredHandlers[i](editor, name);
+		var i=0, handle, handers=this._registeredHandlers;
+		while(handle=handers[i++]){
+			oCommand = handle(editor, name);
 			if(oCommand){
 				return oCommand;
 			}
@@ -356,6 +357,7 @@ dojo.widget.defineWidget(
 					if(!this._htmlEditNode){
 						this._htmlEditNode = dojo.doc().createElement("textarea");
 						dojo.html.insertAfter(this._htmlEditNode, this.editorObject);
+						dojo.event.connect(this._htmlEditNode,'onfocus',this,'onFocus');
 					}
 
 					this._htmlEditNode.style.display = "";
