@@ -199,18 +199,36 @@ dojo.declare(
 			
 			// find the size of the dialog (dialog needs to be showing to get the size)
 			var mb;
+			var padborder;
 			if(this.isShowing()){
 				mb = dojo.html.getMarginBox(this.domNode);
+				padborder = dojo.html.getPadBorder(this.domNode);
 			}else{
 				dojo.html.setVisibility(this.domNode, false);
 				dojo.html.show(this.domNode);
 				mb = dojo.html.getMarginBox(this.domNode);
+				padborder = dojo.html.getPadBorder(this.domNode);
 				dojo.html.hide(this.domNode);
 				dojo.html.setVisibility(this.domNode, true);
 			}
 			
 			var x = scroll_offset.x + (viewport_size.width - mb.width)/2;
 			var y = scroll_offset.y + (viewport_size.height - mb.height)/2;
+			var maxheight = viewport_size.height - padborder.height;
+
+			// dialogs can be too long or too short, try to adjust accordingly 
+			// we need to explicitly set the height on the containerNode so that 
+			// the overflow policy works correctly for the dialog - #757 and 2088 
+			if(viewport_size.height < mb.height){
+				this.containerNode.style.height = maxheight + "px";
+			} else if(this.containerNode.scrollHeight){
+				// if we've loaded dynamic content (e.g. through contentpane href)
+				// we might need to lengthen the dialog to adjust for the new content
+				var height = this.containerNode.scrollHeight + padborder.height;
+				if(height > mb.height && height < maxheight){
+					dojo.html.setMarginBox(this.domNode, { height: height});						
+				}					
+			}
 			with(this.domNode.style){
 				left = x + "px";
 				top = y + "px";
