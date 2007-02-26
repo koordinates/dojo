@@ -8,12 +8,6 @@
 	Author: Brad Neuberg, bkn3@columbia.edu
 */
 
-/* 
-	The special host name that web applications use
-	to interact with the offline infrastructure itself.
-*/
-#define OFF_BOOTSTRAP_HOST "offline.web.app"
-
 /*
     The JavaScript callback function name that will receive
     the results of a call to the offline API. Two arguments
