@@ -97,12 +97,10 @@ void goOffline(void);
 	Returns 1 if we are in online mode, 0 otherwise.
 	Note that this doesn't attempt to see if we are
 	really on the network, it just sees if our
-	off_go_online() or off_go_offline() have been
+	goOnline() or goOffline() have been
 	called.
 */
 int isOnline(void);
-
-extern int proxyPort; /* from http.h */
 
 #endif /* NO_OFFLINE_SUPPORT */
 #endif /* __off_h */
