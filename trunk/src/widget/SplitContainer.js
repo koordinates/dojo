@@ -61,9 +61,9 @@ dojo.widget.defineWidget(
 		// overflow has to be explicitly hidden for splitContainers using gekko (trac #1435)
 		// to keep other combined css classes from inadvertantly making the overflow visible
 		if (dojo.render.html.moz) {
-		        this.domNode.style.overflow = '-moz-scrollbars-none'; // hidden doesn't work
+			this.domNode.style.overflow = '-moz-scrollbars-none'; // hidden doesn't work
 		}
-		
+
 		var content = dojo.html.getContentBox(this.domNode);
 		this.paneWidth = content.width;
 		this.paneHeight = content.height;
@@ -74,6 +74,9 @@ dojo.widget.defineWidget(
 		this.paneWidth = content.width;
 		this.paneHeight = content.height;
 		this._layoutPanels();
+		if(this.cover){
+			this._updateCoverSize();
+		}
 	},
 
 	postCreate: function(args, fragment, parentComp){
@@ -339,12 +342,31 @@ dojo.widget.defineWidget(
 		}
 	},
 
+	_updateCoverSize: function(){
+		this.cover.style.width=this.paneWidth+"px";
+		this.cover.style.height=this.paneHeight+"px";
+	},
 	beginSizing: function(e, i){
 		this.paneBefore = this.children[i];
 		this.paneAfter = this.children[i+1];
 
 		this.isSizing = true;
 		this.sizingSplitter = this.sizers[i];
+
+		if(!this.cover){
+			this.cover = dojo.doc().createElement('div');
+			this.domNode.appendChild(this.cover);
+			var s = this.cover.style;
+			s.position='absolute';
+			s.zIndex=1;
+			s.top=0;
+			s.left=0;
+			this._updateCoverSize();
+		}else{
+			this.cover.style.display="";
+		}
+		this.sizingSplitter.style.zIndex=2;
+		
 		this.originPos = dojo.html.getAbsolutePosition(this.children[0].domNode, true, dojo.html.boxSizing.MARGIN_BOX);
 		if (this.isHorizontal){
 			var client = (e.layerX ? e.layerX : e.offsetX);
@@ -385,7 +407,9 @@ dojo.widget.defineWidget(
 	},
 
 	endSizing: function(e){
-
+		if(this.cover){
+			this.cover.style.display='none';
+		}
 		if (!this.activeSizing){
 			this._hideSizingLine();
 		}
