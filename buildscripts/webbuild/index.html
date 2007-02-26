@@ -112,6 +112,8 @@ SELECT				{	background:#d1c6ae;	}
 	dojo.require("dojo.widget.TreeSelectorV3");
 	dojo.require("dojo.widget.TreeEmphasizeOnSelect");
 	dojo.require("dojo.html.iframe");
+	dojo.require("dojo.crypto.MD5");
+	dojo.require("dojo.string.extras");
 
 	//assign output node on load.
 	outputNode = null;
@@ -123,17 +125,66 @@ SELECT				{	background:#d1c6ae;	}
 		outputNode.innerHTML = "";
 	}
 	
+	function getCachedBuildUrl(depList){
+		var doCompression = document.masterForm.doCompression[1].checked ? true : false;
+		var sortedFileList = depList.sort().join(",");
+		var buildKey = dojo.crypto.MD5.compute(sortedFileList, dojo.crypto.outputTypes.Hex);
+		return "dojobuilds/" + buildKey + (doCompression ? "/compressed" : "") + "/dojo.js";
+	}
+
 	function sendDependencyResultToServer(dependencyResult){
 		clearOutput();
 
-		var depListForm = document.depListForm;
-		depListForm.action = "../webbuild.php";
-		depListForm.depList.value = dependencyResult.depList.join(",");
-		depListForm.provideList.value = dependencyResult.provideList && dependencyResult.provideList.length > 0 ? dependencyResult.provideList.join(",") : "null";
-		depListForm.version.value = version;
-		depListForm.xdDojoUrl.value = xdDojoUrl;
-		depListForm.doCompression.value = document.masterForm.doCompression[1].checked ? true : false;
+		//Find out if the build result is already on the server.
+		var cachedBuildUrl = getCachedBuildUrl(dependencyResult.depList);
+		dojo.io.bind({
+			//Add an URL marker for the server to know if this is an existence query.
+			//Mostly helpful in the Safari 2.0 case where it doesn't support HEAD
+			//requests. This marker should be used to filter server logs when trying to find
+			//download counts.
+			url: cachedBuildUrl + "?query=exist",
+			method: "HEAD",
+			mimetype: "text/plain",
+			handle: function(type, data, xhr, kwArgs){
+				var httpStatus = parseInt(xhr.status, 10);
+				if(httpStatus >= 400){
+					//Build does not exist. Ask server to make it.
+					requestServerBuild(dependencyResult);
+				}else{
+					outputBuildResults(dependencyResult);
+					window.location = "../" + cachedBuildUrl;
+				}
+			}
+		});
+	}
 
+	function requestServerBuild(dependencyResult){
+		var depListForm = document.depListForm;
+		
+		//Ask the server to build the result.
+		dojo.io.bind({
+			url: "../webbuild.php",
+			method: "POST",
+			mimetype: "text/plain",
+			content: {
+				depList: dependencyResult.depList.join(","),
+				provideList: (dependencyResult.provideList && dependencyResult.provideList.length > 0) ? dependencyResult.provideList.join(",") : "null",
+				version: version,
+				xdDojoUrl: xdDojoUrl
+			},
+			handle: function(type, data, xhr, kwArgs){
+				if(type == "load" && dojo.string.trim(data).indexOf("OK") == 0){
+					outputBuildResults(dependencyResult);
+					window.location = "../" + getCachedBuildUrl(dependencyResult.depList);
+				}else{
+					alert("Build " + type + " [" + data + "]");
+				}
+			}
+		});
+
+	}
+
+	function outputBuildResults(dependencyResult){
 		//reset the hidden frame so we can do another build.
 		setTimeout(function(){
 			dojo.html.iframeContentWindow(dojo.byId("builderFrame")).location = "../webbuild.html?random=" + (new Date()).getTime();
@@ -154,9 +205,6 @@ SELECT				{	background:#d1c6ae;	}
 				output(provideList[i]);
 			}
 		}
-
-		//Submit form to generate custom dojo.js file.
-		depListForm.submit();
 	}
 
 	function onTreeSelect(message){

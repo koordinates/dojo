@@ -3,17 +3,13 @@
 load("buildUtil.js");
 load("buildUtilXd.js");
 
-var depList = new String(arguments[0]);
-var provideList = new String(arguments[1]);
-var version = new String(arguments[2]);
-var xdDojoUrl = new String(arguments[3]);
-var doCompression = new String(arguments[4]);
+var result = "ERROR";
 
-if(typeof(doCompression) != "undefined" && doCompression == "true"){
-	doCompression = true;
-}else{
-	doCompression = false;
-}
+var buildDirectory = new String(arguments[0]);
+var depList = new String(arguments[1]);
+var provideList = new String(arguments[2]);
+var version = new String(arguments[3]);
+var xdDojoUrl = new String(arguments[4]);
 
 depList = depList.split(",");
 
@@ -51,10 +47,12 @@ if(isInputOk){
 	};
 	load('../dojo.js');
 	dojo.require("dojo.string.extras");
-	
-	var contents = "";
+	dojo.require("dojo.crypto.MD5");
+
+	var buildSigDir = dojo.crypto.MD5.compute(dependencyResult.depList.sort().join(","), dojo.crypto.outputTypes.Hex);
 	try{
-		contents = buildUtil.makeDojoJs(dependencyResult, version).dojoContents;
+		var contents = buildUtil.makeDojoJs(dependencyResult, version).dojoContents;
+		var compressedContents = "";
 		var prefixes = [["dojo", "src"]];
 	
 		//Make sure any dojo.requireLocalization calls are modified
@@ -72,18 +70,32 @@ if(isInputOk){
 			contents = buildUtilXd.setXdDojoConfig(contents, xdDojoUrl);
 		}
 
-		//Compress code, if desired.
-		if(doCompression){
-			contents = buildUtil.optimizeJs("dojo.js", contents, "", doCompression);
-		}
+		//Compress code.
+		compressedContents = buildUtil.optimizeJs("dojo.js", contents, "", true);
 
 		//Add copyright
-		contents = new String(buildUtil.readFile("copyright.txt"))
-			+ new String(buildUtil.readFile("build_notice.txt"))
-			+ contents;
+		var copyright = new String(buildUtil.readFile("copyright.txt"));
+		var buildNotice = new String(buildUtil.readFile("build_notice.txt"));
+		contents = copyright + buildNotice + contents;
+		compressedContents = copyright + buildNotice + compressedContents;
+		
+		//Prep cache location
+		var buildCachePath = buildDirectory + "/" + buildSigDir + "/";
+
+		//Create needed directories for cache location.
+		var dirFile = new java.io.File(buildCachePath + "compressed");
+		var dirsOk = dirFile.mkdirs();
+
+		result = "dirFile: " + dirFile.getAbsolutePath() + ", dirsOK: " + dirsOk;
+		
+		//Save files to disk
+		buildUtil.saveUtf8File(buildCachePath + "dojo.js", contents);
+		buildUtil.saveUtf8File(buildCachePath + "compressed/dojo.js", compressedContents);
+		
+		result = "OK";
 	}catch(e){
-		contents = "dojo.js build error: " + e;	
+		result += "ERROR: " + e;	
 	}
 
-	print(contents);
+	print(result);
 }
