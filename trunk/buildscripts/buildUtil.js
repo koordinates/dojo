@@ -266,6 +266,12 @@ buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
 		dojoContents += new String(buildUtil.readFile(depList[i])) + "\r\n";
 	}
 	
+	// dojo.requireLocalization is a special case as it pulls in dojo.i18n.loader at runtime
+	if(dojoContents.match(buildUtil.globalRequireLocalizationRegExp)){
+		depList.push("../src/i18n/loader.js");
+		dojoContents += new String(readFile(depList[depList.length-1]));
+	}
+
 	//Construct a string of all the dojo.provide statements.
 	//This string will be used to construct the regexp that will be
 	//used to remove matching dojo.require statements.
