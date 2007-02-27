@@ -1,9 +1,5 @@
 dojo.provide("dojo.date.common");
 
-
-/* Supplementary Date Functions
- *******************************/
-
 dojo.date.setDayOfYear = function(/*Date*/dateObject, /*Number*/dayOfYear){
 	// summary: sets dateObject according to day of the year (1..366)
 	dateObject.setMonth(0);
@@ -67,8 +63,6 @@ dojo.date.getIsoWeekOfYear = function(/*Date*/dateObject){
 dojo.date.getStartOfWeek = function(/*Date*/dateObject, /*Number*/firstDay){
 	// summary: Return a date object representing the first day of the given
 	//   date's week.
-	var date = new Date(dateObject.getFullYear(), dateObject.getMonth(), 
-		dateObject.getDate());
 	if(isNaN(firstDay)){
 		firstDay = dojo.date.getFirstDayOfWeek ? dojo.date.getFirstDayOfWeek() : 0;
 	}
@@ -78,6 +72,8 @@ dojo.date.getStartOfWeek = function(/*Date*/dateObject, /*Number*/firstDay){
 	}else{
 		offset -= (7 - dateObject.getDay());
 	}
+	var date = new Date(dateObject);
+	date.setHours(0, 0, 0, 0);
 	return dojo.date.add(date, dojo.date.dateParts.DAY, offset); // Date
 }
 
@@ -128,8 +124,8 @@ dojo.date.getDaysInMonth = function(/*Date*/dateObject){
 	// summary: returns the number of days in the month used by dateObject
 	var month = dateObject.getMonth();
 	var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	if (month == 1 && dojo.date.isLeapYear(dateObject)) { return 29; } // Number
-	else { return days[month]; } // Number
+	if (month == 1 && dojo.date.isLeapYear(dateObject)){ return 29; } // Number
+	return days[month]; // Number
 }
 
 dojo.date.isLeapYear = function(/*Date*/dateObject){
@@ -143,7 +139,7 @@ dojo.date.isLeapYear = function(/*Date*/dateObject){
 //	multiple of 400. For example, 1900 was not a leap year, but 2000 is one.
 
 	var year = dateObject.getFullYear();
-	return (year%400 == 0) ? true : (year%100 == 0) ? false : (year%4 == 0) ? true : false; // Boolean
+	return !(year%400) || (!(year%4) && !!(year%100)); // Boolean
 }
 
 // FIXME: This is not localized

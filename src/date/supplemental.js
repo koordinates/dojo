@@ -18,11 +18,27 @@ dojo.date.getFirstDayOfWeek = function(/*String?*/locale){
 		sy:4
 	};
 
-	locale = dojo.hostenv.normalizeLocale(locale);
-	var country = locale.split("-")[1];
+	var country = dojo.date._region(locale);
 	var dow = firstDay[country];
 	return (typeof dow == 'undefined') ? 1 : dow; /*Number*/
 };
+
+dojo.date._region = function(/*String?*/locale){
+	locale = dojo.hostenv.normalizeLocale(locale);
+	var tags = locale.split('-');
+	var region = tags[1];
+	if(!region){
+		// IE often gives language only (#2269)
+		// Arbitrary mappings of language-only locales to a country:
+        region = {de:"de", en:"us", es:"es", fi:"fi", fr:"fr", hu:"hu", it:"it",
+        ja:"jp", ko:"kr", nl:"nl", pt:"br", sv:"se", zh:"cn"}[tags[0]];
+	}else if(region.length == 4){
+		// The ISO 3166 country code is usually in the second position, unless a
+		// 4-letter script is given. See http://www.ietf.org/rfc/rfc4646.txt
+		region = tags[2];
+	}
+	return region;
+}
 
 dojo.date.getWeekend = function(/*String?*/locale){
 // summary: Returns a hash containing the start and end days of the weekend
@@ -43,8 +59,7 @@ dojo.date.getWeekend = function(/*String?*/locale){
 		eg:6,il:6,sy:6
 	};
 
-	locale = dojo.hostenv.normalizeLocale(locale);
-	var country = locale.split("-")[1];
+	var country = dojo.date._region(locale);
 	var start = weekendStart[country];
 	var end = weekendEnd[country];
 	if(typeof start == 'undefined'){start=6;}
