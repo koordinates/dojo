@@ -3,7 +3,6 @@ var dependencies = [
 	"dojo.io.*",
 	"dojo.event.*",
 	"dojo.lfx.*",
-	"dojo.widget.Editor",
 	"dojo.widget.Editor2",
 ];
 

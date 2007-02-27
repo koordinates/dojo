@@ -1,16 +1,3 @@
-/**
-* @file bootstrap1.js
-*
-* summary: First file that is loaded that 'bootstraps' the entire dojo library suite.
-* note:  Must run before hostenv_*.js file.
-*
-* @author  Copyright 2004 Mark D. Anderson (mda@discerning.com)
-* TODOC: should the copyright be changed to Dojo Foundation?
-* @license Licensed under the Academic Free License 2.1 http://www.opensource.org/licenses/afl-2.1.php
-*
-* $Id$
-*/
-
 // TODOC: HOW TO DOC THE BELOW?
 // @global: djConfig
 // summary:
