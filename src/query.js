@@ -7,8 +7,31 @@ dojo.experimental("dojo.query");
 	var d = dojo;
 	var h = d.render.html;
 
+	////////////////////////////////////////////////////////////////////////
+	// Utility code
+	////////////////////////////////////////////////////////////////////////
+
 	var _getIndexes = function(q){
 		return [ q.indexOf("#"), q.indexOf("."), q.indexOf("["), q.indexOf(":") ];
+	}
+
+	var _lowestFromIndex = function(query, index){
+		// spammy and verbose, but fast
+		var ql = query.length;
+		var i = _getIndexes(query);
+		var end = ql;
+		for(var x=index; x<i.length; x++){
+			if(i[x] >= 0){
+				if(i[x] < end){
+					end = i[x];
+				}
+			}
+		}
+		return (end < 0) ? ql : end;
+	}
+
+	var getIdEnd = function(query){
+		return _lowestFromIndex(query, 1);
 	}
 
 	var getId = function(query){
@@ -20,13 +43,100 @@ dojo.experimental("dojo.query");
 		}
 	}
 
-	var getIdEnd = function(query){
-		return _lowestFromIndex(query, 1);
-	}
-
 	////////////////////////////////////////////////////////////////////////
 	// XPath query code
 	////////////////////////////////////////////////////////////////////////
+
+	var xPathAttrs = [
+		// FIXME: need to re-order in order of likelyness to be used in matches
+		{
+			key: "|=",
+			match: function(attr, value){
+				return "[contains(concat(' ',@"+attr+",' '), ' "+ value +"-')]";
+			}
+		},
+		{
+			key: "^=",
+			match: function(attr, value){
+				return "[starts-with(@"+attr+", '"+ value +"')]";
+			}
+		},
+		{
+			key: "*=",
+			match: function(attr, value){
+				return "[contains(@"+attr+", '"+ value +"')]";
+			}
+		},
+		{
+			key: "$=",
+			match: function(attr, value){
+				return "[substring(@"+attr+", string-length(@"+attr+")-"+(value.length-1)+")='"+value+"']";
+			}
+		},
+		{
+			key: "!=",
+			match: function(attr, value){
+				return "[not(@"+attr+"='"+ value +"')]";
+			}
+		},
+		// NOTE: the "=" match MUST come last!
+		{
+			key: "=",
+			match: function(attr, value){
+				return "[@"+attr+"='"+ value +"']";
+			}
+		}
+	];
+
+	var handleAttrs = function(	attrList, 
+								query, 
+								getDefault, 
+								handleMatch){
+		var matcher;
+		var i = _getIndexes(query);
+		if(i[2] >= 0){
+			var lBktIdx = query.indexOf("]", i[2]);
+			var condition = query.substring(i[2]+1, lBktIdx);
+			while(condition && condition.length){
+				if(condition.charAt(0) == "@"){
+					condition = condition.slice(1);
+				}
+
+				matcher = null;
+				// http://www.w3.org/TR/css3-selectors/#attribute-selectors
+				for(var x=0; x<attrList.length; x++){
+					var ta = attrList[x];
+					var tci = condition.indexOf(ta.key);
+					if(tci >= 0){
+						var attr = condition.substring(0, tci);
+						var value = condition.substring(tci+ta.key.length);
+						if(	(value.charAt(0) == "\"")||
+							(value.charAt(0) == "\'")){
+							value = value.substring(1, value.length-1);
+						}
+						matcher = ta.match(attr, value);
+						break;
+					}
+				}
+				if((!matcher)&&(condition.length)){
+					matcher = getDefault(condition);
+				}
+				if(matcher){
+					handleMatch(matcher);
+					// ff = agree(ff, matcher);
+				}
+
+				condition = null;
+				var nbktIdx = query.indexOf("[", lBktIdx);
+				if(0 <= nbktIdx){
+					lBktIdx = query.indexOf("]", nbktIdx);
+					if(0 <= lBktIdx){
+						condition = query.substring(nbktIdx+1, lBktIdx);
+					}
+				}
+			}
+		}
+	}
 
 	var buildPath = function(query){
 		var xpath = "";
@@ -63,9 +173,18 @@ dojo.experimental("dojo.query");
 					cn + padding + "')]";
 			}
 
-			// FIXME: need to implement attribute and pseudo-class checks!!
+			handleAttrs(xPathAttrs, tqp, 
+				function(condition){
+						return "[@"+condition+"]";
+				},
+				function(matcher){
+					xpath += matcher;
+				}
+			);
 
+			// FIXME: need to implement pseudo-class checks!!
 		};
+		// dojo.debug(xpath);
 		return xpath;
 	};
 
@@ -75,8 +194,8 @@ dojo.experimental("dojo.query");
 			return _xpathFuncCache[path];
 		}
 
-		var doc = dojo.doc();
-		var parent = dojo.body(); // FIXME
+		var doc = d.doc();
+		var parent = d.body(); // FIXME
 		// FIXME: don't need to memoize. The closure scope handles it for us.
 		var xpath = buildPath(path);
 
@@ -185,21 +304,6 @@ dojo.experimental("dojo.query");
 			_filterDown(te, queryParts, ret, 0);
 		}
 		return ret;
-	}
-
-	var _lowestFromIndex = function(query, index){
-		// spammy and verbose, but fast
-		var ql = query.length;
-		var i = _getIndexes(query);
-		var end = ql;
-		for(var x=index; x<i.length; x++){
-			if(i[x] >= 0){
-				if(i[x] < end){
-					end = i[x];
-				}
-			}
-		}
-		return (end < 0) ? ql : end;
 	}
 
 	var getTagNameEnd = function(query){
@@ -362,7 +466,7 @@ dojo.experimental("dojo.query");
 		// FIXME: need to re-order in order of likelyness to be used in matches
 		{
 			key: "|=",
-			getMatcher: function(attr, value){
+			match: function(attr, value){
 				// E[hreflang|="en"]
 				//		an E element whose "hreflang" attribute has a
 				//		hyphen-separated list of values beginning (from the
@@ -379,7 +483,7 @@ dojo.experimental("dojo.query");
 		},
 		{
 			key: "^=",
-			getMatcher: function(attr, value){
+			match: function(attr, value){
 				return function(elem){
 					return (_getAttr(elem, attr).indexOf(value)==0);
 				}
@@ -387,7 +491,7 @@ dojo.experimental("dojo.query");
 		},
 		{
 			key: "*=",
-			getMatcher: function(attr, value){
+			match: function(attr, value){
 				return function(elem){
 					return (_getAttr(elem, attr).indexOf(value)>=0);
 				}
@@ -395,7 +499,7 @@ dojo.experimental("dojo.query");
 		},
 		{
 			key: "$=",
-			getMatcher: function(attr, value){
+			match: function(attr, value){
 				return function(elem){
 					var ea = _getAttr(elem, attr);
 					return (ea.lastIndexOf(value)==(ea.length-value.length));
@@ -404,7 +508,7 @@ dojo.experimental("dojo.query");
 		},
 		{
 			key: "!=",
-			getMatcher: function(attr, value){
+			match: function(attr, value){
 				return function(elem){
 					return (_getAttr(elem, attr) != value);
 				}
@@ -413,7 +517,7 @@ dojo.experimental("dojo.query");
 		// NOTE: the "=" match MUST come last!
 		{
 			key: "=",
-			getMatcher: function(attr, value){
+			match: function(attr, value){
 				return function(elem){
 					return (_getAttr(elem, attr) == value);
 				}
@@ -424,7 +528,7 @@ dojo.experimental("dojo.query");
 	var pseudos = [
 		{
 			key: "first-child",
-			getMatcher: function(name, condition){
+			match: function(name, condition){
 				return function(elem){
 					if(elem.nodeType != 1){ return false; }
 					// check to see if any of the previous siblings are elements
@@ -438,7 +542,7 @@ dojo.experimental("dojo.query");
 		},
 		{
 			key: "last-child",
-			getMatcher: function(name, condition){
+			match: function(name, condition){
 				return function(elem){
 					if(elem.nodeType != 1){ return false; }
 					// check to see if any of the next siblings are elements
@@ -452,7 +556,7 @@ dojo.experimental("dojo.query");
 		},
 		{
 			key: "empty",
-			getMatcher: function(name, condition){
+			match: function(name, condition){
 				return function(elem){
 					// DomQuery and jQuery get this wrong, oddly enough.
 					// The CSS 3 selectors spec is pretty explicit about
@@ -470,7 +574,7 @@ dojo.experimental("dojo.query");
 		},
 		{
 			key: "contains",
-			getMatcher: function(name, condition){
+			match: function(name, condition){
 				return function(elem){
 					// FIXME: I dislike this version of "contains", as
 					// whimsical attribute could set it off. An inner-text
@@ -483,7 +587,7 @@ dojo.experimental("dojo.query");
 		},
 		{
 			key: "not",
-			getMatcher: function(name, condition){
+			match: function(name, condition){
 				var ntf = getFilterFunc(condition);
 				return function(elem){
 					// FIXME: I dislike this version of "contains", as
@@ -497,7 +601,8 @@ dojo.experimental("dojo.query");
 		},
 		{
 			key: "nth-child",
-			getMatcher: function(name, condition){
+			match: function(name, condition){
+				var pi = parseInt;
 				if(condition == "odd"){
 					return function(elem){
 						return (
@@ -510,20 +615,20 @@ dojo.experimental("dojo.query");
 						return ((getNodeIndex(elem) % 2) == 0);
 					}
 				}else if(condition.indexOf("0n+") == 0){
-					var ncount = parseInt(condition.substr(3));
+					var ncount = pi(condition.substr(3));
 					return function(elem){
 						return (elem.parentNode.childNodes[ncount-1] === elem);
 					}
 				}else if(	(condition.indexOf("n+") > 0) &&
 							(condition.length > 3) ){
 					var tparts = condition.split("n+", 2);
-					var pred = parseInt(tparts[0]);
-					var idx = parseInt(tparts[1]);
+					var pred = pi(tparts[0]);
+					var idx = pi(tparts[1]);
 					return function(elem){
 						return ((getNodeIndex(elem) % pred) == idx);
 					}
 				}else if(condition.indexOf("n") == -1){
-					var ncount = parseInt(condition);
+					var ncount = pi(condition);
 					return function(elem){
 						// removeChaffNodes(elem.parentNode);
 						return (elem.parentNode.childNodes[ncount-1] === elem);
@@ -572,94 +677,25 @@ dojo.experimental("dojo.query");
 				return re.test(elem.className);
 			});
 
-			/*
-			var spcCC = " ".charCodeAt(0);
-			var cnl = className.length;
-			ff = agree(ff, function(elem){
-				var ecn = elem.className;
-				var ecnl = ecn.length;
-				var cni = ecn.indexOf(className);
-				if(cni == 0){
-					// if it's at the front...
-					return (
-						// and it's the whole thing...
-						(ecnl == cnl) ||
-						// or it's a full match
-						(ecn.charCodeAt(cnl) == spcCC)
-					);
-				}else if(ecnl == (cni+cnl)){
-					// or it's at the back...
-					return (
-						// and it's the whole thing...
-						(ecnl == cnl) ||
-						// or it's a full match
-						(ecn.charCodeAt(cni-1) == spcCC)
-					);
-				}else{
-					return (
-						(ecn.charCodeAt(cni-1) == spcCC) &&
-						(ecn.charCodeAt(cni+cnl) == spcCC)
-					);
-				}
-			});
-			*/
-
 		}
 		// [ "#", ".", "[", ":" ];
-		var matcher;
-		if(i[2] >= 0){
-			// FIXME: need to implement chained attribute searches!!
-			// var lBktIdx = query.lastIndexOf("]");
-			var lBktIdx = query.indexOf("]", i[2]);
-			var condition = query.substring(i[2]+1, lBktIdx);
-			while(condition && condition.length){
-				if(condition.charAt(0) == "@"){
-					condition = condition.slice(1);
+		var defaultGetter = (h.ie) ?
+			function(cond){
+				return function(elem){
+					return elem[cond];
 				}
-
-				matcher = null;
-				// http://www.w3.org/TR/css3-selectors/#attribute-selectors
-				for(var x=0; x<attrs.length; x++){
-					var ta = attrs[x];
-					var tci = condition.indexOf(ta.key);
-					if(tci >= 0){
-						var attr = condition.substring(0, tci);
-						var value = condition.substring(tci+ta.key.length);
-						if(	(value.charAt(0) == "\"")||
-							(value.charAt(0) == "\'")){
-							value = value.substring(1, value.length-1);
-						}
-						matcher = ta.getMatcher(attr, value);
-						break;
-					}
+			} : function(cond){
+				return function(elem){
+					return elem.hasAttribute(cond);
 				}
-				if((!matcher)&&(condition.length)){
-					matcher = (function(cond){
-						if(dojo.render.html.ie){
-							return function(elem){
-								return elem[cond];
-							}
-						}else{
-							return function(elem){
-								return elem.hasAttribute(cond);
-							}
-						}
-					})(condition);
-				}
-				if(matcher){
-					ff = agree(ff, matcher);
-				}
-
-				condition = null;
-				var nbktIdx = query.indexOf("[", lBktIdx);
-				if(0 <= nbktIdx){
-					lBktIdx = query.indexOf("]", nbktIdx);
-					if(0 <= lBktIdx){
-						condition = query.substring(nbktIdx+1, lBktIdx);
-					}
-				}
+			};
+		handleAttrs(attrs, query, defaultGetter,
+			function(tmatcher){
+				ff = agree(ff, tmatcher);
 			}
-		}
+		);
+
+		var matcher;
 		if(i[3]>= 0){
 			// NOTE: we count on the pseudo name being at the end
 			var pseudoName = query.substr(i[3]+1);
@@ -681,7 +717,7 @@ dojo.experimental("dojo.query");
 			for(var x=0; x<pseudos.length; x++){
 				var ta = pseudos[x];
 				if(ta.key == pseudoName){
-					matcher = ta.getMatcher(pseudoName, condition);
+					matcher = ta.match(pseudoName, condition);
 					break;
 				}
 			}
@@ -893,20 +929,29 @@ dojo.experimental("dojo.query");
 		//		function to determine on the fly if we should stick w/ the
 		//		potentially optimized variant or if we should try something
 		//		new.
-		(document["evaluate"] && !dojo.render.html.safari) ? 
+		(document["evaluate"] && !h.safari) ? 
 		function(query){
 			// has xpath support that's faster than DOM
 			var qparts = query.split(" ");
+			// can we handle it?
 			if(	(document["evaluate"])&&
 				(query.indexOf(":") == -1)&&
-				(query.indexOf("[") == -1) ){
-				// kind of a lame heuristic, but it works
+				(
+					(true) // ||
+					// (query.indexOf("[") == -1) ||
+					// (query.indexOf("=") == -1)
+				)
+			){
+				// dojo.debug(query);
+				// should we handle it?
 				var gtIdx = query.indexOf(">")
+				// kind of a lame heuristic, but it works
 				if(	
 					// a "div div div" style query
 					((qparts.length > 2)&&(query.indexOf(">") == -1))||
 					// or something else with moderate complexity. kinda janky
 					(qparts.length > 3)||
+					(query.indexOf("[")>=0)||
 					// or if it's a ".thinger" query
 					((1 == qparts.length)&&(0 <= query.indexOf(".")))
 
@@ -914,6 +959,7 @@ dojo.experimental("dojo.query");
 					// use get and cache a xpath runner for this selector
 					return getXPathFunc(query);
 				}
+				// return getXPathFunc(query);
 			}
 
 			return getStepQueryFunc(query);
@@ -963,7 +1009,7 @@ dojo.experimental("dojo.query");
 
 	var _zipIdx = 0;
 	var _zip = function(arr){
-		var ret = new dojo.NodeList();
+		var ret = new d.NodeList();
 		if(!arr){ return ret; }
 		ret.push(arr[0]);
 		if(arr.length < 2){ return ret; }
@@ -984,18 +1030,21 @@ dojo.experimental("dojo.query");
 		// NOTE: elementsById is not currently supported
 		// NOTE: ignores xpath-ish queries for now
 		if(typeof query != "string"){
-			return new dojo.NodeList(query);
+			return new d.NodeList(query);
 		}
 
 		// FIXME: should support more methods on the return than the stock array.
 		return _zip(getQueryFunc(query)(root||document));
 	}
 
+	/*
+	// exposing these was a mistake
 	d.query.attrs = attrs;
 	d.query.pseudos = pseudos;
+	*/
 
 	d._filterQueryResult = function(nodeList, simpleFilter){
-		var tnl = new dojo.NodeList();
+		var tnl = new d.NodeList();
 		var ff = (simpleFilter) ? getFilterFunc(simpleFilter) : function(){ return true; };
 		// dojo.debug(ff);
 		for(var x=0, te; te = nodeList[x]; x++){
