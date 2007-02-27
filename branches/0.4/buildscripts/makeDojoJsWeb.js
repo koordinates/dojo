@@ -49,7 +49,7 @@ if(isInputOk){
 	dojo.require("dojo.string.extras");
 	dojo.require("dojo.crypto.MD5");
 
-	var buildSigDir = dojo.crypto.MD5.compute(dependencyResult.depList.sort().join(","), dojo.crypto.outputTypes.Hex);
+	var buildSigDir = dojo.crypto.MD5.compute(depList.sort().join(","), dojo.crypto.outputTypes.Hex);
 	try{
 		var contents = buildUtil.makeDojoJs(dependencyResult, version).dojoContents;
 		var compressedContents = "";
@@ -88,13 +88,17 @@ if(isInputOk){
 
 		result = "dirFile: " + dirFile.getAbsolutePath() + ", dirsOK: " + dirsOk;
 		
+		//Create build contents file
+		var buildContents = dependencyResult.provideList.sort().join("\n");
+
 		//Save files to disk
 		buildUtil.saveUtf8File(buildCachePath + "dojo.js", contents);
 		buildUtil.saveUtf8File(buildCachePath + "compressed/dojo.js", compressedContents);
+		buildUtil.saveUtf8File(buildCachePath + "build.txt", buildContents);
 		
 		result = "OK";
 	}catch(e){
-		result += "ERROR: " + e;	
+		result = "ERROR: " + e;	
 	}
 
 	print(result);
