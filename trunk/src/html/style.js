@@ -316,6 +316,7 @@ if (dojo.render.html.ie) {
 		// summary
 		//  Extract value in pixels from styleValue (IE version).
 		//  If a value cannot be extracted, zero is returned.
+		if(!styleValue){ return 0; }
 		if(styleValue.slice(-2) == 'px'){return parseFloat(styleValue);}
 		var pixelValue = 0;
 		with(element){
