@@ -6,10 +6,6 @@
 
 //Define some methods that are defined in Rhino, but we need web equivalents
 //in order for the build scripts to work.
-print = function(message){
-	parent.output(message);
-}
-
 buildUtil.readFile = readText = readFile = function(uri){
 	return dojo.hostenv.getText(uri);
 }
