@@ -132,7 +132,9 @@ dojo.declare(
 
 			if(this.resizable){
 				this.resizeBar.style.display="";
-				this.resizeHandle = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
+				// #1184 - set some sensible minimum size constraints on resizehandle
+				this.resizeHandle = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId,
+					id:this.widgetId+"_resize",	 minSize: {w: 30, h: 30}});
 				this.resizeBar.appendChild(this.resizeHandle.domNode);
 			}
 
