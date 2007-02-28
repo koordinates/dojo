@@ -103,7 +103,11 @@ dojo.widget.defineWidget(
 	},		
 		
 	checkSpecialEvent: function(event) {
-		return event.shiftKey || event.ctrlKey;
+		if(dojo.render.os.mac == true){
+			return event.shiftKey || event.metaKey;
+		}else{
+			return event.shiftKey || event.ctrlKey;
+		}
 	},
 	
 	
@@ -134,6 +138,8 @@ dojo.widget.defineWidget(
 	 * press on selected w/o ctrl => dblselect it and deselect all other
 	 *
 	 * press on unselected with ctrl => add it to selection
+	 *
+	 * on Mac we use cmd instead of ctrl to avoid conflict with browser's context menu
 	 *
 	 * event may be both mouse & keyboard ctrl + space
 	 */
