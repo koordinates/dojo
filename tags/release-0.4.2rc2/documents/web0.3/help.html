@@ -1,0 +1,638 @@
+<h2>Looking for help with Dojo?</h2>
+<p>
+	Many frequently asked questions are answered below, but here are a few
+	quick links if you alerady know where you're going:
+</p>
+<ul>
+	<li><a href="./developers">project developer information</a></li>
+	<li><a href="http://manual.dojotoolkit.org/index.html">dojo.manual</a></li>
+	<li><a href="http://dojo.jot.com/WikiHome">project wiki</a></li>
+	<li><a href="http://dojotoolkit.org/mailman/listinfo/dojo-interest">dojo-interest list signup</a>
+	(<a href="http://forums.opensymphony.com/forum.jspa?forumID=36&start=0">web interface</a>)</li>
+	<li><a href="http://dojotoolkit.org/mailman/listinfo/dojo-interest">dojo-jobs list signup</a></li>
+</ul>
+<p>
+	There are a number of different resources you can find for help with
+	Dojo...to start with, you can <a
+	href="http://manual.dojotoolkit.org/index.html">look at the Manual</a>,
+	which is a work in progress...there is also the <a
+	href="http://dojo.jot.com">Jot Wiki</a>, which we treat as a kind of "SVN
+	for documentation"...feel free to look through to find what you're looking
+	for.
+</p>
+<p>
+	We also have a <a
+	href="http://dojotoolkit.org/mailman/listinfo/dojo-interest">mailing
+	list</a> that we maintain for all sorts of questions and answers; if you <a
+	href="http://forums.opensymphony.com/forum.jspa?forumID=36&start=0">prefer
+	browser-based access</a>, <a href="http://www.opensymphony.com">Open
+	Symphony</a> has gratiously donated space in thier support forums for you
+	to use.
+</p>
+<p>
+	If you're feeling adventurous, you <a href="./developers/">can hit the
+	project developer site</a> for detailed information.
+</p>
+<p>
+	Finally, if you're familiar with <a href="http://www.irc.org">IRC</a>, we
+	keep a room open on <strong>irc.freenode.net</strong>:
+	<ul>
+		<li><strong>#dojo</strong>: for general discussion;</li>
+		<li><strong>#dojo-meeting</strong>: where the committers gather every Wednesday at 3 pm PST/PDT.</li>
+	</ul>
+</p>
+<div id="faqs">
+	<h2>The FAQs</h2>
+	<h4>Or "Questions and Answers Collected From the Dojo-Interest Mailing List"</h4>
+	<div>
+		(The most current version of this document can be found at <a
+		href="http://dojo.jot.com/WikiHome/FAQ">http://dojo.jot.com/WikiHome/FAQ</a>)
+	</div>
+
+	<h3>General</h3>
+	<h4>What is dojo?</h4>
+	<p>
+		<a href="http://dojo.jot.com/WhatIsDojo">Read about it here</a>, but
+		the short answer is "a standard library for JavaScript that excells in
+		helping you build responsive apps faster"
+	</p>
+	<h4>What does dojo stand for?</h4>
+	<p>
+		It stands for "a name that won't result in Microsoft's lawyers sending
+		C&amp;D's to Alex".
+	</p>
+	<p class="quotation">
+		<em>From Alex Russell:</em>
+		Actually, I was uncreative enough to name my last toolkit "netWindows"
+		so this go-round we actually took a vote. Leondard Lin suggested
+		"Dojo", and it won the vote. It doesn't really stand for anything.
+		<br><br>
+		We're different from closed source vendors because we appropriate
+		random words out of *other* languages  ;-)
+	</p>
+	<h4>Where is the manual?</h4>
+	<ul>
+		<li><a href="http://manual.dojotoolkit.org">manual.dojotoolkit.org</a></li>
+		<li>learn by example: <a href="http://archive.dojotoolkit.org/nightly/tests/">tests</a> and <a href="http://archive.dojotoolkit.org/nightly/demos/">demos</a></li>
+		<li><a href="http://manual.dojotoolkit.org/WikiHome/DojoDotBook/BookIntroduction">the book</a> - currently being written</li>
+	</ul>
+	<h4>Supported Browsers</h4>
+	<ul>
+		<li>Safari 2.0.x+</li>
+		<li>Opera 8.5+</li>
+		<li>Internet Explorer (Windows) 5.5+</li>
+		<li>Firefox 1.0+/Mozilla<li>
+		<li>Konqueror 3.5+</li>
+	</ul>
+	
+	<h3>Common Pitfalls</h3>
+	<h4>Why aren't my widgets being instantiated?</h4>
+	<p>Often this is caused by closing tags with <strong>/&gt;</strong> syntax.  For example:</p>
+	<strong>wrong:</strong>
+	<pre>
+&lt;script src="dojo.js" /&gt;
+&lt;div dojoType="DatePicker" /&gt;
+	</pre>
+	<strong>right:</strong>
+	<pre>
+&lt;script src="dojo.js"&gt;&lt;/script&gt;
+&lt;div dojoType="DatePicker"&gt;&lt;/div&gt;
+	</pre>
+	<p>
+		Are they any HTML references indicating that only the explicit closing
+		tag form works?
+		<ul>
+			<li>http://www.w3.org/TR/xhtml1/#C_3</li>
+			<li>http://www.w3.org/TR/html4/interact/scripts.html#h-18.2.1</li>
+		</ul>
+		And for comparison, the br tag, which does allow the &lt;br /&gt;
+		notation:
+		<ul>
+			<li>http://www.w3.org/TR/html4/struct/text.html#h-9.3.2.1</li>
+		</ul>
+	</p>
+	
+	<h4>Why does IE say I have a syntax error?</h4>
+	<p>You probably have an extra comma at the end of a list.  For example:</p>
+	<pre>
+	var request = dojo.io.bind({
+		url: this.actionURL,
+		method: 'get',
+		content: {
+			id: this.rowId,
+			field: this.dbField,
+			value: this.checkbox.checked
+		},  <span style="color: red">&lt;---- This comma shouldn't be here!</span>
+	});
+	</pre>
+	<p>Or:</p>
+	<pre>var foo = [ 1 , 2, 3, ];</pre>
+	<p>Or:</p>
+	<pre>
+var obj = {
+	apple: "delicious",
+	brussel sprouts: "yucky",
+};
+	</pre>
+	<h4>If I add a comment line in my HTML template file my widget does not render. Why is it so?</h4>
+	<p>
+		It's because the template file is no longer a tree; it's a forest
+		(there are two top level nodes, a comment node and the real node).
+		You can "goose" the widget system by setting dojoAttachPoint="domNode"
+		on what you'd *like* to be the visible root of your widget. That'll
+		work regardless of how many peers or parents  that widget has.
+		It's also a great way to implement state-only widgets (state1 -&gt;
+		state2  -&gt; state3 -&gt; etc.).
+	</p>
+	<h4>Why do I get the error "could not download widget XXX"?</h4>
+	<p class="quotation">
+		I've downloaded the kitchen sink, I've loaded the demo Fisheye page and
+		the I tried copying it into my own page.  I get: <code>Error: Could not
+		load "dojo.widget.FisheyeList"; last tried "__package__.js" </code>
+		What am I doing wrong?
+	</p>
+	<p>
+		Did you copy just the dojo.js file?  You will need the src directory
+		too.  The widgets are loaded on demand in all builds distributed from
+		<code>dojotoolkit.org</code>. It's possible to build widget resources
+		into a dojo.js file, but that will require a custom build.
+	</p>
+	
+	<h3>Dojo I/O</h3>
+	<h4>How do I attach dojo.io.bind to a load function in my own class?</h4>
+	<p class="quotation">
+		This might be simple, but I can't figure it out: How can I write a
+		self-contained widget that handles its own callback from a
+		dojo.io.bind() call?  Specifically, how can I bind the callbacks (load,
+		error) from a dojo.io.bind call to an object's method?
+	</p>
+	<p>You could use:</p>
+	<pre> 	
+this.clicked = function() {
+	dojo.io.bind({
+		url: this.actionURL,
+		method: 'get',
+		content: {
+			id: this.rowId,
+			field: this.dbField,
+			value: this.checked
+		},
+		load: <b>dojo.lang.hitch</b>(this, this.clickSuccess)
+	});
+}
+</pre>
+	<h4>Can Dojo help me pass query strings and POST data to the server?</h4>
+	<p>Dojo can URL encode the arguments list for you, like so:</p>
+	<pre>
+function GetRSS(id,url,limit){
+	var obj = document.getElementById(id);
+	dojo.io.bind({
+		url: "http://localhost/rss/getRSS.php",
+		content: {rssurl: url, rsslimit: limit},
+		load: function(type, data, evt){
+			RSSLoaded(obj,data); // error handling needed
+		},
+		mimetype: "text/plain"
+	});
+}
+	</pre>
+	<h4>Receiving JSON data</h4>
+	<p>To receive JSON data, just do:</p>
+	<pre>	
+var myVeryCoolObject = null;
+var bindArgs = {
+	url:  "foo.js",
+	type: "text/javascript",
+	load: function(type, data, evt){
+		myVeryCoolObject = data;
+	}
+};
+dojo.io.bind(bindArgs);
+	</pre>
+	<h4>Submitting a Form</h4>
+	<p class="quotation">
+		I want to do a simple procedure, where a user submits a form from the
+		front-end  using POST and a success message comes back in a specified
+		div id without page-refresh. How do i do that using dojo.io.bind?
+	</p>
+	<p>
+		As of Dojo 0.3.0, you can use the <code>dojo.io.updateNode</code>
+		method to simplify the case where you want to do <code>innerHTML</code>
+		replacement.
+	</p>
+	<pre>
+dojo.io.updateNode("target_div_id", {
+	formNode: dojo.byId("your_form_id"),
+	method: "post"
+});
+</pre>
+	<p>
+		Using <code>formBind</code> like this also helps to prevent memory
+		leaks since the replaced content will have
+		<code>dojo.event.browser.clean()</code> called over it prior to
+		removal.
+	</p>
+	<p>
+		Regular-old <code>dojo.io.bind()</code> supports submitting forms and
+		will take it's configuration from the from unless you over-ride it.
+	</p>
+	<pre>
+dojo.io.bind({
+	formNode: dojo.byId("your_form_id"),
+	load: function(type, data, evt){/* do something with the return */}
+});
+</pre>
+	<p>
+		In this example we expect the form node that is passed to have
+		<code>action</code> and <code>method</code> properties defined which
+		will determine the <code>url</code> and <code>method</code> arguments
+		to the <code>bind</code> call.
+	</p>
+	<h3>Events</h3>
+	<p>See <a href="http://dojo.jot.com/WikiHome/EventExamples">Event Examples</a>.</p>
+	
+	<h3>Validation</h3>
+	<h4>Doesn't Dojo require writing HTML that doesn't validate?</h4>
+	<p>
+		No. Dojo can help you validate. As of the 0.2 release, you can use
+		namespaces for attributes and class declarations to declare the dojo
+		type.
+	</p>
+	<pre>&lt;button class="dojo-button2" dojo:caption="hello world" /&gt;</pre>
+	<p>See <a href="http://archive.dojotoolkit.org/nightly/demos/widget/Fisheye.html">the fisheye demo</a> for an example.</p>
+	
+	<h3>Performance</h3>
+	<p>See the <a href="http://dojo.jot.com/WikiHome/PerformanceTuning">Performance Tuning Guide</a>.</p>
+	
+	<h3>Packages and dojo.require()</h3>
+	<p>
+		When you call <code>dojo.require("dojo.foo.bar.baz")</code>, Dojo tries
+		to load the following files, in this order:
+	<ol>
+		<li>src/foo/bar/baz.js</li>
+		<li>src/foo/bar.js</li>
+		<li>src/foo/bar/__package__.js</li>
+		<li>src/foo.js</li>
+		<li>src/foo/__package__.js</li>
+	</ol>
+and then fail.
+	</p>
+	<p>
+		When the ".*" suffix is added, Dojo searches for a "__package__.js"
+		file *first*.  When you call
+		<code>dojo.require("dojo.foo.bar.baz.*")</code>, Dojo tries to load the
+		following files, in this order:
+	<ol>
+		<li>src/foo/bar/baz/__package__.js</li>
+		<li>src/foo/bar/baz.js</li>
+		<li>src/foo/bar/__package__.js</li>
+		<li>src/foo/bar.js</li>
+		<li>src/foo/__package__.js</li>
+		<li>src/foo.js</li>
+	</ol>
+and then fail.
+	</p>
+
+	<h3>Custom dojo code</h3>
+	<h4>How can I use JavaScript in a namespace outside "dojo"?</h4>
+	<p>Given a folder structure like so:</p>
+<pre>
+dojo/
+turbo/
+	foo.js
+</pre>
+<p>...you can use the setModulePrefix method to "register" the namespace for use with the Dojo loading system, like so:</p>
+<pre>
+dojo.setModulePrefix("turbo","../turbo"); // relative to the dojo root
+dojo.require("turbo.foo");
+</pre>
+	<h4>How can I build a custom profile with code/widgets outside the dojo source tree?</h4>
+	<p>Let's say you have this folder structure:</p>
+<pre>
+projects/
+	dojo/
+		buildscripts/
+	foo-project/
+		src/
+			foo/
+				Bar.js
+</pre>
+	<p>...where projects/foo-project/src/foo/Bar.js contains:</p>
+<pre>
+dojo.provide("foo.Bar");
+foo.Bar=function(){ ... }
+</pre>
+	<p>
+		...in your custom profile.js script, you need to specify the module
+		prefixes, something to this effect:
+	</p>
+<pre>
+var dependencies = [
+	"dojo.io",
+	"dojo.event.*",
+	"dojo.io.BrowserIO",
+	"dojo.xml.Parse",
+	"dojo.webui.widgets.*",
+	"dojo.webui.DomWidget",
+	"dojo.animation.*",
+	"foo.Bar"
+];
+
+dependencies.prefixes = [
+	// this HAS to be relative to DOJO_HOME/ folder
+	['foo', '../foo-project/src/foo']
+];
+
+load("getDependencyList.js");
+</pre>
+	
+	<h3>Animations</h3>
+	<!-- FIXME: has this been updated for lfx? -->
+	<p>See <a href="http://dojo.jot.com/WikiHome/Animation">Animation</a>.</p>
+	
+	<h3>Widgets</h3>
+	<p>See <a href="http://dojo.jot.com/WikiHome/WidgetsFAQ">Widgets FAQ</a>.</p>
+	
+	<h3>Tools</h3>
+	<h4>IDEs</h4>
+	<ul>
+		<li><a href="http://www.alphaworks.ibm.com/tech/ajaxtk">Eclipse</a></li>
+		<li><a href="http://www.myeclipseide.com/">MyEclipse</a></li>
+		<li><a href="http://interaktonline.com/">JSEclipse</a></li>
+	</ul>
+	<h4>Using Subversion "externals" to include dojo in your project</h4>
+	<p>
+		If your project uses Subversion for your source code version control,
+		and you need to bundle the dojo toolkit into your project, you can use
+		the Subversion "externals" feature to include dojo "by reference"
+		instead  of "by copy".  For more info see  <a
+		href="http://svnbook.red-bean.com/en/1.1/ch07s04.html">the subversion
+		manual</a>. Or if you're using TortoiseSVN, see section 5.2.4 of <a
+		href="http://tortoisesvn.sourceforge.net/docs/nightly/TortoiseSVN_en.pdf">PDF
+		TortoiseSVN manual</a>.
+	</p>
+	<h3>Debugging</h3>
+	
+	<h4>Debugging with Firefox</h4>
+	<p class="quotation">
+		I am attempting to debug code loaded via dojo.require using Venkman.  However I am not sure how to place a break point in the loaded code.
+		Does anyone familiar with venkman have a nice solution?
+	</p>
+	<p>
+		Yes. There's an optional flag available called "debugAtAllCosts" that pulls files in the "expensive" way, in order to provide exactly this.
+		It requires that you include one more line in your usage. Here's how you might use it:
+	</p>
+	<pre>
+&lt;script&gt;
+djConfig = {
+	isDebug: true,
+	debugAtAllCosts: true
+};
+&lt;/script&gt;
+&lt;script src="/path/to/dojo/dojo.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+	// dojo includes here
+	dojo.require("dojo.myModule");
+	dojo.hostenv.writeIncludes(); // this is a new line
+&lt;/script&gt;&lt;!--
+		you MUST close the script tag here in order to use debugAtAllCosts
+	--&gt;
+</pre>
+<p>
+	Once you've structured your code this way, if you open up Venkman,
+	you'll see all the constituent files listed and you can then set
+	breakpoints.
+</p>
+	<h4>Can I Control Presentation of Dojo Debug Messages?</h4>
+	<p class="quotation">
+		Is there a way to attach a css style to the dojo debug messages. In my
+		case they always appeared behind some div, so i couldnt see them.
+		How can i specify where they appear?
+	</p>
+	<p>
+		In <code>djConfig</code>, you can specify which element they are appended to by
+		providing an id of that element: i.e.:
+	</p>
+<pre>
+var djConfig={
+	isDebug:true,
+	debugContainerId:"dojoDebug"
+};
+</pre>
+	<p>for &lt;div id="dojoDebug"&gt;&lt;/div&gt;</p>
+	<h4>Can I debug with IE?</h4>
+	<p>Yes, use <a href="http://erik.eae.net/archives/2005/07/04/21.49.50/">Microsoft Script Editor</a>.</p>
+	<h4>Can I debug with Safari?</h4>
+	<p>The <a href="http://developer.apple.com/internet/safari/faq.html">Safari Developer FAQ</a> has some general information about developing with Safari, as well as instructions on how to turn on a debug menu that allows showing a javascript console.</p>
+	<p>There does not seem to be a venkman-equivalent debugger for Safari though. There is a <a href="http://webkit.opendarwin.org/blog/?p=41">"dom inspector" type tool</a>, but it requires using a nightly build of Safari.</p>
+	<h4>How do I debug syntax errors? aka How can I find this syntax error in bootstrap?</h4>
+	<p>
+		Sometimes dojo's error messages about syntax errors are really cryptic due to how dojo loads files via dojo.require();
+		however, you can get a better message by simply directly including the js file with the &lt;script&gt; tag.
+	</p>
+	<p>There's also a <a href="http://www.jslint.com/lint.html">lint program</a> that Brian has recommended.</p>
+	<h4>DOM viewers</h4>
+	<p>
+		When you install Firefox, you should select the option for DOM inspector. This tool shows you the DOM tree after 
+		the dojo widgets have been expanded. It's indespensible.
+	</p>
+	<p>
+		There are <a href="http://blogs.msdn.com/ie/archive/2005/05/10/416156.aspx">similar tools</a> for IE. We recommend Microsoft's own <a href="http://www.microsoft.com/downloads/details.aspx?FamilyID=e59c3964-672d-4511-bb3e-2d5e1db91038&amp;displaylang=en">Developer Toolbar</a>.
+	</p>
+	<h4>Javascript shell</h4>
+	<p>
+		While it's not a debugger, we've found the <a href="http://www.squarefree.com/shell/">JavaScript Shell</a>  to be a really great tool for analyzing problems, and even just exploring JavaScript libraries like dojo.
+		It works best as a Firefox bookmarklet, in which case you can open it in the context of any given page and invoke javascript functions yourself, evaluate expressions, redefine functions, etc.
+	</p>
+	<h4>HTTP monitor/debuggers</h4>
+	<p>
+		HTTP monitors and debuggers are tools that monitor the HTTP traffic to/from the server; they are essential for ajax debugging.
+		For WinXP there is a handy tool called <a href="http://www.fiddlertool.com/fiddler/">Fiddler</a>; it configures itself as proxy and it's a one click configure and use kind of tool, so it's just easier to use than Achillies and others we've tried. Shows all the parameters from 
+		the client going out to the server, and raw text and XML, even compressed HTML coming back; opens up the client so it's not a black box any more.
+	</p>
+	<p><a href="http://www.ethereal.com/">Ethereal</a> is also very popular.</p>
+	
+	<h3>Dojo culture</h3>
+	<h4>What parts of dojo are fairly stable, and what parts are rapidly evolving?</h4>
+	<p>
+		Almost everything is rapidly evolving. There has been some
+		<strong>major</strong> refactoring between 0.1 and 0.2 and again
+		between 0.2.x and 0.3. This will continue apace until we're much closer
+		to a 1.0 release.  If you want to get a sense of how stable something
+		is, one heuristic is to have a look at how many unit tests there are
+		for it, and whether those tests pass.
+	</p>
+	<h4>Unit tests</h4>
+	<p class="quotation">
+		Does the project have some norms about when unit tests should pass? Are
+		unit tests always supposed to run error free, or is that only true for
+		sections of the code that are fairly old and no longer rapidly
+		evolving?
+	</p>
+	<p>
+		Unit tests should pass for things that the module maintainer considers
+		to be "working".  At any point in time, <strong>most</strong> unit
+		tests should pass, but many may fail in modules that are still be
+		actively developed.  In these cases, module maintainers should be
+		marking untested code using the <code>dojo.experimental</code>
+		function. By running the unit tests and watching for "experimental"
+		warnings you should be able to get some sense of which modules are
+		rapidly evolving and which are fairly stable.
+	</p>
+	
+	<h3>Licenses and legal questions</h3>
+	<h4>Can I Combine Dojo with LGPL Software?</h4>
+	<p class="quotation">
+		Is Dojo compatible with the LGPL, and could parts of Dojo be used and
+		licensed under the LGPL later?
+	</p>
+	<p>Short answer: yes.</p>
+	<p>
+		Long answer: a combined work may be created out of Dojo that is
+		distributed under the LGPL so long as you abide by the terms of our
+		licenses. Our licenses are more permissive in every way than the
+		(L)GPL, so the restrictions are subsumed by the subsequent restrictions
+		of the (L)GPL. The AFL gives you sub-licensing rights, but the FSF
+		disputes the compatibility of the AFL with the GPL. Therefore, if you
+		choose to accept Dojo as BSD-licensed software and reproduce our
+		copyright statement (listed below), you may use Dojo in your LGPL
+		software.
+	</p>
+	<p>
+		If you use all or part of Dojo in an (L)GPL work, the copyright
+		statement you <em>must</em> include is:
+	</p>
+<pre>
+Copyright (c) 2004-2006, The Dojo Foundation
+All Rights Reserved
+</pre>
+	<p>See also:
+	<ul>
+		<li><a href="http://dojotoolkit.org/docs/licensing.html">licensing goals</a></li>
+		<li><a href="http://dojotoolkit.org/community/licensing.shtml">licensing terms</a></li>
+		<li><a href="http://dojotoolkit.org/icla.txt">Contributor License Agreement (CLA)</a></li>
+	</ul>
+	</p>
+	
+	<h3>Miscellaneous</h3>
+	<h4>How can I define M$-like "behaviors" with Dojo?</h4>
+	<p>
+	<ul>
+		<li>Use Ben Nolan's Behaviors package;</li>
+		<li>Use capabilities built into Dojo:</li>
+	</ul>
+	<pre>
+dojo.require("dojo.widget.*");
+dojo.require("dojo.event.*");
+
+function bindBehavior(obj, funcName){
+	if(!funcName){ funcName = obj; obj = dj_global; }
+	var lfn = funcName.toLowerCase();
+	dojo.widget.tags["dojo:"+lfn] = function(fragment){
+		var node = fragment["dojo:"+lfn].nodeRef;
+		obj[funcName](node);
+	}
+	// or use dojo.widget.tags.addParseTreeHandler("dojo:"+lfn)?
+}
+
+function mouseoverbehavior(node){
+	dojo.event.connect(node, "onmouseover", function(){
+		dj_debug("mouse over!");
+	});
+}
+// register a tag handler
+bindBehavior("mouseoverbehavior");
+	</pre>
+	</p>
+	<h4>Can Dojo work with Ruby on Rails?</h4>
+	<p>
+		As of Dojo rev1641 (two major releases ago), you should now be able to
+		drop Dojo into RoR apps without hesitation.
+	</p>
+	<h4>What does dojo.lang.mixin do?</h4>
+	<p class="quotation">
+		Could somebody explain how dojo.lang.mixin works? This is the code:
+	</p>
+<pre class="quotation">
+dojo.lang.mixin = function(obj, props){
+	var tobj = {};
+	for(var x in props){
+		if(typeof tobj[x] == "undefined"){
+			obj[x] = props[x];
+		}
+	}
+	return obj;
+}
+</pre>
+	<p class="quotation">
+		I just don't get it. It looks like tobj is never changed and always
+		empty producing =&gt; all properties are copied from props to obj. What
+		is the purpose of tobj?
+	</p>
+	<p>
+		<code>dojo.lang.mixin</code> doesn't quite copy all properties, and
+		that is the point of tobj. It copies all properties that are not also
+		properties of the empty object. So it won't clobber any, uh, 'custom'
+		properties of Object.
+	</p>
+	<h4>Adding Functions and Build Scripts</h4>
+	<p class="quotation">
+		I am just starting out using Dojo and thought I might add a new
+		function to my version of the dojo.html namespace
+		<code>dojo.html.getClassArray</code>. So I have started off as simple
+		as I can get it:
+		<pre>
+dojo.html.getClassArray = function(){
+   alert();
+}
+		</pre>
+		But not even that works when I call dojo.html.getClassArray(), though
+		the other functions in the namespace continue to work. Is there
+		something I am missing do I need to state somewhere that the function
+		exists or something?
+	</p>
+	<p>
+		Sounds like the build of dojo.js  that you are using includes (the old
+		version of) dojo.html, so your modified html.js file isn't even getting
+		included.  You probably want to rebuild dojo.js using the tools in the
+		<code>buildscripts/</code> directory.
+	</p>
+	<h4>How to Run Code When Dojo is Loaded?</h4>
+	<p class="quotation">
+		Just getting going with Dojo and don't claim much Javascript experience
+		as well - so this question may be naive...  I am trying a basic test to
+		learn how I can tie together event processing across Dojo widgets.  In
+		my code below, I am trying to get an external button to control the
+		play/pause on the slideshow. My code is not working - the alerts showup
+		with "0", "undefined" and "undefined" - don't know if I'm missing
+		something.
+	</p>
+	<p>
+		Before calling dojo.widget.manager.widgets.length dojo needs to be
+		fully initialised (all widgets loaded).  This can be tested by calling
+		<code>dojo.addOnLoad(yourInitializationMethod)</code>, which will call
+		<code>yourInitializationMethod</code> once Dojo itself is fully loaded.
+	</p>
+	<h4>How to Prevent Default Event Action?</h4>
+	<p class="quotation">
+		I'd ideally like to be able to say:
+	</p>
+<pre class="quotation">
+&lt;a href="valid url" &gt;Foo&lt;/a&gt;
+dojo.event.connect(href, "onclick", function(){ 
+	new Object().foo(); 
+	return false; 
+});
+</pre>
+	<p class="quotation">
+		The same applies to form submissions, or anything else where returning
+		false can cancel the original event chain. Anyone have any ideas?
+	</p>
+	<p>You should use event.preventDefault(). Example:</p>
+	<pre>
+dojo.event.connect(myForm, "onsubmit", function(e){
+	e.preventDefault();
+	... do some magic ...
+});
+</pre>
+</div>
