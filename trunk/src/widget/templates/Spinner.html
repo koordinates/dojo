@@ -3,7 +3,8 @@
 		dojoAttachEvent='onblur;onfocus;onkey:_handleKeyEvents;onKeyUp:_onSpinnerKeyUp;'
 		id='${this.widgetId}' name='${this.name}' size='${this.size}' maxlength='${this.maxlength}'
 		value='${this.value}' class='${this.className}' autocomplete="off"
-	><fieldset class="dojoSpinnerArrowGroup"
+		waiRole="spinbutton"
+	><fieldset class="dojoSpinnerArrowGroup" 
                 ><fieldset dojoAttachPoint="upArrowNode" class="dojoSpinnerButton"
 			dojoAttachEvent="onDblClick: _upArrowDoubleClicked;  onMouseDown: _upArrowPressed; onMouseUp: _arrowReleased; onMouseOut: _arrowReleased; onMouseMove: _discardEvent;"
                         ><div class="dojoSpinnerArrow"

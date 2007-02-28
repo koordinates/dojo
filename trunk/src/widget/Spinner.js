@@ -40,6 +40,12 @@ dojo.declare(
 		//	widget object managing input validation node
 		inputWidget: null,
 
+		postCreate: function(/*Object*/ args, /*Object*/ frag){
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "valuemin", this.flags.min);
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "valuemax", this.flags.max);
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "valuenow", this.getValue());
+		},
+
 		// does the keyboard related stuff
 		_handleKeyEvents: function(/*Event*/ evt){
 			if(!evt.key){ return; }
@@ -223,6 +229,7 @@ dojo.declare(
 		setValue: function(value){
 			if (this._oldValue != value) {
 				this._oldValue = value;
+				dojo.widget.wai.setAttr(this.domNode, "waiState", "valuenow", value);
 				if (this.inputWidget){
 					this.inputWidget.prototype.setValue.call(this, value);
 				}
