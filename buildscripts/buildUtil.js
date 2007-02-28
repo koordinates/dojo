@@ -641,7 +641,6 @@ buildUtil.internTemplateStrings = function(profileFile, loader, releaseDir, srcR
 	
 	print("loader: " + loader);
 	print("releaseDir - " + releaseDir);
-	var resourceFile = releaseDir + "/dojo.js";
 
 	//Load Dojo so we can use readText() defined in hostenv_rhino.js.
 	//Also gives us the ability to use all the neato toolkit features.
@@ -663,7 +662,8 @@ buildUtil.internTemplateStrings = function(profileFile, loader, releaseDir, srcR
 
 	var skiplist = buildUtil.getDependencyPropertyFromProfile(profileFile, "internSkipList");
 	
-	buildUtil.internTemplateStringsInFile(loader, resourceFile, srcRoot, prefixes, skiplist);
+	buildUtil.internTemplateStringsInFile(loader, releaseDir + "/dojo.js", srcRoot, prefixes, skiplist);
+	buildUtil.internTemplateStringsInFile(loader, releaseDir + "/dojo.js.uncompressed.js", srcRoot, prefixes, skiplist);
 
 	//Intern strings for all files in widget dir (xdomain and regular files)
 	var fileList = buildUtil.getFilteredFileList(releaseDir + "/src/widget",
