@@ -62,7 +62,8 @@ dojo.lang.declare("dojo.widget.Editor2Plugin.toggleTableBorderCommand", dojo.wid
 		
 	},
 	getText: function(){
-		return 'Toggle Table Border';
+		var browserCommandNames = dojo.i18n.getLocalization("dojo.widget", "Editor2BrowserCommand", this._editor.lang);
+		return browserCommandNames['toggletableborder'];
 	},
 	getState: function(){
 		return this._showTableBorder ? dojo.widget.Editor2Manager.commandState.Latched : dojo.widget.Editor2Manager.commandState.Enabled;
@@ -71,6 +72,7 @@ dojo.lang.declare("dojo.widget.Editor2Plugin.toggleTableBorderCommand", dojo.wid
 
 dojo.widget.Editor2Plugin.TableOperation = {
 	getCommand: function(editor, name){
+		var browserCommandNames = dojo.i18n.getLocalization("dojo.widget", "Editor2BrowserCommand", editor.lang);
 		switch(name){
 			case 'toggletableborder':
 				return new dojo.widget.Editor2Plugin.toggleTableBorderCommand(editor, name);
@@ -78,7 +80,7 @@ dojo.widget.Editor2Plugin.TableOperation = {
 				return new dojo.widget.Editor2DialogCommand(editor, 'inserttable',
 					{contentFile: "dojo.widget.Editor2Plugin.InsertTableDialog",
 					contentClass: "Editor2InsertTableDialog",
-					title: "Insert/Edit Table", width: "450px", height: "250px"})
+					title: browserCommandNames['inserttable'], width: "450px", height: "250px"})
 			case 'deletetable':
 				return new dojo.widget.Editor2Plugin.deleteTableCommand(editor, name);
 		}
@@ -126,8 +128,10 @@ if(dojo.widget.Editor2Plugin.ContextMenuManager){
 		dojo.widget.Editor2Plugin.SimpleContextMenuGroup,
 	{
 		createItems: function(){
-			this.items.push(dojo.widget.createWidget("Editor2ContextMenuItem", {caption: "Delete Table", command: 'deletetable'}));
-			this.items.push(dojo.widget.createWidget("Editor2ContextMenuItem", {caption: "Table Property", command: 'inserttable', iconClass: "TB_Button_Icon TB_Button_Table"}));
+			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			var browserCommandNames = dojo.i18n.getLocalization("dojo.widget", "Editor2BrowserCommand", curInst.lang);
+			this.items.push(dojo.widget.createWidget("Editor2ContextMenuItem", {caption: browserCommandNames['deletetable'], command: 'deletetable'}));
+			this.items.push(dojo.widget.createWidget("Editor2ContextMenuItem", {caption: browserCommandNames['tableprop'], command: 'inserttable', iconClass: "TB_Button_Icon TB_Button_Table"}));
 		},
 		checkVisibility: function(){
 			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();

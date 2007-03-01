@@ -1,5 +1,9 @@
 dojo.provide("dojo.widget.Editor2Plugin.InsertTableDialog");
 
+dojo.require("dojo.i18n.common"); 
+dojo.requireLocalization("dojo.widget", "common"); 
+dojo.requireLocalization("dojo.widget", "Editor2"); 
+ 	
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2InsertTableDialog",
 	dojo.widget.Editor2DialogContent,
@@ -7,7 +11,11 @@ dojo.widget.defineWidget(
 	templatePath: dojo.uri.moduleUri("dojo.widget", "templates/Editor2/Dialog/inserttable.html"),
 
 	editableAttributes: ['summary', 'height', 'cellspacing', 'cellpadding', 'border', 'align'],
-
+	postMixInProperties: function(){ 
+		dojo.widget.Editor2InsertTableDialog.superclass.postMixInProperties.apply(this, arguments); 
+		this.editorStrings = dojo.i18n.getLocalization("dojo.widget", "Editor2", this.lang); 
+		this.commonStrings = dojo.i18n.getLocalization("dojo.widget", "common", this.lang); 
+	}, 
 	loadContent: function(){
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 		curInst.saveSelection(); //save selection (none-activeX IE)
