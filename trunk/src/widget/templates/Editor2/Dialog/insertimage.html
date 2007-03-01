@@ -4,7 +4,7 @@
 			<table cellspacing="0" cellpadding="0" width="100%" border="0">
 				<tr>
 					<td width="100%">
-						<span>URL</span>
+						<span>${this.editorStrings.linkUrl}</span>
 					</td>
 					<td style="display: none" nowrap="nowrap" rowspan="2">
 						<!--input id="btnBrowse" onclick="BrowseServer();" type="button" value="Browse Server"/-->
@@ -20,7 +20,7 @@
 	</tr>
 	<tr>
 		<td>
-			<span>Alternative Text</span><br />
+			<span>${this.editorStrings.imageAlt}</span><br />
 			<input dojoAttachPoint="image_alt" style="width: 100%" type="text" /><br />
 		</td>
 	</tr>
@@ -30,7 +30,7 @@
 						<table cellspacing="0" cellpadding="0" border="0">
 							<tr>
 								<td nowrap="nowrap">
-									<span>Width</span>&nbsp;</td>
+									<span>${this.commonStrings.width}</span>&nbsp;</td>
 								<td>
 									<input type="text" size="3" dojoAttachPoint="image_width" /></td>
 
@@ -49,7 +49,7 @@
 
 							<tr>
 								<td nowrap="nowrap">
-									<span>Height</span>&nbsp;</td>
+									<span>${this.commonStrings.height}</span>&nbsp;</td>
 								<td>
 									<input type="text" size="3" dojoAttachPoint="image_height" /></td>
 							</tr>
@@ -60,13 +60,13 @@
 							<tr>
 
 								<td nowrap="nowrap">
-									<span >HSpace</span>&nbsp;</td>
+									<span >${this.editorStrings.imageHSpace}</span>&nbsp;</td>
 								<td>
 									<input type="text" size="2" dojoAttachPoint="image_hspace"/></td>
 							</tr>
 							<tr>
 								<td nowrap="nowrap">
-									<span >VSpace</span>&nbsp;</td>
+									<span >${this.editorStrings.imageVSpace}</span>&nbsp;</td>
 
 								<td>
 									<input type="text" size="2" dojoAttachPoint="image_vspace" /></td>
@@ -77,26 +77,24 @@
 						<table cellspacing="0" cellpadding="0" border="0">
 							<tr>
 								<td nowrap="nowrap">
-									<span>Border</span>&nbsp;</td>
+									<span>${this.editorStrings.imageBorder}</span>&nbsp;</td>
 								<td>
 									<input type="text" size="2" value="" dojoAttachPoint="image_border" /></td>
 								<td>&nbsp;&nbsp;&nbsp;</td>
 								<td nowrap="nowrap">
-									<span >Align</span>&nbsp;</td>
+									<span >${this.editorStrings.imageAlign}</span>&nbsp;</td>
 								<td>
 									<select dojoAttachPoint="image_align">
-
 										<option value="" selected="selected"></option>
-										<option value="left">Left</option>
-										<option value="absBottom">Abs Bottom</option>
-										<option value="absMiddle">Abs Middle</option>
-										<option value="baseline">Baseline</option>
-										<option value="bottom">Bottom</option>
-
-										<option value="middle">Middle</option>
-										<option value="right">Right</option>
-										<option value="textTop">Text Top</option>
-										<option value="top">Top</option>
+										<option value="left">${this.commonStrings.left}</option>
+										<option value="absBottom">${this.editorStrings.imageAbsBot}</option>
+										<option value="absMiddle">${this.editorStrings.imageAbsMid}</option>
+										<option value="baseline">${this.editorStrings.imageBaseline}</option>
+										<option value="bottom">${this.commonStrings.bottom}</option>
+										<option value="middle">${this.commonStrings.middle}</option>
+										<option value="right">${this.commonStrings.right}</option>
+										<option value="textTop">${this.editorStrings.imageTextTop}</option>
+										<option value="top">${this.commonStrings.top}</option>
 									</select>
 								</td>
 							</tr>
@@ -107,8 +105,8 @@
 	</tr>
 	<tr><td>
 		<table><tr>
-		<td><button dojoType='Button' dojoAttachEvent='onClick:ok'>OK</button></td>
-		<td><button dojoType='Button' dojoAttachEvent='onClick:cancel'>Cancel</button></td>
+		<td><button dojoType='Button' dojoAttachEvent='onClick:ok'>${this.commonStrings.buttonOk}</button></td>
+		<td><button dojoType='Button' dojoAttachEvent='onClick:cancel'>${this.commonStrings.buttonCancel}</button></td>
 		</tr></table>
 	</td></tr>
 </table>
