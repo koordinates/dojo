@@ -4,28 +4,27 @@ dojo.require("dojo.string.common");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.array");
 
-//TODO: should we use ${} substitution syntax instead, like widgets do?
-dojo.string.substituteParams = function(/*string*/template, /* object - optional or ... */hash){
+dojo.string.substitute = function(/*String*/template, /*Object or Array*/map, /*Object?*/thisObject){
 // summary:
 //	Performs parameterized substitutions on a string. Throws an exception if any parameter is unmatched.
 //
 // description:
 //	For example,
-//		dojo.string.substituteParams("File '%{0}' is not found in directory '%{1}'.","foo.html","/temp");
-//	returns
+//		dojo.string.substituteParams("File '${0}' is not found in directory '${1}'.",["foo.html","/temp"]);
+//		dojo.string.substituteParams("File '${name}' is not found in directory '${info.dir}'.",{name: "foo.html", info: {dir: "/temp"}});
+//	both return
 //		"File 'foo.html' is not found in directory '/temp'."
 //
-// template: the original string template with %{values} to be replaced
-// hash: name/value pairs (type object) to provide substitutions.  Alternatively, substitutions may be
-//	included as arguments 1..n to this function, corresponding to template parameters 0..n-1
+// template: a string with expressions in the form ${key} to be replaced or ${key:format} which specifies a format function.  NOTE syntax has changed from %{key}
+// map: where to look for substitutions
+// thisObject: where to look for optional format function
 
-	var map = (typeof hash == 'object') ? hash : dojo.lang.toArray(arguments, 1);
-
-	return template.replace(/\%\{(\w+)\}/g, function(match, key){
-		if(typeof(map[key]) != "undefined" && map[key] != null){
-			return map[key];
+	return template.replace(/\$\{([^\s\:]+)(?:\:(\S+))?\}/g, function(match, key, format){
+		var value = dojo.getObject(key,false,map);
+		if(typeof(value) == "undefined"){
+			dojo.raise("Missing key: " + key);
 		}
-		dojo.raise("Substitution not found: " + key);
+		return format ? dojo.getObject(format,false,thisObject)(value) : value;
 	}); // string
 };
 
