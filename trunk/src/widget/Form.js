@@ -50,7 +50,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 			for(var i=0; i<widget.children.length; ++i) {
 				  if (widget.children[i].widgetType == "Repeater") {
 					var rIndex=widget.children[i].pattern;
-					var rIndexPos=rIndex.indexOf("%{index}");
+					var rIndexPos=rIndex.indexOf("${index}");
 					rIndex=rIndex.substr(0,rIndexPos-1);
 					var myObj = this._getObject(obj, rIndex);
 					if (typeof(myObj) == "object" && myObj.length == 0) {

@@ -14,7 +14,7 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 			description: 
 					
 			usage: 
-				<div dojoType="Repeater" pattern="row.%{index}" useDnd="false">
+				<div dojoType="Repeater" pattern="row.${index}" useDnd="false">
 					<p>Name: <input typ="text" name="row.%{index}.name" value="" /><input type="button" rowAction="delete" value="remove this" </p>
 				</div>
 
