@@ -318,7 +318,7 @@ dojo.widget.defineWidget(
 		// dataUrl: String
 		//		URL argument passed to data provider object (class name specified in "dataProviderClass")
 		//		An example of the URL format for the default data provider is
-		//		"remoteComboBoxData.js?search=%{searchString}"
+		//		"remoteComboBoxData.js?search=${searchString}"
 		dataUrl: "",
 
 		// fadeTime: Integer

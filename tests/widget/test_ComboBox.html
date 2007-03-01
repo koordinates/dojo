@@ -129,7 +129,7 @@ The drop down list is filtered by the data you have already typed in.
 
 	<p>ComboBox #2: dataUrl, autocomplete=true:</p>
 	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
-		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar"
+		dataUrl="comboBoxData.js?${searchString}" mode="remote" style="width: 300px;" name="foo.bar"
 		onValueChanged="setVal2"
 	>
 	<br>
@@ -157,7 +157,7 @@ The drop down list is filtered by the data you have already typed in.
 	</p>
 	
 	<input dojoType="combobox" value="this should be replaced!"
-				dataUrl="remoteComboBoxData.js?search=%{searchString}" mode="remote">
+				dataUrl="remoteComboBoxData.js?search=${searchString}" mode="remote">
 	<hr>
 	
 	<p>Key value JSON object</p>
