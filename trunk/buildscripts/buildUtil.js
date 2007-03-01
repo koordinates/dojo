@@ -908,6 +908,12 @@ buildUtil.optimizeJs = function(/*String fileName*/fileName, /*String*/fileConte
 			//Replace the spaces with tabs.
 			//Ideally do this in the pretty printer rhino code.
 			fileContents = fileContents.replace(/    /g, "\t");
+
+			//If this is an nls bundle, make sure it does not end in a ;
+			//Otherwise, bad things happen.
+			if(fileName.match(/\/nls\//)){
+				fileContents = fileContents.replace(/;\s*$/, "");
+			}
 		}
 	}finally{
 		Packages.org.mozilla.javascript.Context.exit();
