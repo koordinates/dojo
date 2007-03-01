@@ -27,6 +27,6 @@
  'zh-tw': "Chinese (Traditional)",
  hello: "Hello",
  dojo: "Dojo",
- hello_dojo: "%{hello}, %{dojo}!",
- file_not_found:"The file you requested, %{0}, is not found."
+ hello_dojo: "${hello}, ${dojo}!",
+ file_not_found:"The file you requested, ${0}, is not found."
 }

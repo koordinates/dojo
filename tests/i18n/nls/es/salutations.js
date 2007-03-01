@@ -1,5 +1,5 @@
 {
  es: "Español",
  hello: "Hola",
- hello_dojo: "¡%{hello}, %{dojo}!"
+ hello_dojo: "¡${hello}, ${dojo}!"
 }
