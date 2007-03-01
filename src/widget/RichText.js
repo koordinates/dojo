@@ -5,6 +5,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.html.selection");
+dojo.require("dojo.html.range");
 dojo.require("dojo.event.*");
 dojo.require("dojo.string.extras");
 dojo.require("dojo.uri.Uri");
@@ -87,6 +88,10 @@ dojo.widget.defineWidget(
 		if(dojo.Deferred){
 			this.onLoadDeferred = new dojo.Deferred();
 		}
+
+		//add enter key handler
+		this.addKeyHandler(13, 0, this.handleEnterKey); //enter
+		this.addKeyHandler(13, 2, this.handleEnterKey); //shift+enter
 	},
 	{
 		// inheritWidth: Boolean
@@ -363,7 +368,7 @@ dojo.widget.defineWidget(
 				this.editNode.innerHTML = localhtml;
 				var node = this.editNode.firstChild;
 				while(node){
-					dojo.withGlobal(this.window, "selectElement", dojo.html.selection, [node.firstChild]);
+					dojo.withGlobal(this.window, "selectElement",dojo.html.selection, [node.firstChild]);
 					var nativename = node.tagName.toLowerCase();
 					this._local2NativeFormatNames[nativename] = this.queryCommandValue("formatblock");
 //						dojo.debug([nativename,this._local2NativeFormatNames[nativename]]);
@@ -826,21 +831,23 @@ dojo.widget.defineWidget(
 		},
 
 		KEY_CTRL: 1,
+		KEY_SHIFT: 2,
 
 		onKeyPress: function(e){
 			// summary: Fired on keypress
 
 			// handle the various key events
+			var modifiers = e.ctrlKey ? this.KEY_CTRL : 0 | e.shiftKey?this.KEY_SHIFT : 0;
 
-			var modifiers = e.ctrlKey ? this.KEY_CTRL : 0;
-
-			if (this._keyHandlers[e.key]) {
+			var key = e.key||e.keyCode;
+			if (this._keyHandlers[key]) {
 				// dojo.debug("char:", e.key);
-				var handlers = this._keyHandlers[e.key], i = 0, handler;
-				while (handler = handlers[i++]) {
-					if (modifiers == handler.modifiers) {
-						e.preventDefault();
-						handler.handler.call(this);
+				var handlers = this._keyHandlers[key], i = 0, h;
+				while (h = handlers[i++]) {
+					if (modifiers == h.modifiers) {
+						if(!h.handler.apply(this,arguments)){
+							e.preventDefault();
+						}
 						break;
 					}
 				}
@@ -859,35 +866,145 @@ dojo.widget.defineWidget(
 			});
 		},
 
-		onKeyPressed: function (e) {
-			// summary:
-			//		Fired after a keypress event has occured and it's action taken. This
-		 	//		is useful if action needs to be taken after text operations have finished
-
-			// Mozilla adds a single <p> with an embedded <br> when you hit enter once:
-			//   <p><br>\n</p>
-			// when you hit enter again it adds another <br> inside your enter
-			//   <p><br>\n<br>\n</p>
-			// and if you hit enter again it splits the <br>s over 2 <p>s
-			//   <p><br>\n</p>\n<p><br>\n</p>
-			// now this assumes that <p>s have double the line-height of <br>s to work
-			// and so we need to remove the <p>s to ensure the position of the cursor
-			// changes from the users perspective when they hit enter, as the second two
-			// html snippets render the same when margins are set to 0.
-
-			// TODO: doesn't really work; is this really needed?
-			//if (dojo.render.html.moz) {
-			//	for (var i = 0; i < this.document.getElementsByTagName("p").length; i++) {
-			//		var p = this.document.getElementsByTagName("p")[i];
-			//		if (p.innerHTML.match(/^<br>\s$/m)) {
-			//			while (p.hasChildNodes()) { p.parentNode.insertBefore(p.firstChild, p); }
-			//			p.parentNode.removeChild(p);
-			//		}
-			//	}
-			//}
+		onKeyPressed: function(e){
+			if(this._checkListLater){
+				if(dojo.withGlobal(this.editor.window, 'isCollapsed', dojo.html.selection)){
+					if(!dojo.withGlobal(this.editor.window, 'hasAncestorElement', dojo.html.selection, ['LI'])){
+						//circulate the undo detection code by calling RichText::execCommand directly
+						dojo.widget.Editor2.superclass.execCommand.apply(this.editor, ['formatblock',this.blockNodeForEnter]);
+						//set the innerHTML of the new block node
+						var block = dojo.withGlobal(this.editor.window, 'getAncestorElement', dojo.html.selection, [this.blockNodeForEnter])
+						if(block){
+							block.innerHTML=this.bogusHtmlContent;
+							if(dojo.render.html.ie){
+								//the following won't work, it will move the caret to the last list item in the previous list
+	//							var newrange = dojo.html.range.create();
+	//							newrange.setStart(block.firstChild,0);
+	//							var selection = dojo.html.range.getSelection(this.editor.window)
+	//							selection.removeAllRanges();
+	//							selection.addRange(newrange);
+								//move to the start by move backward one char
+								var r = this.editor.document.selection.createRange();
+								r.move('character',-1);
+								r.select();
+							}
+						}else{
+							alert('onKeyPressed: Can not find the new block node');
+						}
+					}
+				}
+				this._checkListLater = false;
+			}
 			this.onDisplayChanged(/*e*/); // can't pass in e
 		},
 
+		// blockNodeForEnter: String
+		//		this property decides the behavior of Enter key. It can be either P, 
+		//		DIV, BR, or empty (which means disable this feature). Anything else
+		//		will trigger errors.
+		blockNodeForEnter: 'P',
+		bogusHtmlContent: '&nbsp;',
+		handleEnterKey: function(e){
+			// summary: manually handle enter key event to make the behavior consistant across
+			//	all supported browsers. See property blockNodeForEnter for available options
+			if(!this.blockNodeForEnter){ return true; } //let browser handle this 
+			if(e.shiftKey  //shift+enter always generates <br>
+			    || this.blockNodeForEnter=='BR'){
+				var parent = dojo.withGlobal(this.window, "getParentElement",dojo.html.selection);
+				var header = dojo.html.range.getAncestor(parent,/^(?:H1|H2|H3|H4|H5|H6|LI)$/);
+				if(header){
+					if(header.tagName=='LI'){
+						return true; //let brower handle
+					}
+					var selection = dojo.html.range.getSelection(this.window);
+					var range = selection.getRangeAt(0);
+					if(!range.collapsed){
+						range.deleteContents();
+					}
+					if(dojo.html.range.atBeginningOfContainer(header, range.startContainer, range.startOffset)){
+						dojo.html.insertBefore(this.document.createElement('br'),header);
+					}else if(dojo.html.range.atEndOfContainer(header, range.startContainer, range.startOffset)){
+						dojo.html.insertAfter(this.document.createElement('br'),header);
+						var newrange = dojo.html.range.create();
+						newrange.setStartAfter(header);
+
+						selection.removeAllRanges();
+						selection.addRange(newrange);
+					}else{
+						return true; //let brower handle
+					}
+				}else{
+					this.document.execCommand('inserthtml',false, '<br>');
+				}
+				return false;
+			}
+			var _letBrowserHandle = true;
+			//blockNodeForEnter is either P or DIV
+			//first remove selection
+			var selection = dojo.html.range.getSelection(this.window);
+			var range = selection.getRangeAt(0);
+			if(!range.collapsed){
+				range.deleteContents();
+			}
+	
+			var block = dojo.html.range.getBlockAncestor(range.endContainer, null, this.editNode);
+	
+			if(block.blockNode && block.blockNode.tagName == 'LI'){
+				this._checkListLater = true;
+				return;
+			}else{
+				this._checkListLater = false;
+			}
+	
+			//text node directly under body, let's wrap them in a node
+			if(!block.blockNode){
+				this.document.execCommand('formatblock',false, this.blockNodeForEnter);
+				//get the newly created block node
+				block = {blockNode:dojo.html.range.getAncestor(range.startContainer,new RegExp(this.blockNodeForEnter))};
+			}
+			var newblock = this.document.createElement(this.blockNodeForEnter);
+			newblock.innerHTML=this.bogusHtmlContent;
+			this.removeTrailingBr(range.startContainer);
+			if(dojo.html.range.atEndOfContainer(block.blockNode || block.blockContainer, range.endContainer, range.endOffset)){
+				if(block.blockNode === block.blockContainer){
+					block.blockNode.appendChild(newblock);
+				}else{
+					dojo.html.insertAfter(newblock,block.blockNode);
+				}
+				_letBrowserHandle = false;
+				//lets move focus to the newly created block
+				var newrange = dojo.html.range.create();
+				newrange.setStart(newblock,0);
+	
+				selection.removeAllRanges();
+				selection.addRange(newrange);
+			}else if(dojo.html.range.atBeginningOfContainer(block.blockNode || block.blockContainer, 
+					range.startContainer, range.startOffset)){
+				if(block.blockNode === block.blockContainer){
+					dojo.html.prependChild(newblock,block.blockNode);
+				}else{
+					dojo.html.insertBefore(newblock,block.blockNode);
+				}
+				//browser does not scroll the caret position into view, do it manually
+				block.blockNode.scrollIntoView();
+				_letBrowserHandle = false;
+			}
+			return _letBrowserHandle;
+		},
+		removeTrailingBr: function(container){
+			var para = dojo.html.selection.getParentOfType(container,['P','LI']);
+			if(para && para.lastChild){
+				if(para.lastChild.nodeType==3 && dojo.string.trim(para.lastChild.nodeValue).length == 0){
+					dojo.html.destroyNode(para.lastChild);
+				}
+				if(para.childNodes.length>0 && para.lastChild.tagName=='BR'){
+					dojo.html.destroyNode(para.lastChild);
+					if(para.childNodes.length==0){
+						para.appendChild(para.ownerDocument.createTextNode(' '));
+					}
+				}
+			}
+		},
 		onClick: function(e){ this.onDisplayChanged(e); },
 		onBlur: function(e){ },
 		_initialFocus: true,
@@ -1061,24 +1178,24 @@ dojo.widget.defineWidget(
 				// Mozilla gets upset if we just store the range so we have to
 				// get the basic properties and recreate to save the selection
 				var selection = this.window.getSelection();
-				var selectionRange = selection.getRangeAt(0);
-				var selectionStartContainer = selectionRange.startContainer;
-				var selectionStartOffset = selectionRange.startOffset;
-				var selectionEndContainer = selectionRange.endContainer;
-				var selectionEndOffset = selectionRange.endOffset;
+//				var selectionRange = selection.getRangeAt(0);
+//				var selectionStartContainer = selectionRange.startContainer;
+//				var selectionStartOffset = selectionRange.startOffset;
+//				var selectionEndContainer = selectionRange.endContainer;
+//				var selectionEndOffset = selectionRange.endOffset;
 
 				// select our link and unlink
-				var a = dojo.withGlobal(this.window, "getAncestorElement", dojo.html.selection, ['a']);
+				var a = dojo.withGlobal(this.window, "getAncestorElement",dojo.html.selection, ['a']);
 				dojo.withGlobal(this.window, "selectElement", dojo.html.selection, [a]);
 
 				returnValue = this.document.execCommand("unlink", false, null);
 
-				// restore original selection
-				var selectionRange = this.document.createRange();
-				selectionRange.setStart(selectionStartContainer, selectionStartOffset);
-				selectionRange.setEnd(selectionEndContainer, selectionEndOffset);
-				selection.removeAllRanges();
-				selection.addRange(selectionRange);
+//				// restore original selection
+//				var selectionRange = this.document.createRange();
+//				selectionRange.setStart(selectionStartContainer, selectionStartOffset);
+//				selectionRange.setEnd(selectionEndContainer, selectionEndOffset);
+//				selection.removeAllRanges();
+//				selection.addRange(selectionRange);
 
 				return returnValue;
 			}else if((command == "hilitecolor")&&(dojo.render.html.mozilla)){
@@ -1122,7 +1239,7 @@ dojo.widget.defineWidget(
 			command = this._normalizeCommand(command);
 			if(dojo.render.html.mozilla){
 				if(command == "unlink"){ // mozilla returns true always
-					return dojo.withGlobal(this.window, "hasAncestorElement", dojo.html.selection, ['a']);
+					return dojo.withGlobal(this.window, "hasAncestorElement",dojo.html.selection, ['a']);
 				} else if (command == "inserttable") {
 					return true;
 				}
@@ -1156,29 +1273,68 @@ dojo.widget.defineWidget(
 			// summary:
 			//		place the cursor at the start of the editing area
 			this.focus();
+
 			//see comments in placeCursorAtEnd
-			if(dojo.render.html.moz && this.editNode.firstChild &&
-				this.editNode.firstChild.nodeType != dojo.dom.TEXT_NODE){
-				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, [this.editNode.firstChild]);
+			var isvalid=false;
+			if(dojo.render.html.moz){
+				var first=this.editNode.firstChild;
+				while(first){
+					if(first.nodeType == 3){
+						if(dojo.string.trim(first.nodeValue).length>0){
+							isvalid=true;
+							dojo.withGlobal(this.window, "selectElement",dojo.html.selection, [first]);
+							break;
+						}
+					}else if(first.nodeType == 1){
+						isvalid=true;
+						dojo.withGlobal(this.window, "selectElementChildren",dojo.html.selection, [first]);
+						break;
+					}
+					first = first.nextSibling;
+				}
 			}else{
-				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, [this.editNode]);
+				isvalid=true;
+				dojo.withGlobal(this.window, "selectElementChildren",dojo.html.selection, [this.editNode]);
 			}
-			dojo.withGlobal(this.window, "collapse", dojo.html.selection, [true]);
+			if(isvalid){
+				dojo.withGlobal(this.window, "collapse", dojo.html.selection, [true]);
+			}
 		},
 
 		placeCursorAtEnd: function(){
 			// summary:
 			//		place the cursor at the end of the editing area
 			this.focus();
+
 			//In mozilla, if last child is not a text node, we have to use selectElementChildren on this.editNode.lastChild
 			//otherwise the cursor would be placed at the end of the closing tag of this.editNode.lastChild
-			if(dojo.render.html.moz && this.editNode.lastChild &&
-				this.editNode.lastChild.nodeType != dojo.dom.TEXT_NODE){
-				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, [this.editNode.lastChild]);
+			var isvalid=false;
+			if(dojo.render.html.moz){
+				var last=this.editNode.lastChild;
+				while(last){
+					if(last.nodeType == 3){
+						if(dojo.string.trim(last.nodeValue).length>0){
+							isvalid=true;
+							dojo.withGlobal(this.window, "selectElement",dojo.html.selection, [last]);
+							break;
+						}
+					}else if(last.nodeType == 1){
+						isvalid=true;
+						if(last.lastChild){
+							dojo.withGlobal(this.window, "selectElement",dojo.html.selection, [last.lastChild]);
+						}else{
+							dojo.withGlobal(this.window, "selectElement",dojo.html.selection, [last]);
+						}
+						break;
+					}
+					last = last.previousSibling;
+				}
 			}else{
-				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, [this.editNode]);
+				dojo.withGlobal(this.window, "selectElementChildren",dojo.html.selection, [this.editNode]);
 			}
-			dojo.withGlobal(this.window, "collapse", dojo.html.selection, [false]);
+			if(isvalid){
+				dojo.withGlobal(this.window, "collapse", dojo.html.selection, [false]);
+			}
 		},
 
 		getValue: function(){
