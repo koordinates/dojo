@@ -69,7 +69,7 @@ dojo.widget.defineWidget("dojo.widget.FormElement", dojo.widget.HtmlWidget,
 		//		not sure which parts of disabling a widget should be here;
 		//		not sure which code is common to many widgets and which is specific to a particular widget.
 		if (disabled){
-			if (!dojo.html.hasClass(this.domNode, this["class"]+"Disabled"){
+			if (!dojo.html.hasClass(this.domNode, this["class"]+"Disabled")){
 				dojo.html.prependClass(this.domNode, this["class"]+"Disabled");
 			}
 		}else{
