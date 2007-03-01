@@ -814,14 +814,12 @@ dojo.widget.defineWidget(
 				// Unfortuantly pasteHTML does not prove to be undoable
 				this.execCommand((e.shiftKey ? "outdent" : "indent"));
 			}else if(dojo.render.html.ie){
-				if((65 <= e.keyCode)&&(e.keyCode <= 90)){
+				if((65 <= e.keyCode&&e.keyCode <= 90) ||
+				  (e.keyCode>=37&&e.keyCode<=40)){ //arrow keys
 					e.charCode = e.keyCode;
 					this.onKeyPress(e);
 				}
-				// dojo.debug(e.ctrlKey);
-				// dojo.debug(e.keyCode);
-				// dojo.debug(e.charCode);
-				// this.onKeyPress(e);
+				// dojo.debug(e.charCode, e.keyCode, e.ctrlKey);
 			}
 		},
 
@@ -934,7 +932,8 @@ dojo.widget.defineWidget(
 						return true; //let brower handle
 					}
 				}else{
-					this.document.execCommand('inserthtml',false, '<br>');
+					//don't change this: do not call this.execCommand, as that may have other logic in subclass
+					dojo.widget.RichText.prototype.execCommand.call(this, 'inserthtml', '<br>');
 				}
 				return false;
 			}
@@ -955,16 +954,27 @@ dojo.widget.defineWidget(
 			}else{
 				this._checkListLater = false;
 			}
-	
+
 			//text node directly under body, let's wrap them in a node
 			if(!block.blockNode){
 				this.document.execCommand('formatblock',false, this.blockNodeForEnter);
 				//get the newly created block node
-				block = {blockNode:dojo.html.range.getAncestor(range.startContainer,new RegExp(this.blockNodeForEnter))};
+				block = {blockNode:dojo.withGlobal(this.window, "getAncestorElement",dojo.html.selection, [this.blockNodeForEnter]),
+						blockContainer: this.editNode};
+				if(block.blockNode){
+					if(dojo.string.trim(dojo.html.textContent(block.blockNode)).length==0){
+						this.removeTrailingBr(block.blockNode);
+						return false;
+					}
+				}else{
+					block.blockNode = this.editNode;
+				}
+				selection = dojo.html.range.getSelection(this.window);
+				range = selection.getRangeAt(0);
 			}
 			var newblock = this.document.createElement(this.blockNodeForEnter);
 			newblock.innerHTML=this.bogusHtmlContent;
-			this.removeTrailingBr(range.startContainer);
+			this.removeTrailingBr(block.blockNode);
 			if(dojo.html.range.atEndOfContainer(block.blockNode || block.blockContainer, range.endContainer, range.endOffset)){
 				if(block.blockNode === block.blockContainer){
 					block.blockNode.appendChild(newblock);
@@ -1038,7 +1048,7 @@ dojo.widget.defineWidget(
 
 		/** this event will be fired everytime the display context changes and the
 		 result needs to be reflected in the UI */
-		onDisplayChanged: function (e){ },
+		onDisplayChanged: function (e){},
 
 		_normalizeCommand: function (/*String*/cmd){
 			// summary:
