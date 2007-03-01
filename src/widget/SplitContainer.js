@@ -74,9 +74,6 @@ dojo.widget.defineWidget(
 		this.paneWidth = content.width;
 		this.paneHeight = content.height;
 		this._layoutPanels();
-		if(this.cover){
-			this._updateCoverSize();
-		}
 	},
 
 	postCreate: function(args, fragment, parentComp){
@@ -103,7 +100,7 @@ dojo.widget.defineWidget(
 			} catch(e) { this.sizerWidth = 15; }
 		}
 		this.virtualSizer = document.createElement('div');
-		this.virtualSizer.style.position = 'absolute';
+		this.virtualSizer.style.position = 'relative';
 
 		// #1681: work around the dreaded 'quirky percentages in IE' layout bug
 		// If the splitcontainer's dimensions are specified in percentages, it
@@ -113,8 +110,8 @@ dojo.widget.defineWidget(
 		// The workaround: instead of changing the display style attribute,
 		// switch to changing the zIndex (bring to front/move to back)
 
-		this.virtualSizer.style.display = 'block';
-		this.virtualSizer.style.zIndex = -1;
+//		this.virtualSizer.style.display = 'block';
+		this.virtualSizer.style.zIndex = 10;
 		this.virtualSizer.className = this.isHorizontal ? 'dojoSplitContainerVirtualSizerH' : 'dojoSplitContainerVirtualSizerV';
 		this.domNode.appendChild(this.virtualSizer);
 
@@ -342,10 +339,6 @@ dojo.widget.defineWidget(
 		}
 	},
 
-	_updateCoverSize: function(){
-		this.cover.style.width=this.paneWidth+"px";
-		this.cover.style.height=this.paneHeight+"px";
-	},
 	beginSizing: function(e, i){
 		this.paneBefore = this.children[i];
 		this.paneAfter = this.children[i+1];
@@ -361,9 +354,10 @@ dojo.widget.defineWidget(
 			s.zIndex=1;
 			s.top=0;
 			s.left=0;
-			this._updateCoverSize();
+			s.width="100%";
+			s.height="100%";
 		}else{
-			this.cover.style.display="";
+			this.cover.style.zIndex=1;
 		}
 		this.sizingSplitter.style.zIndex=2;
 		
@@ -408,7 +402,7 @@ dojo.widget.defineWidget(
 
 	endSizing: function(e){
 		if(this.cover){
-			this.cover.style.display='none';
+			this.cover.style.zIndex=-1;
 		}
 		if (!this.activeSizing){
 			this._hideSizingLine();
@@ -492,8 +486,8 @@ dojo.widget.defineWidget(
 			dojo.html.setMarginBox(this.virtualSizer, { width: this.paneWidth, height: this.sizerWidth });
 		}
 
-		this.virtualSizer.style.zIndex = 10;
-		this.virtualSizer.style.display = '';
+//		this.virtualSizer.style.zIndex = 10;
+		this.virtualSizer.style.display = 'block';
 	},
 
 	_hideSizingLine: function(){
