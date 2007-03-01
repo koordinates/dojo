@@ -1,10 +1,20 @@
 dojo.provide("dojo.widget.Editor2Plugin.InsertImageDialog");
 
+dojo.require("dojo.i18n.common"); 
+dojo.requireLocalization("dojo.widget", "common"); 
+dojo.requireLocalization("dojo.widget", "Editor2"); 
+
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2InsertImageDialog",
 	dojo.widget.Editor2DialogContent,
 {
 	templatePath: dojo.uri.moduleUri("dojo.widget", "templates/Editor2/Dialog/insertimage.html"),
+
+	postMixInProperties: function(){ 
+		dojo.widget.Editor2InsertImageDialog.superclass.postMixInProperties.apply(this, arguments); 
+		this.editorStrings = dojo.i18n.getLocalization("dojo.widget", "Editor2", this.lang); 
+		this.commonStrings = dojo.i18n.getLocalization("dojo.widget", "common", this.lang); 
+	}, 
 
 	editableAttributes: ['src', 'alt', 'width', 'height', 'hspace', 'vspace', 'border', 'align'],
 	loadContent: function(){
