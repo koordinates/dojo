@@ -37,7 +37,8 @@ dojo.event = new function(){
 			once: false,
 			delay: null,
 			rate: 0,
-			adviceMsg: false
+			adviceMsg: false,
+			maxCalls: -1
 		};
 
 		switch(args.length){
@@ -136,6 +137,7 @@ dojo.event = new function(){
 				ao.delay = args[8];
 				ao.rate = args[9];
 				ao.adviceMsg = args[10];
+				ao.maxCalls = (!isNaN(parseInt(args[11]))) ? args[11] : -1;
 				break;
 		}
 
@@ -268,12 +270,14 @@ dojo.event = new function(){
 				ao.delay = args[8];
 				ao.rate = args[9];
 				ao.adviceMsg = args[10];
+				ao.maxCalls = args[11];
 		*/
 		if(arguments.length == 1){
 			var ao = arguments[0];
 		}else{
 			var ao = interpolateArgs(arguments, true);
 		}
+		/*
 		if(dojo.lang.isString(ao.srcFunc) && (ao.srcFunc.toLowerCase() == "onkey") ){
 			if(dojo.render.html.ie){
 				ao.srcFunc = "onkeydown";
@@ -281,7 +285,7 @@ dojo.event = new function(){
 			}
 			ao.srcFunc = "onkeypress";
 		}
-
+		*/
 
 		if(dojo.lang.isArray(ao.srcObj) && ao.srcObj!=""){
 			var tmpAO = {};
@@ -340,7 +344,7 @@ dojo.event = new function(){
 				argsStr.push(arguments[x]);
 			}
 			dojo.debug("("+kwArgs.srcObj+")."+kwArgs.srcFunc, ":", argsStr.join(", "));
-		}
+		};
 		this.kwConnect(kwArgs);
 	}
 
@@ -368,6 +372,15 @@ dojo.event = new function(){
 		//	 	the "once" flag will always be set to "true"
 		var ao = interpolateArgs(arguments, true);
 		ao.once = true;
+		return this.connect(ao); // a MethodJoinPoint object
+	}
+
+	this.connectRunOnce = function(){
+		// summary:
+		//	 	takes the same parameters as dojo.event.connect(), except that
+		//	 	the "maxCalls" flag will always be set to 1
+		var ao = interpolateArgs(arguments, true);
+		ao.maxCalls = 1;
 		return this.connect(ao); // a MethodJoinPoint object
 	}
 
@@ -512,14 +525,15 @@ dojo.event.MethodJoinPoint.getForMethod = function(/*Object*/obj, /*String*/func
 	// funcName:
 	//		the name of the function to return a MethodJoinPoint for
 	if(!obj){ obj = dj_global; }
-	if(!obj[funcName]){
+	var ofn = obj[funcName];
+	if(!ofn){
 		// supply a do-nothing method implementation
-		obj[funcName] = function(){};
+		ofn = obj[funcName] = function(){};
 		if(!obj[funcName]){
 			// e.g. cannot add to inbuilt objects in IE6
 			dojo.raise("Cannot set do-nothing method on that object "+funcName);
 		}
-	}else if((!dojo.lang.isFunction(obj[funcName]))&&(!dojo.lang.isAlien(obj[funcName]))){
+	}else if((typeof ofn != "function")&&(!dojo.lang.isFunction(ofn))&&(!dojo.lang.isAlien(ofn))){
 		// FIXME: should we throw an exception here instead?
 		return null; 
 	}
@@ -537,43 +551,55 @@ dojo.event.MethodJoinPoint.getForMethod = function(/*Object*/obj, /*String*/func
 				dojo.event.browser.addClobberNodeAttrs(obj, [jpname, jpfuncname, funcName]);
 			}
 		}
-		var origArity = obj[funcName].length;
-		obj[jpfuncname] = obj[funcName];
+		var origArity = ofn.length;
+		obj[jpfuncname] = ofn;
 		// joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, funcName);
 		joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, jpfuncname);
-		obj[funcName] = function(){ 
-			var args = [];
 
-			if((isNode)&&(!arguments.length)){
-				var evt = null;
-				try{
-					if(obj.ownerDocument){
-						evt = obj.ownerDocument.parentWindow.event;
-					}else if(obj.documentElement){
-						evt = obj.documentElement.ownerDocument.parentWindow.event;
-					}else if(obj.event){ //obj is a window
-						evt = obj.event;
-					}else{
+		if(!isNode){
+			obj[funcName] = function(){ 
+				// var args = [];
+				// for(var x=0; x<arguments.length; x++){
+					// args.push(arguments[x]);
+				// }
+				// return joinpoint.run.apply(joinpoint, args); 
+				return joinpoint.run.apply(joinpoint, arguments); 
+			}
+		}else{
+			obj[funcName] = function(){ 
+				var args = [];
+
+				if(!arguments.length){
+					var evt = null;
+					try{
+						if(obj.ownerDocument){
+							evt = obj.ownerDocument.parentWindow.event;
+						}else if(obj.documentElement){
+							evt = obj.documentElement.ownerDocument.parentWindow.event;
+						}else if(obj.event){ //obj is a window
+							evt = obj.event;
+						}else{
+							evt = window.event;
+						}
+					}catch(e){
 						evt = window.event;
 					}
-				}catch(e){
-					evt = window.event;
-				}
 
-				if(evt){
-					args.push(dojo.event.browser.fixEvent(evt, this));
-				}
-			}else{
-				for(var x=0; x<arguments.length; x++){
-					if((x==0)&&(isNode)&&(dojo.event.browser.isEvent(arguments[x]))){
-						args.push(dojo.event.browser.fixEvent(arguments[x], this));
-					}else{
-						args.push(arguments[x]);
+					if(evt){
+						args.push(dojo.event.browser.fixEvent(evt, this));
+					}
+				}else{
+					for(var x=0; x<arguments.length; x++){
+						if((x==0)&&(dojo.event.browser.isEvent(arguments[x]))){
+							args.push(dojo.event.browser.fixEvent(arguments[x], this));
+						}else{
+							args.push(arguments[x]);
+						}
 					}
 				}
+				// return joinpoint.run.apply(joinpoint, arguments); 
+				return joinpoint.run.apply(joinpoint, args); 
 			}
-			// return joinpoint.run.apply(joinpoint, arguments); 
-			return joinpoint.run.apply(joinpoint, args); 
 		}
 		obj[funcName].__preJoinArity = origArity;
 	}
@@ -581,6 +607,8 @@ dojo.event.MethodJoinPoint.getForMethod = function(/*Object*/obj, /*String*/func
 }
 
 dojo.lang.extend(dojo.event.MethodJoinPoint, {
+	squelch: false,
+
 	unintercept: function(){
 		// summary: 
 		//		destroy the connection to all listeners that may have been
@@ -624,6 +652,13 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 			var aroundObj = marr[2]||dj_global;
 			var aroundFunc = marr[3];
 			var msg = marr[6];
+			var maxCount = marr[7];
+			if(maxCount > -1){
+				if(maxCount == 0){
+					return;
+				}
+				marr[7]--;
+			}
 			var undef;
 
 			var to = {
@@ -687,7 +722,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 					}
 				}
 			}
-		}
+		};
 
 		var unRollSquelch = function(){
 			if(this.squelch){
@@ -699,7 +734,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 			}else{
 				return unrollAdvice.apply(this, arguments);
 			}
-		}
+		};
 
 		if((this["before"])&&(this.before.length>0)){
 			// pass a cloned array, if this event disconnects this event forEach on this.before wont work
@@ -759,17 +794,19 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		//			- delay
 		//			- rate
 		//			- adviceMsg
+		//			- maxCalls
 		this.addAdvice(	args["adviceObj"], args["adviceFunc"], 
 						args["aroundObj"], args["aroundFunc"], 
 						args["adviceType"], args["precedence"], 
 						args["once"], args["delay"], args["rate"], 
-						args["adviceMsg"]);
+						args["adviceMsg"], args["maxCalls"]);
 	},
 
 	addAdvice: function(	thisAdviceObj, thisAdvice, 
 							thisAroundObj, thisAround, 
 							adviceType, precedence, 
-							once, delay, rate, asMessage){
+							once, delay, rate, asMessage,
+							maxCalls){
 		// summary:
 		//		add advice to this joinpoint using positional parameters
 		// thisAdviceObj:
@@ -798,12 +835,16 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		// adviceMsg:
 		//		boolean. Should the listener have all the parameters passed in
 		//		as a single argument?
+		// maxCalls:
+		//		Integer. The maximum number of times this connection can be
+		//		used before being auto-disconnected. -1 signals that the
+		//		connection should never be disconnected.
 		var arr = this.getArr(adviceType);
 		if(!arr){
 			dojo.raise("bad this: " + this);
 		}
 
-		var ao = [thisAdviceObj, thisAdvice, thisAroundObj, thisAround, delay, rate, asMessage];
+		var ao = [thisAdviceObj, thisAdvice, thisAroundObj, thisAround, delay, rate, asMessage, maxCalls];
 		
 		if(once){
 			if(this.hasAdvice(thisAdviceObj, thisAdvice, adviceType, arr) >= 0){
