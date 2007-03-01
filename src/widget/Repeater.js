@@ -76,9 +76,9 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 					for (var j=0,len2=list.length; j<len2; j++) {
 						var name = list[j].name;
 						var index=dojo.string.escape("regexp", this.pattern);
-						index = index.replace(/(%\\\{index\\\})/g,"%{index}");
-						var nameRegexp = dojo.string.substituteParams(index, {"index": "[0-9]*"});
-						var newName= dojo.string.substituteParams(this.pattern, {"index": "" + i});
+						index = index.replace(/($\\\{index\\\})/g,"${index}");
+						var nameRegexp = dojo.string.substitute(index, {"index": "[0-9]*"});
+						var newName= dojo.string.substitute(this.pattern, {"index": "" + i});
 						var re=new RegExp(nameRegexp,"g");
 						list[j].name = name.replace(re,newName);
 					}
@@ -88,8 +88,8 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 
 		onDeleteRow: function(e) {
 			var index=dojo.string.escape("regexp", this.pattern);
-			index = index.replace(/%\\\{index\\\}/g,"\%{index}");
-			var nameRegexp = dojo.string.substituteParams(index, {"index": "([0-9]*)"});
+			index = index.replace(/$\\\{index\\\}/g,"\${index}");
+			var nameRegexp = dojo.string.substitute(index, {"index": "([0-9]*)"});
 			var re=new RegExp(nameRegexp,"g");
 			this.deleteRow(re.exec(e.target.name)[1]);
 		},
@@ -132,7 +132,7 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 			} // else-if
 		},
 		setRow: function(/*string*/template, /*object*/myObject) {
-			//template = dojo.string.substituteParams(template, {"index": "0"});
+			//template = dojo.string.substitute(template, {"index": "0"});
 			template= template.replace(/\%\{(index)\}/g, "0");
 			this.rowTemplate=template;
 			if (myObject == null) { myObject = {}; }
@@ -159,7 +159,7 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 						} // ifelse
 					} else if (child.getAttribute("rowAction") != null) {
 						if(child.getAttribute("rowAction") == "delete") {
-							child.name=dojo.string.substituteParams(this.pattern, {"index": "" + node.row})+".delete";
+							child.name=dojo.string.substitute(this.pattern, {"index": "" + node.row})+".delete";
 							dojo.event.connect(child, "onclick", this, "onDeleteRow");
 						} // if
 					} // else-if

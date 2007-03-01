@@ -10,8 +10,8 @@ dojo.string.substitute = function(/*String*/template, /*Object or Array*/map, /*
 //
 // description:
 //	For example,
-//		dojo.string.substituteParams("File '${0}' is not found in directory '${1}'.",["foo.html","/temp"]);
-//		dojo.string.substituteParams("File '${name}' is not found in directory '${info.dir}'.",{name: "foo.html", info: {dir: "/temp"}});
+//		dojo.string.substitute("File '${0}' is not found in directory '${1}'.",["foo.html","/temp"]);
+//		dojo.string.substitute("File '${name}' is not found in directory '${info.dir}'.",{name: "foo.html", info: {dir: "/temp"}});
 //	both return
 //		"File 'foo.html' is not found in directory '/temp'."
 //

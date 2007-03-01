@@ -59,9 +59,11 @@ dojo.declare(
 				// FIXME: implement backoff!
 			}
 			var tss = encodeURIComponent(searchStr);
-			var realUrl = dojo.string.substituteParams(this.searchUrl, {"searchString": tss});
+dojo.debug("STARTSEARCH: url="+this.searchUrl+" searchString="+tss);
+			var realUrl = dojo.string.substitute(this.searchUrl, {"searchString": tss});
+dojo.debug("realUrl="+typeof realUrl);
 			var _this = this;
-			var request = this._lastRequest = dojo.io.bind({
+			var request = (this._lastRequest = dojo.io.bind({
 				url: realUrl,
 				method: "get",
 				mimetype: "text/json",
@@ -79,7 +81,7 @@ dojo.declare(
 						callback(data);
 					}
 				}
-			});
+			}));
 			this._inFlight = true;
 		}
 	}
