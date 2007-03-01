@@ -933,7 +933,8 @@ buildUtil.stripComments = function(/*String*/startDir, /*boolean*/suppressDojoCo
 			//Don't process anything that might be in a buildscripts folder (only a concern for webbuild.sh)
 			if(!fileList[i].match(/dojo\.js$/)
 				&& !fileList[i].match(/dojo\.js\.uncompressed\.js$/)
-				&& !fileList[i].match(/buildscripts/)){
+				&& !fileList[i].match(/buildscripts/)
+				&& !fileList[i].match(/tests\//)){
 				print("Stripping comments from file: " + fileList[i]);
 				
 				//Read in the file. Make sure we have a JS string.
