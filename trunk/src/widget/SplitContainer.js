@@ -493,10 +493,12 @@ dojo.widget.defineWidget(
 		}
 
 		this.virtualSizer.style.zIndex = 10;
+		this.virtualSizer.style.display = '';
 	},
 
 	_hideSizingLine: function(){
-		this.virtualSizer.style.zIndex = -1;
+//		this.virtualSizer.style.zIndex = -1;
+		this.virtualSizer.style.display = 'none';
 	},
 
 	_moveSizingLine: function(){
