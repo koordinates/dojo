@@ -469,21 +469,22 @@ dojo.dom.textContent = function(/*Node*/node, /*string*/text){
 		dojo.dom.replaceChildren(node, _document.createTextNode(text));
 		return text;	//	string
 	} else {
-		if(node.textContent != undefined){ //FF 1.5
+		if(node['textContent'] != undefined){ //FF 1.5
 			return node.textContent;	//	string
 		}
 		var _result = "";
 		if (node == null) { return _result; }
-		for (var i = 0; i < node.childNodes.length; i++) {
-			switch (node.childNodes[i].nodeType) {
+		var i=0, n;
+		while(n=node.childNodes[i++]) {
+			switch (n.nodeType) {
 				case 1: // ELEMENT_NODE
 				case 5: // ENTITY_REFERENCE_NODE
-					_result += dojo.dom.textContent(node.childNodes[i]);
+					_result += dojo.dom.textContent(n);
 					break;
 				case 3: // TEXT_NODE
 				case 2: // ATTRIBUTE_NODE
 				case 4: // CDATA_SECTION_NODE
-					_result += node.childNodes[i].nodeValue;
+					_result += n.nodeValue;
 					break;
 				default:
 					break;
