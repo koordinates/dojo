@@ -27,18 +27,19 @@
 	<script type="text/javascript">
 		var testColumns = [
 			{ field: "ColumnA" },
-			{ field: "ColumnB", dataType:"number" },
-			{ field: "ColumnC" }
+			{ field: "ColumnC" },
+			{ field: "ColumnB", sortType:"Number", dataType:Number, align:"right" }
 		];
 		var testData = [
-			{ myId:0, "ColumnA": "abc", "ColumnB": "123", "ColumnC": "!@#" },
-			{ myId:1, "ColumnA": "def", "ColumnB": "456", "ColumnC": "asdfasd" },
-			{ myId:2, "ColumnA": "hij", "ColumnB": "789", "ColumnC": "asdfasdf" },
-			{ myId:3, "ColumnA": "klm", "ColumnB": "098", "ColumnC": "asdfasdf"},
-			{ myId:4, "ColumnA": "opq", "ColumnB": "765", "ColumnC": "qowie" },
-			{ myId:5, "ColumnA": "rst", "ColumnB": "432", "ColumnC": "xcvms" },
-			{ myId:6, "ColumnA": "uvw", "ColumnB": "101", "ColumnC": "lwqkejr" },
-			{ myId:7, "ColumnA": "xyz", "ColumnB": "234", "ColumnC": "zpxocivu" }
+			{ myId:9, "ColumnA": "abc", "ColumnB": 123, "ColumnC": "!@#" },
+			{ myId:1, "ColumnA": "def", "ColumnB": 456, "ColumnC": "asdfasd" },
+			{ myId:2, "ColumnA": "hij", "ColumnB": 789, "ColumnC": "asdfasdf" },
+			{ myId:3, "ColumnA": "klm", "ColumnB": 098, "ColumnC": "asdfasdf"},
+			{ myId:4, "ColumnA": "opq", "ColumnB": 765, "ColumnC": "qowie" },
+			{ myId:5, "ColumnA": "rst", "ColumnB": 432, "ColumnC": "xcvms" },
+			{ myId:6, "ColumnA": "uvw", "ColumnB": 101, "ColumnC": "lwqkejr" },
+			{ myId:7, "ColumnA": "xyz", "ColumnB": 234, "ColumnC": "zpxocivu" },
+			{ myId:8, "ColumnA": "xyz", "ColumnB": 98, "ColumnC": "zpxocivu" }	
 		];
 
 		dojo.addOnLoad(function() {
