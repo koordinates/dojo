@@ -197,6 +197,7 @@ dojo.widget.defineWidget(
 //		saveArgName: "editorContent",
 //		closeOnSave: false,
 
+		toolbarConfig: {},
 		// toolbarAlwaysVisible: Boolean: Whether the toolbar should scroll to keep it in the view
 		toolbarAlwaysVisible: false,
 
@@ -250,7 +251,7 @@ dojo.widget.defineWidget(
 					}
 				}
 				if(!this.toolbarWidget){
-						var tbOpts = {shareGroup: this.toolbarGroup, parent: this, lang: this.lang};
+						var tbOpts = {shareGroup: this.toolbarGroup, parent: this, lang: this.lang, config:this.toolbarConfig};
 						tbOpts.templateString = dojo.uri.cache.get(this.toolbarTemplatePath);
 						if(this.toolbarTemplateCssPath){
 							tbOpts.templateCssPath = this.toolbarTemplateCssPath;

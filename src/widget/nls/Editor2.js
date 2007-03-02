@@ -27,5 +27,24 @@
 	imageAbsBot: "Abs Bottom",
 	imageAbsMid: "Abs Middle",
 	imageBaseline: "Baseline",
-	imageTextTop: "Text Top"
+	imageTextTop: "Text Top",
+	//blockformat
+	blockP: "Normal",
+	blockDIV: "Normal (DIV)",
+	blockPRE: "Formatted",
+	blockADDRESS: "Address",
+	blockH1: "Heading 1",
+	blockH2: "Heading 2",
+	blockH3: "Heading 3",
+	blockH4: "Heading 4",
+	blockH5: "Heading 5",
+	blockH6: "Heading 6",
+	//fontsize
+	fontSize1: "xx-small",
+	fontSize2: "x-small",
+	fontSize3: "small",
+	fontSize4: "medium",
+	fontSize5: "large",
+	fontSize6: "x-large",
+	fontSize7: "xx-large"
 })
