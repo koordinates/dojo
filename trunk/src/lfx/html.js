@@ -310,10 +310,10 @@ dojo.lfx.html.wipeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Functi
 		// get node height, either it's natural height or it's height specified via style or class attributes
 		// (for FF, the node has to be (temporarily) rendered to measure height)
 		with(node.style){
-			visibility="hidden"
+			visibility="hidden";
 			display="";
 		}
-		var height = dojo.html.getBorderBox(node).height;
+		var nodeHeight = dojo.html.getBorderBox(node).height;
 		with(node.style){
 			visibility="";
 			display="none";
@@ -322,7 +322,7 @@ dojo.lfx.html.wipeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Functi
 		var anim = dojo.lfx.propertyAnimation(node,
 			{	"height": {
 					start: 1, // 0 causes IE to display the whole panel
-					end: function(){ return height; } 
+					end: function(){ return nodeHeight; } 
 				}
 			}, 
 			duration, 
