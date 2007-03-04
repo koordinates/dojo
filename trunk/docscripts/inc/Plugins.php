@@ -39,6 +39,7 @@ class Plugins
               }
 
               $data = call_user_func($function, $by_resource, $by_object);
+							if(!is_array($data)) continue;
               foreach ($data as $file => $contents) {
                 $file = "{$output_dir}{$type}/{$format}/{$file}";
                 if ($format == 'json') {
