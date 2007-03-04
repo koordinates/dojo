@@ -70,9 +70,19 @@ foreach ($files as $file) {
     if ($environment && $require) {
       $environment = $environment->getValue();
       $require = $environment->getValue();
-      if ($environment instanceof DojoString && $require instanceof DojoString) {
-        $output[$package_name]['meta']['requires'][$environment->getValue()][] = $require->getValue();
-      }
+      if ($require instanceof DojoString) {
+				if ($environment instanceof DojoString) {
+        	$output[$package_name]['meta']['requires'][$environment->getValue()][] = $require->getValue();
+				}
+			}
+			else {
+				if ($environment->getValue() == "dojo.render.svg.capable") {
+      		$output[$package_name]['meta']['requires']['svg'][] = $require;
+				}
+				else if($environment->getValue() == "dojo.render.vml.capable") {
+      	$output[$package_name]['meta']['requires']['vml'][] = $require;
+				}
+			}
     }
   }
   
