@@ -150,9 +150,9 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2T
 					if(format == this._lastSelectedFormat && this._blockDisplayNames){
 						return this._lastState;
 					}
-					this._lastSelectedFormat = format;
 					var label = this._domNode.getElementsByTagName("label")[0];
-					var text = this._blockDisplayNames[format.toLowerCase()];
+					this._lastSelectedFormat = format;
+					var text = format?this._blockDisplayNames[format.toLowerCase()]:false;
 					if(text){
 						label.innerHTML = text;
 					}else{
@@ -210,7 +210,7 @@ dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2Tool
 	onDropDownDestroy: function(){},
 
 	refreshState: function(){
-		dojo.widget.Editor2ToolbarFormatBlockSelect.superclass.refreshState.call(this);
+		dojo.widget.Editor2ToolbarFontSizeSelect.superclass.refreshState.call(this);
 		if(this._lastState != dojo.widget.Editor2Manager.commandState.Disabled){
 			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 			if(curInst){
@@ -253,5 +253,78 @@ dojo.declare("dojo.widget.Editor2ToolbarFontNameSelect", dojo.widget.Editor2Tool
 			this._fontSizeDisplayNames[item] = item;
 		}
 		this.contentHtml = innerhtml+"</div>";
+	}
+});
+
+dojo.widget.Editor2ToolbarItemManager.registerHandler(function(name){
+	switch(name){
+		case 'formatblock':
+			return new dojo.widget.Editor2ToolbarFormatBlockSelect("formatblock");
+		case 'fontsize':
+			return new dojo.widget.Editor2ToolbarFontSizeSelect("fontsize");
+		case 'fontname':
+			return new dojo.widget.Editor2ToolbarFontNameSelect("fontname");
+		case 'specialchar':
+			return new dojo.widget.Editor2ToolbarSpecialCharSelect('inserthtml');//use inserthtml as the command, as we do not want to add a command for specialchar
+	}
+});
+
+dojo.declare("dojo.widget.Editor2ToolbarSpecialCharSelect", dojo.widget.Editor2ToolbarComboItem, {
+	// summary: dojo.widget.Editor2ToolbarSpecialCharSelect is a dropdown which have a table of special chars
+	// description: 
+	//		to customize the items in this dropdown, set specialChars in toolbarConfig on Editor2, 
+	//		or specify attribute dojoETItemItems in the toolbar template in the node with 
+	//		dojoETItemName="specialchar", see dojo.widget.Editor2ToolbarFontSizeSelect doc for samples
+
+	create: function(node, toolbar){
+		dojo.widget.Editor2ToolbarSpecialCharSelect.superclass.create.apply(this, arguments);
+		var items=(toolbar.config['specialChars']||node.getAttribute('dojoETItemItems')||"&euro;,&lsquo;,&rsquo;,&rsquo;,&ldquo;,&rdquo;,&ndash;,&mdash;,&iexcl;,&cent;,&pound;,&curren;,&yen;,&brvbar;,&sect;,&uml;,&copy;,&ordf;,&laquo;,&not;,&reg;,&macr;,&deg;,&plusmn;,&sup2;,&sup3;,&acute;,&micro;,&para;,&middot;,&cedil;,&sup1;,&ordm;,&raquo;,&frac14;,&frac12;,&frac34;,&iquest;,&Agrave;,&Aacute;,&Acirc;,&Atilde;,&Auml;,&Aring;,&AElig;,&Ccedil;,&Egrave;,&Eacute;,&Ecirc;,&Euml;,&Igrave;,&Iacute;,&Icirc;,&Iuml;,&ETH;,&Ntilde;,&Ograve;,&Oacute;,&Ocirc;,&Otilde;,&Ouml;,&times;,&Oslash;,&Ugrave;,&Uacute;,&Ucirc;,&Uuml;,&Yacute;,&THORN;,&szlig;,&agrave;,&aacute;,&acirc;,&atilde;,&auml;,&aring;,&aelig;,&ccedil;,&egrave;,&eacute;,&ecirc;,&euml;,&igrave;,&iacute;,&icirc;,&iuml;,&eth;,&ntilde;,&ograve;,&oacute;,&ocirc;,&otilde;,&ouml;,&divide;,&oslash;,&ugrave;,&uacute;,&ucirc;,&uuml;,&uuml;,&yacute;,&thorn;,&yuml;,&OElig;,&oelig;,&sbquo;,&#8219;,&bdquo;,&hellip;,&trade;,&#9658;,&bull;,&rarr;,&rArr;,&hArr;,&diams;,&asymp;").split(',');
+
+		var item,i=0;
+		var cols = 20;
+		var innerhtml='<table style="font-size:11px;border:1px solid #8F8F73;background-color:#FFFFFF;" cellpadding="0" cellspacing="0"><tr><td width="*"><table cellpadding="1" cellspacing="1" align="center" border="0">';
+		while(item=items[i++]){
+			if((i-1)%20 == 0){
+				innerhtml+='<tr>';
+			}
+			innerhtml+='<td class="dojoDropDownItem" dojoETDropDownItem="'+item+'">'+item+'</td>';
+			if(i%20 == 0){
+				innerhtml+='</tr>';
+			}
+		}
+		this.contentHtml = innerhtml+'</table></td><td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;</td><td valign="top" ><div style="font-weight:bold;width:35px;height:35px;font-size:25px;text-align:center" class="ToolbarSelectHighlightedItem">&nbsp;</div></td></tr></table>';
+	},
+
+	setup: function(){
+		dojo.widget.Editor2ToolbarSpecialCharSelect.superclass.setup.call(this);
+
+		var nodes = this._dropdown.domNode.getElementsByTagName("td");
+		var i=0,node;
+		while(node=nodes[i++]){
+			dojo.html.disableSelection(node);
+			if(node.getAttribute('dojoETDropDownItem')){
+				dojo.event.connect(node, "onclick", this, "onChange");
+				dojo.event.connect(node, "onmouseover", this, "onMouseOverItem");
+				dojo.event.connect(node, "onmouseout", this, "onMouseOutItem");
+			}
+		}
+		this.sampleNode = this._dropdown.domNode.getElementsByTagName("div")[0];
+	},
+	onChange: function(e){
+		if(this._parentToolbar.checkAvailability()){
+			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			curInst.execCommand('inserthtml',e.target.getAttribute('dojoETDropDownItem'),'inserthtml');//'specialchar'
+		}
+		this._dropdown.close();
+	},
+
+	onMouseOverItem: function(e){
+		dojo.html.addClass(e.target, 'ToolbarSelectHighlightedItem');
+		this.sampleNode.innerHTML=e.target.getAttribute('dojoETDropDownItem');
+	},
+
+	onMouseOutItem: function(e){
+		dojo.html.removeClass(e.target, 'ToolbarSelectHighlightedItem');
+		this.sampleNode.innerHTML="&nbsp;";
 	}
 });
