@@ -68,8 +68,6 @@ dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
 		}
 		if(name == 'forecolor' || name == 'hilitecolor'){
 			_deprecated(name, 'ColorPicker')
-		}else if(name == 'formatblock' || name == 'fontsize' || name == 'fontname'){
-			_deprecated(name, 'DropDownList')
 		}
 
 		switch(name){
@@ -110,15 +108,6 @@ dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
 				break;
 			case 'plainformatblock':
 				item = new dojo.widget.Editor2ToolbarFormatBlockPlainSelect("formatblock");
-				break;
-			case 'formatblock':
-				item = new dojo.widget.Editor2ToolbarFormatBlockSelect("formatblock");
-				break;
-			case 'fontsize':
-				item = new dojo.widget.Editor2ToolbarFontSizeSelect("fontsize");
-				break;
-			case 'fontname':
-				item = new dojo.widget.Editor2ToolbarFontNameSelect("fontname");
 				break;
 //			case 'inserttable':
 //			case 'insertcell':

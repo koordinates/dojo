@@ -382,9 +382,7 @@ dojo.widget.defineWidget(
 				}
 
 				this.editNode.innerHTML = html;
-				if(this.contentDomPreFilters.length>0){
-					this._preDomFilterContent(this.editNode);
-				}
+				this._preDomFilterContent(this.editNode);
 				if(this.height){ this.document.body.style.overflowY="scroll"; }
 
 				dojo.lang.forEach(this.events, function(e){
@@ -635,6 +633,7 @@ dojo.widget.defineWidget(
 					this.editNode.innerHTML = html;
 					this.onDisplayChanged();
 				}
+				this._preDomFilterContent(this.editNode);
 			});
 
 			if(this.editNode){
@@ -1365,8 +1364,10 @@ dojo.widget.defineWidget(
 				html = this._preFilterContent(html);
 				if(this.isClosed){
 					this.domNode.innerHTML = html;
+					this._preDomFilterContent(this.domNode);
 				}else{
 					this.editNode.innerHTML = html;
+					this._preDomFilterContent(this.editNode);
 				}
 			}
 		},
@@ -1389,6 +1390,7 @@ dojo.widget.defineWidget(
 				this.execCommand("selectall");
 				if(dojo.render.html.moz && !html){ html = "&nbsp;" }
 				this.execCommand("inserthtml", html);
+				this._preDomFilterContent(this.editNode);
 			}else if(this.document && this.document.selection){//IE
 				//In IE, when the first element is not a text node, say
 				//an <a> tag, when replacing the content of the editing 
