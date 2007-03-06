@@ -381,7 +381,7 @@ dojo.event:
 -----------
 
     Most of what's currently in dojo.event.connect()'s chain will be moved to
-    dojox.aop. In its place, two simplified functions will be introduced:
+    dojox.advice. In its place, two simplified functions will be introduced:
 
         dojo.connect()
         dojo.disconnect()
@@ -399,11 +399,11 @@ dojo.event:
 
         dojo.connect(source, "funcName", dest, "funcName");
 
-    Further, dojox.aop.connect() will be broken up into:
+    Further, dojox.advice.connect() will be broken up into:
 
-        dojox.aop.after()
-        dojox.aop.before()
-        dojox.aop.around()
+        dojox.advice.after()
+        dojox.advice.before()
+        dojox.advice.around()
 
 
 dojo.html and dojo.style:
