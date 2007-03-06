@@ -770,6 +770,7 @@ dojo.experimental("dojo.query");
 			var tret;
 			var tn = getTagName(query);
 
+			/*
 			if(-1 != i[3]){
 				var pseudoName = (0 <= i[3]) ? query.substr(i[3]+1) : "";
 				switch(pseudoName){
@@ -811,7 +812,9 @@ dojo.experimental("dojo.query");
 						}
 						break;
 				}
-			}else if(isTagOnly(query)){
+			}else 
+			*/
+			if(isTagOnly(query)){
 				// it's just a plain-ol elements-by-tag-name query from the root
 				retFunc = function(root){
 					var ret = [];
