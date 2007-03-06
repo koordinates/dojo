@@ -4,7 +4,7 @@ dojo.require("dojo.string.common");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.array");
 
-dojo.string.substitute = function(/*String*/template, /*Object or Array*/map, /*Object?*/thisObject){
+dojo.string.substitute = function(/*String*/template, /*Object or Array*/map, /*Function?*/transform, /*Object?*/thisObject){
 // summary:
 //	Performs parameterized substitutions on a string. Throws an exception if any parameter is unmatched.
 //
@@ -17,14 +17,14 @@ dojo.string.substitute = function(/*String*/template, /*Object or Array*/map, /*
 //
 // template: a string with expressions in the form ${key} to be replaced or ${key:format} which specifies a format function.  NOTE syntax has changed from %{key}
 // map: where to look for substitutions
-// thisObject: where to look for optional format function
+// transform: a function to process all parameters before substitution takes place, e.g. dojo.string.encodeXML
+// thisObject: where to look for optional format function; default to the global namespace
 
 	return template.replace(/\$\{([^\s\:]+)(?:\:(\S+))?\}/g, function(match, key, format){
-		var value = dojo.getObject(key,false,map);
-		if(typeof(value) == "undefined"){
-			dojo.raise("Missing key: " + key);
-		}
-		return format ? dojo.getObject(format,false,thisObject)(value) : value;
+		var value = dojo.getObject(key,false,map).toString();
+		if(format){ value = dojo.getObject(format,false,thisObject)(value);}
+		if(transform){ value = transform(value); }
+		return value;
 	}); // string
 };
 
