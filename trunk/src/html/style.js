@@ -2,10 +2,11 @@ dojo.provide("dojo.html.style");
 dojo.require("dojo.html.common");
 dojo.require("dojo.uri.Uri");
 
-dojo.html.getClass = function(/* HTMLElement */node){
-	//	summary
-	//	Returns the string value of the list of CSS classes currently assigned directly 
-	//	to the node in question. Returns an empty string if no class attribute is found;
+dojo.html.getClass = function(/*HTMLElement*/ node){
+	//	summary:
+	//		Returns the string value of the list of CSS classes currently
+	//		assigned directly to the node in question. Returns an empty string
+	//		if no class attribute is found;
 	node = dojo.byId(node);
 	if(!node){ return ""; }
 	var cs = "";
@@ -17,36 +18,37 @@ dojo.html.getClass = function(/* HTMLElement */node){
 	return cs.replace(/^\s+|\s+$/g, "");	//	string
 }
 
-dojo.html.getClasses = function(/* HTMLElement */node) {
-	//	summary
-	//	Returns an array of CSS classes currently assigned directly to the node in question. 
-	//	Returns an empty array if no classes are found;
+dojo.html.getClasses = function(/*HTMLElement*/ node){
+	//	summary:
+	//		Returns an array of CSS classes currently assigned directly to the
+	//		node in question. Returns an empty array if no classes are found;
 	var c = dojo.html.getClass(node);
 	return (c == "") ? [] : c.split(/\s+/g);	//	array
 }
 
-dojo.html.hasClass = function(/* HTMLElement */node, /* string */classname){
-	//	summary
-	//	Returns whether or not the specified classname is a portion of the
-	//	class list currently applied to the node. Does not cover cascaded
-	//	styles, only classes directly applied to the node.
+dojo.html.hasClass = function(/*HTMLElement*/ node, /*String*/ classname){
+	//	summary:
+	//		Returns whether or not the specified classname is a portion of the
+	//		class list currently applied to the node. Does not cover cascaded
+	//		styles, only classes directly applied to the node.
 	return (new RegExp('(^|\\s+)'+classname+'(\\s+|$)')).test(dojo.html.getClass(node))	//	boolean
 }
 
-dojo.html.prependClass = function(/* HTMLElement */node, /* string */classStr){
-	//	summary
-	//	Adds the specified class to the beginning of the class list on the
-	//	passed node. This gives the specified class the highest precidence
-	//	when style cascading is calculated for the node. Returns true or
-	//	false; indicating success or failure of the operation, respectively.
+dojo.html.prependClass = function(/*HTMLElement*/ node, /*string*/ classStr){
+	//	summary:
+	//		Adds the specified class to the beginning of the class list on the
+	//		passed node. This gives the specified class the highest precidence
+	//		when style cascading is calculated for the node. Returns true or
+	//		false; indicating success or failure of the operation,
+	//		respectively.
 	classStr += " " + dojo.html.getClass(node);
 	return dojo.html.setClass(node, classStr);	//	boolean
 }
 
-dojo.html.addClass = function(/* HTMLElement */node, /* string */classStr){
-	//	summary
-	//	Adds the specified class to the end of the class list on the
-	//	passed &node;. Returns &true; or &false; indicating success or failure.
+dojo.html.addClass = function(/*HTMLElement*/ node, /*String*/ classStr){
+	//	summary:
+	//		Adds the specified class to the end of the class list on the passed
+	//		&node;. Returns &true; or &false; indicating success or failure.
 	if (dojo.html.hasClass(node, classStr)) {
 	  return false;
 	}
@@ -55,10 +57,10 @@ dojo.html.addClass = function(/* HTMLElement */node, /* string */classStr){
 }
 
 dojo.html.setClass = function(/* HTMLElement */node, /* string */classStr){
-	//	summary
-	//	Clobbers the existing list of classes for the node, replacing it with
-	//	the list given in the 2nd argument. Returns true or false
-	//	indicating success or failure.
+	//	summary:
+	//		Clobbers the existing list of classes for the node, replacing it
+	//		with the list given in the 2nd argument. Returns true or false
+	//		indicating success or failure.
 	node = dojo.byId(node);
 	var cs = new String(classStr);
 	try{
@@ -76,9 +78,12 @@ dojo.html.setClass = function(/* HTMLElement */node, /* string */classStr){
 	return true;
 }
 
-dojo.html.removeClass = function(/* HTMLElement */node, /* string */classStr, /* boolean? */allowPartialMatches){
-	//	summary
-	//	Removes the className from the node;. Returns true or false indicating success or failure.
+dojo.html.removeClass = function(	/*HTMLElement*/ node, 
+									/*String*/ classStr, 
+									/*boolean?*/ allowPartialMatches){
+	//	summary:
+	//		Removes the className from the node;. Returns true or false
+	//		indicating success or failure.
 	try{
 		if (!allowPartialMatches) {
 			var newcs = dojo.html.getClass(node).replace(new RegExp('(^|\\s+)'+classStr+'(\\s+|$)'), "$1$2");
@@ -92,9 +97,11 @@ dojo.html.removeClass = function(/* HTMLElement */node, /* string */classStr, /*
 	return true;	//	boolean
 }
 
-dojo.html.replaceClass = function(/* HTMLElement */node, /* string */newClass, /* string */oldClass) {
-	//	summary
-	//	Replaces 'oldClass' and adds 'newClass' to node
+dojo.html.replaceClass = function(	/*HTMLElement*/ node, 
+									/*String*/ newClass,
+									/*String*/ oldClass){
+	//	summary:
+	//		Replaces 'oldClass' and adds 'newClass' to node
 	dojo.html.removeClass(node, oldClass);
 	dojo.html.addClass(node, newClass);
 }
@@ -108,15 +115,16 @@ dojo.html.classMatchType = {
 
 
 dojo.html.getElementsByClass = function(
-	/* string */classStr, 
-	/* HTMLElement? */parent, 
-	/* string? */nodeType, 
-	/* integer? */classMatchType, 
-	/* boolean? */useNonXpath
+	/*String*/ classStr, 
+	/*HTMLElement?*/ parent, 
+	/*String?*/ nodeType, 
+	/*integer?*/ classMatchType, 
+	/*boolean?*/ useNonXpath
 ){
-	//	summary
-	//	Returns an array of nodes for the given classStr, children of a
-	//	parent, and optionally of a certain nodeType
+	//	summary:
+	//		Returns an array of nodes for the given classStr, children of a
+	//		parent, and optionally of a certain nodeType
+
 	// FIXME: temporarily set to false because of several dojo tickets related
 	// to the xpath version not working consistently in firefox.
 	useNonXpath = false;
@@ -196,9 +204,9 @@ dojo.html.getElementsByClass = function(
 }
 dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
 
-dojo.html.toCamelCase = function(/* string */selector){
-	//	summary
-	//	Translates a CSS selector string to a camel-cased one.
+dojo.html.toCamelCase = function(/*String*/ selector){
+	//	summary:
+	//		Translates a CSS selector string to a camel-cased one.
 	var arr = selector.split('-'), cc = arr[0];
 	for(var i = 1; i < arr.length; i++) {
 		cc += arr[i].charAt(0).toUpperCase() + arr[i].substring(1);
@@ -207,12 +215,12 @@ dojo.html.toCamelCase = function(/* string */selector){
 }
 
 dojo.html.toSelectorCase = function(/* string */selector){
-	//	summary
-	//	Translates a camel cased string to a selector cased one.
+	//	summary:
+	//		Translates a camel cased string to a selector cased one.
 	return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase();	//	string
 }
 
-if (dojo.render.html.ie) {
+if (dojo.render.html.ie){
 	// IE branch
 	dojo.html.getComputedStyle = function(/*HTMLElement|String*/node, /*String*/property, /*String*/value) {
 		// summary
@@ -225,49 +233,58 @@ if (dojo.render.html.ie) {
 	// SJM: getComputedStyle should be abandoned and replaced with the below function.
 	// All our supported browsers can return CSS2 compliant CssStyleDeclaration objects
 	// which can be queried directly for multiple styles.
-	dojo.html.getComputedStyles = function(/*HTMLElement*/node) {
-		// summary
-		// Get a style object containing computed styles for HTML Element node (IE).
+	dojo.html.getComputedStyles = function(/*HTMLElement*/node){
+		//	summary:
+		// 		Get a style object containing computed styles for HTML Element
+		// 		node (IE).
 		return node.currentStyle; // CSSStyleDeclaration
 	}
-} else {
+}else{
 	// non-IE branch
-	dojo.html.getComputedStyle = function(/*HTMLElement|String*/node, /*String*/property, /*Any*/value) {
-		// summary
-		// Get the computed style value for style "property" on "node" (non-IE).
+	dojo.html.getComputedStyle = function(
+		/*HTMLElement|String*/ node, 
+		/*String*/ property, 
+		/*Any*/ value)
+	{
+		// summary:
+		//		Get the computed style value for style "property" on "node"
+		//		(non-IE).
 		node = dojo.byId(node);
-		if(!node || !node.style){return value;}
+		if(!node || !node.style){ return value; }
 		var s = document.defaultView.getComputedStyle(node, null);
 		// s may be null on Safari
-		return (s&&s[dojo.html.toCamelCase(property)])||''; // String
+		return ( s && s[dojo.html.toCamelCase(property)] )||''; // String
 	}	
 	// SJM: getComputedStyle should be abandoned and replaced with the below function.
 	// All our supported browsers can return CSS2 compliant CssStyleDeclaration objects
 	// which can be queried directly for multiple styles.
-	dojo.html.getComputedStyles = function(node) {
-		// summary
-		// Get a style object containing computed styles for HTML Element node (non-IE).
+	dojo.html.getComputedStyles = function(node){
+		//	summary:
+		// 		Get a style object containing computed styles for HTML Element
+		// 		node (non-IE).
 		return document.defaultView.getComputedStyle(node, null); // CSSStyleDeclaration
 	}	
 }
 
-dojo.html.getStyleProperty = function(/* HTMLElement */node, /* string */cssSelector){
-	//	summary
-	//	Returns the value of the passed style
+dojo.html.getStyleProperty = function(/*HTMLElement*/ node, /*String*/ cssSelector){
+	//	summary:
+	//		Returns the value of the passed style
 	node = dojo.byId(node);
 	return (node && node.style ? node.style[dojo.html.toCamelCase(cssSelector)] : undefined);	//	string
 }
 
-dojo.html.getStyle = function(/* HTMLElement */node, /* string */cssSelector){
-	//	summary
-	//	Returns the computed value of the passed style
+dojo.html.getStyle = function(/*HTMLElement*/ node, /*string*/ cssSelector){
+	//	summary:
+	//		Returns the computed value of the passed style
 	var value = dojo.html.getStyleProperty(node, cssSelector);
 	return (value ? value : dojo.html.getComputedStyle(node, cssSelector));	//	string || integer
 }
 
-dojo.html.setStyle = function(/* HTMLElement */node, /* string */cssSelector, /* string */value){
-	//	summary
-	//	Set the value of passed style on node
+dojo.html.setStyle = function(	/*HTMLElement*/ node, 
+								/*String*/ cssSelector, 
+								/*String*/ value){
+	//	summary:
+	//		Set the value of passed style on node
 	node = dojo.byId(node);
 	if(node && node.style){
 		var camelCased = dojo.html.toCamelCase(cssSelector);
@@ -275,19 +292,21 @@ dojo.html.setStyle = function(/* HTMLElement */node, /* string */cssSelector, /*
 	}
 }
 
-dojo.html.setStyleText = function (/* HTMLElement */target, /* string */text) {
-	//	summary
-	//	Try to set the entire cssText property of the passed target; equiv of setting style attribute.
-	try {
+dojo.html.setStyleText = function (/*HTMLElement*/ target, /*String*/ text){
+	//	summary:
+	//		Try to set the entire cssText property of the passed target; equiv
+	//		of setting style attribute.
+	try{
 	 	target.style.cssText = text;
-	} catch (e) {
+	}catch(e){
 		target.setAttribute("style", text);
 	}
 }
 
-dojo.html.copyStyle = function(/* HTMLElement */target, /* HTMLElement */source){
-	//	summary
-	// work around for opera which doesn't have cssText, and for IE which fails on setAttribute 
+dojo.html.copyStyle = function(/*HTMLElement*/ target, /*HTMLElement*/ source){
+	//	summary:
+	//		work around for opera which doesn't have cssText, and for IE which
+	//		fails on setAttribute 
 	if(!source.style.cssText){ 
 		target.setAttribute("style", source.getAttribute("style")); 
 	}else{
@@ -296,23 +315,23 @@ dojo.html.copyStyle = function(/* HTMLElement */target, /* HTMLElement */source)
 	dojo.html.addClass(target, dojo.html.getClass(source));
 }
 
-dojo.html.getUnitValue = function(/* HTMLElement */node, /* string */cssSelector, /* boolean? */autoIsZero){
-	//	summary
-	//	Get the value of passed selector, with the specific units used
+dojo.html.getUnitValue = function(/*HTMLElement*/ node, /* string */cssSelector, /* boolean? */autoIsZero){
+	//	summary:
+	//		Get the value of passed selector, with the specific units used
 	var s = dojo.html.getComputedStyle(node, cssSelector);
 	if((!s)||((s == 'auto')&&(autoIsZero))){ 
-		return { value: 0, units: 'px' };	//	object 
+		return { value: 0, units: 'px' };	//	Object 
 	}
 	// FIXME: is regex inefficient vs. parseInt or some manual test? 
 	var match = s.match(/(\-?[\d.]+)([a-z%]*)/i);
 	if (!match){return dojo.html.getUnitValue.bad;}
-	return { value: Number(match[1]), units: match[2].toLowerCase() };	//	object
+	return { value: Number(match[1]), units: match[2].toLowerCase() };	//	Object
 }
 dojo.html.getUnitValue.bad = { value: NaN, units: '' };
 
-if (dojo.render.html.ie) {
+if(dojo.render.html.ie){
 	// IE branch
-	dojo.html.toPixelValue = function(/* HTMLElement */element, /* String */styleValue){
+	dojo.html.toPixelValue = function(/*HTMLElement*/ element, /* String */styleValue){
 		// summary
 		//  Extract value in pixels from styleValue (IE version).
 		//  If a value cannot be extracted, zero is returned.
@@ -338,7 +357,7 @@ if (dojo.render.html.ie) {
 	}
 } else {
 	// non-IE branch
-	dojo.html.toPixelValue = function(/* HTMLElement */element, /* String */styleValue){
+	dojo.html.toPixelValue = function(/*HTMLElement*/ element, /*String*/ styleValue){
 		// summary
 		//  Extract value in pixels from styleValue (non-IE version).
 		//  If a value cannot be extracted, zero is returned.
@@ -346,25 +365,27 @@ if (dojo.render.html.ie) {
 	}
 }
 
-dojo.html.getPixelValue = function(/* HTMLElement */node, /* string */styleProperty, /* boolean? */autoIsZero){
-	// summary
-	//  Get a computed style value, in pixels.
-	// node: HTMLElement
-	//  Node to interrogate
-	// styleProperty: String
-	//  Style property to query, in either css-selector or camelCase (property) format.
-	// autoIsZero: Boolean
-	//  Deprecated. Any value that cannot be converted to pixels is returned as zero.
-	// 
-	//  summary
-	//  Get the value of passed selector in pixels.
-	//
+dojo.html.getPixelValue = function(
+	/*HTMLElement*/ node, 
+	/*String*/ styleProperty, 
+	/*Boolean?*/ autoIsZero)
+{
+	// summary:
+	//		Get the value of passed selector in pixels.
+	// node:
+	//		Node to interrogate
+	// styleProperty:
+	//		Style property to query, in either css-selector or camelCase
+	//		(property) format.
+	// autoIsZero:
+	//		Deprecated. Any value that cannot be converted to pixels is returned as zero.
 	return dojo.html.toPixelValue(node, dojo.html.getComputedStyle(node, styleProperty));
 } 
 
-dojo.html.setPositivePixelValue = function(/* HTMLElement */node, /* string */selector, /* integer */value){
-	//	summary
-	//	Attempt to set the value of selector on node as a positive pixel value.
+dojo.html.setPositivePixelValue = function(/*HTMLElement*/ node, /*String*/ selector, /*integer*/ value){
+	//	summary:
+	//		Attempt to set the value of selector on node as a positive pixel
+	//		value.
 	if(isNaN(value)){return false;}
 	node.style[selector] = Math.max(0, value) + 'px'; 
 	return true;	//	boolean
@@ -376,66 +397,75 @@ dojo.html.styleSheet = null;
 // it assumes that you know the index of the cssRule that you want to add 
 // or remove, making it less than useful.  So we need something that can 
 // search for the selector that you you want to remove.
-dojo.html.insertCssRule = function(/* string */selector, /* string */declaration, /* integer? */index) {
-	//	summary
-	//	Attempt to insert declaration as selector on the internal stylesheet; if index try to set it there.
-	if (!dojo.html.styleSheet) {
-		if (document.createStyleSheet) { // IE
+dojo.html.insertCssRule = function(/*String*/ selector, /*String*/ declaration, /* integer? */index) {
+	//	summary:
+	//		Attempt to insert declaration as selector on the internal
+	//		stylesheet; if index try to set it there.
+	if(!dojo.html.styleSheet){
+		if(document.createStyleSheet){ // IE
 			dojo.html.styleSheet = document.createStyleSheet();
-		} else if (document.styleSheets[0]) { // rest
+		}else if(document.styleSheets[0]){ // rest
 			// FIXME: should create a new style sheet here
 			// fall back on an exsiting style sheet
 			dojo.html.styleSheet = document.styleSheets[0];
-		} else { 
+		}else{ 
+			return null;	//	integer 
+		} // fail
+	}
+	var ss = dojo.html.styleSheet;
+
+	if(arguments.length < 3){ // index may == 0
+		if(ss.cssRules){ // W3
+			index = ss.cssRules.length;
+		}else if(ss.rules){ // IE
+			index = ss.rules.length;
+		}else{ 
 			return null;	//	integer 
 		} // fail
 	}
 
-	if (arguments.length < 3) { // index may == 0
-		if (dojo.html.styleSheet.cssRules) { // W3
-			index = dojo.html.styleSheet.cssRules.length;
-		} else if (dojo.html.styleSheet.rules) { // IE
-			index = dojo.html.styleSheet.rules.length;
-		} else { 
-			return null;	//	integer 
-		} // fail
-	}
-
-	if (dojo.html.styleSheet.insertRule) { // W3
+	if(ss.insertRule){ // W3
 		var rule = selector + " { " + declaration + " }";
-		return dojo.html.styleSheet.insertRule(rule, index);	//	integer
-	} else if (dojo.html.styleSheet.addRule) { // IE
-		return dojo.html.styleSheet.addRule(selector, declaration, index);	//	integer
-	} else { 
+		return ss.insertRule(rule, index);	//	integer
+	}else if(ss.addRule){ // IE
+		return ss.addRule(selector, declaration, index);	//	integer
+	}else{ 
 		return null; // integer
 	} // fail
 }
 
-dojo.html.removeCssRule = function(/* integer? */index){
-	//	summary
-	//	Attempt to remove the rule at index.
-	if(!dojo.html.styleSheet){
+dojo.html.removeCssRule = function(/*integer*/ index){
+	//	summary:
+	//		Attempt to remove the rule at index.
+	var ss = dojo.html.styleSheet;
+	if(!ss){
 		dojo.debug("no stylesheet defined for removing rules");
 		return false;
 	}
 	if(dojo.render.html.ie){
 		if(!index){
-			index = dojo.html.styleSheet.rules.length;
-			dojo.html.styleSheet.removeRule(index);
+			index = ss.rules.length;
+			ss.removeRule(index);
 		}
 	}else if(document.styleSheets[0]){
 		if(!index){
-			index = dojo.html.styleSheet.cssRules.length;
+			index = ss.cssRules.length;
 		}
-		dojo.html.styleSheet.deleteRule(index);
+		ss.deleteRule(index);
 	}
 	return true;	//	boolean
 }
 
 dojo.html._insertedCssFiles = []; // cache container needed because IE reformats cssText when added to DOM
-dojo.html.insertCssFile = function(/* string */URI, /* HTMLDocument? */doc, /* boolean? */checkDuplicates, /* boolean */fail_ok){
-	//	summary
-	// calls css by XmlHTTP and inserts it into DOM as <style [widgetType="widgetType"]> *downloaded cssText*</style>
+dojo.html.insertCssFile = function(
+	/*String*/ URI, 
+	/*Document*/ doc, 
+	/*Boolean*/ checkDuplicates,
+	/*Boolean*/ fail_ok)
+{
+	//	summary:
+	//		calls css by XmlHTTP and inserts it into DOM as <style
+	//		[widgetType="widgetType"]> *downloaded cssText*</style>
 	if(!URI){ return; }
 	if(!doc){ doc = document; }
 	var cssStr = dojo.hostenv.getText(URI, false, fail_ok);
@@ -473,9 +503,15 @@ dojo.html.insertCssFile = function(/* string */URI, /* HTMLDocument? */doc, /* b
 	return style;	//	HTMLStyleElement
 }
 
-dojo.html.insertCssText = function(/* string */cssStr, /* HTMLDocument? */doc, /* string? */URI){
-	//	summary
-	//	Attempt to insert CSS rules into the document through inserting a style element
+dojo.html.insertCssText = function(
+	/*String*/ cssStr, 
+	/*Document*/ doc, 
+	/*String*/ URI)
+{
+	//	summary:
+	//		Attempt to insert CSS rules into the document through inserting a
+	//		style element
+
 	// DomNode Style  = insertCssText(String ".dojoMenu {color: green;}"[, DomDoc document, dojo.uri.Uri Url ])
 	if(!cssStr){ 
 		return; //	HTMLStyleElement
@@ -513,10 +549,18 @@ dojo.html.insertCssText = function(/* string */cssStr, /* HTMLDocument? */doc, /
 	return style;	//	HTMLStyleElement
 }
 
-dojo.html.fixPathsInCssText = function(/* string */cssStr, /* string */URI){
-	//	summary
-	// usage: cssText comes from dojoroot/src/widget/templates/Foobar.css
-	// 	it has .dojoFoo { background-image: url(images/bar.png);} then uri should point to dojoroot/src/widget/templates/
+dojo.html.fixPathsInCssText = function(/*String*/ cssStr, /*String*/ URI){
+	//	summary:
+	//		converts relative URLs in CSS document fragments to point to the
+	//		correct locations
+	//	usage:
+	//		cssText comes from 
+	//			dojoroot/src/widget/templates/Foobar.css
+	//		it has 
+	//			.dojoFoo { background-image: url(images/bar.png);} 
+	//		then uri should point to 
+	//			dojoroot/src/widget/templates/
+
 	if(!cssStr || !URI){ return; }
 	var match, str = "", url = "", urlChrs = "[\\t\\s\\w\\(\\)\\/\\.\\\\'\"-:#=&?~]+";
 	var regex = new RegExp('url\\(\\s*('+urlChrs+')\\s*\\)');
@@ -549,9 +593,9 @@ dojo.html.fixPathsInCssText = function(/* string */cssStr, /* string */URI){
 	return str + cssStr;	//	string
 }
 
-dojo.html.setActiveStyleSheet = function(/* string */title){
-	//	summary
-	//	Activate style sheet with specified title.
+dojo.html.setActiveStyleSheet = function(/*String*/ title){
+	//	summary:
+	//		Activate style sheet with specified title.
 	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
 	while (a = els[i++]) {
 		if(a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")){
@@ -562,13 +606,13 @@ dojo.html.setActiveStyleSheet = function(/* string */title){
 }
 
 dojo.html.getActiveStyleSheet = function(){
-	//	summary
-	//	return the title of the currently active stylesheet
+	//	summary:
+	//		return the title of the currently active stylesheet
 	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
-	while (a = els[i++]) {
-		if (a.getAttribute("rel").indexOf("style") != -1 
-			&& a.getAttribute("title") 
-			&& !a.disabled
+	while(a = els[i++]){
+		if( (a.getAttribute("rel").indexOf("style") != -1) &&
+			(a.getAttribute("title")) &&
+			(!a.disabled)
 		){
 			return a.getAttribute("title");	//	string 
 		}
@@ -577,13 +621,14 @@ dojo.html.getActiveStyleSheet = function(){
 }
 
 dojo.html.getPreferredStyleSheet = function(){
-	//	summary
-	//	Return the preferred stylesheet title (i.e. link without alt attribute)
+	//	summary:
+	//		Return the preferred stylesheet title (i.e. link without alt
+	//		attribute)
 	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
-	while (a = els[i++]) {
-		if(a.getAttribute("rel").indexOf("style") != -1
-			&& a.getAttribute("rel").indexOf("alt") == -1
-			&& a.getAttribute("title")
+	while(a = els[i++]){
+		if( (a.getAttribute("rel").indexOf("style") != -1) &&
+			(a.getAttribute("rel").indexOf("alt") == -1) &&
+			(a.getAttribute("title"))
 		){ 
 			return a.getAttribute("title"); 	//	string
 		}
@@ -591,10 +636,10 @@ dojo.html.getPreferredStyleSheet = function(){
 	return null;	//	string
 }
 
-dojo.html.applyBrowserClass = function(/* HTMLElement */node){
-	//	summary
-	//	Applies pre-set class names based on browser & version to the passed node.
-	//	Modified version of Morris' CSS hack.
+dojo.html.applyBrowserClass = function(/*HTMLElement*/ node){
+	//	summary:
+	//		Applies pre-set class names based on browser & version to the
+	//		passed node.  Modified version of Morris' CSS hack.
 	var drh=dojo.render.html;
 	var classes = {
 		dj_ie: drh.ie,
