@@ -101,13 +101,10 @@ dojo.widget.defineWidget(
 			//FIXME: should this be if/else/else?
 			if(typeof(this.value)=='string'&&this.value.toLowerCase()=='today'){
 				this.value = new Date();
-			}
-			if(this.value && isNaN(this.value)){
+			}else if(this.value && isNaN(this.value)){
 				var orig = this.value;
 				this.value = dojo.date.fromRfc3339(this.value);
-				if(!this.value){this.value = new Date(orig); dojo.deprecated("dojo.widget.DropdownDatePicker", "date attributes must be passed in Rfc3339 format", "0.5");}
-			}
-			if(this.value && !isNaN(this.value)){
+			}else if(this.value && !isNaN(this.value)){
 				this.value = new Date(this.value);
 			}
 		},
@@ -159,8 +156,7 @@ dojo.widget.defineWidget(
 				dojo.date.format(this.datePicker.value,
 					{formatLength:this.formatLength, datePattern:this.displayFormat, selector:'dateOnly', locale:this.lang}) :
 				"";
-
-			if(this.value < this.datePicker.startDate||this.value>this.datePicker.endDate){
+			if(this.datePicker.value < this.datePicker.startDate||this.value>this.datePicker.endDate){
 				this.inputNode.value = "";
 			}
 			this._syncValueNode();
