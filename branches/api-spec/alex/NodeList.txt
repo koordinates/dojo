@@ -18,11 +18,7 @@ API outline for a dojo.Elem class:
 			//		indexOf()
 			//		lastIndexOf()
 
-			box: function(){
-				// returns a box object for the first element in a node list
-			},
-
-			boxes: function(){
+			coords: function(){
 				// returns the box objects all elements in a node list as an
 				// Array
 			},
@@ -31,15 +27,17 @@ API outline for a dojo.Elem class:
 			},
 			style: function(key, value){
 			}
-			style: function(props /*...*/){
-			},
+
+			// style: function(props /*...*/){
+			// },
 
 			styles: function(prop){
 			},
 			styles: function(key, value){
 			},
-			styles: function(props /*...*/){
-			},
+
+			// styles: function(props /*...*/){
+			// },
 
 			place: function(queryOrNode, position){
 				// placement always relative to the first element matched by

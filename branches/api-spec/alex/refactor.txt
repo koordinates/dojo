@@ -336,15 +336,23 @@ and the reality that they expose HTTP verbs:
     
         dojo.cookie.*
 
-        the getCookie() and setCookie() methods will be removed. get() and
-        set() are sufficient. deleteCookie will be renamed to "remove".
-        getObjectCookie() and setObjectCookie() will be modified to simply use
-        dojo.json. Back-compat for "dojo.io.cookies" (plural) will be removed.
+        the getCookie() and setCookie() methods will be removed. A one and two
+        argument version of dojo.cookie() will be introduced in their place.
+        deleteCookie will be removed in favor of a two-argument call with null
+        or "" as the second parameter. If an object is passed as the second
+        param to cookie(), it may contain expiration and other relevent
+        properties and members and the string to be used as the value will be
+        expected in the object's "value" property.
+
+        getObjectCookie() and setObjectCookie() will be removed. Since
+        dojo.json is part of the core, users may easily serialize and
+        de-serialize objects themselves. Back-compat for "dojo.io.cookies"
+        (plural) will be removed.
 
     // new I/O functions:
-    dojo.io.formToMap(formNode)
+    dojo.io.formToObject(formNode)
     dojo.io.formToJson(formNode)
-    dojo.io.queryToMap(str)
+    dojo.io.queryToObject(str)
 
 
 dojo.uri:
@@ -428,13 +436,14 @@ APIs in Base:
 
     dojo.require()
     dojo.provide()
-    dojo.kwCompoundRequire() // rename?
+    dojo.platformRequire() // was kwCompoundRequire
     dojo.requireLocalization() // need to find a way to make this code smaller, perhaps move to i18n?
     dojo.registerModulePath() // or whatever it's called this week
     dojo.moduleUrl()
     dojo.dojoUrl()
     dojo.deprecated()
     dojo.experimental()
+    dojo.undefined() // was dj_undef and dojo.lang.isUndefined
     dojo.getObject() // strToObj() ?
     dojo.exists()
     dojo.global()
@@ -444,29 +453,38 @@ APIs in Base:
     dojo.addOnUnload()
     dojo.eval() // was dj_eval
     dojo.hitch() // was dojo.lang.hitch
+    dojo.partial()
     dojo.declare() // was dojo.lang.declare() new, lightweight version
     dojo.extend() // was dojo.lang.extend()
     dojo.mixin() // was dojo.lang.mixin
+    // array extras
     dojo.forEach() // was dojo.lang.forEach
     dojo.every() // was dojo.lang.every
     dojo.some() // was dojo.lang.some
-    dojo.undefined() // was dj_undef and dojo.lang.isUndefined
+    dojo.map()
+    dojo.filter()
+    dojo.indexOf()
+    dojo.lastIndexOf()
+    // node stuff
     dojo.byId()
     dojo.query()
-    dojo.NodeList/dojo.Node (described in "NodeList.txt")
-    // some super-trivial subset of dojo.style and dojo.html. These are exposed via NodeList too.
-    /* FIXME: these don't seem right. Also, should they be on the top-level object?
+    dojo.NodeList (described in "NodeList.txt") // any reason for a dojo.Node?
+    dojo.createElement(obj, parent, position)
+    dojo.place(node, refNode, position) // was dojo.dom.insertAtPosition
+    // note, we must document the standards vs. quirks vs. explicit box model
+    // toggling upshots of using the following box functions
+    dojo.borderBox(node) // returns { w: 0, h: 0 }
+    dojo.borderBox(node, boxObj)
+    dojo.marginBox(node) // returns { w: 0, h: 0 }
+    dojo.marginBox(node, boxObj)
+    // in coords, x and y are absolute while w and h are border-box
+    dojo.coords(node)  // { x: 0, y: 0: w: 0, h: 0 } 
+    // need a setter for coords or a moveTo method?
 
-    dojo.getBorderBox()
-    dojo.setBorderBox()
-    dojo.getMarginBox()
-    dojo.setMarginBox()
-    dojo.getBox()
+    dojo.style(node) // returns computed style obj
+    dojo.style(node, propertyName) // pixel value of property
+    dojo.style(node, propertyName, value) // sets it
 
-    dojo.style.getValue() // was getPixelValue
-    dojo.style.setValue()
-
-    */
     dojo.io
         get()
         post()
@@ -475,15 +493,17 @@ APIs in Base:
         formToQuery()
         mapToQuery()
         wrapForm(formNode) // was FormBind
-        formToMap(formNode)
+        formToObject(formNode)
         formToJson(formNode)
-        queryToMap(str)
+        queryToObject(str)
     dojo.Deferred
     dojo.connect()
     dojo.disconnect()
-    dojo.addNodeListener()
-    dojo.lfx
+    dojo._addNodeListener()
+    dojo.cookie()  
+    dojo.fx // was dojo.lfx
         // internal stuff that was previously public
+        // may need to weed out cruft from private classes
         _IAnimation
         _Animation
         _Chain
@@ -501,28 +521,40 @@ APIs in Base:
     dojo.json
         serialize()
         deserialize()
-    dojo.color // required by lfx
-        extracRGB()
+    dojo.color // required by fx
+        extractRGB()
         rgb2hex()
         hex2rgb()
-    dojo.cookie // alternately we can have this be 1 func w/ 3 arg sets
-        get()
-        set()
-        remove()
-    // environment test variables:
+
+    // environment test variables (boolean):
     dojo.isBrowser
     dojo.isRhino
     dojo.isSpidermonkey
-    dojo.isWSH
-    // browser test variables
+    dojo.isMobile // ?
+
+    // browser test variables 
+    // integers corresponding to version numbers
+    dojo.isFF // may need to roll up gecko rendering numbers
     dojo.isIE
-    dojo.isIE55
-    dojo.isIE60
-    dojo.isIE70
-    dojo.isKhtml
+    dojo.isKonq
     dojo.isSafari
     dojo.isOpera
 
+    // desupported:
+    //      dashboard
+    //      WSH
+    //      Adobe SVG (already dead)
+    //      Native SVG
+
+    // may need to add:
+    //      Apollo
+    //      WPF/E
+    //      Mobile browsers:
+    //          NetFront
+    //          Opera Mobile
+    //          PIE
+    //          BlackBerry
+    //          Reindeer (S60 webkit)
 
 In Core but not Base:
 ---------------------
@@ -548,7 +580,6 @@ Unsure:
     dojo.regex (?)
     dojo.ns
     dojo.dom // most of this NS can be removed, but where does the rest go?
-
 
 Moved to dojox:
 ---------------
