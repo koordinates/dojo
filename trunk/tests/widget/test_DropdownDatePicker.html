@@ -65,7 +65,7 @@
 				<input name="dddp3" dojoType="dropdowndatepicker" value="2006-06-26" lang="en-us" />
 			<p>With initial date of 1969-04-25 and a custom format dd/MM/yyyy</p>
 				<input name="dddp5" dojoType="dropdowndatepicker" inputName="mydate1" value="1969-04-25" displayFormat="dd/MM/yyyy" />
-	\		<p>In German:</p>
+			<p>In German:</p>
 				<input name="dddp7" dojoType="dropdowndatepicker" value="2006-06-28" lang="de" />
 			<p>In Dutch:</p>
 				<input name="dddp8" dojoType="dropdowndatepicker" value="2006-06-28" lang="nl" />
@@ -90,11 +90,10 @@
 		</form>
 	</div>	
     <br />
-	These are broken tests for trac tickets:<br/>
-	Wipe: with startDate="2006-10-10" (inputNode is not updating when clicking a date ticket #1694)
+	Wipe: with startDate="2006-10-10"
 	<input dojoType="dropdowndatepicker" startDate="2006-10-10" containerToggle="wipe" containerToggleDuration="300">
 	<br />
-	Explode: testing invalid initial value of "oiwerwerw" (should render as no value provided not NaN/NaN/NaN ticket #1692)
+	Explode: testing invalid initial value of "oiwerwerw"
 	<input dojoType="dropdowndatepicker" value="oiwerwerw" containerToggle="explode" containerToggleDuration="500">
 	<br /><br />
 	</body>
