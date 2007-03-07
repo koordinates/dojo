@@ -18,18 +18,19 @@ dojo.number.format = function(/*Number*/value, /*Object?*/options){
 // value:
 //		the number to be formatted.
 //
-// options: object {pattern: String?, type: String?, places: Number?, round: Boolean?, locale: String?}
+// options: object {pattern: String?, type: String?, places: Number?, round: Boolean?, currency: Object?, locale: String?}
 //		pattern- override formatting pattern with this string (see dojo.number.applyPattern)
 //		type- choose a format type based on the locale from the following: decimal, scientific, percent, currency. decimal by default.
 //		places- fixed number of decimal places to show.  This overrides any information in the provided pattern.
 //		round- whether to round the number.  false by default //TODO
+//		currency- object with currency information
 //		locale- override the locale used to determine formatting rules
 
 	options = options || {};
 	var locale = dojo.hostenv.normalizeLocale(options.locale);
 	var bundle = dojo.i18n.getLocalization("dojo.i18n.cldr", "number", locale);
 	var pattern = options.pattern || bundle[(options.type || "decimal") + "Format"];
-	return dojo.number.applyPattern(value, pattern, {symbols: bundle, places: options.places, round: options.round}); // String //TODO
+	return dojo.number.applyPattern(value, pattern, {symbols: bundle, places: options.places, round: options.round, currency: options.currency}); // String //TODO
 };
 
 //dojo.number._numberPatternRE = /(?:[#0]*,?)*[#0](?:\.0*#*)?/; // not precise, but good enough
@@ -39,9 +40,9 @@ dojo.number.applyPattern = function(/*Number*/value, /*String*/pattern, /*Object
 	// summary: Apply pattern to format value as a string using options. Gives no consideration to local customs.
 	// value: the number to be formatted.
 	// pattern: a pattern string as described in http://www.unicode.org/reports/tr35/#Number_Format_Patterns
-	// options: object {symbols: Object?, places: Number?, currencyISO: String?} //TODO round
+	// options: object {symbols: Object?, places: Number?, currency: Object?} //TODO round
 	//  symbols- a hash containing: decimal, group, ...
-	//  currencyISO: the 3-letter ISO4217 currency (e.g. USD)
+	//	currency- object with currency information
 
 //TODO: support escapes
 	options = options || {};
@@ -60,15 +61,9 @@ dojo.number.applyPattern = function(/*Number*/value, /*String*/pattern, /*Object
 	}else if(pattern.indexOf('\u00a4') != -1){
 		group = options.symbols.currencyGroup || group;//mixins instead?
 		decimal = options.symbols.currencyDecimal || decimal;// Should these be mixins instead?
-		pattern.replace('/\u00a4{1,3}/', function(match){
-			switch(match.length){
-			case 1:
-				return options.symbols.symbol; //TODO
-			case 2:
-				return currencyISO; //TODO: is this right?
-			case 3:
-				return "United States Dollars?"; //TODO // Q: the long form of the decimal?? symbol
-			}
+		pattern = pattern.replace(/\u00a4{1,3}/, function(match){
+			var prop = ["symbol", "iso4217", "displayName"][match.length-1];
+			return options.currency[prop] || options.currency.iso4217;
 		});
 	}else if(pattern.indexOf('E') != -1){
 		dojo.unimplemented("exponential notation not supported");
@@ -93,7 +88,6 @@ dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Obje
 	//  decimal- the decimal separator
 	//  group- the group separator
 	//  places- number of decimal places
-
 	options = options || {};
 	value = Math.abs(value);
 	var round = false; //TODO
@@ -173,6 +167,7 @@ dojo.number.regexp = function(/*Object?*/options){
 //		locale- override the locale used to determine formatting rules
 //		strict- strict parsing, false by default
 //		places- number of decimal places to accept: Infinity, a positive number, or a range "n,m"
+//		currency- object with currency information
 	return dojo.number._parseInfo(options).regexp; // String
 }
 
@@ -185,6 +180,15 @@ dojo.number._parseInfo = function(/*Object?*/options){
 	var group = bundle.group;
 //	if(!options.strict){ group = [group,""]; }
 	var decimal = bundle.decimal;
+
+	if(pattern.indexOf('\u00a4') != -1){
+		group = bundle.currencyGroup || group;//mixins instead?
+		decimal = bundle.currencyDecimal || decimal;// Should these be mixins instead?
+		pattern = pattern.replace(/\u00a4{1,3}/g, function(match){
+			var prop = ["symbol", "iso4217", "displayName"][match.length-1];
+			return /*dojo.string.escapeRegExp*/(options.currency[prop] || options.currency.iso4217);
+		});
+	}
 
 	//TODO: handle quoted escapes
 	var patternList = pattern.split(';');
@@ -246,6 +250,7 @@ dojo.number.parse = function(/*String*/expression, /*Object?*/options){
 //		type- choose a format type based on the locale from the following: decimal, scientific, percent, currency. decimal by default.
 //		locale- override the locale used to determine formatting rules
 //		strict- strict parsing, false by default
+//		currency- object with currency information
 
 	var info = dojo.number._parseInfo(options);
 	var group = info.group;
