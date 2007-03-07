@@ -500,19 +500,18 @@ APIs in Base:
     dojo.style(node, propertyName) // pixel value of property
     dojo.style(node, propertyName, value) // sets it
 
-    // I/O
-    dojo.io
-        get()
-        post()
-        rawPost()
-        queue("get", {/*args */})
-        formToQuery()
-        mapToQuery()
-        wrapForm(formNode) // was FormBind
-        formToObject(formNode)
-        formToJson(formNode)
-        queryToObject(str)
+    // I/O // was dojo.io
     dojo.Deferred
+    dojo.callQueue("dojo.xhrGet", {/*args */}) // returns Deferred
+    dojo.xhrGet()
+    dojo.xhrPost()
+    dojo.rawXhrPost()
+    dojo.formToQuery()
+    dojo.mapToQuery()
+    dojo.wrapForm(formNode) // was FormBind
+    dojo.formToObject(formNode)
+    dojo.formToJson(formNode)
+    dojo.queryToObject(str)
 
     // event
     dojo.connect()
@@ -537,10 +536,11 @@ APIs in Base:
         slideIn() // new, replaces wipeIn
         slideOut()  // new, replaces wipeOut
         propertyAnimation()
-    dojo.color // required by fx
-        extractRGB()
-        rgb2hex()
-        hex2rgb()
+
+    // color functions. Were in dojo.color
+    dojo.extractRGB()
+    dojo.rgb2hex()
+    dojo.hex2rgb()
 
     // environment test variables (boolean):
     dojo.isBrowser
