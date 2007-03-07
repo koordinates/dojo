@@ -466,9 +466,8 @@ APIs in Base:
     dojo.declare() // was dojo.lang.declare() new, lightweight version
     dojo.extend() // was dojo.lang.extend()
     dojo.mixin() // was dojo.lang.mixin
-    dojo.json
-        serialize()
-        deserialize()
+    dojo.toJson()
+    dojo.fromJson()
 
     // array extras
     dojo.forEach() // was dojo.lang.forEach
@@ -502,7 +501,7 @@ APIs in Base:
 
     // I/O // was dojo.io
     dojo.Deferred
-    dojo.callQueue("dojo.xhrGet", {/*args */}) // returns Deferred
+    dojo.callQueue("queueName", "dojo.xhrGet", {/*args */}) // returns Deferred
     dojo.xhrGet()
     dojo.xhrPost()
     dojo.rawXhrPost()
@@ -520,22 +519,15 @@ APIs in Base:
 
     // effects
     dojo.fx // was dojo.lfx
-        // internal stuff that was previously public
-        // may need to weed out cruft from private classes
-        _IAnimation
-        _Animation
-        _Chain
-        _Combine
-        _PropertyAnimation
-        _defaultEasing()
-        // things users might actually use
-        chain()
-        combine()
-        fadeIn()
-        fadeOut()
-        slideIn() // new, replaces wipeIn
-        slideOut()  // new, replaces wipeOut
-        propertyAnimation()
+    dojo._IAnimation
+    dojo._Animation // must be a Deferred
+    dojo._PropertyAnimation
+    dojo._defaultEasing()
+    dojo.fadeIn()
+    dojo.fadeOut()
+    dojo.slideIn() // new, replaces wipeIn
+    dojo.slideOut()  // new, replaces wipeOut
+    dojo.animateProperty() // was dojo.lfx.propertyAnimation
 
     // color functions. Were in dojo.color
     dojo.extractRGB()
@@ -589,6 +581,12 @@ In Core but not Base:
     dojo.AdapterRegistry
     dojo.validate
     dojo.date
+    dojo.fx
+        _Chain
+        _Combine
+        // things users might actually use
+        chain()
+        combine()
 
 Unsure:
 -------
