@@ -434,13 +434,20 @@ The Split:
 APIs in Base:
 -------------
 
+    // loader
     dojo.require()
     dojo.provide()
-    dojo.platformRequire() // was kwCompoundRequire
-    dojo.requireLocalization() // need to find a way to make this code smaller, perhaps move to i18n?
-    dojo.registerModulePath() // or whatever it's called this week
     dojo.moduleUrl()
     dojo.dojoUrl()
+    dojo.registerModulePath() // or whatever it's called this week
+    dojo.platformRequire() // was kwCompoundRequire
+    dojo.version
+    dojo.is* // see below for details
+    
+    // i18n
+    dojo.requireLocalization() // need to find a way to make this code smaller, perhaps move to i18n?
+
+    // misc util
     dojo.deprecated()
     dojo.experimental()
     dojo.undefined() // was dj_undef and dojo.lang.isUndefined
@@ -448,15 +455,21 @@ APIs in Base:
     dojo.exists()
     dojo.global()
     dojo.doc()
-    dojo.version
     dojo.addOnLoad()
     dojo.addOnUnload()
+    dojo.cookie()  
+
+    // lang util
     dojo.eval() // was dj_eval
     dojo.hitch() // was dojo.lang.hitch
     dojo.partial()
     dojo.declare() // was dojo.lang.declare() new, lightweight version
     dojo.extend() // was dojo.lang.extend()
     dojo.mixin() // was dojo.lang.mixin
+    dojo.json
+        serialize()
+        deserialize()
+
     // array extras
     dojo.forEach() // was dojo.lang.forEach
     dojo.every() // was dojo.lang.every
@@ -465,12 +478,15 @@ APIs in Base:
     dojo.filter()
     dojo.indexOf()
     dojo.lastIndexOf()
-    // node stuff
+
+    // node utils
     dojo.byId()
     dojo.query()
     dojo.NodeList (described in "NodeList.txt") // any reason for a dojo.Node?
     dojo.createElement(obj, parent, position)
     dojo.place(node, refNode, position) // was dojo.dom.insertAtPosition
+
+    // style utils
     // note, we must document the standards vs. quirks vs. explicit box model
     // toggling upshots of using the following box functions
     dojo.borderBox(node) // returns { w: 0, h: 0 }
@@ -480,11 +496,11 @@ APIs in Base:
     // in coords, x and y are absolute while w and h are border-box
     dojo.coords(node)  // { x: 0, y: 0: w: 0, h: 0 } 
     // need a setter for coords or a moveTo method?
-
     dojo.style(node) // returns computed style obj
     dojo.style(node, propertyName) // pixel value of property
     dojo.style(node, propertyName, value) // sets it
 
+    // I/O
     dojo.io
         get()
         post()
@@ -497,10 +513,13 @@ APIs in Base:
         formToJson(formNode)
         queryToObject(str)
     dojo.Deferred
+
+    // event
     dojo.connect()
     dojo.disconnect()
     dojo._addNodeListener()
-    dojo.cookie()  
+
+    // effects
     dojo.fx // was dojo.lfx
         // internal stuff that was previously public
         // may need to weed out cruft from private classes
@@ -518,9 +537,6 @@ APIs in Base:
         slideIn() // new, replaces wipeIn
         slideOut()  // new, replaces wipeOut
         propertyAnimation()
-    dojo.json
-        serialize()
-        deserialize()
     dojo.color // required by fx
         extractRGB()
         rgb2hex()
