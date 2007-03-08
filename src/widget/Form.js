@@ -269,7 +269,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 				// FIXME: would be better to give it an attachPoint:
 				var elm = this.formElements[i];
 				var namePath = [];
-				if (elm.name == '') { continue;}
+				if (!elm.name) { continue;}
 				namePath=elm.name.split(".");
 				var myObj=obj;
 				var name=namePath[namePath.length-1];
