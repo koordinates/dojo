@@ -1,5 +1,6 @@
 dojo.provide("dojo.currency");
 
+dojo.require("dojo.number");
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.i18n.cldr", "currency");
 dojo.require("dojo.i18n.cldr.currencydata");
