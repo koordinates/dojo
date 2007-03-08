@@ -12,14 +12,24 @@
 	dojo.hostenv.writeIncludes();
 </script>
 <script type="text/javascript">
-	function saveHandler(newValue, oldValue) {
-		dojo.debug("New Value: " + newValue + " Old Value: " + oldValue);
-	}
-	
+	function saveHandler(newValue, oldValue,name) {
+		dojo.debug("onSave was called -- New Value: " + newValue + " : Old Value: " + oldValue);
+	};
+	function cancelCall(){
+		dojo.debug('onCancel was called.');
+	};
+	function changeCall(newValue,oldValue){
+		dojo.debug('onChange was called'+"New Value: " + newValue + " : Old Value: " + oldValue);
+	};		
 	dojo.addOnLoad(function(){
 		var editable = dojo.widget.byId("editable");
 		dojo.event.connect(editable, "onSave", "saveHandler");
+		dojo.event.connect(editable,'onChange','changeCall');
+		dojo.event.connect(editable,'onCancel','cancelCall');
 	});
+	
+
+
 </script>
 
 <style type="text/css">
@@ -30,7 +40,7 @@
 </head>
 
 <body>
-<h1 id="editable" dojoType="inlineEditBox">Edit me - I will trigger a custom onSave Handler</h1>
+<h1 id="editable" dojoType="inlineEditBox">Edit me - I trigger the callbacks onSave,onCancel,onChange</h1>
 
 <p id="areaEditable" dojoType="inlineEditBox" mode="textarea">
 I'm one big paragraph.  Go ahead and edit me.
