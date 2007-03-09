@@ -125,3 +125,12 @@ function test_lang_some(){
 		jum.assertTrue(String(580 + idx), ok);
 	});
 }
+
+function test_lang_reduce(){
+	var array = [1, 2, 3];
+	var initialArrayLength = array.length;
+
+	jum.assertTrue("590", dojo.lang.reduce(array, function(a, b){ return a+b; }) == 6);
+	jum.assertTrue("591", array.length == initialArrayLength);
+	jum.assertTrue("592", dojo.lang.reduce(array, function(a, b){ return a+b; }, 100) == 106);
+}
