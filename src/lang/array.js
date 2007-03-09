@@ -80,46 +80,26 @@ dojo.lang.mixin(dojo.lang, {
 		}
 	},
 
-	reduce: function(/*Array*/arr, initialValue, /*Object|Function*/obj, /*Function*/binary_func){
+	reduce: function(/*Array*/arr, /*Function*/binary_func, /*mixed?*/initialValue, /*Object?*/thisObject){
 		// summary:
 		// 		similar to Python's builtin reduce() function. The result of
 		// 		the previous computation is passed as the first argument to
 		// 		binary_func along with the next value from arr. The result of
 		// 		this call is used along with the subsequent value from arr, and
 		// 		this continues until arr is exhausted. The return value is the
-		// 		last result. The "obj" and "initialValue" parameters may be
-		// 		safely omitted and the order of obj and binary_func may be
-		// 		reversed. The default order of the obj and binary_func argument
-		// 		will probably be reversed in a future release, and this call
-		// 		order is supported today.
+		// 		last result.
 		// usage:
 		//		dojo.lang.reduce([1, 2, 3, 4], function(last, next){ return last+next});
 		//		returns 10
+
+		// FIXME: changes from 0.4.x calling syntax need to be documented in the 0.9 porting guide!!!
 		var reducedValue = initialValue;
-		if(arguments.length == 1){
-			dojo.debug("dojo.lang.reduce called with too few arguments!");
-			return false;
-		}else if(arguments.length == 2){
-			binary_func = initialValue;
-			reducedValue = arr.shift();
-		}else if(arguments.lenght == 3){
-			if(dojo.lang.isFunction(obj)){
-				binary_func = obj;
-				obj = null;
-			}
-		}else{
-			// un-fsck the default order
-			// FIXME:
-			//		could be wrong for some strange function object cases. Not
-			//		sure how to test for them.
-			if(dojo.lang.isFunction(obj)){
-				var tmp = binary_func;
-				binary_func = obj;
-				obj = tmp;
-			}
+		if(arguments.length == 2){
+			reducedValue = arr[0];
+			arr = arr.slice(1);
 		}
 
-		var ob = obj ? obj : dj_global;
+		var ob = thisObject || dj_global;
 		dojo.lang.map(arr, 
 			function(val){
 				reducedValue = binary_func.call(ob, reducedValue, val);
