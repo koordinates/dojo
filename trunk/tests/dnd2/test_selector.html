@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+	<title>Dojo DnD selector test</title>
+	<style type="text/css">
+		.container					{border: 3px solid #ccc; padding: 1em 3em; cursor: default;}
+		.dojo_dnd_container_over	{border: 3px solid #888; background: #ffe;}
+		.dojo_dnd_item_over			{background: #feb;}
+		.dojo_dnd_item_selected		{background: #ccf; color: #444;}
+		.dojo_dnd_item_anchor		{background: #ccf; color: black;}
+		.dojo_dnd_item_over.dojo_dnd_item_selected {background: #ec8;}
+		.dojo_dnd_item_over.dojo_dnd_item_anchor   {background: #ec8;}
+	</style>
+	<script type="text/javascript">
+		var djConfig = { isDebug: true /* , debugAtAllCosts: true */ };
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">dojo.require("dojo.debug.console");</script>
+	<script type="text/javascript" src="../../src/dnd2/container.js"></script>
+	<script type="text/javascript" src="../../src/dnd2/selector.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.dnd2.selector");
+		// dojo.hostenv.writeIncludes();
+	</script>
+	<script type="text/javascript">
+		var c1, c2, c3, c4, c5;
+		var init = function(){
+			c1 = new dojo.dnd2.Selector(dojo.byId("container1"), null, null, true);
+			c2 = new dojo.dnd2.Selector(dojo.byId("container2"));
+			c3 = new dojo.dnd2.Selector(dojo.byId("container3"));
+			c4 = new dojo.dnd2.Selector(dojo.byId("container4"));
+			c5 = new dojo.dnd2.Selector(dojo.byId("container5"));
+		};
+		dojo.addOnLoad(init);
+	</script>
+</head>
+<body>
+	<p>Dojo DnD selector test</p>
+	<div id="container1" class="container">
+		<div>Item 1</div>
+		<div>Item 2</div>
+		<div>Item 3</div>
+	</div>
+	<ul id="container2" class="container">
+		<li>Item 1</li>
+		<li>Item 2</li>
+		<li>Item 3</li>
+	</ul>
+	<ol id="container3" class="container">
+		<li>Item 1</li>
+		<li>Item 2</li>
+		<li>Item 3</li>
+	</ol>
+	<table id="container4" class="container" border="1px solid black">
+		<tr>
+			<td>A</td>
+			<td>row 1</td>
+		</tr>
+		<tr>
+			<td>B</td>
+			<td>row 2</td>
+		</tr>
+		<tr>
+			<td>C</td>
+			<td>row 3</td>
+		</tr>
+	</table>
+	<p id="container5" class="container">
+		<span>&nbsp;Item 1&nbsp;</span>
+		<span>&nbsp;Item 2&nbsp;</span>
+		<span>&nbsp;Item 3&nbsp;</span>
+	</p>
+</body>
+</html>
