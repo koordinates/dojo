@@ -23,7 +23,7 @@ function test_topic_registerPublisher(){
 	var mjp = dojo.event.MethodJoinPoint.getForMethod(tobj, "testPublish");
 	jum.assertEquals("test 20", 1, mjp.after.length);
 	jum.assertTrue("test 20", (mjp.after[0] instanceof Array));
-	jum.assertEquals("test 30", 7, mjp.after[0].length);
+	jum.assertEquals("test 30", 8, mjp.after[0].length);
 
 	dojo.event.topic.subscribe("/test", tobj, "testSubscribe");
 	tobj.testPublish();
