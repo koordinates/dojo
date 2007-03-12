@@ -222,7 +222,13 @@ dojo.hostenv.modulesLoaded = function(){
 }
 
 dojo.hostenv.callLoaded = function(){
-	if(typeof setTimeout == "object"){
+	//The "object" check is for IE, and the other opera check fixes an issue
+	//in Opera where it could not find the body element in some widget test cases.
+	//For 0.9, maybe route all browsers through the setTimeout (need protection
+	//still for non-browser environments though). This might also help the issue with
+	//FF 2.0 and freezing issues where we try to do sync xhr while background css images
+	//are being loaded (trac #2572)? Consider for 0.9.
+	if(typeof setTimeout == "object" || (djConfig["useXDomain"] && dojo.render.html.opera)){
 		setTimeout("dojo.hostenv.loaded();", 0);
 	}else{
 		dojo.hostenv.loaded();
