@@ -734,6 +734,12 @@ available in src/storage/java/ without rebuilding it.
 			<arg value="${release_dir}/dojo.js" />
 			<arg value="${xdDojoUrl}" />
 		</java>
+		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true"
+			logError="true">
+			<arg value="setXdDojoConfig.js" />
+			<arg value="${release_dir}/dojo.js.uncompressed.js" />
+			<arg value="${xdDojoUrl}" />
+		</java>
 	</target>
 	<!-- end xd-dojo-config task -->
 
