@@ -137,7 +137,7 @@ dojo.lang.mixin(dojo.html.selection, {
 		if ( dojo.html.selection.getType() == dojo.html.selectionType.CONTROL ){
 			if(dojo.doc()["selection"]){ //IE
 				var range = dojo.doc().selection.createRange();
-		
+
 				if ( range && range.item ){
 					return dojo.doc().selection.createRange().item(0);
 				}
@@ -265,7 +265,7 @@ dojo.lang.mixin(dojo.html.selection, {
 		var _document = dojo.doc();
 		element = dojo.byId(element);
 		if(_document.selection && dojo.body().createTextRange){ // IE
-			var range = dojo.body().createTextRange();
+			var range = element.ownerDocument.body.createTextRange();
 			range.moveToElementText(element);
 			range.select();
 		}else if(_window["getSelection"]){
@@ -283,7 +283,19 @@ dojo.lang.mixin(dojo.html.selection, {
 		var _document = dojo.doc();
 		if(_document["selection"]){ // IE
 			var range = _document.selection.createRange();
-			bookmark = range.getBookmark();
+			if(_document.selection.type.toUpperCase()=='CONTROL'){
+				if(range.length){
+					bookmark=[];
+					var i=0;
+					while(i<range.length){
+						bookmark.push(range.item(i++));
+					}
+				}else{
+					bookmark = null;
+				}
+			}else{
+				bookmark = range.getBookmark();
+			}
 		}else{
 			var selection;
 			try {selection = dojo.global().getSelection();}
@@ -302,9 +314,18 @@ dojo.lang.mixin(dojo.html.selection, {
 		// bookmark: this should be a returned object from dojo.html.selection.getBookmark()
 		var _document = dojo.doc();
 		if(_document["selection"]){ // IE
-			var range = _document.selection.createRange();
-			 range.moveToBookmark(bookmark);
-			 range.select();
+			if(dojo.lang.isArray(bookmark)){
+				var range= _document.body.createControlRange();
+				var i=0;
+				while(i<bookmark.length){
+					range.addElement(bookmark[i++]);
+				}
+				range.select();
+			}else{
+				var range = _document.selection.createRange();
+				range.moveToBookmark(bookmark);
+				range.select();
+			}
 		}else{ //Moz/W3C
 			var selection;
 			try {selection = dojo.global().getSelection();}

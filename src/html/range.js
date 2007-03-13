@@ -415,7 +415,7 @@ if(!dojo.html.range._w3c){
 		}
 	},{
 	_simpleSetEndPoint: function(node, range, end){
-		var r = node.ownerDocument.body.createTextRange();
+		var r = (this._body||node.ownerDocument.body).createTextRange();
 		if(node.nodeType!=1){
 			r.moveToElementText(node.parentNode);
 		}else{
@@ -427,7 +427,7 @@ if(!dojo.html.range._w3c){
 	_updateInternal: function(__internal_common){
 		if(this.startContainer !== this.endContainer){
 			if(!__internal_common){
-				var r = this.startContainer.ownerDocument.body.createTextRange();
+				var r = (this._body||this.startContainer.ownerDocument.body).createTextRange();
 				this._simpleSetEndPoint(this.startContainer,r);
 				this._simpleSetEndPoint(this.endContainer,r,true);
 				__internal_common = r.parentElement();
