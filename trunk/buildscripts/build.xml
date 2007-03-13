@@ -40,6 +40,7 @@
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
 	<property name="profile" value=""/>
 	<property name="locales" value="en-gb,en-us,de-de,es-es,fr-fr,it-it,pt-br,ko-kr,zh-tw,zh-cn,ja-jp"/> 	<!-- FIXME: where should this list come from? -->
+	<property name="currencies" value="GBP,USD,CAD,AUD,EUR,CHF,HKD,JPY"/> 	<!-- FIXME: arbitrary list. Can be altered or eliminated for all currencies -->
 	<property name="cldrIn" location="${root}/cldr"/>
 	<property name="cldrOut" location="${root}/${src}/i18n/cldr"/>
 
@@ -312,6 +313,7 @@ build targets:
 				<mkdir dir="@{destdir}"/>
 				<saxon in="@{in}" style="${cldrIn}/ldml/main/cldrCalendar.xsl" destdir="@{destdir}"/>
 				<saxon in="@{in}" style="${cldrIn}/ldml/main/cldrNumber.xsl" destdir="@{destdir}"/>
+				<saxon in="@{in}" style="${cldrIn}/ldml/main/cldrCurrency.xsl" destdir="@{destdir}"/>
 				<echo level="info" message="Transformed @{in} to @{destDir}" taskName="cldr"/>
 				<removeEmptyOutput dir="@{destdir}" />
 			</sequential>
@@ -338,6 +340,7 @@ build targets:
 					<arg value="org.apache.xml.resolver.tools.ResolvingXMLReader"/>
 					<arg file="@{in}"/>
 					<arg file="@{style}"/>
+					<arg value="currencyList=${currencies}"/>
 				</java>
 			</sequential>
 		</macrodef>
@@ -373,7 +376,7 @@ build targets:
 		   </fileset>
 		</copy>	
 
-		<delete dir="${cldrOut}/nls" includeemptydirs="yes"/>
+		<delete dir="${cldrOut}/nls" />
 		<transformCldr destdir="${cldrOut}/nls">
 			<fileset dir="${cldrIn}/ldml/main" includes="**/*.xml" />
 		</transformCldr>

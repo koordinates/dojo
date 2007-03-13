@@ -40,6 +40,7 @@ djConfig={baseRelativePath: "../"};
 load("../dojo.js");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.common");
+dojo.require("dojo.i18n.loader");
 dojo.require("dojo.json");
 
 load("buildUtil.js");
@@ -56,8 +57,7 @@ for(var i= 0; i < fileList.length; i++){
 	var locale = jsPath[localeIndex];
 	if(locale=="nls"){continue;} // don't run on ROOT resource
 	var hasChanged = false;
-
-	dojo.hostenv.searchLocalePath(locale, true, function(variant) {
+	dojo.i18n._searchLocalePath(locale, true, function(variant){
 		var isComplete = false;
 		var path = jsPath;
 		if(variant=="ROOT"){
@@ -98,7 +98,6 @@ for(var i= 0; i < fileList.length; i++){
 		}
 		return isComplete;
 	});
-
 	if(hasChanged){
 		buildUtil.saveUtf8File(jsFileName, dojo.json.serialize(data));
 	}
