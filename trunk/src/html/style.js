@@ -335,7 +335,7 @@ if(dojo.render.html.ie){
 		// summary
 		//  Extract value in pixels from styleValue (IE version).
 		//  If a value cannot be extracted, zero is returned.
-		if(!styleValue){ return 0; }
+		if(!styleValue){return 0;}
 		if(styleValue.slice(-2) == 'px'){return parseFloat(styleValue);}
 		var pixelValue = 0;
 		with(element){
@@ -361,7 +361,7 @@ if(dojo.render.html.ie){
 		// summary
 		//  Extract value in pixels from styleValue (non-IE version).
 		//  If a value cannot be extracted, zero is returned.
-		return (styleValue.slice(-2) == 'px' ? parseFloat(styleValue) : 0); // Number
+		return (styleValue && (styleValue.slice(-2)=='px') ? parseFloat(styleValue) : 0); // Number
 	}
 }
 
