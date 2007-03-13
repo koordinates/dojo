@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:saxon="http://saxon.sf.net/" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+<xsl:stylesheet xmlns:saxon="http://saxon.sf.net/" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" extension-element-prefixes="saxon" version="2.0">
 <xsl:output method="text" indent="yes"/>
-<xsl:strip-space elements="*"/> 
-    
+<!-- list the data elements whose spaces should be preserved
+       it seems listing only the parent node doesn't work -->
+<xsl:preserve-space elements="displayName symbol"/>
+<xsl:strip-space elements="*"/>
+
+<!--  currencyList is an external string property like "AUD|BEF|CAD|CHF|CNY|DEM|...|USD",
+        if it is provided, only those currencies in this list will be extracted,
+        otherwise all the currencies will be extracted by default-->
+<xsl:param name="currencyList"></xsl:param>
+<xsl:variable name="first" select="true()" saxon:assignable="yes"/>
+
 <xsl:template match="/">
      <xsl:apply-templates/>
 </xsl:template>
-  
+
 <!-- process ldml, numbers and currencies -->
 <xsl:template name="top" match="/ldml">
     <xsl:choose>
@@ -23,19 +32,27 @@
         <xsl:otherwise>
             <xsl:choose>
                 <xsl:when test="name()='currencies'">
-                    <!-- currencies -->
-                    <xsl:for-each select="currency">
-                        <xsl:value-of select="@type"></xsl:value-of>
-                        <xsl:result-document href="{concat(@type,'.js')}" encoding="UTF-8">// generated from cldr/ldml/main/*.xml, xpath: ldml/numbers/currencies
-({<xsl:call-template name="currency"></xsl:call-template>
+                    <xsl:result-document href="currency.js" encoding="UTF-8">// generated from cldr/ldml/main/*.xml, xpath: ldml/numbers/currencies
+({<xsl:choose><xsl:when test="string-length(string($currencyList))>0">                            
+                                 <xsl:for-each select="currency">
+                                     <xsl:if test="contains($currencyList,@type)">
+                                         <xsl:call-template name="currency"></xsl:call-template>
+                                     </xsl:if>
+                                 </xsl:for-each>
+                         </xsl:when>
+                         <xsl:otherwise>
+                             <xsl:for-each select="currency">
+                                 <xsl:call-template name="currency"></xsl:call-template>                        
+                             </xsl:for-each>
+                         </xsl:otherwise>
+                     </xsl:choose>
 })
-                        </xsl:result-document>
-                    </xsl:for-each>
+                 </xsl:result-document>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:if test="name()='ldml'">
                         <!-- ldml -->
-                        <xsl:for-each select="numbers">
+                        <xsl:for-each select="numbers">    
                             <xsl:call-template name="top"></xsl:call-template>
                         </xsl:for-each>
                     </xsl:if>
@@ -66,16 +83,24 @@
             </xsl:for-each>
         </xsl:when>
         <xsl:otherwise>
-            <xsl:for-each select="*[not(@draft)] | *[@draft!='provisional' and @draft!='unconfirmed']">
-        '<xsl:value-of select="name()"></xsl:value-of>
-                <xsl:text>': "</xsl:text> 
-                <xsl:value-of select="replace(.,'&quot;', '\\&quot;')"></xsl:value-of>                
-                <xsl:text>"</xsl:text>
-                <xsl:if test="count((following-sibling::node())[not(@draft)] 
-                           | *[@draft!='provisional' and @draft!='unconfirmed']) > 0 ">
-                    <xsl:text>,</xsl:text>
-                </xsl:if>
-            </xsl:for-each>            
+        <xsl:if test="count(./* [(not(@draft) or @draft!='provisional' and @draft!='unconfirmed')]) > 0">
+            <xsl:call-template name="insert_comma"/>
+            <xsl:text>
+        </xsl:text>
+            <xsl:value-of select="@type"></xsl:value-of>
+            <xsl:text>:{</xsl:text>
+             <xsl:for-each select="*[not(@draft)] | *[@draft!='provisional' and @draft!='unconfirmed']">
+                    <xsl:value-of select="name()"></xsl:value-of>
+                    <xsl:text>:"</xsl:text> 
+                    <xsl:value-of select="replace(.,'&quot;', '\\&quot;')"></xsl:value-of>                
+                    <xsl:text>"</xsl:text>
+                    <xsl:if test="count((following-sibling::node())[not(@draft)] 
+                               | *[@draft!='provisional' and @draft!='unconfirmed']) > 0 ">
+                    <xsl:text>, </xsl:text>
+                    </xsl:if>
+             </xsl:for-each>
+            <xsl:text>}</xsl:text>
+            </xsl:if>
          </xsl:otherwise>   
         </xsl:choose>
     </xsl:template>
@@ -123,4 +148,15 @@
         </xsl:if>
     </xsl:template>   
 
+    <xsl:template name="insert_comma">
+        <xsl:choose>
+            <xsl:when test="$first">
+                <saxon:assign name="first" select="false()"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:text>,</xsl:text>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
 </xsl:stylesheet>
