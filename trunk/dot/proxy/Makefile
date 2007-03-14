@@ -85,7 +85,7 @@ md5import.o: md5import.c md5.c
 
 .PHONY: all install install.binary install.man
 
-all: polipo$(EXE) polipo.info html/index.html localindex.html
+build: polipo$(EXE) polipo.info html/index.html localindex.html
 
 install: install.binary install.man
 
@@ -144,3 +144,18 @@ clean:
 	-rm -f polipo.dvi polipo.ps polipo.ps.gz polipo.pdf polipo.html
 	-rm -rf ./html/
 	-rm -f polipo.man.html
+
+all:
+	make clean
+	make mac
+	make clean
+	make windows
+
+mac: build
+	mv -f polipo ../proxy-build/mac/x86
+	cp -f config.sample ../proxy-build/mac/x86/config
+	
+windows:
+	make CC=i386-mingw32-gcc EXE=.exe LDLIBS=-lwsock32 PREFIX=/ build
+	mv -f polipo.exe ../proxy-build/win
+	cp -f config.sample ../proxy-build/win/config
