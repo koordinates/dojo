@@ -112,11 +112,21 @@ buildUtilXd.makeXdBundleContents = function(prefix, prefixPath, srcFileName, fil
 	fileContents = (prefix.indexOf("dojo") == 0) ? fileContents : buildUtil.makeFlatBundleContents(prefix, prefixPath, srcFileName);
 
 	//Final XD file contents.
-	fileContents = 'dojo.provide("' + moduleName + '.nls.' + (localeName ? localeName + '.' : '') + bundleName + '");'
+	var provideString = 'dojo.provide("' + moduleName + '.nls.' + (localeName ? localeName + '.' : '') + bundleName + '");';
+
+	fileContents = provideString
 	                 + 'dojo.hostenv.xdLoadFlattenedBundle("' + moduleName + '", "' + bundleName
                    + '", "' + localeName + '", ' + fileContents + ');';
 
-	//Now make a proper xd.js file out of the content.
-	return buildUtilXd.makeXdContents(fileContents, baseRelativePath, prefixes);
+	//Now make a proper xd.js file out of the content, but
+	//only include the dojo.provide statement. We'll leave the bundle contents outside of the
+	//xd wrapper.
+	var bundleContents = buildUtilXd.makeXdContents(provideString, baseRelativePath, prefixes);
+	
+	//Just inline the real contents right in the file. Its ok if bundles are evaluated right
+	//away since they don't have dependencies.
+	bundleContents += fileContents;
+	
+	return bundleContents;
 }
 //END makeXdBundleContents function
