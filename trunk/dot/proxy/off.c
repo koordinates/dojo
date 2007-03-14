@@ -5,6 +5,31 @@
 
 #include "polipo.h"
 
+/** Our strategy for dealing with the network falling out from under
+    us is as follows:
+
+    We start assuming the network exists (i.e. proxyOffline = no). If
+    at any time we get a DNS error when trying to resolve a name, inside
+    of server.c:httpServerConnectionDnsHandler, we automatically move offline
+    and retry the request again, causing the data to be retrieved from our
+    offline cache if available. We therefore call goOffline(), which sets
+    proxyOffline = yes, causing Polipo to therefore start using the local
+    data cache.
+
+    We depend on the offline JavaScript layer to determine when our particular
+    web application has lost the network -- if so, we then call our local
+    goOffline() API on the local proxy. The web app also periodically checks
+    to see if the web application has reappeared on the network -- if so, we
+    call goOnline() on the local proxy. This happens through the JavaScript layer.
+    Doing this through the JavaScript layer simplifies our code and allows us to 
+    avoid having custom sockets being opened on a listener thread at the C level,
+    which would be checking to see if each web app is available, which would get
+    complicated.
+
+    FIXME: If we have multiple offline-enabled web apps running at once, how
+    will one of them pushing us offline affect the others?
+*/
+
 #ifdef NO_OFFLINE_SUPPORT /* compile out offline support */
 
 void preinitOffline(){
@@ -482,13 +507,11 @@ void setOfflineFileName(char *name_ptr){
 }
 
 void goOnline(void){
-	printf("goOnline\n");
 	online_flag = 1;
 	proxyOffline = 0; /* 0 means take proxy online */
 }
 
 void goOffline(void){
-	printf("goOffline\n");
 	online_flag = 0;
 	proxyOffline = 1; /* 1 means take proxy offline */
 }

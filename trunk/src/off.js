@@ -501,7 +501,7 @@ dojo.lang.mixin(dojo.off, {
 		}else{
 			url += "&";
 		}
-		url += new Date().getTime();
+		url += "cachebust=" + new Date().getTime();
 		
 		return url;
 	},

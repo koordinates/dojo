@@ -505,9 +505,67 @@ httpServerConnection(HTTPServerPtr server)
 int
 httpServerConnectionDnsHandler(int status, GethostbynameRequestPtr request)
 {
-    HTTPConnectionPtr connection = request->data;
+    HTTPConnectionPtr serverConnection = request->data;
+    HTTPRequestPtr serverRequest = serverConnection->server->request;
+	HTTPRequestPtr clientRequest = (HTTPRequestPtr)(serverRequest->object->requestor);
+	HTTPConnectionPtr clientConnection = clientRequest->connection;
+	int correctMethod = 0;
 
-    httpSetTimeout(connection, -1);
+    httpSetTimeout(serverConnection, -1);
+
+    if(clientRequest){
+       if(clientRequest->method == METHOD_GET
+          || clientRequest->method == METHOD_CONDITIONAL_GET){
+          correctMethod = 1;
+       }	
+    }
+
+#ifndef NO_OFFLINE_SUPPORT
+    /* automatically go offline and retry this request 
+       if it is a GET request and if we haven't tried to
+       replay this request before. */
+    if(disableOfflineSupport == 0 
+         && status <= 0
+         && correctMethod == 1
+         && clientRequest
+         && clientRequest->replaying == 0){
+		printf("We are going to replay this request\n");
+       /* prevent infinite loops */
+       clientRequest->replaying = 1;
+      
+       /* go offline */
+       goOffline();
+
+       /* free up our old connection handler created when we thought
+          we would be talking on the network */
+       unregisterConditionHandler(clientRequest->chandler);
+       clientRequest->chandler = NULL;
+	   
+       /* clean up server connection resources */
+       if(serverRequest){
+		printf("freeing yo mama\n");
+          /* keep these around for replaying -- don't free them */
+          serverRequest->object = NULL; /* our cached object */
+          serverRequest->request = NULL; /* our client request */
+       }
+       /* discard our request object representing communication with the server */
+       httpDestroyRequest(serverRequest);
+       serverConnection->server->request = NULL;
+       serverRequest = NULL;
+       /* discard our object representing the server itself */
+       discardServer(serverConnection->server);
+       serverConnection->server = NULL;
+       /* now destroy the HTTP connection object built to talk to this server */
+       httpDestroyConnection(serverConnection);
+       serverConnection = NULL;
+       /* clientRequest references serverRequest -- clear this */
+       clientRequest->request = NULL;
+
+       clientConnection->flags |= CONN_WRITER;
+       lockChunk(clientRequest->object, clientRequest->from / CHUNK_SIZE);
+       return httpServeObject(clientConnection);
+    }
+#endif
 
     if(status <= 0) {
         AtomPtr message;
@@ -523,11 +581,11 @@ httpServerConnectionDnsHandler(int status, GethostbynameRequestPtr request)
                request->error_message ?
                request->error_message->string :
                pstrerror(-status), -status);
-        connection->connecting = 0;
-        if(connection->server->request)
-            httpServerAbortRequest(connection->server->request, 1, 504,
+        serverConnection->connecting = 0;
+        if(serverConnection->server->request)
+            httpServerAbortRequest(serverConnection->server->request, 1, 504,
                                    retainAtom(message));
-        httpServerAbort(connection, 1, 502, message);
+        httpServerAbort(serverConnection, 1, 502, message);
         return 1;
     }
 
@@ -535,26 +593,26 @@ httpServerConnectionDnsHandler(int status, GethostbynameRequestPtr request)
         if(request->count > 10) {
             AtomPtr message = internAtom("DNS CNAME loop");
             do_log(L_ERROR, "DNS CNAME loop.\n");
-            connection->connecting = 0;
-            if(connection->server->request)
-                httpServerAbortRequest(connection->server->request, 1, 504,
+            serverConnection->connecting = 0;
+            if(serverConnection->server->request)
+                httpServerAbortRequest(serverConnection->server->request, 1, 504,
                                        retainAtom(message));
-            httpServerAbort(connection, 1, 504, message);
+            httpServerAbort(serverConnection, 1, 504, message);
             return 1;
         }
             
-        httpSetTimeout(connection, serverTimeout);
+        httpSetTimeout(serverConnection, serverTimeout);
         do_gethostbyname(request->addr->string + 1, request->count + 1,
                          httpServerConnectionDnsHandler,
-                         connection);
+                         serverConnection);
         return 1;
     }
 
-    connection->connecting = CONNECTING_CONNECT;
-    httpSetTimeout(connection, serverTimeout);
-    do_connect(retainAtom(request->addr), connection->server->addrindex,
-               connection->server->port,
-               httpServerConnectionHandler, connection);
+    serverConnection->connecting = CONNECTING_CONNECT;
+    httpSetTimeout(serverConnection, serverTimeout);
+    do_connect(retainAtom(request->addr), serverConnection->server->addrindex,
+               serverConnection->server->port,
+               httpServerConnectionHandler, serverConnection);
     return 1;
 }
 

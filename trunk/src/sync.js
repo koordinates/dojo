@@ -400,7 +400,7 @@ dojo.lang.mixin(dojo.sync, {
 	//	Example: 
 	//	dojo.sync.details = ["The document 'foobar' had conflicts - yours one",
 	//						"The document 'hello world' was automatically merged"];
-	details: null,
+	details: new Array(),
 	
 	// lastSync: Date
 	//	The last successful sync that was performed, null
@@ -433,7 +433,7 @@ dojo.lang.mixin(dojo.sync, {
 	
 		this.isSyncing = true;
 		this.successful = false;
-		this.details = null;
+		this.details = new Array();
 		this.cancelled = false;
 		
 		this.start();

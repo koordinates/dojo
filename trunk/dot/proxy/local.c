@@ -209,9 +209,7 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
        && lwrcmp(referer->string, "http", 4) == 0) {
       safe_scheme = 1; 
     }
-    printf("safe_scheme=%d\n", safe_scheme);
 	if(safe_scheme == 0){
-		printf("unsafe scheme; returning\n");
 		goto fail;
 	}
 	
@@ -324,7 +322,6 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
 {
     char buffer[1024];
     int hlen = 0;
-    printf("httpSpecialRequest\n");
     if(method >= METHOD_POST) {
         return httpSpecialSideRequest(object, method, from, to,
                                       requestor, closure);

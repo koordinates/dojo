@@ -621,6 +621,7 @@ httpMakeRequest()
     request->method = METHOD_UNKNOWN;
     request->from = 0;
     request->to = -1;
+    request->replaying = 0;
     request->cache_control = no_cache_control;
     request->condition = NULL;
     request->via = NULL;

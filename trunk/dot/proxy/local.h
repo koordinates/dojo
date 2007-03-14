@@ -30,6 +30,7 @@ typedef struct _SpecialRequest {
 
 extern int disableConfiguration;
 extern int disableIndexing;
+extern int disableOfflineSupport;
 
 void preinitLocal(void);
 void alternatingHttpStyle(FILE *out, char *id);
