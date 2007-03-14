@@ -308,9 +308,14 @@ public class MoxieServlet extends HttpServlet{
 			out.write("fileName: \"" + d.fileName + "\", ");
 			
 			// escape our double quotes
-			Pattern p = Pattern.compile("[\"]", Pattern.MULTILINE);
-			Matcher m = p.matcher(d.content);
+			Pattern quotePattern = Pattern.compile("[\"]", Pattern.MULTILINE);
+			Matcher m = quotePattern.matcher(d.content);
 			String content = m.replaceAll("\\\\\""); 
+			
+			// escape multi line strings
+			Pattern linePattern = Pattern.compile("\n|\r", Pattern.MULTILINE);
+			m = linePattern.matcher(content);
+			content = m.replaceAll("\\\\\n");
 			
 			// write out our contents
 			out.write("content: \"" + content + "\"");
