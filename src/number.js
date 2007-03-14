@@ -18,19 +18,20 @@ dojo.number.format = function(/*Number*/value, /*Object?*/options){
 // value:
 //		the number to be formatted.
 //
-// options: object {pattern: String?, type: String?, places: Number?, round: Boolean?, currencyData: Object?, locale: String?}
+// options: object {pattern: String?, type: String?, places: Number?, round: Boolean?, currency: String?, symbol: String?, locale: String?}
 //		pattern- override formatting pattern with this string (see dojo.number.applyPattern)
 //		type- choose a format type based on the locale from the following: decimal, scientific, percent, currency. decimal by default.
 //		places- fixed number of decimal places to show.  This overrides any information in the provided pattern.
 //		round- whether to round the number.  false by default //TODO
-//		currencyData- object with currency information
+//		currency- iso4217 currency code
+//		symbol- localized currency symbol
 //		locale- override the locale used to determine formatting rules
 
 	options = options || {};
 	var locale = dojo.hostenv.normalizeLocale(options.locale);
 	var bundle = dojo.i18n.getLocalization("dojo.i18n.cldr", "number", locale);
 	var pattern = options.pattern || bundle[(options.type || "decimal") + "Format"];
-	return dojo.number.applyPattern(value, pattern, {symbols: bundle, places: options.places, round: options.round, currencyData: options.currencyData}); // String //TODO
+	return dojo.number.applyPattern(value, pattern, {symbols: bundle, places: options.places, round: options.round, currency: options.currency, symbol: options.symbol}); // String //TODO mixin
 };
 
 //dojo.number._numberPatternRE = /(?:[#0]*,?)*[#0](?:\.0*#*)?/; // not precise, but good enough
@@ -40,9 +41,8 @@ dojo.number.applyPattern = function(/*Number*/value, /*String*/pattern, /*Object
 	// summary: Apply pattern to format value as a string using options. Gives no consideration to local customs.
 	// value: the number to be formatted.
 	// pattern: a pattern string as described in http://www.unicode.org/reports/tr35/#Number_Format_Patterns
-	// options: object {symbols: Object?, places: Number?, currencyData: Object?} //TODO round
+	// options: object {symbols: Object?, places: Number?, currency: String?, symbol: String?} //TODO round
 	//  symbols- a hash containing: decimal, group, ...
-	//	currencyData- object with currency information
 
 //TODO: support escapes
 	options = options || {};
@@ -62,8 +62,8 @@ dojo.number.applyPattern = function(/*Number*/value, /*String*/pattern, /*Object
 		group = options.symbols.currencyGroup || group;//mixins instead?
 		decimal = options.symbols.currencyDecimal || decimal;// Should these be mixins instead?
 		pattern = pattern.replace(/\u00a4{1,3}/, function(match){
-			var prop = ["symbol", "iso4217", "displayName"][match.length-1];
-			return options.currencyData[prop] || options.currencyData.iso4217 || "";
+			var prop = ["symbol", "currency", "displayName"][match.length-1];
+			return options[prop] || options.currency || "";
 		});
 	}else if(pattern.indexOf('E') != -1){
 		dojo.unimplemented("exponential notation not supported");
@@ -168,7 +168,6 @@ dojo.number.regexp = function(/*Object?*/options){
 //		locale- override the locale used to determine formatting rules
 //		strict- strict parsing, false by default
 //		places- number of decimal places to accept: Infinity, a positive number, or a range "n,m"
-//		currencyData- object with currency information
 	return dojo.number._parseInfo(options).regexp; // String
 }
 
@@ -224,8 +223,8 @@ dojo.number._parseInfo = function(/*Object?*/options){
 
 	if(isCurrency){
 		re = re.replace(/\u00a4{1,3}/g, function(match){
-			var prop = ["symbol", "iso4217", "displayName"][match.length-1];
-			var symbol = dojo.string.escape('regexp', options.currencyData[prop] || options.currencyData.iso4217 || "");
+			var prop = ["symbol", "currency", "displayName"][match.length-1];
+			var symbol = dojo.string.escape('regexp', options[prop] || options.currency || "");
 			if(!options.strict){ symbol = "(?:"+symbol+")?"; }
 			return symbol;
 		});
