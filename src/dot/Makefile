@@ -15,13 +15,19 @@ all:
 	make windows
 
 mac:
-	echo --- Creating Mac/x86 Build ---
+	@echo
+	@echo
+	@echo --- Creating Mac/x86 Build ---
+	@echo
 	make -C proxy all
 	mv -f proxy/polipo proxy-build/mac/x86/dot
 	cp -f proxy/config.sample proxy-build/mac/x86/config
 	
 windows:
-	echo --- Creating Windows/x86 Build ---
+	@echo
+	@echo
+	@echo --- Creating Windows/x86 Build ---
+	@echo
 	make -C proxy all CC=i386-mingw32-gcc EXE=.exe LDLIBS=-lwsock32 PREFIX=/
 	mv -f proxy/polipo.exe proxy-build/win/dot.exe
 	cp -f proxy/config.sample proxy-build/win/config
