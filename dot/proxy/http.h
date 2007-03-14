@@ -35,6 +35,7 @@ typedef struct _HTTPRequest {
     int method;
     int from;
     int to;
+    int replaying;
     CacheControlRec cache_control;
     HTTPConditionPtr condition;
     AtomPtr via;

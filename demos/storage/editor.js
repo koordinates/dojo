@@ -48,7 +48,8 @@ dojo.off.files.cache([
 					djConfig.baseRelativePath + "src/widget/templates/buttons/indent.gif",
 					djConfig.baseRelativePath + "src/widget/templates/buttons/createlink.gif",
 					djConfig.baseRelativePath + "src/widget/templates/buttons/insertimage.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/inserthorizontalrule.gif"
+					djConfig.baseRelativePath + "src/widget/templates/buttons/inserthorizontalrule.gif",
+					djConfig.baseRelativePath + "nls/dojo_en.js"
 					]);
 
 var Moxie = {
@@ -290,7 +291,11 @@ var Moxie = {
 	_loadOnline: function(key){
 		// get the value from the server
 		var self = this;
-		// FIXME: I'm sure Dojo can do this internal cache busting itself
+		// add 'cachebust' to the URL to make sure we get a fresh
+		// copy that is not returned from either the browser's cache
+		// or the local offline proxy's cache -- cachebust is a magic
+		// string that will bypass the local proxy, and also trick the
+		// browser
 		var url = "/moxie/" + encodeURIComponent(key) 
 					+ "?cachebust=" + new Date().getTime(); 
 		var bindArgs = {
@@ -383,7 +388,11 @@ var Moxie = {
 	
 	_downloadData: function(){
 		var self = this;
-		// FIXME: Use Dojo's internal cache busting mechanisms
+		// add 'cachebust' to the URL to make sure we get a fresh
+		// copy that is not returned from either the browser's cache
+		// or the local offline proxy's cache -- cachebust is a magic
+		// string that will bypass the local proxy, and also trick the
+		// browser
 		var bindArgs = {
 			url:	 "/moxie/download?cachebust=" + new Date().getTime(),
 			sync:		false,
