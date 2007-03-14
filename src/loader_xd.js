@@ -154,10 +154,11 @@ dojo.hostenv.loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/curre
 		if(!this.headElement){
 			this.headElement = document.getElementsByTagName("head")[0];
 
-			//For opera, head element may not exist, particularly in html
+			//Head element may not exist, particularly in html
 			//html 4 or tag soup cases where the page does not
 			//have a head tag in it. Use html element, since that will exist.
-			if(!this.headElement && dojo.render.html.opera){
+			//Seems to be an issue mostly with Opera 9 and to lesser extent Safari 2
+			if(!this.headElement){
 				this.headElement = document.getElementsByTagName("html")[0];
 			}
 		}
