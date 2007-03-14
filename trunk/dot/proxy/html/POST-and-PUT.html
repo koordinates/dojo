@@ -1,0 +1,75 @@
+<html lang="en">
+<head>
+<title>POST and PUT - The Polipo Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Polipo Manual">
+<meta name="generator" content="makeinfo 4.7">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Background.html#Background" title="Background">
+<link rel="prev" href="Partial-instances.html#Partial-instances" title="Partial instances">
+<link rel="next" href="Other-HTTP-proxies.html#Other-HTTP-proxies" title="Other HTTP proxies">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 2003 -- 2006 by Juliusz Chroboczek.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc { font-variant:small-caps }
+  span.roman { font-family: serif; font-weight: normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="POST-and-PUT"></a>Next:&nbsp;<a rel="next" accesskey="n" href="Other-HTTP-proxies.html#Other-HTTP-proxies">Other HTTP proxies</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Partial-instances.html#Partial-instances">Partial instances</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Background.html#Background">Background</a>
+<hr><br>
+</div>
+
+<h3 class="section">1.6 Other requests</h3>
+
+<p><a name="index-GET-request-17"></a><a name="index-HEAD-request-18"></a><a name="index-PUT-request-19"></a><a name="index-POST-request-20"></a><a name="index-OPTIONS-request-21"></a><a name="index-PROPFIND-request-22"></a>
+The previous sections pretend that there is only one kind of request
+in HTTP &mdash; the <span class="samp">GET</span> request.  In fact, there are some others.
+
+   <p>The <span class="samp">HEAD</span> request method retrieves data about an resource.  Polipo
+does not normally use <span class="samp">HEAD</span>, but will fall back to using it for
+validation it if finds that a given server fails to cooperate with its
+standard validation methods (see <a href="Cache-transparency.html#Cache-transparency">Cache transparency</a>).  Polipo will
+correctly reply to a client's <span class="samp">HEAD</span> request.
+
+   <p>The <span class="samp">POST</span> method is used to request that the server should do
+something rather than merely sending an entity; it is usually used
+with HTML forms that have an effect<a rel="footnote" href="#fn-1" name="fnd-1"><sup>1</sup></a>.  The <span class="samp">PUT</span> method is used to replace an
+resource with a different instance; it is typically used by web
+publishing applications.
+
+   <p><span class="samp">POST</span> and <span class="samp">PUT</span> requests are handled by Polipo pretty much
+like <span class="samp">GET</span> and <span class="samp">HEAD</span>; however, for various reasons, some
+precautions must be taken.  In particular, any cached data for the
+resource they refer to must be discarded, and they can never be
+pipelined.
+
+   <p>Finally, HTTP/1.1 includes a convenient backdoor with the
+<span class="samp">CONNECT</span> method.  For more information, please see
+<a href="Tunnelling-connections.html#Tunnelling-connections">Tunnelling connections</a>.
+
+   <p>Polipo does not currently handle the more exotic methods such as
+<span class="samp">OPTIONS</span> and <span class="samp">PROPFIND</span>.
+
+   <div class="footnote">
+<hr>
+<h4>Footnotes</h4><p class="footnote"><small>[<a name="fn-1" href="#fnd-1">1</a>]</small> HTML forms should use the
+<span class="samp">GET</span> method when the form has no side-effect as this makes the
+results cacheable.</p>
+
+   <p><hr></div>
+
+   </body></html>
+
