@@ -118,16 +118,15 @@ dojo.hostenv.loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/curre
 
 		this.xdOrderedReqs.push(module);
 
-		//Add to waiting packages.
-		//Only add it if not a non-xdomain i18n resource bundle.
-		if(currentIsXDomain && uri.indexOf("/nls/") == -1){
+		//Add to waiting packages if it is an xdomain resource.
+		if(currentIsXDomain){
 			this.xdInFlight[module] = true;
+
+			//Increment inFlightCount
+			//This will stop the modulesLoaded from firing all the way.
+			this.inFlightCount++;
 		}
 
-		//Increment inFlightCount
-		//This will stop the modulesLoaded from firing all the way.
-		this.inFlightCount++;
-				
 		//Start timer
 		if(!this.xdTimer){
 			this.xdTimer = setInterval("dojo.hostenv.watchInFlightXDomain();", 100);
