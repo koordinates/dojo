@@ -188,6 +188,9 @@ int generatePACFile(){
 	
 	fprintf(out_file, "function FindProxyForURL(url, host){\n");
 	
+    /** Provide a way to 'bust' the cache and really 
+        test the outer network. This is with the magic
+        query variable 'cachebust'. */
 	fprintf(out_file, "   if(/cachebust/.test(url)){\n"
                       "      return \"DIRECT\";\n"
                       "   }\n\n");
@@ -234,10 +237,8 @@ int addOfflineHost(char host[]){
 	struct offline_list_entry *entry_ptr;
 	struct offline_list_entry *new_entry_ptr;
 	int status;
-	printf("addOfflineHost, host=%s\n", host);
 	
 	if(isValidHost(host) == 0){ /* invalid host */
-		printf("invalid host given\n");
 		do_log(L_FORBIDDEN, 
 				"off.c:addOfflineHost: Illegal host name\n");
 		return 0; /* failed */

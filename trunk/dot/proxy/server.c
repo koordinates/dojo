@@ -529,7 +529,6 @@ httpServerConnectionDnsHandler(int status, GethostbynameRequestPtr request)
          && correctMethod == 1
          && clientRequest
          && clientRequest->replaying == 0){
-		printf("We are going to replay this request\n");
        /* prevent infinite loops */
        clientRequest->replaying = 1;
       
@@ -543,7 +542,6 @@ httpServerConnectionDnsHandler(int status, GethostbynameRequestPtr request)
 	   
        /* clean up server connection resources */
        if(serverRequest){
-		printf("freeing yo mama\n");
           /* keep these around for replaying -- don't free them */
           serverRequest->object = NULL; /* our cached object */
           serverRequest->request = NULL; /* our client request */
