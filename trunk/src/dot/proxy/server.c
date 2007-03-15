@@ -525,6 +525,7 @@ httpServerConnectionDnsHandler(int status, GethostbynameRequestPtr request)
        if it is a GET request and if we haven't tried to
        replay this request before. */
     if(disableOfflineSupport == 0 
+         && proxyOffline == 0
          && status <= 0
          && correctMethod == 1
          && clientRequest
@@ -540,6 +541,15 @@ httpServerConnectionDnsHandler(int status, GethostbynameRequestPtr request)
        unregisterConditionHandler(clientRequest->chandler);
        clientRequest->chandler = NULL;
 	   
+       /* if we are a publicly cached object, reset our state 
+          back to public -- this is because 'objects' are
+          recycled between requests, and the flags that
+          are present are invalid at this point and will
+          create issues when served in the future */
+       if(clientRequest->object->flags & OBJECT_PUBLIC){
+          clientRequest->object->flags = OBJECT_PUBLIC;
+       }
+		
        /* clean up server connection resources */
        if(serverRequest){
           /* keep these around for replaying -- don't free them */
