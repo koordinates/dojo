@@ -10,11 +10,10 @@ doBuild(){
 	version=$2
 	loader=$3
 	proName=dojo-$version-$profile
-	extraAntTasks="strip-resource-comments"
+	extraAntTasks="intern-strings strip-resource-comments"
 	if [ "$loader" == "xdomain" ]; then
 		proName=dojo-$version-xdomain-$profile
 		version=$version"xdomain"
-		extraAntTasks="intern-strings $extraAntTasks"
 	fi
 
 	echo Building profile: $profile
