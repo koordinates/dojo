@@ -14,9 +14,14 @@
 
 			var lastEvt;
 			function dump(evt){
-				result = '';
+				var result = '';
 				for(var x in evt){
-					result += (x+": "+evt[x]+"<br>");
+					//Using String() wrapper appeases Safari 2.0.4.
+					var value = String(evt[x]);
+					if(!value){
+						value = "undefined";
+					}
+					result += (x+": "+value+"<br>");
 				}
 				return result;
 			}
