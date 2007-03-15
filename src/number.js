@@ -18,20 +18,21 @@ dojo.number.format = function(/*Number*/value, /*Object?*/options){
 // value:
 //		the number to be formatted.
 //
-// options: object {pattern: String?, type: String?, places: Number?, round: Boolean?, currency: String?, symbol: String?, locale: String?}
+// options: object {pattern: String?, type: String?, places: Number?, round: Number?, currency: String?, symbol: String?, locale: String?}
 //		pattern- override formatting pattern with this string (see dojo.number.applyPattern)
 //		type- choose a format type based on the locale from the following: decimal, scientific, percent, currency. decimal by default.
 //		places- fixed number of decimal places to show.  This overrides any information in the provided pattern.
-//		round- whether to round the number.  false by default
+//		round- 5 rounds to nearest .5; 0 rounds to nearest whole (default). -1 means don't round.
 //		currency- iso4217 currency code
 //		symbol- localized currency symbol
 //		locale- override the locale used to determine formatting rules
 
-	options = options || {};
+	options = dojo.lang.mixin({}, options || {});
 	var locale = dojo.hostenv.normalizeLocale(options.locale);
 	var bundle = dojo.i18n.getLocalization("dojo.i18n.cldr", "number", locale);
+	options.customs = bundle;
 	var pattern = options.pattern || bundle[(options.type || "decimal") + "Format"];
-	return dojo.number.applyPattern(value, pattern, {symbols: bundle, places: options.places, round: options.round, currency: options.currency, symbol: options.symbol}); // String //TODO mixin
+	return dojo.number.applyPattern(value, pattern, options); // String
 };
 
 //dojo.number._numberPatternRE = /(?:[#0]*,?)*[#0](?:\.0*#*)?/; // not precise, but good enough
@@ -41,13 +42,13 @@ dojo.number.applyPattern = function(/*Number*/value, /*String*/pattern, /*Object
 	// summary: Apply pattern to format value as a string using options. Gives no consideration to local customs.
 	// value: the number to be formatted.
 	// pattern: a pattern string as described in http://www.unicode.org/reports/tr35/#Number_Format_Patterns
-	// options: object {symbols: Object?, places: Number?, currency: String?, round: Boolean?, symbol: String?}
-	//  symbols- a hash containing: decimal, group, ...
+	// options: object {customs: Object?, places: Number?, currency: String?, round: Number?, symbol: String?}
+	//  customs- a hash containing: decimal, group, ...
 
 //TODO: support escapes
 	options = options || {};
-	var group = options.symbols.group;
-	var decimal = options.symbols.decimal;
+	var group = options.customs.group;
+	var decimal = options.customs.decimal;
 
 	var patternList = pattern.split(';');
 	var positivePattern = patternList[0];
@@ -59,8 +60,8 @@ dojo.number.applyPattern = function(/*Number*/value, /*String*/pattern, /*Object
 	}else if(pattern.indexOf('\u2030') != -1){
 		value *= 1000; // per mille
 	}else if(pattern.indexOf('\u00a4') != -1){
-		group = options.symbols.currencyGroup || group;//mixins instead?
-		decimal = options.symbols.currencyDecimal || decimal;// Should these be mixins instead?
+		group = options.customs.currencyGroup || group;//mixins instead?
+		decimal = options.customs.currencyDecimal || decimal;// Should these be mixins instead?
 		pattern = pattern.replace(/\u00a4{1,3}/, function(match){
 			var prop = ["symbol", "currency", "displayName"][match.length-1];
 			return options[prop] || options.currency || "";
@@ -111,14 +112,16 @@ dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Obje
 	//  decimal- the decimal separator
 	//  group- the group separator
 	//  places- number of decimal places
-	//  round- boolean or digit for nearest multiple
+	//  round- 5 rounds to nearest .5; 0 rounds to nearest whole (default). -1 means don't round.
 	options = options || {};
 	if(options.places === true){options.places=0;}
 	if(options.places === Infinity){options.places=6;} // avoid a loop; pick a limit
 
 	var patternParts = pattern.split(".");
 	var maxPlaces = (options.places >= 0) ? options.places : (patternParts[1] && patternParts[1].length) || 0;
-	value = dojo.number.round(value, maxPlaces, options.round);
+	if(!(options.round < 0)){
+		value = dojo.number.round(value, maxPlaces, options.round);
+	}
 
 	var valueParts = String(Math.abs(value)).split(".");
 	var fractional = valueParts[1] || "";
@@ -205,7 +208,6 @@ dojo.number._parseInfo = function(/*Object?*/options){
 	var pattern = options.pattern || bundle[(options.type || "decimal") + "Format"];
 //TODO: memoize?
 	var group = bundle.group;
-//	if(!options.strict){ group = [group,""]; }
 	var decimal = bundle.decimal;
 	var factor = 1;
 
@@ -220,6 +222,8 @@ dojo.number._parseInfo = function(/*Object?*/options){
 			decimal = bundle.currencyDecimal || decimal;
 		}
 	}
+
+	if(group == '\xa0'){group = ' ';}
 
 	//TODO: handle quoted escapes
 	var patternList = pattern.split(';');
@@ -266,10 +270,6 @@ dojo.number._parseInfo = function(/*Object?*/options){
 
 //TODO: substitute localized sign/percent/permille/etc.?
 
-	if(!options.strict){
-		//TODO: handle .### with no leading integer as a strict option only?
-	}
-
 	return {regexp: re, group: group, decimal: decimal, factor: factor}; // Object
 }
 
@@ -299,18 +299,16 @@ dojo.number.parse = function(/*String*/expression, /*Object?*/options){
 	if(!results){
 		return NaN; //NaN
 	}
-	var absoluteMatch = results[1];
+	var absoluteMatch = results[1]; // match for the positive expression
 	if(typeof absoluteMatch == 'undefined'){
 		// matched the negative pattern
-		info.factor *= -1;
 		absoluteMatch = results[2];
+		info.factor *= -1;
 	}
-	absoluteMatch = absoluteMatch.replace(info.group, "", "g").replace(info.decimal, ".");
-	value = Number(absoluteMatch);
 
-	if(!isNaN(value)){
-		// Adjust for negative sign, percent, etc. as necessary
-		value *= info.factor;
-	}
-	return value;
+	// Transform it to something Javascript can parse as a number
+	absoluteMatch = absoluteMatch.replace(info.group, "", "g").replace(info.decimal, ".");
+
+	// Adjust for negative sign, percent, etc. as necessary
+	return Number(absoluteMatch) * info.factor; //Number
 };
