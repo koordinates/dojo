@@ -207,17 +207,24 @@ dojo.number._parseInfo = function(/*Object?*/options){
 	var group = bundle.group;
 //	if(!options.strict){ group = [group,""]; }
 	var decimal = bundle.decimal;
+	var factor = 1;
 
-	var isCurrency = pattern.indexOf('\u00a4') != -1;
-	if(isCurrency){
-		group = bundle.currencyGroup || group;//mixins instead?
-		decimal = bundle.currencyDecimal || decimal;// Should these be mixins instead?
+	if(pattern.indexOf('%') != -1){
+		factor /= 100;
+	}else if(pattern.indexOf('\u2030') != -1){
+		factor /= 1000; // per mille
+	}else{
+		var isCurrency = pattern.indexOf('\u00a4') != -1;
+		if(isCurrency){
+			group = bundle.currencyGroup || group;
+			decimal = bundle.currencyDecimal || decimal;
+		}
 	}
 
 	//TODO: handle quoted escapes
 	var patternList = pattern.split(';');
 	if (patternList.length == 1){
-		patternList.push("-" + patternList[0]); // substitute negative sign?
+		patternList.push("-" + patternList[0]);
 	}
 
 	var re = dojo.regexp.buildGroupRE(patternList, function(pattern){
@@ -257,11 +264,13 @@ dojo.number._parseInfo = function(/*Object?*/options){
 		});
 	}
 
+//TODO: substitute localized sign/percent/permille/etc.?
+
 	if(!options.strict){
 		//TODO: handle .### with no leading integer as a strict option only?
 	}
 
-	return {regexp: re, group: group, decimal: decimal}; // Object
+	return {regexp: re, group: group, decimal: decimal, factor: factor}; // Object
 }
 
 dojo.number.parse = function(/*String*/expression, /*Object?*/options){
@@ -285,28 +294,23 @@ dojo.number.parse = function(/*String*/expression, /*Object?*/options){
 //		currency- object with currency information
 
 	var info = dojo.number._parseInfo(options);
-	var group = info.group;
-	var decimal = info.decimal;
-	var re = info.regexp;
 
-//TODO: substitute percent/permille/etc.
-	var results = (new RegExp("^"+re+"$")).exec(expression);
+	var results = (new RegExp("^"+info.regexp+"$")).exec(expression);
 	if(!results){
 		return NaN; //NaN
 	}
 	var absoluteMatch = results[1];
 	if(typeof absoluteMatch == 'undefined'){
 		// matched the negative pattern
-		var negative = true;
+		info.factor *= -1;
 		absoluteMatch = results[2];
 	}
-	absoluteMatch = absoluteMatch.replace(group, "", "g").replace(decimal, ".");
+	absoluteMatch = absoluteMatch.replace(info.group, "", "g").replace(info.decimal, ".");
 	value = Number(absoluteMatch);
 
 	if(!isNaN(value)){
-		if(negative){ value = -value; }
-		//TODO: handle percent, per mille
-		//TODO: handle exponent
+		// Adjust for negative sign, percent, etc. as necessary
+		value *= info.factor;
 	}
 	return value;
 };
