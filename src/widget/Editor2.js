@@ -491,11 +491,11 @@ dojo.widget.defineWidget(
 		},
 
 		//overload to support source editing mode
-		getValue: function(){
+		getValue: function(/*Boolean?*/nondistructive){
 			if(this._inSourceMode){
 				return this._htmlEditNode.value;
 			}
-			return dojo.widget.Editor2.superclass.getValue.call(this);
+			return dojo.widget.Editor2.superclass.getValue.apply(this,arguments);
 		},
 
 		replaceValue: function(html){

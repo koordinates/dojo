@@ -865,12 +865,12 @@ dojo.widget.defineWidget(
 
 		onKeyPressed: function(e){
 			if(this._checkListLater){
-				if(dojo.withGlobal(this.editor.window, 'isCollapsed', dojo.html.selection)){
-					if(!dojo.withGlobal(this.editor.window, 'hasAncestorElement', dojo.html.selection, ['LI'])){
+				if(dojo.withGlobal(this.window, 'isCollapsed', dojo.html.selection)){
+					if(!dojo.withGlobal(this.window, 'hasAncestorElement', dojo.html.selection, ['LI'])){
 						//circulate the undo detection code by calling RichText::execCommand directly
-						dojo.widget.Editor2.superclass.execCommand.apply(this.editor, ['formatblock',this.blockNodeForEnter]);
+						dojo.widget.RichText.prototype.execCommand.apply(this, ['formatblock',this.blockNodeForEnter]);
 						//set the innerHTML of the new block node
-						var block = dojo.withGlobal(this.editor.window, 'getAncestorElement', dojo.html.selection, [this.blockNodeForEnter])
+						var block = dojo.withGlobal(this.window, 'getAncestorElement', dojo.html.selection, [this.blockNodeForEnter])
 						if(block){
 							block.innerHTML=this.bogusHtmlContent;
 							if(dojo.render.html.ie){
@@ -881,7 +881,7 @@ dojo.widget.defineWidget(
 	//							selection.removeAllRanges();
 	//							selection.addRange(newrange);
 								//move to the start by move backward one char
-								var r = this.editor.document.selection.createRange();
+								var r = this.document.selection.createRange();
 								r.move('character',-1);
 								r.select();
 							}
@@ -949,7 +949,7 @@ dojo.widget.defineWidget(
 	
 			if(block.blockNode && block.blockNode.tagName == 'LI'){
 				this._checkListLater = true;
-				return;
+				return true;
 			}else{
 				this._checkListLater = false;
 			}
@@ -1346,13 +1346,13 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		getValue: function(){
+		getValue: function(/*Boolean?*/nondistructive){
 			// summary:
 			//		return the current content of the editing area (post filters are applied)
 			if(this.isClosed && this.textarea){
 				return this.textarea.value;
 			}else{
-				return this._postFilterContent();
+				return this._postFilterContent(null,nondistructive);
 			}
 		},
 		setValue: function(/*String*/html){
@@ -1419,10 +1419,13 @@ dojo.widget.defineWidget(
 			}, this);
 		},
 
-		_postFilterContent: function(/*DomNode|DomNode[]?*/dom){
+		_postFilterContent: function(/*DomNode|DomNode[]?*/dom,/*Boolean?*/nondistructive){
 			// summary:
 			//		filter the output after getting the content of the editing area
 			dom = dom || this.editNode;
+			if(nondistructive && dom['cloneNode']){
+				dom = dom.cloneNode(true);
+			}
 			if(this.contentDomPostFilters.length>0){
 				dojo.lang.forEach(this.contentDomPostFilters, function(ef){
 					dom = ef(dom);
