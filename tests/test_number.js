@@ -23,30 +23,34 @@ function test_number_format() {
 	jum.assertEquals("num_0_4", "(1,234,567.89012)", dojo.number.format(-1234567.890123, {pattern: "#,##0.000##;(#)"}));
 	jum.assertEquals("num_0_5", "50.1%", dojo.number.format(0.501, {pattern: "#0.#%"}));
 	jum.assertEquals("num_0_6", "98", dojo.number.format(1998, {pattern: "00"}));
+	jum.assertEquals("num_0_7", "01998", dojo.number.format(1998, {pattern: "00000"}));
+	jum.assertEquals("num_0_8", "0.13", dojo.number.format(0.125, {pattern: "0.##"})); //NOTE: expects round_half_up, not round_half_even
+	jum.assertEquals("num_0_9", "0.1250", dojo.number.format(0.125, {pattern: "0.0000"}));
+	jum.assertEquals("num_0_10", "0.1", dojo.number.format(0.100004, {pattern: "0.####"}));
 
 	jum.assertEquals("num_1_0", "-12", dojo.number.format(-12.3, {places:0, locale: "en-us"}));
 	jum.assertEquals("num_1_1", "-1,234,567.89", dojo.number.format(-1234567.89, {locale: "en-us"}));
 	jum.assertEquals("num_1_2", "-12,34,567.89", dojo.number.format(-1234567.89, {locale: "en-in"}));
-	jum.assertEquals("num_1_3", "-1,234,567", dojo.number.format(-1234567.89, {places:0, locale: "en-us"}));
-	jum.assertEquals("num_1_4", "-12,34,567", dojo.number.format(-1234567.89, {places:0, locale: "en-in"}));
+	jum.assertEquals("num_1_3", "-1,234,568", dojo.number.format(-1234567.89, {places:0, locale: "en-us"}));
+	jum.assertEquals("num_1_4", "-12,34,568", dojo.number.format(-1234567.89, {places:0, locale: "en-in"}));
 	jum.assertEquals("num_1_5", "-1\xa0000,10", dojo.number.format(-1000.1, {places:2, locale: "fr-fr"}));
 	jum.assertEquals("num_1_6", "-1,000.10", dojo.number.format(-1000.1, {places:2, locale: "en-us"}));
 	jum.assertEquals("num_1_7", "-1\xa0000,10", dojo.number.format(-1000.1, {places:2, locale: "fr-fr"}));
 	jum.assertEquals("num_1_8", "-1,000.10", dojo.number.format(-1000.1, {places:2, locale: "en-us"}));
-	jum.assertEquals("num_1_9", "123.45%", dojo.number.format(1.23456, {places:2, locale: "en-us", type: "percent"}));
+	jum.assertEquals("num_1_9", "123.46%", dojo.number.format(1.23456, {places:2, locale: "en-us", type: "percent"}));
 
 	//rounding
-//	jum.assertEquals("num_2_1", "-1,234,568", dojo.number.format(-1234567.89, {places:0, locale: "en-us"}));
-//	jum.assertEquals("num_2_2", "-12,34,568", dojo.number.format(-1234567.89, {places:0, locale: "en-in"}));
-//	jum.assertEquals("num_2_3", "-1,000.11", dojo.number.format(-1000.114, {places:2, round: true, locale: "en-us"}));
-//	jum.assertEquals("num_2_4", "-1,000.12", dojo.number.format(-1000.115, {places:2, round: true, locale: "en-us"}));
-//	jum.assertEquals("num_2_5", "-0.00", dojo.number.format(-0.0001, {places:2, round: true, locale: "en-us"}));
-//	jum.assertEquals("num_2_6", "0.00", dojo.number.format(0, {places:2, round: true, locale: "en-us"}));
+	jum.assertEquals("num_2_1", "-1,234,568", dojo.number.format(-1234567.89, {places:0, locale: "en-us"}));
+	jum.assertEquals("num_2_2", "-12,34,568", dojo.number.format(-1234567.89, {places:0, locale: "en-in"}));
+	jum.assertEquals("num_2_3", "-1,000.11", dojo.number.format(-1000.114, {places:2, locale: "en-us"}));
+	jum.assertEquals("num_2_4", "-1,000.11", dojo.number.format(-1000.115, {places:2, locale: "en-us"}));//TODO: could this be right?
+	jum.assertEquals("num_2_4a", "-1,000.12", dojo.number.format(-1000.116, {places:2, locale: "en-us"}));
+	jum.assertEquals("num_2_5", "-0.00", dojo.number.format(-0.0001, {places:2, locale: "en-us"}));
+	jum.assertEquals("num_2_6", "0.00", dojo.number.format(0, {places:2, locale: "en-us"}));
 
 	//change decimal places
 	jum.assertEquals("num_2_7", "-1\xa0000,100", dojo.number.format(-1000.1, {places:3, locale: "fr-fr"}));
 	jum.assertEquals("num_2_8", "-1,000.100", dojo.number.format(-1000.1, {places:3, locale: "en-us"}));
-
 }
 
 /**
@@ -205,22 +209,19 @@ function test_number_format_quotes(){
 }
 
 /**
- * TODO: For dojo.number future version
  * Refer to ICU4J's NumberFormatTest.TestRounding487() and NumberFormatTest.TestRounding()
  */
-function test_number_format_rouding(){
-	//print("test_number_format_Rouding() start..............");
-	/*    
-	rounding(0.000179999, 4, "0.00018");
-	rounding(0.00099, 4, "0.001");
-	rounding(17.6995, 3, "17.7");
+function test_number_format_rounding(){
+	//print("test_number_format_rounding() start..............");
+	rounding(0.000179999, 5, "0.00018");
+//	rounding(0.00099, 4, "0.001");
+//	rounding(17.6995, 3, "17.7");
 	rounding(15.3999, 0, "15");
 	rounding(-29.6, 0, "-30");
-	*/
 	
 	//TODO refer to NumberFormatTest.TestRounding()
 	
-	//print("test_number_format_Rouding() end..............");
+	//print("test_number_format_rounding() end..............");
 }
 
 /**
@@ -866,10 +867,10 @@ function checkParse(options,sourceInput,expectResult){
 }
 
 /**
- * //TODO:Roud a given number
+ * //TODO:Round a given number
  */
 function rounding(number,maxFractionDigits,expected){
-	var result = dojo.number.format(number,{places:maxFractionDigits,round:true,locale:"en-us"});
+	var result = dojo.number.format(number,{places:maxFractionDigits,locale:"en-us"});
 	jum.assertEquals(("Fail: " + number +"should be rounded to "+
 	 expected +"but "+ result + " instead"),expected,result);	
 }
