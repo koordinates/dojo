@@ -33,7 +33,7 @@ dojo.currency.format = function(/*Number*/value, /*Object?*/options){
 // value:
 //		the number to be formatted.
 //
-// options: object {currency: String, pattern: String?, type: String?, places: Number?, round: Boolean?, symbol: String?, locale: String?}
+// options: object {currency: String, pattern: String?, type: String?, places: Number?, round: Number?, symbol: String?, locale: String?}
 //		currency- the ISO4217 currency code, a three letter sequence like "USD"
 //			See http://en.wikipedia.org/wiki/ISO_4217
 //		symbol- override currency symbol. Normally, will be looked up in table of supported currencies, and ISO currency code will
@@ -41,7 +41,7 @@ dojo.currency.format = function(/*Number*/value, /*Object?*/options){
 //		pattern- override formatting pattern with this string (see dojo.number.applyPattern)
 //		type- choose a format type based on the locale from the following: decimal, scientific, percent, currency. decimal by default.
 //		places- fixed number of decimal places to show.  Default is defined by the currency.
-//		round- whether to round the number.  false by default
+//	    round- 5 rounds to nearest .5; 0 rounds to nearest whole (default). -1 means don't round.
 //		locale- override the locale used to determine formatting rules
 
 	return dojo.number.format(value, dojo.currency._mixInDefaults(options));

@@ -1,7 +1,7 @@
 dojo.provide("dojo.i18n.cldr.monetary");
 
 dojo.i18n.cldr.monetary.getData = function(code){
-// summary: A mapping of currency code to currency-specific formatting information. Returns an object with places and rounding.
+// summary: A mapping of currency code to currency-specific formatting information. Returns a unique object with properties: places, round.
 // code: an iso4217 currency code
 
 // from http://www.unicode.org/cldr/data/common/supplemental/supplementalData.xml:supplementalData/currencyData/fractions
@@ -15,9 +15,9 @@ dojo.i18n.cldr.monetary.getData = function(code){
 
 	var roundingData = {CHF:5};
 
-	var places = placesData[code], rounding = roundingData[code];
+	var places = placesData[code], round = roundingData[code];
 	if(typeof places == "undefined"){ places = 2; }
-	if(typeof rounding == "undefined"){ rounding = 0; }
+	if(typeof round == "undefined"){ round = 0; }
 
-	return {places: places, rounding: rounding}; // Object
+	return {places: places, round: round}; // Object
 };

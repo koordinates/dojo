@@ -43,14 +43,14 @@ function test_number_format() {
 	jum.assertEquals("num_2_1", "-1,234,568", dojo.number.format(-1234567.89, {places:0, locale: "en-us"}));
 	jum.assertEquals("num_2_2", "-12,34,568", dojo.number.format(-1234567.89, {places:0, locale: "en-in"}));
 	jum.assertEquals("num_2_3", "-1,000.11", dojo.number.format(-1000.114, {places:2, locale: "en-us"}));
-	jum.assertEquals("num_2_4", "-1,000.11", dojo.number.format(-1000.115, {places:2, locale: "en-us"}));//TODO: could this be right?
-	jum.assertEquals("num_2_4a", "-1,000.12", dojo.number.format(-1000.116, {places:2, locale: "en-us"}));
-	jum.assertEquals("num_2_5", "-0.00", dojo.number.format(-0.0001, {places:2, locale: "en-us"}));
-	jum.assertEquals("num_2_6", "0.00", dojo.number.format(0, {places:2, locale: "en-us"}));
+	jum.assertEquals("num_2_4", "-1,000.11", dojo.number.format(-1000.115, {places:2, locale: "en-us"}));
+	jum.assertEquals("num_2_5", "-1,000.12", dojo.number.format(-1000.116, {places:2, locale: "en-us"}));
+	jum.assertEquals("num_2_6", "-0.00", dojo.number.format(-0.0001, {places:2, locale: "en-us"}));
+	jum.assertEquals("num_2_7", "0.00", dojo.number.format(0, {places:2, locale: "en-us"}));
 
 	//change decimal places
-	jum.assertEquals("num_2_7", "-1\xa0000,100", dojo.number.format(-1000.1, {places:3, locale: "fr-fr"}));
-	jum.assertEquals("num_2_8", "-1,000.100", dojo.number.format(-1000.1, {places:3, locale: "en-us"}));
+	jum.assertEquals("num_2_8", "-1\xa0000,100", dojo.number.format(-1000.1, {places:3, locale: "fr-fr"}));
+	jum.assertEquals("num_2_9", "-1,000.100", dojo.number.format(-1000.1, {places:3, locale: "en-us"}));
 }
 
 /**
@@ -63,8 +63,7 @@ function test_number_parse() {
 	jum.assertEquals("num_3_3", -1000, dojo.number.parse("-1000", {locale: "en-us"}));
 	jum.assertEquals("num_3_4", -1000.123, dojo.number.parse("-1000.123", {locale: "en-us"}));
 	jum.assertEquals("num_3_5", -1234567.89, dojo.number.parse("-1,234,567.89", {locale: "en-us"}));
-	//Evan:test case fails
-	//jum.assertEquals("num_3_6", -1234567.89, dojo.number.parse("-1 234 567,89", {locale: "fr-fr"}));
+	jum.assertEquals("num_3_6", -1234567.89, dojo.number.parse("-1 234 567,89", {locale: "fr-fr"}));
 	jum.assertEquals("num_3_7", NaN, dojo.number.parse("-1 234 567,89", {locale: "en-us"}));
 
 	//invalid - NaN
@@ -215,8 +214,8 @@ function test_number_format_quotes(){
 function test_number_format_rounding(){
 	//print("test_number_format_rounding() start..............");
 	rounding(0.000179999, 5, "0.00018");
-//	rounding(0.00099, 4, "0.001");
-//	rounding(17.6995, 3, "17.7");
+	rounding(0.00099, 4, "0.001");
+	rounding(17.6995, 3, "17.7");
 	rounding(15.3999, 0, "15");
 	rounding(-29.6, 0, "-30");
 	
@@ -246,13 +245,11 @@ function test_number_format_perMill(){
 	
     //TODO: !!Failed case - ###.###\u2030(\u2030 is ‰)
 	//Pattern ###.###\u2030 should format 0.4857 as 485.7\u2030,but got 485.700\u2030 instead    
-	/*
 	pattern = "###.###\u2030";
 	expectResult = "485.7\u2030";
-	result = dojo.number.format(0.4857,{pattern:pattern,locale:"en-us"});
+	result = dojo.number.format(0.4857,{pattern:pattern});
 	jum.assertEquals(("FAIL: Pattern  " + pattern + " should format 0.4857 as " + expectResult +
       	"; but" + result + " instead"),expectResult,result);
-    */
 
     //TODO: !!Failed mile percent case - ###.###m
 	//Pattern "###.###m" should format 0.4857 to 485.7m, but got 0.485m instead
@@ -547,11 +544,10 @@ function test_number_parse_whiteSpace(){
  * They are inluced here so that dojo.number may avoid those similar bugs. 
  *************************************************************************************************/
 /**
- * !!Failed case,-0.09 should formatted as -0.1 but -0.09 instead
  * Refer to ICU4J's NumberFormatRegressionTest.Test4161100()
  */
 function test_number_regression_1(){
-	//checkFormatParseCycle({locale:"en-us",round:true},-0.09,"-0.1",false);
+	checkFormatParseCycle({pattern:"#0.#"},-0.09,"-0.1",false);
 }
 
 /**
@@ -632,21 +628,10 @@ function test_number_regression_5(){
 }
 
 /**
- * !!Failed case,grouping separator errors in locale "fr":
- * 1.with pattern "###,00;(###,00)"
- *   1234 should be formatted as "1234,00",but got "12 34" instead
- * 	 -1234 should be formatted as "(1234,00)",but got "(12 34)" instead
- * 2.with pattern "#\u00a0###,00;(#\u00a0###,00)",here "\u00a0"->" "
- *   1234 should be formatted as "1 234,00",but got "1234\xa0###,00" instead
- *   -1234 should be formatted as "(1 234,00)",but got "(1234\xa0###,00)" instead
- *   
- * Not sure why space-"\u00a0" is changed to "\xa0"?
- *   
  * Refer to ICU4J's NumberRegression.Test4086575()
  */
-/*
 function test_number_regression_6(){
-	var pattern = "###,00;(###,00)";
+	var pattern = "###.00;(###.00)";
 	var locale = "fr";
 	var options = {pattern:pattern,locale:locale};
 	
@@ -655,12 +640,11 @@ function test_number_regression_6(){
 	checkFormatParseCycle(options,-1234,"(1234,00)",false);	
 	
 	//space as group separator
-	pattern = "#\u00a0###,00;(#\u00a0###,00)";
+	pattern = "#,###.00;(#,###.00)";
 	options = {pattern:pattern,locale:locale};
 	checkFormatParseCycle(options,1234,"1\u00a0234,00",false);// Expect 1 234,00
 	checkFormatParseCycle(options,-1234,"(1\u00a0234,00)",false);  // Expect (1 234,00)
 }
-*/
 
 /**
  * !!Failed case - expontent has not implemented yet 
@@ -871,9 +855,11 @@ function checkParse(options,sourceInput,expectResult){
  * //TODO:Round a given number
  */
 function rounding(number,maxFractionDigits,expected){
-	var result = dojo.number.format(number,{places:maxFractionDigits,locale:"en-us"});
-	jum.assertEquals(("Fail: " + number +"should be rounded to "+
-	 expected +"but "+ result + " instead"),expected,result);	
+	var pattern="#0.";
+	for(var i=0; i<maxFractionDigits; i++){pattern += "#";}
+	var result = dojo.number.format(number,{pattern:pattern});
+	jum.assertEquals(("Fail: " + number +" should be rounded to "+
+	 expected +" but "+ result + " instead"),expected,result);	
 }
 
 /**
