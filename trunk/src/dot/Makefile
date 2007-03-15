@@ -13,6 +13,7 @@ all:
 	make mac
 	make clean
 	make windows
+	make clean
 
 mac:
 	@echo
@@ -22,6 +23,7 @@ mac:
 	make -C proxy all
 	mv -f proxy/polipo proxy-build/mac/x86/dot
 	cp -f proxy/config.sample proxy-build/mac/x86/config
+	cp -f proxy/default-pac proxy-build/mac/x86/.polipo-offline-pac
 	
 windows:
 	@echo
@@ -31,10 +33,14 @@ windows:
 	make -C proxy all CC=i386-mingw32-gcc EXE=.exe LDLIBS=-lwsock32 PREFIX=/
 	mv -f proxy/polipo.exe proxy-build/win/dot.exe
 	cp -f proxy/config.sample proxy-build/win/config
+	cp -f proxy/default-pac proxy-build/win/.polipo-offline-pac
 
 run:
 	./proxy-build/mac/x86/dot -c ./proxy-build/mac/x86/config
 	
+debug:
+	gdb ./proxy-build/mac/x86/dot
+
 clean:
 	make -C proxy clean
 	
