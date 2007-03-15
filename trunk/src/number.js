@@ -22,7 +22,7 @@ dojo.number.format = function(/*Number*/value, /*Object?*/options){
 //		pattern- override formatting pattern with this string (see dojo.number.applyPattern)
 //		type- choose a format type based on the locale from the following: decimal, scientific, percent, currency. decimal by default.
 //		places- fixed number of decimal places to show.  This overrides any information in the provided pattern.
-//		round- whether to round the number.  false by default //TODO
+//		round- whether to round the number.  false by default
 //		currency- iso4217 currency code
 //		symbol- localized currency symbol
 //		locale- override the locale used to determine formatting rules
@@ -41,7 +41,7 @@ dojo.number.applyPattern = function(/*Number*/value, /*String*/pattern, /*Object
 	// summary: Apply pattern to format value as a string using options. Gives no consideration to local customs.
 	// value: the number to be formatted.
 	// pattern: a pattern string as described in http://www.unicode.org/reports/tr35/#Number_Format_Patterns
-	// options: object {symbols: Object?, places: Number?, currency: String?, symbol: String?} //TODO round
+	// options: object {symbols: Object?, places: Number?, currency: String?, round: Boolean?, symbol: String?}
 	//  symbols- a hash containing: decimal, group, ...
 
 //TODO: support escapes
@@ -69,7 +69,6 @@ dojo.number.applyPattern = function(/*Number*/value, /*String*/pattern, /*Object
 		dojo.unimplemented("exponential notation not supported");
 	}
 	
-//TODO: support [1-9] rounding
 //TODO: support @ sig figs?
 	var numberPatternRE = dojo.number._numberPatternRE;
 	var numberPattern = positivePattern.match(numberPatternRE);
@@ -80,6 +79,30 @@ dojo.number.applyPattern = function(/*Number*/value, /*String*/pattern, /*Object
 	return output;
 }
 
+dojo.number.round = function(/*Number*/value, /*Number*/places, /*Number?*/multiple){
+	// summary: Rounds the number at the given number of places
+	// value: the number to round
+	// places: the number of decimal places where rounding takes place
+	// multiple: rounds next place to nearest multiple
+
+	var pieces = String(value).split(".");
+	var length = (pieces[1] && pieces[1].length) || 0;
+	if(length > places){
+		var factor = Math.pow(10, places);
+		if(multiple > 0){factor *= 10/multiple;places++;} //FIXME
+		value = Math.round(value * factor)/factor;
+
+		// truncate to remove any residual floating point values
+		pieces = String(value).split(".");
+		length = (pieces[1] && pieces[1].length) || 0;
+		if(length > places){
+			pieces[1] = pieces[1].substr(0, places);
+			value = Number(pieces.join("."));
+		}
+	}
+	return value; //Number
+}
+
 dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Object?*/options){
 	// summary: Apply numeric pattern to absolute value using options.  Gives no consideration to local customs
 	// value: the number to be formatted, ignores sign
@@ -88,13 +111,17 @@ dojo.number.formatAbsolute = function(/*Number*/value, /*String*/pattern, /*Obje
 	//  decimal- the decimal separator
 	//  group- the group separator
 	//  places- number of decimal places
+	//  round- boolean or digit for nearest multiple
 	options = options || {};
-	value = Math.abs(value);
-	var round = false; //TODO
-	var valueParts = String(value).split(".");
+	if(options.places === true){options.places=0;}
+	if(options.places === Infinity){options.places=6;} // avoid a loop; pick a limit
+
 	var patternParts = pattern.split(".");
+	var maxPlaces = (options.places >= 0) ? options.places : (patternParts[1] && patternParts[1].length) || 0;
+	value = dojo.number.round(value, maxPlaces, options.round);
+
+	var valueParts = String(Math.abs(value)).split(".");
 	var fractional = valueParts[1] || "";
-	if(options.places == Infinity){options.places=6;} // avoid a loop; pick a limit
 	if(options.places){
 		valueParts[1] = dojo.string.pad(fractional.substr(0, options.places), options.places, '0', -1);
 	}else if(patternParts[1] && options.places !== 0){
@@ -262,7 +289,7 @@ dojo.number.parse = function(/*String*/expression, /*Object?*/options){
 	var decimal = info.decimal;
 	var re = info.regexp;
 
-//TODO: substitute currency symbol, percent/permille/etc.
+//TODO: substitute percent/permille/etc.
 	var results = (new RegExp("^"+re+"$")).exec(expression);
 	if(!results){
 		return NaN; //NaN
