@@ -206,6 +206,12 @@ dojo.widget.defineWidget (
 
 		_currentTimeout: this.defaultTimeout,
 
+		postCreate: function(/*Object*/ args, /*Object*/ frag){
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "valuemin", this.minimum);
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "valuemax", this.maximum);
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "valuenow", this.initialValue);
+		},
+
 		// does the keyboard related stuff
 		_handleKeyEvents: function(/*Event*/ evt){
 			if(!evt.key){ return; }
@@ -246,6 +252,14 @@ dojo.widget.defineWidget (
 						}else{
 							this._topButtonPressed(evt);
 						}
+						return;
+					case evt.KEY_HOME:
+						dojo.event.browser.stopEvent(evt);
+						this.setValue(this.minimum);
+						return;
+					case evt.KEY_END:
+						dojo.event.browser.stopEvent(evt);
+						this.setValue(this.maximum);
 						return;
 				}
 			}
@@ -496,6 +510,7 @@ dojo.widget.defineWidget (
 				this._clipRight = x + this._clipXdelta;
 			}
 			this.progressBackgroundNode.style.clip = "rect("+this._clipTop+"px,"+this._clipRight+"px,"+this._clipBottom+"px,"+this._clipLeft+"px)";
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "valuenow", this.getValueX());
 		},
 
 		// compute _valueSizeX & _constraintWidth & default snapValuesX
@@ -582,6 +597,7 @@ dojo.widget.defineWidget (
 				this._clipBottom = y + this._clipYdelta;
 			}
 			this.progressBackgroundNode.style.clip = "rect("+this._clipTop+"px,"+this._clipRight+"px,"+this._clipBottom+"px,"+this._clipLeft+"px)";
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "valuenow", this.getValueY());
 		},
 		// compute _valueSizeY & _constraintHeight & default snapValuesY
 		_calc_valueSizeY: function (){
