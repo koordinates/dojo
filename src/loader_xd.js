@@ -400,23 +400,6 @@ dojo.hostenv.xdWalkReqs = function(){
 	}
 }
 
-dojo.hostenv.xdTraceReqs = function(/*Object*/reqs, /*Array*/reqChain){
-	//summary: Internal xd loader function. 
-	//Trace the requires to chain the correct order of required modules.
-	if(reqs && reqs.length > 0){
-		var nextReq;
-		for(var i = 0; i < reqs.length; i++){
-			nextReq = reqs[i].name;
-			if(nextReq && !reqChain[nextReq]){
-				//New req depedency. Follow it down.
-				reqChain.push(nextReq);
-				reqChain[nextReq] = true;
-				this.xdEvalReqs(reqChain);
-			}
-		}
-	}
-}
-
 dojo.hostenv.xdEvalReqs = function(/*Array*/reqChain){
 	//summary: Internal xd loader function. 
 	//Does a depth first, breadth second search and eval of required modules.
@@ -425,7 +408,21 @@ dojo.hostenv.xdEvalReqs = function(/*Array*/reqChain){
 		var pkg = this.xdDepMap[req];
 		if(pkg){
 			//Trace down any requires for this package.
-			this.xdTraceReqs(pkg.requires, reqChain);
+			//START dojo.hostenv.xdTraceReqs() inlining for small Safari 2.0 call stack
+			var reqs = pkg.requires;
+			if(reqs && reqs.length > 0){
+				var nextReq;
+				for(var i = 0; i < reqs.length; i++){
+					nextReq = reqs[i].name;
+					if(nextReq && !reqChain[nextReq]){
+						//New req depedency. Follow it down.
+						reqChain.push(nextReq);
+						reqChain[nextReq] = true;
+						this.xdEvalReqs(reqChain);
+					}
+				}
+			}
+			//END dojo.hostenv.xdTraceReqs() inlining for small Safari 2.0 call stack
 
 			//Evaluate the package.
 			var contents = this.xdContents[pkg.contentIndex];
@@ -438,8 +435,22 @@ dojo.hostenv.xdEvalReqs = function(/*Array*/reqChain){
 			}
 			this.xdDepMap[req] = null;
 
-			//Trace down any requireAfters for this package..
-			this.xdTraceReqs(pkg.requiresAfter, reqChain);
+			//Trace down any requireAfters for this package.
+			//START dojo.hostenv.xdTraceReqs() inlining for small Safari 2.0 call stack
+			var reqs = pkg.requiresAfter;
+			if(reqs && reqs.length > 0){
+				var nextReq;
+				for(var i = 0; i < reqs.length; i++){
+					nextReq = reqs[i].name;
+					if(nextReq && !reqChain[nextReq]){
+						//New req depedency. Follow it down.
+						reqChain.push(nextReq);
+						reqChain[nextReq] = true;
+						this.xdEvalReqs(reqChain);
+					}
+				}
+			}
+			//END dojo.hostenv.xdTraceReqs() inlining for small Safari 2.0 call stack
 		}
 
 		//Done with that require. Remove it and go to the next one.
