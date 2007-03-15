@@ -205,7 +205,7 @@ dojo.widget.defineWidget(
 			if(	(this.domNode["nodeName"])&&
 				(this.domNode.nodeName.toLowerCase() == "textarea")){
 				this.textarea = this.domNode;
-				var html = dojo.string.trim(this.textarea.value);
+				var html = this._preFilterContent(this.textarea.value);
 				this.domNode = dojo.doc().createElement("div");
 				dojo.html.copyStyle(this.domNode, this.textarea);
 				var tmpFunc = dojo.lang.hitch(this, function(){
@@ -261,7 +261,7 @@ dojo.widget.defineWidget(
 			this._firstChildContributingMargin = this._getContributingMargin(this.domNode, "top");
 			this._lastChildContributingMargin = this._getContributingMargin(this.domNode, "bottom");
 
-			this.savedContent = this.domNode.innerHTML;
+			this.savedContent = html;
 			this.domNode.innerHTML = '';
 
 			this.editingArea = dojo.doc().createElement("div");
