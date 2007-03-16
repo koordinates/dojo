@@ -41,6 +41,12 @@ run:
 debug:
 	gdb -d proxy ./proxy-build/mac/x86/dot
 
+install:
+	rm -fr ~/.offline-cache
+	mkdir ~/.offline-cache
+	rm ~/.offline-list
+	cp proxy-build/mac/x86/.offline-pac ~
+
 clean:
 	make -C proxy clean
 	
