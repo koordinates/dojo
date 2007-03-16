@@ -1,4 +1,4 @@
-# Sample configuration file for Polipo. -*-sh-*-
+# Configuration file for Dojo Offline for Windows
 
 # You should not need to use a configuration file; all configuration
 # variables have reasonable defaults.  If you want to use one, you
@@ -67,7 +67,7 @@ cacheIsShared = false
 # Uncomment this if you want to put the on-disk cache in a
 # non-standard location:
 
-diskCacheRoot = "~/.polipo-cache/"
+diskCacheRoot = "~/.offline-cache/"
 
 # Uncomment this if you want to disable the local web server:
 
@@ -161,6 +161,7 @@ disableOfflineSupport = false;
 # Uncomment to assign a custom location for where the list of
 # offline enabled web applications is located
 
+offlineFile = ~/.offline-list
 # offlineFile = /some/custom/location
 
 # Uncomment to assign a custom location where our Proxy AutoConfig (PAC)
@@ -168,4 +169,5 @@ disableOfflineSupport = false;
 # offline sites, and is used by a web browser when deciding whether to
 # communicate with the local Polipo instance or not.
 
+offlinePACFile = ~/.offline-pac
 # offlinePACFile = /some/custom/location 
