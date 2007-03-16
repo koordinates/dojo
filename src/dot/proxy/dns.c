@@ -38,21 +38,7 @@ const int dnsUseGethostbyname = 0;
 
 #ifndef NO_FANCY_RESOLVER
 AtomPtr dnsNameServer = NULL;
-#ifndef NO_OFFLINE_SUPPORT
-/* shorter so we can detect the network going down
-   and provide resources from local cache instead faster
-   than a 60 second timeout.
-
-   FIXME: How will a 5 second timeout work on very laggy
-   networks with slow DNS but which do have a network? There
-   is a tradeoff here between having the user get their 
-   web application quickly when offline versus testing the 
-   network.
-*/
-int dnsMaxTimeout = 5;
-#else
 int dnsMaxTimeout = 60;
-#endif
 #endif
 
 #ifndef NO_STANDARD_RESOLVER

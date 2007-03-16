@@ -507,9 +507,13 @@ int
 httpServerConnectionDnsHandler(int status, GethostbynameRequestPtr request)
 {
     HTTPConnectionPtr serverConnection = request->data;
-    
-    httpSetTimeout(serverConnection, -1);
 
+#ifdef NO_OFFLINE_SUPPORT
+    httpSetTimeout(serverConnection, -1);
+#else
+	httpSetTimeout(serverConnection, offlineTimeout);
+#endif    
+   
     if(status <= 0) {
         AtomPtr message;
         message = internAtomF("Host %s lookup failed: %s",
@@ -583,7 +587,7 @@ httpServerConnectionHandler(int status,
                             ConnectRequestPtr request)
 {
     HTTPConnectionPtr connection = request->data;
-
+	printf("httpServerConnectionHandler, status=%d\n", status);
     assert(connection->fd < 0);
     if(request->fd >= 0) {
         int rc;
@@ -613,8 +617,12 @@ httpServerSocksHandler(int status, SocksRequestPtr request)
 int
 httpServerConnectionHandlerCommon(int status, HTTPConnectionPtr connection)
 {
+#ifdef NO_OFFLINE_SUPPORT
     httpSetTimeout(connection, -1);
-
+#else
+    httpSetTimeout(connection, offlineTimeout);
+#endif	
+    
     if(status < 0) {
         AtomPtr message = 
             internAtomError(-status, "Connect to %s:%d failed",
@@ -1002,7 +1010,11 @@ httpServerDoSide(HTTPConnectionPtr connection)
 
     assert(connection->bodylen >= 0);
 
+#ifdef NO_OFFLINE_SUPPORT
     httpSetTimeout(connection, 60);
+#else
+	httpSetTimeout(connection, offlineTimeout);
+#endif
 
     if(connection->reqlen > 0) {
         /* Send the headers, but don't send any part of the body if
@@ -1762,7 +1774,11 @@ httpServerHandler(int status,
     connection->reqbuf = NULL;
     shutdown(connection->fd, 2);
     pokeFdEvent(connection->fd, -EDOSHUTDOWN, POLLIN);
+#ifdef NO_OFFLINE_SUPPORT
     httpSetTimeout(connection, 60);
+#else
+	httpSetTimeout(connection, offlineTimeout);
+#endif
     return 1;
 }
 
@@ -1919,9 +1935,12 @@ httpServerHandlerHeaders(int eof,
 
     assert(request->object->flags & OBJECT_INPROGRESS);
     assert(eof >= 0);
-
+#ifdef NO_OFFLINE_SUPPORT
     httpSetTimeout(connection, -1);
-
+#else
+	httpSetTimeout(connection, offlineTimeout);
+#endif
+    
     if(request->flags & REQUEST_WAIT_CONTINUE) {
         do_log(D_SERVER_CONN, "W   %s:%d.\n",
                connection->server->name, connection->server->port);
@@ -2558,8 +2577,12 @@ httpServerIndirectHandler(int status,
 {
     HTTPConnectionPtr connection = srequest->data;
     assert(connection->request->object->flags & OBJECT_INPROGRESS);
-
+#ifdef NO_OFFLINE_SUPPORT
     httpSetTimeout(connection, -1);
+#else
+	httpSetTimeout(connection, offlineTimeout);
+#endif
+
     if(status < 0) {
         if(status != -ECLIENTRESET)
             do_log_error(L_ERROR, -status, "Read from server failed");
@@ -2703,8 +2726,12 @@ httpServerDirectHandlerCommon(int kind, int status,
 
     assert(request->object->flags & OBJECT_INPROGRESS);
 
+#ifdef NO_OFFLINE_SUPPORT
     httpSetTimeout(connection, -1);
-
+#else
+	httpSetTimeout(connection, offlineTimeout);
+#endif
+    
     if(status < 0) {
         unlockChunk(object, i);
         if(kind == 2) unlockChunk(object, i + 1);
