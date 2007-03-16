@@ -188,7 +188,7 @@ static int getHost(AtomPtr referer, char **host_results){
     return 1;
 }
 
-static void
+void
 handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
 {
 	AtomPtr referer;

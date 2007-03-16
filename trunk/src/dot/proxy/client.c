@@ -545,6 +545,12 @@ httpClientReplayNeeded(HTTPConnectionPtr serverConnection){
 		clientConnection = clientRequest->connection;
     }
 
+    if(serverConnection == NULL
+       || clientRequest == NULL
+       || clientConnection == NULL){
+       return 0;	
+    }
+
 	assert(serverConnection != NULL);
     assert(clientRequest != NULL);
 	assert(clientConnection != NULL);
@@ -558,7 +564,6 @@ httpClientReplayNeeded(HTTPConnectionPtr serverConnection){
        if it is a GET request and if we haven't tried to
        replay this request before. */
     if(disableOfflineSupport == 0 
-         && proxyOffline == 0
          && correctMethod == 1
          && clientRequest
          && clientRequest->replaying == 0){

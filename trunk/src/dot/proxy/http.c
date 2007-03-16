@@ -27,7 +27,28 @@ AtomPtr proxyName = NULL;
 int proxyPort = 8123;
 
 int clientTimeout = 120;
+
+/* The amount of time we should spend on server
+   requests before timing out, possibly attempting
+   to replay the client request offline against our
+   local cache. */
+int offlineTimeout = 5;
+
+#ifdef NO_OFFLINE_SUPPORT
 int serverTimeout = 90;
+#else
+/* Shorter so we can detect the network going down
+   and provide resources from local cache instead faster
+   than a 60 second timeout.
+
+   FIXME: How will a 5 second timeout work on very latent
+   networks? There
+   is a tradeoff here between having the user get their 
+   web application quickly when offline versus testing the 
+   network.
+*/
+int serverTimeout = 5;
+#endif
 
 int bigBufferSize = (32 * 1024);
 
@@ -263,15 +284,24 @@ int
 httpTimeoutHandler(TimeEventHandlerPtr event)
 {
     HTTPConnectionPtr connection = *(HTTPConnectionPtr*)event->data;
-
+	printf("httpTimeoutHandler\n");
     if(connection->fd >= 0) {
         int rc;
+		printf("We would be shutting down here\n");
         rc = shutdown(connection->fd, 2);
         if(rc < 0 && errno != ENOTCONN)
                 do_log_error(L_ERROR, errno, "Timeout: shutdown failed");
         pokeFdEvent(connection->fd, -EDOTIMEOUT, POLLIN | POLLOUT);
     }
+
     connection->timeout = NULL;
+
+    if(httpClientReplayNeeded(connection)){
+		httpClientReplay(connection);
+		
+		return 1;	  
+    }
+
     return 1;
 }
 
@@ -577,7 +607,11 @@ httpDestroyConnection(HTTPConnectionPtr connection)
     assert(!connection->request);
     assert(!connection->request_last);
     httpConnectionDestroyReqbuf(connection);
-    assert(!connection->timeout);
+
+    if(connection->timeout)
+        cancelTimeEvent(connection->timeout);
+    connection->timeout = NULL;
+
     assert(!connection->server);
     free(connection);
 }
