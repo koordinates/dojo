@@ -39,7 +39,7 @@ run:
 	./proxy-build/mac/x86/dot -c ./proxy-build/mac/x86/config
 	
 debug:
-	gdb ./proxy-build/mac/x86/dot
+	gdb -d proxy ./proxy-build/mac/x86/dot
 
 clean:
 	make -C proxy clean
