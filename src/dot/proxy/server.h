@@ -110,4 +110,6 @@ int connectionAddData(HTTPConnectionPtr connection, int skip);
 int 
 httpWriteRequest(HTTPConnectionPtr connection, HTTPRequestPtr request, int);
 
+void discardServer(HTTPServerPtr server);
+
 void listServers(FILE*);

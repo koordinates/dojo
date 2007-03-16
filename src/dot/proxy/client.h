@@ -20,6 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+extern int httpClientReplayNeeded(HTTPConnectionPtr serverConnection);
+extern int httpClientReplay(HTTPConnectionPtr serverConnection);
+
 int httpAccept(int, FdEventHandlerPtr, AcceptRequestPtr);
 void httpClientFinish(HTTPConnectionPtr connection, int s);
 int httpClientHandler(int, FdEventHandlerPtr, StreamRequestPtr);
@@ -59,6 +62,7 @@ int httpServeObjectStreamHandler2(int status,
                                   StreamRequestPtr request);
 int httpServeObjectHandler(int, ConditionHandlerPtr);
 int httpClientSideRequest(HTTPRequestPtr request);
-int  httpClientSideHandler(int status,
+int httpClientSideHandler(int status,
                            FdEventHandlerPtr event,
                            StreamRequestPtr srequest);
+
