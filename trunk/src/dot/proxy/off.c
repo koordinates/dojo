@@ -9,12 +9,15 @@
     us is as follows:
 
     We start assuming the network exists (i.e. proxyOffline = no). If
-    at any time we get a DNS error when trying to resolve a name, inside
-    of server.c:httpServerConnectionDnsHandler, we automatically move offline
+    at any time we get a network error, we automatically move offline
     and retry the request again, causing the data to be retrieved from our
     offline cache if available. We therefore call goOffline(), which sets
     proxyOffline = yes, causing Polipo to therefore start using the local
-    data cache.
+    data cache. See client.c:httpClientReplayNeeded and
+    client.c:httpClientReplay for the appropriate code where this occurs.
+    We place calls to httpClientReplayNeeded before most httpServerAbort
+    calls in server.c to attempt a replay if necessary instead of
+    aborting the request and sending an error message to the client.
 
     We depend on the offline JavaScript layer to determine when our particular
     web application has lost the network -- if so, we then call our local
