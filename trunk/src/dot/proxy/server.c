@@ -91,7 +91,7 @@ parentProxySetter(ConfigVariablePtr var, void *value)
     return 1;
 }
 
-static void
+void
 discardServer(HTTPServerPtr server)
 {
     HTTPServerPtr previous;
@@ -319,6 +319,7 @@ httpServerAbort(HTTPConnectionPtr connection, int fail,
                 int code, AtomPtr message)
 {
     HTTPRequestPtr request = connection->request;
+
     if(request) {
         if(request->request) {
             httpClientError(request->request, code, retainAtom(message));
@@ -506,74 +507,8 @@ int
 httpServerConnectionDnsHandler(int status, GethostbynameRequestPtr request)
 {
     HTTPConnectionPtr serverConnection = request->data;
-    HTTPRequestPtr serverRequest = serverConnection->server->request;
-	HTTPRequestPtr clientRequest = (HTTPRequestPtr)(serverRequest->object->requestor);
-	HTTPConnectionPtr clientConnection = clientRequest->connection;
-	int correctMethod = 0;
-
+    
     httpSetTimeout(serverConnection, -1);
-
-    if(clientRequest){
-       if(clientRequest->method == METHOD_GET
-          || clientRequest->method == METHOD_CONDITIONAL_GET){
-          correctMethod = 1;
-       }	
-    }
-
-#ifndef NO_OFFLINE_SUPPORT
-    /* automatically go offline and retry this request 
-       if it is a GET request and if we haven't tried to
-       replay this request before. */
-    if(disableOfflineSupport == 0 
-         && proxyOffline == 0
-         && status <= 0
-         && correctMethod == 1
-         && clientRequest
-         && clientRequest->replaying == 0){
-       /* prevent infinite loops */
-       clientRequest->replaying = 1;
-      
-       /* go offline */
-       goOffline();
-
-       /* free up our old connection handler created when we thought
-          we would be talking on the network */
-       unregisterConditionHandler(clientRequest->chandler);
-       clientRequest->chandler = NULL;
-	   
-       /* if we are a publicly cached object, reset our state 
-          back to public -- this is because 'objects' are
-          recycled between requests, and the flags that
-          are present are invalid at this point and will
-          create issues when served in the future */
-       if(clientRequest->object->flags & OBJECT_PUBLIC){
-          clientRequest->object->flags = OBJECT_PUBLIC;
-       }
-		
-       /* clean up server connection resources */
-       if(serverRequest){
-          /* keep these around for replaying -- don't free them */
-          serverRequest->object = NULL; /* our cached object */
-          serverRequest->request = NULL; /* our client request */
-       }
-       /* discard our request object representing communication with the server */
-       httpDestroyRequest(serverRequest);
-       serverConnection->server->request = NULL;
-       serverRequest = NULL;
-       /* discard our object representing the server itself */
-       discardServer(serverConnection->server);
-       serverConnection->server = NULL;
-       /* now destroy the HTTP connection object built to talk to this server */
-       httpDestroyConnection(serverConnection);
-       serverConnection = NULL;
-       /* clientRequest references serverRequest -- clear this */
-       clientRequest->request = NULL;
-
-       clientConnection->flags |= CONN_WRITER;
-       lockChunk(clientRequest->object, clientRequest->from / CHUNK_SIZE);
-       return httpServeObject(clientConnection);
-    }
-#endif
 
     if(status <= 0) {
         AtomPtr message;
@@ -590,10 +525,19 @@ httpServerConnectionDnsHandler(int status, GethostbynameRequestPtr request)
                request->error_message->string :
                pstrerror(-status), -status);
         serverConnection->connecting = 0;
+
+        /* try to move offline and replay the request
+           if appropriate. */
+        if(httpClientReplayNeeded(serverConnection)){
+            httpClientReplay(serverConnection);
+		    return 1;
+        }
+
         if(serverConnection->server->request)
             httpServerAbortRequest(serverConnection->server->request, 1, 504,
                                    retainAtom(message));
         httpServerAbort(serverConnection, 1, 502, message);
+        
         return 1;
     }
 
@@ -602,6 +546,15 @@ httpServerConnectionDnsHandler(int status, GethostbynameRequestPtr request)
             AtomPtr message = internAtom("DNS CNAME loop");
             do_log(L_ERROR, "DNS CNAME loop.\n");
             serverConnection->connecting = 0;
+
+            /* try to move offline and replay the request
+               if appropriate. */
+            if(httpClientReplayNeeded(serverConnection)){ 
+               releaseAtom(message);
+               httpClientReplay(serverConnection);
+		       return 1;
+            }
+
             if(serverConnection->server->request)
                 httpServerAbortRequest(serverConnection->server->request, 1, 504,
                                        retainAtom(message));
@@ -671,6 +624,15 @@ httpServerConnectionHandlerCommon(int status, HTTPConnectionPtr connection)
             do_log_error(L_ERROR, -status, "Connect to %s:%d failed",
                          connection->server->name, connection->server->port);
         connection->connecting = 0;
+
+        /* try to move offline and replay the request
+           if appropriate. */
+        if(httpClientReplayNeeded(connection)){
+            releaseAtom(message);
+            httpClientReplay(connection);
+		    return 1;
+        }
+
         if(connection->server->request)
             httpServerAbortRequest(connection->server->request,
                                    status != -ECLIENTRESET, 504, 
@@ -707,6 +669,13 @@ httpServerIdleHandler(int a, FdEventHandlerPtr event)
         }
     }
     assert(i < server->maxslots);
+
+    /* try to move offline and replay the request
+       if appropriate. */
+    if(httpClientReplayNeeded(connection)){
+        httpClientReplay(connection);
+        return 1;
+    }
 
     httpServerAbort(connection, 1, 504, internAtom("Timeout"));
     return 1;
@@ -1837,6 +1806,14 @@ httpServerReplyHandler(int status,
         }
         if(status != -ECLIENTRESET)
             do_log_error(L_ERROR, -status, "Read from server failed");
+
+        /* try to move offline and replay the request
+           if appropriate. */
+        if(httpClientReplayNeeded(connection)){
+            httpClientReplay(connection);
+		    return 1;
+        }
+
         httpServerAbort(connection, status != -ECLIENTRESET, 502, 
                         internAtomError(-status, "Read from server failed"));
         return 1;
@@ -1855,9 +1832,18 @@ httpServerReplyHandler(int status,
             httpServerRestart(connection);
             return 1;
         }
+
+        /* try to move offline and replay the request
+           if appropriate. */
+        if(httpClientReplayNeeded(connection)){
+            httpClientReplay(connection);
+		    return 1;
+        }
+
         if(status < 0) {
             do_log(L_ERROR, 
                    "Error reading server headers: %d\n", -status);
+
             httpServerAbort(connection, status != -ECLIENTRESET, 502, 
                             internAtomError(-status, 
                                             "Error reading server headers"));
@@ -1871,8 +1857,17 @@ httpServerReplyHandler(int status,
         int rc = 0;
         if(!(connection->flags & CONN_BIGBUF))
             rc = httpConnectionBigify(connection);
+
         if(rc == 0) {
             do_log(L_ERROR, "Couldn't find end of server's headers.\n");
+
+            /* try to move offline and replay the request
+	           if appropriate. */
+	        if(httpClientReplayNeeded(connection)){
+	            httpClientReplay(connection);
+			    return 1;
+	        }
+
             httpServerAbort(connection, 1, 502,
                             internAtom("Couldn't find end "
                                        "of server's headers"));
@@ -1936,6 +1931,14 @@ httpServerHandlerHeaders(int eof,
     rc = httpParseServerFirstLine(connection->buf, &code, &version, &message);
     if(rc <= 0) {
         do_log(L_ERROR, "Couldn't parse server status line.\n");
+
+        /* try to move offline and replay the request
+           if appropriate. */
+        if(httpClientReplayNeeded(connection)){
+            httpClientReplay(connection);
+		    return 1;
+        }
+
         httpServerAbort(connection, 1, 502,
                         internAtom("Couldn't parse server status line"));
         return 1;
@@ -1969,6 +1972,14 @@ httpServerHandlerHeaders(int eof,
         do_log(L_ERROR, "Couldn't parse server headers\n");
         releaseAtom(url);
         releaseAtom(message);
+
+        /* try to move offline and replay the request
+           if appropriate. */
+        if(httpClientReplayNeeded(connection)){
+            httpClientReplay(connection);
+		    return 1;
+        }
+
         httpServerAbort(connection, 1, 502, 
                         internAtom("Couldn't parse server headers"));
         return 1;
@@ -2364,10 +2375,26 @@ httpServerHandlerHeaders(int eof,
             if(rc < 0) {
                 if(rc == -2) {
                     do_log(L_ERROR, "Couldn't parse chunk size.\n");
+
+                    /* try to move offline and replay the request
+                       if appropriate. */
+                    if(httpClientReplayNeeded(connection)){
+			            httpClientReplay(connection);
+					    return 1;
+			        }
+
                     httpServerAbort(connection, 1, 502,
                                     internAtom("Couldn't parse chunk size"));
                 } else {
                     do_log(L_ERROR, "Couldn't add data to connection.\n");
+
+                    /* try to move offline and replay the request
+                       if appropriate. */
+                    if(httpClientReplayNeeded(connection)){
+			            httpClientReplay(connection);
+					    return 1;
+			        }
+
                     httpServerAbort(connection, 1, 500, 
                                     internAtom("Couldn't add data "
                                                "to connection"));
@@ -2399,6 +2426,14 @@ httpServerHandlerHeaders(int eof,
            (object->length >= 0 && 
             connection->offset < object->length)) {
             do_log(L_ERROR, "Server closed connection.\n");
+
+            /* try to move offline and replay the request
+               if appropriate. */
+	        if(httpClientReplayNeeded(connection)){
+	            httpClientReplay(connection);
+			    return 1;
+	        }
+
             httpServerAbort(connection, 1, 502,
                             internAtom("Server closed connection"));
             return 1;
@@ -2442,10 +2477,26 @@ httpServerIndirectHandlerCommon(HTTPConnectionPtr connection, int eof)
             if(rc < 0) {
                 if(rc == -2) {
                     do_log(L_ERROR, "Couldn't parse chunk size.\n");
+
+                    /* try to move offline and replay the request
+                       if appropriate. */
+                    if(httpClientReplayNeeded(connection)){
+			            httpClientReplay(connection);
+					    return 1;
+			        }
+
                     httpServerAbort(connection, 1, 502,
                                     internAtom("Couldn't parse chunk size"));
                 } else {
                     do_log(L_ERROR, "Couldn't add data to connection.\n");
+
+                    /* try to move offline and replay the request
+                       if appropriate. */
+                    if(httpClientReplayNeeded(connection)){
+			            httpClientReplay(connection);
+					    return 1;
+			        }
+
                     httpServerAbort(connection, 1, 500,
                                     internAtom("Couldn't add data "
                                                "to connection"));
@@ -2475,6 +2526,14 @@ httpServerIndirectHandlerCommon(HTTPConnectionPtr connection, int eof)
         if(connection->te == TE_CHUNKED ||
            (request->to >= 0 && connection->offset < request->to)) {
             do_log(L_ERROR, "Server dropped connection.\n");
+
+            /* try to move offline and replay the request
+               if appropriate. */
+	        if(httpClientReplayNeeded(connection)){
+	            httpClientReplay(connection);
+			    return 1;
+	        }
+
             httpServerAbort(connection, 1, 502, 
                             internAtom("Server dropped connection"));
             return 1;
@@ -2504,6 +2563,14 @@ httpServerIndirectHandler(int status,
     if(status < 0) {
         if(status != -ECLIENTRESET)
             do_log_error(L_ERROR, -status, "Read from server failed");
+
+        /* try to move offline and replay the request
+           if appropriate. */
+        if(httpClientReplayNeeded(connection)){
+            httpClientReplay(connection);
+		    return 1;
+        }
+
         httpServerAbort(connection, status != -ECLIENTRESET, 502,
                         internAtomError(-status, "Read from server failed"));
         return 1;
@@ -2643,6 +2710,14 @@ httpServerDirectHandlerCommon(int kind, int status,
         if(kind == 2) unlockChunk(object, i + 1);
         if(status != -ECLIENTRESET)
             do_log_error(L_ERROR, -status, "Read from server failed");
+
+        /* try to move offline and replay the request
+           if appropriate. */
+        if(httpClientReplayNeeded(connection)){
+           httpClientReplay(connection);
+	       return 1;
+        }
+
         httpServerAbort(connection, status != -ECLIENTRESET, 502,
                         internAtomError(-status, "Read from server failed"));
         return 1;
