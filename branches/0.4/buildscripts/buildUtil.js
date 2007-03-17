@@ -280,9 +280,9 @@ buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
 		depRegExpString += '("' + provideList[i] + '")';
 	}
 		
-	//If we have a string for a regexp, do the dojo.require() removal now.
+	//If we have a string for a regexp, do the dojo.require() and requireIf() removal now.
 	if(depRegExpString){
-		var depRegExp = new RegExp("dojo\\.(require)\\((" + depRegExpString + ")\\)(;?)", "g");
+		var depRegExp = new RegExp("dojo\\.(require|requireIf)\\(.*?(" + depRegExpString + ")\\)(;?)", "g");
 		dojoContents = dojoContents.replace(depRegExp, "");
 	}
 
