@@ -450,7 +450,6 @@ APIs in Base:
     // misc util
     dojo.deprecated()
     dojo.experimental()
-    dojo.undefined() // was dj_undef and dojo.lang.isUndefined
     dojo.getObject() // strToObj() ?
     dojo.exists()
     dojo.global()
