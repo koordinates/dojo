@@ -494,14 +494,14 @@ dojo.lang.mixin(dojo.off, {
 	
 	_getAvailabilityURL: function(){
 		var url = this.availabilityURL;
-		// cache bust to make sure we are really talking to
+		// bust the proxy cache to make sure we are really talking to
 		// the server
 		if(url.indexOf("?") == -1){
 			url += "?";
 		}else{
 			url += "&";
 		}
-		url += "cachebust=" + new Date().getTime();
+		url += "proxybust=" + new Date().getTime();
 		
 		return url;
 	},

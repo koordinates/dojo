@@ -284,10 +284,8 @@ int
 httpTimeoutHandler(TimeEventHandlerPtr event)
 {
     HTTPConnectionPtr connection = *(HTTPConnectionPtr*)event->data;
-	printf("httpTimeoutHandler\n");
     if(connection->fd >= 0) {
         int rc;
-		printf("We would be shutting down here\n");
         rc = shutdown(connection->fd, 2);
         if(rc < 0 && errno != ENOTCONN)
                 do_log_error(L_ERROR, errno, "Timeout: shutdown failed");
