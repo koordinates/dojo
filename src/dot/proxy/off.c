@@ -191,10 +191,10 @@ int generatePACFile(){
     
     fprintf(out_file, "function FindProxyForURL(url, host){\n");
     
-    /** Provide a way to 'bust' the cache and really 
+    /** Provide a way to 'bust' the proxy's cache and really 
         test the outer network. This is with the magic
-        query variable 'cachebust'. */
-    fprintf(out_file, "   if(/cachebust/.test(url)){\n"
+        query variable 'proxybust'. */
+    fprintf(out_file, "   if(/proxybust/.test(url)){\n"
                       "      return \"DIRECT\";\n"
                       "   }\n\n");
     
