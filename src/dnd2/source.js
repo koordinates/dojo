@@ -38,7 +38,9 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 	this.is_dragging = false;
 	this.mouse_down = false;
 	this.target_anchor = null;
+	this.target_valid = false;
 	this.before = false;
+	// states
 	this.source_state  = "";
 	dojo.html.addClass(this.node, "dojo_dnd_source_");
 	this.target_state  = "";
@@ -54,21 +56,26 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 	onMouseMove: function(e){
 		if(this.is_dragging && this.target_state == "disabled"){ return; }
 		if(this.container_state != "over"){
-			//dojo.debug("onMouseMove", this.container_state, e.target);
 			dojo.dnd2.manager().overSource(this);
 		}
 		dojo.dnd2.Source.superclass.onMouseMove.call(this, e);
 		if(this.is_dragging){
-			if(this.current != this.target_anchor && this.current == e.target){
-				/*
+			// calculate before/after
+			var before = false;
+			/*
+			THIS IS A PLACEHOLDER!
+			
+			if(this.current){
 				if(this.horizontal){
-					this.before = (e.clientX - this.current.clientLeft) < (this.current.offsetWidth / 2);
+					before = (e.clientX - this.current.clientLeft) < (this.current.offsetWidth / 2);
 				}else{
-					this.before = (e.clientY - this.current.clientTop)  < (this.current.offsetHeight / 2);
+					before = (e.clientY - this.current.clientTop)  < (this.current.offsetHeight / 2);
 				}
-				*/
-				this.before = false;
-				this.markTargetAnchor();
+			}
+			*/
+			if(this.current != this.target_anchor || before != this.before){
+				this.markTargetAnchor(before);
+				dojo.dnd2.manager().canDrop(!this.current || !(this.current.id in this.selection));
 			}
 		}else{
 			if(this.mouse_down){
@@ -108,18 +115,17 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 		this.is_dragging = true;
 	},
 	onDndDrop: function(source, nodes, copy){
-		if(this.container_state == "over"){
+		do{ //break box
+			if(this.container_state != "over"){ break; }
 			var old_creator = this.node_creator;
 			if(this != source || copy){
 				this.selectNone();
 				this.node_creator = function(n){
-					dojo.debug("creator #1: ", n.id, source.map);
 					return old_creator(source.map[n.id].data);
 				};
 			}else{
-				if(this.current.id in this.selection){ return; }
+				if(this.current.id in this.selection){ break; }
 				this.node_creator = function(n){
-					dojo.debug("creator #2: ", n.id, source.map);
 					var t = source.map[n.id]; return {node: n, data: t.data, types: t.types};
 				};
 			}
@@ -128,7 +134,7 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 			if(this != source && !copy){
 				source.deleteSelectedNodes();
 			}
-		}
+		}while(false);
 		this.onDndCancel();
 	},
 	onDndCancel: function(){
@@ -136,6 +142,7 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 			this.unmarkTargetAnchor();
 			this.target_anchor = null;
 		}
+		this.before = true;
 		this.is_dragging = false;
 		this.changeState("source", "");
 		this.changeState("target", "");
@@ -169,14 +176,14 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 		}
 		return accepted;
 	},
-	markTargetAnchor: function(){
+	markTargetAnchor: function(before){
 		if(this.current == this.target_anchor){ return; }
 		var prefix = this.horizontal ? "h_" : "v_";
 		if(this.target_anchor){
-			this.removeItemClass(this.target_anchor, prefix + "before");
-			this.removeItemClass(this.target_anchor, prefix + "after");
+			this.removeItemClass(this.target_anchor, prefix + (this.before ? "before" : "after"));
 		}
 		this.target_anchor = this.current;
+		this.before = before;
 		if(this.target_anchor){
 			this.addItemClass(this.target_anchor, prefix + (this.before ? "before" : "after"));
 		}
@@ -184,8 +191,7 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 	unmarkTargetAnchor: function(){
 		if(!this.target_anchor){ return; }
 		var prefix = this.horizontal ? "h_" : "v_";
-		this.removeItemClass(this.target_anchor, prefix + "before");
-		this.removeItemClass(this.target_anchor, prefix + "after");
+		this.removeItemClass(this.target_anchor, prefix + (this.before ? "before" : "after"));
 		this.target_anchor = null;
 	},
 	markDndStatus: function(copy){

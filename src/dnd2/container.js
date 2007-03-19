@@ -19,13 +19,14 @@ function(node, filter, creator){
 	// general variables
 	this.node = node;
 	this.node_filter  = filter  ? filter  : function(n){ return n.nodeType == 1; };
-	this.node_creator = creator ? creator : null; // TODO: add some reasonable default
+	this.node_creator = creator ? creator : dojo.dnd2._defaultCreator(node);
 	// class-specific variables
-	this.parent = node;
 	this.map = {};
+	this.current = null;
+	this.parent = node;
+	// states
 	this.container_state = "";
 	dojo.html.addClass(node, "dojo_dnd_container_");
-	this.current = null;
 	// mark up children
 	var c;
 	if(node.tagName.toLowerCase() == "table"){
@@ -44,7 +45,7 @@ function(node, filter, creator){
 		}
 	}
 	// set up events
-	dojo.event.connectBefore(dojo.body(), "onmousemove", this, "onMouseMoveGlobal");
+	dojo.event.connectBefore(dojo.doc(), "onmousemove", this, "onMouseMoveGlobal");
 	// cancel text selection and text dragging
 	dojo.event.connect(node, "ondragstart",   this, "cancelEvent");
 	dojo.event.connect(node, "onselectstart", this, "cancelEvent");
@@ -136,3 +137,39 @@ function(node, filter, creator){
 		return parent ? (node.nodeType == 1 ? node : this.node) : null;
 	}
 });
+
+dojo.dnd2._createNode = function(tag){
+	if(!tag){ return dojo.dnd2._createSpan; }
+	return function(text){
+		var n = dojo.doc().createElement(tag);
+		n.innerHTML = text;
+		return n;
+	};
+};
+
+dojo.dnd2._createTrTd = function(text){
+	var tr = dojo.doc().createElement("tr");
+	var td = dojo.doc().createElement("td");
+	td.innerHTML = text;
+	tr.appendChild(td);
+	return tr;
+};
+
+dojo.dnd2._createSpan = function(text){
+	var n = dojo.doc().createElement("span");
+	n.innerHTML = text;
+	return n;
+};
+
+dojo.dnd2._defaultCreatorNodes = {ul: "li", ol: "li", div: "div", p: "div"};
+dojo.dnd2._defaultCreator = function(node){
+	var tag = node.tagName.toLowerCase();
+	var c = tag == "table" ? dojo.dnd2._createTrTd : dojo.dnd2._createNode(dojo.dnd2._defaultCreatorNodes[tag]);
+	var r = dojo.lang.repr ? dojo.lang.repr : function(o){ return o + ""; };
+	return function(data, hint){
+		var t = r(data);
+		var n = (hint == "avatar" ? dojo.dnd2._createSpan : c)(t);
+		n.id = dojo.dom.getUniqueId();
+		return {node: n, data: data, types: ["text"]};
+	};
+};
