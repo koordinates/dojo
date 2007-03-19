@@ -44,10 +44,6 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 	this.target_state  = "";
 	dojo.html.addClass(this.node, "dojo_dnd_target_");
 	// set up events
-	//dojo.event.connect(node, "onmousemove", this,  "onMouseMove");
-	//dojo.event.connect(node, "onmouseout",  this,  "onMouseOut");
-	//dojo.event.connect(node, "onmousedown", this,  "onMouseDown");
-	dojo.event.connect(node, "onmouseup",   this,  "onMouseUp");
 	dojo.event.topic.subscribe("dnd_source_over", this, "onDndSourceOver");
 	dojo.event.topic.subscribe("dnd_start",  this, "onDndStart");
 	dojo.event.topic.subscribe("dnd_drop",   this, "onDndDrop");
@@ -80,19 +76,13 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 			}
 		}
 	},
-	onMouseOut: function(e){
-		dojo.dnd2.Source.superclass.onMouseOut.call(this, e);
-		if(this.node == e.target){
-			//dojo.debug("onMouseOut", e.target);
-			dojo.dnd2.manager().outSource(this);
-		}
-	},
 	onMouseDown: function(e){
 		this.mouse_down = true;
 		dojo.dnd2.Source.superclass.onMouseDown.call(this, e);
 	},
 	onMouseUp: function(e){
 		this.mouse_down = false;
+		dojo.dnd2.Source.superclass.onMouseUp.call(this, e);
 	},
 	// topic event processors
 	onDndSourceOver: function(source){
@@ -111,6 +101,9 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 		if(this.accept){
 			var accepted = this.checkAcceptance(source, nodes);
 			this.changeState("target", accepted ? "" : "disabled");
+			if(accepted){
+				dojo.dnd2.manager().overSource(this);
+			}
 		}
 		this.is_dragging = true;
 	},
@@ -148,6 +141,10 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 		this.changeState("target", "");
 	},
 	// methods
+	onOutEvent: function(){
+		dojo.dnd2.Source.superclass.onOutEvent.call(this);
+		dojo.dnd2.manager().outSource(this);
+	},
 	checkAcceptance: function(source, nodes){
 		if(this == source){ return true; }
 		var accepted = true;
@@ -176,19 +173,19 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 		if(this.current == this.target_anchor){ return; }
 		var prefix = this.horizontal ? "h_" : "v_";
 		if(this.target_anchor){
-			this.removeClass(this.target_anchor, prefix + "before");
-			this.removeClass(this.target_anchor, prefix + "after");
+			this.removeItemClass(this.target_anchor, prefix + "before");
+			this.removeItemClass(this.target_anchor, prefix + "after");
 		}
 		this.target_anchor = this.current;
 		if(this.target_anchor){
-			this.addClass(this.target_anchor, prefix + (this.before ? "before" : "after"));
+			this.addItemClass(this.target_anchor, prefix + (this.before ? "before" : "after"));
 		}
 	},
 	unmarkTargetAnchor: function(){
 		if(!this.target_anchor){ return; }
 		var prefix = this.horizontal ? "h_" : "v_";
-		this.removeClass(this.target_anchor, prefix + "before");
-		this.removeClass(this.target_anchor, prefix + "after");
+		this.removeItemClass(this.target_anchor, prefix + "before");
+		this.removeItemClass(this.target_anchor, prefix + "after");
 		this.target_anchor = null;
 	},
 	markDndStatus: function(copy){
