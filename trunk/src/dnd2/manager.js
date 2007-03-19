@@ -3,6 +3,8 @@ dojo.provide("dojo.dnd2.manager");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
 
+dojo.require("dojo.dnd2.avatar");
+
 dojo.dnd2.Manager = function(){
 	this.avatar  = null;
 	
@@ -11,22 +13,23 @@ dojo.dnd2.Manager = function(){
 	this.copy  = true;
 	
 	this.target = null;
+	this.can_drop = false;
 };
 
 dojo.extend(dojo.dnd2.Manager, {
 	// methods
 	overSource: function(source){
-		dojo.debug("overSource");
 		if(this.avatar){
 			this.target = source;
 		}
 		dojo.event.topic.publish("dnd_source_over", source);
 	},
 	outSource: function(source){
-		dojo.debug("outSource");
 		if(this.avatar){
 			if(this.target == source){
 				this.target = null;
+				this.can_drop = false;
+				this.avatar.update();
 				dojo.event.topic.publish("dnd_source_over", null);
 			}
 		}else{
@@ -34,69 +37,37 @@ dojo.extend(dojo.dnd2.Manager, {
 		}
 	},
 	startDrag: function(source, nodes, copy){
-		dojo.debug("startDrag");
 		this.source = source;
 		this.nodes  = nodes;
 		this.copy   = copy;
 		this.avatar = this.makeAvatar();
-		dojo.body().appendChild(this.avatar);
+		dojo.body().appendChild(this.avatar.node);
 		dojo.event.topic.publish("dnd_start", source, nodes, copy);
-		dojo.event.connect(dojo.body(), "onmousemove", this, "onMouseMove");
-		dojo.event.connect(dojo.body(), "onmouseup",   this, "onMouseUp");
+		dojo.event.connect(dojo.doc(), "onmousemove", this, "onMouseMove");
+		dojo.event.connect(dojo.doc(), "onmouseup",   this, "onMouseUp");
 		dojo.html.addClass(dojo.body(), "dojo_dnd_" + (copy ? "copy" : "move"));
 	},
+	canDrop: function(flag){
+		this.can_drop = this.target && flag;
+	},
 	stopDrag: function(){
-		dojo.debug("stopDrag");
 		dojo.html.removeClass(dojo.body(), "dojo_dnd_copy");
 		dojo.html.removeClass(dojo.body(), "dojo_dnd_move");
-		dojo.event.disconnect(dojo.body(), "onmousemove", this, "onMouseMove");
-		dojo.event.disconnect(dojo.body(), "onmouseup",   this, "onMouseUp");
-		this.avatar.parentNode.removeChild(this.avatar);
+		dojo.event.disconnect(dojo.doc(), "onmousemove", this, "onMouseMove");
+		dojo.event.disconnect(dojo.doc(), "onmouseup",   this, "onMouseUp");
+		this.avatar.destroy();
 		this.avatar = null;
 		this.source = null;
 		this.nodes = [];
 	},
-	makeAvatar: function(){
-		dojo.debug("makeAvatar");
-		var a = dojo.doc().createElement("table");
-		dojo.html.addClass(a, "dojo_dnd_avatar");
-		a.style.position = "absolute";
-		var tr = dojo.doc().createElement("tr");
-		dojo.html.addClass(tr, "dojo_dnd_avatar_header");
-		var td = dojo.doc().createElement("td");
-		td.innerHTML = (this.copy ? "copy" : "mov") + "ing " + this.nodes.length + " items";
-		tr.appendChild(td);
-		a.appendChild(tr);
-		var k = Math.min(3, this.nodes.length);
-		for(var i = 0; i < k; ++i){
-			tr = dojo.doc().createElement("tr");
-			dojo.html.addClass(tr, "dojo_dnd_avatar_item");
-			td = dojo.doc().createElement("td");
-			var t = this.source.node_creator(this.source.map[this.nodes[i].id].data, "avatar");
-			td.appendChild(t.node);
-			tr.appendChild(td);
-			a.appendChild(tr);
-		}
-		return a;
-	},
-	updateAvatar: function(){
-		dojo.debug("update avatar");
-		var t = this.avatar.getElementsByTagName("td");
-		for(var i = 0; i < t.length; ++i){
-			var n = t[i];
-			if(dojo.html.hasClass(n.parentNode, "dojo_dnd_avatar_header")){
-				n.innerHTML = (this.copy ? "copy" : "mov") + "ing " + this.nodes.length + " items";
-				break;
-			}
-		}
-	},
+	makeAvatar: function(){ return new dojo.dnd2.Avatar(this); },
+	updateAvatar: function(){ this.avatar.update(); },
 	// mouse event processors
 	onMouseMove: function(e){
-		//dojo.debug("onMouseMove", e.target, this.source);
 		if(this.avatar){
-			var s = this.avatar.style;
-			s.left = (e.clientX + 10) + "px";
-			s.top  = (e.clientY + 10) + "px";
+			var s = this.avatar.node.style;
+			s.left = (e.pageX + 10) + "px";
+			s.top  = (e.pageY + 10) + "px";
 			if(this.copy != e.ctrlKey){
 				this.copy = e.ctrlKey;
 				this.source.markDndStatus(this.copy);
@@ -107,7 +78,7 @@ dojo.extend(dojo.dnd2.Manager, {
 	},
 	onMouseUp: function(e){
 		if(this.avatar){
-			if(this.target){
+			if(this.target && this.can_drop){
 				dojo.event.topic.publish("dnd_drop", this.source, this.nodes, this.copy);
 			}else{
 				dojo.event.topic.publish("dnd_cancel");
@@ -121,11 +92,7 @@ dojo.dnd2._manager = null;
 
 dojo.dnd2.manager = function(){
 	if(!dojo.dnd2._manager){
-		dojo.dnd2.setManager(new dojo.dnd2.Manager());
+		dojo.dnd2._manager = new dojo.dnd2.Manager();
 	}
 	return dojo.dnd2._manager;
-};
-
-dojo.dnd2.setManager = function(manager){
-	dojo.dnd2._manager = manager;
 };

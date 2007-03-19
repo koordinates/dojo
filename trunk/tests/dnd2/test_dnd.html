@@ -12,42 +12,45 @@
 		.dojo_dnd_item_over.dojo_dnd_item_anchor	{background: #ec8;}
 		.dojo_dnd_item_v_before		{border-top: 3px solid red;}
 		.dojo_dnd_item_v_after		{border-bottom: 3px solid red;}
-		.dojo_dnd_avatar			{font-size: 75%; background: #eee;}
+		.dojo_dnd_avatar			{font-size: 75%;}
 		.dojo_dnd_avatar_header		{background: #aaa;}
+		.dojo_dnd_avatar_item		{background: #eee;}
 	</style>
 	<script type="text/javascript">
-		var djConfig = { isDebug: true /* , debugAtAllCosts: true */ };
+		var djConfig = {isDebug: true};
 	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
 	<script type="text/javascript">dojo.require("dojo.debug.console");</script>
 	<script type="text/javascript" src="../../src/dnd2/container.js"></script>
 	<script type="text/javascript" src="../../src/dnd2/selector.js"></script>
 	<script type="text/javascript" src="../../src/dnd2/source.js"></script>
+	<script type="text/javascript" src="../../src/dnd2/avatar.js"></script>
 	<script type="text/javascript" src="../../src/dnd2/manager.js"></script>
 	<script type="text/javascript">
 		dojo.require("dojo.dnd2.source");
 		dojo.require("dojo.dnd2.manager");
-		// dojo.hostenv.writeIncludes();
 	</script>
 	<script type="text/javascript">
 		var c1, c2;
-		var creator = function(data){
-			var n = dojo.doc().createElement("div");
-			n.innerHTML = "Item: " + data.toString();
-			n.id = dojo.dom.getUniqueId();
-			return {node: n, data: data, types: ["text"]};
-		};
 		var init = function(){
-			c1 = new dojo.dnd2.Source(dojo.byId("container1"), null, creator);
-			c1.insertNodes(false, [1, 2, 3, 4, 5, 6, 7]);
-			c2 = new dojo.dnd2.Source(dojo.byId("container2"), null, creator);
-			c2.insertNodes(false, ["A", "B", "C", "D", "E", "F", "G"]);
+			c1 = new dojo.dnd2.Source(dojo.byId("container1"));
+			c1.insertNodes(false, [1, 2, 3, 4, 5, 6, [1, 2, 3], function(x){ return x + x; }]);
+			c2 = new dojo.dnd2.Source(dojo.byId("container2"));
+			c2.insertNodes(false, ["A", "B", "C", "D", "E", "F", {repr: function(){ return "CUSTOM!"; }}, null]);
 		};
 		dojo.addOnLoad(init);
 	</script>
 </head>
 <body>
-	<p>Dojo DnD test</p>
+	<h1>Dojo DnD test</h1>
+	<p>Elements of both sources/targets were created dynamically.</p>
+	<p>Following selection modes are supported by default:</p>
+	<ul>
+		<li>Simple click &mdash; selects a single element, all other elements will be unselected.</li>
+		<li>Ctrl+click &mdash; toggles a selection state of an element.</li>
+		<li>Shift+click &mdash; selects a range of element from the previous anchor to the current element.</li>
+		<li>Ctrl+Shift+click &mdash; adds a range of element from the previous anchor to the current element.</li>
+	</ul>
 	<p id="container1" class="container"></p>
 	<p id="container2" class="container"></p>
 </body>

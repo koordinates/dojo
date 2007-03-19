@@ -12,7 +12,7 @@
 		.dojo_dnd_item_over.dojo_dnd_item_anchor   {background: #ec8;}
 	</style>
 	<script type="text/javascript">
-		var djConfig = { isDebug: true /* , debugAtAllCosts: true */ };
+		var djConfig = {isDebug: true};
 	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
 	<script type="text/javascript">dojo.require("dojo.debug.console");</script>
@@ -20,7 +20,6 @@
 	<script type="text/javascript" src="../../src/dnd2/selector.js"></script>
 	<script type="text/javascript">
 		dojo.require("dojo.dnd2.selector");
-		// dojo.hostenv.writeIncludes();
 	</script>
 	<script type="text/javascript">
 		var c1, c2, c3, c4, c5;
@@ -35,22 +34,35 @@
 	</script>
 </head>
 <body>
-	<p>Dojo DnD selector test</p>
+	<h1>Dojo DnD selector test</h1>
+	<p>Containers have a notion of a "current container", and one element can be "current". All containers on this page are selectors that allow to select elements.</p>
+	<p>Following selection modes are supported by default:</p>
+	<ul>
+		<li>Simple click &mdash; selects a single element, all other elements will be unselected.</li>
+		<li>Ctrl+click &mdash; toggles a selection state of an element.</li>
+		<li>Shift+click &mdash; selects a range of element from the previous anchor to the current element.</li>
+		<li>Ctrl+Shift+click &mdash; adds a range of element from the previous anchor to the current element.</li>
+	</ul>
+	<h2>DIV selector</h2>
+	<p>This selector can select just one element a time. It was specified during the creation time.</p>
 	<div id="container1" class="container">
 		<div>Item 1</div>
 		<div>Item 2</div>
 		<div>Item 3</div>
 	</div>
+	<h2>UL selector</h2>
 	<ul id="container2" class="container">
 		<li>Item 1</li>
 		<li>Item 2</li>
 		<li>Item 3</li>
 	</ul>
+	<h2>OL selector</h2>
 	<ol id="container3" class="container">
 		<li>Item 1</li>
 		<li>Item 2</li>
 		<li>Item 3</li>
 	</ol>
+	<h2>TABLE selector</h2>
 	<table id="container4" class="container" border="1px solid black">
 		<tr>
 			<td>A</td>
@@ -65,6 +77,8 @@
 			<td>row 3</td>
 		</tr>
 	</table>
+	<h2>P selector with SPAN elements</h2>
+	<p>Elements of this container are layed out horizontally.</p>
 	<p id="container5" class="container">
 		<span>&nbsp;Item 1&nbsp;</span>
 		<span>&nbsp;Item 2&nbsp;</span>
