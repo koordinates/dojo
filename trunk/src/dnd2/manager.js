@@ -79,7 +79,7 @@ dojo.extend(dojo.dnd2.Manager, {
 	onMouseUp: function(e){
 		if(this.avatar){
 			if(this.target && this.can_drop){
-				dojo.event.topic.publish("dnd_drop", this.source, this.nodes, this.copy);
+				dojo.event.topic.publish("dnd_drop", this.source, this.nodes, e.ctrlKey);
 			}else{
 				dojo.event.topic.publish("dnd_cancel");
 			}
