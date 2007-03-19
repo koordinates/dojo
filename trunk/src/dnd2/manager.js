@@ -3,9 +3,6 @@ dojo.provide("dojo.dnd2.manager");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
 
-dojo.require("dojo.dnd2.avatar");
-dojo.require("dojo.dnd2.target");
-
 dojo.dnd2.Manager = function(){
 	this.avatar  = null;
 	
