@@ -41,7 +41,6 @@ dojo.extend(dojo.dnd2.Avatar, {
 		this.node = false;
 	},
 	update: function(){
-		dojo.html[(this.manager.copy     ? "add" : "remove") + "Class"](this.node, "dojo_dnd_avatar_copy");
 		dojo.html[(this.manager.can_drop ? "add" : "remove") + "Class"](this.node, "dojo_dnd_avatar_can_drop");
 		// replace text
 		var t = this.node.getElementsByTagName("td");

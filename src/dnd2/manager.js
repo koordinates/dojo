@@ -48,7 +48,11 @@ dojo.extend(dojo.dnd2.Manager, {
 		dojo.html.addClass(dojo.body(), "dojo_dnd_" + (copy ? "copy" : "move"));
 	},
 	canDrop: function(flag){
-		this.can_drop = this.target && flag;
+		var can_drop = this.target && flag;
+		if(this.can_drop != can_drop){
+			this.can_drop = can_drop;
+			this.avatar.update();
+		}
 	},
 	stopDrag: function(){
 		dojo.html.removeClass(dojo.body(), "dojo_dnd_copy");
