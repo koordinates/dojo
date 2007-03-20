@@ -140,7 +140,7 @@ dojo.widget.defineWidget("dojo.widget.Repeater", dojo.widget.HtmlWidget,
 		},
 		setRow:function(/*string*/template, /*object*/myObject){
 			//template = dojo.string.substitute(template, {"index": "0"});
-			template = template.replace(/\%\{(index)\}/g, "0");
+			template = template.replace(/\$\{(index)\}/g, "0");
 			this.rowTemplate = template;
 			if(myObject == null){ myObject = {}; }
 			this.myObject = myObject;
