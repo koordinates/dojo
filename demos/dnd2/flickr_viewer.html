@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+	<title>Sort Flickr images by tags</title>
+	<style type="text/css">
+		/* application-specific settings */
+		#status						{font-weight: bold;}
+		.container					{padding: 5px; cursor: default; background: #f8f8ff;}
+		.wrap1						{float: left; width: 275px; height: 600px; overflow: auto; margin-right: 1em;}
+		.wrap2						{position: relative; width: 350px; height: 170px; overflow: auto;}
+		#container1 .name			{font-weight: bold; padding-right: 4px;}
+		#container1 .image			{padding: 5px;}
+		body.dojo_dnd_copy, body.dojo_dnd_move	{color: #888;}
+		.dojo_dnd_copy .container, .dojo_dnd_move .container	{background: #ddf;}
+		/* container-specific settings */
+		.dojo_dnd_container_		{border: 1px solid white; color: black;}
+		.dojo_dnd_container_over	{border: 1px solid black; color: black;}
+		.container.dojo_dnd_target_disabled	{background: #ccc; color: #888;}
+		/* item-specific settings */
+		.dojo_dnd_item_over			{background: #feb;}
+		.dojo_dnd_item_selected		{background: #ccf; color: #444;}
+		.dojo_dnd_item_anchor		{background: #ccf; color: black;}
+		.dojo_dnd_item_over.dojo_dnd_item_selected	{background: #ec8;}
+		.dojo_dnd_item_over.dojo_dnd_item_anchor	{background: #ec8;}
+		.dojo_dnd_item_before		{border-top:    3px solid red;}
+		.dojo_dnd_item_after		{border-bottom: 3px solid red;}
+		.dojo_dnd_horizontal .dojo_dnd_item_before		{border-top:    none;}
+		.dojo_dnd_horizontal .dojo_dnd_item_after		{border-bottom: none;}
+		.dojo_dnd_horizontal .dojo_dnd_item_before img	{border-left:  3px solid red;}
+		.dojo_dnd_horizontal .dojo_dnd_item_after img	{border-right: 3px solid red;}
+		/* avatar-specific settings */
+		.dojo_dnd_avatar			{font-size: 75%; color: black;}
+		.dojo_dnd_avatar td			{padding-left: 20px; padding-right: 4px;}
+		.dojo_dnd_avatar_header		{background: #ccc; background-repeat: no-repeat;}
+		.dojo_dnd_avatar_item		{background: #eee;}
+		.dojo_dnd_move .dojo_dnd_avatar_header	{background-image: url(images/set2_stop.png);}
+		.dojo_dnd_copy .dojo_dnd_avatar_header	{background-image: url(images/set2_stop.png);}
+		.dojo_dnd_move .dojo_dnd_avatar_can_drop .dojo_dnd_avatar_header	{background-image: url(images/set2_copy.png);}
+		.dojo_dnd_copy .dojo_dnd_avatar_can_drop .dojo_dnd_avatar_header	{background-image: url(images/set2_allow.png);}
+	</style>
+	<script type="text/javascript">
+		var djConfig = {isDebug: true};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">dojo.require("dojo.debug.console");</script>
+	<script type="text/javascript" src="../../src/dnd2/container.js"></script>
+	<script type="text/javascript" src="../../src/dnd2/selector.js"></script>
+	<script type="text/javascript" src="../../src/dnd2/source.js"></script>
+	<script type="text/javascript" src="../../src/dnd2/avatar.js"></script>
+	<script type="text/javascript" src="../../src/dnd2/manager.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.dnd2.source");
+		dojo.require("dojo.dnd2.manager");
+		
+		dojo.require("dojo.io.ScriptSrcIO");
+		
+		// our 3 image containers
+		var c1 = null, c2 = null, c3 = null;
+		
+		// The main image container creator
+		var main_creator = function(data, hint){
+			var types = [];
+			if(data.tags.search(/river/i) >= 0){ types.push("river"); }
+			if(data.tags.search(/sunset/i) >= 0){ types.push("sunset"); }
+			var node;
+			if(hint == "avatar"){
+				node = dojo.doc().createElement("span");
+				node.innerHTML = "<img src='" + data.media.m.replace(/_m\./, "_s.") + "'/>";
+			}else{
+				var t = ["<table border='0' cellpadding='0' cellspacing='0' width='250'>"];
+				t.push("<tr><td colspan='2' class='image' align='center' width='250'><img src='" + data.media.m + "'/></td></tr>");
+				t.push("<tr><td class='name' valign='top'>Title:</td><td class='value'><a href='" + data.link + "' target='_blank'>" + data.title + "</a></td></tr>");
+				t.push("<tr><td class='name' valign='top'>Author:</td><td class='value'>" + data.author + "</td></tr>");
+				t.push("<tr><td class='name' valign='top'>Tags:</td><td class='value'>" + data.tags + "</td></tr>");
+				t.push("</table>");
+				node = dojo.doc().createElement("div");
+				node.innerHTML = t.join("");
+			}
+			node.id = dojo.dom.getUniqueId();
+			return {node: node, data: data, types: types};
+		};
+		
+		// The band image container creator
+		var band_creator = function(data, hint){
+			var types = [];
+			if(data.tags.search(/river/i) >= 0){ types.push("river"); }
+			if(data.tags.search(/sunset/i) >= 0){ types.push("sunset"); }
+			var src = data.media.m.replace(/_m\./, "_s.");
+			var node = dojo.doc().createElement("span");
+			node.innerHTML = "<img src='" + src + "'/>";
+			node.id = dojo.dom.getUniqueId();
+			return {node: node, data: data, types: types};
+		};
+		
+		// Flickr's JSONP function
+		var jsonFlickrFeed = function(data){
+			if(!data.items || !data.items.length){
+				dojo.byId("status").innerHTML = "Flickr didn't return any images";
+				return;
+			}
+			dojo.byId("status").innerHTML = data.items.length + " images were retrieved";
+			// initialize sources
+			if(c1){
+				c1.selectAll().deleteSelectedNodes();
+			}else{
+				c1 = new dojo.dnd2.Source(dojo.byId("container1"), null, main_creator, false, true, ["river", "sunset"]);
+			}
+			if(c2){
+				c2.selectAll().deleteSelectedNodes();
+			}else{
+				c2 = new dojo.dnd2.Source(dojo.byId("container2"), null, band_creator, false, true, ["river"], true);
+			}
+			if(c3){
+				c3.selectAll().deleteSelectedNodes();
+			}else{
+				c3 = new dojo.dnd2.Source(dojo.byId("container3"), null, band_creator, false, true, ["sunset"], true);
+			}
+			// populate the main source
+			c1.insertNodes(false, data.items);
+		};
+		
+		var init = function(){
+			// ask Flickr for images
+			dojo.io.bind({
+				url: "http://api.flickr.com/services/feeds/photos_public.gne",
+				content: {tags: "river,sunset", tagmode: "any", format: "json"},
+				transport: "ScriptSrcTransport",
+				mimetype: "text/javascript",
+				preventCache: true,
+				error: function(){
+					dojo.byId("status").innerHTML = "Flickr failed to return images";
+				}
+			});
+		};
+		
+		dojo.addOnLoad(init);
+	</script>
+</head>
+<body>
+	<h1>Sort Flickr images by tags</h1>
+	<p>This simple web application retrieves public images from Flickr that were tagged either as "river" or "sunset".
+	You can copy/move images in different containers according to their tags.</p>
+	<p>Following selection modes are supported by default:</p>
+	<ul>
+		<li>Simple click &mdash; selects a single element, all other elements will be unselected.</li>
+		<li>Ctrl+click &mdash; toggles a selection state of an element.</li>
+		<li>Shift+click &mdash; selects a range of element from the previous anchor to the current element.</li>
+		<li>Ctrl+Shift+click &mdash; adds a range of element from the previous anchor to the current element.</li>
+	</ul>
+	<p>Following drop modes are supported by default:</p>
+	<ul>
+		<li>Simple drop &mdash; moves elements to the valid target removing them from the source. It can be used to reorganize elements within a single source/target.</li>
+		<li>Ctrl+drop &mdash; copies elements to the valid target.</li>
+	</ul>
+	<p>Now scroll down and start dragging and dropping!</p>
+	<p>Status: <span id="status">retrieving a list of Flickr images...</span></p>
+	<div class="wrap1"><div id="container1" class="container"></div></div>
+	<p>Tag: river</p>
+	<div class="wrap2"><div id="container2" class="container"></div></div>
+	<p>Tag: sunset</p>
+	<div class="wrap2"><div id="container3" class="container"></div></div>
+</body>
+</html>
