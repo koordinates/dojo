@@ -114,6 +114,7 @@ function(node, filter, creator){
 				this.parent.appendChild(t.node);
 			}
 		}
+		return this;
 	},
 	onOutEvent: function(){},
 	// utilities

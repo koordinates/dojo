@@ -166,6 +166,7 @@ function(node, filter, creator, singular){
 			this.anchor = null;
 		}
 		this.selection = {};
+		return this;
 	},
 	selectAll: function(){
 		if(this.anchor){
@@ -180,6 +181,7 @@ function(node, filter, creator, singular){
 				this.selection[n.id] = 1;
 			}
 		}
+		return this;
 	},
 	deleteSelectedNodes: function(){
 		var empty = {};
@@ -192,6 +194,7 @@ function(node, filter, creator, singular){
 		}
 		this.anchor = null;
 		this.selection = {};
+		return this;
 	},
 	insertNodes: function(add_selected, data, before, anchor){
 		var old_creator = this.node_creator;
@@ -206,5 +209,6 @@ function(node, filter, creator, singular){
 		}
 		dojo.dnd2.Selector.superclass.insertNodes.call(this, data, before, anchor);
 		this.node_creator = old_creator;
+		return this;
 	}
 });
