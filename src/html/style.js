@@ -217,8 +217,8 @@ if (dojo.render.html.ie) {
 	dojo.html.getComputedStyle = function(/*HTMLElement|String*/node, /*String*/property, /*String*/value) {
 		// summary
 		// Get the computed style value for style "property" on "node" (IE).
-		node = dojo.byId(node);  // FIXME: remove ability to access nodes by id for this time-critical function
-		if(!node || !node.style){return value;}
+		node = dojo.byId(node); // FIXME: remove ability to access nodes by id for this time-critical function
+		if(!node || !node.currentStyle){return value;}
 		// FIXME: standardize on camel-case input to improve speed
 		return node.currentStyle[dojo.html.toCamelCase(property)]; // String
 	}
