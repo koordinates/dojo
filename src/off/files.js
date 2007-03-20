@@ -107,6 +107,19 @@ dojo.off.files = {
 		dojo.off.files._finishedCallback = finishedCallback;
 		for(var i = 0; i < this.listOfURLs.length; i++){
 			var url = this.listOfURLs[i];
+			
+			// Add 'browserbust' to the end to break the browser cache
+			// and force this file to be reloaded through the local proxy
+			if(dojo.off.requireOfflineCache == true){
+				if(url.indexOf("?") == -1){
+					url += "?";
+				}else{
+					url += "&";
+				}
+				
+				url += "browserbust=" + new Date().getTime();
+			}
+			
 			// Firefox can't handle many XHR requests done quickly; do
 			// them on a slight timeout so Firefox doesn't get confused
 			window.setTimeout("dojo.off.files._loadFile('" + url + "')", 10);

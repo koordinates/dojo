@@ -532,8 +532,6 @@ httpClientReplayNeeded(HTTPConnectionPtr serverConnection){
     HTTPConnectionPtr clientConnection = NULL;
     int correctMethod = 0;
 
-    printf("httpClientReplayNeeded\n");
-
     /* get our request and connection objects if present */
     if(serverConnection && serverConnection->server){
 		serverRequest = serverConnection->server->request;
@@ -571,7 +569,6 @@ httpClientReplayNeeded(HTTPConnectionPtr serverConnection){
         return 1;
 	}
 	
-    printf("Replay not needed2\n");
 	return 0;	
 }
 
@@ -873,6 +870,10 @@ httpClientRequest(HTTPRequestPtr request, AtomPtr url)
 
     assert(!request->chandler);
     assert(connection->reqbuf);
+    
+    /* if there is a "browserbust=" string on this
+       URL then remove it. */
+    url = removeBrowserBust(url);
 
     i = httpParseHeaders(1, url,
                          connection->reqbuf, connection->reqbegin, request,
@@ -2282,4 +2283,45 @@ httpServeObjectStreamHandler2(int status,
                               StreamRequestPtr srequest)
 {
     return httpServeObjectStreamHandlerCommon(2, status, event, srequest);
+}
+
+/** Removes a possible '&browserbust=' string followed by a time stamp
+    on a given URL; this is necessary to 'bust' the browser's cache but
+    not the proxy's cache under some conditions to refresh the UI resources
+    for an offline web application. */
+AtomPtr removeBrowserBust(AtomPtr url)
+{
+    char buffer[4096];
+    char *paramLoc = NULL;
+    unsigned int end = 0;
+    
+    assert(url != NULL);
+       
+    if(urlIsLocal(url->string, url->length))
+        return url;
+        
+    /* prevent a buffer overflow attack */
+    if(strlen(url->string) >= 4095)
+        return url;
+       
+    /* is our browserbust=(number) even in this string? */
+    paramLoc = strstr(url->string, "&browserbust=");
+    
+    if(paramLoc == NULL)
+        paramLoc = strstr(url->string, "?browserbust=");
+        
+    if(paramLoc == NULL)
+        return url;
+    
+    /* convert this into an actual location now using
+       pointer arithmetic */
+    end = paramLoc - url->string;
+    
+    strncpy(buffer, url->string, end);
+    buffer[end] = '\0';
+    
+    printf("url after removing browser bust: %s\n", buffer);
+    
+    releaseAtom(url);
+    return internAtom(buffer);
 }
