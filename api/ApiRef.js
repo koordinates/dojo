@@ -66,7 +66,7 @@
 
 dojo.provide("api.ApiRef");
 
-dojo.require("dojo.profile.ProfileHelper");
+dojo.require("api.ProfileHelper");
 dojo.require("dojo.debug.console");
 
 dojo.require("dojo.io.*");
