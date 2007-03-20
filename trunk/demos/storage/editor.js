@@ -292,13 +292,13 @@ var Moxie = {
 	_loadOnline: function(key){
 		// get the value from the server
 		var self = this;
-		// add 'cachebust' to the URL to make sure we get a fresh
+		// add 'proxybust' to the URL to make sure we get a fresh
 		// copy that is not returned from either the browser's cache
-		// or the local offline proxy's cache -- cachebust is a magic
+		// or the local offline proxy's cache -- proxybust is a magic
 		// string that will bypass the local proxy, and also trick the
 		// browser
 		var url = "/moxie/" + encodeURIComponent(key) 
-					+ "?cachebust=" + new Date().getTime(); 
+					+ "?proxybust=" + new Date().getTime(); 
 		var bindArgs = {
 			url:	 url,
 			sync:		false,
@@ -389,13 +389,13 @@ var Moxie = {
 	
 	_downloadData: function(){
 		var self = this;
-		// add 'cachebust' to the URL to make sure we get a fresh
+		// add 'proxybust' to the URL to make sure we get a fresh
 		// copy that is not returned from either the browser's cache
-		// or the local offline proxy's cache -- cachebust is a magic
+		// or the local offline proxy's cache -- proxybust is a magic
 		// string that will bypass the local proxy, and also trick the
 		// browser
 		var bindArgs = {
-			url:	 "/moxie/download?cachebust=" + new Date().getTime(),
+			url:	 "/moxie/download?proxybust=" + new Date().getTime(),
 			sync:		false,
 			mimetype:	"text/javascript",
 			headers:	{ "Accept" : "text/javascript" },
