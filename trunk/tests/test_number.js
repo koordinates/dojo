@@ -1,4 +1,4 @@
-// can't set djConfig.extraLocale before bootstrapping unit tests, so directly load resources here for specific locales: 
+// can't set djConfig.extraLocale before bootstrapping unit tests, so directly load resources here for specific locales:
 
 //TODO: move all extra locale references out into separate test file
 var partLocaleList = (["en-us", "fr-fr", "en-in"]);
