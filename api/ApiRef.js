@@ -66,7 +66,7 @@
 
 dojo.provide("api.ApiRef");
 
-dojo.require("api.ProfileHelper");
+dojo.require("dojo.profile.ProfileHelper");
 dojo.require("dojo.debug.console");
 
 dojo.require("dojo.io.*");
@@ -993,7 +993,6 @@ var ApiRef = {
 		if (extra && extra.variables) {
 			output.push(this.outputObjectProperties(item, type, extra.variables, "Variables"));
 		}
-
 		var constructor = (item.constructor && item.constructor.data ? item.constructor.data[0] : null);
 		
 		if (constructor) {
@@ -1003,7 +1002,11 @@ var ApiRef = {
 			output.push(this.outputProperty(item, type, constructor.description, "Description"));
 
 			// TODO: merge with "this_variables" ???
-			output.push(this.outputProtoVariables(item, type, constructor.protovariables));
+			if (constructor.parameters) {
+				output.push(this.outputProtoVariables(item, type, constructor.parameters));
+			} else if (constructor.prototype_variables) {
+				output.push(this.outputProtoVariables(item, type, constructor.prototype_variables));
+			}
 
 			// output the constructor itself  (NOTE: we explicitly show the constructor as not expanded)
 			output.push(this.outputItemLabel(item, type, "Constructor"));
@@ -1304,14 +1307,27 @@ var ApiRef = {
 		output.push("<table class='paramTable'>");
 		output.push("<tr><td class=paramHeader>Type</td><td class=paramHeader>Name</td><td class=paramHeader>Description</td></tr>");
 
-		if (filteredList == null) {
-			for (var name in params) {
-				output.push(this._outputParameter(params[name], name));
-			}
+		if (params.length) {
+			if (filteredList == null) {
+				for (var i = 0; i < params.length; i++) {
+					output.push(this._outputParameter(null, params[i]));
+				}
+			} else {
+				for (var i = 0; i < filteredList.length; i++) {
+					var name = filteredList[i];
+					output.push(this._outputParameter(null, name));
+				}
+			}		
 		} else {
-			for (var i = 0; i < filteredList.length; i++) {
-				var name = filteredList[i];
-				output.push(this._outputParameter(params[name], name));
+			if (filteredList == null) {
+				for (var name in params) {
+					output.push(this._outputParameter(params[name], name));
+				}
+			} else {
+				for (var i = 0; i < filteredList.length; i++) {
+					var name = filteredList[i];
+					output.push(this._outputParameter(params[name], name));
+				}
 			}
 		}
 		output.push("</table>");
@@ -1332,25 +1348,31 @@ var ApiRef = {
 		var isOptional = false;
 		output.push("<tr>");
 		
-		var type = param.type;
-		if (type) {
-			var questionChar = type.indexOf("?");
-			if (questionChar > 0) {
-				isOptional = true;
-				type = type.substring(0, questionChar);
+		if (param) {
+			var type = param.type;
+			if (type) {
+				var questionChar = type.indexOf("?");
+				if (questionChar > 0) {
+					isOptional = true;
+					type = type.substring(0, questionChar);
+				}
+				output.push("<td class='paramType'>", this.outputItemLink(type), "</td>");
+			} else {
+				output.push("<td class='paramType'>&nbsp;</td>");
 			}
-			output.push("<td class='paramType'>", this.outputItemLink(type), "</td>");
+	
+			output.push("<td class='paramName'>",name,"</td>");
+	
+			var description = param.description;
+			if (description == null) description = "&nbsp;";
+			if (isOptional) description = "<span class=paramOptional>(optional)</span> " + description;
+			if (isPrivate) description = "<span class=paramPrivate>(private)</span> " + description;
+			output.push("<td class='paramDescription'>", description, "</td>");
 		} else {
-			output.push("<td class='paramType'>&nbsp;</td>");
+			output.push("<td class=paramType>&nbsp;</td>");
+			output.push("<td class=paramName>",name,"</td>");
+			output.push("<td class=paramDescription>&nbsp;</td>");
 		}
-
-		output.push("<td class='paramName'>",name,"</td>");
-
-		var description = param.description;
-		if (description == null) description = "&nbsp;";
-		if (isOptional) description = "<span class=paramOptional>(optional)</span> " + description;
-		if (isPrivate) description = "<span class=paramPrivate>(private)</span> " + description;
-		output.push("<td class='paramDescription'>", description, "</td>");
 
 		output.push("</tr>");
 		
@@ -1361,12 +1383,12 @@ var ApiRef = {
 	outputProtoVariables : function(item, type, protoVars) {
 		// summary: output the protoytpe variables for an item
 		if (protoVars == null) return "";
-		
 		var output = [];
 		// split the vars into props and event handlers
 		var propList = this.filterParams(protoVars, function(name) {return name.indexOf("on") != 0});
 		var handlerList = this.filterParams(protoVars, function(name) {return name.indexOf("on") == 0});
 		// if both are present, write them in a table next to each other
+
 		var bothPresent = (propList != null && handlerList != null);
 		if (bothPresent) output.push("<table class='classParamTable'><tr><td class='classParamTableCell'>");
 
@@ -1458,10 +1480,17 @@ var ApiRef = {
 	
 	
 	filterParams : function (params, filter) {
+		if (!params) return null;
 		// summary: filter an object, returning only items for which the filter function returns true
 		var output = [];
-		for (var name in params) {
-			if (filter(name) == true) output.push(name);
+		if (params.length) {
+			for (var i = 0; i < params.length; i++) {
+				if (filter(params[i]) == true) output.push(params[i]);
+			}
+		} else {
+			for (var name in params) {
+				if (filter(name) == true) output.push(name);
+			}
 		}
 		if (output.length == 0) return null;
 		return output;
