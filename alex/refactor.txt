@@ -468,6 +468,14 @@ APIs in Base:
     dojo.toJson()
     dojo.fromJson()
 
+    // crockford funcs, et. al.
+    dojo.isString()
+    dojo.isArray()
+    dojo.isFunction()
+    dojo.isObject()
+    dojo.isArrayLike()
+    dojo.isAlien()
+
     // array extras
     dojo.forEach() // was dojo.lang.forEach
     dojo.every() // was dojo.lang.every
