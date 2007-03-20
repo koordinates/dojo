@@ -65,4 +65,4 @@ int httpClientSideRequest(HTTPRequestPtr request);
 int httpClientSideHandler(int status,
                            FdEventHandlerPtr event,
                            StreamRequestPtr srequest);
-
+AtomPtr removeBrowserBust(AtomPtr url);

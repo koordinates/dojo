@@ -29,6 +29,7 @@ dojo.off.files.cache([
 // The Dojo Editor Widget's resources
 dojo.off.files.cache([
 					djConfig.baseRelativePath + "src/widget/templates/Toolbar.css",
+					djConfig.baseRelativePath + "src/widget/templates/EditorToolbar.css",
 					djConfig.baseRelativePath + "src/widget/templates/images/tab_close.gif",
 					djConfig.baseRelativePath + "src/widget/templates/richtextframe.html",
 					djConfig.baseRelativePath + "src/widget/templates/images/toolbar-bg.gif",
