@@ -55,8 +55,8 @@
 					var salutations = dojo.i18n.getLocalization("tests.i18n", "salutations", loc);
 					var language_as_english = salutations_en[loc];
 					var language_as_native = salutations[loc];
-					var hello_dojo = dojo.string.substituteParams(salutations.hello_dojo, salutations);
-					if (!dojo.i18n.isLTR(loc)) {
+					var hello_dojo = dojo.string.substitute(salutations.hello_dojo, salutations);
+					if (!dojo.i18n.isLeftToRight(loc)) {
 						var RLE = "\u202b";
 						var PDF = "\u202c";
 						hello_dojo = RLE + hello_dojo + PDF;					
