@@ -672,8 +672,32 @@ httpMakeRequest()
 }
 
 void
-httpDestroyRequest(HTTPRequestPtr request)
+httpDestroyRequest(HTTPRequestPtr request, int destroyQueuedRequests)
 {
+    /* FIXME: Is this safe to destroy request->next's? 
+       We only do it if we have faulted on the network, moved
+       offline, and are replaying the request against the
+       local offline cache. -- Brad Neuberg */
+    if(destroyQueuedRequests && request->next != NULL){
+        if(request->next->connection != NULL){
+            httpDestroyConnection(request->next->connection);
+            request->next->connection = NULL;
+        }
+        
+        if(request->request != NULL){
+            httpDestroyRequest(request->request, 1);
+            request->request = NULL;
+        }
+        
+        if(request->next->request != NULL){
+            httpDestroyRequest(request->next->request, 1);
+            request->next->request = NULL;
+        }
+        
+        httpDestroyRequest(request->next, 1);
+        request->next = NULL;
+    }
+    
     if(request->object)
         releaseObject(request->object);
     if(request->condition)

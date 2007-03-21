@@ -196,7 +196,7 @@ httpClientFinish(HTTPConnectionPtr connection, int s)
             request->object = NULL;
         }
         httpDequeueRequest(connection);
-        httpDestroyRequest(request);
+        httpDestroyRequest(request, 0);
         request = NULL;
 
     }
@@ -266,7 +266,7 @@ httpClientFinish(HTTPConnectionPtr connection, int s)
         if(request->object && request->object->requestor == request)
             request->object->requestor = NULL;
         httpDequeueRequest(connection);
-        httpDestroyRequest(request);
+        httpDestroyRequest(request, 0);
     }
     httpConnectionDestroyReqbuf(connection);
     if(connection->timeout)
@@ -614,8 +614,10 @@ httpClientReplay(HTTPConnectionPtr serverConnection){
        serverRequest->object = NULL; /* our cached object */
        serverRequest->request = NULL; /* our client request */
     }
+    
     /* discard our request object representing communication with the server */
-    httpDestroyRequest(serverRequest);
+    /* clean up our request/connection objects now */
+    httpDestroyRequest(serverRequest, 1);
     if(serverConnection->server){
         serverConnection->server->request = NULL;
     }
