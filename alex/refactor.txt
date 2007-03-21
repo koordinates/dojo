@@ -205,9 +205,8 @@ be put in place:
                 xip_client.html
                 xip_server.html
 
-        And users will include common-case functionality with:
-
-            dojo.require("dojo.io");
+        And users will receive common-case functionality in the base Dojo
+        package.
 
         While io.js may indeed continue in the tradition of __package__.js and
         include environment-specific implementations of the APIs it exposes
@@ -269,10 +268,10 @@ and the reality that they expose HTTP verbs:
 
     dojo.io.bind() -->
 
-        // dojo/io.js
-        dojo.io.get()     // xhrGet ?
-        dojo.io.post()    // xhrPost ?
-        dojo.io.rawPost() // xhrRawPost ?
+        // _base/io.js
+        dojo.xhrGet()
+        dojo.xhrPost()
+        dojo.xhrRwPost()
 
         // dojo/io/iframe.js
         dojo.io.iframe.get()
@@ -320,21 +319,21 @@ and the reality that they expose HTTP verbs:
 
     dojo.io.encodeForm -->
 
-        dojo.io.formToQuery()
+        dojo.formToQuery()
 
     dojo.io.argsFromMap() -->
 
-        dojo.io.mapToQuery()
+        dojo.mapToQuery()
 
     dojo.io.FormBind -->
 
-        dojo.io.wrapForm(formNode)
+        dojo.wrapForm(formNode)
 
         wrapForm will need to be moved into its own file.
 
     dojo.io.cookie.* --> 
     
-        dojo.cookie.*
+        dojo.cookie()
 
         the getCookie() and setCookie() methods will be removed. A one and two
         argument version of dojo.cookie() will be introduced in their place.
@@ -350,9 +349,9 @@ and the reality that they expose HTTP verbs:
         (plural) will be removed.
 
     // new I/O functions:
-    dojo.io.formToObject(formNode)
-    dojo.io.formToJson(formNode)
-    dojo.io.queryToObject(str)
+    dojo.formToObject(formNode)
+    dojo.formToJson(formNode)
+    dojo.queryToObject(str)
 
 
 dojo.uri:
