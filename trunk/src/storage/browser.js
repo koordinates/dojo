@@ -483,13 +483,12 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	},
 	
 	getResourceList: function(){ /* Array[] */
-		var results = 
-				[
-					djConfig.baseRelativePath + "storage_dialog.swf",
-					djConfig.baseRelativePath + "Storage_version6.swf",
-					djConfig.baseRelativePath + "Storage_version8.swf",
-					djConfig.baseRelativePath + "flash6_gateway.swf"
-				];
+		var swfloc6 = dojo.uri.moduleUri("dojo", "../Storage_version6.swf").toString();
+		var swfloc8 = dojo.uri.moduleUri("dojo", "../Storage_version8.swf").toString();
+		
+		var results = dojo.flash.info.getResourceList(swfloc6, swfloc8);
+		
+		results.push(djConfig.baseRelativePath + "storage_dialog.swf");
 				
 		return results;
 	},

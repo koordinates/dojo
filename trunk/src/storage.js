@@ -448,4 +448,34 @@ dojo.storage.manager = new function(){
 			this._onLoadListeners[i]();
 		}
 	};
+	
+	this.getResourceList = function(){
+		// summary:
+		//	Returns a list of whatever resources are necessary for
+		//	storage providers to work. 
+		// description:
+		//	This will return all files
+		//	needed by all storage providers for this particular
+		//	environment type. For example, if we are in the
+		//	browser environment, then this will return the hidden
+		//	SWF files needed by the FlashStorageProvider, even if
+		//	we don't need them for the particular browser we are
+		//	working within. This is meant to faciliate Dojo Offline,
+		//	which must retrieve all resources we need offline into
+		//	the offline cache -- we retrieve everything needed, in case
+		//	another browser that requires different storage mechanisms
+		//	hits the local offline cache. For example, if we were to 
+		//	sync against Dojo Offline on Firefox 2, then we would not
+		//	grab the FlashStorageProvider resources needed for Safari.
+		var results = new Array();
+		for(var i = 0; i < dojo.storage.manager._providers.length; i++){
+			var currentProvider = dojo.storage.manager._providers[i];
+			var resources = currentProvider.getResourceList();
+			for(var j = 0; j < resources.length; j++){
+				results[results.length] = resources[j];
+			}
+		}
+		
+		return results;
+	}
 };
