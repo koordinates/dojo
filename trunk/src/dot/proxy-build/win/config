@@ -80,6 +80,11 @@ diskCacheRoot = /.offline-cache
 # disableIndexing = false
 # disableServersList = false
 
+# Uncomment this if you want to enable offline support for web
+# applications
+
+disableOfflineSupport = false;
+
 
 ### Domain Name System
 ### ******************
