@@ -600,20 +600,13 @@ httpClientReplay(HTTPConnectionPtr serverConnection){
    
     /* go offline */
     goOffline();
-
+    
     /* free up our old connection handler created when we thought
-       we would be talking on the network */
+           we would be talking on the network */
     if(clientRequest->chandler){
        unregisterConditionHandler(clientRequest->chandler);
        clientRequest->chandler = NULL;
     } 
-
-    /* clean up server connection resources */
-    if(serverRequest){
-       /* keep these around for replaying -- don't free them */
-       serverRequest->object = NULL; /* our cached object */
-       serverRequest->request = NULL; /* our client request */
-    }
     
     /* discard our request object representing communication with the server */
     /* clean up our request/connection objects now */

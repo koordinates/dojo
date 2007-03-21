@@ -32,7 +32,7 @@ int clientTimeout = 120;
    requests before timing out, possibly attempting
    to replay the client request offline against our
    local cache. */
-int offlineTimeout = 5;
+int offlineTimeout = 10;
 
 #ifdef NO_OFFLINE_SUPPORT
 int serverTimeout = 90;
@@ -47,7 +47,7 @@ int serverTimeout = 90;
    web application quickly when offline versus testing the 
    network.
 */
-int serverTimeout = 5;
+int serverTimeout = 10;
 #endif
 
 int bigBufferSize = (32 * 1024);
@@ -672,30 +672,31 @@ httpMakeRequest()
 }
 
 void
-httpDestroyRequest(HTTPRequestPtr request, int destroyQueuedRequests)
+httpDestroyRequest(HTTPRequestPtr request, int destroyEverything)
 {
-    /* FIXME: Is this safe to destroy request->next's? 
-       We only do it if we have faulted on the network, moved
-       offline, and are replaying the request against the
-       local offline cache. -- Brad Neuberg */
-    if(destroyQueuedRequests && request->next != NULL){
-        if(request->next->connection != NULL){
-            httpDestroyConnection(request->next->connection);
-            request->next->connection = NULL;
-        }
+    if(destroyEverything){
+        /* free up our old connection handler created when we thought
+           we would be talking on the network */
+        if(request->chandler){
+           unregisterConditionHandler(request->chandler);
+           request->chandler = NULL;
+        } 
         
-        if(request->request != NULL){
-            httpDestroyRequest(request->request, 1);
-            request->request = NULL;
-        }
+        request->request = NULL;
         
-        if(request->next->request != NULL){
-            httpDestroyRequest(request->next->request, 1);
-            request->next->request = NULL;
-        }
+        /* FIXME: Is this safe to destroy request->next's? 
+           We only do it if we have faulted on the network, moved
+           offline, and are replaying the request against the
+           local offline cache. -- Brad Neuberg */        
+        if(request->next != NULL){
+            if(request->next->connection != NULL){
+                httpDestroyConnection(request->next->connection);
+                request->next->connection = NULL;
+            }
         
-        httpDestroyRequest(request->next, 1);
-        request->next = NULL;
+            httpDestroyRequest(request->next, 1);
+            request->next = NULL;
+        }
     }
     
     if(request->object)

@@ -122,7 +122,7 @@ dojo.off.files = {
 			
 			// Firefox can't handle many XHR requests done quickly; do
 			// them on a slight timeout so Firefox doesn't get confused
-			window.setTimeout("dojo.off.files._loadFile('" + url + "')", 10);
+			window.setTimeout("dojo.off.files._loadFile(\"" + url + "\")", 10);
 		}	
 	},
 	
