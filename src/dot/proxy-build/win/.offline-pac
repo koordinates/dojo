@@ -1,12 +1,3 @@
 function FindProxyForURL(url, host){
-   if(/proxybust/.test(url)){
-      return "DIRECT";
-   }
-
-   if(shExpMatch(url, "http://codinginparadise.org*")
-		){
-      return "PROXY 127.0.0.1:8123; DIRECT";
-   }else{
-      return "DIRECT";
-   }
+   return "DIRECT";
 }
