@@ -9,18 +9,18 @@ dojo.require("dojo.dnd2.manager");
 
 /*
 	Container property:
-		"horizontal"- if this is the horizontal container
+		"Horizontal"- if this is the horizontal container
 	Source states:
 		""			- normal state
-		"moved"		- this source is being moved
-		"copied"	- this source is being copied
+		"Moved"		- this source is being moved
+		"Copied"	- this source is being copied
 	Target states:
 		""			- normal state
-		"disabled"	- the target cannot accept an avatar
+		"Disabled"	- the target cannot accept an avatar
 	Target anchor state:
 		""			- item is not selected
-		"before"	- insert point is before the anchor
-		"after"		- insert point is after the anchor
+		"Before"	- insert point is before the anchor
+		"After"		- insert point is after the anchor
 */
 
 dojo.declare("dojo.dnd2.Source", dojo.dnd2.Selector, 
@@ -44,10 +44,10 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 	this.before = true;
 	// states
 	this.source_state  = "";
-	dojo.html.addClass(this.node, "dojo_dnd_source_");
+	dojo.html.addClass(this.node, "dojoDndSource");
 	this.target_state  = "";
-	dojo.html.addClass(this.node, "dojo_dnd_target_");
-	if(horizontal){ dojo.html.addClass(this.node, "dojo_dnd_horizontal"); }
+	dojo.html.addClass(this.node, "dojoDndTarget");
+	if(horizontal){ dojo.html.addClass(this.node, "dojoDndHorizontal"); }
 	// set up events
 	dojo.event.topic.subscribe("dnd_source_over", this, "onDndSourceOver");
 	dojo.event.topic.subscribe("dnd_start",  this, "onDndStart");
@@ -109,11 +109,11 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 	},
 	onDndStart: function(source, nodes, copy){
 		if(this.is_source){
-			this.changeState("source", this == source ? (copy ? "copied" : "moved") : "");
+			this.changeState("Source", this == source ? (copy ? "Copied" : "Moved") : "");
 		}
 		if(this.accept){
 			var accepted = this.checkAcceptance(source, nodes);
-			this.changeState("target", accepted ? "" : "disabled");
+			this.changeState("Target", accepted ? "" : "Disabled");
 			if(accepted){
 				dojo.dnd2.manager().overSource(this);
 			}
@@ -122,7 +122,7 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 	},
 	onDndDrop: function(source, nodes, copy){
 		do{ //break box
-			if(this.container_state != "over"){ break; }
+			if(this.container_state != "Over"){ break; }
 			var old_creator = this.node_creator;
 			if(this != source || copy){
 				this.selectNone();
@@ -150,8 +150,8 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 		}
 		this.before = true;
 		this.is_dragging = false;
-		this.changeState("source", "");
-		this.changeState("target", "");
+		this.changeState("Source", "");
+		this.changeState("Target", "");
 	},
 	// methods
 	onOutEvent: function(){
@@ -185,21 +185,21 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 	markTargetAnchor: function(before){
 		if(this.current == this.target_anchor && this.before == before){ return; }
 		if(this.target_anchor){
-			this.removeItemClass(this.target_anchor, this.before ? "before" : "after");
+			this.removeItemClass(this.target_anchor, this.before ? "Before" : "After");
 		}
 		this.target_anchor = this.current;
 		this.before = before;
 		if(this.target_anchor){
-			this.addItemClass(this.target_anchor, this.before ? "before" : "after");
+			this.addItemClass(this.target_anchor, this.before ? "Before" : "After");
 		}
 	},
 	unmarkTargetAnchor: function(){
 		if(!this.target_anchor){ return; }
-		this.removeItemClass(this.target_anchor, this.before ? "before" : "after");
+		this.removeItemClass(this.target_anchor, this.before ? "Before" : "After");
 		this.target_anchor = null;
 		this.before = true;
 	},
 	markDndStatus: function(copy){
-		this.changeState("source", copy ? "copied" : "moved");
+		this.changeState("Source", copy ? "Copied" : "Moved");
 	}
 });

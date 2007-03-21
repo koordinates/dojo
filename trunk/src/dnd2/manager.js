@@ -45,7 +45,7 @@ dojo.extend(dojo.dnd2.Manager, {
 		dojo.event.topic.publish("dnd_start", source, nodes, copy);
 		dojo.event.connect(dojo.doc(), "onmousemove", this, "onMouseMove");
 		dojo.event.connect(dojo.doc(), "onmouseup",   this, "onMouseUp");
-		dojo.html.addClass(dojo.body(), "dojo_dnd_" + (copy ? "copy" : "move"));
+		dojo.html.addClass(dojo.body(), "dojoDnd" + (copy ? "Copy" : "Move"));
 	},
 	canDrop: function(flag){
 		var can_drop = this.target && flag;
@@ -55,8 +55,8 @@ dojo.extend(dojo.dnd2.Manager, {
 		}
 	},
 	stopDrag: function(){
-		dojo.html.removeClass(dojo.body(), "dojo_dnd_copy");
-		dojo.html.removeClass(dojo.body(), "dojo_dnd_move");
+		dojo.html.removeClass(dojo.body(), "dojoDndCopy");
+		dojo.html.removeClass(dojo.body(), "dojoDndMove");
 		dojo.event.disconnect(dojo.doc(), "onmousemove", this, "onMouseMove");
 		dojo.event.disconnect(dojo.doc(), "onmouseup",   this, "onMouseUp");
 		this.avatar.destroy();
@@ -76,7 +76,7 @@ dojo.extend(dojo.dnd2.Manager, {
 				this.copy = e.ctrlKey;
 				this.source.markDndStatus(this.copy);
 				this.updateAvatar();
-				dojo.html.replaceClass(dojo.body(), "dojo_dnd_" + (this.copy ? "copy" : "move"), "dojo_dnd_" + (this.copy ? "move" : "copy"));
+				dojo.html.replaceClass(dojo.body(), "dojoDnd" + (this.copy ? "Copy" : "Move"), "dojoDnd" + (this.copy ? "Move" : "Copy"));
 			}
 		}
 	},

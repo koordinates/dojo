@@ -8,10 +8,10 @@ dojo.require("dojo.html.style");
 /*
 	Container states:
 		""		- normal state
-		"over"	- mouse over a container
+		"Over"	- mouse over a container
 	Container item states:
 		""		- normal state
-		"over"	- mouse over a container item
+		"Over"	- mouse over a container item
 */
 
 dojo.declare("dojo.dnd2.Container", null, 
@@ -26,7 +26,7 @@ function(node, filter, creator){
 	this.parent = node;
 	// states
 	this.container_state = "";
-	dojo.html.addClass(node, "dojo_dnd_container_");
+	dojo.html.addClass(node, "dojoDndContainer");
 	// mark up children
 	var c;
 	if(node.tagName.toLowerCase() == "table"){
@@ -55,25 +55,25 @@ function(node, filter, creator){
 	onMouseMoveGlobal: function(e){
 		var node = this.getChildByEvent(e);
 		if(!node){
-			if(this.container_state == "over"){
+			if(this.container_state == "Over"){
 				if(this.current){
-					this.removeItemClass(this.current, "over");
+					this.removeItemClass(this.current, "Over");
 					this.current = null;
 				}
-				this.changeState("container", "");
+				this.changeState("Container", "");
 				this.onOutEvent();
 			}
 			return;
 		}
-		if(this.container_state != "over"){
-			this.changeState("container", "over");
+		if(this.container_state != "Over"){
+			this.changeState("Container", "Over");
 		}
 		if(node == this.node){ return; }
 		if(this.current != node){
 			if(this.current){
-				this.removeItemClass(this.current, "over");
+				this.removeItemClass(this.current, "Over");
 			}
-			this.addItemClass(node, "over");
+			this.addItemClass(node, "Over");
 			this.current = node;
 		}
 	},
@@ -120,13 +120,13 @@ function(node, filter, creator){
 	// utilities
 	cancelEvent: function(e){ e.stopPropagation(); e.preventDefault(); },
 	changeState: function(type, new_state){
-		var prefix = "dojo_dnd_" + type + "_";
-		var state  = type + "_state";
+		var prefix = "dojoDnd" + type;
+		var state  = type.toLowerCase() + "_state";
 		dojo.html.replaceClass(this.node, prefix + new_state, prefix + this[state]);
 		this[state] = new_state;
 	},
-	addItemClass:    function(node, type){ dojo.html.addClass(node, "dojo_dnd_item_" + type); },
-	removeItemClass: function(node, type){ dojo.html.removeClass(node, "dojo_dnd_item_" + type); },
+	addItemClass:    function(node, type){ dojo.html.addClass(node, "dojoDndItem" + type); },
+	removeItemClass: function(node, type){ dojo.html.removeClass(node, "dojoDndItem" + type); },
 	getChildByEvent: function(e){
 		var node = e.target;
 		if(node == this.node){ return node; }
