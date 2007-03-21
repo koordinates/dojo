@@ -158,7 +158,7 @@ void httpDestroyConnection(HTTPConnectionPtr connection);
 void httpConnectionDestroyBuf(HTTPConnectionPtr connection);
 void httpConnectionDestroyReqbuf(HTTPConnectionPtr connection);
 HTTPRequestPtr httpMakeRequest(void);
-void httpDestroyRequest(HTTPRequestPtr request);
+void httpDestroyRequest(HTTPRequestPtr request, int destroyQueuedRequests);
 void httpQueueRequest(HTTPConnectionPtr, HTTPRequestPtr);
 HTTPRequestPtr httpDequeueRequest(HTTPConnectionPtr connection);
 int httpConnectionBigify(HTTPConnectionPtr);

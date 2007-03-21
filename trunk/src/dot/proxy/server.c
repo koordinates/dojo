@@ -432,7 +432,7 @@ httpMakeServerRequest(char *name, int port, ObjectPtr object,
         requestor->request = NULL;
         object->flags &= ~(OBJECT_INPROGRESS | OBJECT_VALIDATING);
         releaseNotifyObject(object);
-        httpDestroyRequest(request);
+        httpDestroyRequest(request, 0);
         return 1;
     }
 
@@ -703,7 +703,7 @@ httpServerDiscardRequests(HTTPServerPtr server)
         request->object->flags &= ~(OBJECT_INPROGRESS | OBJECT_VALIDATING);
         releaseNotifyObject(request->object);
         request->object = NULL;
-        httpDestroyRequest(request);
+        httpDestroyRequest(request, 0);
     }
 }
 
@@ -1247,7 +1247,7 @@ httpServerFinish(HTTPConnectionPtr connection, int s, int offset)
         }
         releaseNotifyObject(request->object);
         request->object = NULL;
-        httpDestroyRequest(request);
+        httpDestroyRequest(request, 0);
     }
 
     do_log(D_SERVER_CONN, "Done with server %s:%d connection (%d)\n",
