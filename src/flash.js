@@ -552,11 +552,21 @@ dojo.flash.Info.prototype = {
 		var dojoPath = djConfig.baseRelativePath;
 		swfloc = swfloc + "?baseRelativePath=" + escape(dojoPath);
 		results.push(swfloc);
+		// Safari has a strange bug where it appends '%20'%20quality=
+		// to the end of Flash movies taken through XHR while offline;
+		// append this so we don't get a cache miss
+		swfloc += "'%20'%20quality=";
+		results.push(swfloc);
 		
 		// flash 8
 		swfloc = swfloc8;
 		results.push(swfloc);
 		swfloc +=  "?baseRelativePath="+escape(dojoPath);
+		results.push(swfloc);
+		// Safari has a strange bug where it appends '%20'%20quality=
+		// to the end of Flash movies taken through XHR while offline;
+		// append this so we don't get a cache miss
+		swfloc += "'%20'%20quality=";
 		results.push(swfloc);
 		
 		// flash 6 gateway
