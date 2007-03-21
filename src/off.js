@@ -333,10 +333,10 @@ dojo.lang.mixin(dojo.off, {
 		//dojo.debug("dojo.off._onLoad");
 		// both local storage and the page are finished loading
 		
-		// make sure that resources needed by our underlying
-		// Dojo Storage storage provider will be available
+		// make sure that resources needed by all of our underlying
+		// Dojo Storage storage providers will be available
 		// offline
-		dojo.off.files.cache(dojo.storage.getResourceList());
+		dojo.off.files.cache(dojo.storage.manager.getResourceList());
 		
 		// load framework data; when we are finished, continue
 		// initializing ourselves
