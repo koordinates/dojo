@@ -11,12 +11,12 @@ dojo.dnd2.Avatar = function(manager){
 dojo.extend(dojo.dnd2.Avatar, {
 	construct: function(){
 		var a = dojo.doc().createElement("table");
-		dojo.html.addClass(a, "dojo_dnd_avatar");
+		dojo.html.addClass(a, "dojoDndAvatar");
 		a.style.position = "absolute";
 		a.style.zIndex = 999;
 		var b = dojo.doc().createElement("tbody");
 		var tr = dojo.doc().createElement("tr");
-		dojo.html.addClass(tr, "dojo_dnd_avatar_header");
+		dojo.html.addClass(tr, "dojoDndAvatarHeader");
 		var td = dojo.doc().createElement("td");
 		td.innerHTML = this._generateText();
 		tr.appendChild(td);
@@ -25,7 +25,7 @@ dojo.extend(dojo.dnd2.Avatar, {
 		var k = Math.min(5, this.manager.nodes.length);
 		for(var i = 0; i < k; ++i){
 			tr = dojo.doc().createElement("tr");
-			dojo.html.addClass(tr, "dojo_dnd_avatar_item");
+			dojo.html.addClass(tr, "dojoDndAvatarItem");
 			td = dojo.doc().createElement("td");
 			var t = this.manager.source.node_creator(this.manager.source.map[this.manager.nodes[i].id].data, "avatar");
 			td.appendChild(t.node);
@@ -41,12 +41,12 @@ dojo.extend(dojo.dnd2.Avatar, {
 		this.node = false;
 	},
 	update: function(){
-		dojo.html[(this.manager.can_drop ? "add" : "remove") + "Class"](this.node, "dojo_dnd_avatar_can_drop");
+		dojo.html[(this.manager.can_drop ? "add" : "remove") + "Class"](this.node, "dojoDndAvatarCanDrop");
 		// replace text
 		var t = this.node.getElementsByTagName("td");
 		for(var i = 0; i < t.length; ++i){
 			var n = t[i];
-			if(dojo.html.hasClass(n.parentNode, "dojo_dnd_avatar_header")){
+			if(dojo.html.hasClass(n.parentNode, "dojoDndAvatarHeader")){
 				n.innerHTML = this._generateText();
 				break;
 			}

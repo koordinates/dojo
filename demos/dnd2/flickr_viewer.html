@@ -4,39 +4,39 @@
 	<title>Sort Flickr images by tags</title>
 	<style type="text/css">
 		/* application-specific settings */
-		#status						{font-weight: bold;}
-		.container					{padding: 5px; cursor: default; background: #f8f8ff;}
-		.wrap1						{float: left; width: 275px; height: 600px; overflow: auto; margin-right: 1em;}
-		.wrap2						{position: relative; width: 350px; height: 170px; overflow: auto;}
-		#container1 .name			{font-weight: bold; padding-right: 4px;}
-		#container1 .image			{padding: 5px;}
-		body.dojo_dnd_copy, body.dojo_dnd_move	{color: #888;}
-		.dojo_dnd_copy .container, .dojo_dnd_move .container	{background: #ddf;}
+		#status					{font-weight: bold;}
+		.container				{padding: 5px; cursor: default; background: #f8f8ff;}
+		.wrap1					{float: left; width: 275px; height: 600px; overflow: auto; margin-right: 1em;}
+		.wrap2					{position: relative; width: 350px; height: 170px; overflow: auto;}
+		#container1 .name		{font-weight: bold; padding-right: 4px;}
+		#container1 .image		{padding: 5px;}
+		body.dojoDndCopy, body.dojoDndMove	{color: #888;}
+		.dojoDndCopy .container, .dojoDndMove .container	{background: #ddf;}
 		/* container-specific settings */
-		.dojo_dnd_container_		{border: 1px solid white; color: black;}
-		.dojo_dnd_container_over	{border: 1px solid black; color: black;}
-		.container.dojo_dnd_target_disabled	{background: #ccc; color: #888;}
+		.dojoDndContainer		{border: 1px solid white; color: black;}
+		.dojoDndContainerOver	{border: 1px solid black; color: black;}
+		.container.dojoDndTargetDisabled	{background: #ccc; color: #888;}
 		/* item-specific settings */
-		.dojo_dnd_item_over			{background: #feb;}
-		.dojo_dnd_item_selected		{background: #ccf; color: #444;}
-		.dojo_dnd_item_anchor		{background: #ccf; color: black;}
-		.dojo_dnd_item_over.dojo_dnd_item_selected	{background: #ec8;}
-		.dojo_dnd_item_over.dojo_dnd_item_anchor	{background: #ec8;}
-		.dojo_dnd_item_before		{border-top:    3px solid red;}
-		.dojo_dnd_item_after		{border-bottom: 3px solid red;}
-		.dojo_dnd_horizontal .dojo_dnd_item_before		{border-top:    none;}
-		.dojo_dnd_horizontal .dojo_dnd_item_after		{border-bottom: none;}
-		.dojo_dnd_horizontal .dojo_dnd_item_before img	{border-left:  3px solid red;}
-		.dojo_dnd_horizontal .dojo_dnd_item_after img	{border-right: 3px solid red;}
+		.dojoDndItemOver		{background: #feb;}
+		.dojoDndItemSelected	{background: #ccf; color: #444;}
+		.dojoDndItemAnchor		{background: #ccf; color: black;}
+		.dojoDndItemOver.dojoDndItemSelected	{background: #ec8;}
+		.dojoDndItemOver.dojoDndItemAnchor		{background: #ec8;}
+		.dojoDndItemBefore		{border-top:    3px solid red;}
+		.dojoDndItemAfter		{border-bottom: 3px solid red;}
+		.dojoDndHorizontal .dojoDndItemBefore		{border-top:    none;}
+		.dojoDndHorizontal .dojoDndItemAfter		{border-bottom: none;}
+		.dojoDndHorizontal .dojoDndItemBefore img	{border-left:  3px solid red;}
+		.dojoDndHorizontal .dojoDndItemAfter img	{border-right: 3px solid red;}
 		/* avatar-specific settings */
-		.dojo_dnd_avatar			{font-size: 75%; color: black;}
-		.dojo_dnd_avatar td			{padding-left: 20px; padding-right: 4px;}
-		.dojo_dnd_avatar_header		{background: #ccc; background-repeat: no-repeat;}
-		.dojo_dnd_avatar_item		{background: #eee;}
-		.dojo_dnd_move .dojo_dnd_avatar_header	{background-image: url(images/set2_stop.png);}
-		.dojo_dnd_copy .dojo_dnd_avatar_header	{background-image: url(images/set2_stop.png);}
-		.dojo_dnd_move .dojo_dnd_avatar_can_drop .dojo_dnd_avatar_header	{background-image: url(images/set2_copy.png);}
-		.dojo_dnd_copy .dojo_dnd_avatar_can_drop .dojo_dnd_avatar_header	{background-image: url(images/set2_allow.png);}
+		.dojoDndAvatar			{font-size: 75%; color: black;}
+		.dojoDndAvatar td		{padding-left: 20px; padding-right: 4px;}
+		.dojoDndAvatarHeader	{background: #ccc; background-repeat: no-repeat;}
+		.dojoDndAvatarItem		{background: #eee;}
+		.dojoDndMove .dojoDndAvatarHeader	{background-image: url(images/set2_stop.png);}
+		.dojoDndCopy .dojoDndAvatarHeader	{background-image: url(images/set2_stop.png);}
+		.dojoDndMove .dojoDndAvatarCanDrop .dojoDndAvatarHeader	{background-image: url(images/set2_copy.png);}
+		.dojoDndCopy .dojoDndAvatarCanDrop .dojoDndAvatarHeader	{background-image: url(images/set2_allow.png);}
 	</style>
 	<script type="text/javascript">
 		var djConfig = {isDebug: true};
