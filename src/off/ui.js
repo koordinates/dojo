@@ -143,7 +143,7 @@ dojo.lang.mixin(dojo.off.ui, {
 			}
 		}
 		
-		if(dojo.sync.details != null && details){
+		if(dojo.sync.details.length > 0 && details){
 			details.style.display = "inline";
 		}
 		
