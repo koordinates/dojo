@@ -869,6 +869,10 @@ httpClientRequest(HTTPRequestPtr request, AtomPtr url)
     /* if there is a "browserbust=" string on this
        URL then remove it. */
     url = removeBrowserBust(url);
+    
+    /* if the domain is a fake domain, such as brad.com, that should
+       actually resolve against the local host then transform it. */
+    url = handleTestDomain(url);
 
     i = httpParseHeaders(1, url,
                          connection->reqbuf, connection->reqbegin, request,
@@ -2317,6 +2321,77 @@ AtomPtr removeBrowserBust(AtomPtr url)
     
     printf("url after removing browser bust: %s\n", buffer);
     
+    releaseAtom(url);
+    return internAtom(buffer);
+}
+
+/** Inside of the Polipo configuration file, a fake 'testDomain' 
+    can be specified that will actually resolve to the address
+    given in 'testDomainAddress', such as 127.0.0.1; this can be 
+    useful for testing disconnected web applications that are 
+    running on your local laptop. */
+AtomPtr handleTestDomain(AtomPtr url){
+    char buffer[4096];
+    char *paramLoc = NULL;
+    char *testDomainPtr = NULL;
+    int finalLength, end, urlLoc, bufferLoc, finishedFinding = 0;
+    
+    assert(url != NULL);
+    
+    if(urlIsLocal(url->string, url->length))
+        return url;
+    
+    if(testDomain == NULL || testDomainAddress == NULL)
+        return url;
+        
+    /* prevent buffer overflow attack */
+    /* the length after we have replaced the domain in 
+        'testDomain' with 'testDomainAddress' */
+    finalLength = url->length - testDomain->length 
+                    + testDomainAddress->length;
+    if(finalLength >= 4095)
+        return url;
+    
+    /* do we have the test domain in our url? */    
+    paramLoc = strstr(url->string, testDomain->string);
+    if(paramLoc == NULL)
+        return url;
+        
+    /* convert this into an actual location now using
+       pointer arithmetic */
+    end = paramLoc - url->string;
+        
+    /* copy up to this into our buffer */
+    strncpy(buffer, url->string, end);
+    buffer[end] = '\0';
+    
+    /* now add the new address */
+    strncat(buffer, testDomainAddress->string, 
+            testDomainAddress->length);
+    bufferLoc = strlen(buffer);
+    
+    /* in the original string, find where the end of
+        testDomain is */
+    testDomainPtr = testDomain->string;
+    while(finishedFinding == 0){
+        if(*testDomainPtr != *paramLoc){
+            finishedFinding = 1;
+            break;
+        }
+        paramLoc++;
+        testDomainPtr++;
+    }
+    urlLoc = paramLoc - url->string;
+    
+    /* now add the rest of this to our buffer */
+    while(urlLoc < url->length){
+        buffer[bufferLoc] = url->string[urlLoc];
+        bufferLoc++;
+        urlLoc++;
+    }
+    buffer[bufferLoc] = '\0';
+    
+    /* decommision the old AtomPtr and create a new one */
     releaseAtom(url);
     return internAtom(buffer);
 }

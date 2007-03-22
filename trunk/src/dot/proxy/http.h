@@ -141,6 +141,8 @@ extern int expectContinue;
 extern AtomPtr atom100Continue;
 extern int disableVia;
 extern int dontTrustVaryETag;
+extern AtomPtr testDomain;
+extern AtomPtr testDomainAddress;
 
 void preinitHttp(void);
 void initHttp(void);

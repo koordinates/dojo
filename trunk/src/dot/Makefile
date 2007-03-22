@@ -34,6 +34,7 @@ windows:
 	mv -f proxy/polipo.exe proxy-build/win/dot.exe
 	cp -f proxy/config.win proxy-build/win/config
 	cp -f proxy/default-pac proxy-build/win/.offline-pac
+	cp -f proxy/default-pac proxy-build/win/offline-pac
 
 run:
 	./proxy-build/mac/x86/dot -c ./proxy-build/mac/x86/config

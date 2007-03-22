@@ -41,6 +41,14 @@
 # socksParentProxy = "localhost:9050"
 # socksProxyType = socks5
 
+# A test URL that will actually resolve to the address given by 
+# 'testDomainAddress'; useful because Polipo does not resolve your local 
+# etc/hosts.conf file, which can
+# make testing disconnected web applications running on your local machine
+# difficult
+testDomain = "brad.com"
+testDomainAddress = "192.168.1.108"
+
 
 ### Memory
 ### ******
