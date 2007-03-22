@@ -5,4 +5,12 @@ load("buildUtil.js");
 var profileFile = arguments[0];
 var lineSeparator = java.lang.System.getProperty("line.separator");
 
-print("Files included in this profile:" + lineSeparator + buildUtil.loadDependencyList(profileFile).depList.join(lineSeparator));
+var result = buildUtil.loadDependencyList(profileFile);
+
+var buildText = "Files included in this profile:" + lineSeparator;
+for(var i = 0; i < result.length; i++){
+	buildText += lineSeparator + result[i].layerName + ":" + lineSeparator;
+	buildText += result[i].depList.join(lineSeparator) + lineSeparator;
+}
+
+print(buildText);

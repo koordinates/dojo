@@ -82,10 +82,10 @@ buildUtil.getDependencyList = function(/*Object*/dependencies, /*String or Array
 	dojo.hostenv.name_ = hostenvType;
 	
 	//Override dojo.provide to get a list of resource providers.
-	var provideList = [];
+	var currentProvideList = [];
 	dojo._provide = dojo.provide;
 	dojo.provide = function(resourceName){
-		provideList.push(resourceName);
+		currentProvideList.push(resourceName);
 		dojo._provide(resourceName);
 	}
 	
@@ -163,7 +163,76 @@ buildUtil.getDependencyList = function(/*Object*/dependencies, /*String or Array
 	if(dependencies["dojoLoaded"]){
 		dependencies["dojoLoaded"]();
 	}
+
+	//Now build the URI list, starting with the main dojo.js file
+	var result = [];
+	result[0] = {
+		layerName: "dojo.js",
+		depList: buildUtil.determineUriList(dependencies, null, dependencies["filters"]),
+		provideList: currentProvideList
+	}
+	currentProvideList = [];
 	
+	//Figure out if we have to process layers.
+	var layerCount = 0;
+	var layers = dependencies["layers"];
+	if(layers && layers.length > 0){
+		layerCount = layers.length;
+	}
+	
+	//Process dojo layer files 
+	if(layerCount){
+		//Set up a lookup table for the layer URIs based on layer file name.
+		var namedLayerUris = {"dojo.js": result[0].depList};
+				
+		for(var i = 0; i < layerCount; i++){
+			var layer = layers[i];
+			
+			//Set up list of module URIs that are already defined for this layer's
+			//layer dependencies.
+			var layerUris = [];
+			if(layer["layerDependencies"]){
+				for(var j = 0; j < layer.layerDependencies.length; j++){
+					if(namedLayerUris[layer.layerDependencies[j]]){
+						layerUris.concat(namedLayerUris[layer.layerDependencies[j]]);
+					}
+				}
+			}
+			
+			//Get the final list of dependencies in this layer
+			var depList = buildUtil.determineUriList(layer.dependencies, layerUris, dependencies["filters"]); 
+			
+			//Store the layer URIs that are in this file as well as all files it depends on.
+			namedLayerUris[layer.name] = layerUris.concat(depList);
+
+			//Add to the results object.
+			result[i + 1] = {
+				layerName: layer.name,
+				depList: depList,
+				provideList: currentProvideList
+			}
+
+			//Reset for another run through the loop.
+			currentProvideList = []; 
+		} 
+	}
+
+	if(isWebBuild){
+		dojo.hostenv.loadUri = dojo.hostenv.oldLoadUri;
+	}else{
+		load = old_load; // restore the original load function
+		dj_eval = old_eval; // restore the original dj_eval function
+
+		dj_global['dojo'] = undefined;
+		dj_global['djConfig'] = undefined;
+		delete dj_global;
+	}
+
+	return result; //Object with properties: name (String), depList (Array) and provideList (Array)
+}
+
+//Function to do the actual collection of file names to join.
+buildUtil.determineUriList = function(/*Array*/dependencies, /*Array*/layerUris, /*Object*/filters){
 	for(var x=0; x<dependencies.length; x++){
 		try{
 			var dep = dependencies[x];
@@ -181,60 +250,41 @@ buildUtil.getDependencyList = function(/*Object*/dependencies, /*String or Array
 			quit(-1);
 		}
 	}
-	
-	// FIXME: we should also provide some way of figuring out what files are the
-	// test files for the namespaces which are included and provide them in the
-	// final package.
-	
-	// FIXME: should we turn __package__.js file clobbering on? It will break things if there's a subdir rolled up into a __package__
-	/*
-	for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
-		print(dojo.hostenv.loadedUris[x].substr(-14));
-		if(dojo.hostenv.loadedUris[x].substr(-14) == "__package__.js"){
-			dojo.hostenv.loadedUris.splice(x, 1);
-			x--;
-		}
-	}
-	*/
-	
-	// print("URIs, in order: ");
-	// for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
-	// 	print(dojo.hostenv.loadedUris[x]);
-	// }
-	
+
 	var depList = [];
 	var seen = {};
 	uris: for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
 		var curi = dojo.hostenv.loadedUris[x];
 		if(!seen[curi]){
 			seen[curi] = true;
-			if(dependencies["filters"]){
-				for(var i in dependencies.filters){
-					if(curi.match(dependencies.filters[i])){
+			if(filters){
+				for(var i in filters){
+					if(curi.match(filters[i])){
 						continue uris;
-					}}}
+					}
+
+					//If the uri is already accounted for in another
+					//layer, skip it.
+					if(layerUris){
+						for(var i = 0; i < layerUris.length; i++){ 
+							if(curi == layerUris[i]){ 
+											continue uris; 
+							} 
+						} 
+					} 
+				}
+			}
 			depList.push(curi);
 		}
 	}
 	
-	if(isWebBuild){
-		dojo.hostenv.loadUri = dojo.hostenv.oldLoadUri;
-	}else{
-		load = old_load; // restore the original load function
-		dj_eval = old_eval; // restore the original dj_eval function
-
-		dj_global['dojo'] = undefined;
-		dj_global['djConfig'] = undefined;
-		delete dj_global;
-	}
-
-	return {
-		depList: depList,
-		provideList: provideList
-	};
+	//Clear out the loadedUris for the next run. 
+	dojo.hostenv.loadedUris = []; 
+	return depList; 
 }
 
-buildUtil.loadDependencyList = function(/*String*/profileFile){
+
+buildUtil.evalProfile = function(/*String*/ profileFile){
 	var dependencies = null;
 	var hostenvType = null;
 	var profileText = new String(buildUtil.readFile(profileFile));
@@ -242,21 +292,25 @@ buildUtil.loadDependencyList = function(/*String*/profileFile){
 	//Remove the call to getDependencyList.js because we want to call it manually.
 	profileText = profileText.replace(/load\(("|')getDependencyList.js("|')\)/, "");
 	eval(profileText);
-	if(hostenvType){
-		hostenvType.join(",\n");
+	return {
+		dependencies: dependencies,
+		hostenvType: hostenvType
+	};
+}
+
+buildUtil.loadDependencyList = function(/*String*/profileFile){
+	var profile = buildUtil.evalProfile(profileFile);
+	if(profile.hostenvType){
+		profile.hostenvType = profile.hostenvType.join(",\n");
 	}
-	var depResult = buildUtil.getDependencyList(dependencies, hostenvType);
-	depResult.dependencies = dependencies;
+	var depResult = buildUtil.getDependencyList(profile.dependencies, profile.hostenvType);
+	depResult.dependencies = profile.dependencies;
 	
 	return depResult;
 }
 
-buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
-	//summary: Makes the uncompressed contents for dojo.js using the object
-	//returned from buildUtil.getDependencyList()
-
-	var lineSeparator = buildUtil.getLineSeparator();
-	var depList = dependencyResult.depList;
+buildUtil.createLayerContents = function(/*Array*/depList, /*Array*/provideList, /*String*/version){
+	//summary: Creates the core contents for a build layer (including dojo.js).
 
 	//Concat the files together, and mark where we should insert all the
 	//provide statements.
@@ -277,7 +331,7 @@ buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
 	//used to remove matching dojo.require statements.
 	//Sort the provide list alphabetically to make it easy to read.
 	//Order of provide statements do not matter.
-	var provideList = dependencyResult.provideList.sort(); 
+	provideList = provideList.sort(); 
 	var depRegExpString = "";
 	for(var i = 0; i < provideList.length; i++){
 		if(i != 0){
@@ -325,6 +379,28 @@ buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
 		"major: " + majorValue + ", minor: " + minorValue + ", patch: " + patchValue + ", flag: \"" + flagValue + "\","
 	);
 	
+	return dojoContents;
+}
+
+buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
+	//summary: Makes the uncompressed contents for dojo.js using the object
+	//returned from buildUtil.getDependencyList()
+
+	var lineSeparator = buildUtil.getLineSeparator();
+
+	//Cycle through the layers to create the content for each layer.
+	for(var i = 0; i< dependencyResult.length; i++){
+		var layerResult = dependencyResult[i];
+		layerResult.contents = buildUtil.createLayerContents(layerResult.depList, layerResult.provideList, version);
+	}
+
+	//Object with properties:
+	//depList: Array of file paths (src/io/js)
+	//provideList: Array of module resource names (dojo.io)
+	//name: name of the layer file
+	//contents: the file contents for that layer file.
+	return dependencyResult; 
+
 	//Return the dependency list, since it is used for other things in the ant file.
 	return {
 		resourceDependencies: depList,
@@ -661,15 +737,26 @@ buildUtil.internTemplateStrings = function(profileFile, loader, releaseDir, srcR
 	//Find the bundles that need to be flattened.
 	load("buildUtil.js");
 
-	var prefixes = buildUtil.getDependencyPropertyFromProfile(profileFile, "prefixes");
+	var profile = buildUtil.evalProfile(profileFile);
+	var dependencies = profileFile.dependencies;
+
+	var prefixes = dependencies["prefixes"] || [];
 	//Make sure dojo is in the list.
 	var dojoPath = releaseDir.replace(/^.*(\/|\\)release(\/|\\)/, "release/");
 	prefixes.push(["dojo", dojoPath + "/src"]);
 
-	var skiplist = buildUtil.getDependencyPropertyFromProfile(profileFile, "internSkipList");
+	var skiplist = dependencies["internSkipList"] || [];
 	
+	//Intern strings for dojo.js
 	buildUtil.internTemplateStringsInFile(loader, releaseDir + "/dojo.js", srcRoot, prefixes, skiplist);
 	buildUtil.internTemplateStringsInFile(loader, releaseDir + "/dojo.js.uncompressed.js", srcRoot, prefixes, skiplist);
+
+	//Intern strings for any other layer files.
+	if(dependencies["layers"] && dependencies.layers.length > 0){
+		for(var i = 0; i < dependencies.layers.length; i++){
+			buildUtil.internTemplateStringsInFile(loader, releaseDir + "/" + dependencies.layers[i].name, srcRoot, prefixes, skiplist);
+		}
+	}
 
 	//Intern strings for all files in widget dir (xdomain and regular files)
 	var fileList = buildUtil.getFilteredFileList(releaseDir + "/src/widget",
