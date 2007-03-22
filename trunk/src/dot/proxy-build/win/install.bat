@@ -17,9 +17,9 @@ rem
 rem @author Brad Neuberg, bkn3@columbia.edu
 rem
 rem
-rmdir c:\dot
+rmdir /Q /S c:\dot
 mkdir c:\dot
-rmdir c:\.offline-cache
+rmdir /Q /S c:\.offline-cache
 del c:\.offline-list
 mkdir c:\.offline-cache
 copy %WINDOWS_BUILD%\dot.exe c:\dot
