@@ -6,7 +6,7 @@ dojo.require("dojo.html.iframe");
 
 // This is mostly taken from Jesse Kuhnert's MessageNotifier.
 // Modified by Bryan Forbes to support topics and a variable delay.
-//Modified by Karl Tiedt to support 0 duration messages that require user interaction and message stacking
+// Modified by Karl Tiedt to support 0 duration messages that require user interaction and message stacking
 
 dojo.widget.defineWidget(
 	"dojo.widget.Toaster",
@@ -59,6 +59,7 @@ dojo.widget.defineWidget(
 		positionDirectionTypes: ["br-up", "br-left", "bl-up", "bl-right", "tr-down", "tr-left", "tl-down", "tl-right"],
 		
 		initializer: function(){
+console.debug("initializer");
 			// duration: Integer
 			//		Number of milliseconds to show message
 			this.duration = 2000;
@@ -71,6 +72,7 @@ dojo.widget.defineWidget(
 		},
 		
 		postCreate: function(){
+console.debug("postCreate");
 			if(this.showDelay!=''){
 				dojo.deprecated("dojo.widget.Toaster", "use 'duration' instead of 'showDelay'", "0.6");
 				this.duration = this.showDelay;
@@ -104,8 +106,8 @@ dojo.widget.defineWidget(
 			//		type of message; possible values in messageTypes array ("MESSAGE", "WARNING", "ERROR", "FATAL")
 			// duraton: Integer
 			//		duration in milliseconds to display message before removing it
-
 			var duration = duration||this.duration;
+console.debug("setContent duration="+duration);
 			// sync animations so there are no ghosted fades and such
 			if(this.slideAnim && this.slideAnim.status() == "playing"){
 				dojo.lang.setTimeout(50, dojo.lang.hitch(this, function(){
