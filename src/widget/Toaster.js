@@ -6,7 +6,7 @@ dojo.require("dojo.html.iframe");
 
 // This is mostly taken from Jesse Kuhnert's MessageNotifier.
 // Modified by Bryan Forbes to support topics and a variable delay.
-// Modified by Karl Tiedt to support 0 duration messages that require user interaction and message stacking
+//Modified by Karl Tiedt to support 0 duration messages that require user interaction and message stacking
 
 dojo.widget.defineWidget(
 	"dojo.widget.Toaster",
