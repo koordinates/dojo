@@ -477,12 +477,13 @@ dojo.lang.mixin(dojo.sync, {
 			this.onRefreshUI();
 		}
 		
-		dojo.off.files.refresh(dojo.lang.hitch(this, function(error, errorMessage){
+		dojo.off.files.refresh(dojo.lang.hitch(this, function(error, errorMessages){
 			if(error == true){
 				this.error = true;
 				this.successful = false;
-				this.details = new Array();
-				this.details.push(errorMessage);
+				for(var i = 0; i < errorMessages.length; i++){
+					this.details.push(errorMessages[i]);
+				}
 				
 				this.finished();
 			}else{
