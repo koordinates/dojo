@@ -43,7 +43,15 @@ float maxAgeFraction = 0.1;
 int maxNoModifiedAge = 23 * 60;
 int maxWriteoutWhenIdle = 64 * 1024;
 int maxObjectsWhenIdle = 32;
+
+#ifdef NO_OFFLINE_SUPPORT
 int idleTime = 20;
+#else
+/* Write things out to disk _much_ quicker if we want
+    offline web app support */
+int idleTime = 2;
+#endif
+
 int dontCacheCookies = 0;
 
 void
