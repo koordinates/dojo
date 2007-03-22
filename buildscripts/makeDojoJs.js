@@ -10,12 +10,22 @@ var lineSeparator = java.lang.System.getProperty("line.separator");
 
 var result = buildUtil.makeDojoJs(buildUtil.loadDependencyList(profileFile), version);
 
-//Save the dojo.js contents.
-buildUtil.saveFile(releaseDir + "/" + dojoFileName, result.dojoContents);
+//Save the dojo.js contents. It is always the first result.
+buildUtil.saveFile(releaseDir + "/" + dojoFileName, result[0].contents);
+
+//Save the other layers, if there are any.
+for(var i = 1; i < result.length; i++){
+	buildUtil.saveFile(releaseDir + "/" + result[i].layerName, result[i].contents);
+}
 
 //Save the dependency list to build.txt
-buildUtil.saveFile(releaseDir + "/build.txt", "Files baked into this build:" + lineSeparator + result.resourceDependencies.join(lineSeparator));
+var buildText = "Files baked into this build:" + lineSeparator;
+for(var i = 0; i < result.length; i++){
+	buildText += lineSeparator + result[i].layerName + ":" + lineSeparator;
+	buildText += result[i].depList.join(lineSeparator) + lineSeparator;
+}
 
-print("Files baked into this build:" + lineSeparator + result.resourceDependencies.join(lineSeparator));
+buildUtil.saveFile(releaseDir + "/build.txt", buildText);
 
+print(buildText);
 
