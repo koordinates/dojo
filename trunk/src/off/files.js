@@ -14,7 +14,7 @@ dojo.off.files = {
 	
 	_refreshCounter: 0,
 	_error: false,
-	_errorMessage: null,
+	_errorMessages: new Array(),
 	_finishedCallback: null,
 	
 	cache: function(urlOrList){ /* void */
@@ -97,13 +97,14 @@ dojo.off.files = {
 		//	files.
 		// finishedCallback: Function
 		//	A callback that receives two arguments: whether an error
-		//	occurred, which is a boolean; and a message concerning this
-		//	error. If no error occured then message is null.
+		//	occurred, which is a boolean; and an array of error message strings
+		//	with details on errors encountered. If no error occured then message is
+		//	empty array with length 0.
 		
 		// shoot off an XHR request for each file
 		dojo.off.files._refreshCounter = 0;
 		dojo.off.files._error = false;
-		dojo.off.files._errorMessage = null;
+		dojo.off.files._errorMessages = new Array();
 		dojo.off.files._finishedCallback = finishedCallback;
 		for(var i = 0; i < this.listOfURLs.length; i++){
 			var url = this.listOfURLs[i];
@@ -137,11 +138,21 @@ dojo.off.files = {
 					// returned and make sure they have correct values if
 					// requireOfflineCache = false
 				}else{
+					// remove the browserbust string
+					var url = xhr.url;
+					if(url.indexOf("browserbust=") != -1){
+						url = url.replace(/browserbust\=[0-9]*/, "");
+						if(url.charAt(url.length - 1) == "?"){
+							url = url.replace(/\?$/, "");
+						}
+					}
+					
 					// log our error
 					dojo.off.files._error = true;
-					dojo.off.files._errorMessage = 
-									"Error loading offline resource " + xhr.url + ": "
+					var msg = "Error loading offline resource " + url + ": "
 									+ xhr.statusText;
+					dojo.off.files._errorMessages.push(msg); 
+									
 				}
 				
 				// see if we are finished with all of
@@ -150,7 +161,7 @@ dojo.off.files = {
 				if(dojo.off.files._refreshCounter == dojo.off.files.listOfURLs.length
 					|| dojo.off.files._error == true){
 					dojo.off.files._finishedCallback(dojo.off.files._error,
-													dojo.off.files._errorMessage);
+													dojo.off.files._errorMessages);
 				}
 			}
 		};
