@@ -2,7 +2,8 @@ rem Move new distributions to a place on Windows we can run them.
 rem
 rem Define WINDOWS_BUILD to the full path to where your Windows build
 rem files are (such as z:\), and SOURCE_PATH to where your Dojo Offline
-rem local proxy source files are (such as y:dev\dojo\offline\trunk\src\dot\proxy).
+rem local proxy source files are (such as y:\dev\dojo\offline\trunk\src\dot\proxy).
+rem These are both defined below and must be changed in this file.
 rem
 rem On my machine, Z:\ is a mapped network drive that actually maps to a Samba
 rem mounted drive, through Parallels, to a directory on my Mac OS X box
@@ -17,6 +18,8 @@ rem
 rem @author Brad Neuberg, bkn3@columbia.edu
 rem
 rem
+set WINDOWS_BUILD=z:
+set SOURCE_PATH=y:\dev\dojo\offline\trunk\src\dot\proxy
 rmdir /Q /S c:\dot
 mkdir c:\dot
 rmdir /Q /S c:\.offline-cache
