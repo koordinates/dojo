@@ -188,6 +188,9 @@ dojo.widget.defineWidget(
 		// events: Array
 		//		 events which should be connected to the underlying editing area
 		events: ["onBlur", "onFocus", "onKeyPress", "onKeyDown", "onKeyUp", "onClick"],
+		// events: Array
+		//		 events which should be connected to the underlying editing area, events in this array will be addListener with capture=true
+		captureEvents: [],
 
 		open: function (/*DomNode, optional*/element) {
 			// summary:
@@ -384,8 +387,8 @@ dojo.widget.defineWidget(
 				this.editNode.innerHTML = html;
 				this._preDomFilterContent(this.editNode);
 				if(this.height){ this.document.body.style.overflowY="scroll"; }
-
-				dojo.lang.forEach(this.events, function(e){
+				var events=this.events.concat(this.captureEvents);
+				dojo.lang.forEach(events, function(e){
 					dojo.event.connect(this.editNode, e.toLowerCase(), this, e);
 				}, this);
 
@@ -765,8 +768,9 @@ dojo.widget.defineWidget(
 					var doc = this.document;
 					var addListener = dojo.event.browser.addListener;
 					var self = this;
-					dojo.lang.forEach(this.events, function(e){
-						var l = addListener(self.document, e.substr(2).toLowerCase(), dojo.lang.hitch(self, e));
+					var events=this.events.concat(this.captureEvents);
+					dojo.lang.forEach(events, function(e){
+						var l = addListener(self.document, e.substr(2).toLowerCase(), dojo.lang.hitch(self, e), dojo.lang.inArray(self.captureEvents,e));
 						if(e=="onBlur"){
 							// We need to unhook the blur event listener on close as we
 							// can encounter a garunteed crash in FF if another event is
