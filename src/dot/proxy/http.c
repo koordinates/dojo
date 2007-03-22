@@ -69,6 +69,9 @@ AtomPtr atom100Continue;
 
 int disableVia = 1;
 
+AtomPtr testDomain = NULL;
+AtomPtr testDomainAddress = NULL;
+
 /* 0 means that all failures lead to errors.  1 means that failures to
    connect are reported in a Warning header when stale objects are
    served.  2 means that only missing data is fetched from the net,
@@ -123,6 +126,10 @@ preinitHttp()
                              "Don't use Via headers.");
     CONFIG_VARIABLE(dontTrustVaryETag, CONFIG_TRISTATE,
                     "Whether to trust the ETag when there's Vary.");
+    CONFIG_VARIABLE(testDomain, CONFIG_ATOM,
+                    "Fake domain for resolving against 'testDomainAddress' for testing purposes.");
+    CONFIG_VARIABLE(testDomainAddress, CONFIG_ATOM,
+                    "The address to resolve for 'testDomain'.");
     preinitHttpParser();
 }
 

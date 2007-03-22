@@ -172,6 +172,8 @@ static int getHost(AtomPtr referer, char **host_results){
     */
     cut_length = (cut_end - cut_start) + 2;
     host_ptr = (char *)malloc((unsigned) cut_length);
+    if(host_ptr == NULL)
+        return -1;
     cut_ptr = host_ptr;
     for(index = cut_start; index <= cut_end 
                              && index < strlen(referer->string); index++){
@@ -185,6 +187,26 @@ static int getHost(AtomPtr referer, char **host_results){
     }
 
     *host_results = host_ptr;
+    
+    /* if we have a 'testDomain', transform this host into
+        our 'testDomainAddress' value given in the config file. */
+    if(testDomain == NULL || testDomainAddress == NULL)
+        return 1;
+    
+    if(strlen(host_ptr) != testDomain->length)
+        return 1;
+        
+    if(strcmp(host_ptr, testDomain->string) != 0)
+        return 1;
+        
+    /* change the host to our full testDomainAddress */
+    free(host_ptr);
+    host_ptr = (char *)malloc((unsigned int)(testDomainAddress->length + 1));
+    if(host_ptr == NULL)
+        return -1;
+    strcpy(host_ptr, testDomainAddress->string);
+    *host_results = host_ptr;
+    
     return 1;
 }
 
