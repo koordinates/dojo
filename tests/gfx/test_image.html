@@ -21,7 +21,7 @@ makeShapes = function(){
 		surface.createLine({x1: 0, x2: grid_size, y1: i, y2: i}).setStroke("black");
 		surface.createLine({y1: 0, y2: grid_size, x1: i, x2: i}).setStroke("black");
 	}
-    image = surface.createImage({width: 319, height: 95, src: "http://dojotoolkit.org/img/header-downloads.png"});
+    image = surface.createImage({width: 333, height: 80, src: "http://dojotoolkit.org/files/downloadButton.gif"});
     dojo.event.connect(image.getEventSource(), "onclick", function(){ alert("You didn't expect a download, did you?"); });
 };
 
