@@ -46,6 +46,8 @@ dojo.extend(dojo.dnd2.Manager, {
 		dojo.event.topic.publish("dnd_start", source, nodes, copy);
 		dojo.event.connect(dojo.doc(), "onmousemove", this, "onMouseMove");
 		dojo.event.connect(dojo.doc(), "onmouseup",   this, "onMouseUp");
+		dojo.event.connect(dojo.doc(), "onkeydown",   this, "onKeyDown");
+		dojo.event.connect(dojo.doc(), "onkeyup",     this, "onKeyUp");
 		dojo.html.addClass(dojo.body(), "dojoDnd" + (copy ? "Copy" : "Move"));
 	},
 	canDrop: function(flag){
@@ -60,6 +62,8 @@ dojo.extend(dojo.dnd2.Manager, {
 		dojo.html.removeClass(dojo.body(), "dojoDndMove");
 		dojo.event.disconnect(dojo.doc(), "onmousemove", this, "onMouseMove");
 		dojo.event.disconnect(dojo.doc(), "onmouseup",   this, "onMouseUp");
+		dojo.event.disconnect(dojo.doc(), "onkeydown",   this, "onKeyDown");
+		dojo.event.disconnect(dojo.doc(), "onkeyup",     this, "onKeyUp");
 		this.avatar.destroy();
 		this.avatar = null;
 		this.source = null;
@@ -73,12 +77,7 @@ dojo.extend(dojo.dnd2.Manager, {
 			var s = this.avatar.node.style;
 			s.left = (e.pageX + 10) + "px";
 			s.top  = (e.pageY + 10) + "px";
-			if(this.copy != e.ctrlKey){
-				this.copy = e.ctrlKey;
-				this.source.markDndStatus(this.copy);
-				this.updateAvatar();
-				dojo.html.replaceClass(dojo.body(), "dojoDnd" + (this.copy ? "Copy" : "Move"), "dojoDnd" + (this.copy ? "Move" : "Copy"));
-			}
+			if(this.copy != e.ctrlKey){ this.setCopyStatus(e.ctrlKey); }
 		}
 	},
 	onMouseUp: function(e){
@@ -90,6 +89,20 @@ dojo.extend(dojo.dnd2.Manager, {
 			}
 			this.stopDrag();
 		}
+	},
+	// keyboard event processors
+	onKeyDown: function(e){
+		if(this.avatar && e.keyCode == dojo.event.browser.keys.KEY_CTRL && !this.copy){ this.setCopyStatus(true); }
+	},
+	onKeyUp: function(e){
+		if(this.avatar && e.keyCode == dojo.event.browser.keys.KEY_CTRL && this.copy){ this.setCopyStatus(false); }
+	},
+	// utilities
+	setCopyStatus: function(copy){
+		this.copy = copy;
+		this.source.markDndStatus(this.copy);
+		this.updateAvatar();
+		dojo.html.replaceClass(dojo.body(), "dojoDnd" + (this.copy ? "Copy" : "Move"), "dojoDnd" + (this.copy ? "Move" : "Copy"));
 	}
 });
 
