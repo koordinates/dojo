@@ -103,17 +103,17 @@
 			if(c1){
 				c1.selectAll().deleteSelectedNodes();
 			}else{
-				c1 = new dojo.dnd2.Source(dojo.byId("container1"), null, main_creator, false, true, ["river", "sunset"]);
+				c1 = new dojo.dnd2.Source(dojo.byId("container1"), {creator: main_creator, accept: ["river", "sunset"]});
 			}
 			if(c2){
 				c2.selectAll().deleteSelectedNodes();
 			}else{
-				c2 = new dojo.dnd2.Source(dojo.byId("container2"), null, band_creator, false, true, ["river"], true);
+				c2 = new dojo.dnd2.Source(dojo.byId("container2"), {creator: band_creator, accept: ["river"], horizontal: true});
 			}
 			if(c3){
 				c3.selectAll().deleteSelectedNodes();
 			}else{
-				c3 = new dojo.dnd2.Source(dojo.byId("container3"), null, band_creator, false, true, ["sunset"], true);
+				c3 = new dojo.dnd2.Source(dojo.byId("container3"), {creator: band_creator, accept: ["sunset"], horizontal: true});
 			}
 			// populate the main source
 			c1.insertNodes(false, data.items);
