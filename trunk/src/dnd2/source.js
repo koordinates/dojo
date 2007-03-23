@@ -3,6 +3,7 @@ dojo.provide("dojo.dnd2.source");
 dojo.require("dojo.lang.declare");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
+dojo.require("dojo.html.layout");
 
 dojo.require("dojo.dnd2.selector");
 dojo.require("dojo.dnd2.manager");
@@ -41,6 +42,7 @@ function(node, params){
 	this.is_dragging = false;
 	this.mouse_down = false;
 	this.target_anchor = null;
+	this.target_box = null;
 	this.before = true;
 	// states
 	this.source_state  = "";
@@ -63,17 +65,19 @@ function(node, params){
 		if(this.is_dragging){
 			// calculate before/after
 			var before = false;
-			/*
-			THIS IS A PLACEHOLDER!
-			
 			if(this.current){
+				if(!this.target_box){
+					this.target_box = {
+						xy: dojo.html.getAbsolutePosition(this.current, true),
+						wh: dojo.html.getBorderBox(this.current)
+					};
+				}
 				if(this.horizontal){
-					before = (e.clientX - this.current.clientLeft) < (this.current.offsetWidth / 2);
+					before = (e.pageX - this.target_box.xy.x) < (this.target_box.wh.width / 2);
 				}else{
-					before = (e.clientY - this.current.clientTop)  < (this.current.offsetHeight / 2);
+					before = (e.pageY - this.target_box.xy.y) < (this.target_box.wh.height / 2);
 				}
 			}
-			*/
 			if(this.current != this.target_anchor || before != this.before){
 				this.markTargetAnchor(before);
 				m.canDrop(!this.current || m.source != this || !(this.current.id in this.selection));
@@ -188,6 +192,7 @@ function(node, params){
 			this.removeItemClass(this.target_anchor, this.before ? "Before" : "After");
 		}
 		this.target_anchor = this.current;
+		this.target_box = null;
 		this.before = before;
 		if(this.target_anchor){
 			this.addItemClass(this.target_anchor, this.before ? "Before" : "After");
@@ -197,6 +202,7 @@ function(node, params){
 		if(!this.target_anchor){ return; }
 		this.removeItemClass(this.target_anchor, this.before ? "Before" : "After");
 		this.target_anchor = null;
+		this.target_box = null;
 		this.before = true;
 	},
 	markDndStatus: function(copy){
