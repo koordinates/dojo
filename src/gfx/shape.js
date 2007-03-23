@@ -99,6 +99,22 @@ dojo.declare("dojo.gfx.Shape", null,
 		//	(see dojo.gfx.defaultRect)
 		return this.bbox;	// dojo.gfx.Rectangle
 	},
+	getTransformedBoundingBox: function(){
+		// summary: returns an array of four points or null
+		//	four points represent four corners of the untransformed bounding box
+		if(!this.bbox){
+			return null;	// null
+		}
+		var g = dojo.gfx.matrix;
+		var m = this._getRealMatrix();
+		var b = this.getBoundingBox();
+		var r = [];
+		r.push(g.multiplyPoint(m, b.x, b.y));
+		r.push(g.multiplyPoint(m, b.x + b.width, b.y));
+		r.push(g.multiplyPoint(m, b.x + b.width, b.y + b.height));
+		r.push(g.multiplyPoint(m, b.x, b.y + b.height));
+		return r;	// Array
+	},
 	getEventSource: function(){
 		// summary: returns a Node, which is used as 
 		//	a source of events for this shape

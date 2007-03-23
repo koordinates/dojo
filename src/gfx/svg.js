@@ -170,7 +170,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 	},
 	
 	_applyTransform: function() {
-		var matrix = this._getRealMatrix();
+		var matrix = this.matrix;
 		if(matrix){
 			var tm = this.matrix;
 			if(dojo.render.html.safari){
@@ -353,6 +353,18 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			this.matrix = this.attachTransform(rawNode);
 			this.shape = this.attachShape(rawNode);
 		}
+	},
+	
+	_getRealMatrix: function(){
+		var m = this.matrix;
+		var p = this.parent;
+		while(p){
+			if(p.matrix){
+				m = dojo.gfx.matrix.multiply(p.matrix, m);
+			}
+			p = p.parent;
+		}
+		return m;
 	}
 });
 
