@@ -58,12 +58,9 @@ function(node, params){
 {
 	// mouse event processors
 	onMouseMove: function(e){
-		if(this.is_dragging && this.target_state == "disabled"){ return; }
-		var m = dojo.dnd2.manager();
-		if(this.container_state != "over"){
-			m.overSource(this);
-		}
+		if(this.is_dragging && this.target_state == "Disabled"){ return; }
 		dojo.dnd2.Source.superclass.onMouseMove.call(this, e);
+		var m = dojo.dnd2.manager();
 		if(this.is_dragging){
 			// calculate before/after
 			var before = false;
@@ -105,7 +102,7 @@ function(node, params){
 			}
 		}else if(this.is_dragging){
 			var m = dojo.dnd2.manager();
-			m.canDrop(!this.current || m.source != this || !(this.current.id in this.selection));
+			m.canDrop(this.target_state != "Disabled" && (!this.current || m.source != this || !(this.current.id in this.selection)));
 		}
 	},
 	onDndStart: function(source, nodes, copy){
@@ -154,11 +151,16 @@ function(node, params){
 		this.changeState("Source", "");
 		this.changeState("Target", "");
 	},
-	// methods
+	// utilities
+	onOverEvent: function(){
+		dojo.dnd2.Source.superclass.onOverEvent.call(this);
+		dojo.dnd2.manager().overSource(this);
+	},
 	onOutEvent: function(){
 		dojo.dnd2.Source.superclass.onOutEvent.call(this);
 		dojo.dnd2.manager().outSource(this);
 	},
+	// methods
 	checkAcceptance: function(source, nodes){
 		if(this == source){ return true; }
 		var accepted = true;

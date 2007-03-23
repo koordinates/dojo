@@ -20,7 +20,8 @@ dojo.extend(dojo.dnd2.Manager, {
 	// methods
 	overSource: function(source){
 		if(this.avatar){
-			this.target = source;
+			this.target = (source && source.target_state != "Disabled") ? source : null;
+			this.avatar.update();
 		}
 		dojo.event.topic.publish("dnd_source_over", source);
 	},
