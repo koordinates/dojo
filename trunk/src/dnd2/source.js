@@ -79,7 +79,7 @@ function(node, params){
 				m.canDrop(!this.current || m.source != this || !(this.current.id in this.selection));
 			}
 		}else{
-			if(this.mouse_down){
+			if(this.mouse_down && this.is_source){
 				m.startDrag(this, this.getSelectedNodes(), e.ctrlKey);
 			}
 		}
@@ -108,12 +108,10 @@ function(node, params){
 		if(this.is_source){
 			this.changeState("Source", this == source ? (copy ? "Copied" : "Moved") : "");
 		}
-		if(this.accept){
-			var accepted = this.checkAcceptance(source, nodes);
-			this.changeState("Target", accepted ? "" : "Disabled");
-			if(accepted){
-				dojo.dnd2.manager().overSource(this);
-			}
+		var accepted = this.accept && this.checkAcceptance(source, nodes);
+		this.changeState("Target", accepted ? "" : "Disabled");
+		if(accepted){
+			dojo.dnd2.manager().overSource(this);
 		}
 		this.is_dragging = true;
 	},
