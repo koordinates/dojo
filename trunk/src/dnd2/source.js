@@ -24,10 +24,11 @@ dojo.require("dojo.dnd2.manager");
 */
 
 dojo.declare("dojo.dnd2.Source", dojo.dnd2.Selector, 
-function(node, filter, creator, singular, is_source, accepted_types, horizontal){
+function(node, params){
 	// general variables
-	this.is_source = typeof is_source == "undefined" ? true : is_source;
-	var types = accepted_types instanceof Array ? accepted_types : ["text"];
+	if(!params){ params = {}; }
+	this.is_source = typeof params.is_source == "undefined" ? true : params.is_source;
+	var types = params.accept instanceof Array ? params.accept : ["text"];
 	this.accept = null;
 	if(types.length){
 		this.accept = {};
@@ -35,7 +36,7 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 			this.accept[types[i]] = 1;
 		}
 	}
-	this.horizontal = horizontal;
+	this.horizontal = params.horizontal;
 	// class-specific variables
 	this.is_dragging = false;
 	this.mouse_down = false;
@@ -47,7 +48,7 @@ function(node, filter, creator, singular, is_source, accepted_types, horizontal)
 	dojo.html.addClass(this.node, "dojoDndSource");
 	this.target_state  = "";
 	dojo.html.addClass(this.node, "dojoDndTarget");
-	if(horizontal){ dojo.html.addClass(this.node, "dojoDndHorizontal"); }
+	if(this.horizontal){ dojo.html.addClass(this.node, "dojoDndHorizontal"); }
 	// set up events
 	dojo.event.topic.subscribe("dnd_source_over", this, "onDndSourceOver");
 	dojo.event.topic.subscribe("dnd_start",  this, "onDndStart");

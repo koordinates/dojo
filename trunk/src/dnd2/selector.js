@@ -14,16 +14,15 @@ dojo.require("dojo.dnd2.container");
 */
 
 dojo.declare("dojo.dnd2.Selector", dojo.dnd2.Container, 
-function(node, filter, creator, singular){
+function(node, params){
 	// general variables
-	this.singular = singular;
+	this.singular = params && params.singular;
 	// class-specific variables
 	this.selection = {};
 	this.anchor = null;
 	this.simple_selection = false;
 	// set up events
 	dojo.event.connect(node, "onmousedown", this, "onMouseDown");
-	dojo.event.connect(node, "onmousemove", this, "onMouseMove");
 	dojo.event.connect(node, "onmouseup",   this, "onMouseUp");
 },
 {
@@ -130,9 +129,6 @@ function(node, filter, creator, singular){
 		}
 		this.cancelEvent(e);
 	},
-	onMouseMove: function(e){
-		this.simple_selection = false;
-	},
 	onMouseUp: function(e){
 		if(!this.simple_selection){ return; }
 		this.simple_selection = false;
@@ -142,6 +138,16 @@ function(node, filter, creator, singular){
 			this.addItemClass(this.anchor, "Anchor");
 			this.selection[this.current.id] = 1;
 		}
+	},
+	onMouseMove: function(e){
+		this.simple_selection = false;
+	},
+	// utilities
+	onOverEvent: function(){
+		dojo.event.connect(this.node, "onmousemove", this, "onMouseMove");
+	},
+	onOutEvent: function(){
+		dojo.event.disconnect(this.node, "onmousemove", this, "onMouseMove");
 	},
 	// methods
 	getSelectedNodes: function(){
