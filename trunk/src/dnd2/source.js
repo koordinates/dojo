@@ -41,7 +41,6 @@ function(node, params){
 	this.is_dragging = false;
 	this.mouse_down = false;
 	this.target_anchor = null;
-	this.target_valid = false;
 	this.before = true;
 	// states
 	this.source_state  = "";
