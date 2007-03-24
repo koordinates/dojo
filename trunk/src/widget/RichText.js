@@ -1172,6 +1172,8 @@ dojo.widget.defineWidget(
 				}
 			}
 			if(command == "inserthtml"){
+				//TODO: we shall probably call _preDomFilterContent here as well
+				argument=this._preFilterContent(argument);
 				if(dojo.render.html.ie){
 					//dojo.debug("inserthtml breaks the undo stack when not using the ActiveX version of the control!");
 					var insertRange = this.document.selection.createRange();
@@ -1427,15 +1429,15 @@ dojo.widget.defineWidget(
 			// summary:
 			//		filter the output after getting the content of the editing area
 			dom = dom || this.editNode;
-			if(nondistructive && dom['cloneNode']){
-				dom = dom.cloneNode(true);
-			}
 			if(this.contentDomPostFilters.length>0){
+				if(nondistructive && dom['cloneNode']){
+					dom = dom.cloneNode(true);
+				}
 				dojo.lang.forEach(this.contentDomPostFilters, function(ef){
 					dom = ef(dom);
 				});
 			}
-			var ec = this.getNodeChildrenHtml(dom);//dom.innerHTML;
+			var ec = this.getNodeChildrenHtml(dom);
 			if(dojo.string.trim(ec) == "&nbsp;"){ ec = ""; }
 
 			if(dojo.render.html.ie){
