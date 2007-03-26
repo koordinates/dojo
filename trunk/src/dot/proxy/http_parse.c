@@ -1469,13 +1469,15 @@ parseUrl(const char *url, int len,
 int
 urlIsLocal(const char *url, int len)
 {
-    return (len > 0 && url[0] == '/');
+    return (len >= 13 && strstr(url, "pac_check.txt")) ||
+            (len > 0 && url[0] == '/');
 }
 
 int
 urlIsSpecial(const char *url, int len)
 {
-    return (len >= 8 && memcmp(url, "/polipo/", 8) == 0);
+    return  (len >= 13 && strstr(url, "pac_check.txt")) ||
+            (len >= 8 && memcmp(url, "/polipo/", 8) == 0);
 }
 
 int

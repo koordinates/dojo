@@ -325,6 +325,21 @@ dojo.lang.mixin(dojo.off.ui, {
 			return;
 		}
 		
+		// check to see if we need a browser restart
+		// to be able to use this web app offline
+		dojo.debug("Checking in UI to see if we need a browser restart...");
+		if(dojo.off.requireOfflineCache == true
+			&& dojo.off.hasOfflineCache == true
+			&& dojo.off.browserRestart == true){
+			this._needsBrowserRestart();
+			return;
+		}else{
+			var browserRestart = dojo.byId("dot-widget-browser-restart");
+			if(browserRestart){
+				browserRestart.style.display = "none";
+			}
+		}
+		
 		// update our sync UI
 		this._updateSyncUI();
 		
@@ -797,6 +812,28 @@ dojo.lang.mixin(dojo.off.ui, {
 		dojo.debug("at bottom, dojo.off.goOffline="+dojo.off.goOffline);
 		
 		dojo.off.goOffline();
+	},
+	
+	_needsBrowserRestart: function(){
+		dojo.debug("needsBrowserRestart");
+		var browserRestart = dojo.byId("dot-widget-browser-restart");
+		if(browserRestart){
+			dojo.html.addClass(browserRestart, "dot-needs-browser-restart");
+		}
+		
+		var appName = dojo.byId("dot-widget-browser-restart-app-name");
+		if(appName){
+			appName.innerHTML = "";
+			appName.appendChild(document.createTextNode(this.appName));
+		}
+		
+		var elems = new Array();
+		elems.push(dojo.byId("dot-sync-controls"));
+		elems.push(dojo.byId("dot-sync-status"));
+		elems.push(dojo.byId("dot-more-commands"));
+		for(var i = 0; i < elems.length; i++){
+			elems[i].style.display = "none";
+		}
 	},
 	
 	_needsOfflineCache: function(){

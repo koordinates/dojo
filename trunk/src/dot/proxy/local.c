@@ -350,6 +350,10 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
 		hlen = snnprintf(buffer, 0, 1024,
                      "\r\nServer: polipo"
                      "\r\nContent-Type: text/javascript");
+	}else if(isPACCheck(object) == 1){
+		hlen = snnprintf(buffer, 0, 1024,
+                     "\r\nServer: polipo"
+                     "\r\nContent-Type: text/plain");
 	}else{
         hlen = snnprintf(buffer, 0, 1024,
                      "\r\nServer: polipo"
@@ -375,9 +379,14 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
         object->length = object->size;
 #ifndef NO_OFFLINE_SUPPORT
     } else if(disableOfflineSupport == 0 && 
-              matchUrl("/polipo/offline", object)) {
-	    handleOfflineAPI(object, requestor);
+            matchUrl("/polipo/offline", object)) {
+        handleOfflineAPI(object, requestor);
 #endif
+    } else if(isPACCheck(object) == 1) {
+        printf("pac_check.txt was requested");
+        objectPrintf(object, 0, 
+                    "the web application is inside the PAC file");
+        object->length = object->size;        
     } else if(matchUrl("/polipo/status", object)) {
         objectPrintf(object, 0,
                      "<!DOCTYPE HTML PUBLIC "
@@ -675,6 +684,28 @@ httpSpecialDoSideFinish(AtomPtr data, HTTPRequestPtr requestor)
     notifyObject(object);
     requestor->connection->flags &= ~CONN_READER;
     return 1;
+}
+
+int
+isPACCheck(ObjectPtr object)
+{
+    char *testUrl;
+    printf("isPACCheck\n");
+    
+    if(disableOfflineSupport == 1)
+        return 0;
+        
+    /* object->key doesn't use a null terminator, which
+       strstr requires; copy it over and add a null
+       terminator. */
+    testUrl = (char *)malloc((unsigned)(object->key_size + 1)); 
+    memcpy(testUrl, object->key, object->key_size);
+    testUrl[object->key_size] = '\0';
+    printf("testUrl=%s\n", testUrl);
+    if(strstr(testUrl, "pac_check.txt") != NULL)
+        return 1;
+    else
+        return 0;
 }
 
 #ifdef HAVE_FORK
