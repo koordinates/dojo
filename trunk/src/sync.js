@@ -15,7 +15,7 @@ dojo.provide("dojo.sync");
 //	we call a method named onCommand that applications should override and which
 //	will be called over and over for each of our commands -- applications should
 //	take the offline command information and use it to talk to a server to have
-//	this command actually happen online, 'syncing' ourselves with the server. If
+//	this command actually happen online, 'syncing' themselves with the server. If
 //	the command was "update" with the item that was updated, for example, we might
 //	call some RESTian server API that exists for updating an item in our application.
 //	The server could either then do sophisticated merging and conflict resolution on
@@ -402,11 +402,6 @@ dojo.lang.mixin(dojo.sync, {
 	//						"The document 'hello world' was automatically merged"];
 	details: new Array(),
 	
-	// lastSync: Date
-	//	The last successful sync that was performed, null
-	//	if none.
-	lastSync: null,
-	
 	// autoSync: boolean
 	//	Whether we do automatically sync on page load
 	//	or when we go online. If true we do, if false syncing
@@ -423,6 +418,7 @@ dojo.lang.mixin(dojo.sync, {
 	log: new dojo.sync.CommandLog(),
 	
 	synchronize: function(){ /* void */
+		dojo.debug("synchronize");
 		// summary:
 		//	Begin a synchronization session.
 		if(this.isSyncing == true
@@ -568,7 +564,6 @@ dojo.lang.mixin(dojo.sync, {
 		
 		if(this.cancelled == false && this.error == false){
 			this.successful = true;
-			this.lastSync = new Date();
 		}else{
 			this.successful = false;
 		}
@@ -576,33 +571,6 @@ dojo.lang.mixin(dojo.sync, {
 		if(this.onFinished){
 			this.onFinished();
 		}
-	},
-	
-	isRecommended: function(){ /* boolean */
-		// summary:
-		//	Whether syncing is recommended or not.
-		// description:
-		//	If the user has local data that has not been
-		//	synced, then we return true.
-		
-		var modifiedItems = this.getNumModifiedItems();
-		if(modifiedItems > 0){
-			return true;
-		}else{
-			return false;
-		}
-	},
-	
-	getNumModifiedItems: function(){ /* int */
-		// summary:
-		//	Returns the number of local modified items
-		// description:
-		//	This method internally determines the number
-		//	of items a user has locally modified, either
-		//	through creation, deletion, or updates.	
-		
-		// FIXME: Implement
-		return 5;
 	},
 	
 	save: function(finishedCallback){ /* void */

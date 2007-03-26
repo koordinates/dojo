@@ -114,7 +114,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	onOffline: function(){ /* void */
-		dojo.debug("origin onOffline called");
 		// summary:
 		//	Called when we go offline.
 		// description: 
@@ -123,7 +122,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	goOffline: function(){ /* void */
-		dojo.debug("goOffline");
 		// summary:
 		//	Manually goes offline, away from the network.
 		if(dojo.sync.isSyncing == true
@@ -140,7 +138,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	goOnline: function(finishedCallback){ /* void */
-		dojo.debug("goOnline");
 		// summary:
 		//	Attempts to go online.
 		// description:
@@ -164,16 +161,6 @@ dojo.lang.mixin(dojo.off, {
 		
 		// see if can reach our web application's web site
 		this._isSiteAvailable(finishedCallback);
-	},
-	
-	clear: function(){ /* void */
-		// summary:
-		//	Clears out local data
-		// description:
-		//	This method will clear application-level data
-		//	stored on the client; it will leave data that
-		//	is important for Dojo Offline's functioning
-		//	alone.
 	},
 	
 	addOnLoad: function(func){ /* void */
@@ -252,7 +239,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	addOfflineHost: function(resultsCallback /* Function(successful) */){
-		dojo.debug("addOfflineHost");
 		// summary:
 		//	Makes the this web application's host name, such as 
 		//  "sitepen.com", offline-enabled with a true offline cache.
@@ -305,7 +291,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	isHostAvailableOffline: function(resultsHandler /* function(availableOffline) */){
-		dojo.debug("isHostAvailableOffline");
 		// summary:
 		//	Checks to see if this host is already available
 		//	in our offline list with a previous call to
@@ -374,7 +359,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_onFrameworkDataLoaded: function(){
-		dojo.debug("onFrameworkDataLoaded");
 		// this method is part of our _onLoad series of startup tasks
 		
 		if(this.requireOfflineCache == false){
@@ -388,7 +372,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_onOfflineCacheChecked: function(){
-		dojo.debug("onOfflineCacheChecked");
 		// this method is part of our _onLoad series of startup tasks
 		
 		// if we have an offline cache, see if we have been added to the 
@@ -401,7 +384,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_onHostAvailabilityChecked: function(availableOffline){
-		dojo.debug("onHostAvailabilityChecked, availableOffline="+availableOffline);
 		// this method is part of our _onLoad series of startup tasks
 		
 		// if we are not available offline, try to add ourselves 
@@ -415,10 +397,9 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_onHostAdded: function(){
-		dojo.debug("onHostAdded");
 		// this method is part of our _onLoad series of startup tasks
 		
-		// FIXME: We really should deal with the situation where
+		// FIXME: We should deal with the situation where
 		// the local proxy _couldnt_ add this host correctly
 		
 		// see if our PAC file (Proxy AutoConfig) has this web application
@@ -428,7 +409,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_finishStartingUp: function(){
-		dojo.debug("finishStartingUp");
 		// this method is part of our _onLoad series of startup tasks
 		
 		// kick off a thread to check network status on
@@ -464,7 +444,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_isSiteAvailable: function(finishedCallback){
-		dojo.debug("isSiteAvailable");
 		// summary:
 		//	Determines if our web application's website
 		//	is available.
@@ -533,7 +512,6 @@ dojo.lang.mixin(dojo.off, {
 						dojo.off.isOnline = false;
 						// if we have a local proxy tell it our new network
 						// status
-						dojo.debug("startNetworkThread, error, dojo.off.onOffline="+dojo.off.onOffline);
 						dojo.off._tellCacheNetworkStatus(false, 
 										dojo.lang.hitch(dojo.off, dojo.off.onOffline));
 					}
@@ -544,7 +522,6 @@ dojo.lang.mixin(dojo.off, {
 						dojo.off.isOnline = true;
 						// if we have a local proxy tell it our new network
 						// status
-						dojo.debug("startNetworkThread, load, dojo.off.onOnline="+dojo.off.onOnline);
 						dojo.off._tellCacheNetworkStatus(true, 
 										dojo.lang.hitch(dojo.off, dojo.off.onOnline));
 					}
@@ -571,7 +548,6 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_tellCacheNetworkStatus: function(isOnline, finishedCallback){
-		dojo.debug("tellCacheNetworkStatus, isOnline="+isOnline+", finishedCallback="+finishedCallback);
 		if(this.requireOfflineCache == false
 			|| this.hasOfflineCache == false){
 			if(finishedCallback){
@@ -597,7 +573,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_talkToOfflineCache: function(methodName, resultsCallback){
-		dojo.debug("talkToOfflineCache, methodName="+methodName);
+		//dojo.debug("talkToOfflineCache, methodName="+methodName);
 		// causes us to talk to our local proxy that is running on
 		// localhost, communicating to it through it's API that
 		// is exposed by us calling it through JSONP
@@ -645,19 +621,17 @@ dojo.lang.mixin(dojo.off, {
 			sync:		false,
 			mimetype:	"text/plain",
 			error:		function(type, errObj){
+				//dojo.debug("_checkPac, type="+type+", errObj="+errObj);
 				dojo.off.browserRestart = false;
 				resultsCallback();
 			},
 			load:		function(type, data, evt){
-				dojo.debug("load, data="+data);
+				//dojo.debug("_checkPac, load, data="+data);
 				if(data.indexOf("the web application is not in PAC file") != -1){
-					dojo.debug("1");
 					dojo.off.browserRestart = true;
 				}else{
-					dojo.debug("2");
 					dojo.off.browserRestart = false;
 				}
-				dojo.debug("browserRestart="+dojo.off.browserRestart);
 				resultsCallback();
 			}
 		};

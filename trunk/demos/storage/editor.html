@@ -9,7 +9,7 @@
 	<script type="text/javascript">
 		var djConfig = 
 						{ 
-							isDebug: true, 
+							isDebug: false, 
 							parseWidgets: false, 
 							searchIds: ["storageValue"] 
 						};
@@ -40,7 +40,6 @@
 		#directory { width: 13em; }
 		#storageKey, #directory { margin-top: 0.3em; }
 		#saveButton { margin-left: 0.2em; }
-		/*#dot-widget-container { height: auto; }*/
 		
 		.widget { border: 2px solid #CDDDE9; }
 		.widgetTitleBar { background-color: #CDDDE9; padding-top: 0.2em; padding-bottom: 0.2em; }
@@ -89,37 +88,7 @@
 				Place the Dojo Offline widget here; it will be automagically
 			 	filled into any element with ID "dot-widget".
 			 -->
-			
-			<div id="dot-widget"></div>
-			
-			<!-- Customize what parts of the Offline Widget we see -->
-			<!--
-			<div id="dot-widget-container" style="visibility: hidden;">
-				<div id="dot-widget-title-bar">
-					<span id="dot-widget-network-indicator">
-						<img id="dot-widget-network-indicator-online" />
-						<img id="dot-widget-network-indicator-offline" />
-					</span>
-					<span id="dot-widget-title-text"></span>
-				</div>
-				
-				<div id="dot-widget-contents">
-					<div id="dot-sync-status">
-						<img id="dot-roller" />
-						<img id="dot-success-checkmark" />
-						<span id="dot-sync-messages"></span>
-						<span id="dot-sync-details">
-							(<a id="dot-sync-details-button" href="#">details</a>)
-						</span>
-					</div>
-					
-					<div id="dot-widget-learn-how">
-						<a id="dot-widget-learn-how-link" target="_blank" href="#">Learn How</a> 
-						to use <span id="dot-widget-learn-how-app-name"></span>&nbsp;Offline!
-					</div>
-				</div>
-			</div>
-			-->
+			<div id="dot-widget"></div>	
 		</div>
 		
 		<div id="content-container">
