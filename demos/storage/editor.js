@@ -49,8 +49,8 @@ dojo.off.files.cache([
 					djConfig.baseRelativePath + "src/widget/templates/buttons/indent.gif",
 					djConfig.baseRelativePath + "src/widget/templates/buttons/createlink.gif",
 					djConfig.baseRelativePath + "src/widget/templates/buttons/insertimage.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/inserthorizontalrule.gif",
-					djConfig.baseRelativePath + "nls/dojo_en.js"
+					djConfig.baseRelativePath + "src/widget/templates/buttons/inserthorizontalrule.gif" /*,
+					djConfig.baseRelativePath + "nls/dojo_en.js"*/
 					]);
 
 var Moxie = {

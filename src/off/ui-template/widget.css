@@ -6,7 +6,7 @@
 		user-font size settings
 	*/
 	width: 13em;
-	height: 14em;
+	height: auto;
 	border: 2px solid #CDDDE9; /* light tundra blue */
 	position: relative;
 	visibility: visible !important;
@@ -39,23 +39,7 @@
 	font-size: 11pt;
 }
 
-#dot-sync-button,
-#dot-syncing,
-#dot-configure-button,
-#dot-work-online-button,
-#dot-work-offline-button{
-	font-size: 14pt;
-}
-
-#dot-recommended,
-#dot-sync-cancel{
-	font-size: 11pt;
-}
-
-#dot-sync-controls{
-	margin-top: 0.8em;
-}
-
+#dot-sync-cancel,
 #dot-sync-status{
 	font-size: 11pt;
 }
@@ -84,66 +68,17 @@
 	margin-bottom: 0.8em;
 }
 
-#dot-last-sync{
-	line-height: 1.5em;
-}
-
-#dot-last-sync,
-#dot-num-modified-items{
-	font-size: 11pt;
-}
-
-#dot-num-modified-items{
-	padding-bottom: 0.3em;
-}
-
-#dot-more-commands{
-	position: absolute;
-	bottom: 8px;
-	padding-top: 3px;
-}
-
-#dot-configure-button{
-	margin-right: 0.5em; 
-}
-
-a.dot-disabled{
-	text-decoration: none;
-	color: LightGray;
-	cursor: text;
-}
-
 .dot-needs-offline-cache,
 .dot-needs-browser-restart{
-	padding-top: 1.5em;
 	text-align: center;
 	line-height: 1.2;
-}
-
-.dot-needs-offline-cache{
-    font-size: 16pt !important;
+	font-size: 16pt !important;
 }
 
 .dot-needs-browser-restart{
     font-size: 14pt !important;
-}
-
-#dot-configure{
-	display: none;
-}
-
-#dot-configure a{
-	margin-bottom: 0.5em;
-}
-
-#dot-configure-buttons{
-	position: absolute;
-	bottom: 8px;
-	width: 95%;
-}
-
-#dot-configure-ok-button{
-	float: right;
+    padding-bottom: 1em;
+    padding-top: 1em;
 }
 
 /** Learn How Page Styles */
