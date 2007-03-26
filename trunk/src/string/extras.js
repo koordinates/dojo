@@ -20,7 +20,7 @@ dojo.string.substitute = function(/*String*/template, /*Object or Array*/map, /*
 // transform: a function to process all parameters before substitution takes place, e.g. dojo.string.encodeXML
 // thisObject: where to look for optional format function; default to the global namespace
 
-	return template.replace(/\$\{([^\s\:]+)(?:\:(\S+))?\}/g, function(match, key, format){
+	return template.replace(/\$\{([^\s\:\}]+)(?:\:(\S+))?\}/g, function(match, key, format){
 		var value = dojo.getObject(key,false,map).toString();
 		if(format){ value = dojo.getObject(format,false,thisObject)(value);}
 		if(transform){ value = transform(value); }
