@@ -30,6 +30,10 @@ function test_string_substitute(){
 		thrown = e; // exception must be thrown
 	}
 	jum.assertTrue("test24", thrown);
+
+	var ps5 = dojo.string.substitute("<span title='${AuditInformation.EnteredBy}'>" +
+		"${AuditInformation.EnteredBy}</span>", {AuditInformation: {EnteredBy: 'joe'}});
+	jum.assertEquals("test25", "<span title='joe'>joe</span>", ps5);
 }
 
 function test_string_isBlank(){
