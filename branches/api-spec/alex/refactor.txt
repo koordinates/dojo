@@ -425,6 +425,37 @@ Some of this design work is contingent on getting answers to the outstanding
 "fast path" box model and style calcuation questions which are being worked on
 by Eugene.
 
+configuration:
+--------------
+
+Earlier versions of Dojo allowed the djConfig variable to provide a
+"allowQueryConfig" boolean flag in order to take debugging information from an
+easily modified location. This, however, required explicit permission from the
+djConfig flag which itself required its own <script> block. This was onerous
+and rarely used. It is also being replaced in 0.9 with a simpler system.
+
+Instead of requiring at *least* one extra <script> tag to configure Dojo, the
+system now supports a djConfig attribute on the <script> element which is used
+to include Dojo into the page. The value of this attribute much be well-formed
+JavaScript object literal syntax. Previously, putting Dojo into debugging mode
+required syntax such as this:
+
+    <script type="text/javascript">
+        djConfig = {
+            isDebug: true,
+            useXDomain: true
+        };
+    </script>
+    <script type="text/javascript" src="/path/to/dojo.js"></script>
+
+Could now be written as:
+
+    <script type="text/javascript" 
+        djConfig="isDebug: true, useXDomain: true"
+        src="/path/to/dojo.js"></script>
+
+Note that the prior syntax is still available, but is not likely to be
+advantageous since the new variation is smaller and easier to use.
 
 The Split:
 ==========
