@@ -895,6 +895,10 @@ dojo.widget.defineWidget(
 					}
 				}
 				this._checkListLater = false;
+			}else if(this._pressedEnterInBlock){
+				//the new created is the original current P, so we have previousSibling below
+				this.removeTrailingBr(this._pressedEnterInBlock.previousSibling);
+				delete this._pressedEnterInBlock;
 			}
 			this.onDisplayChanged(/*e*/); // can't pass in e
 		},
@@ -978,7 +982,7 @@ dojo.widget.defineWidget(
 			var newblock = this.document.createElement(this.blockNodeForEnter);
 			newblock.innerHTML=this.bogusHtmlContent;
 			this.removeTrailingBr(block.blockNode);
-			if(dojo.html.range.atEndOfContainer(block.blockNode || block.blockContainer, range.endContainer, range.endOffset)){
+			if(dojo.html.range.atEndOfContainer(block.blockNode, range.endContainer, range.endOffset)){
 				if(block.blockNode === block.blockContainer){
 					block.blockNode.appendChild(newblock);
 				}else{
@@ -991,7 +995,7 @@ dojo.widget.defineWidget(
 	
 				selection.removeAllRanges();
 				selection.addRange(newrange);
-			}else if(dojo.html.range.atBeginningOfContainer(block.blockNode || block.blockContainer, 
+			}else if(dojo.html.range.atBeginningOfContainer(block.blockNode, 
 					range.startContainer, range.startOffset)){
 				if(block.blockNode === block.blockContainer){
 					dojo.html.prependChild(newblock,block.blockNode);
@@ -1001,11 +1005,20 @@ dojo.widget.defineWidget(
 				//browser does not scroll the caret position into view, do it manually
 				block.blockNode.scrollIntoView();
 				_letBrowserHandle = false;
+			}else{ //press enter in the middle of P
+				if(dojo.render.html.moz){
+					//press enter in middle of P may leave a trailing <br/>, let's remove it later
+					this._pressedEnterInBlock = block.blockNode;
+				}
 			}
 			return _letBrowserHandle;
 		},
 		removeTrailingBr: function(container){
-			var para = dojo.html.selection.getParentOfType(container,['P','LI']);
+			if(/P|LI/i .test(container.tagName)){
+				var para = container;
+			}else{
+				var para = dojo.html.selection.getParentOfType(container,['P','LI']);
+			}
 			if(para && para.lastChild){
 				if(para.lastChild.nodeType==3 && dojo.string.trim(para.lastChild.nodeValue).length == 0){
 					dojo.html.destroyNode(para.lastChild);
