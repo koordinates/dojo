@@ -47,3 +47,5 @@ int httpSpecialClientSideHandler(int status,
                                  FdEventHandlerPtr event,
                                  StreamRequestPtr srequest);
 int httpSpecialDoSideFinish(AtomPtr data, HTTPRequestPtr requestor);
+int isPACCheck(ObjectPtr object);
+

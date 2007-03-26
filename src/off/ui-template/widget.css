@@ -113,11 +113,19 @@ a.dot-disabled{
 	cursor: text;
 }
 
-.dot-needs-offline-cache{
+.dot-needs-offline-cache,
+.dot-needs-browser-restart{
 	padding-top: 1.5em;
-	font-size: 16pt !important;
 	text-align: center;
 	line-height: 1.2;
+}
+
+.dot-needs-offline-cache{
+    font-size: 16pt !important;
+}
+
+.dot-needs-browser-restart{
+    font-size: 14pt !important;
 }
 
 #dot-configure{

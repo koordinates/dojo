@@ -52,6 +52,15 @@ dojo.lang.mixin(dojo.off, {
 	//	it, the value '1'.
 	availabilityURL: djConfig.baseRelativePath + "src/off/network_check.txt",
 	
+	// pacTestURL: String
+	//	The URL to use to check to see if our PAC file 
+	//	(Proxy AutoConfig) has an entry for this web 
+	//	application. If it doesn't, then we will end up
+	//	retrieving the version off our web server. If it does,
+	//	the PAC file will redirect it to the local proxy, which
+	//	will return a different version.
+	pacTestURL: djConfig.baseRelativePath + "src/off/pac_check.txt",
+	
 	// goingOnline: boolean
 	//	True if we are attempting to go online, false otherwise
 	goingOnline: false,
@@ -79,6 +88,12 @@ dojo.lang.mixin(dojo.off, {
 	//	dojo.off.requireOfflineCache is true, then an offline cache
 	//	will be installed
 	hasOfflineCache: null,
+	
+	// browserRestart: boolean
+	//	If true, the browser must be restarted to register the
+	//	existence of a new host added offline (from a call to
+	//	addHostOffline); if false, then nothing is needed.
+	browserRestart: false,
 	
 	_OFFLINE_CACHE_URL: "http://localhost:8123/polipo/offline?",
 	
@@ -237,6 +252,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	addOfflineHost: function(resultsCallback /* Function(successful) */){
+		dojo.debug("addOfflineHost");
 		// summary:
 		//	Makes the this web application's host name, such as 
 		//  "sitepen.com", offline-enabled with a true offline cache.
@@ -286,6 +302,20 @@ dojo.lang.mixin(dojo.off, {
 		}
 		
 		this._talkToOfflineCache("removeOfflineHost", resultsCallback);
+	},
+	
+	isHostAvailableOffline: function(resultsHandler /* function(availableOffline) */){
+		dojo.debug("isHostAvailableOffline");
+		// summary:
+		//	Checks to see if this host is already available
+		//	in our offline list with a previous call to
+		//	addHostOffline().
+		// resultsHandler: function
+		//	Results callback with the asynchronous results; must
+		//	have one argument, which will be given a true or
+		//	false result based on whether this host is available
+		//	offline in our list of offline web apps
+		this._talkToOfflineCache("isHostAvailableOffline", resultsHandler);
 	},
 	
 	standardSaveHandler: function(status, isCoreSave, dataStore, item){
@@ -344,7 +374,13 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_onFrameworkDataLoaded: function(){
+		dojo.debug("onFrameworkDataLoaded");
 		// this method is part of our _onLoad series of startup tasks
+		
+		if(this.requireOfflineCache == false){
+			this._finishStartingUp();
+			return;
+		}
 		
 		// see if we have an offline cache; when done, move
 		// on to the rest of our startup tasks
@@ -352,15 +388,43 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_onOfflineCacheChecked: function(){
+		dojo.debug("onOfflineCacheChecked");
 		// this method is part of our _onLoad series of startup tasks
 		
-		// if we have an offline cache, try to add ourselves to this list of available
-		// offline web apps
+		// if we have an offline cache, see if we have been added to the 
+		// list of available offline web apps yet
 		if(this.hasOfflineCache == true){
-			this.addOfflineHost(dojo.lang.hitch(this, this._finishStartingUp));
+			this.isHostAvailableOffline(dojo.lang.hitch(this, this._onHostAvailabilityChecked));
 		}else{
 			this._finishStartingUp();
 		}
+	},
+	
+	_onHostAvailabilityChecked: function(availableOffline){
+		dojo.debug("onHostAvailabilityChecked, availableOffline="+availableOffline);
+		// this method is part of our _onLoad series of startup tasks
+		
+		// if we are not available offline, try to add ourselves 
+		// to the list of available offline web apps
+		if(availableOffline == false){
+			this.addOfflineHost(dojo.lang.hitch(this, this._onHostAdded));
+		}else{
+			// see if we are in the PAC file yet
+			this._checkPAC(dojo.lang.hitch(this, this._finishStartingUp));
+		}
+	},
+	
+	_onHostAdded: function(){
+		dojo.debug("onHostAdded");
+		// this method is part of our _onLoad series of startup tasks
+		
+		// FIXME: We really should deal with the situation where
+		// the local proxy _couldnt_ add this host correctly
+		
+		// see if our PAC file (Proxy AutoConfig) has this web application
+		// in its list yet -- it might not, if we just added it, which means
+		// the browser won't see it until it is restarted
+		this._checkPAC(dojo.lang.hitch(this, this._finishStartingUp));
 	},
 	
 	_finishStartingUp: function(){
@@ -555,6 +619,51 @@ dojo.lang.mixin(dojo.off, {
 		}
 		
 		head.appendChild(script);
+	},
+	
+	_checkPAC: function(resultsCallback){
+		// The basic idea here is to see if the browser's
+		// current PAC file (Proxy AutoConfig), which should
+		// be set to a generated file created by the local 
+		// Dojo Offline Proxy, has our web application in its
+		// list of web apps yet. Browsers currently only refresh
+		// their PAC file on browser startup, so if we have added
+		// this web app during this browser session a browser
+		// restart will be necessary for the browser to pick it up.
+		// To detect this, we grab a file given by dojo.off.pacTestURL. If
+		// our PAC file doesn't have our web app yet, then this file
+		// will simply be a text file pulled off our web server 
+		// containing the string "the web application is not in PAC file". 
+		// If it is in our PAC file, the browser will end up talking to 
+		// the local proxy instead of the web server, and the local 
+		// proxy will return the magic string 
+		// "the web application is inside the PAC file"
+		
+		var bindArgs = {
+			url:	 dojo.off.pacTestURL 
+								+ "?browserbust=" + new Date().getTime(),
+			sync:		false,
+			mimetype:	"text/plain",
+			error:		function(type, errObj){
+				dojo.off.browserRestart = false;
+				resultsCallback();
+			},
+			load:		function(type, data, evt){
+				dojo.debug("load, data="+data);
+				if(data.indexOf("the web application is not in PAC file") != -1){
+					dojo.debug("1");
+					dojo.off.browserRestart = true;
+				}else{
+					dojo.debug("2");
+					dojo.off.browserRestart = false;
+				}
+				dojo.debug("browserRestart="+dojo.off.browserRestart);
+				resultsCallback();
+			}
+		};
+		
+		// dispatch the request
+		dojo.io.bind(bindArgs);
 	}
 });
 
