@@ -112,6 +112,22 @@ dojo.lang.extend(dojo.io.Request, {
 
 	/** Prevent the browser from caching this by adding a query string argument to the URL */
 	preventCache: false,
+
+	jsonFilter: function(value){
+		if(	(this.mimetype == "text/json-comment-filtered")||
+			(this.mimetype == "application/json-comment-filtered")
+		){
+			var cStartIdx = value.indexOf("\/*");
+			var cEndIdx = value.lastIndexOf("*\/");
+			if((cStartIdx == -1)||(cEndIdx == -1)){
+				dojo.debug("your JSON wasn't comment filtered!"); // FIXME: throw exception instead?
+				return "";
+			}
+			return value.substring(cStartIdx+2, cEndIdx);
+		}
+		dojo.debug("please consider using a mimetype of text/json-comment-filtered to avoid potential security issues with JSON endpoints");
+		return value;
+	},
 	
 	// events stuff
 	load: function(/*String*/type, /*Object*/data, /*Object*/transportImplementation, /*Object*/kwArgs){
