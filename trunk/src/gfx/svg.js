@@ -26,6 +26,20 @@ dojo.gfx.svg.getRef = function(name){
 	return null;	// Node
 };
 
+dojo.gfx.svg.dasharray = {
+	solid:				"none",
+	shortdash:			[4, 1],
+	shortdot:			[1, 1],
+	shortdashdot:		[4, 1, 1, 1],
+	shortdashdotdot:	[4, 1, 1, 1, 1, 1],
+	dot:				[1, 3],
+	dash:				[4, 3],
+	longdash:			[8, 3],
+	dashdot:			[4, 3, 1, 3],
+	longdashdot:		[8, 3, 1, 3],
+	longdashdotdot:		[8, 3, 1, 3, 1, 3]
+};
+
 dojo.lang.extend(dojo.gfx.Shape, {
 	// summary: SVG-specific implementation of dojo.gfx.Shape methods
 	
@@ -111,6 +125,25 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			}else{
 				rn.setAttribute("stroke-linejoin",   s.join);
 			}
+			var da = s.style.toLowerCase();
+			if(da in dojo.gfx.svg.dasharray){ da = dojo.gfx.svg.dasharray[da]; }
+			if(da instanceof Array){
+				for(var i = 0; i < da.length; ++i){
+					da[i] *= s.width;
+				}
+				if(s.cap != "butt"){
+					for(var i = 0; i < da.length; i += 2){
+						da[i] -= s.width;
+						if(da[i] < 1){ da[i] = 1; }
+					}
+					for(var i = 1; i < da.length; i += 2){
+						da[i] += s.width;
+					}
+				}
+				da = da.join(",");
+			}
+			rn.setAttribute("stroke-dasharray", da);
+			rn.setAttribute("dojoGfxStrokeStyle", s.style);
 		}
 		return this;	// self
 	},
@@ -308,6 +341,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			if(strokeStyle.join == "miter"){
 				strokeStyle.join = rawNode.getAttribute("stroke-miterlimit");
 			}
+			strokeStyle.style = rawNode.getAttribute("dojoGfxStrokeStyle");
 		}
 		return strokeStyle;	// Object
 	},
