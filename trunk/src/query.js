@@ -43,6 +43,22 @@ dojo.experimental("dojo.query");
 		}
 	}
 
+	var getTagNameEnd = function(query){
+		var i = _getIndexes(query);
+		if((i[0] == 0)||(i[1] == 0)){
+			// hash or dot at the front, no tagname
+			return 0;
+		}else{
+			return _lowestFromIndex(query, 0);
+		}
+	}
+
+	var getTagName = function(query){
+		var tagNameEnd = getTagNameEnd(query);
+		// FIXME: should this be ">=" to account for tags like <a> ?
+		return ((tagNameEnd > 0) ? query.substr(0, tagNameEnd).toLowerCase() : "*");
+	}
+
 	////////////////////////////////////////////////////////////////////////
 	// XPath query code
 	////////////////////////////////////////////////////////////////////////
@@ -304,23 +320,6 @@ dojo.experimental("dojo.query");
 			_filterDown(te, queryParts, ret, 0);
 		}
 		return ret;
-	}
-
-	var getTagNameEnd = function(query){
-		var i = _getIndexes(query);
-		if((i[0] == 0)||(i[1] == 0)){
-			// hash or dot at the front, no tagname
-			return 0;
-		}else{
-			return _lowestFromIndex(query, 0);
-		}
-	}
-
-
-	var getTagName = function(query){
-		var tagNameEnd = getTagNameEnd(query);
-		// FIXME: should this be ">=" to account for tags like <a> ?
-		return ((tagNameEnd > 0) ? query.substr(0, tagNameEnd).toLowerCase() : "*");
 	}
 
 	var getFilterFunc = function(query){
