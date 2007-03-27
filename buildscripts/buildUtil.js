@@ -732,7 +732,7 @@ buildUtil.internTemplateStrings = function(profileFile, loader, releaseDir, srcR
 	load("buildUtil.js");
 
 	var profile = buildUtil.evalProfile(profileFile);
-	var dependencies = profileFile.dependencies;
+	var dependencies = profile.dependencies;
 
 	var prefixes = dependencies["prefixes"] || [];
 	//Make sure dojo is in the list.
