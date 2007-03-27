@@ -10,7 +10,6 @@ dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.html.display");
 dojo.require("dojo.html.layout");
-//dojo.require("dojo.animation.Animation");
 dojo.require("dojo.gfx.color");
 
 dojo.widget.defineWidget(
@@ -436,14 +435,22 @@ dojo.widget.defineWidget(
 				}else if(tmpAction == "wipeout"){
 					dojo.lfx.html.wipeOut(component, duration).play();
 				}else if(tmpAction == "color"){
-					var from = new dojo.gfx.color.Color(action.from).toRgb();
-					var to = new dojo.gfx.color.Color(action.to).toRgb();
-					var anim = new dojo.animation.Animation(new dojo.math.curves.Line(from, to), duration, 0);
-					var node = component;
-					dojo.event.connect(anim, "onAnimate", function(e) {
-						node.style.color = "rgb(" + e.coordsAsInts().join(",") + ")";
-					});
-					anim.play(true);
+                    var node = component;
+                    var from = new dojo.gfx.color.Color(action.from);
+                    var to = new dojo.gfx.color.Color(action.to);
+
+                    var anim = new dojo.lfx.propertyAnimation(node,
+                        { "background-color": { start: from, end: to } },
+                            duration,
+                            0,
+                        {
+                            "beforeBegin": function(){
+                                node.style.backgroundColor = "rgb(" + from.toRgb().join(",") + ")";
+                            }
+                        }
+                    );
+                    
+                    anim.play(true);
 				}else if(tmpAction == "bgcolor"){
 					dojo.lfx.html.unhighlight(component, action.to, duration).play();
 				}else if(tmpAction == "remove"){
