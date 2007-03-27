@@ -436,5 +436,6 @@ dojo.declare("dojo.gfx.shape.Text", dojo.gfx.Shape,
 		this.fontStyle = typeof newFont == "string" ? dojo.gfx.splitFontString(newFont) :
 			dojo.gfx.makeParameters(dojo.gfx.defaultFont, newFont);
 		this._setFont();
+		return this;	// self
 	}
 });

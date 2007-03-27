@@ -4,6 +4,7 @@ dojo.require("dojo.gfx.color");
 dojo.require("dojo.lang.declare");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.dom");
+dojo.require("dojo.html.metrics");
 
 dojo.lang.mixin(dojo.gfx, {
 	// summary: defines constants, prototypes, and utility functions
@@ -22,7 +23,7 @@ dojo.lang.mixin(dojo.gfx, {
 		align: "start", decoration: "none", rotated: false, kerning: true },
 
 	// default geometric attributes
-	defaultStroke: {type: "stroke", color: "black", width: 1, cap: "butt", join: 4},
+	defaultStroke: {type: "stroke", color: "black", style: "solid", width: 1, cap: "butt", join: 4},
 	defaultLinearGradient: {type: "linear", x1: 0, y1: 0, x2: 100, y2: 100, 
 		colors: [{offset: 0, color: "black"}, {offset: 1, color: "white"}]},
 	defaultRadialGradient: {type: "radial", cx: 0, cy: 0, r: 100, 
@@ -114,6 +115,41 @@ dojo.lang.mixin(dojo.gfx, {
 			font.family = t[j + 1];
 		}while(false);
 		return font;	// Object
+	},
+	// length operations
+	cm_in_pt: 72 / 2.54,	// Number: centimeters per inch
+	mm_in_pt: 7.2 / 2.54,	// Number: millimeters per inch
+	px_in_pt: function(){
+		// summary: returns a number of pixels per point
+		return dojo.html.getCachedFontMeasurements()["12pt"] / 12;	// Number
+	},
+	pt2px: function(len){
+		// summary: converts points to pixels
+		// len: Number: a value in points
+		return len * dojo.gfx.px_in_pt();	// Number
+	},
+	px2pt: function(len){
+		// summary: converts pixels to points
+		// len: Number: a value in pixels
+		return len / dojo.gfx.px_in_pt();	// Number
+	},
+	normalizedLength: function(len) {
+		// summary: converts any length value to pixels
+		// len: String: a length, e.g., "12pc"
+		if(len.length == 0) return 0;
+		if(len.length > 2){
+			var px_in_pt = dojo.gfx.px_in_pt();
+			var val = parseFloat(len);
+			switch(len.slice(-2)){
+				case "px": return val;
+				case "pt": return val * px_in_pt;
+				case "in": return val * 72 * px_in_pt;
+				case "pc": return val * 12 * px_in_pt;
+				case "mm": return val / dojo.gfx.mm_in_pt * px_in_pt;
+				case "cm": return val / dojo.gfx.cm_in_pt * px_in_pt;
+			}
+		}
+		return parseFloat(len);	// Number
 	},
 	
 	// a constant used to split a SVG/VML path into primitive components

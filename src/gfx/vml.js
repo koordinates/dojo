@@ -5,7 +5,6 @@ dojo.require("dojo.math");
 dojo.require("dojo.lang.declare");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.string.*");
-dojo.require("dojo.html.metrics");
 
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.gfx.common");
@@ -143,8 +142,8 @@ dojo.lang.extend(dojo.gfx.Shape, {
 					fo.src = f.src;
 					if(f.width && f.height){
 						// in points
-						fo.size.x = dojo.gfx.vml.px2pt(f.width);
-						fo.size.y = dojo.gfx.vml.px2pt(f.height);
+						fo.size.x = dojo.gfx.px2pt(f.width);
+						fo.size.y = dojo.gfx.px2pt(f.height);
 					}
 					fo.alignShape = false;
 					fo.position.x = 0;
@@ -197,6 +196,7 @@ dojo.lang.extend(dojo.gfx.Shape, {
 				rn.stroke.joinstyle = s.join;
 				// rn.stroke.miterlimit = s.width;
 			}
+			rn.stroke.dashstyle = s.style == "none" ? "Solid" : s.style;
 		}
 		return this;	// self
 	},
@@ -288,8 +288,8 @@ dojo.lang.extend(dojo.gfx.Shape, {
 				}
 			}else if(fo.on && fo.type == "tile"){
 				var fillStyle = dojo.lang.shallowCopy(dojo.gfx.defaultPattern, true);
-				fillStyle.width  = dojo.gfx.vml.pt2px(fo.size.x); // from pt
-				fillStyle.height = dojo.gfx.vml.pt2px(fo.size.y); // from pt
+				fillStyle.width  = dojo.gfx.pt2px(fo.size.x); // from pt
+				fillStyle.height = dojo.gfx.pt2px(fo.size.y); // from pt
 				fillStyle.x = fo.origin.x * fillStyle.width;
 				fillStyle.y = fo.origin.y * fillStyle.height;
 				fillStyle.src = fo.src;
@@ -309,10 +309,11 @@ dojo.lang.extend(dojo.gfx.Shape, {
 		if(rawNode && rawNode.stroked){
 			strokeStyle.color = new dojo.gfx.color.Color(rawNode.strokecolor.value);
 			dojo.debug("We are expecting an .75pt here, instead of strokeweight = " + rawNode.strokeweight );
-			strokeStyle.width = dojo.gfx.vml.normalizedLength(rawNode.strokeweight+"");
+			strokeStyle.width = dojo.gfx.normalizedLength(rawNode.strokeweight+"");
 			strokeStyle.color.a = rawNode.stroke.opacity;
 			strokeStyle.cap = this._translate(this._capMapReversed, rawNode.stroke.endcap);
 			strokeStyle.join = rawNode.stroke.joinstyle == "miter" ? rawNode.stroke.miterlimit : rawNode.stroke.joinstyle;
+			strokeStyle.style = rawNode.stroke.dashstyle;
 		}else{
 			return null;
 		}
@@ -329,8 +330,8 @@ dojo.lang.extend(dojo.gfx.Shape, {
 			matrix.xy = s.matrix.ytox;
 			matrix.yx = s.matrix.xtoy;
 			matrix.yy = s.matrix.ytoy;
-			matrix.dx = dojo.gfx.vml.pt2px(s.offset.x);
-			matrix.dy = dojo.gfx.vml.pt2px(s.offset.y);
+			matrix.dx = dojo.gfx.pt2px(s.offset.x);
+			matrix.dy = dojo.gfx.pt2px(s.offset.y);
 		}
 		return dojo.gfx.matrix.normalize(matrix);	// dojo.gfx.matrix.Matrix
 	},
@@ -849,7 +850,7 @@ dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text,
 		var matrix = dojo.gfx.Shape.prototype.attachTransform.call(this);
 		// see comments in _getRealMatrix()
 		if(matrix){
-			matrix = dojo.gfx.matrix.multiply(matrix, {dy: dojo.gfx.vml.normalizedLength(this.fontStyle.size) * 0.35});
+			matrix = dojo.gfx.matrix.multiply(matrix, {dy: dojo.gfx.normalizedLength(this.fontStyle.size) * 0.35});
 		}
 		return matrix;	// dojo.gfx.Matrix2D
 	},
@@ -863,7 +864,7 @@ dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text,
 		// more-or-less common value of 0.7 * FontSize, which is typical for European fonts.
 		if(matrix){
 			matrix = dojo.gfx.matrix.multiply(matrix, 
-				{dy: -dojo.gfx.vml.normalizedLength(this.fontStyle ? this.fontStyle.size : "10pt") * 0.35});
+				{dy: -dojo.gfx.normalizedLength(this.fontStyle ? this.fontStyle.size : "10pt") * 0.35});
 		}
 		return matrix;	// dojo.gfx.Matrix2D
 	}
