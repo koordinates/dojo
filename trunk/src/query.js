@@ -59,6 +59,35 @@ dojo.experimental("dojo.query");
 		return ((tagNameEnd > 0) ? query.substr(0, tagNameEnd).toLowerCase() : "*");
 	}
 
+	var smallest = function(arr){
+		var ret = -1;
+		for(var x=0; x<arr.length; x++){
+			var ta = arr[x];
+			if(ta >= 0){
+				if((ta > ret)||(ret == -1)){
+					ret = ta;
+				}
+			}
+		}
+		return ret;
+	}
+
+	var getClassName = function(query){
+		// [ "#", ".", "[", ":" ];
+		var i = _getIndexes(query);
+		if(-1 == i[1]){ return ""; } // no class component
+		var di = i[1]+1;
+
+		var othersStart = smallest(i.slice(2));
+		if(di < othersStart){
+			return query.substring(di, othersStart);
+		}else if(-1 == othersStart){
+			return query.substr(di);
+		}else{
+			return "";
+		}
+	}
+
 	////////////////////////////////////////////////////////////////////////
 	// XPath query code
 	////////////////////////////////////////////////////////////////////////
@@ -365,35 +394,6 @@ dojo.experimental("dojo.query");
 		}
 
 		return _filtersCache[query] = ff;
-	}
-
-	var smallest = function(arr){
-		var ret = -1;
-		for(var x=0; x<arr.length; x++){
-			var ta = arr[x];
-			if(ta >= 0){
-				if((ta > ret)||(ret == -1)){
-					ret = ta;
-				}
-			}
-		}
-		return ret;
-	}
-
-	var getClassName = function(query){
-		// [ "#", ".", "[", ":" ];
-		var i = _getIndexes(query);
-		if(-1 == i[1]){ return ""; } // no class component
-		var di = i[1]+1;
-
-		var othersStart = smallest(i.slice(2));
-		if(di < othersStart){
-			return query.substring(di, othersStart);
-		}else if(-1 == othersStart){
-			return query.substr(di);
-		}else{
-			return "";
-		}
 	}
 
 	var getNodeIndex = function(node){
