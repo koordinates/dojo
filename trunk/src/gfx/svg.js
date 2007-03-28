@@ -456,7 +456,7 @@ dojo.gfx.Line.nodeType = "line";
 dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline, {
 	// summary: a polyline/polygon shape (SVG)
 	
-	setShape: function(points){
+	setShape: function(points, closed){
 		// summary: sets a polyline/polygon shape object (SVG)
 		// points: Object: a polyline/polygon shape object
 		if(points && points instanceof Array){
@@ -472,13 +472,23 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline, {
 		this.box = null;
 		var attr = [];
 		var p = this.shape.points;
-		for(var i = 0; i < p.length; ++i){
-			if(dojo.render.html.safari){
-				attr.push(parseInt(p[i].x));
-				attr.push(parseInt(p[i].y));
-			}else{
-				attr.push(p[i].x.toFixed(8));
-				attr.push(p[i].y.toFixed(8));
+		if(dojo.render.html.safari){
+			for(var i = 0; i < p.length; ++i){
+				if(typeof p[i] == "number"){
+					attr.push(parseInt(p[i]));
+				}else{
+					attr.push(parseInt(p[i].x));
+					attr.push(parseInt(p[i].y));
+				}
+			}
+		}else{
+			for(var i = 0; i < p.length; ++i){
+				if(typeof p[i] == "number"){
+					attr.push(p[i].toFixed(8));
+				}else{
+					attr.push(p[i].x.toFixed(8));
+					attr.push(p[i].y.toFixed(8));
+				}
 			}
 		}
 		this.rawNode.setAttribute("points", attr.join(" "));
