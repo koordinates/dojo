@@ -160,9 +160,37 @@ dojo.require("dojo.html.iframe");
 				y += child.selected ? dojo.html.getBorderBox(child.domNode).height : child.getLabelHeight();
 			}, this);
 			dojo.lfx.combine(anims).play();
-		}
-	}
-);
+		},
+		focusNextLabel: function(/*Widget*/ page){
+			var bFound = false;
+			dojo.lang.forEach(this.children, function(child, idx){
+				if(child==page){
+					bFound = true;
+					child.setFocus(false);
+				}else{
+					if(bFound){
+						child.setFocus(true);
+						bFound = false;
+					}
+				}
+			}, this);
+		},
+
+		focusPreviousLabel: function(/*Widget*/ page){
+			var nPrevious = null;
+			dojo.lang.forEach(this.children, function(child, idx){
+				if(child==page){
+					child.setFocus(false);
+					if(nPrevious){
+						nPrevious.setFocus(true);
+					}
+				}
+				nPrevious = child;
+			}, this);
+ 		}
+ 	}
+ );
+	
 
 dojo.widget.defineWidget(
 	"dojo.widget.AccordionPane",
@@ -199,7 +227,7 @@ dojo.widget.defineWidget(
 	fillInTemplate: function() {
 		dojo.html.addClass(this.domNode, this["class"]);
 		dojo.widget.AccordionPane.superclass.fillInTemplate.call(this);
-		dojo.html.disableSelection(this.labelNode);
+		//dojo.html.disableSelection(this.labelNode);
 		this.setSelected(this.selected);
 
 		// Prevent IE bleed-through problem
@@ -231,11 +259,46 @@ dojo.widget.defineWidget(
 		// summary: callback when someone clicks my label
 		this.parent.selectChild(this);
 	},
+        onLabelKey: function(/*Event*/ e) {
+		// summary: callback when someone presses a key while focus is on my label
+		var k = dojo.event.browser.keys;
+		switch(e.key){
+			case " ":
+				this.onLabelClick();
+				dojo.event.browser.stopEvent(e);
+				return;
+			case k.KEY_LEFT_ARROW:
+				this.parent.focusPreviousLabel(this);
+				dojo.event.browser.stopEvent(e);
+				return;
+			case k.KEY_RIGHT_ARROW:
+				this.parent.focusNextLabel(this);
+				dojo.event.browser.stopEvent(e);
+				return;
+	 	}
+	},
+
+	onFocus: function(/*Event*/ e){dojo.debug((this["class"]+"-focused"));
+		dojo.html.addClass(this.domNode, this["class"]+"-focused");
+		this.onLabelClick();
+	},
+
+	onBlur: function(/*Event*/ e){
+		dojo.html.removeClass(this.domNode, this["class"]+"-focused");
+		
+	},
+
+	setFocus: function(/*Boolean*/ isFocused){
+		if(isFocused){
+			this.labelNode.focus();
+		}
+	},
+
 	
 	setSelected: function(/*Boolean*/ isSelected){
 		this.selected=isSelected;
 		(isSelected ? dojo.html.addClass : dojo.html.removeClass)(this.domNode, this["class"]+"-selected");
-
+		this.labelNode.tabIndex = isSelected ? 0 : -1;
 		// make sure child is showing (lazy load), and also that onShow()/onHide() is called
 		var child = this.children[0];
 		if(child){
