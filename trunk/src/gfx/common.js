@@ -153,7 +153,8 @@ dojo.lang.mixin(dojo.gfx, {
 	},
 	
 	// a constant used to split a SVG/VML path into primitive components
-	pathRegExp: /([A-Za-z]+)|(\d+(\.\d+)?)|(\.\d+)|(-\d+(\.\d+)?)|(-\.\d+)/g
+	pathVmlRegExp: /([A-Za-z]+)|(\d+(\.\d+)?)|(\.\d+)|(-\d+(\.\d+)?)|(-\.\d+)/g,
+	pathSvgRegExp: /([A-Za-z])|(\d+(\.\d+)?)|(\.\d+)|(-\d+(\.\d+)?)|(-\.\d+)/g
 });
 
 dojo.declare("dojo.gfx.Surface", null,

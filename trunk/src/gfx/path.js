@@ -282,7 +282,7 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
 	_setPath: function(path){
 		// summary: forms a path using an SVG path string
 		// path: String: an SVG path string
-		var p = dojo.lang.isArray(path) ? path : path.match(dojo.gfx.pathRegExp);
+		var p = dojo.lang.isArray(path) ? path : path.match(dojo.gfx.pathSvgRegExp);
 		this.segments = [];
 		this.absolute = true;
 		this.bbox = {};
