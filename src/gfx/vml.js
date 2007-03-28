@@ -556,7 +556,7 @@ dojo.declare("dojo.gfx.Line", dojo.gfx.shape.Line,
 	attachShape: function(rawNode){
 		// summary: builds a line shape from a Node.
 		// rawNode: Node: an VML node
-		var p = rawNode.path.v.match(dojo.gfx.pathRegExp);
+		var p = rawNode.path.v.match(dojo.gfx.pathVmlRegExp);
 		var shape = {};
 		do{
 			if(p.length < 7 || p[0] != "m" || p[3] != "l" || p[6] != "e") break;
@@ -589,7 +589,7 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline,
 		// summary: builds a polyline/polygon shape from a Node.
 		// rawNode: Node: an VML node
 		var shape = dojo.lang.shallowCopy(dojo.gfx.defaultPolyline, true);
-		var p = rawNode.path.v.match(dojo.gfx.pathRegExp);
+		var p = rawNode.path.v.match(dojo.gfx.pathVmlRegExp);
 		do{
 			if(p.length < 3 || p[0] != "m") break;
 			var x = parseInt(p[0]);
@@ -731,7 +731,7 @@ dojo.declare("dojo.gfx.Text", dojo.gfx.shape.Text,
 		var shape = null;
 		if(rawNode){
 			shape = dojo.lang.shallowCopy(dojo.gfx.defaultText, true);
-			var p = rawNode.path.v.match(dojo.gfx.pathRegExp);
+			var p = rawNode.path.v.match(dojo.gfx.pathVmlRegExp);
 			if(!p || p.length != 7){ return null; }
 			var c = rawNode.childNodes;
 			for(var i = 0; i < c.length; ++i){
@@ -914,7 +914,7 @@ dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
 		// summary: builds a path shape from a Node.
 		// rawNode: Node: an VML node
 		var shape = dojo.lang.shallowCopy(dojo.gfx.defaultPath, true);
-		var p = rawNode.path.v.match(dojo.gfx.pathRegExp);
+		var p = rawNode.path.v.match(dojo.gfx.pathVmlRegExp);
 		var t = [], skip = false;
 		for(var i = 0; i < p.length; ++p){
 			var s = p[i];
