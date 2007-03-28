@@ -155,7 +155,11 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
 		if(typeof(this.shape.path) == "string"){
 			this.shape.path += path.join("");
 		}else{
-			this.shape.path = this.shape.path.concat(path);
+			var l = path.length;
+			var a = this.shape.path;
+			for(var i = 0; i < l; ++i){
+				a.push(path[i]);
+			}
 		}
 	},
 	
@@ -278,7 +282,7 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
 	_setPath: function(path){
 		// summary: forms a path using an SVG path string
 		// path: String: an SVG path string
-		var p = path.match(dojo.gfx.pathRegExp);
+		var p = dojo.lang.isArray(path) ? path : path.match(dojo.gfx.pathRegExp);
 		this.segments = [];
 		this.absolute = true;
 		this.bbox = {};
@@ -287,7 +291,8 @@ dojo.declare("dojo.gfx.path.Path", dojo.gfx.Shape,
 		// create segments
 		var action = "";	// current action
 		var args = [];		// current arguments
-		for(var i = 0; i < p.length; ++i){
+		var l = p.length;
+		for(var i = 0; i < l; ++i){
 			var t = p[i];
 			var x = parseFloat(t);
 			if(isNaN(x)){
