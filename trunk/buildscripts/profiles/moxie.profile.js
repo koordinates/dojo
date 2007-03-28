@@ -16,6 +16,7 @@ var dependencies = [
 	"dojo.widget.FloatingPane",
 	"dojo.widget.ContentPane",
 	"dojo.widget.Editor2",
+	"dojo.widget.Editor2Toolbar",
 	"dojo.widget.PopupContainer",
 	"dojo.widget.ColorPalette",
 	"dojo.widget.Editor2Plugin.ColorPicker",
