@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section>
+    <title>Performance</title>
+    <para>Tree was coded with performance in mind. Although, JavaScript itself is a slow language.
+        Flexible model requires some code that slows it down. It's not DOM manipulations, but actually
+        javascript that I couldn't make lighter. Being a part of dojo/widget structure also implies some overhead, but also power.
+    </para>
+    <para>        
+        Almost all operations require small constant time when single node is involved. Depending on your
+        application you may notice slowdown when (most common) creating lots of nodes or
+        performing other batch operations.
+    </para>
+    <para>
+        In my tests 1000 nodes required 0.7-0.8 sec, growth is linear, depth does not matter, children
+        are created with  <code>createSimple</code> and added to parent all at once with <code>setChildren</code>.                
+    </para>
+    <para>Creation from markup or with standard create/addChild routines is  2-3 times slower,
+        because these routines are generic.</para>
+
+    <para>Memory footprint (IE,FF) is about 1M per 100 nodes</para>
+    
+    <section>
+        <title>Comparison</title>
+        <para>Fast node creation with dojo tree is 2-3 times slower than xtree 1.7, another tree widget, not
+            so featured, but nicely optimized for performance.
+        </para>
+        
+    </section>
+        
+    <important>The results described here refer to operations without any lazy features involved.
+        Most of time you will use lazy creation or lazy loading, or both, and operate with 10000 "virtual" nodes with ease.</important>
+    
+    
+</section>
+
