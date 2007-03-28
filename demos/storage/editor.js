@@ -6,6 +6,7 @@ dojo.require("dojo.lfx.*");
 dojo.require("dojo.widget.Editor2");
 dojo.require("dojo.storage.*");
 dojo.require("dojo.off.*");
+dojo.require("dojo.off.ui");
 dojo.require("dojo.sync");
 
 // configure how we should work offline
@@ -33,24 +34,8 @@ dojo.off.files.cache([
 					djConfig.baseRelativePath + "src/widget/templates/images/tab_close.gif",
 					djConfig.baseRelativePath + "src/widget/templates/richtextframe.html",
 					djConfig.baseRelativePath + "src/widget/templates/images/toolbar-bg.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/bold.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/italic.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/underline.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/strikethrough.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/sep.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/justifyleft.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/justifycenter.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/justifyright.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/forecolor.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/hilitecolor.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/insertorderedlist.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/insertunorderedlist.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/outdent.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/indent.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/createlink.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/insertimage.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/inserthorizontalrule.gif" /*,
-					djConfig.baseRelativePath + "nls/dojo_en.js"*/
+					djConfig.baseRelativePath + "src/widget/templates/buttons/aggregate.gif",
+					djConfig.baseRelativePath + "nls/dojo_en.js"
 					]);
 
 var Moxie = {

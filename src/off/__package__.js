@@ -1,5 +1,5 @@
 dojo.kwCompoundRequire({
 	common: [ "dojo.off",
-		"dojo.off.files",
-		"dojo.off.ui" ]
+		"dojo.off.files"]
 });
+dojo.provide("dojo.off.*");
