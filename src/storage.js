@@ -50,11 +50,11 @@ dojo.declare("dojo.storage", null, {
 	//	limit on the amount of data it can store. 
 	SIZE_NO_LIMIT: "No size limit",
 
-	// namespace: String
+	// DEFAULT_NAMESPACE: String
 	//	The namespace for all storage operations. This is useful if several
 	//	applications want access to the storage system from the same domain but
-		//want different storage silos. 
-	namespace: "default",
+	//	want different storage silos. 
+	DEFAULT_NAMESPACE: "default",
 	
 	// onHideSettingsUI: Function
 	//	If a function is assigned to this property, then when the settings
@@ -82,7 +82,8 @@ dojo.declare("dojo.storage", null, {
 
 	put: function(	/*string*/ key,
 					/*object*/ value, 
-					/*function*/ resultsHandler){
+					/*function*/ resultsHandler,
+					/*string?*/ namespace){
 		// summary:
 		//		Puts a key and value into this storage system.
 		// description:
@@ -110,41 +111,52 @@ dojo.declare("dojo.storage", null, {
 		//		The third argument in the call back is an optional message that
 		//		details possible error messages that might have occurred during
 		//		the storage process.
+		//	namespace:
+		//		Optional string namespace that this value will be placed into;
+		//		if left off, the value will be placed into dojo.storage.DEFAULT_NAMESPACE
 		
 		dojo.unimplemented("dojo.storage.put");
 	},
 
-	get: function(/*string*/ key){ /*Object*/
+	get: function(/*string*/ key, /*string?*/ namespace){ /*Object*/
 		// summary:
 		//		Gets the value with the given key. Returns null if this key is
 		//		not in the storage system.
 		// key:
 		//		A string key to get the value of.
+		//	namespace:
+		//		Optional string namespace that this value will be retrieved from;
+		//		if left off, the value will be retrieved from dojo.storage.DEFAULT_NAMESPACE
 		// return: Returns any JavaScript object type; null if the key is not present
 		dojo.unimplemented("dojo.storage.get");
 	},
 
-	hasKey: function(/*string*/ key){ /*Boolean*/
+	hasKey: function(/*string*/ key, /*string?*/ namespace){ /*Boolean*/
 		// summary: Determines whether the storage has the given key. 
 		return (this.get(key) != null);
 	},
 
-	getKeys: function(){ /*Array*/
+	getKeys: function(/*string?*/ namespace){ /*Array*/
 		// summary: Enumerates all of the available keys in this storage system.
 		// return: Array of available keys
 		dojo.unimplemented("dojo.storage.getKeys");
 	},
 	
-	clear: function(){
+	clear: function(/*string?*/ namespace){
 		// summary: 
 		//		Completely clears this storage system of all of it's values and
-		//		keys. 
+		//		keys. If 'namespace' is provided just clears the keys in that
+		//		namespace.
 		dojo.unimplemented("dojo.storage.clear");
 	},
   
-	remove: function(key){
+	remove: function(/*string*/ key, /*string?*/ namespace){
 		// summary: Removes the given key from this storage system.
 		dojo.unimplemented("dojo.storage.remove");
+	},
+	
+	getNamespaces: function(){ /*string[]*/
+		dojo.unimplemented("dojo.storage.getNamespaces");
 	},
 
 	isPermanent: function(){ /*Boolean*/
@@ -208,6 +220,21 @@ dojo.declare("dojo.storage", null, {
 		}
 			
 		return /^[0-9A-Za-z_]*$/.test(keyName);
+	},
+	
+	getResourceList: function(){ /* Array[] */
+		// summary:
+		//	Returns a list of URLs that this
+		//	storage provider might depend on.
+		// description:
+		//	This method returns a list of URLs that this
+		//	storage provider depends on to do its work.
+		//	This list is used by the Dojo Offline Toolkit
+		//	to cache these resources to ensure the machinery
+		//	used by this storage provider is available offline.
+		//	What is returned is an array of URLs.
+		
+		return new Array();
 	}
 });
 
@@ -231,11 +258,7 @@ dojo.storage.manager = new function(){
 	
 	this._initialized = false;
 	this._providers = [];
-	
-	// namespace: String
-	//	An optional namespace value that can be used by a single application
-	//	to partition storage into seperate units - not well supported yet.
-	this.namespace = "default";
+	this._onLoadListeners = new Array();
 	
 	this.initialize = function(){
 		// summary: 
@@ -325,6 +348,39 @@ dojo.storage.manager = new function(){
 		return this.available;
 	};
 	
+	this.addOnLoad = function(func){ /* void */
+		// summary:
+		//	Adds an onload listener to know when
+		//	Dojo Offline can be used.
+		// description:
+		//	Adds a listener to know when Dojo Offline
+		//	can be used. This ensures that the Dojo
+		//	Offline framework is loaded and that the
+		//	local Dojo Storage system is ready to
+		//	be used. This method is useful if you
+		//	don't want to have a dependency on
+		//	Dojo Events when using Dojo Storage.
+		// func: Function
+		//	A function to call when Dojo Offline
+		//	is ready to go
+		this._onLoadListeners.push(func);
+		
+		if(this.isInitialized() == true){
+			this.fireLoaded();
+		}
+	};
+	
+	this.removeOnLoad = function(func){ /* void */
+		// summary:
+		//	Removes the given onLoad listener
+		for(var i = 0; i < this._onLoadListeners.length; i++){
+			if(func == this._onLoadListeners[i]){
+				this._onLoadListeners = this._onLoadListeners.splice(i, 1);
+				break;
+			}
+		}
+	};
+	
 	this.isInitialized = function(){ /*Boolean*/
 	 	// summary:
 		//		Returns whether the storage system is initialized and ready to
@@ -371,14 +427,55 @@ dojo.storage.manager = new function(){
 		//		The storage provider should call this method when it is loaded
 		//		and ready to be used. Clients who will use the provider will
 		//		connect to this method to know when they can use the storage
-		//		system.
+		//		system. You can either use dojo.event.connect to connect to this
+		//		function, or can use dojo.storage.manager.addOnLoad() to add
+		//		a listener that does not depend on the dojo.event package.
 		// description:
-		//		Example-
+		//		Example 1-
 		//			if(dojo.storage.manager.isInitialized() == false){ 
 		//				dojo.event.connect(dojo.storage.manager, "loaded", TestStorage, 
 	    //				TestStorage.initialize);
 		//			}else{
 		//				dojo.event.connect(dojo, "loaded", TestStorage, TestStorage.initialize);
 		//			}
+		//		Example 2-
+		//			dojo.storage.manager.addOnLoad(someFunction);
+		this.fireLoaded();
 	};
+	
+	this.fireLoaded = function(){
+		for(var i = 0; i < this._onLoadListeners.length; i++){
+			this._onLoadListeners[i]();
+		}
+	};
+	
+	this.getResourceList = function(){
+		// summary:
+		//	Returns a list of whatever resources are necessary for
+		//	storage providers to work. 
+		// description:
+		//	This will return all files
+		//	needed by all storage providers for this particular
+		//	environment type. For example, if we are in the
+		//	browser environment, then this will return the hidden
+		//	SWF files needed by the FlashStorageProvider, even if
+		//	we don't need them for the particular browser we are
+		//	working within. This is meant to faciliate Dojo Offline,
+		//	which must retrieve all resources we need offline into
+		//	the offline cache -- we retrieve everything needed, in case
+		//	another browser that requires different storage mechanisms
+		//	hits the local offline cache. For example, if we were to 
+		//	sync against Dojo Offline on Firefox 2, then we would not
+		//	grab the FlashStorageProvider resources needed for Safari.
+		var results = new Array();
+		for(var i = 0; i < dojo.storage.manager._providers.length; i++){
+			var currentProvider = dojo.storage.manager._providers[i];
+			var resources = currentProvider.getResourceList();
+			for(var j = 0; j < resources.length; j++){
+				results[results.length] = resources[j];
+			}
+		}
+		
+		return results;
+	}
 };
