@@ -1,5 +1,6 @@
 #!/bin/bash
-# Define TOMCAT_HOME before running this script
+# Override value of TOMCAT_HOME below before running this script
+export TOMCAT_HOME=/usr/local/tomcat
 rm -f WEB-INF/lib/moxie.jar
 rm -f moxie.war
 rm org/dojo/moxie/*.class
