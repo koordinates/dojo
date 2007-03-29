@@ -78,6 +78,8 @@ build targets:
 	and example files.
 			
 	buildDojoStorage - compiles the dojo.storage package
+	
+	moxie - builds Moxie, the example Dojo Offline/Dojo Storage application
 
 	**** all following build types can take an optional parameter in the form of: -Dversion='currentVer'
 		where 'currentVer' is the version of ${project} being built, default is 'development'
@@ -724,6 +726,32 @@ available in src/storage/java/ without rebuilding it.
 		</exec>
 	</target>
 	<!-- end buildFlash task -->
+	
+	<!-- moxie task -->
+	<target name="moxie">
+		<!-- We need to use the EditorToolbarOnline.html file,
+			so it gets interned correctly - must change source
+			to do this before building -->
+		<replaceregexp match="EditorToolbar.html&quot;" byline="true" 
+			replace="EditorToolbarOneline.html&quot;" flags="g">
+			<fileset file="../src/widget/Editor2Toolbar.js"/>
+		</replaceregexp>
+		
+		<!-- Generate a Dojo release with the 'moxie' profile -->
+		<antcall target="release">
+			<param name="profile" value="moxie" />
+		</antcall>
+		
+		<!-- Now intern our strings -->
+		<antcall target="intern-strings"/>
+		
+		<!-- Replace our modified Editor2 files with the original versions -->
+		<replaceregexp match="EditorToolbarOneline.html&quot;" byline="true" 
+			replace="EditorToolbar.html&quot;" flags="g">
+			<fileset file="../src/widget/Editor2Toolbar.js"/>
+		</replaceregexp>
+	</target>
+	<!-- end moxie task -->
 
 	<!-- xd-dojo-config task -->
 	<target name="xd-dojo-config" depends="-fix-config"
