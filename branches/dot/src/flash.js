@@ -529,6 +529,52 @@ dojo.flash.Info.prototype = {
 		}
 	},
 	
+	getResourceList: function(swfloc6 /* string */, swfloc8 /* string */){ /* String[] */
+		// summary:
+		//	Returns all resources required for embedding.
+		// description:
+		//	This is a convenience method for Dojo Offline, meant
+		//	to encapsulate us from the specific resources necessary
+		//	for embedding. Dojo Offline requires that we sync our
+		//	offline resources for offline availability; this method
+		//	will return all offline resources, including any possible
+		//	query parameters that might be used since caches treat 
+		//	resources with query parameters as different than ones that
+		//	have query parameters. If offline and we request a resource
+		//	with a query parameter that was not cached with a query
+		//	parameter, then we will have a cache miss and not be able to
+		//	work offline
+		var results = new Array();
+		
+		// flash 6
+		var swfloc = swfloc6;
+		results.push(swfloc);
+		var dojoPath = djConfig.baseRelativePath;
+		swfloc = swfloc + "?baseRelativePath=" + escape(dojoPath);
+		results.push(swfloc);
+		// Safari has a strange bug where it appends '%20'%20quality=
+		// to the end of Flash movies taken through XHR while offline;
+		// append this so we don't get a cache miss
+		swfloc += "'%20'%20quality=";
+		results.push(swfloc);
+		
+		// flash 8
+		swfloc = swfloc8;
+		results.push(swfloc);
+		swfloc +=  "?baseRelativePath="+escape(dojoPath);
+		results.push(swfloc);
+		// Safari has a strange bug where it appends '%20'%20quality=
+		// to the end of Flash movies taken through XHR while offline;
+		// append this so we don't get a cache miss
+		swfloc += "'%20'%20quality=";
+		results.push(swfloc);
+		
+		// flash 6 gateway
+		results.push(djConfig.baseRelativePath + "flash6_gateway.swf");
+		
+		return results;
+	},
+	
 	_detectVersion: function(){
 		var versionStr;
 		
