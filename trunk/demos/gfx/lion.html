@@ -1,4 +1,4 @@
-﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+﻿<html>
 <head>
 <title>dojo.gfx: Lion</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -6,11 +6,33 @@
 <script type="text/javascript">
 
 dojo.require("dojo.gfx.*");
+dojo.require ("dojo.widget.*");
+dojo.require ("dojo.widget.Slider");
+
+var rotation = 0, scaling = 1;
+var surface, g, m = dojo.gfx.matrix;
+var initial_matrix = m.normalize([m.rotateg(-10), m.translate(300, 100)]);
+
+var updateMatrix = function(){
+	if(g){ g.setTransform([m.rotategAt(rotation, 350, 350), m.scaleAt(scaling, 350, 350), initial_matrix]); }
+};
+
+var rotatingEvent = function(value){
+	rotation = value;
+	dojo.byId("rotationValue").innerHTML = rotation;
+	updateMatrix();
+};
+
+var scalingEvent = function(value){
+	scaling = Math.exp(Math.LN10 * (value - 1));
+	dojo.byId("scaleValue").innerHTML = scaling.toFixed(3);
+	updateMatrix();
+};
 
 makeShapes = function(){
-	var surface = dojo.gfx.createSurface(dojo.byId("gfx_holder"), 500, 500);
-	var m = dojo.gfx.matrix;
-	var g = surface.createGroup().setTransform([m.rotateg(-10), m.translate(100, 10)]);
+	surface = dojo.gfx.createSurface(dojo.byId("gfx_holder"), 700, 700);
+	surface.createRect({x: 0, y: 0, width: 700, height: 700}).setFill("#eee");
+	g = surface.createGroup().setTransform(initial_matrix);
 	g.createPolyline([69,18,82,8,99,3,118,5,135,12,149,21,156,13,165,9,177,13,183,28,180,50,164,91,155,107,154,114,151,121,141,127,139,136,155,206,157,251,126,342,133,357,128,376,83,376,75,368,67,350,61,350,53,369,4,369,2,361,5,354,12,342,16,321,4,257,4,244,7,218,9,179,26,127,43,93,32,77,30,70,24,67,16,49,17,35,18,23,30,12,40,7,53,7,62,12]).setFill("#f2cc99");
 	g.createPolyline([142,79,136,74,138,82,133,78,133,84,127,78,128,85,124,80,125,87,119,82,119,90,125,99,125,96,128,100,128,94,131,98,132,93,135,97,136,93,138,97,139,94,141,98,143,94,144,85]).setFill("#e5b27f");
 	g.createPolyline([127,101,132,100,137,99,144,101,143,105,135,110]).setFill("#eb8080");
@@ -151,15 +173,57 @@ makeShapes = function(){
 	g.createPolyline([147,338,142,341,143,345,141,354,147,343]).setFill(c);
 	g.createPolyline([157,342,156,349,150,356,157,353,163,346,162,342]).setFill(c);
 	g.createPolyline([99,265,96,284,92,299,73,339,73,333,87,300]).setFill(c);
+	//surface.createLine({x1: 0, y1: 350, x2: 700, y2: 350}).setStroke("green");
+	//surface.createLine({y1: 0, x1: 350, y2: 700, x2: 350}).setStroke("green");
+    dojo.event.connect(dojo.widget.byId("rotatingSlider"), "onValueChanged", rotatingEvent);
+    dojo.event.connect(dojo.widget.byId("scalingSlider"), "onValueChanged", scalingEvent);
+    dojo.byId("sliders").style.visibility = "visible";
 };
 
 dojo.addOnLoad(makeShapes);
 
 </script>
+<style type="text/css">
+td.pad { padding: 0px 5px 0px 5px; }
+</style>
 </head>
 <body>
 	<h1>dojo.gfx: Lion</h1>
 	<p>This example was directly converted from SVG file.</p>
-	<div id="gfx_holder" style="width: 500px; height: 500px;"></div>
+	<table id="sliders" style="visibility: hidden;">
+		<tr>
+			<td align="center" class="pad">Rotation (<span id="rotationValue">0</span>)</td>
+			<td align="center" class="pad">Scaling (<span id="scaleValue">1.000</span>)</td>
+		</tr>
+		<tr>
+			<td class="pad">
+				<div id="rotatingSlider" dojoType="SliderHorizontal" 
+					initialValue="0" minimum="-180" maximum="180" snapValues="73"
+					activeDrag="true"
+					buttonStyle="top: 1px;"
+					backgroundStyle="padding: 8px 4px; border: 1px solid black;"
+					backgroundSize="width:100px; height:5px;"
+					backgroundSrc="src/widget/templates/images/blank.gif"
+					progressBackgroundSrc="src/widget/templates/images/slider-bg.gif"
+					handleStyle="top: 0px; width: 13px; height: 18px;"
+					handleSrc="src/widget/templates/images/slider.gif">
+				</div>
+			</td>
+			<td class="pad">
+				<div id="scalingSlider" dojoType="SliderHorizontal" 
+					initialValue="1" minimum="0" maximum="1" snapValues="10"
+					activeDrag="true"
+					buttonStyle="top: 1px;"
+					backgroundStyle="padding: 8px 4px; border: 1px solid black;"
+					backgroundSize="width:100px; height:5px;"
+					backgroundSrc="src/widget/templates/images/blank.gif"
+					progressBackgroundSrc="src/widget/templates/images/slider-bg.gif"
+					handleStyle="top: 0px; width: 13px; height: 18px;"
+					handleSrc="src/widget/templates/images/slider.gif">
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div id="gfx_holder" style="width: 700px; height: 700px;"></div>
 </body>
 </html>
