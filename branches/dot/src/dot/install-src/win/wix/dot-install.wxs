@@ -7,6 +7,10 @@
 		<Package Id="????????-????-????-????-????????????" Keywords="Installer"
 			Description="Dojo Offline Toolkit Installer" Manufacturer="The Dojo Foundation"
 			InstallerVersion="100" Languages="1033" Compressed="yes" SummaryCodepage="1252" />
+			
+		<Condition Message="You need to be an administrator to install this product.">
+			Privileged
+		</Condition>
 
 		<Media Id="1" Cabinet="dot.cab" EmbedCab="yes" />
 		<Property Id="DiskPrompt" Value="Dojo Offline Toolkit Installation" />
