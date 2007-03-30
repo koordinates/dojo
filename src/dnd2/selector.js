@@ -22,8 +22,8 @@ function(node, params){
 	this.anchor = null;
 	this.simple_selection = false;
 	// set up events
-	dojo.event.connect(node, "onmousedown", this, "onMouseDown");
-	dojo.event.connect(node, "onmouseup",   this, "onMouseUp");
+	dojo.event.connect(this.node, "onmousedown", this, "onMouseDown");
+	dojo.event.connect(this.node, "onmouseup",   this, "onMouseUp");
 },
 {
 	// mouse events

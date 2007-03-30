@@ -4,14 +4,14 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.html.layout");
 
 dojo.dnd2.Mover = function(node, e){
-	this.node = node;
-	node.style.position = "absolute"; // enforcing the absolute mode
+	this.node = dojo.byId(node);
+	this.node.style.position = "absolute"; // enforcing the absolute mode
 	this.mouse_x = e.pageX;
 	this.mouse_y = e.pageY;
 	var h = dojo.html;
-	this.node_pos    = h.abs(node, true);
-	this.node_pos.x -= h.getMarginExtent(node, "left") + h.getBorderExtent(node, "left") + h.getPaddingExtent(node, "left");
-	this.node_pos.y -= h.getMarginExtent(node, "top")  + h.getBorderExtent(node, "top")  + h.getPaddingExtent(node, "top");
+	this.node_pos    = h.abs(this.node, true);
+	this.node_pos.x -= h.getMarginExtent(this.node, "left") + h.getBorderExtent(this.node, "left") + h.getPaddingExtent(this.node, "left");
+	this.node_pos.y -= h.getMarginExtent(this.node, "top")  + h.getBorderExtent(this.node, "top")  + h.getPaddingExtent(this.node, "top");
 	dojo.event.connect(dojo.doc(), "onmousemove", this, "onMouseMove");
 	dojo.event.connect(dojo.doc(), "onmouseup",   this, "onMouseUp");
 	// cancel text selection and text dragging
@@ -43,12 +43,13 @@ dojo.dnd2.move = function(node, e){ return new dojo.dnd2.Mover(node, e); };
 
 dojo.dnd2.Moveable = function(node, handle){
 	if(!handle){ handle = node; }
-	this.node = node;
-	this.handle = handle;
-	dojo.event.connect(handle, "onmousedown", this, "onMouseDown");
+	this.node = dojo.byId(node);
+	this.handle = dojo.byId(handle);
+	if(!this.handle){ this.handle = this.node; }
+	dojo.event.connect(this.handle, "onmousedown", this, "onMouseDown");
 	// cancel text selection and text dragging
-	dojo.event.connect(handle, "ondragstart",   dojo.event.browser, "stopEvent");
-	dojo.event.connect(handle, "onselectstart", dojo.event.browser, "stopEvent");
+	dojo.event.connect(this.handle, "ondragstart",   dojo.event.browser, "stopEvent");
+	dojo.event.connect(this.handle, "onselectstart", dojo.event.browser, "stopEvent");
 };
 
 dojo.extend(dojo.dnd2.Moveable, {

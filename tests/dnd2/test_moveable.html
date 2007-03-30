@@ -37,8 +37,10 @@
 		dojo.require("dojo.dnd2.move");
 		var m1, m2;
 		var init = function(){
-			m1 = new dojo.dnd2.Moveable(dojo.byId("moveable1"), dojo.byId("handle1"));
-			m2 = new dojo.dnd2.Moveable(dojo.byId("moveable2"));
+			//m1 = new dojo.dnd2.Moveable(dojo.byId("moveable1"), dojo.byId("handle1"));
+			//m2 = new dojo.dnd2.Moveable(dojo.byId("moveable2"));
+			m1 = new dojo.dnd2.Moveable("moveable1", "handle1");
+			m2 = new dojo.dnd2.Moveable("moveable2");
 		};
 		dojo.addOnLoad(init);
 	</script>
