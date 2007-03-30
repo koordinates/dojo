@@ -95,6 +95,10 @@ foreach ($files as $file) {
       if ($args[3]->isA(DojoFunctionDeclare)) {
         $init = $args[3]->getFunction();
       }
+			if ($args[3]->isA(DojoObject)) {
+				$args[4] = $args[3];
+				$args[3] = null;
+			}
     }
     else {
       if ($call->getParameter(3)->isA(DojoString)) {
