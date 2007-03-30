@@ -115,7 +115,7 @@ function(node, params){
 	// utilities
 	onOverEvent: function(){},
 	onOutEvent: function(){},
-	cancelEvent: function(e){ e.stopPropagation(); e.preventDefault(); },
+	cancelEvent: function(e){ dojo.event.browser.stopEvent(e); },
 	changeState: function(type, new_state){
 		var prefix = "dojoDnd" + type;
 		var state  = type.toLowerCase() + "_state";
