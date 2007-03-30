@@ -66,7 +66,7 @@ function(node, params){
 			// calculate before/after
 			var before = false;
 			if(this.current){
-				if(!this.target_box){
+				if(!this.target_box || this.target_anchor != this.current){
 					this.target_box = {
 						xy: dojo.html.getAbsolutePosition(this.current, true),
 						wh: dojo.html.getBorderBox(this.current)
