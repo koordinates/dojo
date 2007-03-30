@@ -32,46 +32,6 @@ dojo.gfx.vml._parseFloat = function(str) {
 	return str.match(/^\d+f$/i) ? parseInt(str) / 65536 : parseFloat(str);	// Number
 };
 
-// dojo.gfx.vml.cm_in_pt: Number: centimeters per inch
-dojo.gfx.vml.cm_in_pt = 72 / 2.54;
-
-// dojo.gfx.vml.mm_in_pt: Number: millimeters per inch
-dojo.gfx.vml.mm_in_pt = 7.2 / 2.54;
-
-dojo.gfx.vml.px_in_pt = function(){
-	// summary: returns a number of pixels per point
-	return dojo.html.getCachedFontMeasurements()["12pt"] / 12;	// Number
-};
-dojo.gfx.vml.pt2px = function(len){
-	// summary: converts points to pixels
-	// len: Number: a value in points
-	return len * this.px_in_pt();	// Number
-};
-dojo.gfx.vml.px2pt = function(len){
-	// summary: converts pixels to points
-	// len: Number: a value in pixels
-	return len / this.px_in_pt();	// Number
-};
-
-dojo.gfx.vml.normalizedLength = function(len) {
-	// summary: converts any length value to pixels
-	// len: String: a length, e.g., "12pc"
-	if(len.length == 0) return 0;
-	if(len.length > 2){
-		var px_in_pt = this.px_in_pt();
-		var val = parseFloat(len);
-		switch(len.slice(-2)){
-			case "px": return val;
-			case "pt": return val * px_in_pt;
-			case "in": return val * 72 * px_in_pt;
-			case "pc": return val * 12 * px_in_pt;
-			case "mm": return val / this.mm_in_pt * px_in_pt;
-			case "cm": return val / this.cm_in_pt * px_in_pt;
-		}
-	}
-	return parseFloat(len);	// Number
-};
-
 dojo.gfx.vml._bool = {"t": 1, "true": 1};
 
 dojo.lang.extend(dojo.gfx.Shape, {
