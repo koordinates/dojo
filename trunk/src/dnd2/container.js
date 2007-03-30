@@ -17,26 +17,26 @@ dojo.require("dojo.html.style");
 dojo.declare("dojo.dnd2.Container", null, 
 function(node, params){
 	// general variables
-	this.node = node;
+	this.node = dojo.byId(node);
 	this.node_filter  = (params && params.filter)  ? params.filter  : function(n){ return n.nodeType == 1; };
-	this.node_creator = (params && params.creator) ? params.creator : dojo.dnd2._defaultCreator(node);
+	this.node_creator = (params && params.creator) ? params.creator : dojo.dnd2._defaultCreator(this.node);
 	// class-specific variables
 	this.map = {};
 	this.current = null;
-	this.parent = node;
+	this.parent = this.node;
 	// states
 	this.container_state = "";
-	dojo.html.addClass(node, "dojoDndContainer");
+	dojo.html.addClass(this.node, "dojoDndContainer");
 	// mark up children
 	var c;
-	if(node.tagName.toLowerCase() == "table"){
-		c = node.getElementsByTagName("tbody");
+	if(this.node.tagName.toLowerCase() == "table"){
+		c = this.node.getElementsByTagName("tbody");
 		if(c && c.length){
 			this.parent = c[0];
 		}
 		c = this.parent.getElementsByTagName("tr");
 	}else{
-		c = node.childNodes;
+		c = this.node.childNodes;
 	}
 	for(var i = 0; i < c.length; ++i){
 		var n = c[i];
@@ -45,11 +45,11 @@ function(node, params){
 		}
 	}
 	// set up events
-	dojo.event.connect(node, "onmouseover", this, "onMouseOver");
-	dojo.event.connect(node, "onmouseout",  this, "onMouseOut");
+	dojo.event.connect(this.node, "onmouseover", this, "onMouseOver");
+	dojo.event.connect(this.node, "onmouseout",  this, "onMouseOut");
 	// cancel text selection and text dragging
-	dojo.event.connect(node, "ondragstart",   this, "cancelEvent");
-	dojo.event.connect(node, "onselectstart", this, "cancelEvent");
+	dojo.event.connect(this.node, "ondragstart",   this, "cancelEvent");
+	dojo.event.connect(this.node, "onselectstart", this, "cancelEvent");
 },
 {
 	// mouse events
