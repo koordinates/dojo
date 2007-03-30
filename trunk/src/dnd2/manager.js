@@ -73,10 +73,11 @@ dojo.extend(dojo.dnd2.Manager, {
 	updateAvatar: function(){ this.avatar.update(); },
 	// mouse event processors
 	onMouseMove: function(e){
-		if(this.avatar){
-			var s = this.avatar.node.style;
-			s.left = (e.pageX + 10) + "px";
-			s.top  = (e.pageY + 10) + "px";
+		var a = this.avatar;
+		if(a){
+			var s = a.node.style;
+			s.left = (e.pageX + 10 + a.off_x) + "px";
+			s.top  = (e.pageY + 10 + a.off_y) + "px";
 			if(this.copy != e.ctrlKey){ this.setCopyStatus(e.ctrlKey); }
 		}
 	},
