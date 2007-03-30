@@ -50,4 +50,35 @@ install:
 
 clean:
 	make -C proxy clean
-	
+
+# The following directives can only be run on Windows using
+# nmake
+
+# Our Windows installer relies on an open source project named WiX, available from this home page:
+#
+# http://wix.sourceforge.net/
+# 
+# For obvious reasons these installers can only be produced on Windows; our src/dot/Makefile has a number
+# of directives that can only be run on Windows, using nmake. You must have the WiX package in your
+# PATH for these directives to work.
+# You must also have the 'cabarc' utility installed and in your path to create Microsoft CAB 
+# files -- this can be downloaded from http://support.microsoft.com/kb/310618
+
+# cabarc n install-src\win\wix\dot.cab proxy-build\win\dot.exe proxy-build\win\config
+installer-win-make:
+	del proxy-build\win\dot-install.wixobj
+	del proxy-build\win\dot-install.wxs
+	del proxy-build\win\dot.msi
+	copy install-src\win\wix\dot-install.wxs proxy-build\win
+	cd proxy-build\win
+	candle.exe dot-install.wxs -out dot-install.wixobj
+	light.exe dot-install.wixobj -out dot.msi
+	del dot-install.wixobj
+	del dot-install.wxs
+	cd ..\..
+
+win-install:
+	msiexec /i proxy-build\win\dot.msi
+
+win-uninstall:
+	msiexec /x proxy-build\win\dot.msi

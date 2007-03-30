@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+
+	<Product Name="Dojo Offline Toolkit" Id="226158B0-8A01-4026-BA47-F4CED89FB3DC"
+		Language="1033" Codepage="1252" Version="0.0.1" Manufacturer="The Dojo Foundation">
+
+		<Package Id="????????-????-????-????-????????????" Keywords="Installer"
+			Description="Dojo Offline Toolkit Installer" Manufacturer="The Dojo Foundation"
+			InstallerVersion="100" Languages="1033" Compressed="yes" SummaryCodepage="1252" />
+
+		<Media Id="1" Cabinet="dot.cab" EmbedCab="yes" />
+		<Property Id="DiskPrompt" Value="Dojo Offline Toolkit Installation" />
+		
+		<Directory Id="ProgramFilesFolder" Name="PFiles">
+			<Directory Id="DojoDir" Name="Dojo">
+				<Directory Id="INSTALLDIR" Name="dot">
+				
+					<Component Id="MainExecutable" Guid="D1E9CE05-8D43-4FA0-8EE8-7E2FD9931EEE">
+						<File Id="DotEXE" Name="dot.exe" DiskId="1" Source="dot.exe" Vital="yes" />
+					</Component>
+					
+					<Component Id="ConfigComponent" Guid="98BA3742-67C9-4E3E-B39C-478FE373C59D">
+						<File Id="ConfigFile" Name="config" DiskId="1" Source="config" Vital="yes" />
+					</Component>
+				
+				</Directory>
+			</Directory>
+		</Directory>
+		
+		<Feature Id="Complete" Level="1">
+			<ComponentRef Id="MainExecutable" />
+			<ComponentRef Id="ConfigComponent" />
+		</Feature>
+
+	</Product>
+</Wix>
