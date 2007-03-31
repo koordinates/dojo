@@ -15,18 +15,32 @@
 		<Media Id="1" Cabinet="dot.cab" EmbedCab="yes" />
 		<Property Id="DiskPrompt" Value="Dojo Offline Toolkit Installation" />
 		
-		<Directory Id="ProgramFilesFolder" Name="PFiles">
-			<Directory Id="DojoDir" Name="Dojo">
-				<Directory Id="INSTALLDIR" Name="dot">
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder" Name="PFiles">
+				<Directory Id="DojoDir" Name="Dojo">
+					<Directory Id="INSTALLDIR" Name="dot">
 				
-					<Component Id="MainExecutable" Guid="D1E9CE05-8D43-4FA0-8EE8-7E2FD9931EEE">
-						<File Id="DotEXE" Name="dot.exe" DiskId="1" Source="dot.exe" Vital="yes" />
-					</Component>
+						<Component Id="MainExecutable" Guid="D1E9CE05-8D43-4FA0-8EE8-7E2FD9931EEE">
+							<File Id="DotEXE" Name="dot.exe" DiskId="1" Source="dot.exe" Vital="yes" />
+						</Component>
 					
-					<Component Id="ConfigComponent" Guid="98BA3742-67C9-4E3E-B39C-478FE373C59D">
-						<File Id="ConfigFile" Name="config" DiskId="1" Source="config" Vital="yes" />
-					</Component>
+						<Component Id="ConfigComponent" Guid="98BA3742-67C9-4E3E-B39C-478FE373C59D">
+							<File Id="ConfigFile" Name="config" DiskId="1" Source="config" Vital="yes" />
+						</Component>
+					
+						<Component Id="InternetExplorerPACSettings" Guid="21A1C163-FCCE-438B-BA54-D21F5B93ED72">
+							<Registry 
+								Id="InternetExplorerAutoConfigURL" 
+								Root="HKCU"
+								Key="Software\Microsoft\Windows\CurrentVersion\Internet Settings" 
+								KeyPath="yes"
+								Name="AutoConfigURL" 
+								Value="file://C:\hello-world" 
+								Type="string"
+								Action="write" />
+						</Component>
 				
+					</Directory>
 				</Directory>
 			</Directory>
 		</Directory>
@@ -34,6 +48,7 @@
 		<Feature Id="Complete" Level="1">
 			<ComponentRef Id="MainExecutable" />
 			<ComponentRef Id="ConfigComponent" />
+			<ComponentRef Id="InternetExplorerPACSettings" />
 		</Feature>
 
 	</Product>
