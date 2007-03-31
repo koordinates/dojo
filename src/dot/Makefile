@@ -8,6 +8,11 @@
 #
 # @author Brad Neuberg, bkn3@columbia.edu
 
+# Debug builds are off by default; call make as follows to turn on
+# debug builds:
+# make all FLAG="-g"
+export CDEBUGFLAGS = -Os -Wall $(CCFLAG)
+
 all:
 	make clean
 	make mac
@@ -20,17 +25,17 @@ mac:
 	@echo
 	@echo --- Creating Mac/x86 Build ---
 	@echo
-	make -C proxy all
+	make -e -C proxy all
 	mv -f proxy/polipo proxy-build/mac/x86/dot
 	cp -f proxy/config.mac proxy-build/mac/x86/config
 	cp -f proxy/default-pac proxy-build/mac/x86/.offline-pac
-	
+
 windows:
 	@echo
 	@echo
 	@echo --- Creating Windows/x86 Build ---
 	@echo
-	make -C proxy all CC=i386-mingw32-gcc EXE=.exe LDLIBS=-lwsock32 PREFIX=/
+	make -e -C proxy all CC=i386-mingw32-gcc EXE=.exe LDLIBS=-lwsock32 PREFIX=/
 	mv -f proxy/polipo.exe proxy-build/win/dot.exe
 	cp -f proxy/config.win proxy-build/win/config
 	cp -f proxy/default-pac proxy-build/win/.offline-pac
