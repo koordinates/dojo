@@ -1,4 +1,5 @@
-!include LogicLib.nsh
+!include "LogicLib.nsh"
+!include "TextFunc.nsh"
 !include "MUI.nsh"
 
 !define VERSION "0.0.1"
@@ -13,6 +14,16 @@ InstallDir "$PROGRAMFILES\Dojo\dot"
 !insertmacro MUI_UNPAGE_INSTFILES
 
 !insertmacro MUI_LANGUAGE "English"
+
+Function .onInit
+	;make sure the user doesn't run the installer multiple times
+	;at the same time - make a mutex
+	System::Call 'kernel32::CreateMutexA(i 0, i 0, t "dotInstallation") i .r1 ?e'
+	Pop $R0
+	StrCmp $R0 0 +3
+		MessageBox MB_OK|MB_ICONEXCLAMATION "The installer is already running."
+		Abort
+FunctionEnd
   
 Section "Install"
 	SetOutPath "$INSTDIR"
@@ -25,6 +36,10 @@ Section "Install"
 	File "dot.exe"
 	File "config"
 	File /oname=$APPDATA\Dojo\dot\.offline-pac ".offline-pac"
+	
+	;update the configuration file to point to Windows locations,
+	;rather than Unix ones
+	;${ConfigWrite} "$INSTDIR\config" "diskCacheRoot = " "$APPDATA/Dojo/dot/.offline-cache" $R0
 
 	;store installation folder and application data folder
 	WriteRegStr HKCU "Software\Dojo\dot" "InstallFolder" $INSTDIR
