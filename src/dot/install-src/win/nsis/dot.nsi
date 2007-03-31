@@ -26,8 +26,8 @@ Function .onInit
 FunctionEnd
   
 Section "Install"
-	;make sure this user has admin privs - this plugin places its
-	;results on the stack
+	;make sure this user has admin privs - the 'userInfo::getAccountType' 
+	;plugin places its results on the stack
 	userInfo::getAccountType
 	pop $0
     ${if} $0 != "Admin"
