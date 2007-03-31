@@ -63,12 +63,12 @@ clean:
 win-install-make:
 	del proxy-build\win\Install.exe
 	copy install-src\win\nsis\dot.nsi proxy-build\win\dot.nsi
-	makensis proxy-build\win\dot.nsi /DINSTALL_FILENAME=proxy-build\win\Install.exe
+	makensis proxy-build\win\dot.nsi
 	del proxy-build\win\dot.nsi
 
 win-install:
-	proxy-build\win\install-dot.exe
+	proxy-build\win\Install.exe /S
 
 win-uninstall:
-	proxy-build\win\uninstall-dot.exe
+	"C:\Program Files\Dojo\dot\Uninstall.exe" /S
 
