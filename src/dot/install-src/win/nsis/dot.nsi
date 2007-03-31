@@ -8,9 +8,6 @@ OutFile "Install.exe"
 
 InstallDir "$PROGRAMFILES\Dojo\dot"
 
-;get installation folder from registry if available
-InstallDirRegKey HKCU "Software\Dojo\dot" ""
-
 ;no pages -- just install or uninstall seamlessly 
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_UNPAGE_INSTFILES
@@ -22,14 +19,24 @@ Section "Install"
 
 	File "dot.exe"
 	File "config"
+	
+	;create our application data directory
+	CreateDirectory $APPDATA\Dojo
+	CreateDirectory $APPDATA\Dojo\dot
 
-	;store installation folder
-	WriteRegStr HKCU "Software\Dojo\dot" "" $INSTDIR
+	;store installation folder and application data folder
+	WriteRegStr HKCU "Software\Dojo\dot" "InstallFolder" $INSTDIR
+	WriteRegStr HKCU "Software\Dojo\dot" "AppFolder" "$APPDATA\Dojo\dot"
+	
+	;preserve three possible previous proxy settings:
+	; * "Autodetect proxy settings" - used for the network-based PAC file installation
+	; * A previous PAC file setting
+	; * Directly using a proxy 
 	
 	;update Internet Explorer's PAC file setting
 	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" \
 										"AutoConfigURL" \
-										"file://C:\hello-world22"
+										"file://$APPDATA\Dojo\dot\.offline-pac"
   
 	;create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -50,5 +57,8 @@ Section "Uninstall"
 	RMDir "$PROGRAMFILES\Dojo"
 
 	DeleteRegKey /ifempty HKCU "Software\Dojo\dot"
+	DeleteRegKey /ifempty HKCU "Software\Dojo"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot"
+	DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" \
+										"AutoConfigURL"
 SectionEnd
