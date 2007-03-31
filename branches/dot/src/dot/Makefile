@@ -54,51 +54,21 @@ clean:
 # The following directives can only be run on Windows using
 # nmake
 
-# Our Windows installer relies on an open source project named WiX, available from this home page:
+# Our Windows installer relies on an open source project named NSIS 2.24, available from this home page:
 #
-# http://wix.sourceforge.net/
-# 
-# For obvious reasons these installers can only be produced on Windows; our src/dot/Makefile has a number
-# of directives that can only be run on Windows, using nmake. You must have the WiX package in your
-# PATH for these directives to work.
+# http://nsis.sourceforge.net/Main_Page
 #
-# You must also have the 'cabarc' utility installed and in your path to create Microsoft CAB 
-# files -- this can be downloaded from http://support.microsoft.com/kb/310618
-#
-# The 'win-install-validate' task, which validates a WIX file to aid in the creation
-# and writing of WIX files (not necessary to produce installers), uses the free msival2 utility
-# which must be downloaded from Microsoft at 
-# http://www.microsoft.com/downloads/details.aspx?FamilyId=A55B6B43-E24F-4EA3-A93E-40C0EC4F68E5&displaylang=en
-# Once installed, you must install the msival2 utility by double clicking bin/msival2.msi.
-# You must set MSIVAL_HOME to where you installed msival:
-# set MSIVAL_HOME=C:\dev\msival2
-# with no trailing slash
+# MakeNSIS.exe must be in your PATH environment variable.
 
-# cabarc n install-src\win\wix\dot.cab proxy-build\win\dot.exe proxy-build\win\config
 win-install-make:
-	del proxy-build\win\dot-install.wixobj
-	del proxy-build\win\dot-install.wxs
-	del proxy-build\win\dot.msi
-	del WinInstall.log
-	copy install-src\win\wix\dot-install.wxs proxy-build\win
-	cd proxy-build\win
-	candle.exe dot-install.wxs -out dot-install.wixobj
-	light.exe dot-install.wixobj -out dot.msi
-	del dot-install.wixobj
-	del dot-install.wxs
-	cd ..\..
-
-win-install-validate: win-install-make
-	%MSIVAL_HOME%\msival2 proxy-build\win\dot.msi %MSIVAL_HOME%\darice.cub %MSIVAL_HOME%\mergemod.cub -f
+	del proxy-build\win\Install.exe
+	copy install-src\win\nsis\dot.nsi proxy-build\win\dot.nsi
+	makensis proxy-build\win\dot.nsi /DINSTALL_FILENAME=proxy-build\win\Install.exe
+	del proxy-build\win\dot.nsi
 
 win-install:
-	msiexec /i proxy-build\win\dot.msi
-
-win-install-debug:
-	msiexec /i proxy-build\win\dot.msi /l* WinInstall.log
-	
-win-install-verbose:
-	msiexec /i proxy-build\win\dot.msi /l*v WinInstall.log
+	proxy-build\win\install-dot.exe
 
 win-uninstall:
-	msiexec /quiet /x proxy-build\win\dot.msi
+	proxy-build\win\uninstall-dot.exe
+
