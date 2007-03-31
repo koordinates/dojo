@@ -128,9 +128,14 @@ checkRoot(AtomPtr root)
     if(!root || root->length == 0)
         return 0;
 
+    /* TODO: If we are on Windows, make sure we are a Windows
+        style absolute path, such as beginning with a drive
+        letter. */
+#ifndef MINGW
     if(root->string[0] != '/') {
         return -2;
     }
+#endif
 
     rc = stat(root->string, &ss);
     if(rc < 0)

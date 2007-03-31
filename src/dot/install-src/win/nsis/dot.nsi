@@ -1,5 +1,6 @@
 !include "LogicLib.nsh"
 !include "TextFunc.nsh"
+!include "WordFunc.nsh"
 !include "MUI.nsh"
 
 !define VERSION "0.0.1"
@@ -13,7 +14,12 @@ InstallDir "$PROGRAMFILES\Dojo\dot"
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_UNPAGE_INSTFILES
 
+;default language
 !insertmacro MUI_LANGUAGE "English"
+
+;inline library macros we use below
+!insertmacro ConfigWrite
+!insertmacro WordReplace
 
 Function .onInit
 	;make sure the user doesn't run the installer multiple times
@@ -38,8 +44,11 @@ Section "Install"
 	SetOutPath "$INSTDIR"
 
 	;create our application data directory
-	CreateDirectory $APPDATA\Dojo
-	CreateDirectory $APPDATA\Dojo\dot
+	CreateDirectory "$APPDATA\Dojo"
+	CreateDirectory "$APPDATA\Dojo\dot"
+	
+	;create our offline cache directory
+	CreateDirectory "$APPDATA\Dojo\dot\.offline-cache"
 
 	;add our files
 	File "dot.exe"
@@ -48,7 +57,10 @@ Section "Install"
 	
 	;update the configuration file to point to Windows locations,
 	;rather than Unix ones
-	;${ConfigWrite} "$INSTDIR\config" "diskCacheRoot = " "$APPDATA/Dojo/dot/.offline-cache" $R0
+	${WordReplace} "$APPDATA" "\" "/" "+" $R1
+	${ConfigWrite} "$INSTDIR\config" "diskCacheRoot = " '"$R1/Dojo/dot/.offline-cache"' $R0
+	${ConfigWrite} "$INSTDIR\config" "offlineFile = " '"$R1/Dojo/dot/.offline-list"' $R0
+	${ConfigWrite} "$INSTDIR\config" "offlinePACFile = " '"$R1/Dojo/dot/.offline-pac"' $R0
 
 	;store installation folder and application data folder
 	WriteRegStr HKCU "Software\Dojo\dot" "InstallFolder" $INSTDIR
@@ -82,6 +94,8 @@ Section "Uninstall"
 	Delete "$INSTDIR\config"
 	Delete "$INSTDIR\dot.exe"
 	Delete "$INSTDIR\Uninstall.exe"
+	
+	Delete "$APPDATA\Dojo\dot\.offline-pac"
 
 	RMDir "$PROGRAMFILES\Dojo\dot"
 	RMDir "$PROGRAMFILES\Dojo"
