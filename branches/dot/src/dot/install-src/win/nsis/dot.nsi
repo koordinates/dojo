@@ -17,12 +17,14 @@ InstallDir "$PROGRAMFILES\Dojo\dot"
 Section "Install"
 	SetOutPath "$INSTDIR"
 
-	File "dot.exe"
-	File "config"
-	
 	;create our application data directory
 	CreateDirectory $APPDATA\Dojo
 	CreateDirectory $APPDATA\Dojo\dot
+
+	;add our files
+	File "dot.exe"
+	File "config"
+	File /oname=$APPDATA\Dojo\dot\.offline-pac ".offline-pac"
 
 	;store installation folder and application data folder
 	WriteRegStr HKCU "Software\Dojo\dot" "InstallFolder" $INSTDIR
@@ -43,9 +45,13 @@ Section "Install"
 	
 	;add our uninstaller to the Add/Remove Programs dialog
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot" \
-                 "DisplayName" "Dojo Offline Toolkit"
+					"DisplayName" "Dojo Offline Toolkit"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot" \
-                 "UninstallString" "$INSTDIR\Uninstall.exe"
+					"UninstallString" "$INSTDIR\Uninstall.exe"
+	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot" \
+					"NoModify" 1
+	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot" \
+					"NoRepair" 1
 SectionEnd
 
 Section "Uninstall"
