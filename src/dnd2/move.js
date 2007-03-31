@@ -5,13 +5,10 @@ dojo.require("dojo.html.layout");
 
 dojo.dnd2.Mover = function(node, e){
 	this.node = dojo.byId(node);
-	this.node.style.position = "absolute"; // enforcing the absolute mode
 	this.mouse_x = e.pageX;
 	this.mouse_y = e.pageY;
 	var h = dojo.html;
-	this.node_pos    = h.abs(this.node, true);
-	this.node_pos.x -= h.getMarginExtent(this.node, "left") + h.getBorderExtent(this.node, "left") + h.getPaddingExtent(this.node, "left");
-	this.node_pos.y -= h.getMarginExtent(this.node, "top")  + h.getBorderExtent(this.node, "top")  + h.getPaddingExtent(this.node, "top");
+	this.node_pos = h.abs(this.node, true, h.boxSizing.MARGIN_BOX);
 	dojo.event.connect(dojo.doc(), "onmousemove", this, "onMouseMove");
 	dojo.event.connect(dojo.doc(), "onmouseup",   this, "onMouseUp");
 	// cancel text selection and text dragging
@@ -23,6 +20,7 @@ dojo.extend(dojo.dnd2.Mover, {
 	// mouse event processors
 	onMouseMove: function(e){
 		var s = this.node.style;
+		s.position = "absolute";	// enforcing the absolute mode
 		s.left = (e.pageX - this.mouse_x + this.node_pos.x) + "px";
 		s.top  = (e.pageY - this.mouse_y + this.node_pos.y) + "px";
 	},
