@@ -23,11 +23,22 @@ Section "Install"
 	File "dot.exe"
 	File "config"
 
-	;Store installation folder
+	;store installation folder
 	WriteRegStr HKCU "Software\Dojo\dot" "" $INSTDIR
+	
+	;update Internet Explorer's PAC file setting
+	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" \
+										"AutoConfigURL" \
+										"file://C:\hello-world22"
   
-	;Create uninstaller
+	;create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
+	
+	;add our uninstaller to the Add/Remove Programs dialog
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot" \
+                 "DisplayName" "Dojo Offline Toolkit"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot" \
+                 "UninstallString" "$INSTDIR\Uninstall.exe"
 SectionEnd
 
 Section "Uninstall"
@@ -39,4 +50,5 @@ Section "Uninstall"
 	RMDir "$PROGRAMFILES\Dojo"
 
 	DeleteRegKey /ifempty HKCU "Software\Dojo\dot"
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot"
 SectionEnd
