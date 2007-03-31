@@ -8,10 +8,10 @@
 #
 # @author Brad Neuberg, bkn3@columbia.edu
 
-# Debug builds are off by default; call make as follows to turn on
-# debug builds:
-# make all FLAG="-g"
-export CDEBUGFLAGS = -Os -Wall $(CCFLAG)
+# Debug builds are off by default; you must define
+# the following environment variable to the following
+# value to get debug builds:
+# export DEBUGFLAG="-g"
 
 all:
 	make clean
