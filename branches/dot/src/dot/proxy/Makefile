@@ -85,7 +85,10 @@ md5import.o: md5import.c md5.c
 
 .PHONY: all install install.binary install.man
 
-all: polipo$(EXE) polipo.info html/index.html localindex.html
+all: test polipo$(EXE) polipo.info html/index.html localindex.html
+
+test:
+	echo CDEBUGFLAGS = $(CDEBUGFLAGS)
 
 install: install.binary install.man
 
