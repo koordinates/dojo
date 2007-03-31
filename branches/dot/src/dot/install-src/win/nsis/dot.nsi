@@ -4,7 +4,7 @@
 !define VERSION "0.0.1"
 
 Name "Dojo Offline Toolkit"
-OutFile "${INSTALL_FILENAME}"
+OutFile "Install.exe"
 
 InstallDir "$PROGRAMFILES\Dojo\dot"
 
@@ -31,12 +31,12 @@ Section "Install"
 SectionEnd
 
 Section "Uninstall"
-	File "dot.exe"
-	File "config"
-
+	Delete "$INSTDIR\config"
+	Delete "$INSTDIR\dot.exe"
 	Delete "$INSTDIR\Uninstall.exe"
 
-	RMDir "$INSTDIR"
+	RMDir "$PROGRAMFILES\Dojo\dot"
+	RMDir "$PROGRAMFILES\Dojo"
 
 	DeleteRegKey /ifempty HKCU "Software\Dojo\dot"
 SectionEnd
