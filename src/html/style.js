@@ -251,7 +251,7 @@ if (dojo.render.html.ie){
 		//		(non-IE).
 		node = dojo.byId(node);
 		if(!node || !node.style){ return value; }
-		var s = document.defaultView.getComputedStyle(node, null);
+		var s = node.ownerDocument.defaultView.getComputedStyle(node, null);
 		// s may be null on Safari
 		return ( s && s[dojo.html.toCamelCase(property)] )||''; // String
 	}	
@@ -262,7 +262,7 @@ if (dojo.render.html.ie){
 		//	summary:
 		// 		Get a style object containing computed styles for HTML Element
 		// 		node (non-IE).
-		return document.defaultView.getComputedStyle(node, null); // CSSStyleDeclaration
+		return node.ownerDocument.defaultView.getComputedStyle(node, null); // CSSStyleDeclaration
 	}	
 }
 
