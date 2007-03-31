@@ -26,6 +26,15 @@ Function .onInit
 FunctionEnd
   
 Section "Install"
+	;make sure this user has admin privs - this plugin places its
+	;results on the stack
+	userInfo::getAccountType
+	pop $0
+    ${if} $0 != "Admin"
+		messageBox MB_OK "You must have Administrator privileges to install this application"
+		Abort
+	${endif}
+
 	SetOutPath "$INSTDIR"
 
 	;create our application data directory
