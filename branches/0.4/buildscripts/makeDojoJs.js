@@ -15,7 +15,23 @@ buildUtil.saveFile(releaseDir + "/" + dojoFileName, result[0].contents);
 
 //Save the other layers, if there are any.
 for(var i = 1; i < result.length; i++){
-	buildUtil.saveFile(releaseDir + "/" + result[i].layerName, result[i].contents);
+	var layerName = releaseDir + "/" + result[i].layerName;
+	var uncompressedLayerName = layerName + ".uncompressed.js";
+
+	buildUtil.saveFile(uncompressedLayerName, result[i].contents);
+	
+	//Compress the layer files. It is clunky to do it here and have dojo.js
+	//compression done elsewhere. This will be fixed in 0.9 re-org.
+	print("Compressing file: " + layerName);
+
+	var copyright = new String(buildUtil.readFile("copyright.txt"));
+
+	//Load the file contents and optimize.
+	var fileContents = new String(buildUtil.readFile(uncompressedLayerName));
+	fileContents = buildUtil.optimizeJs(uncompressedLayerName, fileContents, copyright, true);
+	
+	//Save the optimized file.
+	buildUtil.saveFile(layerName, fileContents);
 }
 
 //Save the dependency list to build.txt
