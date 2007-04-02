@@ -13,28 +13,28 @@ dojo.dnd2.Manager = function(){
 	this.copy  = true;
 	
 	this.target = null;
-	this.can_drop = false;
+	this.canDropFlag = false;
 };
 
 dojo.extend(dojo.dnd2.Manager, {
 	// methods
 	overSource: function(source){
 		if(this.avatar){
-			this.target = (source && source.target_state != "Disabled") ? source : null;
+			this.target = (source && source.targetState != "Disabled") ? source : null;
 			this.avatar.update();
 		}
-		dojo.event.topic.publish("dnd_source_over", source);
+		dojo.event.topic.publish("dndSourceOver", source);
 	},
 	outSource: function(source){
 		if(this.avatar){
 			if(this.target == source){
 				this.target = null;
-				this.can_drop = false;
+				this.canDropFlag = false;
 				this.avatar.update();
-				dojo.event.topic.publish("dnd_source_over", null);
+				dojo.event.topic.publish("dndSourceOver", null);
 			}
 		}else{
-			dojo.event.topic.publish("dnd_source_over", null);
+			dojo.event.topic.publish("dndSourceOver", null);
 		}
 	},
 	startDrag: function(source, nodes, copy){
@@ -43,7 +43,7 @@ dojo.extend(dojo.dnd2.Manager, {
 		this.copy   = copy;
 		this.avatar = this.makeAvatar();
 		dojo.body().appendChild(this.avatar.node);
-		dojo.event.topic.publish("dnd_start", source, nodes, copy);
+		dojo.event.topic.publish("dndStart", source, nodes, copy);
 		dojo.event.connect(dojo.doc(), "onmousemove", this, "onMouseMove");
 		dojo.event.connect(dojo.doc(), "onmouseup",   this, "onMouseUp");
 		dojo.event.connect(dojo.doc(), "onkeydown",   this, "onKeyDown");
@@ -51,9 +51,9 @@ dojo.extend(dojo.dnd2.Manager, {
 		dojo.html.addClass(dojo.body(), "dojoDnd" + (copy ? "Copy" : "Move"));
 	},
 	canDrop: function(flag){
-		var can_drop = this.target && flag;
-		if(this.can_drop != can_drop){
-			this.can_drop = can_drop;
+		var canDropFlag = this.target && flag;
+		if(this.canDropFlag != canDropFlag){
+			this.canDropFlag = canDropFlag;
 			this.avatar.update();
 		}
 	},
@@ -76,17 +76,17 @@ dojo.extend(dojo.dnd2.Manager, {
 		var a = this.avatar;
 		if(a){
 			var s = a.node.style;
-			s.left = (e.pageX + 10 + a.off_x) + "px";
-			s.top  = (e.pageY + 10 + a.off_y) + "px";
+			s.left = (e.pageX + 10 + a.offX) + "px";
+			s.top  = (e.pageY + 10 + a.offY) + "px";
 			if(this.copy != e.ctrlKey){ this.setCopyStatus(e.ctrlKey); }
 		}
 	},
 	onMouseUp: function(e){
 		if(this.avatar){
-			if(this.target && this.can_drop){
-				dojo.event.topic.publish("dnd_drop", this.source, this.nodes, e.ctrlKey);
+			if(this.target && this.canDropFlag){
+				dojo.event.topic.publish("dndDrop", this.source, this.nodes, e.ctrlKey);
 			}else{
-				dojo.event.topic.publish("dnd_cancel");
+				dojo.event.topic.publish("dndCancel");
 			}
 			this.stopDrag();
 		}
