@@ -20,7 +20,7 @@ function(node, params){
 	// class-specific variables
 	this.selection = {};
 	this.anchor = null;
-	this.simple_selection = false;
+	this.simpleSelection = false;
 	// set up events
 	dojo.event.connect(this.node, "onmousedown", this, "onMouseDown");
 	dojo.event.connect(this.node, "onmouseup",   this, "onMouseUp");
@@ -30,7 +30,7 @@ function(node, params){
 	onMouseDown: function(e){
 		if(!this.current){ return; }
 		if(!this.singular && !e.ctrlKey && !e.shiftKey && (this.current.id in this.selection)){
-			this.simple_selection = true;
+			this.simpleSelection = true;
 			this.cancelEvent(e);
 			return;
 		}
@@ -50,7 +50,7 @@ function(node, params){
 				var i = 0;
 				for(; i < c.length; ++i){
 					var n = c[i];
-					if(this.node_filter(n)){ break; }
+					if(this.nodeFilter(n)){ break; }
 				}
 				this.anchor = c[i];
 				this.addItemClass(this.anchor, "Anchor");
@@ -60,12 +60,12 @@ function(node, params){
 				var i = 0;
 				for(; i < c.length; ++i){
 					var n = c[i];
-					if(!this.node_filter(n)){ continue; }
+					if(!this.nodeFilter(n)){ continue; }
 					if(n == this.anchor || n == this.current){ break; }
 				}
 				for(++i; i < c.length; ++i){
 					var n = c[i];
-					if(!this.node_filter(n)){ continue; }
+					if(!this.nodeFilter(n)){ continue; }
 					if(n == this.anchor || n == this.current){ break; }
 					this.addItemClass(n, "Selected");
 					this.selection[n.id] = 1;
@@ -130,8 +130,8 @@ function(node, params){
 		this.cancelEvent(e);
 	},
 	onMouseUp: function(e){
-		if(!this.simple_selection){ return; }
-		this.simple_selection = false;
+		if(!this.simpleSelection){ return; }
+		this.simpleSelection = false;
 		this.selectNone();
 		if(this.current){
 			this.anchor = this.current;
@@ -140,7 +140,7 @@ function(node, params){
 		}
 	},
 	onMouseMove: function(e){
-		this.simple_selection = false;
+		this.simpleSelection = false;
 	},
 	// utilities
 	onOverEvent: function(){
@@ -182,7 +182,7 @@ function(node, params){
 		var c = this.node.tagName.toLowerCase() == "table" ? this.parent.getElementsByTagName("tr") : this.node.childNodes;
 		for(var i = 0; i < c.length; ++i){
 			var n = c[i];
-			if(this.node_filter(n)){
+			if(this.nodeFilter(n)){
 				this.addItemClass(n, "Selected");
 				this.selection[n.id] = 1;
 			}
@@ -202,19 +202,19 @@ function(node, params){
 		this.selection = {};
 		return this;
 	},
-	insertNodes: function(add_selected, data, before, anchor){
-		var old_creator = this.node_creator;
-		if(add_selected){
+	insertNodes: function(addSelected, data, before, anchor){
+		var oldCreator = this.nodeCreator;
+		if(addSelected){
 			var _this = this;
-			this.node_creator = function(d){
-				var t = old_creator(d);
+			this.nodeCreator = function(d){
+				var t = oldCreator(d);
 				_this.addItemClass(t.node, "Selected");
 				_this.selection[t.node.id] = 1;
 				return t;
 			};
 		}
 		dojo.dnd2.Selector.superclass.insertNodes.call(this, data, before, anchor);
-		this.node_creator = old_creator;
+		this.nodeCreator = oldCreator;
 		return this;
 	}
 });

@@ -18,14 +18,14 @@ dojo.declare("dojo.dnd2.Container", null,
 function(node, params){
 	// general variables
 	this.node = dojo.byId(node);
-	this.node_filter  = (params && params.filter)  ? params.filter  : function(n){ return n.nodeType == 1; };
-	this.node_creator = (params && params.creator) ? params.creator : dojo.dnd2._defaultCreator(this.node);
+	this.nodeFilter  = (params && params.filter)  ? params.filter  : function(n){ return n.nodeType == 1; };
+	this.nodeCreator = (params && params.creator) ? params.creator : dojo.dnd2._defaultCreator(this.node);
 	// class-specific variables
 	this.map = {};
 	this.current = null;
 	this.parent = this.node;
 	// states
-	this.container_state = "";
+	this.containerState = "";
 	dojo.html.addClass(this.node, "dojoDndContainer");
 	// mark up children
 	var c;
@@ -40,7 +40,7 @@ function(node, params){
 	}
 	for(var i = 0; i < c.length; ++i){
 		var n = c[i];
-		if(this.node_filter(n)){
+		if(this.nodeFilter(n)){
 			n.id = dojo.dom.getUniqueId();
 		}
 	}
@@ -79,7 +79,7 @@ function(node, params){
 		var c = this.node.tagName.toLowerCase() == "table" ? this.parent.getElementsByTagName("tr") : this.node.childNodes;
 		for(var i = 0; i < c.length; ++i){
 			var n = c[i];
-			if(this.node_filter(n)){
+			if(this.nodeFilter(n)){
 				t.push(n);
 			}
 		}
@@ -99,13 +99,13 @@ function(node, params){
 		}
 		if(anchor){
 			for(var i = 0; i < data.length; ++i){
-				var t = this.node_creator(data[i]);
+				var t = this.nodeCreator(data[i]);
 				this.map[t.node.id] = {data: t.data, types: t.types};
 				this.parent.insertBefore(t.node, anchor);
 			}
 		}else{
 			for(var i = 0; i < data.length; ++i){
-				var t = this.node_creator(data[i]);
+				var t = this.nodeCreator(data[i]);
 				this.map[t.node.id] = {data: t.data, types: t.types};
 				this.parent.appendChild(t.node);
 			}
@@ -116,11 +116,11 @@ function(node, params){
 	onOverEvent: function(){},
 	onOutEvent: function(){},
 	cancelEvent: function(e){ dojo.event.browser.stopEvent(e); },
-	changeState: function(type, new_state){
+	changeState: function(type, newState){
 		var prefix = "dojoDnd" + type;
-		var state  = type.toLowerCase() + "_state";
-		dojo.html.replaceClass(this.node, prefix + new_state, prefix + this[state]);
-		this[state] = new_state;
+		var state  = type.toLowerCase() + "State";
+		dojo.html.replaceClass(this.node, prefix + newState, prefix + this[state]);
+		this[state] = newState;
 	},
 	addItemClass:    function(node, type){ dojo.html.addClass(node, "dojoDndItem" + type); },
 	removeItemClass: function(node, type){ dojo.html.removeClass(node, "dojoDndItem" + type); },
@@ -132,7 +132,7 @@ function(node, params){
 			node = parent;
 			parent = node.parentNode;
 		}
-		return (parent && this.node_filter(node)) ? node : null;
+		return (parent && this.nodeFilter(node)) ? node : null;
 	}
 });
 

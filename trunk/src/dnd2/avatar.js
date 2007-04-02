@@ -9,6 +9,11 @@ dojo.dnd2.Avatar = function(manager){
 	this.construct();
 };
 
+dojo.dnd2._getOffset = function(node, side){
+	var h = dojo.html;
+	return h.getMarginExtent(node, side) + h.getBorderExtent(node, side) + h.getPaddingExtent(node, side);
+};
+
 dojo.extend(dojo.dnd2.Avatar, {
 	construct: function(){
 		var h = dojo.html;
@@ -29,7 +34,7 @@ dojo.extend(dojo.dnd2.Avatar, {
 			tr = dojo.doc().createElement("tr");
 			h.addClass(tr, "dojoDndAvatarItem");
 			td = dojo.doc().createElement("td");
-			var t = this.manager.source.node_creator(this.manager.source.map[this.manager.nodes[i].id].data, "avatar");
+			var t = this.manager.source.nodeCreator(this.manager.source.map[this.manager.nodes[i].id].data, "avatar");
 			td.appendChild(t.node);
 			tr.appendChild(td);
 			h.setOpacity(tr, (6 - i) / 10);
@@ -38,15 +43,15 @@ dojo.extend(dojo.dnd2.Avatar, {
 		a.appendChild(b);
 		this.node = a;
 		// calculate various offsets
-		this.off_x = h.getMarginExtent(a, "left") + h.getBorderExtent(a, "left") + h.getPaddingExtent(a, "left");
-		this.off_y = h.getMarginExtent(a, "top")  + h.getBorderExtent(a, "top")  + h.getPaddingExtent(a, "top");
+		this.offX = dojo.dnd2._getOffset(a, "left");
+		this.offY = dojo.dnd2._getOffset(a, "top");
 	},
 	destroy: function(){
 		this.node.parentNode.removeChild(this.node);
 		this.node = false;
 	},
 	update: function(){
-		dojo.html[(this.manager.can_drop ? "add" : "remove") + "Class"](this.node, "dojoDndAvatarCanDrop");
+		dojo.html[(this.manager.canDropFlag ? "add" : "remove") + "Class"](this.node, "dojoDndAvatarCanDrop");
 		// replace text
 		var t = this.node.getElementsByTagName("td");
 		for(var i = 0; i < t.length; ++i){
