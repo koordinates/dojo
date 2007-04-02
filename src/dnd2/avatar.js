@@ -5,17 +5,27 @@ dojo.require("dojo.html.layout");
 dojo.require("dojo.html.display");
 
 dojo.dnd2.Avatar = function(manager){
+	// summary: an object, which represents transferred DnD items visually
+	// manager: Object: a DnD manager object
 	this.manager = manager;
 	this.construct();
+	// calculate various offsets
+	this.offX = dojo.dnd2._getOffset(this.node, "left");
+	this.offY = dojo.dnd2._getOffset(this.node, "top");
 };
 
 dojo.dnd2._getOffset = function(node, side){
+	// summary: calculates an offset for a content box
+	// node: Node: a node
+	// side: String: a side of a box ("left", "right", "top", or "bottom")
 	var h = dojo.html;
-	return h.getMarginExtent(node, side) + h.getBorderExtent(node, side) + h.getPaddingExtent(node, side);
+	return h.getMarginExtent(node, side) + h.getBorderExtent(node, side) + h.getPaddingExtent(node, side);	// Number
 };
 
 dojo.extend(dojo.dnd2.Avatar, {
 	construct: function(){
+		// summary: a constructor function;
+		//	it is separate so it can be (dynamically) overwritten in case of need
 		var h = dojo.html;
 		var a = dojo.doc().createElement("table");
 		h.addClass(a, "dojoDndAvatar");
@@ -42,15 +52,14 @@ dojo.extend(dojo.dnd2.Avatar, {
 		}
 		a.appendChild(b);
 		this.node = a;
-		// calculate various offsets
-		this.offX = dojo.dnd2._getOffset(a, "left");
-		this.offY = dojo.dnd2._getOffset(a, "top");
 	},
 	destroy: function(){
+		// summary: a desctructor for the avatar, called to remove all references so it can be garbage-collected
 		this.node.parentNode.removeChild(this.node);
 		this.node = false;
 	},
 	update: function(){
+		// summary: updates the avatar to reflect the current DnD state
 		dojo.html[(this.manager.canDropFlag ? "add" : "remove") + "Class"](this.node, "dojoDndAvatarCanDrop");
 		// replace text
 		var t = this.node.getElementsByTagName("td");
@@ -63,6 +72,7 @@ dojo.extend(dojo.dnd2.Avatar, {
 		}
 	},
 	_generateText: function(){
+		// summary: generates a proper text to reflect copying or moving of items
 		return (this.manager.copy ? "copy" : "mov") + "ing " + this.manager.nodes.length + " item" + (this.manager.nodes.length != 1 ? "s" : "");	
 	}
 });
