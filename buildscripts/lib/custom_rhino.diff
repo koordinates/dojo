@@ -1,10 +1,12 @@
+### Eclipse Workspace Patch 1.0
+#P rhino
 Index: src/org/mozilla/javascript/BaseFunction.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/BaseFunction.java,v
 retrieving revision 1.57
 diff -u -r1.57 BaseFunction.java
 --- src/org/mozilla/javascript/BaseFunction.java	30 Aug 2005 10:05:42 -0000	1.57
-+++ src/org/mozilla/javascript/BaseFunction.java	2 Jun 2006 09:19:22 -0000
++++ src/org/mozilla/javascript/BaseFunction.java	2 Apr 2007 22:06:50 -0000
 @@ -373,6 +373,28 @@
          return sb.toString();
      }
@@ -34,13 +36,76 @@ diff -u -r1.57 BaseFunction.java
      public int getArity() { return 0; }
  
      public int getLength() { return 0; }
+Index: src/org/mozilla/javascript/NativeFunction.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeFunction.java,v
+retrieving revision 1.62
+diff -u -r1.62 NativeFunction.java
+--- src/org/mozilla/javascript/NativeFunction.java	17 Jan 2005 13:06:33 -0000	1.62
++++ src/org/mozilla/javascript/NativeFunction.java	2 Apr 2007 22:06:50 -0000
+@@ -70,6 +70,26 @@
+         }
+     }
+ 
++    /**
++     * Compress the script.
++     * <p>
++     * 
++     * @param parseTree Mapping for each function node and corresponding parameters & variables names
++     * @param indent How much to indent the decompiled result
++     * @param flags Flags specifying format of decompilation output
++     * @return compressed script
++     */
++    final String compress(ScriptOrFnNode parseTree, int indent, int flags)
++    {
++        String encodedSource = getEncodedSource();
++        if (encodedSource == null) {
++            return super.compress(indent, flags);
++        } else {
++            UintMap properties = new UintMap(1);
++            properties.put(Decompiler.INITIAL_INDENT_PROP, indent);
++            return Decompiler.compress(encodedSource, flags, properties, parseTree);
++        }
++    }
+     public int getLength()
+     {
+         int paramCount = getParamCount();
+Index: src/org/mozilla/javascript/TokenStream.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/TokenStream.java,v
+retrieving revision 1.63
+diff -u -r1.63 TokenStream.java
+--- src/org/mozilla/javascript/TokenStream.java	31 Jul 2005 13:48:46 -0000	1.63
++++ src/org/mozilla/javascript/TokenStream.java	2 Apr 2007 22:06:50 -0000
+@@ -64,9 +64,12 @@
+     private final static int
+         EOF_CHAR = -1;
+ 
++    public StringBuffer lastComment;
++    
+     TokenStream(Parser parser, Reader sourceReader, String sourceString,
+                 int lineno)
+     {
++    	this.lastComment = new StringBuffer();
+         this.parser = parser;
+         this.lineno = lineno;
+         if (sourceReader != null) {
+@@ -736,6 +739,8 @@
+ 
+             case '/':
+                 // is it a // comment?
++            	// FIXME: RAR: comment, need to set config to optionally keep
++            	// instead of skipping!
+                 if (matchChar('/')) {
+                     skipLine();
+                     continue retry;
 Index: src/org/mozilla/javascript/Context.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Context.java,v
 retrieving revision 1.244
 diff -u -r1.244 Context.java
 --- src/org/mozilla/javascript/Context.java	4 Nov 2005 13:37:45 -0000	1.244
-+++ src/org/mozilla/javascript/Context.java	2 Jun 2006 09:19:26 -0000
++++ src/org/mozilla/javascript/Context.java	2 Apr 2007 22:06:50 -0000
 @@ -1178,6 +1178,33 @@
          }
      }
@@ -75,7 +140,7 @@ diff -u -r1.244 Context.java
      /**
       * Check whether a string is ready to be compiled.
       * <p>
-@@ -1361,6 +1388,27 @@
+@@ -1361,6 +1388,33 @@
      }
  
      /**
@@ -89,6 +154,12 @@ diff -u -r1.244 Context.java
 +     */
 +    public final String compressScript(Script script, int indent, String source,int lineno)
 +    {
++        //Make sure to clear out the TokenMapper state before running.
++        //This allows for more than one script to be compressed.
++        //However, this is not a very clean way to do the reset.
++        TokenMapper.reset();
++        Decompiler.tm = new TokenMapper();
++
 +        NativeFunction scriptImpl = (NativeFunction) script;
 +        
 +        CompilerEnvirons compilerEnv = new CompilerEnvirons();
@@ -103,7 +174,7 @@ diff -u -r1.244 Context.java
       * Decompile a JavaScript Function.
       * <p>
       * Decompiles a previously compiled JavaScript function object to
-@@ -2240,7 +2288,6 @@
+@@ -2240,7 +2294,6 @@
                  sourceReader = null;
              }
          }
@@ -111,7 +182,7 @@ diff -u -r1.244 Context.java
          Parser p = new Parser(compilerEnv, compilationErrorReporter);
          if (returnFunction) {
              p.calledByCompileFunction = true;
-@@ -2251,6 +2298,7 @@
+@@ -2251,6 +2304,7 @@
          } else {
              tree = p.parse(sourceReader, sourceName, lineno);
          }
@@ -125,7 +196,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Decompiler.java,v
 retrieving revision 1.19
 diff -u -r1.19 Decompiler.java
 --- src/org/mozilla/javascript/Decompiler.java	28 Aug 2005 23:25:22 -0000	1.19
-+++ src/org/mozilla/javascript/Decompiler.java	2 Jun 2006 09:19:28 -0000
++++ src/org/mozilla/javascript/Decompiler.java	2 Apr 2007 22:06:50 -0000
 @@ -37,6 +37,11 @@
  
  package org.mozilla.javascript;
@@ -138,7 +209,7 @@ diff -u -r1.19 Decompiler.java
  /**
   * The following class save decompilation information about the source.
   * Source information is returned from the parser as a String
-@@ -70,6 +75,264 @@
+@@ -70,6 +75,272 @@
   * the final constant pool entry from information available at parse
   * time.
   */
@@ -168,6 +239,14 @@ diff -u -r1.19 Decompiler.java
 +	private int parentScope = 0;
 +
 +	private int lastTokenCount = 0;
++
++	/**
++	 * Reset the static members for the TokenMapper.
++	 */
++	public static void reset() {
++		funcObjects = new ObjArray();
++		functionVarMappings = new ArrayList();
++	}
 +
 +	/**
 +	 * Generate new compressed tokens
@@ -403,11 +482,14 @@ diff -u -r1.19 Decompiler.java
  public class Decompiler
  {
      /**
-@@ -266,6 +529,512 @@
+@@ -266,6 +537,515 @@
          return new String(sourceBuffer, offset, sourceTop - offset);
      }
  
-+    private static TokenMapper tm = new TokenMapper();
++    //Used to be private, but making it public so we
++    //can reset the token state between compression runs.
++    //Not very pretty.
++    public static TokenMapper tm = new TokenMapper();
 +    
 +    /**
 +     * Compress the script
@@ -916,76 +998,13 @@ diff -u -r1.19 Decompiler.java
      /**
       * Decompile the source information associated with this js
       * function/script back into a string.  For the most part, this
-Index: src/org/mozilla/javascript/NativeFunction.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeFunction.java,v
-retrieving revision 1.62
-diff -u -r1.62 NativeFunction.java
---- src/org/mozilla/javascript/NativeFunction.java	17 Jan 2005 13:06:33 -0000	1.62
-+++ src/org/mozilla/javascript/NativeFunction.java	2 Jun 2006 09:19:28 -0000
-@@ -70,6 +70,26 @@
-         }
-     }
- 
-+    /**
-+     * Compress the script.
-+     * <p>
-+     * 
-+     * @param parseTree Mapping for each function node and corresponding parameters & variables names
-+     * @param indent How much to indent the decompiled result
-+     * @param flags Flags specifying format of decompilation output
-+     * @return compressed script
-+     */
-+    final String compress(ScriptOrFnNode parseTree, int indent, int flags)
-+    {
-+        String encodedSource = getEncodedSource();
-+        if (encodedSource == null) {
-+            return super.compress(indent, flags);
-+        } else {
-+            UintMap properties = new UintMap(1);
-+            properties.put(Decompiler.INITIAL_INDENT_PROP, indent);
-+            return Decompiler.compress(encodedSource, flags, properties, parseTree);
-+        }
-+    }
-     public int getLength()
-     {
-         int paramCount = getParamCount();
-Index: src/org/mozilla/javascript/TokenStream.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/TokenStream.java,v
-retrieving revision 1.63
-diff -u -r1.63 TokenStream.java
---- src/org/mozilla/javascript/TokenStream.java	31 Jul 2005 13:48:46 -0000	1.63
-+++ src/org/mozilla/javascript/TokenStream.java	2 Jun 2006 09:19:29 -0000
-@@ -64,9 +64,12 @@
-     private final static int
-         EOF_CHAR = -1;
- 
-+    public StringBuffer lastComment;
-+    
-     TokenStream(Parser parser, Reader sourceReader, String sourceString,
-                 int lineno)
-     {
-+    	this.lastComment = new StringBuffer();
-         this.parser = parser;
-         this.lineno = lineno;
-         if (sourceReader != null) {
-@@ -736,6 +739,8 @@
- 
-             case '/':
-                 // is it a // comment?
-+            	// FIXME: RAR: comment, need to set config to optionally keep
-+            	// instead of skipping!
-                 if (matchChar('/')) {
-                     skipLine();
-                     continue retry;
 Index: toolsrc/org/mozilla/javascript/tools/resources/Messages.properties
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/toolsrc/org/mozilla/javascript/tools/resources/Messages.properties,v
 retrieving revision 1.22
 diff -u -r1.22 Messages.properties
 --- toolsrc/org/mozilla/javascript/tools/resources/Messages.properties	2 Sep 2005 14:18:40 -0000	1.22
-+++ toolsrc/org/mozilla/javascript/tools/resources/Messages.properties	2 Jun 2006 09:19:30 -0000
++++ toolsrc/org/mozilla/javascript/tools/resources/Messages.properties	2 Apr 2007 22:06:50 -0000
 @@ -55,7 +55,9 @@
      \    -version 100|110|120|130|140|150\n\
      \    -opt [-1|0-9]\n\
@@ -1003,7 +1022,7 @@ RCS file: /cvsroot/mozilla/js/rhino/toolsrc/org/mozilla/javascript/tools/shell/M
 retrieving revision 1.65
 diff -u -r1.65 Main.java
 --- toolsrc/org/mozilla/javascript/tools/shell/Main.java	30 Sep 2005 08:28:51 -0000	1.65
-+++ toolsrc/org/mozilla/javascript/tools/shell/Main.java	2 Jun 2006 09:19:31 -0000
++++ toolsrc/org/mozilla/javascript/tools/shell/Main.java	2 Apr 2007 22:06:50 -0000
 @@ -66,6 +66,11 @@
      static private final int EXITCODE_RUNTIME_ERROR = 3;
      static private final int EXITCODE_FILE_NOT_FOUND = 4;
