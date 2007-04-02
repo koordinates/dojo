@@ -39,6 +39,7 @@
 	<property name="website_dir" value="${docs_dir}/website"/>
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
 	<property name="profile" value=""/>
+	<property name="strip_and_compress" value="false"/>
 	<property name="locales" value="en-gb,en-us,de-de,es-es,fr-fr,it-it,pt-br,ko-kr,zh-tw,zh-cn,ja-jp"/> 	<!-- FIXME: where should this list come from? -->
 	<property name="currencies" value="GBP,USD,CAD,AUD,EUR,CHF,HKD,JPY"/> 	<!-- FIXME: arbitrary list. Can be altered or eliminated for all currencies -->
 	<property name="cldrIn" location="${root}/cldr"/>
@@ -488,7 +489,9 @@ build targets:
 		<java jar="./lib/custom_rhino.jar" failonerror="true" fork="true" 
 				logerror="true">
 			<arg value="stripComments.js" />
-			<arg value="${release_dir}"/>
+			<arg value="${release_dir}/src"/>
+			<arg value="false"/>
+			<arg value="${strip_and_compress}"/>
 		</java>
 	</target>
 	<!-- end strip-resource-comments -->
