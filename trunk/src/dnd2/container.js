@@ -24,30 +24,33 @@ function(node, params){
 	//	filter: Function: a filter function, which is used to filter out children of the container
 	//	creator: Function: a creator function, which takes a data item, and returns an object like that:
 	//		{node: newNode, data: usedData, types: arrayOfStrings}
+	//	selector: Function: a selector function, which selects all relevant nodes of a container; 
+	//		should be used in pair with the filter function; returns an object like that:
+	//		{parent: parentNode, nodes: arrayOf childNodes}
 	this.node = dojo.byId(node);
-	this.nodeFilter  = (params && params.filter)  ? params.filter  : function(n){ return n.nodeType == 1; };
-	this.nodeCreator = (params && params.creator) ? params.creator : dojo.dnd2._defaultCreator(this.node);
+	var me = this;
+	this.nodeFilter = (params && params.filter) ?
+		params.filter :
+		function(n){ return n.parentNode == me.parent && n.nodeType == 1; };
+	this.nodeCreator  = (params && params.creator) ?
+		params.creator :
+		dojo.dnd2._defaultCreator(this.node);
+	this.nodeSelector = (params && params.selector) ?
+		params.selector :
+		dojo.dnd2._defaultSelector;
 	// class-specific variables
 	this.map = {};
 	this.current = null;
-	this.parent = this.node;
 	// states
 	this.containerState = "";
 	dojo.html.addClass(this.node, "dojoDndContainer");
 	// mark up children
-	var c;
-	if(this.node.tagName.toLowerCase() == "table"){
-		c = this.node.getElementsByTagName("tbody");
-		if(c && c.length){
-			this.parent = c[0];
-		}
-		c = this.parent.getElementsByTagName("tr");
-	}else{
-		c = this.node.childNodes;
-	}
+	var c = this.nodeSelector(this.node);
+	this.parent = c.parent;
+	c = c.nodes;
 	for(var i = 0; i < c.length; ++i){
 		var n = c[i];
-		if(this.nodeFilter(n)){
+		if(this.nodeFilter(n) && !n.id){
 			n.id = dojo.dom.getUniqueId();
 		}
 	}
@@ -88,7 +91,7 @@ function(node, params){
 	getAllNodes: function(){
 		// summary: returns a list (an array) of all valid child nodes
 		var t = [];
-		var c = this.node.tagName.toLowerCase() == "table" ? this.parent.getElementsByTagName("tr") : this.node.childNodes;
+		var c = this.nodeSelector(this.node).nodes;
 		for(var i = 0; i < c.length; ++i){
 			var n = c[i];
 			if(this.nodeFilter(n)){
@@ -100,7 +103,7 @@ function(node, params){
 	insertNodes: function(data, before, anchor){
 		// summary: inserts an array of new nodes before/after an anchor node
 		// data: Array: a list of data items, which should be processed by the creator function
-		// before: Boolean: insert before the anchor, if true, and after the anchot otherwise
+		// before: Boolean: insert before the anchor, if true, and after the anchor otherwise
 		// anchor: Node: the anchor node to be used as a point of insertion
 		if(!this.parent.firstChild){
 			anchor = null;
@@ -157,14 +160,16 @@ function(node, params){
 		dojo.html.removeClass(node, "dojoDndItem" + type);
 	},
 	_getChildByEvent: function(e){
-		// summary: gets a child, which is under the mouse at the moment
+		// summary: gets a child, which is under the mouse at the moment, or null
 		// e: Event: a mouse event
 		var node = e.target;
 		if(node == this.node){ return null; }
+		if(this.nodeFilter(node)) return node;
 		var parent = node.parentNode;
 		while(parent && parent != this.parent && node != this.node){
 			node = parent;
 			parent = node.parentNode;
+			if(this.nodeFilter(node)) return node;
 		}
 		return (parent && this.nodeFilter(node)) ? node : null;	// Node
 	}
@@ -215,4 +220,20 @@ dojo.dnd2._defaultCreator = function(node){
 		n.id = dojo.dom.getUniqueId();
 		return {node: n, data: data, types: ["text"]};
 	};
+};
+
+dojo.dnd2._defaultSelector = function(node) {
+	// summary: takes a container node, and returns a parent, and a list of children
+	// node: Node: a container node
+	var ret = {parent: node, nodes: []};
+	if(node.tagName.toLowerCase() == "table"){
+		var c = node.getElementsByTagName("tbody");
+		if(c && c.length){
+			ret.parent = c[0];
+		}
+		ret.nodes = ret.parent.getElementsByTagName("tr");
+	}else{
+		ret.nodes = node.childNodes;
+	}
+	return ret;	// Object
 };
