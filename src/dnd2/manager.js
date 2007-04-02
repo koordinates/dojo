@@ -3,6 +3,7 @@ dojo.provide("dojo.dnd2.manager");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
 
+dojo.require("dojo.dnd2.common");
 dojo.require("dojo.dnd2.avatar");
 
 dojo.dnd2.Manager = function(){
@@ -95,7 +96,7 @@ dojo.extend(dojo.dnd2.Manager, {
 			var s = a.node.style;
 			s.left = (e.pageX + 10 + a.offX) + "px";
 			s.top  = (e.pageY + 10 + a.offY) + "px";
-			if(this.copy != e.ctrlKey){ this._setCopyStatus(e.ctrlKey); }
+			if(this.copy != dojo.dnd2.multiSelectKey(e)){ this._setCopyStatus(dojo.dnd2.multiSelectKey(e)); }
 		}
 	},
 	onMouseUp: function(e){
@@ -103,7 +104,7 @@ dojo.extend(dojo.dnd2.Manager, {
 		// e: Event: mouse event
 		if(this.avatar){
 			if(this.target && this.canDropFlag){
-				dojo.event.topic.publish("dndDrop", this.source, this.nodes, e.ctrlKey);
+				dojo.event.topic.publish("dndDrop", this.source, this.nodes, dojo.dnd2.multiSelectKey(e));
 			}else{
 				dojo.event.topic.publish("dndCancel");
 			}

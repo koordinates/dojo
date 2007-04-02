@@ -4,6 +4,7 @@ dojo.require("dojo.lang.declare");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
 
+dojo.require("dojo.dnd2.common");
 dojo.require("dojo.dnd2.container");
 
 /*
@@ -36,13 +37,13 @@ function(node, params){
 		// summary: event processor for onmousedown
 		// e: Event: mouse event
 		if(!this.current){ return; }
-		if(!this.singular && !e.ctrlKey && !e.shiftKey && (this.current.id in this.selection)){
+		if(!this.singular && !dojo.dnd2.multiSelectKey(e) && !e.shiftKey && (this.current.id in this.selection)){
 			this.simpleSelection = true;
 			dojo.event.browser.stopEvent(e);
 			return;
 		}
 		if(!this.singular && e.shiftKey){
-			if(!e.ctrlKey){
+			if(!dojo.dnd2.multiSelectKey(e)){
 				var empty = {};
 				for(var i in this.selection){
 					if(!(i in empty)){
@@ -83,7 +84,7 @@ function(node, params){
 		}else{
 			if(this.singular){
 				if(this.anchor == this.current){
-					if(e.ctrlKey){
+					if(dojo.dnd2.multiSelectKey(e)){
 						this._removeItemClass(this.anchor, "Anchor");
 						this.anchor = null;
 						this.selection = {};
@@ -98,7 +99,7 @@ function(node, params){
 					this.selection[this.current.id] = 1;
 				}
 			}else{
-				if(e.ctrlKey){
+				if(dojo.dnd2.multiSelectKey(e)){
 					if(this.anchor == this.current){
 						this._removeItemClass(this.anchor, "Anchor");
 						delete this.selection[this.anchor.id];
@@ -227,11 +228,11 @@ function(node, params){
 		// anchor: Node: the anchor node to be used as a point of insertion
 		var oldCreator = this.nodeCreator;
 		if(addSelected){
-			var _this = this;
+			var me = this;
 			this.nodeCreator = function(d){
 				var t = oldCreator(d);
-				_this._addItemClass(t.node, "Selected");
-				_this.selection[t.node.id] = 1;
+				me._addItemClass(t.node, "Selected");
+				me.selection[t.node.id] = 1;
 				return t;
 			};
 		}
