@@ -88,11 +88,11 @@ Function handleInternetExplorer
 	${if} $1 == ""
 		StrCpy $1 "0"
 	${endif}
-	WriteRegDWORD HKCU "Software\Dojo\dot" "OriginalProxyEnable" $1
+	WriteRegDWORD HKCU "Software\Dojo\dot" "OriginalIEProxyEnable" $1
 	
 	;PAC file given
 	ReadRegStr $1 HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "AutoConfigURL"
-	WriteRegStr HKCU "Software\Dojo\dot" "OriginalAutoConfigURL" $1
+	WriteRegStr HKCU "Software\Dojo\dot" "OriginalIEAutoConfigURL" $1
 	
 	;TODO: "Autodetect proxy settings" which is used for WPAD PAC files over the
 	;network are not clearly reflected into the registry -- unable to
@@ -109,8 +109,133 @@ Function handleInternetExplorer
 										"file://$APPDATA\Dojo\dot\.offline-pac"
 FunctionEnd
 
-Function handleFirefox
+Function removeTrailingNewlines
+	Var /GLOBAL inputLength
+	Var /GLOBAL startCut
+	Var /GLOBAL inputString
+	Var /GLOBAL fragment
 
+	Pop $inputString
+	
+	StrLen $inputLength $inputString
+	${if} $inputLength >= 2
+		IntOp $startCut $inputLength - 2
+		StrCpy $fragment $inputString 2 $startCut
+		${if} $fragment == "$\r$\n"
+			StrCpy $inputString $inputString $startCut
+		${endif}
+	${endif}
+	
+	Push $inputString
+FunctionEnd
+
+Function handleFirefox
+	Var /GLOBAL searchHandle
+	Var /GLOBAL foundDirectory
+	Var /GLOBAL allProfileNames
+	
+	StrCpy $allProfileNames ""
+	
+	;Firefox installations can have multiple users -- some users create
+	;multiple accounts for different reasons, though all linked to
+	;this single Windows user account. Enumerate through each profile, which
+	;usually has a strange GUID-like name such as w2hwmkob.default.
+	FindFirst $searchHandle $foundDirectory "$APPDATA\Mozilla\Firefox\Profiles\*"
+	loop:
+		StrCmp $foundDirectory "" done
+		
+		;handle the pref settings for this Firefox profile
+		;FindFirst/FindNext includes "." and ".." -- filter out
+		${if} $foundDirectory != "."
+		${andif} $foundDirectory != ".."
+			;record this profile name to later store in the registry
+			${if} $allProfileNames == ""
+				StrCpy $allProfileNames "$foundDirectory"
+			${else}
+				StrCpy $allProfileNames "$allProfileNames,$foundDirectory"
+			${endif}
+			Push $foundDirectory
+			Call handleFirefoxProfile
+		${endif}
+		
+		FindNext $searchHandle $foundDirectory
+		Goto loop
+	done:
+		FindClose $searchHandle
+		
+		;persist the names of all of our profiles
+		DetailPrint "allProfileNames=$allProfileNames"
+		${if} $allProfileNames != ""
+			WriteRegStr HKCU "Software\Dojo\dot" "allMozillaProfileNames" $allProfileNames
+		${endif}
+FunctionEnd
+
+Function handleFirefoxProfile
+	;for each profile, get the prefs.js file, read out the old network settings,
+	;persist this in a registry key as a sub-value under the name of this
+	;profile (such as w2hwmkob.default), then update the prefs.js file with our
+	;new values by adding them to the bottom. When Firefox restarts it will
+	;simply over-write the old settings and use the new ones we added
+	;at the bottom, since lower settings get precedence since prefs.js is
+	;just JavaScript. On Uninstallation we will restore these values
+	;using the registry settings.
+	
+	Var /GLOBAL profilePath
+	Var /GLOBAL profileName
+	Var /GLOBAL pacPref
+	Var /GLOBAL proxyTypePref
+	Var /GLOBAL prefsFile
+	Var /GLOBAL currentLine
+	Var /GLOBAL lineStart
+	Var /GLOBAL lineLen
+	
+	Pop $profileName
+	
+	StrCpy $pacPref "none"
+	StrCpy $proxyTypePref "none"	
+	
+	StrCpy $profilePath "$APPDATA\Mozilla\Firefox\Profiles\$profileName"
+	
+	;keep reading pref lines in until we find
+	;the ones we want
+	ClearErrors
+	FileOpen $prefsFile "$profilePath\prefs.js" a
+	loop:
+		IfErrors done
+		FileRead $prefsFile $currentLine
+		
+		;is this the autoconfig_url pref setting?
+		StrLen $lineLen 'user_pref("network.proxy.autoconfig_url",'
+		StrCpy $lineStart $currentLine $lineLen
+		${if} $lineStart == 'user_pref("network.proxy.autoconfig_url",'
+			StrCpy $pacPref $currentLine
+			Push $pacPref
+			Call removeTrailingNewlines
+			Pop $pacPref
+		${endif}
+		
+		;is this the proxy type setting?
+		StrLen $lineLen 'user_pref("network.proxy.type",'
+		StrCpy $lineStart $currentLine $lineLen
+		${if} $lineStart == 'user_pref("network.proxy.type",'
+			StrCpy $proxyTypePref $currentLine
+			Push $proxyTypePref
+			Call removeTrailingNewlines
+			Pop $proxyTypePref
+		${endif}
+		
+		Goto loop 
+	done:
+		;write out our new proxy settings at the end of the proxy file
+		FileSeek $prefsFile 0 END
+		FileWrite $prefsFile 'user_pref("network.proxy.type", 1);$\r$\n'
+		FileWrite $prefsFile 'user_pref("network.proxy.autoconfig_url", "file://$APPDATA\Dojo\dot\.offline-pac");$\r$\n'
+		
+		;persist our old proxy settings in the registry
+		WriteRegStr HKCU "Software\Dojo\dot\mozilla_profiles\$profileName" "pacPref" $pacPref
+		WriteRegStr HKCU "Software\Dojo\dot\mozilla_profiles\$profileName" "proxyTypePref" $proxyTypePref
+		
+		FileClose $prefsFile
 FunctionEnd
 
 Function initUninstaller
@@ -164,9 +289,9 @@ Section "Uninstall"
 	RMDir "$PROGRAMFILES\Dojo"
 	
 	;restore previous proxy settings
-	ReadRegDWORD $1 HKCU "Software\Dojo\dot" "OriginalProxyEnable"
+	ReadRegDWORD $1 HKCU "Software\Dojo\dot" "OriginalIEProxyEnable"
 	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "ProxyEnable" $1
-	ReadRegStr $1 HKCU "Software\Dojo\dot" "OriginalAutoConfigURL"
+	ReadRegStr $1 HKCU "Software\Dojo\dot" "OriginalIEAutoConfigURL"
 	;was there even an old PAC setting?
 	${if} $1 != ""
 		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "AutoConfigURL" $1
