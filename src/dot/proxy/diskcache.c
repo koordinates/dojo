@@ -366,9 +366,18 @@ urlDirname(char *buf, int n, const char *url, int len)
     if(memcmp(url, "http://", 7) != 0)
         return -1;
 
+#ifdef MINGW
+    /* TODO: Detect Windows style drive string at
+        beginning to confirm valid disk cache root 
+        setting. */
+    if(diskCacheRoot == NULL ||
+       diskCacheRoot->length <= 0)
+        return -1;
+#else
     if(diskCacheRoot == NULL ||
        diskCacheRoot->length <= 0 || diskCacheRoot->string[0] != '/')
         return -1;
+#endif
 
     if(n <= diskCacheRoot->length)
         return -1;
