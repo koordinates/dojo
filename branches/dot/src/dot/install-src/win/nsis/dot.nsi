@@ -152,7 +152,7 @@ Section "Uninstall"
 	
 	Delete "$APPDATA\Dojo\dot\.offline-pac"
 
-	RMDir "$PROGRAMFILES\Dojo\dot"
+	RMDir /r "$PROGRAMFILES\Dojo\dot"
 	RMDir "$PROGRAMFILES\Dojo"
 	
 	;restore previous proxy settings
