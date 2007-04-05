@@ -128,6 +128,11 @@ Function initUninstaller
 					"NoRepair" 1
 FunctionEnd
 
+Function startOnStartup
+	;have our local proxy start up on system startup
+	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "DojoOffline" '"$INSTDIR\dot.exe" "$INSTDIR\"'
+FunctionEnd
+
 Function doFinalSanityCheck
 	;do a final sanity check to make sure our environment is correctly installed
 	;if not, uninstall
@@ -142,6 +147,7 @@ Section "Install"
 	call storeAppMetadata
 	call handleInternetExplorer
 	call handleFirefox
+	call startOnStartup
 	call initUninstaller
 	call doFinalSanityCheck				
 SectionEnd
@@ -173,4 +179,5 @@ Section "Uninstall"
 	DeleteRegKey HKCU "Software\Dojo\dot"
 	DeleteRegKey /ifempty HKCU "Software\Dojo"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot"
+	DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "DojoOffline"
 SectionEnd
