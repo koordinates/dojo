@@ -102,5 +102,12 @@ void goOffline(void);
 */
 int isOnline(void);
 
+/**
+     Generates and saves a Proxy AutoConfig (PAC) file 
+     from our list of offline-enabled hosts. Returns 1
+     if successful, 0 if not.
+*/
+int generatePACFile(void);
+
 #endif /* NO_OFFLINE_SUPPORT */
 #endif /* __off_h */
