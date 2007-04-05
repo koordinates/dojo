@@ -159,6 +159,7 @@ Section "Uninstall"
 	ReadRegDWORD $1 HKCU "Software\Dojo\dot" "OriginalProxyEnable"
 	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "ProxyEnable" $1
 	ReadRegStr $1 HKCU "Software\Dojo\dot" "OriginalAutoConfigURL"
+	;was there even an old PAC setting?
 	${if} $1 != ""
 		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "AutoConfigURL" $1
 	${else}
