@@ -74,7 +74,7 @@ Function storeAppMetadata
 	WriteRegStr HKCU "Software\Dojo\dot" "AppFolder" "$APPDATA\Dojo\dot"
 	
 	;write out our version
-	WriteRegStr HKCU "Software\Dojo\dot" "CurrentVersion" $VERSION
+	WriteRegStr HKCU "Software\Dojo\dot" "CurrentVersion" ${VERSION}
 FunctionEnd
 
 Function saveOldProxySettings
@@ -159,12 +159,15 @@ Section "Uninstall"
 	ReadRegDWORD $1 HKCU "Software\Dojo\dot" "OriginalProxyEnable"
 	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "ProxyEnable" $1
 	ReadRegStr $1 HKCU "Software\Dojo\dot" "OriginalAutoConfigURL"
-	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "AutoConfigURL" "file://test"
+	${if} $1 != ""
+		WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "AutoConfigURL" $1
+	${else}
+		DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" \
+										"AutoConfigURL"
+	${endif}
 
 	;clean up our final registry keys
 	DeleteRegKey HKCU "Software\Dojo\dot"
 	DeleteRegKey /ifempty HKCU "Software\Dojo"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot"
-	DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" \
-										"AutoConfigURL"
 SectionEnd
