@@ -113,6 +113,14 @@ void initOffline(void){
     if(offlineFile != NULL){
         loadOfflineList();
     }
+    
+    /* Under some conditions, such as if someone has upgraded
+        Polipo, removing the default PAC file but leaving the
+        offline-list present, we must regenerate the PAC file
+        to ensure it is up to date. Simply do this on
+        startup each time, in case someone has hand edited
+        the offline list as well. */
+    generatePACFile();
 }
 
 int isValidHost(char host[]){
