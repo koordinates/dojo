@@ -79,13 +79,16 @@ OBJS = util.o event.o io.o chunk.o atom.o object.o log.o diskcache.o main.o \
 polipo$(EXE): $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o polipo$(EXE) $(OBJS) $(MD5LIBS) $(LDLIBS)
 
+restart$(EXE): $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o restarter$(EXE) restart.c $(MD5LIBS) $(LDLIBS)
+
 ftsimport.o: ftsimport.c fts_compat.c
 
 md5import.o: md5import.c md5.c
 
 .PHONY: all install install.binary install.man
 
-all: polipo$(EXE) polipo.info html/index.html localindex.html
+all: polipo$(EXE) restart$(EXE) polipo.info html/index.html localindex.html
 
 install: install.binary install.man
 

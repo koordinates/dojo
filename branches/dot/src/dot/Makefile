@@ -26,7 +26,8 @@ mac:
 	@echo --- Creating Mac/x86 Build ---
 	@echo
 	make -e -C proxy all
-	mv -f proxy/polipo proxy-build/mac/x86/dot
+	mv -f proxy/polipo proxy-build/mac/x86/proxy
+	mv -f proxy/restarter proxy-build/mac/x86/dot
 	cp -f proxy/config.mac proxy-build/mac/x86/config
 	cp -f proxy/default-pac proxy-build/mac/x86/.offline-pac
 
@@ -36,7 +37,8 @@ windows:
 	@echo --- Creating Windows/x86 Build ---
 	@echo
 	make -e -C proxy all CC=i386-mingw32-gcc EXE=.exe LDLIBS=-lwsock32 PREFIX=/
-	mv -f proxy/polipo.exe proxy-build/win/dot.exe
+	mv -f proxy/polipo.exe proxy-build/win/proxy.exe
+	mv -f proxy/restarter.exe proxy-build/win/dot.exe
 	cp -f proxy/config.win proxy-build/win/config
 	cp -f proxy/default-pac proxy-build/win/.offline-pac
 	cp -f proxy/default-pac proxy-build/win/offline-pac
