@@ -13,6 +13,7 @@ var dependencies = [
 dependencies.layers = [
 	{
 		name: "dojo2.js",
+		resourceName: "custom.layers.dojo2",
 		layerDependencies: [
 			"dojo.js"
 		],
@@ -22,6 +23,7 @@ dependencies.layers = [
 	},
 	{
 		name: "dojo3.js",
+		resourceName: "custom.layers.dojo3",
 		layerDependencies: [
 			"dojo2.js"
 		],
