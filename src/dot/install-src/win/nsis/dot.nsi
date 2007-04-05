@@ -77,7 +77,7 @@ Function storeAppMetadata
 	WriteRegStr HKCU "Software\Dojo\dot" "CurrentVersion" ${VERSION}
 FunctionEnd
 
-Function saveOldProxySettings
+Function handleInternetExplorer
 	;preserve three possible previous proxy settings:
 	; * "Autodetect proxy settings" - used for the network-based PAC file installation
 	; * A previous PAC file setting
@@ -102,13 +102,15 @@ Function saveOldProxySettings
 	
 	;turn off the old proxy settings
 	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "ProxyEnable" 0
-FunctionEnd
 
-Function setNewProxySettings
 	;update Internet Explorer's PAC file setting
 	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" \
 										"AutoConfigURL" \
 										"file://$APPDATA\Dojo\dot\.offline-pac"
+FunctionEnd
+
+Function handleFirefox
+
 FunctionEnd
 
 Function initUninstaller
@@ -138,8 +140,8 @@ Section "Install"
 	call createFileLayout
 	call updateConfigFile
 	call storeAppMetadata
-	call saveOldProxySettings
-	call setNewProxySettings
+	call handleInternetExplorer
+	call handleFirefox
 	call initUninstaller
 	call doFinalSanityCheck				
 SectionEnd
