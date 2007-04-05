@@ -309,12 +309,12 @@ buildUtil.loadDependencyList = function(/*String*/profileFile){
 	return depResult;
 }
 
-buildUtil.createLayerContents = function(/*Array*/depList, /*Array*/provideList, /*String*/version){
+buildUtil.createLayerContents = function(/*String*/resourceName, /*Array*/depList, /*Array*/provideList, /*String*/version){
 	//summary: Creates the core contents for a build layer (including dojo.js).
 
 	//Concat the files together, and mark where we should insert all the
 	//provide statements.
-	var dojoContents = "";
+	var dojoContents = resourceName ? "dojo.provide(\"" + resourceName + "\");\r\n" : "";
 	for(var i = 0; i < depList.length; i++){
 		//Make sure we have a JS string and not a Java string by using new String().
 		dojoContents += new String(buildUtil.readFile(depList[i])) + "\r\n";
@@ -387,11 +387,21 @@ buildUtil.makeDojoJs = function(/*Object*/dependencyResult, /*String*/version){
 	//returned from buildUtil.getDependencyList()
 
 	var lineSeparator = buildUtil.getLineSeparator();
+	var layers = dependencyResult.dependencies.layers;
 
 	//Cycle through the layers to create the content for each layer.
 	for(var i = 0; i< dependencyResult.length; i++){
 		var layerResult = dependencyResult[i];
-		layerResult.contents = buildUtil.createLayerContents(layerResult.depList, layerResult.provideList, version);
+		var resourceName = "";
+
+		//If this is not dojo.js, then look for a resource name.
+		if(i != 0){	
+			var layer = layers[i - 1]; // -1 because layers in profile do not have dojo.js dependencies.
+			if(layer && layer["resourceName"]){
+				resourceName = layer["resourceName"];
+			}
+		}
+		layerResult.contents = buildUtil.createLayerContents(resourceName, layerResult.depList, layerResult.provideList, version);
 	}
 
 	//Object with properties:
@@ -754,7 +764,9 @@ buildUtil.internTemplateStrings = function(profileFile, loader, releaseDir, srcR
 	//Intern strings for any other layer files.
 	if(dependencies["layers"] && dependencies.layers.length > 0){
 		for(var i = 0; i < dependencies.layers.length; i++){
-			buildUtil.internTemplateStringsInFile(loader, releaseDir + "/" + dependencies.layers[i].name, srcRoot, prefixes, skiplist);
+			var layerName = dependencies.layers[i].name;
+			buildUtil.internTemplateStringsInFile(loader, releaseDir + "/" + layerName, srcRoot, prefixes, skiplist);
+			buildUtil.internTemplateStringsInFile(loader, releaseDir + "/" + layerName + ".uncompressed.js", srcRoot, prefixes, skiplist);
 		}
 	}
 
@@ -779,7 +791,21 @@ buildUtil.interningDojoUriRegExpString = "(((templatePath|templateCssPath)\\s*(=
 buildUtil.interningGlobalDojoUriRegExp = new RegExp(buildUtil.interningDojoUriRegExpString, "g");
 buildUtil.interningLocalDojoUriRegExp = new RegExp(buildUtil.interningDojoUriRegExpString);
 
-//WARNING: This function assumes dojo.string.escapeString() has been loaded.
+
+//Copied from dojo.string.escapeString. Duplicating it here
+//to avoid dependency that might be hard to satisfy in some cases.
+buildUtil.escapeString = function(/*string*/str){
+//summary:
+//	Adds escape sequences for non-visual characters, double quote and backslash
+//	and surrounds with double quotes to form a valid string literal.
+	return ('"' + str.replace(/(["\\])/g, '\\$1') + '"'
+		).replace(/[\f]/g, "\\f"
+		).replace(/[\b]/g, "\\b"
+		).replace(/[\n]/g, "\\n"
+		).replace(/[\t]/g, "\\t"
+		).replace(/[\r]/g, "\\r"); // string
+}
+
 buildUtil.interningRegexpMagic = function(loader, resourceContent, srcRoot, prefixes, skiplist, isSilent){
 	return resourceContent.replace(buildUtil.interningGlobalDojoUriRegExp, function(matchString){
 		var parts = matchString.match(buildUtil.interningLocalDojoUriRegExp);
@@ -810,8 +836,8 @@ buildUtil.interningRegexpMagic = function(loader, resourceContent, srcRoot, pref
 			if(!isSilent){
 				print("Interning resource path: " + filePath);
 			}
-			//dojo.string.escapeString will add starting and ending double-quotes.
-			var jsEscapedContent = dojo.string.escapeString(new String(readText(filePath)));
+			//buildUtil.escapeString will add starting and ending double-quotes.
+			var jsEscapedContent = buildUtil.escapeString(new String(readText(filePath)));
 			if(jsEscapedContent){
 				if(matchString.indexOf("dojo.uri.cache.allow") != -1){
 					//Handle dojo.uri.cache-related interning.
