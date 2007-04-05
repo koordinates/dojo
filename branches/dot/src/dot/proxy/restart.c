@@ -6,6 +6,88 @@
 #define MINGW
 #endif
 
+#ifdef MINGW
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
+void addTrailingSlash(char *path){
+    int len;
+    
+    /* Add a trailing slash */
+    len = strlen(path);
+#ifdef MINGW
+    if(path[len - 1] != '\\'){
+        path[len - 1] = '\\';
+        path[len] = '\0';
+    }
+#else
+    if(path[len - 1] != '/'){
+        path[len - 1] = '/';
+        path[len] = '\0';
+    }
+#endif
+}
+
+void getSystemString(char *systemStr, char *path){
+#ifndef MINGW
+    /* we only need the system string to execute
+        this process on non-Windows systems */
+    strcpy(systemStr, "cd ");
+    strcat(systemStr, path);
+    strcat(systemStr, "; ");
+    strcat(systemStr, "./proxy -c ");
+    strcat(systemStr, "config");
+#endif
+}
+
+void executeProxy(char *systemStr, char *path){
+#ifdef MINGW
+    /* can't use system() on Windows - opens
+        a DOS window */
+    while(1){
+        /* execute the command */
+        BOOL result;
+        SHELLEXECUTEINFO sei = { sizeof(sei) };
+        sei.fMask = SEE_MASK_FLAG_DDEWAIT | SEE_MASK_NOCLOSEPROCESS;
+        sei.nShow = SW_HIDE;
+        sei.lpVerb = "open";
+        sei.lpFile = "proxy.exe";
+        sei.lpParameters = " -c config";
+        sei.lpDirectory = (LPCTSTR)path;
+        result = ShellExecuteEx(&sei);
+        
+        /* make sure there wasn't an error */
+        if(result == FALSE){
+            printf("Unable to execute local proxy: %d\n", (int)GetLastError());
+            return;
+        }
+        
+        /* wait until application has terminated */
+        WaitForSingleObject(sei.hProcess, INFINITE);
+
+        /* close process handle */
+        if(sei.hProcess != NULL){
+            CloseHandle(sei.hProcess);
+        }  
+        
+        printf("---Restarting local proxy...\n");
+    }
+#else    
+    /** see if we have a command processor */
+    if(system(NULL) == 0){
+        printf("No command process available\n");
+        return;
+    }
+    
+    while(1){
+        system(systemStr);
+        printf("---Restarting local proxy...\n");
+    }
+    
+#endif
+}
+
 /* A simple restarter that keeps restarting the proxy
    if it fails. 
    
@@ -13,8 +95,6 @@
 */
 int main(int argc, char **argv)
 {
-    int len;
-    int results;
     char *path;
     char systemStr[5000];
    
@@ -30,46 +110,9 @@ int main(int argc, char **argv)
         path = argv[1];
     }
 
-    /* Add a trailing slash */
-    len = strlen(path);
-#ifdef MINGW
-    if(path[len - 1] != '\\'){
-        path[len - 1] = '\\';
-        path[len] = '\0';
-    }
-#else
-    if(path[len - 1] != '/'){
-        path[len - 1] = '/';
-        path[len] = '\0';
-    }
-#endif
-     
-#ifdef MINGW
-    strcpy(systemStr, "cd \"");
-    strcat(systemStr, path);
-    strcat(systemStr, "\" & ");
-    strcat(systemStr, "proxy.exe -c ");
-    strcat(systemStr, "config");
-#else
-    strcpy(systemStr, "cd ");
-    strcat(systemStr, path);
-    strcat(systemStr, "; ");
-    strcat(systemStr, "./proxy -c ");
-    strcat(systemStr, "config");
-#endif
-   
-    printf("Systemstr: %s\n", systemStr);
-    
-    /** see if we have a command processor */
-    if(system(NULL) == 0){
-        printf("No command process available\n");
-        return(1);
-    }
-    
-    while(1){
-        results = system(systemStr);
-        printf("---Restarting local proxy...; results=%d\n", results);
-    }
+    addTrailingSlash(path);
+    getSystemString(systemStr, path);
+    executeProxy(systemStr, path);
     
     printf("---Unable to continue executing local proxy\n");
     return(1);

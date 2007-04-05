@@ -41,6 +41,11 @@ CDEBUGFLAGS = -Os -Wall $(DEBUGFLAG)
 # EXE=.exe
 # LDLIBS = -lwsock32
 
+# Hides a console window popping up on Windows -- needed
+# if you want to start the restarter on system startup
+# without a window appearing. 
+# HIDECONSOLE = -mwindows
+
 FILE_DEFINES = -DLOCAL_ROOT=\"$(LOCAL_ROOT)/\" \
                -DDISK_CACHE_ROOT=\"$(DISK_CACHE_ROOT)/\"
 
@@ -80,7 +85,7 @@ polipo$(EXE): $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o polipo$(EXE) $(OBJS) $(MD5LIBS) $(LDLIBS)
 
 restart$(EXE): $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o restarter$(EXE) restart.c $(MD5LIBS) $(LDLIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(HIDECONSOLE) -o restarter$(EXE) restart.c $(MD5LIBS) $(LDLIBS)
 
 ftsimport.o: ftsimport.c fts_compat.c
 

@@ -36,7 +36,7 @@ windows:
 	@echo
 	@echo --- Creating Windows/x86 Build ---
 	@echo
-	make -e -C proxy all CC=i386-mingw32-gcc EXE=.exe LDLIBS=-lwsock32 PREFIX=/
+	make -e -C proxy all CC=i386-mingw32-gcc EXE=.exe LDLIBS=-lwsock32 PREFIX=/ HIDECONSOLE=-mwindows
 	mv -f proxy/polipo.exe proxy-build/win/proxy.exe
 	mv -f proxy/restarter.exe proxy-build/win/dot.exe
 	cp -f proxy/config.win proxy-build/win/config
