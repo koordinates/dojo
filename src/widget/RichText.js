@@ -729,6 +729,25 @@ dojo.widget.defineWidget(
 			}
 		},
 
+		enable: function(){
+			var h=dojo.render.html;
+			if(h.ie || this._safariIsLeopard() || h.opera){
+				this.editNode.contentEditable=true;
+			}else{ //moz
+				this.document.designMode='on';
+			}
+			this.enabled=true;
+		},
+		disable: function(){
+			var h=dojo.render.html;
+			if(h.ie || this._safariIsLeopard() || h.opera){
+				this.editNode.contentEditable=false;
+			}else{ //moz
+				this.blur(); //to remove the blinking caret
+				this.document.designMode='off';
+			}
+			this.enabled=false;
+		},
 	/* Event handlers
 	 *****************/
 
@@ -1014,10 +1033,10 @@ dojo.widget.defineWidget(
 			return _letBrowserHandle;
 		},
 		removeTrailingBr: function(container){
-			if(/P|LI/i .test(container.tagName)){
+			if(/P|DIV|LI/i .test(container.tagName)){
 				var para = container;
 			}else{
-				var para = dojo.html.selection.getParentOfType(container,['P','LI']);
+				var para = dojo.html.selection.getParentOfType(container,['P','DIV','LI']);
 			}
 			if(para && para.lastChild){
 				if(para.lastChild.nodeType==3 && dojo.string.trim(para.lastChild.nodeValue).length == 0){

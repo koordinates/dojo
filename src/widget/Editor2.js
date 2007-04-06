@@ -221,7 +221,7 @@ dojo.widget.defineWidget(
 		_inSourceMode: false,
 		_htmlEditNode: null,
 
-		// toolbarGroup: String: 
+		// toolbarGroup: String
 		//		This instance of editor will share the same toolbar with other editor with the same toolbarGroup. 
 		//		By default, toolbarGroup is empty and standalone toolbar is used for this instance.
 		toolbarGroup: '',
@@ -233,6 +233,7 @@ dojo.widget.defineWidget(
 			// summary:
 			//		Create toolbar and other initialization routines. This is called after
 			//		the finish of the loading of document in the editing element
+
 //			dojo.profile.start("dojo.widget.Editor2::editorOnLoad");
 
 			dojo.event.topic.publish("dojo.widget.Editor2::preLoadingToolbar", this);
@@ -434,7 +435,7 @@ dojo.widget.defineWidget(
 
 		updateToolbar: function(/*Boolean*/force){
 			// summary: update the associated toolbar of this Editor2
-			if((!this.isLoaded)||(!this.toolbarWidget)){ return; }
+			if((!this.isLoaded)||(!this.toolbarWidget) || (!this.enabled)){ return; }
 
 			// keeps the toolbar from updating too frequently
 			// TODO: generalize this functionality?
