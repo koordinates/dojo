@@ -38,6 +38,9 @@ Function .onInit
 FunctionEnd
 
 Function ensureEnvironment
+	DetailPrint "Ensuring correct installation environment..."
+	
+	DetailPrint "Making sure user has admin privileges..."
 	;make sure this user has admin privs - the 'userInfo::getAccountType' 
 	;plugin places its results on the stack
 	userInfo::getAccountType
@@ -47,10 +50,16 @@ Function ensureEnvironment
 		Abort
 	${endif}
 	
+	;TODO: Make sure supported Windows version is installed
+	DetailPrint "Making sure supported version of Windows is installed..."
+	
 	;TODO: Make sure the version of IE installed is supported
+	DetailPrint "Making sure user has supported version of Internet Explorer..."
 FunctionEnd
 
 Function createFileLayout
+	DetailPrint "Creating file layout..."
+	
 	;create our application data directory
 	CreateDirectory "$APPDATA\Dojo"
 	CreateDirectory "$APPDATA\Dojo\dot"
@@ -66,6 +75,8 @@ Function createFileLayout
 FunctionEnd
 
 Function updateConfigFile
+	DetailPrint "Configuring Dojo Offline config file for user's machine..."
+
 	;update the configuration file to point to Windows locations,
 	;rather than Unix ones - replace all slashes with backslashes
 	${WordReplace} "$APPDATA" "\" "/" "+" $R1
@@ -75,6 +86,8 @@ Function updateConfigFile
 FunctionEnd
 
 Function storeAppMetadata
+	DetailPrint "Storing Dojo Offline metadata in registry..."
+
 	;store installation folder and application data folder
 	WriteRegStr HKCU "Software\Dojo\dot" "InstallFolder" $INSTDIR
 	WriteRegStr HKCU "Software\Dojo\dot" "AppFolder" "$APPDATA\Dojo\dot"
@@ -84,10 +97,14 @@ Function storeAppMetadata
 FunctionEnd
 
 Function handleInternetExplorer
+	DetailPrint "Configuring Internet Explorer to use Dojo Offline..."
+
 	;preserve three possible previous proxy settings:
 	; * "Autodetect proxy settings" - used for the network-based PAC file installation
 	; * A previous PAC file setting
 	; * Directly using a proxy
+	
+	DetailPrint "Preserving old Internet Explorer proxy settings..."
 	
 	;exact proxy value given
 	ReadRegDWORD $1 HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "ProxyEnable"
@@ -109,6 +126,8 @@ Function handleInternetExplorer
 	;turn off the old proxy settings
 	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "ProxyEnable" 0
 
+	DetailPrint "Setting Internet Explorer to use Dojo Offline proxy..."
+
 	;update Internet Explorer's PAC file setting
 	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" \
 										"AutoConfigURL" \
@@ -116,11 +135,15 @@ Function handleInternetExplorer
 FunctionEnd
 
 Function handleFirefox
+	DetailPrint "Configuring Firefox to use Dojo Offline..."
+
 	Var /GLOBAL searchHandle
 	Var /GLOBAL foundDirectory
 	Var /GLOBAL allProfileNames
+	Var /GLOBAL numFirefoxProfiles
 	
 	StrCpy $allProfileNames ""
+	StrCpy $numFirefoxProfiles "0"
 	
 	;Firefox installations can have multiple users -- some users create
 	;multiple accounts for different reasons, though all linked to
@@ -134,6 +157,8 @@ Function handleFirefox
 		;FindFirst/FindNext includes "." and ".." -- filter out
 		${if} $foundDirectory != "."
 		${andif} $foundDirectory != ".."
+			IntOp $numFirefoxProfiles $numFirefoxProfiles + 1
+			
 			;record this profile name to later store in the registry
 			${if} $allProfileNames == ""
 				StrCpy $allProfileNames "$foundDirectory"
@@ -153,6 +178,8 @@ Function handleFirefox
 		${if} $allProfileNames != ""
 			WriteRegStr HKCU "Software\Dojo\dot" "allMozillaProfileNames" $allProfileNames
 		${endif}
+		
+		DetailPrint "$numFirefoxProfiles Firefox profiles were found and configured."
 FunctionEnd
 
 Function handleFirefoxProfile
@@ -223,6 +250,8 @@ Function handleFirefoxProfile
 FunctionEnd
 
 Function initUninstaller
+	DetailPrint "Creating uninstaller..."
+
 	;create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 	
@@ -238,16 +267,15 @@ Function initUninstaller
 FunctionEnd
 
 Function startOnStartup
+	DetailPrint "Registering Dojo Offline to start on system startup..."
+
 	;have our local proxy start up on system startup
 	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "DojoOffline" '"$INSTDIR\dot.exe" "$INSTDIR\"'
 FunctionEnd
 
-Function doFinalSanityCheck
-	;do a final sanity check to make sure our environment is correctly installed
-	;if not, uninstall
-FunctionEnd
+Function un.restoreIEProxySettings
+	DetailPrint "Restoring Internet Explorer's pre-Dojo Offline proxy settings..."
 
-Function un.RestoreIEProxySettings
 	ReadRegDWORD $1 HKCU "Software\Dojo\dot" "OriginalIEProxyEnable"
 	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "ProxyEnable" $1
 	ReadRegStr $1 HKCU "Software\Dojo\dot" "OriginalIEAutoConfigURL"
@@ -260,11 +288,11 @@ Function un.RestoreIEProxySettings
 	${endif}
 FunctionEnd
 
-Function un.RestoreFirefoxProxySettings
-	DetailPrint "RestoreFirefoxProxySettings"
+Function un.restoreFirefoxProxySettings
+	DetailPrint "Restoring Firefox's pre-Dojo Offline proxy settings..."
+
 	Var /GLOBAL allProfiles
 	Var /GLOBAL currentProfile
-	Var /GLOBAL pFile
 
 	StrCpy $allProfiles ""
 
@@ -302,6 +330,7 @@ Function un.RestoreFirefoxProxySettings
 FunctionEnd
   
 Section "Install"
+	DetailPrint "Installing Dojo Offline version ${VERSION}..."
 	SetOutPath "$INSTDIR"
 	
 	call ensureEnvironment
@@ -312,10 +341,18 @@ Section "Install"
 	call handleFirefox
 	call startOnStartup
 	call initUninstaller
-	call doFinalSanityCheck				
+	
+	DetailPrint "Finished installing Dojo Offline."
+	DetailPrint "Have Fun!"			
 SectionEnd
 
 Section "Uninstall"
+	DetailPrint "Uninstalling Dojo Offline..."
+	DetailPrint "All your personal offline application data will be"
+	DetailPrint "left untouched -- see $APPDATA\Dojo\dot\ to access"
+	
+	DetailPrint "Removing Dojo Offline files and directories..."
+
 	Delete "$INSTDIR\config"
 	Delete "$INSTDIR\dot.exe"
 	Delete "$INSTDIR\proxy.exe"
@@ -327,12 +364,15 @@ Section "Uninstall"
 	RMDir "$PROGRAMFILES\Dojo"
 	
 	;restore previous IE and Firefox proxy settings
-	Call un.RestoreIEProxySettings
-	Call un.RestoreFirefoxProxySettings
+	Call un.restoreIEProxySettings
+	Call un.restoreFirefoxProxySettings
 
 	;clean up our final registry keys
+	DetailPrint "Cleaning up Dojo Offline registry keys..."
 	DeleteRegKey HKCU "Software\Dojo\dot"
 	DeleteRegKey /ifempty HKCU "Software\Dojo"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot"
 	DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "DojoOffline"
+	
+	DetailPrint "Dojo Offline is uninstalled!"
 SectionEnd
