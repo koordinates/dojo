@@ -80,7 +80,7 @@ dojo.widget.defineWidget(
 		
 	initialize: function(args) {
 
-		for(name in this.eventNamesDefault) {
+		for(var name in this.eventNamesDefault) {
 			if (dojo.lang.isUndefined(this.eventNames[name])) {
 				this.eventNames[name] = this.widgetId+"/"+this.eventNamesDefault[name];
 			}
