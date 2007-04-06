@@ -95,6 +95,10 @@ Function ensureEnvironment
 	${endif}
 FunctionEnd
 
+Function stopDojoOffline
+	DetailPrint "Stopping existing Dojo Offline if running..."
+FunctionEnd
+
 Function createFileLayout
 	DetailPrint "Creating file layout..."
 	
@@ -372,6 +376,7 @@ Section "Install"
 	SetOutPath "$INSTDIR"
 	
 	call ensureEnvironment
+	call stopDojoOffline
 	call createFileLayout
 	call updateConfigFile
 	call storeAppMetadata
