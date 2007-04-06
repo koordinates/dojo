@@ -5,7 +5,7 @@
 
 !include "dot_util.nsh"
 
-!define VERSION "0.0.1"
+!define VERSION "0.4.2-dot-beta1"
 
 ;constants for the beginning of the lines we search for
 !define PAC_LINE_START 'user_pref("network.proxy.autoconfig_url",'
