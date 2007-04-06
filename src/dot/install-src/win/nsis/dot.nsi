@@ -374,8 +374,20 @@ SectionEnd
 
 Section "Uninstall"
 	DetailPrint "Uninstalling Dojo Offline..."
+	
 	DetailPrint "All your personal offline application data will be"
 	DetailPrint "left untouched -- see $APPDATA\Dojo\dot\ to access"
+	
+	;restore previous IE and Firefox proxy settings
+	Call un.restoreIEProxySettings
+	Call un.restoreFirefoxProxySettings
+
+	;clean up our final registry keys
+	DetailPrint "Cleaning up Dojo Offline registry keys..."
+	DeleteRegKey HKCU "Software\Dojo\dot"
+	DeleteRegKey /ifempty HKCU "Software\Dojo"
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot"
+	DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "DojoOffline"
 	
 	DetailPrint "Removing Dojo Offline files and directories..."
 
@@ -388,17 +400,6 @@ Section "Uninstall"
 
 	RMDir /r "$PROGRAMFILES\Dojo\dot"
 	RMDir "$PROGRAMFILES\Dojo"
-	
-	;restore previous IE and Firefox proxy settings
-	Call un.restoreIEProxySettings
-	Call un.restoreFirefoxProxySettings
-
-	;clean up our final registry keys
-	DetailPrint "Cleaning up Dojo Offline registry keys..."
-	DeleteRegKey HKCU "Software\Dojo\dot"
-	DeleteRegKey /ifempty HKCU "Software\Dojo"
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot"
-	DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "DojoOffline"
 	
 	DetailPrint "Dojo Offline is uninstalled!"
 	
