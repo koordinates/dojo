@@ -16,7 +16,7 @@ OutFile "Install.exe"
 
 InstallDir "$PROGRAMFILES\Dojo\dot"
 
-;setup our compression method
+;set our compression method
 SetCompressor /SOLID bzip2
 
 ;no pages -- just install or uninstall seamlessly 
