@@ -7,6 +7,10 @@
 
 !define VERSION "0.4.2-dot-beta1"
 
+;Minimum version of IE we support; this must
+;be a whole number, such as 5, 6, 7, etc.
+!define MINIMUM_INTERNET_EXPLORER_VERSION "6"
+
 ;constants for the beginning of the lines we search for
 !define PAC_LINE_START 'user_pref("network.proxy.autoconfig_url",'
 !define PROXY_TYPE_LINE_START 'user_pref("network.proxy.type",'
@@ -50,15 +54,33 @@ Function ensureEnvironment
 	userInfo::getAccountType
 	pop $0
     ${if} $0 != "Admin"
-		messageBox MB_OK "You must have Administrator privileges to install this application"
+		DetailPrint "You must have Administrator privileges to install this application"
+		messageBox MB_OK "You must have Administrator privileges to install this application" /SD IDOK
 		Abort
 	${endif}
 	
 	;TODO: Make sure supported Windows version is installed
 	DetailPrint "Making sure supported version of Windows is installed..."
 	
-	;TODO: Make sure the version of IE installed is supported
+	;Make sure the version of IE installed is supported
 	DetailPrint "Making sure user has supported version of Internet Explorer..."
+	Var /GLOBAL dllVersionHigh
+	Var /GLOBAL dllVersionLow
+	Var /GLOBAL ieVersion
+	;see the DLL version of IE installed
+	GetDllVersion "$SYSDIR\mshtml.dll" $dllVersionHigh $dllVersionLow
+	;get the first digit
+	IntOp $ieVersion $dllVersionHigh / 0x00010000
+	${if} $ieVersion < ${MINIMUM_INTERNET_EXPLORER_VERSION}
+		StrCpy $R1 "Dojo Offline does not supported your version of Internet Explorer (version $ieVersion)."
+		StrCpy $R1 "$R1 Would you like to continue installing Dojo Offline anyway?"
+		messageBox MB_YESNO|MB_ICONQUESTION "$R1" /SD IDNO \
+						IDYES continueInstalling IDNO abortInstalling
+		abortInstalling:
+			Abort
+		continueInstalling:
+			nop
+	${endif}
 FunctionEnd
 
 Function createFileLayout
@@ -384,5 +406,6 @@ Section "Uninstall"
 	StrCpy $R1 "$R1 Please restart Firefox and Internet Explorer"
 	StrCpy $R1 "$R1 for the uninstallation to take effect."
 	
-	MessageBox MB_OK $R1
+	DetailPrint "$R1"
+	MessageBox MB_OK $R1 /SD IDOK
 SectionEnd
