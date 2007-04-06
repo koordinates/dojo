@@ -173,73 +173,89 @@ FunctionEnd
 ;
 
 !define ReplaceLineStr "!insertmacro ReplaceLineStr"
+!define Un_ReplaceLineStr "!insertmacro Un_ReplaceLineStr"
  
 !macro ReplaceLineStr ModifyFile BeginWith ReplaceLineWith
-  Push "${ModifyFile}"
-  Push "${BeginWith}"
-  Push "${ReplaceLineWith}"
+  Push ${ModifyFile}
+  Push ${BeginWith}
+  Push ${ReplaceLineWith}
+  Call ReplaceLineStr
+!macroend
+
+!macro Un_ReplaceLineStr ModifyFile BeginWith ReplaceLineWith
+  Push ${ModifyFile}
+  Push ${BeginWith}
+  Push ${ReplaceLineWith}
   Call un.ReplaceLineStr
 !macroend
 
-Function un.ReplaceLineStr
- Exch $R0 ; string to replace that whole line with
- Exch
- Exch $R1 ; string that line should start with
- Exch
- Exch 2
- Exch $R2 ; file
- Push $R3 ; file handle
- Push $R4 ; temp file
- Push $R5 ; temp file handle
- Push $R6 ; global
- Push $R7 ; input string length
- Push $R8 ; line string length
- Push $R9 ; global
+!macro ReplaceLineStrFunctionBody
+	 Exch $R0 ; string to replace that whole line with
+	 Exch
+	 Exch $R1 ; string that line should start with
+	 Exch
+	 Exch 2
+	 Exch $R2 ; file
+	 Push $R3 ; file handle
+	 Push $R4 ; temp file
+	 Push $R5 ; temp file handle
+	 Push $R6 ; global
+	 Push $R7 ; input string length
+	 Push $R8 ; line string length
+	 Push $R9 ; global
  
-  StrLen $R7 $R1
+	  StrLen $R7 $R1
  
-  GetTempFileName $R4
+	  GetTempFileName $R4
  
-  FileOpen $R5 $R4 w
-  FileOpen $R3 $R2 r
+	  FileOpen $R5 $R4 w
+	  FileOpen $R3 $R2 r
  
-  ReadLoop:
-  ClearErrors
-   FileRead $R3 $R6
-    IfErrors Done
+	  ReadLoop:
+	  ClearErrors
+	   FileRead $R3 $R6
+	    IfErrors Done
  
-   StrLen $R8 $R6
-   StrCpy $R9 $R6 $R7 -$R8
-   StrCmp $R9 $R1 0 +3
+	   StrLen $R8 $R6
+	   StrCpy $R9 $R6 $R7 -$R8
+	   StrCmp $R9 $R1 0 +3
  
-    FileWrite $R5 "$R0$\r$\n"
-    Goto ReadLoop
+	    FileWrite $R5 "$R0$\r$\n"
+	    Goto ReadLoop
  
-    FileWrite $R5 $R6
-    Goto ReadLoop
+	    FileWrite $R5 $R6
+	    Goto ReadLoop
  
-  Done:
+	  Done:
  
-  FileClose $R3
-  FileClose $R5
+	  FileClose $R3
+	  FileClose $R5
  
-  SetDetailsPrint none
-   Delete $R2
-   Rename $R4 $R2
-  SetDetailsPrint both
+	  SetDetailsPrint none
+	   Delete $R2
+	   Rename $R4 $R2
+	  SetDetailsPrint both
  
- Pop $R9
- Pop $R8
- Pop $R7
- Pop $R6
- Pop $R5
- Pop $R4
- Pop $R3
- Pop $R2
- Pop $R1
- Pop $R0
+	 Pop $R9
+	 Pop $R8
+	 Pop $R7
+	 Pop $R6
+	 Pop $R5
+	 Pop $R4
+	 Pop $R3
+	 Pop $R2
+	 Pop $R1
+	 Pop $R0
+	;end ReplaceLineStrFunctionBody
+!macroend
+
+Function ReplaceLineStr
+!insertmacro ReplaceLineStrFunctionBody
 FunctionEnd
-;end ReplaceLineStr
+
+Function un.ReplaceLineStr
+!insertmacro ReplaceLineStrFunctionBody
+FunctionEnd
 
 Function removeTrailingNewlines
 	Var /GLOBAL inputLength
