@@ -7,6 +7,10 @@
 
 !define VERSION "0.0.1"
 
+;constants for the beginning of the lines we search for
+!define PAC_LINE_START 'user_pref("network.proxy.autoconfig_url",'
+!define PROXY_TYPE_LINE_START 'user_pref("network.proxy.type",'
+
 Name "Dojo Offline Toolkit"
 OutFile "Install.exe"
 
@@ -155,10 +159,7 @@ Function handleFirefoxProfile
 	;for each profile, get the prefs.js file, read out the old network settings,
 	;persist this in a registry key as a sub-value under the name of this
 	;profile (such as w2hwmkob.default), then update the prefs.js file with our
-	;new values by adding them to the bottom. When Firefox restarts it will
-	;simply over-write the old settings and use the new ones we added
-	;at the bottom, since lower settings get precedence since prefs.js is
-	;just JavaScript. On Uninstallation we will restore these values
+	;new values. On Uninstallation we will restore these values
 	;using the registry settings.
 	
 	Var /GLOBAL profilePath
@@ -170,10 +171,11 @@ Function handleFirefoxProfile
 	Var /GLOBAL lineStart
 	Var /GLOBAL lineLen
 	
+	;get the profile file name passed to this function
 	Pop $profileName
 	
-	StrCpy $pacPref 'user_pref("network.proxy.autoconfig_url", null);'
-	StrCpy $proxyTypePref 'user_pref("network.proxy.type", 0);'	
+	StrCpy $pacPref 'none'
+	StrCpy $proxyTypePref 'none'	
 	
 	StrCpy $profilePath "$APPDATA\Mozilla\Firefox\Profiles\$profileName"
 	
@@ -186,9 +188,9 @@ Function handleFirefoxProfile
 		FileRead $prefsFile $currentLine
 		
 		;is this the autoconfig_url pref setting?
-		StrLen $lineLen 'user_pref("network.proxy.autoconfig_url",'
+		StrLen $lineLen ${PAC_LINE_START}
 		StrCpy $lineStart $currentLine $lineLen
-		${if} $lineStart == 'user_pref("network.proxy.autoconfig_url",'
+		${if} $lineStart == ${PAC_LINE_START}
 			StrCpy $pacPref $currentLine
 			Push $pacPref
 			Call removeTrailingNewlines
@@ -196,9 +198,9 @@ Function handleFirefoxProfile
 		${endif}
 		
 		;is this the proxy type setting?
-		StrLen $lineLen 'user_pref("network.proxy.type",'
+		StrLen $lineLen ${PROXY_TYPE_LINE_START}
 		StrCpy $lineStart $currentLine $lineLen
-		${if} $lineStart == 'user_pref("network.proxy.type",'
+		${if} $lineStart == ${PROXY_TYPE_LINE_START}
 			StrCpy $proxyTypePref $currentLine
 			Push $proxyTypePref
 			Call removeTrailingNewlines
@@ -207,17 +209,17 @@ Function handleFirefoxProfile
 		
 		Goto loop 
 	done:
-		;write out our new proxy settings at the end of the proxy file
-		FileSeek $prefsFile 0 END
-		FileWrite $prefsFile '$\r$\n'
-		FileWrite $prefsFile 'user_pref("network.proxy.type", 2);$\r$\n'
-		FileWrite $prefsFile 'user_pref("network.proxy.autoconfig_url", "file://$APPDATA\Dojo\dot\.offline-pac");$\r$\n'
-		
+		FileClose $prefsFile
+	
 		;persist our old proxy settings in the registry
 		WriteRegStr HKCU "Software\Dojo\dot\mozilla_profiles\$profileName" "pacPref" $pacPref
 		WriteRegStr HKCU "Software\Dojo\dot\mozilla_profiles\$profileName" "proxyTypePref" $proxyTypePref
-		
-		FileClose $prefsFile
+
+		;replace the old proxy values in the file with the new ones now
+		StrCpy $R2 'user_pref("network.proxy.type", 2);$\r$\n'
+		${ReplaceLineStr} "$profilePath\prefs.js" ${PROXY_TYPE_LINE_START} $R2
+		StrCpy $R2 'user_pref("network.proxy.autoconfig_url", "file://$APPDATA\Dojo\dot\.offline-pac");$\r$\n'
+		${ReplaceLineStr} "$profilePath\prefs.js" ${PAC_LINE_START} $R2
 FunctionEnd
 
 Function initUninstaller
@@ -281,25 +283,21 @@ Function un.RestoreFirefoxProxySettings
 		ReadRegStr $R2 HKCU "Software\Dojo\dot\mozilla_profiles\$currentProfile" "pacPref"
 		ReadRegStr $R3 HKCU "Software\Dojo\dot\mozilla_profiles\$currentProfile" "proxyTypePref"
 		
-		;open the pref.js file for this profile
-		ClearErrors
-		FileOpen $pFile "$APPDATA\Mozilla\Firefox\Profiles\$currentProfile\prefs.js" a
-		IfErrors done
-			
-		;append our original values -- if there were none, then
-		;the default set the pref to null, which will clear
-		;it out when Firefox reads it, giving a correct value
-		;of having no proxy settings and directly connecting
-		;to the Internet
-		FileSeek $pFile 0 END
-		FileWrite $pFile '$\r$\n'
-		FileWrite $pFile '$R2$\r$\n'
-		FileWrite $pFile '$R3$\r$\n'
+		${if} $R2 == "none"
+			StrCpy $R2 ""
+		${endif}
 		
-		done:
-			FileClose $pFile
+		${if} $R3 == "none"
+			StrCpy $R3 ""
+		${endif}
 		
-			IntOp $R1 $R1 + 1
+		;restore prefs.js pre-Dojo Offline values
+		${Un_ReplaceLineStr} "$APPDATA\Mozilla\Firefox\Profiles\$currentProfile\prefs.js" \
+								${PAC_LINE_START} "$R2$\r$\n"
+		${Un_ReplaceLineStr} "$APPDATA\Mozilla\Firefox\Profiles\$currentProfile\prefs.js" \
+								${PROXY_TYPE_LINE_START} "$R3$\r$\n"
+
+		IntOp $R1 $R1 + 1
 	${loop}
 FunctionEnd
   
