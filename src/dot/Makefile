@@ -69,8 +69,10 @@ clean:
 win-install-make:
 	del proxy-build\win\Install.exe
 	copy install-src\win\nsis\dot.nsi proxy-build\win\dot.nsi
+	copy install-src\win\nsis\dot_util.nsh proxy-build\win\dot_util.nsh
 	makensis proxy-build\win\dot.nsi
 	del proxy-build\win\dot.nsi
+	del proxy-build\win\dot_util.nsh
 
 win-install:
 	proxy-build\win\Install.exe /S
