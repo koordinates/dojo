@@ -59,8 +59,20 @@ Function ensureEnvironment
 		Abort
 	${endif}
 	
-	;TODO: Make sure supported Windows version is installed
+	;Make sure supported Windows version is installed -- we only
+	;support Windows NT variants (i.e. Windows 2000, XP, Vista, etc.)
 	DetailPrint "Making sure supported version of Windows is installed..."
+	ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" "CurrentVersion"
+	${if} $R0 == ""
+		StrCpy $R1 "Dojo Offline does not supported your version of Windows."
+		StrCpy $R1 "$R1 Would you like to continue installing Dojo Offline anyway (not recommended)?"
+		messageBox MB_YESNO|MB_ICONQUESTION "$R1" /SD IDNO \
+						IDYES continueInstallingWin IDNO abortInstallingWin
+		abortInstallingWin:
+			Abort
+		continueInstallingWin:
+			nop
+	${endif}
 	
 	;Make sure the version of IE installed is supported
 	DetailPrint "Making sure user has supported version of Internet Explorer..."
@@ -73,12 +85,12 @@ Function ensureEnvironment
 	IntOp $ieVersion $dllVersionHigh / 0x00010000
 	${if} $ieVersion < ${MINIMUM_INTERNET_EXPLORER_VERSION}
 		StrCpy $R1 "Dojo Offline does not supported your version of Internet Explorer (version $ieVersion)."
-		StrCpy $R1 "$R1 Would you like to continue installing Dojo Offline anyway?"
+		StrCpy $R1 "$R1 Would you like to continue installing Dojo Offline anyway (not recommended)?"
 		messageBox MB_YESNO|MB_ICONQUESTION "$R1" /SD IDNO \
-						IDYES continueInstalling IDNO abortInstalling
-		abortInstalling:
+						IDYES continueInstallingIE IDNO abortInstallingIE
+		abortInstallingIE:
 			Abort
-		continueInstalling:
+		continueInstallingIE:
 			nop
 	${endif}
 FunctionEnd
