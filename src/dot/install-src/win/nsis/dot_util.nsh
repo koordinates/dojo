@@ -1,12 +1,14 @@
-;
-;Define the StrTok macro, a publicly available snippet 
-;of source code for NSIS available under the same
-;license as NSIS, free for developers to use from the 
-;NSIS portal, under the zlib/png license which is 
-;just the BSD.
-;NSIS License here: http://nsis.sourceforge.net/License
-;StrTok wiki page in NSIS docs here: http://nsis.sourceforge.net/StrTok 
-;
+;This file includes a number of standard functions
+;that are distributed on the NSIS portal for free use
+;by developers. These standard functions and samples
+;are distributed under the same license as NSIS, which
+;is the zlib/png license. The zlib/png license is just
+;the BSD license under a different name.
+;Each code snippet is clearly marked with the Wiki
+;page location on the NSIS portal where it was taken
+;from.
+
+;StrTok wiki page in NSIS docs here: http://nsis.sourceforge.net/StrTok
 
 !define StrTok "!insertmacro StrTok"
  
@@ -158,19 +160,11 @@ Function un.StrTok
   Pop $2
   Exch $3
 FunctionEnd
+
 ;end definition of StrTok macro
 
-;
-;Standard function to replace one string line
-;in a file with another one. This is a publicly 
-;available snippet of source code for NSIS 
-;available under the same license as NSIS, free 
-;for developers to use from the NSIS portal, under
-;the zlib/png license which is just the BSD.
-;NSIS License here: http://nsis.sourceforge.net/License
 ;ReplaceLinstStr wiki page in NSIS docs here: 
 ;http://nsis.sourceforge.net/Replace_line_that_starts_with_specified_string
-;
 
 !define ReplaceLineStr "!insertmacro ReplaceLineStr"
 !define Un_ReplaceLineStr "!insertmacro Un_ReplaceLineStr"
@@ -257,6 +251,10 @@ Function un.ReplaceLineStr
 !insertmacro ReplaceLineStrFunctionBody
 FunctionEnd
 
+;end of definition for ReplaceLineStr
+
+;The following functions were custom written
+;as part of the Dojo Offline installer
 Function removeTrailingNewlines
 	Var /GLOBAL inputLength
 	Var /GLOBAL startCut
