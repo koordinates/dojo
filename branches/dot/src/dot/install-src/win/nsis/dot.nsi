@@ -16,6 +16,9 @@ OutFile "Install.exe"
 
 InstallDir "$PROGRAMFILES\Dojo\dot"
 
+;setup our compression method
+SetCompressor /SOLID bzip2
+
 ;no pages -- just install or uninstall seamlessly 
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_UNPAGE_INSTFILES
@@ -26,6 +29,7 @@ InstallDir "$PROGRAMFILES\Dojo\dot"
 ;inline library macros we use below
 !insertmacro ConfigWrite
 !insertmacro WordReplace
+
 
 Function .onInit
 	;make sure the user doesn't run the installer multiple times
