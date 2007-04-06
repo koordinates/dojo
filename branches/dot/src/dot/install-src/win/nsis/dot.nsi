@@ -379,4 +379,10 @@ Section "Uninstall"
 	DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "DojoOffline"
 	
 	DetailPrint "Dojo Offline is uninstalled!"
+	
+	StrCpy $R1 "Dojo Offline is now uninstalled."
+	StrCpy $R1 "$R1 Please restart Firefox and Internet Explorer"
+	StrCpy $R1 "$R1 for the uninstallation to take effect."
+	
+	MessageBox MB_OK $R1
 SectionEnd
