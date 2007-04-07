@@ -348,6 +348,12 @@ Function startOnStartup
 	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "DojoOffline" '"$INSTDIR\dot.exe" "$INSTDIR\"'
 FunctionEnd
 
+Function startDojoOffline
+	DetailPrint "Starting Dojo Offline..."
+	
+	Exec '"$INSTDIR\dot.exe" "$INSTDIR\"'
+FunctionEnd
+
 Function un.restoreIEProxySettings
 	DetailPrint "Restoring Internet Explorer's pre-Dojo Offline proxy settings..."
 
@@ -417,6 +423,7 @@ Section "Install"
 	call handleFirefox
 	call startOnStartup
 	call initUninstaller
+	call startDojoOffline
 	
 	DetailPrint "Finished installing Dojo Offline."
 	DetailPrint "Have Fun!"			
