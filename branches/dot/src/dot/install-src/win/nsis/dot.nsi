@@ -95,9 +95,42 @@ Function ensureEnvironment
 	${endif}
 FunctionEnd
 
-Function stopDojoOffline
-	DetailPrint "Stopping existing Dojo Offline if running..."
-FunctionEnd
+!define stopDojoOffline "!insertmacro stopDojoOffline"
+!macro stopDojoOffline
+	DetailPrint "Stopping existing Dojo Offline processes if running..."
+	
+	;TODO: Forcefully terminating these processes is not safe.
+	;Instead, both dot.exe and proxy.exe need to be able to 
+	;receive Windows messages to terminate themselves, close their
+	;currently open file and socket handles, and then go away.
+	
+	;whether we have found the processes and need to sleep
+	;for a bit until they are finished being terminated
+	StrCpy $R1 "false"
+	
+	;TODO:Handle the following two error return types
+	;and terminate installation:
+	;604 = No permission to terminate process
+	;607 = Unsupported OS
+	
+	KillProcDLL::KillProc "DOT.EXE" ;return value inside R0
+	${if} $R0 == 0
+		StrCpy $R1 "true"
+	${endif}
+	
+	KillProcDLL::KillProc "PROXY.EXE"
+	${if} $R0 == 0
+		StrCpy $R1 "true"
+	${endif}
+	
+	;do a slight timeout here to ensure the process has finished shutting
+	;down (in milliseconds), but only if the processes were detected to
+	;be running so that the common case is not slowed down
+	${if} $R1 == "true"
+		DetailPrint "Waiting for Dojo Offline processes to end..."
+		Sleep 500
+	${endif}
+!macroend
 
 Function createFileLayout
 	DetailPrint "Creating file layout..."
@@ -376,7 +409,7 @@ Section "Install"
 	SetOutPath "$INSTDIR"
 	
 	call ensureEnvironment
-	call stopDojoOffline
+	${stopDojoOffline}
 	call createFileLayout
 	call updateConfigFile
 	call storeAppMetadata
@@ -394,6 +427,9 @@ Section "Uninstall"
 	
 	DetailPrint "All your personal offline application data will be"
 	DetailPrint "left untouched -- see $APPDATA\Dojo\dot\ to access"
+	
+	;stop the running Dojo Offline processes
+	${stopDojoOffline}
 	
 	;restore previous IE and Firefox proxy settings
 	Call un.restoreIEProxySettings
@@ -422,8 +458,7 @@ Section "Uninstall"
 	
 	StrCpy $R1 "Dojo Offline is now uninstalled."
 	StrCpy $R1 "$R1 Please restart Firefox and Internet Explorer"
-	StrCpy $R1 "$R1 for the uninstallation to take effect."
-	
+	StrCpy $R1 "$R1 for the uninstallation to take effect."	
 	DetailPrint "$R1"
 	MessageBox MB_OK $R1 /SD IDOK
 SectionEnd
