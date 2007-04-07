@@ -71,37 +71,6 @@ dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
 		}
 
 		switch(name){
-			//button for builtin functions
-			case 'bold':
-			case 'copy':
-			case 'cut':
-			case 'delete':
-			case 'indent':
-			case 'inserthorizontalrule':
-			case 'insertorderedlist':
-			case 'insertunorderedlist':
-			case 'italic':
-			case 'justifycenter':
-			case 'justifyfull':
-			case 'justifyleft':
-			case 'justifyright':
-			case 'outdent':
-			case 'paste':
-			case 'redo':
-			case 'removeformat':
-			case 'selectall':
-			case 'strikethrough':
-			case 'subscript':
-			case 'superscript':
-			case 'underline':
-			case 'undo':
-			case 'unlink':
-			case 'createlink':
-			case 'insertimage':
-			//extra simple buttons
-			case 'htmltoggle':
-				item = new dojo.widget.Editor2ToolbarButton(name);
-				break;
 			case 'forecolor':
 			case 'hilitecolor':
 				item = new dojo.widget.Editor2ToolbarColorPaletteButton(name);
@@ -109,19 +78,8 @@ dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
 			case 'plainformatblock':
 				item = new dojo.widget.Editor2ToolbarFormatBlockPlainSelect("formatblock");
 				break;
-//			case 'inserttable':
-//			case 'insertcell':
-//			case 'insertcol':
-//			case 'insertrow':
-//			case 'deletecells':
-//			case 'deletecols':
-//			case 'deleterows':
-//			case 'mergecells':
-//			case 'splitcell':
-//				dojo.debug(name + " is implemented in dojo.widget.Editor2Plugin.TableOperation, please require it first.");
-//				break;
 			//TODO:
-			case 'inserthtml':
+//			case 'inserthtml':
 			case 'blockdirltr':
 			case 'blockdirrtl':
 			case 'dirltr':
@@ -131,7 +89,9 @@ dojo.lang.mixin(dojo.widget.Editor2ToolbarItemManager,
 				dojo.debug("Not yet implemented toolbar item: "+name);
 				break;
 			default:
-				dojo.debug("dojo.widget.Editor2ToolbarItemManager.getToolbarItem: Unknown toolbar item: "+name);
+				//simple button, which just call a command with name
+				item = new dojo.widget.Editor2ToolbarButton(name);
+//				dojo.debug("dojo.widget.Editor2ToolbarItemManager.getToolbarItem: Unknown toolbar item: "+name);
 		}
 		return item;
 	}

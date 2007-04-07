@@ -386,7 +386,7 @@ dojo.widget.defineWidget(
 
 				this.editNode.innerHTML = html;
 				this._preDomFilterContent(this.editNode);
-				if(this.height){ this.document.body.style.overflowY="scroll"; }
+//				if(this.height){ this.document.body.style.overflowY="scroll"; }
 				var events=this.events.concat(this.captureEvents);
 				dojo.lang.forEach(events, function(e){
 					dojo.event.connect(this.editNode, e.toLowerCase(), this, e);
