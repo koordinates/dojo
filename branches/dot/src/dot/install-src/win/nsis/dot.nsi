@@ -35,6 +35,10 @@ SetCompressor /SOLID bzip2
 !insertmacro WordReplace
 !insertmacro VersionCompare
 
+;the number of browsers we have successfully configured
+;if 0, then we will abort
+Var /GLOBAL browsersConfigured
+
 Function .onInit
 	;make sure the user doesn't run the installer multiple times
 	;at the same time - block on a common mutex object
@@ -43,6 +47,16 @@ Function .onInit
 	StrCmp $R0 0 +3
 		MessageBox MB_OK|MB_ICONEXCLAMATION "The installer is already running."
 		Abort
+		
+	StrCpy $browsersConfigured "0"
+FunctionEnd
+
+Function handleError
+	Var /GLOBAL errorMessage
+	Pop $errorMessage
+	ExecWait '"$INSTDIR\Uninstall.exe" _?=$INSTDIR /S' 
+	MessageBox MB_OK "Unable to install Dojo Offline:$\n$errorMessage.$\n"
+	Abort
 FunctionEnd
 
 Function ensureEnvironment
@@ -51,8 +65,17 @@ Function ensureEnvironment
 	DetailPrint "Making sure user has admin privileges..."
 	;make sure this user has admin privs - the 'userInfo::getAccountType' 
 	;plugin places its results on the stack
+	ClearErrors
 	userInfo::getAccountType
 	pop $0
+	
+	IfErrors adminError adminContinue
+		adminError:
+			Push "Unable to ensure user has admin privileges"
+			Call handleError
+			
+		adminContinue:
+	
     ${if} $0 != "Admin"
 		DetailPrint "You must have Administrator privileges to install this application"
 		messageBox MB_OK "You must have Administrator privileges to install this application" /SD IDOK
@@ -80,7 +103,16 @@ Function ensureEnvironment
 	Var /GLOBAL dllVersionLow
 	Var /GLOBAL ieVersion
 	;see the DLL version of IE installed
+	ClearErrors
 	GetDllVersion "$SYSDIR\mshtml.dll" $dllVersionHigh $dllVersionLow
+	
+	IfErrors ieVersionError ieVersionContinue
+		ieVersionError:
+			Push "Unable to verify version of Internet Explorer installed"
+			Call handleError
+			
+		ieVersionContinue:
+		
 	;get the first digit
 	IntOp $ieVersion $dllVersionHigh / 0x00010000
 	${if} $ieVersion < ${MINIMUM_INTERNET_EXPLORER_VERSION}
@@ -108,18 +140,34 @@ FunctionEnd
 	;for a bit until they are finished being terminated
 	StrCpy $R1 "false"
 	
-	;TODO:Handle the following two error return types
+	;Handle the following two error return types
 	;and terminate installation:
 	;604 = No permission to terminate process
 	;607 = Unsupported OS
 	
 	KillProcDLL::KillProc "DOT.EXE" ;return value inside R0
-	${if} $R0 == 0
+	${if} $R0 == 604
+		StrCpy $R5 "No permission to terminate dot.exe process"
+		MessageBox MB_OK "Unable to install Dojo Offline:$\n$R5.$\n"
+		Abort
+	${elseif} $R0 == 607
+		StrCpy $R5 "Unsupported OS for terminating dot.exe process"
+		MessageBox MB_OK "Unable to install Dojo Offline:$\n$R5.$\n"
+		Abort
+	${elseif} $R0 == 0
 		StrCpy $R1 "true"
 	${endif}
 	
 	KillProcDLL::KillProc "PROXY.EXE"
-	${if} $R0 == 0
+	${if} $R0 == 604
+		StrCpy $R5 "No permission to terminate proxy.exe process"
+		MessageBox MB_OK "Unable to install Dojo Offline:$\n$R5.$\n"
+		Abort
+	${elseif} $R0 == 607
+		StrCpy $R5 "Unsupported OS for terminating proxy.exe process"
+		MessageBox MB_OK "Unable to install Dojo Offline:$\n$R5.$\n"
+		Abort
+	${elseif} $R0 == 0
 		StrCpy $R1 "true"
 	${endif}
 	
@@ -137,7 +185,6 @@ Function handleExistingInstallation
 	
 	;get an existing Dojo Offline version string if there is one
 	ReadRegStr $R1 HKCU "Software\Dojo\dot" "CurrentVersion"
-
 	${if} $R1 == ""
 		return
 	${endif}
@@ -172,24 +219,55 @@ Function handleExistingInstallation
 					"UninstallString"
 		DetailPrint "Uninstalling existing Dojo Offline installation..."
 		DetailPrint $R3
+		
+		ClearErrors
 		ExecWait '"$R3" _?=$INSTDIR /S'
+		IfErrors uninstallError uninstallContinue
+			uninstallError:
+				Push "Unable to uninstall older Dojo Offline installation"
+				Call handleError
+			uninstallContinue:
 FunctionEnd
 
 Function createFileLayout
 	DetailPrint "Creating file layout..."
 	
 	;create our application data directory
+	ClearErrors
 	CreateDirectory "$APPDATA\Dojo"
+	IfErrors error +1
+	
+	ClearErrors
 	CreateDirectory "$APPDATA\Dojo\dot"
+	IfErrors error +1
 	
 	;create our offline cache directory
+	ClearErrors
 	CreateDirectory "$APPDATA\Dojo\dot\.offline-cache"
+	IfErrors error +1
 
 	;add our files
+	ClearErrors
 	File "dot.exe"
+	IfErrors error +1
+	
+	ClearErrors
 	File "proxy.exe"
+	IfErrors error +1
+	
+	ClearErrors
 	File "config"
+	IfErrors error +1
+	
+	ClearErrors
 	File /oname=$APPDATA\Dojo\dot\.offline-pac ".offline-pac"
+	IfErrors error +1
+	
+	return
+	
+	error:
+		Push "Unable to create file layout"
+		Call handleError
 FunctionEnd
 
 Function updateConfigFile
@@ -198,20 +276,48 @@ Function updateConfigFile
 	;update the configuration file to point to Windows locations,
 	;rather than Unix ones - replace all slashes with backslashes
 	${WordReplace} "$APPDATA" "\" "/" "+" $R1
+	
+	ClearErrors
 	${ConfigWrite} "$INSTDIR\config" "diskCacheRoot = " '"$R1/Dojo/dot/.offline-cache"' $R0
+	IfErrors error +1
+	
+	ClearErrors
 	${ConfigWrite} "$INSTDIR\config" "offlineFile = " '"$R1/Dojo/dot/.offline-list"' $R0
+	IfErrors error +1
+	
+	ClearErrors
 	${ConfigWrite} "$INSTDIR\config" "offlinePACFile = " '"$R1/Dojo/dot/.offline-pac"' $R0
+	IfErrors error +1
+	
+	return
+	
+	error:
+		Push "Unable to configure Dojo Offline configuration file"
+		Call handleError
 FunctionEnd
 
 Function storeAppMetadata
 	DetailPrint "Storing Dojo Offline metadata in registry..."
 
 	;store installation folder and application data folder
+	ClearErrors
 	WriteRegStr HKCU "Software\Dojo\dot" "InstallFolder" $INSTDIR
+	IfErrors error +1
+	
+	ClearErrors
 	WriteRegStr HKCU "Software\Dojo\dot" "AppFolder" "$APPDATA\Dojo\dot"
+	IfErrors error +1
 	
 	;write out our version
+	ClearErrors
 	WriteRegStr HKCU "Software\Dojo\dot" "CurrentVersion" ${VERSION}
+	IfErrors error +1
+	
+	return
+	
+	error:
+		Push "Unable to store Dojo Offline metadata in registry"
+		Call handleError
 FunctionEnd
 
 Function handleInternetExplorer
@@ -225,7 +331,7 @@ Function handleInternetExplorer
 	DetailPrint "Preserving old Internet Explorer proxy settings..."
 	
 	;exact proxy value given
-	ReadRegDWORD $1 HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "ProxyEnable"
+	ReadRegDWORD $1 HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" "ProxyEnable"	
 	${if} $1 == ""
 		StrCpy $1 "0"
 	${endif}
@@ -247,9 +353,15 @@ Function handleInternetExplorer
 	DetailPrint "Setting Internet Explorer to use Dojo Offline proxy..."
 
 	;update Internet Explorer's PAC file setting
+	ClearErrors
 	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Internet Settings" \
 										"AutoConfigURL" \
 										"file://$APPDATA\Dojo\dot\.offline-pac"
+	IfErrors error noerror
+		error:
+			return
+		noerror:
+			IntOp $browsersConfigured $browsersConfigured + 1
 FunctionEnd
 
 Function handleFirefox
@@ -362,39 +474,111 @@ Function handleFirefoxProfile
 
 		;replace the old proxy values in the file with the new ones now
 		StrCpy $R2 'user_pref("network.proxy.type", 2);$\r$\n'
-		${ReplaceLineStr} "$profilePath\prefs.js" ${PROXY_TYPE_LINE_START} $R2
+		${if} $proxyTypePref != "none"
+			${ReplaceLineStr} "$profilePath\prefs.js" ${PROXY_TYPE_LINE_START} $R2
+		${else}
+			ClearErrors
+			FileOpen $prefsFile "$profilePath\prefs.js" a
+			IfErrors error +1
+			
+			ClearErrors
+			FileSeek $prefsFile 0 END
+			IfErrors error +1
+			
+			ClearErrors
+			FileWrite $prefsFile $R2
+			IfErrors error +1
+			 
+			FileClose $prefsFile
+		${endif}
+		
 		StrCpy $R2 'user_pref("network.proxy.autoconfig_url", "file://$APPDATA\Dojo\dot\.offline-pac");$\r$\n'
-		${ReplaceLineStr} "$profilePath\prefs.js" ${PAC_LINE_START} $R2
+		${if} $pacPref != "none"
+			${ReplaceLineStr} "$profilePath\prefs.js" ${PAC_LINE_START} $R2
+		${else}
+			ClearErrors
+			FileOpen $prefsFile "$profilePath\prefs.js" a
+			IfErrors error +1
+			
+			ClearErrors
+			FileSeek $prefsFile 0 END
+			IfErrors error +1
+			
+			ClearErrors
+			FileWrite $prefsFile $R2
+			IfErrors error +1
+			 
+			FileClose $prefsFile
+		${endif}
+		
+		IntOp $browsersConfigured $browsersConfigured + 1
+		
+		return
+		
+		error:
+			;do nothing -- just continue, but browserConfigured
+			;won't be incremented
 FunctionEnd
 
 Function initUninstaller
 	DetailPrint "Creating uninstaller..."
 
 	;create uninstaller
+	ClearErrors
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
+	IfErrors error +1
 	
 	;add our uninstaller to the Add/Remove Programs dialog
+	ClearErrors
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot" \
 					"DisplayName" "Dojo Offline Toolkit"
+	IfErrors error +1				
+					
+	ClearErrors
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot" \
 					"UninstallString" "$INSTDIR\Uninstall.exe"
+	IfErrors error +1
+	
+	ClearErrors
 	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot" \
 					"NoModify" 1
+	IfErrors error +1
+	
+	ClearErrors
 	WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot" \
 					"NoRepair" 1
+	IfErrors error +1
+	
+	return
+	
+	error:
+		Push "Unable to create uninstaller"
+		Call handleError
 FunctionEnd
 
 Function startOnStartup
 	DetailPrint "Registering Dojo Offline to start on system startup..."
 
 	;have our local proxy start up on system startup
+	ClearErrors
 	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "DojoOffline" '"$INSTDIR\dot.exe" "$INSTDIR\"'
+	IfErrors error noerror
+		error:
+			Push "Unable to register Dojo Offline to start on system startup"
+			Call handleError
+		noerror:
 FunctionEnd
 
 Function startDojoOffline
 	DetailPrint "Starting Dojo Offline..."
 	
+	ClearErrors
 	Exec '"$INSTDIR\dot.exe" "$INSTDIR\"'
+	IfErrors error noerror
+		error:
+			Push "Unable to start Dojo Offline"
+			Call handleError
+		noerror:
 FunctionEnd
 
 Function un.restoreIEProxySettings
@@ -464,8 +648,17 @@ Section "Install"
 	call createFileLayout
 	call updateConfigFile
 	call storeAppMetadata
+	
+	;configure our browsers
 	call handleInternetExplorer
 	call handleFirefox
+	
+	;make sure we were able to configure at least one browser
+	${if} $browsersConfigured == 0
+		Push "Unable to configure any browsers to use Dojo Offline"
+		Call handleError
+	${endif}
+	
 	call startOnStartup
 	call startDojoOffline
 	
