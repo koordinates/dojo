@@ -1,3 +1,9 @@
+;
+;Nullsoft Scriptable Install System (NSIS) script for
+;Dojo Offline installation on Windows
+;
+;@author Brad Neuberg, bkn3@columbia.edu
+
 !include "LogicLib.nsh"
 !include "TextFunc.nsh"
 !include "WordFunc.nsh"
