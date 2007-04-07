@@ -5,7 +5,7 @@
 
 !include "dot_util.nsh"
 
-!define VERSION "0.4.2-dot-beta1"
+!define VERSION "0.4.2.1"
 
 ;Minimum version of IE we support; this must
 ;be a whole number, such as 5, 6, 7, etc.
@@ -33,7 +33,7 @@ SetCompressor /SOLID bzip2
 ;inline library macros we use below
 !insertmacro ConfigWrite
 !insertmacro WordReplace
-
+!insertmacro VersionCompare
 
 Function .onInit
 	;make sure the user doesn't run the installer multiple times
@@ -64,9 +64,9 @@ Function ensureEnvironment
 	DetailPrint "Making sure supported version of Windows is installed..."
 	ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" "CurrentVersion"
 	${if} $R0 == ""
-		StrCpy $R1 "Dojo Offline does not supported your version of Windows."
-		StrCpy $R1 "$R1 Would you like to continue installing Dojo Offline anyway (not recommended)?"
-		messageBox MB_YESNO|MB_ICONQUESTION "$R1" /SD IDNO \
+		StrCpy $R1 "Dojo Offline does not supported your version of Windows.$\n"
+		StrCpy $R1 "$R1Would you like to continue installing Dojo Offline anyway (not recommended)?"
+		messageBox MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 "$R1" /SD IDNO \
 						IDYES continueInstallingWin IDNO abortInstallingWin
 		abortInstallingWin:
 			Abort
@@ -84,9 +84,9 @@ Function ensureEnvironment
 	;get the first digit
 	IntOp $ieVersion $dllVersionHigh / 0x00010000
 	${if} $ieVersion < ${MINIMUM_INTERNET_EXPLORER_VERSION}
-		StrCpy $R1 "Dojo Offline does not supported your version of Internet Explorer (version $ieVersion)."
-		StrCpy $R1 "$R1 Would you like to continue installing Dojo Offline anyway (not recommended)?"
-		messageBox MB_YESNO|MB_ICONQUESTION "$R1" /SD IDNO \
+		StrCpy $R1 "Dojo Offline does not supported your version of Internet Explorer (version $ieVersion).$\n"
+		StrCpy $R1 "$R1Would you like to continue installing Dojo Offline anyway (not recommended)?"
+		messageBox MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 "$R1" /SD IDNO \
 						IDYES continueInstallingIE IDNO abortInstallingIE
 		abortInstallingIE:
 			Abort
@@ -131,6 +131,49 @@ FunctionEnd
 		Sleep 500
 	${endif}
 !macroend
+
+Function handleExistingInstallation
+	DetailPrint "Handling existing Dojo Offline installations..."
+	
+	;get an existing Dojo Offline version string if there is one
+	ReadRegStr $R1 HKCU "Software\Dojo\dot" "CurrentVersion"
+
+	${if} $R1 == ""
+		return
+	${endif}
+	
+	${VersionCompare} "$R1" "${VERSION}" $R2
+
+	;is this the same as what we are trying to install?
+	${if} $R2 == 0
+		MessageBox MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 \
+					"You already have this version of Dojo Offline installed (version ${VERSION}).$\nContinue anyway?" \
+					/SD IDCANCEL \
+					IDYES uninstallFirst IDNO abortInstallation
+	${endif}
+	
+	;are we installing an older version?
+	${if} $R2 == 1
+		MessageBox MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 \
+					"The version you are trying to install is older than the one you have installed (version ${VERSION}).$\nContinue anyway?" \
+					/SD IDCANCEL \
+					IDYES uninstallFirst IDNO abortInstallation
+	${endif}
+	
+	;are we installing a newer version?
+	${if} $R2 == 2
+		Goto uninstallFirst
+	${endif}
+	
+	abortInstallation:
+		Abort
+	uninstallFirst:
+		ReadRegStr $R3 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dot" \
+					"UninstallString"
+		DetailPrint "Uninstalling existing Dojo Offline installation..."
+		DetailPrint $R3
+		ExecWait '"$R3" _?=$INSTDIR /S'
+FunctionEnd
 
 Function createFileLayout
 	DetailPrint "Creating file layout..."
@@ -416,13 +459,14 @@ Section "Install"
 	
 	call ensureEnvironment
 	${stopDojoOffline}
+	call handleExistingInstallation
+	call initUninstaller
 	call createFileLayout
 	call updateConfigFile
 	call storeAppMetadata
 	call handleInternetExplorer
 	call handleFirefox
 	call startOnStartup
-	call initUninstaller
 	call startDojoOffline
 	
 	DetailPrint "Finished installing Dojo Offline."
@@ -463,8 +507,8 @@ Section "Uninstall"
 	
 	DetailPrint "Dojo Offline is uninstalled!"
 	
-	StrCpy $R1 "Dojo Offline is now uninstalled."
-	StrCpy $R1 "$R1 Please restart Firefox and Internet Explorer"
+	StrCpy $R1 "Dojo Offline is now uninstalled.$\n"
+	StrCpy $R1 "$R1Please restart Firefox and Internet Explorer"
 	StrCpy $R1 "$R1 for the uninstallation to take effect."	
 	DetailPrint "$R1"
 	MessageBox MB_OK $R1 /SD IDOK
