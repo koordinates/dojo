@@ -486,7 +486,7 @@ Function handleFirefoxProfile
 			IfErrors error +1
 			
 			ClearErrors
-			FileWrite $prefsFile $R2
+			FileWrite $prefsFile "$R2"
 			IfErrors error +1
 			 
 			FileClose $prefsFile
@@ -505,7 +505,7 @@ Function handleFirefoxProfile
 			IfErrors error +1
 			
 			ClearErrors
-			FileWrite $prefsFile $R2
+			FileWrite $prefsFile "$R2"
 			IfErrors error +1
 			 
 			FileClose $prefsFile
