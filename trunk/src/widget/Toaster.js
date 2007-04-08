@@ -11,6 +11,18 @@ dojo.require("dojo.html.iframe");
 dojo.widget.defineWidget(
 	"dojo.widget.Toaster",
 	dojo.widget.HtmlWidget,
+	function(){
+
+		// duration: Integer
+		//		Number of milliseconds to show message
+		this.duration = 2000;
+		// showDelay: Integer
+		//		Deprecated and replaced by Duration -- Number of milliseconds to show message
+		this.showDelay = '';
+		//separator: String
+		//		String used to separate messages if consecutive calls are made to setContent before previous messages go away
+		this.separator = "<hr>";
+	},
 	{
 		// summary
 		//		Message that slides in from the corner of the screen, used for notifications
@@ -57,19 +69,6 @@ dojo.widget.defineWidget(
 		// positionDirectionTypes: Enumeration
 		//		Possible values for positionDirection parameter
 		positionDirectionTypes: ["br-up", "br-left", "bl-up", "bl-right", "tr-down", "tr-left", "tl-down", "tl-right"],
-		
-		initializer: function(){
-
-			// duration: Integer
-			//		Number of milliseconds to show message
-			this.duration = 2000;
-			// showDelay: Integer
-			//		Deprecated and replaced by Duration -- Number of milliseconds to show message
-			this.showDelay = '';
-			//separator: String
-			//		String used to separate messages if consecutive calls are made to setContent before previous messages go away
-			this.separator = "<hr>";
-		},
 		
 		postCreate: function(){
 
