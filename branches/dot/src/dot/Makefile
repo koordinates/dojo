@@ -14,6 +14,13 @@
 # export DEBUGFLAG="-g"
 
 # The version of DOT we are generating
+#
+# Note that the Mac installer for DOT, which uses the Mac OS X bundled PackageManager
+# utility, also has a version number inside of it that must be changed
+# manually through the PackageManager GUI. Our PackageManager configuration
+# is at src/dot/install-src/mac/pkg/DojoOffline-$(VERSION).pmproj .
+# PackageManager can be run from /Developer/Applications/Utilities/PackageMaker
+#
 VERSION=0.4.2.1
 
 all:
