@@ -13,6 +13,9 @@
 # value to get debug builds:
 # export DEBUGFLAG="-g"
 
+# The version of DOT we are generating
+VERSION=0.4.2.1
+
 all:
 	make clean
 	make mac
@@ -56,6 +59,50 @@ install:
 
 clean:
 	make -C proxy clean
+	
+mac-install-make:
+	# clean up old stuff first
+	sudo rm -fr proxy-build/mac/x86/DojoOffline-$(VERSION).pkg
+	sudo rm -f proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
+	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/dot
+	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/proxy
+	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/config
+	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/.offline-pac
+	# copy our built files over
+	sudo cp proxy-build/mac/x86/dot install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/dot
+	sudo cp proxy-build/mac/x86/proxy install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/proxy
+	sudo cp proxy-build/mac/x86/config install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/config
+	sudo cp proxy-build/mac/x86/.offline-pac install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/.offline-pac
+	# make sure the files inside the pre-generated PKG directory layout have 
+	# correct permissions and ownership
+	sudo find -E install-src/mac/pkg/DotApp-$(VERSION) -false -regex '.*svn.*' -print0 | xargs -t -0 sudo chown root:admin
+	sudo find -E install-src/mac/pkg/DotApp-$(VERSION) -false -regex '.*svn.*' -print0 | xargs -t -0 sudo chmod u+rwx
+	sudo find -E install-src/mac/pkg/DotApp-$(VERSION) -false -regex '.*svn.*' -print0 | xargs -t -0 sudo chmod g+rwx
+	sudo find -E install-src/mac/pkg/DotApp-$(VERSION) -false -regex '.*svn.*' -print0 | xargs -t -0 sudo chmod o+rx
+	# generate the PKG file	
+	sudo /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker -build -proj install-src/mac/pkg/DojoOffline-$(VERSION).pmproj -f -v -p proxy-build/mac/x86/DojoOffline-$(VERSION).pkg
+	# make sure it's ownership and permissions are correct for installation on user's machine
+	sudo chown root:admin proxy-build/mac/x86/DojoOffline-$(VERSION).pkg
+	sudo chmod u+rwx proxy-build/mac/x86/DojoOffline-$(VERSION).pkg
+	sudo chmod g+rwx proxy-build/mac/x86/DojoOffline-$(VERSION).pkg
+	sudo chmod o+rx proxy-build/mac/x86/DojoOffline-$(VERSION).pkg
+	# turn it into an Internet-distributable disk image
+	sudo hdiutil create -srcfolder proxy-build/mac/x86/DojoOffline-$(VERSION).pkg proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
+	sudo hdiutil internet-enable -yes proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
+	# make sure the disk image has correct permissions
+	sudo chown root:admin proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
+	sudo chmod u+rwx proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
+	sudo chmod g+rwx proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
+	sudo chmod o+rx proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
+	# cleanup the build files we copied over
+	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/dot
+	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/proxy
+	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/config
+	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/.offline-pac
+
+mac-install:
+
+mac-uninstall:
 
 # The following directives can only be run on Windows using
 # nmake
