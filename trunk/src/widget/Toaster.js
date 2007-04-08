@@ -59,7 +59,7 @@ dojo.widget.defineWidget(
 		positionDirectionTypes: ["br-up", "br-left", "bl-up", "bl-right", "tr-down", "tr-left", "tl-down", "tl-right"],
 		
 		initializer: function(){
-console.debug("initializer");
+
 			// duration: Integer
 			//		Number of milliseconds to show message
 			this.duration = 2000;
@@ -72,7 +72,7 @@ console.debug("initializer");
 		},
 		
 		postCreate: function(){
-console.debug("postCreate");
+
 			if(this.showDelay!=''){
 				dojo.deprecated("dojo.widget.Toaster", "use 'duration' instead of 'showDelay'", "0.6");
 				this.duration = this.showDelay;
@@ -107,7 +107,7 @@ console.debug("postCreate");
 			// duraton: Integer
 			//		duration in milliseconds to display message before removing it
 			var duration = duration||this.duration;
-console.debug("setContent duration="+duration);
+
 			// sync animations so there are no ghosted fades and such
 			if(this.slideAnim && this.slideAnim.status() == "playing"){
 				dojo.lang.setTimeout(50, dojo.lang.hitch(this, function(){
