@@ -5,5 +5,8 @@
 # except for the VolumeCheck and the InstallationCheck scripts, so
 # we manually append it to our own log file to aid debugging
 #
+
+# stop the 'dot' and 'proxy' processes if they are running
+
 echo "$SCRIPT_NAME: hello from the preflight world!" >> mac_install.log
 exit 0
