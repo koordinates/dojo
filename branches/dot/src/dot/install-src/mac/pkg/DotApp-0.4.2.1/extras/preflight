@@ -1,5 +1,4 @@
 #!/bin/sh
-
 #
 # Mac OS X's install system doesn't echo anything from our scripts into
 # it's output when executed from the command-line 'installer' command,
