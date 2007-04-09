@@ -112,19 +112,30 @@ mac-install-make:
 	sudo chmod u+rwx proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
 	sudo chmod g+rwx proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
 	sudo chmod o+rx proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
-	# cleanup the build files we copied over
+	# clean up the build files we copied over
 	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/dot
 	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/proxy
 	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/config
 	sudo rm -f install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo\ Offline\ Toolkit/.offline-pac
 
 mac-install:
+	sudo rm -f mac_install.log
+	touch mac_install.log
 	hdiutil attach -readonly proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
-	sudo installer -pkg "/Volumes/DojoOffline-$(VERSION)/DojoOffline-$(VERSION).pkg" \
-			-target "/Applications" -verbose -dumplog
+	#sudo installer -pkg "/Volumes/DojoOffline-$(VERSION)/DojoOffline-$(VERSION).pkg" -target "/Applications"
+	sudo installer -pkg "/Volumes/DojoOffline-$(VERSION)/DojoOffline-$(VERSION).pkg" -target "/Applications" -verbose -dumplog
+	hdiutil unmount "/Volumes/DojoOffline-$(VERSION)"
+	echo Install log:
+	cat mac_install.log
+	sudo rm -f mac_install.log
 
 mac-uninstall:
 	sudo "/Applications/Dojo\ Offline\ Toolkit/Uninstall.sh"
+	
+# Clean up an old installation receipt of Dojo Offline so that we
+# can simulate a clean install versus an upgrade
+mac-clean-receipt:
+	sudo rm -fr /Library/Receipts/DojoOffline-$(VERSION).pkg
 
 # The following directives can only be run on Windows using
 # nmake

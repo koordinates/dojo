@@ -1,0 +1,10 @@
+#!/bin/sh
+
+#
+# Mac OS X's install system doesn't echo anything from our scripts into
+# it's output when executed from the command-line 'installer' command,
+# except for the VolumeCheck and the InstallationCheck scripts, so
+# we manually append it to our own log file to aid debugging
+#
+echo "$SCRIPT_NAME: hello from the preflight world!" >> mac_install.log
+exit 0
