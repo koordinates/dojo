@@ -158,7 +158,7 @@ dojo.html.range.create = function(){
 	}
 }
 
-dojo.html.range.getSelection = function(win){
+dojo.html.range.getSelection = function(win, /*Boolean?*/ignoreUpdate){
 	if(dojo.html.range._w3c){
 		return win.getSelection();
 	}else{//IE
@@ -168,7 +168,9 @@ dojo.html.range.getSelection = function(win){
 		}else{
 			var s = dojo.html.range.ie.cachedSelection[win];
 		}
-		s._getCurrentSelection();
+		if(!ignoreUpdate){
+			s._getCurrentSelection();
+		}
 		return s;
 	}
 }
@@ -195,11 +197,14 @@ if(!dojo.html.range._w3c){
 			};
 			var _initCurrentRange = function(){
 				var r = win.document.selection.createRange();
-				if(win.document.selection.type.toUpperCase() == "CONTROL"){
+				var type=win.document.selection.type.toUpperCase();
+				if(type == "CONTROL"){
 					//TODO: multiple range selection(?)
 					return new dojo.html.range.W3CRange(dojo.html.range.ie.decomposeControlRange(r));
-				}else{
+				}else if(type=="TEXT"){
 					return new dojo.html.range.W3CRange(dojo.html.range.ie.decomposeTextRange(r));
+				}else{ //NONE
+					return null;
 				}
 			};
 			this.getRangeAt = function(i){
@@ -207,7 +212,10 @@ if(!dojo.html.range._w3c){
 			};
 			this._getCurrentSelection = function(){
 				this.removeAllRanges();
-				this.addRange(_initCurrentRange(), true);
+				var r=_initCurrentRange();
+				if(r){
+					this.addRange(r, true);
+				}
 			};
 		},
 		decomposeControlRange: function(range){
