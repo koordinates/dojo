@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "$SCRIPT_NAME: running" >> mac_install.log
+
+exit 0

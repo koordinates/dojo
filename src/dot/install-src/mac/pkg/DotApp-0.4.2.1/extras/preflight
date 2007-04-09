@@ -6,7 +6,8 @@
 # we manually append it to our own log file to aid debugging
 #
 
+echo "$SCRIPT_NAME: running" >> mac_install.log
+
 # stop the 'dot' and 'proxy' processes if they are running
 
-echo "$SCRIPT_NAME: hello from the preflight world!" >> mac_install.log
 exit 0
