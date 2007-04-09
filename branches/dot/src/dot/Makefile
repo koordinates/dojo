@@ -122,8 +122,9 @@ mac-install:
 	sudo rm -f mac_install.log
 	touch mac_install.log
 	hdiutil attach -readonly proxy-build/mac/x86/DojoOffline-$(VERSION).dmg
-	#sudo installer -pkg "/Volumes/DojoOffline-$(VERSION)/DojoOffline-$(VERSION).pkg" -target "/Applications"
-	sudo installer -pkg "/Volumes/DojoOffline-$(VERSION)/DojoOffline-$(VERSION).pkg" -target "/Applications" -verbose -dumplog
+	# the dash tells make to ignore errors from this command and continue running
+	-sudo installer -pkg "/Volumes/DojoOffline-$(VERSION)/DojoOffline-$(VERSION).pkg" -target "/Applications"
+	#-sudo installer -pkg "/Volumes/DojoOffline-$(VERSION)/DojoOffline-$(VERSION).pkg" -target "/Applications" -verbose -dumplog
 	hdiutil unmount "/Volumes/DojoOffline-$(VERSION)"
 	echo Install log:
 	cat mac_install.log
