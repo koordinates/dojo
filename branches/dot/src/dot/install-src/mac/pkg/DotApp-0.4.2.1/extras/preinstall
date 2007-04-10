@@ -1,5 +1,211 @@
-#!/bin/sh
+#!/usr/bin/perl
+#
+# This file manipulates the Safari proxy settings, which are stored
+# in XML in a Mac format called 'plists'.
+#
+# This file is based on techniques from the following two O'Reilly
+# tutorials that detail how to work with plist files from perl:
+# http://www.macdevcenter.com/pub/a/mac/2005/07/29/plist.html
+# http://www.macdevcenter.com/pub/a/mac/2005/08/02/plist.html
+#
+# It is also based on techniques discovered by the following blog
+# writer:
+# http://homepage.mac.com/gregneagle/iblog/C1833135211/E870388235/index.html
+#
+# @author: Brad Neuberg, bkn3@columbia.edu
 
-echo "$SCRIPT_NAME: running" >> mac_install.log
+use Foundation;
 
-exit 0
+# echo out that the preinstall script has started
+echo("running");
+
+# open our plist file that has our network preference configuration
+$PREFS_PATH = "/Library/Preferences/SystemConfiguration/preferences.plist";
+
+# machines upgraded from Mac OS X 10.2 have this plist file
+# in an older location
+if (!(-e $PREFS_PATH)) {
+	`cp /private/var/db/SystemConfiguration/preferences.xml $PREFS_PATH`;
+}
+
+$file = $PREFS_PATH;
+$plist = NSDictionary->dictionaryWithContentsOfFile_( $file );
+
+# make sure an error didn't occur or we couldn't find the file
+if (! $plist or ! $$plist){
+	echo("Unable to find Safari network preferences plist file");
+	exit 1;
+}
+
+# our plist file is structured as follows:
+# at the root we have a dictionary key named "NetworkServices";
+# this has a series of dictionary entries, where the key is a GUID,
+# such as 2D826DFA-9D8E-4BE5-8755-69DA45A78B92. Each
+# of these GUIDs corresponds to a different possible networking
+# endpoint. We aren't interested in all of these; one is for
+# Bluetooth, for example. For each GUID, we see if it has
+# a sub-dict named "Interface" with the name of this interface,
+# defined in "UserDefinedName" -- which despite it's name, is not
+# set by the user, but the name given by Mac OS X -- they are not
+# changeable through a UI. We only want
+# two of these GUID children: one with the UserDefinedName
+# of "Built-in Ethernet" for ethernet, and "AirPort" for WiFi.
+#
+# TODO: What about dial-up modems?
+$networkServices = getPlistObject($plist, "NetworkServices");
+$allKeys = $networkServices->allKeys();
+for($i = 0; $i < $allKeys->count(); $i++){
+	$currentKey = $allKeys->objectAtIndex_($i);
+	$userDefinedName  = getPlistObject($plist, "NetworkServices", 
+									$currentKey->description()->UTF8String(),
+									"Interface",
+									"UserDefinedName");
+	if($userDefinedName and $$userDefinedName){
+		$userDefinedName = $userDefinedName->description()->UTF8String();
+		if($userDefinedName eq "Built-in Ethernet" or
+			$userDefinedName eq "AirPort"){
+			$guid = $currentKey->description()->UTF8String();
+			handleNetworkEndpoint($plist, $userDefinedName, $guid);
+		}
+	}
+}
+
+exit 0;
+
+
+sub handleNetworkEndpoint{
+	my $plist = shift;
+	my $userDefinedName = shift;
+	my $guid = shift;
+	
+	# The Proxy dict has the following subkeys under the following conditions --
+	# we will use this to persist old settings for uninstallation, and to setup
+	# a reference to our Dojo Offline proxy for Safari:
+	#
+	# With proxy settings of any kind:
+	# 	AppleProxyConfigurationSelected = 1
+	#
+	# With no proxy settings:
+	# 	AppleProxyConfigurationSelected = 2
+	#	The HTTPEnable key is not present
+	#
+	# With manual proxy settings that are enabled:
+	#	HTTPEnable is 1
+	#
+	# With manual proxy settings that have values, but are not enabled:
+	#	HTTPEnable is present, and is 1
+	#
+	# PAC enabled:
+	#	ProxyAutoConfigEnable = 1
+	#	ProxyAutoConfigURLString has a String value
+	#
+	# PAC disabled:
+	#	ProxyAutoConfigEnable = 0 if there is a PAC string
+	#	key completely gone if there is no ProxyAutoConfigURLString string
+	#	
+	# PAC setting:
+	#	ProxyAutoConfigURLString
+	#	If nothing there, key completely gone
+	#
+	# WPAD:
+	# 	Think its linked to ProxyAutoDiscoveryEnable, but no way to set through UI
+	#	0 or 1. Always present though as a 0 value.
+	#
+	# The manual proxy settings have keys like HTTPProxy with an IP address, HTTPPort
+	# with a port, etc. if manual proxy settings have been entered. We don't need
+	# to persist these because they will stay around but we will disable manual
+	# proxy settings (i.e. HTTPEnable = 0)
+	
+	print "\n";
+	print "userDefinedName=" . $userDefinedName . "\n";
+	print "guid=" . $guid . "\n";
+	
+	# initial defaults
+	$AppleProxyConfigurationSelected = 2;
+	$HTTPEnable = 0;
+	$ProxyAutoConfigEnable = null;
+	$ProxyAutoConfigURLString = null;
+	$ProxyAutoDiscoveryEnable = 0;
+	
+	# fill these values out
+	
+	# is any kind of proxy configured?
+	$AppleProxyConfigurationSelected = 
+			handleProxyKey($plist, $guid, "AppleProxyConfigurationSelected", 
+							$AppleProxyConfigurationSelected);
+	
+	# are HTTP manual proxy settings enabled?
+	$HTTPEnable = 
+			handleProxyKey($plist, $guid, "HTTPEnable", 
+							$HTTPEnable);
+	
+	# is PAC (Proxy AutoConfig) enabled?
+	$ProxyAutoConfigEnable = 
+			handleProxyKey($plist, $guid, "ProxyAutoConfigEnable", 
+							$ProxyAutoConfigEnable);
+	
+	# is there a PAC URL?
+	$ProxyAutoConfigURLString = 
+				handleProxyKey($plist, $guid, "ProxyAutoConfigURLString", 
+							$ProxyAutoConfigURLString);
+	
+	# do PAC autodiscovery (i.e. use the WPAD standard)?
+	# FIXME: TODO: I _think_ this is what this does -- we just persist its
+	# value, so this is ok
+	$ProxyAutoDiscoveryEnable = 
+				handleProxyKey($plist, $guid, "ProxyAutoDiscoveryEnable", 
+							$ProxyAutoDiscoveryEnable);
+}
+
+sub handleProxyKey{
+	my $plist = shift;
+	my $guid = shift;
+	my $keyName = shift;
+	my $defaultValue = shift;
+	
+	$objValue = null;
+	$returnMe = null;
+	
+	$objValue = getPlistObject($plist, 
+								"NetworkServices", 
+								$guid,
+								"Proxies",
+								$keyName);
+	if(! $objValue or ! $$objValue){
+		$returnMe = $defaultValue;
+	}else{
+		$returnMe = $objValue->description()->UTF8String();
+	}
+	
+	print "$keyName=" . $returnMe . "\n";
+	
+	return $returnMe;
+}
+
+sub getPlistObject{
+	my ($object, @keysIndexes) = (@_);
+	if(@keysIndexes){
+		foreach my $keyIndex(@keysIndexes){
+			if($object and $$object){
+				if($object->isKindOfClass_(NSArray->class)){
+					$object = $object->objectAtIndex_($keyIndex);
+				}elsif($object->isKindOfClass_(NSDictionary->class)){
+					$object = $object->objectForKey_($keyIndex);
+				}else{
+					echo("Unknown type (not an array or a dictionary)");
+					return;
+				}
+			}else{
+					echo("Got nil or other error for $keyIndex.");
+					return;
+			}
+		}
+	}
+	return $object;
+}
+
+sub echo {
+	my $msg = shift;
+	$msg = "preinstall: " . $msg;
+	`echo "$msg" >> mac_install.log 2>&1`;
+}
