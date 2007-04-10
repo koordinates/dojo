@@ -28,8 +28,8 @@ if (!(-e $PREFS_PATH)) {
 	`cp /private/var/db/SystemConfiguration/preferences.xml $PREFS_PATH`;
 }
 
-$file = $PREFS_PATH;
-$plist = NSDictionary->dictionaryWithContentsOfFile_( $file );
+echo("Loading Safari proxy settings file...");
+$plist = NSMutableDictionary->dictionaryWithContentsOfFile_($PREFS_PATH);
 
 # make sure an error didn't occur or we couldn't find the file
 if (! $plist or ! $$plist){
@@ -52,6 +52,7 @@ if (! $plist or ! $$plist){
 # of "Built-in Ethernet" for ethernet, and "AirPort" for WiFi.
 #
 # TODO: What about dial-up modems?
+echo("Finding pre-installation values for Safari proxy settings...");
 $networkServices = getPlistObject($plist, "NetworkServices");
 $allKeys = $networkServices->allKeys();
 for($i = 0; $i < $allKeys->count(); $i++){
@@ -69,6 +70,18 @@ for($i = 0; $i < $allKeys->count(); $i++){
 			handleNetworkEndpoint($plist, $userDefinedName, $guid);
 		}
 	}
+}
+
+# make a backup of the plist file
+echo("Backing up original Safari proxy prefs file to $PREFS_PATH.orig...");
+`cp $PREFS_PATH $PREFS_PATH.orig`;
+
+# write out our changed plist file
+echo("Writing out changed Safari proxy prefs file...");
+$saveResults = $plist->writeToFile_atomically_($PREFS_PATH, "1");
+if($saveResults ne 0){
+	echo("Unable to save modified Safari proxy settings");
+	exit 1;
 }
 
 exit 0;
@@ -117,9 +130,8 @@ sub handleNetworkEndpoint{
 	# to persist these because they will stay around but we will disable manual
 	# proxy settings (i.e. HTTPEnable = 0)
 	
-	print "\n";
-	print "userDefinedName=" . $userDefinedName . "\n";
-	print "guid=" . $guid . "\n";
+	echo("Handling proxy values for network endpoint '$userDefinedName'...");
+	echo("Original values:");
 	
 	# initial defaults
 	$AppleProxyConfigurationSelected = 2;
@@ -158,6 +170,7 @@ sub handleNetworkEndpoint{
 							$ProxyAutoDiscoveryEnable);
 							
 	# persist these values into Mac OS X's application defaults system
+	echo("Persisting original Safari proxy values into defaults system for '$userDefinedName'...");
 	system("/usr/bin/defaults", "write", "org.dojo.dot", "Safari Proxy for $userDefinedName",
 			"'{ " .
 			" AppleProxyConfigurationSelected = " 	. $AppleProxyConfigurationSelected . ";" .
@@ -172,7 +185,30 @@ sub handleNetworkEndpoint{
 		exit 1
 	}
 	
+	# now change these values to what we want for Dojo Offline
+	echo("Changing PAC settings for '$userDefinedName' to what Dojo Offline needs...");
+	$proxyElem = getPlistObject($plist, 
+								"NetworkServices", 
+								$guid,
+								"Proxies");
 	
+	# indicate that we have a proxy setting now (AppleProxyConfigurationSelected = 1)
+	$proxyElem->setObject_forKey_("1", "AppleProxyConfigurationSelected");
+	
+	# if HTTPEnable is not null, then set it to 0 -- i.e. turn it off
+	if($HTTPEnable){
+		$proxyElem->setObject_forKey_("0", "HTTPEnable");
+	}
+	
+	# do we already have a ProxyAutoConfigEnable setting? If so, set it to 1. if not,
+	# create it now and set it to 1.
+	$proxyElem->setObject_forKey_("1", "ProxyAutoConfigEnable");
+	
+	# set our Dojo Offline PAC file
+	$proxyElem->setObject_forKey_("file://~/.offline.pac", "ProxyAutoConfigURLString");
+	
+	# set ProxyAutoDiscoveryEnable to 0, since we don't want to use WPAD for proxy setting
+	$proxyElem->setObject_forKey_("0", "ProxyAutoDiscoveryEnable");
 }
 
 sub handleProxyKey{
@@ -195,7 +231,7 @@ sub handleProxyKey{
 		$returnMe = $objValue->description()->UTF8String();
 	}
 	
-	print "$keyName=" . $returnMe . "\n";
+	echo("\t$keyName=" . $returnMe);
 	
 	return $returnMe;
 }

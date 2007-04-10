@@ -135,8 +135,12 @@ mac-uninstall:
 	
 # Clean up an old installation receipt of Dojo Offline so that we
 # can simulate a clean install versus an upgrade
-mac-clean-receipt:
+mac-clean-old-install:
+	sudo rm -fr /Applications/Dojo\ Offline\ Toolkit
 	sudo rm -fr /Library/Receipts/DojoOffline-$(VERSION).pkg
+	-sudo defaults delete org.dojo.dot
+	sudo cp /Library/Preferences/SystemConfiguration/preferences.plist.orig \
+				/Library/Preferences/SystemConfiguration/preferences.plist
 
 # The following directives can only be run on Windows using
 # nmake. Windows installers must be created on Windows currently 
