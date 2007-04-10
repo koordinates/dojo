@@ -52,12 +52,6 @@ windows:
 	cp -f proxy/config.win proxy-build/win/config
 	cp -f proxy/default-pac proxy-build/win/.offline-pac
 
-mac-run:
-	./proxy-build/mac/x86/dot "`pwd`/proxy-build/mac/x86/" 
-	
-mac-debug:
-	gdb -d proxy ./proxy-build/mac/x86/dot
-
 install:
 	rm -fr ~/.offline-cache
 	mkdir ~/.offline-cache
@@ -66,6 +60,12 @@ install:
 
 clean:
 	make -C proxy clean
+
+mac-run:
+	./proxy-build/mac/x86/dot "`pwd`/proxy-build/mac/x86/" 
+	
+mac-debug:
+	gdb -d proxy ./proxy-build/mac/x86/dot
 	
 mac-install-make:
 	# clean up old stuff first
