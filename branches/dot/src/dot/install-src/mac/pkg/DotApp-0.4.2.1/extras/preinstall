@@ -56,7 +56,8 @@ $networkServices = getPlistObject($plist, "NetworkServices");
 $allKeys = $networkServices->allKeys();
 for($i = 0; $i < $allKeys->count(); $i++){
 	$currentKey = $allKeys->objectAtIndex_($i);
-	$userDefinedName  = getPlistObject($plist, "NetworkServices", 
+	$userDefinedName  = getPlistObject($plist, 
+									"NetworkServices", 
 									$currentKey->description()->UTF8String(),
 									"Interface",
 									"UserDefinedName");
@@ -155,6 +156,23 @@ sub handleNetworkEndpoint{
 	$ProxyAutoDiscoveryEnable = 
 				handleProxyKey($plist, $guid, "ProxyAutoDiscoveryEnable", 
 							$ProxyAutoDiscoveryEnable);
+							
+	# persist these values into Mac OS X's application defaults system
+	system("/usr/bin/defaults", "write", "org.dojo.dot", "Safari Proxy for $userDefinedName",
+			"'{ " .
+			" AppleProxyConfigurationSelected = " 	. $AppleProxyConfigurationSelected . ";" .
+			" HTTPEnable = " 						. $HTTPEnable . ";" .
+			" ProxyAutoConfigEnable = " 			. $ProxyAutoConfigEnable . ";" .
+			" ProxyAutoConfigURLString = " 			. '"' . $ProxyAutoConfigURLString . '"' . ";" .
+			" ProxyAutoDiscoveryEnable = " 			. $ProxyAutoDiscoveryEnable . ";" .
+			"}'");
+	$defaultsResult = $?;
+	if($defaultsResult ne 0){
+		echo("Unable to persist old Safari proxy settings into Mac OS X defaults system: $?");
+		exit 1
+	}
+	
+	
 }
 
 sub handleProxyKey{
