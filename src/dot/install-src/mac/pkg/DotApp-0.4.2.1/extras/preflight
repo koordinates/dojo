@@ -25,4 +25,7 @@ else
 	echo "$SCRIPT_NAME: 'proxy' process was not running" >> mac_install.log 2>&1
 fi
 
+# TODO: Make sure that Safari, Firefox, and System Preferences are not running.
+# Ask user to quit them if they are
+
 exit 0
