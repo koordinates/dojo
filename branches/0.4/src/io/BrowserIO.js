@@ -257,6 +257,7 @@ dojo.io.XMLHTTPTransport = new function(){
 	function doLoad(kwArgs, http, url, query, useCache) {
 		if(	((http.status>=200)&&(http.status<300))|| 	// allow any 2XX response code
 			(http.status==304)|| 						// get it out of the cache
+			(http.status==1223)|| 						// Internet Explorer mangled the status code
 			(location.protocol=="file:" && (http.status==0 || http.status==undefined))||
 			(location.protocol=="chrome:" && (http.status==0 || http.status==undefined))
 		){
