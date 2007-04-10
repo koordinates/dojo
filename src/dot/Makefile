@@ -52,10 +52,10 @@ windows:
 	cp -f proxy/config.win proxy-build/win/config
 	cp -f proxy/default-pac proxy-build/win/.offline-pac
 
-run-mac:
+mac-run:
 	./proxy-build/mac/x86/dot "`pwd`/proxy-build/mac/x86/" 
 	
-debug:
+mac-debug:
 	gdb -d proxy ./proxy-build/mac/x86/dot
 
 install:
