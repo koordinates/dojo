@@ -6,8 +6,23 @@
 # we manually append it to our own log file to aid debugging
 #
 
-echo "$SCRIPT_NAME: running" >> mac_install.log
+echo "$SCRIPT_NAME: running" >> mac_install.log 2>&1
 
 # stop the 'dot' and 'proxy' processes if they are running
+echo "$SCRIPT_NAME: Stopping old 'dot' and 'proxy' processes..." >> mac_install.log 2>&1
+
+killall -9 dot
+if test $? -eq 0; then
+	echo "$SCRIPT_NAME: 'dot' process killed" >> mac_install.log 2>&1
+else
+	echo "$SCRIPT_NAME: 'dot' process was not running" >> mac_install.log 2>&1
+fi
+
+killall -9 proxy
+if test $? -eq 0; then
+	echo "$SCRIPT_NAME: 'proxy' process killed" >> mac_install.log 2>&1
+else
+	echo "$SCRIPT_NAME: 'proxy' process was not running" >> mac_install.log 2>&1
+fi
 
 exit 0
