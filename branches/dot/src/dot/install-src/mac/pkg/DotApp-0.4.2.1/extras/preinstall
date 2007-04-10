@@ -16,6 +16,9 @@
 
 use Foundation;
 
+# the URL for our Dojo Offline PAC file
+$DOT_PAC_URL = "file://~/.offline-pac";
+
 # echo out that the preinstall script has started
 echo("running");
 
@@ -79,8 +82,8 @@ echo("Backing up original Safari proxy prefs file to $PREFS_PATH.orig...");
 # write out our changed plist file
 echo("Writing out changed Safari proxy prefs file...");
 $saveResults = $plist->writeToFile_atomically_($PREFS_PATH, "1");
-if($saveResults ne 0){
-	echo("Unable to save modified Safari proxy settings");
+if($saveResults ne 1){ # 1 = success, 0 = failure
+	echo("Unable to save modified Safari proxy settings: $saveResults");
 	exit 1;
 }
 
@@ -205,7 +208,7 @@ sub handleNetworkEndpoint{
 	$proxyElem->setObject_forKey_("1", "ProxyAutoConfigEnable");
 	
 	# set our Dojo Offline PAC file
-	$proxyElem->setObject_forKey_("file://~/.offline.pac", "ProxyAutoConfigURLString");
+	$proxyElem->setObject_forKey_($DOT_PAC_URL, "ProxyAutoConfigURLString");
 	
 	# set ProxyAutoDiscoveryEnable to 0, since we don't want to use WPAD for proxy setting
 	$proxyElem->setObject_forKey_("0", "ProxyAutoDiscoveryEnable");
