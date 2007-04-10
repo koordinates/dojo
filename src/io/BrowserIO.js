@@ -257,6 +257,7 @@ dojo.io.XMLHTTPTransport = new function(){
 	function doLoad(kwArgs, http, url, query, useCache) {
 		if(	((http.status>=200)&&(http.status<300))|| 	// allow any 2XX response code
 			(http.status==304)|| 						// get it out of the cache
+			(http.status==1223)|| 						// Internet Explorer mangled the status code
 			(location.protocol=="file:" && (http.status==0 || http.status==undefined))||
 			(location.protocol=="chrome:" && (http.status==0 || http.status==undefined))
 		){
@@ -339,8 +340,9 @@ dojo.io.XMLHTTPTransport = new function(){
 		//summary: internal method that checks each inflight XMLHttpRequest to see
 		//if it has completed or if the timeout situation applies.
 		var now = null;
-		// make sure sync calls stay thread safe, if this callback is called during a sync call
-		// and this results in another sync call before the first sync call ends the browser hangs
+		// make sure sync calls stay thread safe, if this callback is called
+		// during a sync call and this results in another sync call before the
+		// first sync call ends the browser hangs
 		if(!dojo.hostenv._blockAsync && !_this._blockAsync){
 			for(var x=this.inFlight.length-1; x>=0; x--){
 				try{
@@ -613,7 +615,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			if (!kwArgs.user) {
 				http.open("POST", url, async);
 			}else{
-        http.open("POST", url, async, kwArgs.user, kwArgs.password);
+				http.open("POST", url, async, kwArgs.user, kwArgs.password);
 			}
 			setHeaders(http, kwArgs);
 			http.setRequestHeader("Content-Type", kwArgs.multipart ? ("multipart/form-data; boundary=" + this.multipartBoundary) : 
