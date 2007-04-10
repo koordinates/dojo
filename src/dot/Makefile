@@ -139,13 +139,14 @@ mac-clean-receipt:
 	sudo rm -fr /Library/Receipts/DojoOffline-$(VERSION).pkg
 
 # The following directives can only be run on Windows using
-# nmake
-
+# nmake. Windows installers must be created on Windows currently 
+# by running 'nmake' using one of the make directives below.
+#
 # Our Windows installer relies on an open source project named NSIS 2.24, available from this home page:
 #
 # http://nsis.sourceforge.net/Main_Page
 #
-# MakeNSIS.exe must be in your PATH environment variable.
+# MakeNSIS.exe must be in your PATH environment variable. 
 
 win-install-make:
 	del proxy-build\win\Install.exe
