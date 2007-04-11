@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 #
 # Find and persist pre-installation proxy values for Firefox
-# and Safari, then change them to what Dojo Offline needs to
-# work.
+# and Safari, which will be used to uninstall Dojo Offline, 
+# then change proxy settings to what Dojo Offline needs to work.
 #
 # @author: Brad Neuberg, bkn3@columbia.edu
 
