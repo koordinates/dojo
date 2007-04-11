@@ -1,5 +1,5 @@
 #!/bin/sh
 
-echo "$SCRIPT_NAME: running" >> /tmp/dot_install.log
+echo "$SCRIPT_NAME: Running" >> /tmp/dot_install.log
 
 exit 0
