@@ -16,7 +16,7 @@ restoreFirefoxProxySettings();
 removeDefaults();
 deleteFiles();
 
-echo("Dojo Offline is now uninstalled.");
+reportUninstalled();
 
 exit 0;
 
@@ -40,6 +40,22 @@ sub removeDefaults{
 
 sub deleteFiles{
 	echo("Removing Dojo Offline files...");
+}
+
+sub reportUninstalled{
+	$msg = "Dojo Offline uninstalled.\n" .
+			"Please restart Firefox and Safari for changes to take effect.";	
+	echo($msg);
+	
+	# use a little bit of AppleScript magic to display a dialog telling the user
+	# that uninstallation is done -- osascript is a command line utility to execute
+	# AppleScript
+	$runMe = "osascript " .
+				"-e 'tell application \"Finder\"' " . 
+	 				"-e 'activate' " .
+					"-e 'display dialog \"$msg\" buttons [\"OK\"]' " .
+				"-e 'end tell'";
+	system($runMe);
 }
 
 sub echo{
