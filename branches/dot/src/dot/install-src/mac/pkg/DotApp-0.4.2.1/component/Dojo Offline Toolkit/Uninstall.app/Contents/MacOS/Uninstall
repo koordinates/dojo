@@ -4,6 +4,9 @@ use Foundation;
 
 echo("Running");
 
+
+
+bootstrapUninstall();
 stopDojoOffline();
 restoreSafariProxySettings();
 restoreFirefoxProxySettings();
@@ -13,6 +16,48 @@ deleteFiles();
 reportUninstalled();
 
 exit 0;
+
+sub bootstrapUninstall(){
+	# We have a quandry: we can't delete
+	# ourself or the DOT directory because
+	# we are running inside of it. So, we
+	# do a trick where we copy ourself to
+	# the /tmp directory and call THAT version
+	# of Uninstall. To differentiate running
+	# the uninstaller twice we add a parameter,
+	# "--douninstall", that will now actually
+	# do the uninstall
+	$doUninstall = false;
+	if(scalar(@ARGV) > 0){
+		for($i = 0; $i < scalar(@ARGV); $i++){
+			if(@ARGV[$i] eq "--douninstall"){
+				$doUninstall = true;
+			}
+		}
+	}
+	
+	if($doUninstall eq true){
+		echo("--douninstall flag is present");
+		echo("Continuing existing uninstall");
+		return; # continue doing the uninstall
+	}else{
+		echo("--douninstall flag is not present");
+		echo("Trying to bootstrap uninstaller...");
+		# copy ourself to /tmp
+		`cp "/Applications/Dojo Offline Toolkit/Uninstall.app/Contents/MacOS/Uninstall" /tmp/Uninstall`;
+		# if we can't copy, just continue -- the worst thing that could happen
+		# is the DOT directory won't be deleted
+		if($? ne 0){
+			echo("Unable to copy ourself to /tmp/Uninstall -- continuing uninstall");
+			return;
+		}
+		# now run our other copy of Uninstall
+		echo("Running /tmp/Uninstall...");
+		$outputResults = system("/tmp/Uninstall --douninstall");
+		echo($outputResults);
+		exit 0;
+	}
+}
 
 sub stopDojoOffline{
 	echo("Stopping Dojo Offline...");
@@ -40,6 +85,8 @@ sub removeDefaults{
 
 sub deleteFiles{
 	echo("Removing Dojo Offline files...");
+	
+	`rm -fr "/Applications/Dojo Offline Toolkit"`;
 }
 
 sub reportUninstalled{
