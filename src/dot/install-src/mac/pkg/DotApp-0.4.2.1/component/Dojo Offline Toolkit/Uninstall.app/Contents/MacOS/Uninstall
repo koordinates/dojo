@@ -4,16 +4,16 @@ use Foundation;
 
 echo("Running");
 
-
-
 bootstrapUninstall();
 stopDojoOffline();
 restoreSafariProxySettings();
 restoreFirefoxProxySettings();
 removeDefaults();
-deleteFiles();
 
 reportUninstalled();
+
+# now delete the directory and files
+deleteFiles();
 
 exit 0;
 
