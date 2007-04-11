@@ -8,10 +8,16 @@
 
 use Foundation;
 
-# the URL for our Dojo Offline PAC file
-$DOT_PAC_URL = "file://~/.offline-pac";
+# fail fast if we don't have a HOME variable
+if(! $ENV{HOME}){
+	echo("There is HOME environment variable");
+	exit 1;
+}
 
-echo("running...");
+# the URL for our Dojo Offline PAC file
+$DOT_PAC_URL = "file://$ENV{HOME}/.offline-pac";
+
+echo("Running...");
 
 handleSafari();
 handleFirefox();

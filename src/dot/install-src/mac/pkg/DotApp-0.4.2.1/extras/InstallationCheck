@@ -1,4 +1,5 @@
 #!/bin/sh
+echo $SCRIPT_NAME: Running... >> mac_install.log
 echo $SCRIPT_NAME: Ensuring machine has an i386 compatible chip... >> mac_install.log
 
 # Make sure we have an Intel-compatible chip

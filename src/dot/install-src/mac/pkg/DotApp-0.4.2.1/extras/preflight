@@ -6,7 +6,7 @@
 # we manually append it to our own log file to aid debugging
 #
 
-echo "$SCRIPT_NAME: running" >> /tmp/dot_install.log 2>&1
+echo "$SCRIPT_NAME: Running" >> /tmp/dot_install.log 2>&1
 
 # stop the 'dot' and 'proxy' processes if they are running
 echo "$SCRIPT_NAME: Stopping old 'dot' and 'proxy' processes..." >> /tmp/dot_install.log 2>&1
