@@ -4,12 +4,6 @@ use Foundation;
 
 echo("Running");
 
-# we can't delete ourselves -- copy the
-# uninstall script to a location outside 
-# of the Dojo Offline directory, then re-call
-# ourself
-echo("0 = $0");
-
 stopDojoOffline();
 restoreSafariProxySettings();
 restoreFirefoxProxySettings();
@@ -22,6 +16,9 @@ exit 0;
 
 sub stopDojoOffline{
 	echo("Stopping Dojo Offline...");
+	
+	system "killall -9 dot";
+	system "killall -9 proxy"
 }
 
 sub restoreSafariProxySettings{
@@ -32,6 +29,9 @@ sub restoreSafariProxySettings{
 sub restoreFirefoxProxySettings{
 	echo("Restoring Firefox's proxy settings to "
 			."what they were before Dojo Offline was installed...");
+			
+	# get the old values from the defaults system
+	
 }
 
 sub removeDefaults{
@@ -43,19 +43,33 @@ sub deleteFiles{
 }
 
 sub reportUninstalled{
+	$beSilent = false;
+	
+	# is this a silent uninstall?
+	if(scalar(@ARGV) > 0){
+		for($i = 0; $i < scalar(@ARGV); $i++){
+			if(@ARGV[i] eq "--silent"){
+				echo("Silent uninstall");
+				$beSilent = true;
+			}
+		}
+	}
+	
 	$msg = "Dojo Offline uninstalled.\n" .
 			"Please restart Firefox and Safari for changes to take effect.";	
 	echo($msg);
 	
-	# use a little bit of AppleScript magic to display a dialog telling the user
-	# that uninstallation is done -- osascript is a command line utility to execute
-	# AppleScript
-	$runMe = "osascript " .
-				"-e 'tell application \"Finder\"' " . 
-	 				"-e 'activate' " .
-					"-e 'display dialog \"$msg\" buttons [\"OK\"]' " .
-				"-e 'end tell'";
-	system($runMe);
+	if($beSilent eq false){
+		# use a little bit of AppleScript magic to display a dialog telling the user
+		# that uninstallation is done -- osascript is a command line utility to execute
+		# AppleScript
+		$runMe = "osascript " .
+					"-e 'tell application \"Finder\"' " . 
+		 				"-e 'activate' " .
+						"-e 'display dialog \"$msg\" buttons [\"OK\"]' " .
+					"-e 'end tell'";
+		system($runMe);
+	}
 }
 
 sub echo{
