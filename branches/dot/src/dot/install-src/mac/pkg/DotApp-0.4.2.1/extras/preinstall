@@ -1,16 +1,8 @@
 #!/usr/bin/perl
 #
-# This file manipulates the Safari proxy settings, which are stored
-# in XML in a Mac format called 'plists'.
-#
-# This file is based on techniques from the following two O'Reilly
-# tutorials that detail how to work with plist files from perl:
-# http://www.macdevcenter.com/pub/a/mac/2005/07/29/plist.html
-# http://www.macdevcenter.com/pub/a/mac/2005/08/02/plist.html
-#
-# It is also based on techniques discovered by the following blog
-# writer:
-# http://homepage.mac.com/gregneagle/iblog/C1833135211/E870388235/index.html
+# Find and persist pre-installation proxy values for Firefox
+# and Safari, then change them to what Dojo Offline needs to
+# work.
 #
 # @author: Brad Neuberg, bkn3@columbia.edu
 
@@ -19,75 +11,93 @@ use Foundation;
 # the URL for our Dojo Offline PAC file
 $DOT_PAC_URL = "file://~/.offline-pac";
 
-# echo out that the preinstall script has started
-echo("running");
+echo("running...");
 
-# open our plist file that has our network preference configuration
-$PREFS_PATH = "/Library/Preferences/SystemConfiguration/preferences.plist";
-
-# machines upgraded from Mac OS X 10.2 have this plist file
-# in an older location
-if (!(-e $PREFS_PATH)) {
-	`cp /private/var/db/SystemConfiguration/preferences.xml $PREFS_PATH`;
-}
-
-echo("Loading Safari proxy settings file...");
-$plist = NSMutableDictionary->dictionaryWithContentsOfFile_($PREFS_PATH);
-
-# make sure an error didn't occur or we couldn't find the file
-if (! $plist or ! $$plist){
-	echo("Unable to find Safari network preferences plist file");
-	exit 1;
-}
-
-# our plist file is structured as follows:
-# at the root we have a dictionary key named "NetworkServices";
-# this has a series of dictionary entries, where the key is a GUID,
-# such as 2D826DFA-9D8E-4BE5-8755-69DA45A78B92. Each
-# of these GUIDs corresponds to a different possible networking
-# endpoint. We aren't interested in all of these; one is for
-# Bluetooth, for example. For each GUID, we see if it has
-# a sub-dict named "Interface" with the name of this interface,
-# defined in "UserDefinedName" -- which despite it's name, is not
-# set by the user, but the name given by Mac OS X -- they are not
-# changeable through a UI. We only want
-# two of these GUID children: one with the UserDefinedName
-# of "Built-in Ethernet" for ethernet, and "AirPort" for WiFi.
-#
-# TODO: What about dial-up modems?
-echo("Finding pre-installation values for Safari proxy settings...");
-$networkServices = getPlistObject($plist, "NetworkServices");
-$allKeys = $networkServices->allKeys();
-for($i = 0; $i < $allKeys->count(); $i++){
-	$currentKey = $allKeys->objectAtIndex_($i);
-	$userDefinedName  = getPlistObject($plist, 
-									"NetworkServices", 
-									$currentKey->description()->UTF8String(),
-									"Interface",
-									"UserDefinedName");
-	if($userDefinedName and $$userDefinedName){
-		$userDefinedName = $userDefinedName->description()->UTF8String();
-		if($userDefinedName eq "Built-in Ethernet" or
-			$userDefinedName eq "AirPort"){
-			$guid = $currentKey->description()->UTF8String();
-			handleNetworkEndpoint($plist, $userDefinedName, $guid);
-		}
-	}
-}
-
-# make a backup of the plist file
-echo("Backing up original Safari proxy prefs file to $PREFS_PATH.orig...");
-`cp $PREFS_PATH $PREFS_PATH.orig`;
-
-# write out our changed plist file
-echo("Writing out changed Safari proxy prefs file...");
-$saveResults = $plist->writeToFile_atomically_($PREFS_PATH, "1");
-if($saveResults ne 1){ # 1 = success, 0 = failure
-	echo("Unable to save modified Safari proxy settings: $saveResults");
-	exit 1;
-}
+handleSafari();
+handleFirefox();
 
 exit 0;
+
+sub handleSafari{
+	# This function manipulates the Safari proxy settings, which are stored
+	# in XML in a Mac format called 'plists'.
+	#
+	# It is based on techniques from the following two O'Reilly
+	# tutorials that detail how to work with plist files from perl:
+	# http://www.macdevcenter.com/pub/a/mac/2005/07/29/plist.html
+	# http://www.macdevcenter.com/pub/a/mac/2005/08/02/plist.html
+	#
+	# It is also based on techniques discovered by the following blog
+	# writer:
+	# http://homepage.mac.com/gregneagle/iblog/C1833135211/E870388235/index.html
+
+	echo("Handling Safari proxy settings...");
+
+	# open our plist file that has our network preference configuration
+	$PREFS_PATH = "/Library/Preferences/SystemConfiguration/preferences.plist";
+
+	# machines upgraded from Mac OS X 10.2 have this plist file
+	# in an older location
+	if (!(-e $PREFS_PATH)) {
+		`cp /private/var/db/SystemConfiguration/preferences.xml $PREFS_PATH`;
+	}
+
+	echo("Loading Safari proxy settings file...");
+	$plist = NSMutableDictionary->dictionaryWithContentsOfFile_($PREFS_PATH);
+
+	# make sure an error didn't occur or we couldn't find the file
+	if (! $plist or ! $$plist){
+		echo("Unable to find Safari network preferences plist file");
+		exit 1;
+	}
+
+	# our plist file is structured as follows:
+	# at the root we have a dictionary key named "NetworkServices";
+	# this has a series of dictionary entries, where the key is a GUID,
+	# such as 2D826DFA-9D8E-4BE5-8755-69DA45A78B92. Each
+	# of these GUIDs corresponds to a different possible networking
+	# endpoint. We aren't interested in all of these; one is for
+	# Bluetooth, for example. For each GUID, we see if it has
+	# a sub-dict named "Interface" with the name of this interface,
+	# defined in "UserDefinedName" -- which despite it's name, is not
+	# set by the user, but the name given by Mac OS X -- they are not
+	# changeable through a UI. We only want
+	# two of these GUID children: one with the UserDefinedName
+	# of "Built-in Ethernet" for ethernet, and "AirPort" for WiFi.
+	#
+	# TODO: What about dial-up modems?
+	echo("Finding pre-installation values for Safari proxy settings...");
+	$networkServices = getPlistObject($plist, "NetworkServices");
+	$allKeys = $networkServices->allKeys();
+	for($i = 0; $i < $allKeys->count(); $i++){
+		$currentKey = $allKeys->objectAtIndex_($i);
+		$userDefinedName  = getPlistObject($plist, 
+										"NetworkServices", 
+										$currentKey->description()->UTF8String(),
+										"Interface",
+										"UserDefinedName");
+		if($userDefinedName and $$userDefinedName){
+			$userDefinedName = $userDefinedName->description()->UTF8String();
+			if($userDefinedName eq "Built-in Ethernet" or
+				$userDefinedName eq "AirPort"){
+				$guid = $currentKey->description()->UTF8String();
+				handleNetworkEndpoint($plist, $userDefinedName, $guid);
+			}
+		}
+	}
+
+	# make a backup of the plist file
+	echo("Backing up original Safari proxy prefs file to $PREFS_PATH.orig...");
+	`cp $PREFS_PATH $PREFS_PATH.orig`;
+
+	# write out our changed plist file
+	echo("Writing out changed Safari proxy prefs file...");
+	$saveResults = $plist->writeToFile_atomically_($PREFS_PATH, "1");
+	if($saveResults ne 1){ # 1 = success, 0 = failure
+		echo("Unable to save modified Safari proxy settings: $saveResults");
+		exit 1;
+	}
+}
 
 
 sub handleNetworkEndpoint{
@@ -261,8 +271,126 @@ sub getPlistObject{
 	return $object;
 }
 
-sub echo {
+sub handleFirefox{
+	echo("Handling Firefox proxy settings...");
+	
+	# build up the location to where Firefox profiles are
+	# stored for this user -- Perl doesn't automatically
+	# expand the ~ tilde
+	$HOME = $ENV{HOME};
+	$FIREFOX_PROFILE_PATH = "$HOME/Library/Application\ Support/Firefox/Profiles";
+	echo("User's Firefox profile settings should be at $FIREFOX_PROFILE_PATH");
+	
+	# see if this user even has Firefox installed with their own Firefox
+	# prefs
+	if(! -e "$FIREFOX_PROFILE_PATH"){
+		echo("This user has no Firefox profiles");
+		return;
+	}else{
+		echo("This user has Firefox profiles");
+	}
+	
+	# enumerate through each subdirectory under Profiles;
+	# each subdirectory is a discrete, seperate Firefox profile
+	# that this user might use
+	eval{
+		opendir(DIR, "$FIREFOX_PROFILE_PATH") || die "Couldn't open directory $FIREFOX_PROFILE_PATH: $!";
+		@files = readdir(DIR);
+		closedir(DIR) || die "Couldn't close directory $FIREFOX_PROFILE_PATH: $!";
+		foreach $profileDir (@files) {
+			if($profileDir ne "." and $profileDir ne ".."){
+				handleFirefoxProfile($FIREFOX_PROFILE_PATH, $profileDir);
+			}
+		}
+	};
+	
+	# was there an error?
+	if($@){
+		echo("Unable to handle firefox profiles: $@");
+		return;
+	}
+}
+
+sub handleFirefoxProfile{
+	my $profilePath = shift;
+	my $profileDir = shift;
+	
+	echo("Handling Firefox profile at $profilePath/$profileDir...");
+	
+	# see if there is a prefs.js file
+	$prefsPath = "$profilePath/$profileDir/prefs.js";
+	if(! -e "$prefsPath"){
+		echo("No prefs.js file for this profile");
+		return;
+	}
+	
+	# read the whole prefs.js file into a string
+	eval{
+		open FILE, "$prefsPath" || die "Couldn't open file $prefsPath: $!";
+		$prefsStr = "";
+		while(<FILE>){
+		 $prefsStr .= $_;
+		}
+		close FILE || die "Could not close $prefsPath: $!";
+	};
+	
+	# was there an error?
+	if($@){
+		echo($@);
+		return;
+	}
+	
+	# isolate just the parts we want
+	$pacPref = null;
+	$proxyTypePref = null;
+	$_ = $prefsStr;
+	if(m/^user_pref\(\"network\.proxy\.autoconfig_url\"\,[ ]*(\"[^\"]*\")\);$/m){
+		$pacPref = $1;
+	}
+	if(m/^user_pref\(\"network\.proxy\.type\"\,[ ]*(\"[^\"]*\")\);$/m){
+		$proxyTypePref = $1;
+	}
+	echo("Existing PAC file setting: $pacPref");
+	echo("Existing proxy type setting: $proxyTypePref");
+	
+	# persist these values into Mac OS X's application defaults system
+	echo("Persisting original Firefox proxy values into defaults system...");
+	system("/usr/bin/defaults", "write", "org.dojo.dot", "Firefox Proxy for $profileDir",
+			"'{ " .
+			" NetworkProxyAutoconfigURL = " 		. "$pacPref" . ";" .
+			" NetworkProxyType = " 					. "$proxyTypePref" . ";" .
+			"}'");
+	$defaultsResult = $?;
+	if($defaultsResult ne 0){
+		# don't change this browser profile if we can't persist it's old settings
+		echo("Unable to persist old Firefox proxy settings into Mac OS X defaults system: $?");
+		echo("WARNING: Will not configure this Firefox profile for Dojo Offline");
+		return;
+	}
+	
+	# make a backup of prefs.js
+	echo("Making a backup of prefs.js file at '$prefsPath.orig'...");
+	`cp "$prefsPath" "$prefsPath.orig"`;
+	
+	# add our new proxy settings to user.js
+	echo("Adding our new Dojo Offline proxy prefs...");
+	eval{
+		$userJSPath = "$profilePath/$profileDir/user.js";
+		open(DAT,">>$userJSPath") || die("Cannot open $userJSPath: $!");
+		print DAT "user_pref(\"network.proxy.type\", 2);\n";
+		print DAT "user_pref(\"network.proxy.autoconfig_url\", \"$DOT_PAC_URL\");";
+		close(DAT) || die("Cannot close $userJSPath: $!");
+	};
+	
+	# was there an error?
+	if($@){
+		echo($@);
+		return;
+	}
+}
+
+sub echo{
 	my $msg = shift;
 	$msg = "preinstall: " . $msg;
-	`echo "$msg" >> mac_install.log 2>&1`;
+	`echo "$msg" >> /tmp/dot_install.log 2>&1`;
 }
