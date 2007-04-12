@@ -16,7 +16,7 @@ var prefixes = dependencyResult.dependencies["prefixes"] || [];
 
 var copyright = new String(buildUtil.readFile("copyright.txt"));
 
-var result = buildUtil.makeDojoJs(buildUtil.loadDependencyList(profileFile), version);
+var result = buildUtil.makeDojoJs(dependencyResult, version);
 
 //Save the dojo.js contents. It is always the first result.
 buildUtil.saveFile(releaseDir + "/" + dojoFileName, result[0].contents);
