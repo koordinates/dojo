@@ -19,8 +19,15 @@ $DOT_PAC_URL = "file://$ENV{HOME}/.offline-pac";
 
 echo("Running...");
 
-handleSafari();
-handleFirefox();
+# a hash that will hold the original proxy settings
+# for our user's browsers - we will persist these into
+# a plist file to reuse when uninstalling Dojo Offline
+$proxyDefaults = {};
+
+handleSafari($proxyDefaults);
+handleFirefox($proxyDefaults);
+
+saveOldProxySettings($proxyDefaults);
 
 exit 0;
 
@@ -36,6 +43,8 @@ sub handleSafari{
 	# It is also based on techniques discovered by the following blog
 	# writer:
 	# http://homepage.mac.com/gregneagle/iblog/C1833135211/E870388235/index.html
+	
+	my $proxyDefaults = shift;
 
 	echo("Handling Safari proxy settings...");
 
@@ -87,7 +96,7 @@ sub handleSafari{
 			if($userDefinedName eq "Built-in Ethernet" or
 				$userDefinedName eq "AirPort"){
 				$guid = $currentKey->description()->UTF8String();
-				handleNetworkEndpoint($plist, $userDefinedName, $guid);
+				handleNetworkEndpoint($plist, $userDefinedName, $guid, $proxyDefaults);
 			}
 		}
 	}
@@ -100,7 +109,7 @@ sub handleSafari{
 	echo("Writing out changed Safari proxy prefs file...");
 	$saveResults = $plist->writeToFile_atomically_($PREFS_PATH, "1");
 	if($saveResults ne 1){ # 1 = success, 0 = failure
-		echo("Unable to save modified Safari proxy settings: $saveResults");
+		echo("Unable to save modified Safari proxy settings");
 		exit 1;
 	}
 }
@@ -110,6 +119,7 @@ sub handleNetworkEndpoint{
 	my $plist = shift;
 	my $userDefinedName = shift;
 	my $guid = shift;
+	my $proxyDefaults = shift;
 	
 	# The Proxy dict has the following subkeys under the following conditions --
 	# we will use this to persist old settings for uninstallation, and to setup
@@ -155,7 +165,7 @@ sub handleNetworkEndpoint{
 	# initial defaults
 	$AppleProxyConfigurationSelected = 2;
 	$HTTPEnable = 0;
-	$ProxyAutoConfigEnable = null;
+	$ProxyAutoConfigEnable = -1;
 	$ProxyAutoConfigURLString = null;
 	$ProxyAutoDiscoveryEnable = 0;
 	
@@ -188,21 +198,15 @@ sub handleNetworkEndpoint{
 				handleProxyKey($plist, $guid, "ProxyAutoDiscoveryEnable", 
 							$ProxyAutoDiscoveryEnable);
 							
-	# persist these values into Mac OS X's application defaults system
-	echo("Persisting original Safari proxy values into defaults system for '$userDefinedName'...");
-	system("/usr/bin/defaults", "write", "org.dojo.dot", "Safari Proxy for $userDefinedName",
-			"'{ " .
-			" AppleProxyConfigurationSelected = " 	. $AppleProxyConfigurationSelected . ";" .
-			" HTTPEnable = " 						. $HTTPEnable . ";" .
-			" ProxyAutoConfigEnable = " 			. $ProxyAutoConfigEnable . ";" .
-			" ProxyAutoConfigURLString = " 			. '"' . $ProxyAutoConfigURLString . '"' . ";" .
-			" ProxyAutoDiscoveryEnable = " 			. $ProxyAutoDiscoveryEnable . ";" .
-			"}'");
-	$defaultsResult = $?;
-	if($defaultsResult ne 0){
-		echo("Unable to persist old Safari proxy settings into Mac OS X defaults system: $?");
-		exit 1
-	}
+	# create a hashtable of the original proxy values, which we will
+	# use to persist into our own plist file later on
+	$proxyDefaults->{"Safari Proxy for $userDefinedName"} = {
+		"AppleProxyConfigurationSelected"=>cocoaInt($AppleProxyConfigurationSelected),
+		"HTTPEnable"=>cocoaInt($HTTPEnable),
+		"ProxyAutoConfigEnable"=>cocoaInt($ProxyAutoConfigEnable),
+		"ProxyAutoConfigURLString"=>"$ProxyAutoConfigURLString",
+		"ProxyAutoDiscoveryEnable"=>cocoaInt($ProxyAutoDiscoveryEnable)
+	};
 	
 	# now change these values to what we want for Dojo Offline
 	echo("Changing PAC settings for '$userDefinedName' to what Dojo Offline needs...");
@@ -228,6 +232,14 @@ sub handleNetworkEndpoint{
 	
 	# set ProxyAutoDiscoveryEnable to 0, since we don't want to use WPAD for proxy setting
 	$proxyElem->setObject_forKey_("0", "ProxyAutoDiscoveryEnable");
+	
+	# write out our changed plist file
+	echo("Writing out changed Safari proxy prefs file...");
+	$saveResults = $plist->writeToFile_atomically_($PREFS_PATH, "1");
+	if($saveResults ne 1){ # 1 = success, 0 = failure
+		echo("Unable to save modified Safari proxy settings");
+		exit 1;
+	}
 }
 
 sub handleProxyKey{
@@ -278,6 +290,8 @@ sub getPlistObject{
 }
 
 sub handleFirefox{
+	my $proxyDefaults = shift;
+	
 	echo("Handling Firefox proxy settings...");
 	
 	# build up the location to where Firefox profiles are
@@ -305,7 +319,7 @@ sub handleFirefox{
 		closedir(DIR) || die "Couldn't close directory $FIREFOX_PROFILE_PATH: $!";
 		foreach $profileDir (@files) {
 			if($profileDir ne "." and $profileDir ne ".."){
-				handleFirefoxProfile($FIREFOX_PROFILE_PATH, $profileDir);
+				handleFirefoxProfile($FIREFOX_PROFILE_PATH, $profileDir, $proxyDefaults);
 			}
 		}
 	};
@@ -320,6 +334,7 @@ sub handleFirefox{
 sub handleFirefoxProfile{
 	my $profilePath = shift;
 	my $profileDir = shift;
+	my $proxyDefaults = shift;
 	
 	echo("Handling Firefox profile at $profilePath/$profileDir...");
 	
@@ -350,7 +365,7 @@ sub handleFirefoxProfile{
 	$pacPref = null;
 	$proxyTypePref = null;
 	$_ = $prefsStr;
-	if(m/^user_pref\(\"network\.proxy\.autoconfig_url\"\,[ ]*(\"[^\"]*\")\);$/m){
+	if(m/^user_pref\(\"network\.proxy\.autoconfig_url\"\,[ ]*\"([^\"]*)\"\);$/m){
 		$pacPref = $1;
 	}
 	if(m/^user_pref\(\"network\.proxy\.type\"\,[ ]*(\"[^\"]*\")\);$/m){
@@ -359,20 +374,12 @@ sub handleFirefoxProfile{
 	echo("Existing PAC file setting: $pacPref");
 	echo("Existing proxy type setting: $proxyTypePref");
 	
-	# persist these values into Mac OS X's application defaults system
-	echo("Persisting original Firefox proxy values into defaults system...");
-	system("/usr/bin/defaults", "write", "org.dojo.dot", "Firefox Proxy for $profileDir",
-			"'{ " .
-			" NetworkProxyAutoconfigURL = " 		. "$pacPref" . ";" .
-			" NetworkProxyType = " 					. "$proxyTypePref" . ";" .
-			"}'");
-	$defaultsResult = $?;
-	if($defaultsResult ne 0){
-		# don't change this browser profile if we can't persist it's old settings
-		echo("Unable to persist old Firefox proxy settings into Mac OS X defaults system: $?");
-		echo("WARNING: Will not configure this Firefox profile for Dojo Offline");
-		return;
-	}
+	# create a hashtable of the original proxy values, which we will
+	# use to persist into our own plist file later on
+	$proxyDefaults->{"Firefox Proxy for $profileDir"} = {
+		"NetworkProxyAutoconfigURL"=>"$pacPref",
+		"NetworkProxyType"=>cocoaInt($proxyTypePref)
+	};
 	
 	# make a backup of prefs.js
 	echo("Making a backup of prefs.js file at '$prefsPath.orig'...");
@@ -395,8 +402,88 @@ sub handleFirefoxProfile{
 	}
 }
 
+sub saveOldProxySettings{
+	my $proxyDefaults = shift;
+	
+	$saveTo = "$ENV{HOME}/Library/Application\ Support/Dojo/dot";
+	
+	echo("Saving original proxy settings to disk at $saveTo...");
+	$mkResults = system("mkdir -p \"$saveTo\"");
+	if($mkResults ne 0){
+		echo("Unable to create application support directory for Dojo Offline: $mkResults");
+		exit 1;
+	}
+	
+	$plist = cocoaDictFromPerlHash(%$proxyDefaults);
+	$plist->writeToFile_atomically_("$saveTo/proxies.xml", "1");
+}
+
+sub cocoaInt{
+	return NSNumber->numberWithLong_($_[0]);
+}
+
+sub cocoaBool{
+	return NSNumber->numberWithBool_($_[0]);
+}
+
+sub cocoaFloat{
+	return NSNumber->numberWithDouble_($_[0]);
+}
+
+sub cocoaDate{
+	return NSDate->dateWithTimeIntervalSince1970_($_[0]);
+}
+
+sub cocoaDictFromPerlHash{
+	my(%hash) = (@_);
+	my $cocoaDict = NSMutableDictionary->dictionary();
+	while(my($key, $value) = each(%hash)){
+		if(defined $value){
+			if(ref($value) eq "ARRAY"){
+				$cocoaDict->setObject_forKey_(cocoaArrayFromPerlArray(@$value), 
+											$key);
+			}elsif(ref($value) eq "HASH"){
+				$cocoaDict->setObject_forKey_(cocoaDictFromPerlHash(%$value), 
+											$key);
+			}elsif(ref($value) eq "SCALAR"){
+				$cocoaDict->setObject_forKey_( $$value, $key );
+			}elsif(substr(ref($value), 0,4) eq "NSCF"){
+				$cocoaDict->setObject_forKey_($value, $key);
+			}else{
+				$cocoaDict->setObject_forKey_("$value", $key);
+			}
+		}else{
+			print STDERR "The value was not defined for $key!\n";
+		}
+	}
+	return $cocoaDict;
+}
+
+sub cocoaArrayFromPerlArray{
+	my (@perlArray) = (@_);
+	my $cocoaArray = NSMutableArray->array();
+	foreach my $value (@perlArray){
+		if (defined $value){
+			if(ref($value) eq "ARRAY"){
+				$cocoaArray->addObject_(cocoaArrayFromPerlArray(@$value));
+			}elsif(ref($value) eq "HASH"){
+				$cocoaArray->addObject_(cocoaDictFromPerlHash(%$value));
+			}elsif(ref($value) eq "SCALAR"){
+				$cocoaArray->addObject_($$value);
+			}elsif(substr(ref($value), 0,4 ) eq "NSCF"){
+				$cocoaArray->addObject_($value);
+			}else{
+				$cocoaArray->addObject_("$value");
+			}
+		}else{
+			print STDERR "The value was not defined!\n";
+		}
+	}
+	return $cocoaArray;
+}
+
 sub echo{
 	my $msg = shift;
 	$msg = "preinstall: " . $msg;
-	`echo "$msg" >> /tmp/dot_install.log 2>&1`;
+	`echo "$msg" >> ~/dot_install.log 2>&1`;
 }

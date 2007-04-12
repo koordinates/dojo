@@ -1,19 +1,19 @@
 #!/bin/sh
 
-echo "$SCRIPT_NAME: Running" >> /tmp/dot_install.log 2>&1
+echo "$SCRIPT_NAME: Running" >> ~/dot_install.log 2>&1
 
 # first, uninstall the old installation
-echo "$SCRIPT_NAME: Uninstalling old installation..." >> /tmp/dot_install.log 2>&1
+echo "$SCRIPT_NAME: Uninstalling old installation..." >> ~/dot_install.log 2>&1
 /Applications/Dojo\ Offline\ Toolkit/Uninstall --silent --douninstall
 if test $? -ne 0; then
-	echo "$SCRIPT_NAME: Unable to uninstall old installation" >> /tmp/dot_install.log 2>&1
+	echo "$SCRIPT_NAME: Unable to uninstall old installation" >> ~/dot_install.log 2>&1
 	exit 1
 fi
 
 # now install the new installation
 $PACKAGE_PATH/Contents/Resources/preinstall
 if test $? -ne 0; then
-	echo "$SCRIPT_NAME: Unable to install Dojo Offline" >> /tmp/dot_install.log 2>&1
+	echo "$SCRIPT_NAME: Unable to install Dojo Offline" >> ~/dot_install.log 2>&1
 	exit 1
 fi
 
