@@ -336,6 +336,9 @@ buildUtil.createLayerContents = function(/*String*/resourceName, /*Array*/depLis
 		
 	//If we have a string for a regexp, do the dojo.require() and requireIf() removal now.
 	if(depRegExpString){
+		//Make to escape regexp-sensitive characters
+		depRegExpString = depRegExpString.replace(/([\.\*])/g, "\\$1");
+		//Build the regexp
 		var depRegExp = new RegExp("dojo\\.(require|requireIf)\\(.*?(" + depRegExpString + ")\\)(;?)", "g");
 		dojoContents = dojoContents.replace(depRegExp, "");
 	}
