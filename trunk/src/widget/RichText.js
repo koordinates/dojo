@@ -734,7 +734,8 @@ dojo.widget.defineWidget(
 			if(h.ie || this._safariIsLeopard() || h.opera){
 				this.editNode.contentEditable=true;
 			}else{ //moz
-				this.document.designMode='on';
+				this.document.execCommand('contentReadOnly', false, false);
+//				this.document.designMode='on';
 			}
 			this.enabled=true;
 		},
@@ -743,8 +744,9 @@ dojo.widget.defineWidget(
 			if(h.ie || this._safariIsLeopard() || h.opera){
 				this.editNode.contentEditable=false;
 			}else{ //moz
-				this.blur(); //to remove the blinking caret
-				this.document.designMode='off';
+				this.document.execCommand('contentReadOnly', false, true);
+//				this.blur(); //to remove the blinking caret
+//				this.document.designMode='off';
 			}
 			this.enabled=false;
 		},
@@ -763,7 +765,7 @@ dojo.widget.defineWidget(
 				}
 
 				try { // sanity check for Mozilla
-					this.document.execCommand("useCSS", false, true); // old moz call
+//					this.document.execCommand("useCSS", false, true); // old moz call
 					this.document.execCommand("styleWithCSS", false, false); // new moz call
 					//this.document.execCommand("insertBrOnReturn", false, false); // new moz call
 				}catch(e2){ }
@@ -1235,23 +1237,14 @@ dojo.widget.defineWidget(
 				var a = dojo.withGlobal(this.window, "getAncestorElement",dojo.html.selection, ['a']);
 				dojo.withGlobal(this.window, "selectElement", dojo.html.selection, [a]);
 
-				returnValue = this.document.execCommand("unlink", false, null);
-
-//				// restore original selection
-//				var selectionRange = this.document.createRange();
-//				selectionRange.setStart(selectionStartContainer, selectionStartOffset);
-//				selectionRange.setEnd(selectionEndContainer, selectionEndOffset);
-//				selection.removeAllRanges();
-//				selection.addRange(selectionRange);
-
-				return returnValue;
+				return this.document.execCommand("unlink");
 			}else if((command == "hilitecolor")&&(dojo.render.html.mozilla)){
-				// mozilla doesn't support hilitecolor properly when useCSS is
-				// set to false (bugzilla #279330)
+//				// mozilla doesn't support hilitecolor properly when useCSS is
+//				// set to false (bugzilla #279330)
 
-				this.document.execCommand("useCSS", false, false);
+//				this.document.execCommand("useCSS", false, false);
 				returnValue = this.document.execCommand(command, false, argument);
-				this.document.execCommand("useCSS", false, true);
+//				this.document.execCommand("useCSS", false, true);
 
 			}else if((dojo.render.html.ie)&&( (command == "backcolor")||(command == "forecolor") )){
 				// Tested under IE 6 XP2, no problem here, comment out
@@ -1584,10 +1577,10 @@ dojo.widget.defineWidget(
 					}
 					break;
 				case 3: //text
-					var output = node.nodeValue;
+					var output = dojo.string.escapeXml(node.nodeValue,true);
 					break;
 				case 8: //comment
-					var output = '<!--'+node.nodeValue+'-->';
+					var output = '<!--'+dojo.string.escapeXml(node.nodeValue,true)+'-->';
 					break;
 				default:
 					var output = "Element not recognized - Type: " + node.nodeType + " Name: " + node.nodeName;
