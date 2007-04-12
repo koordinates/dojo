@@ -1,6 +1,6 @@
 #!/bin/sh
-echo $SCRIPT_NAME: Running... >> mac_install.log
-echo $SCRIPT_NAME: Ensuring machine has an i386 compatible chip... >> mac_install.log
+echo $SCRIPT_NAME: Running... >> ~/dot_install.log
+echo $SCRIPT_NAME: Ensuring machine has an i386 compatible chip... >> ~/dot_install.log
 
 # Make sure we have an Intel-compatible chip
 if uname -p | grep -v -q i386; then
