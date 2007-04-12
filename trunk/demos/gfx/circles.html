@@ -136,6 +136,10 @@ function initGfx() {
 	dojo.event.connect(container, 'onmousedown', handleMouseDown);
 	dojo.event.connect(container, 'onmousemove', handleMouseMove);
 	dojo.event.connect(container, 'onmouseup',   handleMouseUp);
+	
+	// cancel text selection and text dragging
+	dojo.event.connect(container, "ondragstart",   dojo.event.browser, "stopEvent");
+	dojo.event.connect(container, "onselectstart", dojo.event.browser, "stopEvent");
 }
 
 dojo.addOnLoad(initGfx);
