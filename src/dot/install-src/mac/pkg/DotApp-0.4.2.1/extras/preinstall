@@ -19,6 +19,8 @@ $DOT_PAC_URL = "file://$ENV{HOME}/.offline-pac";
 
 echo("Running...");
 
+echo("HOME directory=".$ENV{HOME});
+
 # a hash that will hold the original proxy settings
 # for our user's browsers - we will persist these into
 # a plist file to reuse when uninstalling Dojo Offline
@@ -388,6 +390,10 @@ sub handleFirefoxProfile{
 	echo("Adding our new Dojo Offline proxy prefs...");
 	eval{
 		$userJSPath = "$profilePath/$profileDir/user.js";
+		# TODO: WARNING: If we create the user.js file because it's not there
+		# the owner of user.js will be 'root' rather than the user installing the
+		# app; this could create trouble, though I haven't seen an issue
+		# yet
 		open(DAT,">>$userJSPath") || die("Cannot open $userJSPath: $!");
 		print DAT "/* dot */ user_pref(\"network.proxy.type\", 2);\n";
 		print DAT "/* dot */ user_pref(\"network.proxy.autoconfig_url\", \"$DOT_PAC_URL\");\n";
