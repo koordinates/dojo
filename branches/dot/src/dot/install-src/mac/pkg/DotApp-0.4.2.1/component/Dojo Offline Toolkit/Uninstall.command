@@ -98,7 +98,7 @@ sub stopDojoOffline{
 	# that appears while uninstalling, which we don't want so
 	# the user doesn't get overwhelmed with technical output
 	system("sudo -u `logname` launchctl stop org.dojo.dot.DojoOfflineLaunchd >/dev/null 2>&1");
-	system("sudo -u `logname` launchctl unload \"$HOME/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist\" >/dev/null 2>&1");
+	system("sudo -u `logname` launchctl unload \"$ENV{HOME}/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist\" >/dev/null 2>&1");
 	`killall -9 dot >/dev/null 2>&1`;
 	`killall -9 proxy >/dev/null 2>&1`;
 	`killall -9 dotlauncher.sh >/dev/null 2>&1`;
@@ -150,6 +150,28 @@ sub restoreSafariProxySettings{
 			# proxy settings back to their original values
 			revertNetworkEndpoint($endpointSettings, $endpoint);
 		}
+	}
+	
+	# force Safari to see this change
+	echo("Forcing Safari to see this change...");
+	# the 'scutil' can give us our current location,
+	# which we will then reselect. 'scutil' hooks right
+	# into the System Preferences system, and will force
+	# a refresh of the configuration info into memory.
+	# Technique from the following blog post:
+	# http://homepage.mac.com/gregneagle/iblog/C1833135211/E870388235/index.html
+	my $location;
+	my @scutil = `scutil <<- end_scutil 2> /dev/null
+open
+show Setup:/
+close
+end_scutil`;
+	my @matches = map { m/UserDefinedName : (.*)/ } @scutil;
+	if(@matches == 1) {
+		$location = $matches[0];
+		echo("Existing network endpoint: $location");
+		system("sudo -u `logname` scselect $location");
+		echo("Results of forcing Safari to see this change: $results");
 	}
 }
 
@@ -471,7 +493,7 @@ sub deleteFiles{
 	
 	# startup agent
 	echo("Removing Dojo Offline launch agent...");
-	`sudo rm -f "$ENV{HOME}/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd"`;
+	`sudo rm -f "$ENV{HOME}/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist"`;
 	
 	# install receipt
 	echo("Removing Dojo Offline install receipt...");
