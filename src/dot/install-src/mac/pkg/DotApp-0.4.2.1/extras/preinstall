@@ -407,13 +407,14 @@ sub saveOldProxySettings{
 	
 	$saveTo = "$ENV{HOME}/Library/Application\ Support/Dojo/dot";
 	
-	echo("Saving original proxy settings to disk at $saveTo...");
+	echo("Making application support directory at $saveTo...");
 	$mkResults = system("mkdir -p \"$saveTo\"");
 	if($mkResults ne 0){
 		echo("Unable to create application support directory for Dojo Offline: $mkResults");
 		exit 1;
 	}
 	
+	echo("Saving original proxy settings to disk at $saveTo/proxies.xml...");
 	$plist = cocoaDictFromPerlHash(%$proxyDefaults);
 	$plist->writeToFile_atomically_("$saveTo/proxies.xml", "1");
 }
