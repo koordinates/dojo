@@ -28,6 +28,7 @@ if(scalar(@ARGV) > 0){
 
 bootstrapUninstall();
 stopDojoOffline();
+promptStopFirefox();
 $origProxySettings = loadOriginalProxySettings();
 restoreSafariProxySettings($origProxySettings);
 restoreFirefoxProxySettings($origProxySettings);
@@ -104,6 +105,38 @@ sub stopDojoOffline{
 	`killall -9 dotlauncher.sh >/dev/null 2>&1`;
 }
 
+sub promptStopFirefox{
+	# We must close Firefox if it is open before 
+	# continuing. If Firefox is open, and is currently
+	# configured to point at our Dojo Offline PAC file,
+	# if we change it through this uninstaller THAN close
+	# Firefox it will clobber our new settings and keep
+	# the PAC file configuration! We can't change user.js
+	# now, because we don't want to touch that on uninstall.
+	# The only thing to do is ensure Firefox is closed
+	# at the beginning of the uninstall.
+	
+	# see if Firefox is open; if so, prompt user to close it
+	# before continuing
+	my $firefoxOpen = 1;
+	while($firefoxOpen > 0){
+		$firefoxOpen = `ps -x -U \`logname\` | grep Firefox | egrep -v \"grep\" | wc -l | tr -d ' '`;
+		echo("firefoxOpen=$firefoxOpen");
+		if($firefoxOpen > 0){
+			my $msg = "Please quit Firefox before continuing uninstall";
+			echo($msg);
+			if($beSilent eq false){
+				displayDialog($msg);
+			}else{
+				echo("Press enter when Firefox is closed");
+				`read`;
+			}
+		}
+	}
+	
+	echo("Firefox now closed or was never open");
+}
+
 sub loadOriginalProxySettings{
 	$proxiesXML = "$ENV{HOME}/Library/Application\ Support/Dojo/dot/proxies.xml";
 	
@@ -155,7 +188,7 @@ sub restoreSafariProxySettings{
 	# force Safari to see this change
 	echo("Forcing Safari to see this change...");
 	# the 'scutil' can give us our current location,
-	# which we will then reselect. 'scutil' hooks right
+	# which we will then reselect. 'scselect' hooks right
 	# into the System Preferences system, and will force
 	# a refresh of the configuration info into memory.
 	# Technique from the following blog post:
@@ -170,7 +203,9 @@ end_scutil`;
 	if(@matches == 1) {
 		$location = $matches[0];
 		echo("Existing network endpoint: $location");
-		system("sudo -u `logname` scselect $location");
+		print("1\n");
+		system("sudo -u `logname` scselect $location > /dev/null 2>&1");
+		print("2\n");
 		echo("Results of forcing Safari to see this change: $results");
 	}
 }
@@ -182,7 +217,7 @@ sub getProxySetting{
 	
 	$result = getPlistObject($origProxySettings, $key, $subkey);
 	
-	return $result->description->UTF8String();
+	return $result->description()->UTF8String();
 }
 
 sub revertNetworkEndpoint{
@@ -511,23 +546,29 @@ sub reportUninstalled{
 	echo($msg);
 	
 	if($beSilent eq false){
-		# Use a little bit of AppleScript magic to display a dialog telling the user
-		# that uninstallation is done -- 'osascript' is a command line utility to execute
-		# AppleScript. Here's the AppleScript without all the extraneous command line stuff:
-		#
-		# tell application "Finder"
-		#	activate
-		#	display dialog "$msg" buttons ["OK"]
-		# end tell
-		#
-		$runMe = "osascript " .
-					"-e 'tell application \"Finder\"' " . 
-		 				"-e 'activate' " .
-						"-e 'display dialog \"$msg\" buttons [\"OK\"]' " .
-					"-e 'end tell' " .
-					">/dev/null 2>&1";
-		system($runMe);
+		displayDialog($msg);
 	}
+}
+
+sub displayDialog{
+	my $msg = shift;
+	
+	# Use a little bit of AppleScript magic to display a dialog telling the user
+	# a given message -- 'osascript' is a command line utility to execute
+	# AppleScript. Here's the AppleScript without all the extraneous command line stuff:
+	#
+	# tell application "Finder"
+	#	activate
+	#	display dialog "$msg" buttons ["OK"]
+	# end tell
+	#
+	my $runMe = "osascript " .
+				"-e 'tell application \"Finder\"' " . 
+	 				"-e 'activate' " .
+					"-e 'display dialog \"$msg\" buttons [\"OK\"]' " .
+				"-e 'end tell' " .
+				">/dev/null 2>&1";
+	system($runMe);
 }
 
 sub getPlistObject{
@@ -583,7 +624,7 @@ sub cocoaInt{
 sub echo{
 	my $msg = shift;
 	$msg = "Uninstall: " . $msg;
-	`sudo echo "$msg" >> ~/dot_install.log 2>&1`;
+	`echo "$msg" >> ~/dot_install.log 2>&1`;
 	if($isDebug eq true){
 		print "$msg\n";
 	}
