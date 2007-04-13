@@ -76,11 +76,16 @@ sub handleSafari{
 	# a sub-dict named "Interface" with the name of this interface,
 	# defined in "UserDefinedName" -- which despite it's name, is not
 	# set by the user, but the name given by Mac OS X -- they are not
-	# changeable through a UI. We only want
-	# two of these GUID children: one with the UserDefinedName
-	# of "Built-in Ethernet" for ethernet, and "AirPort" for WiFi.
+	# changeable through a UI. Get each network endpoint and change
+	# it's proxies settings.
 	#
-	# TODO: What about dial-up modems?
+	# TODO: WARNING: Is it safe to be changing all the network endpoints?
+	# However, this fixes an important bug in Safari. If we are off the
+	# network (i.e. "Turn AirPort Off" is selected), then we are not
+	# connected to the AirPort or Built In Ethernet endpoints. Safari
+	# therefore doesn't have DOT PAC settings, and doesn't work offline
+	# in this scenario. Setting all endpoints to have our proxy settings
+	# fixes this.
 	echo("Finding pre-installation values for Safari proxy settings...");
 	$networkServices = getPlistObject($plist, "NetworkServices");
 	$allKeys = $networkServices->allKeys();
@@ -93,11 +98,8 @@ sub handleSafari{
 										"UserDefinedName");
 		if($userDefinedName and $$userDefinedName){
 			$userDefinedName = $userDefinedName->description()->UTF8String();
-			if($userDefinedName eq "Built-in Ethernet" or
-				$userDefinedName eq "AirPort"){
-				$guid = $currentKey->description()->UTF8String();
-				handleNetworkEndpoint($plist, $userDefinedName, $guid, $proxyDefaults);
-			}
+			$guid = $currentKey->description()->UTF8String();
+			handleNetworkEndpoint($plist, $userDefinedName, $guid, $proxyDefaults);
 		}
 	}
 
@@ -180,14 +182,25 @@ sub handleNetworkEndpoint{
 	# proxy settings (i.e. HTTPEnable = 0)
 	
 	echo("Handling proxy values for network endpoint '$userDefinedName'...");
+	
+	# see if we have even have a proxies element for this endpoint
+	my $proxyElem = getPlistObject($plist, 
+								"NetworkServices", 
+								$guid,
+								"Proxies");
+	if(! $proxyElem or ! $$proxyElem){
+		echo("Endpoint has no 'Proxies' element");
+		return;
+	}
+	
 	echo("Original values:");
 	
 	# initial defaults
-	$AppleProxyConfigurationSelected = 2;
-	$HTTPEnable = 0;
-	$ProxyAutoConfigEnable = -1;
-	$ProxyAutoConfigURLString = null;
-	$ProxyAutoDiscoveryEnable = 0;
+	my $AppleProxyConfigurationSelected = 2;
+	my $HTTPEnable = 0;
+	my $ProxyAutoConfigEnable = -1;
+	my $ProxyAutoConfigURLString = null;
+	my $ProxyAutoDiscoveryEnable = 0;
 	
 	# fill these values out
 	
@@ -230,10 +243,6 @@ sub handleNetworkEndpoint{
 	
 	# now change these values to what we want for Dojo Offline
 	echo("Changing PAC settings for '$userDefinedName' to what Dojo Offline needs...");
-	$proxyElem = getPlistObject($plist, 
-								"NetworkServices", 
-								$guid,
-								"Proxies");
 	
 	# indicate that we have a proxy setting now (AppleProxyConfigurationSelected = 1)
 	$proxyElem->setObject_forKey_(cocoaInt(1), "AppleProxyConfigurationSelected");
@@ -255,7 +264,7 @@ sub handleNetworkEndpoint{
 	
 	# write out our changed plist file
 	echo("Writing out changed Safari proxy prefs file...");
-	$saveResults = $plist->writeToFile_atomically_($PREFS_PATH, "1");
+	my $saveResults = $plist->writeToFile_atomically_($PREFS_PATH, "1");
 	if($saveResults ne 1){ # 1 = success, 0 = failure
 		echo("Unable to save modified Safari proxy settings");
 		exit 1;
