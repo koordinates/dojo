@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use Foundation;
+use Tie::File;
 
 echo("Running");
 	
@@ -14,7 +15,6 @@ if(scalar(@ARGV) > 0){
 	}
 }
 
-	
 # is this a silent uninstall?
 $beSilent = false;
 if(scalar(@ARGV) > 0){
@@ -389,11 +389,37 @@ sub revertFirefoxProfile{
 	echo("\tNetworkProxyAutoconfigURL: ".$profileSettings->{"NetworkProxyAutoconfigURL"});
 	echo("\tNetworkProxyType: ".$profileSettings->{"NetworkProxyType"});
 	
-	# add our reverted proxy settings to user.js
-	echo("Adding reverted original proxy prefs to user.js...");
+	# user.js does not get recreated when Firefox is started or stopped;
+	# so, first remove all of our Dojo Offline network settings from user.js
+	# then, add our reverted proxy settings to prefs.js
+	
+	# remove any of our Dojo Offline pref settings
+	echo("Removing old Dojo Offline settings from $FIREFOX_PROFILE_PATH/$profileName/user.js...");
+	my $userJSPath = "$FIREFOX_PROFILE_PATH/$profileName/user.js";
 	eval{
-		$userJSPath = "$FIREFOX_PROFILE_PATH/$profileName/user.js";
-		open(DAT,">>$userJSPath") || die("Cannot open $userJSPath: $!");
+		my @contents;
+		tie @contents, 'Tie::File', $userJSPath or die("Cannot open $userJSPath");
+		
+		for(@contents){
+			# simply delete our Dojo Offline lines, which start with the 
+			# JavaScript comment /* dot */
+			s/^\/\* dot \*\/.*$//g;
+		}
+
+		untie @contents;
+	};
+	
+	# was there an error?
+	if($@){
+		echo($@);
+		return;
+	}
+	
+	# add our reverted proxy settings to prefs.js
+	echo("Adding reverted original proxy prefs to $FIREFOX_PROFILE_PATH/$profileName/prefs.js...");
+	eval{
+		$prefsJSPath = "$FIREFOX_PROFILE_PATH/$profileName/prefs.js";
+		open(DAT,">>$prefsJSPath") || die("Cannot open $prefsJSPath: $!");
 		
 		$proxyPAC = null;
 		if($profileSettings->{"NetworkProxyAutoconfigURL"} ne null){
@@ -411,7 +437,7 @@ sub revertFirefoxProfile{
 		
 		print DAT "user_pref(\"network.proxy.type\", $proxyType);\n";
 		print DAT "user_pref(\"network.proxy.autoconfig_url\", $proxyPAC);\n";
-		close(DAT) || die("Cannot close $userJSPath: $!");
+		close(DAT) || die("Cannot close $prefsJSPath: $!");
 	};
 	
 	# was there an error?
