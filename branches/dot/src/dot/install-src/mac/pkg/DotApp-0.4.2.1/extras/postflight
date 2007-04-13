@@ -1,36 +1,34 @@
-#!/bin/sh
+#!/usr/bin/perl
 
-echo "$SCRIPT_NAME: Running" >> ~/dot_install.log
-
-# HACK: This is a phenomenal hack, but we need to find out
-# the user that is running this installer; unfortunately
-# we are 'root' right now because the installer authenticated
-# us and there is no other way to find out who we are -- everything
-# looks like root to us, including HOME. 
-# So here's how we find out who we are:
-# 	get a list of files being accessed by processes right now (lsof)
-#	collapse multiple spaces into just one, to create consistent fields (tr)
-# 	get a reference to our installer (grep)
-# 	get the first one (head)
-# 	the fifth field is our username (cut)
-#
-# TODO: Find something much less hacky and brittle than this
-echo "$SCRIPT_NAME: Discovering what user is installing this..." >>~/dot_install.log 2>&1
-userName=`lsof -n -P | tr -s ' ' | grep DojoOffline- | head -n 1  | cut -d ' ' -f3`
-echo "$SCRIPT_NAME: User identified as $userName..." >>~/dot_install.log 2>&1
+echo("Running");
 
 # copy our default PAC file to it's correct location
-echo "$SCRIPT_NAME: Copying default PAC file over to user's home directory..." >>~/dot_install.log 2>&1
-mv "/Applications/Dojo Offline Toolkit/.offline-pac $userName"
+echo("Copying default PAC file over to user's home directory...");
+system("mv -f \"/Applications/Dojo Offline Toolkit/.offline-pac\" \"$ENV{HOME}\"");
+system("chown `logname`:`logname` \"$ENV{HOME}/.offline-pac\"");
 
 # copy our launch agent file over
-echo "$SCRIPT_NAME: Copying launch agent file over..." >>~/dot_install.log 2>&1
-mv "/Applications/Dojo Offline Toolkit/org.dojo.dot.DojoOfflineLaunchd.plist" $userName/Library/LaunchAgent
+echo("Copying launch agent file over...");
+system("mv -f \"/Applications/Dojo Offline Toolkit/org.dojo.dot.DojoOfflineLaunchd.plist\" \"$ENV{HOME}/Library/LaunchAgents\"");
+system("chown `logname`:`logname` \"$ENV{HOME}/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist\"");
 
-# start Dojo Offline up now
-echo "$SCRIPT_NAME: Starting up Dojo Offline processes..." >>~/dot_install.log 2>&1
-#su $userName
-echo "$SCRIPT_NAME: whoami="`whoami` >>~/dot_install.log 2>&1
-#nohup "/Applications/Dojo Offline Toolkit/dot" "/Applications/Dojo\ Offline\ Toolkit/"&
+# create an offline cache directory if one doesn't exist
+echo("Creating offline cache directory...");
+system("sudo -u `logname` mkdir \"$ENV{HOME}/.offline-cache\"");
 
-exit 0
+# start Dojo Offline up now, but not under root.
+# start it as the user who is logged in, which is more secure
+# and ensures that any files that are written out are owned
+# by this user process
+echo("Starting up Dojo Offline processes under login account `logname`...");
+system("sudo -u `logname` nohup \"/Applications/Dojo Offline Toolkit/dotlauncher.sh\" start&");
+
+echo("Finished installing Dojo Offline.");
+
+exit 0;
+
+sub echo{
+	my $msg = shift;
+	$msg = "postflight: " . $msg;
+	`echo "$msg" >> ~/dot_install.log 2>&1`;
+}

@@ -19,8 +19,6 @@ $DOT_PAC_URL = "file://$ENV{HOME}/.offline-pac";
 
 echo("Running...");
 
-echo("HOME directory=".$ENV{HOME});
-
 # a hash that will hold the original proxy settings
 # for our user's browsers - we will persist these into
 # a plist file to reuse when uninstalling Dojo Offline
