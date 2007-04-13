@@ -118,7 +118,7 @@ sub handleSafari{
 	# force Safari to see this change
 	echo("Forcing Safari to see this change...");
 	# the 'scutil' can give us our current location,
-	# which we will then reselect. 'scutil' hooks right
+	# which we will then reselect. 'scselect' hooks right
 	# into the System Preferences system, and will force
 	# a refresh of the configuration info into memory.
 	# Technique from the following blog post:
@@ -364,10 +364,12 @@ sub handleFirefoxProfile{
 	my $profileDir = shift;
 	my $proxyDefaults = shift;
 	
+	$prefsPath = "$profilePath/$profileDir/prefs.js";
+	$userJSPath = "$profilePath/$profileDir/user.js";
+	
 	echo("Handling Firefox profile at $profilePath/$profileDir...");
 	
 	# see if there is a prefs.js file
-	$prefsPath = "$profilePath/$profileDir/prefs.js";
 	if(! -e "$prefsPath"){
 		echo("No prefs.js file for this profile");
 		return;
@@ -409,14 +411,15 @@ sub handleFirefoxProfile{
 		"NetworkProxyType"=>cocoaInt($proxyTypePref)
 	};
 	
-	# make a backup of prefs.js
+	# make a backup of prefs.js and user.js
 	echo("Making a backup of prefs.js file at '$prefsPath.orig'...");
-	`cp "$prefsPath" "$prefsPath.orig"`;
+	`cp -f "$prefsPath" "$prefsPath.orig"`;
+	echo("Making a backup of user.js file at '$userJSPath.orig'...");
+	`cp -f "$userJSPath" "$userJSPath.orig"`;
 	
 	# add our new proxy settings to user.js
 	echo("Adding our new Dojo Offline proxy prefs...");
 	eval{
-		$userJSPath = "$profilePath/$profileDir/user.js";
 		# TODO: WARNING: If we create the user.js file because it's not there
 		# the owner of user.js will be 'root' rather than the user installing the
 		# app; this could create trouble, though I haven't seen an issue
