@@ -351,6 +351,76 @@ sub restoreFirefoxProxySettings{
 	
 	echo("Restoring Firefox's proxy settings to "
 			."what they were before Dojo Offline was installed...");
+			
+	# enumerate through each original pre-Dojo Offline proxy setting, 
+	# getting the ones that have to do with Firefox profiles
+	my $enumerator = $origProxySettings->keyEnumerator();
+	my $key;
+	while($key = $enumerator->nextObject() and $$key){
+		$key = $key->description->UTF8String();
+		if(index($key, "Firefox Proxy") != -1){
+			$key =~ m/^Firefox Proxy for (.*)$/;
+			my $profileName = $1;
+			
+			# transform these plist values into a perl hash
+			# we can work with
+			my $profileSettings = {
+				"NetworkProxyAutoconfigURL"=>
+						getProxySetting($origProxySettings, $key, "NetworkProxyAutoconfigURL"),
+				"NetworkProxyType"=>
+						getProxySetting($origProxySettings, $key, "NetworkProxyType")
+			};
+			
+			# now use these values to set Firefox's current
+			# proxy settings back to their original values
+			revertFirefoxProfile($profileSettings, $profileName);
+		}
+	}
+}
+
+sub revertFirefoxProfile{
+	my $profileSettings = shift;
+	my $profileName = shift;
+	
+	my $FIREFOX_PROFILE_PATH = "$ENV{HOME}/Library/Application\ Support/Firefox/Profiles";
+	
+	echo("Handling Firefox profile $profileName...");
+	echo("Original values:");
+	echo("\tNetworkProxyAutoconfigURL: ".$profileSettings->{"NetworkProxyAutoconfigURL"});
+	echo("\tNetworkProxyType: ".$profileSettings->{"NetworkProxyType"});
+	
+	# add our reverted proxy settings to user.js
+	echo("Adding reverted original proxy prefs to user.js...");
+	eval{
+		$userJSPath = "$FIREFOX_PROFILE_PATH/$profileName/user.js";
+		open(DAT,">>$userJSPath") || die("Cannot open $userJSPath: $!");
+		
+		$proxyPAC = null;
+		if($profileSettings->{"NetworkProxyAutoconfigURL"} ne null){
+			$proxyPAC = "\"" . $profileSettings->{"NetworkProxyAutoconfigURL"} . "\"";
+		}else{
+			$proxyPAC = "undefined";
+		}
+		
+		$proxyType = null;
+		if($profileSettings->{"NetworkProxyType"} ne null){
+			$proxyType = "\"" . $profileSettings->{"NetworkProxyType"} . "\"";
+		}else{
+			$proxyType = 0;
+		}
+		
+		print DAT "user_pref(\"network.proxy.type\", $proxyType);\n";
+		print DAT "user_pref(\"network.proxy.autoconfig_url\", $proxyPAC);\n";
+		close(DAT) || die("Cannot close $userJSPath: $!");
+	};
+	
+	# was there an error?
+	if($@){
+		echo($@);
+		return;
+	}
+	
+	echo("Original Firefox proxy settings were written out for $profileName");
 }
 
 sub deleteFiles{
