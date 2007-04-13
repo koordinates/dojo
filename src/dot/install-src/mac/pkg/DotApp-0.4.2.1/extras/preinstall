@@ -389,8 +389,8 @@ sub handleFirefoxProfile{
 	eval{
 		$userJSPath = "$profilePath/$profileDir/user.js";
 		open(DAT,">>$userJSPath") || die("Cannot open $userJSPath: $!");
-		print DAT "user_pref(\"network.proxy.type\", 2);\n";
-		print DAT "user_pref(\"network.proxy.autoconfig_url\", \"$DOT_PAC_URL\");\n";
+		print DAT "/* dot */ user_pref(\"network.proxy.type\", 2);\n";
+		print DAT "/* dot */ user_pref(\"network.proxy.autoconfig_url\", \"$DOT_PAC_URL\");\n";
 		close(DAT) || die("Cannot close $userJSPath: $!");
 	};
 	
