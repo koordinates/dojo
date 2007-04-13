@@ -112,8 +112,28 @@ sub handleSafari{
 		echo("Unable to save modified Safari proxy settings");
 		exit 1;
 	}
+	
+	# force Safari to see this change
+	echo("Forcing Safari to see this change...");
+	# the 'scutil' can give us our current location,
+	# which we will then reselect. 'scutil' hooks right
+	# into the System Preferences system, and will force
+	# a refresh of the configuration info into memory.
+	# Technique from the following blog post:
+	# http://homepage.mac.com/gregneagle/iblog/C1833135211/E870388235/index.html
+	my $location;
+	my @scutil = `scutil <<- end_scutil 2> /dev/null
+open
+show Setup:/
+close
+end_scutil`;
+	my @matches = map { m/UserDefinedName : (.*)/ } @scutil;
+	if(@matches == 1){
+		$location = $matches[0];
+		system("sudo -u `logname` scselect $location");
+		echo("Results of forcing Safari to see this change: $results");
+	}
 }
-
 
 sub handleNetworkEndpoint{
 	my $plist = shift;
@@ -216,22 +236,22 @@ sub handleNetworkEndpoint{
 								"Proxies");
 	
 	# indicate that we have a proxy setting now (AppleProxyConfigurationSelected = 1)
-	$proxyElem->setObject_forKey_("1", "AppleProxyConfigurationSelected");
+	$proxyElem->setObject_forKey_(cocoaInt(1), "AppleProxyConfigurationSelected");
 	
 	# if HTTPEnable is not null, then set it to 0 -- i.e. turn it off
 	if($HTTPEnable){
-		$proxyElem->setObject_forKey_("0", "HTTPEnable");
+		$proxyElem->setObject_forKey_(cocoaInt(0), "HTTPEnable");
 	}
 	
 	# do we already have a ProxyAutoConfigEnable setting? If so, set it to 1. if not,
 	# create it now and set it to 1.
-	$proxyElem->setObject_forKey_("1", "ProxyAutoConfigEnable");
+	$proxyElem->setObject_forKey_(cocoaInt(1), "ProxyAutoConfigEnable");
 	
 	# set our Dojo Offline PAC file
 	$proxyElem->setObject_forKey_($DOT_PAC_URL, "ProxyAutoConfigURLString");
 	
 	# set ProxyAutoDiscoveryEnable to 0, since we don't want to use WPAD for proxy setting
-	$proxyElem->setObject_forKey_("0", "ProxyAutoDiscoveryEnable");
+	$proxyElem->setObject_forKey_(cocoaInt(0), "ProxyAutoDiscoveryEnable");
 	
 	# write out our changed plist file
 	echo("Writing out changed Safari proxy prefs file...");
