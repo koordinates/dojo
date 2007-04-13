@@ -3,13 +3,34 @@
 use Foundation;
 
 echo("Running");
+	
+# do we want debug messages?
+$isDebug = false;
+if(scalar(@ARGV) > 0){
+	for($i = 0; $i < scalar(@ARGV); $i++){
+		if(@ARGV[$i] eq "--debug"){
+			$isDebug = true;
+		}
+	}
+}
+
+	
+# is this a silent uninstall?
+$beSilent = false;
+if(scalar(@ARGV) > 0){
+	for($i = 0; $i < scalar(@ARGV); $i++){
+		if(@ARGV[$i] eq "--silent"){
+			echo("Silent uninstall");
+			$beSilent = true;
+		}
+	}
+}
 
 bootstrapUninstall();
 stopDojoOffline();
 $origProxySettings = loadOriginalProxySettings();
 restoreSafariProxySettings($origProxySettings);
 restoreFirefoxProxySettings($origProxySettings);
-removeDefaults();
 
 reportUninstalled();
 
@@ -47,7 +68,7 @@ sub bootstrapUninstall(){
 		echo("--douninstall flag is not present");
 		echo("Trying to bootstrap uninstaller...");
 		# copy ourself to /tmp
-		`sudo cp "/Applications/Dojo Offline Toolkit/Uninstall.command" /tmp/Uninstall >/dev/null 2>&1`;
+		`sudo cp "/Applications/Dojo Offline Toolkit/Uninstall.command" /tmp/Uninstall.command >/dev/null 2>&1`;
 		# if we can't copy, just continue -- the worst thing that could happen
 		# is the DOT directory won't be deleted
 		if($? ne 0){
@@ -55,8 +76,15 @@ sub bootstrapUninstall(){
 			return;
 		}
 		# now run our other copy of Uninstall
-		echo("Running /tmp/Uninstall...");
-		$outputResults = system("/tmp/Uninstall --douninstall");
+		echo("Running /tmp/Uninstall.command...");
+		$parameters = "";
+		if($isDebug eq true){
+			$parameters .= " --debug";
+		}
+		if($beSilent eq true){
+			$parameters .= " --silent";
+		}
+		$outputResults = system("sudo /tmp/Uninstall.command --douninstall $parameters");
 		echo($outputResults);
 		exit 0;
 	}
@@ -161,7 +189,6 @@ sub revertNetworkEndpoint{
 	my $currentGUID;
 	while($currentGUID = $enumerator->nextObject() and $$currentGUID){
 		$currentGUID = $currentGUID->description->UTF8String();
-		echo("currentGUID=.$currentGUID");
 		my $userDefinedName = getPlistObject($plist, 
 										"NetworkServices", 
 										$currentGUID,
@@ -169,10 +196,8 @@ sub revertNetworkEndpoint{
 										"UserDefinedName");
 		if($userDefinedName and $$userDefinedName){
 			$userDefinedName = $userDefinedName->description()->UTF8String();
-			echo("userDefinedName=$userDefinedName");
 			if($userDefinedName eq $endpointName){
 				$guid = $currentGUID;
-				echo("Found the guid we want, guid=$guid");
 				break;
 			}
 		}
@@ -200,10 +225,13 @@ sub revertNetworkEndpoint{
 										"ProxyAutoConfigURLString");
 		# was the PAC file switched on?
 		if($origPrefs->{"ProxyAutoConfigEnable"} ne -1){ # PAC file was switched on
-			$proxyElem->setObject_forKey_($origPrefs->{"ProxyAutoConfigEnable"}, 
-											"ProxyAutoConfigEnable");
+			# make sure we have an int type and not a string, or
+			# this will be serialized into the wrong plist type
+			my $value = $origPrefs->{"ProxyAutoConfigEnable"};
+			$value = ($value eq "1" or $value eq 1) ? 1 : 0;
+			$proxyElem->setObject_forKey_(cocoaInt($value), "ProxyAutoConfigEnable");
 		}else{
-			$proxyElem->setObject_forKey_("0", "ProxyAutoConfigEnable");
+			$proxyElem->setObject_forKey_(cocoaInt(0), "ProxyAutoConfigEnable");
 		}
 	}else{
 		$proxyElem->removeObjectForKey_("ProxyAutoConfigURLString");
@@ -211,42 +239,59 @@ sub revertNetworkEndpoint{
 	}
 	
 	# For a manual proxy, was HTTP enabled for a proxy setting?
-	if($origPrefs->{"HTTPEnable"} eq 1){
-		$proxyElem->setObject_forKey_($origPrefs->{"HTTPEnable"}, 
-										"HTTPEnable");
+	if($origPrefs->{"HTTPEnable"} eq 1 or $origPrefs->{"HTTPEnable"} eq "1"){
+		$proxyElem->setObject_forKey_(cocoaInt(1), "HTTPEnable");
 	}
 	
 	# reset whether proxies are enabled in general or not
-	$proxyElem->setObject_forKey_($origPrefs->{"AppleProxyConfigurationSelected"}, 
-									"AppleProxyConfigurationSelected");
+	my $value = $origPrefs->{"AppleProxyConfigurationSelected"};
+	if($value eq "0"){
+		$value = 0;
+	}elsif($value eq "1"){
+		$value = 1;
+	}elsif($value eq "2"){
+		$value = 2;
+	}elsif($value eq "3"){
+		$value = 3;
+	}
+	$proxyElem->setObject_forKey_(cocoaInt($value), "AppleProxyConfigurationSelected");
 									
 	# renable PAC autodiscovery on the network (WPAD) if that was on before
-	$proxyElem->setObject_forKey_($origPrefs->{"ProxyAutoDiscoveryEnable"}, 
-									"ProxyAutoDiscoveryEnable");
-	
+	$value = $origPrefs->{"ProxyAutoDiscoveryEnable"};
+	if($value eq "1"){
+		$value = 1;
+	}elsif($value eq "0"){
+		$value = 0;
+	}
+	$proxyElem->setObject_forKey_(cocoaInt($value), "ProxyAutoDiscoveryEnable");
+
 	# write out our changed plist file
-	echo("Writing out reverted Safari proxy prefs file at $ENV{HOME}/preferences.plist...");
+	echo("Writing out reverted Safari proxy prefs file to $ENV{HOME}/preferences.plist...");
 	$saveResults = $plist->writeToFile_atomically_("$ENV{HOME}/preferences.plist", "0");
 	if($saveResults ne 1){ # 1 = success, 0 = failure
 		echo("Unable to save reverted Safari proxy settings");
 		return;
 	}
 	
-	# prompt the user using sudo now so we can move this prefs file over
-	$copyResults = system("sudo cp \"$ENV{HOME}/preferences.plist\" \"$PREFS_PATH\"");
+	# move the prefs file over
+	echo("Copying reverted prefs to \"$PREFS_PATH\"...");
+	$copyResults = system("sudo cp -f \"$ENV{HOME}/preferences.plist\" \"$PREFS_PATH\"");
 	if($copyResults ne 0){
 		echo("Unable to copy reverted Safari proxy settings over");
-		`rm -f $ENV{HOME}/preferences.plist >/dev/null 2>&1`;
+		`sudo rm -f $ENV{HOME}/preferences.plist >/dev/null 2>&1`;
 		return;
 	}
 	
-	#clean up
-	`rm -f $ENV{HOME}/preferences.plist >/dev/null 2>&1`;
+	# clean up
+	`sudo rm -f $ENV{HOME}/preferences.plist >/dev/null 2>&1`;
 	
 	echo("Safari proxy prefs file saved.");
 }
 
 sub printDebugValues{
+	# a debugging method to print all of our proxy values
+	# for a Safari proxy settings file
+	
 	my $plist = shift;
 	my $guid = shift;
 	
@@ -306,36 +351,31 @@ sub restoreFirefoxProxySettings{
 	
 	echo("Restoring Firefox's proxy settings to "
 			."what they were before Dojo Offline was installed...");
-			
-	# get the old values from the defaults system
-	
-}
-
-sub removeDefaults{
-	echo("Removing Dojo Offline's default settings...");
 }
 
 sub deleteFiles{
-	echo("Removing Dojo Offline files...");
+	# application directory
+	echo("Removing Dojo Offline application directory...");
+	`sudo rm -fr "/Applications/Dojo Offline Toolkit" >/dev/null 2>&1`;
 	
-	`rm -fr "/Applications/Dojo Offline Toolkit" >/dev/null 2>&1`;
+	# application support directory
+	echo("Removing Dojo Offline application support directory...");
+	`sudo rm -fr "$ENV{HOME}/Library/Application Support/Dojo/dot"`;
+	$numberFiles = `ls "$ENV{HOME}/Library/Application Support/Dojo" | wc -l`;
+	if($numberFiles eq 0){
+		`sudo rm -fr "$ENV{HOME}/Library/Application Support/Dojo"`;
+	}
 	
-	# TODO: Remove application support directory for DOT as well
+	# install receipt
+	echo("Removing Dojo Offline install receipt...");
+	# TODO: WARNING: It is potentially dangerous to be removing all
+	# of the receipts for any version of Dojo Offline. We don't have
+	# a version string here to work off of, but it would be good to pass
+	# one in in the future
+	`sudo rm -fr /Library/Receipts/DojoOffline-*.pkg`;
 }
 
 sub reportUninstalled{
-	$beSilent = false;
-	
-	# is this a silent uninstall?
-	if(scalar(@ARGV) > 0){
-		for($i = 0; $i < scalar(@ARGV); $i++){
-			if(@ARGV[$i] eq "--silent"){
-				echo("Silent uninstall");
-				$beSilent = true;
-			}
-		}
-	}
-	
 	$msg = "Dojo Offline uninstalled.\n" .
 			"Please restart Firefox and Safari for changes to take effect.";
 	print $msg."\n";	
@@ -407,9 +447,15 @@ sub setPlistObject {
 	}
 }
 
+sub cocoaInt{
+	return NSNumber->numberWithLong_($_[0]);
+}
+
 sub echo{
 	my $msg = shift;
 	$msg = "Uninstall: " . $msg;
-	`echo "$msg" >> ~/dot_install.log 2>&1`;
-	#print "$msg\n";
+	`sudo echo "$msg" >> ~/dot_install.log 2>&1`;
+	if($isDebug eq true){
+		print "$msg\n";
+	}
 }
