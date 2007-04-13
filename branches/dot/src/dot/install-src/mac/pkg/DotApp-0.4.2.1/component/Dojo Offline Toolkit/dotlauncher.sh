@@ -2,9 +2,11 @@
 
 case $1 in
 	start) 
+		echo "Starting Dojo Offline...";
 		"/Applications/Dojo Offline Toolkit/dot" "/Applications/Dojo\ Offline\ Toolkit/";
 		;;  
 	stop)
+		echo "Stopping Dojo Offline...";
 		launchctl stop org.dojo.dot.DojoOfflineLaunchd;
 		launchctl unload ~/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist;
 		killall -9 dot;
