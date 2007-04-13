@@ -297,8 +297,7 @@ sub handleFirefox{
 	# build up the location to where Firefox profiles are
 	# stored for this user -- Perl doesn't automatically
 	# expand the ~ tilde
-	$HOME = $ENV{HOME};
-	$FIREFOX_PROFILE_PATH = "$HOME/Library/Application\ Support/Firefox/Profiles";
+	$FIREFOX_PROFILE_PATH = "$ENV{HOME}/Library/Application\ Support/Firefox/Profiles";
 	echo("User's Firefox profile settings should be at $FIREFOX_PROFILE_PATH");
 	
 	# see if this user even has Firefox installed with their own Firefox
@@ -391,7 +390,7 @@ sub handleFirefoxProfile{
 		$userJSPath = "$profilePath/$profileDir/user.js";
 		open(DAT,">>$userJSPath") || die("Cannot open $userJSPath: $!");
 		print DAT "user_pref(\"network.proxy.type\", 2);\n";
-		print DAT "user_pref(\"network.proxy.autoconfig_url\", \"$DOT_PAC_URL\");";
+		print DAT "user_pref(\"network.proxy.autoconfig_url\", \"$DOT_PAC_URL\");\n";
 		close(DAT) || die("Cannot close $userJSPath: $!");
 	};
 	
