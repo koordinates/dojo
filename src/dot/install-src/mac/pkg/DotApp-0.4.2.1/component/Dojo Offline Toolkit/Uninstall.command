@@ -93,8 +93,15 @@ sub bootstrapUninstall(){
 sub stopDojoOffline{
 	echo("Stopping Dojo Offline...");
 	
+	# set the output to /dev/null or else output from these
+	# commands will show up to the user in the Terminal window
+	# that appears while uninstalling, which we don't want so
+	# the user doesn't get overwhelmed with technical output
+	system("sudo -u `logname` launchctl stop org.dojo.dot.DojoOfflineLaunchd >/dev/null 2>&1");
+	system("sudo -u `logname` launchctl unload \"$HOME/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist\" >/dev/null 2>&1");
 	`killall -9 dot >/dev/null 2>&1`;
 	`killall -9 proxy >/dev/null 2>&1`;
+	`killall -9 dotlauncher.sh >/dev/null 2>&1`;
 }
 
 sub loadOriginalProxySettings{
@@ -461,6 +468,10 @@ sub deleteFiles{
 	if($numberFiles eq 0){
 		`sudo rm -fr "$ENV{HOME}/Library/Application Support/Dojo"`;
 	}
+	
+	# startup agent
+	echo("Removing Dojo Offline launch agent...");
+	`sudo rm -f "$ENV{HOME}/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd"`;
 	
 	# install receipt
 	echo("Removing Dojo Offline install receipt...");

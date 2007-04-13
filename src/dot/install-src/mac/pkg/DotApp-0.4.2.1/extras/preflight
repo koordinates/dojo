@@ -13,7 +13,8 @@ echo "$SCRIPT_NAME: Stopping possible existing Dojo Offline processes..." >>~/do
 
 # TODO: Rewrite DOT processes to accept proper shutdown
 # signals
-launchctl stop org.dojo.dot.DojoOfflineLaunchd
+sudo -u `logname` launchctl stop org.dojo.dot.DojoOfflineLaunchd
+sudo -u `logname` launchctl unload $HOME/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist
 killall -9 dot
 killall -9 proxy
 killall -9 dotlauncher.sh
