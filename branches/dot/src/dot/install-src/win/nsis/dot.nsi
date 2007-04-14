@@ -421,8 +421,8 @@ FunctionEnd
 Function handleFirefoxProfile
 	;for each profile, get the prefs.js file, read out the old network settings,
 	;persist this in a registry key as a sub-value under the name of this
-	;profile (such as w2hwmkob.default), then update the prefs.js file with our
-	;new values. On Uninstallation we will restore these values
+	;profile (such as w2hwmkob.default), then add our new values to the end of
+	;user.js. On Uninstallation we will restore these values
 	;using the registry settings.
 	
 	Var /GLOBAL profilePath
@@ -430,6 +430,7 @@ Function handleFirefoxProfile
 	Var /GLOBAL pacPref
 	Var /GLOBAL proxyTypePref
 	Var /GLOBAL prefsFile
+	Var /GLOBAL userJSFile
 	Var /GLOBAL currentLine
 	Var /GLOBAL lineStart
 	Var /GLOBAL lineLen
@@ -441,6 +442,9 @@ Function handleFirefoxProfile
 	StrCpy $proxyTypePref 'none'	
 	
 	StrCpy $profilePath "$APPDATA\Mozilla\Firefox\Profiles\$profileName"
+	
+	;make a copy of the pref.js file before we start messing with it
+	CopyFiles /SILENT /FILESONLY "$profilePath\prefs.js" "$profilePath\prefs.js.orig"
 	
 	;keep reading pref lines in until we find
 	;the ones we want
@@ -478,44 +482,26 @@ Function handleFirefoxProfile
 		WriteRegStr HKCU "Software\Dojo\dot\mozilla_profiles\$profileName" "pacPref" $pacPref
 		WriteRegStr HKCU "Software\Dojo\dot\mozilla_profiles\$profileName" "proxyTypePref" $proxyTypePref
 
-		;replace the old proxy values in the file with the new ones now
-		StrCpy $R2 'user_pref("network.proxy.type", 2);$\r$\n'
-		${if} $proxyTypePref != "none"
-			${ReplaceLineStr} "$profilePath\prefs.js" ${PROXY_TYPE_LINE_START} $R2
-		${else}
-			ClearErrors
-			FileOpen $prefsFile "$profilePath\prefs.js" a
-			IfErrors error +1
-			
-			ClearErrors
-			FileSeek $prefsFile 0 END
-			IfErrors error +1
-			
-			ClearErrors
-			FileWrite $prefsFile "$R2"
-			IfErrors error +1
-			 
-			FileClose $prefsFile
-		${endif}
+		;make a backup of user.js before we start messing with it
+		IfFileExists $profilePath\user.js +1 +2
+			CopyFiles /SILENT /FILESONLY "$profilePath\user.js" "$profilePath\user.js.orig"
+
+		;append our new values to the bottom of user.js
+		StrCpy $R2 '/* dot */ user_pref("network.proxy.type", 2);$\r$\n'
+		StrCpy $R2 '$R2/* dot */ user_pref("network.proxy.autoconfig_url", "file://$APPDATA\Dojo\dot\.offline-pac");$\r$\n'
+		ClearErrors
+		FileOpen $userJSFile "$profilePath\user.js" a
+		IfErrors error +1
 		
-		StrCpy $R2 'user_pref("network.proxy.autoconfig_url", "file://$APPDATA\Dojo\dot\.offline-pac");$\r$\n'
-		${if} $pacPref != "none"
-			${ReplaceLineStr} "$profilePath\prefs.js" ${PAC_LINE_START} $R2
-		${else}
-			ClearErrors
-			FileOpen $prefsFile "$profilePath\prefs.js" a
-			IfErrors error +1
+		ClearErrors
+		FileSeek $userJSFile 0 END
+		IfErrors error +1
 			
-			ClearErrors
-			FileSeek $prefsFile 0 END
-			IfErrors error +1
-			
-			ClearErrors
-			FileWrite $prefsFile "$R2"
-			IfErrors error +1
+		ClearErrors
+		FileWrite $userJSFile "$R2"
+		IfErrors error +1
 			 
-			FileClose $prefsFile
-		${endif}
+		FileClose $userJSFile
 		
 		IntOp $browsersConfigured $browsersConfigured + 1
 		
@@ -633,14 +619,37 @@ Function un.restoreFirefoxProxySettings
 			StrCpy $R3 ""
 		${endif}
 		
-		;restore prefs.js pre-Dojo Offline values
+		;replace our Dojo Offline PAC settings in user.js
+		;with the reverted values
+		StrCpy $R4 ${PAC_LINE_START}
+		StrCpy $R4 "/* dot */ $R4"
+		${Un_ReplaceLineStr} "$APPDATA\Mozilla\Firefox\Profiles\$currentProfile\user.js" \
+								"$R4" "$R2$\r$\n"
+		StrCpy $R4 ${PROXY_TYPE_LINE_START}
+		StrCpy $R4 "/* dot */ $R4"
+		${Un_ReplaceLineStr} "$APPDATA\Mozilla\Firefox\Profiles\$currentProfile\user.js" \
+								"$R4" "$R3$\r$\n"
+								
+		;delete our old Dojo Offline PAC settings in prefs.js
 		${Un_ReplaceLineStr} "$APPDATA\Mozilla\Firefox\Profiles\$currentProfile\prefs.js" \
-								${PAC_LINE_START} "$R2$\r$\n"
-		${Un_ReplaceLineStr} "$APPDATA\Mozilla\Firefox\Profiles\$currentProfile\prefs.js" \
-								${PROXY_TYPE_LINE_START} "$R3$\r$\n"
+								${PAC_LINE_START} "$\r$\n"
+		${Un_ReplaceLineStr} "$APPDATA\\Mozilla\\Firefox\\Profiles\$currentProfile\prefs.js" \
+								${PROXY_TYPE_LINE_START} "$\r$\n"
 
 		IntOp $R1 $R1 + 1
 	${loop}
+FunctionEnd
+
+Function un.promptStopFirefox
+	;if Firefox is open while reverting it's settings,
+	;on closure it will promptly wipe them out -- we
+	;can't change user.js here, because we want to leave
+	;this alone on uninstallation, so make sure Firefox
+	;is closed before we move on
+	
+	;it's hard to find running Firefox instances, so just
+	;always prompt
+	MessageBox MB_OK "Please quit Firefox before continuing uninstall" /SD IDOK
 FunctionEnd
   
 Section "Install"
@@ -681,6 +690,10 @@ Section "Uninstall"
 	;stop the running Dojo Offline processes
 	${stopDojoOffline}
 	
+	;make sure Firefox is closed before reverting
+	;it's proxy settings
+	Call un.promptStopFirefox
+	
 	;restore previous IE and Firefox proxy settings
 	Call un.restoreIEProxySettings
 	Call un.restoreFirefoxProxySettings
@@ -707,7 +720,7 @@ Section "Uninstall"
 	DetailPrint "Dojo Offline is uninstalled!"
 	
 	StrCpy $R1 "Dojo Offline is now uninstalled.$\n"
-	StrCpy $R1 "$R1Please restart Firefox and Internet Explorer"
+	StrCpy $R1 "$R1Please restart Internet Explorer"
 	StrCpy $R1 "$R1 for the uninstallation to take effect."	
 	DetailPrint "$R1"
 	MessageBox MB_OK $R1 /SD IDOK
