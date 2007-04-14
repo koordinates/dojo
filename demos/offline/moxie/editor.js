@@ -43,7 +43,7 @@ var Moxie = {
 	_documents: null,
 
 	initialize: function(){
-		//dojo.debug("Moxie.initialize");
+		dojo.debug("Moxie.initialize");
 		
 		// clear out old values
 		dojo.byId("storageKey").value = "";
