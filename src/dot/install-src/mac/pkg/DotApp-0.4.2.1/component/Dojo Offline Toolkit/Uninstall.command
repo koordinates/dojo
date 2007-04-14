@@ -203,9 +203,7 @@ end_scutil`;
 	if(@matches == 1) {
 		$location = $matches[0];
 		echo("Existing network endpoint: $location");
-		print("1\n");
 		system("sudo -u `logname` scselect $location > /dev/null 2>&1");
-		print("2\n");
 		echo("Results of forcing Safari to see this change: $results");
 	}
 }
