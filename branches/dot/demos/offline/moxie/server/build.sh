@@ -8,6 +8,6 @@ javac -Xlint:unchecked -source 1.5 -target jsr14 -cp .:lib/servlet-api.jar:WEB-I
 jar -cvf WEB-INF/lib/moxie.jar org/dojo/moxie/*.class 1>/dev/null
 jar -cvf moxie.war WEB-INF/* 1>/dev/null
 cp moxie.war $TOMCAT_HOME/webapps
-cp -r ../server ../../../release/dojo/demos/storage
+cp -r ../server ../../../../release/dojo/demos/storage
 rm -fr $TOMCAT_HOME/webapps/moxie
 
