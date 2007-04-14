@@ -163,7 +163,7 @@ FunctionEnd
 
 ;end definition of StrTok macro
 
-;ReplaceLinstStr wiki page in NSIS docs here: 
+;ReplaceLineStr wiki page in NSIS docs here: 
 ;http://nsis.sourceforge.net/Replace_line_that_starts_with_specified_string
 
 !define ReplaceLineStr "!insertmacro ReplaceLineStr"
