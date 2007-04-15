@@ -216,6 +216,7 @@ dojo.lang.mixin(dojo.off.ui, {
 	},
 
 	_initialize: function(){
+		//dojo.debug("dojo.off.ui._initialize");
 		// make sure our app name is correct
 		if(this._validateAppName(this.appName) == false){
 			alert("You must set dojo.off.ui.appName; it can only contain "
@@ -241,6 +242,7 @@ dojo.lang.mixin(dojo.off.ui, {
 		
 		// cache our default UI resources
 		dojo.off.files.cache([
+							djConfig.baseRelativePath + "/src/off/ui.js",
 							this.htmlTemplatePath,
 							this.cssTemplatePath,
 							this.onlineImagePath,
@@ -378,11 +380,13 @@ dojo.lang.mixin(dojo.off.ui, {
 			// add parameters to URL so the Learn How page
 			// can customize itself and display itself
 			// correctly based on framework settings
+			var dojoPath = djConfig.baseRelativePath;
 			this.learnHowPath += "?appName=" + encodeURIComponent(this.appName)
 									+ "&requireOfflineCache=" + dojo.off.requireOfflineCache
 									+ "&hasOfflineCache=" + dojo.off.hasOfflineCache
 									+ "&runLink=" + encodeURIComponent(this.runLink)
-									+ "&runLinkText=" + encodeURIComponent(this.runLinkText);
+									+ "&runLinkText=" + encodeURIComponent(this.runLinkText)
+									+ "&baseRelativePath=" + encodeURIComponent(dojoPath);
 			
 			// cache our Learn How JavaScript page and
 			// the HTML version with full query parameters
