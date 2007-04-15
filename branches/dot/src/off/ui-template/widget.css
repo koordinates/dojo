@@ -68,11 +68,16 @@
 	margin-bottom: 0.8em;
 }
 
-.dot-needs-offline-cache,
+.dot-needs-offline-cache #dot-widget-learn-how,
 .dot-needs-browser-restart{
 	text-align: center;
 	line-height: 1.2;
 	font-size: 16pt !important;
+}
+
+.dot-needs-offline-cache #dot-sync-status,
+.dot-needs-offline-cache #dot-widget-browser-restart{
+	display: none;
 }
 
 .dot-needs-browser-restart{
