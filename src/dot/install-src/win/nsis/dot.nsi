@@ -22,7 +22,7 @@
 !define PROXY_TYPE_LINE_START 'user_pref("network.proxy.type",'
 
 Name "Dojo Offline Toolkit"
-OutFile "Install.exe"
+OutFile "Install Dojo Offline.exe"
 
 InstallDir "$PROGRAMFILES\Dojo\dot"
 
