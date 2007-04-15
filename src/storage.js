@@ -242,6 +242,7 @@ dojo.declare("dojo.storage", null, {
 
 
 dojo.storage.manager = new function(){
+	//dojo.debug("dojo.storage.manager");
 	// summary: A singleton class in charge of the Dojo Storage system
 	// description:
 	//		Initializes the storage systems and figures out the best available 
