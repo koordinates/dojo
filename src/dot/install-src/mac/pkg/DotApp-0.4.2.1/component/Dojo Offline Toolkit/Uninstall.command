@@ -120,9 +120,11 @@ sub promptStopFirefox{
 	# before continuing
 	my $firefoxOpen = 1;
 	while($firefoxOpen > 0){
-		$firefoxOpen = `ps -x -U \`logname\` | grep Firefox | egrep -v \"grep\" | wc -l | tr -d ' '`;
-		echo("firefoxOpen=$firefoxOpen");
+		# filter out Parallels as well because the user could have Firefox
+		# running under Windows on Parallels, which breaks this!
+		$firefoxOpen = `ps -x -U \`logname\` | grep Firefox | egrep -v \"grep|Parallels\" | wc -l | tr -d ' '`;
 		if($firefoxOpen > 0){
+			echo("Open Firefox processes = $firefoxOpen");
 			my $msg = "Please quit Firefox before continuing uninstall";
 			echo($msg);
 			if($beSilent eq false){
