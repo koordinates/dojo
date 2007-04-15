@@ -238,6 +238,17 @@ dojo.lang.mixin(dojo.off, {
 		}
 	},
 	
+	onOfflineCacheInstalled: function(){
+		// summary:
+		//	A function that can be overridden that is called 
+		//	when a user has installed the offline cache after
+		//	the page has been loaded. If a user didn't have an offline cache
+		//	when the page loaded, a UI of some kind might have prompted them
+		//	to download one. This method is called if they have downloaded
+		//	and installed an offline cache so a UI can reinitialize itself
+		//	to begin using this offline cache.
+	},
+	
 	addOfflineHost: function(resultsCallback /* Function(successful) */){
 		// summary:
 		//	Makes the this web application's host name, such as 
@@ -379,8 +390,30 @@ dojo.lang.mixin(dojo.off, {
 		if(this.hasOfflineCache == true){
 			this.isHostAvailableOffline(dojo.lang.hitch(this, this._onHostAvailabilityChecked));
 		}else{
-			this._finishStartingUp();
+			this._keepCheckingUntilInstalled();
 		}
+	},
+	
+	_keepCheckingUntilInstalled: function(){
+		// this method is part of our _onLoad series of startup tasks
+		
+		// kick off a background interval that keeps
+		// checking to see if an offline cache has been
+		// installed since this page loaded
+			
+		
+		var installInterval = window.setInterval(dojo.lang.hitch(this, function(){
+			// see if we are available yet
+			this._checkOfflineCacheAvailable(dojo.lang.hitch(this, function(){
+				if(this.hasOfflineCache == true){
+					window.clearTimeout(installInterval);
+					this._onOfflineCacheInstalled();
+				}
+			}));
+		}), 1000);
+		
+		// now continue starting up
+		this._finishStartingUp();
 	},
 	
 	_onHostAvailabilityChecked: function(availableOffline){
@@ -638,6 +671,26 @@ dojo.lang.mixin(dojo.off, {
 		
 		// dispatch the request
 		dojo.io.bind(bindArgs);
+	},
+	
+	_onOfflineCacheInstalled: function(){
+		// try to add ourselves offline now
+		this.addOfflineHost(dojo.lang.hitch(this, function(){
+			// FIXME: We should deal with the situation where
+			// the local proxy _couldnt_ add this host correctly
+		
+			// see if our PAC file (Proxy AutoConfig) has this web application
+			// in its list yet -- it might not, if we just added it, which means
+			// the browser won't see it until it is restarted
+			this._checkPAC(dojo.lang.hitch(this, function(){
+				// finally, call any listeners that were waiting to
+				// know whether an offline cache has been installed
+				// since the page loaded
+				if(this.onOfflineCacheInstalled){
+					this.onOfflineCacheInstalled();
+				}
+			}));
+		}));
 	}
 });
 

@@ -444,6 +444,7 @@ var Moxie = {
 	}
 };
 
-// wait until Dojo Offline and the default Offline Widget are ready
-// before we initialize ourselves
+// Wait until Dojo Offline and the default Offline Widget are ready
+// before we initialize ourselves. When this gets called the page
+// is also finished loading.
 dojo.off.ui.onLoad = dojo.lang.hitch(Moxie, Moxie.initialize);

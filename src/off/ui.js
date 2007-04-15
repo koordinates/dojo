@@ -21,7 +21,7 @@ dojo.lang.mixin(dojo.off.ui, {
 	//	this is a string, not HTML, so embedded markup will
 	//	not work, including entities. Only the following
 	//	characters are allowed: numbers, letters, and spaces
-	appName: "Define dojo.off.ui.appName",
+	appName: "setme",
 	
 	// autoEmbed: boolean
 	//	Whether to automatically auto-embed the default Dojo Offline
@@ -214,6 +214,51 @@ dojo.lang.mixin(dojo.off.ui, {
 		//	the Offline Widget are all initialized and ready to be
 		//	used.
 	},
+	
+	onOfflineCacheInstalled: function(){
+		dojo.debug("onOfflineCacheInstalled");
+		// summary:
+		//	A function that can be overridden that is called 
+		//	when a user has installed the offline cache after
+		//	the page has been loaded. If a user didn't have an offline cache
+		//	when the page loaded, a UI of some kind might have prompted them
+		//	to download one. This method is called if they have downloaded
+		//	and installed an offline cache so a UI can reinitialize itself
+		//	to begin using this offline cache.
+		
+		// clear out the 'needs offline cache' info
+		this._hideNeedsOfflineCache();
+		
+		// check to see if we need a browser restart
+		// to be able to use this web app offline --
+		// some browsers can't see updates to a
+		// Proxy AutoConfig (PAC) file done after the
+		// browser has been loaded until a restart
+		// has occurred
+		if(dojo.off.requireOfflineCache == true
+			&& dojo.off.hasOfflineCache == true
+			&& dojo.off.browserRestart == true){
+			this._needsBrowserRestart();
+			return;
+		}else{
+			var browserRestart = dojo.byId("dot-widget-browser-restart");
+			if(browserRestart){
+				browserRestart.style.display = "none";
+			}
+		}
+		
+		// update our sync UI
+		this._updateSyncUI();
+		
+		// register our event listeners for our main buttons
+		this._initMainEvtHandlers();
+		
+		// if offline is disabled, disable everything
+		this._setOfflineEnabled(dojo.off.enabled);
+		
+		// try to go online
+		this._testNetwork();
+	},
 
 	_initialize: function(){
 		//dojo.debug("dojo.off.ui._initialize");
@@ -221,7 +266,7 @@ dojo.lang.mixin(dojo.off.ui, {
 		if(this._validateAppName(this.appName) == false){
 			alert("You must set dojo.off.ui.appName; it can only contain "
 					+ "letters, numbers, and spaces; right now it "
-					+ "is incorrectly set to " + dojo.off.ui.appName);
+					+ "is incorrectly set to '" + dojo.off.ui.appName + "'");
 			dojo.off.enabled = false;
 			return;
 		}
@@ -242,7 +287,6 @@ dojo.lang.mixin(dojo.off.ui, {
 		
 		// cache our default UI resources
 		dojo.off.files.cache([
-							djConfig.baseRelativePath + "/src/off/ui.js",
 							this.htmlTemplatePath,
 							this.cssTemplatePath,
 							this.onlineImagePath,
@@ -295,7 +339,7 @@ dojo.lang.mixin(dojo.off.ui, {
 		// check offline cache settings
 		if(dojo.off.requireOfflineCache == true
 			&& dojo.off.hasOfflineCache == false){
-			this._needsOfflineCache();
+			this._showNeedsOfflineCache();
 			return;
 		}
 		
@@ -578,19 +622,17 @@ dojo.lang.mixin(dojo.off.ui, {
 		}
 	},
 	
-	_needsOfflineCache: function(){
-		var learnHow = dojo.byId("dot-widget-learn-how");
-		if(learnHow){
-			dojo.html.addClass(learnHow, "dot-needs-offline-cache");
+	_showNeedsOfflineCache: function(){
+		var widgetContainer = dojo.byId("dot-widget-container");
+		if(widgetContainer){
+			dojo.html.addClass(widgetContainer, "dot-needs-offline-cache");
 		}
-		
-		var elems = new Array();
-		elems.push(dojo.byId("dot-sync-status"));
-		elems.push(dojo.byId("dot-widget-browser-restart"));
-		for(var i = 0; i < elems.length; i++){
-			if(elems[i]){
-				elems[i].style.display = "none";
-			}
+	},
+	
+	_hideNeedsOfflineCache: function(){
+		var widgetContainer = dojo.byId("dot-widget-container");
+		if(widgetContainer){
+			dojo.html.removeClass(widgetContainer, "dot-needs-offline-cache");
 		}
 	},
 	
@@ -624,6 +666,11 @@ dojo.lang.mixin(dojo.off.ui, {
 // register ourselves to know when failed saves have 
 // occurred
 dojo.off.onSave = dojo.lang.hitch(dojo.off.ui, dojo.off.ui.onSave);
+
+// register ourselves to know when an offline cached has
+// been installed even after the page is finished loading
+dojo.off.onOfflineCacheInstalled = 
+				dojo.lang.hitch(dojo.off.ui, dojo.off.ui.onOfflineCacheInstalled);
 
 // start our magic when the Dojo Offline framework is ready to go
 dojo.off.addOnLoad(dojo.lang.hitch(dojo.off.ui, dojo.off.ui._initialize));
