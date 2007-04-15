@@ -1,7 +1,7 @@
 window.onload = function(){
 	// get the app name from our URL
 	var href = window.location.href;
-	var matches = href.match(/appName=([a-z0-9 ]*)/i);
+	var matches = href.match(/appName=([a-z0-9 \%]*)/i);
 	var appName = "Application";
 	if(matches && matches.length > 0){
 		appName = decodeURIComponent(matches[1]);
@@ -52,7 +52,7 @@ window.onload = function(){
 	}
 	
 	// get our run link info and update the UI
-	matches = href.match(/runLink=([^\&]*)\&runLinkText=(.*)$/);
+	matches = href.match(/runLink=([^\&]*)\&runLinkText=([^\&]*)/);
 	if(matches && matches.length > 0){
 		var runLink = decodeURIComponent(matches[1]);
 		var runLinkElem = document.getElementById("dot-learn-how-run-link");
@@ -61,5 +61,20 @@ window.onload = function(){
 		var runLinkText = decodeURIComponent(matches[2]);
 		runLinkElem.innerHTML = "";
 		runLinkElem.appendChild(document.createTextNode(runLinkText));
+	}
+	
+	// get our dojo install path and update where the downloads
+	// of the client runtime are available
+	matches = href.match(/baseRelativePath=([^\&]*)/);
+	if(matches && matches.length > 0){
+		var baseRelativePath = decodeURIComponent(matches[1]);
+		var winDownloadElem = document.getElementById("dot-windows-download");
+		var macIntelDownloadElem = document.getElementById("dot-mac-intel-download");
+		
+		var winDownload = baseRelativePath + "src/dot/proxy-build/win/Install%20Dojo%20Offline.exe";
+		var macIntelDownload = baseRelativePath + "src/dot/proxy-build/mac/x86/Install%20Dojo%20Offline.dmg";
+		
+		winDownloadElem.setAttribute("href", winDownload);
+		macIntelDownloadElem.setAttribute("href", macIntelDownload);
 	}
 }
