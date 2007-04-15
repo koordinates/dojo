@@ -557,12 +557,6 @@ build targets:
 			}
 		]]>
 		</script>
-		
-		<!-- 
-			Generate optional Java class needed for Safari and Opera
-			for dojo.storage.browser.FileStorageProvider
-		-->
-		<antcall target="buildFileStorageProvider" />
 
 		<antcall target="compress" />
 		<!-- <antcall target="intern-strings" /> -->
@@ -606,29 +600,6 @@ build targets:
 		<delete file="${root}/release/${project}_${version}.tar"/>
 	</target>
 	<!-- end tar task -->
-	
-	<!-- buildFileStorageProvider task -->
-	<target name="buildFileStorageProvider"
-			description="Builds a Java class needed by dojo.storage.browser.FileStorageProvider">
-		<echo>
-Building optional Java class for dojo.storage.browser.FileStorageProvider. Don't
-worry if this fails; the generated class file is checked into Subversion and is
-available in src/storage/java/ without rebuilding it.
-		</echo>		
-		
-		<javac	srcdir="${root}/src/storage/java/"
-				destdir="${root}/src/storage/java/"
-				debug="on"
-				target="1.1"
-				source="1.1"
-				failonerror="false"/>
-				
-		<jar destfile="${root}/DojoFileStorageProvider.jar">
-		    <fileset dir="${root}/src/storage/java/"
-		             includes="*.class"/>
-		 </jar>
-	</target>
-	<!-- end buildFileStorageProvider task -->
 
 	<!-- buildDojoFlash task -->
 	<target name="buildDojoFlash"
