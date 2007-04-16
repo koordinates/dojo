@@ -1,6 +1,5 @@
 dojo.provide("dijit.util.PopupManager");
 
-dojo.require("dojo.lang.array");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.html.util");
 dojo.require("dojo.html.iframe");
@@ -64,9 +63,9 @@ dijit.util.PopupManager = new function(){
 		stack.push(widget);
 
 		// TODO: use effects
-		widget.domNode.style.display="";
+		dojo.style(widget.domNode, "display", "");
 
-		if(dojo.render.html.ie60){
+		if(dojo.isIE == 6){ //PORT exact?
 			if(!widget.bgIframe){
 				widget.bgIframe = new dojo.html.BackgroundIframe();
 				widget.bgIframe.setZIndex(widget.domNode);
@@ -83,8 +82,8 @@ dijit.util.PopupManager = new function(){
 
 		var widget = stack.pop();
 
-		widget.domNode.style.display="none";
-		if(dojo.render.html.ie60){
+		dojo.style(widget.domNode, "display", "none");
+		if(dojo.isIE == 6){ //PORT exact?
 			widget.bgIframe.hide();
 		}
 		
@@ -156,7 +155,7 @@ dijit.util.PopupManager = new function(){
 		}
 
 		// if they clicked on the popup itself then ignore it
-		if(dojo.lang.some(stack, function(widget){
+		if(dojo.some(stack, function(widget){
 			return dojo.html.overElement(widget.domNode, e) || dojo.html.isDescendantOf(e.target, widget.domNode);
 		}))
 		{

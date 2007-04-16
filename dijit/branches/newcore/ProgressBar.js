@@ -75,10 +75,10 @@ dojo.declare(
 		// public functions
 		postCreate: function(){
 			dijit.ProgressBar.superclass.postCreate.apply(this, arguments);
-//FIXME: is the CSS browser hack still required?  If so, port it.
+//PORT: is the CSS browser hack still required?  If so, port it.
 //			dojo.html.applyBrowserClass(this.domNode);
 			if(this.orientation == "vertical"){
-//FIXME: if !this.domNode.className?
+//PORT: if !this.domNode.className?
 				this.domNode.className += " "+"dojoProgressBarVertical";
 				this._dimension = "height";
 			}else{
@@ -120,7 +120,7 @@ dojo.declare(
 				}else{
 					labelNode.appendChild(dojo.doc.createTextNode(text));
 				}
-				labelNode.style.display = display;
+				dojo.style(labelNode, "display", display);
 
 // move this out of update, or perhaps replace with css or template layout?
 				var dim = dojo.contentBox(labelNode);
@@ -209,7 +209,7 @@ dojo.declare(
 				method: "POST",
 				mimetype: "text/json",
 				error: function(type, errorObj){
-					dojo.debug("ProgressBar: showRemoteProgress error");
+					console.debug("ProgressBar: showRemoteProgress error");
 				},
 				load: function(type, data, evt){
 					self.update({progress: self._timer ? data.progress : "100%"});

@@ -1,7 +1,5 @@
 dojo.provide("dijit.Tooltip");
 
-dojo.require("dojo.lang.declare");
-dojo.require("dojo.uri.Uri");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.util");
@@ -37,7 +35,7 @@ dojo.declare(
 		//		(When user hovers over specified dom node, the tooltip will appear.)
 		connectId: "",
 
-		templatePath: dojo.uri.moduleUri("dijit", "templates/Tooltip.html"),
+		templatePath: dojo.moduleUrl("dijit", "templates/Tooltip.html"),
 	
 		postCreate: function(){
 			this._connectNode = dojo.byId(this.connectId);
@@ -82,7 +80,7 @@ dojo.declare(
 			
 			// If tooltip not showing yet then set a timer to show it shortly
 			if(!this.isShowingNow && !this._showTimer){
-				this._showTimer = setTimeout(dojo.lang.hitch(this, "open"), this.showDelay);
+				this._showTimer = setTimeout(dojo.hitch(this, "open"), this.showDelay);
 			}
 		},
 
@@ -95,7 +93,7 @@ dojo.declare(
 				delete this._showTimer;
 			}
 			if(this.isShowingNow && !this._hideTimer){
-				this._hideTimer = setTimeout(dojo.lang.hitch(this, "close"), this.hideDelay);
+				this._hideTimer = setTimeout(dojo.hitch(this, "close"), this.hideDelay);
 			}
 			
 			// If we aren't showing the tooltip, then we can stop tracking the mouse now;

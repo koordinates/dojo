@@ -1,8 +1,6 @@
 dojo.provide("dijit.util.FocusManager");
 
 dojo.require("dojo.html.selection");
-dojo.require("dojo.html.util");
-dojo.require("dojo.event.*");
 
 dijit.util.FocusManager = new function(){
 	// summary:
@@ -31,12 +29,12 @@ dijit.util.FocusManager = new function(){
 		if(node !== curFocus){
 			prevFocus = curFocus;
 			curFocus = node;
-			dojo.debug("focused on ", node ? (node.id ? node.id : node.tagName) : "nothing");
+			console.debug("focused on ", node ? (node.id ? node.id : node.tagName) : "nothing");
 		}
 	}
 	
 	dojo.addOnLoad(function(){
-		if(dojo.render.html.ie){
+		if(dojo.isIE){
 			// TODO: to make this more deterministic should delay updating curFocus/prevFocus for 10ms?
 			window.setInterval(function(){ onFocus(document.activeElement); }, 100);
 		}else{
@@ -71,8 +69,8 @@ dijit.util.FocusManager = new function(){
 
 		// Find node to restore focus to, when this menu/dialog closes
 		restoreFocus = dojo.html.isDescendantOf(curFocus, menu.domNode) ? prevFocus : curFocus;
-		dojo.debug("will restore focus to " + ( restoreFocus ? (restoreFocus.id || restoreFocus.tagName) : "nothing") );
-		dojo.debug("prev focus is " + prevFocus);
+		console.debug("will restore focus to " + ( restoreFocus ? (restoreFocus.id || restoreFocus.tagName) : "nothing") );
+		console.debug("prev focus is " + prevFocus);
 
 		//Store the current selection and restore it before the action for a menu item
 		//is executed. This is required as clicking on an menu item deselects current selection

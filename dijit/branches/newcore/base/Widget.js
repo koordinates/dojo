@@ -35,32 +35,32 @@ function(params, srcNodeRef){
 			dojo.mixin(this,params);
 		}
 
-		//dojo.profile.start(this.widgetType + " create");
-		// dojo.debug(this.widgetType, "create");
+		//console.profile(this.widgetType + " create");
+		// console.debug(this.widgetType, "create");
 
-		// dojo.debug(this.widgetType, "-> postMixInProperties");
-		//dojo.profile.start(this.widgetType + " postMixInProperties");
+		// console.debug(this.widgetType, "-> postMixInProperties");
+		//console.profile(this.widgetType + " postMixInProperties");
 		this.postMixInProperties();
-		//dojo.profile.end(this.widgetType + " postMixInProperties");
+		//console.profileEnd(this.widgetType + " postMixInProperties");
 
-		// dojo.debug(this.widgetType, "-> dojo.widget.manager.add");
+		// console.debug(this.widgetType, "-> dojo.widget.manager.add");
 		dijit.util.manager.add(this);
 
-		// dojo.debug(this.widgetType, "-> buildRendering");
-		//dojo.profile.start(this.widgetType + " buildRendering");
+		// console.debug(this.widgetType, "-> buildRendering");
+		//console.profile(this.widgetType + " buildRendering");
 		this.buildRendering();
-		//dojo.profile.end(this.widgetType + " buildRendering");
+		//console.profileEnd(this.widgetType + " buildRendering");
 
 		this.domNode.widgetId = this.id;
 
-		// dojo.debug(this.widgetType, "-> postCreate");
-		//dojo.profile.start(this.widgetType + " postCreate");
+		// console.debug(this.widgetType, "-> postCreate");
+		//console.profile(this.widgetType + " postCreate");
 		this.postCreate();
-		//dojo.profile.end(this.widgetType + " postCreate");
+		//console.profileEnd(this.widgetType + " postCreate");
 
-		// dojo.debug(this.widgetType, "done!");
+		// console.debug(this.widgetType, "done!");
 		
-		//dojo.profile.end(this.widgetType + " create");
+		//console.profileEnd(this.widgetType + " create");
 
 },
 {
@@ -148,12 +148,16 @@ function(params, srcNodeRef){
 			}
 		}catch(e){ /* squelch! */ }
 		try{
-			dojo.dom.destroyNode(this.domNode);
+//			dojo.dom.destroyNode(this.domNode);
+//PORT memory leak?
+			this.domNode.parentNode.removeChild(this.domNode);
 			delete this.domNode;
 		}catch(e){ /* squelch! */ }
 		if(this.srcNodeRef){
 			try{
-				dojo.dom.destroyNode(this._sourceNodeRef);
+//				dojo.dom.destroyNode(this._sourceNodeRef);
+//PORT memory leak?
+				this._sourceNodeRef.parentNode.removeChild(this._sourceNodeRef);
 			}catch(e){ /* squelch! */ }
 		}
 	},
@@ -201,3 +205,18 @@ function(params, srcNodeRef){
 		return nodes;
 	}
 });
+
+//PORT - where does this go?  dijit.util?  dojo.html?
+dijit._disableSelection = function(/*DomNode*/element){
+	// summary: disable selection on a node
+	element = dojo.byId(element)||dojo.body();
+
+	if(dojo.isMozilla){
+		element.style.MozUserSelect = "none";
+	}else if(dojo.isKhtml){
+		element.style.KhtmlUserSelect = "none"; 
+	}else if(h.ie){
+		element.unselectable = "on";
+	}
+	return false;
+};

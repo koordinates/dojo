@@ -1,10 +1,7 @@
 dojo.provide("dijit.Toaster");
 
-dojo.require("dojo.event.common");
-dojo.require("dojo.event.topic");
-dojo.require("dojo.lfx.html");
+dojo.require("dojo.fx");
 dojo.require("dojo.html.iframe");
-dojo.require("dojo.string.extras");
 
 dojo.require("dijit.base.Widget");
 dojo.require("dijit.base.TemplatedWidget");
@@ -65,16 +62,16 @@ dojo.declare(
 			dijit.Toaster.superclass.postCreate.apply(this);
 			this.hide();
 
-			dojo.html.setClass(this.clipNode, "dojoToasterClip");
-			dojo.html.addClass(this.containerNode, "dojoToasterContainer");
-			dojo.html.setClass(this.contentNode, "dojoToasterContent");
+			this.clipNode.className = "dojoToasterClip";
+			this.containerNode.className += " dojoToasterContainer";
+			this.contentNode.className = "dojoToasterContent";
 			if(this.messageTopic){
-				dojo.event.topic.subscribe(this.messageTopic, this, "_handleMessage");
+				dojo.subscribe(this.messageTopic, this, "_handleMessage");
 			}
 		},
 
 		_handleMessage: function(/*String|Object*/message){
-			if(dojo.lang.isString(message)){
+			if(dojo.isString(message)){
 				this.setContent(message);
 			}else{
 				this.setContent(message.message, message.type, message.duration);
@@ -97,18 +94,22 @@ dojo.declare(
 					this.slideAnim.stop();
 				}
 				if(this.slideAnim.status() == "playing" || (this.fadeAnim && this.fadeAnim.status() == "playing")){
-					dojo.lang.setTimeout(50, dojo.lang.hitch(this, function(){
+					setTimeout(50, dojo.hitch(this, function(){
 						this.setContent(message, messageType);
 					}));
 					return;
 				}
 			}
 
+			var capitalize = function(word){
+				return word.substring(0,1).toUpperCase() + word.substring(1);
+			};
+
 			// determine type of content and apply appropriately
 			for(var type in this.messageTypes){
-				dojo.html.removeClass(this.containerNode, "dojoToaster" + dojo.string.capitalize(this.messageTypes[type]));
+				dojo.html.removeClass(this.containerNode, "dojoToaster" + capitalize(this.messageTypes[type]));
 			}
-			dojo.html.clearOpacity(this.containerNode);
+			dojo.style(this.containerNode, 1);
 
 			if(dojo.html.isNode(message)){
 				message = dojo.html.getContentAsString(message);
@@ -119,12 +120,12 @@ dojo.declare(
 			}
 			this.contentNode.innerHTML = message;
 
-			dojo.html.addClass(this.containerNode, "dojoToaster" + dojo.string.capitalize(messageType || this.defaultType));
+			dojo.html.addClass(this.containerNode, "dojoToaster" + capitalize(messageType || this.defaultType));
 
 			// now do funky animation of widget appearing from
 			// bottom right of page and up
 			this.show();
-			var nodeSize = dojo.html.getMarginBox(this.containerNode);
+			var nodeSize = dojo.marginBox(this.containerNode);
 			
 			if(this.isVisible){
 				this._placeClip();
@@ -134,41 +135,41 @@ dojo.declare(
 				// sets up initial position of container node and slide-out direction
 				if(pd.indexOf("-up") >= 0){
 					style.left=0+"px";
-					style.top=nodeSize.height + 10 + "px";
+					style.top=nodeSize.h + 10 + "px";
 				}else if(pd.indexOf("-left") >= 0){
-					style.left=nodeSize.width + 10 +"px";
+					style.left=nodeSize.w + 10 +"px";
 					style.top=0+"px";
 				}else if(pd.indexOf("-right") >= 0){
-					style.left = 0 - nodeSize.width - 10 + "px";
+					style.left = 0 - nodeSize.w - 10 + "px";
 					style.top = 0+"px";
 				}else if(pd.indexOf("-down") >= 0){
 					style.left = 0+"px";
-					style.top = 0 - nodeSize.height - 10 + "px";
+					style.top = 0 - nodeSize.h - 10 + "px";
 				}else{
-					dojo.raise(this.id + ".positionDirection is an invalid value: " + pd);
+					throw new Error(this.id + ".positionDirection is an invalid value: " + pd);
 				}
 
-				this.slideAnim = dojo.lfx.html.slideTo(
+				this.slideAnim = dojo.fx.slideTo(
 					this.containerNode,
 					{ top: 0, left: 0 },
 					450,
 					null,
-					dojo.lang.hitch(this, function(nodes, anim){
+					dojo.hitch(this, function(nodes, anim){
 						//we build the fadeAnim here so we dont have to duplicate it later
 						// can't do a fadeHide because we're fading the
 						// inner node rather than the clipping node
-						this.fadeAnim = dojo.lfx.html.fadeOut(
+						this.fadeAnim = dojo.fadeOut(
 							this.containerNode,
 							1000,
 							null,
-							dojo.lang.hitch(this, function(evt){
+							dojo.hitch(this, function(evt){
 								this.isVisible = false;
 								this.hide();
 							}));
 						//if duration == 0 we keep the message displayed until clicked
 						//TODO: fix so that if a duration > 0 is displayed when a duration==0 is appended to it, the fadeOut is canceled
 						if(duration>0){
-							dojo.lang.setTimeout(dojo.lang.hitch(this, function(evt){
+							setTimeout(dojo.hitch(this, function(evt){
 								// we must hide the iframe in order to fade
 								// TODO: figure out how to fade with a BackgroundIframe
 								if(this.bgIframe){
@@ -177,12 +178,13 @@ dojo.declare(
 								this.fadeAnim.play();
 							}), duration);
 						}else{
-							dojo.event.connect(
+							dojo.connect(
 								this,
 								'onSelect',
-								dojo.lang.hitch(this, function(evt){
+								this,
+								function(evt){
 									this.fadeAnim.play();
-								}));
+								});
 						}
 						this.isVisible = true;
 					})).play();
@@ -193,28 +195,28 @@ dojo.declare(
 			var scroll = dojo.html.getScroll();
 			var view = dojo.html.getViewport();
 
-			var nodeSize = dojo.html.getMarginBox(this.containerNode);
+			var nodeSize = dojo.marginBox(this.containerNode);
 
 			var style = this.clipNode.style;
 			// sets up the size of the clipping node
-			style.height = nodeSize.height+"px";
-			style.width = nodeSize.width+"px";
+			style.height = nodeSize.h+"px";
+			style.width = nodeSize.w+"px";
 
 			// sets up the position of the clipping node
 			var pd = this.positionDirection;
 			if(pd.match(/^t/)){
 				style.top = scroll.top+"px";
 			}else if(pd.match(/^b/)){
-				style.top = (view.height - nodeSize.height - 2 + scroll.top)+"px";
+				style.top = (view.height - nodeSize.h - 2 + scroll.top)+"px";
 			}
 			if(pd.match(/^[tb]r-/)){
-				style.left = (view.width - nodeSize.width - 1 - scroll.left)+"px";
+				style.left = (view.width - nodeSize.w - 1 - scroll.left)+"px";
 			}else if(pd.match(/^[tb]l-/)){
 				style.left = 0 + "px";
 			}
 
-			style.clip = "rect(0px, " + nodeSize.width + "px, " + nodeSize.height + "px, 0px)";
-			if(dojo.render.html.ie){
+			style.clip = "rect(0px, " + nodeSize.w + "px, " + nodeSize.h + "px, 0px)";
+			if(dojo.isIE){
 				if(!this.bgIframe){
 					this.bgIframe = new dojo.html.BackgroundIframe(this.clipNode);
 					this.bgIframe.setZIndex(this.clipNode);
@@ -230,13 +232,13 @@ dojo.declare(
 
 		show: function(){
 			// summary: show the Toaster
-			dojo.html.show(this.containerNode);
+			dojo.style(this.containerNode, 'display', '');
 
 			this._placeClip();
 
 			if(!this._scrollConnected){
 				this._scrollConnected = true;
-				dojo.event.connect(window, "onscroll", this, "_placeClip");
+				dojo.connect(window, "onscroll", this, this._placeClip);
 			}
 		},
 
@@ -244,14 +246,14 @@ dojo.declare(
 			// summary: hide the Toaster
 
 			//Q: ALP: I didn't port all the toggler stuff from d.w.HtmlWidget.  Is it needed? Ditto for show.
-			dojo.html.hide(this.containerNode);
+			dojo.style(this.containerNode, 'display', 'none');
 
 			if(this._scrollConnected){
 				this._scrollConnected = false;
-				dojo.event.disconnect(window, "onscroll", this, "_placeClip");
+				dojo.disconnect(window, "onscroll", this._placeClip);
 			}
 
-			dojo.html.setOpacity(this.containerNode, 1.0);
+			dojo.style(this.containerNode, 1);
 		}
 	}
 );

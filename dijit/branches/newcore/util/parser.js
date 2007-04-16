@@ -131,6 +131,8 @@ dijit.util.parser = new function(){
 dojo.addOnLoad(function(){ dijit.util.parser.parse(); });
 
 //PORT belongs in dojo core?
+dijit.util.parser._anonCtr = 0;
+dijit.util.parser._anon = {}; // why is this property required?
 dijit.util.parser._nameAnonFunc = function(/*Function*/anonFuncPtr, /*Object*/thisObj, /*Boolean*/searchForNames){
 	// summary:
 	//		Creates a reference to anonFuncPtr in thisObj with a completely
@@ -141,7 +143,7 @@ dijit.util.parser._nameAnonFunc = function(/*Function*/anonFuncPtr, /*Object*/th
 	//		searchForNames to be false.
 	var isIE = dojo.isIE;
 	var jpn = "$joinpoint";
-	var nso = (thisObj|| dojo.lang.anon);
+	var nso = (thisObj|| dijit.util.parser._anon);
 	if(isIE){
 		var cn = anonFuncPtr["__dojoNameCache"];
 		if(cn && nso[cn] === anonFuncPtr){
@@ -155,7 +157,7 @@ dijit.util.parser._nameAnonFunc = function(/*Function*/anonFuncPtr, /*Object*/th
 		}
 	}
 	if( (searchForNames) ||
-		((dj_global["djConfig"])&&(djConfig["slowAnonFuncLookups"] == true)) ){
+		((dojo.global["djConfig"])&&(djConfig["slowAnonFuncLookups"] == true)) ){
 		for(var x in nso){
 			if(nso[x] === anonFuncPtr){
 				if(isIE){
@@ -170,9 +172,9 @@ dijit.util.parser._nameAnonFunc = function(/*Function*/anonFuncPtr, /*Object*/th
 			}
 		}
 	}
-	var ret = "__"+dojo.lang.anonCtr++;
+	var ret = "__"+dijit.util.parser._anonCtr++;
 	while(typeof nso[ret] != "undefined"){
-		ret = "__"+dojo.lang.anonCtr++;
+		ret = "__"+dijit.util.parser._anonCtr++;
 	}
 	nso[ret] = anonFuncPtr;
 	return ret; // String

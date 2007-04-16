@@ -1,9 +1,6 @@
 dojo.provide("dijit.base.LayoutContainer");
 
-dojo.require("dojo.event.browser");
-
 dojo.require("dijit.util.Container");
-dojo.require("dojo.html.layout");
 
 dojo.declare("dijit.base.Sizable", 
 	null,
@@ -20,10 +17,12 @@ dojo.declare("dijit.base.Sizable",
 			// param: Object
 			//		{width: x, height: y}
 
-			dojo.html.setMarginBox(this.domNode, param);
+			param = {w: param.width, h: param.height}; //PORT: remove this and change API
+			dojo.marginBox(this.domNode, param);
 			if(!param.width || !param.height){
-				param = dojo.html.getMarginBox(this.domNode);
+				param = dojo.marginBox(this.domNode);
 			}
+			param = {width: param.w, height: param.h}; //PORT: remove this and change API
 			this.onResized(param);
 		},
 	
@@ -48,7 +47,7 @@ dojo.declare("dijit.base.Sizable",
 
 			// if my parent isn't a layout container, and my style is width=height=100% (or something similar),
 			// then I need to watch when the window resizes, and size myself accordingly
-			dojo.event.browser.addListener(window, 'onresize', dojo.lang.hitch(this, '_onWindowResize'));	// window resize
+			dojo.addListener(window, 'onresize', this, this._onWindowResize);	// window resize
 
 			this._onWindowResize();
 		},
@@ -59,7 +58,8 @@ dojo.declare("dijit.base.Sizable",
 			//		If the size is explicitly changed by calling resize() this
 			//		function is not called.
 			// Size my children based on my size
-			var size = dojo.html.getMarginBox(this.domNode);
+			var size = dojo.marginBox(this.domNode);
+			size = {width: size.w, height: size.h}; // PORT: remove
 			this.onResized(size);
 		}
 	}

@@ -48,14 +48,23 @@ dojo.declare("dijit.base.TemplatedWidget",
 
 			var cached = dijit.base.getCachedTemplate(this.templatePath, this.templateString);
 
+//PORT: from dojo.dom.  promote this?  reduce?
+			var isNode = function(/* object */wh){
+				//	summary:
+				//		checks to see if wh is actually a node.
+				if(typeof Element == "function") {
+					return wh instanceof Element;	//	boolean
+				} else {
+					// best-guess
+					return wh && !isNaN(wh.nodeType);	//	boolean
+				}
+			};
+
 			var node;
-			if(cached instanceof Element){ //PORT: good enough replacement for isNode?
+			if(isNode(cached)){
 				// if it's a node, all we have to do is clone it
 				node = cached.cloneNode(true);
 			}else{
-				// Cache contains a string because we need to do property replacement
-				var tstr = cached;
-
 				// construct table for property replacement
 				var hash = this.strings || {};
 				for(var key in dijit.base.defaultStrings){
@@ -63,6 +72,9 @@ dojo.declare("dijit.base.TemplatedWidget",
 						hash[key] = dijit.base.defaultStrings[key];
 					}
 				}
+
+				// Cache contains a string because we need to do property replacement
+				var tstr = cached;
 
 				// do the property replacement
 				var _this = this;
@@ -72,13 +84,11 @@ dojo.declare("dijit.base.TemplatedWidget",
 					if(value){
 						// Safer substitution, see heading "Attribute values" in  
 						// http://www.w3.org/TR/REC-html40/appendix/notes.html#h-B.3.2
-						value = value.toString();
-						value = value.replace(/"/g,"&quot;");
-						return value;
+						return value.toString().replace(/"/g,"&quot;");
 					}
 				});
 
-				node = dijit.base.TemplatedWidget._createNodesFromText(tstr, true)[0];
+				node = dijit.base._createNodesFromText(tstr)[0];
 			}
 
 			// recurse through the node, looking for, and attaching to, our
@@ -87,13 +97,9 @@ dojo.declare("dijit.base.TemplatedWidget",
 			dijit.base.attachTemplateNodes(node, this);
 			// dojo.profile.end("attachTemplateNodes");
 
-//PORT: double check this replacement for copyStyle
 			if(this.srcNodeRef){
-				node.style.cssText = this.srcNodeRef.style.cssText; // will fail on Opera
-				var className = this.srcNodeRef.className;
-				if(className && !new RegExp('(^|\\s+)'+className+'(\\s+|$)').test(node.ClassName)){
-					node.className += " " + className;
-				}
+				dojo.style(node, "cssText", this.srcNodeRef.style.cssText); // will fail on Opera?
+				node.className += " " + this.srcNodeRef.className;
 			}
 
 			this.domNode = node;
@@ -110,7 +116,6 @@ dojo.declare("dijit.base.TemplatedWidget",
 			if(this.srcNodeRef && this.srcNodeRef.parentNode){
 				this.srcNodeRef.parentNode.replaceChild(this.domNode, this.srcNodeRef);
 			}
-			
 		}
 	}
 );
@@ -151,15 +156,12 @@ dijit.base.getCachedTemplate = function(templatePath, templateString){
 		templateString = dijit.base._sanitizeTemplateString(dojo._getText(templatePath));
 	}
 
-	if(templateString.match(/\$\{([^\}]+)\}/g)) {
+	if(templateString.match(/\$\{([^\}]+)\}/g)){
 		// there are variables in the template so all we can do is cache the string
-		tmplts[key] = templateString;
-		return templateString;
+		return (tmplts[key] = templateString); //String
 	}else{
 		// there are no variables in the template so we can cache the DOM tree
-		var dom = dijit.base.TemplatedWidget._createNodesFromText(templateString, true)[0];
-		tmplts[key] = dom;
-		return dom;
+		return (tmplts[key] = dijit.base._createNodesFromText(templateString)[0]); //Node
 	}
 };
 
@@ -191,12 +193,11 @@ dijit.base.attachTemplateNodes = function(rootNode, /*Widget*/ targetObj){
 	// rootNode: DomNode
 	//		the node to search for properties. All children will be searched.
 
-	function trim(str){
+	var trim = function(str){
 		return str.replace(/^\s+|\s+$/g, "");
-	}
+	};
 
 	var nodes = rootNode.all || rootNode.getElementsByTagName("*");
-	var _this = targetObj;
 	for(var x=-1; x<nodes.length; x++){
 		var baseNode = (x == -1) ? rootNode : nodes[x];
 
@@ -222,10 +223,10 @@ dijit.base.attachTemplateNodes = function(rootNode, /*Widget*/ targetObj){
 			// "domEvent: nativeEvent; ..."
 			var evts = attachEvent.split(";");
 			for(var y=0; y<evts.length; y++){
-				if((!evts[y])||(!evts[y].length)){ continue; }
+				if(!evts[y] || !evts[y].length){ continue; }
 				var thisFunc = null;
 				var tevt = trim(evts[y]);
-				if(evts[y].indexOf(":") >= 0){
+				if(evts[y].indexOf(":") != -1){
 					// oh, if only JS had tuple assignment
 					var funcNameArr = tevt.split(":");
 					tevt = trim(funcNameArr[0]);
@@ -235,17 +236,7 @@ dijit.base.attachTemplateNodes = function(rootNode, /*Widget*/ targetObj){
 					thisFunc = tevt;
 				}
 
-				var tf = function(){ 
-					var ntf = new String(thisFunc);
-					return function(evt){
-						if(_this[ntf]){
-//PORT FIXME							_this[ntf](dojo.event.browser.fixEvent(evt, this));
-						}
-					};
-				}();
-//				dojo.addListener(baseNode, tevt, tf, false, true);
-//PORT FIXME unsure about context arg, dontFix/fixEvent
-				dojo.addListener(baseNode, tevt, null, tf);
+				dojo.connect(baseNode, tevt, targetObj, thisFunc); 
 			}
 		}
 
@@ -254,13 +245,14 @@ dijit.base.attachTemplateNodes = function(rootNode, /*Widget*/ targetObj){
 			var wai = dijit.util.wai[name];
 			var val = baseNode.getAttribute(wai.name);
 			if(val){
-				if(val.indexOf('-') == -1){ 
-					dijit.util.wai.setAttr(baseNode, wai.name, "role", val);
-				}else{
+				var role = "role";
+				if(val.indexOf('-') != -1){ 
 					// this is a state-value pair
 					var statePair = val.split('-');
-					dijit.util.wai.setAttr(baseNode, wai.name, statePair[0], statePair[1]);
+					role = statePair[0];
+					val = statePair[1];
 				}
+				dijit.util.wai.setAttr(baseNode, wai.name, role, val);
 			}
 		}, this);
 	}
@@ -271,53 +263,47 @@ if(dojo.isIE){
 		for(var key in dijit.base._templateCache){
 			var value = dijit.base._templateCache[key];
 			if(value instanceof Element){ //PORT: good enough replacement for isNode?
-				dojo.dom.destroyNode(value);
+// PORT				dojo.dom.destroyNode(value);
 			}
 			dijit.base._templateCache[key] = null;
 		}
 	});
 }
 
-//PORT TODO bring into 0.9 dojo.html port?
-dijit.base.TemplatedWidget._createNodesFromText = function(/* string */txt, /* boolean? */trim){
+dijit.base._createNodesFromText = function(/*String*/text){
 	//	summary
 	//	Attempts to create a set of nodes based on the structure of the passed text.
-	if(trim){ txt = txt.replace(/^\s+|\s+$/g, ""); }
+
+	text = text.replace(/^\s+|\s+$/g, "");
 
 	var tn = dojo.doc.createElement("div");
-	// tn.style.display = "none";
-	tn.style.visibility= "hidden";
+	// dojo.style(tn, "display", "none");
+	dojo.style(tn, "visibility", "hidden");
 	dojo.body().appendChild(tn);
 	var tableType = "none";
-	if((/^<t[dh][\s\r\n>]/i).test(txt.replace(/^\s+/))){
-		txt = "<table><tbody><tr>" + txt + "</tr></tbody></table>";
-		tableType = "cell";
-	} else if((/^<tr[\s\r\n>]/i).test(txt.replace(/^\s+/))){
-		txt = "<table><tbody>" + txt + "</tbody></table>";
-		tableType = "row";
-	} else if((/^<(thead|tbody|tfoot)[\s\r\n>]/i).test(txt.replace(/^\s+/))){
-		txt = "<table>" + txt + "</table>";
-		tableType = "section";
+	var tagMap = {
+		cell: {re: /^<t[dh][\s\r\n>]/i, pre: "<table><tbody><tr>", post: "</tr></tbody></table>"},
+		row: {re: /^<tr[\s\r\n>]/i, pre: "<table><tbody>", post: "</tbody></table>"},
+		section: {re: /^<(thead|tbody|tfoot)[\s\r\n>]/i, pre: "<table>", post: "</table>"}
+	};
+	for(var type in tagMap){
+		var map = tagMap[type];
+		if(map.re.test(text.replace(/^\s+/))){ //FIXME: replace with one arg?  is this a no-op?
+			tableType = type;
+			text = map.pre + text + map.post;
+			break;
+		}
 	}
-	tn.innerHTML = txt;
-	if(tn["normalize"]){
+
+	tn.innerHTML = text;
+	if(tn.normalize){
 		tn.normalize();
 	}
 
-	var parent = null;
-	switch(tableType){
-		case "cell":
-			parent = tn.getElementsByTagName("tr")[0];
-			break;
-		case "row":
-			parent = tn.getElementsByTagName("tbody")[0];
-			break;
-		case "section":
-			parent = tn.getElementsByTagName("table")[0];
-			break;
-		default:
-			parent = tn;
-			break;
+	var tag = {cell: "tr", row: "tbody", section: "table"}[tableType];
+	var parent = tn;
+	if(typeof tag != "undefined"){
+		parent = tn.getElementsByTagName(tag)[0];
 	}
 
 	/* this doesn't make much sense, I'm assuming it just meant trim() so wrap was replaced with trim
@@ -327,7 +313,7 @@ dijit.base.TemplatedWidget._createNodesFromText = function(/* string */txt, /* b
 		var fc = tn.firstChild;
 		ret[0] = ((fc.nodeValue == " ")||(fc.nodeValue == "\t")) ? fc.nextSibling : fc;
 		// end hack
-		// tn.style.display = "none";
+		// dojo.style(tn, "display", "none");
 		dojo.body().removeChild(tn);
 		return ret;
 	}
@@ -336,9 +322,8 @@ dijit.base.TemplatedWidget._createNodesFromText = function(/* string */txt, /* b
 	for(var x=0; x<parent.childNodes.length; x++){
 		nodes.push(parent.childNodes[x].cloneNode(true));
 	}
-	tn.style.display = "none"; // FIXME: why do we do this?
-//	dojo.html.destroyNode(tn);
-//FIXME: need code to prevent leaks and such
-//FIXME: bombs here:	dojo.doc.removeChild(tn);
-	return nodes;	//	array
+	dojo.style(tn, "display", "none"); // FIXME: why do we do this?
+//PORT	dojo.html.destroyNode(tn); FIXME: need code to prevent leaks and such
+	dojo.body().removeChild(tn);
+	return nodes;	//	Array
 }

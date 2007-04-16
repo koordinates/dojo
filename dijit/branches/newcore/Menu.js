@@ -1,9 +1,7 @@
 dojo.provide("dijit.Menu");
 
-dojo.require("dojo.lang.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.selection");
-dojo.require("dojo.event.browser");
 
 dojo.require("dijit.base.Widget");
 dojo.require("dijit.base.Container");
@@ -49,7 +47,7 @@ dojo.declare(
 			var doc = dojo.body();
 			this.bindDomNode(doc);
 		}else if(this.targetNodeIds.length > 0){
-			dojo.lang.forEach(this.targetNodeIds, this.bindDomNode, this);
+			dojo.forEach(this.targetNodeIds, this.bindDomNode, this);
 		}
 
 		if(!dojo.html.isLeftToRight(this.domNode)){
@@ -140,7 +138,7 @@ dojo.declare(
 				curItem = dir>0 ? children[0] : children[children.length-1];
 			}
 			//find next/previous visible menu item, not including separators
-			if(curItem.onHover && curItem.domNode.style.display != "none"){
+			if(curItem.onHover && dojo.style(curItem.domNode, "display") != "none"){
 				return curItem;
 			}
 			curItem = dir>0 ? curItem.getNextSibling() : curItem.getPreviousSibling();
@@ -195,16 +193,13 @@ dojo.declare(
 			node = dojo.withGlobal(win, dojo.body);
 		}
 
-		if(!this.hitchedOpen){
-			this.hitchedOpen = dojo.lang.hitch(this, "open");
-		}
-		dojo.event.browser.addListener(node, "contextmenu", this.hitchedOpen);
+		dojo.addListener(node, "contextmenu", this, this.open);
 	},
 
 	unBindDomNode: function(/*String|DomNode*/ nodeName){
 		// summary: detach menu from given node
 		var node = dojo.byId(nodeName);
-		dojo.event.browser.removeListener(node, "contextmenu", this.hitchedOpen);
+		dojo.removeListener(node, "contextmenu", this.open);
 	},
 
 	_openAsSubmenu: function(/*Widget|DomNode*/parent, /*Object*/explodeSrc, /*String?*/orient){
@@ -227,7 +222,7 @@ dojo.declare(
 		//		Open menu relative to the mouse
 		dijit.util.PopupManager.open(e, this);
 
-		dojo.event.browser.stopEvent(e);
+		dojo.stopEvent(e);
 	},
 
 	close: function(/*Boolean*/ force){
@@ -246,7 +241,7 @@ dojo.declare(
 
 	closeAll: function(/*Boolean?*/force){
 		// summary: close all popups in the chain
-		var parentMenu = this.parentMenu
+		var parentMenu = this.parentMenu;
 		this.close(force);
 		if (parentMenu){
 			parentMenu.closeAll(force);
@@ -325,11 +320,9 @@ dojo.declare(
 	postMixInProperties: function(){
 		this.iconStyle="";
 		if(this.iconSrc){
-			if((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4) == ".png") && (dojo.render.html.ie55 || dojo.render.html.ie60)){
-				this.iconStyle="filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+this.iconSrc+"', sizingMethod='image')";
-			}else{
-				this.iconStyle="background-image: url("+this.iconSrc+")";
-			}
+			this.iconStyle = ((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4) == ".png") && (dojo.isIE < 7)) ?
+				"filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+this.iconSrc+"', sizingMethod='image')" :
+				"background-image: url("+this.iconSrc+")";
 		}
 		dijit.MenuItem.superclass.postMixInProperties.apply(this, arguments);
 	},
@@ -337,7 +330,7 @@ dojo.declare(
 	postCreate: function(){
 		dojo.html.disableSelection(this.domNode);
 		if(this.submenuId){
-			this.arrow.style.display="";
+			dojo.style(this.arrow, "display", "");
 		}
 		if(this.disabled){
 			this.setDisabled(true);
@@ -429,12 +422,12 @@ dojo.declare(
 		var self = this;
 		var closure = function(){ return function(){ self._openSubmenu(); }; }();
 
-		this.hover_timer = dojo.lang.setTimeout(closure, this.getParent().submenuDelay);
+		this.hover_timer = setTimeout(closure, this.getParent().submenuDelay);
 	},
 
 	_stopSubmenuTimer: function(){
 		if(this.hover_timer){
-			dojo.lang.clearTimeout(this.hover_timer);
+			clearTimeout(this.hover_timer);
 			this.hover_timer = null;
 		}
 	},
