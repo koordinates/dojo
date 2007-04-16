@@ -2,7 +2,8 @@ dojo.provide("dijit.form.SpinnerBase");
 
 dojo.require("dijit.form.ValidationTextbox");
 dojo.require("dijit.util.Typematic");
-dojo.require("dojo.html.style");
+
+//FIXME: Should we rename to something which represents a mixin vs. a base class?
 
 dojo.declare(
 	"dijit.form.SpinnerBase",
@@ -38,19 +39,19 @@ dojo.declare(
 		},
 
 		_arrowPressed: function(/*Node*/ nodePressed, /*Number*/ direction){
-			dojo.html.addClass(nodePressed, "dojoSpinnerButtonPushed");
+			nodePressed.className += " dojoSpinnerButtonPushed";
 			this.setValue(this.adjust(this.getValue(), direction*this.smallDelta));
 		},
 
 		_arrowReleased: function(/*Node*/ node){
 			this._wheelTimer = null;
 			this.textbox.focus();
-			dojo.html.removeClass(node, "dojoSpinnerButtonPushed");
+			node.className.replace(new RegExp('(^|\\s+)dojoSpinnerButtonPushed(\\s+|$)'), "$1$2");
 		},
 
 		_typematicCallback: function(/*Node*/ node, /*Number*/ count){
-			if (count == -1){ this._arrowReleased(node); }
-			else { this._arrowPressed(node, (node == this.upArrowNode) ? +1 : -1); }
+			if(count == -1){ this._arrowReleased(node); }
+			else{ this._arrowPressed(node, (node == this.upArrowNode) ? 1 : -1); }
 		},
 
 		_wheelTimer: null,
@@ -82,19 +83,23 @@ dojo.declare(
 
 //PORT: what to do with csshack?			dojo.html.applyBrowserClass(this.domNode);
 
+			var node = this.textbox;
+
 			// textbox and domNode get the same style but the css separates the 2 using !important
-//PORT this
-			dojo.html.copyStyle(this.textbox, this.srcNodeRef);
+			if(this.srcNodeRef){
+				dojo.style(node, "cssText", this.srcNodeRef.style.cssText); // will fail on Opera?
+				node.className += " " + this.srcNodeRef.className;
+			}
 
 			// extra listeners
-			if(this.textbox.addEventListener){
-				// dojo.event.connect() doesn't seem to work with DOMMouseScroll
-				this.textbox.addEventListener('DOMMouseScroll', dojo.hitch(this, "_mouseWheeled"), false); // Mozilla + Firefox + Netscape
+			if(node.addEventListener){
+				// dojo.connect() doesn't seem to work with DOMMouseScroll
+				node.addEventListener('DOMMouseScroll', dojo.hitch(this, "_mouseWheeled"), false); // Mozilla + Firefox + Netscape
 			}else{
-				dojo.connect(this.textbox, "onmousewheel", this, "_mouseWheeled"); // IE + Safari
+				dojo.connect(node, "onmousewheel", this, "_mouseWheeled"); // IE + Safari
 			}
 //PORT: use of private dojo._keys
-			dijit.typematic.addListener(this.upArrowNode, this.textbox, {key:dojo._keys.UP_ARROW,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout);
-			dijit.typematic.addListener(this.downArrowNode, this.textbox, {key:dojo._keys.DOWN_ARROW,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout);
+			dijit.util.typematic.addListener(this.upArrowNode, node, {key:dojo._keys.UP_ARROW,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout);
+			dijit.util.typematic.addListener(this.downArrowNode, node, {key:dojo._keys.DOWN_ARROW,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout);
 		}
 });

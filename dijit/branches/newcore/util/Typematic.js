@@ -1,8 +1,6 @@
 dojo.provide("dijit.util.Typematic");
 
-dojo.require("dojo.event.browser");
-
-dijit.typematic = {
+dijit.util.typematic = {
 	// summary:
 	//              These functions are used to repetitively call a user specified callback 
 	//		method when a specific key or mouse click over a specific DOM node is 
@@ -76,20 +74,20 @@ dijit.typematic = {
 		//		altKey: same as ctrlKey but for the alt key
 		//		shiftKey: same as ctrlKey but for the shift key
 		//	See the trigger method for other parameters.
-		dojo.event.browser.addListener(node, "key", function(evt){
+		dojo.addListener(node, "key", null, function(evt){
 			if(evt.key == keyObject.key
 			&& ((typeof keyObject.ctrlKey == "undefined") || keyObject.ctrlKey == evt.ctrlKey)
 			&& ((typeof keyObject.altKey == "undefined") || keyObject.altKey == evt.ctrlKey)
 			&& ((typeof keyObject.shiftKey == "undefined") || keyObject.shiftKey == evt.ctrlKey)){
 				dojo.stopEvent(evt);
-				dijit.typematic.trigger(_this, callback, obj, subsequentDelay, initialDelay);
-			}else if (dijit.typematic._obj == obj){
-				dijit.typematic.stop();
+				dijit.util.typematic.trigger(_this, callback, obj, subsequentDelay, initialDelay);
+			}else if (dijit.util.typematic._obj == obj){
+				dijit.util.typematic.stop();
 			}
 		});
 		dojo.addListener(node, "keyup", null, function(evt){
-			if(dijit.typematic._obj == obj){
-				dijit.typematic.stop();
+			if(dijit.util.typematic._obj == obj){
+				dijit.util.typematic.stop();
 			}
 		});
 	},
@@ -98,26 +96,26 @@ dijit.typematic = {
 		// summary: Start listening for a typematic mouse click.
 		//	node: the DOM node object to listen on for mouse events.
 		//	See the trigger method for other parameters.
-		dojo.event.browser.addListener(node, "mousedown", function(evt){
+		dojo.addListener(node, "mousedown", null, function(evt){
 			dojo.stopEvent(evt);
-			dijit.typematic.trigger(_this, callback, obj, subsequentDelay, initialDelay);
+			dijit.util.typematic.trigger(_this, callback, obj, subsequentDelay, initialDelay);
 		});
-		dojo.event.browser.addListener(node, "mouseup", function(evt){
+		dojo.addListener(node, "mouseup", null,function(evt){
 			dojo.stopEvent(evt);
-			dijit.typematic.stop();
+			dijit.util.typematic.stop();
 		});
-		dojo.event.browser.addListener(node, "mouseout", function(evt){
+		dojo.addListener(node, "mouseout", null, function(evt){
 			dojo.stopEvent(evt);
-			dijit.typematic.stop();
+			dijit.util.typematic.stop();
 		});
-		dojo.event.browser.addListener(node, "mousemove", function(evt){
+		dojo.addListener(node, "mousemove", null, function(evt){
 			dojo.stopEvent(evt);
 		});
-		dojo.event.browser.addListener(node, "dblclick", function(evt){
+		dojo.addListener(node, "dblclick", null, function(evt){
 			dojo.stopEvent(evt);
 			if(dojo.isIE){
-				dijit.typematic.trigger(_this, callback, obj, subsequentDelay, initialDelay);
-				setTimeout("dijit.typematic.stop()",50);
+				dijit.util.typematic.trigger(_this, callback, obj, subsequentDelay, initialDelay);
+				setTimeout("dijit.util.typematic.stop()",50);
 			}
 		});
 	},
