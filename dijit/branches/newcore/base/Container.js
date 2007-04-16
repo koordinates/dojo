@@ -35,7 +35,7 @@ dojo.declare("dijit.base.Contained", //FIXME: typo for Container??
 			var node = this.domNode;
 			do {
 				node = node.previousSibling;
-			} while(node && node.nodeType != dojo.dom.ELEMENT_NODE);
+			} while(node && node.nodeType != 1);
 			if(!node){ return null; } // null
 			var id = node.widgetId;
 			return dijit.byId(id);
@@ -49,7 +49,7 @@ dojo.declare("dijit.base.Contained", //FIXME: typo for Container??
 			var node = this.domNode;
 			do {
 				node = node.nextSibling;
-			} while(node && node.nodeType != dojo.dom.ELEMENT_NODE);
+			} while(node && node.nodeType != 1);
 			if(!node){ return null; } // null
 			var id = node.widgetId;
 			return dijit.byId(id);
@@ -110,7 +110,7 @@ dojo.declare("dijit.base.Container",
 			var nextElement = function(node){
 				do {
 					node = node.nextSibling;
-				} while(node && node.nodeType != dojo.dom.ELEMENT_NODE);
+				} while(node && node.nodeType != 1);
 				return node;
 			};
 
