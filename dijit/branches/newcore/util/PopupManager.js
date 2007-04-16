@@ -26,7 +26,7 @@ dijit.util.PopupManager = new function(){
 		var win = dojo.html.getElementWindow(e.target);
 		var iframe = win._frameElement || win.frameElement;
 		if(iframe){
-			var cood = dojo.html.abs(iframe, true);
+			var cood = dojo.coords(iframe, true);
 			x += cood.x - dojo.withGlobal(win, dojo.html.getScroll).left;
 			y += cood.y - dojo.withGlobal(win, dojo.html.getScroll).top;
 		}
@@ -127,12 +127,12 @@ dijit.util.PopupManager = new function(){
 	function onKey(/*Event*/e){
 		// summary
 		//	Handles keystrokes, passing them up the chain of menus
-		if (!e.key) { return; }
+		if(!e.key){ return; }
 		if(stack.length==0){ return; }
 
 		// loop from child menu up ancestor chain, ending at button that spawned the menu
 		var m = stack[stack.length-1];
-		while (m){
+		while(m){
 			if(m.processKey(e)){
 				e.preventDefault();
 				e.stopPropagation();
@@ -172,7 +172,7 @@ dijit.util.PopupManager = new function(){
 		//		and the top window, so that whereever the user clicks in the page,
 		//		the popup menu will be closed
 
-		if(!targetWindow) { //see comment below
+		if(!targetWindow){ //see comment below
 			targetWindow = dojo.html.getDocumentWindow(window.top && window.top.document || window.document);
 		}
 
@@ -180,7 +180,7 @@ dijit.util.PopupManager = new function(){
 		dojo.event[command](targetWindow, "onscroll", onMouse);
 		dojo.event[command](targetWindow.document, "onkey", onKey);
 
-		for (var i = 0; i < targetWindow.frames.length; i++){
+		for(var i = 0; i < targetWindow.frames.length; i++){
 			try{
 				//do not remove dojo.html.getDocumentWindow, see comment in it
 				var win = dojo.html.getDocumentWindow(targetWindow.frames[i].document);

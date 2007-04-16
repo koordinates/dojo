@@ -1,8 +1,10 @@
 dojo.provide("dijit.form.ValidationTextbox");
 
-dojo.require("dijit.form.Textbox");
 dojo.require("dojo.i18n");
 dojo.require("dijit.util.wai");
+
+dojo.require("dijit.form.Textbox");
+dojo.require("dijit.Tooltip");
 
 dojo.requireLocalization("dijit.form", "validate");
 
@@ -42,8 +44,6 @@ dojo.declare(
 		//		Do not specify both regExp and regExpGen
 		regExpGen: function(constraints){ return this.regExp; },
 	
-		templatePath: dojo.moduleUrl("dijit.form", "templates/ValidationTextbox.html"),
-		
 		setValue: function(value){
 			dijit.form.ValidationTextbox.superclass.setValue.call(this, value);
 			this.validate(false);
@@ -105,10 +105,23 @@ dojo.declare(
 					if (typeof message != "string"){ message = ""; }
 				}
 			}
-			this.messageSpan.innerHTML = message;
+			this._displayMessage(message);
 			this.updateClass(_class);
 		},
 		
+		// currently displayed message
+		_message: "",		
+
+		_displayMessage: function(/*String*/ message){
+			if(this._message == message){ return; }
+			this._message = message;
+			if(message){
+				dijit.MasterTooltip.show(message, this.domNode);
+			}else{
+				dijit.MasterTooltip.hide();
+			}
+		},
+
 		_lastClassAdded: "dojoInputFieldValidationError",
 		updateClass: function(className){
 			// summary: used to ensure that only 1 validation class is set at a time

@@ -1,19 +1,70 @@
 dojo.provide("dijit.Tooltip");
 
-dojo.require("dojo.event.*");
-dojo.require("dojo.html.style");
-dojo.require("dojo.html.util");
-
 dojo.require("dijit.base.Widget");
 dojo.require("dijit.base.TemplatedWidget");
-dojo.require("dijit.util.PopupManager");
+dojo.require("dijit.util.place");
 
 dojo.declare(
-	"dijit.Tooltip",
+	"dijit._MasterTooltip",
 	[dijit.base.Widget, dijit.base.TemplatedWidget],
 	{
 		// summary
-		//		Pops up a tooltip (a help message) when you hover over a node
+		//		Internal widget that holds the actual tooltip markup,
+		//		which occurs once per page.
+		//		Called by Tooltip widgets which are just containers to hold
+		//		the markup
+
+		// duration: Integer
+		//		Milliseconds to fade in/fade out
+		duration: 100,
+
+		templatePath: dojo.moduleUrl("dijit", "templates/Tooltip.html"),
+
+		postCreate: function(){
+			this.domNode.style.display="none";
+			dojo.body().appendChild(this.domNode);
+		},
+
+		show: function(/*String*/ innerHTML, /*DomNode*/ aroundNode){
+			// summary: display tooltip w/specified contents underneath specified node
+
+			if (this.isShowingNow){
+				this.domNode.style.display="none";
+			}
+			this.containerNode.innerHTML=innerHTML;
+			dijit.util.placeOnScreenAroundElement(this.domNode, aroundNode, [0,0],
+				"border-box", {'BL': 'TL', 'TL': 'BL'}); //PORT: does border-box still work?
+			var anim = dojo.fadeIn(this.domNode, this.duration);
+			dojo.connect(anim, "onEnd", this, function(){
+				dojo.style(this.domNode, "display", "");
+			});
+			anim.play();
+			this.isShowingNow = true;
+		},
+
+		hide: function(){
+			// summary: hide the tooltip
+			this.isShowingNow = false;
+			var anim = dojo.fadeOut(this.domNode, this.duration);
+			dojo.connect(anim, "onEnd", this, function(){
+				dojo.style(this.domNode, "display", "none");
+			});
+			anim.play();
+		}
+	}
+);
+
+// Make a single tooltip markup on the page that is reused as appropriate
+dojo.addOnLoad(function(){
+	dijit.MasterTooltip = new dijit._MasterTooltip();
+});
+
+dojo.declare(
+	"dijit.Tooltip",
+	dijit.base.Widget,
+	{
+		// summary
+		//		Pops up a tooltip (a help message) when you hover over a node.
 
 		// caption: String
 		//		Text to display in the tooltip.
@@ -21,63 +72,61 @@ dojo.declare(
 		caption: "",
 		
 		// showDelay: Integer
-		//		Number of milliseconds to wait after hovering over the object, before
+		//		Number of milliseconds to wait after hovering over/focusing on the object, before
 		//		the tooltip is displayed.
-		showDelay: 500,
-		
-		// hideDelay: Integer
-		//		Number of milliseconds to wait after moving mouse off of the object (or
-		//		off of the tooltip itself), before erasing the tooltip
-		hideDelay: 100,
+		showDelay: 400,
 		
 		// connectId: String
 		//		Id of domNode to attach the tooltip to.
 		//		(When user hovers over specified dom node, the tooltip will appear.)
 		connectId: "",
 
-		templatePath: dojo.moduleUrl("dijit", "templates/Tooltip.html"),
-	
+		// A hash to hold connect handles for cleanup
+		_connections: [],
+
 		postCreate: function(){
 			this._connectNode = dojo.byId(this.connectId);
-			dojo.event.connect(this._connectNode, "onmouseover", this, "_onMouseOver");
 
-			if(this.caption != ""){
-				this.containerNode.appendChild(document.createTextNode(this.caption));
+			dojo.forEach(["onMouseOver", "onHover", "onMouseOut", "onUnHover"], function(event){
+				this._connections.event = dojo.connect(this._connectNode, event.toLowerCase(), this, "_"+event);
+			}, this);
+		},
+
+		//PORT from dojo.dom.isDescendentOf
+		_isDescendentOf: function(/*Node*/node, /*Node*/ancestor){
+			//	summary
+			//	Returns boolean if node is a descendant of ancestor
+			// guaranteeDescendant allows us to be a "true" isDescendantOf function
+
+			while(node){
+				if(node === ancestor){ 
+					return true; // boolean
+				}
+				node = node.parentNode;
 			}
+			return false; // boolean
 		},
 
 		_onMouseOver: function(/*Event*/ e){
-			// Start tracking mouse movements, so we know when to cancel timers or erase the tooltip
-			if(!this._tracking){
-				dojo.event.connect(document.documentElement, "onmousemove", this, "_onMouseMove");
-				this._tracking=true;
+			if(this._isDescendantOf(e.relatedTarget, this._connectNode)){
+				// false event; just moved from target child to target; ignore.
+				return;
 			}
-
-			this._onHover(e);			
+			this._onHover(e);
 		},
 
-		_onMouseMove: function(/*Event*/ e) {
-			if(dojo.html.overElement(this._connectNode, e) || dojo.html.overElement(this.domNode, e)){
-				this._onHover(e);
-			} else {
-				// mouse has been moved off the element/tooltip
-				// note: can't use onMouseOut to detect this because the "explode" effect causes
-				// spurious onMouseOut events (due to interference from outline), w/out corresponding _onMouseOver
-				this._onUnHover(e);
+		_onMouseOut: function(/*Event*/ e){
+			if(this._isDescendantOf(e.relatedTarget, this._connectNode)){
+				// false event; just moved from target to target child; ignore.
+				return;
 			}
+			this._onUnHover(e);
 		},
 
-		_onHover: function(/*Event*/ e) {
+		_onHover: function(/*Event*/ e){
 			if(this._hover){ return; }
 			this._hover=true;
 
-			// If the tooltip has been scheduled to be erased, cancel that timer
-			// since we are hovering over element/tooltip again
-			if(this._hideTimer) {
-				clearTimeout(this._hideTimer);
-				delete this._hideTimer;
-			}
-			
 			// If tooltip not showing yet then set a timer to show it shortly
 			if(!this.isShowingNow && !this._showTimer){
 				this._showTimer = setTimeout(dojo.hitch(this, "open"), this.showDelay);
@@ -91,55 +140,36 @@ dojo.declare(
 			if(this._showTimer){
 				clearTimeout(this._showTimer);
 				delete this._showTimer;
-			}
-			if(this.isShowingNow && !this._hideTimer){
-				this._hideTimer = setTimeout(dojo.hitch(this, "close"), this.hideDelay);
-			}
-			
-			// If we aren't showing the tooltip, then we can stop tracking the mouse now;
-			// otherwise must track the mouse until tooltip disappears
-			if(!this.isShowingNow){
-				dojo.event.disconnect(document.documentElement, "onmousemove", this, "_onMouseMove");
-				this._tracking=false;
+			}else{
+				this.close();
 			}
 		},
 
-		open: function() {
+		open: function(){
 			// summary: display the tooltip; usually not called directly.
-
-			if (this.isShowingNow) { return; }
-			dijit.util.PopupManager.openAround(this._connectNode, this, {'BL': 'TL', 'TL': 'BL'}, [0, 0] );
+			if(this.isShowingNow){ return; }
+			if(this._showTimer){
+				clearTimeout(this._showTimer);
+				delete this._showTimer;
+			}
+			delete this._showTimer;
+			dijit.MasterTooltip.show(this.caption || this.domNode.innerHTML, this._connectNode);
 			this.isShowingNow = true;
 		},
 
-		close: function() {
+		close: function(){
 			// summary: hide the tooltip; usually not called directly.
-			if (this.isShowingNow) {
-				if ( this._showTimer ) {
-					clearTimeout(this._showTimer);
-					delete this._showTimer;
-				}
-				if ( this._hideTimer ) {
-					clearTimeout(this._hideTimer);
-					delete this._hideTimer;
-				}
-				dojo.event.disconnect(document.documentElement, "onmousemove", this, "_onMouseMove");
-				this._tracking=false;
-				dijit.util.PopupManager.close();
-				this.isShowingNow = false;
-			}
-		},
-
-		_loadedContent: function(){
-			if(this.isShowingNow){
-				// the tooltip has changed size due to downloaded contents, so reposition it
-				// TODO: this.move(this._mouse, [10,15], "TL,TR,BL,BR");
-			}
+			if(!this.isShowingNow){ return; }
+			dijit.MasterTooltip.hide();
+			this.isShowingNow = false;
 		},
 
 		uninitialize: function(){
 			this.close();
-			dojo.event.disconnect(this._connectNode, "onmouseover", this, "_onMouseOver");
+			for(var event in this._connections){
+				dojo.disconnect(this._connectNode, event, this._connections.event);
+			}
+			this._connections = {};
 		}
 	}
 );
