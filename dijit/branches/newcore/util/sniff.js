@@ -25,9 +25,15 @@ dojo.provide("dijit.util.sniff");
 		dj_safari: d.isSafari,
 		dj_gecko: d.isMozilla
 	}; // no dojo unsupported browsers
+
 	for(var p in classes){
 		if(classes[p]){
-			dojo.doc.className += " " + p;
+			var html = dojo.doc.documentElement; //TODO browser-specific DOM magic needed?
+			if(html.classname){
+				html.className += " " + p;
+			}else{
+				html.className = p;
+			}
 		}
 	}
 })();

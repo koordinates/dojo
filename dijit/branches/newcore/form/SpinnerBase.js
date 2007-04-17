@@ -2,6 +2,7 @@ dojo.provide("dijit.form.SpinnerBase");
 
 dojo.require("dijit.form.ValidationTextbox");
 dojo.require("dijit.util.Typematic");
+dojo.require("dijit.util.sniff");
 
 //FIXME: Should we rename to something which represents a mixin vs. a base class?
 
@@ -80,8 +81,6 @@ dojo.declare(
 		postCreate: function(){
 			dijit.form.SpinnerBase.superclass.postCreate.apply(this, arguments);
 			// there's some browser specific CSS
-
-//PORT: what to do with csshack?			dojo.html.applyBrowserClass(this.domNode);
 
 			var node = this.textbox;
 
