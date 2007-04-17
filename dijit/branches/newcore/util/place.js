@@ -2,6 +2,54 @@ dojo.provide("dijit.util.place");
 
 // ported from dojo.html.util
 
+dijit.util.getViewport = function(){
+	//	summary
+	//	Returns the dimensions of the viewable area of a browser window
+	var _window = dojo.global;
+	var _document = dojo.doc;
+	var w = 0;
+	var h = 0;
+
+	if(dojo.isMozilla){
+		// mozilla
+		w = _document.documentElement.clientWidth;
+		h = _window.innerHeight;
+	}else if(!dojo.isOpera && _window.innerWidth){
+		//in opera9, dojo.body().clientWidth should be used, instead
+		//of window.innerWidth/document.documentElement.clientWidth
+		//so we have to check whether it is opera
+		w = _window.innerWidth;
+		h = _window.innerHeight;
+	}else if (!dojo.isOpera && dojo.getObject("documentElement.clientWidth", _document)){
+		// IE6 Strict
+		var w2 = _document.documentElement.clientWidth;
+		// this lets us account for scrollbars
+		if(!w || w2 && w2 < w) {
+			w = w2;
+		}
+		h = _document.documentElement.clientHeight;
+	}else if (dojo.body().clientWidth){
+		// IE, Opera
+		w = dojo.body().clientWidth;
+		h = dojo.body().clientHeight;
+	}
+	return { w: w, h: h };	//	object
+};
+
+dijit.util.getScroll = function(){
+	//	summary
+	//	Returns the scroll position of the document
+	var _window = dojo.global;
+	var _document = dojo.doc;
+	var top = _window.pageYOffset || _document.documentElement.scrollTop || dojo.body().scrollTop || 0;
+	var left = _window.pageXOffset || _document.documentElement.scrollLeft || dojo.body().scrollLeft || 0;
+	return { 
+		top: top,
+		left: left, 
+		offset:{ x: left, y: top }	//	note the change, NOT an Array with added properties. 
+	};	//	object
+};
+
 dijit.util.placeOnScreen = function(
 	/* HTMLElement */node,
 	/* integer */desiredX,
@@ -61,15 +109,16 @@ dijit.util.placeOnScreen = function(
 		padding = [0, 0];
 	}
 
-	var scroll = dojo.html.getScroll().offset;
-	var view = dojo.html.getViewport();
+	var scroll = dijit.util.getScroll().offset;
+	var view = dijit.util.getViewport();
 
 	node = dojo.byId(node);
 	var oldDisplay = node.style.display;
 	node.style.display="";
-	var bb = dojo.html.getBorderBox(node);
-	var w = bb.width;
-	var h = bb.height;
+//	var bb = dojo.html.getBorderBox(node);
+	var bb = dojo.marginBox(node); //PORT okay?
+	var w = bb.w;
+	var h = bb.h;
 	node.style.display=oldDisplay;
 
 	if(!(corners instanceof Array || typeof corners == "array")){
@@ -99,8 +148,8 @@ dijit.util.placeOnScreen = function(
 		}
 
 		var x = tryX + w;
-		if(x > view.width) {
-			x = view.width - w;
+		if(x > view.w) {
+			x = view.w - w;
 			match = false;
 		} else {
 			x = tryX;
@@ -108,8 +157,8 @@ dijit.util.placeOnScreen = function(
 		x = Math.max(padding[0], x) + scroll.x;
 
 		var y = tryY + h;
-		if(y > view.height) {
-			y = view.height - h;
+		if(y > view.h) {
+			y = view.h - h;
 			match = false;
 		} else {
 			y = tryY;
@@ -146,27 +195,27 @@ dijit.util.placeOnScreenAroundElement = function(
 	/* HTMLElement */node,
 	/* HTMLElement */aroundNode,
 	/* integer */padding,
-	/* string? */aroundType,
 	/* string? */aroundCorners,
 	/* boolean? */tryOnly){
 	//	summary
 	//	Like placeOnScreen, except it accepts aroundNode instead of x,y
-	//	and attempts to place node around it. aroundType (see
-	//	dojo.html.boxSizing in html/layout.js) determines which box of the
-	//	aroundNode should be used to calculate the outer box.
-	//	aroundCorners specify Which corner of aroundNode should be
-	//	used to place the node => which corner(s) of node to use (see the
-	//	corners parameter in dojo.html.placeOnScreen)
-	//	aroundCorners: {'TL': 'BL', 'BL': 'TL'}
+	//	and attempts to place node around it.  Uses margin box dimensions.
+	//
+	//	aroundCorners
+	//		specify Which corner of aroundNode should be
+	//		used to place the node => which corner(s) of node to use (see the
+	//		corners parameter in dijit.util.placeOnScreen)
+	//		e.g. {'TL': 'BL', 'BL': 'TL'}
 
 	var best, bestDistance=Infinity;
 	aroundNode = dojo.byId(aroundNode);
 	var oldDisplay = aroundNode.style.display;
 	aroundNode.style.display="";
-	var mb = dojo.html.getElementBox(aroundNode, aroundType);
-	var aroundNodeW = mb.width;
-	var aroundNodeH = mb.height;
-	var aroundNodePos = dojo.html.getAbsolutePosition(aroundNode, true, aroundType);
+	var mb = dojo.marginBox(aroundNode);
+	var aroundNodeW = mb.w;
+	var aroundNodeH = mb.h;
+//	var aroundNodePos = dojo.html.getAbsolutePosition(aroundNode, true, aroundType);
+	var aroundNodePos = dojo.coords(aroundNode); //PORT is this right?
 	aroundNode.style.display=oldDisplay;
 
 	for(var nodeCorner in aroundCorners){

@@ -6,6 +6,7 @@ dojo.require("dojo.event.*");
 
 dojo.require("dijit.util.BackgroundIframe");
 dojo.require("dijit.util.FocusManager");
+dojo.require("dijit.util.place");
 dojo.require("dijit.util.window");
 
 dijit.util.PopupManager = new function(){
@@ -31,7 +32,7 @@ dijit.util.PopupManager = new function(){
 			x += cood.x - dojo.withGlobal(win, dojo.html.getScroll).left;
 			y += cood.y - dojo.withGlobal(win, dojo.html.getScroll).top;
 		}
-		dojo.html.placeOnScreen(widget.domNode, x, y, padding, true);
+		dijit.util.placeOnScreen(widget.domNode, x, y, padding, true);
 		
 		_open(widget);
 	}
@@ -41,8 +42,7 @@ dijit.util.PopupManager = new function(){
 		//		Open the widget relative to parent widget (typically as a drop down to that widget)
 		//		TODO: if widget has href attach to onLoaded and reposition
 
-		dojo.html.placeOnScreenAroundElement(widget.domNode, parent, padding,
-			dojo.html.boxSizing.BORDER_BOX, orient);
+		dijit.util.placeOnScreenAroundElement(widget.domNode, parent, padding, orient);
 			
 		_open(widget);
 	};

@@ -33,7 +33,7 @@ dojo.declare(
 			}
 			this.containerNode.innerHTML=innerHTML;
 			dijit.util.placeOnScreenAroundElement(this.domNode, aroundNode, [0,0],
-				"border-box", {'BL': 'TL', 'TL': 'BL'}); //PORT: does border-box still work?
+				{'BL': 'TL', 'TL': 'BL'});
 			var anim = dojo.fadeIn(this.domNode, this.duration);
 			dojo.connect(anim, "onEnd", this, function(){
 				dojo.style(this.domNode, "display", "");

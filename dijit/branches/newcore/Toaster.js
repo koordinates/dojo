@@ -192,8 +192,8 @@ dojo.declare(
 		},
 
 		_placeClip: function(){
-			var scroll = dojo.html.getScroll();
-			var view = dojo.html.getViewport();
+			var scroll = dijit.util.getScroll();
+			var view = dijit.util.getViewport();
 
 			var nodeSize = dojo.marginBox(this.containerNode);
 
@@ -207,10 +207,10 @@ dojo.declare(
 			if(pd.match(/^t/)){
 				style.top = scroll.top+"px";
 			}else if(pd.match(/^b/)){
-				style.top = (view.height - nodeSize.h - 2 + scroll.top)+"px";
+				style.top = (view.h - nodeSize.h - 2 + scroll.top)+"px";
 			}
 			if(pd.match(/^[tb]r-/)){
-				style.left = (view.width - nodeSize.w - 1 - scroll.left)+"px";
+				style.left = (view.w - nodeSize.w - 1 - scroll.left)+"px";
 			}else if(pd.match(/^[tb]l-/)){
 				style.left = 0 + "px";
 			}
@@ -238,7 +238,7 @@ dojo.declare(
 
 			if(!this._scrollConnected){
 				this._scrollConnected = true;
-				dojo.connect(window, "onscroll", this, this._placeClip);
+				this._scrollHandle = dojo.connect(window, "onscroll", this, this._placeClip);
 			}
 		},
 
@@ -250,7 +250,7 @@ dojo.declare(
 
 			if(this._scrollConnected){
 				this._scrollConnected = false;
-				dojo.disconnect(window, "onscroll", this._placeClip);
+				dojo.disconnect(window, "onscroll", this._scrollHandle);
 			}
 
 			dojo.style(this.containerNode, 1);
