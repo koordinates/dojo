@@ -332,15 +332,12 @@ dojo.widget.defineWidget(
 			//		editor will be focused, and this function always return true. For shared
 			//		toolbar, if the current focued editor is not one of the instances sharing
 			//		this toolbar, this function return false, otherwise true.
-			if(!this.shareGroup){
+			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			if(!this.shareGroup||!curInst){
 				this.parent.focus();
 				return true;
 			}
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-			if(this.shareGroup == curInst.toolbarGroup){
-				return true;
-			}
-			return false;
+			return (this.shareGroup == curInst.toolbarGroup);
 		},
 		destroy: function(){
 			for(var it in this.items){

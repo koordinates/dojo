@@ -21,10 +21,20 @@ dojo.lang.mixin(dojo.widget.Editor2Manager,
 
 	getCurrentInstance: function(){
 		// summary: Return the current focused Editor2 instance
+		
+		//TODO: make use of the focusmanager in dijit, so we can
+		//get rid of the setFocus logic for FF too
+		var iframe=document.activeElement; //IE only
+		if(iframe && iframe.tagName=='IFRAME'){
+			var f=dojo.widget.byId(iframe.id);
+			if(f){
+				this._currentInstance = f;
+			}
+		}
 		return this._currentInstance;
 	},
 	setCurrentInstance: function(/*Widget*/inst){
-		// summary: Set current focused Editor2 instance
+//		dojo.debug('setCurrentInstance',inst);
 		this._currentInstance = inst;
 	},
 	getCommand: function(/*dojo.widget.Editor2*/editor,/*String*/name){
@@ -235,7 +245,17 @@ dojo.widget.defineWidget(
 			//		the finish of the loading of document in the editing element
 
 //			dojo.profile.start("dojo.widget.Editor2::editorOnLoad");
-
+			this.iframe.id=this.widgetId;
+			if(dojo.render.html.ie){
+				//IE always focus into the created new instance, try to workaround that by
+				//logging the real instance which should be focused, and in setFocus, always
+				//try to focus in the correct instance
+				if(this.focusOnLoad){
+					this._shared.focusOnLoadInstance=this;
+				}else{
+					this._fixIEFocus=true;
+				}
+			}
 			dojo.event.topic.publish("dojo.widget.Editor2::preLoadingToolbar", this);
 			if(this.toolbarAlwaysVisible){
 				dojo.require("dojo.widget.Editor2Plugin.AlwaysShowToolbar");
@@ -397,7 +417,7 @@ dojo.widget.defineWidget(
 
 		setFocus: function(){
 			// summary: focus is set on this instance
-//			dojo.debug("setFocus: start "+this.widgetId);
+//			dojo.debug("setFocus: start ",this);
 			if(dojo.widget.Editor2Manager.getCurrentInstance() === this){ return; }
 
 			this.clobberFocus();
@@ -421,7 +441,7 @@ dojo.widget.defineWidget(
 			if(this._bookmark){
 				this.focus(); //require for none-activeX IE
 				dojo.withGlobal(this.window, "moveToBookmark", dojo.html.selection, [this._bookmark]);
-				if(keepbookmark){
+				if(!keepbookmark){
 					this._bookmark = null;
 				}
 			}else{
@@ -455,8 +475,8 @@ dojo.widget.defineWidget(
 			}
 			// end frequency checker
 
-			//IE has the habit of generating events even when this editor is blurred, prevent this
-			if(dojo.widget.Editor2Manager.getCurrentInstance() !== this){ return; }
+//			//IE has the habit of generating events even when this editor is blurred, prevent this
+//			if(dojo.widget.Editor2Manager.getCurrentInstance() !== this){ return; }
 
 			this.toolbarWidget.update();
 		},
@@ -485,10 +505,21 @@ dojo.widget.defineWidget(
 			}
 			this.editorOnLoad();
 		},
-
+		_shared: {focusOnLoadInstance:null},
 		onFocus: function(){
-			dojo.widget.Editor2.superclass.onFocus.call(this);
-			this.setFocus();
+			if(this._fixIEFocus){
+				delete this._fixIEFocus;
+				var f=this._shared.focusOnLoadInstance;
+				if(f && f!==this){
+					f.focus();
+					return;
+				}
+			}
+			dojo.widget.Editor2.superclass.onFocus.apply(this,arguments);
+			//no need to track focus for IE us onFocus event, see comment in dojo.widget.Editor2Manager.getCurrentInstance()
+			if(!dojo.render.html.ie){
+				this.setFocus();
+			}
 		},
 
 		//overload to support source editing mode
