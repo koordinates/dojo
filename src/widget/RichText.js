@@ -191,7 +191,6 @@ dojo.widget.defineWidget(
 		// events: Array
 		//		 events which should be connected to the underlying editing area, events in this array will be addListener with capture=true
 		captureEvents: [],
-
 		open: function (/*DomNode, optional*/element) {
 			// summary:
 			//		Transforms the node referenced in this.domNode into a rich text editing
@@ -317,7 +316,7 @@ dojo.widget.defineWidget(
 				this.window = this.iframe.contentWindow;
 				this.document = this.window.document;
 				this.document.open();
-				this.document.write('<html><head><style>body{margin:0;padding:0;border:0;overflow:hidden;}</style>'+
+				this.document.write('<html><head><style>body{margin:0;padding:0;border:0;overflow:auto;}</style>'+
 					 this._applyEditingAreaStyleSheets()+ "</head><body></body></html>");
 				this.document.close();
 				if(this.height){
@@ -515,7 +514,7 @@ dojo.widget.defineWidget(
 					style.border = "none";
 					style.lineHeight = "0"; // squash line height
 					style.verticalAlign = "bottom";
-					scrolling = this.height ? "auto" : "no";
+					scrolling = this.height ? "auto" : "vertical";
 				}
 			}
 			// opera likes this to be outside the with block
@@ -590,7 +589,7 @@ dojo.widget.defineWidget(
 				// TODO: left positioning will case contents to disappear out of view
 				//       if it gets too wide for the visible area
 				'body{top:0;left:0;right:0;' +
-				(((this.height)||(dojo.render.html.opera)) ? '' : 'position:fixed;') +
+				((this.height||dojo.render.html.opera) ? '' : 'position:fixed;') +
 				'font:' + font + ';' +
 				'min-height:' + this.minHeight + ';' +
 				'line-height:' + lineHeight + '}' +
@@ -1215,10 +1214,14 @@ dojo.widget.defineWidget(
 					insertRange.select();
 					//insertRange.collapse(true);
 					return true;
+				}else if(dojo.render.html.moz && argument.length==0){
+					//mozilla can not inserthtml an empty html to delete current selection
+					//so we delete the selection instead in this case
+					dojo.withGlobal(this.window,'remove',dojo.html.selection);
+					return true;
 				}else{
 					return this.document.execCommand(command, false, argument);
 				}
-			/* */
 			// fix up unlink in Mozilla to unlink the link and not just the selection
 			}else if((command == "unlink")&&
 				(this.queryCommandEnabled("unlink"))&&
@@ -1498,7 +1501,7 @@ dojo.widget.defineWidget(
 			}
 			this._lastHeight = height;
 			this.editorObject.style.height = this._lastHeight + "px";
-			this.window.scrollTo(0, 0);
+//			this.window.scrollTo(0, 0);
 		},
 
 		_saveContent: function(e){
@@ -1695,11 +1698,9 @@ dojo.widget.defineWidget(
 
 		_fixContentForMoz: function(html){
 			// summary:
-			//		Moz can not handle strong/em tags correctly, correct them here
-			html = html.replace(/<strong([ \>])/gi, '<b$1' );
-			html = html.replace(/<\/strong>/gi, '<\/b>' );
-			html = html.replace(/<em([ \>])/gi, '<i$1' );
-			html = html.replace(/<\/em>/gi, '<\/i>' );
+			//		Moz can not handle strong/em tags correctly, convert them to b/i
+			html = html.replace(/<(\/)?strong([ \>])/gi, '<$1b$2' );
+			html = html.replace(/<(\/)?em([ \>])/gi, '<$1i$2' );
 			return html;
 		},
 		_srcInImgRegex	: /(?:(<img(?=\s).*?\ssrc=)("|')(.*?)\2)|(?:(<img\s.*?src=)([^"'][^ >]+))/gi ,
