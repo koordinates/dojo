@@ -109,13 +109,11 @@ dojo.declare(
 		// event handlers, you can over-ride these in your own subclasses
 		onfocus: function(){
 			// addClass dojoInputFieldFocused
-			if(!(new RegExp('(^|\\s+)dojoInputFieldFocused(\\s+|$)')).test(this.nodeWithBorder.className)){
-				this.nodeWithBorder.className += " dojoInputFieldFocused";
-			}
+			this._addClass(this.nodeWithBorder.className, "dojoInputFieldFocused");
 		},
 		onblur: function(){
 			// removeClass dojoInputFieldFocused
-			this.nodeWithBorder.className = this.nodeWithBorder.className.replace(new RegExp('(^|\\s+)dojoInputFieldFocused(\\s+|$)'), "$1$2");
+			this._removeClass(this.nodeWithBorder, "dojoInputFieldFocused");
 
 			this.setValue(this.getValue()); 
 		},

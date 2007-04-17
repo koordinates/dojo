@@ -1,7 +1,7 @@
 dojo.provide("dijit.form.Calendar");
 
-dojo.require("dojo.date.common");
-dojo.require("dojo.date.format");
+dojo.require("dojo.date.calc");
+dojo.require("dojo.date.local");
 dojo.require("dojo.date.serialize");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
@@ -65,10 +65,10 @@ dojo.declare(
 			}
 		
 			if(this.selectedNode!=null){
-				dojo.html.removeClass(this.selectedNode,this.classNames.selectedDate);
+				this._removeClass(this.selectedNode,this.classNames.selectedDate);
 			}
 			if(this.clickedNode!=null){
-				dojo.html.addClass(this.clickedNode,this.classNames.selectedDate);
+				this._addClass(this.clickedNode,this.classNames.selectedDate);
 				this.selectedNode = this.clickedNode;
 			}else{
 				//only call this if setDate was called by means other than clicking a date
@@ -88,7 +88,7 @@ dojo.declare(
 			// summary: Replacable function to convert a formatted string to a value
 			return value;
 		},
-		postCreate: function() {
+		postCreate: function(){
 			dijit.form.Calendar.superclass.postCreate.apply(this);
 			// get the node for which the background color will be updated
 			if (typeof this.nodeWithBorder != "object"){
@@ -99,7 +99,7 @@ dojo.declare(
 
 			// Insert localized day names in the template
 			//if we dont use unnest, we risk modifying the dayLabels array inside of dojo.date and screwing up other calendars on the page
-			var dayLabels = dojo.lang.unnest(dojo.date.getNames('days', this.dayWidth, 'standAlone', this.lang));
+			var dayLabels = dojo.lang.unnest(dojo.date.local.getNames('days', this.dayWidth, 'standAlone', this.lang));
 			if(this.weekStartsOn>0){
 				//adjust dayLabels for different first day of week. ie: Monday or Thursday instead of Sunday
 				for(var i=0;i<this.weekStartsOn;i++){
@@ -107,7 +107,7 @@ dojo.declare(
 				}
 			}
 			var dayLabelNodes = this.dayLabelsRow.getElementsByTagName("td");
- 			for(i=0; i<7; i++) {
+ 			for(i=0; i<7; i++){
 				dayLabelNodes.item(i).innerHTML = dayLabels[i];
 			}
 
@@ -116,7 +116,7 @@ dojo.declare(
 			}
 		},
 
-		filter: function(val) {
+		filter: function(val){
 			// summary: Return string format of date
 			dojo.date.toRfc3339(new Date(val),'dateOnly')
 			return val;
@@ -152,7 +152,7 @@ dojo.declare(
 		//	how to render the names of the days in the header. see dojo.date.getDayNames
 		dayWidth: 'narrow',
 
-		classNames: {
+		classNames:{
 		// summary:
 		//	stores a list of class names that may be overriden
 		//	TODO: this is not good; can't be adjusted via markup, etc. since it's an array
@@ -171,7 +171,7 @@ dojo.declare(
 			this.today.setHours(0,0,0,0);
 			if(typeof(this.value)=='string'&&this.value.toLowerCase()=='today'){
 				this.value = new Date();
-			}else if(this.value && (typeof this.value=="string") && (this.value.split("-").length > 2)) {
+			}else if(this.value && (typeof this.value=="string") && (this.value.split("-").length > 2)){
 				this.value = dojo.date.fromRfc3339(this.value);
 				this.value.setHours(0,0,0,0);
 			}
@@ -252,9 +252,9 @@ dojo.declare(
 				if(dojo.html.hasClass(currentCalendarNode,this.classNames.selectedDate)){
 					this.selectedNode = currentCalendarNode;
 				}
-				nextDate = dojo.date.add(nextDate, dojo.date.dateParts.DAY, 1);
+				nextDate = dojo.date.calc.add(nextDate, dojo.date.calc.parts.DAY, 1);
 			}
-			this.lastDay = dojo.date.add(nextDate,dojo.date.dateParts.DAY, -1);
+			this.lastDay = dojo.date.calc.add(nextDate,dojo.date.calc.parts.DAY, -1);
 			this._initControls();
 		},
 		_initControls: function(){
@@ -266,11 +266,11 @@ dojo.declare(
 			switch(evt.currentTarget) {
 				case this.increaseMonthNode.getElementsByTagName("img").item(0):
 				case this.increaseMonthNode:
-					d = dojo.date.add(d, dojo.date.dateParts.MONTH, 1);
+					d = dojo.date.calc.add(d, dojo.date.calc.parts.MONTH, 1);
 					break;
 				case this.decreaseMonthNode.getElementsByTagName("img").item(0):
 				case this.decreaseMonthNode:
-					d = dojo.date.add(d, dojo.date.dateParts.MONTH, -1);
+					d = dojo.date.calc.add(d, dojo.date.calc.parts.MONTH, -1);
 					break;
 			}
 			this._preInitUI(d,false,true);
@@ -280,10 +280,10 @@ dojo.declare(
 			var d = new Date(this.curMonth);
 			switch(evt.target) {
 				case this.nextYearLabelNode:
-					d = dojo.date.add(d, dojo.date.dateParts.YEAR, 1);
+					d = dojo.date.calc.add(d, dojo.date.calc.parts.YEAR, 1);
 					break;
 				case this.previousYearLabelNode:
-					d = dojo.date.add(d, dojo.date.dateParts.YEAR, -1);
+					d = dojo.date.calc.add(d, dojo.date.calc.parts.YEAR, -1);
 					break;
 			}
 			this._preInitUI(d,false,true);
@@ -302,7 +302,7 @@ dojo.declare(
 		},
 	
 		_setMonthLabel: function(monthIndex) {
-			this.monthLabelNode.innerHTML = dojo.date.getNames('months', 'wide', 'standAlone', this.lang)[monthIndex];
+			this.monthLabelNode.innerHTML = dojo.date.local.getNames('months', 'wide', 'standAlone', this.lang)[monthIndex];
 		},
 		
 		_setYearLabels: function(year) {
@@ -310,7 +310,7 @@ dojo.declare(
 			var that = this;
 			function f(n){
 				that[n+"YearLabelNode"].innerHTML =
-					dojo.date.format(new Date(y++, 0), {selector:'yearOnly', locale:that.lang});
+					dojo.date.local.format(new Date(y++, 0), {selector:'yearOnly', locale:that.lang});
 			}
 			f("previous");
 			f("current");

@@ -5,6 +5,7 @@ dojo.require("dojo.fx");
 dojo.require("dijit.base.Widget");
 dojo.require("dijit.base.TemplatedWidget");
 dojo.require("dijit.util.BackgroundIframe");
+dojo.require("dijit.util.place");
 
 // This is mostly taken from Jesse Kuhnert's MessageNotifier.
 // Modified by Bryan Forbes to support topics and a variable delay.
@@ -78,7 +79,7 @@ dojo.declare(
 			}
 		},
 
-		setContent: function(/*String|Node*/message, /*String*/messageType, /*int?*/duration){
+		setContent: function(/*String*/message, /*String*/messageType, /*int?*/duration){
 			// summary
 			//		sets and displays the given message and show duration
 			// message:
@@ -94,9 +95,9 @@ dojo.declare(
 					this.slideAnim.stop();
 				}
 				if(this.slideAnim.status() == "playing" || (this.fadeAnim && this.fadeAnim.status() == "playing")){
-					setTimeout(50, dojo.hitch(this, function(){
+					setTimeout(dojo.hitch(this, function(){
 						this.setContent(message, messageType);
-					}));
+					}), 50);
 					return;
 				}
 			}
@@ -107,20 +108,17 @@ dojo.declare(
 
 			// determine type of content and apply appropriately
 			for(var type in this.messageTypes){
-				dojo.html.removeClass(this.containerNode, "dojoToaster" + capitalize(this.messageTypes[type]));
+				this._removeClass(this.containerNode, "dojoToaster" + capitalize(this.messageTypes[type]));
 			}
-			dojo.style(this.containerNode, 1);
 
-			if(dojo.html.isNode(message)){
-				message = dojo.html.getContentAsString(message);
-			}
+			dojo.style(this.containerNode, "opacity", 1);
 
 			if(message && this.isVisible){
 				message = this.contentNode.innerHTML + this.separator + message;
 			}
 			this.contentNode.innerHTML = message;
 
-			dojo.html.addClass(this.containerNode, "dojoToaster" + capitalize(messageType || this.defaultType));
+			this._addClass(this.containerNode, "dojoToaster" + capitalize(messageType || this.defaultType));
 
 			// now do funky animation of widget appearing from
 			// bottom right of page and up
@@ -253,7 +251,7 @@ dojo.declare(
 				dojo.disconnect(window, "onscroll", this._scrollHandle);
 			}
 
-			dojo.style(this.containerNode, 1);
+			dojo.style(this.containerNode, "opacity", 1);
 		}
 	}
 );

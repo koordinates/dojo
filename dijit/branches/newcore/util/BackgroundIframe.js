@@ -24,7 +24,7 @@ dijit.util.BackgroundIframe = function(/* HTMLElement */node) {
 		}
 	}
 };
-dojo.lang.extend(dojo.html.BackgroundIframe, {
+dojo.extend(dijit.util.BackgroundIframe, {
 	iframe: null,
 	onResized: function(){
 		//	summary
@@ -57,11 +57,25 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 		}
 	},
 
-	setZIndex: function(/* HTMLElement */node){
+	setZIndex: function(/* HTMLElement|int */node){
 		//	summary
 		//	Sets the z-index of the background iframe.
+		//TODOC: if it's an element, decrements zIndex by one?
 		if(!this.iframe){ return; }
-		if(dojo.dom.isNode(node)){
+
+//PORT: from dojo.dom.  promote this?  reduce?
+		var isNode = function(/* object */wh){
+			//	summary:
+			//		checks to see if wh is actually a node.
+			if(typeof Element == "function"){
+				return wh instanceof Element;	//	boolean
+			}else{
+				// best-guess
+				return wh && !isNaN(wh.nodeType);	//	boolean
+			}
+		};
+
+		if(isNode(node)){
 			this.iframe.style.zIndex = dojo.style(node, "zIndex") - 1;
 		}else if(!isNaN(node)){
 			this.iframe.style.zIndex = node;

@@ -93,8 +93,8 @@ dojo.declare(
 
 	onMouseOut: function(){
 		if(!this.editing){
-			var classname = this.disabled ? "dojoDisabledClickableRegion" : "dojoClickableRegion";
-			this.editable.className = this.editable.className.replace(new RegExp('(^|\\s+)'+classname+'(\\s+|$)'), "$1$2");
+			var classStr = this.disabled ? "dojoDisabledClickableRegion" : "dojoClickableRegion";
+			this._removeClass(this.editable, classStr);
 		}
 	},
 

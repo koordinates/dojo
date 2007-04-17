@@ -22,9 +22,9 @@ dojo.declare(
 	
 	templatePath: dojo.moduleUrl("dijit", "templates/TitlePane.html"),
 
-	postCreate: function() {
+	postCreate: function(){
 		this.setLabel(this.label);
-		if (!this.open) {
+		if(!this.open){
 			dojo.style(this.containerNode, "display", "none");
 		}
 		this._setCss();
@@ -48,7 +48,7 @@ dojo.declare(
 	_setCss: function(){
 		var classes = ["dojoClosed", "dojoOpen"];
 		var boolIndex = this.open;
-		this.domNode.className = this.domNode.className.replace(new RegExp('(^|\\s+)'+classes[!boolIndex+0]+'(\\s+|$)'), "$1$2");
+		this._removeClass(this.domNode, classes[!boolIndex+0]);
 		this.domNode.className += " " + classes[boolIndex+0];
 	},
 
@@ -62,7 +62,7 @@ dojo.declare(
 	 	}
 	},
 
-	setLabel: function(/*String*/ label) {
+	setLabel: function(/*String*/ label){
 		// summary: sets the text of the label
 		this.labelNode.innerHTML=label;
 	}

@@ -20,15 +20,15 @@ dijit.util.getViewport = function(){
 		//so we have to check whether it is opera
 		w = _window.innerWidth;
 		h = _window.innerHeight;
-	}else if (!dojo.isOpera && dojo.getObject("documentElement.clientWidth", _document)){
+	}else if(!dojo.isOpera && dojo.getObject("documentElement.clientWidth", _document)){
 		// IE6 Strict
 		var w2 = _document.documentElement.clientWidth;
 		// this lets us account for scrollbars
-		if(!w || w2 && w2 < w) {
+		if(!w || w2 && w2 < w){
 			w = w2;
 		}
 		h = _document.documentElement.clientHeight;
-	}else if (dojo.body().clientWidth){
+	}else if(dojo.body().clientWidth){
 		// IE, Opera
 		w = dojo.body().clientWidth;
 		h = dojo.body().clientHeight;
@@ -103,9 +103,9 @@ dijit.util.placeOnScreen = function(
 		corners = corners.split(",");
 	}
 
-	if(!isNaN(padding)) {
+	if(!isNaN(padding)){
 		padding = [Number(padding), Number(padding)];
-	} else if(!(padding instanceof Array || typeof padding == "array")) {
+	}else if(!(padding instanceof Array || typeof padding == "array")) {
 		padding = [0, 0];
 	}
 
@@ -132,7 +132,7 @@ dijit.util.placeOnScreen = function(
 		var match = true;
 		var tryX = desiredX - (corner.charAt(1)=='L' ? 0 : w) + padding[0]*(corner.charAt(1)=='L' ? 1 : -1);
 		var tryY = desiredY - (corner.charAt(0)=='T' ? 0 : h) + padding[1]*(corner.charAt(0)=='T' ? 1 : -1);
-		if(hasScroll) {
+		if(hasScroll){
 			tryX -= scroll.x;
 			tryY -= scroll.y;
 		}
@@ -148,19 +148,19 @@ dijit.util.placeOnScreen = function(
 		}
 
 		var x = tryX + w;
-		if(x > view.w) {
+		if(x > view.w){
 			x = view.w - w;
 			match = false;
-		} else {
+		}else{
 			x = tryX;
 		}
 		x = Math.max(padding[0], x) + scroll.x;
 
 		var y = tryY + h;
-		if(y > view.h) {
+		if(y > view.h){
 			y = view.h - h;
 			match = false;
-		} else {
+		}else{
 			y = tryY;
 		}
 		y = Math.max(padding[1], y) + scroll.y;
