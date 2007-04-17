@@ -78,7 +78,9 @@ dojo.declare(
 
 		getWarningMessage: function(/* Boolean*/ isFocused){
 			// summary: return a warning message to show if appropriate
-			if(this.isMissing(false) || (( this.required || !this.isEmpty() ) && !this.isValid(false))){ return this.promptMessage; }
+			if(this.isMissing(false) || (( this.required || !this.isEmpty() ) && !this.isValid(false))){
+				return this.promptMessage;
+			}
 		},
 
 		getValidMessage: function(/* Boolean*/ isFocused){
@@ -251,7 +253,7 @@ dojo.declare(
 			var isMin = (typeof constraints.min != "undefined");
 			var isMax = (typeof constraints.max != "undefined");
 			if (isMin || isMax){
-				return	(!isMin || this.compare(primitive,constraints.min) >= 0) &&
+				return (!isMin || this.compare(primitive,constraints.min) >= 0) &&
 					(!isMax || this.compare(primitive,constraints.max) <= 0);
 			}else{ return true; }
 		},
@@ -270,7 +272,7 @@ dojo.declare(
 
 		postMixInProperties: function(){
 			dijit.form.RangeBoundTextbox.superclass.postMixInProperties.apply(this, arguments);
-			if (!this.rangeMessage){ 
+			if(!this.rangeMessage){ 
 				this.messages = dojo.i18n.getLocalization("dijit.form", "validate", this.lang);
 				this.rangeMessage = this.messages.rangeMessage;
 			}
@@ -278,10 +280,10 @@ dojo.declare(
 
 		postCreate: function(){
 			dijit.form.RangeBoundTextbox.superclass.postCreate.apply(this, arguments);
-			if (typeof this.constraints.min != "undefined"){
+			if(typeof this.constraints.min != "undefined"){
 				dijit.util.wai.setAttr(this.domNode, "waiState", "valuemin", this.constraints.min);
 			}
-			if (typeof this.constraints.max != "undefined"){
+			if(typeof this.constraints.max != "undefined"){
 				dijit.util.wai.setAttr(this.domNode, "waiState", "valuemax", this.constraints.max);
 			}
 		}

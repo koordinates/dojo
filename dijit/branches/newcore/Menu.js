@@ -6,7 +6,31 @@ dojo.require("dojo.html.selection");
 dojo.require("dijit.base.Widget");
 dojo.require("dijit.base.Container");
 dojo.require("dijit.base.TemplatedWidget");
+dojo.require("dijit.util.bidi");
 dojo.require("dijit.util.PopupManager");
+dojo.require("dijit.util.window");
+
+//PORT: move these to dijit.util.iframe?
+// thanks burstlib!
+dijit._iframeContentWindow = function(/* HTMLIFrameElement */iframe_el) {
+	//	summary
+	//	returns the window reference of the passed iframe
+	var win = dijit.util.window.getDocumentWindow(dijit._iframeContentDocument(iframe_el)) ||
+		// Moz. TODO: is this available when defaultView isn't?
+		dijit._iframeContentDocument(iframe_el)['__parent__'] ||
+		(iframe_el.name && document.frames[iframe_el.name]) || null;
+	return win;	//	Window
+};
+
+dijit._iframeContentDocument = function(/* HTMLIFrameElement */iframe_el){
+	//	summary
+	//	returns a reference to the document object inside iframe_el
+	var doc = iframe_el.contentDocument // W3
+		|| ((iframe_el.contentWindow)&&(iframe_el.contentWindow.document))	// IE
+		|| ((iframe_el.name)&&(document.frames[iframe_el.name])&&(document.frames[iframe_el.name].document)) 
+		|| null;
+	return doc;	//	HTMLDocument
+};
 
 dojo.declare(
 	"dijit.PopupMenu",
@@ -50,7 +74,7 @@ dojo.declare(
 			dojo.forEach(this.targetNodeIds, this.bindDomNode, this);
 		}
 
-		if(!dojo.html.isLeftToRight(this.domNode)){
+		if(!dijit.util.bidi.isLeftToRight(this.domNode)){
 			dojo.html.addClass(this.containerNode, "dojoRTL");
 		}
 	},
@@ -187,9 +211,9 @@ dojo.declare(
 		// summary: attach menu to given node
 		node = dojo.byId(node);
 
-		var win = dojo.html.getElementWindow(node);
-		if(dojo.html.isTag(node,'iframe') == 'iframe'){
-			win = dojo.html.iframeContentWindow(node);
+		var win = dijit.util.window.getDocumentWindow(node.ownerDocument);
+		if(node.tagName.toLowerCase()=="iframe"){
+			win = dijit._iframeContentWindow(node);
 			node = dojo.withGlobal(win, dojo.body);
 		}
 
@@ -250,7 +274,7 @@ dojo.declare(
 	
 	_openSubmenu: function(submenu, from_item){
 		// summary: open the submenu to the side of the current menu item
-		var orient = dojo.html.isLeftToRight(from_item.arrowCell) ? {'TR': 'TL', 'TL': 'TR'} : {'TL': 'TR', 'TR': 'TL'};
+		var orient = dijit.util.bidi.isLeftToRight(from_item.arrowCell) ? {'TR': 'TL', 'TL': 'TR'} : {'TL': 'TR', 'TR': 'TL'};
 		submenu._openAsSubmenu(this, from_item.arrowCell, orient);
 
 		this.currentSubmenu = submenu;

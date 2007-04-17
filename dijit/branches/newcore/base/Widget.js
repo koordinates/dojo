@@ -196,7 +196,7 @@ function(params, srcNodeRef){
 		var allNodes = this.domNode.all || this.domNode.getElementsByTagName("*");
 		var i=0, node;
 		var nodes = [];
-		while (node = allNodes[i++]) {
+		while((node = allNodes[i++])){
 			var id = node.widgetId;
 			if(id){
 				nodes.push(dijit.byId(id));

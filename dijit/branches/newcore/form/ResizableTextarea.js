@@ -2,7 +2,6 @@ dojo.provide("dijit.form.ResizableTextarea");
 
 dojo.require("dijit.base.FormElement");
 dojo.require("dijit.base.TemplatedWidget");
-dojo.require("dojo.html.style");
 
 dojo.declare(
 	"dijit.form.ResizableTextarea",
@@ -42,9 +41,9 @@ dojo.declare(
 		if (this.iframe){
 			var d = this.iframe.contentWindow.document;
 			var newHeight = d.body.firstChild.scrollHeight;
-			if (d.body.scrollWidth > d.body.clientWidth){ newHeight+=16; } // scrollbar space needed?
-			if (this.lastHeight != newHeight){ // cache size so that we don't get a resize event because of a resize event
-				if (newHeight == 0){ newHeight = 16; } // height = 0 causes the browser to not set scrollHeight
+			if(d.body.scrollWidth > d.body.clientWidth){ newHeight+=16; } // scrollbar space needed?
+			if(this.lastHeight != newHeight){ // cache size so that we don't get a resize event because of a resize event
+				if(newHeight == 0){ newHeight = 16; } // height = 0 causes the browser to not set scrollHeight
 				dojo.contentBox(this.iframe, {h: newHeight});
 				this.lastHeight = newHeight;
 			}
@@ -53,10 +52,10 @@ dojo.declare(
 	},
 
 	setValue: function(/*String*/ value){
-		if (this.editNode){
+		if(this.editNode){
 			this.editNode.innerHTML = ""; // wipe out old nodes
 			var lines = value.split("\n");
-			for (var i=0; i < lines.length; i++){
+			for(var i=0; i < lines.length; i++){
 				this.editNode.appendChild(document.createTextNode(lines[i])); // use text nodes so that imbedded tags can be edited
 				this.editNode.appendChild(document.createElement("BR")); // preserve line breaks
 			}
@@ -71,31 +70,31 @@ dojo.declare(
 	postMixInProperties: function(){
 		dijit.form.ResizableTextarea.superclass.postMixInProperties.apply(this,arguments);
 		// don't let the source text be converted to a DOM structure since we just want raw text
-		if (this.srcNodeRef && this.srcNodeRef.innerHTML != ""){
+		if(this.srcNodeRef && this.srcNodeRef.innerHTML != ""){
 			this.value = this.srcNodeRef.innerHTML;
 			this.srcNodeRef.innerHTML = "";
 		}
-		if ((!this.value || this.value == "") && this.srcNodeRef && this.srcNodeRef.value){
+		if((!this.value || this.value == "") && this.srcNodeRef && this.srcNodeRef.value){
 			this.value = this.srcNodeRef.value;
 		}
-		if (!this.value){ this.value = ""; }
+		if(!this.value){ this.value = ""; }
 	},
 
 	postCreate: function(){
-		if (dojo.isIE || dojo.isSafari){
+		if(dojo.isIE || dojo.isSafari){
 			this.domNode.style.overflowY = 'hidden';
 			this.eventNode = this.editNode;
 			this.focusNode = this.editNode;
 			dojo.addListener(this.eventNode, "oncut", this, this._changing);
 			dojo.addListener(this.eventNode, "onpaste", this, this._changing);
-		}else if (dojo.isMozilla){
+		}else if(dojo.isMozilla){
 			this.iframe = this.domNode.firstChild;
 			var w = this.iframe.contentWindow;
 			var d = w.document;
 			d.open();
 			d.write('<html><body style="margin:0px;padding:0px;border:0px;"><div tabIndex="1" style="padding:2px;"></div></body></html>');
 			d.close();
-			try { this.iframe.contentDocument.designMode="on"; } catch(e){} // this can fail if display:none
+			try{ this.iframe.contentDocument.designMode="on"; }catch(e){/*squelch*/} // this can fail if display:none
 			this.editNode = d.body.firstChild;
 			this.domNode.style.overflowY = 'hidden';
 			this.eventNode = d;
@@ -106,7 +105,7 @@ dojo.declare(
 			this.focusNode = this.domNode;
 		}
 		this.setValue(this.value);
-		if (this.eventNode){
+		if(this.eventNode){
 			dojo.addListener(this.eventNode, "keydown", this, this._changing);
 			dojo.addListener(this.eventNode, "mousemove", this, this._changed);
 			dojo.addListener(this.eventNode, "focus", this, this._focused);
@@ -116,17 +115,20 @@ dojo.declare(
 
 	// event handlers, you can over-ride these in your own subclasses
 	_focused: function(){
-		dojo.html.addClass(this.domNode,"dojoInputFieldFocused");
+		var classname = "dojoInputFieldFocused";
+		if(!(new RegExp('(^|\\s+)'+classname+'(\\s+|$)')).test(this.domNode.className)){
+			this.domNode.className += " "+classname;
+		}
 		this._changed();
 	},
 
 	_blurred: function(){
-		dojo.html.removeClass(this.domNode,"dojoInputFieldFocused");
+		this.domNode.className = this.domNode.className.replace(new RegExp('(^|\\s+)dojoInputFieldFocused(\\s+|$)'), "$1$2");
 		this._changed();
 	},
 
 	_interceptTab: function(e){
-		if (e.keyCode == 9 && !e.shiftKey && !e.ctrlKey && !e.altKey){
+		if(e.keyCode == 9 && !e.shiftKey && !e.ctrlKey && !e.altKey){
 			this.iframe.focus();
 			e.preventDefault();
 		}
@@ -139,7 +141,7 @@ dojo.declare(
 
 	_changed: function(){
 		// summary: event handler for when a change has already happened
-		if (this.iframe && this.iframe.contentDocument.designMode != "on"){
+		if(this.iframe && this.iframe.contentDocument.designMode != "on"){
 			this.iframe.contentDocument.designMode="on"; // in case this failed on init due to being hidden
 		}
 		this._setFormValue();

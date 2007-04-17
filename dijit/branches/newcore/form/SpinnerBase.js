@@ -47,7 +47,7 @@ dojo.declare(
 		_arrowReleased: function(/*Node*/ node){
 			this._wheelTimer = null;
 			this.textbox.focus();
-			node.className.replace(new RegExp('(^|\\s+)dojoSpinnerButtonPushed(\\s+|$)'), "$1$2");
+			node.className = node.className.replace(new RegExp('(^|\\s+)dojoSpinnerButtonPushed(\\s+|$)'), "$1$2");
 		},
 
 		_typematicCallback: function(/*Node*/ node, /*Number*/ count){

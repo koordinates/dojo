@@ -82,7 +82,7 @@ dojo.declare("dijit.base.FormElement", dijit.base.Widget,
 				this.containerNode.removeAttribute("tabIndex");
 			}
 		}else{
-			this.domNode.className.replace(new RegExp('(^|\\s+)'+disabledClass+'(\\s+|$)'), "$1$2");
+			this.domNode.className = this.domNode.className.replace(new RegExp('(^|\\s+)'+disabledClass+'(\\s+|$)'), "$1$2");
 			if(this.containerNode){
 				this.containerNode.setAttribute("tabIndex", this.tabIndex);
 			}

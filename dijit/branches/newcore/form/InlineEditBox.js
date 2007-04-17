@@ -44,13 +44,13 @@ dojo.declare(
 		var _this = this;
 		dojo.addOnLoad(function(){
 			// look for the input widget as a child of the containerNode
-			if (_this.editWidget){
+			if(_this.editWidget){
 				_this.containerNode.appendChild(_this.editWidget.domNode);
 			}else{
 				var node = _this.containerNode.firstChild;
-				while (node != null) {
+				while(node != null){
 					_this.editWidget = dijit.util.manager.byNode(node);
-					if (_this.editWidget){
+					if(_this.editWidget){
 						break;
 					}
 					node = node.nextSibling;
@@ -76,7 +76,7 @@ dojo.declare(
 		switch(e.key) {
 			case " ":
 			case e.KEY_ENTER:
-				dojo.event.browser.stopEvent(e);
+				dojo.stopEvent(e);
 				this.onClick(e);
 				break;
 		}
@@ -84,13 +84,17 @@ dojo.declare(
 
 	onMouseOver: function(){
 		if(!this.editing){
-			dojo.html.addClass(this.editable, this.disabled ? "dojoDisabledClickableRegion" : "dojoClickableRegion");
+			var classname = this.disabled ? "dojoDisabledClickableRegion" : "dojoClickableRegion";
+			if(!(new RegExp('(^|\\s+)'+classname+'(\\s+|$)')).test(this.editable.className)){
+				this.editable.className += " "+classname;
+			}
 		}
 	},
-	
+
 	onMouseOut: function(){
 		if(!this.editing){
-			dojo.html.removeClass(this.editable, this.disabled ? "dojoDisabledClickableRegion" : "dojoClickableRegion");
+			var classname = this.disabled ? "dojoDisabledClickableRegion" : "dojoClickableRegion";
+			this.editable.className = this.editable.className.replace(new RegExp('(^|\\s+)'+classname+'(\\s+|$)'), "$1$2");
 		}
 	},
 
@@ -122,21 +126,21 @@ dojo.declare(
 		var value = this._getEditValue();
 		dijit.form.InlineEditBox.superclass.setValue.call(this, value);
 		// whitespace is really hard to click so show a ?
-		if (/^\s*$/.test(value)) { value = "?"; this._isEmpty = true; }
+		if(/^\s*$/.test(value)){ value = "?"; this._isEmpty = true; }
 		this.editable.innerHTML = value;
 		this._visualize();
 	},
 
 	save: function(e){
 		// summary: Callback when user presses "Save" button
-		dojo.event.browser.stopEvent(e);
+		dojo.stopEvent(e);
 		this.editing = false;
 		this._showText();
 	},
 
 	cancel: function(e){
 		// summary: Callback when user presses "Cancel" button
-		dojo.event.browser.stopEvent(e);
+		dojo.stopEvent(e);
 		this.editing = false;
 		this._visualize();
 	},

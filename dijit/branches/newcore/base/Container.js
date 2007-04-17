@@ -2,7 +2,7 @@ dojo.provide("dijit.base.Container");
 
 dojo.require("dijit.util.manager");
 		
-dojo.declare("dijit.base.Contained", //FIXME: typo for Container?? 
+dojo.declare("dijit.base.Contained",
 	null,
 	{
 		// summary

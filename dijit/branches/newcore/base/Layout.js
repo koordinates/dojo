@@ -15,14 +15,12 @@ dojo.declare("dijit.base.Sizable",
 			//		called if our parent is a layout widget.
 			//	
 			// param: Object
-			//		{width: x, height: y}
+			//		{w: int, h: int}
 
-			param = {w: param.width, h: param.height}; //PORT: remove this and change API
 			dojo.marginBox(this.domNode, param);
 			if(!param.width || !param.height){
 				param = dojo.marginBox(this.domNode);
 			}
-			param = {width: param.w, height: param.h}; //PORT: remove this and change API
 			this.onResized(param);
 		},
 	
@@ -31,7 +29,7 @@ dojo.declare("dijit.base.Sizable",
 			//		Layout widgets will override this method to size & position their children
 			//	
 			// param: Object
-			//		{width: x, height: y}
+			//		{w: int, h: int}
 		},
 		
 		startup: function(){
@@ -47,7 +45,7 @@ dojo.declare("dijit.base.Sizable",
 
 			// if my parent isn't a layout container, and my style is width=height=100% (or something similar),
 			// then I need to watch when the window resizes, and size myself accordingly
-			dojo.addListener(window, 'onresize', this, this._onWindowResize);	// window resize
+			dojo.addListener(window, 'onresize', this, this._onWindowResize); // window resize
 
 			this._onWindowResize();
 		},
@@ -59,7 +57,6 @@ dojo.declare("dijit.base.Sizable",
 			//		function is not called.
 			// Size my children based on my size
 			var size = dojo.marginBox(this.domNode);
-			size = {width: size.w, height: size.h}; // PORT: remove
 			this.onResized(size);
 		}
 	}

@@ -76,7 +76,7 @@ dojo.declare(
 			}
 			// assign value programatically in case it has a quote in it
 			this.setTextValue(this.value);
-			},
+		},
 
 		filter: function(val){
 			// summary: Apply various filters to textbox value

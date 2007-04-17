@@ -120,8 +120,11 @@ dojo.declare(
 
 		_deregister: function(){
 			// summary: remove this widget from _groups
-			var idx = dojo.lang.find(this._groups[this.name], this, true);
-			this._groups[this.name].splice(idx, 1);
+			dojo.forEach(this._groups[this.name], function(widget, i, list){
+				if(widget === this){
+					list.splice(i, 1);
+				}
+			}, this);
 		},
 
 		setValue: function(/*boolean*/ bool){

@@ -1,10 +1,10 @@
 dojo.provide("dijit.Toaster");
 
 dojo.require("dojo.fx");
-dojo.require("dojo.html.iframe");
 
 dojo.require("dijit.base.Widget");
 dojo.require("dijit.base.TemplatedWidget");
+dojo.require("dijit.util.BackgroundIframe");
 
 // This is mostly taken from Jesse Kuhnert's MessageNotifier.
 // Modified by Bryan Forbes to support topics and a variable delay.
@@ -218,7 +218,7 @@ dojo.declare(
 			style.clip = "rect(0px, " + nodeSize.w + "px, " + nodeSize.h + "px, 0px)";
 			if(dojo.isIE){
 				if(!this.bgIframe){
-					this.bgIframe = new dojo.html.BackgroundIframe(this.clipNode);
+					this.bgIframe = new dijit.util.BackgroundIframe(this.clipNode);
 					this.bgIframe.setZIndex(this.clipNode);
 				}
 				this.bgIframe.onResized();

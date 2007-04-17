@@ -5,6 +5,7 @@ dojo.require("dojo.number");
 
 dojo.require("dijit.base.Widget");
 dojo.require("dijit.base.TemplatedWidget");
+dojo.require("dijit.util.sniff");
 
 dojo.declare(
 	"dijit.ProgressBar",
@@ -75,8 +76,6 @@ dojo.declare(
 		// public functions
 		postCreate: function(){
 			dijit.ProgressBar.superclass.postCreate.apply(this, arguments);
-//PORT: is the CSS browser hack still required?  If so, port it.
-//			dojo.html.applyBrowserClass(this.domNode);
 			if(this.orientation == "vertical"){
 //PORT: if !this.domNode.className?
 				this.domNode.className += " "+"dojoProgressBarVertical";

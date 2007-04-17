@@ -2,10 +2,11 @@ dojo.provide("dijit.util.PopupManager");
 
 dojo.require("dojo.html.selection");
 dojo.require("dojo.html.util");
-dojo.require("dojo.html.iframe");
 dojo.require("dojo.event.*");
 
+dojo.require("dijit.util.BackgroundIframe");
 dojo.require("dijit.util.FocusManager");
+dojo.require("dijit.util.window");
 
 dijit.util.PopupManager = new function(){
 	// summary:
@@ -23,7 +24,7 @@ dijit.util.PopupManager = new function(){
 		//		TODO: if widget has href, attach to onLoaded() and reposition
 
 		var x = e.pageX, y = e.pageY;
-		var win = dojo.html.getElementWindow(e.target);
+		var win = dijit.util.window.getDocumentWindow(e.target.ownerDocument);
 		var iframe = win._frameElement || win.frameElement;
 		if(iframe){
 			var cood = dojo.coords(iframe, true);
@@ -67,7 +68,7 @@ dijit.util.PopupManager = new function(){
 
 		if(dojo.isIE == 6){ //PORT exact?
 			if(!widget.bgIframe){
-				widget.bgIframe = new dojo.html.BackgroundIframe();
+				widget.bgIframe = new dijit.util.BackgroundIframe();
 				widget.bgIframe.setZIndex(widget.domNode);
 			}
 			widget.bgIframe.size(widget.domNode);
@@ -173,7 +174,7 @@ dijit.util.PopupManager = new function(){
 		//		the popup menu will be closed
 
 		if(!targetWindow){ //see comment below
-			targetWindow = dojo.html.getDocumentWindow(window.top && window.top.document || window.document);
+			targetWindow = dijit.util.window.getDocumentWindow(window.top && window.top.document || window.document);
 		}
 
 		dojo.event[command](targetWindow.document, 'onmousedown', onMouse);
@@ -182,8 +183,8 @@ dijit.util.PopupManager = new function(){
 
 		for(var i = 0; i < targetWindow.frames.length; i++){
 			try{
-				//do not remove dojo.html.getDocumentWindow, see comment in it
-				var win = dojo.html.getDocumentWindow(targetWindow.frames[i].document);
+				//do not remove dijit.util.window.getDocumentWindow, see comment in it
+				var win = dijit.util.window.getDocumentWindow(targetWindow.frames[i].document);
 				if(win){
 					setWindowEvents(command, win);
 				}
