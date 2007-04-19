@@ -540,7 +540,11 @@ dojo.hostenv.watchInFlightXDomain = function(){
 dojo.hostenv.xdNotifyLoaded = function(){
 	//Clear inflight count so we will finally do finish work.
 	this.inFlightCount = 0; 
-	this.callLoaded();
+	
+	//Only trigger call loaded if dj_load_init has run.
+	if(this._djInitFired && !this.loadNotifying){
+		this.callLoaded();
+	}
 }
 
 dojo.hostenv.flattenRequireArray = function(/*Array*/target){
@@ -573,7 +577,6 @@ dojo.hostenv.callLoaded = function(){
 	//there is a path registered for dojo, with implies that dojo was xdomain loaded.
 	if(this.xdHasCalledPreload || dojo.hostenv.getModulePrefix("dojo") == "src" || !this.localesGenerated){
 		this.xdRealCallLoaded();
-		this.xdHasCalledPreload = true;
 	}else{
 		if(this.localesGenerated){
 			this.registerNlsPrefix = function(){
@@ -582,6 +585,6 @@ dojo.hostenv.callLoaded = function(){
 			};
 			this.preloadLocalizations();
 		}
-		this.xdHasCalledPreload = true;
 	}
+	this.xdHasCalledPreload = true;
 }
