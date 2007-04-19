@@ -265,9 +265,30 @@ dojo.widget.Editor2ToolbarItemManager.registerHandler(function(name){
 		case 'fontname':
 			return new dojo.widget.Editor2ToolbarFontNameSelect("fontname");
 		case 'specialchar':
-			return new dojo.widget.Editor2ToolbarSpecialCharSelect('inserthtml');//use inserthtml as the command, as we do not want to add a command for specialchar
+			return new dojo.widget.Editor2ToolbarSpecialCharSelect('specialchar');
 	}
 });
+
+dojo.lang.declare("dojo.widget.Editor2Plugin.specialCharCommand", dojo.widget.Editor2Command,
+{
+	getText: function(){
+		return 'Insert Special Characters';
+//		var browserCommandNames = dojo.i18n.getLocalization("dojo.widget", "Editor2BrowserCommand", this._editor.lang);
+//		return browserCommandNames['specialchar'];
+	}
+});
+
+dojo.widget.Editor2Plugin.DropDown = {
+	getCommand: function(editor, name){
+//		var browserCommandNames = dojo.i18n.getLocalization("dojo.widget", "Editor2BrowserCommand", editor.lang);
+		switch(name){
+			case 'specialchar':
+				return new dojo.widget.Editor2Plugin.specialCharCommand(editor, name);
+		}
+	}
+}
+
+dojo.widget.Editor2Manager.registerHandler(dojo.widget.Editor2Plugin.DropDown.getCommand);
 
 dojo.declare("dojo.widget.Editor2ToolbarSpecialCharSelect", dojo.widget.Editor2ToolbarComboItem, {
 	// summary: dojo.widget.Editor2ToolbarSpecialCharSelect is a dropdown which have a table of special chars
@@ -294,6 +315,10 @@ dojo.declare("dojo.widget.Editor2ToolbarSpecialCharSelect", dojo.widget.Editor2T
 		}
 		this.contentHtml = innerhtml+'</table></td><td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;</td><td valign="top" ><div style="font-weight:bold;width:35px;height:35px;font-size:25px;text-align:center" class="ToolbarSelectHighlightedItem">&nbsp;</div></td></tr></table>';
 	},
+
+	//use those functions defined in Editor2ToolbarButton, as this is a normal icon in the toolbar, not a combo
+	enableToolbarItem: dojo.widget.Editor2ToolbarButton.prototype.enableToolbarItem,
+	disableToolbarItem: dojo.widget.Editor2ToolbarButton.prototype.disableToolbarItem,
 
 	setup: function(){
 		dojo.widget.Editor2ToolbarSpecialCharSelect.superclass.setup.call(this);

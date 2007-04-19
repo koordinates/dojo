@@ -728,6 +728,7 @@ dojo.widget.defineWidget(
 			}
 		},
 
+		enabled: true,
 		enable: function(){
 			var h=dojo.render.html;
 			if(h.ie || this._safariIsLeopard() || h.opera){

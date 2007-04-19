@@ -10,16 +10,16 @@ dojo.widget.defineWidget(
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 		var findcmd = curInst.getCommand('find');
 		var option = 0;
-	
+		var os=dojo.widget.Editor2Plugin.SearchOption;
 		if(this["find_option_casesens"].checked){
-			option |= findcmd.SearchOption.CaseSensitive;
+			option |= os.CaseSensitive;
 		}
 		if(this["find_option_backwards"].checked){
-			option |= findcmd.SearchOption.SearchBackwards;
+			option |= os.SearchBackwards;
 		}
 	
 		if(this["find_option_wholeword"].checked){
-			option |= findcmd.SearchOption.WholeWord;
+			option |= os.WholeWord;
 		}
 		findcmd.find(this["find_text"].value, option);
 	}
