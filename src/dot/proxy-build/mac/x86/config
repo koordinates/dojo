@@ -156,7 +156,7 @@ disableOfflineSupport = false;
 
 # Uncomment this if you have no network:
 
-proxyOffline = yes
+# proxyOffline = yes
 
 # Uncomment this if you want to avoid revalidating instances with a
 # Vary header (this is not a good idea):
