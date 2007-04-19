@@ -129,8 +129,9 @@ dojo.lang.declare("dojo.widget.Editor2Command",null,
 		getState: function(){
 			// summary:
 			//		Return the state of the command. The default behavior is
-			//		to always return Enabled
-			return dojo.widget.Editor2Manager.commandState.Enabled;
+			//		to only dependant on whether is in source mode: if not, 
+			//		enabled, otherwise disabled.
+			return this._editor._inSourceMode ? dojo.widget.Editor2Manager.commandState.Disabled : dojo.widget.Editor2Manager.commandState.Enabled;
 		},
 		destroy: function(){
 			// summary: Destructor
@@ -304,6 +305,7 @@ dojo.widget.defineWidget(
 			// summary:
 			//		Fired when the toolbar for this editor is created.
 			//		This event is for plugins to use
+//			this.updateToolbar();
 		},
 
 		//TODO: provide a query mechanism about loaded plugins?

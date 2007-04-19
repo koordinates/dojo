@@ -148,6 +148,19 @@ dojo.html.range.atEndOfContainer = function(/*DomNode*/container, /*DomNode*/nod
 	return atEnd;
 }
 
+dojo.html.range.adjacentNoneTextNode=function(startnode, next){
+	var node = startnode;
+	var len = (0-startnode.length) || 0;
+	var prop = next?'nextSibling':'previousSibling';
+	while(node){
+		if(node.nodeType!=3){
+			break;
+		}
+		len += node.length
+		node = node[prop];
+	}
+	return [node,len];
+}
 
 dojo.html.range._w3c = Boolean(window['getSelection']);
 dojo.html.range.create = function(){
@@ -162,11 +175,20 @@ dojo.html.range.getSelection = function(win, /*Boolean?*/ignoreUpdate){
 	if(dojo.html.range._w3c){
 		return win.getSelection();
 	}else{//IE
-		if(!dojo.html.range.ie.cachedSelection[win]){
+		var id=win.__W3CRange;
+		if(!id || !dojo.html.range.ie.cachedSelection[id]){
 			var s = new dojo.html.range.ie.selection(win);
-			dojo.html.range.ie.cachedSelection[win] = s;
+			//use win as the key in an object is not reliable, which
+			//can leads to quite odd behaviors. thus we generate a
+			//string and use it as a key in the cache
+			id=(new Date).getTime();
+			while(id in dojo.html.range.ie.cachedSelection){
+				id=id+1;
+			}
+			id=String(id);
+			dojo.html.range.ie.cachedSelection[id] = s;
 		}else{
-			var s = dojo.html.range.ie.cachedSelection[win];
+			var s = dojo.html.range.ie.cachedSelection[id];
 		}
 		if(!ignoreUpdate){
 			s._getCurrentSelection();
@@ -174,7 +196,7 @@ dojo.html.range.getSelection = function(win, /*Boolean?*/ignoreUpdate){
 		return s;
 	}
 }
-
+		
 if(!dojo.html.range._w3c){
 	dojo.html.range.ie={
 		cachedSelection: {},
@@ -201,10 +223,8 @@ if(!dojo.html.range._w3c){
 				if(type == "CONTROL"){
 					//TODO: multiple range selection(?)
 					return new dojo.html.range.W3CRange(dojo.html.range.ie.decomposeControlRange(r));
-				}else if(type=="TEXT"){
+				}else{
 					return new dojo.html.range.W3CRange(dojo.html.range.ie.decomposeTextRange(r));
-				}else{ //NONE
-					return null;
 				}
 			};
 			this.getRangeAt = function(i){
@@ -264,13 +284,13 @@ if(!dojo.html.range._w3c){
 					}
 		//			try{
 						if(calOffset && startnode){
-							var prevnode = dojo.html.range.ie.adjacentNoneTextNode(startnode)[0];
+							var prevnode = dojo.html.range.adjacentNoneTextNode(startnode)[0];
 							if(prevnode){
 								startnode = prevnode.nextSibling;
 							}else{
 								startnode = parentNode.firstChild; //firstChild must be a text node
 							}
-							var prevnodeobj = dojo.html.range.ie.adjacentNoneTextNode(startnode);
+							var prevnodeobj = dojo.html.range.adjacentNoneTextNode(startnode);
 							prevnode = prevnodeobj[0];
 							var lenoffset = prevnodeobj[1];
 							if(prevnode){
@@ -303,19 +323,6 @@ if(!dojo.html.range._w3c){
 				}
 			}
 			return [startnode, startOffset];
-		},
-		adjacentNoneTextNode: function(startnode, next){
-			var node = startnode;
-			var len = (0-startnode.length) || 0;
-			var prop = next?'nextSibling':'previousSibling';
-			while(node){
-				if(node.nodeType!=3){
-					break;
-				}
-				len += node.length
-				node = node[prop];
-			}
-			return [node,len];
 		},
 		setEndPoint: function(range, container, offset){
 			//text node
@@ -360,15 +367,21 @@ if(!dojo.html.range._w3c){
 				}
 			}
 			if(container.nodeType==3){
-				var prevnodeobj = dojo.html.range.ie.adjacentNoneTextNode(container);
+				var prevnodeobj = dojo.html.range.adjacentNoneTextNode(container);
 				var prevnode = prevnodeobj[0], len = prevnodeobj[1];
 				if(prevnode){
 					atmrange.moveToElementText(prevnode);
 					atmrange.collapse(false);
+					//if contentEditable is not inherit, the above collapse won't make the end point
+					//in the correctly position: it always has a -1 offset, so compensate it
+					if(prevnode.contentEditable!='inherit'){
+						len++;
+					}
 				}else{
 					atmrange.moveToElementText(container.parentNode);
 					atmrange.collapse(true);
 				}
+
 				offset += len;
 				if(offset>0){
 					if(atmrange.moveEnd('character',offset) != offset){
