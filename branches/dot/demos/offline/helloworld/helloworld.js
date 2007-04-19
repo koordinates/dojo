@@ -22,11 +22,11 @@ dojo.off.files.cache([
 					
 var HelloWorld = {
 	initialize: function(){
-		dojo.debug("Dojo Offline and the page are finished initializing");
+		dojo.debug("Dojo Offline and Dojo Storage are ready to be used; the page is also finished loading");
 	}
 }
 					
-// Wait until Dojo Offline and the default Offline Widget are ready
+// Wait until Dojo Offline and Dojo Storage are ready
 // before we initialize ourselves. When this gets called the page
 // is also finished loading.
 dojo.off.ui.onLoad = dojo.lang.hitch(HelloWorld, HelloWorld.initialize);
