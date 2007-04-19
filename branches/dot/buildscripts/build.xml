@@ -80,6 +80,14 @@ build targets:
 	buildDojoStorage - compiles the dojo.storage package
 	
 	moxie - builds Moxie, the example Dojo Offline/Dojo Storage application
+	
+	moxie-server - builds the server-side of Moxie - see demos/offline/moxie/server/README
+	for tools necessary to build this
+	
+	offline - builds Dojo Offline
+	
+	offlineRuntime - builds the Dojo Offline client runtime - see src/dot/README
+	for tools necessary to build this
 
 	**** all following build types can take an optional parameter in the form of: -Dversion='currentVer'
 		where 'currentVer' is the version of ${project} being built, default is 'development'
@@ -698,6 +706,143 @@ build targets:
 	</target>
 	<!-- end buildFlash task -->
 	
+	<!-- Dojo Offline task -->
+	<target name="offline">
+		<echo message="Building Moxie..."/>
+		
+		<!-- Build Moxie first -->
+		<antcall target="moxie">
+		</antcall>
+		
+		<!-- Take the generated dojo.js
+			and the uncompressed dojo.js files
+			and save them -->
+		<copy file="${release_dir}/dojo.js" 
+				tofile="${root}/dojo-moxie.js" 
+				preservelastmodified="true"	/>
+		
+		<copy file="${release_dir}/dojo.js" 
+				tofile="${root}/dojo-moxie.js.uncompressed.js" 
+				preservelastmodified="true"	/>
+				
+		<!-- 
+			Call our local proxy tasks
+			in such a way that they won't cause the
+			entire release task to fail.
+			See src/dot/README for build tools
+			necessary for this to work.
+		-->
+		<script language="javascript">
+			<![CDATA[
+			function echo(msg){
+				var echo = dojo.createTask("echo");
+				echo.setMessage(msg);
+				echo.execute();
+			}
+			
+			function antCall(target){
+				var antCall = dojo.createTask("antcall");
+				antCall.setTarget(target);
+				antCall.execute();
+			}
+
+			try{
+				echo();
+				antCall("offlineRuntime");
+			}catch(exp){
+				echo("WARNING: 'offlineRuntime' could not run");
+				echo("Unable to rebuild local offline proxy for Windows and Mac OS X/Intel");
+				echo("Please see src/dot/README for build details");
+			}
+		]]>
+		</script>	
+		
+		<!-- Build Moxie's server-side -->
+		<script language="javascript">
+			<![CDATA[
+			function echo(msg){
+				var echo = dojo.createTask("echo");
+				echo.setMessage(msg);
+				echo.execute();
+			}
+			
+			function antCall(target){
+				var antCall = dojo.createTask("antcall");
+				antCall.setTarget(target);
+				antCall.execute();
+			}
+
+			try{
+				echo("Building Moxie's server-side Java code...");
+				antCall("moxie-server");
+			}catch(exp){
+				echo("WARNING: 'moxie-server' could not run");
+				echo("Unable to build Moxie's server-side component");
+				echo("Please see demos/offline/moxie/server/README for build details");
+			}
+		]]>
+		</script>
+				
+		<!-- Generate our 'offline' build now -->
+		<echo message="Building 'offline' Dojo profile..."/>
+		<antcall target="release">
+			<param name="profile" value="offline" />
+		</antcall>
+		
+		<!-- Copy Moxie files back over -->
+		<move file="${root}/dojo-moxie.js" 
+				tofile="${release_dir}/dojo-moxie.js"
+				preservelastmodified="true"	/>
+		
+		<move file="${root}/dojo-moxie.js.uncompressed.js" 
+				tofile="${release_dir}/dojo-moxie.js.uncompressed.js"
+				preservelastmodified="true"	/>
+				
+		<!-- Modify Moxie demo to use these the dojo-moxie.js
+			source -->
+		<replaceregexp match="/dojo.js" byline="true" 
+			replace="/dojo-moxie.js" flags="g">
+			<fileset file="${root}/demos/offline/moxie/editor.js"/>
+		</replaceregexp>
+	</target>
+	<!-- end Dojo Offline task -->
+	
+	<!-- offlineRuntime task -->
+	<target name="offlineRuntime">
+		<echo message="Creating Dojo Offline client runtimes..."/>
+		
+		<echo message="Compiling local proxy for Mac OS X/Intel and Windows..."/>
+		<antcall target="buildLocalProxy"/>
+		
+		<echo message="Creating Mac OS X Installer/Uninstaller..."/>
+		<antcall target="offlineRuntimeMacInstaller"/>
+	</target>
+	<!-- end offlineRuntime task -->
+	
+	<!-- buildLocalProxy task -->
+	<target name="buildLocalProxy">
+		<exec executable="make"
+				dir="${root}/src/dot"
+				failonerror="true">
+			<arg value="all"/>
+		</exec>
+	</target>
+	<!-- end buildLocalProxy task -->
+	
+	<!-- offlineRuntimeMacInstaller task - makes the Mac installer
+			for Dojo Offline -->
+	<target name="offlineRuntimeMacInstaller">
+		<exec executable="make" 
+				dir="${root}/src/dot"
+				failonerror="true"
+				newenvironment="true"
+				vmlauncher="false">
+			<arg value="mac-install-make"/>
+			<arg value="VERSION=${version}"/>
+		</exec>
+	</target>
+	<!-- end offlineRuntimeMacInstaller task -->
+	
 	<!-- moxie task -->
 	<target name="moxie">
 		<!-- We need to use the EditorToolbarOnline.html file,
@@ -705,7 +850,7 @@ build targets:
 			to do this before building -->
 		<replaceregexp match="EditorToolbar.html&quot;" byline="true" 
 			replace="EditorToolbarOneline.html&quot;" flags="g">
-			<fileset file="../src/widget/Editor2Toolbar.js"/>
+			<fileset file="${root}/src/widget/Editor2Toolbar.js"/>
 		</replaceregexp>
 		
 		<!-- Generate a Dojo release with the 'moxie' profile -->
@@ -719,10 +864,59 @@ build targets:
 		<!-- Replace our modified Editor2 files with the original versions -->
 		<replaceregexp match="EditorToolbarOneline.html&quot;" byline="true" 
 			replace="EditorToolbar.html&quot;" flags="g">
-			<fileset file="../src/widget/Editor2Toolbar.js"/>
+			<fileset file="${root}/src/widget/Editor2Toolbar.js"/>
 		</replaceregexp>
 	</target>
 	<!-- end moxie task -->
+
+	<!-- moxie-server task -->
+	<target name="moxie-server">
+		<delete file="${root}/demos/offline/moxie/server/WEB-INF/lib/moxie.jar"/>
+		<delete file="${root}/demos/offline/moxie/server/WEB-INF/lib/moxie.war"/>
+		<delete>
+			<fileset dir="${root}/demos/offline/moxie/server/org/dojo/moxie"
+						includes="*.class"/>
+		</delete>
+		
+		<path id="moxie.class.path">
+			<pathelement
+					location="${root}/demos/offline/moxie/server/org/dojo/moxie/"/>
+			<pathelement
+					location="${root}/demos/offline/moxie/server/lib/servlet-api.jar"/>
+			<pathelement
+					location="${root}/demos/offline/moxie/server/WEB-INF/lib/json-lib-1.0b2-jdk13.jar"/>
+			<pathelement
+					location="${root}/demos/offline/moxie/server/WEB-INF/lib/commons-beanutils.jar"/>
+			<pathelement
+					location="${root}/demos/offline/moxie/server/WEB-INF/lib/ezmorph-1.0.jar"/>
+			<pathelement
+					location="${root}/demos/offline/moxie/server/WEB-INF/lib/commons-lang-2.2.jar"/>
+		</path>
+		
+		<javac
+			source="1.5"
+			target="jsr14"
+			srcdir="${root}/demos/offline/moxie/server/org/dojo/moxie/">
+			<classpath refid="moxie.class.path"/>
+		</javac>
+		
+		<jar 
+			destfile="${root}/demos/offline/moxie/server/WEB-INF/lib/moxie.jar">
+			<fileset dir="${root}/demos/offline/moxie/server/"
+             			includes="org/**"/>
+		</jar>
+		
+		<jar 
+			destfile="${root}/demos/offline/moxie/moxie.war">
+			<fileset dir="${root}/demos/offline/moxie/server"
+             			includes="WEB-INF/**"/>
+		</jar>
+		
+		<move file="${root}/demos/offline/moxie/moxie.war" 
+				tofile="${root}/demos/offline/moxie/server/moxie.war"
+				preservelastmodified="true"	/>
+	</target>
+	<!-- end moxie-server task-->
 
 	<!-- xd-dojo-config task -->
 	<target name="xd-dojo-config" depends="-fix-config"
