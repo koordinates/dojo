@@ -1,0 +1,11 @@
+License Disclaimer:
+
+All contents of this directory are Copyright (c) the Dojo Foundation, with the
+following exceptions:
+-------------------------------------------------------------------------------
+
+The file dot_util.nsh contains code snippets from the Nullsoft Scriptable Install System developer portal (NSIS). dot_util.nsh contains a number of standard functions that are distributed on the NSIS portal for free, unimpeded use by developers. These standard functions and samples are distributed under the same license as NSIS, which is the zlib/png license. The zlib/png license is just the BSD license under a different name. Each code snippet is clearly marked with the Wiki page location on the NSIS portal where it was taken from below.
+
+* StrTok wiki page in NSIS docs here: http://nsis.sourceforge.net/StrTok
+* ReplaceLineStr wiki page in NSIS docs here: 
+  http://nsis.sourceforge.net/Replace_line_that_starts_with_specified_string
