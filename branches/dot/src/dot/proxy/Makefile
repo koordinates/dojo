@@ -11,7 +11,7 @@ DISK_CACHE_ROOT = /var/cache/polipo
 
 # To compile with GCC:
 
-# CC = gcc
+CC = gcc
 # CDEBUGFLAGS = -Os -g -Wall -std=gnu99
 CDEBUGFLAGS = -Os -Wall $(DEBUGFLAG)
 # CDEBUGFLAGS = -Os -Wall
@@ -43,7 +43,7 @@ CDEBUGFLAGS = -Os -Wall $(DEBUGFLAG)
 
 # Hides a console window popping up on Windows -- needed
 # if you want to start the restarter on system startup
-# without a window appearing. 
+# without a window appearing (mingw option).
 # HIDECONSOLE = -mwindows
 
 FILE_DEFINES = -DLOCAL_ROOT=\"$(LOCAL_ROOT)/\" \
@@ -74,12 +74,45 @@ SRCS = util.c event.c io.c chunk.c atom.c object.c log.c diskcache.c main.c \
        config.c local.c http.c client.c server.c auth.c tunnel.c \
        http_parse.c parse_time.c dns.c forbidden.c \
        md5import.c md5.c ftsimport.c fts_compat.c socks.c mingw.c \
-       off.c
+       off.c 
+#database.c
 
 OBJS = util.o event.o io.o chunk.o atom.o object.o log.o diskcache.o main.o \
        config.o local.o http.o client.o server.o auth.o tunnel.o \
        http_parse.o parse_time.o dns.o forbidden.o \
-       md5import.o ftsimport.o socks.o mingw.o off.o
+       md5import.o ftsimport.o socks.o mingw.o off.o 
+#\
+#database.o
+
+SQLITE_PATH = ../sqlite
+
+SQLITE_OBJS = \
+	$(SQLITE_PATH)/build/.libs/alter.o $(SQLITE_PATH)/build/.libs/analyze.o \
+	$(SQLITE_PATH)/build/.libs/attach.o $(SQLITE_PATH)/build/.libs/auth.o \
+	$(SQLITE_PATH)/build/.libs/btree.o $(SQLITE_PATH)/build/.libs/build.o \
+	$(SQLITE_PATH)/build/.libs/callback.o $(SQLITE_PATH)/build/.libs/complete.o \
+	$(SQLITE_PATH)/build/.libs/date.o $(SQLITE_PATH)/build/.libs/delete.o \
+	$(SQLITE_PATH)/build/.libs/expr.o $(SQLITE_PATH)/build/.libs/func.o \
+	$(SQLITE_PATH)/build/.libs/hash.o $(SQLITE_PATH)/build/.libs/insert.o \
+	$(SQLITE_PATH)/build/.libs/loadext.o $(SQLITE_PATH)/build/.libs/main.o \
+	$(SQLITE_PATH)/build/.libs/opcodes.o $(SQLITE_PATH)/build/.libs/os.o \
+	$(SQLITE_PATH)/build/.libs/os_unix.o $(SQLITE_PATH)/build/.libs/os_win.o \
+	$(SQLITE_PATH)/build/.libs/os_os2.o $(SQLITE_PATH)/build/.libs/pager.o \
+	$(SQLITE_PATH)/build/.libs/parse.o $(SQLITE_PATH)/build/.libs/pragma.o \
+	$(SQLITE_PATH)/build/.libs/prepare.o $(SQLITE_PATH)/build/.libs/printf.o \
+	$(SQLITE_PATH)/build/.libs/random.o $(SQLITE_PATH)/build/.libs/select.o \
+	$(SQLITE_PATH)/build/.libs/table.o $(SQLITE_PATH)/build/.libs/tokenize.o \
+	$(SQLITE_PATH)/build/.libs/trigger.o $(SQLITE_PATH)/build/.libs/update.o \
+	$(SQLITE_PATH)/build/.libs/util.o $(SQLITE_PATH)/build/.libs/vacuum.o \
+	$(SQLITE_PATH)/build/.libs/vdbe.o $(SQLITE_PATH)/build/.libs/vdbeapi.o \
+	$(SQLITE_PATH)/build/.libs/vdbeaux.o $(SQLITE_PATH)/build/.libs/vdbefifo.o \
+	$(SQLITE_PATH)/build/.libs/vdbemem.o $(SQLITE_PATH)/build/.libs/where.o \
+	$(SQLITE_PATH)/build/.libs/utf.o $(SQLITE_PATH)/build/.libs/legacy.o \
+	$(SQLITE_PATH)/build/.libs/vtab.o
+
+#polipo$(EXE): $(OBJS)
+#	$(CC) $(CFLAGS) $(LDFLAGS) -o polipo$(EXE) $(OBJS) $(SQLITE_OBJS) $(MD5LIBS) $(LDLIBS) \
+#			-I. -I$(SQLITE_PATH)/src -I$(SQLITE_PATH) -I$(SQLITE_PATH)/build
 
 polipo$(EXE): $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o polipo$(EXE) $(OBJS) $(MD5LIBS) $(LDLIBS)
@@ -90,6 +123,11 @@ restart$(EXE): $(OBJS)
 ftsimport.o: ftsimport.c fts_compat.c
 
 md5import.o: md5import.c md5.c
+
+database.o: database.c
+
+database.c:
+	$(CC) $(CFLAGS) $(LDFLAGS) -I. -I$(SQLITE_PATH)/src -I$(SQLITE_PATH) -I$(SQLITE_PATH)/build
 
 .PHONY: all install install.binary install.man
 
@@ -152,4 +190,3 @@ clean:
 	-rm -f polipo.dvi polipo.ps polipo.ps.gz polipo.pdf polipo.html
 	-rm -rf ./html/
 	-rm -f polipo.man.html
-
