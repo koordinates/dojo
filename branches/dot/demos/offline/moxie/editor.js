@@ -14,7 +14,7 @@ dojo.require("dojo.sync");
 // set our application name
 dojo.off.ui.appName = "Moxie";
 
-// add our list resources we need offline
+// add our list of resources we need offline
 // Moxie resources
 dojo.off.files.cache([
 					"editor.html",
