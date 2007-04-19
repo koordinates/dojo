@@ -97,6 +97,17 @@ int main(int argc, char **argv)
 {
     char *path;
     char systemStr[5000];
+    
+#ifdef MINGW
+    /* On Windows, we get an annoying Dr. Watson
+        dialog that appears if this sub-process
+        crashes -- tell Windows not to do this.
+        Technique from 
+        http://blogs.msdn.com/oldnewthing/archive/2004/07/27/198410.aspx
+    */
+    DWORD dwMode = SetErrorMode(SEM_NOGPFAULTERRORBOX);
+    SetErrorMode(dwMode | SEM_NOGPFAULTERRORBOX);
+#endif
    
     /* The absolute path directory of where the proxy executable
         is located is passed in as the first argument,

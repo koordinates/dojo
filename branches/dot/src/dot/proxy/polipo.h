@@ -210,6 +210,7 @@ THE SOFTWARE.
 
 #ifndef NO_OFFLINE_SUPPORT
 #include "off.h"
+#include "database.h"
 #endif /* NO_OFFLINE_SUPPORT */
 
 extern AtomPtr configFile;

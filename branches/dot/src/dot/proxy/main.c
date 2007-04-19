@@ -45,6 +45,17 @@ main(int argc, char **argv)
     int i;
     int rc;
     int expire = 0, printConfig = 0;
+    
+#ifdef MINGW
+    /* On Windows, we get an annoying Dr. Watson
+        dialog that appears when this sub-process
+        crashes -- tell Windows not to do this.
+        Technique from 
+        http://blogs.msdn.com/oldnewthing/archive/2004/07/27/198410.aspx
+    */
+    DWORD dwMode = SetErrorMode(SEM_NOGPFAULTERRORBOX);
+    SetErrorMode(dwMode | SEM_NOGPFAULTERRORBOX);
+#endif
 
     initAtoms();
     CONFIG_VARIABLE(daemonise, CONFIG_BOOLEAN, "Run as a daemon");
@@ -61,6 +72,7 @@ main(int argc, char **argv)
     preinitLocal();
     preinitForbidden();
     preinitSocks();
+    /*preinitDatabase();*/
     preinitOffline();
 
     i = 1;
@@ -139,6 +151,7 @@ main(int argc, char **argv)
     initDiskcache();
     initForbidden();
     initSocks();
+    /*initDatabase();*/
     initOffline();
 
     if(printConfig) {
