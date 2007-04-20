@@ -52,7 +52,7 @@ AddModule mod_headers.c
 AddModule mod_alias.c
 
 
-# For anything served fro the dojo_offline directory,
+# For anything served from the dojo_offline directory,
 # make sure that Dojo Offline caches it by giving all
 # the files good expires headers
 <IfModule mod_alias.c>
