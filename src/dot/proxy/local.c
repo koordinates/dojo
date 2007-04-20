@@ -387,7 +387,7 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
         objectPrintf(object, 0, 
                     "the web application is inside the PAC file");
         object->length = object->size;        
-    } else if(matchUrl("/polipo/status", object)) {
+    } else if(disableOfflineSupport == 0 && matchUrl("/polipo/status", object)) {
         objectPrintf(object, 0,
                      "<!DOCTYPE HTML PUBLIC "
                      "\"-//W3C//DTD HTML 4.01 Transitional//EN\" "
@@ -431,11 +431,11 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
                      used_atoms);
         object->expires = current_time.tv_sec;
         object->length = object->size;
-    } else if(matchUrl("/polipo/config", object)) {
+    } else if(disableOfflineSupport == 0 && matchUrl("/polipo/config", object)) {
         fillSpecialObject(object, printConfig, NULL);
         object->expires = current_time.tv_sec + 5;
 #ifndef NO_DISK_CACHE
-    } else if(matchUrl("/polipo/index", object)) {
+    } else if(disableOfflineSupport == 0 && matchUrl("/polipo/index", object)) {
         int len;
         char *root;
         if(disableIndexing) {
@@ -454,7 +454,7 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
         fillSpecialObject(object, plainIndexDiskObjects, root);
         free(root);
         object->expires = current_time.tv_sec + 5;
-    } else if(matchUrl("/polipo/recursive-index", object)) {
+    } else if(disableOfflineSupport == 0 && matchUrl("/polipo/recursive-index", object)) {
         int len;
         char *root;
         if(disableIndexing) {
@@ -474,7 +474,7 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
         free(root);
         object->expires = current_time.tv_sec + 20;
 #endif
-    } else if(matchUrl("/polipo/servers", object)) {
+    } else if(disableOfflineSupport == 0 && matchUrl("/polipo/servers", object)) {
         if(disableServersList) {
             abortObject(object, 403, internAtom("Action not allowed"));
             notifyObject(object);

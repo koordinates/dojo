@@ -649,7 +649,7 @@ Function un.promptStopFirefox
 	
 	;it's hard to find running Firefox instances, so just
 	;always prompt
-	MessageBox MB_OK "Please quit Firefox before continuing uninstall" /SD IDOK
+	MessageBox MB_OK "If running, please quit Firefox before continuing uninstall" /SD IDOK
 FunctionEnd
   
 Section "Install"
