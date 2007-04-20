@@ -5,15 +5,14 @@
 			// Dojo configuration
 			djConfig = { 
 				isDebug: true,
-				debugAtAllCosts: true,
+				debugAtAllCosts: false,
+				xdWaitSeconds: 5,
 				baseScriptUri: "../../" //for xdomain testing.
 			};
 		</script>
-		<!-- script type="text/javascript" src="http://o.aolcdn.com/dojo/0.4.2/dojo.js"></script -->
 		<script type="text/javascript" src="../../dojo.js"></script>
-		<!-- script type="text/javascript" src="../_bootstrap.js"></script -->
+		<script type="text/javascript" src="../_bootstrap.js"></script>
 		<script type="text/javascript">
-			dojo.registerModulePath('tests', 'testsxd');
 
 			dojo.require('tests.i18n.testmod');
 			dojo.hostenv.writeIncludes();
