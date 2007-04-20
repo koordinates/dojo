@@ -129,8 +129,15 @@ dojo.off.files = {
 	
 	_loadFile: function(url){
 		var xhr = dojo.hostenv.getXmlhttpObject();
-		xhr.url = url;
-		
+		// Commented out because IE 6 breaks on this --
+		// expando properties are not allowed on XHR objects
+		// on IE 6 -- a closure on 'url' is also not good
+		// for other browsers, since we will change the value
+		// of this (TODO: validate that a closure on 'url'
+		// causes problems on other browsers -- I recall it
+		// does but can't completely remember  )
+		//xhr.url = url;
+		var urlCopy = url;
 		xhr.onreadystatechange = function(){
 			if(xhr.readyState == 4 && dojo.off.files._error != true){ /* Loaded */
 				if(xhr.status == 200){
@@ -139,20 +146,18 @@ dojo.off.files = {
 					// requireOfflineCache = false
 				}else{
 					// remove the browserbust string
-					var url = xhr.url;
-					if(url.indexOf("browserbust=") != -1){
-						url = url.replace(/browserbust\=[0-9]*/, "");
-						if(url.charAt(url.length - 1) == "?"){
-							url = url.replace(/\?$/, "");
+					if(urlCopy.indexOf("browserbust=") != -1){
+						urlCopy = urlCopy.replace(/browserbust\=[0-9]*/, "");
+						if(urlCopy.charAt(urlCopy.length - 1) == "?"){
+							urlCopy = urlCopy.replace(/\?$/, "");
 						}
 					}
 					
 					// log our error
 					dojo.off.files._error = true;
-					var msg = "Error loading offline resource " + url + ": "
+					var msg = "Error loading offline resource " + urlCopy + ": "
 									+ xhr.statusText;
 					dojo.off.files._errorMessages.push(msg); 
-									
 				}
 				
 				// see if we are finished with all of
