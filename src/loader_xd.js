@@ -107,7 +107,10 @@ dojo.hostenv.loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/curre
 	}
 
 	//Add the module (package) to the list of modules.
-	if(this.isXDomain){
+	//Only do this work if we have a modlue name. Otherwise,
+	//it is a non-xd i18n bundle, which can load immediately and does not
+	//need to be tracked.
+	if(this.isXDomain && module){
 		//If this is a __package__.js file, then this must be
 		//a package.* request (since xdomain can only work with the first
 		//path in a package search list. However, .* module names are not
