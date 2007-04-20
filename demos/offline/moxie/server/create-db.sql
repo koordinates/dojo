@@ -19,11 +19,13 @@ CREATE DATABASE moxie;
 USE moxie;
 
 CREATE TABLE DOCUMENTS (
-	id 			INT(50) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	file_name		VARCHAR(255) UNIQUE NOT NULL,
+	id 				INT(50) NOT NULL AUTO_INCREMENT,
+	file_name		VARCHAR(255) NOT NULL,
 	created_on		DATETIME NOT NULL,
-	last_updated		DATETIME NOT NULL,
-	content			MEDIUMTEXT 
+	last_updated	DATETIME NOT NULL,
+	content			MEDIUMTEXT,
+	PRIMARY KEY(id),
+	UNIQUE(file_name)
 ) ENGINE=MyISAM;
 
 
@@ -34,7 +36,9 @@ INSERT INTO DOCUMENTS (file_name, created_on, last_updated, content)
 INSERT INTO DOCUMENTS (file_name, created_on, last_updated, content)
 	VALUES ('message2', NOW(), NOW(), 'Hello World!');
 INSERT INTO DOCUMENTS (file_name, created_on, last_updated, content)
-	VALUES ('message3', NOW(), NOW(), 'Goodbye World!');	
+	VALUES ('message3', NOW(), NOW(), 'Goodbye World!');
+INSERT INTO DOCUMENTS (file_name, created_on, last_updated, content)
+	VALUES ('message4', NOW(), NOW(), 'Brad Neuberg was here');	
 
 
 /* Create our default user - You should change this default password. */
