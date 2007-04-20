@@ -295,6 +295,10 @@ Function updateConfigFile
 	${ConfigWrite} "$INSTDIR\config" "offlinePACFile = " '"$R1/Dojo/dot/.offline-pac"' $R0
 	IfErrors error +1
 	
+	ClearErrors
+	${ConfigWrite} "$INSTDIR\config" "logFile = " '"$R1/Dojo/dot/.offline-log"' $R0
+	IfErrors error +1
+	
 	return
 	
 	error:

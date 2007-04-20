@@ -565,7 +565,7 @@ httpClientReplayNeeded(HTTPConnectionPtr serverConnection){
          && correctMethod == 1
          && clientRequest
          && clientRequest->replaying == 0){
-        printf("Replay needed\n");
+        do_log(L_INFO, "Replay needed\n");
         return 1;
 	}
 	
@@ -578,7 +578,7 @@ httpClientReplay(HTTPConnectionPtr serverConnection){
 	HTTPRequestPtr clientRequest = NULL;
     HTTPConnectionPtr clientConnection = NULL;
 
-    printf("httpClientReplay -- Replaying request!\n");
+    do_log(L_INFO, "httpClientReplay -- Replaying request!\n");
 
     /* get our request and connection objects if present */
     if(serverConnection && serverConnection->server){
@@ -859,7 +859,7 @@ httpClientRequest(HTTPRequestPtr request, AtomPtr url)
     HTTPConditionPtr condition;
     HTTPRangeRec range;
 
-	printf("httpClientRequest, url=%s\n", (char *)url->string);
+	do_log(L_INFO, "httpClientRequest, url=%s\n", (char *)url->string);
 	
 	referer = NULL;
 
@@ -2319,7 +2319,7 @@ AtomPtr removeBrowserBust(AtomPtr url)
     strncpy(buffer, url->string, end);
     buffer[end] = '\0';
     
-    printf("url after removing browser bust: %s\n", buffer);
+    do_log(L_INFO, "url after removing browser bust: %s\n", buffer);
     
     releaseAtom(url);
     return internAtom(buffer);

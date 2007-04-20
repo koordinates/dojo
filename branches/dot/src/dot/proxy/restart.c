@@ -57,6 +57,8 @@ void executeProxy(char *systemStr, char *path){
         sei.lpDirectory = (LPCTSTR)path;
         result = ShellExecuteEx(&sei);
         
+        /* TODO: Get printf's to write into Polipo's log file. */
+        
         /* make sure there wasn't an error */
         if(result == FALSE){
             printf("Unable to execute local proxy: %d\n", (int)GetLastError());

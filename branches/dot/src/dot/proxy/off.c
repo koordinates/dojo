@@ -519,13 +519,13 @@ void setOfflineFileName(char *name_ptr){
 }
 
 void goOnline(void){
-    printf("Going online\n");
+    do_log(L_INFO, "Going online\n");
     online_flag = 1;
     proxyOffline = 0; /* 0 means take proxy online */
 }
 
 void goOffline(void){
-    printf("Going offline\n");
+    do_log(L_INFO, "Going offline\n");
     online_flag = 0;
     proxyOffline = 1; /* 1 means take proxy offline */
 }

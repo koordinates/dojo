@@ -65,7 +65,7 @@ httpLocalRequest(ObjectPtr object, int method, int from, int to,
     if(object->requestor == NULL)
         object->requestor = requestor;
 
-    if(!disableLocalInterface && urlIsSpecial(object->key, object->key_size))
+    if(urlIsSpecial(object->key, object->key_size))
         return httpSpecialRequest(object, method, from, to, 
                                   requestor, closure);
 
@@ -198,7 +198,9 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
 	char *host_ptr = NULL;
 	int safe_scheme = 0;
 	int status;
-	printf("handleOfflineAPI, key=%s\n", (char *)object->key);
+    do_log(L_INFO, "handleOfflineAPI, key=");
+    do_log_n(L_INFO, object->key, object->key_size);
+    do_log(L_INFO, "\n");
 	if(requestor->referer == NULL 
           || requestor->referer->string == NULL
           || strlen(requestor->referer->string) == 0) {
@@ -221,7 +223,7 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
 	if(status == -1){
 		goto fail;
 	}
-	printf("host=%s\n", host_ptr);
+	do_log(L_INFO, "host=%s\n", host_ptr);
 	
 	/* 
        get the type of API request desired:
@@ -325,7 +327,7 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
 {
     char buffer[1024];
     int hlen = 0;
-    if(method >= METHOD_POST) {
+    if(disableOfflineSupport == 1 && method >= METHOD_POST) {
         return httpSpecialSideRequest(object, method, from, to,
                                       requestor, closure);
     }
@@ -345,6 +347,10 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
     object->message = internAtom("Okay");
     object->flags &= ~OBJECT_INITIAL;
     object->flags |= OBJECT_DYNAMIC;
+    
+    do_log(L_INFO, "httpSpecialRequest, url=");
+    do_log_n(L_INFO, object->key, object->key_size);
+    do_log(L_INFO, "\n");
 
 	if(disableOfflineSupport == 0 && matchUrl("/polipo/offline", object)){
 		hlen = snnprintf(buffer, 0, 1024,
@@ -360,7 +366,9 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
                      "\r\nContent-Type: text/html");
     }
 
-    if(object->key_size == 8 && memcmp(object->key, "/polipo/", 8) == 0) {
+    if(disableOfflineSupport == 1 
+        && object->key_size == 8 
+        && memcmp(object->key, "/polipo/", 8) == 0) {
         objectPrintf(object, 0,
                      "<!DOCTYPE HTML PUBLIC "
                      "\"-//W3C//DTD HTML 4.01 Transitional//EN\" "
@@ -383,11 +391,11 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
         handleOfflineAPI(object, requestor);
 #endif
     } else if(isPACCheck(object) == 1) {
-        printf("pac_check.txt was requested");
+        do_log(L_INFO, "pac_check.txt was requested");
         objectPrintf(object, 0, 
                     "the web application is inside the PAC file");
         object->length = object->size;        
-    } else if(disableOfflineSupport == 0 && matchUrl("/polipo/status", object)) {
+    } else if(disableOfflineSupport == 1 && matchUrl("/polipo/status", object)) {
         objectPrintf(object, 0,
                      "<!DOCTYPE HTML PUBLIC "
                      "\"-//W3C//DTD HTML 4.01 Transitional//EN\" "
@@ -431,11 +439,11 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
                      used_atoms);
         object->expires = current_time.tv_sec;
         object->length = object->size;
-    } else if(disableOfflineSupport == 0 && matchUrl("/polipo/config", object)) {
+    } else if(disableOfflineSupport == 1 && matchUrl("/polipo/config", object)) {
         fillSpecialObject(object, printConfig, NULL);
         object->expires = current_time.tv_sec + 5;
 #ifndef NO_DISK_CACHE
-    } else if(disableOfflineSupport == 0 && matchUrl("/polipo/index", object)) {
+    } else if(disableOfflineSupport == 1 && matchUrl("/polipo/index", object)) {
         int len;
         char *root;
         if(disableIndexing) {
@@ -454,7 +462,7 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
         fillSpecialObject(object, plainIndexDiskObjects, root);
         free(root);
         object->expires = current_time.tv_sec + 5;
-    } else if(disableOfflineSupport == 0 && matchUrl("/polipo/recursive-index", object)) {
+    } else if(disableOfflineSupport == 1 && matchUrl("/polipo/recursive-index", object)) {
         int len;
         char *root;
         if(disableIndexing) {
@@ -474,7 +482,7 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
         free(root);
         object->expires = current_time.tv_sec + 20;
 #endif
-    } else if(disableOfflineSupport == 0 && matchUrl("/polipo/servers", object)) {
+    } else if(disableOfflineSupport == 1 && matchUrl("/polipo/servers", object)) {
         if(disableServersList) {
             abortObject(object, 403, internAtom("Action not allowed"));
             notifyObject(object);
@@ -690,7 +698,7 @@ int
 isPACCheck(ObjectPtr object)
 {
     char *testUrl;
-    printf("isPACCheck\n");
+    do_log(L_INFO, "isPACCheck\n");
     
     if(disableOfflineSupport == 1)
         return 0;
@@ -701,7 +709,7 @@ isPACCheck(ObjectPtr object)
     testUrl = (char *)malloc((unsigned)(object->key_size + 1)); 
     memcpy(testUrl, object->key, object->key_size);
     testUrl[object->key_size] = '\0';
-    printf("testUrl=%s\n", testUrl);
+    do_log(L_INFO, "testUrl=%s\n", testUrl);
     if(strstr(testUrl, "pac_check.txt") != NULL)
         return 1;
     else
