@@ -448,3 +448,7 @@ var Moxie = {
 // before we initialize ourselves. When this gets called the page
 // is also finished loading.
 dojo.off.ui.onLoad = dojo.lang.hitch(Moxie, Moxie.initialize);
+
+// tell Dojo Offline we are ready for it to initialize itself now
+// that we have finished configuring it for our application
+dojo.off.initialize();
