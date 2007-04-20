@@ -804,6 +804,13 @@ build targets:
 			replace="/dojo-moxie.js" flags="g">
 			<fileset file="${root}/demos/offline/moxie/editor.js"/>
 		</replaceregexp>
+		
+		<!-- Build our SDK ZIP file -->
+		<antcall target="zip"/>
+		
+		<!-- Change the name -->
+		<move file="${root}/release/dojo_${version}.zip"
+				tofile="${root}/release/dot_sdk_${version}.zip"/>
 	</target>
 	<!-- end Dojo Offline task -->
 	
