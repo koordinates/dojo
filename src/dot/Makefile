@@ -8,10 +8,10 @@
 #
 # @author Brad Neuberg, bkn3@columbia.edu
 
-# Debug builds are off by default; you must define
-# the following environment variable to the following
-# value to get debug builds:
-# export DEBUGFLAG="-g"
+# Debug builds are off by default; you must pass
+# the following variable overridden into your call
+# to make to get debugging. Ex:
+# make mac CDEBUGFLAGS=-Wall -g
 
 # The version of DOT we are generating
 #
@@ -99,9 +99,6 @@ sqlite-clean:
 
 mac-run:
 	./proxy-build/mac/x86/dot "`pwd`/proxy-build/mac/x86/" 
-	
-mac-debug:
-	gdb -d proxy ./proxy-build/mac/x86/dot
 	
 mac-install-make:
 	# clean up old stuff first
