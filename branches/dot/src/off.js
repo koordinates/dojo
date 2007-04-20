@@ -98,6 +98,7 @@ dojo.lang.mixin(dojo.off, {
 	_OFFLINE_CACHE_URL: "http://localhost:8123/polipo/offline?",
 	
 	_onLoadListeners: new Array(),
+	_initializeCalled: false,
 	_storageLoaded: false,
 	_pageLoaded: false,
 	
@@ -202,6 +203,35 @@ dojo.lang.mixin(dojo.off, {
 		//	Causes the Dojo Offline framework to load its configuration data
 		//	from local storage
 		dojo.sync.load(finishedCallback);
+	},
+	
+	initialize: function(){ /* void */
+		// summary:
+		//	Called when a Dojo Offline-enabled application
+		//	is finished configuring Dojo Offline, and is ready
+		//	for Dojo Offline to initialize itself.
+		// description:
+		//	When an application has finished filling
+		//	out the variables Dojo Offline needs to work, such
+		//	as dojo.off.ui.appName, it should call this method
+		//	to tell Dojo Offline to initialize itself. This method
+		//	is needed for a rare edge case. In some conditions,
+		//	especially if we are dealing with a compressed Dojo build,
+		//	the entire Dojo Offline subsystem might initialize itself
+		//	and be running even before the JavaScript for an application
+		//	has had a chance to run and configure Dojo Offline, causing
+		//	Dojo Offline to have incorrect initialization parameters for
+		//	a given app, such as no value for dojo.off.ui.appName. This
+		//	method is provided to prevent this scenario, to slightly
+		//	'slow down' Dojo Offline so it can be configured before running
+		//	off and doing its thing.	
+		this._initializeCalled = true;
+		
+		if(this._storageLoaded == true
+			&& this._pageLoaded == true
+			&& this._initializeCalled == true){
+			this._onLoad();
+		}
 	},
 	
 	onSave: function(isCoreSave, status, key, value, namespace){
@@ -462,7 +492,8 @@ dojo.lang.mixin(dojo.off, {
 		this._pageLoaded = true;
 		
 		if(this._pageLoaded == true
-			&& this._storageLoaded == true){
+			&& this._storageLoaded == true
+			&& this._initializeCalled == true){
 			this._onLoad();		
 		}
 	},
@@ -471,7 +502,8 @@ dojo.lang.mixin(dojo.off, {
 		this._storageLoaded = true;
 		
 		if(this._pageLoaded == true
-			&& this._storageLoaded == true){
+			&& this._storageLoaded == true
+			&& this._initializeCalled == true){
 			this._onLoad();		
 		}
 	},
