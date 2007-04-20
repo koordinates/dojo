@@ -23,7 +23,7 @@ system("sudo -u `logname` mkdir \"$ENV{HOME}/.offline-cache\"");
 # and ensures that any files that are written out are owned
 # by this user process
 echo("Starting up Dojo Offline processes under login account `logname`...");
-system("sudo -u `logname` nohup \"/Applications/Dojo Offline Toolkit/dotlauncher.sh\" start&");
+system("sudo -u `logname` nohup \"/Applications/Dojo Offline Toolkit/dot\" \"/Applications/Dojo\\ Offline\\ Toolkit/\" &");
 
 echo("Finished installing Dojo Offline.");
 
