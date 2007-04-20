@@ -1041,7 +1041,7 @@ dojo.widget.defineWidget(
 				var para = dojo.html.selection.getParentOfType(container,['P','DIV','LI']);
 			}
 			if(para && para.lastChild){
-				if(para.lastChild.nodeType==3 && dojo.string.trim(para.lastChild.nodeValue).length == 0){
+				if(para.childNodes.length>1 && para.lastChild.nodeType==3 && dojo.string.trim(para.lastChild.nodeValue).length == 0){
 					dojo.html.destroyNode(para.lastChild);
 				}
 				if(para.childNodes.length>0 && para.lastChild.tagName=='BR'){
