@@ -57,10 +57,6 @@ AddModule mod_alias.c
 # the files good expires headers
 <IfModule mod_alias.c>
 	<Directory "~/web/dojo_offline">
-		Options Indexes FollowSymLinks MultiViews ExecCGI
-		AllowOverride All
-		Order allow,deny
-		Allow from all
 		ExpiresActive On
 		ExpiresDefault A2592000
 		Header Set Cache-Control "max-age=2592000"
