@@ -715,11 +715,11 @@ Section "Uninstall"
 	Delete "$INSTDIR\dot.exe"
 	Delete "$INSTDIR\proxy.exe"
 	Delete "$INSTDIR\Uninstall.exe"
-	
-	Delete "$APPDATA\Dojo\dot\.offline-pac"
 
 	RMDir /r "$PROGRAMFILES\Dojo\dot"
 	RMDir "$PROGRAMFILES\Dojo"
+	RMDir /r "$APPDATA\Dojo\dot"
+	RMDir "$APPDATA\Dojo"
 	
 	DetailPrint "Dojo Offline is uninstalled!"
 	

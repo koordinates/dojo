@@ -526,6 +526,12 @@ sub deleteFiles{
 		`sudo rm -fr "$ENV{HOME}/Library/Application Support/Dojo"`;
 	}
 	
+	# per-user settings files
+	echo("Removing Dojo Offline setting for this user...");
+	`sudo rm -fr $ENV{HOME}/.offline-cache`;
+	`sudo rm -fr $ENV{HOME}/.offline-list`;
+	`sudo rm -fr $ENV{HOME}/.offline-pac`;
+	
 	# startup agent
 	echo("Removing Dojo Offline launch agent...");
 	`sudo rm -f "$ENV{HOME}/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist"`;
