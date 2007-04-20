@@ -70,25 +70,15 @@ dojo.declare("dijit.base.Container",
 			//		Process the given child widget, inserting it's dom node as
 			//		a child of our dom node
 
-			if(typeof insertIndex == "undefined"){
-				insertIndex = this.children.length;
-			}
 			var containerNode = this.containerNode || this.domNode;
 			if(containerNode === widget){
 				return false;  // throw instead?
 			}
-			var node = widget.domNode;
-			var parent = node.parentNode;
-			var siblingNodes = containerNode.childNodes;
 
-			// if there aren't any kids yet, just add it to the beginning
-			if(!siblingNodes.length || siblingNodes.length == insertIndex){
-				containerNode.appendChild(node);
-			}else if(!insertIndex){
-				parent.insertBefore(node, containerNode.firstChild);
+			if(typeof insertIndex == "undefined"){
+				dojo.place(widget.domNode, containerNode);
 			}else{
-				// otherwise we need to walk the childNodes and find our spot
-				return parent.insertBefore(node, siblingNodes[insertIndex]); // boolean
+				dojo.place(widget.domNode, containerNode, insertIndex);
 			}
 //FIXME: does this function have to return a boolean?  only for recursive check?  Should that throw instead?
 			return true; // boolean

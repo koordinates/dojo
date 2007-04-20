@@ -210,13 +210,7 @@ dojo.declare(
 			valueNode.name = this.textbox.name;
 			textbox.name = "";
 
-			// Insert valueNode after textbox
-			var parent = textbox.parentNode;
-			if(parent.lastChild === valueNode){
-				parent.appendChild(valueNode);
-			}else{
-				parent.insertBefore(valueNode, textbox.nextSibling);
-			}
+			dojo.place(valueNode, textbox, "after"); 
 
 			dijit.form.SerializableTextbox.superclass.postCreate.apply(this, arguments);
 		}
