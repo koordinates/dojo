@@ -79,7 +79,7 @@ diskCacheRoot = "~/.offline-cache/"
 
 # Uncomment this if you want to disable the local web server:
 
-# localDocumentRoot = ""
+localDocumentRoot = ""
 
 # Uncomment this if you want to enable the pages under /polipo/index?
 # and /polipo/servers?.  This is a serious privacy leak if your proxy
@@ -179,3 +179,18 @@ offlineFile = ~/.offline-list
 
 offlinePACFile = ~/.offline-pac
 # offlinePACFile = /some/custom/location 
+
+# For offline use, the following Polipo services are recommended to
+# be disabled for security reasons
+
+# Disable the local configuration pages
+disableLocalInterface = true
+
+# Disable reconfiguring Polipo at runtime
+disableConfiguration = true
+
+# Disable indexing of the local cache
+disableIndexing = true
+
+# Disable the list of known servers
+disableServersList = true

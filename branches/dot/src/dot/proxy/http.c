@@ -950,14 +950,15 @@ httpWriteErrorHeaders(char *buf, int size, int offset, int do_body,
             strftime(timeStr, sizeof(timeStr), "%a, %d %b %Y %H:%M:%S %Z",
                      localtime(&ct));
         }
-        
+           
+        /* Parts commented out by Brad Neuberg to harden Polipo */
         m = snnprintf(body, m, CHUNK_SIZE,
                       ":<br><br>"
                       "\n<strong>%3d %s</strong></p>"
-                      "\n<hr>Generated %s by Polipo on <em>%s:%d</em>."
+                      /*"\n<hr>Generated %s by Polipo on <em>%s:%d</em>."*/
                       "\n</body></html>\r\n",
-                      code, htmlMessage,
-                      timeStr, proxyName->string, proxyPort);
+                      code, htmlMessage /*,
+                      timeStr, proxyName->string, proxyPort*/);
         if(m <= 0 || m >= CHUNK_SIZE) {
             do_log(L_ERROR, "Couldn't write error body.\n");
             dispose_chunk(body);

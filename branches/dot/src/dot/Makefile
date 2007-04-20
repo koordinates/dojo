@@ -178,7 +178,7 @@ mac-install:
 	rm -f ~/dot_install.log
 
 mac-uninstall:
-	sudo "install-src/mac/pkg/DotApp-$(VERSION)/component/Dojo Offline Toolkit/Uninstall.command" \
+	sudo "install-src/mac/pkg/DotApp/component/Dojo Offline Toolkit/Uninstall.command" \
 				--silent --debug
 
 # Clean up an old installation receipt of Dojo Offline so that we
