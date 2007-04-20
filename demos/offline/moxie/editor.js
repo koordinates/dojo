@@ -34,8 +34,7 @@ dojo.off.files.cache([
 					djConfig.baseRelativePath + "src/widget/templates/images/tab_close.gif",
 					djConfig.baseRelativePath + "src/widget/templates/richtextframe.html",
 					djConfig.baseRelativePath + "src/widget/templates/images/toolbar-bg.gif",
-					djConfig.baseRelativePath + "src/widget/templates/buttons/aggregate.gif",
-					djConfig.baseRelativePath + "nls/dojo_en.js"
+					djConfig.baseRelativePath + "src/widget/templates/buttons/aggregate.gif"
 					]);
 
 var Moxie = {
@@ -197,8 +196,11 @@ var Moxie = {
 	
 	_loadKeysOnline: function(){
 		var self = this;
+		var url = "/moxie/*"
+					+ "?browserbust=" + new Date().getTime()
+					+ "&proxybust=" + new Date().getTime();
 		var bindArgs = {
-			url:	 "/moxie/*",
+			url:	 url,
 			sync:		false,
 			mimetype:	"text/javascript",
 			headers:		{ "Accept" : "text/javascript" },
