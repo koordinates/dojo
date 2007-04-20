@@ -278,7 +278,7 @@ dojo.sync.CommandLog.prototype = {
 				}
 			};
 			
-			dojo.storage.put("commandlog", this.commands, finishedCallback,
+			dojo.storage.put("commandlog", this.commands, resultsHandler,
 							dojo.off.STORAGE_NAMESPACE);
 		}catch(exp){
 			dojo.off.onSave(true, exp.toString(), "commandlog", 
@@ -418,7 +418,7 @@ dojo.lang.mixin(dojo.sync, {
 	log: new dojo.sync.CommandLog(),
 	
 	synchronize: function(){ /* void */
-		dojo.debug("synchronize");
+		//dojo.debug("synchronize");
 		// summary:
 		//	Begin a synchronization session.
 		if(this.isSyncing == true
