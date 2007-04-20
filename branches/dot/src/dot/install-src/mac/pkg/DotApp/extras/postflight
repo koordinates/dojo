@@ -9,7 +9,8 @@ system("chown `logname`:`logname` \"$ENV{HOME}/.offline-pac\"");
 
 # copy our launch agent file over
 echo("Copying launch agent file over...");
-system("mv -f \"/Applications/Dojo Offline Toolkit/org.dojo.dot.DojoOfflineLaunchd.plist\" \"$ENV{HOME}/Library/LaunchAgents\"");
+system("mkdir -p \"$ENV{HOME}/Library/LaunchAgents\"");
+system("mv -f \"/Applications/Dojo Offline Toolkit/org.dojo.dot.DojoOfflineLaunchd.plist\" \"$ENV{HOME}/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist\"");
 system("chown `logname`:`logname` \"$ENV{HOME}/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist\"");
 
 # create an offline cache directory if one doesn't exist
