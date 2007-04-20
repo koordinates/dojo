@@ -708,22 +708,8 @@ build targets:
 	
 	<!-- Dojo Offline task -->
 	<target name="offline">
-		<echo message="Building Moxie..."/>
-		
-		<!-- Build Moxie first -->
-		<antcall target="moxie">
-		</antcall>
-		
-		<!-- Take the generated dojo.js
-			and the uncompressed dojo.js files
-			and save them -->
-		<copy file="${release_dir}/dojo.js" 
-				tofile="${root}/dojo-moxie.js" 
-				preservelastmodified="true"	/>
-		
-		<copy file="${release_dir}/dojo.js" 
-				tofile="${root}/dojo-moxie.js.uncompressed.js" 
-				preservelastmodified="true"	/>
+		<!-- Build Moxie -->
+		<antcall target="offline-moxie"/>
 				
 		<!-- 
 			Call our local proxy tasks
@@ -783,6 +769,48 @@ build targets:
 		]]>
 		</script>
 				
+		<!-- Now generate our offline build -->
+		<antcall target="offline-js"/>
+		
+		<!-- Build our SDK ZIP file -->
+		<antcall target="zip"/>
+		
+		<!-- Change the name -->
+		<move file="${root}/release/dojo_${version}.zip"
+				tofile="${root}/release/dot_sdk_${version}.zip"/>
+	</target>
+	<!-- end Dojo Offline task -->
+	
+	<!-- just-offline-js task -->
+	<target name="just-offline-js">
+		<antcall target="offline-moxie"/>
+		<antcall target="offline-js"/>
+	</target>
+	<!-- end of just-offline-js task -->
+	
+	<!-- offline-moxie task -->
+	<target name="offline-moxie">
+		<echo message="Building Moxie..."/>
+		
+		<!-- Build Moxie -->
+		<antcall target="moxie">
+		</antcall>
+		
+		<!-- Take the generated dojo.js
+			and the uncompressed dojo.js files
+			and save them -->
+		<copy file="${release_dir}/dojo.js" 
+				tofile="${root}/dojo-moxie.js" 
+				preservelastmodified="true"	/>
+		
+		<copy file="${release_dir}/dojo.js.uncompressed.js" 
+				tofile="${root}/dojo-moxie.js.uncompressed.js" 
+				preservelastmodified="true"	/>
+	</target>
+	<!-- end of offline-moxie task -->
+	
+	<!-- offline-js task -->
+	<target name="offline-js">
 		<!-- Generate our 'offline' build now -->
 		<echo message="Building 'offline' Dojo profile..."/>
 		<antcall target="release">
@@ -802,17 +830,10 @@ build targets:
 			source -->
 		<replaceregexp match="/dojo.js" byline="true" 
 			replace="/dojo-moxie.js" flags="g">
-			<fileset file="${root}/demos/offline/moxie/editor.js"/>
+			<fileset file="${release_dir}/demos/offline/moxie/editor.html"/>
 		</replaceregexp>
-		
-		<!-- Build our SDK ZIP file -->
-		<antcall target="zip"/>
-		
-		<!-- Change the name -->
-		<move file="${root}/release/dojo_${version}.zip"
-				tofile="${root}/release/dot_sdk_${version}.zip"/>
 	</target>
-	<!-- end Dojo Offline task -->
+	<!-- end of offline-js task -->
 	
 	<!-- offlineRuntime task -->
 	<target name="offlineRuntime">
