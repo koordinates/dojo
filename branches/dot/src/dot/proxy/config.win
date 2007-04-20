@@ -198,4 +198,3 @@ disableServersList = true
 
 # Have error and output messages go to a file
 logFile = ~/.offline-log
-

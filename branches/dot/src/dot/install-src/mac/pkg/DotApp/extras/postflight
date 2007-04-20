@@ -10,8 +10,6 @@ system("chown `logname`:`logname` \"$ENV{HOME}/.offline-pac\"");
 # copy our launch agent file over
 echo("Copying launch agent file over...");
 system("mv -f \"/Applications/Dojo Offline Toolkit/org.dojo.dot.DojoOfflineLaunchd.plist\" \"$ENV{HOME}/Library/LaunchAgents\"");
-# TODO: figure out how to have better debug output into a file for standard out/error when
-# using nohup
 system("chown `logname`:`logname` \"$ENV{HOME}/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist\"");
 
 # create an offline cache directory if one doesn't exist
@@ -23,8 +21,8 @@ system("sudo -u `logname` mkdir \"$ENV{HOME}/.offline-cache\"");
 # and ensures that any files that are written out are owned
 # by this user process
 echo("Starting up Dojo Offline processes under login account `logname`...");
-system("sudo -u `logname` nohup \"/Applications/Dojo Offline Toolkit/dot\" \"/Applications/Dojo\\ Offline\\ Toolkit/\" &");
-
+system("sudo -u `logname` launchctl load \"$ENV{HOME}/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist\"");
+system("sudo -u `logname` launchctl start org.dojo.dot.DojoOfflineLaunchd");	
 echo("Finished installing Dojo Offline.");
 
 exit 0;
