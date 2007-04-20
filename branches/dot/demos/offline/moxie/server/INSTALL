@@ -29,7 +29,7 @@ For Apache, you must have HTTP/1.1 caching turned on. This is different for Apac
 
 Make sure that the Dojo Offline SDK is available to be served by your Apache web server. For the purposes of these docs, let's assume you have placed them to be available at /dojo_offline on the webserver, and that your web server is running at http://brad.com. So to access these it would be http://brad.com/dojo_offline. Let's say the physical directory where the SDK was unzipped is ~/web/dojo_offline.
 
-For Apache 1.3, add the following to your httpd.conf file:
+For Apache 1, add the following to your httpd.conf file:
 
 --------------------------------------------------------
 
