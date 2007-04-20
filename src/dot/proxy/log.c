@@ -41,6 +41,9 @@ preinitLog()
 void
 initLog()
 {
+    if(logFile != NULL)
+        logFile = expandTilde(logFile);
+    
     if(daemonise && logFile == NULL)
         logFile = internAtom("/var/log/polipo");
         

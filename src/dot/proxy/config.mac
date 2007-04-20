@@ -194,3 +194,6 @@ disableIndexing = true
 
 # Disable the list of known servers
 disableServersList = true
+
+# Have error and output messages go to a file
+logFile = ~/.offline-log
