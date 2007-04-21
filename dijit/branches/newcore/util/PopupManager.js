@@ -169,7 +169,7 @@ dijit.util.PopupManager = new function(){
 		//	summary
 		//	Returns whether the mouse is over the passed element.
 		//	Element must be display:block (ie, not a <span>)
-		var mouse = getCursorPosition(e);
+		var mouse = _getCursorPosition(e);
 		var coords = dojo.coords(element, true); //PORT dojo.html.boxSizing.BORDER_BOX
 		var top = coords.y;
 		var bottom = top + coords.h;
