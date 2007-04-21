@@ -69,7 +69,7 @@ dijit.util.FocusManager = new function(){
 		}
 	};
 
-	var getBookmark =function(){
+	var getBookmark = function(){
 		// summary: Retrieves a bookmark that can be used with moveToBookmark to return to the same range
 		var bookmark;
 		var _document = dojo.doc;
@@ -167,7 +167,7 @@ dijit.util.FocusManager = new function(){
 		//Store the current selection and restore it before the action for a menu item
 		//is executed. This is required as clicking on an menu item deselects current selection
 		if(!dojo.withGlobal(openedForWindow||dojo.global(), isCollapsed)){
-			bookmark = dojo.withGlobal(openedForWindow||dojo.global(), dojo.html.selection.getBookmark);
+			bookmark = dojo.withGlobal(openedForWindow||dojo.global(), getBookmark);
 		}else{
 			bookmark = null;
 		}
@@ -190,7 +190,7 @@ dijit.util.FocusManager = new function(){
 					openedForWindow.focus();
 				}
 				try{
-					dojo.withGlobal(openedForWindow||dojo.global, "moveToBookmark", dojo.html.selection, [bookmark]);
+					dojo.withGlobal(openedForWindow||dojo.global, moveToBookmark, null, [bookmark]);
 				}catch(e){
 					/*squelch IE internal error, see http://trac.dojotoolkit.org/ticket/1984 */
 				}
