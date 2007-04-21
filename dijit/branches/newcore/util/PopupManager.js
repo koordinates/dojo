@@ -1,9 +1,5 @@
 dojo.provide("dijit.util.PopupManager");
 
-dojo.require("dojo.html.selection");
-dojo.require("dojo.html.util");
-dojo.require("dojo.event.*");
-
 dojo.require("dijit.util.BackgroundIframe");
 dojo.require("dijit.util.FocusManager");
 dojo.require("dijit.util.place");
@@ -29,8 +25,8 @@ dijit.util.PopupManager = new function(){
 		var iframe = win._frameElement || win.frameElement;
 		if(iframe){
 			var cood = dojo.coords(iframe, true);
-			x += cood.x - dojo.withGlobal(win, dojo.html.getScroll).left;
-			y += cood.y - dojo.withGlobal(win, dojo.html.getScroll).top;
+			x += cood.x - dojo.withGlobal(win, dijit.util.getScroll).left;
+			y += cood.y - dojo.withGlobal(win, dijit.util.getScroll).top;
 		}
 		dijit.util.placeOnScreen(widget.domNode, x, y, padding, true);
 		
@@ -143,6 +139,50 @@ dijit.util.PopupManager = new function(){
 		}
 	};
 
+//PORT factor?
+    function _getCursorPosition(/* DOMEvent */e){
+	//	summary
+	//	Returns the mouse position relative to the document (not the viewport).
+	//	For example, if you have a document that is 10000px tall,
+	//	but your browser window is only 100px tall,
+	//	if you scroll to the bottom of the document and call this function it
+	//	will return {x: 0, y: 10000}
+	//	NOTE: for events delivered via dojo.connect() and/or dojoAttachEvent (for widgets),
+	//	you can just access evt.pageX and evt.pageY, rather than calling this function.
+	e = e || dojo.global.event;
+	var cursor = {x:0, y:0};
+	if(e.pageX || e.pageY){
+		cursor.x = e.pageX;
+		cursor.y = e.pageY;
+	}else{
+		var de = dojo.doc.documentElement;
+		var db = dojo.body();
+		var elem = de||db;
+		cursor.x = e.clientX + elem.scrollLeft - elem.clientLeft;
+		cursor.y = e.clientY + elem.scrollTop - elem.clientTop;
+	}
+	return cursor;	//	object
+};
+
+//PORT factor?
+	function _overElement(/* HTMLElement */element, /* DOMEvent */e){
+		//	summary
+		//	Returns whether the mouse is over the passed element.
+		//	Element must be display:block (ie, not a <span>)
+		var mouse = getCursorPosition(e);
+		var coords = dojo.coords(element, true); //PORT dojo.html.boxSizing.BORDER_BOX
+		var top = coords.y;
+		var bottom = top + coords.h;
+		var left = coords.x;
+		var right = left + coords.w;
+
+		return (mouse.x >= left
+			&& mouse.x <= right
+			&& mouse.y >= top
+			&& mouse.y <= bottom
+		);	//	boolean
+	}
+
 	function onMouse(/*Event*/e){
 		// summary
 		// Monitor clicks in the screen.  If popup has requested it than
@@ -150,14 +190,29 @@ dijit.util.PopupManager = new function(){
 
 		if(stack.length==0){ return; }
 
+		//PORT from dojo.dom.isDescendentOf
+		var isDescendentOf = function(/*Node*/node, /*Node*/ancestor){
+			//	summary
+			//	Returns boolean if node is a descendant of ancestor
+			// guaranteeDescendant allows us to be a "true" isDescendantOf function
+
+			while(node){
+				if(node === ancestor){ 
+					return true; // boolean
+				}
+				node = node.parentNode;
+			}
+			return false; // boolean
+		}
+
 		// if they clicked on the trigger node (often a button), ignore the click
-		if(currentTrigger && dojo.html.isDescendantOf(e.target, currentTrigger)){
+		if(currentTrigger && isDescendantOf(e.target, currentTrigger)){
 			return;
 		}
 
 		// if they clicked on the popup itself then ignore it
 		if(dojo.some(stack, function(widget){
-			return dojo.html.overElement(widget.domNode, e) || dojo.html.isDescendantOf(e.target, widget.domNode);
+			return _overElement(widget.domNode, e) || isDescendantOf(e.target, widget.domNode);
 		}))
 		{
 			return;
@@ -177,9 +232,18 @@ dijit.util.PopupManager = new function(){
 			targetWindow = dijit.util.window.getDocumentWindow(window.top && window.top.document || window.document);
 		}
 
-		dojo.event[command](targetWindow.document, 'onmousedown', onMouse);
-		dojo.event[command](targetWindow, "onscroll", onMouse);
-		dojo.event[command](targetWindow.document, "onkey", onKey);
+		if(command == 'connectOnce'){ // PORT: make dojo.connect do connectOnce?
+			targetWindow._onmousedownhandler = dojo.connect(targetWindow.document, 'onmousedown', null, onMouse);
+			targetWindow._onscrollhandler = dojo.connect(targetWindow, "onscroll", null, onMouse);
+			targetWindow._onkeyhandler = dojo.connect(targetWindow.document, "onkey", null, onKey);
+		}else{
+			dojo.disconnect(targetWindow.document, 'onmousedown', targetWindow._onmousedownhandler);
+			targetWindow._onmousedownhandler = null;
+			dojo.disconnect(targetWindow, "onscroll", targetWindow._onscrollhandler);
+			targetWindow._onscrollhandler = null;
+			dojo.disconnect(targetWindow.document, "onkey", targetWindow._onkeyhandler);
+			targetWindow._onkeyhandler = null;
+		}
 
 		for(var i = 0; i < targetWindow.frames.length; i++){
 			try{

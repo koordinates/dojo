@@ -1,18 +1,17 @@
 dojo.provide("dijit.util.BackgroundIframe");
 
-dijit.util.BackgroundIframe = function(/* HTMLElement */node) {
+dijit.util.BackgroundIframe = function(/* HTMLElement */node){
 	//	summary
 	//	For IE z-index schenanigans
 	//	Two possible uses:
-	//	1. new dojo.html.BackgroundIframe(node)
+	//	1. new dijit.util.BackgroundIframe(node)
 	//		Makes a background iframe as a child of node, that fills area (and position) of node
-	//	2. new dojo.html.BackgroundIframe()
+	//	2. new dijit.util.BackgroundIframe()
 	//		Attaches frame to dojo.body().  User must call size() to set size.
-	if(dojo.IE < 7) {
+	if(dojo.IE < 7){
 		var html="<iframe src='javascript:false'"
 			+ " style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"
-			+ "z-index: -1; filter:Alpha(Opacity=\"0\");' "
-			+ ">";
+			+ "z-index: -1; filter:Alpha(Opacity=\"0\");'>";
 		this.iframe = dojo.doc.createElement(html);
 		this.iframe.tabIndex = -1; // Magic to prevent iframe from getting focus on tab keypress - as style didnt work.
 		if(node){
@@ -24,6 +23,7 @@ dijit.util.BackgroundIframe = function(/* HTMLElement */node) {
 		}
 	}
 };
+
 dojo.extend(dijit.util.BackgroundIframe, {
 	iframe: null,
 	onResized: function(){
@@ -32,7 +32,7 @@ dojo.extend(dijit.util.BackgroundIframe, {
 		// TODO: this function shouldn't be necessary but setting width=height=100% doesn't work!
 		if(this.iframe && this.domNode && this.domNode.parentNode){ // No parentElement if onResized() timeout event occurs on a removed domnode
 			var outer = dojo.marginBox(this.domNode);
-			if (outer.w  == 0 || outer.h == 0 ){
+			if (!outer.w || !outer.h){
 				setTimeout(this, this.onResized, 100);
 				return;
 			}
@@ -41,20 +41,19 @@ dojo.extend(dijit.util.BackgroundIframe, {
 		}
 	},
 
-	size: function(/* HTMLElement */node) {
+	size: function(/* HTMLElement */node){
 		// summary:
 		//		Call this function if the iframe is connected to dojo.body()
 		//		rather than the node being shadowed 
 
 		//	(TODO: erase)
 		if(!this.iframe){ return; }
-		var coords = dojo.html.toCoordinateObject(node, true, dojo.html.boxSizing.BORDER_BOX); // PORT
-		with(this.iframe.style){
-			width = coords.width + "px";
-			height = coords.height + "px";
-			left = coords.left + "px";
-			top = coords.top + "px";
-		}
+		var coords = dojo.coords(node, true); // PORT used BORDER_BOX
+		var s = this.iframe.style;
+		s.width = coords.w + "px";
+		s.height = coords.h + "px";
+		s.left = coords.x + "px";
+		s.top = coords.y + "px";
 	},
 
 	setZIndex: function(/* HTMLElement|int */node){
@@ -102,7 +101,7 @@ dojo.extend(dijit.util.BackgroundIframe, {
 		//	summary:
 		//		remove the iframe
 		if(this.iframe){
-			dojo.html.removeNode(this.iframe, true);
+			this.iframe.parentNode.removeChild(this.iframe); // PORT: leak?
 			delete this.iframe;
 			this.iframe=null;
 		}
