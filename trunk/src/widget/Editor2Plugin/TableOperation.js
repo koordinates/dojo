@@ -9,7 +9,7 @@ dojo.event.topic.subscribe("dojo.widget.RichText::init", function(editor){
 	if(dojo.render.html.ie){
 		//add/remove a class to a table with border=0 to show the border when loading/saving
 		editor.contentDomPreFilters.push(dojo.widget.Editor2Plugin.TableOperation.showIETableBorder);
-		editor.contentDomPostFilters.push(dojo.widget.Editor2Plugin.TableOperation.removeIEFakeClass);
+		editor.contentPostFilters.push(dojo.widget.Editor2Plugin.TableOperation.removeIEFakeClass);
 	}
 	//create a toggletableborder command for this editor so that tables without border can be seen
 	editor.getCommand("toggletableborder");
@@ -105,12 +105,15 @@ dojo.widget.Editor2Plugin.TableOperation = {
 		});
 		return dom;
 	},
-	removeIEFakeClass: function(dom){
-		var tables = dom.getElementsByTagName('table');
-		dojo.lang.forEach(tables, function(t){
-			dojo.html.removeClass(t, "dojoShowIETableBorders");
+	removeIEFakeClass: function(html){
+		html=html.replace(/(\s)*dojoShowIETableBorders(\s)*/gi, function(str,p1,p2){
+			if(p1.length && p2.length){
+				return ' ';
+			}else{
+				return '';
+			}
 		});
-		return dom;
+		return html;
 	}
 }
 
