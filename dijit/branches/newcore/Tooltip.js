@@ -92,8 +92,8 @@ dojo.declare(
 			}, this);
 		},
 
-		//PORT from dojo.dom.isDescendentOf
-		_isDescendentOf: function(/*Node*/node, /*Node*/ancestor){
+		//PORT from dojo.dom.isDescendantOf
+		_isDescendantOf: function(/*Node*/node, /*Node*/ancestor){
 			//	summary
 			//	Returns boolean if node is a descendant of ancestor
 			// guaranteeDescendant allows us to be a "true" isDescendantOf function
