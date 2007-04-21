@@ -139,24 +139,22 @@ dojo.declare(
 
 		_setupAnimation: function(){
 			var self = this;
-			this._animation = dojo.fx.slideTo(this.internalProgress,
-				{
-					top: 0,
-					left: parseInt(dojo.getComputedStyle(this.domNode).width)-parseInt(dojo.getComputedStyle(this.internalProgress).width)
-				},
-				this.duration, null, 
-				function(){
-					var backAnim = dojo.fx.slideTo(self.internalProgress, {top: 0, left: 0}, self.duration);
-					dojo.connect(backAnim, "onEnd", null, function(){
-						if(!self._animationStopped){
-							self._animation.play();
-						}
-					});
+			this._animation = dojo.fx.slideTo({node: this.internalProgress,
+				top: 0,
+				left: parseInt(dojo.getComputedStyle(this.domNode).width)-parseInt(dojo.getComputedStyle(this.internalProgress).width),
+				duration: this.duration});
+			dojo.connect(this._animation, "onEnd", null, function(){
+				var backAnim = dojo.fx.slideTo({node: self.internalProgress, top: 0, left: 0, duration: self.duration});
+				dojo.connect(backAnim, "onEnd", null, function(){
 					if(!self._animationStopped){
-						backAnim.play();
+						self._animation.play();
 					}
-					backAnim = null; // to avoid memory leaks in IE
 				});
+				if(!self._animationStopped){
+					backAnim.play();
+				}
+				backAnim = null; // to avoid memory leaks in IE
+			});
 		},
 
 		startAnimation: function(){

@@ -147,23 +147,21 @@ dojo.declare(
 					throw new Error(this.id + ".positionDirection is an invalid value: " + pd);
 				}
 
-				this.slideAnim = dojo.fx.slideTo(
-					this.containerNode,
-					{ top: 0, left: 0 },
-					450,
-					null,
-					dojo.hitch(this, function(nodes, anim){
+				this.slideAnim = dojo.fx.slideTo({
+					node: this.containerNode,
+					top: 0, left: 0,
+					duration: 450});
+				dojo.connect(this.slideAnim, "onEnd", this, function(nodes, anim){
 						//we build the fadeAnim here so we dont have to duplicate it later
 						// can't do a fadeHide because we're fading the
 						// inner node rather than the clipping node
-						this.fadeAnim = dojo.fadeOut(
-							this.containerNode,
-							1000,
-							null,
-							dojo.hitch(this, function(evt){
+						this.fadeAnim = dojo.fadeOut({
+							node: this.containerNode,
+							duration: 1000});
+						dojo.connect(this.fadeAnim, "onEnd", this, function(evt){
 								this.isVisible = false;
 								this.hide();
-							}));
+							});
 						//if duration == 0 we keep the message displayed until clicked
 						//TODO: fix so that if a duration > 0 is displayed when a duration==0 is appended to it, the fadeOut is canceled
 						if(duration>0){
@@ -185,8 +183,9 @@ dojo.declare(
 								});
 						}
 						this.isVisible = true;
-					})).play();
-				}
+					});
+				this.slideAnim.play();
+			}
 		},
 
 		_placeClip: function(){

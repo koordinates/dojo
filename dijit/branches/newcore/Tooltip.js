@@ -34,7 +34,7 @@ dojo.declare(
 			this.containerNode.innerHTML=innerHTML;
 			dijit.util.placeOnScreenAroundElement(this.domNode, aroundNode, [0,0],
 				{'BL': 'TL', 'TL': 'BL'});
-			var anim = dojo.fadeIn(this.domNode, this.duration);
+			var anim = dojo.fadeIn({node: this.domNode, duration: this.duration});
 			dojo.connect(anim, "onEnd", this, function(){
 				dojo.style(this.domNode, "display", "");
 			});
@@ -45,7 +45,7 @@ dojo.declare(
 		hide: function(){
 			// summary: hide the tooltip
 			this.isShowingNow = false;
-			var anim = dojo.fadeOut(this.domNode, this.duration);
+			var anim = dojo.fadeOut({node: this.domNode, duration: this.duration});
 			dojo.connect(anim, "onEnd", this, function(){
 				dojo.style(this.domNode, "display", "none");
 			});
