@@ -1,7 +1,7 @@
 dojo.provide("dijit.util.bidi");
 
 // ported from dojo.html.util
-dojo.html.isLeftToRight = function(/*HtmlElement*/node){
+dijit.util.bidi.isLeftToRight = function(/*HtmlElement*/node){
 	// summary
 	// Walks the DOM parent chain looking for a dir attribute to determine direction of text (BiDi)
 	// Stops if a value is found and returns true if the attribute is set to "ltr".  If none is found,
