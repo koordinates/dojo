@@ -832,6 +832,10 @@ build targets:
 			replace="/dojo-moxie.js" flags="g">
 			<fileset file="${release_dir}/demos/offline/moxie/editor.html"/>
 		</replaceregexp>
+		<replaceregexp match="&quot;dojo.js" byline="true" 
+			replace="&quot;dojo-moxie.js" flags="g">
+			<fileset file="${release_dir}/demos/offline/moxie/editor.js"/>
+		</replaceregexp>
 	</target>
 	<!-- end of offline-js task -->
 	
