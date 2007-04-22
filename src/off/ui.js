@@ -216,7 +216,6 @@ dojo.lang.mixin(dojo.off.ui, {
 	},
 	
 	onOfflineCacheInstalled: function(){
-		dojo.debug("onOfflineCacheInstalled");
 		// summary:
 		//	A function that can be overridden that is called 
 		//	when a user has installed the offline cache after
@@ -261,7 +260,7 @@ dojo.lang.mixin(dojo.off.ui, {
 	},
 
 	_initialize: function(){
-		//dojo.debug("dojo.off.ui._initialize");
+		dojo.debug("dojo.off.ui._initialize");
 		// make sure our app name is correct
 		if(this._validateAppName(this.appName) == false){
 			alert("You must set dojo.off.ui.appName; it can only contain "
@@ -302,6 +301,7 @@ dojo.lang.mixin(dojo.off.ui, {
 	},
 	
 	_doAutoEmbed: function(){
+		dojo.debug("dojo.off.ui._doAutoEmbed");
 		// fetch our HTML for the offline widget
 		var templatePath = this.htmlTemplatePath;
 		var bindArgs = {
@@ -321,6 +321,7 @@ dojo.lang.mixin(dojo.off.ui, {
 	},
 	
 	_templateLoaded: function(type, data, evt){
+		dojo.debug("dojo.of.ui._templateLoaded");
 		// inline our HTML
 		var container = dojo.byId(this.autoEmbedID);
 		if(container){
