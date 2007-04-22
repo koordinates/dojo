@@ -2336,8 +2336,6 @@ AtomPtr removeBrowserBust(AtomPtr url)
     strncpy(buffer, url->string, end);
     buffer[end] = '\0';
     
-    do_log(L_INFO, "url after removing browser bust: %s\n", buffer);
-    
     releaseAtom(url);
     return internAtom(buffer);
 }
