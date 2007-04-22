@@ -587,7 +587,6 @@ httpServerConnectionHandler(int status,
                             ConnectRequestPtr request)
 {
     HTTPConnectionPtr connection = request->data;
-	printf("httpServerConnectionHandler, status=%d\n", status);
     assert(connection->fd < 0);
     if(request->fd >= 0) {
         int rc;
