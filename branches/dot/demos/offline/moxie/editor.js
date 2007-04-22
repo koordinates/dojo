@@ -36,6 +36,11 @@ dojo.off.files.cache([
 					djConfig.baseRelativePath + "src/widget/templates/images/toolbar-bg.gif",
 					djConfig.baseRelativePath + "src/widget/templates/buttons/aggregate.gif"
 					]);
+					
+// work-around for bug in Dojo Editor Widget
+dojo.off.files.cache([
+					djConfig.baseRelativePath + "demos/src/widget/templates/buttons/aggregate.gif"
+					]);
 
 var Moxie = {
 	_availableKeys: null,
