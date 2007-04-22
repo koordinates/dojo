@@ -110,7 +110,7 @@ mac-debug:
 	rm -f proxy/proxy
 
 mac-run:
-	./proxy-build/mac/x86/dot "`pwd`/proxy-build/mac/x86/" 
+	cd ./proxy-build/mac/x86/;./proxy -c config
 	
 mac-install-make:
 	# clean up old stuff first
