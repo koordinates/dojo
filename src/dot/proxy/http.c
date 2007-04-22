@@ -41,7 +41,7 @@ int serverTimeout = 90;
    and provide resources from local cache instead faster
    than a 60 second timeout.
 
-   FIXME: How will a 5 second timeout work on very latent
+   FIXME: How will a short timeout work on very latent
    networks? There
    is a tradeoff here between having the user get their 
    web application quickly when offline versus testing the 
@@ -661,6 +661,7 @@ httpMakeRequest()
     request->from = 0;
     request->to = -1;
     request->replaying = 0;
+    request->proxyOnlineCheck = 0;
     request->cache_control = no_cache_control;
     request->condition = NULL;
     request->via = NULL;

@@ -565,8 +565,18 @@ httpClientReplayNeeded(HTTPConnectionPtr serverConnection){
          && correctMethod == 1
          && clientRequest
          && clientRequest->replaying == 0){
-        do_log(L_INFO, "Replay needed\n");
-        return 1;
+        /* don't replay if this was a proxyOnlineCheck, which 
+            meant we are offline, had a cache miss, but then
+            forced ourselves to check the network
+            otherwise. */
+        if(clientRequest->proxyOnlineCheck == 1
+            && proxyOffline == 0){
+            proxyOffline = 1;
+            return 0;
+        }else{
+            do_log(L_INFO, "Replay needed\n");
+            return 1;
+        }
 	}
 	
 	return 0;	
@@ -1231,9 +1241,9 @@ httpClientNoticeRequest(HTTPRequestPtr request, int novalidate)
     int conditional = 0;
     int local, haveData;
     int rc;
-
+    
     assert(!request->chandler);
-
+    
     if(request->error_code) {
         if((request->flags & REQUEST_FORCE_ERROR) || REQUEST_SIDE(request) ||
            request->object == NULL ||
@@ -1363,11 +1373,18 @@ httpClientNoticeRequest(HTTPRequestPtr request, int novalidate)
 
     if(serveNow) {
         connection->flags |= CONN_WRITER;
-        if(!local && proxyOffline)
-            return httpClientRawError(connection, 502, 
+        if(!local && proxyOffline){
+            /* If we are offline, try to go onto the network
+                to fetch this resource to see if the network
+                has reappeared. If it hasn't, then we will
+                switch back to proxyOffline. */
+            proxyOffline=0;
+            request->proxyOnlineCheck = 1;
+            /*return httpClientRawError(connection, 502, 
                                       internAtom("Disconnected operation "
                                                  "and object not in cache"),
-                                      0);
+                                      0);*/
+        }
         request->chandler =
             conditionWait(&request->object->condition, httpClientGetHandler, 
                           sizeof(request), &request);
