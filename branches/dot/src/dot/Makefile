@@ -104,8 +104,7 @@ mac-debug:
 	cp -f proxy-build/mac/x86/dot proxy/dot
 	cp -f proxy-build/mac/x86/config proxy/config
 	cp -f proxy-build/mac/x86/proxy proxy/proxy
-	cd proxy/
-	-gdb proxy
+	-cd proxy;gdb proxy
 	rm -f proxy/proxy
 	rm -f proxy/config
 	rm -f proxy/proxy
