@@ -1,6 +1,7 @@
 dojo.provide("dijit.util.parser");
 
 dojo.require("dijit.util.manager");
+dojo.require("dojo.date.serial");
 
 // TODO:
 // - call startup() after all the other widgets have been created
@@ -52,7 +53,7 @@ dijit.util.parser = new function(){
 				var date = null;
 				if(value && value.length > 0){
 					try{
-						date = dojo.date.fromRfc3339(value);
+						date = dojo.date.serial.fromRfc3339(value);
 					}catch(e){/*squelch*/}
 					if(!(date instanceof Date)){
 						try{
