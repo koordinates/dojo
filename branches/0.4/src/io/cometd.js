@@ -899,7 +899,7 @@ cometd.callbackPollTransport = new function(){
 				transport: "ScriptSrcTransport",
 				jsonParamName: "jsonp",
 				content: { message: dojo.json.serialize([ message ]) },
-				load: dojo.lang.hitch(this, function(type, data, evt, args){ cometd.deliver(data); }),
+				load: dojo.lang.hitch(this, function(type, data, evt, args){ cometd.deliver(data); })
 			};
 			return dojo.io.bind(bindArgs);
 		}else{
