@@ -51,7 +51,7 @@ dojo.declare(
 		// summary: callback when user hits a key
 		if(e.key == dojo._keys.ENTER){ //PORT use of a dojo private
 			this.onLabelClick();
-			if(this.open == true){
+			if(this.open){
 				this.containerNode.focus();
 			}
 	 	}
