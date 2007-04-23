@@ -35,7 +35,7 @@ dojo.declare(
 
 	onLabelClick: function(){
 		// summary: callback when label is clicked
-		dojo.fx[this.open ? "wipeOut" : "wipeIn"]({node: this.containerNode, duration: 250}).play();
+		dojo.fx[this.open ? "slideOut" : "slideIn"]({node: this.containerNode, duration: 250}).play();
 		this.open=!this.open;
 		this._setCss();
 	},
