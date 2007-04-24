@@ -138,7 +138,7 @@ dojo.declare(
 
 		onKey: function(/*Event*/ e){
 			// summary: callback when user hits a key
-			var k = dojo._keys; //PORT does this need to be public?
+			var k = dojo.keys;
 			if(e.key == " "){
 	 			this._onClick(e);
 	 		}

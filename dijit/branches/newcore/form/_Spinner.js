@@ -113,8 +113,7 @@ dojo.declare(
 			}else{
 				dojo.connect(node, "onmousewheel", this, "_mouseWheeled"); // IE + Safari
 			}
-//PORT: use of private dojo._keys
-			dijit.util.typematic.addListener(this.upArrowNode, node, {key:dojo._keys.UP_ARROW,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout);
-			dijit.util.typematic.addListener(this.downArrowNode, node, {key:dojo._keys.DOWN_ARROW,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout);
+			dijit.util.typematic.addListener(this.upArrowNode, node, {key:dojo.keys.UP_ARROW,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout);
+			dijit.util.typematic.addListener(this.downArrowNode, node, {key:dojo.keys.DOWN_ARROW,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout);
 		}
 });
