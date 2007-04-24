@@ -214,7 +214,7 @@ dojo.declare(
 	// FIXME: temporarily set to false because of several dojo tickets related
 	// to the xpath version not working consistently in firefox.
 //	useNonXpath = false;
-	var _document = dojo.doc();
+	var _document = dojo.doc;
 	parent = dojo.byId(parent) || _document;
 	var classes = classStr.split(/\s+/g);
 	var nodes = [];
@@ -344,7 +344,7 @@ dojo.declare(
 	unBindDomNode: function(/*String|DomNode*/ nodeName){
 		// summary: detach menu from given node
 		var node = dojo.byId(nodeName);
-		dojo.removeListener(node, "contextmenu", this.open);
+		dojo.removeListener(node, "contextmenu", this.open); //PORT fix 3rd arg (handle)
 	},
 
 	_openAsSubmenu: function(/*Widget|DomNode*/parent, /*Object*/explodeSrc, /*String?*/orient){

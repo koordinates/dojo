@@ -104,7 +104,7 @@ dijit.util.FocusManager = new function(){
 	var moveToBookmark = function(/*Object*/bookmark){
 		// summary: Moves current selection to a bookmark
 		// bookmark: this should be a returned object from dojo.html.selection.getBookmark()
-		var _document = dojo.doc();
+		var _document = dojo.doc;
 		if(_document.selection){ // IE
 			if(dojo.isArray(bookmark)){
 				var range= _document.body.createControlRange();
