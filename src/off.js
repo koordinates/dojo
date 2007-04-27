@@ -2,6 +2,7 @@ dojo.provide("dojo.off");
 
 dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
+dojo.require("dojo.storage.*");
 
 // Author: Brad Neuberg, bkn3@columbia.edu, http://codinginparadise.org
 

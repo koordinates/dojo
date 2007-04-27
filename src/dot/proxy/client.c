@@ -1027,7 +1027,7 @@ httpClientRequestContinue(int forbidden_code, AtomPtr url,
         urlIsLocal(url->string, url->length) ? 
         httpLocalRequest :
         httpServerRequest;
-
+        
     if(request->method == METHOD_POST || request->method == METHOD_PUT) {
         do {
             object = findObject(OBJECT_HTTP, url->string, url->length);
