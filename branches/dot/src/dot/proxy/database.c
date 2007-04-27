@@ -10,12 +10,19 @@ sqlite3* db;
 
 int first_row;
 
+char *escapeJSON(const char *escapeMe) {
+    /* TODO: Implement -- escape all double quotes, all new lines, and back slashes */
+    
+    return (char *)escapeMe;
+}
+
 void execSQL(const char *sql) {
     sqlite3_stmt *ppStmt;
     const char *errmsg;
     const char *colName;
-    const unsigned char *colValue;
+    const char *colValue;
     int result, numCols, i;
+    int firstRow = 1;
 
     do_log(L_INFO, "Executing SQL: %s\n", sql);
 
@@ -28,20 +35,38 @@ void execSQL(const char *sql) {
         return;
     }
     
+    printf("{\n");
     do {
         result = sqlite3_step(ppStmt);
-        printf("new row\n");
         if (result == SQLITE_ROW) {
+            /* print a comma from the previous result? */
+            if(firstRow != 1) {
+                printf(",\n");
+            }else {
+                firstRow = 0;
+            }
+            
+            printf("\t[\n");
             numCols = sqlite3_column_count(ppStmt);
             for(i = 0; i < numCols; i++){
-                colName = sqlite3_column_name(ppStmt, i);
-                colValue = sqlite3_column_text(ppStmt, i);
-                printf("%s: %s\n", colName, colValue);
+                colName = escapeJSON((const char *)sqlite3_column_name(ppStmt, i));
+                colValue = escapeJSON((const char *)sqlite3_column_text(ppStmt, i));
+                
+                printf("\t\t\"%s\": \"%s\"", colName, colValue);
+                
+                /* Are we the last result for this row? */
+                if(i < (numCols - 1)) {
+                    printf(",");
+                }
+                printf("\n");
             }
+            printf("\t]");
         }
     } while (result == SQLITE_ROW);
     
     sqlite3_finalize(ppStmt);
+    
+    printf("\n}\n");
 }
 
 void preinitDatabase(void){
