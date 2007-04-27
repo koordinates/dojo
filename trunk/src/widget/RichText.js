@@ -929,7 +929,7 @@ dojo.widget.defineWidget(
 		//		DIV, BR, or empty (which means disable this feature). Anything else
 		//		will trigger errors.
 		blockNodeForEnter: 'P',
-		bogusHtmlContent: '&nbsp;',
+		bogusHtmlContent: '&shy;',
 		handleEnterKey: function(e){
 			// summary: manually handle enter key event to make the behavior consistant across
 			//	all supported browsers. See property blockNodeForEnter for available options
@@ -1040,16 +1040,18 @@ dojo.widget.defineWidget(
 			}else{
 				var para = dojo.html.selection.getParentOfType(container,['P','DIV','LI']);
 			}
-			if(para && para.lastChild){
-				if(para.childNodes.length>1 && para.lastChild.nodeType==3 && dojo.string.trim(para.lastChild.nodeValue).length == 0){
+
+			if(!para) { return; }
+			if(para.lastChild){
+				if(para.childNodes.length>1 && para.lastChild.nodeType==3 && /^[\s\xAD]*$/ .test(para.lastChild.nodeValue)){
 					dojo.html.destroyNode(para.lastChild);
 				}
-				if(para.childNodes.length>0 && para.lastChild.tagName=='BR'){
+				if(para.lastChild && para.lastChild.tagName=='BR'){
 					dojo.html.destroyNode(para.lastChild);
-					if(para.childNodes.length==0){
-						para.appendChild(para.ownerDocument.createTextNode(' '));
-					}
 				}
+			}
+			if(para.childNodes.length==0){
+				para.innerHTML=this.bogusHtmlContent;
 			}
 		},
 		onClick: function(e){ this.onDisplayChanged(e); },
@@ -1469,11 +1471,10 @@ dojo.widget.defineWidget(
 			var ec = this.getNodeChildrenHtml(dom);
 			if(dojo.string.trim(ec) == "&nbsp;"){ ec = ""; }
 
-			if(dojo.render.html.ie){
-				//removing appended <P>&nbsp;</P> for IE
-				var re = new RegExp("(?:<p>&nbsp;</p>[\n\r]*)+$", "i");
-				ec = ec.replace(re,"");
-			}
+//			if(dojo.render.html.ie){
+//				//removing appended <P>&nbsp;</P> for IE
+//				ec = ec.replace(/(?:<p>&nbsp;</p>[\n\r]*)+$/i,"");
+//			}
 			dojo.lang.forEach(this.contentPostFilters, function(ef){
 				ec = ef(ec);
 			});
@@ -1538,16 +1539,21 @@ dojo.widget.defineWidget(
 						s = s.substr(0,s.indexOf('>'));
 						s = s.replace(/(?:['"])[^"']*\1/g, '');//to make the following regexp safe
 						var reg = /([^\s=]+)=/g;
-						var m;
+						var m, key;
 						while((m = reg.exec(s)) != undefined){
-							if(m[1].substr(0,3) != '_dj'){
-								if(m[1] == 'src' || m[1] == 'href'){
+							key=m[1];
+							if(key.substr(0,3) != '_dj'){
+								if(key == 'src' || key == 'href'){
 									if(node.getAttribute('_djrealurl')){
-										attrarray.push([m[1],node.getAttribute('_djrealurl')]);
+										attrarray.push([key,node.getAttribute('_djrealurl')]);
 										continue;
 									}
 								}
-								attrarray.push([m[1],node.getAttribute(m[1])]);
+								if(key == 'class'){
+									attrarray.push([key,node.className]);
+								}else{
+									attrarray.push([key,node.getAttribute(key)]);
+								}
 							}
 						}
 					}else{
