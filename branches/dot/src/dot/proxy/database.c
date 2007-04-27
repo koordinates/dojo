@@ -10,79 +10,38 @@ sqlite3* db;
 
 int first_row;
 
-int select_callback(void *p_data, int num_fields, char **p_fields, char **p_col_names) {
-
-  int i;
-  int *p_rn = (int*)p_data;
-
-  if (first_row) {
-    first_row = 0;
-
-    for(i=0; i < num_fields; i++) {
-      printf("%20s", p_col_names[i]);
-    }
-    printf("\n");
-    for(i=0; i< num_fields*20; i++) {
-      printf("=");
-    }
-    printf("\n");
-  }
-
-  (*p_rn)++;
-
-  for(i=0; i < num_fields; i++) {
-    printf("%20s", p_fields[i]);
-  }
-
-  printf("\n");
-  return 0;
-}
-
-void select_stmt(const char* stmt) {
-  char *errmsg;
-  int   ret;
-  int   nrecs = 0;
-
-  first_row = 1;
-
-  ret = sqlite3_exec(db, stmt, select_callback, &nrecs, &errmsg);
-
-  if(ret!=SQLITE_OK) {
-    printf("Error in select statement %s [%s].\n", stmt, errmsg);
-  }
-  else {
-    printf("\n   %d records returned.\n", nrecs);
-  }
-}
-
-void sql_stmt(const char* stmt) {
-  char *errmsg;
-  int   ret;
-
-  ret = sqlite3_exec(db, stmt, 0, 0, &errmsg);
-
-  if(ret != SQLITE_OK) {
-    printf("Error in statement: %s [%s].\n", stmt, errmsg);
-  }
-}
-
 void execSQL(const char *sql) {
-    char *errmsg;
-    int   ret;
-    int   nrecs = 0;
-    
+    sqlite3_stmt *ppStmt;
+    const char *errmsg;
+    const char *colName;
+    const unsigned char *colValue;
+    int result, numCols, i;
+
     do_log(L_INFO, "Executing SQL: %s\n", sql);
 
-    first_row = 1;
-
-    ret = sqlite3_exec(db, sql, select_callback, &nrecs, &errmsg);
-
-    if(ret != SQLITE_OK) {
-        printf("Error in select statement %s [%s].\n", sql, errmsg);
+    /* execute this SQL statement and step through each of its rows. */
+    result = sqlite3_prepare_v2(db, sql, strlen(sql), &ppStmt, NULL);
+    
+    if(result != SQLITE_OK) {
+        errmsg = sqlite3_errmsg(db);
+        do_log(L_ERROR, "Error in select statement %s [%s].\n", sql, errmsg);
+        return;
     }
-    else {
-        printf("\n   %d records returned.\n", nrecs);
-    }
+    
+    do {
+        result = sqlite3_step(ppStmt);
+        printf("new row\n");
+        if (result == SQLITE_ROW) {
+            numCols = sqlite3_column_count(ppStmt);
+            for(i = 0; i < numCols; i++){
+                colName = sqlite3_column_name(ppStmt, i);
+                colValue = sqlite3_column_text(ppStmt, i);
+                printf("%s: %s\n", colName, colValue);
+            }
+        }
+    } while (result == SQLITE_ROW);
+    
+    sqlite3_finalize(ppStmt);
 }
 
 void preinitDatabase(void){
