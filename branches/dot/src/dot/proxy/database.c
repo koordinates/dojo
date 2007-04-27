@@ -16,13 +16,15 @@ char *escapeJSON(const char *escapeMe) {
     return (char *)escapeMe;
 }
 
-void execSQL(const char *sql) {
+void execSQL(const char *sql, ObjectPtr object) {
+    char buffer[1024];
     sqlite3_stmt *ppStmt;
     const char *errmsg;
     const char *colName;
     const char *colValue;
     int result, numCols, i;
     int firstRow = 1;
+    int offset = 0;
 
     do_log(L_INFO, "Executing SQL: %s\n", sql);
 
@@ -35,38 +37,62 @@ void execSQL(const char *sql) {
         return;
     }
     
-    printf("{\n");
+    objectPrintf(object, offset, "[\n");
+    offset += strlen("[\n");
+    
     do {
         result = sqlite3_step(ppStmt);
         if (result == SQLITE_ROW) {
             /* print a comma from the previous result? */
             if(firstRow != 1) {
-                printf(",\n");
+                objectPrintf(object, offset, ",\n");
+                offset += strlen(",\n");
             }else {
                 firstRow = 0;
             }
             
-            printf("\t[\n");
+            objectPrintf(object, offset, "\t{\n");
+            offset += strlen("\t{\n");
+            
             numCols = sqlite3_column_count(ppStmt);
             for(i = 0; i < numCols; i++){
                 colName = escapeJSON((const char *)sqlite3_column_name(ppStmt, i));
                 colValue = escapeJSON((const char *)sqlite3_column_text(ppStmt, i));
                 
-                printf("\t\t\"%s\": \"%s\"", colName, colValue);
+                objectPrintf(object, offset, "\t\t\"%s\": \"%s\"", colName, colValue);
+                offset += strlen("\t\t\"");
+                offset += strlen(colName);
+                offset += strlen("\": \"");
+                offset += strlen(colValue);
+                offset += strlen("\"");
                 
                 /* Are we the last result for this row? */
                 if(i < (numCols - 1)) {
-                    printf(",");
+                    objectPrintf(object, offset, ",");
+                    offset++;
                 }
-                printf("\n");
+                objectPrintf(object, offset, "\n");
+                offset++;
             }
-            printf("\t]");
+            objectPrintf(object, offset, "\t}");
+            offset += strlen("\t}");
         }
     } while (result == SQLITE_ROW);
     
     sqlite3_finalize(ppStmt);
     
-    printf("\n}\n");
+    objectPrintf(object, offset, "\n]\n");
+    offset += strlen("\n]\n");        
+    
+    /* tell the client we are about to give them JSON */
+    snnprintf(buffer, 0, 1024,
+                     "\r\nServer: polipo"
+                     "\r\nContent-Type: text/javascript");
+    
+    object->length = object->size;
+    object->message = internAtom("Okay");
+    object->code = 200;
+    object->flags &= ~OBJECT_INITIAL;
 }
 
 void preinitDatabase(void){

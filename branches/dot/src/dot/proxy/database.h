@@ -7,7 +7,7 @@
 	Author: Brad Neuberg, bkn3@columbia.edu
 */
 
-void execSQL(const char *sql);
+void execSQL(const char *sql, ObjectPtr object);
 
 void preinitDatabase(void);
 

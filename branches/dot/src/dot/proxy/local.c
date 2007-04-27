@@ -648,7 +648,8 @@ httpSpecialDoSideFinish(AtomPtr data, HTTPRequestPtr requestor)
                     }
                 }
                 
-                execSQL(sql);
+                /* execute the SQL and return it's results JSON encoded */
+                execSQL(sql, object);
                 free(origPtr);
             }
             else {
