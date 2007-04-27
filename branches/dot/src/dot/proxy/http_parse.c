@@ -1469,15 +1469,37 @@ parseUrl(const char *url, int len,
 int
 urlIsLocal(const char *url, int len)
 {
-    return (len >= 13 && strstr(url, "pac_check.txt")) ||
-            (len > 0 && url[0] == '/');
+    if (disableOfflineSupport == 0 
+                && len >= 13 
+                && strstr(url, "pac_check.txt")) {
+        return 1;
+    } else if (disableOfflineSupport == 0 
+                && len >= 19 
+                && strstr(url, "/__polipo/__offline")) {
+        return 1;
+    } else if (len > 0 && url[0] == '/') {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 int
 urlIsSpecial(const char *url, int len)
 {
-    return  (len >= 13 && strstr(url, "pac_check.txt")) ||
-            (len >= 8 && memcmp(url, "/polipo/", 8) == 0);
+    if (disableOfflineSupport == 0 
+                && len >= 13 
+                && strstr(url, "pac_check.txt")) {
+        return 1;
+    } else if (disableOfflineSupport == 0
+                && len >= 19 
+                && memcmp(url, "/__polipo/__offline", 19)) {
+        return 1;
+    } else if (len >= 8 && memcmp(url, "/polipo/", 8) == 0) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 int

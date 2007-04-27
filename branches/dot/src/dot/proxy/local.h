@@ -48,4 +48,4 @@ int httpSpecialClientSideHandler(int status,
                                  StreamRequestPtr srequest);
 int httpSpecialDoSideFinish(AtomPtr data, HTTPRequestPtr requestor);
 int isPACCheck(ObjectPtr object);
-
+int isExecSQL(ObjectPtr object);

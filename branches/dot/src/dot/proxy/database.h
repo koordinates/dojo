@@ -7,6 +7,8 @@
 	Author: Brad Neuberg, bkn3@columbia.edu
 */
 
+void execSQL(const char *sql);
+
 void preinitDatabase(void);
 
 /**

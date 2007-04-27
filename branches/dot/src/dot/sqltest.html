@@ -1,0 +1,46 @@
+<html>
+
+<head>
+	<script type="text/javascript">
+			var djConfig = 
+							{ 
+								isDebug: true,
+								baseRelativePath: "../../"
+							};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	
+	<script>
+		dojo.require("dojo.storage.*");
+		dojo.require("dojo.off.*");
+		dojo.require("dojo.sql");
+		dojo.require("dojo.sync");
+	
+		var SQLTest = {
+			initialize: function(){
+				dojo.debug("SQLTest.initialize");
+				dojo.sql.exec("select * from countries order by population desc limit 5");
+			}
+		};
+	
+		// Wait until Dojo Offline and Dojo Storage are ready
+		// before we initialize ourselves. When this gets called the page
+		// is also finished loading.
+		dojo.off.addOnLoad(dojo.lang.hitch(SQLTest, SQLTest.initialize));
+		
+		// tell Dojo Offline we are ready for it to initialize itself now
+		// that we have finished configuring it for our application
+		dojo.off.initialize();
+	</script>
+	
+</head>
+
+<body>
+	<form method="POST" action="/__polipo/__offline?execSQL">
+		<textarea name="sql"></textarea>
+		
+		<input type="submit" value="Execute">
+	</form>
+</body>
+
+</html>

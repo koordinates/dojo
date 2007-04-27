@@ -33,6 +33,7 @@ AtomPtr atomReopenLog;
 AtomPtr atomDiscardObjects;
 AtomPtr atomWriteoutObjects;
 AtomPtr atomFreeChunkArenas;
+AtomPtr atomSQL;
 
 void
 preinitLocal()
@@ -42,6 +43,7 @@ preinitLocal()
     atomDiscardObjects = internAtom("discard-objects");
     atomWriteoutObjects = internAtom("writeout-objects");
     atomFreeChunkArenas = internAtom("free-chunk-arenas");
+    atomSQL = internAtom("sql");
 
     /* These should not be settable for obvious reasons */
     CONFIG_VARIABLE(disableLocalInterface, CONFIG_BOOLEAN,
@@ -327,7 +329,8 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
 {
     char buffer[1024];
     int hlen = 0;
-    if(disableOfflineSupport == 1 && method >= METHOD_POST) {
+    
+    if(method >= METHOD_POST) {
         return httpSpecialSideRequest(object, method, from, to,
                                       requestor, closure);
     }
@@ -504,7 +507,7 @@ httpSpecialSideRequest(ObjectPtr object, int method, int from, int to,
                        HTTPRequestPtr requestor, void *closure)
 {
     HTTPConnectionPtr client = requestor->connection;
-
+    
     assert(client->request == requestor);
 
     if(method != METHOD_POST) {
@@ -520,7 +523,7 @@ int
 httpSpecialDoSide(HTTPRequestPtr requestor)
 {
     HTTPConnectionPtr client = requestor->connection;
-
+    
     if(client->reqlen - client->reqbegin >= client->bodylen) {
         AtomPtr data;
         data = internAtomN(client->reqbuf + client->reqbegin,
@@ -598,8 +601,69 @@ int
 httpSpecialDoSideFinish(AtomPtr data, HTTPRequestPtr requestor)
 {
     ObjectPtr object = requestor->object;
+    
+    if(isExecSQL(object)) {
+        AtomListPtr list = NULL;
+        int i;
 
-    if(matchUrl("/polipo/config", object)) {
+        list = urlDecode(data->string, data->length);
+        if(list == NULL) {
+            abortObject(object, 400,
+                        internAtom("Couldn't parse action"));
+            goto out;
+        }
+        
+        for(i = 0; i < list->length; i++) {
+            char *equals = 
+                memchr(list->list[i]->string, '=', list->list[i]->length);
+            AtomPtr name = 
+                equals ? 
+                internAtomN(list->list[i]->string, 
+                            equals - list->list[i]->string) :
+                retainAtom(list->list[i]);
+            if(name == atomSQL) {
+                char *sql = (char *)malloc(list->list[i]->length);
+                char *changeme = NULL;
+                char *origPtr = sql;
+                
+                memcpy(sql, list->list[i]->string, list->list[i]->length);
+                changeme = sql;
+                
+                /* strip off the 'sql=' part of the URL encoded value */
+                if (strlen(sql) < 4) {
+                    abortObject(object, 400, internAtomF("Invalid form data: %s",
+                                                        sql));
+                    free(sql);
+                    releaseAtom(name);
+                    destroyAtomList(list);
+                    goto out;
+                }
+                sql = sql + 4;
+                
+                /* convert URL encoded spaces from pluses to actual spaces */
+                while(changeme != NULL) {
+                    changeme = strchr(changeme, '+');
+                    if(changeme != NULL && strlen(changeme) > 0 && changeme[0] == '+') {
+                        changeme[0] = ' ';
+                    }
+                }
+                
+                execSQL(sql);
+                free(origPtr);
+            }
+            else {
+                abortObject(object, 400, internAtomF("Unknown action %s",
+                                                     name->string));
+                releaseAtom(name);
+                destroyAtomList(list);
+                goto out;
+            }
+            releaseAtom(name);
+        }
+        
+        destroyAtomList(list);
+    }
+    else if(disableOfflineSupport == 1 && matchUrl("/polipo/config", object)) {
         AtomListPtr list = NULL;
         int i, rc;
 
@@ -633,7 +697,7 @@ httpSpecialDoSideFinish(AtomPtr data, HTTPRequestPtr requestor)
         object->message = internAtom("Done");
         object->flags &= ~OBJECT_INITIAL;
         object->length = 0;
-    } else if(matchUrl("/polipo/status", object)) {
+    } else if(disableOfflineSupport == 1 && matchUrl("/polipo/status", object)) {
         AtomListPtr list = NULL;
         int i;
 
@@ -698,7 +762,6 @@ int
 isPACCheck(ObjectPtr object)
 {
     char *testUrl;
-    do_log(L_INFO, "isPACCheck\n");
     
     if(disableOfflineSupport == 1)
         return 0;
@@ -710,7 +773,30 @@ isPACCheck(ObjectPtr object)
     memcpy(testUrl, object->key, object->key_size);
     testUrl[object->key_size] = '\0';
     do_log(L_INFO, "testUrl=%s\n", testUrl);
-    if(strstr(testUrl, "pac_check.txt") != NULL)
+    if(strstr(testUrl, "pac_check.txt") != NULL) {
+        free(testUrl);
+        return 1;
+    } else {
+        free(testUrl);
+        return 0;
+    }
+}
+
+int
+isExecSQL(ObjectPtr object)
+{
+    char *testUrl;
+    
+    if(disableOfflineSupport == 1)
+        return 0;
+        
+    /* object->key doesn't use a null terminator, which
+       strstr requires; copy it over and add a null
+       terminator. */
+    testUrl = (char *)malloc((unsigned)(object->key_size + 1)); 
+    memcpy(testUrl, object->key, object->key_size);
+    testUrl[object->key_size] = '\0';
+    if(strstr(testUrl, "/__polipo/__offline?execSQL") != NULL)
         return 1;
     else
         return 0;

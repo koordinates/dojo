@@ -1,5 +1,9 @@
 dojo.provide("dojo.sync");
 
+dojo.require("dojo.off");
+dojo.require("dojo.off.files");
+dojo.require("dojo.storage.*");
+
 // Author: Brad Neuberg, bkn3@columbia.edu, http://codinginparadise.org
 
 // summary:
