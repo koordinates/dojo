@@ -72,7 +72,7 @@ main(int argc, char **argv)
     preinitLocal();
     preinitForbidden();
     preinitSocks();
-    /*preinitDatabase();*/
+    preinitDatabase();
     preinitOffline();
 
     i = 1;
@@ -151,7 +151,7 @@ main(int argc, char **argv)
     initDiskcache();
     initForbidden();
     initSocks();
-    /*initDatabase();*/
+    initDatabase();
     initOffline();
 
     if(printConfig) {

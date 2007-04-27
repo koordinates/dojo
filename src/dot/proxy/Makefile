@@ -74,15 +74,13 @@ SRCS = util.c event.c io.c chunk.c atom.c object.c log.c diskcache.c main.c \
        config.c local.c http.c client.c server.c auth.c tunnel.c \
        http_parse.c parse_time.c dns.c forbidden.c \
        md5import.c md5.c ftsimport.c fts_compat.c socks.c mingw.c \
-       off.c 
-#database.c
+       off.c database.c
 
 OBJS = util.o event.o io.o chunk.o atom.o object.o log.o diskcache.o main.o \
        config.o local.o http.o client.o server.o auth.o tunnel.o \
        http_parse.o parse_time.o dns.o forbidden.o \
-       md5import.o ftsimport.o socks.o mingw.o off.o 
-#\
-#database.o
+       md5import.o ftsimport.o socks.o mingw.o off.o \
+       database.o
 
 SQLITE_PATH = ../sqlite
 
@@ -110,12 +108,13 @@ SQLITE_OBJS = \
 	$(SQLITE_PATH)/build/.libs/utf.o $(SQLITE_PATH)/build/.libs/legacy.o \
 	$(SQLITE_PATH)/build/.libs/vtab.o
 
-#polipo$(EXE): $(OBJS)
-#	$(CC) $(CFLAGS) $(LDFLAGS) -o polipo$(EXE) $(OBJS) $(SQLITE_OBJS) $(MD5LIBS) $(LDLIBS) \
-#			-I. -I$(SQLITE_PATH)/src -I$(SQLITE_PATH) -I$(SQLITE_PATH)/build
-
 polipo$(EXE): $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o polipo$(EXE) $(OBJS) $(MD5LIBS) $(LDLIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o polipo$(EXE) $(OBJS) $(SQLITE_OBJS) $(MD5LIBS) $(LDLIBS) \
+			-I. -I$(SQLITE_PATH)/src -I$(SQLITE_PATH) -I$(SQLITE_PATH)/build
+
+# Use this commented out version if you don't want SQLite linked in
+#polipo$(EXE): $(OBJS)
+#	$(CC) $(CFLAGS) $(LDFLAGS) -o polipo$(EXE) $(OBJS) $(MD5LIBS) $(LDLIBS)
 
 restart$(EXE): $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(HIDECONSOLE) -o restarter$(EXE) restart.c $(MD5LIBS) $(LDLIBS)
