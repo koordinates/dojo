@@ -30,7 +30,7 @@ all:
 	make windows
 	make sqlite-clean clean
 
-mac: #sqlite
+mac: sqlite
 	@echo
 	@echo
 	@echo --- Creating Mac/x86 Build ---
@@ -41,7 +41,7 @@ mac: #sqlite
 	cp -f proxy/config.mac proxy-build/mac/x86/config
 	cp -f proxy/default-pac proxy-build/mac/x86/.offline-pac
 
-windows: #sqlite-win
+windows: sqlite-win
 	@echo
 	@echo
 	@echo --- Creating Windows/x86 Build ---
