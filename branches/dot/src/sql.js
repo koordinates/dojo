@@ -6,7 +6,7 @@ dojo.require("dojo.io.*");
 dojo.lang.mixin(dojo.sql, {
 	_EXEC_SQL_URL: "/__polipo/__offline?execSQL",
 	
-	exec: function(sql){
+	exec: function(sql /* string */, callback /* function(resultSet, sql, errMessage) */){
 		dojo.debug("dojo.sql.exec, sql="+sql);
 		
 		var requestArgs = {
@@ -19,11 +19,12 @@ dojo.lang.mixin(dojo.sql, {
 			content: 	requestArgs, 
 			mimetype:	"text/javascript",
 			error:		function(type, errObj){
-				alert("Unable to execute SQL: "
-						+ sql + ": " + errObj.message);
+				var msg = "Unable to execute SQL: "
+						+ sql + ": " + errObj.message;
+				callback(null, sql, msg);
 			},
 			load:		function(type, data, evt){
-				alert("data loaded, data="+data);
+				callback(data, sql, null);
 			}
 		};
 		
