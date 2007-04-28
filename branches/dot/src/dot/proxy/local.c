@@ -226,6 +226,7 @@ handleOfflineAPI(ObjectPtr object, HTTPRequestPtr requestor)
 	if(status == -1){
 		goto fail;
 	}
+	
 	do_log(L_INFO, "host=%s\n", host_ptr);
 	
 	/* 
@@ -356,11 +357,15 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
     do_log_n(L_INFO, object->key, object->key_size);
     do_log(L_INFO, "\n");
 
-	if(disableOfflineSupport == 0 && matchUrl("/polipo/offline", object)){
+	if(disableOfflineSupport == 0 && matchUrl("/polipo/offline", object)) {
 		hlen = snnprintf(buffer, 0, 1024,
                      "\r\nServer: polipo"
                      "\r\nContent-Type: text/javascript");
-	}else if(isPACCheck(object) == 1){
+    } else if(disableOfflineSupport == 0 && (isDbOpen(object) || isDbClose(object))) {
+		hlen = snnprintf(buffer, 0, 1024,
+                     "\r\nServer: polipo"
+                     "\r\nContent-Type: text/javascript");
+    } else if(isPACCheck(object) == 1) {
 		hlen = snnprintf(buffer, 0, 1024,
                      "\r\nServer: polipo"
                      "\r\nContent-Type: text/plain");
@@ -393,12 +398,16 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
     } else if(disableOfflineSupport == 0 && 
             matchUrl("/polipo/offline", object)) {
         handleOfflineAPI(object, requestor);
-#endif
+    } else if(disableOfflineSupport == 0 && isDbOpen(object)) {
+        httpSpecialDbOpen(object, requestor);
+    } else if(disableOfflineSupport == 0 && isDbClose(object)) {
+        httpSpecialDbClose(object, requestor);
     } else if(isPACCheck(object) == 1) {
-        do_log(L_INFO, "pac_check.txt was requested");
+        do_log(L_INFO, "pac_check.txt was requested\n");
         objectPrintf(object, 0, 
                     "the web application is inside the PAC file");
         object->length = object->size;        
+#endif
     } else if(disableOfflineSupport == 1 && matchUrl("/polipo/status", object)) {
         objectPrintf(object, 0,
                      "<!DOCTYPE HTML PUBLIC "
@@ -576,7 +585,7 @@ httpSpecialClientSideHandler(int status,
     }
         
     if(status < 0) {
-        do_log_error(L_ERROR, -status, "Reading from client");
+        do_log_error(L_ERROR, -status, "Reading from client\n");
         if(status == -EDOGRACEFUL)
             httpClientFinish(connection, 1);
         else
@@ -602,7 +611,7 @@ int
 httpSpecialDoSideFinish(AtomPtr data, HTTPRequestPtr requestor)
 {
     ObjectPtr object = requestor->object;
-    
+     
     if(isExecSQL(object)) {
         int status;
         
@@ -610,8 +619,7 @@ httpSpecialDoSideFinish(AtomPtr data, HTTPRequestPtr requestor)
         if(status == 1) {
             goto out;
         }
-    }
-    else if(disableOfflineSupport == 1 && matchUrl("/polipo/config", object)) {
+    } else if(disableOfflineSupport == 1 && matchUrl("/polipo/config", object)) {
         AtomListPtr list = NULL;
         int i, rc;
 
@@ -806,6 +814,110 @@ httpSpecialExecSQL(ObjectPtr object, AtomPtr data, HTTPRequestPtr requestor) {
 }
 
 int
+httpSpecialDbOpen(ObjectPtr object, HTTPRequestPtr requestor) {
+    AtomPtr referer;
+    char *refererHostPtr = NULL;
+    char *urlHostPtr = NULL;
+    int status;
+    
+    if(requestor->referer == NULL 
+          || requestor->referer->string == NULL
+          || strlen(requestor->referer->string) == 0) {
+        abortObject(object, 400, internAtomF("No referer given"));
+        return 1;
+	}
+
+    referer = requestor->referer;
+    
+    /* get the host inside of the referer header */
+    status = getHost(referer, &refererHostPtr);
+	if(status == -1) {
+	    abortObject(object, 400, internAtomF("No referer given"));
+        return 1;
+	}
+	
+	/* get the host given in this URL */
+	status = getHost(referer, &urlHostPtr);
+	if(status == -1) {
+	    abortObject(object, 400, internAtomF("No URL given"));
+        return 1;
+	}
+	
+	/* make sure they match */
+	if(strcmp(urlHostPtr, refererHostPtr) != 0) {
+	    abortObject(object, 400, internAtomF("Referer different than host inside URL"));
+        return 1;
+	}
+
+    status = openDb(refererHostPtr);
+    if(status == 1) {
+        abortObject(object, 400, internAtomF("Unable to open database"));
+        return 1;
+    }
+    
+    objectPrintf(object, 0, "true");
+    
+    object->length = object->size;
+    object->message = internAtom("Okay");
+    object->code = 200;
+    object->flags &= ~OBJECT_INITIAL;
+    
+    return 0;
+}
+
+int 
+httpSpecialDbClose(ObjectPtr object, HTTPRequestPtr requestor) {
+    AtomPtr referer;
+    char *refererHostPtr = NULL;
+    char *urlHostPtr = NULL;
+    int status;
+    
+    if(requestor->referer == NULL 
+          || requestor->referer->string == NULL
+          || strlen(requestor->referer->string) == 0) {
+        abortObject(object, 400, internAtomF("No referer given"));
+        return 1;
+	}
+
+    referer = requestor->referer;
+    
+    /* get the host inside of the referer header */
+    status = getHost(referer, &refererHostPtr);
+	if(status == -1) {
+	    abortObject(object, 400, internAtomF("No referer given"));
+        return 1;
+	}
+	
+	/* get the host given in this URL */
+	status = getHost(referer, &urlHostPtr);
+	if(status == -1) {
+	    abortObject(object, 400, internAtomF("No URL given"));
+        return 1;
+	}
+	
+	/* make sure they match */
+	if(strcmp(urlHostPtr, refererHostPtr) != 0) {
+	    abortObject(object, 400, internAtomF("Referer different than host inside URL"));
+        return 1;
+	}
+
+    status = closeDb(refererHostPtr);
+    if(status == 1) {
+        abortObject(object, 400, internAtomF("Unable to close database"));
+        return 1;
+    }
+    
+    objectPrintf(object, 0, "true");
+    
+    object->length = object->size;
+    object->message = internAtom("Okay");
+    object->code = 200;
+    object->flags &= ~OBJECT_INITIAL;
+    
+    return 0;
+}
+
+int
 isPACCheck(ObjectPtr object)
 {
     char *testUrl;
@@ -819,7 +931,7 @@ isPACCheck(ObjectPtr object)
     testUrl = (char *)malloc((unsigned)(object->key_size + 1)); 
     memcpy(testUrl, object->key, object->key_size);
     testUrl[object->key_size] = '\0';
-    do_log(L_INFO, "testUrl=%s\n", testUrl);
+    
     if(strstr(testUrl, "pac_check.txt") != NULL) {
         free(testUrl);
         return 1;
@@ -843,10 +955,60 @@ isExecSQL(ObjectPtr object)
     testUrl = (char *)malloc((unsigned)(object->key_size + 1)); 
     memcpy(testUrl, object->key, object->key_size);
     testUrl[object->key_size] = '\0';
-    if(strstr(testUrl, "/__polipo/__offline?execSQL") != NULL)
+    if(strstr(testUrl, "/__polipo/__offline?execSQL") != NULL) {
+        free(testUrl);
         return 1;
-    else
+    } else {
+        free(testUrl);
         return 0;
+    }
+}
+
+
+int
+isDbClose(ObjectPtr object)
+{
+    char *testUrl;
+    
+    if(disableOfflineSupport == 1)
+        return 0;
+        
+    /* object->key doesn't use a null terminator, which
+       strstr requires; copy it over and add a null
+       terminator. */
+    testUrl = (char *)malloc((unsigned)(object->key_size + 1)); 
+    memcpy(testUrl, object->key, object->key_size);
+    testUrl[object->key_size] = '\0';
+    if(strstr(testUrl, "/__polipo/__offline?close") != NULL) {
+        free(testUrl);
+        return 1;
+    } else {
+        free(testUrl);
+        return 0;
+    }
+}
+
+int
+isDbOpen(ObjectPtr object)
+{
+    char *testUrl;
+    
+    if(disableOfflineSupport == 1)
+        return 0;
+        
+    /* object->key doesn't use a null terminator, which
+       strstr requires; copy it over and add a null
+       terminator. */
+    testUrl = (char *)malloc((unsigned)(object->key_size + 1)); 
+    memcpy(testUrl, object->key, object->key_size);
+    testUrl[object->key_size] = '\0';
+    if(strstr(testUrl, "/__polipo/__offline?open") != NULL) {
+        free(testUrl);
+        return 1;
+    } else {
+        free(testUrl);
+        return 0;
+    }
 }
 
 #ifdef HAVE_FORK
@@ -863,7 +1025,7 @@ fillSpecialObject(ObjectPtr object, void (*fn)(FILE*, char*), void* closure)
 
     rc = pipe(filedes);
     if(rc < 0) {
-        do_log_error(L_ERROR, errno, "Couldn't create pipe");
+        do_log_error(L_ERROR, errno, "Couldn't create pipe\n");
         abortObject(object, 503,
                     internAtomError(errno, "Couldn't create pipe"));
         return;
@@ -882,7 +1044,7 @@ fillSpecialObject(ObjectPtr object, void (*fn)(FILE*, char*), void* closure)
         rc = sigprocmask(SIG_BLOCK, &ss, &old_mask);
     } while (rc < 0 && errno == EINTR);
     if(rc < 0) {
-        do_log_error(L_ERROR, errno, "Sigprocmask failed");
+        do_log_error(L_ERROR, errno, "Sigprocmask failed\n");
         abortObject(object, 503, internAtomError(errno, "Sigprocmask failed"));
         close(filedes[0]);
         close(filedes[1]);
@@ -891,7 +1053,7 @@ fillSpecialObject(ObjectPtr object, void (*fn)(FILE*, char*), void* closure)
     
     pid = fork();
     if(pid < 0) {
-        do_log_error(L_ERROR, errno, "Couldn't fork");
+        do_log_error(L_ERROR, errno, "Couldn't fork\n");
         abortObject(object, 503, internAtomError(errno, "Couldn't fork"));
         close(filedes[0]);
         close(filedes[1]);
@@ -899,7 +1061,7 @@ fillSpecialObject(ObjectPtr object, void (*fn)(FILE*, char*), void* closure)
             rc = sigprocmask(SIG_SETMASK, &old_mask, NULL);
         } while (rc < 0 && errno == EINTR);
         if(rc < 0) {
-            do_log_error(L_ERROR, errno, "Couldn't restore signal mask");
+            do_log_error(L_ERROR, errno, "Couldn't restore signal mask\n");
             polipoExit();
         }
         return;
@@ -912,7 +1074,7 @@ fillSpecialObject(ObjectPtr object, void (*fn)(FILE*, char*), void* closure)
             rc = sigprocmask(SIG_SETMASK, &old_mask, NULL);
         } while (rc < 0 && errno == EINTR);
         if(rc < 0) {
-            do_log_error(L_ERROR, errno, "Couldn't restore signal mask");
+            do_log_error(L_ERROR, errno, "Couldn't restore signal mask\n");
             polipoExit();
             return;
         }
