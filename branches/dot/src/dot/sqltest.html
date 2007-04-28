@@ -19,11 +19,9 @@
 		var SQLTest = {
 			initialize: function(){
 				dojo.debug("SQLTest.initialize");
-				dojo.sql.open();
 				var results = 
 					dojo.sql.exec("select * from countries order by population desc limit 10");
 				dojo.debug(results[0].country_name);
-				dojo.sql.close();
 			}
 		};
 	
