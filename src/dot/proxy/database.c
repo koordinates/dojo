@@ -6,7 +6,7 @@
 
 #include "polipo.h"
 
-sqlite3* db;
+sqlite3* db = NULL;
 
 int first_row;
 
@@ -14,6 +14,36 @@ char *escapeJSON(const char *escapeMe) {
     /* TODO: Implement -- escape all double quotes, all new lines, and back slashes */
     
     return (char *)escapeMe;
+}
+
+int openDb(char *host) {
+    int status;
+    
+    do_log(L_INFO, "Opening database for host %s\n", host);
+    
+    status = sqlite3_open("./countries.db", &db);
+
+    if(db == NULL || db == 0 || status != SQLITE_OK) {
+        do_log(L_ERROR, "Could not open database\n");
+        return 1;
+    }
+    
+    return 0;
+}
+
+int closeDb(char *host) {
+    int status;
+    
+    do_log(L_INFO, "Closing database for host %s\n", host);
+    
+    status = sqlite3_close(db);
+    
+    if(status != SQLITE_OK) {
+        do_log(L_ERROR, "Could not close database\n");
+        return 1;
+    }
+    
+    return 0;
 }
 
 void execSQL(const char *sql, ObjectPtr object) {
@@ -101,12 +131,4 @@ void preinitDatabase(void){
 }
 
 void initDatabase(void){
-    sqlite3_open("./countries.db", &db);
-
-    if(db == 0) {
-        printf("Could not open database.");
-        exit(1);
-    }
-
-   /* sqlite3_close(db);*/
 }

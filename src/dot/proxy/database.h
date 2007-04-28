@@ -9,6 +9,9 @@
 
 void execSQL(const char *sql, ObjectPtr object);
 
+int openDb(char * host);
+int closeDb(char * host);
+
 void preinitDatabase(void);
 
 /**
