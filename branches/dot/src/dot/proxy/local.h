@@ -47,5 +47,7 @@ int httpSpecialClientSideHandler(int status,
                                  FdEventHandlerPtr event,
                                  StreamRequestPtr srequest);
 int httpSpecialDoSideFinish(AtomPtr data, HTTPRequestPtr requestor);
+int getHost(AtomPtr url, char **host_results);
+int httpSpecialExecSQL(ObjectPtr object, AtomPtr data, HTTPRequestPtr requestor);
 int isPACCheck(ObjectPtr object);
 int isExecSQL(ObjectPtr object);
