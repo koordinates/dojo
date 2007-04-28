@@ -7,10 +7,9 @@
 	Author: Brad Neuberg, bkn3@columbia.edu
 */
 
-void execSQL(const char *sql, ObjectPtr object);
+#include "../sqlite/build/sqlite3.h"
 
-int openDb(char * host);
-int closeDb(char * host);
+int execSQL(const char *host, const char *sql, ObjectPtr object);
 
 void preinitDatabase(void);
 

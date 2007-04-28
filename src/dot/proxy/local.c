@@ -361,10 +361,6 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
 		hlen = snnprintf(buffer, 0, 1024,
                      "\r\nServer: polipo"
                      "\r\nContent-Type: text/javascript");
-    } else if(disableOfflineSupport == 0 && (isDbOpen(object) || isDbClose(object))) {
-		hlen = snnprintf(buffer, 0, 1024,
-                     "\r\nServer: polipo"
-                     "\r\nContent-Type: text/javascript");
     } else if(isPACCheck(object) == 1) {
 		hlen = snnprintf(buffer, 0, 1024,
                      "\r\nServer: polipo"
@@ -398,10 +394,6 @@ httpSpecialRequest(ObjectPtr object, int method, int from, int to,
     } else if(disableOfflineSupport == 0 && 
             matchUrl("/polipo/offline", object)) {
         handleOfflineAPI(object, requestor);
-    } else if(disableOfflineSupport == 0 && isDbOpen(object)) {
-        httpSpecialDbOpen(object, requestor);
-    } else if(disableOfflineSupport == 0 && isDbClose(object)) {
-        httpSpecialDbClose(object, requestor);
     } else if(isPACCheck(object) == 1) {
         do_log(L_INFO, "pac_check.txt was requested\n");
         objectPrintf(object, 0, 
@@ -721,12 +713,12 @@ httpSpecialExecSQL(ObjectPtr object, AtomPtr data, HTTPRequestPtr requestor) {
     AtomPtr referer;
     char *refererHostPtr = NULL;
     char *urlHostPtr = NULL;
-    int status;
+    int status = 0;
     
     if(requestor->referer == NULL 
           || requestor->referer->string == NULL
           || strlen(requestor->referer->string) == 0) {
-        abortObject(object, 400, internAtomF("No referer given"));
+        abortObject(object, 400, internAtom("No referer given"));
         return 1;
 	}
 
@@ -735,20 +727,20 @@ httpSpecialExecSQL(ObjectPtr object, AtomPtr data, HTTPRequestPtr requestor) {
     /* get the host inside of the referer header */
     status = getHost(referer, &refererHostPtr);
 	if(status == -1) {
-	    abortObject(object, 400, internAtomF("No referer given"));
+	    abortObject(object, 400, internAtom("No referer given"));
         return 1;
 	}
 	
 	/* get the host given in this URL */
 	status = getHost(referer, &urlHostPtr);
 	if(status == -1) {
-	    abortObject(object, 400, internAtomF("No URL given"));
+	    abortObject(object, 400, internAtom("No URL given"));
         return 1;
 	}
 	
 	/* make sure they match */
 	if(strcmp(urlHostPtr, refererHostPtr) != 0) {
-	    abortObject(object, 400, internAtomF("Referer different than host inside URL"));
+	    abortObject(object, 400, internAtom("Referer different than host inside URL"));
         return 1;
 	}
 
@@ -768,11 +760,13 @@ httpSpecialExecSQL(ObjectPtr object, AtomPtr data, HTTPRequestPtr requestor) {
                         equals - list->list[i]->string) :
             retainAtom(list->list[i]);
         if(name == atomSQL) {
-            char *sql = (char *)malloc(list->list[i]->length);
+            char *sql = (char *)malloc(list->list[i]->length + 1);
             char *changeme = NULL;
             char *origPtr = sql;
             
             memcpy(sql, list->list[i]->string, list->list[i]->length);
+            sql[list->list[i]->length] = '\0';
+            
             changeme = sql;
             
             /* strip off the 'sql=' part of the URL encoded value */
@@ -793,10 +787,11 @@ httpSpecialExecSQL(ObjectPtr object, AtomPtr data, HTTPRequestPtr requestor) {
                     changeme[0] = ' ';
                 }
             }
-            
+            do_log(L_INFO, "sql=%s\n", sql);
             /* execute the SQL and return it's results JSON encoded */
-            execSQL(sql, object);
+            status = execSQL(refererHostPtr, sql, object);
             free(origPtr);
+            break;
         }
         else {
             abortObject(object, 400, internAtomF("Unknown action %s",
@@ -809,112 +804,7 @@ httpSpecialExecSQL(ObjectPtr object, AtomPtr data, HTTPRequestPtr requestor) {
     }
     
     destroyAtomList(list);
-    
-    return 0;
-}
-
-int
-httpSpecialDbOpen(ObjectPtr object, HTTPRequestPtr requestor) {
-    AtomPtr referer;
-    char *refererHostPtr = NULL;
-    char *urlHostPtr = NULL;
-    int status;
-    
-    if(requestor->referer == NULL 
-          || requestor->referer->string == NULL
-          || strlen(requestor->referer->string) == 0) {
-        abortObject(object, 400, internAtomF("No referer given"));
-        return 1;
-	}
-
-    referer = requestor->referer;
-    
-    /* get the host inside of the referer header */
-    status = getHost(referer, &refererHostPtr);
-	if(status == -1) {
-	    abortObject(object, 400, internAtomF("No referer given"));
-        return 1;
-	}
-	
-	/* get the host given in this URL */
-	status = getHost(referer, &urlHostPtr);
-	if(status == -1) {
-	    abortObject(object, 400, internAtomF("No URL given"));
-        return 1;
-	}
-	
-	/* make sure they match */
-	if(strcmp(urlHostPtr, refererHostPtr) != 0) {
-	    abortObject(object, 400, internAtomF("Referer different than host inside URL"));
-        return 1;
-	}
-
-    status = openDb(refererHostPtr);
-    if(status == 1) {
-        abortObject(object, 400, internAtomF("Unable to open database"));
-        return 1;
-    }
-    
-    objectPrintf(object, 0, "true");
-    
-    object->length = object->size;
-    object->message = internAtom("Okay");
-    object->code = 200;
-    object->flags &= ~OBJECT_INITIAL;
-    
-    return 0;
-}
-
-int 
-httpSpecialDbClose(ObjectPtr object, HTTPRequestPtr requestor) {
-    AtomPtr referer;
-    char *refererHostPtr = NULL;
-    char *urlHostPtr = NULL;
-    int status;
-    
-    if(requestor->referer == NULL 
-          || requestor->referer->string == NULL
-          || strlen(requestor->referer->string) == 0) {
-        abortObject(object, 400, internAtomF("No referer given"));
-        return 1;
-	}
-
-    referer = requestor->referer;
-    
-    /* get the host inside of the referer header */
-    status = getHost(referer, &refererHostPtr);
-	if(status == -1) {
-	    abortObject(object, 400, internAtomF("No referer given"));
-        return 1;
-	}
-	
-	/* get the host given in this URL */
-	status = getHost(referer, &urlHostPtr);
-	if(status == -1) {
-	    abortObject(object, 400, internAtomF("No URL given"));
-        return 1;
-	}
-	
-	/* make sure they match */
-	if(strcmp(urlHostPtr, refererHostPtr) != 0) {
-	    abortObject(object, 400, internAtomF("Referer different than host inside URL"));
-        return 1;
-	}
-
-    status = closeDb(refererHostPtr);
-    if(status == 1) {
-        abortObject(object, 400, internAtomF("Unable to close database"));
-        return 1;
-    }
-    
-    objectPrintf(object, 0, "true");
-    
-    object->length = object->size;
-    object->message = internAtom("Okay");
-    object->code = 200;
-    object->flags &= ~OBJECT_INITIAL;
-    
-    return 0;
+    return status;
 }
 
 int
@@ -956,53 +846,6 @@ isExecSQL(ObjectPtr object)
     memcpy(testUrl, object->key, object->key_size);
     testUrl[object->key_size] = '\0';
     if(strstr(testUrl, "/__polipo/__offline?execSQL") != NULL) {
-        free(testUrl);
-        return 1;
-    } else {
-        free(testUrl);
-        return 0;
-    }
-}
-
-
-int
-isDbClose(ObjectPtr object)
-{
-    char *testUrl;
-    
-    if(disableOfflineSupport == 1)
-        return 0;
-        
-    /* object->key doesn't use a null terminator, which
-       strstr requires; copy it over and add a null
-       terminator. */
-    testUrl = (char *)malloc((unsigned)(object->key_size + 1)); 
-    memcpy(testUrl, object->key, object->key_size);
-    testUrl[object->key_size] = '\0';
-    if(strstr(testUrl, "/__polipo/__offline?close") != NULL) {
-        free(testUrl);
-        return 1;
-    } else {
-        free(testUrl);
-        return 0;
-    }
-}
-
-int
-isDbOpen(ObjectPtr object)
-{
-    char *testUrl;
-    
-    if(disableOfflineSupport == 1)
-        return 0;
-        
-    /* object->key doesn't use a null terminator, which
-       strstr requires; copy it over and add a null
-       terminator. */
-    testUrl = (char *)malloc((unsigned)(object->key_size + 1)); 
-    memcpy(testUrl, object->key, object->key_size);
-    testUrl[object->key_size] = '\0';
-    if(strstr(testUrl, "/__polipo/__offline?open") != NULL) {
         free(testUrl);
         return 1;
     } else {
