@@ -929,7 +929,7 @@ dojo.widget.defineWidget(
 		//		DIV, BR, or empty (which means disable this feature). Anything else
 		//		will trigger errors.
 		blockNodeForEnter: 'P',
-		bogusHtmlContent: '&shy;',
+		bogusHtmlContent: '&nbsp;',
 		handleEnterKey: function(e){
 			// summary: manually handle enter key event to make the behavior consistant across
 			//	all supported browsers. See property blockNodeForEnter for available options
@@ -1010,12 +1010,14 @@ dojo.widget.defineWidget(
 					dojo.html.insertAfter(newblock,block.blockNode);
 				}
 				_letBrowserHandle = false;
-				//lets move focus to the newly created block
+				//lets move caret to the newly created block
 				var newrange = dojo.html.range.create();
 				newrange.setStart(newblock,0);
-	
 				selection.removeAllRanges();
 				selection.addRange(newrange);
+				if(this.height){
+					newblock.scrollIntoView(false);
+				}
 			}else if(dojo.html.range.atBeginningOfContainer(block.blockNode, 
 					range.startContainer, range.startOffset)){
 				if(block.blockNode === block.blockContainer){
@@ -1023,8 +1025,10 @@ dojo.widget.defineWidget(
 				}else{
 					dojo.html.insertBefore(newblock,block.blockNode);
 				}
-				//browser does not scroll the caret position into view, do it manually
-				block.blockNode.scrollIntoView();
+				if(this.height){
+					//browser does not scroll the caret position into view, do it manually
+					newblock.scrollIntoView(false);
+				}
 				_letBrowserHandle = false;
 			}else{ //press enter in the middle of P
 				if(dojo.render.html.moz){
