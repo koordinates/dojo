@@ -124,7 +124,7 @@ dojo.registerNamespaceResolver = function(/*String*/name, /*Function*/resolver){
 
 dojo.registerNamespaceManifest = function(/*String*/module, /*String*/path, /*String*/name, /*String*/widgetModule, /*Function?*/resolver){
 	// summary: convenience function to register a module path, a namespace, and optionally a resolver all at once.
-	dojo.registerModulePath(name, path);
+	dojo.registerModulePath(module, path);
 	dojo.registerNamespace(name, widgetModule, resolver);
 }
 
