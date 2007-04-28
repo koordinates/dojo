@@ -129,7 +129,8 @@ matchUrl(char *base, ObjectPtr object)
 
 #ifndef NO_OFFLINE_SUPPORT
 
-static int getHost(AtomPtr referer, char **host_results){
+int 
+getHost(AtomPtr url, char **host_results){
 	int cut_start = -1, cut_end = -1, cut_length;
 	int index;
 	char *cut_ptr;
@@ -137,27 +138,27 @@ static int getHost(AtomPtr referer, char **host_results){
 	
 	/* get the host name */
 	/* find where the host name begins */
-	for(index = 0; index < strlen(referer->string); index++){
-       if(referer->string[index] == '/'
-          && (index + 1) < strlen(referer->string)
-          && referer->string[index + 1] == '/'){
+	for(index = 0; index < strlen(url->string); index++){
+       if(url->string[index] == '/'
+          && (index + 1) < strlen(url->string)
+          && url->string[index + 1] == '/'){
 	      index = index + 2;
           break;
        }
 	}
 	
-	if(index == strlen(referer->string)){
+	if(index == strlen(url->string)){
        /* nothing left to process */
        return -1;	
     }
 
     /* find the end cut for where the host name is */
     cut_start = index;
-    while(index < strlen(referer->string)){
-       if(referer->string[index] == '/' 
-            || referer->string[index] == '?'
-            || referer->string[index] == ':'
-            || (index + 1) == strlen(referer->string)){
+    while(index < strlen(url->string)){
+       if(url->string[index] == '/' 
+            || url->string[index] == '?'
+            || url->string[index] == ':'
+            || (index + 1) == strlen(url->string)){
           cut_end = index - 1;	
           break;
        }
@@ -178,8 +179,8 @@ static int getHost(AtomPtr referer, char **host_results){
         return -1;
     cut_ptr = host_ptr;
     for(index = cut_start; index <= cut_end 
-                             && index < strlen(referer->string); index++){
-	  *cut_ptr = referer->string[index];
+                             && index < strlen(url->string); index++){
+	  *cut_ptr = url->string[index];
 	  cut_ptr++;
     }
     *cut_ptr = '\0';
@@ -603,66 +604,12 @@ httpSpecialDoSideFinish(AtomPtr data, HTTPRequestPtr requestor)
     ObjectPtr object = requestor->object;
     
     if(isExecSQL(object)) {
-        AtomListPtr list = NULL;
-        int i;
-
-        list = urlDecode(data->string, data->length);
-        if(list == NULL) {
-            abortObject(object, 400,
-                        internAtom("Couldn't parse action"));
+        int status;
+        
+        status = httpSpecialExecSQL(object, data, requestor);
+        if(status == 1) {
             goto out;
         }
-        
-        for(i = 0; i < list->length; i++) {
-            char *equals = 
-                memchr(list->list[i]->string, '=', list->list[i]->length);
-            AtomPtr name = 
-                equals ? 
-                internAtomN(list->list[i]->string, 
-                            equals - list->list[i]->string) :
-                retainAtom(list->list[i]);
-            if(name == atomSQL) {
-                char *sql = (char *)malloc(list->list[i]->length);
-                char *changeme = NULL;
-                char *origPtr = sql;
-                
-                memcpy(sql, list->list[i]->string, list->list[i]->length);
-                changeme = sql;
-                
-                /* strip off the 'sql=' part of the URL encoded value */
-                if (strlen(sql) < 4) {
-                    abortObject(object, 400, internAtomF("Invalid form data: %s",
-                                                        sql));
-                    free(sql);
-                    releaseAtom(name);
-                    destroyAtomList(list);
-                    goto out;
-                }
-                sql = sql + 4;
-                
-                /* convert URL encoded spaces from pluses to actual spaces */
-                while(changeme != NULL) {
-                    changeme = strchr(changeme, '+');
-                    if(changeme != NULL && strlen(changeme) > 0 && changeme[0] == '+') {
-                        changeme[0] = ' ';
-                    }
-                }
-                
-                /* execute the SQL and return it's results JSON encoded */
-                execSQL(sql, object);
-                free(origPtr);
-            }
-            else {
-                abortObject(object, 400, internAtomF("Unknown action %s",
-                                                     name->string));
-                releaseAtom(name);
-                destroyAtomList(list);
-                goto out;
-            }
-            releaseAtom(name);
-        }
-        
-        destroyAtomList(list);
     }
     else if(disableOfflineSupport == 1 && matchUrl("/polipo/config", object)) {
         AtomListPtr list = NULL;
@@ -757,6 +704,105 @@ httpSpecialDoSideFinish(AtomPtr data, HTTPRequestPtr requestor)
     notifyObject(object);
     requestor->connection->flags &= ~CONN_READER;
     return 1;
+}
+
+int
+httpSpecialExecSQL(ObjectPtr object, AtomPtr data, HTTPRequestPtr requestor) {
+    AtomListPtr list = NULL;
+    int i;
+    AtomPtr referer;
+    char *refererHostPtr = NULL;
+    char *urlHostPtr = NULL;
+    int status;
+    
+    if(requestor->referer == NULL 
+          || requestor->referer->string == NULL
+          || strlen(requestor->referer->string) == 0) {
+        abortObject(object, 400, internAtomF("No referer given"));
+        return 1;
+	}
+
+    referer = requestor->referer;
+    
+    /* get the host inside of the referer header */
+    status = getHost(referer, &refererHostPtr);
+	if(status == -1) {
+	    abortObject(object, 400, internAtomF("No referer given"));
+        return 1;
+	}
+	
+	/* get the host given in this URL */
+	status = getHost(referer, &urlHostPtr);
+	if(status == -1) {
+	    abortObject(object, 400, internAtomF("No URL given"));
+        return 1;
+	}
+	
+	/* make sure they match */
+	if(strcmp(urlHostPtr, refererHostPtr) != 0) {
+	    abortObject(object, 400, internAtomF("Referer different than host inside URL"));
+        return 1;
+	}
+
+    list = urlDecode(data->string, data->length);
+    if(list == NULL) {
+        abortObject(object, 400,
+                    internAtom("Couldn't parse action"));
+        return 1;
+    }
+    
+    for(i = 0; i < list->length; i++) {
+        char *equals = 
+            memchr(list->list[i]->string, '=', list->list[i]->length);
+        AtomPtr name = 
+            equals ? 
+            internAtomN(list->list[i]->string, 
+                        equals - list->list[i]->string) :
+            retainAtom(list->list[i]);
+        if(name == atomSQL) {
+            char *sql = (char *)malloc(list->list[i]->length);
+            char *changeme = NULL;
+            char *origPtr = sql;
+            
+            memcpy(sql, list->list[i]->string, list->list[i]->length);
+            changeme = sql;
+            
+            /* strip off the 'sql=' part of the URL encoded value */
+            if (strlen(sql) < 4) {
+                abortObject(object, 400, internAtomF("Invalid form data: %s",
+                                                    sql));
+                free(sql);
+                releaseAtom(name);
+                destroyAtomList(list);
+                return 1;
+            }
+            sql = sql + 4;
+            
+            /* convert URL encoded spaces from pluses to actual spaces */
+            while(changeme != NULL) {
+                changeme = strchr(changeme, '+');
+                if(changeme != NULL && strlen(changeme) > 0 && changeme[0] == '+') {
+                    changeme[0] = ' ';
+                }
+            }
+            
+            /* execute the SQL and return it's results JSON encoded */
+            execSQL(sql, object);
+            free(origPtr);
+        }
+        else {
+            abortObject(object, 400, internAtomF("Unknown action %s",
+                                                 name->string));
+            releaseAtom(name);
+            destroyAtomList(list);
+            return 1;
+        }
+        releaseAtom(name);
+    }
+    
+    destroyAtomList(list);
+    
+    return 0;
 }
 
 int
