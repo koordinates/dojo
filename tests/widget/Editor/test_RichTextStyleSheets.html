@@ -23,7 +23,7 @@ this is text above the editor
 <input type="button" value="Remove Stylesheet" onclick="dojo.widget.byId('editor1').removeStyleSheet(new dojo.uri.Uri(dojo.global().location, 'test_richtext_other.css'));">
 <br>
 <br>
-<div style="position: relative;" parseWidgets="false">
+<div style="position: relative;" parseWidgets="true">
 	<div style="border: 1px solid black;">
 		<div dojoType="RichText" widgetid="editor1"
 			htmlEditing="true" useActiveX="false" styleSheets="test_richtext.css"
@@ -32,7 +32,7 @@ this is text above the editor
 			<ul>
 				<li>foo</li>
 				<li>bar</li>
-				<li>baz</li>
+				<li>baz</li>
 			</ul>
 			<h1>Lorem!</h1>
 		</div>
