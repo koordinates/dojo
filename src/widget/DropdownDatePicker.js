@@ -175,7 +175,7 @@ dojo.widget.defineWidget(
 				var inputDate = dojo.date.parse(input,
 						{formatLength:this.formatLength, datePattern:this.displayFormat, selector:'dateOnly', locale:this.lang});			
 				// if inputDate is in a valid range, we call setDate
-				if(!this.datePicker._isDisabledDate(inputDate)){
+				if(!this.datePicker._isDisabledDate(inputDate) && inputDate != null){
 					this.setDate(inputDate);
 				}
 			} else {
