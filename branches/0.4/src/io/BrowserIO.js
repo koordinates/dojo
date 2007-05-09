@@ -255,6 +255,7 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	// moved successful load stuff here
 	function doLoad(kwArgs, http, url, query, useCache) {
+		var errObj = null;
 		if(	((http.status>=200)&&(http.status<300))|| 	// allow any 2XX response code
 			(http.status==304)|| 						// get it out of the cache
 			(http.status==1223)|| 						// Internet Explorer mangled the status code
@@ -285,9 +286,8 @@ dojo.io.XMLHTTPTransport = new function(){
 				try{
 					ret = dj_eval("("+http.responseText+")");
 				}catch(e){
-					dojo.debug(e);
-					dojo.debug(http.responseText);
 					ret = false;
+					errObj = new dojo.io.Error("XMLHttpTransport Error: Malformed JSON response: " + http.responseText);
 				}
 			}else if((kwArgs.mimetype == "application/xml")||
 						(kwArgs.mimetype == "text/xml")){
@@ -302,9 +302,14 @@ dojo.io.XMLHTTPTransport = new function(){
 			if(useCache){ // only cache successful responses
 				addToCache(url, query, kwArgs.method, http);
 			}
-			kwArgs[(typeof kwArgs.load == "function") ? "load" : "handle"]("load", ret, http, kwArgs);
+			if(!errObj){
+				kwArgs[(typeof kwArgs.load == "function") ? "load" : "handle"]("load", ret, http, kwArgs);
+			}
 		}else{
-			var errObj = new dojo.io.Error("XMLHttpTransport Error: "+http.status+" "+http.statusText);
+			errObj = new dojo.io.Error("XMLHttpTransport Error: "+http.status+" "+http.statusText);
+		}
+
+		if(errObj){
 			kwArgs[(typeof kwArgs.error == "function") ? "error" : "handle"]("error", errObj, http, kwArgs);
 		}
 	}
