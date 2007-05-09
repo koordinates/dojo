@@ -1,0 +1,525 @@
+#!/usr/bin/perl
+#
+# Find and persist pre-installation proxy values for Firefox
+# and Safari, which will be used to uninstall Dojo Offline, 
+# then change proxy settings to what Dojo Offline needs to work.
+#
+# @author: Brad Neuberg, bkn3@columbia.edu
+
+use Foundation;
+
+# fail fast if we don't have a HOME variable
+if(! $ENV{HOME}){
+	echo("There is HOME environment variable");
+	exit 1;
+}
+
+# the URL for our Dojo Offline PAC file
+$DOT_PAC_URL = "file://$ENV{HOME}/.offline-pac";
+
+echo("Running...");
+
+# a hash that will hold the original proxy settings
+# for our user's browsers - we will persist these into
+# a plist file to reuse when uninstalling Dojo Offline
+$proxyDefaults = {};
+
+handleSafari($proxyDefaults);
+handleFirefox($proxyDefaults);
+
+saveOldProxySettings($proxyDefaults);
+
+exit 0;
+
+sub handleSafari{
+	# This function manipulates the Safari proxy settings, which are stored
+	# in XML in a Mac format called 'plists'.
+	#
+	# It is based on techniques from the following two O'Reilly
+	# tutorials that detail how to work with plist files from perl:
+	# http://www.macdevcenter.com/pub/a/mac/2005/07/29/plist.html
+	# http://www.macdevcenter.com/pub/a/mac/2005/08/02/plist.html
+	#
+	# It is also based on techniques discovered by the following blog
+	# writer:
+	# http://homepage.mac.com/gregneagle/iblog/C1833135211/E870388235/index.html
+	
+	my $proxyDefaults = shift;
+
+	echo("Handling Safari proxy settings...");
+
+	# open our plist file that has our network preference configuration
+	$PREFS_PATH = "/Library/Preferences/SystemConfiguration/preferences.plist";
+
+	# machines upgraded from Mac OS X 10.2 have this plist file
+	# in an older location
+	if (!(-e $PREFS_PATH)) {
+		`cp /private/var/db/SystemConfiguration/preferences.xml $PREFS_PATH`;
+	}
+
+	echo("Loading Safari proxy settings file...");
+	$plist = NSMutableDictionary->dictionaryWithContentsOfFile_($PREFS_PATH);
+
+	# make sure an error didn't occur or we couldn't find the file
+	if (! $plist or ! $$plist){
+		echo("Unable to find Safari network preferences plist file");
+		exit 1;
+	}
+
+	# our plist file is structured as follows:
+	# at the root we have a dictionary key named "NetworkServices";
+	# this has a series of dictionary entries, where the key is a GUID,
+	# such as 2D826DFA-9D8E-4BE5-8755-69DA45A78B92. Each
+	# of these GUIDs corresponds to a different possible networking
+	# endpoint. We aren't interested in all of these; one is for
+	# Bluetooth, for example. For each GUID, we see if it has
+	# a sub-dict named "Interface" with the name of this interface,
+	# defined in "UserDefinedName" -- which despite it's name, is not
+	# set by the user, but the name given by Mac OS X -- they are not
+	# changeable through a UI. Get each network endpoint and change
+	# it's proxies settings.
+	#
+	# TODO: WARNING: Is it safe to be changing all the network endpoints?
+	# However, this fixes an important bug in Safari. If we are off the
+	# network (i.e. "Turn AirPort Off" is selected), then we are not
+	# connected to the AirPort or Built In Ethernet endpoints. Safari
+	# therefore doesn't have DOT PAC settings, and doesn't work offline
+	# in this scenario. Setting all endpoints to have our proxy settings
+	# fixes this.
+	echo("Finding pre-installation values for Safari proxy settings...");
+	$networkServices = getPlistObject($plist, "NetworkServices");
+	$allKeys = $networkServices->allKeys();
+	for($i = 0; $i < $allKeys->count(); $i++){
+		$currentKey = $allKeys->objectAtIndex_($i);
+		$userDefinedName  = getPlistObject($plist, 
+										"NetworkServices", 
+										$currentKey->description()->UTF8String(),
+										"Interface",
+										"UserDefinedName");
+		if($userDefinedName and $$userDefinedName){
+			$userDefinedName = $userDefinedName->description()->UTF8String();
+			$guid = $currentKey->description()->UTF8String();
+			handleNetworkEndpoint($plist, $userDefinedName, $guid, $proxyDefaults);
+		}
+	}
+
+	# make a backup of the plist file
+	echo("Backing up original Safari proxy prefs file to $PREFS_PATH.orig...");
+	`cp $PREFS_PATH $PREFS_PATH.orig`;
+
+	# write out our changed plist file
+	echo("Writing out changed Safari proxy prefs file...");
+	$saveResults = $plist->writeToFile_atomically_($PREFS_PATH, "1");
+	if($saveResults ne 1){ # 1 = success, 0 = failure
+		echo("Unable to save modified Safari proxy settings");
+		exit 1;
+	}
+	
+	# force Safari to see this change
+	echo("Forcing Safari to see this change...");
+	# the 'scutil' can give us our current location,
+	# which we will then reselect. 'scselect' hooks right
+	# into the System Preferences system, and will force
+	# a refresh of the configuration info into memory.
+	# Technique from the following blog post:
+	# http://homepage.mac.com/gregneagle/iblog/C1833135211/E870388235/index.html
+	my $location;
+	my @scutil = `scutil <<- end_scutil 2> /dev/null
+open
+show Setup:/
+close
+end_scutil`;
+	my @matches = map { m/UserDefinedName : (.*)/ } @scutil;
+	if(@matches == 1){
+		$location = $matches[0];
+		system("sudo -u `logname` scselect $location");
+		echo("Results of forcing Safari to see this change: $results");
+	}
+}
+
+sub handleNetworkEndpoint{
+	my $plist = shift;
+	my $userDefinedName = shift;
+	my $guid = shift;
+	my $proxyDefaults = shift;
+	
+	# The Proxy dict has the following subkeys under the following conditions --
+	# we will use this to persist old settings for uninstallation, and to setup
+	# a reference to our Dojo Offline proxy for Safari:
+	#
+	# With proxy settings of any kind:
+	# 	AppleProxyConfigurationSelected = 1
+	#
+	# With no proxy settings:
+	# 	AppleProxyConfigurationSelected = 2
+	#	The HTTPEnable key is not present
+	#
+	# With manual proxy settings that are enabled:
+	#	HTTPEnable is 1
+	#
+	# With manual proxy settings that have values, but are not enabled:
+	#	HTTPEnable is present, and is 1
+	#
+	# PAC enabled:
+	#	ProxyAutoConfigEnable = 1
+	#	ProxyAutoConfigURLString has a String value
+	#
+	# PAC disabled:
+	#	ProxyAutoConfigEnable = 0 if there is a PAC string
+	#	key completely gone if there is no ProxyAutoConfigURLString string
+	#	
+	# PAC setting:
+	#	ProxyAutoConfigURLString
+	#	If nothing there, key completely gone
+	#
+	# WPAD:
+	# 	Think its linked to ProxyAutoDiscoveryEnable, but no way to set through UI
+	#	0 or 1. Always present though as a 0 value.
+	#
+	# The manual proxy settings have keys like HTTPProxy with an IP address, HTTPPort
+	# with a port, etc. if manual proxy settings have been entered. We don't need
+	# to persist these because they will stay around but we will disable manual
+	# proxy settings (i.e. HTTPEnable = 0)
+	
+	echo("Handling proxy values for network endpoint '$userDefinedName'...");
+	
+	# see if we have even have a proxies element for this endpoint
+	my $proxyElem = getPlistObject($plist, 
+								"NetworkServices", 
+								$guid,
+								"Proxies");
+	if(! $proxyElem or ! $$proxyElem){
+		echo("Endpoint has no 'Proxies' element");
+		return;
+	}
+	
+	echo("Original values:");
+	
+	# initial defaults
+	my $AppleProxyConfigurationSelected = 2;
+	my $HTTPEnable = 0;
+	my $ProxyAutoConfigEnable = -1;
+	my $ProxyAutoConfigURLString = null;
+	my $ProxyAutoDiscoveryEnable = 0;
+	
+	# fill these values out
+	
+	# is any kind of proxy configured?
+	$AppleProxyConfigurationSelected = 
+			handleProxyKey($plist, $guid, "AppleProxyConfigurationSelected", 
+							$AppleProxyConfigurationSelected);
+	
+	# are HTTP manual proxy settings enabled?
+	$HTTPEnable = 
+			handleProxyKey($plist, $guid, "HTTPEnable", 
+							$HTTPEnable);
+	
+	# is PAC (Proxy AutoConfig) enabled?
+	$ProxyAutoConfigEnable = 
+			handleProxyKey($plist, $guid, "ProxyAutoConfigEnable", 
+							$ProxyAutoConfigEnable);
+	
+	# is there a PAC URL?
+	$ProxyAutoConfigURLString = 
+				handleProxyKey($plist, $guid, "ProxyAutoConfigURLString", 
+							$ProxyAutoConfigURLString);
+	
+	# do PAC autodiscovery (i.e. use the WPAD standard)?
+	# FIXME: TODO: I _think_ this is what this does -- we just persist its
+	# value, so this is ok
+	$ProxyAutoDiscoveryEnable = 
+				handleProxyKey($plist, $guid, "ProxyAutoDiscoveryEnable", 
+							$ProxyAutoDiscoveryEnable);
+							
+	# create a hashtable of the original proxy values, which we will
+	# use to persist into our own plist file later on
+	$proxyDefaults->{"Safari Proxy for $userDefinedName"} = {
+		"AppleProxyConfigurationSelected"=>cocoaInt($AppleProxyConfigurationSelected),
+		"HTTPEnable"=>cocoaInt($HTTPEnable),
+		"ProxyAutoConfigEnable"=>cocoaInt($ProxyAutoConfigEnable),
+		"ProxyAutoConfigURLString"=>"$ProxyAutoConfigURLString",
+		"ProxyAutoDiscoveryEnable"=>cocoaInt($ProxyAutoDiscoveryEnable)
+	};
+	
+	# now change these values to what we want for Dojo Offline
+	echo("Changing PAC settings for '$userDefinedName' to what Dojo Offline needs...");
+	
+	# indicate that we have a proxy setting now (AppleProxyConfigurationSelected = 1)
+	$proxyElem->setObject_forKey_(cocoaInt(1), "AppleProxyConfigurationSelected");
+	
+	# if HTTPEnable is not null, then set it to 0 -- i.e. turn it off
+	if($HTTPEnable){
+		$proxyElem->setObject_forKey_(cocoaInt(0), "HTTPEnable");
+	}
+	
+	# do we already have a ProxyAutoConfigEnable setting? If so, set it to 1. if not,
+	# create it now and set it to 1.
+	$proxyElem->setObject_forKey_(cocoaInt(1), "ProxyAutoConfigEnable");
+	
+	# set our Dojo Offline PAC file
+	$proxyElem->setObject_forKey_($DOT_PAC_URL, "ProxyAutoConfigURLString");
+	
+	# set ProxyAutoDiscoveryEnable to 0, since we don't want to use WPAD for proxy setting
+	$proxyElem->setObject_forKey_(cocoaInt(0), "ProxyAutoDiscoveryEnable");
+	
+	# write out our changed plist file
+	echo("Writing out changed Safari proxy prefs file...");
+	my $saveResults = $plist->writeToFile_atomically_($PREFS_PATH, "1");
+	if($saveResults ne 1){ # 1 = success, 0 = failure
+		echo("Unable to save modified Safari proxy settings");
+		exit 1;
+	}
+}
+
+sub handleProxyKey{
+	my $plist = shift;
+	my $guid = shift;
+	my $keyName = shift;
+	my $defaultValue = shift;
+	
+	$objValue = null;
+	$returnMe = null;
+	
+	$objValue = getPlistObject($plist, 
+								"NetworkServices", 
+								$guid,
+								"Proxies",
+								$keyName);
+	if(! $objValue or ! $$objValue){
+		$returnMe = $defaultValue;
+	}else{
+		$returnMe = $objValue->description()->UTF8String();
+	}
+	
+	echo("\t$keyName=" . $returnMe);
+	
+	return $returnMe;
+}
+
+sub getPlistObject{
+	my ($object, @keysIndexes) = (@_);
+	if(@keysIndexes){
+		foreach my $keyIndex(@keysIndexes){
+			if($object and $$object){
+				if($object->isKindOfClass_(NSArray->class)){
+					$object = $object->objectAtIndex_($keyIndex);
+				}elsif($object->isKindOfClass_(NSDictionary->class)){
+					$object = $object->objectForKey_($keyIndex);
+				}else{
+					echo("Unknown type (not an array or a dictionary)");
+					return;
+				}
+			}else{
+					echo("Got nil or other error for $keyIndex.");
+					return;
+			}
+		}
+	}
+	return $object;
+}
+
+sub handleFirefox{
+	my $proxyDefaults = shift;
+	
+	echo("Handling Firefox proxy settings...");
+	
+	# build up the location to where Firefox profiles are
+	# stored for this user -- Perl doesn't automatically
+	# expand the ~ tilde
+	$FIREFOX_PROFILE_PATH = "$ENV{HOME}/Library/Application\ Support/Firefox/Profiles";
+	echo("User's Firefox profile settings should be at $FIREFOX_PROFILE_PATH");
+	
+	# see if this user even has Firefox installed with their own Firefox
+	# prefs
+	if(! -e "$FIREFOX_PROFILE_PATH"){
+		echo("This user has no Firefox profiles");
+		return;
+	}else{
+		echo("This user has Firefox profiles");
+	}
+	
+	# enumerate through each subdirectory under Profiles;
+	# each subdirectory is a discrete, seperate Firefox profile
+	# that this user might use
+	eval{
+		opendir(DIR, "$FIREFOX_PROFILE_PATH") || die "Couldn't open directory $FIREFOX_PROFILE_PATH: $!";
+		@files = readdir(DIR);
+		closedir(DIR) || die "Couldn't close directory $FIREFOX_PROFILE_PATH: $!";
+		foreach $profileDir (@files) {
+			if($profileDir ne "." and $profileDir ne ".."){
+				handleFirefoxProfile($FIREFOX_PROFILE_PATH, $profileDir, $proxyDefaults);
+			}
+		}
+	};
+	
+	# was there an error?
+	if($@){
+		echo("Unable to handle firefox profiles: $@");
+		return;
+	}
+}
+
+sub handleFirefoxProfile{
+	my $profilePath = shift;
+	my $profileDir = shift;
+	my $proxyDefaults = shift;
+	
+	$prefsPath = "$profilePath/$profileDir/prefs.js";
+	$userJSPath = "$profilePath/$profileDir/user.js";
+	
+	echo("Handling Firefox profile at $profilePath/$profileDir...");
+	
+	# see if there is a prefs.js file
+	if(! -e "$prefsPath"){
+		echo("No prefs.js file for this profile");
+		return;
+	}
+	
+	# read the whole prefs.js file into a string
+	eval{
+		open FILE, "$prefsPath" || die "Couldn't open file $prefsPath: $!";
+		$prefsStr = "";
+		while(<FILE>){
+		 $prefsStr .= $_;
+		}
+		close FILE || die "Could not close $prefsPath: $!";
+	};
+	
+	# was there an error?
+	if($@){
+		echo($@);
+		return;
+	}
+	
+	# isolate just the parts we want
+	$pacPref = null;
+	$proxyTypePref = null;
+	$_ = $prefsStr;
+	if(m/^user_pref\(\"network\.proxy\.autoconfig_url\"\,[ ]*\"([^\"]*)\"\);$/m){
+		$pacPref = $1;
+	}
+	if(m/^user_pref\(\"network\.proxy\.type\"\,[ ]*(\"[^\"]*\")\);$/m){
+		$proxyTypePref = $1;
+	}
+	echo("Existing PAC file setting: $pacPref");
+	echo("Existing proxy type setting: $proxyTypePref");
+	
+	# create a hashtable of the original proxy values, which we will
+	# use to persist into our own plist file later on
+	$proxyDefaults->{"Firefox Proxy for $profileDir"} = {
+		"NetworkProxyAutoconfigURL"=>"$pacPref",
+		"NetworkProxyType"=>cocoaInt($proxyTypePref)
+	};
+	
+	# make a backup of prefs.js and user.js
+	echo("Making a backup of prefs.js file at '$prefsPath.orig'...");
+	`cp -f "$prefsPath" "$prefsPath.orig"`;
+	echo("Making a backup of user.js file at '$userJSPath.orig'...");
+	`cp -f "$userJSPath" "$userJSPath.orig"`;
+	
+	# add our new proxy settings to user.js
+	echo("Adding our new Dojo Offline proxy prefs...");
+	eval{
+		# TODO: WARNING: If we create the user.js file because it's not there
+		# the owner of user.js will be 'root' rather than the user installing the
+		# app; this could create trouble, though I haven't seen an issue
+		# yet
+		open(DAT,">>$userJSPath") || die("Cannot open $userJSPath: $!");
+		print DAT "/* dot */ user_pref(\"network.proxy.type\", 2);\n";
+		print DAT "/* dot */ user_pref(\"network.proxy.autoconfig_url\", \"$DOT_PAC_URL\");\n";
+		close(DAT) || die("Cannot close $userJSPath: $!");
+	};
+	
+	# was there an error?
+	if($@){
+		echo($@);
+		return;
+	}
+}
+
+sub saveOldProxySettings{
+	my $proxyDefaults = shift;
+	
+	$saveTo = "$ENV{HOME}/Library/Application\ Support/Dojo/dot";
+	
+	echo("Making application support directory at $saveTo...");
+	$mkResults = system("mkdir -p \"$saveTo\"");
+	if($mkResults ne 0){
+		echo("Unable to create application support directory for Dojo Offline: $mkResults");
+		exit 1;
+	}
+	
+	echo("Saving original proxy settings to disk at $saveTo/proxies.xml...");
+	$plist = cocoaDictFromPerlHash(%$proxyDefaults);
+	$plist->writeToFile_atomically_("$saveTo/proxies.xml", "1");
+}
+
+sub cocoaInt{
+	return NSNumber->numberWithLong_($_[0]);
+}
+
+sub cocoaBool{
+	return NSNumber->numberWithBool_($_[0]);
+}
+
+sub cocoaFloat{
+	return NSNumber->numberWithDouble_($_[0]);
+}
+
+sub cocoaDate{
+	return NSDate->dateWithTimeIntervalSince1970_($_[0]);
+}
+
+sub cocoaDictFromPerlHash{
+	my(%hash) = (@_);
+	my $cocoaDict = NSMutableDictionary->dictionary();
+	while(my($key, $value) = each(%hash)){
+		if(defined $value){
+			if(ref($value) eq "ARRAY"){
+				$cocoaDict->setObject_forKey_(cocoaArrayFromPerlArray(@$value), 
+											$key);
+			}elsif(ref($value) eq "HASH"){
+				$cocoaDict->setObject_forKey_(cocoaDictFromPerlHash(%$value), 
+											$key);
+			}elsif(ref($value) eq "SCALAR"){
+				$cocoaDict->setObject_forKey_( $$value, $key );
+			}elsif(substr(ref($value), 0,4) eq "NSCF"){
+				$cocoaDict->setObject_forKey_($value, $key);
+			}else{
+				$cocoaDict->setObject_forKey_("$value", $key);
+			}
+		}else{
+			print STDERR "The value was not defined for $key!\n";
+		}
+	}
+	return $cocoaDict;
+}
+
+sub cocoaArrayFromPerlArray{
+	my (@perlArray) = (@_);
+	my $cocoaArray = NSMutableArray->array();
+	foreach my $value (@perlArray){
+		if (defined $value){
+			if(ref($value) eq "ARRAY"){
+				$cocoaArray->addObject_(cocoaArrayFromPerlArray(@$value));
+			}elsif(ref($value) eq "HASH"){
+				$cocoaArray->addObject_(cocoaDictFromPerlHash(%$value));
+			}elsif(ref($value) eq "SCALAR"){
+				$cocoaArray->addObject_($$value);
+			}elsif(substr(ref($value), 0,4 ) eq "NSCF"){
+				$cocoaArray->addObject_($value);
+			}else{
+				$cocoaArray->addObject_("$value");
+			}
+		}else{
+			print STDERR "The value was not defined!\n";
+		}
+	}
+	return $cocoaArray;
+}
+
+sub echo{
+	my $msg = shift;
+	$msg = "preinstall: " . $msg;
+	`echo "$msg" >> ~/dot_install.log 2>&1`;
+}

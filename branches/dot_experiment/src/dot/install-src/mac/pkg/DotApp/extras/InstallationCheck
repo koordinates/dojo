@@ -1,0 +1,16 @@
+#!/bin/sh
+echo $SCRIPT_NAME: Running... >> ~/dot_install.log
+echo $SCRIPT_NAME: Ensuring machine has an i386 compatible chip... >> ~/dot_install.log
+
+# Make sure we have an Intel-compatible chip
+if uname -p | grep -v -q i386; then
+	# The Mac OS X install system requires that the return value
+	# from InstallationCheck have bits 5 and 6 set to 1, corresponding
+	# to the decimal number 48.
+	# Error 16 corresponds to the error message that an Intel chip is required
+	# (see InstallationCheck.strings for localized error messages)
+	let "returnResult = 16|48"
+	exit $returnResult
+else
+	exit 0
+fi

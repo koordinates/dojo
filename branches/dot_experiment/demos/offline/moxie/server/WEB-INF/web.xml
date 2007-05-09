@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/j2ee/dtds/web-app_2_3.dtd">
+
+<web-app>
+  <display-name>Moxie</display-name>
+  <description>A web-based word processor with persistent storage, offline ability, and server synchronization</description>
+  
+	<servlet>
+		<description>
+			The ability to view, create, and update Moxie pages
+		</description>
+		<display-name>
+			MoxieServlet
+		</display-name>
+		<servlet-name>
+			MoxieServlet
+		</servlet-name>
+		<servlet-class>
+			org.dojo.moxie.MoxieServlet
+		</servlet-class>
+		<init-param>
+            <param-name>jdbcURL</param-name>
+            <param-value>jdbc:mysql://127.0.0.1/moxie?autoReconnect=true</param-value>
+        </init-param>
+		<init-param>
+            <param-name>driver</param-name>
+            <param-value>com.mysql.jdbc.Driver</param-value>
+        </init-param>
+		<init-param>
+            <param-name>userName</param-name>
+            <param-value>moxie</param-value>
+        </init-param>
+		<init-param>
+            <param-name>password</param-name>
+            <param-value>changeme</param-value>
+        </init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>MoxieServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+</web-app>

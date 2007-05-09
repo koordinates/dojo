@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# Mac OS X's install system doesn't echo anything from our scripts into
+# it's output when executed from the command-line 'installer' command,
+# except for the VolumeCheck and the InstallationCheck scripts, so
+# we manually append it to our own log file to aid debugging
+#
+
+echo "$SCRIPT_NAME: Running" >> /tmp/dot_install.log 2>&1
+
+# stop the 'dot' and 'proxy' processes if they are running
+echo "$SCRIPT_NAME: Stopping possible existing Dojo Offline processes..." >>~/dot_install.log 2>&1
+
+# TODO: Rewrite DOT processes to accept proper shutdown
+# signals
+sudo -u `logname` launchctl stop org.dojo.dot.DojoOfflineLaunchd
+sudo -u `logname` launchctl unload $HOME/Library/LaunchAgents/org.dojo.dot.DojoOfflineLaunchd.plist
+killall -9 dot
+killall -9 proxy
+killall -9 dotlauncher.sh
+
+# TODO: Make sure that System Preferences is not running.
+
+exit 0

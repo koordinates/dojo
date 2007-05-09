@@ -1,0 +1,29 @@
+#!/bin/sh
+
+echo "$SCRIPT_NAME: Running" >> ~/dot_install.log 2>&1
+
+# first, uninstall the old installation
+echo "$SCRIPT_NAME: Uninstalling old installation..." >> ~/dot_install.log 2>&1
+$result=/Applications/Dojo\ Offline\ Toolkit/Uninstall.command --silent --douninstall --debug
+if test $result -ne 0; then
+	# the user might have manually deleted the DOT directory; try a different
+	# location for the Uninstall.command file -- we want to make sure this user
+	# can install Dojo Offline even if they messed up an earlier one some how
+	echo "$SCRIPT_NAME: Trying different location for Uninstall.command...:" >> ~/dot_install.log 2>&1
+	echo "$SCRIPT_NAME: $PACKAGE_PATH/Contents/Resources/Uninstall.command" >> ~/dot_install.log 2>&1
+	# try another location
+	$result="$PACKAGE_PATH/Contents/Resources/Uninstall.command" --silent --douninstall --debug
+	if test $result -ne 0; then
+		echo "$SCRIPT_NAME: Unable to uninstall old installation" >> ~/dot_install.log 2>&1
+		exit 1
+	fi
+fi
+
+# now install the new installation
+$PACKAGE_PATH/Contents/Resources/preinstall
+if test $? -ne 0; then
+	echo "$SCRIPT_NAME: Unable to install Dojo Offline" >> ~/dot_install.log 2>&1
+	exit 1
+fi
+
+exit 0

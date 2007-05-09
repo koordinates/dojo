@@ -1,0 +1,379 @@
+<html>
+	<head>
+		<!-- Bring in the CSS for the default Dojo Offline UI widget -->
+		<link	rel="stylesheet" 
+			type="text/css" 
+			href="../../../src/off/ui-template/widget.css"></link>
+		
+		<script type="text/javascript">
+			var djConfig = 
+							{ 
+								isDebug: true,
+								baseRelativePath: "../../../"
+							};
+		</script>
+		<script type="text/javascript" src="../../../dojo.js"></script>
+		
+		<script>
+			dojo.require("dojo.storage.*");
+			dojo.require("dojo.off.*");
+			dojo.require("dojo.off.ui");
+			dojo.require("dojo.sync");
+
+			// configure how we should work offline
+
+			// set our application name
+			dojo.off.ui.appName = "Hello World";
+
+			// add our list resources we need offline
+			// Hello World resources
+			dojo.off.files.cache([
+								"helloworld.html"
+								]);
+
+			// Dojo resources
+			dojo.off.files.cache([
+								djConfig.baseRelativePath + "dojo.js"
+								]);
+					
+			var HelloWorld = {
+				/* hello world messages to be sent */
+				_messages: new Array(),
+				
+				initialize: function(){
+					dojo.debug("HelloWorld.initialize");
+					
+					// Dojo Offline and Dojo Storage are ready to be used;
+					// the page is also finished loading
+					
+					// tell us when we go offline
+					dojo.off.onOffline = dojo.lang.hitch(this, this.onOffline);
+					
+					// tell us when we go online
+					dojo.off.onOnline = dojo.lang.hitch(this, this.onOnline);
+					
+					// Dojo Sync helps us with syncing when we go online;
+					// we have to help it though -- we must provide a way to
+					// download data for offline use (onDownload), and provide
+					// a way to help with syncing data created while offline
+					// (onCommand)
+											
+					// set up how to download our data during syncing
+					dojo.sync.onDownload = dojo.lang.hitch(this, this.doDownload);
+					
+					// While offline, as a user works, we create Command objects
+					// to represent what they have done while offline, adding
+					// them to a Command Log that will automatically be persisted. 
+					// When we go back online, Dojo Sync will replay each of 
+					// these commands, handing them to our onCommand handler
+					// for us to handle
+					dojo.sync.log.onCommand = dojo.lang.hitch(this, this.onCommand);
+					
+					// This is an optional function to override, but it gets
+					// called when syncing is finished. 
+					dojo.sync.onFinished = dojo.lang.hitch(this, this.onFinished);
+					
+					// did the page load with us already offline? if so, 
+					// we will have to load our data from Dojo Storage for 
+					// the user to be able to work with since we can't 
+					// load it from the network
+					if(dojo.off.isOnline == false){
+						this.loadOfflineData();
+					}
+					
+					// print out what messages we have
+					this.printMessages();
+				},
+				
+				loadOfflineData: function(){
+					dojo.debug("We are already offline -- loading Hello World messages from Dojo Storage");
+					
+					// get our Hello World messages from Dojo Storage
+					this._messages = dojo.storage.get("messages");
+					if(typeof this._messages == "undefined"
+							|| this._messages == null){
+						this._messages = new Array();
+					}
+				},
+				
+				onOffline: function(){
+					// this method is called if we move offline
+					
+					// the default Dojo Offline UI widget tells the user
+					// about on- or off-line network changes; however, it might
+					// be useful for your own application to also enable or disable
+					// parts of itself when the network status changes. If your
+					// app doesn't care, you can simply leave this method out and get
+					// rid of your dojo.off.onOffline = dojo.lang.hitch(this, this.onOffline)
+					// call
+					
+					// let the Dojo Offline widget update it's UI
+					// since we have overridden this method
+					dojo.off.ui.onOffline();
+					
+					// do our app-specific actions here
+					dojo.debug("HelloWorld.onOffline");
+				},
+				
+				onOnline: function(){
+					// this method is called if we move online
+					
+					// the default Dojo Offline UI widget tells the user
+					// about on- or off-line network changes; however, it might
+					// be useful for your own application to also enable or disable
+					// parts of itself when the network status changes. If your
+					// app doesn't care, you can simply leave this method out and get
+					// rid of your dojo.off.onOnline = dojo.lang.hitch(this, this.onOnline)
+					// call
+					
+					// let the Dojo Offline widget update it's UI
+					// since we have overridden this method
+					dojo.off.ui.onOnline();
+					
+					// do our app-specific actions here
+					dojo.debug("HelloWorld.onOnline");
+				},
+				
+				doDownload: function(){
+					dojo.debug("HelloWorld.doDownload");
+					
+					// this method is called during the syncing process;
+					// in it, we should get the data we need for offline
+					// use by calling a network service of some kind
+					
+					// call some network service -- this is pseudocode,
+					// because a real network call would be asychronous
+					this._messages = this.getDownloadData();
+					
+					// persist this fake data into Dojo Storage
+					var self = this;
+					try{
+						dojo.storage.put("messages", this._messages, function(status, key, errorMsg){
+							// Dojo Storage callback method to tell us if the put() succeeded
+							if(status == dojo.storage.FAILED){
+								alert("Unable to locally save downloaded data: " + errorMsg);
+							}
+						});	
+					}catch(exp){
+						alert("Unable to locally save downloaded data: " + exp);
+					}
+					
+					// now tell Dojo Sync to continue it's syncing
+					// process
+					dojo.sync.finishedDownloading();
+				},
+				
+				getDownloadData: function(){
+					// we don't have any real data -- return fake data;
+					// in a real application we would make a network call
+					// here
+					this._messages.push("Hi! This is fake downloaded data!");
+					
+					return this._messages;
+				},
+				
+				onFinished: function(){
+					// called when syncing is done.
+					
+					// this is an optional method that does not need to be
+					// overridden, but it helps us because we want to clear
+					// out any old messages we have persisted into 
+					// Dojo Storage sent they are all sent now
+					
+					this._messages = new Array();
+					dojo.storage.remove("messages");
+					
+					// since we overrode the dojo.sync.onFinished method,
+					// we have to manually tell the Dojo Offline widget
+					// that we are finished
+					dojo.off.ui.onFinished();
+				},
+				
+				printMessages: function(){
+					if(this._messages.length == 0){
+						dojo.debug("No Hello World messages available");
+						return;
+					}
+					
+					dojo.debug("The following Hello World messages are persistently stored:");
+					for(var i = 0; i < this._messages.length; i++){
+						dojo.debug("Hello World: " + this._messages[i]);
+					}
+				},
+				
+				send: function(){
+					// called when the send button is pressed
+					
+					// get the text to send
+					var inputElem = dojo.byId("helloInput");
+					var message = inputElem.value;
+					if(message == null || message == ""
+						|| typeof message == "undefined"){
+						alert("Please enter a Hello World message to send");
+						return;
+					}
+					
+					// if we are online, immediately 'send' this
+					// message to a network service
+					if(dojo.off.isOnline == true){
+						this.sendMessage(message);
+						inputElem.value = "";
+						return;
+					}else{
+						// we are offline
+						this.saveOfflineSend(message);
+						inputElem.value = "";
+					}
+				},
+				
+				sendMessage: function(message){
+					// fake 'sending' of Hello World message to a network service -- we
+					// just do an alert box
+					alert("Sent the following Hello World message to server: "
+									+ message);
+				},
+				
+				saveOfflineSend: function(message){	
+					// first, add this to our list of messages
+					this._messages.push(message);
+					
+					// now, persist this into Dojo Storage so it is available
+					// in the future if we don't reach a network while the
+					// browser is open
+					var self = this;
+					try{
+						dojo.storage.put("messages", this._messages, function(status, key, errorMsg){
+							// Dojo Storage callback method to tell us if the put() succeeded
+							if(status == dojo.storage.FAILED){
+								alert("Unable to locally save Hello World messages: " + errorMsg);
+							}
+						});	
+					}catch(exp){
+						alert("Unable to locally save Hello World messages: " + exp);
+					}
+					
+					// Dojo Sync has us represent offline actions as Command
+					// objects -- these can have anything we want inside of them.
+					// When we create them, they will be added to an offline 
+					// Command Log, and when we go back online this log will
+					// simply be replayed. Each of these Command objects that we
+					// added while offline will be handed to our onCommand handler
+					// for us to deal with, so we have to place enough info
+					// in here to be useful later on
+					
+					var command = {action: "new hello world message", data: message};
+					dojo.sync.log.add(command);
+					
+					alert("This message has been saved for sending when we go back online");
+				},
+				
+				onCommand: function(command){
+					// While offline, as a user works, we create Command objects
+					// to represent what they have done while offline, adding
+					// them to a Command Log that will automatically be persisted. 
+					// When we go back online, Dojo Sync will replay each of 
+					// these commands, handing them to our onCommand handler
+					// for us to handle
+					if(command.action == "new hello world message"){
+						// this was a hello world message created while offline
+						
+						// In a real application, we would probably call some network
+						// service to replay this action, such as sending an email,
+						// creating a task, etc. Instead, we just do an alert box.
+						var message = command.data;
+						this.sendMessage(message);
+						
+						// In a real application, the network call would be
+						// asynchronous so we don't lock up the UI. For this reason,
+						// we have to tell Dojo Sync when to continue replaying the
+						// Command Log
+						dojo.sync.log.continueReplay();
+					}
+				}
+			}
+					
+			// Wait until Dojo Offline and Dojo Storage are ready
+			// before we initialize ourselves. When this gets called the page
+			// is also finished loading.
+			dojo.off.ui.onLoad = dojo.lang.hitch(HelloWorld, HelloWorld.initialize);
+			
+			// tell Dojo Offline we are ready for it to initialize itself now
+			// that we have finished configuring it for our application
+			dojo.off.initialize();
+		</script>
+		
+	</head>
+	
+	<body style="padding: 2em;">
+		<h1>Hello World</h1>
+		
+		<h2>This is a simple Hello World program using
+			Dojo Offline. It doesn't really do much --
+			it gives a code sample of how to work with
+			Dojo Offline.</h2>
+			
+		<p>In our HTML, we create a DIV with the special id "dot-widget", which
+			Dojo Offline will automagically fill with a default
+			Dojo Offline widget that tells the user when they are online
+			or offline; gives them sync messages; and provides instructions
+			on how to download and install the small Dojo Offline client
+			runtime. It basically handles all of the UI tedium and hard
+			stuff of providing good offline feedback to a user.
+			Here is that widget inserted into the page:</p>
+			
+		<!-- 
+			Place the Dojo Offline widget here; it will be automagically
+		 	filled into any element with ID "dot-widget".
+		 -->
+		<div id="dot-widget"></div>	
+		
+		<p>The default Dojo Offline UI will fill in your application
+			name automatically into the UI based on what you set 
+			<code>dojo.off.ui.appName</code> to in your JavaScript 
+			file; in our case we set it to "Hello World".</p>
+			
+		<p>It will also fill out the <i>Learn How</i> link with your
+			app name; click that link now to see an autogenerated
+			page that helps your users make sure they can work
+			with your application offline. That page automatically
+			figures out if Dojo Offline is installed or not, and
+			provides instructions on downloading it if not and
+			providing an easy link to running your application
+			offline (which is just autoset to be the URL of this
+			current page, btw)</p>
+			
+		<p>Do a View Source on this page to see the JavaScript
+			necessary to create an offline web application.</p>
+			
+		<p>As you play with this example, after installing the
+				Dojo Offline client runtime, experiment with 
+				dropping the network and going off- and on-line.</p>
+			
+		<p>To be somewhat of a real example, we need to be able
+			to have an action that can be performend either on or
+			offline. The following input lets you 'send' Hello
+			World messages to a server (it's fake -- we don't 
+			really send messages). When we are online, entering
+			a message and sending it will cause the action to
+			happen immediately (we fake send it to a server); when
+			offline, we queue this up to be sent when we next go
+			online:</p>
+			
+		<div id="helloMessage" style="margin: 1em;">
+			<label for="helloInput" 
+							style="margin-right: 0.2em;">
+				Enter Hello World Message:
+			</label>
+			
+			<input name="helloInput" 
+							id="helloInput" 
+							style="margin-right: 0.2em;">
+			
+			<button id="sendMessage" 
+							onclick="HelloWorld.send()"
+							style="margin-right: 0.2em;">Send</button>
+		</div>
+			
+		<p>Debug output:</p>
+	</body>
+</html>

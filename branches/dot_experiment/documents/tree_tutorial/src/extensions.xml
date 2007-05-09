@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Extensions</title>
+    
+    <para>Extensions are also called plugins, they can be hooked onto widgets in various combinations and provide wanted options.</para>
+    
+    <para>Currently there is a couple of extensions
+        
+        <variablelist>
+            <varlistentry>
+                <term>TreeDisableWrapExtension</term>
+                <listitem><simpara>Tree extension, disables wrapping for tree nodes. Also it fixes IE bug when an 'unwrappable' node (e.g single word) will move 
+                to next line if no space left.</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>TreeDocIconExtension</term>
+                <listitem><simpara>Tree extension, places icon to the left of a node, depening on <property>nodeType</property> property</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>TreeEmphaseOnSelect</term>
+                <listitem><simpara>Selector extension, highlights currently selected nodes</simpara></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>TreeDeselectOnDblselect</term>
+                <listitem><simpara>Selector extension, deselects a selected node when it is clicked. Usually, one should ctrl-click, or click another node.</simpara></listitem>
+            </varlistentry>            
+            <varlistentry>
+                <term>TreeLinkExtension</term>
+                <listitem><simpara>Tree extension, turns labels into links, merges object property into &lt;a&gt; tag</simpara></listitem>
+            </varlistentry>
+                        
+            
+        </variablelist>
+        
+        </para>
+            
+</section>

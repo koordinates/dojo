@@ -1,0 +1,71 @@
+<html>
+<body>
+<p>Dojo Offline requires that you configure your web server to correctly add HTTP/1.1 caching headers when serving up content that you want to have available offline. This is because Dojo Offline basically just uses a tiny local proxy to cache offline resources, and the proxy will only cache materials that say they can be cached.</p>
+
+<p>Configuring your web server differs between Apache 1 and Apache 2 (if you are not using these web servers, please help contribute to this document on how to configure your own web server for Dojo Offline).</p>
+
+<p>For the config code below, let's assume that you have uploaded the Dojo Offline SDK on your file system to ~/web/dojo_offline and that your application is at ~/web/myapp</p>
+
+<p>For Apache 1, add the following to your httpd.conf file:</p>
+
+<code><pre>
+# Load the modules we need for Dojo Offline
+
+# HTTP/1.1 Expires Headers 
+LoadModule expires_module     libexec/httpd/mod_expires.so
+
+# HTTP/1.1 Headers in general
+LoadModule headers_module     libexec/httpd/mod_headers.so
+
+
+# Now add these modules
+AddModule mod_expires.c
+AddModule mod_headers.c
+
+
+# For anything served from our Dojo Offline directories
+# make sure that Dojo Offline caches it by giving all
+# the files good expires headers
+&lt;Directory "~/web/dojo_offline"&gt;
+	ExpiresActive On
+	ExpiresDefault A2592000
+	Header Set Cache-Control "max-age=2592000"
+&lt;/Directory&gt;
+
+&lt;Directory "~/web/myapp"&gt;
+	ExpiresActive On
+	ExpiresDefault A2592000
+	Header Set Cache-Control "max-age=2592000"
+&lt;/Directory&gt;
+
+# Mac installers use the DMG format - make sure Apache
+# serves this up with the right MIME type for our 
+# Dojo Offline Mac installer
+AddType  application/octet-stream      .dmg
+</pre></code>
+
+<p>For Apache 2, add the following to your httpd.conf file:</p>
+
+<code><pre>
+# Load the Apache modules we need
+LoadModule expires_module modules/mod_expires.so
+LoadModule headers_module modules/mod_headers.so
+
+# Turn on the expires header for anything served under Dojo Offline;
+# this will cause Dojo Offline's local proxy to cache all of this
+# for offline availability
+&lt;Directory "~/web/dojo_offline"&gt;
+        ExpiresActive On
+        ExpiresDefault "access plus 1 month"
+&lt;/Directory&gt;
+
+&lt;Directory "~/web/myapp"&gt;
+        ExpiresActive On
+        ExpiresDefault "access plus 1 month"
+&lt;/Directory&gt;
+
+# Mac installers use the DMG format - make sure Apache
+# serves this up with the right MIME type for our 
+# Dojo Offline Mac installer
+AddType  application/octet-stream      .dmg
+</pre></code>
