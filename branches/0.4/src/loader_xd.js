@@ -29,10 +29,16 @@ dojo.hostenv.createXdPackage = function(/*String*/contents, /*String*/resourceNa
 
 	//Find dependencies.
 	var deps = [];
-    var depRegExp = /dojo.(require|requireIf|requireAll|provide|requireAfterIf|requireAfter|kwCompoundRequire|conditionalRequire|hostenv\.conditionalLoadModule|.hostenv\.loadModule|hostenv\.moduleLoaded)\(([\w\W]*?)\)/mg;
+    var depRegExp = /dojo.(requireLocalization|require|requireIf|requireAll|provide|requireAfterIf|requireAfter|kwCompoundRequire|conditionalRequire|hostenv\.conditionalLoadModule|.hostenv\.loadModule|hostenv\.moduleLoaded)\(([\w\W]*?)\)/mg;
     var match;
 	while((match = depRegExp.exec(contents)) != null){
-		deps.push("\"" + match[1] + "\", " + match[2]);
+		if(match[1] == "requireLocalization"){
+			//Need to load the local bundles asap, since they are not
+			//part of the list of modules watched for loading.
+			eval(match[0]);
+		}else{
+			deps.push("\"" + match[1] + "\", " + match[2]);
+		}
 	}
 
 	//Create package object and the call to packageLoaded.
