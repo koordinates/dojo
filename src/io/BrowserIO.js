@@ -281,9 +281,9 @@ dojo.io.XMLHTTPTransport = new function(){
 					dojo.debug(http.responseText);
 					ret = null;
 				}
-			}else if(kwArgs.mimetype == "text/json" || kwArgs.mimetype == "application/json"){
+			}else if(kwArgs.mimetype.substr(0, 9) == "text/json" || kwArgs.mimetype.substr(0, 16) == "application/json"){
 				try{
-					ret = dj_eval("("+http.responseText+")");
+					ret = dj_eval("("+kwArgs.jsonFilter(http.responseText)+")");
 				}catch(e){
 					dojo.debug(e);
 					dojo.debug(http.responseText);
@@ -397,8 +397,19 @@ dojo.io.XMLHTTPTransport = new function(){
 		// FIXME: we need to determine when form values need to be
 		// multi-part mime encoded and avoid using this transport for those
 		// requests.
+		var mlc = kwArgs["mimetype"].toLowerCase()||"";
 		return hasXmlHttp
-			&& dojo.lang.inArray(["text/plain", "text/html", "application/xml", "text/xml", "text/javascript", "text/json", "application/json"], (kwArgs["mimetype"].toLowerCase()||""))
+			&& (
+				(
+					dojo.lang.inArray([
+						"text/plain", "text/html", "application/xml", 
+						"text/xml", "text/javascript"
+						], mlc
+					)
+				) || (
+					mlc.substr(0, 9) == "text/json" || mlc.substr(0, 16) == "application/json"
+				)
+			)
 			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) ); //boolean
 	}
 
