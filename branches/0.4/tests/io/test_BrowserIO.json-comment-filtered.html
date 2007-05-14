@@ -24,7 +24,11 @@
 				for(var key in json){
 					dojo.debug(key, ":", json[key]);
 				}
+				dojo.debug("");
+				dojo.debug("");
+				dojo.debug("");
 			}
+
 			var kw = {
 				url: "data-json.js",
 				mimetype: "application/json",
@@ -32,19 +36,24 @@
 			};
 			dojo.io.bind(kw);
 
-			var kw2 = {
-				url: "data-json.js",
-				mimetype: "application/json-comment-filtered",
-				load: loaded
-			};
-			dojo.io.bind(kw2);
 
-			var kw3 = {
-				url: "data-json-comment-filtered.js",
-				mimetype: "application/json-comment-filtered",
-				load: loaded
-			};
-			dojo.io.bind(kw3);
+			setTimeout(function(){
+				var kw2 = {
+					url: "data-json.js",
+					mimetype: "application/json-comment-filtered",
+					load: loaded
+				};
+				dojo.io.bind(kw2);
+			}, 500);
+
+			setTimeout(function(){
+				var kw3 = {
+					url: "data-json-comment-filtered.js",
+					mimetype: "application/json-comment-filtered",
+					load: loaded
+				};
+				dojo.io.bind(kw3);
+			}, 500);
 		}
 
 		dojo.addOnLoad(doit);
