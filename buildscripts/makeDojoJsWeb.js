@@ -51,7 +51,7 @@ if(isInputOk){
 
 	var buildSigDir = dojo.crypto.MD5.compute(depList.sort().join(","), dojo.crypto.outputTypes.Hex);
 	try{
-		var contents = buildUtil.createLayerContents(dependencyResult.depList, dependencyResult.provideList, version);
+		var contents = buildUtil.createLayerContents(null, dependencyResult.depList, dependencyResult.provideList, version);
 		var compressedContents = "";
 		var prefixes = [["dojo", "src"]];
 	
