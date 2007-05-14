@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- 
+	Copyright (c) 2004-2006 The Dojo Foundation, Licensed under the Academic
+	Free License version 2.1 or BSD licenses
+-->
+
+<project name="dojo-test" default="help" basedir=".">
+
+	<description>Builds the Dojo toolkit testing tools.</description>
+
+	<!-- ====================================================================== -->
+	<!-- Global properties                                                      -->
+	<!-- ====================================================================== -->
+
+	<property name="build.dir" value="build/main" />
+	<property name="lib.dir" value="lib" />
+	<property name="src.dir" value="src/java" />
+	<property name="dist.dir" value="dist" />
+	<property name="root" value="../../" />
+	<property name="root.lib" value="${root}/buildscripts/lib" />
+
+	<property name="js.test" value="../../tests" />
+	<property name="js.tools" value="../../testtools" />
+	<property name="test.build.target" value="build/test" />
+	<property name="test.src.dir" value="test/src/java" />
+	<property name="testng.report.dir" value="build/test-reports" />
+
+	<property name="prologue" value="${js.test}/prologue.js" />
+	<property name="BUFakeDom" value="${js.tools}/JsFakeDom/BUFakeDom.js" />
+	<property name="jsunit_wrap" value="${js.tools}/JsTestManager/jsunit_wrap.js" />
+	<property name="epilogue" value="${js.test}/epilogue.js" />
+
+	<!-- ====================================================================== -->
+	<!-- Help Menu                                                  			-->
+	<!-- ====================================================================== -->
+
+	<target name="help" >
+		<echo>
+This build creates the Dojo toolkit ant tasks for running the unit testing
+system. 
+	
+	Available options:
+			
+	* dist-jar : Compiles/creates the dist/ant-dojotest.jar for distribution.
+			
+	* compile-tasks : Compiles the tool classes.
+	
+	* clean : Cleans compiled classes/created jars.
+
+	* test : Runs unit tests for ant task.
+		</echo>
+	</target>
+
+	<!-- ==================================================================== -->
+	<!-- Cleanup                                                         	  -->
+	<!-- ==================================================================== -->
+
+	<target name="clean" description="Cleans up build directories.">
+		<delete dir="${build.dir}" />
+		<delete dir="${test.build.target}" />
+		<delete dir="${testng.report.dir}" />
+		<delete file="${dist.dir}/ant-dojotest.jar" />
+		<delete dir="build" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<!-- ==================================================================== -->
+	<!-- Distribution                                                         -->
+	<!-- ==================================================================== -->
+
+	<target name="dist-jar" depends="compile-tasks,copy-resources,extract-jars"
+			description="Creates the ant-dojotest.jar task.">
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/ant-dojotest.jar" update="true">
+			<fileset dir="${build.dir}" excludes="test/**"/>
+		</jar>
+	</target>
+
+	<!-- ==================================================================== -->
+	<!-- Compiling                                                 			  -->
+	<!-- ==================================================================== -->
+
+	<target name="compile-tasks" 
+			description="Compiles classes/code needed to create ant tasks." >
+		<mkdir dir="${build.dir}" />
+
+		<path id="compile.cp">
+			<fileset dir="${root.lib}">
+				<include name="custom_rhino.jar" />
+			</fileset>
+		</path>
+
+		<javac classpathref="compile.cp"
+			       debug="true"
+			       destdir="${build.dir}"
+				   target="1.4" source="1.4">
+			
+			<exclude name="**/*Cookie*" />
+			<src path="${src.dir}"/>
+		</javac>
+	</target>
+
+	<!-- ==================================================================== -->
+	<!-- COPY-RESOURCES                                                       -->
+	<!-- ==================================================================== -->
+
+	<target name="copy-resources" 
+				description="Compiles classes/code needed to create ant tasks." >
+		<copy verbose="false" file="${prologue}" todir="${build.dir}" />
+		<copy verbose="false" file="${BUFakeDom}" todir="${build.dir}" />
+		<copy verbose="false" file="${jsunit_wrap}" todir="${build.dir}" />
+		<copy verbose="false" file="${epilogue}" todir="${build.dir}" />
+	</target>
+
+	<target name="extract-jars">
+		<unjar src="${root.lib}/custom_rhino.jar"
+			       dest="${build.dir}"
+			       overwrite="true" />
+		<unjar src="${root.lib}/xbean.jar"
+					       dest="${build.dir}"
+					       overwrite="true" />
+	</target>
+	
+	<!-- ==================================================================== -->
+	<!-- TESTING                                                   			  -->
+	<!-- ==================================================================== -->
+	
+	<target name="compile-test" depends="compile-tasks" 
+		description="Compiles classes/code needed to test dojo tasks.">
+		
+		<mkdir dir="${test.build.target}" />
+		<path id="compile.test.cp">
+			<fileset dir="${lib.dir}">
+				<include name="testng-5.1-jdk15.jar" />
+			</fileset>
+			<pathelement location="${build.dir}" />
+			<fileset dir="${root.lib}">
+				<include name="custom_rhino.jar" />
+			</fileset>
+		</path>
+
+		<javac classpathref="compile.test.cp" 
+				debug="true"
+				destdir="${test.build.target}">
+			<src path="${test.src.dir}" />
+		</javac>
+	</target>
+
+	<taskdef resource="testngtasks" classpath="lib/testng-5.1-jdk15.jar" />
+
+	<target name="test" depends="compile-test" description="Tests the dojo ant tasks.">
+
+		<path id="compile.cp">
+			<fileset dir="${lib.dir}">
+				<include name="testng-5.1-jdk15.jar" />
+				<include name="ant.jar" />
+			</fileset>
+			<pathelement location="${build.dir}" />
+			<pathelement location="${test.build.target}" />
+			<fileset dir="${root.lib}">
+				<include name="custom_rhino.jar" />
+			</fileset>
+		</path>
+		
+		<testng classpathref="compile.cp" outputDir="${testng.report.dir}" 
+				haltOnFailure="true" verbose="2">
+			<sysproperty key="basedir" value="${root}" />
+			<classfileset dir="${test.build.target}" includes="**/*.class" />
+		</testng>
+	</target>
+	
+</project>

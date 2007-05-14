@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<title>Live Collections</title>
+
+<style type="text/css">
+
+tbody th { text-align: right; font-weight: normal; }
+th, td { padding: 0 0.4em; }
+
+</style>
+
+<script type="text/javascript">
+
+function bench () {
+	var div = document.createElement("div");
+	var span = "<span><" + "/span>";
+	// order 2^n, so 2^20 = 1 048 576
+	for (var i = 0; i < 11; i++) { span += span; }
+	div.innerHTML = span;
+
+	// first hit all the elements to turn them into JS objects for a fair test
+	var el, i = 0, els = div.getElementsByTagName("span");
+	while (el = els[i++]) { }
+
+
+	tic();
+	var els = div.getElementsByTagName("span");
+	for (var i = 0; i < els.length; i++) { var el = els[i]; }
+	toc("for loop, accessing length");
+
+	tic();
+	var el
+	for (var i = 0; el = div.getElementsByTagName("span")[i]; i++) { }
+	toc("for loop, calling inline");
+	
+	tic();
+	var el, i = 0;
+	while (el = div.getElementsByTagName("span")[i++]) { }
+	toc("while loop, calling inline");
+
+	tic();
+	var el, els = div.getElementsByTagName("span");
+	for (var i = 0; el = els[i]; i++) { }
+	toc("for loop, accessing var");
+	
+	tic();
+	var el, i = 0, els = div.getElementsByTagName("span");
+	while (el = els[i++]) { }
+	toc("while loop, accessing var");
+}
+
+function tic () {
+	tic.time = new Date();
+}
+
+function toc (str) {
+	var time = new Date().getTime() - tic.time.getTime();
+	var p = document.createElement("p");
+	p.appendChild(document.createTextNode(time + " - " + str));
+	document.body.appendChild(p);
+}
+
+</script>
+
+<h1>Live Collections</h1>
+
+<p><strong style="color:red">Warning:</strong> these benchmarks will take a number of seconds to run.  Other system activity will cause these benchmarks to skew.
+<p><a href="javascript:bench()">Run benchmarks</a>
+
+<h2>Results</h2>
+
+<p>The results should not be compared between browsers for they are run on different systems, however results for the same browser are relative to each other.
+
+<table>
+<thead>
+	<tr>
+		<th>
+		<th>IE
+		<th>Safari
+		<th>Gecko
+	</tr>
+</thead>
+<tbody>
+	<tr>
+		<th>for loop, accessing length
+		<td>172
+		<td>32
+		<td>1039
+	</tr>
+	<tr>
+		<th>for loop, calling inline
+		<td>47
+		<td>601
+		<td>417
+	</tr>
+	<tr>
+		<th>while loop, calling inline
+		<td>31
+		<td>604
+		<td>412
+	</tr>
+	<tr>
+		<th>for loop, accessing var
+		<td>16
+		<td>12
+		<td>475
+	</tr>
+	<tr>
+		<th>while loop, accessing var
+		<td><strong>15</strong>
+		<td><strong>11</strong>
+		<td><strong>349</strong>
+	</tr>
+</tbody>
+</table>

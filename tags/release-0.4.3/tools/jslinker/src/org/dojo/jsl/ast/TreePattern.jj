@@ -1,0 +1,346 @@
+/*
+      Copyright (c) 2004-2005, The Dojo Foundation
+      All Rights Reserved.
+
+      Licensed under the Academic Free License version 2.1 or above OR the
+      modified BSD license. For more information on Dojo licensing, see:
+
+              http://dojotoolkit.org/community/licensing.shtml <http://dojotoolkit.org/community/licensing.shtml>
+
+      Code donated to the Dojo Foundation by AOL LLC under the terms of
+      the Dojo CCLA (http://dojotoolkit.org/ccla.txt).
+
+*/
+
+options {
+  STATIC = false;
+  DEBUG_PARSER = false;
+  DEBUG_TOKEN_MANAGER = false;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = false;
+}
+
+PARSER_BEGIN(TreePattern)
+
+package org.dojo.jsl.ast;
+
+import java.util.*;
+
+import org.dojo.jsl.parser.ASTLiteral;
+
+/**
+ * This is the parser for the tree pattern language.
+ * Take a look at <a href="doc-files/Tree_Patterns.html">this description</a> for an explanation of this idea.
+ *
+ * @since JDK 1.4
+ */
+public class TreePattern {
+
+  // Just for test
+  public static void main(String args[]){
+    TreePattern parser;
+    if(args.length == 0){
+      System.out.println("TreePattern Parser:  Reading from standard input . . .");
+      parser = new TreePattern(System.in);
+    } else if(args.length == 1){
+      System.out.println("TreePattern Parser:  Reading from file " + args[0] + " . . .");
+      try {
+        parser = new TreePattern(new java.io.FileInputStream(args[0]));
+      } catch(java.io.FileNotFoundException e){
+        System.out.println("TreePattern Parser:  File " + args[0] + " not found.");
+        return;
+      }
+    } else {
+      System.out.println("TreePattern Parser:  Usage is one of:");
+      System.out.println("         java org.dojo.jsl.ast.TreePattern < inputfile");
+      System.out.println("OR");
+      System.out.println("         java org.dojo.jsl.ast.TreePattern inputfile");
+      return;
+    }
+    try {
+        parser.Pattern();
+        System.out.println("TreePattern parser:  TreePattern program parsed successfully.");
+    } catch (ParseException e) {
+        System.out.println(e.getMessage());
+        System.out.println("TreePattern parser:  Encountered errors during parse.");
+    }
+  }
+
+}
+PARSER_END(TreePattern)
+
+/* WHITE SPACE */
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* RESERVED WORDS AND LITERALS */
+
+TOKEN :
+{
+  < VALUE: "value" > 
+| < NAME: "name" > 
+| < STOP: "stop" >
+| < SCOPE: "scope" > 
+| < PARENT: "parent" >
+| < PREV : "prev" >
+| < NEXT : "next" > 
+| < TYPE: "type" > 
+| < MULTI: "multi" > 
+| < NULL: "null" > 
+| < TRUE: "true" > 
+| < FALSE: "false" >
+| < LOCAL: "local" >
+| < GLOBAL: "global" > 
+}
+
+/* LITERALS */
+
+TOKEN :
+{
+  < DECIMAL_LITERAL: (["0"-"9"])+ > 
+|
+  < HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ > 
+|
+  < FLOATING_POINT_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? 
+      | "." (["0"-"9"])+ (<EXPONENT>)? 
+      | (["0"-"9"])+ (<EXPONENT>)? 
+  > 
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  < STRING_LITERAL:
+        "\""
+        (   (~["\"","\\","\n","\r"])
+        | <ESCAPE_SEQUENCE>
+        )*
+        "\""
+      | "'"
+        (   (~["'","\\","\n","\r"])
+        | <ESCAPE_SEQUENCE>
+        )*
+        "'"
+  > 
+|  // PENDING(uwe) Maybe x and u could be x,X and u,U
+  < #ESCAPE_SEQUENCE:
+      "\\"
+        ( ["n","t","b","r","f","\\","'","\""]
+        | ["0"-"7"] ( ["0"-"7"] )?
+        | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+        | ["x"] ["0"-"9","a"-"f","A"-"F"] ["0"-"9","a"-"f","A"-"F"]
+        | ["u"] ["0"-"9","a"-"f","A"-"F"] ["0"-"9","a"-"f","A"-"F"] ["0"-"9","a"-"f","A"-"F"] ["0"-"9","a"-"f","A"-"F"]
+        )
+  >
+|
+  < UNTERMINATED_STRING_LITERAL:
+        "\""
+        (   (~["\"","\\","\n","\r"])
+        | <ESCAPE_SEQUENCE>
+        )*
+        (["\n","\r"])?
+      | "'"
+        (   (~["'","\\","\n","\r"])
+        | <ESCAPE_SEQUENCE>
+        )*
+        (["\n","\r"])?
+  >
+}
+
+TOKEN:
+{ 
+  < BOOLEAN_LITERAL: "true" | "false" >
+}
+
+
+/* SEPARATORS */
+
+TOKEN :
+{
+  < LPAREN: "(" > 
+| < RPAREN: ")" > 
+| < LBRACE: "{" > 
+| < RBRACE: "}" > 
+| < LBRACKET: "[" > 
+| < RBRACKET: "]" > 
+| < COMMA: "," >
+| < COLON: ":" >
+}
+
+/* OPERATORS */
+
+TOKEN :
+{
+  < EQUAL: "=" > 
+| < NEQUAL: "!=" >
+| < REGEQUAL: "/=" > 
+| < GT: ">" > 
+| < LT: "<" > 
+| < LE: "<=" > 
+| < GE: ">=" > 
+| < PLUS: "+" >
+| < STAR: "*" >
+}
+
+ASTLiteral Literal() :
+{
+  Token t;
+  ASTLiteral literal = new ASTLiteral(0);	
+}
+{ (
+  t = <DECIMAL_LITERAL>
+  {
+        literal.setDecimalValue(t.image);
+  }
+|
+  t = <HEX_LITERAL>
+  {
+	literal.setHexValue(t.image);
+  }
+|
+  t = <FLOATING_POINT_LITERAL>
+  {
+        literal.setFloatingPointValue(t.image);
+  }
+|
+  t = <STRING_LITERAL>
+  {
+        try {
+            literal.setStringValue(t.image);
+	} catch(org.dojo.jsl.parser.ParseException exc){
+	    throw new ParseException(exc.toString());
+	}
+  }
+|
+  t = <BOOLEAN_LITERAL>
+  {
+        literal.setBooleanValue(t.image);
+  }
+|
+  t = <NULL>
+  {
+    	literal.setNullValue();
+  }
+|
+  t = <UNTERMINATED_STRING_LITERAL>
+  {
+        throw generateParseException();
+  }
+  ) { return literal; }
+}
+
+TreeTemplate Pattern() :
+{
+   TreeTemplate template = new TreeTemplate();
+   TreeTemplate child;
+}
+{
+ (  ( <LPAREN>  template.node = Node() ( <COMMA> ( child = Pattern() { template.add(child); } )? )* <RPAREN> ) 
+ |
+    template.node = Node() { template.node.put("stop", Boolean.TRUE); }
+ ) {return template; }
+}
+
+Map Node() :
+{
+    HashMap nodeMap = new HashMap();
+}
+{
+   <LBRACE> ( FieldList(nodeMap) )? <RBRACE> { return nodeMap; }
+}
+
+void FieldList(Map nodeMap) :
+{
+}
+{
+   Field(nodeMap) ( <COMMA> ( Field(nodeMap) )? )*
+}
+
+void Field(Map nodeMap) :
+{
+  ASTLiteral literal;
+  Multi multi;
+  String scopeValue;	
+  String key;
+  String comps;
+  Object refNodePattern = ASTLiteral.NULL;
+  Token t;	
+}
+{
+   key = FieldKey() comps = Comparator() literal = Literal() { nodeMap.put(key, new NodeField(literal, comps)); }
+ | 
+   <MULTI> multi = MExpr() { nodeMap.put("multi", multi); }
+ |
+   key = NodeRefKey() <EQUAL> (refNodePattern = Pattern() | <NULL>) { nodeMap.put(key, refNodePattern); } 
+ | 
+   <STOP> { nodeMap.put("stop", Boolean.TRUE); }
+ |
+   <NAME> <COLON> literal = Literal() { nodeMap.put("name", literal); }
+ |
+   <SCOPE> <EQUAL> ( t = <LOCAL> | t = <GLOBAL> ) { nodeMap.put("scope", t.image); }
+}
+
+String FieldKey() :
+{
+   Token t;
+}
+{
+   ( t = <TYPE> | t = <VALUE> ) { return t.image; }
+}
+
+String NodeRefKey() :
+{
+   Token t;
+}
+{
+   ( t = <PREV> | t = <NEXT> |  t = <PARENT> ) { return t.image; }
+}
+
+String Comparator() :
+{
+   Token t;
+}
+{
+   ( t = <EQUAL> | t = <NEQUAL> | t = <REGEQUAL> | t = <GT> | t = <LT> | t = <LE> | t = <GE> ) { return t.image; }
+}
+ 
+Multi MExpr() :
+{
+   Multi multi = new Multi();
+   Token decimal;
+}
+{
+  (  (<GT> { multi.setGreater(); } | <LT> { multi.setLess(); } |
+	 <GE> { multi.setGreaterOrEqual(); } | <LE> { multi.setLessOrEqual(); }) decimal = <DECIMAL_LITERAL> 
+      {
+        multi.setDecimal(decimal.image);
+      }
+   | 
+     <EQUAL> { multi.setEqual(); } MultiEqualFactor(multi) 
+  )
+  { return multi; }
+}
+
+void MultiEqualFactor(Multi multi) :
+{
+   Token decimal;
+}
+{
+   decimal = <DECIMAL_LITERAL> { multi.setDecimal(decimal.image);}
+ |
+   <PLUS> { multi.setPlus(); }
+ |
+   <STAR> { multi.setStar(); }
+ |   
+   <LBRACKET> decimal = <DECIMAL_LITERAL> { multi.setLeftDecimal(decimal.image); } 
+                 <COMMA> decimal = <DECIMAL_LITERAL> { multi.setRightDecimal(decimal.image); } <RBRACKET>
+}
+  
+  
+

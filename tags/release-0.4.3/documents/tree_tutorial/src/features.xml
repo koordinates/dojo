@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Features</title>
+        
+    <itemizedlist>
+        <listitem>Flexible styling            
+            <itemizedlist>                
+                <listitem>All design in CSS through classes and class combinations</listitem>
+                <listitem>Different trees be styled with different CSS class families</listitem>                  
+                <listitem>Multiline and rich content support</listitem>
+            </itemizedlist>    
+        </listitem>
+        <listitem>Full set of node operations
+            <itemizedlist>
+                <listitem>expand/collapse</listitem>
+                <listitem>create with JS or markup</listitem>
+                <listitem>destroy/move/clone</listitem>
+                <listitem>addChild/detach/(de)folderize</listitem>
+                <listitem>inline editing</listitem>
+                <listitem>multiple selection and drag'n'drop</listitem>
+            </itemizedlist>
+        </listitem>        
+        
+        <listitem>Performance
+            <itemizedlist>
+                <listitem>batch operations</listitem>
+                <listitem>special features</listitem>
+            </itemizedlist>        
+        </listitem>
+        
+        <listitem>Lazy loading &amp; RPC features
+            <itemizedlist>
+                <listitem>ready to be in-sync with your data</listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem>Rich event system
+            <itemizedlist>
+                <listitem>fluently integrates with your app</listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem>Customization
+            <itemizedlist>
+                <listitem>change everything through inheritance, events and css</listitem>
+                <listitem>out-of-the box extensions</listitem>                
+            </itemizedlist>
+        </listitem>        
+        <listitem>Tests and demos</listitem>
+        
+    </itemizedlist>
+    
+    
+</section>

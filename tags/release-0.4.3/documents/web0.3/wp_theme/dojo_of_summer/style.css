@@ -1,0 +1,134 @@
+/* 
+Theme Name: dojo of summer
+Theme URI: http://dojotoolkit.org
+Description:  custom theme for dojotoolkit.org
+Version: 1.0
+Author: Tom Trenka
+Author URI: http://www.dept-z.com
+*/
+
+/* Blog posts */
+.post { }
+.post h1 { }
+.post h1 a { }
+.post h1 a:hover { }
+.post h2.posttitle { }
+.post h2.posttitle a {
+	color : black;
+	text-decoration : none;
+}
+.post h2.posttitle a:hover { 
+	color : #666;
+	text-decoration : underline;
+}
+.post h3 { }
+.post h3 a { 
+	color : black;
+	text-decoration : none;
+}
+.post h3 a:hover { 
+	color : #666;
+	text-decoration : underline;
+}
+.post h4 { 
+	margin-top : -1.5em;
+	color : #666;
+}
+.post h4 a { }
+.post h4 a:hover { }
+.post .postdate {
+	float:left;
+	border-right:1px solid #ccc;
+	margin-right:4px;
+}
+.post .postdate img {
+	display:block;
+	float:left;
+}
+.post .entry { clear:both; }
+.post .entry p {
+	margin-left : 8px;
+}
+.post .entry pre {
+	width:100%;
+	overflow:auto;
+}
+.post .entrytext { clear:both; }
+.post .entrytext p { }
+.post p.postmetadata { 
+	border-top: 1px dotted #ddd;
+	font: normal 0.8em sans-serif;
+	color : #999;
+}
+.post p.postmetadata a { 
+	color : #66e;
+}
+.post p.postmetadata a:visited { 
+	color : #858;
+}
+.navigation { }
+.navigation .alignleft { }
+.navigation .alignright { }
+
+/* Comments */
+h3#comments { 
+	font:bold 1.2em sans-serif;
+	border-bottom:1px dotted #ddd;
+}
+ol.commentlist { 
+	margin-left:0;
+
+	padding-left:0;
+}
+ol.commentlist li { 
+	padding : 3px 8px;
+}
+ol.commentlist li.alt { 
+	background-color : #f0f0ed;
+}
+ol.commentlist li small { 
+	font-size:0.8em;
+	float : right;
+}
+ol.commentlist li small a {
+	color : #666;
+	text-decoration : none;
+}
+ol.commentlist li small a:hover {
+	text-decoration : underline;
+}
+ol.commentlist li cite { 
+	font: bold 1.0em sans-serif;
+}
+ol.commentlist li cite a {
+	color : #666;
+}
+ol.commentlist li cite a:hover {
+}
+ol.commentlist li p {
+	margin-left : 8px;
+}
+#commentform { }
+#commentform p { }
+#commentform p input#author{ }
+#commentform p input#email{ }
+#commentform p input#url{ }
+#commentform p label { 
+}
+#commentform p textarea#comment { }
+
+
+/* sidebar specific */
+#sidebar ul { 
+	margin-left : 0;
+	padding-left : 0;
+	list-style : none;
+}
+#sidebar ul li { 
+	list-style : none;
+}
+#sidebar ul li h2 { }
+#sidebar ul li a { }
+#sidebar ul li ul {
+	list-style : disc;
+}
