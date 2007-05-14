@@ -277,7 +277,6 @@ dojo.event = new function(){
 		}else{
 			var ao = interpolateArgs(arguments, true);
 		}
-		/*
 		if(dojo.lang.isString(ao.srcFunc) && (ao.srcFunc.toLowerCase() == "onkey") ){
 			if(dojo.render.html.ie){
 				ao.srcFunc = "onkeydown";
@@ -285,7 +284,6 @@ dojo.event = new function(){
 			}
 			ao.srcFunc = "onkeypress";
 		}
-		*/
 
 		if(dojo.lang.isArray(ao.srcObj) && ao.srcObj!=""){
 			var tmpAO = {};
