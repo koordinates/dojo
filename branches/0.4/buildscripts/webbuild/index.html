@@ -138,7 +138,7 @@ SELECT				{	background:#d1c6ae;	}
 		clearOutput();
 
 		//Find out if the build result is already on the server.
-		var cachedBuildUrl = getCachedBuildUrl(dependencyResult.depList);
+		var cachedBuildUrl = getCachedBuildUrl(dependencyResult[0].depList);
 		dojo.io.bind({
 			//Add an URL marker for the server to know if this is an existence query.
 			//Mostly helpful in the Safari 2.0 case where it doesn't support HEAD
@@ -151,9 +151,9 @@ SELECT				{	background:#d1c6ae;	}
 				var httpStatus = parseInt(xhr.status, 10);
 				if(httpStatus >= 400){
 					//Build does not exist. Ask server to make it.
-					requestServerBuild(dependencyResult);
+					requestServerBuild(dependencyResult[0]);
 				}else{
-					outputBuildResults(dependencyResult);
+					outputBuildResults(dependencyResult[0]);
 					window.location = "../" + cachedBuildUrl;
 				}
 			}
