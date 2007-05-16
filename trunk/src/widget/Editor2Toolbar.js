@@ -137,8 +137,11 @@ dojo.declare("dojo.widget.Editor2ToolbarButton", null,
 			dojo.html.disableSelection(node);
 		}
 	},
+	getMainComponent: function(){
+		return dojo.widget.Editor2Manager.getCurrentInstance();
+	},
 	onMouseOver: function(){
-		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+		var curInst = this.getMainComponent();
 		if(curInst){
 			var _command = curInst.getCommand(this._name);
 			if(_command && _command.getState() != dojo.widget.Editor2Manager.commandState.Disabled){
@@ -159,7 +162,7 @@ dojo.declare("dojo.widget.Editor2ToolbarButton", null,
 		if(this._domNode && !this._domNode.disabled && this._parentToolbar.checkAvailability()){
 			e.preventDefault();
 			e.stopPropagation();
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			var curInst = this.getMainComponent();
 			if(curInst){
 				var _command = curInst.getCommand(this._name);
 				if(_command){
@@ -170,7 +173,7 @@ dojo.declare("dojo.widget.Editor2ToolbarButton", null,
 	},
 	refreshState: function(){
 		// summary: update the state of the toolbar item
-		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+		var curInst = this.getMainComponent();
 		var em = dojo.widget.Editor2Manager;
 		if(curInst){
 			var _command = curInst.getCommand(this._name);
@@ -249,7 +252,7 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockPlainSelect", dojo.widget.Edi
 	onChange: function(){
 		if(this._parentToolbar.checkAvailability()){
 			var sv = this._domNode.value.toLowerCase();
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			var curInst = this.getMainComponent();
 			if(curInst){
 				var _command = curInst.getCommand(this._name);
 				if(_command){
@@ -262,7 +265,7 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockPlainSelect", dojo.widget.Edi
 	refreshState: function(){
 		if(this._domNode){
 			dojo.widget.Editor2ToolbarFormatBlockPlainSelect.superclass.refreshState.call(this);
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			var curInst = this.getMainComponent();
 			if(curInst){
 				var _command = curInst.getCommand(this._name);
 				if(_command){
@@ -297,7 +300,7 @@ dojo.widget.defineWidget(
 		templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/EditorToolbar.css"),
 
 //		itemNodeType: 'span', //all the items (with attribute dojoETItemName set) defined in the toolbar should be a of this type
-
+		itemManager: dojo.widget.Editor2ToolbarItemManager,
 		postCreate: function(){
 			var i=0,node,nodes = dojo.html.getElementsByClass("dojoEditorToolbarItem", this.domNode/*, this.itemNodeType*/);
 
@@ -305,7 +308,7 @@ dojo.widget.defineWidget(
 			while(node=nodes[i++]){
 				var itemname = node.getAttribute("dojoETItemName");
 				if(itemname){
-					var item = dojo.widget.Editor2ToolbarItemManager.getToolbarItem(itemname);
+					var item = this.itemManager.getToolbarItem(itemname);
 					if(item){
 						item.create(node, this);
 						this.items[itemname.toLowerCase()] = item;

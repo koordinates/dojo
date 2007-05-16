@@ -41,7 +41,7 @@ dojo.declare("dojo.widget.Editor2ToolbarDropDownButton", dojo.widget.Editor2Tool
 });
 
 dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDropDownButton,{
-	// summary: dojo.widget.Editor2ToolbarComboItem provides an external loaded dropdown list
+	// summary: dojo.widget.Editor2ToolbarComboItem provides a realonly combobox in the toolbar
 
 	onMouseOver: function(e){
 		if(this._lastState != dojo.widget.Editor2Manager.commandState.Disabled){
@@ -67,7 +67,7 @@ dojo.declare("dojo.widget.Editor2ToolbarComboItem", dojo.widget.Editor2ToolbarDr
 	onChange: function(e){
 		if(this._parentToolbar.checkAvailability()){
 			var name = e.currentTarget.getAttribute("dropDownItemName");
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			var curInst = this.getMainComponent();
 			if(curInst){
 				var _command = curInst.getCommand(this._name);
 				if(_command){
@@ -142,7 +142,7 @@ dojo.declare("dojo.widget.Editor2ToolbarFormatBlockSelect", dojo.widget.Editor2T
 	refreshState: function(){
 		dojo.widget.Editor2ToolbarFormatBlockSelect.superclass.refreshState.call(this);
 		if(this._lastState != dojo.widget.Editor2Manager.commandState.Disabled){
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			var curInst = this.getMainComponent();
 			if(curInst){
 				var _command = curInst.getCommand(this._name);
 				if(_command){
@@ -212,7 +212,7 @@ dojo.declare("dojo.widget.Editor2ToolbarFontSizeSelect", dojo.widget.Editor2Tool
 	refreshState: function(){
 		dojo.widget.Editor2ToolbarFontSizeSelect.superclass.refreshState.call(this);
 		if(this._lastState != dojo.widget.Editor2Manager.commandState.Disabled){
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			var curInst = this.getMainComponent();
 			if(curInst){
 				var _command = curInst.getCommand(this._name);
 				if(_command){
@@ -337,7 +337,7 @@ dojo.declare("dojo.widget.Editor2ToolbarSpecialCharSelect", dojo.widget.Editor2T
 	},
 	onChange: function(e){
 		if(this._parentToolbar.checkAvailability()){
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+			var curInst = this.getMainComponent();
 			curInst.execCommand('inserthtml',e.target.getAttribute('dojoETDropDownItem'),'inserthtml');//'specialchar'
 		}
 		this._dropdown.close();
