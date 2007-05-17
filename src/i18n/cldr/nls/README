@@ -1,0 +1,4 @@
+All files within this directory and subdirectories were derived from the contents of the cldr directory using the cldr ant task (see http://unicode.org/cldr)
+An arbitrary subset of these files have been checked in to svn.  For the complete set, run 'ant cldr'
+
+See terms of use: http://www.unicode.org/copyright.html#Exhibit1

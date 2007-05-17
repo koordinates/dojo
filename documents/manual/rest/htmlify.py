@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 import os, sys, glob
 
 ffiles = []
@@ -9,7 +9,7 @@ for source in ffiles:
    tdir = os.path.join("../html/", tdir)
    if not os.path.isdir(tdir):
    	os.makedirs(tdir)
-   target = os.path.join(tdir, os.path.splitext(tfn)[0]+'.xml')
-   print source, target
+   target = os.path.join(tdir, os.path.splitext(tfn)[0]+'.html')
+   print os.path.basename(source), "->", os.path.basename(target)
    target = os.path.abspath(target)
    os.system('rst2html.py --stylesheet-path=./screen.css  %s %s' % (source, target))

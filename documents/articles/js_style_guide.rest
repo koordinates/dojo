@@ -25,15 +25,15 @@ Quick Reference
 
 Table of core API naming constructs:
 
-=============  =========================  =======
-Construct      Convention                 Comment
-=============  =========================  =======
-package        lower                      never multiple words
-class          UpperLower
-public method  lowerUpper                 whether class or instance method. lower_case() is acceptable only if the particular function is mimicing another API.
-public var     lowerUpper
-constant       UpperLower or UPPER_LOWER
-=============  =========================  =======
+===============  =========================  =======
+Construct        Convention                 Comment
+===============  =========================  =======
+resource/module  lower                      never multiple words
+class            UpperLower
+public method    lowerUpper                 whether class or instance method. lower_case() is acceptable only if the particular function is mimicking another API.
+public var       lowerUpper
+constant         UpperLower or UPPER_LOWER
+===============  =========================  =======
 
 Table of constructs that are not visible in the API, and therefore are optional
 and carry less weight of enforcement.
@@ -50,7 +50,7 @@ local vars      ``_lowerUpper``, lowerUpper
 Naming Conventions
 ******************
 
-A.  Names representing packages SHOULD be in all lower case.
+A.  Names representing modules and resources SHOULD be in all lower case.
 B.  Names representing types (classes) MUST be nouns and written in
     UpperLower case::
 
@@ -74,8 +74,8 @@ E.  Names representing methods SHOULD be verbs or verb phrases::
 
         obj.getSomeValue()
 
-F.  Public class variables MUST be written using upperLower case.
-G.  Private class variables MAY be written using ``_upperLower`` (with
+F.  Public class variables MUST be written using lowerUpper case.
+G.  Private class variables MAY be written using ``_lowerUpper`` (with
     preceding underscore)::
 
         var MyClass = function(){
@@ -84,21 +84,21 @@ G.  Private class variables MAY be written using ``_upperLower`` (with
             };
         }
 
-H.  Variables that are intended to be private, but cannot be based on the
-    semantics of Javascript, SHOULD prepended with a "_" (underscore) char::
+H.  Variables that are intended to be private, but cannot be, based on the
+    semantics of Javascript, SHOULD be prepended with a "_" (underscore) char::
 
-        this._somePrivateVariable = statement ;
+        this._somePrivateVariable = statement;
 
-    NB  Note that the above variable also follows the convention for a
+    Note that the above variable also follows the convention for a
     private variable.
 
 I.  Generic variables SHOULD have the same name as their type::
 
-        setTopic(topic) //  where topic isTypeOf Topic
+        setTopic(topic) //  where topic is of type Topic
 
 J.  All names SHOULD be written in English.
-K.  Variables with a large scope SHOULD have globally unambiguious names,
-    ambiguity MAY be distinguished by package memebership. Variables with
+K.  Variables with a large scope SHOULD have globally unambiguious names;
+    ambiguity MAY be distinguished by module membership. Variables with
     small or private scope MAY be more terse still.
 L.  The name of the return object is implicit, and SHOULD be avoided in a
     method name::
@@ -115,7 +115,7 @@ M.  Public names SHOULD be as clear as necessary and SHOULD avoid unclear
 
         MouseEventHandler, NOT MseEvtHdlr.
 
-    Note that, again, any context that can be determined by package
+    Note that, again, any context that can be determined by module
     membership SHOULD be used when determining if a variable name is clear.
     For example, a class that represents a mouse event handler::
 
@@ -128,30 +128,30 @@ N.  Classes/constructors MAY be named based on their inheritance
         UIEventHandler
         MouseEventHandler
 
-    NB  The base class CAN be dropped from a name if it is obviously
+    The base class CAN be dropped from a name if it is obviously
     implicit in the name::
 
         MouseEventHandler as opposed to MouseUIEventHandler.
 
-Specific Naming conventions
+Specific Naming Conventions
 ***************************
 
 A.  The terms get/set SHOULD NOT used where a field is accessed, unless the
     variable being accessed is lexically private.
-B.  "is" prefix SHOULD be used for boolean variables and methods
-    NB. Alternatives include "has", "can" and "should"
+B.  The "is" prefix SHOULD be used for boolean variables and methods.
+    Alternatives include "has", "can" and "should".
 C.  The term "compute" CAN be used in methods where something is computed.
 D.  The term "find" CAN be used in methods where something is looked up.
 E.  The terms "initialize" or "init" CAN be used where an object or a
     concept is established.
 F.  UI Control variables SHOULD be suffixed by the control type.
-    ex.  leftComboBox, topScrollPane
+    Examples:  leftComboBox, topScrollPane
 G.  Plural form MUST be used to name collections.
-H.  "num" prefix or "count" postfix SHOULD be used for variables
+H.  The "num" prefix or "count" postfix SHOULD be used for variables
     representing a number of objects.
 I.  Iterator variables SHOULD be called "i", "j", "k", etc.
-J.  Compliment names MUST be used for compliment entities.
-    ex.  get/set, add/remove, create/destroy, start/stop, insert/delete,
+J.  Complement names MUST be used for complement entities.
+    Examples:  get/set, add/remove, create/destroy, start/stop, insert/delete,
     begin/end, etc.
 K.  Abbreviations in names SHOULD be avoided.
 L.  Negated boolean variable names MUST be avoided::
@@ -168,16 +168,16 @@ Files
 A.  Class or object-per-file guidelines are not yet determined.
 B.  Tabs (set to 4 spaces) SHOULD be used for indentation. 
 C.  If your editor supports "file tags", please append the appropriate tag
-    at the end of the file enable others to effortlessly obey the correct
+    at the end of the file to enable others to effortlessly obey the correct
     indentation guidelines for that file::
 
         // vim:ts=4:noet:tw=0:
 
-C.  The incompleteness of split line MUST be made obvious::
+C.  The incompleteness of a split line MUST be made obvious::
 
         var someExpression = Expression1
             + Expression2
-            + Expression3 ;
+            + Expression3;
 
         var o = someObject.get(
                 Expression1,
@@ -205,13 +205,13 @@ C.  Related variables of the same type CAN be declared in a common
 D.  Variables SHOULD be kept alive for as short a time as possible.
 E.  Loops / iterative declarations
 
-    1.  Only loop control statements MUST be included in the "for()"
+    1.  Only loop control statements MUST be included in the "for" loop
         construction.
     2.  Loop variables SHOULD be initialized immediately before the loop;
         loop variables in a "for" statement MAY be initialized in the "for"
         loop construction.
-    3.  The use of "do...while" loops are acceptable (unlike in Java)
-    4.  The use of "break" and "continue" is not discouraged (unlike in Java)
+    3.  The use of "do...while" loops is acceptable (unlike in Java).
+    4.  The use of "break" and "continue" is not discouraged (unlike in Java).
 
 F.  Conditionals
 
@@ -234,6 +234,7 @@ Layout
 ******
 
 A.  Block statements.
+
     1.  Block layout SHOULD BE as illustrated below::
 
             while(!isDone){
@@ -241,7 +242,7 @@ A.  Block statements.
                 isDone = moreToDo();
             }
 
-    2.  If statements SHOULD have the following form::
+    2.  An "if" statement SHOULD have the following form::
 
             if(someCondition){
                 statements;
@@ -251,22 +252,26 @@ A.  Block statements.
                 statements;
             }
 
-    3.  for statements SHOULD have the following form::
+    3.  A "for" statement SHOULD have the following form::
 
             for(initialization; condition; update){
                 statements;
             }
 
-    ..  FIXME: (alex) this reference should use reST reference syntax!
+    4.  A "while" statement SHOULD have the following form::
+	
+            while(!isDone){
+                statements;
+                isDone = moreToDo();
+            }
 
-    4.  while statement SHOULD follow the form in example VI.A.1.
-    5.  a do...while statement SHOULD have the following form::
+    5.  A "do...while" statement SHOULD have the following form::
 
             do{
                 statements;
             }while (condition);
 
-    6.  a switch statement SHOULD have the following form::
+    6.  A "switch" statement SHOULD have the following form::
 
             switch (condition){
                 case ABC:
@@ -280,7 +285,7 @@ A.  Block statements.
                     break;
             }
 
-    7.  A try...catch...finally statement SHOULD have the following form::
+    7.  A "try...catch...finally" statement SHOULD have the following form::
 
             try{
                 statements;
@@ -290,7 +295,7 @@ A.  Block statements.
                 statements;
             }
 
-    8.  Single statement if-else, while or for MUST NOT be written without
+    8.  A single statement if-else, while or for MUST NOT be written without
         brackets, but CAN be written on the same line::
 
             if(condition){ statement; }
@@ -306,8 +311,10 @@ B.  Whitespace
     4.  Colons MAY be surrounded by a space.
     5.  Semi-colons in for statements SHOULD be followed by a space.
     6.  Semi-colons SHOULD NOT be preceded by a space.
-    7.  Functions/method calls SHOULD NOT be followed by a space.
-        ex. doSomething(someParameter);     //  NOT doSomething (someParameter)
+    7.  Functions/method calls SHOULD NOT be followed by a space:
+	
+        doSomething(someParameter);     //  NOT doSomething (someParameter)
+		
     8.  Logical units within a block SHOULD be separated by one blank line.
     9.  Statements MAY be aligned wherever this enhances readability.
 
@@ -324,10 +331,7 @@ C.  Comments
     6.  Comments SHOULD NOT be included for every single line of code.
 
 .. raw:: html
-   :file: ../website/rest_template/sidebar.html
-
-.. raw:: html
-   :file: ../website/rest_template/docs_menu.html
+   :file: ../website/docs/sidebar.html
 
 Javascript Programming Conventions
 ==================================
@@ -339,6 +343,9 @@ Javascript Programming Conventions
 :Date: $Date: 2004/07/30 04:02:28 $
 
 .. contents::
+
+.. raw:: html
+   :file: ../website/docs/menu.html
 
 .. raw:: html
    :file: ../website/rest_template/footer.html

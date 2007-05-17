@@ -6,20 +6,32 @@
 		<script language="JavaScript" type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
-				// preventBackButtonFix: true,
+				preventBackButtonFix: false,
+				dojoIframeHistoryUrl: "../../iframe_history.html", //for xdomain
 				isDebug: true
 			};
 		</script>
 		<script language="JavaScript" type="text/javascript" 
 			src="../../dojo.js"></script>
 		<script language="JavaScript" type="text/javascript">
-			dojo.require("dojo.io.*");
+			dojo.require("dojo.io.BrowserIO");
 
 			function init(){
+				var initialState = {
+					back: function(){
+						alert("We are BACK at initial state.");
+					},
+					forward: function(){
+						alert("We are FORWARD at initial state (you should never see this alert.");
+					}
+				};
+
+				dojo.undo.browser.setInitialState(initialState);
+				
 				var bindArgs = {
 					url: "test_BrowserIO_data.txt",
 					load: function(type, data, evt){
-						dj_debug(data);
+						dojo.debug(data);
 						// we could just set mimetype: "text/javascript" to
 						// have it auto-eval, but that's not as interesting
 						// dj_eval(data); 
@@ -35,17 +47,7 @@
 				var canBind = dojo.io.bind(bindArgs);
 			}
 
-			function initRequest(){
-				var req = new dojo.io.Request("test_BrowserIO_data.txt");
-				req.changeURL = "foobar" + (new Date()).getTime();
-				req.onload = function (e) {
-					dj_debug(e.data);
-				}
-				req.addEventListener("backbutton", function (e) { alert("we intercepted the back button"); });
-				dojo.io.bind(req);
-			}
-
-			dojo.hostenv.modulesLoadedListeners.push(init);
+			dojo.addOnLoad(init);
 		</script>
 	</head>
 	<body>

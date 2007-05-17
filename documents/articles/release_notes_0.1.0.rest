@@ -124,7 +124,7 @@ Alex Russell, a core contributor to Dojo, can be reached at
 .. _`The Dojo Wiki`: http://dojo.jot.com/
 
 .. raw:: html
-   :file: ../website/rest_template/sidebar.html
+   :file: ../website/docs/sidebar.html
 
 Dojo 0.1.0 Release Notes
 ================================
@@ -135,6 +135,9 @@ Dojo 0.1.0 Release Notes
 :Date: 2005/08/30
 
 .. contents::
+
+.. raw:: html
+   :file: ../website/docs/menu.html
 
 .. raw:: html
    :file: ../website/rest_template/footer.html

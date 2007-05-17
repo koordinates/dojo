@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project name="dojotoolkit_org" default="help" basedir=".">
+	<description>Build and deploy the Dojo website (http://dojotoolkit.org)</description>
+
+	<property name="project" value="dojo"/>
+	<property name="build_dir" value="../build"/>
+	<property name="root" value="../.."/>
+	<property name="src" value="src"/>
+	<property name="version" value="development"/>
+	<property name="lang" value="en"/>
+	<property name="release_dir" value="${root}/release/${project}"/>
+	<property name="docs_dir" value="${root}/documents"/>
+	<property name="articles_dir" value="${docs_dir}/articles"/>
+	<property name="release_docs_dir" value="${release_dir}/documents"/>
+	<property name="rest_style_sheet" value="${docs_dir}/styles/dojo.css"/>
+	<property name="rest_files" value=""/>
+	<property name="website_dir" value="${docs_dir}/web0.3"/>
+	<property name="release_website_dir" value="/srv/www/htdocs"/>
+	<property name="blog_website_dir" value="/srv/www/vhosts/blog/wp-content/themes"/>
+
+	<target name="help">
+		<echo message="User home is ${user.home}."/>
+		<echo message="web - runs any tasks related to building the web site, moves the files to the correct directory and fixes file permissions." />
+		<echo message="docs - builds any documentation from specific formats in ./${src} and places them in ${release_docs_dir}." />
+	</target>
+
+	<target name="-check-config"
+		description="checks to make sure than we're sane before doing anything else">
+		<available property="bsf_ok" file="${user.home}/.ant/lib/bsf.jar" />
+		<available property="ant_bsf_ok" file="${user.home}/.ant/lib/ant-apache-bsf.jar" />
+		<available property="jython_ok" file="${user.home}/.ant/lib/jython.jar" />
+		<available property="jython_libs_ok" file="${user.home}/.ant/lib/pyLib.zip" />
+		<condition property="config_ok">
+			<and>
+				<isset property="bsf_ok" />
+				<isset property="ant_bsf_ok" />
+				<isset property="jython_ok" />
+				<isset property="jython_libs_ok" />
+			</and>
+		</condition>
+	</target>
+
+	<target name="-fix-config"
+		depends="-check-config"
+		unless="config_ok"
+		description="fixes our ant classpath (if possible)"
+	>
+		<copy todir="${user.home}/.ant/lib" preservelastmodified="true">
+			<fileset dir="lib/">
+				<include name="bsf.jar"/>
+				<include name="jython.jar"/>
+				<include name="pyLib.zip"/>
+				<include name="js.jar"/>
+				<include name="ant-apache-bsf.jar"/>
+			</fileset>
+		</copy>
+
+		<echo message=""/>
+		<echo message="+--------------------------------------------------------+" />
+		<echo message="| Due to some horrendous design decisions by the authors |" />
+		<echo message="| of Ant, it has been necessaray to install some jar     |" />
+		<echo message="| files to your ~/.ant/ directory. Given the nature of   |" />
+		<echo message="| the problem, it will be necessaray for you to re-run   |" />
+		<echo message="| your build command.                                    |" />
+		<echo message="|                                                        |" />
+		<echo message="| The Dojo team apologies for this inconvenience.        |" />
+		<echo message="|                                                        |" />
+		<echo message="| The system will now exit.                              |" />
+		<echo message="+--------------------------------------------------------+" />
+		<echo message=""/>
+		<fail message="Sorry, please re-run your build command, it should work now"/>
+	</target>
+
+	<target name="web" description="'builds' the website and moves files into the correct directory, taking care to ensure that file permissions are correct">
+		<copy todir="${release_website_dir}" overwrite="true">
+			<fileset dir="${website_dir}">
+				<exclude name="**/.svn*" />
+				<exclude name="wp_theme/**"/>
+				<exclude name="build.xml" />
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${blog_website_dir}" overwrite="true">
+			<fileset dir="${website_dir}/wp_theme">
+				<exclude name="**/.svn*" />
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<!--
+		<antcall target="docs" />
+		<copy todir="${release_website_dir}/docs/" overwrite="true">
+			<fileset dir="${release_docs_dir}">
+				<exclude name="**/.svn*" />
+				<include name="*.html" />
+			</fileset>
+		</copy>
+		-->
+		<chgrp group="www" type="both">
+			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
+			<fileset dir="${blog_website_dir}" followsymlinks="false" includes="**/**" />
+		</chgrp>
+		<chmod perm="g+rwx" type="dir">
+			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
+			<fileset dir="${blog_website_dir}" followsymlinks="false" includes="**/**" />
+		</chmod>
+		<chmod perm="g+rw" type="file">
+			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
+			<fileset dir="${blog_website_dir}" followsymlinks="false" includes="**/**" />
+		</chmod>
+	</target>
+
+	<target name="docs" unless="docless" depends="-fix-config" description="'builds' the docs">
+		<delete dir="${release_docs_dir}"/>
+		<mkdir dir="${release_docs_dir}" />
+		<mkdir dir="${release_docs_dir}/requirements" />
+		<script language="jython"><![CDATA[
+import sys
+# make the python standard library avialable
+sys.path.append("lib/pyLib.zip")
+sys.path.append(".")
+
+# import re
+import os
+from buildUtil import *
+
+buildRestFiles( dojo.getProperty("articles_dir"), 
+				dojo.getProperty("release_docs_dir"),
+				dojo.getProperty("rest_style_sheet"),
+				dojo.getProperty("rest_files"))
+]]></script>
+		<replaceregexp match="^&lt;body&gt;$" byline="true" 
+			replace="&lt;body class=&quot;docs&quot;&gt;" flags="g">
+			<fileset dir="${release_docs_dir}">
+				<exclude name="**/.svn*" />
+				<include name="**/*.html" />
+			</fileset>
+		</replaceregexp>
+	</target>
+</project>

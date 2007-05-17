@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Introduction</title>
+    <para>
+        This documentation refers to new TreeV3, not to stable Tree widget. Many classes have V3 on the end for TreeV3, 
+        but that suffix can be omitted, because it will be removed in dojo 0.5.
+    </para>
+    
+    <para>
+        Basic things are shown in tests (dojo/tests/widget/treeV3), so you might want to check them first and copy-paste
+        exactly the things you need. The tutorial is meant to provide deeper understanding for those
+        who want to extend/modify tree behavior.
+     </para>
+    
+    
+    <para>This is just a draft, quite incomplete, but I'd be grateful for your replies.</para>
+    
+    <para>The contacts are
+       <itemizedlist>
+           <listitem>IRC: Freenode, #dojo by nick [algo]</listitem>
+           <listitem>ICQ: 820317</listitem>
+           <listitem>Dojo mailing lists: "Ilia Kantor" ilia @ dojotoolkit.org</listitem>
+           </itemizedlist>
+    </para>
+    
+</section>
+

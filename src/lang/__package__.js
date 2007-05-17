@@ -1,4 +1,13 @@
-dojo.hostenv.conditionalLoadModule({
-	common: ["dojo.lang"]
+dojo.kwCompoundRequire({
+	common: [
+		"dojo.lang.common",
+		"dojo.lang.assert",
+		"dojo.lang.array",
+		"dojo.lang.type",
+		"dojo.lang.func",
+		"dojo.lang.extras",
+		"dojo.lang.repr",
+		"dojo.lang.declare"
+	]
 });
-dojo.hostenv.moduleLoaded("dojo.lang.*");
+dojo.provide("dojo.lang.*");

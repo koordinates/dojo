@@ -10,7 +10,8 @@ Summary and Overview
 
 When dojo.js is included, some functions are always available.  They include
 debugging aids, version information, etc. These utilites are not provided by
-dojo.js itself, but by the boostrap files and the 
+dojo.js itself, but by the boostrap files and the host environment file which
+provides portability between interpreters and platforms.
 
 Usage
 ===============================================================================
@@ -51,7 +52,7 @@ Properties
 ``dojo.render.os``:
 
     An object which describes the operating system.  It has properties which are
-    booleans: ``windows``, ``linux``, ``mac``, ``osx``.
+    booleans: ``win``, ``linux``, ``osx``.
     
 ``dojo.render.ver``:
 
@@ -143,7 +144,7 @@ Methods
     This method allows package files to tell the system that their namespace has
     been loaded. For example, the contents of ``src/io/__package__.js`` may be::
     
-        dojo.kwCompoundRequire({
+        dojo.hostenv.conditionalLoadModule({
             common: ["dojo.io"],
             rhino: ["dojo.io.RhinoIO"],
             browser: ["dojo.io.BrowserIO", dojo.io.cookie"]
@@ -205,20 +206,9 @@ Root ``dojo`` Methods
     *return*:
         Nothing.
 
-``requireAfter(modulename)``:
-
-    Load ``modulename`` *after* the current namespace has finished evaluating.
-
-    ``modulename``:
-        String. The name of the module to load.
-
-    *return*:
-        Nothing.
-
 ``requireAfterIf(condition, modulename)``:
 
-    Load ``modulename`` *after* the current namespace has finished evaluating if
-    ``condition`` is met.
+    Deprecated. Alias for requireIf. Use that method instead.
 
     ``condition``:
         String or Boolean.
@@ -229,12 +219,12 @@ Root ``dojo`` Methods
     *return*:
         Nothing.
 
-``kwCompoundRequire(requireMap)``:
+``hostenv.conditionalLoadModule(requireMap)``:
 
     Loads specified modules based on hostenv type. When the following map is
     used::
 
-        dojo.kwCompoundRequire({
+        dojo.hostenv.conditionalLoadModule({
             common: ["dojo.io"],
             rhino: ["dojo.io.RhinoIO"],
             browser: ["dojo.io.BrowserIO", dojo.io.cookie"]

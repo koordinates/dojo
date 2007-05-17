@@ -297,10 +297,10 @@ BUFakeNode.prototype.attnodes_by_name_ = function() {return this.attributes}
 
 // Attr removeAttributeNode(Attr attr)
 BUFakeNode.prototype.removeAttributeNode = function(attr) {
-  for(var i=0;i<attributes.length;++i) {
-    if (attr === attributes[i]) break;
+  for(var i=0;i<this.attributes.length;++i) {
+    if (attr === this.attributes[i]) break;
   }
-  if (i == attributes.length) throw new BUFakeDOMException(DOMException.NOT_FOUND_ERR);
+  if (i == this.attributes.length) throw new BUFakeDOMException(DOMException.NOT_FOUND_ERR);
   this.ownerDocument.update_indexes_(attr.nodeName, attr.nodeValue, undefined, this);
   this.attributes.splice(i,1);
   delete this.attnodes_by_name_()[attr.nodeName];
@@ -316,7 +316,9 @@ BUFakeNode.prototype.removeAttribute = function(name) {
 }
 
 BUFakeNode.prototype.find_listener_ = function(eventType, listener, useCapture) {
-  return burst.Alg.find(this.listeners_, function(o) {o[0] == eventType && o[1] === listener && o[2] == useCapture});
+  return burst.Alg.find(this.listeners_, function(o) {
+	return o[0] == eventType && o[1] === listener && o[2] == useCapture;
+  });
 }
 
 // void EventTarget.addEventListener(String type, EventListener listener, Boolean useCapture)
@@ -416,7 +418,7 @@ BUFakeNode.prototype.setAttribute = function(name, attval) {
   name = this.ownerDocument.norm_case_(name);
   if (name in this.attnodes_by_name_()) {
     this.ownerDocument.update_indexes_(name, this.attnodes_by_name_()[name], attval, this);
-    this.attnodes_by_name_()[name][nodeValue] = attval;
+    this.attnodes_by_name_()[name].nodeValue = attval;
   }
   else {
     this.attributes.push(this.attnodes_by_name_()[name] = this.ownerDocument.createAttribute(name, attval));

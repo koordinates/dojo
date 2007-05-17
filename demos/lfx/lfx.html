@@ -1,0 +1,203 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>HTML Effects</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<style type="text/css">
+		body,html { 
+			background:#fff;
+		}
+
+		#fadeElm {
+			padding : 0px;
+			background : transparent;
+			color : #000;
+			position:absolute; top:50px; left:300px; 		
+			}
+
+		#fadeNav { color:#666; overflow:hidden; font:10pt Arial,sans-serif;  } 
+		#fadeNav ul { margin:5px; padding:12px;   } 
+
+		#exploder {
+	
+			width:200px; height:175px; 
+			position: absolute;
+			top:200px; left:300px;
+			background:#dedede;
+			border:1px solid #000; 
+			text-align:center; 
+			display:none; 
+
+		}
+
+	</style>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.lfx.*");
+		dojo.require("dojo.lfx.rounded"); 
+		dojo.require("dojo.widget.Menu2"); 
+		dojo.require("dojo.widget.AccordionContainer"); 
+
+
+	var fadeElem, flash, unflash, wiper;
+	var fadeOverEnabled = true; 
+
+	dojo.addOnLoad(function() {
+		dojo.html.setOpacity(dojo.byId('fadeElm'), 0.15)
+		// see notes:
+		//slideNodeLots('fadeElm'); 
+	});
+
+	function slideNodeLots(node) {
+		// chained animations break here, because you setup the animation initially
+  		// and each animation calculated the node's inital position at the time of
+ 		// animation creation. we could put a callback function to call the animation
+		// again, but there will probably be a noticable delay between animations. 
+		var slide1 = dojo.lfx.html.slideBy(node, { top: 50, left: 0 } , 300);
+		var slide2 = dojo.lfx.html.slideBy(node, { top: 0, left: 50 } , 300);
+		var slide3 = dojo.lfx.html.slideBy(node, { top: -50, left: 0 } , 300);
+		var slide4 = dojo.lfx.html.slideBy(node, { top: 0, left: -50 } , 300);
+		dojo.lfx.chain(slide1,slide2,slide3,slide4).play(); 
+	}
+
+	function showFade() {
+		if (fadeOverEnabled) { 
+		dojo.lfx.html.fade('fadeElm',{ start:dojo.html.getOpacity(dojo.byId('fadeElm')), end:0.99}, 300).play()		
+		}
+	}
+
+	function stopFade() {
+		if (fadeOverEnabled) {
+			dojo.lfx.html.fade('fadeElm',{ start:dojo.html.getOpacity(dojo.byId('fadeElm')), end:0.15}, 300).play()
+		}
+	}
+
+	function roundExploder() {
+		// return; 
+		dojo.lfx.rounded({
+				tl:{ radius:15 },
+				tr:{ radius:15 },
+				bl:{ radius:15 },
+				br:{ radius:15 }
+			},["exploder"]); 
+	}
+
+	function testExplode(start){
+		dojo.lfx.explode(start, "exploder", 250).play();
+	}
+
+	function testImplode(start){
+		dojo.lfx.implode("exploder", start, 250).play();
+	}
+
+
+	function toggleFadeEnabled() {
+
+	fadeOverEnabled = (fadeOverEnabled) ? false : true; 
+	if (!fadeOverEnabled) { 
+		dojo.html.setOpacity('fadeElm',0.99); 
+		} else {
+		dojo.html.setOpacity('fadeElm',0.15); 
+		}
+	
+	}
+
+	function wowi(node) {
+		var wipeOut = dojo.lfx.wipeOut(node, null, null, function(n) {
+			n.innerHTML = "I have been replaced "
+				+ "with something completely different "
+				+ "in the middle of the wipe effects.";
+			dojo.lfx.wipeIn(n).play();
+		});
+		wipeOut.play();
+	}
+	</script>
+</head>
+<body>
+
+	<h2>dojo.lfx demo(s)</h2>
+
+	<div id="fadeNav">
+
+	<div id="ControlNav" dojoType="AccordionContainer" duration="200" 
+		style="float:left; margin-right:30px; width:200px; 
+		height:320px; overflow:hidden; ">
+
+		<div dojoType="ContentPane" selected="true" label="Fade(s)" style="overflow:scroll;">
+	<ul>	
+		<li><a href="javascript:void(dojo.lfx.html.fadeOut('fadeElm', 300).play())">Fade out</a></li>
+		<li><a href="javascript:void(dojo.lfx.html.fadeIn('fadeElm', 300).play())">Fade in</a></li>
+		<li><a href="javascript:void(dojo.lfx.html.fade('fadeElm',{ start:0.99, end:0.25}, 300).play())">fade from 100% -> 25%</a></li>
+		<li><a href="javascript:void(dojo.lfx.html.fade('fadeElm',{ start:dojo.html.getOpacity(dojo.byId('fadeElm')), end:0.25}, 300).play())">fade from current -> 25%</a></li>
+		<li><a href="javascript:void(dojo.html.setOpacity(dojo.byId('fadeElm'), 0.5))">Set opacity = 50% (no transition)</a></li>
+		<li><a href="javascript:void(toggleFadeEnabled())">Toggle mouseOver Fade</a></li>
+	</ul>
+
+		</div>
+
+		<div dojoType="ContentPane" label="Slide(s)" style="overflow:auto;">
+	<ul>
+	<li><a href="javascript:void(dojo.lfx.html.slideTo('fadeElm', { top: 200, left: 200 }, 300).play())">Slide 
+to: 200, 200</a></li>
+	<li>
+	<a href="javascript:void(dojo.lfx.html.slideBy('fadeElm', { top: -50, left: -50 } , 300).play())">Slide by: -50, -50</a>
+	</li><li>
+	<a href="javascript:void(dojo.lfx.html.slideBy('fadeElm', { top: 50, left: 50 } , 300).play())">Slide by: 50, 50</a>
+	</li><li>
+	<a href="javascript:void(dojo.lfx.html.slideTo('fadeElm', { top: 50, left: 300 }, 300).play())">Reset</a>
+	</li>
+		</div>
+
+		<div dojoType="ContentPane" label="Wipe(s)" style="overflow:auto;">
+
+			<ul>
+
+			<li>
+			<div id="wiper2">
+			This one does a wipeOut+wipeIn that you could use
+			to replace the content. Go ahead, give it a
+			<a href="javascript:;" onclick="wowi(this.parentNode)">try</a>
+			</div>
+
+			</li>
+
+			<li><a href="javascript:wowi('fadeElm');">wipeOut/In the logo</a></li>
+
+			</ul>
+
+
+		</div>
+
+		<div dojoType="ContentPane" label="Explosion(s)" style="overflow:auto;">
+
+		<ul>
+			<li><a href="javascript:;" onclick="testExplode(this)">Explode!</a></li>
+			<li><a href="javascript:;" onclick="testImplode(this)">Implode!</a></li>
+<!--			<li>broken:<br /><a href="javascript:roundExploder();">Rounded Corners</a></li> -->
+		</ul>
+			
+
+		</div>
+
+
+
+		<div dojoType="ContentPane" label="empty" style="overflow:auto;"></div>
+
+	</div>
+
+
+	</div>
+
+	
+
+	<div id="fadeElm" onMouseOver="showFade()" onMouseOut="stopFade()"><img src="dojoLogo.png" alt="Dojo Logo" /></div>
+
+	<div id="exploder">
+		<img src="dojoLogo.png" alt="Dojo Logo Explode instance" />
+		<br /><a href="http://dojotoolkit.org">Link to dojotoolkit.org</a>
+	</div>
+</body>
+</html>

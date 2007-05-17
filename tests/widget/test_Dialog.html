@@ -1,6 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd">
-
+<html>
+<head>
+<title>Dialog Widget Dojo Tests</title>
 <script type="text/javascript"> djConfig = { isDebug: true }; </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
@@ -9,12 +11,12 @@
 
 <script type="text/javascript">
 var dlg;
+var secDlg;
 function init(e) {
-	dlg = dojo.widget.manager.getWidgetsByType("Dialog")[0];
-	var btn = document.getElementById("hider");
-	dlg.setCloseControl(btn);
+	dlg = dojo.widget.byId("DialogContent");
+	secDlg = dojo.widget.byId("SecondDialog");
 }
-dojo.event.connect(dojo.hostenv, "loaded", window, "init");
+dojo.addOnLoad(init);
 
 </script>
 <style type="text/css">
@@ -30,24 +32,34 @@ form {
 	margin-bottom : 0;
 }
 </style>
+</head>
+<body>
+<a href="javascript:dlg.show()">Show First Dialog</a>
 
-<a href="javascript:dlg.show()">Show</a>
-
-<div dojoType="dialog" id="DialogContent" bgColor="white" bgOpacity="0.5">
+<div dojoType="dialog" id="DialogContent" bgColor="white" bgOpacity="0.5" toggle="fade" toggleDuration="250" closeNode="hider">
+	<h3>First Dialog</h3>
 	<form onsubmit="return false;">
 		<table>
 			<tr>
-				<td>Name:
-				<td><input type="text">
+				<td>Name:</td>
+				<td><input type="text"></td>
+			</tr>
 			<tr>
-				<td>Location:
-				<td><input type="text">
+				<td>Location:</td>
+				<td><input type="text"></td>
+			</tr>
 			<tr>
-				<td>Description:
-				<td><input type="text">
+				<td>Description:</td>
+				<td><input type="text"></td>
+			</tr>
 			<tr>
-				<td colspan="2" align="right">
-					<input type="button" id="hider" value="OK">
+				<td>Location:</td>
+				<td><input type="file"></td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center">
+					<input type="button" id="hider" value="OK"></td>
+			</tr>
 		</table>
 	</form>
 </div>
@@ -95,8 +107,8 @@ hymenaeos.
 <form>
 	<center>
 		<select>
-			<option>1
-			<option>2
+			<option>1</option>
+			<option>2</option>
 		</select>
 	</center>
 </form>
@@ -150,8 +162,8 @@ hymenaeos.
 <form>
 	<center>
 		<select>
-			<option>1
-			<option>2
+			<option>1</option>
+			<option>2</option>
 		</select>
 	</center>
 </form>
@@ -170,7 +182,7 @@ turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
 consectetuer dapibus eros. Aliquam nisl.
 </p>
 
-<a href="javascript:dlg.show()">Show</a>
+<a href="javascript:secDlg.show()">Show Second Dialog</a>
 <p>
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
 semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
@@ -264,3 +276,35 @@ tempus. Nunc euismod nisl id dolor tristique tincidunt. Nullam placerat
 turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
 consectetuer dapibus eros. Aliquam nisl.
 </p>
+
+<div dojoType="dialog" id="SecondDialog" bgColor="black" closeNode="closeButton">
+	<h3>Second Dialog</h3>
+	<form onsubmit="return false;">
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Location:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Description:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Location:</td>
+				<td><input type="file"></td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center">
+					<input type="button" id="closeButton" value="OK"></td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+</body>
+</html>
+

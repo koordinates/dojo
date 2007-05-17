@@ -4,31 +4,17 @@ dojo.provide("dojo.widget.SVGWidget"); // back compat
 
 dojo.require("dojo.dom");
 
+
+dojo.require("dojo.experimental");
+dojo.experimental("dojo.widget.SvgWidget");
+
 // SVGWidget is a mixin ONLY
-dojo.widget.SvgWidget = function(args){
-	// mix in the parent type
-	// dojo.widget.DomWidget.call(this);
-}
-dojo.inherits(dojo.widget.SvgWidget, dojo.widget.DomWidget);
-
-dojo.lang.extend(dojo.widget.SvgWidget, {
-	getContainerHeight: function(){
-		// NOTE: container height must be returned as the INNER height
-		dj_unimplemented("dojo.widget.SvgWidget.getContainerHeight");
-	},
-
-	getContainerWidth: function(){
-		// return this.parent.domNode.offsetWidth;
-		dj_unimplemented("dojo.widget.SvgWidget.getContainerWidth");
-	},
-
-	setNativeHeight: function(height){
-		// var ch = this.getContainerHeight();
-		dj_unimplemented("dojo.widget.SVGWidget.setNativeHeight");
-	},
-
+dojo.widget.declare(
+	"dojo.widget.SvgWidget",
+	dojo.widget.DomWidget,
+{
 	createNodesFromText: function(txt, wrap){
-		return dojo.dom.createNodesFromText(txt, wrap);
+		return dojo.svg.createNodesFromText(txt, wrap);
 	}
 });
 
@@ -43,7 +29,6 @@ try{
 			this.buildRendering = function(){ return; }
 			this.destroyRendering = function(){ return; }
 			this.postInitialize = function(){ return; }
-			this.cleanUp = function(){ return; }
 			this.widgetType = "SVGRootWidget";
 			this.domNode = document.documentElement;
 		}

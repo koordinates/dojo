@@ -5,20 +5,19 @@
 <title>Dojo DragHandle Test</title>
 
 <script type="text/javascript">
-	var djConfig = { isDebug: true };
+	var djConfig = { isDebug: true /* , debugAtAllCosts: true */ };
 </script>
 
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.dnd.*");
 	dojo.require("dojo.event.*");
-
-	function byId(id){
-		return document.getElementById(id);
-	}
+	// dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
 
 	function init(){
-		var dl = byId("dragList");
+		var dl = dojo.byId("dragList");
 		new dojo.dnd.HtmlDropTarget(dl, ["li"]);
 		var lis = dl.getElementsByTagName("li");
 		for(var x=0; x<lis.length; x++){
@@ -26,7 +25,7 @@
 		}
 	}
 
-	dojo.event.connect(dojo, "loaded", "init");
+	dojo.addOnLoad(init);
 </script>
 </head>
 <body>

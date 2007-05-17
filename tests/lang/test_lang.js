@@ -1,4 +1,4 @@
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.*");
 
 function test_lang_mixin(){
 	var src = {
@@ -25,24 +25,6 @@ function test_lang_extend(){
 	var test = new dest();
 	jum.assertEquals("20", "function", typeof test["foo"]);
 	jum.assertEquals("21", "string", typeof test["bar"]);
-}
-
-function test_lang_extendPrototype(){
-	var src = {
-		foo: function(){
-			jum.debug("foo");
-		},
-		bar: "bar"
-	};
-	function dest(){};
-	dojo.lang.extendPrototype(dest.prototype, src);
-	var test = new dest();
-	jum.assertEquals("30", "function", typeof test["foo"]);
-	jum.assertEquals("31", "string", typeof test["bar"]);
-}
-
-function test_lang_setTimeout(){
-	jum.debug("cannot test setTimeout in a pure Rhino envionment");
 }
 
 function test_lang_isObject(){
@@ -102,4 +84,22 @@ function test_lang_isUndefined(){
 	jum.assertFalse("93", dojo.lang.isUndefined(true));
 	var undef3 = null;
 	jum.assertFalse("94", dojo.lang.isUndefined(undef3));
+}
+
+function test_lang_hitch(){
+	var scope = { foo: "bar" };
+	var scope2 = { foo: "baz" };
+	function thinger(){
+		return [this.foo, arguments.length];
+	}
+	
+	var st1 = dojo.lang.hitch(scope, thinger);
+	jum.assertEquals("bar", st1()[0]);
+	jum.assertEquals(0, st1()[1]);
+	var st2 = dojo.lang.hitch(scope, thinger, "foo", "bar");
+	jum.assertEquals("bar", st2()[0]);
+	jum.assertEquals(2, st2()[1]);
+	var st3 = dojo.lang.hitch(scope2, thinger, "foo", "bar");
+	jum.assertEquals("baz", st3()[0]);
+	jum.assertEquals(2, st3()[1]);
 }

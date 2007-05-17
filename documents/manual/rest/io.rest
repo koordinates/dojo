@@ -129,13 +129,13 @@ Properties
 Methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    ``handle(type, data, event)``:
+    ``handle(type, data, event, kwArgs)``:
         A catch-all handler method that is used when ``load``, ``error`` or
         another status-specific handler is not defined or not available. The
         event type may be determined via string comparision with the ``type``
         paramater.
 
-    ``load(type, data, event)``:
+    ``load(type, data, event, kwArgs)``:
         Method called when data is successfully returned for this ``Request``.
         The ``type`` paramater will always have a value of "load". The ``data``
         paramater passes in whatever data was returned from the network, subject
@@ -149,7 +149,7 @@ Methods
         is a reference to the XMLHTTP object used to dispatch the network
         request.
 
-    ``error(type, errorObject)``:
+    ``error(type, data, errorObject, kwArgs)``:
         Handler called with data cannot be returned for this ``Request``. The
         ``type`` paramater will always have a value of "error". The
         ``errorObject`` is transport specific, but should provide details about

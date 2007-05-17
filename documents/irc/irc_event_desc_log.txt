@@ -232,7 +232,6 @@
 [10:37AM] ttrenka: <onEvent>
 [10:37AM] ttrenka: <connect source="" target="" handler=""/>
 [10:37AM] ttrenka: <connect source="" target="" handler=
-[10:37AM] ttrenka: shit
 ​[10:37AM] slightlyoff: ​heh
 ​[10:37AM] ttrenka: ​sorry, hit the enter key too soon
 [10:37AM] ttrenka: you get the idea

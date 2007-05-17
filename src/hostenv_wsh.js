@@ -13,7 +13,7 @@ var WScript;
 
 // make sure we are in right environment
 if(typeof WScript == 'undefined'){
-	dj_throw("attempt to use WSH host environment when no WScript global");
+	dojo.raise("attempt to use WSH host environment when no WScript global");
 }
 
 dojo.hostenv.println = WScript.Echo;
@@ -34,3 +34,5 @@ dojo.hostenv.getText = function(fpath){
 }
 
 dojo.hostenv.exit = function(exitcode){ WScript.Quit(exitcode); }
+
+dojo.requireIf((djConfig["isDebug"] || djConfig["debugAtAllCosts"]), "dojo.debug");

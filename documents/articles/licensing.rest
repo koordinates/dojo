@@ -55,10 +55,7 @@ The above goals have given rise to the following policies:
 .. _`Corporate Contributors License Agreement`: http://dojotoolkit.org/ccla.txt
 
 .. raw:: html
-   :file: ../website/rest_template/sidebar.html
-
-.. raw:: html
-   :file: ../website/rest_template/docs_menu.html
+   :file: ../website/docs/sidebar.html
 
 Licensing Considerations of the Dojo Foundation
 ===============================================
@@ -69,6 +66,9 @@ Licensing Considerations of the Dojo Foundation
 :Date: 2005/10/19
 
 .. contents::
+
+.. raw:: html
+   :file: ../website/docs/menu.html
 
 .. raw:: html
    :file: ../website/rest_template/footer.html

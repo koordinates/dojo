@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" lang="en">
 	<head>
-		<title>keepOnScreen &amp; keepOnScreenPoint</title>
+		<title>placeOnScreen &amp; placeOnScreenPoint</title>
 		<script type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
@@ -11,12 +11,12 @@
 		</script>
 		<script type="text/javascript" src="../dojo.js"></script>
 		<script type="text/javascript">
-			dojo.require("dojo.html");
+			dojo.require("dojo.html.util");
 			dojo.require("dojo.event.*");
 			function init() {
 				dojo.event.connect(document, "onclick", function(e) {
-					dojo.html.keepOnScreenPoint("test", e.clientX, e.clientY, 5, false);
-					dojo.html.keepOnScreen("test2", e.clientX, e.clientY, 0, false);
+					dojo.html.placeOnScreen("test", e.clientX, e.clientY, 5, false, ['TL', 'TR', 'BL', 'BR']);
+					dojo.html.placeOnScreen("test2", e.clientX, e.clientY, 0, false);
 				});
 			}
 			dojo.addOnLoad(init);
@@ -47,10 +47,10 @@
 	</head>
 	<body>
 		<div id="test">
-			keepOnScreenPoint
+			placeOnScreenPoint
 		</div>
 		<div id="test2">
-			keepOnScreen
+			placeOnScreen
 		</div>
 
 		<div id="lipsum">

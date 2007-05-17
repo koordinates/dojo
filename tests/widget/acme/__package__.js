@@ -1,2 +1,2 @@
-alert("in package");
-dojo.hostenv.moduleLoaded("foo.*");
+//alert("in acme/__package__.js");
+dojo.provide("foo.*");

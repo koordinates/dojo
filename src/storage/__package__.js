@@ -1,6 +1,6 @@
-dojo.hostenv.conditionalLoadModule({
+dojo.kwCompoundRequire({
 	common: ["dojo.storage"],
 	browser: ["dojo.storage.browser"]
 });
-dojo.hostenv.moduleLoaded("dojo.storage.*");
+dojo.provide("dojo.storage.*");
 

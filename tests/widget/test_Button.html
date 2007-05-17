@@ -1,53 +1,217 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-        "http://www.w3.org/TR/html4/strict.dtd"> 
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
 <title>Dojo Button Widget Test</title>
-
+	<link rel="stylesheet" type="text/css" href="css/demos.css" />
 <script type="text/javascript">
-	var djConfig = { isDebug: true };
+	var djConfig = {isDebug: true , debugAtAllCosts: false };
 </script>
 
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
-	delete dojo["profile"]; // hack!
-	dojo.require("dojo.profile");
-	dojo.require("dojo.widget.*");
-	dojo.require("dojo.event.*");
 	dojo.require("dojo.widget.Button");
-	dojo.require("dojo.widget.html.Button");
+	dojo.require("dojo.widget.Menu2");
+	dojo.require("dojo.widget.Manager");
+</script>
+
+<script>
+	function widgetClick() {
+		dojo.debug('widget [' + this.widgetId + '] was clicked');
+	}
+	
 	dojo.hostenv.writeIncludes();
 </script>
-<script type="text/javascript">
-	function init(){
-		var buttonArgs = {
-			label: "button from script",
-			onFoo: function(){
-				dojo.debug("dojo.widget.button.onFoo");
-			},
-			onClick: function(){
-				dojo.debug("dojo.widget.button.onClick");
-			}
-		};
-		var button = dojo.widget.createWidget("Button", buttonArgs);
-		dojo.html.body().appendChild(button.domNode);
+<style>
+	/* group multiple buttons in a row */
+	.box {
+		display: block;
+		text-align: center;
+	}
+	.box .dojoButton {
+		margin-right: 10px;
+	}
+	.dojoButtonContents {
+		font-size: 1.6em;
 	}
 
-	dojo.addOnLoad(init);
+	/* todo: find good color for disabled menuitems, and teset */
+	.dojoMenuItem2Disabled .dojoMenuItem2Label span,
+	.dojoMenuItem2Disabled .dojoMenuItem2Accel span {
+		color: ThreeDShadow;
+	}
+	
+	.dojoMenuItem2Disabled .dojoMenuItem2Label span span,
+	.dojoMenuItem2Disabled .dojoMenuItem2Accel span span {
+		color: ThreeDHighlight;
+	}
+
+</style>
+</head>
+<body>
+<h2>Simple, drop down & combo buttons</h2>
+<p>
+Buttons can do an action, display a menu, or both:
+</p>
+<div class="box">
+	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
+		<img src="images/plus.gif" width="16" height="16"> Create
+	</button>
+	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
+		<img src="images/plus.gif" width="16" height="16"><br>Create
+	</button>
+	<button dojoType="DropDownButton" menuId='editMenu'>
+		<img src="images/note.gif" width="20" height="20"> Edit
+	</button>
+	<button dojoType="DropDownButton" menuId='editMenu'>
+		<img src="images/note.gif" width="20" height="20"><br>Edit
+	</button>
+	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");'>
+		<img src="images/note.gif" width="20" height="20"> Save
+	</button>
+	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");'>
+		<img src="images/note.gif" width="20" height="20"><br>Save
+	</button>
+</div>
+<br clear=both>
+
+<h2>Sizing</h2>
+<p>Short button, tall buttons, big buttons, small buttons...
+These buttons size to their content (just like &lt;button&gt;).</p>
+<div class="box">
+	<button dojoType="Button" onclick='dojo.debug("big");'>
+		<img src="images/flatScreen.gif" width="32" height="32">
+		<span style="font-size:xx-large">big</span>
+	</button>
+	<button id="smallButton1" dojoType="Button" onclick='dojo.debug("small");'>
+		<img src="images/arrowSmall.gif" width="15" height="5">
+		<span style="font-size:x-small">small</span>
+	</button>
+	<button dojoType="Button" onclick='dojo.debug("long");'>
+		<img src="images/tube.gif" width="150" height="16">
+		long
+	</button>
+	<button dojoType="Button" onclick='dojo.debug("tall");' width2height="0.1">
+		<img src="images/tubeTall.gif" height="75" width="35"><br>
+		<span style="font-size:medium">tall</span>
+	</button>
+	<div style="clear: both;"></div>
+</div>
+<br clear=both>
+
+<h2>Customized buttons</h2>
+<p>Dojo users can mix in their styles.
+Here's an example:</p>
+<style>
+	.dc {
+		font-size: x-large;
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+
+	button.Acme {
+	        background-color: rgb(96,96,96);
+	        color: white;
+		padding: 10px;
+	}
+
+	button.Acme:hover {
+	        background-color: rgb(89,94,111);
+	        color: cyan;
+	}
+
+	button.Acme:active {
+	        background-color: white;
+	        color: black;
+	}
+</style>
+<div class="box">
+	<button dojoType="Button" class="Acme" onclick='dojo.debug("short");'>
+		<div class="dc">short</div>
+	</button>
+	<button dojoType="Button" class="Acme" onclick='dojo.debug("longer");'>
+		<div class="dc">bit longer</div>
+	</button>
+	<button dojoType="Button" class="Acme" onclick='dojo.debug("longer yet");'>
+		<div class="dc">ridiculously long</div>
+	</button>
+	<div style="clear: both;"></div>
+</div>
+
+<h2>Toggling the display test</h2>
+<p>
+(Ticket <a href="http://trac.dojotoolkit.org/ticket/403">#403</a>)
+</p>
+<div class="box">
+	<button dojoType="Button" onclick='dojo.byId("hiddenNode").style.display="inline";'>
+		Show Hidden Buttons
+	</button>
+</div>
+<div class="box" style="display:none;" id="hiddenNode">
+	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
+		<img src="images/plus.gif" width="16" height="16"> Create
+	</button>
+	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
+		<img src="images/plus.gif" width="16" height="16"> Create
+	</button>
+</div>
+<div style="clear: both;"></div>
+
+<h2>Programatically changing buttons</h2>
+<p>clicking the buttons below will change the buttons above</p>
+<script>
+	function forEachButton(func){
+		dojo.lang.forEach(
+			dojo.lang.unnest(
+				dojo.widget.manager.getWidgetsByType("Button"),
+				dojo.widget.manager.getWidgetsByType("DropDownButton"),
+				dojo.widget.manager.getWidgetsByType("ComboButton")
+			),
+			func
+		);
+	}
+
+	var disabled=false;
+	function toggleDisabled(){	
+		disabled=!disabled;
+		forEachButton(function(widget){ widget.setDisabled(disabled); });
+		dojo.byId("toggle").innerHTML= disabled ? "Enable all" : "Disable all";
+	}
+	var captions=["<img src='images/note.gif' width='20' height='20'>All", "<i>work</i>", "and no", "<h1>play</h1>",
+				 "<span style='color: red'>makes</span>", "Jack", "<h3>a</h3>", "dull",
+				 "<img src='images/plus.gif' width='16' height='16'>boy"];
+	var idx=0;
+	function changeCaptions(){
+		forEachButton(function(widget){ widget.setCaption( captions[idx++ % captions.length]); });
+	}
+</script>
+<div>
+	<button id="toggle" onclick='toggleDisabled()'>Disable all</button>
+	<button onclick='changeCaptions()'>Change caption</button>
+	<button onclick='location.reload()'>Revert</button>
+</div>
+
+<div dojoType="PopupMenu2" id="editMenu" toggle="fade" toggleDuration="500">
+	<div dojoType="MenuItem2" iconSrc="../../src/widget/templates/buttons/cut.gif" caption="Cut" accelKey="Ctrl+C"
+		onClick="dojo.debug('not actually cutting anything, just a test!')"></div>
+	<div dojoType="MenuItem2" iconSrc="../../src/widget/templates/buttons/copy.gif" caption="Copy" accelKey="Ctrl+X"
+		onClick="dojo.debug('not actually copying anything, just a test!')"></div>
+	<div dojoType="MenuItem2" iconSrc="../../src/widget/templates/buttons/paste.gif" caption="Paste" accelKey="Ctrl+V"
+		onClick="dojo.debug('not actually pasting anything, just a test!')"></div>
+</div>
+
+<div dojoType="PopupMenu2" id="saveMenu" toggle="wipe" toggleDuration="500">
+	<div dojoType="MenuItem2" iconSrc="../../src/widget/templates/buttons/save.gif" caption="Save" accelKey="Ctrl+S"
+		onClick="dojo.debug('not actually saving anything, just a test!')"></div>
+	<div dojoType="MenuItem2" iconSrc="../../src/widget/templates/buttons/save.gif" caption="Save As" accelKey="Ctrl+A"
+		onClick="dojo.debug('not actually saving anything, just a test!')"></div>
+</div>
+
+<h3>Button instantiated via javacript:</h3>
+<div id="buttonContainer"></div>
+<script type="text/javascript">
+	var params = {caption: "hello!"};
+	var widget = dojo.widget.createWidget("Button", params, document.getElementById("buttonContainer"));
 </script>
 
-<!-- button from class name -->
-<button class="dojo-button">
-	<img src="images/reply.gif"> Reply
-</button>
-
-
-<button id="testDojoButton" class="dojo-button"
-	onClick="alert(this.domNode.innerHTML);" onFoo="dojo.hostenv.println('onFoo');">
-	<img src="images/forward.gif"> Forward
-</button>
-
-<dojo:button dojo:label="from namespace prefix"></dojo:button>
-
-<button dojo:type="button" label="namespace'd attribute used" onClick="dojo.debug('foo');">
-	button from namespace'd attribute
-</button>
+</body>
+</html>

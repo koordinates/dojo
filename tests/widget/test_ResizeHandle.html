@@ -2,23 +2,17 @@
 <html>
 <head>
 
-<title>FloatingPane w/Resize Widget Demo</title>
+<title>Resize Widget Test</title>
 
 <script type="text/javascript">
 	var djConfig = {isDebug: true};
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
-
-	dojo.require("dojo.widget.FloatingPane");
+	dojo.require("dojo.widget.ContentPane");
 	dojo.require("dojo.widget.ResizeHandle");
 </script>
-<style>
-	.dojoFloatingPaneClient {
-		border: 0 !important;
-		margin: 0 !important;
-	}
-</style>
+
 </head>
 <body style="background-color: ThreeDFace;">
 
@@ -27,33 +21,24 @@
 <p>Sed congue. Aenean blandit sollicitudin mi. Maecenas pellentesque. Vivamus ac urna. Nunc consequat nisi vitae quam. Suspendisse sed nunc. Proin suscipit porta magna. Duis accumsan nunc in velit. Nam et nibh. Nulla facilisi. Cras venenatis urna et magna. Aenean magna mauris, bibendum sit amet, semper quis, aliquet nec, sapien. Aliquam aliquam odio quis erat. Etiam est nisi, condimentum non, lacinia ac, vehicula laoreet, elit. Sed interdum augue sit amet quam dapibus semper. Nulla facilisi. Pellentesque lobortis erat nec quam.</p>
 
 
-<div dojoType="FloatingPane"
+<div dojoType="ContentPane"
 	title="Test window"
 	constrainToContainer="1"
-	style="width: 300px; height: 200px; left: 200px;"
+	style="width: 300px; height: 200px; border: solid blue 5px; position: relative; background: white;"
 	widgetId="testWindow"
-	minWidth="200"
-	minHeight="100"
 >
-		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
-		(to check we're copying children around properly).<br />
-
+	Content Pane w/a resize handle
 	<div dojoType="ResizeHandle" targetElmId="testWindow"></div>
 </div>
 
-<div dojoType="FloatingPane"
-	title="Test window"
-	constrainToContainer="1"
-	style="width: 300px; height: 200px; left: 600px;"
-	widgetId="testShadowWindow"
-	minWidth="200"
-	minHeight="100"
-	hasShadow="true"
->
-		shadowed main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
-		(to check we're copying children around properly).<br />
+<br>
 
-	<div dojoType="ResizeHandle" targetElmId="testShadowWindow"></div>
+<div 
+	id="plainDiv"
+	style="width: 300px; height: 200px; border: solid red 5px; position: relative; background: white;"
+>
+	Plain div w/a resize handle
+	<div dojoType="ResizeHandle" targetElmId="plainDiv" style="bottom: 0; right: 0; position: absolute;"></div>
 </div>
 
 <p>Sed arcu magna, molestie at, fringilla in, sodales eu, elit. Curabitur mattis lorem et est. Quisque et tortor. Integer bibendum vulputate odio. Nam nec ipsum. Vestibulum mollis eros feugiat augue. Integer fermentum odio lobortis odio. Nullam mollis nisl non metus. Maecenas nec nunc eget pede ultrices blandit. Ut non purus ut elit convallis eleifend. Fusce tincidunt, justo quis tempus euismod, magna nulla viverra libero, sit amet lacinia odio diam id risus. Ut varius viverra turpis. Morbi urna elit, imperdiet eu, porta ac, pharetra sed, nisi. Etiam ante libero, ultrices ac, faucibus ac, cursus sodales, nisl. Praesent nisl sem, fermentum eu, consequat quis, varius interdum, nulla. Donec neque tortor, sollicitudin sed, consequat nec, facilisis sit amet, orci. Aenean ut eros sit amet ante pharetra interdum.</p>

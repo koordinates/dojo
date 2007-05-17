@@ -5,8 +5,7 @@
 		<![endif]-->
 		<script language="JavaScript" type="text/javascript">
 			// Dojo configuration
-			djConfig = { 
-				// preventBackButtonFix: true,
+			djConfig = {
 				isDebug: true
 			};
 		</script>
@@ -20,10 +19,10 @@
 					mimetype: "text/plain",
 					formNode: form,
 					load: function(t, txt, e) {
-						dj_debug(txt);
+						dojo.debug(txt);
 					},
 					error: function(t, e) {
-						dj_debug("Error!... " + e.message);
+						dojo.debug("Error!... " + e.message);
 					}
 				};
 				dojo.io.bind(kw);

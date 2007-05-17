@@ -1,0 +1,87 @@
+<html>
+	<head>
+		<title>dojo.html.units tests</title>
+		<style type="text/css">
+			.rule1 { font-size:   larger; border: 1px solid black; }
+			.ruleA { font-family: sans-serif; border: 1px solid black; }
+			.ruleB { font-size:   32pt;   border: 1px solid black; }
+			.ruleC { font-style:  italic; border: 1px solid black; padding: 1em 0.1in 1pt 1px; }
+		</style>
+		<script type="text/javascript">
+			var djConfig={ isDebug: true };
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript" src="../../src/html/units.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.html.units");
+			dojo.require("dojo.string.Builder");
+			
+			var values = ['1em', '1ex', '100%', '10pt', '10px', '1in', '1cm'];
+			
+			function show(sb, title, heights){
+				sb.append(title);
+				for(var i = 0; i < values.length; ++i){
+					var val = values[i];
+					sb.append('<div>' + val + ': <strong>' + heights.getLength(val) + '</strong> pixels</div>');
+				}
+				sb.append("<div>&nbsp;</div>");
+			};
+			
+			function tell(sb, m, node, sel){
+				var val = dojo.html.getStyleValue(node, sel);
+				sb.append("<div>#" + node + " - " + sel + ": " + val + " = " + m.getLength(val) + " pixels</div>");
+			};
+
+			dojo.addOnLoad(function(){
+				var m = dojo.byId("measurements");
+				var sb = new dojo.string.Builder();
+				
+				show(sb, "<div><strong>Defaults</strong></div>", dojo.html.measureDefaults());
+				show(sb, "<div><strong>Times bold italic</strong></div>", dojo.html.measure("times", "bold", "italic"));
+				show(sb, "<div><strong>Class rule1</strong></div>", dojo.html.measure("rule1", "class"));
+				show(sb, "<div><strong>Class ruleA</strong></div>", dojo.html.measure("ruleA", "class"));
+				show(sb, "<div><strong>Class ruleB</strong></div>", dojo.html.measure("ruleB", "class"));
+				show(sb, "<div><strong>Class ruleC</strong></div>", dojo.html.measure("ruleC", "class"));
+				show(sb, "<div><strong>Style bold 8pt</strong></div>", dojo.html.measure("font-weight: bold; font-size: 8pt;", "style"));
+				show(sb, "<div><strong>Fragment #1</strong></div>", dojo.html.measureNode("frag1"));
+				show(sb, "<div><strong>Fragment #2</strong></div>", dojo.html.measureNode("frag2"));
+				
+				var t = dojo.html.measureNode("frag2");
+				tell(sb, t, "frag2", "padding-top");
+				tell(sb, t, "frag2", "padding-right");
+				tell(sb, t, "frag2", "padding-bottom");
+				tell(sb, t, "frag2", "padding-left");
+				tell(sb, t, "frag2", "margin-top");
+				tell(sb, t, "frag2", "margin-right");
+				tell(sb, t, "frag2", "margin-bottom");
+				tell(sb, t, "frag2", "margin-left");
+				
+				m.innerHTML = sb;
+			});
+		</script>
+	</head>
+	<body>
+		<h2>Fragment #1</h2>
+		<div class="rule1">
+			&lt;div class="rule1"&gt;
+			<div class="rule1">
+				&lt;div class="rule1"&gt;
+				<div id="frag1" class="rule1">
+					&lt;div class="rule1"&gt; &mdash; it will be measured.
+				</div>
+			</div>
+		</div>
+		<h2>Fragment #2</h2>
+		<div class="ruleA">
+			&lt;div class="ruleA"&gt;
+			<div class="ruleB">
+				&lt;div class="ruleB"&gt;
+				<div id="frag2" class="ruleC">
+					&lt;div class="ruleC"&gt; &mdash; it will be measured.
+				</div>
+			</div>
+		</div>
+		<h2>Font unit measurements</h2>
+		<div id="measurements"></div>
+	</body>
+</html>

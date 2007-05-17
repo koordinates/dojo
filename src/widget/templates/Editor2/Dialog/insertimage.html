@@ -1,0 +1,112 @@
+<table cellspacing="1" cellpadding="1" border="0" width="100%" height="100%">
+	<tr>
+		<td>
+			<table cellspacing="0" cellpadding="0" width="100%" border="0">
+				<tr>
+					<td width="100%">
+						<span>${this.editorStrings.linkUrl}</span>
+					</td>
+					<td style="display: none" nowrap="nowrap" rowspan="2">
+						<!--input id="btnBrowse" onclick="BrowseServer();" type="button" value="Browse Server"/-->
+					</td>
+				</tr>
+				<tr>
+					<td valign="top">
+						<input dojoAttachPoint="image_src" style="width: 100%" type="text" />
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<span>${this.editorStrings.imageAlt}</span><br />
+			<input dojoAttachPoint="image_alt" style="width: 100%" type="text" /><br />
+		</td>
+	</tr>
+	<tr>
+		<td valign="top">
+			<table><tr><td>
+						<table cellspacing="0" cellpadding="0" border="0">
+							<tr>
+								<td nowrap="nowrap">
+									<span>${this.commonStrings.width}</span>&nbsp;</td>
+								<td>
+									<input type="text" size="3" dojoAttachPoint="image_width" /></td>
+
+								<td rowspan="2">
+									<!--div id="btnLockSizes" class="BtnLocked" onmouseover="this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' ) + ' BtnOver';"
+										onmouseout="this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' );" title="Lock Sizes"
+										onclick="SwitchLock(this);">
+									</div-->
+								</td>
+								<td rowspan="2">
+									<!--div id="btnResetSize" class="BtnReset" onmouseover="this.className='BtnReset BtnOver';"
+										onmouseout="this.className='BtnReset';" title="Reset Size" onclick="ResetSizes();">
+									</div-->
+								</td>
+							</tr>
+
+							<tr>
+								<td nowrap="nowrap">
+									<span>${this.commonStrings.height}</span>&nbsp;</td>
+								<td>
+									<input type="text" size="3" dojoAttachPoint="image_height" /></td>
+							</tr>
+						</table>
+					</td><td>
+
+						<table cellspacing="0" cellpadding="0" border="0">
+							<tr>
+
+								<td nowrap="nowrap">
+									<span >${this.editorStrings.imageHSpace}</span>&nbsp;</td>
+								<td>
+									<input type="text" size="2" dojoAttachPoint="image_hspace"/></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap">
+									<span >${this.editorStrings.imageVSpace}</span>&nbsp;</td>
+
+								<td>
+									<input type="text" size="2" dojoAttachPoint="image_vspace" /></td>
+							</tr>
+						</table>
+					</td></tr>
+					<tr><td colspan="2">
+						<table cellspacing="0" cellpadding="0" border="0">
+							<tr>
+								<td nowrap="nowrap">
+									<span>${this.editorStrings.imageBorder}</span>&nbsp;</td>
+								<td>
+									<input type="text" size="2" value="" dojoAttachPoint="image_border" /></td>
+								<td>&nbsp;&nbsp;&nbsp;</td>
+								<td nowrap="nowrap">
+									<span >${this.editorStrings.imageAlign}</span>&nbsp;</td>
+								<td>
+									<select dojoAttachPoint="image_align">
+										<option value="" selected="selected"></option>
+										<option value="left">${this.commonStrings.left}</option>
+										<option value="absBottom">${this.editorStrings.imageAbsBot}</option>
+										<option value="absMiddle">${this.editorStrings.imageAbsMid}</option>
+										<option value="baseline">${this.editorStrings.imageBaseline}</option>
+										<option value="bottom">${this.commonStrings.bottom}</option>
+										<option value="middle">${this.commonStrings.middle}</option>
+										<option value="right">${this.commonStrings.right}</option>
+										<option value="textTop">${this.editorStrings.imageTextTop}</option>
+										<option value="top">${this.commonStrings.top}</option>
+									</select>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr></table>
+		</td>
+	</tr>
+	<tr><td>
+		<table><tr>
+		<td><button dojoType='Button' dojoAttachEvent='onClick:ok'>${this.commonStrings.buttonOk}</button></td>
+		<td><button dojoType='Button' dojoAttachEvent='onClick:cancel'>${this.commonStrings.buttonCancel}</button></td>
+		</tr></table>
+	</td></tr>
+</table>

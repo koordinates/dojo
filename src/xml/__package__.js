@@ -1,7 +1,7 @@
 dojo.require("dojo.xml.Parse");
-dojo.hostenv.conditionalLoadModule({
-	common:		["dojo.xml.domUtil"],
-    browser: 	["dojo.xml.htmlUtil"],
-    svg: 		["dojo.xml.svgUtil"]
+dojo.kwCompoundRequire({
+	common:		["dojo.dom"],
+    browser: 	["dojo.html.*"],
+    dashboard: 	["dojo.html.*"]
 });
-dojo.hostenv.moduleLoaded("dojo.xml.*");
+dojo.provide("dojo.xml.*");

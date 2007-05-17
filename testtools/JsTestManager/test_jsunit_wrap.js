@@ -1,8 +1,8 @@
-if(this["load"]){
+/*if(this["load"]){
 	load(["jsunit_wrap.js"]);
 	bu_alert = print;
-}
-
+}*/
+jum.verbose=false;
 function test_JsUnitWrap_simple() {
   jum.assertEquals('test1', 1, 1);
   jum.assertTrue('test2', true);
@@ -18,12 +18,22 @@ function test_JsUnitWrap_deep() {
 }
 
 function test_JsUnitWrap_continueAsync() {
-  jum.continueAsync('JsUnitWrap_continueAsync', null, 'testing continueAsync');
-  jum.resume('JsUnitWrap_continueAsync', null, function() {jum.assertTrue('tada', true)})
+  jum.pause('test_continueAsync', "1", 'testing continueAsync');
+  jum.pause("anonAsync", null, "testing anon async function");
+  
+  jum.resume('test_continueAsync', "1", test_continueAsync);
+  jum.resume("anonAsync", null, function(){jum.assertTrue('tada', true);});
 }
 
+function test_continueAsync(){
+	dojo.debug("continueAsync called!");
+	jum.assertTrue("woohooo!", true);
+}
+
+/*
 function test_JsUnitWrap_waitAll() {
-  jum.waitAll('JsUnitWrap_waitAll', arguments.callee);
+  jum.waitAll('JsUnitWrap_waitAll', arguments.callee, 2000);
 }
+*/
 
-jum.init();
+// jum.init();

@@ -1,0 +1,18 @@
+License Disclaimer:
+
+All contents of this directory are Copyright (c) the Dojo Foundation, with the
+following exceptions:
+-------------------------------------------------------------------------------
+
+selector.html, benchmarker.css, benchmarker.js, jquery.js,
+jquery_test_page.html:
+	* Copyright (c) 2007 John Resig (jquery.com)
+	  Dual licensed under the MIT and GPL licenses.
+
+yui.js:
+	* Copyright (c) 2006, Yahoo! Inc. 
+	  Licensed under the BSD License
+
+yui-ext.js:
+	* Copyright(c) 2006, Jack Slocum 
+	  Licensed under the BSD License

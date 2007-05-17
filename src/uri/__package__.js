@@ -1,4 +1,4 @@
-dojo.hostenv.conditionalLoadModule({
-	common: ["dojo.uri.Uri", false, false]
+dojo.kwCompoundRequire({
+	common: [["dojo.uri.Uri", false, false]]
 });
-dojo.hostenv.moduleLoaded("dojo.uri.*");
+dojo.provide("dojo.uri.*");

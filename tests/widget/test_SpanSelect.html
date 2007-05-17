@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>SpanSelect test</title>
+		
+		<script> var djConfig = {isDebug: true, debugAtAllCosts: true}; </script>
+		<script src="../../dojo.js"></script>
+		<script>
+			dojo.require("dojo.widget.*");
+			dojo.require("dojo.widget.SpanSelect");
+			
+			dojo.hostenv.writeIncludes();
+		</script>
+	</head>
+	
+	<body>
+	
+	<h4 style="margin:0px">click the span..</h4>
+	<div 
+		dojoType="SpanSelect" 
+		spanContent="value1" 
+		selectOptions="a:value1;c:value2;e:value3"></div>
+
+	<hr/>
+	<textarea>another element for blur test</textarea>
+	
+	</body>
+	
+</html>
+	
+	

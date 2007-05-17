@@ -74,8 +74,8 @@
 </style>
 <script type="text/javascript" src="dojo/dojo.js"></script>
 <script type="text/javascript">
-dojo.require("dojo.xml.*");
-dojo.require("dojo.event.BrowserEvent");
+dojo.require("dojo.event.*");
+dojo.require("dojo.html");
 
 var Picker = {
 	init: function() {
@@ -87,7 +87,7 @@ var Picker = {
 			dojo.event.connect(a[i], "onclick", Picker, "click");
 		}
 
-		Picker.select(dojo.xml.domUtil.getFirstChildTag(td[0]));
+		Picker.select(dojo.html.firstElement(td[0], "a"));
 	},
 
 	click: function(e) {
@@ -96,22 +96,22 @@ var Picker = {
 	},
 
 	select: function(node) {
-		dojo.xml.htmlUtil.addClass(node, "selected");
+		dojo.html.addClass(node, "selected");
 		try { node.blur(); } catch(e) {}
 
-		var lnk = dojo.xml.domUtil.getFirstChildTag(node.parentNode);
+		var lnk = dojo.html.firstElement(node.parentNode,"a");
 		while(lnk) {
 			if(lnk != node) {
-				dojo.xml.htmlUtil.removeClass(lnk, "selected");
+				dojo.html.removeClass(lnk, "selected");
 			}
-			lnk = dojo.xml.domUtil.getNextSiblingTag(lnk);
+			lnk = dojo.html.nextElement(lnk, "a");
 		}
 
 		var id = node.href.split("#")[1];
-		var div = dojo.xml.domUtil.getFirstChildTag(document.getElementById("picker-content"));
+		var div = dojo.html.firstElement(document.getElementById("picker-content"), "div");
 		while(div) {
 			div.style.display = (div.id == id ? "block" : "none");
-			div = dojo.xml.domUtil.getNextSiblingTag(div);
+			div = dojo.html.nextElement(div, "div");
 		}
 	}
 };
@@ -142,9 +142,13 @@ dojo.addOnLoad(Picker, "init");
 		<div id="content" class="content"><div id="content2">
 			<h1>Pick an Edition</h1>
 
-			<p>Dojo offers a number of custom builds, referred to as <em>Editions</em>, that combine different pieces
-			of Dojo into a single, compressed file. Don't worry, you can still use all the power of Dojo no matter
-			what edition you snag.</p>
+			<p>
+			Dojo offers a number of builds, called <em>Editions</em>, that
+			combine related parts of Dojo into a single, compressed file.
+			Don't worry, you can still use all the APIs Dojo provides no matter
+			what edition you snag, but the "baked in" libraries in a given
+			Edition will be faster loading.
+			</p>
 
 			<!-- Gah, this was going to be a beautiful DL if it wasn't for IE -->
 			<table id="picker-table" border="0" cellpadding="0" cellspacing="0">
@@ -158,23 +162,23 @@ dojo.addOnLoad(Picker, "init");
 			</td>
 			<td id="picker-content">
 				<div class="content selected" id="dl-ajax">
-					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-ajax.zip">Download 0.2.1 (zip)</a></div>
+					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.2/dojo-0.2.2-ajax.zip">Download 0.2.2 (zip)</a></div>
 					<p>The AJAX edition makes creating applications with <strong>async I/O</strong> (XmlHttp), perform top-notch <strong>visual effects</strong> and tie it all together with an aspect-oriented <strong>event system</strong> to create your next web application.</p>
 				</div>
 				<div class="content" id="dl-io">
-					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-browserio.zip">Download 0.2.1 (zip)</a></div>
+					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.2/dojo-0.2.2-browserio.zip">Download 0.2.2 (zip)</a></div>
 					<p>Just need a kick-ass XmlHttp layer? The I/O edition is built with <CODE>dojo.io.bind</CODE> for all your async needs.</p>
 				</div>
 				<div class="content" id="dl-evio">
-					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-event_and_io.zip">Download 0.2.1 (zip)</a></div>
+					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.2/dojo-0.2.2-event_and_io.zip">Download 0.2.2 (zip)</a></div>
 					<p>Go for the one-two punch with our aspect-oriented event system and robust XmlHttp layer.</p>
 				</div>
 				<div class="content" id="dl-widgets">
-					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-widget.zip">Download 0.2.1 (zip)</a></div>
+					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.2/dojo-0.2.2-widget.zip">Download 0.2.2 (zip)</a></div>
 					<p>Make web widgets fun again. No other widget system provides HTML &amp; CSS templating capabilities with loose coupling to the widget implementation. Take "separating style, content, and logic" to a whole new level.</p>
 				</div>
 				<div class="content" id="dl-sink">
-					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-kitchen_sink.zip">Download 0.2.1 (zip)</a></div>
+					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.2/dojo-0.2.2-kitchen_sink.zip">Download 0.2.2 (zip)</a></div>
 					<p>This build includes all of the Dojo libraries rolled into a single file so you don't have to think about what to include. A great way to get up-and-running fast.</p>
 				</div>
 			</td>
@@ -188,6 +192,7 @@ dojo.addOnLoad(Picker, "init");
 			you might want to check out:</p>
 			<ul>
 				<li><a href="http://dojotoolkit.org/docs/getting_started_with_packaged_dojo.html">Getting Started with a Dojo Download</a></li>
+				<li><a href="http://manual.dojotoolkit.org/index.html">The Dojo Manual (API Documentation)</a></li>
 				<li><a href="http://dojotoolkit.org/docs/intro_to_dojo_io.html"><code>dojo.io.bind()</code>: Baking Usability into XMLHTTP</a></li>
 				<li><a href="http://dojo.jot.com/Animation">Animations</a> &amp;
 				<a href="http://dojo.jot.com/HTMLEffects">Effects</a> in Dojo</li>
@@ -226,6 +231,7 @@ dojo.addOnLoad(Picker, "init");
 					<a href="http://dojotoolkit.org/blog/feed/" title="RSS 2.0 Feed">RSS</a>
 					<span>|</span>
 					<a href="http://dojotoolkit.org/blog/feed/atom/" title="Atom 0.3">Atom</a>
+				</div>
 			</div>
 		</div>
 	</div>

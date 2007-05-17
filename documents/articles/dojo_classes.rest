@@ -136,7 +136,7 @@ Areas not covered::
 Functionality not in classes::
 
    fixes to ecmascript implementations
-   dj_import(), dj_class(), dj_throw(), and any othe pseduo language extensions
+   dj_import(), dj_class(), and any othe pseduo language extensions
 
 .. raw:: html
    :file: ../website/rest_template/sidebar.html

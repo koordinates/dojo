@@ -14,38 +14,51 @@
 
 			var lastEvt;
 			function dump(evt){
-				result = '';
+				var result = '';
 				for(var x in evt){
-					result += (x+": "+evt[x]+"<br>");
+					//Using String() wrapper appeases Safari 2.0.4.
+					var value = String(evt[x]);
+					if(!value){
+						value = "undefined";
+					}
+					result += (x+": "+value+"<br>");
 				}
 				return result;
 			}
 			function logMe(evt){
 				// FIXME: it appears that we're not actually getting this passed from IE!?!
 				//if(!evt){ evt = window.event; }
-				dj_debug(evt.type + ' was fired');
+				dojo.debug(evt.type + ' was fired');
 				lastEvt = dump(evt);
 				/*
 				for(var x in evt){
-					dj_debug(x+": "+evt[x]);
+					dojo.debug(x+": "+evt[x]);
 				}
-				dj_debug("some event was fired");
+				dojo.debug("some event was fired");
 				*/
 			}
 			function dumpLast(){
-				(lastEvt ? dj_debug(lastEvt) : dj_debug('no event yet'));
+				(lastEvt ? dojo.debug(lastEvt) : dojo.debug('no event yet'));
 			}
 
 			function click1(){
-				dj_debug("click1");
+				dojo.debug("click1");
 			}
 
 			function click2(){
-				dj_debug("click2");
+				dojo.debug("click2");
 			}
 
 			function click3(){
-				dj_debug("click3");
+				dojo.debug("click3");
+			}
+			
+			function testMouseOver(evt){
+				dojo.debug("mouseover relatedTarget: " + evt.relatedTarget);
+			}
+			
+			function testMouseOut(evt){
+				dojo.debug("mouseout relatedTarget: " + evt.relatedTarget);				
 			}
 
 			function init(){
@@ -57,6 +70,8 @@
 
 				var overNode = document.getElementById("mouseOver");
 				dojo.event.connect(overNode, "onmouseover", dj_global, "logMe");
+				//dojo.event.connect(overNode, "onmouseover", dj_global, "testMouseOver");
+				//dojo.event.connect(overNode, "onmouseout", dj_global, "testMouseOut");
 
 				var click2Node = document.getElementById("click2");
 				var c1fp = dojo.event.browser.addListener(click2Node, "onclick", click1);
@@ -65,7 +80,7 @@
 				dojo.event.browser.removeListener(click2Node, "onclick", c2fp);
 			}
 
-			dojo.event.connect(dojo, "loaded", "init")
+			dojo.addOnLoad(init);
 		</script>
 	</head>
 	<body>

@@ -1,8 +1,7 @@
 var dependencies = [ 
 	"dojo.widget.*",
 	"dojo.io.*",
-	"dojo.event.*",
-	"dojo.fx.*"
+	"dojo.event.*"
 ];
 
 load("getDependencyList.js");

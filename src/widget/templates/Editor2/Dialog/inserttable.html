@@ -1,0 +1,90 @@
+<div>
+<table cellSpacing="1" cellPadding="1" width="100%" border="0">
+	<tr>
+		<td valign="top">
+			<table cellSpacing="0" cellPadding="0" border="0">
+				<tr>
+					<td><span>${this.editorStrings.tableRows}</span>:</td>
+					<td>&nbsp;<input dojoAttachPoint="table_rows" type="text" maxLength="3" size="2" value="3"></td>
+				</tr>
+				<tr>
+					<td><span>${this.editorStrings.tableColumns}</span>:</td>
+					<td>&nbsp;<input dojoAttachPoint="table_cols" type="text" maxLength="2" size="2" value="2"></td>
+				</tr>
+
+				<tr>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td><span>${this.editorStrings.tableBorderSize}</span>:</td>
+					<td>&nbsp;<INPUT dojoAttachPoint="table_border" type="text" maxLength="2" size="2" value="1"></td>
+				</tr>
+
+				<tr>
+					<td><span>${this.editorStrings.tableAlignment}</span>:</td>
+					<td>&nbsp;<select dojoAttachPoint="table_align">
+							<option value="" selected>&lt;${this.commonStrings.notSet}&gt;</option>
+							<option value="left">${this.commonStrings.left}</option>
+							<option value="center">${this.commonStrings.center}</option>
+							<option value="right">${this.commonStrings.right}</option>
+						</select></td>
+				</tr>
+			</table>
+		</td>
+		<td>&nbsp;&nbsp;&nbsp;</td>
+		<td align="right" valign="top">
+			<table cellSpacing="0" cellPadding="0" border="0">
+				<tr>
+					<td><span>${this.commonStrings.width}</span>:</td>
+					<td>&nbsp;<input dojoAttachPoint="table_width" type="text" maxLength="4" size="3"></td>
+					<td>&nbsp;<select dojoAttachPoint="table_widthtype">
+							<option value="percent" selected>${this.commonStrings.unitPercent}</option>
+							<option value="pixels">${this.commonStrings.unitPixel}</option>
+						</select></td>
+
+				</tr>
+				<tr>
+					<td><span>${this.commonStrings.height}</span>:</td>
+					<td>&nbsp;<INPUT dojoAttachPoint="table_height" type="text" maxLength="4" size="3"></td>
+					<td>&nbsp;<span>${this.commonStrings.unitPixel}</span></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td nowrap><span>${this.editorStrings.tableCellSpacing}</span>:</td>
+					<td>&nbsp;<input dojoAttachPoint="table_cellspacing" type="text" maxLength="2" size="2" value="1"></td>
+					<td>&nbsp;</td>
+
+				</tr>
+				<tr>
+					<td nowrap><span>${this.editorStrings.tableCellPadding}</span>:</td>
+					<td>&nbsp;<input dojoAttachPoint="table_cellpadding" type="text" maxLength="2" size="2" value="1"></td>
+					<td>&nbsp;</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<table cellSpacing="0" cellPadding="0" width="100%" border="0">
+	<tr>
+		<td nowrap><span>${this.editorStrings.tableCaption}</span>:</td>
+		<td>&nbsp;</td>
+		<td width="100%" nowrap>&nbsp;
+			<input dojoAttachPoint="table_caption" type="text" style="WIDTH: 90%"></td>
+	</tr>
+	<tr>
+		<td nowrap><span>${this.editorStrings.tableSummary}</span>:</td>
+		<td>&nbsp;</td>
+		<td width="100%" nowrap>&nbsp;
+			<input dojoAttachPoint="table_summary" type="text" style="WIDTH: 90%"></td>
+	</tr>
+</table>
+<table><tr>
+<td><button dojoType='Button' dojoAttachEvent='onClick:ok'>${this.commonStrings.buttonOk}</button></td>
+<td><button dojoType='Button' dojoAttachEvent='onClick:cancel'>${this.commonStrings.buttonCancel}</button></td>
+</tr></table>
+</div>

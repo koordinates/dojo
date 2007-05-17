@@ -38,7 +38,7 @@ body {
 </head>
 <body>
 	<p>This example shows a wizard with customized button labels.</p>
-    <div id="wizard1" dojoType="wizard"
+    <div id="wizard1" dojoType="WizardContainer"
          style="width: 100%; height: 200px;"
          nextButtonLabel="next >>"
          previousButtonLabel="<< previous"
@@ -66,9 +66,9 @@ body {
         </div>
     </div>
 
-    <p>The next shows the option to hide the inactive buttons...</p>
+    <p>The next shows the option to hide the inactive buttons, with a smaller width...</p>
 
-    <div id="wizard2" dojoType="wizard" hideDisabledButtons="true" style="width: 100%; height: 200px;">
+    <div id="wizard2" dojoType="WizardContainer" hideDisabledButtons="true" style="width: 50%; height: 200px;">
         <div dojoType="WizardPane">
             <h1>Step 1 of 3</h1>
             <p>Lorem ipsum dolor sit amet</p>
@@ -94,7 +94,7 @@ body {
             }
         }
     </script>
-    <div id="wizard3" dojoType="wizard" style="width: 100%; height: 200px;">
+    <div id="wizard3" dojoType="WizardContainer" style="width: 100%; height: 200px;">
         <div dojoType="WizardPane" id="Agreement1" passFunction="checkAgreement">
             <h1>Agreement Terms</h1>
             <form action="#" name="acceptAgreement">

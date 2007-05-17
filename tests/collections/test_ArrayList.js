@@ -46,8 +46,10 @@ function test_ArrayList_getIterator(){
 	var al = getAL();
 	//	iterator test
 	var e = al.getIterator();
-	while(!e.atEnd){ e.moveNext(); }
-	jum.assertEquals("test100", "bull", e.current);
+	while(!e.atEnd()){ 
+		e.get(); 
+	}
+	jum.assertEquals("test100", "bull", e.element);
 }
 
 function test_ArrayList_indexOf(){

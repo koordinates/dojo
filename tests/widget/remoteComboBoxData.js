@@ -7,4 +7,4 @@
 	["Minnesota","MN"],
 	["Mississippi","MS"],
 	["Missouri","MO"],
-];
+]

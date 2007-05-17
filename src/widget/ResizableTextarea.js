@@ -1,42 +1,36 @@
 dojo.provide("dojo.widget.ResizableTextarea");
-dojo.require("dojo.html");
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.LayoutPane");
+dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.ResizeHandle");
+dojo.require("dojo.i18n.common");
+dojo.requireLocalization("dojo.widget", "ResizableTextarea");
 
-dojo.widget.tags.addParseTreeHandler("dojo:resizabletextarea");
+dojo.widget.defineWidget(
+	"dojo.widget.ResizableTextarea",
+	dojo.widget.HtmlWidget,
+{
+	// summary
+	//	A resizable textarea.
+	//	Takes all the parameters (name, value, etc.) that a vanilla textarea takes.
+	// usage
+	//	<textarea dojoType="ResizableTextArea">...</textarea>
 
-dojo.widget.ResizableTextarea = function(){
-	dojo.widget.HtmlWidget.call(this);
-}
+	templatePath: dojo.uri.moduleUri("dojo.widget", "templates/ResizableTextarea.html"),
+	templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/ResizableTextarea.css"),
 
-dojo.inherits(dojo.widget.ResizableTextarea, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.ResizableTextarea, {
-	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlResizableTextarea.html"),
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlResizableTextarea.css"),
-	widgetType: "ResizableTextarea",
-	tagName: "dojo:resizabletextarea",
-	isContainer: false,
-	textAreaNode: null,
-	textAreaContainer: null,
-	textAreaContainerNode: null,
-	statusBar: null,
-	statusBarContainerNode: null,
-	statusLabelNode: null,
-	statusLabel: null,
-	rootLayoutNode: null,
-	resizeHandleNode: null,
-	resizeHandle: null,
+	postMixInProperties: function(){
+		dojo.widget.HtmlWidget.superclass.postMixInProperties.apply(this, arguments);
+		this.messages = dojo.i18n.getLocalization("dojo.widget", "ResizableTextarea", this.lang);
+	},
 
 	fillInTemplate: function(args, frag){
 		this.textAreaNode = this.getFragNodeRef(frag).cloneNode(true);
 
 		// FIXME: Safari apparently needs this!
-		document.body.appendChild(this.domNode);
+		dojo.body().appendChild(this.domNode);
 
 		this.rootLayout = dojo.widget.createWidget(
-			"LayoutPane",
+			"LayoutContainer",
 			{
 				minHeight: 50,
 				minWidth: 100
@@ -44,9 +38,10 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 			this.rootLayoutNode
 		);
 
-
+		// TODO: all this code should be replaced with a template
+		// (especially now that templates can contain subwidgets)
 		this.textAreaContainer = dojo.widget.createWidget(
-			"LayoutPane",
+			"LayoutContainer",
 			{ layoutAlign: "client" },
 			this.textAreaContainerNode
 		);
@@ -59,7 +54,7 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 		}
 
 		this.statusBar = dojo.widget.createWidget(
-			"LayoutPane",
+			"LayoutContainer",
 			{ 
 				layoutAlign: "bottom", 
 				minHeight: 28
@@ -69,7 +64,7 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 		this.rootLayout.addChild(this.statusBar);
 
 		this.statusLabel = dojo.widget.createWidget(
-			"LayoutPane",
+			"LayoutContainer",
 			{ 
 				layoutAlign: "client", 
 				minWidth: 50
@@ -84,17 +79,10 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 			this.resizeHandleNode
 		);
 		this.statusBar.addChild(this.resizeHandle);
-		// dojo.debug(this.rootLayout.widgetId);
-
-		// dojo.event.connect(this.resizeHandle, "beginSizing", this, "hideContent");
-		// dojo.event.connect(this.resizeHandle, "endSizing", this, "showContent");
 	},
-
-	hideContent: function(){
-		this.textAreaNode.style.display = "none";
-	},
-
-	showContent: function(){
-		this.textAreaNode.style.display = "";
+	
+	onResized: function(){
+		dojo.widget.ResizableTextarea.superclass.onResized.call(this);
+		this.rootLayout.onResized();
 	}
 });

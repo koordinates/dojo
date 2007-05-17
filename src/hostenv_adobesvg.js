@@ -2,7 +2,7 @@
  * Adobe SVG Viewer host environment
  */
 if(typeof window == 'undefined'){
-	dj_throw("attempt to use adobe svg hostenv when no window object");
+	dojo.raise("attempt to use adobe svg hostenv when no window object");
 }
 
 with(dojo.render){
@@ -50,7 +50,7 @@ dojo.debug = function() {
 	if (!djConfig.isDebug) { return; }
 	var args = arguments;
 	if(typeof dojo.hostenv.println != 'function'){
-		dj_throw("attempt to call dojo.debug when there is no dojo.hostenv println implementation (yet?)");
+		dojo.raise("attempt to call dojo.debug when there is no dojo.hostenv println implementation (yet?)");
 	}
 	var isJUM = dj_global["jum"];
 	var s = isJUM ? "": "DEBUG: ";
@@ -181,68 +181,7 @@ dojo.hostenv.loadUri = function(uri, cb){
 	var stack = this.loadUriStack;
 	stack.push([uri, cb, null]);
 	var tcb = function(contents){
-		// gratuitous hack for Adobe SVG 3, what a fucking POS
-		if(contents.content){
-			contents = contents.content;
-		}
-
-		// stack management
-		var next = stack.pop();
-		if((!next)&&(stack.length==0)){ 
-			dojo.hostenv.modulesLoaded();
-			return;
-		}
-		if(typeof contents == "string"){
-			stack.push(next);
-			for(var x=0; x<stack.length; x++){
-				if(stack[x][0]==uri){
-					stack[x][2] = contents;
-				}
-			}
-			next = stack.pop();
-		}
-		if(dojo.hostenv.loadedUris[next[0]]){ 
-			// dojo.debug("WE ALREADY HAD: "+next[0]);
-			dojo.hostenv.unwindUriStack();
-			return;
-		}
-		// push back onto stack
-		stack.push(next);
-		if(next[0]!=uri){
-			//  and then unwind as far as we can
-			if(typeof next[2] == "string"){
-				dojo.hostenv.unwindUriStack();
-			}
-
-		}else{
-			if(!contents){ 
-				next[1](false);
-			}else{
-				var deps = dojo.hostenv.getDepsForEval(next[2]);
-				if(deps.length>0){
-					eval(deps.join(";"));
-				}else{
-					dojo.hostenv.unwindUriStack();
-				}
-			}
-		}
-	}
-	this.getText(uri, tcb, true);
-}
-
-/**
- * Reads the contents of the URI, and evaluates the contents.
- * Returns true if it succeeded. Returns false if the URI reading failed. Throws if the evaluation throws.
- * The result of the eval is not available to the caller.
- */
-dojo.hostenv.loadUri = function(uri, cb){
-	if(dojo.hostenv.loadedUris[uri]){
-		return;
-	}
-	var stack = this.loadUriStack;
-	stack.push([uri, cb, null]);
-	var tcb = function(contents){
-		// gratuitous hack for Adobe SVG 3, what a fucking POS
+		// gratuitous hack for Adobe SVG 3
 		if(contents.content){
 			contents = contents.content;
 		}
@@ -329,7 +268,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		// are normal in the course of app and module building, so blow out of
 		// it gracefully, but log it in debug mode
 
-		// dj_throw("recursive attempt to load module '" + modulename + "'");
+		// dojo.raise("recursive attempt to load module '" + modulename + "'");
 		dojo.debug("recursive attempt to load module '" + modulename + "'");
 	}else{
 		this.addedToLoadingCount.push(modulename);
@@ -365,7 +304,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 			if(lastStatus){ 
 				module = _this.findModule(modulename, false); // pass in false so we can give better error
 				if((!module)&&(syms[syms.length-1]!=pfn)){
-					dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+					dojo.raise("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
 				}
 				if(module){
 					_this.removedFromLoadingCount.push(modulename);
@@ -396,7 +335,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 				module = _this.findModule(modulename, false); // pass in false so we can give better error
 				// if(!module){
 				if((!module)&&(syms[syms.length-1]!=pfn)){
-					dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+					dojo.raise("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
 				}
 				if(module){
 					_this.removedFromLoadingCount.push(modulename);
@@ -438,7 +377,7 @@ dojo.hostenv.unWindGetTextStack = function(){
 		setTimeout("dojo.hostenv.unWindGetTextStack()", 100);
 		return;
 	}
-	// we serialize because this goddamned environment is too fucked up
+	// we serialize because this environment is too messed up
 	// to know how to do anything else
 	dojo.hostenv.inFlightCount++;
 	var next = dojo.hostenv.getTextStack.pop();
@@ -463,10 +402,10 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 			dojo.hostenv.getTextStack.push([uri, async_cb, fail_ok]);
 			dojo.hostenv.unWindGetTextStack();
 		}else{
-			return dj_throw("No synchronous XMLHTTP implementation available, for uri " + uri);
+			return dojo.raise("No synchronous XMLHTTP implementation available, for uri " + uri);
 		}
 	}catch(e){
-		return dj_throw("No XMLHTTP implementation available, for uri " + uri);
+		return dojo.raise("No XMLHTTP implementation available, for uri " + uri);
 	}
 }
 
@@ -490,11 +429,11 @@ dojo.hostenv.postText = function(uri, async_cb, text, fail_ok, mime_type, encodi
 	
 	var async_callback = function(httpResponse){
 		if (!httpResponse.success) {
-			dj_throw("Request for uri '" + uri + "' resulted in " + httpResponse.status);
+			dojo.raise("Request for uri '" + uri + "' resulted in " + httpResponse.status);
 		}
 		
 		if(!httpResponse.content) {
-			if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no content");
+			if (!fail_ok) dojo.raise("Request for uri '" + uri + "' resulted in no content");
 			return null;
 		}
 		// FIXME: wtf, I'm losing a reference to async_cb
@@ -505,10 +444,10 @@ dojo.hostenv.postText = function(uri, async_cb, text, fail_ok, mime_type, encodi
 		if(async_cb) {
 			http = window.postURL(uri, text, async_callback, mimeType, encoding);
 		} else {
-		return dj_throw("No synchronous XMLHTTP post implementation available, for uri " + uri);
+		return dojo.raise("No synchronous XMLHTTP post implementation available, for uri " + uri);
 		}
 	} catch(e) {
-		return dj_throw("No XMLHTTP post implementation available, for uri " + uri);
+		return dojo.raise("No XMLHTTP post implementation available, for uri " + uri);
 	}
 }
 
@@ -521,7 +460,7 @@ dojo.hostenv.postText = function(uri, async_cb, text, fail_ok, mime_type, encodi
 function dj_last_script_src() {
 	var scripts = window.document.getElementsByTagName('script');
 	if(scripts.length < 1){ 
-		dj_throw("No script elements in window.document, so can't figure out my script src"); 
+		dojo.raise("No script elements in window.document, so can't figure out my script src"); 
 	}
 	var li = scripts.length-1;
 	var xlinkNS = "http://www.w3.org/1999/xlink";
@@ -535,7 +474,7 @@ function dj_last_script_src() {
 		// break;
 	}
 	if(!src){
-		dj_throw("Last script element (out of " + scripts.length + ") has no src");
+		dojo.raise("Last script element (out of " + scripts.length + ") has no src");
 	}
 	return src;
 }
@@ -559,3 +498,5 @@ if(!dojo.hostenv["library_script_uri_"]){
 	return 1;
 }
 */
+
+dojo.requireIf((djConfig["isDebug"] || djConfig["debugAtAllCosts"]), "dojo.debug");

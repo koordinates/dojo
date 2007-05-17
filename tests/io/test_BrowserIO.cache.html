@@ -25,7 +25,7 @@
 					mimetype: "text/javascript",
 					load: function(type, data, evt){
 						var props = [], p;
-						dj_debug("Event info:: status: " + evt.status +
+						dojo.debug("Event info:: status: " + evt.status +
 								", statusText: " + evt.statusText);
 					},
 					useCache: true
@@ -33,17 +33,7 @@
 				var canBind = dojo.io.bind(bindArgs);
 			}
 
-			function initRequest(){
-				var req = new dojo.io.Request("test_BrowserIO_data.txt");
-				req.changeURL = "foobar" + (new Date()).getTime();
-				req.onload = function (e) {
-					dj_debug(e.data);
-				}
-				req.addEventListener("backbutton", function (e) { alert("we intercepted the back button"); });
-				dojo.io.bind(req);
-			}
-
-			dojo.hostenv.modulesLoadedListeners.push(init);
+			dojo.addOnLoad(init);
 		</script>
 	</head>
 	<body>

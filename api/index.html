@@ -1,0 +1,114 @@
+<!--DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"-->
+<html>
+<head>
+	<title>Dojo API Reference</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="css/common.css" />	<!-- COPIED FROM dtk.org -->
+	<link rel="stylesheet" type="text/css" href="css/text.css" />	<!-- COPIED FROM dtk.org -->
+	<link rel="stylesheet" type="text/css" href="css/ApiRef.css" />
+	<script type="text/javascript">
+		var djConfig = {
+			isDebug: true, 
+			debugAtAllCosts:false,
+			preventBackButtonFix: false,
+			baseScriptURI : "../"
+		};
+	</script>
+	<!-- NOTE: 	We now assume that for every install of the api ref, dojo is at ../dojo.js .
+				This means that to host the ref, you should check out the entire source tree
+				and sym-link /api to /checkout/api		-->
+	<script type="text/javascript" src="../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.*");
+
+		dojo.registerModulePath("api", "api");
+//		dojo.require("api.ApiRef");
+	</script>
+	<!-- NOTE: including the script with the require above is breaking IE6! Load it manually. -->
+	<script src='ProfileHelper.js'></script>
+	<script src='ApiRef.js'></script>
+</head>
+<body>
+<div style='display:none'>
+	<!-- work around IE bug with redundantly loading images by in-lining them here -->
+	<!-- app images -->
+	<img src="img/blue-stripe-big.gif" width=20 height=20>
+	<img src="img/blue-stripe.gif">
+	<img src="img/file-js.gif">
+	<img src="img/minus.gif">
+	<img src="img/plus.gif">
+	<!-- tree images : DISABLING THESE because the path to these changes on dojotoolkit.org 
+	<img src="../src/widget/templates/images/TreeV3/i.gif">
+	<img src="../src/widget/templates/images/TreeV3/i_half.gif">
+	<img src="../src/widget/templates/images/TreeV3/expand_minus.gif">
+	<img src="../src/widget/templates/images/TreeV3/expand_plus.gif">
+	<img src="../src/widget/templates/images/TreeV3/expand_leaf.gif">
+	<img src="../src/widget/templates/images/TreeV3/document.gif">
+	<img src="../src/widget/templates/images/TreeV3/open.gif">
+	<img src="../src/widget/templates/images/TreeV3/closed.gif">
+	<br>
+	<img src="../src/widget/templates/images/TreeV3/i_long.gif">
+	-->
+</div>
+
+<table style='width:100%;height:100%;' cellspacing=0 cellpadding=5>
+<thead>
+	<colgroup>
+		<col  style='width:300px'>
+		<col  style='width:100%'>
+		<col  style='width:250px'>
+	</colgroup>
+</thead>
+<tbody>
+	<tr>
+		<td class="stripe noVPad">
+			<table cellspacing=0 cellpadding=0 border=0>
+				<tr><td class='label'>Search:</td>
+					<td><input id='searchBox' class='searchBox' dojoType="combobox" maxListLength="20" id="search" mode="local" autoComplete="false"></td>
+				</tr>
+			</table>
+		</td>
+		<td class="stripe noVPad"><table cellspacing=0 cellpadding=0>
+				<tr><td id='title' class='label' width="100%">Dojo API Reference</td>
+					<td style='text-align:right;' class='label'>Show:</td>
+					<td><input id='showInherited' type='checkbox' onclick='ApiRef.toggleInherited()'></td><td><div class='toggleDisplayLink' onclick='ApiRef.toggleInherited()'>Inherited</div></td>
+					<td><input id='showPrivate' type='checkbox' onclick='ApiRef.togglePrivate()'></td><td><div class='toggleDisplayLink' onclick='ApiRef.togglePrivate()'>Private</div></td>
+<!-- NOT IMPLEMENTED YET
+					<td><input id='showDeprecated' type='checkbox' onclick='ApiRef.toggleDeprecated()'></td><td class='toggleDisplayLink' onclick='ApiRef.toggleDeprecated()'>Deprecated</td>
+					<td><input id='showExperimental' type='checkbox' onclick='ApiRef.toggleExperimental()'></td><td class='toggleDisplayLink' onclick='ApiRef.toggleExperimental()'>Experimental</td>
+-->
+				</tr>
+			</table>
+		</td>
+		<td class="stripe noVPad" style='text-align:right'>
+			<button id='debugMenuButton' onclick='dojo.widget.byId("debugMenu").open(this, null, this)'>Debug</button>
+			<div dojoType="PopupMenu2" widgetId="debugMenu">
+				<div dojoType="MenuItem2" caption="Toggle debug messages" 				onclick='ApiRef.debug_toggleDebug()'></div>
+				<div dojoType="MenuItem2" caption="Toggle profiling messages" 			onclick='ApiRef.debug_toggleProfile()'></div>
+				<div dojoType="MenuSeparator2"></div>
+				<div dojoType="MenuItem2" caption="Show Resource -> Function Map" 		onclick='ApiRef.debug_showResourceMap()'></div>
+				<div dojoType="MenuItem2" caption="Show Function->Type Map" 			onclick='ApiRef.debug_showFunctionMap()'></div>
+				<div dojoType="MenuItem2" caption='" " (w/o functions)' 				onclick='ApiRef.debug_showObjectMap()'></div>
+				<div dojoType="MenuItem2" caption="Show All Known Functions" 			onclick='ApiRef.debug_showKnownFunctions()'></div>
+				<div dojoType="MenuItem2" caption="Show Parser Data for File..." 		onclick='ApiRef.debug_showParserData()'></div>
+				<div dojoType="MenuItem2" caption="Show Parser Data for Reference..." 	onclick='ApiRef.debug_showItemData()'></div>
+				<div dojoType="MenuItem2" caption="Show Item for Reference..." 			onclick='ApiRef.debug_showItem()'></div>
+				<div dojoType="MenuSeparator2"></div>
+				<div dojoType="MenuItem2" caption="Show ApiRef To Do List..." 			onclick='ApiRef.debug_showTodo()'></div>
+			</div>
+		</td>		
+	</tr>
+	<tr><td colspan=3 style='height:100%;vertical-align:top;padding:0px;'>
+		<div id='mainContainer' dojoType="SplitContainer" orientation="horizontal" sizerWidth="5" activeSizing="false">
+			<div id="fnTreeContainer" dojoType="ContentPane" sizeShare="25" style="overflow: auto;width:25%;height:100%;">
+					<div class='loadingPrompt'>
+						Loading Class Tree... <br><br>(This could take a few moments).
+					</div>
+			</div>
+			<div id="content" dojoType="ContentPane" sizeShare="75"></div>
+		</div>	
+	</td></tr>
+</tbody>
+</table>
+</body>
+</html>

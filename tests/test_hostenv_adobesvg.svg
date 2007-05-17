@@ -29,7 +29,7 @@
 
 		function treeLoader(result){
 			try {
-				dj_debug(result);
+				dojo.debug(result);
 			} catch(err) {
 				alert(err.message);
 			}
@@ -39,7 +39,7 @@
 		function bar(result){ return; }
 
 		function baz(result){
-			dj_debug("baz!: "+result.length);
+			dojo.debug("baz!: "+result.length);
 		}
 	]]></script>
 	<g>

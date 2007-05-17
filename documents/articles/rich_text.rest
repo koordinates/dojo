@@ -81,7 +81,7 @@ toolbar. assuming that Dojo and the Editor control are included. To include
 them, unpack Dojo into a directory and add the following code in the header of
 the document::
 
-    <script src="/path/to/dojo.js"
+    <script src="/path/to/dojo/dojo.js"
         type="text/javascript"></script>
     <script type="text/javascript">
         dojo.require("dojo.widget.Editor");
@@ -103,12 +103,7 @@ As you can see...
 
         <!-- pull in the core of Dojo -->
         <script type="text/javascript" 
-            src="/archive/dojo-2005-11-07/editor/dojo/dojo.js"></script>
-
-        <!--
-        <script type="text/javascript" 
-            src="/~alex/dojo/trunk/dojo.js"></script>
-        -->
+            src="/path/to/dojo/dojo.js"></script>
 
         <!-- Dojo is loaded, include the widget  -->
         <script type="text/javascript">
@@ -118,7 +113,7 @@ As you can see...
         <!-- outline the editor so people know where they can type -->
         <div style="border: 1px solid #908f8f;" id="testEditor">
             <div dojoType="Editor"
-                items="blockGroup;|;textGroup;|;justifyGroup;|;colorGroup;">
+                items="textGroup;|;justifyGroup;|;colorGroup;">
                 <br />
                 ...It could scarcely be easier.
                 <br />
@@ -290,18 +285,6 @@ with a copyright notice comment.
 .. FIXME: discuss fast creation/removal of RichText controls
 .. FIXME: discuss customizing event handlers
 
-Availability
-------------
-
-The Editor component covered in this article is part of the upcoming 0.2
-release of Dojo. To take advantage of it before 0.2 becomes available, you can
-download a nightly build, available at http://archive.dojotoolkit.org/ and the
-latest builds of the various Editions of Dojo are available from
-http://archive.dojotoolkit.org/nightly-profiles/
-
-Developers familiar with Subversion can get the lastest Dojo directly from:
-http://dojotoolkit.org/svn/dojo/trunk/
-
 Endnotes
 --------
 
@@ -325,13 +308,10 @@ Alex Russell is the project lead for Dojo and can be reached at
 .. _`David Schontzler`: http://stilleye.com
 .. _`JotSpot`: http://www.jot.com
 .. _`liberal license`: http://opensource.org/licenses/afl-2.1.php
-.. _`Quick link to the Editor demo`: http://dojotoolkit.org/archive/dojo-2005-11-07/demos/widget/Editor.html
+.. _`Quick link to the Editor demo`: http://download.dojotoolkit.org/release-0.2.2/dojo-0.2.2-widget/demos/widget/Editor.html
 
 .. raw:: html
-   :file: ../website/rest_template/sidebar.html
-
-.. raw:: html
-   :file: ../website/rest_template/docs_menu.html
+   :file: ../website/docs/sidebar.html
 
 Rich Text Editing With Dojo
 ===========================
@@ -342,6 +322,9 @@ Rich Text Editing With Dojo
 :Date: 2005/11/5
 
 .. contents::
+
+.. raw:: html
+   :file: ../website/docs/menu.html
 
 .. raw:: html
    :file: ../website/rest_template/footer.html

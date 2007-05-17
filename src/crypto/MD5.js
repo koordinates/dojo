@@ -4,11 +4,19 @@ dojo.provide("dojo.crypto.MD5");
 /*	Return to a port of Paul Johnstone's MD5 implementation
  *	http://pajhome.org.uk/crypt/md5/index.html
  *
+ *	Copyright (C) Paul Johnston 1999 - 2002.
+ *	Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * 	Distributed under the BSD License
+ *
+ *	Dojo port by Tom Trenka
+ *
  *	2005-12-7
  *	All conversions are internalized (no dependencies)
  *	implemented getHMAC for message digest auth.
  */
 dojo.crypto.MD5 = new function(){
+	//	summary
+	//	object for creating digests using the MD5 algorithm
 	var chrsz=8;
 	var mask=(1<<chrsz)-1;
 	function toWord(s) {
@@ -156,31 +164,35 @@ dojo.crypto.MD5 = new function(){
 	}
 
 	//	Public functions
-	this.compute=function(data,outputType){
+	this.compute=function(/* string */data, /* dojo.crypto.outputTypes */outputType){
+		//	summary
+		//	computes the digest of data, and returns the result as a string of type outputType
 		var out=outputType||dojo.crypto.outputTypes.Base64;
 		switch(out){
 			case dojo.crypto.outputTypes.Hex:{
-				return toHex(core(toWord(data),data.length*chrsz));
+				return toHex(core(toWord(data),data.length*chrsz));	//	string
 			}
 			case dojo.crypto.outputTypes.String:{
-				return toString(core(toWord(data),data.length*chrsz));
+				return toString(core(toWord(data),data.length*chrsz));	//	string
 			}
 			default:{
-				return toBase64(core(toWord(data),data.length*chrsz));
+				return toBase64(core(toWord(data),data.length*chrsz));	//	string
 			}
 		}
 	};
-	this.getHMAC=function(data,key,outputType){
+	this.getHMAC=function(/* string */data, /* string */key, /* dojo.crypto.outputTypes */outputType){
+		//	summary
+		//	computes a digest of data using key, and returns the result as a string of outputType
 		var out=outputType||dojo.crypto.outputTypes.Base64;
 		switch(out){
 			case dojo.crypto.outputTypes.Hex:{
-				return toHex(hmac(data,key));
+				return toHex(hmac(data,key));	//	string
 			}
 			case dojo.crypto.outputTypes.String:{
-				return toString(hmac(data,key));
+				return toString(hmac(data,key));	//	string
 			}
 			default:{
-				return toBase64(hmac(data,key));
+				return toBase64(hmac(data,key));	//	string
 			}
 		}
 	};

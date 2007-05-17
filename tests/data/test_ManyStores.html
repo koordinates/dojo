@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<title>Example dojo.data datastore displays</title>
+		<link rel="stylesheet" type="text/css" href="filteringTableStyles.css" /> 
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript" src="../jsunit_browser.js"></script>
+		<script type="text/javascript">
+			dojo.registerModulePath("tests", "tests");  // relative to dojo.js
+			dojo.hostenv.writeIncludes();
+		</script>
+		<script type="text/javascript" src="test_ManyStores.js"></script>
+		<script type="text/javascript">
+			dojo.addOnLoad(gui.doInitialSetup);
+		</script>
+	</head>
+	<body>
+		<h2>This page displays different datastores in different dojo widgets</h2>
+		<table>
+			<tr>
+				<td valign="top">
+					<p>Pick a data source:<br/>
+					<select name="datastore" id="datastore_select_element"></select>
+					</p>
+				</td>
+				<td width="30">&nbsp;</td>
+				<td valign="top">
+					<p>Pick an output view:</p>
+					<div id="output_checkbox_div"></div>
+				</td>
+			</tr>
+		</table>
+		<h2>Output view(s)</h2>
+		<div id="output_div"></div>
+		<p>&nbsp;</p>
+		<h2>dojo.debug output</h2>
+	</body>
+</html>
+

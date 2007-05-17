@@ -167,10 +167,7 @@ Alex Russell is the project lead for Dojo and can be reached at
 <alex@dojotoolkit.org>. His blog is at: http://alex.dojotoolkit.org
 
 .. raw:: html
-   :file: ../website/rest_template/sidebar.html
-
-.. raw:: html
-   :file: ../website/rest_template/docs_menu.html
+   :file: ../website/docs/sidebar.html
 
 Dojo's Compressor
 =================
@@ -181,6 +178,9 @@ Dojo's Compressor
 :Date: 2005/08/12
 
 .. contents::
+
+.. raw:: html
+   :file: ../website/docs/menu.html
 
 .. raw:: html
    :file: ../website/rest_template/footer.html

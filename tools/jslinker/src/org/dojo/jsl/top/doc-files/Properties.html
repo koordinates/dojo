@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <meta name="author" content="Uwe Hoffmann">
+  <title>Properties</title>
+</head>
+<body>
+<pre>
+
+# ----------------------------------------------------------------
+# the list of input source directories
+# can be specified with command line option -d or --sourcedirs
+# value is a comma-separated list of directories
+# optional property, default value is the directory where jsc was started
+#
+# jsc.recoder.sources
+
+# ----------------------------------------------------------------
+# the list of input source entities to ignore
+# value is a comma-separated list of paths (or path suffixes)
+# optional property
+#
+# jsc.recoder.sources.exclude
+
+# ----------------------------------------------------------------
+# the flag that controls whether excluded files and source files
+# without any defined suffix should be copied over (mirrored) into the output dir
+# value is a boolean
+# optional property (default is false)
+#
+# jsc.recoder.sources.mirror
+
+# ----------------------------------------------------------------
+# the web root directory
+# needed to resolve absolute paths in src attributes in html
+# value is a directory
+# optional property, default value is the directory where jsc was started
+#
+# jsc.recoder.web.root
+
+# ----------------------------------------------------------------
+# the web maps (webserver url maps)
+# needed to resolve absolute paths in src attributes in html
+# value is a comma-separated list of key-value pairs
+# keys are url prefixes, values are directories on local file system
+# example: 
+# jsc.recoder.web.maps = /fw,dig/framework/client/content,/fw/images,dig/images,/music,dig/client/music
+# optional property
+#
+# jsc.recoder.web.maps
+
+# ----------------------------------------------------------------
+# the list of tasks to execute
+# can be specified with command line option -a or --tasks
+# value is a comma-separated list of task names
+# all task names known so far: print,javadoc,jabber,janitor2,muffler
+# required property
+#
+# jsc.recoder.tasklist
+
+# ----------------------------------------------------------------
+# the output directory
+# can be specified with command line option -o or --outputdir
+# value is a directory
+# optional property, default value is a date-stamped jscout subdir of the temp dir
+#
+# task.print.output.dir
+
+# ----------------------------------------------------------------
+# printer option if true prints in place
+# value is a boolean
+# optional property, default value is false
+#
+# task.print.inplace
+
+# ----------------------------------------------------------------
+# the function names that need to be deleted
+# value is comma-separated list of identifiers
+# required property for this task
+#
+# task.muffler.noise
+
+# ----------------------------------------------------------------
+# the set of properties to declare values for identifiers
+# used in if statement conditional expressions
+# muffler strips code out that cannot be reached if identifiers
+# have those values
+# values are booleans
+# optional property for this task
+#
+# task.muffler.branch
+#
+# example
+# task.muffler.branch.isIE4 = true
+# task.muffler.branch.debug = false
+# etc (for each identifier you want to declare one line with
+# the key being the task.muffler.branch prefix followed by
+# the identifier name and the value being the boolean value
+# you want to assign)
+
+# ----------------------------------------------------------------
+# the global entry points into the code (things that are used but not called explicitly in code)
+# value is comma-separated list of identifiers
+# optional property for this task
+#
+# task.janitor.entries
+
+# ----------------------------------------------------------------
+# the flag that controls whether only js source files which are actually
+# imported by html files are considered when running janitor
+# value is boolean
+# optional property for this task (default is false)
+#
+# task.janitor.process.js.imports.only
+
+# ----------------------------------------------------------------
+# the identifiers that should not be obfuscated
+# value is comma-separated list of identifiers
+# optional property for this task
+#
+# task.jabber.tabu
+
+# ----------------------------------------------------------------
+# the file where the obfuscation map and the seed are saved
+# value is file
+# optional property for this task
+#
+# task.jabber.file
+
+# ----------------------------------------------------------------
+# the flag that controls whether local scopes should have different name space when obfuscated
+# value is a boolean (when true then obfuscation uses local name space)
+# optional property for this task (default is false)
+#
+# task.jabber.local
+
+# ----------------------------------------------------------------
+# the seed used to initialize the wocky
+# value is a long number
+# optional property for this task (default is System.currentTimeMillis())
+#
+# task.jabber.seed
+
+# ----------------------------------------------------------------
+# the identifier length for obfuscated identifiers
+# value is a int number
+# optional property for this task (default is 10)
+#
+# task.jabber.length
+
+# ----------------------------------------------------------------
+# the list of attribute names whose values are protected from obfuscation
+# value is a comma-separated list of attribute names (like name,id)
+# optional property for this task
+#
+# task.jabber.protect.html.attributes
+
+# ----------------------------------------------------------------
+# the flag that controls whether only locals are obfuscated
+# value is a boolean 
+# optional property for this task (default is false)
+#
+# task.jabber.ignore.globals
+
+# ----------------------------------------------------------------
+# the file where the deobfuscation map are saved
+# value is file (use the one generated by task.jabber.file)
+# required property for this task
+#
+# task.vorpal.file
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true strips all newlines, whitespace and comments
+# value is boolean
+# optional property
+#
+# source.js.prettyprinter.strip.all
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true strips comments
+# value is boolean
+# optional property
+#
+# source.js.prettyprinter.strip.comments
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true strips whitespace
+# value is boolean
+# optional property
+#
+# source.js.prettyprinter.strip.whitespace
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true strips newlines
+# value is boolean
+# optional property
+#
+# source.js.prettyprinter.strip.newlines
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true preserves all newlines, whitespace and comments
+# value is boolean
+# optional property
+#
+# source.js.prettyprinter.preserve
+
+# ----------------------------------------------------------------
+# pretty-printer option for javascript code, if true re-indents
+# value is boolean
+# optional property
+#
+# source.js.prettyprinter.indent
+
+# ----------------------------------------------------------------
+# html pretty-printer option for if true strips comments
+# value is boolean
+# optional property
+#
+# source.html.prettyprinter.strip.comments
+
+# ----------------------------------------------------------------
+# the tool's home directory
+# not used currently (beta 1)
+# can be specified with command line option -j or --homedir
+# value is a directory
+# optional property, default value is user's home directory
+#
+# jsc.recoder.home.dir
+
+# ----------------------------------------------------------------
+# the tool's temp directory
+# can be specified with command line option -t or --tempdir
+# value is a directory
+# optional property, default value is system temp directory for current user
+# 
+# jsc.recoder.temp.dir
+
+# ----------------------------------------------------------------
+# the tool's log directory
+# can be specified with command line option -l or --logdir
+# value is a directory
+# optional property, default value is a date-stamped jsclog subdir of the temp dir
+#
+# jsc.recoder.log.dir
+
+# ----------------------------------------------------------------
+# the default type used in javadoc
+# value is a java type identifier
+# optional property, default value is var
+#
+# task.javadoc.defaulttype
+
+# ----------------------------------------------------------------
+# the type used in javadoc for function that don't return anything
+# value is a java type identifier
+# optional property, default value is void
+#
+# task.javadoc.voidreturntype
+
+# ----------------------------------------------------------------
+# the map used to assign package statements to java classes in javadoc
+# value is a comma-separated list of keys and values (pairs)
+# keys are either directory suffixes if packages.map is directory or class name prefixes if not
+# optional property, if not present javadoc does not produce package statements
+#
+# task.javadoc.packages
+
+# ----------------------------------------------------------------
+# the map type used to assign package statements to java classes in javadoc
+# value is either "directory" or "prefix"
+# optional property, default is "prefix"
+#
+# task.javadoc.packages.map
+
+# ----------------------------------------------------------------
+# the directory used to put the java files
+# value is a directory
+# optional property, default is the jsc temp directory
+#
+# task.javadoc.java.tempdir
+
+# ----------------------------------------------------------------
+# boolean flag controls whether the sun jdk javadoc tool gets invoked
+# value is true or false
+# optional property, default is true
+#
+# task.javadoc.invoke.javadoc
+
+</pre>
+</body>
+</html>

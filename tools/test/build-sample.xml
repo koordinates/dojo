@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- 
+    Copyright (c) 2004-2006 The Dojo Foundation, Licensed under the Academic
+    Free License version 2.1 or BSD licenses
+-->
+
+<project name="dojo-ant-task" default="test" basedir="../../">
+
+    <description>
+        Shows example of using the dojo ant testing task. You must compile and build
+        the ant testing tool by running the dist-jar task on the main build.xml before
+        trying to run this example.
+    </description>
+    
+    <!-- Defines the dojo test task. -->
+    <taskdef name="dojo-test" 
+        classname="org.dojotoolkit.ant.DojoTestTask" 
+        classpath="tools/test/dist/ant-dojotest.jar" />
+    
+    <!-- Runs the dojo testing task on the dojo core set of tests. -->
+    <target name="test">
+        <dojo-test dojosrc="." testsrc="tests"/>
+    </target>
+    
+    <!-- Runs the jum unit tests. (ie tests for JUM ) -->
+    <target name="test-jum">
+        <dojo-test dojosrc="." testsrc="testtools" />
+    </target>
+    
+</project>

@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<title>with() test</title>
+
+<style>
+	th { background: #ccccff; }
+	td { align: left; }
+</style>
+
+<script type="text/javascript">
+
+	function bench () {
+		foo={};
+		foo.bar={};
+		foo.bar.node=document.getElementById("node");
+	
+		tic();
+		for (var i = 0; i < 10000; i++) {
+			with(foo.bar.node.style){
+				position="relative";
+				top="10px";
+				left="10px";
+				height="100px";
+				width="300px";
+				background="red";
+			}
+		}
+		toc("using with()");
+	
+		tic();
+		for (var i = 0; i < 10000; i++) {
+			foo.bar.node.style.position="relative";
+			foo.bar.node.style.top="10px";
+			foo.bar.node.style.left="10px";
+			foo.bar.node.style.height="100px";
+			foo.bar.node.style.width="300px";
+			foo.bar.node.style.background="red";
+		}
+		toc("direct access");
+	
+	
+		tic();
+		for (var i = 0; i < 10000; i++) {
+			var x = foo.bar.node.style;
+			x.position="relative";
+			x.top="10px";
+			x.left="10px";
+			x.height="100px";
+			x.width="300px";
+			x.background="red";
+		}
+		toc("using temp variable");
+	}
+	
+	function tic () {
+		tic.time = new Date();
+	}
+	
+	function toc (str) {
+		var time = new Date().getTime() - tic.time.getTime();
+		var p = document.createElement("p");
+		p.appendChild(document.createTextNode(time + " - " + str));
+		document.getElementById("results").appendChild(p);
+	}
+
+</script>
+
+<h1>Test of with() for setting style</h1>
+
+<p><strong style="color:red">Warning:</strong> these benchmarks will take a number of seconds to run.  Other system activity will cause these benchmarks to skew.
+<p><a href="javascript:bench()">Run benchmarks</a>
+
+<div id="node">
+This is the node whose style will be adjusted
+</div>
+
+<p>The results should not be compared between browsers for they are run on different systems, however results for the same browser are relative to each other.
+
+<div id="results"></div>
+
+<h2>Typical results</h2>
+<table border=1>
+<thead>
+	<tr>
+		<td>
+		<th>IE
+		<th>Safari
+		<th>Gecko
+	</tr>
+</thead>
+<tbody>
+	<tr>
+		<th>with()
+<pre>
+with(foo.bar.node.style){
+	position="relative";
+	...
+}
+</pre>
+		<td>516
+		<td>747
+		<td>891
+	</tr>
+	<tr>
+		<th>direct access
+<pre>
+foo.bar.node.style.position="relative";
+...
+</pre>
+		<td>703
+		<td>806
+		<td>1297
+	</tr>
+	<tr>
+		<th>using temp variable
+<pre>
+var x = foo.bar.node.style;
+x.position="relative";
+...
+</pre>
+		<td>500
+		<td>720
+		<td>796
+	</tr>
+</tbody>
+</table>

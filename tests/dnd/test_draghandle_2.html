@@ -10,32 +10,27 @@
 
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
-	dojo.require("dojo.html");
+	dojo.require("dojo.html.selection");
 	dojo.require("dojo.dnd.*");
 	dojo.require("dojo.event.*");
 
-	function byId(id){
-		return document.getElementById(id);
-	}
-
 	function init(){
-		dojo.html.disableSelection(byId('inner1'));
+		dojo.html.disableSelection(dojo.byId('inner1'));
 
-		var drag = new dojo.dnd.HtmlDragSource(byId('outer1'));
-		drag.setDragHandle(byId('inner1'));
+		var drag = new dojo.dnd.HtmlDragSource(dojo.byId('outer1'));
+		drag.setDragHandle(dojo.byId('inner1'));
 
-		var drag = new dojo.dnd.HtmlDragSource(byId('inner2'));
-		drag.setDragTarget(byId('outer2'));
+		var drag = new dojo.dnd.HtmlDragSource(dojo.byId('inner2'));
+		drag.setDragTarget(dojo.byId('outer2'));
 	}
 
-	dojo.event.connect(dojo, "loaded", "init");
+	dojo.addOnLoad(init);
 </script>
 <style>
-
 .outer {
 	position: absolute;
-	top: 100px;
-	left: 100px;
+	top: 25px;
+	left: 25;
 	width: 300px;
 	height: 300px;
 	background-color: lightblue;
@@ -51,7 +46,7 @@
 }
 
 #outer2 {
-	left: 450px;
+	left: 375px;
 }
 
 </style>

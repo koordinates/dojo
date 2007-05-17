@@ -9,23 +9,10 @@ function test_dom_sanityCheck(){
 	jum.assertEquals("test1", 3, td.childNodes.length);
 }
 
-function test_dom_getTagName(){
+function test_dom_getUniqueId(){ 
 	var td = document.createElement("div");
-	td.setAttribute("dojoType", "foo");
-	jum.assertEquals("test10", "dojo:foo", dojo.dom.getTagName(td));
-
-	var td2 = document.createElement("div");
-	jum.assertEquals("test20", "div", dojo.dom.getTagName(td2));
-
-	var td3 = document.createElement("div");
-	td3.setAttribute("class", "dojo-foo");
-	jum.assertEquals("test30", "dojo:foo", dojo.dom.getTagName(td3));
-}
-
-function test_dom_getUniqueId(){
-	var td = document.createElement("div");
-	td.setAttribute("id", "dj_unique_1");
-	document.body.appendChild(td);
+	td.setAttribute("id", "dj_unique_1");    
+    document.body.appendChild(td);
 	jum.assertEquals("test40", "dj_unique_2", dojo.dom.getUniqueId());
 }
 

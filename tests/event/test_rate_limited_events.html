@@ -16,17 +16,15 @@
 				dojo.debug(evt.type + ' was fired');
 			}
 
-			function init(){
+			dojo.addOnLoad(function() {
 				var kwArgs = {
-					srcObj: document.getElementById("rater"),
+					srcObj: dojo.byId("rater"),
 					srcFunc: "onmousemove",
 					adviceFunc: "logIt",
 					rate: 500
 				};
 				dojo.event.kwConnect(kwArgs);
-			}
-
-			dojo.event.connect(dojo, "loaded", "init")
+			});
 		</script>
 		<style>
 			#rater {
@@ -44,8 +42,8 @@
 		<div id="rater">
 			when you move your mouse over this container, you should see
 			logging messages appear every 500ms (half second) but no more
-			frequently than that. Once the you mouse off of this area, the last
-			event should be delivered 1 second afterward, although it's
+			frequently than that. Once you mouse off of this area, the last
+			event should be delivered 1 second afterward, although its
 			properties might not be what you expect since the referenced object
 			has likely mutated.
 		</div>

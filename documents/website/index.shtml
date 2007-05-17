@@ -5,7 +5,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<title>Dojo - DojoToolkit.org</title>
+	<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=dojotoolkit"></script>
 	<script type="text/javascript" src="/dojo/dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.YahooMap");
+		dojo.addOnLoad(function(){
+			var w=dojo.widget.byId("devdaymap");
+			w.map.setZoomLevel(5);
+		});
+	</script>
 	<link rel="stylesheet" type="text/css" 
 		href="http://dojotoolkit.org/css/screen.css" media="screen" />
 	<style type="text/css" media="screen">
@@ -53,6 +61,7 @@
 			height : 92px;
 			background : url(img/btn-ajax.gif) no-repeat;
 			text-indent : -999em;
+			text-decoration: none;
 		}
 
 		#btn-bottom {
@@ -63,6 +72,7 @@
 			height : 46px;
 			background : url(img/btn-more.gif) no-repeat;
 			text-indent : -999em;
+			text-decoration: none;
 		}
 
 		#col1 {
@@ -95,9 +105,6 @@
 			background : url(img/col-planet.gif) no-repeat;
 			text-indent : -999em;
 		}
-
-		</style>
-		<style type="text/css">
 		.col dl {
 			margin-top : 5px;
 			font-size : 0.9em;
@@ -127,6 +134,12 @@
 		a.more:hover {
 			text-decoration : underline;
 		}
+
+		#devdaymap{
+			border:1px solid black;
+			float:left;
+			margin:6px;
+		}
 	</style>
 </head>
 <body>
@@ -138,7 +151,6 @@
 				<span>|</span>
 				<a id="dojo-news" href="http://dojotoolkit.org/blog" title="planet::dojo">News</a>
 				<span>|</span>
-
 				<a id="dojo-docs" href="http://dojotoolkit.org/docs/" title="Help, How-tos, and more">Documentation</a>
 				<span>|</span>
 				<a id="dojo-trac" href="http://dojotoolkit.org/trac/" title="Source Browser, Bug Tracker">Bug Tracker</a>
@@ -152,12 +164,11 @@
 	<div id="splash">
 		<h1>Introducing Dojo</h1>
 		<p>
-			Dojo 0.2.1 delivers professional JavaScript tools for dynamic
-			applications in one easy-to-use package. Engineered and tested for
-			the real world, Dojo lets you build great user experiences with
-			confidence.
+			Dojo 0.2.2 delivers all the professional JavaScript tools you'll
+			need in one easy-to-use package. Engineered and tested for the real
+			world, Dojo lets you build great user experiences with confidence.
 		</p>
-		<a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-ajax.zip" id="btn-top">Download AJAX edition</a>
+		<a href="http://download.dojotoolkit.org/release-0.2.2/dojo-0.2.2-ajax.zip" id="btn-top">Download AJAX edition</a>
 		<a href="/download" id="btn-bottom">Download other dojo profiles</a>
 	</div>
 
@@ -170,6 +181,30 @@
 	</div>
 
 	<div id="col1" class="content">
+		<h1>Dojo Developer Day!</h1>
+		<h2>AOL Headquarters, 401 Ellis St. Mountain View, CA</h2>
+		<h3>May 13, 2006 10am - 6pm...and it's FREE!</h3><br/>
+		<p>Join us for the first annual <strong>Dojo Developer Day</strong>. The day will mostly be focused on Dojo Development, with time to hack, test, and socialize. It will be very light on talks, if any at all. <strong>Drinks, food, and wifi</strong> are on AOL! We will also <em>have Dojo t-shirts available for sale</em>. Please rsvp by <a href="mailto:rsvp@dojotoolkit.org?Subject=RSVP for Dojo Developer Day">e-mail</a> or posting to one of the mailing lists.</p>
+		<div dojoType="yahoomap" id="devdaymap" width="250" height="250" controls="zoomshort">
+			<table>
+				<thead><tr><th>Lat</th><th>Long</th><th>Description</th></tr></thead>
+				<tbody>
+					<tr>
+						<td>37.39817</td>
+						<td>-122.053337</td>
+						<td>
+							<div>
+								<h3>Dojo Developer Day at AOL</h3>
+								<div>401 Ellis Street, Mountain View, CA</div>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<p>The day will revolve around hacking and discussions around the various topics that everyone is hacking on. The day will start with getting to know everyone and at 10:30 we'll open up the whiteboard to listing ad-hoc discussion groups that will meet to hack and discuss throught the day. Participation in any of the groups is entirely optional, but they provide a place for people thinking about the same problem to work on it and not miss other discussions that interest them. At about 5:30 we'll break for lightning demos. If you've got something cool to show, this is your chance but it'll have to be very short. 10 minutes tops (5 preferred). After the event, we encurage people to go out and grab dinner and beer!</p>
+		<p></p>
+		<p><a href="http://www.aol.com">AOL</a> is graciously hosting Dojo Developer Day. If you would like to help sponsor Dojo Developer Day, please contact Dylan Schiemann (mail at dylans dot org).</p>
 		<h2>What is Dojo?</h2>
 		<p>
 			Dojo is the Open Source JavaScript toolkit that helps you build

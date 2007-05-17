@@ -1,28 +1,20 @@
 .. title:: The Dojo Roadmap
 
+.. raw:: html
+   :file: ../website/rest_template/header.html
+
 Status
 ------------------------
 
 Dojo is currently in heavy development. As you can glean from the list of
 modules in the roadmap, we have finished a significant portion of the core
-"plumbing" for the project, and we also have our first widget, a button, that
-can be constructed from markup in HTML and SVG namespaces. We have also shipped
-an `initial profile build`_, and a supporting article, `baking usability into
-XMLHTTP`_
-
-We still have a lot of work to do on making our widget system better,
-especially in the world of SVG, but good SVG widget support will come later
-rather than sooner. The current SVG button could be described as hacky at best.
-A button is a surprisingly complex widget, at least if it is done with any sort
-of sane flexibility and constraints.
-
-Other things we are actively working on include our event, IO, and data binding
-systems. This makes Dojo an excellent toolkit for sending messages and data
-between the client and server, and between components in the client. Ongoing
-improvements and refinements are being made to our xml declaration language
-(specifically to support contraints and state) and parser. The parser currently
-supports the most necessary markup constructs, with space to later saccomodate
-more elaborate declaration mechanisms.
+"plumbing" for the project, and we now have over 30 widgets that
+can be constructed from markup in HTML, and a few in the SVG namespace. We have 
+most recently shipped Dojo 0.3.  Don't let the version number deceive you... 
+the toolkit it currently used by a large number of companies, consumer, 
+enterprise, startup, and established.  We just take a conservative approach to 
+version numbers, and we expect major portions of the Dojo API to change before 
+we reach 1.0.
 
 The Plan
 -------------------
@@ -30,70 +22,72 @@ The Plan
 What follows is highly provisional. If a feature is important to you, make it
 known on the `dojo interest mailing list`_.
 
-0.2.2
-******************************************
+0.4 "The Widgets Release, Part 2"
+********************************************
 
-Proposed release date: January 14, 2006 
+Release candidate on: August 15, 2006 
+Proposed release date: August 31, 2006 
 
-Fix `0.2.x bugs`_
-
-.. _`0.2.x bugs`: http://dojotoolkit.org/trac/report/10
-
-0.3 "The Widget Release"
-******************************************
-
-Proposed release date: February 28, 2006 
+Documentation:
+- Reference guide
+- User Guide
+- Writing widgets
+- Debugging widgets
 
 Core:
-- Performance improvements/profiling
-- Provide better/simpler APIs for inheritance (public facing APIs are a bit 
-  challenging)
-- crypto
-- SVG layout calculations, etc.
+- Accessibility
+- Soria theme for all widgets
+- Internationalization
 - xhtml issues/testing (to support nested svg widgets, etc.)
+- Performance improvements/profiling, smaller base namespaces
 - hostenvs for dashboard, canvas
+- Namespace support for widget parsing
+- dojo.html refactor
+- DnD refactor and improvements
 
 Widgets:
 - Widget Refactoring
   + public facing APIs
 	+ widget template improvements
   + inheritance simplifications
-	+ css-interning
 	+ making it easier to specify an external css document, etc.)
 	+ etc.
+
 - Widget API cleanup/unification
-- Default widget styles (should have at least 2 default themes)
-- SVG widget facility improvements
-- Begin VML compatibility layer
+- Ongoing vector graphics efforts
+	+ SVG widget facility improvements
+	+ VML compatibility layer
 - New widgets
-	+ Base widgets/container widgets
-	+ Start Grid widget, data binding (large number of people)
+
+	+ Grid widget, data binding
 	+ SVG Color Picker widget(s)
-	+ Validation widgets
 	+ Other widgets as contributed by the community
-- Guide on writing widgets
-- Guide on debugging widgets
 
-0.3.1
+0.4.1
 ******************************************
 
-Proposed release date: March 14, 2006 
+Proposed release date: September 21, 2006 
 
-0.3.x bug fixes
+0.4.x bug fixes
 
-0.3.2 (if needed)
+0.4.2 (if needed)
 ******************************************
 
-Proposed release date: March 31, 2006 
+Proposed release date: October 5, 2006 
 
-0.3.x bug fixes
+0.4.x bug fixes
 
-0.4 "The Performance Release"
+
+0.5 "The Performance Release"
 ********************************************
 
-Proposed release date: April 30, 2006
+Proposed release date: December 15, 2006
 
 Core:
+- crypto
+- SVG layout calculations, etc.
+- xhtml issues/testing (to support nested svg widgets, etc.)
+- hostenvs for dashboard, canvas
 - better logging/debugging
 - js linker/better packaging
 - Add many missing aspects to the parser
@@ -106,29 +100,32 @@ Widgets:
 - first release of data grid/data binding
 - start work on expression-based UI constraints
 - port some html widgets to svg to better test SVG support
+- Default widget styles (should have at least 2 default themes)
 - new widgets
+
   + SVG clock style time picker
-.. FIXME: are the following two already done?
-  + Accordion widget
-  + basic menu widgets
+	+ Validation widgets
   + Other widgets as contributed by the community
 
-0.4.1
+0.5.1
 ******************************************
 
-Proposed release date: May 15, 2006 
+Proposed release date: January 15, 2006 
 
-0.4.x bug fixes
+0.5.x bug fixes
 
-0.4.2 (if needed)
+0.5.2 (if needed)
 ******************************************
 
-Proposed release date: May 31, 2006 
+Proposed release date: February 7, 2006
 
-0.5 "The Comet Release"
+0.6 "The Comet Release"
 ******************************************
 
-Proposed release date: June 30, 2006 
+Proposed release date: March 15, 2007
+
+Note:
+- many Comet-specific features will get rolled into 0.4 and 0.5.
 
 Core:
 - advanced data binding
@@ -143,14 +140,14 @@ Widgets:
 - Support for SVG on other platforms as it becomes more viable
 
 
-Beyond 0.5
+Beyond 0.6
 **********************
 
-Past 0.5, we will be implementing what the
-community has use for and need of. 1.0 is still a while away, and at about the 
-0.5 milestone, a re-evaluation of goals and acheivements will take place which 
-will allow the project contributors to then take stock of the situation and 
-decide what the explicit goals for 1.0 are.
+Past 0.6, we will be implementing what the community has use for and need of.
+1.0 is still a while away, and at about the 0.6 milestone, a re-evaluation of
+goals and acheivements will take place which will allow the project
+contributors to then take stock of the situation and decide what the explicit
+goals for 1.0 are.
 
 Some items that aren't explicitly on the roadmap, but that are part of our 
 efforts include:
@@ -159,10 +156,11 @@ efforts include:
 - improvements and additions to animation code
 - dojo.math
 - dojo.mop
-- tools development
+- tools development (ATF?)
 - demo apps
 - better documentation
 - articles
+- interoperability (through the Open Ajax Alliance)
 - screencasts
 - talks at conferences
 - hack-a-thons
@@ -221,7 +219,7 @@ cool..." features that the contributors would like to add into the toolkit, but
 many of these simply aren't feasible for 1.0 with the number of contributors
 adding code to the project and the quality of the release we want to produce.
 
-There are several large functional goals that Dojo works to acheive. Breifly,
+There are several large functional goals that Dojo works to acheive. Briefly,
 they are:
 
     - Creating a package and build system that makes it possible to take only
@@ -384,8 +382,8 @@ alternately under the terms of the BSD license should you need to use Dojo with
 Dojo Foundation
 ---------------
 
-Dojo is a California nonprofit corporation.  We're currently working on 
-mundane details like bylaws and tax exemption status.
+Dojo is a California nonprofit corporation. We're currently working on mundane
+details like bylaws and tax exemption status.
 
 
 .. FIXME: insert correct urls, and additional urls to make this more useful
@@ -398,17 +396,20 @@ mundane details like bylaws and tax exemption status.
 .. _`baking usability into XMLHTTP` : http://dojotoolkit.org/intro_to_dojo_io.html
 .. _`Anonymous SVN access` : http://dojotoolkit.org/svn/dojo/
 .. _`Academic Free License v 2.1` : http://opensource.org/licenses/afl-2.1.php
-.. _`thoughts on the AFL license` : http://netwindows.org/pipermail/ng-dhtml_netwindows.org/2005-January/000643.html
+.. _`thoughts on the AFL license` : http://dojotoolkit.org/pipermail/dojo-contributors/2005-January/000643.html
 
 .. raw:: html
-   :file: ../website/rest_template/sidebar.html
+   :file: ../website/docs/sidebar.html
+
+:Author: Alex Russell, Dylan Schiemann
+:Version: 0.7 (revised June 11, 2006)
+
+.. contents::
 
 .. raw:: html
-   :file: ../website/rest_template/docs_menu.html
+   :file: ../website/docs/menu.html
 
-:Author: Alex Russell,Dylan Schiemann
-:Version: 0.5 most necessary markup constructs, with space to later saccomodate
-more elaborate declaration mechanisms.
-
+.. raw:: html
+   :file: ../website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:

@@ -1,0 +1,17 @@
+This directory contains a server-side implementation of Moxie to illustrate how to create a full client/server application with Dojo Offline.
+
+Dependencies
+------------
+
+Moxie requires the following pieces of software to install:
+* MySQL 4.1+
+* Tomcat
+* Apache
+
+You must also download the following third-party JARs and place them into demos/storage/server/WEB-INF/lib. We don't distribute these with Moxie out of license concerns:
+
+* commons-beanutils.jar and commons-lang-2.2.jar - Download both of these from the Apache Common site. These are both available under the Apache License.
+* ezmorph-1.0.jar - Download this from http://ezmorph.sourceforge.net/ . Under the Apache License 2.0.
+* json-lib-1.0b2-jdk13.jar - Download this from http://json-lib.sourceforge.net/ . Under the Apache License 2.0.
+* mysql-connector-java-5.0.4-bin.jar - Download this from http://dev.mysql.com/downloads/connector/j/3.0.html . This is under the GPL -- however, since it is dynamically brought in at runtime by the JDBC infrastructure, it might not be infectious if you redistribute it.
+

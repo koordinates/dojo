@@ -52,7 +52,6 @@ function dj_spidermonkey_current_file(depth){
 }
 
 // call this now because later we may not be on the top of the stack
-//dojo.hostenv.getLibraryScriptUri = dj_spidermonkey_current_file;
 if(!dojo.hostenv.library_script_uri_){ 
 	dojo.hostenv.library_script_uri_ = dj_spidermonkey_current_file(0); 
 }
@@ -67,4 +66,5 @@ dojo.hostenv.loadUri = function(uri){
 	return 1;
 }
 
+dojo.requireIf((djConfig["isDebug"] || djConfig["debugAtAllCosts"]), "dojo.debug");
 

@@ -1,0 +1,33 @@
+var dependencies = [ 
+	"dojo.html.common",
+	"dojo.html.style",
+	"dojo.event.common",
+	"dojo.event.browser",
+	"dojo.string.common",
+	"dojo.string",
+	"dojo.io.common",
+	"dojo.io.BrowserIO",
+	"dojo.lfx.*",
+	"dojo.dnd.*",
+	"dojo.dnd.HtmlDragMove",
+	"dojo.widget.html.layout",
+	"dojo.widget.Dialog",
+	"dojo.widget.ResizeHandle",
+	"dojo.widget.FloatingPane",
+	"dojo.widget.ContentPane",
+	"dojo.widget.Editor2",
+	"dojo.widget.Editor2Toolbar",
+	"dojo.widget.PopupContainer",
+	"dojo.widget.ColorPalette",
+	"dojo.widget.Editor2Plugin.ColorPicker",
+	"dojo.widget.Editor2Plugin.DropDownList",
+	"dojo.widget.Editor2Plugin.DialogCommands",
+	"dojo.lfx.shadow",
+	"dojo.flash",
+	"dojo.storage.*",
+	"dojo.off.*",
+	"dojo.off.ui",
+	"dojo.sync"
+];
+
+load("getDependencyList.js");

@@ -11,6 +11,8 @@ djConfig = {
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 dojo.require("dojo.io.*");
+//Test to be sure that IframeIO does not handle the request.
+dojo.require("dojo.io.IframeIO");
 dojo.hostenv.writeIncludes();
 </script>
 <script type="text/javascript">
@@ -18,7 +20,7 @@ dojo.hostenv.writeIncludes();
 function doit() {
 	var kw = {
 		url: "data-json.js",
-		mimetype: "text/json",
+		mimetype: "application/json",
 		load: function(type, json, http) {
 			dojo.debug("http:", http);
 			dojo.debug("response:", http.responseText);
@@ -34,7 +36,7 @@ function doit() {
 	dojo.io.bind(kw);
 }
 
-doit();
+dojo.addOnLoad(doit);
 </script>
 </head>
 

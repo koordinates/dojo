@@ -18,8 +18,8 @@ Usage
 
 ::
 
-	//This class is a base class only, it must be overridden to provide
-	//specific functionality.
+    //This class is a base class only, it must be overridden to provide
+    //specific functionality.
 
 API Reference
 ===============================================================================
@@ -50,57 +50,57 @@ Properties
 Methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    ``parseResults(object)``:
+``parseResults(object)``:
 
-	This function is intended to be overridden by specific 
-     	RPC implementations.  Implementations will recieve the
-	raw ``object`` received from an asycnronous call, the
-	function should return the actual results.  This stub
-	implementation, simply returns the object passed to it.
-	If a specific implementation does not override this 
-	function, the raw object will be passed to the developers
-	deferred callbacks. This function is typically called by
-	``resultCallback`` and should not be used outside of the 
-	object.
+    This function is intended to be overridden by specific 
+    RPC implementations.  Implementations will recieve the
+    raw ``object`` received from an asycnronous call, the
+    function should return the actual results.  This stub
+    implementation, simply returns the object passed to it.
+    If a specific implementation does not override this 
+    function, the raw object will be passed to the developers
+    deferred callbacks. This function is typically called by
+    ``resultCallback`` and should not be used outside of the 
+    object.
 
-	``object``:
-	    Raw data returned from the asyncronous request
+    ``object``:
+        Raw data returned from the asyncronous request
 
-        *return*:
-            ``object``
+    *return*:
+        ``object``
 
-    ``errorCallback(deferredRequestHandler)``:
+``errorCallback(deferredRequestHandler)``:
 
-	Opaque method that creates an errback function for 
-	dispatching error results to a DeferredRequest.errback()
+    Opaque method that creates an errback function for 
+    dispatching error results to a DeferredRequest.errback()
 
-    ``resultCallback(deferredRequestHandler)``:
+``resultCallback(deferredRequestHandler)``:
 
-	Opaque method that creates an callback function for 
-	dispatching results to a DeferredRequest.callback();  It
-	Will call parseResults on the raw data and send the
-	results of that to the deferred's callbacks. 
+    Opaque method that creates an callback function for 
+    dispatching results to a DeferredRequest.callback();  It
+    Will call parseResults on the raw data and send the
+    results of that to the deferred's callbacks. 
 
-    ``generateMethod(method, params)``:
+``generateMethod(method, params)``:
         
-        Opaque method that creates local functions for calling. Should not be
-        used except by the object.
+    Opaque method that creates local functions for calling. Should not be
+    used except by the object.
 
-    ``processSMD(type, data, evt)``:
+``processSMD(type, data, evt)``:
         
-        Opaque method that creates local functions for calling. Should not be
-        used except by the object.
+    Opaque method that creates local functions for calling. Should not be
+    used except by the object.
 
-     ``connect(smdURL)``:
-        
-        Async JSDL satisfaction. Creates local function stubs on this object as
-        a result.
+``connect(smdURL)``:
+    
+    Async JSDL satisfaction. Creates local function stubs on this object as
+    a result.
 
-        ``smdURL``:
-            String. URL of the SMD file to retreive and process.
+    ``smdURL``:
+        String. URL of the SMD file to retreive and process.
 
-        *return*:
-            Nothing
+    *return*:
+        Nothing
 
 Requires
 ===============================================================================
@@ -110,7 +110,7 @@ Requires
 - `dojo.lang`_
 - `dojo.rpc.DeferredRequest`_
 
-.. _`dojo.io.*`: 		io.html
+.. _`dojo.io.*`:	io.html
 .. _`dojo.json`:	json.html
 .. _`dojo.lang`:	lang.html
 

@@ -60,4 +60,4 @@
 	["West Virginia","WV"],
 	["Wisconsin","WI"],
 	["Wyoming","WY"]
-];
+]
