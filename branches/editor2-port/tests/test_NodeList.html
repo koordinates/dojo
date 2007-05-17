@@ -1,0 +1,82 @@
+<html>
+	<head>
+		<title>dojo.NodeList Tests</title>
+		<script type="text/javascript">
+			djConfig = { isDebug: true };
+		</script>
+		<script type="text/javascript" src="../dojo.js"></script>
+		<script type="text/javascript" src="../src/NodeList.js"></script>
+		<script type="text/javascript" src="../src/query.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.query");
+			dojo.require("dojo.debug.console");
+		</script>
+		<script type="text/javascript">
+			dojo.addOnLoad(function(){
+				// move "Block 1" just before "Middle Ground"
+				dojo.query("#block1 h3").place("#middleGround", "before");
+				// move "Block 2" inside of "Middle Ground"
+				dojo.query("#block2 h3").place("#middleGround", "last");
+				// remove all the H4's
+				var onl = dojo.query("h4").orphan();
+				dojo.debug(6 == onl.length);
+
+				dojo.debug(dojo.query("#block1").query(".thinger2").length == 1);
+			});
+		</script>
+	</head>
+	<body>
+		<div id="block1">
+			<h3>Block 1</h3>
+			<h4 class="thinger dojo-Thinger">The standard Lorem Ipsum passage, used since the 1500s</h4>
+			<p>
+			"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+			eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+			ad minim veniam, ..
+			</p>
+
+			<h4>Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC</h4>
+
+			<p class="blah thinger2 blahblah">
+			"Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+			accusantium doloremque laudantium,...
+			</p>
+
+			<h4 class="thinger3">1914 translation by H. Rackham</h4>
+
+			<!-- <pre></pre> -->
+			<p>
+			"But I must explain to you how all this mistaken idea of denouncing
+			pleasure and praising pain was born and I will give you a complete
+			account of the system, ...
+			<p>
+		</div>
+		<h3 id="middleGround" style="border: 1px solid black;">Middle Ground</h3>
+		<div id="block2">
+			<h3>Block 2</h3>
+			<h4 class="thinger dojo-Thinger">The standard Lorem Ipsum passage, used since the 1500s</h4>
+			<p>
+			"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+			eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+			ad minim veniam, ..
+			</p>
+
+			<h4>Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC</h4>
+
+			<p class="blah thinger2 blahblah">
+			"Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+			accusantium doloremque laudantium,...
+			</p>
+
+			<h4 class="thinger3">1914 translation by H. Rackham</h4>
+
+			<!-- <pre></pre> -->
+			<p>
+			"But I must explain to you how all this mistaken idea of denouncing
+			pleasure and praising pain was born and I will give you a complete
+			account of the system, ...
+			<p>
+		</div>
+	</body>
+</html>
+

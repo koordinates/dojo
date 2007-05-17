@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<title>dojo.event.connect() test</title>
+
+<style>
+	th { background: #ccccff; }
+	td { align: left; }
+</style>
+
+<script type="text/javascript">
+	djConfig = { 
+		debugAtAllCosts: true,
+		isDebug: true
+	};
+</script>
+<script type="text/javascript" src="../dojo.js"></script>
+<script>
+	dojo.require("dojo.event.*");
+	dojo.require("dojo.profile");
+	dojo.require("dojo.debug.console");
+	dojo.hostenv.writeIncludes();
+</script>
+
+<script type="text/javascript">
+
+	function click(){ dojo.debug("i was clicked"); }
+
+	var node;
+	function bench () {
+		var iters = 1000;
+		node = dojo.byId("node");
+
+		function _runBench(str, profile){
+			var tf = new Function("node", "click", str);
+			for (var i = 0; i < iters; i++){
+				if(profile !== false){
+					dojo.profile.start(str);
+				}
+				tf(node, click);
+				if(profile !== false){
+					dojo.profile.end(str);
+				}
+			}
+		}
+
+		_runBench('dojo.event.connect(node, "onclick", "click");');
+		_runBench('dojo.event.disconnect(node, "onclick", "click");', false);
+		_runBench('dojo.event.connect(node, "onclick", click);');
+		_runBench('dojo.event.disconnect(node, "onclick", click);', false);
+		_runBench('dojo.event.connectOnce(node, "onclick", click);');
+		_runBench('dojo.event.disconnect(node, "onclick", click);', false);
+		_runBench('dojo.event.browser.addListener(node, "onclick", click);');
+		_runBench('dojo.event.browser.removeListener(node, "onclick", click);', false);
+		_runBench('dojo.event.kwConnect({srcObj: node, srcFunc: "onclick", adviceFunc: click});');
+		_runBench('dojo.event.kwDisconnect({srcObj: node, srcFunc: "onclick", adviceFunc: click});', false);
+		_runBench('dojo.event.kwConnect({srcObj: node, srcFunc: "onclick", adviceFunc: "click"});');
+		_runBench('dojo.event.kwDisconnect({srcObj: node, srcFunc: "onclick", adviceFunc: "click"});', false);
+	
+		dojo.profile.dump(true);
+	}
+	
+</script>
+
+<h1>Test of dojo.event.connect() (and related functions)</h1>
+
+<p><strong style="color:red">Warning:</strong> these benchmarks will take a number of seconds to run.  Other system activity will cause these benchmarks to skew.
+<p><a href="javascript:bench()">Run benchmarks</a>
+
+<div id="node">
+This is the node which will be connected to
+</div>
+
+<p>The results should not be compared between browsers for they are run on different systems, however results for the same browser are relative to each other.
+
+<div id="profileOutputTable"></div>
+
+<h2>Typical results</h2>
+<table border=1>
+<thead>
+	<tr>
+		<td>
+		<th>IE
+		<th>Safari
+		<th>Gecko (on PC)
+		<th>Gecko (on intel mac)
+	</tr>
+</thead>
+<tbody>
+	<tr>
+		<th>dojo.event.connect()
+		<td>hang!
+		<td>842
+		<td>437
+		<td>523
+	</tr>
+	<tr>
+		<th>dojo.event.connectOnce()
+		<td>?
+		<td>856
+		<td>344
+		<td>521
+	</tr>
+	<tr>
+		<th>dojo.event.browser.addListener()
+		<td>?
+		<td>97
+		<td>125
+		<td>100
+	</tr>
+	<tr>
+		<th>dojo.event.kwConnect()
+		<td>?
+		<td>744
+		<td>344
+		<td>658
+	</tr>
+</tbody>
+</table>

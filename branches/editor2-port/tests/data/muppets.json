@@ -1,0 +1,6 @@
+{ items: [
+	{ name:'Kermit', color:'green', age:12, friends:['Gonzo', {reference:{name:'Fozzie Bear'}}]},
+	{ name:'Fozzie Bear', wears:['hat', 'tie']},
+	{ name:'Miss Piggy', pets:'Foo-Foo'}
+]}
+

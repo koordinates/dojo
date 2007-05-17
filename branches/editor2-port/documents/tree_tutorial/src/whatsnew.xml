@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    
+    
+    <title>What's new in TreeV3</title>
+    
+    <section>
+        <title>New HTML/CSS structure</title>
+        
+        <section>                    
+            <title>Nested divs</title>
+            <para>Previous tree used a list of divs, each of them was indented  with grid and spacers to right level. The new tree uses
+                natural nested divs structure (children' divs inside parent's div). Grid is contigous and structure is displayed correctly for any
+                node/font size</para>            
+            
+        </section>
+        <section>
+            <title>All design in CSS through classes and class combinations</title>
+            <para>All image and size information was removed from JS code. There is a bunch of classes applied to nodes, that may denote
+                node folder state, node type, show if there are children, etc. CSS moves this logical classes into style</para>
+        </section>
+        <section>
+            <title>Different trees be styled with different CSS class families</title>
+            <para>Want to put 2 differently styled trees on a page? Give them different classPrefix.</para>
+        </section>
+        <section>
+            <title>Multiline content support</title>
+            <para>Rich content support was incomplete, because list-of-divs model could not handle arbitrary-sized nodes. Now
+                you may have &lt;br&gt;, &lt;p&gt; and any other width/height modifiers.</para>
+        </section>
+        
+    </section>    
+    
+    <section>
+        <title>Event system modified</title>
+        <para><methodname>nodeDOMCreated</methodname> event was removed. That's because listeners are bound to tree and may want to modify the new node,
+            but that's only possible when the node is being bound to the tree, not when it was created and hanging around. 
+            <methodname>afterTreeChange</methodname> was introduced to help listeners to (un)bind nodes the right moment
+        </para>
+        <para>All events were renamed to better reflect the moment of their publishing</para>
+        <para><methodname>afterExpand</methodname>, <methodname>afterCollapse</methodname> events now fire
+            when the animation (e.g fading in or out) finishes, not when the actual expand/collapse is called.</para>
+    </section>
+    
+    <section>
+        <title>Lazy widget creation</title>
+        
+        <para>Before TreeV3, all nodes must be widgets. A node is added  - hence graphical widget is created. For performance reasons
+            that behavior was altered. Now when you add a node, you may actually add a "data object", containing node data, e.g
+            {title:"new node"}. You may want to add a large nested branch of such data objects, like {title:"new", children:[...data objects..]}.
+        </para>
+        <para>Data objects will become real members of children array (you may recursively search them, modify etc), but graphical widgets
+            will be created only when visitor expands them.</para>
+        
+        <para>The compatibility drawback of such behavior is that old code may erroneously call *widget* methods on *data objects* 
+            while recursively traversing a tree, e.g with Widget#getDescendants. You should change such code to use TreeCommon#processDescendants,
+            or handle data objects in special way.            
+        </para>
+        
+        <para> There are no special mechanisms to add laziliy instantiated "data objects". 
+            You may manipulate them simply modifying <methodname>children</methodname> array, but no events are thrown until a
+            real widget appears on the scene. In most cases that is fine, but you are free to "disable" lazy widget creation - do not modify
+            <methodname>children</methodname> directly and enable <methodname>tree.eagerWidgetInstantiation</methodname></para>
+        
+    </section>    
+    
+    
+    <section>
+        <title>Tree extensions</title>
+        <para>Many features were moved from core into extensions</para>
+        <itemizedlist>
+            <listitem><simpara>Added TreeDocIconExtension instead of builtin childIcon support</simpara></listitem>
+            <listitem><simpara>Selector now only throws events, not doing anything with nodes</simpara></listitem>
+            <listitem><simpara>Out-of-the box extensions introduced to be examples and handle well-known requirements</simpara></listitem>
+        </itemizedlist>
+        
+    </section>
+    
+    <section>    
+        <title>Implicit helpers  removed</title>
+        
+        <para>The Tree is actually a pack of loosely coupled components, connected through events. To keep things simple and also
+            for compatibility reasons, such components(controller,selector...) were created implicitly, if not declared. But actually this proved to be a source of 
+            questions and misunderstandings. So now nothing is created implicitly, read how-to and declare things.
+        </para>
+        
+    </section>
+    <section>
+        
+        <title>RPC has both sync/async modes</title>
+        <para>Old callbacks code was removed in favor to dojo.Deferred. Now all operations may be async and run your callbacks at the end.</para>
+    </section>
+    
+    <section>
+        <title>Drag'n'drop changes</title>
+        
+        <section>
+            <title>Multiple selection and multiple drag'n'drop (incomplete)</title>
+            <para>Sounds simple enough.. Select multiple nodes with ctrl and get them with <methodname>selector.selectedNodes</methodname>.
+                instead of removed <methodname>selectorNode</methodname> call.</para>
+            <para>Currently, multiple drag'n'drop does not work with multiple selection because of dojo bugs. Hopefully will be fixed.</para>
+        </section>
+        
+        <section>
+            <title>Drop of any source, not just tree node</title>
+            <para>If <methodname>treeNode</methodname> property is empty, tree will create a new node from the data returned by
+                <methodname>source.getTreeNode</methodname>, then <methodname>source.onDrop</methodname> will be called to remove old node.
+            </para>
+        </section>
+        
+    </section>
+    
+        <section>
+            <title>Inline node editing</title>
+            <para>It became possible to edit nodes inline, using TreeEditor. Base variant uses RichText widget, you can make another wrapper though.
+                Remote calls can be made on save only, or on start/cancel too e.g for locking purposes.
+            </para>
+        </section>
+        
+    
+</section>
+
+    

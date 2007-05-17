@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+
+<title>Import JS File</title>
+<script type="text/javascript" src="dojo_collections_import.js"></script>
+
+<script type="text/javascript">
+
+function testArray(){
+
+	var sl = new dojo.collections.SortedList();
+	sl.add("foo","bar");
+	sl.add("baz","fab");
+	sl.add("buck","shot");
+	sl.add("apple","orange");
+
+   alert( sl.getValueList()) ;
+}
+
+</script>
+<body onload="testArray()">
+
+</body>
+</html>
+

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Tree model</title>
+    <para>Two classes handle the model: <classname>TreeV3</classname> is "tree" itself and somewhat a root node, while
+    <classname>TreeNodeV3</classname> is any  other node, linked by <methodname>parent</methodname>
+    and <methodname>children[]</methodname> properties. There is a common mixin <classname>TreeWithNode</classname>.
+    </para>
+    
+    <section>
+        <title>Tree parameters</title>
+        
+        <para><methodname>listeners</methodname> specifies a list of widgetIds.
+            They will be called AFTER tree itself is initialized, but BEFORE any nodes get added. This allows them to hook on node creation events,
+            mostly useful for markup creation.
+          </para>
+    </section>
+    
+</section>
+

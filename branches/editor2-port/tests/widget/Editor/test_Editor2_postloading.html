@@ -1,0 +1,17 @@
+<html>
+<head>
+<title>Editor2 test case</title>
+	<script type="text/javascript" src="../../../dojo.js"></script>
+</head>
+<body>
+<button id="buildEditor">Build editor!</button>
+<script type="text/javascript" >
+dojo.require("dojo.event.*");
+dojo.event.connect(dojo.byId("buildEditor"), "onclick", function() {
+	dojo.require("dojo.widget.Editor2");
+	dojo.widget.createWidget("Editor2", {}, dojo.byId("editorContent"));
+});
+</script>
+	<div id="editorContent">look ma! it's editable content!</div>
+</body>
+</html>

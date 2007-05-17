@@ -1,0 +1,37 @@
+#!/bin/sh
+
+JSL_HOME=`cd \`dirname $0\`/.. && echo \`pwd\``
+
+
+# OS specific support.  $var _must_ be set to either true or false.
+cygwin=false;
+darwin=false;
+case "`uname`" in
+  CYGWIN*) cygwin=true ;;
+  Darwin*) darwin=true ;;
+esac
+
+FILE_SEP=":"
+if $cygwin ; then
+    FILE_SEP="\\;"
+    JSL_HOME=`cygpath -wp $JSL_HOME`
+fi
+
+JSL_JAR_DIR=$JSL_HOME/lib
+
+# Puts all files on the same line, separated by spaces
+JSL_JARS=`ls -1 $JSL_JAR_DIR/*.jar`
+
+# Note: won't work if a path or filename contains a space
+JSL_JARS=`echo $JSL_JARS | tr ' ' "$FILE_SEP"`
+
+JSL_CLASSPATH=$CLASSPATH$FILE_SEP$JSL_JARS$FILE_SEP$JAVA_HOME/lib/tools.jar
+
+${JAVA_HOME}/bin/java -Xms8m  -Xmx200m -cp $JSL_CLASSPATH -Djsc.home="${JSL_HOME}" org.dojo.jsl.top.Top $*
+
+
+
+
+
+			
+

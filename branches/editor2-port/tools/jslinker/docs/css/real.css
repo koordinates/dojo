@@ -1,0 +1,154 @@
+body {
+	margin: 0;
+	padding: 0;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 76%;/* font sizing in ems, baby. if you want to change anything, just change this.*/
+	/*funny thing happens at 75% and lower. opera goes to a nice small size, but moz and ie pc change almost not at all. seems 76% is as small as you can go and stay the same across browsers. poop.*/
+	color: #000;
+	background-color: #fff;
+	background-image: url(http://www.thenoodleincident.com/img/_.gif);/*these three lines replace the n4_upgrade.gif in n4.css. and if you use this code, make sure you point to an img on _your_ server, not mine.*/
+	background-repeat: no-repeat;
+	background-position: top left;	
+	}
+#content {
+	margin: 0em;
+	padding: 0em 0em 4em 3em;/* use padding instead of margin for multicolumn layouts because of a really odd ie5pc bug where it sometimes relates the width of an unrelated menu div to this div. i'll, uh, write about that somewhere. it was hard to figure out what was causing it, so i want this note here to remind me. */
+	width: 770px;
+	}
+	
+/*the following classes are to demonstrate better line heights for narrow columns*/	
+.tab {text-indent: 1in;}
+.narrow2{
+	width: 50%;
+	line-height: 1.5em;
+	}
+		
+/*typography*/
+a {
+	text-decoration: none;
+	font-weight: bold;
+	color: #000;
+	}
+a:link {
+	}
+a:visited {
+	}
+a:active {
+	}
+a:hover {
+	text-decoration: underline;
+	}
+h1 {
+	font-size: 2.0em;
+	font-weight: normal;
+	margin-top: 0em;
+	margin-bottom: 0em;/*both set to zero and padding in header div is used intead to deal with compound ie pc problems that are beyound summary in a simple comment.*/
+	}
+h2 {
+	font-size: 1.7em;
+	margin: 1.2em 0em 1.2em 0em;
+	font-weight: normal;
+	color: #900;
+	}
+h3 {
+	font-size: 1.4em;
+	margin: 1.2em 0em 1.2em 0em;
+	font-weight: normal;
+	}
+h4 {
+	font-size: 1.2em;
+	margin: 1.2em 0em 1.2em 0em;
+	font-weight: bold;
+	}
+h5 {
+	font-size: 1.0em;
+	margin: 1.2em 0em 1.2em 0em;
+	font-weight: bold;
+	}
+h6 {
+	font-size: 0.8em;
+	margin: 1.2em 0em 1.2em 0em;
+	font-weight: bold;
+	}
+img {
+	border: 0;
+	}
+ol, ul, li {/*
+	list-style: none;*/
+	font-size: 1.0em;
+	line-height: 1.8em;
+	margin-top: 0.2em;
+	margin-bottom: 0.1em; 
+	}
+p {
+	font-size: 1.0em;
+	line-height: 1.8em;
+	margin: 1.2em 0em 1.2em 0em;
+	text-align: justify; 
+	}
+li > p {
+	margin-top: 0.2em;
+    padding: 0.5em 0 0.5em; 
+	}
+pre {/*moz 1.0/1.1/1.2.1, net 7.0/7.01 make this way too small, but i'm not going to go larger because monospace tends to run you into overflow pretty quick. prior moz and net are okay.*/
+	font-family: monospace;
+	font-size: 1.2em;
+	}
+strong, b {
+	font-weight: bold;
+	}
+
+.mainbar {
+	color:#fff;
+	margin:0px;
+	padding:7px 10px 8px;
+	background:#AD7C35;
+}
+#hometopmenu {
+    width: 100%;
+	height:25px;
+	margin:0px;
+	padding:6px 2px 0px 35px;
+	background:#810101;
+	color:#C99F90;
+	font-family:verdana, geneva, sans-serif;
+	font-size:12px;
+	font-weight:bold;
+	letter-spacing:-1px;
+	border-top:solid 1px #933;
+	border-bottom:1px solid #600;
+}
+#hometopmenu a {
+	color:#fff;
+	text-decoration:none;
+}
+#hometopmenu a:hover {
+	color:#c99;
+	text-decoration:none;
+}
+#noteTable {
+  font: 1em Georgia, serif;   
+  padding: 0.75em 0 0.5em; 
+  margin: 0.25em 0 0.5em; 
+  background: #F8F7EF;
+  border: 1px dashed #B2B2B2; 
+  border-width: 1px 0;
+  color: #900;
+}
+table {
+  font: verdana, helevetica, arial, sans-serif;
+  border-collapse:	collapse;
+  margin-top: 5px;
+  border-bottom: #ccc solid 1px;
+  border-left: #ccc solid 1px;
+  background: #F8F7EF;
+}
+td {
+  padding: 0.3em 0.2em 0.3em 1em;
+  border-top: #ccc solid 1px;
+  border-right: #ccc solid 1px;
+}
+code {/*moz 1.0/1.1/1.2.1, net 7.0/7.01 make this way too small, but i'm not going to go larger because monospace tends to run you into overflow pretty quick. prior moz and net are okay.*/
+	font-family: monospace;
+	font-size: 1.2em;
+}
