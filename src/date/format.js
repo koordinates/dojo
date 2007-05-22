@@ -61,7 +61,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 			switch(c){
 				case 'G':
 					if(l>3){dojo.unimplemented("Era format not implemented");}
-					s = info.eras[dateObject.getFullYear() < 0 ? 1 : 0];
+					s = bundle.eras[dateObject.getFullYear() < 0 ? 1 : 0];
 					break;
 				case 'y':
 					s = dateObject.getFullYear();
@@ -69,7 +69,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 						case 1:
 							break;
 						case 2:
-							s = String(s).substr(-2);
+							s = String(s); s = s.substr(s.length - 2);
 							break;
 						default:
 							pad = true;
@@ -102,7 +102,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 					if(width){
 						var type = (c == "L") ? "standalone" : "format";
 						var prop = ["months",type,width].join("-");
-						s = info[prop][m];
+						s = bundle[prop][m];
 					}
 					break;
 				case 'w':
@@ -138,12 +138,12 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 					if(width){
 						var type = (c == "c") ? "standalone" : "format";
 						var prop = ["days",type,width].join("-");
-						s = info[prop][d];
+						s = bundle[prop][d];
 					}
 					break;
 				case 'a':
 					var timePeriod = (dateObject.getHours() < 12) ? 'am' : 'pm';
-					s = info[timePeriod];
+					s = bundle[timePeriod];
 					break;
 				case 'h':
 				case 'H':
@@ -202,7 +202,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 				case 'F':
 				case 'g':
 				case 'A':
-					dojo.debug(match+" modifier not yet implemented");
+//					dojo.debug(match+" modifier not yet implemented");
 					s = "?";
 					break;
 				default:
@@ -216,16 +216,24 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 	options = options || {};
 
 	var locale = dojo.hostenv.normalizeLocale(options.locale);
-	var formatLength = options.formatLength || 'full';
-	var info = dojo.date._getGregorianBundle(locale);
+	var formatLength = options.formatLength || 'short';
+	var bundle = dojo.date._getGregorianBundle(locale);
 	var str = [];
 	var sauce = dojo.lang.curry(this, formatPattern, dateObject);
+	if(options.selector == "yearOnly"){
+		// Special case as this is not yet driven by CLDR data
+		var year = dateObject.getFullYear();
+		if(locale.match(/^zh|^ja/)){
+			year += "\u5E74";
+		}
+		return year;
+	}
 	if(options.selector != "timeOnly"){
-		var datePattern = options.datePattern || info["dateFormat-"+formatLength];
+		var datePattern = options.datePattern || bundle["dateFormat-"+formatLength];
 		if(datePattern){str.push(_processPattern(datePattern, sauce));}
 	}
 	if(options.selector != "dateOnly"){
-		var timePattern = options.timePattern || info["timeFormat-"+formatLength];
+		var timePattern = options.timePattern || bundle["timeFormat-"+formatLength];
 		if(timePattern){str.push(_processPattern(timePattern, sauce));}
 	}
 	var result = str.join(" "); //TODO: use locale-specific pattern to assemble date + time

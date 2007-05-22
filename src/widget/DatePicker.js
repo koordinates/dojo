@@ -108,9 +108,7 @@ dojo.widget.defineWidget(
 
 		fillInTemplate: function(args, frag) {
 			// summary: see dojo.widget.DomWidget
-
 			dojo.widget.DatePicker.superclass.fillInTemplate.apply(this, arguments);
-
 			// Copy style info from input node to output node
 			var source = this.getFragNodeRef(frag);
 			dojo.html.copyStyle(this.domNode, source);
@@ -154,26 +152,30 @@ dojo.widget.defineWidget(
 
 		setDate: function(/*Date|String*/dateObj) {
 			//summary: set the current date and update the UI
-			if(dateObj == ""){
-				this.value = "";
-				this._preInitUI(this.curMonth,false,true);
-			}else if(typeof dateObj=="string"){
-				this.value = dojo.date.fromRfc3339(dateObj);
+			var d = dateObj;
+			if(typeof(d)=="string" && d!=""){
+				var t = dojo.date.fromRfc3339(d);			
+			}else if(typeof(d)=="object"){
+				var t = new Date(d);
+			}else{
+				t = ""
+			}
+			if(typeof(t)=="object"){
+				this.value = new Date(t);
 				this.value.setHours(0,0,0,0);
 			}else{
-				this.value = new Date(dateObj);
-				this.value.setHours(0,0,0,0);
+				this.value = "";
 			}
+		
 			if(this.selectedNode!=null){
 				dojo.html.removeClass(this.selectedNode,this.classNames.selectedDate);
 			}
 			if(this.clickedNode!=null){
-				dojo.debug('adding selectedDate');
 				dojo.html.addClass(this.clickedNode,this.classNames.selectedDate);
 				this.selectedNode = this.clickedNode;
 			}else{
 				//only call this if setDate was called by means other than clicking a date
-				this._preInitUI(this.value,false,true);
+				this._preInitUI((this.value=="")?this.curMonth:this.value,false,true);
 			}
 			this.clickedNode=null;
 			this.onValueChanged(this.value);
@@ -189,12 +191,19 @@ dojo.widget.defineWidget(
 
 			//initFirst is to tell _initFirstDay if you want first day of the displayed calendar, or first day of the week for dateObj
 			//initUI tells preInitUI to go ahead and run initUI if set to true
-			if(typeof(this.startDate) == "string"){
-				this.startDate = dojo.date.fromRfc3339(this.startDate);
-			}
-			if(typeof(this.endDate) == "string"){
-				this.endDate = dojo.date.fromRfc3339(this.endDate);
-			}
+			function checkDate(d , s){
+				if(typeof(d)=="string"){
+					var t = dojo.date.fromRfc3339(d);
+					if(t==null && typeof(s)=="string"){
+						var t = dojo.date.fromRfc3339(s);
+					}
+					return t;
+				}
+				return d;
+			}		
+			this.startDate = checkDate(this.startDate, "1492-10-12");
+			this.endDate = checkDate(this.endDate, "2941-10-12");
+
 			this.startDate.setHours(0,0,0,0); //adjust startDate to be exactly midnight
 			this.endDate.setHours(24,0,0,-1); //adjusting endDate to be a fraction of a second before  midnight
 
@@ -414,7 +423,7 @@ dojo.widget.defineWidget(
 			var that = this;
 			function f(n){
 				that[n+"YearLabelNode"].innerHTML =
-					dojo.date.format(new Date(y++, 0), {formatLength:'yearOnly', locale:that.lang});
+					dojo.date.format(new Date(y++, 0), {selector:'yearOnly', locale:that.lang});
 			}
 			f("previous");
 			f("current");
