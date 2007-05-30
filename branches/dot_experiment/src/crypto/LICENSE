@@ -8,4 +8,9 @@ MD5.js, SHA1.js:
 	* Copyright 1998-2005, Paul Johnstone
 	  Distributed under the terms of the BSD License
 
-
+DES.js
+	* Copyright 2002-2005, Chris Veness
+	Taken from http://www.movable-type.co.uk/scripts/tea-block.html
+	This author has been contacted to sign a CLA, but has not
+	responded yet; you should not use this code until then.
+	Copyright info: "You are welcome to re-use these scripts [without any warranty express or implied] provided you retain my copyright notice and when possible a link to my website."

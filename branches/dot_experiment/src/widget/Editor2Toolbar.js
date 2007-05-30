@@ -593,7 +593,7 @@ dojo.widget.defineWidget(
 		// summary:
 		//		dojo.widget.Editor2Toolbar is the main widget for the toolbar associated with an Editor2
 
-		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/EditorToolbar.html"),
+		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/EditorToolbarOneline.html"),
 		templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/EditorToolbar.css"),
 
 		// ToolbarLatchedItemStyle: String: class name for latched toolbar button items

@@ -15,26 +15,40 @@
 		<script type="text/javascript" src="../../../dojo.js"></script>
 		
 		<script>
-			dojo.require("dojo.storage.*");
+			dojo.debug = function(msg){
+				var body = document.getElementsByTagName("body");
+				if(body == null
+						|| typeof body == "undefined"
+						|| body.length == 0){
+					return;
+				}
+				body = body[0];
+				
+				var div = document.createElement("div");
+				div.appendChild(document.createTextNode(msg));
+				body.appendChild(div);
+			}
+		</script>
+		
+		<script>
 			dojo.require("dojo.off.*");
 			dojo.require("dojo.off.ui");
 			dojo.require("dojo.sync");
-
+			
 			// configure how we should work offline
 
 			// set our application name
 			dojo.off.ui.appName = "Hello World";
 
-			// add our list resources we need offline
-			// Hello World resources
+			// resources that Hello World needs when
+			// offline
 			dojo.off.files.cache([
 								"helloworld.html"
 								]);
-
-			// Dojo resources
-			dojo.off.files.cache([
-								djConfig.baseRelativePath + "dojo.js"
-								]);
+					
+			// print out any SQL we execute
+			dojo.sql.debug = true;
+			
 					
 			var HelloWorld = {
 				/* hello world messages to be sent */
@@ -42,6 +56,14 @@
 				
 				initialize: function(){
 					dojo.debug("HelloWorld.initialize");
+					
+					dojo.debug("Inserting encrypted content22...");
+					dojo.sql.open();
+					dojo.sql("CREATE TABLE IF NOT EXISTS MESSAGES ("
+								+ "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+								+ "data TEXT NOT NULL "
+								+ ")"
+							);
 					
 					// Dojo Offline and Dojo Storage are ready to be used;
 					// the page is also finished loading
@@ -74,7 +96,7 @@
 					dojo.sync.onFinished = dojo.lang.hitch(this, this.onFinished);
 					
 					// did the page load with us already offline? if so, 
-					// we will have to load our data from Dojo Storage for 
+					// we will have to load our data from persistent storage for 
 					// the user to be able to work with since we can't 
 					// load it from the network
 					if(dojo.off.isOnline == false){
@@ -86,14 +108,20 @@
 				},
 				
 				loadOfflineData: function(){
-					dojo.debug("We are already offline -- loading Hello World messages from Dojo Storage");
+					dojo.debug("We are already offline -- loading Hello World "
+								+ "messages from persistent storage");
 					
-					// get our Hello World messages from Dojo Storage
-					this._messages = dojo.storage.get("messages");
-					if(typeof this._messages == "undefined"
-							|| this._messages == null){
-						this._messages = new Array();
-					}
+					// get our Hello World messages from persistent storage,
+					// creating the MESSAGES table if it doesn't exist
+					// yet
+					dojo.sql.open();
+					dojo.sql("CREATE TABLE IF NOT EXISTS MESSAGES ("
+									+ "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+									+ "data TEXT NOT NULL "
+									+ ")"
+								);
+					this._messages = dojo.sql("SELECT * FROM MESSAGES");
+					dojo.sql.close();
 				},
 				
 				onOffline: function(){
@@ -145,17 +173,22 @@
 					// because a real network call would be asychronous
 					this._messages = this.getDownloadData();
 					
-					// persist this fake data into Dojo Storage
-					var self = this;
+					// persist this fake data into our persistent storage
 					try{
-						dojo.storage.put("messages", this._messages, function(status, key, errorMsg){
-							// Dojo Storage callback method to tell us if the put() succeeded
-							if(status == dojo.storage.FAILED){
-								alert("Unable to locally save downloaded data: " + errorMsg);
-							}
-						});	
+						dojo.sql.open();
+						dojo.sql("DROP TABLE IF EXISTS MESSAGES");
+						dojo.sql("CREATE TABLE MESSAGES ("
+									+ "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+									+ "data TEXT NOT NULL "
+									+ ")"
+								);
+						for(var i = 0; i < this._messages.length; i++){
+							dojo.sql("INSERT INTO MESSAGES (data) VALUES (?)", this._messages[i]);
+						}
+						dojo.sql.close();
 					}catch(exp){
-						alert("Unable to locally save downloaded data: " + exp);
+						dojo.debug("Unable to locally save downloaded data: " + exp);
+						dojo.sql.close();
 					}
 					
 					// now tell Dojo Sync to continue it's syncing
@@ -178,10 +211,13 @@
 					// this is an optional method that does not need to be
 					// overridden, but it helps us because we want to clear
 					// out any old messages we have persisted into 
-					// Dojo Storage sent they are all sent now
+					// persistent storage since they are all sent now
 					
 					this._messages = new Array();
-					dojo.storage.remove("messages");
+					
+					dojo.sql.open();
+					dojo.sql("DROP TABLE IF EXISTS MESSAGES");
+					dojo.sql.close();
 					
 					// since we overrode the dojo.sync.onFinished method,
 					// we have to manually tell the Dojo Offline widget
@@ -237,20 +273,12 @@
 					// first, add this to our list of messages
 					this._messages.push(message);
 					
-					// now, persist this into Dojo Storage so it is available
+					// now, persist this so it is available
 					// in the future if we don't reach a network while the
 					// browser is open
-					var self = this;
-					try{
-						dojo.storage.put("messages", this._messages, function(status, key, errorMsg){
-							// Dojo Storage callback method to tell us if the put() succeeded
-							if(status == dojo.storage.FAILED){
-								alert("Unable to locally save Hello World messages: " + errorMsg);
-							}
-						});	
-					}catch(exp){
-						alert("Unable to locally save Hello World messages: " + exp);
-					}
+					dojo.sql.open();
+					dojo.sql("INSERT INTO MESSAGES (data) VALUES (?)", message);
+					dojo.sql.close();
 					
 					// Dojo Sync has us represent offline actions as Command
 					// objects -- these can have anything we want inside of them.

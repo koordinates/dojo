@@ -2,7 +2,7 @@ dojo.provide("dojo.sync");
 
 dojo.require("dojo.off");
 dojo.require("dojo.off.files");
-dojo.require("dojo.storage.*");
+dojo.require("dojo.storage.Gears");
 
 // Author: Brad Neuberg, bkn3@columbia.edu, http://codinginparadise.org
 
@@ -448,6 +448,9 @@ dojo.lang.mixin(dojo.sync, {
 		}
 		
 		this.cancelled = true;
+		if(dojo.off.files.refreshing == true){
+			dojo.off.files.abortRefresh();
+		}
 		
 		if(this.onCancel){
 			this.onCancel();
@@ -468,6 +471,7 @@ dojo.lang.mixin(dojo.sync, {
 	},
 	
 	refreshUI: function(){ /* void */
+		//dojo.debug("refreshUI");
 		if(this.cancelled == true){
 			this.finished();
 			return;

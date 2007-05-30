@@ -229,13 +229,8 @@ dojo.lang.mixin(dojo.off.ui, {
 		this._hideNeedsOfflineCache();
 		
 		// check to see if we need a browser restart
-		// to be able to use this web app offline --
-		// some browsers can't see updates to a
-		// Proxy AutoConfig (PAC) file done after the
-		// browser has been loaded until a restart
-		// has occurred
-		if(dojo.off.requireOfflineCache == true
-			&& dojo.off.hasOfflineCache == true
+		// to be able to use this web app offline
+		if(dojo.off.hasOfflineCache == true
 			&& dojo.off.browserRestart == true){
 			this._needsBrowserRestart();
 			return;
@@ -260,7 +255,7 @@ dojo.lang.mixin(dojo.off.ui, {
 	},
 
 	_initialize: function(){
-		dojo.debug("dojo.off.ui._initialize");
+		//dojo.debug("dojo.off.ui._initialize");
 		// make sure our app name is correct
 		if(this._validateAppName(this.appName) == false){
 			alert("You must set dojo.off.ui.appName; it can only contain "
@@ -301,7 +296,7 @@ dojo.lang.mixin(dojo.off.ui, {
 	},
 	
 	_doAutoEmbed: function(){
-		dojo.debug("dojo.off.ui._doAutoEmbed");
+		//dojo.debug("dojo.off.ui._doAutoEmbed");
 		// fetch our HTML for the offline widget
 		var templatePath = this.htmlTemplatePath;
 		var bindArgs = {
@@ -321,7 +316,7 @@ dojo.lang.mixin(dojo.off.ui, {
 	},
 	
 	_templateLoaded: function(type, data, evt){
-		dojo.debug("dojo.of.ui._templateLoaded");
+		//dojo.debug("dojo.of.ui._templateLoaded");
 		// inline our HTML
 		var container = dojo.byId(this.autoEmbedID);
 		if(container){
@@ -338,20 +333,14 @@ dojo.lang.mixin(dojo.off.ui, {
 		this._initLearnHow();
 		
 		// check offline cache settings
-		if(dojo.off.requireOfflineCache == true
-			&& dojo.off.hasOfflineCache == false){
+		if(dojo.off.hasOfflineCache == false){
 			this._showNeedsOfflineCache();
 			return;
 		}
 		
 		// check to see if we need a browser restart
-		// to be able to use this web app offline --
-		// some browsers can't see updates to a
-		// Proxy AutoConfig (PAC) file done after the
-		// browser has been loaded until a restart
-		// has occurred
-		if(dojo.off.requireOfflineCache == true
-			&& dojo.off.hasOfflineCache == true
+		// to be able to use this web app offline
+		if(dojo.off.hasOfflineCache == true
 			&& dojo.off.browserRestart == true){
 			this._needsBrowserRestart();
 			return;
@@ -427,7 +416,6 @@ dojo.lang.mixin(dojo.off.ui, {
 			// correctly based on framework settings
 			var dojoPath = djConfig.baseRelativePath;
 			this.learnHowPath += "?appName=" + encodeURIComponent(this.appName)
-									+ "&requireOfflineCache=" + dojo.off.requireOfflineCache
 									+ "&hasOfflineCache=" + dojo.off.hasOfflineCache
 									+ "&runLink=" + encodeURIComponent(this.runLink)
 									+ "&runLinkText=" + encodeURIComponent(this.runLinkText)
@@ -489,7 +477,7 @@ dojo.lang.mixin(dojo.off.ui, {
 			if(cancel){
 				cancel.style.display = "inline";
 			}
-		}else{		
+		}else{	
 			if(roller){
 				roller.style.display = "none";
 			}
@@ -502,9 +490,17 @@ dojo.lang.mixin(dojo.off.ui, {
 	
 	_setSyncMessage: function(message){
 		var syncMessage = dojo.byId("dot-sync-messages");
-		
 		if(syncMessage){
-			syncMessage.innerHTML = message;
+			// when used with Google Gears pre-release in Firefox/Mac OS X,
+			// the browser would crash when testing in Moxie
+			// if we set the message this way for some reason.
+			// Brad Neuberg, bkn3@columbia.edu
+			//syncMessage.innerHTML = message;
+			
+			while(syncMessage.firstChild != null){
+				syncMessage.removeChild(syncMessage.firstChild);
+			}
+			syncMessage.appendChild(document.createTextNode(message));
 		}
 	},
 	
