@@ -3,14 +3,16 @@ dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.lfx.*");
-dojo.require("dojo.storage.*");
+dojo.require("dojo.storage.Gears");
+dojo.require("dojo.json");
+
 
 var TestStorage = {
 	currentProvider: "default",
 	currentNamespace: dojo.storage.DEFAULT_NAMESPACE,
 	
 	initialize: function(){
-		dojo.debug("test_storage.initialize()");
+		//dojo.debug("test_storage.initialize()");
 		
 		// clear out old values and enable input forms
 		dojo.byId("storageNamespace").value = this.currentNamespace;
@@ -359,6 +361,11 @@ var TestStorage = {
 			results = dojo.storage.get(key);
 		}else{
 			results = dojo.storage.get(key, this.currentNamespace);
+		}
+		
+		// jsonify it if it is a JavaScript object
+		if(typeof results != "string"){
+			results = dojo.json.serialize(results);
 		}
 		
 		// print out its value

@@ -12,28 +12,6 @@ window.onload = function(){
 	appNameSpan.innerHTML = "";
 	appNameSpan.appendChild(document.createTextNode(appName));
 	
-	// get whether we need an offline cache
-	var requireOfflineCache = true;
-	matches = href.match(/requireOfflineCache=(true|false)/);
-	if(matches && matches.length > 0){
-		requireOfflineCache = matches[1];
-		// transform from string to boolean
-		requireOfflineCache = (requireOfflineCache == "true") ? true : false;
-	}
-	
-	// update UI based on whether an offline cache is needed
-	if(requireOfflineCache == false){
-		// delete DOT reference
-		var toolkitInfo = document.getElementById("dot-toolkit-info");
-		toolkitInfo.parentNode.removeChild(toolkitInfo);
-		
-		// delete download and install steps
-		var downloadStep = document.getElementById("dot-download-step");
-		var installStep = document.getElementById("dot-install-step");
-		downloadStep.parentNode.removeChild(downloadStep);
-		installStep.parentNode.removeChild(installStep);
-	}
-	
 	// if we need an offline cache, and we already have one installed,
 	// update the UI
 	matches = href.match(/hasOfflineCache=(true|false)/);
@@ -43,7 +21,7 @@ window.onload = function(){
 		// convert to boolean
 		hasOfflineCache = (hasOfflineCache == "true") ? true : false;
 	}
-	if(requireOfflineCache == true && hasOfflineCache == true){
+	if(hasOfflineCache == true){
 		// delete the download and install steps
 		var downloadStep = document.getElementById("dot-download-step");
 		var installStep = document.getElementById("dot-install-step");
@@ -68,13 +46,17 @@ window.onload = function(){
 	matches = href.match(/baseRelativePath=([^\&]*)/);
 	if(matches && matches.length > 0){
 		var baseRelativePath = decodeURIComponent(matches[1]);
-		var winDownloadElem = document.getElementById("dot-windows-download");
-		var macIntelDownloadElem = document.getElementById("dot-mac-intel-download");
 		
-		var winDownload = baseRelativePath + "src/dot/proxy-build/win/Install%20Dojo%20Offline.exe";
-		var macIntelDownload = baseRelativePath + "src/dot/proxy-build/mac/x86/Install%20Dojo%20Offline.dmg";
+		var winDownloadElem = document.getElementById("dot-windows-download");
+		var macDownloadElem = document.getElementById("dot-mac-download");
+		var linuxDownloadElem = document.getElementById("dot-linux-download");
+		
+		var winDownload = baseRelativePath + "src/dot/installers/scour-win32.msi";
+		var macDownload = baseRelativePath + "src/dot/installers/scour-osx.xpi";
+		var linuxDownload = baseRelativePath + "src/dot/installers/scour-linux.xpi";
 		
 		winDownloadElem.setAttribute("href", winDownload);
-		macIntelDownloadElem.setAttribute("href", macIntelDownload);
+		macDownloadElem.setAttribute("href", macDownload);
+		linuxDownloadElem.setAttribute("href", linuxDownload);
 	}
 }

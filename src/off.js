@@ -2,7 +2,8 @@ dojo.provide("dojo.off");
 
 dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
-dojo.require("dojo.storage.*");
+dojo.require("dojo.storage.Gears");
+dojo.require("dojo.sql");
 
 // Author: Brad Neuberg, bkn3@columbia.edu, http://codinginparadise.org
 
@@ -29,21 +30,6 @@ dojo.lang.mixin(dojo.off, {
 	//	true if we are online, false if not
 	isOnline: false,
 	
-	// requireOfflineCache: boolean
-	//	An offline cache is a cache that can correctly and
-	//	truely cache the UI resources of an application for
-	//	offline use, such as its HTML, JavaScript, etc. An
-	//	offline cache won't remove these files, for example. 
-	//	No browser's currently
-	//	support native offline cache's; FireFox 3 has plans
-	//	for one. If true, then we require an offline cache,
-	//	and must either install one or have one natively
-	//	supported by this browser; if false, then we will
-	//	rely on the browser's ordinary cache, which can be
-	//	made to work but is not always reliable. Defaults to
-	//	true.
-	requireOfflineCache: true,
-	
 	// availabilityURL: String
 	//	The URL to check for site availability. 
 	//	We do a GET request
@@ -52,15 +38,6 @@ dojo.lang.mixin(dojo.off, {
 	//	in src/off/network_check.txt that has one value
 	//	it, the value '1'.
 	availabilityURL: djConfig.baseRelativePath + "src/off/network_check.txt",
-	
-	// pacTestURL: String
-	//	The URL to use to check to see if our PAC file 
-	//	(Proxy AutoConfig) has an entry for this web 
-	//	application. If it doesn't, then we will end up
-	//	retrieving the version off our web server. If it does,
-	//	the PAC file will redirect it to the local proxy, which
-	//	will return a different version.
-	pacTestURL: djConfig.baseRelativePath + "src/off/pac_check.txt",
 	
 	// goingOnline: boolean
 	//	True if we are attempting to go online, false otherwise
@@ -95,8 +72,6 @@ dojo.lang.mixin(dojo.off, {
 	//	existence of a new host added offline (from a call to
 	//	addHostOffline); if false, then nothing is needed.
 	browserRestart: false,
-	
-	_OFFLINE_CACHE_URL: "http://localhost:8123/polipo/offline?",
 	
 	_onLoadListeners: new Array(),
 	_initializeCalled: false,
@@ -133,13 +108,10 @@ dojo.lang.mixin(dojo.off, {
 		
 		this.goingOnline = false;
 		this.isOnline = false;
-		
-		// if we have a local proxy tell it our new network
-		// status
-		this._tellCacheNetworkStatus(false, this.onOffline);
 	},
 	
 	goOnline: function(finishedCallback){ /* void */
+		//dojo.debug("goOnline");
 		// summary:
 		//	Attempts to go online.
 		// description:
@@ -280,71 +252,6 @@ dojo.lang.mixin(dojo.off, {
 		//	to begin using this offline cache.
 	},
 	
-	addOfflineHost: function(resultsCallback /* Function(successful) */){
-		// summary:
-		//	Makes the this web application's host name, such as 
-		//  "sitepen.com", offline-enabled with a true offline cache.
-		// description:
-		//  If a true offline cache is available on this platform, this
-		//  means this hosts resources are made truly available
-		//  offline and will not disappear from the offline cache
-		//  as it might from a browser cache. The host name this
-		//  page was served from is the host that is used, such
-		//  as "sitepen.com".
-		// resultsCallback:
-		//  A Function that will be called with the results of this
-		//  add attempt; if it was successful, you will get true; if
-		//  not, you will receive false
-		if(this.requireOfflineCache == false){
-			resultsCallback(true);
-		}
-		
-		if(this.hasOfflineCache != true){
-			resultsCallback(false);
-		}
-		
-		this._talkToOfflineCache("addOfflineHost", resultsCallback);
-	},
-	
-	removeOfflineHost: function(resultsCallback /* Function(successful) */){
-		// summary:
-		//	Removes this web application's host name, such as "sitepen.com",
-		//  from being offline enabled.
-		// description:
-		//  If a true offline cache is available on this platform, this
-		//  means this hosts resources are made truly available
-		//  offline and will not disappear from the offline cache
-		//  as it might from a browser cache. The host name this
-		//  page was served from is the host that is used, such
-		//  as "sitepen.com".
-		// resultsCallback:
-		//  A Function that will be called with the results of this
-		//  remove attempt; if it was successful, you will get true; if
-		//  not, you will receive false
-		if(this.requireOfflineCache == false){
-			resultsCallback(true);
-		}
-		
-		if(this.hasOfflineCache != true){
-			resultsCallback(false);
-		}
-		
-		this._talkToOfflineCache("removeOfflineHost", resultsCallback);
-	},
-	
-	isHostAvailableOffline: function(resultsHandler /* function(availableOffline) */){
-		// summary:
-		//	Checks to see if this host is already available
-		//	in our offline list with a previous call to
-		//	addHostOffline().
-		// resultsHandler: function
-		//	Results callback with the asynchronous results; must
-		//	have one argument, which will be given a true or
-		//	false result based on whether this host is available
-		//	offline in our list of offline web apps
-		this._talkToOfflineCache("isHostAvailableOffline", resultsHandler);
-	},
-	
 	standardSaveHandler: function(status, isCoreSave, dataStore, item){
 		// summary:
 		//	Called by portions of the Dojo Offline framework
@@ -363,41 +270,69 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_checkOfflineCacheAvailable: function(finishedCallback){
-		var self = this;
-		
-		// is an true, offline cache running on this machine as a
-		// local web proxy distributed with DOT?
-		if(this.requireOfflineCache == false){
-			self.hasOfflineCache = false;
-			resultsCallback();
-			return;
+		// is a true, offline cache running on this machine?
+		if(typeof google != "undefined" 
+			&& google.scour && google.scour.factory){
+			this.hasOfflineCache = true;
+		}else{
+			this.hasOfflineCache = false;
 		}
 		
-		// give the local proxy 200 milliseconds to respond
-		var timer = setTimeout(function(){
-			self.hasOfflineCache = false;
-			finishedCallback();
-		}, 200);
-		
-		this._talkToOfflineCache("isRunning", function(results){
-			self.hasOfflineCache = true;
-			window.clearTimeout(timer);
-			finishedCallback();
-		});
+		finishedCallback();
 	},
 	
 	_onLoad: function(){
 		//dojo.debug("dojo.off._onLoad");
 		// both local storage and the page are finished loading
 		
+		// initialize Scour
+		this._initScour();
+		
+		// cache the Dojo JavaScript -- just use the default dojo.js
+		// name for the most common scenario
+		// FIXME: TEST: Make sure syncing doesn't break if dojo.js
+		// can't be found, or report an error to developer
+		dojo.off.files.cache([djConfig.baseRelativePath + "dojo.js"]);
+		
 		// make sure that resources needed by all of our underlying
 		// Dojo Storage storage providers will be available
 		// offline
 		dojo.off.files.cache(dojo.storage.manager.getResourceList());
 		
+		// workaround or else we will get an error on page load
+		// from Dojo that it can't find 'dojo.debug' for optimized builds
+		dojo.off.files.cache(djConfig.baseRelativePath + "src/debug.js");
+		
+		// if we are debugging, we must individually add all dojo.require()
+		// JS files to offline cache
+		this._initDebugResources();
+		
 		// load framework data; when we are finished, continue
 		// initializing ourselves
 		this.load(dojo.lang.hitch(this, this._onFrameworkDataLoaded));
+	},
+	
+	// FIXME: Move this into the Dojo hostenv code
+	_initScour: function(){
+		google = new Object();
+		google.scour = new Object();
+		google.scour.factory = null;
+		
+		try{
+			google.scour.factory = new ActiveXObject("Scour.Factory");
+			return;
+		}catch(e){
+			// ignore
+		}
+		
+		if(typeof ScourFactory != "undefined"){
+			google.scour.factory = new ScourFactory();
+			return;
+		}
+
+		if(google.scour.factory == null){
+			google = undefined;
+		}
 	},
 	
 	_onFrameworkDataLoaded: function(){
@@ -419,7 +354,7 @@ dojo.lang.mixin(dojo.off, {
 		// if we have an offline cache, see if we have been added to the 
 		// list of available offline web apps yet
 		if(this.hasOfflineCache == true){
-			this.isHostAvailableOffline(dojo.lang.hitch(this, this._onHostAvailabilityChecked));
+			this._finishStartingUp();
 		}else{
 			this._keepCheckingUntilInstalled();
 		}
@@ -432,44 +367,10 @@ dojo.lang.mixin(dojo.off, {
 		// checking to see if an offline cache has been
 		// installed since this page loaded
 			
-		
-		var installInterval = window.setInterval(dojo.lang.hitch(this, function(){
-			// see if we are available yet
-			this._checkOfflineCacheAvailable(dojo.lang.hitch(this, function(){
-				if(this.hasOfflineCache == true){
-					window.clearTimeout(installInterval);
-					this._onOfflineCacheInstalled();
-				}
-			}));
-		}), 1000);
+		// FIXME: SCOUR: See if we are installed somehow
 		
 		// now continue starting up
 		this._finishStartingUp();
-	},
-	
-	_onHostAvailabilityChecked: function(availableOffline){
-		// this method is part of our _onLoad series of startup tasks
-		
-		// if we are not available offline, try to add ourselves 
-		// to the list of available offline web apps
-		if(availableOffline == false){
-			this.addOfflineHost(dojo.lang.hitch(this, this._onHostAdded));
-		}else{
-			// see if we are in the PAC file yet
-			this._checkPAC(dojo.lang.hitch(this, this._finishStartingUp));
-		}
-	},
-	
-	_onHostAdded: function(){
-		// this method is part of our _onLoad series of startup tasks
-		
-		// FIXME: We should deal with the situation where
-		// the local proxy _couldnt_ add this host correctly
-		
-		// see if our PAC file (Proxy AutoConfig) has this web application
-		// in its list yet -- it might not, if we just added it, which means
-		// the browser won't see it until it is restarted
-		this._checkPAC(dojo.lang.hitch(this, this._finishStartingUp));
 	},
 	
 	_finishStartingUp: function(){
@@ -510,6 +411,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_isSiteAvailable: function(finishedCallback){
+		//dojo.debug("isSiteAvailable");
 		// summary:
 		//	Determines if our web application's website
 		//	is available.
@@ -544,15 +446,11 @@ dojo.lang.mixin(dojo.off, {
 				self.goingOnline = false;
 				self.isOnline = true;
 				
-				// if we have a local proxy tell it our new network
-				// status
-				self._tellCacheNetworkStatus(true, function(){
-					if(finishedCallback){
-						finishedCallback(true);
-					}else if(self.onOnline){
-						self.onOnline();
-					}
-				});
+				if(finishedCallback){
+					finishedCallback(true);
+				}else if(self.onOnline){
+					self.onOnline();
+				}
 			}
 		};
 		
@@ -561,6 +459,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_startNetworkThread: function(){
+		//dojo.debug("startNetworkThread");
 		// kick off a thread that does periodic
 		// checks on the status of the network
 		if(this.doNetworkChecking == false){
@@ -576,20 +475,14 @@ dojo.lang.mixin(dojo.off, {
 					//dojo.debug("dojo.off.networkThread.error, type="+type+", errObj="+errObj);
 					if(dojo.off.isOnline == true){
 						dojo.off.isOnline = false;
-						// if we have a local proxy tell it our new network
-						// status
-						dojo.off._tellCacheNetworkStatus(false, 
-										dojo.lang.hitch(dojo.off, dojo.off.onOffline));
+						dojo.off.onOffline();
 					}
 				},
 				load:		function(type, data, evt){
 					//dojo.debug("dojo.off.networkThread.load, type="+type+", data="+data+", evt="+evt);	
 					if(dojo.off.isOnline == false){
 						dojo.off.isOnline = true;
-						// if we have a local proxy tell it our new network
-						// status
-						dojo.off._tellCacheNetworkStatus(true, 
-										dojo.lang.hitch(dojo.off, dojo.off.onOnline));
+						dojo.off.onOnline();
 					}
 				}
 			};
@@ -601,129 +494,56 @@ dojo.lang.mixin(dojo.off, {
 	
 	_getAvailabilityURL: function(){
 		var url = this.availabilityURL;
-		// bust the proxy cache to make sure we are really talking to
+		
+		// bust the browser's cache to make sure we are really talking to
 		// the server
 		if(url.indexOf("?") == -1){
 			url += "?";
 		}else{
 			url += "&";
 		}
-		url += "proxybust=" + new Date().getTime();
+		url += "browserbust=" + new Date().getTime();
 		
 		return url;
 	},
 	
-	_tellCacheNetworkStatus: function(isOnline, finishedCallback){
-		if(this.requireOfflineCache == false
-			|| this.hasOfflineCache == false){
-			if(finishedCallback){
-				finishedCallback();
-			}
+	_onOfflineCacheInstalled: function(){
+		if(this.onOfflineCacheInstalled){
+			this.onOfflineCacheInstalled();
+		}
+	},
+	
+	_initDebugResources: function(){
+		// if we are debugging, we must add all of the 
+		// individual dojo.require() JS files to our offline
+		// cache list
+		if(djConfig.isDebug == false){
 			return;
 		}
 		
-		var methodName;
-		
-		// tell our local proxy what our network status is
-		if(isOnline == true){ /* we just went online */
-			methodName = "goOnline";
-		}else{ /* we just went offline */
-			methodName = "goOffline";
+		var addMe = new Array();
+		dojo.debug(dojo.hostenv.loaded_modules_);
+		for(var moduleName in dojo.hostenv.loaded_modules_){
+			// convert periods to slashes
+			var relpath = moduleName.replace(/\./g, '/') + '.js';
+			
+			// convert * into __package__
+			relpath = relpath.replace(/\*/, '__package__');
+			
+			// convert dojo/ into src/
+			// FIXME: Is this kosher? Also, will this break
+			// for external modules that aren't under dojo/
+			// namespace?
+			relpath = relpath.replace(/dojo\//, "src/");
+			
+			// convert into a path we can use
+			var path = dojo.hostenv.getBaseScriptUri() + relpath;
+			
+			addMe.push(path);
 		}
 		
-		this._talkToOfflineCache(methodName, function(method, results){
-			if(finishedCallback){
-				finishedCallback();
-			}
-		});
-	},
-	
-	_talkToOfflineCache: function(methodName, resultsCallback){
-		//dojo.debug("talkToOfflineCache, methodName="+methodName);
-		// causes us to talk to our local proxy that is running on
-		// localhost, communicating to it through it's API that
-		// is exposed by us calling it through JSONP
-		var head = document.getElementsByTagName("head")[0];
-		var script = document.createElement("script");
-		var url = this._OFFLINE_CACHE_URL + methodName;
-		script.setAttribute("src", url);
-		window.offlineCacheCallback = function(name, results){
-			if(name == "UnknownMethod"){
-				dojo.raise("Programming error in dojo.off._talkToOfflineCache: " + name);
-				return;
-			}
-			
-			// avoid memory leaks on IE
-			head = null;
-			script = null;
-			
-			resultsCallback(results);
-		}
-		
-		head.appendChild(script);
-	},
-	
-	_checkPAC: function(resultsCallback){
-		// The basic idea here is to see if the browser's
-		// current PAC file (Proxy AutoConfig), which should
-		// be set to a generated file created by the local 
-		// Dojo Offline Proxy, has our web application in its
-		// list of web apps yet. Browsers currently only refresh
-		// their PAC file on browser startup, so if we have added
-		// this web app during this browser session a browser
-		// restart will be necessary for the browser to pick it up.
-		// To detect this, we grab a file given by dojo.off.pacTestURL. If
-		// our PAC file doesn't have our web app yet, then this file
-		// will simply be a text file pulled off our web server 
-		// containing the string "the web application is not in PAC file". 
-		// If it is in our PAC file, the browser will end up talking to 
-		// the local proxy instead of the web server, and the local 
-		// proxy will return the magic string 
-		// "the web application is inside the PAC file"
-		
-		var bindArgs = {
-			url:	 dojo.off.pacTestURL 
-								+ "?browserbust=" + new Date().getTime(),
-			sync:		false,
-			mimetype:	"text/plain",
-			error:		function(type, errObj){
-				//dojo.debug("_checkPac, type="+type+", errObj="+errObj);
-				dojo.off.browserRestart = false;
-				resultsCallback();
-			},
-			load:		function(type, data, evt){
-				//dojo.debug("_checkPac, load, data="+data);
-				if(data.indexOf("the web application is not in PAC file") != -1){
-					dojo.off.browserRestart = true;
-				}else{
-					dojo.off.browserRestart = false;
-				}
-				resultsCallback();
-			}
-		};
-		
-		// dispatch the request
-		dojo.io.bind(bindArgs);
-	},
-	
-	_onOfflineCacheInstalled: function(){
-		// try to add ourselves offline now
-		this.addOfflineHost(dojo.lang.hitch(this, function(){
-			// FIXME: We should deal with the situation where
-			// the local proxy _couldnt_ add this host correctly
-		
-			// see if our PAC file (Proxy AutoConfig) has this web application
-			// in its list yet -- it might not, if we just added it, which means
-			// the browser won't see it until it is restarted
-			this._checkPAC(dojo.lang.hitch(this, function(){
-				// finally, call any listeners that were waiting to
-				// know whether an offline cache has been installed
-				// since the page loaded
-				if(this.onOfflineCacheInstalled){
-					this.onOfflineCacheInstalled();
-				}
-			}));
-		}));
+		// add these to our offline cache
+		dojo.off.files.cache(addMe);
 	}
 });
 

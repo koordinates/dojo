@@ -4,11 +4,5 @@ All contents of this directory are Copyright (c) the Dojo Foundation, with the
 following exceptions:
 -------------------------------------------------------------------------------
 
-polipo/ directory
-	* Copyright 2003-2007, Juliusz Chroboczek
-	  Distributed under the terms of an MIT-like License; see
-	  polipo/COPYING for the full license text
-
-sqlite/ directory
-	* Completely under the public domain, no rights reserved
-	Taken from http://www.sqlite.org/
+installers/ directory
+	* Copyright Google, available under BSD license

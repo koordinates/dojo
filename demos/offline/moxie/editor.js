@@ -4,7 +4,7 @@ dojo.require("dojo.io.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.widget.Editor2");
-dojo.require("dojo.storage.*");
+dojo.require("dojo.storage.Gears");
 dojo.require("dojo.off.*");
 dojo.require("dojo.off.ui");
 dojo.require("dojo.sync");
@@ -20,11 +20,6 @@ dojo.off.files.cache([
 					"editor.html",
 					"editor.js",
 					"about.html"
-					]);
-
-// Dojo resources
-dojo.off.files.cache([
-					djConfig.baseRelativePath + "dojo.js"
 					]);
 					
 // The Dojo Editor Widget's resources
@@ -42,7 +37,7 @@ var Moxie = {
 	_documents: null,
 
 	initialize: function(){
-		dojo.debug("Moxie.initialize");
+		//dojo.debug("Moxie.initialize");
 		
 		// clear out old values
 		dojo.byId("storageKey").value = "";
@@ -279,13 +274,11 @@ var Moxie = {
 	_loadOnline: function(key){
 		// get the value from the server
 		var self = this;
-		// add 'proxybust' to the URL to make sure we get a fresh
+		// add 'cachebust' to the URL to make sure we get a fresh
 		// copy that is not returned from either the browser's cache
-		// or the local offline proxy's cache -- proxybust is a magic
-		// string that will bypass the local proxy, and also trick the
-		// browser
+		// or the local offline proxy's cache
 		var url = "/moxie/" + encodeURIComponent(key) 
-					+ "?proxybust=" + new Date().getTime(); 
+					+ "?cachebust=" + new Date().getTime(); 
 		var bindArgs = {
 			url:	 url,
 			sync:		false,
@@ -376,13 +369,11 @@ var Moxie = {
 	
 	_downloadData: function(){
 		var self = this;
-		// add 'proxybust' to the URL to make sure we get a fresh
+		// add 'cachebust' to the URL to make sure we get a fresh
 		// copy that is not returned from either the browser's cache
-		// or the local offline proxy's cache -- proxybust is a magic
-		// string that will bypass the local proxy, and also trick the
-		// browser
+		// or the local offline proxy's cache
 		var bindArgs = {
-			url:	 "/moxie/download?proxybust=" + new Date().getTime(),
+			url:	 "/moxie/download?cachebust=" + new Date().getTime(),
 			sync:		false,
 			mimetype:	"text/javascript",
 			headers:	{ "Accept" : "text/javascript" },
@@ -393,7 +384,7 @@ var Moxie = {
 				dojo.sync.finishedDownloading(false, message);
 			},
 			load:		function(type, data, evt){
-				//dojo.debug("Moxie._downloadData.load, type="+type+", evt="+evt);	
+				//dojo.debug("Moxie._downloadData.load, type="+type+", evt="+evt);
 				self._saveDownloadedData(data);
 			}
 		};

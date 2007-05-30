@@ -710,38 +710,6 @@ build targets:
 	<target name="offline">
 		<!-- Build Moxie -->
 		<antcall target="offline-moxie"/>
-				
-		<!-- 
-			Call our local proxy tasks
-			in such a way that they won't cause the
-			entire release task to fail.
-			See src/dot/README for build tools
-			necessary for this to work.
-		-->
-		<script language="javascript">
-			<![CDATA[
-			function echo(msg){
-				var echo = dojo.createTask("echo");
-				echo.setMessage(msg);
-				echo.execute();
-			}
-			
-			function antCall(target){
-				var antCall = dojo.createTask("antcall");
-				antCall.setTarget(target);
-				antCall.execute();
-			}
-
-			try{
-				echo();
-				antCall("offlineRuntime");
-			}catch(exp){
-				echo("WARNING: 'offlineRuntime' could not run");
-				echo("Unable to rebuild local offline proxy for Windows and Mac OS X/Intel");
-				echo("Please see src/dot/README for build details");
-			}
-		]]>
-		</script>	
 		
 		<!-- Build Moxie's server-side -->
 		<script language="javascript">
@@ -838,43 +806,7 @@ build targets:
 		</replaceregexp>
 	</target>
 	<!-- end of offline-js task -->
-	
-	<!-- offlineRuntime task -->
-	<target name="offlineRuntime">
-		<echo message="Creating Dojo Offline client runtimes..."/>
-		
-		<echo message="Compiling local proxy for Mac OS X/Intel and Windows..."/>
-		<antcall target="buildLocalProxy"/>
-		
-		<echo message="Creating Mac OS X Installer/Uninstaller..."/>
-		<antcall target="offlineRuntimeMacInstaller"/>
-	</target>
-	<!-- end offlineRuntime task -->
-	
-	<!-- buildLocalProxy task -->
-	<target name="buildLocalProxy">
-		<exec executable="make"
-				dir="${root}/src/dot"
-				failonerror="true">
-			<arg value="all"/>
-		</exec>
-	</target>
-	<!-- end buildLocalProxy task -->
-	
-	<!-- offlineRuntimeMacInstaller task - makes the Mac installer
-			for Dojo Offline -->
-	<target name="offlineRuntimeMacInstaller">
-		<exec executable="make" 
-				dir="${root}/src/dot"
-				failonerror="true"
-				newenvironment="true"
-				vmlauncher="false">
-			<arg value="mac-install-make"/>
-			<arg value="VERSION=${version}"/>
-		</exec>
-	</target>
-	<!-- end offlineRuntimeMacInstaller task -->
-	
+
 	<!-- moxie task -->
 	<target name="moxie">
 		<!-- We need to use the EditorToolbarOnline.html file,
