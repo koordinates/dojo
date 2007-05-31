@@ -116,6 +116,18 @@ dojo.hostenv.loadUri = function(/*String (URL)*/uri, /*Function?*/cb){
 	if(this.loadedUris[uri]){
 		return true; // Boolean
 	}
+	
+	// keep track of uris that need to be loaded, so that we can 
+	// support using this dojo application offline if we are
+	// in debug mode. inside of dojo.off._initDebugResources()
+	// we use this list to cache all of these Dojo JS files
+	// if we are in debug mode. Brad Neuberg, bkn3@columbia.edu
+	if(typeof dojo.hostenv.loadedUris == "undefined"){
+		dojo.hostenv.loadedUris = new Array();
+	}
+	
+	dojo.hostenv.loadedUris.push(uri);
+	
 	var contents = this.getText(uri, null, true);
 	if(!contents){ return false; } // Boolean
 	this.loadedUris[uri] = true;
