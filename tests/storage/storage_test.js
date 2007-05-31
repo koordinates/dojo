@@ -17,6 +17,8 @@ var TestStorage = {
 		dojo.byId("storageKey").disabled = false;
 		dojo.byId("storageValue").value = "";
 		dojo.byId("storageValue").disabled = false;
+		dojo.byId("flushDelay").disabled = false;
+		dojo.byId("flushDelay").value = String(dojo.flash.comm.getFlushDelay());
 		
 		// write out our available keys
 		this._printAvailableKeys();
@@ -26,6 +28,9 @@ var TestStorage = {
 		dojo.event.connect(directory, "onchange", this, this.directoryChange);
 		var storageValueElem = dojo.byId("storageValue");
 		dojo.event.connect(storageValueElem, "onkeyup", this, this.printValueSize);
+
+		var flushDelayInput = dojo.byId("flushDelay");
+		dojo.event.connect(flushDelayInput, "onblur", this, this.updateFlushDelay);
 		
 		// make the directory be unselected if the key name field gets focus
 		var keyNameField = dojo.byId("storageKey");
@@ -114,7 +119,22 @@ var TestStorage = {
 		this.printValueSize(); 
 		
 		// do the save
-		this._save(key, value)
+		this._save(key, value);
+	},
+	
+	updateFlushDelay: function(){
+		//	Let the underlying objects throw an exception if a value is wrong - so we can test them for rubustness as well
+		var newDelay = Number(dojo.byId("flushDelay").value);
+		dojo.storage.setFlushDelay(newDelay);
+	},
+	
+	flush: function(evt){
+		// cancel the button's default behavior
+		evt.preventDefault();
+		evt.stopPropagation();
+		
+		// do the flush
+		dojo.storage.flush();
 	},
 	
 	clear: function(evt){

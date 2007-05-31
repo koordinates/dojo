@@ -103,6 +103,22 @@ dojo.lang.extend(dojo.storage.browser.FileStorageProvider, {
 		return this._available;
 	},
 
+	setFlushDelay: function(newDelay){
+		if(newDelay === null || typeof newDelay === "undefined" || !dojo.lang.isNumber(newDelay) || isNaN(newDelay)){
+			dojo.raise("Invalid argunment: " + newDelay);
+		}
+		
+		dojo.flash.comm.setFlushDelay(String(newDelay));
+	},
+	
+	getFlushDelay: function(){
+		return Number(dojo.flash.comm.getFlushDelay());
+	},
+	
+	flush: function(){
+		dojo.flash.comm.flush(this.namespace);
+	},
+
 	put: function(key, value, resultsHandler){
 		if(this.isValidKey(key) == false){
 			dojo.raise("Invalid key given: " + key);
