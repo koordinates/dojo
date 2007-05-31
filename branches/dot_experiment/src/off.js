@@ -516,34 +516,29 @@ dojo.lang.mixin(dojo.off, {
 	_initDebugResources: function(){
 		// if we are debugging, we must add all of the 
 		// individual dojo.require() JS files to our offline
-		// cache list
+		// cache list so that this app will load while offline
+		// even when we are debugging. we want to do this in 
+		// such a way that we don't hard code them here.
 		if(djConfig.isDebug == false){
 			return;
 		}
 		
-		var addMe = new Array();
-		dojo.debug(dojo.hostenv.loaded_modules_);
-		for(var moduleName in dojo.hostenv.loaded_modules_){
-			// convert periods to slashes
-			var relpath = moduleName.replace(/\./g, '/') + '.js';
-			
-			// convert * into __package__
-			relpath = relpath.replace(/\*/, '__package__');
-			
-			// convert dojo/ into src/
-			// FIXME: Is this kosher? Also, will this break
-			// for external modules that aren't under dojo/
-			// namespace?
-			relpath = relpath.replace(/dojo\//, "src/");
-			
-			// convert into a path we can use
-			var path = dojo.hostenv.getBaseScriptUri() + relpath;
-			
-			addMe.push(path);
-		}
+		// make sure the dojo bootstrap system is available offline
+		dojo.off.files.cache(djConfig.baseRelativePath + "src/bootstrap1.js");
+		dojo.off.files.cache(djConfig.baseRelativePath + "src/loader.js");
+		// FIXME: make this more generic for non-browser host environments
+		dojo.off.files.cache(djConfig.baseRelativePath + "src/hostenv_browser.js");
 		
-		// add these to our offline cache
-		dojo.off.files.cache(addMe);
+		// in src/loader.js, in the function 
+		// dojo.hostenv.loadUri, we added code to capture
+		// any uris that were loaded for dojo packages
+		// with calls to dojo.require()
+		// so we can add them to our list of captured
+		// files here
+		if(typeof dojo.hostenv.loadedUris != "undefined"
+			&& dojo.hostenv.loadedUris.length > 0){
+			dojo.off.files.cache(dojo.hostenv.loadedUris);
+		}
 	}
 });
 
