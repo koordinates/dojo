@@ -294,18 +294,18 @@ dojo.lang.mixin(dojo.off, {
 		// can't be found, or report an error to developer
 		dojo.off.files.cache([djConfig.baseRelativePath + "dojo.js"]);
 		
-		// make sure that resources needed by all of our underlying
-		// Dojo Storage storage providers will be available
-		// offline
-		dojo.off.files.cache(dojo.storage.manager.getResourceList());
+		// if we are debugging, we must individually add all dojo.require()
+		// JS files to offline cache
+		this._initDebugResources();
 		
 		// workaround or else we will get an error on page load
 		// from Dojo that it can't find 'dojo.debug' for optimized builds
 		dojo.off.files.cache(djConfig.baseRelativePath + "src/debug.js");
 		
-		// if we are debugging, we must individually add all dojo.require()
-		// JS files to offline cache
-		this._initDebugResources();
+		// make sure that resources needed by all of our underlying
+		// Dojo Storage storage providers will be available
+		// offline
+		dojo.off.files.cache(dojo.storage.manager.getResourceList());
 		
 		// load framework data; when we are finished, continue
 		// initializing ourselves
@@ -531,7 +531,7 @@ dojo.lang.mixin(dojo.off, {
 		
 		// in src/loader.js, in the function 
 		// dojo.hostenv.loadUri, we added code to capture
-		// any uris that were loaded for dojo packages
+		// any uris that fwere loaded for dojo packages
 		// with calls to dojo.require()
 		// so we can add them to our list of captured
 		// files here
