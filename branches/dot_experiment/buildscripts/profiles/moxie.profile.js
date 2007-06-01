@@ -24,7 +24,8 @@ var dependencies = [
 	"dojo.widget.Editor2Plugin.DialogCommands",
 	"dojo.lfx.shadow",
 	"dojo.flash",
-	"dojo.storage.*",
+	"dojo.storage",
+	"dojo.storage.Gears",
 	"dojo.off.*",
 	"dojo.off.ui",
 	"dojo.sync"
