@@ -35,10 +35,10 @@ dojo.io.XhrIframeProxy = {
 			//IE7 hack. Need to load server URL, and have that load the xip_client.html.
 			//Also, this server URL needs to different from the one eventually loaded by xip_client.html
 			//Otherwise, IE7 will not load it. Funky.
-			var fullClientUrl = window.location.href;
+			var fullClientUrl = window.location.href.split("#")[0].split("?")[0];
 			if((this.xipClientUrl + "").charAt(0) == "/"){
 				var endIndex = fullClientUrl.indexOf("://");
-				endIndex = fullClientUrl.indexOf("/", endIndex + 1);
+				endIndex = fullClientUrl.indexOf("/", endIndex + 3);
 				fullClientUrl = fullClientUrl.substring(0, endIndex);
 			}else{
 				fullClientUrl = fullClientUrl.substring(0, fullClientUrl.lastIndexOf("/") + 1);
