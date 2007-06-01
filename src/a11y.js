@@ -32,7 +32,7 @@ dojo.a11y = {
 	//		in IE and Mozilla. 
 		this.accessible = false; //default
 		if (dojo.render.html.ie || dojo.render.html.mozilla){
-			var div = document.createElement("div");
+			var div = dojo.doc().createElement("div");
 			//div.style.color="rgb(153,204,204)";
 			div.style.backgroundImage = "url(\"" + this.imgPath + "/tab_close.gif\")";
 			// must add to hierarchy before can view currentStyle below
@@ -42,8 +42,10 @@ dojo.a11y = {
 			// in FF the return value will be url(invalid-url:) when running over http 
 			var bkImg = null;
 			if (window.getComputedStyle  ) {
-				var cStyle = getComputedStyle(div, ""); 
-				bkImg = cStyle.getPropertyValue("background-image");
+				var cStyle = getComputedStyle(div, "");
+				if( cStyle && cStyle != null){
+					bkImg = cStyle.getPropertyValue("background-image");
+				}
 			}else{
 				bkImg = div.currentStyle.backgroundImage;
 			}
@@ -62,7 +64,7 @@ dojo.a11y = {
 					}
 				}	
 			}*/
-			dojo.body().removeChild(div);
+			dojo.html.destroyNode(div);
 		}
 		return this.accessible; /* Boolean */
 	},
