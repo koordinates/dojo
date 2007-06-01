@@ -227,7 +227,7 @@ dojo.lang.extend(dojo.storage.GearsStorageProvider, {
 	},
 	
 	getType: function(){
-		return "dojo.storage.GearsProvider";
+		return "dojo.storage.GearsStorageProvider";
 	}
 });
 
