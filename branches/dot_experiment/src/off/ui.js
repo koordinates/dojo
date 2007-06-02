@@ -169,7 +169,7 @@ dojo.lang.mixin(dojo.off.ui, {
 		// so that the user can orient themselves -
 		// 1 second
 		if(dojo.sync.autoSync == true){
-			window.setTimeout(dojo.lang.hitch(dojo.sync, dojo.sync.synchronize), 1000);
+			//window.setTimeout(dojo.lang.hitch(dojo.sync, dojo.sync.synchronize), 1000);
 		}
 	},
 	
@@ -252,6 +252,20 @@ dojo.lang.mixin(dojo.off.ui, {
 		
 		// try to go online
 		this._testNetwork();
+	},
+	
+	onCoreOperationFailed: function(){
+		// summary:
+		//	Called if the Dojo Offline machinery is denied
+		//	the ability to work with the offline cache for some
+		//	reason during an operation that is core to it's 
+		//	functionality. For example, if the offline cache
+		//	prompts the user to give permission to cache files
+		//	for offline use, as Google Gears does, and the user
+		//	selects 'deny', then we can not continue to function.
+		//	We 'fail fast' in this scenario so that we are in a
+		//	known state. This callback is called when this occurs.
+		alert("Application does not have permission to use Dojo Offline");
 	},
 
 	_initialize: function(){
@@ -664,10 +678,15 @@ dojo.lang.mixin(dojo.off.ui, {
 // occurred
 dojo.off.onSave = dojo.lang.hitch(dojo.off.ui, dojo.off.ui.onSave);
 
-// register ourselves to know when an offline cached has
+// register ourselves to know when an offline cache has
 // been installed even after the page is finished loading
 dojo.off.onOfflineCacheInstalled = 
 				dojo.lang.hitch(dojo.off.ui, dojo.off.ui.onOfflineCacheInstalled);
+
+// register ourselves to know if some core operation failed
+// or was denied by the user
+dojo.off.onCoreOperationFailed = dojo.lang.hitch(dojo.off.ui, 
+												dojo.off.ui.onCoreOperationFailed);
 
 // start our magic when the Dojo Offline framework is ready to go
 dojo.off.addOnLoad(dojo.lang.hitch(dojo.off.ui, dojo.off.ui._initialize));

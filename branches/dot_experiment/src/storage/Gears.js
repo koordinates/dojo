@@ -35,17 +35,25 @@ dojo.lang.extend(dojo.storage.GearsStorageProvider, {
 		}
 		
 		// create the table that holds our data
-		dojo.sql.open();
-		dojo.sql("CREATE TABLE IF NOT EXISTS " + this.TABLE_NAME + "( "
-					+ " namespace TEXT, "
-					+ " key TEXT UNIQUE, "
-					+ " value TEXT "
-					+ ")"
-				);
-		dojo.sql("CREATE UNIQUE INDEX IF NOT EXISTS namespace_key_index" 
-					+ " ON " + this.TABLE_NAME
-					+ " (namespace, key)");
-		dojo.sql.close();
+		try{
+			dojo.sql.open();
+			dojo.sql("CREATE TABLE IF NOT EXISTS " + this.TABLE_NAME + "( "
+						+ " namespace TEXT, "
+						+ " key TEXT UNIQUE, "
+						+ " value TEXT "
+						+ ")"
+					);
+			dojo.sql("CREATE UNIQUE INDEX IF NOT EXISTS namespace_key_index" 
+						+ " ON " + this.TABLE_NAME
+						+ " (namespace, key)");
+			dojo.sql.close();
+		}catch(e){
+			dojo.debug("dojo.storage.Gears.initialize: " + e);
+			
+			this.initialized = false; // we were unable to initialize
+			dojo.storage.manager.loaded();
+			return;
+		}
 		
 		// indicate that this storage provider is now loaded
 		this.initialized = true;

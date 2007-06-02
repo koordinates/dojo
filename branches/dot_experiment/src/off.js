@@ -43,12 +43,19 @@ dojo.lang.mixin(dojo.off, {
 	//	True if we are attempting to go online, false otherwise
 	goingOnline: false,
 	
-	// coreSaveFailed: boolean
+	// coreOperationFailed: boolean
 	//	A flag set by the Dojo Offline framework that indicates
-	//	that saving a piece of important core data failed. This
-	//	flag causes a 'fail fast' condition, turning off offline
-	//	ability.
-	coreSaveFailed: false,
+	//	that the user denied some operation that required the
+	//	offline cache or an operation failed in some critical
+	//	way that was unrecoverable. For example, if the offline cache is
+	//	Google Gears and we try to get a Gears database, a
+	//	popup window appears asking the user whether they
+	//	will approve or deny this request. If the user denies
+	//	the request, and we are doing some operation that is
+	//	core to Dojo Offline, then we set this flag to 'true'. 
+	//	This flag causes a 'fail fast' condition, turning off 
+	//	offline ability.
+	coreOperationFailed: false,
 	
 	// doNetworkChecking: boolean
 	//	Whether to have a timing interval in the background doing
@@ -176,7 +183,7 @@ dojo.lang.mixin(dojo.off, {
 		// summary:
 		//	Causes the Dojo Offline framework to load its configuration data
 		//	from local storage
-		dojo.sync.load(finishedCallback);
+		//dojo.sync.load(finishedCallback);
 	},
 	
 	initialize: function(){ /* void */
@@ -225,7 +232,7 @@ dojo.lang.mixin(dojo.off, {
 		//	the functioning of Dojo Offline. If false, then it is a piece of
 		//	normal data being saved for offline access. Dojo Offline will
 		//	'fail fast' if some core piece of data could not be saved, automatically
-		//	setting dojo.off.coreSaveFailed to 'true' and dojo.off.enabled to 'false'.
+		//	setting dojo.off.coreOperationFailed to 'true' and dojo.off.enabled to 'false'.
 		// status: dojo.storage.SUCCESS, dojo.storage.PENDING, dojo.storage.FAILED
 		//	Whether the save succeeded, whether it is pending based on a UI dialog
 		//	asking the user for permission, or whether it failed.
@@ -237,10 +244,11 @@ dojo.lang.mixin(dojo.off, {
 		//	The Dojo Storage namespace we are saving this key/value pair
 		//	into, such as "default", "Documents", "Contacts", etc. Optional.
 		if(isCoreSave == true && status == dojo.storage.FAILED){
-			dojo.off.coreSaveFailed = true;
-			dojo.off.enabled = false;
+			dojo.off.coreOperationFailed = true;
+			dojo.off.enabledabled = false;
 			
 			// FIXME: Stop the background network thread
+			dojo.off.onCoreOperationFailed();
 		}
 	},
 	
@@ -255,6 +263,18 @@ dojo.lang.mixin(dojo.off, {
 		//	to begin using this offline cache.
 	},
 	
+	onCoreOperationFailed: function(){
+		// summary:
+		//	Called when a core operation during interaction with the
+		//	offline cache is denied by the user. Some offline caches,
+		//	such as Google Gears, prompts the user to approve or deny
+		//	caching files, using the database, and more. If the user 
+		//	denies a request that is core to Dojo Offline's operation,
+		//	we set dojo.off.coreOperationFailed to true and call this
+		//	method for listeners that would like to respond some how
+		//	to Dojo Offline 'failing fast'.
+	},
+	
 	standardSaveHandler: function(status, isCoreSave, dataStore, item){
 		// summary:
 		//	Called by portions of the Dojo Offline framework
@@ -263,7 +283,7 @@ dojo.lang.mixin(dojo.off, {
 		//	of the Dojo Offline package.
 		if(status == dojo.storage.FAILED
 			&& isCoreSave == true){
-			this.coreSaveFailed = true;
+			this.coreOperationFailed = true;
 			this.enabled = false;	
 		}
 		
@@ -280,7 +300,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_onLoad: function(){
-		//dojo.debug("dojo.off._onLoad");
+		dojo.debug("dojo.off._onLoad");
 		// both local storage and the page are finished loading
 		
 		// cache the Dojo JavaScript -- just use the default dojo.js
@@ -308,14 +328,20 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_onOfflineCacheChecked: function(){
+		dojo.debug("dojo.off._onOfflineCacheChecked");
 		// this method is part of our _onLoad series of startup tasks
+		dojo.debug("hasOfflineCache="+this.hasOfflineCache);
 		
 		// if we have an offline cache, see if we have been added to the 
 		// list of available offline web apps yet
-		if(this.hasOfflineCache == true){
+		if(this.hasOfflineCache == true && this.enabled == true){
 			// load framework data; when we are finished, continue
 			// initializing ourselves
 			this.load(dojo.lang.hitch(this, this._finishStartingUp));
+		}else if(this.hasOfflineCache == true && this.enabled == false){
+			// we have an offline cache, but it is disabled for some reason
+			// perhaps due to the user denying a core operation
+			this._finishStartingUp();
 		}else{
 			this._keepCheckingUntilInstalled();
 		}
@@ -328,28 +354,40 @@ dojo.lang.mixin(dojo.off, {
 		// checking to see if an offline cache has been
 		// installed since this page loaded
 			
-		// FIXME: Gears: See if we are installed somehow
+		// FIXME: Gears: See if we are installed somehow after the
+		// page has been loaded
 		
 		// now continue starting up
 		this._finishStartingUp();
 	},
 	
 	_finishStartingUp: function(){
-		//dojo.debug("dojo.off._finishStartingUp");
+		dojo.debug("dojo.off._finishStartingUp");
 		// this method is part of our _onLoad series of startup tasks
 		
-		// kick off a thread to check network status on
-		// a regular basis
-		this._startNetworkThread();
+		if(this.enabled == true){
+			// kick off a thread to check network status on
+			// a regular basis
+			this._startNetworkThread();
 
-		// try to go online
-		var self = this;
-		this.goOnline(function(){
-			// indicate we are ready to be used
-			for(var i = 0; i < self._onLoadListeners.length; i++){
-				self._onLoadListeners[i]();
+			// try to go online
+			var self = this;
+			this.goOnline(function(){
+				// indicate we are ready to be used
+				for(var i = 0; i < self._onLoadListeners.length; i++){
+					self._onLoadListeners[i]();
+				}
+			});
+		}else{ // we are disabled or a core operation failed
+			dojo.debug("this.coreOperationFailed="+this.coreOperationFailed);
+			if(this.coreOperationFailed == true){
+				this.onCoreOperationFailed();
+			}else{
+				for(var i = 0; i < this._onLoadListeners.length; i++){
+					this._onLoadListeners[i]();
+				}
 			}
-		});
+		}
 	},
 	
 	_onPageLoad: function(){
@@ -366,6 +404,15 @@ dojo.lang.mixin(dojo.off, {
 	_onStorageLoad: function(){
 		//dojo.debug("dojo.off._onStorageLoad");
 		this._storageLoaded = true;
+		
+		// were we able to initialize storage? if
+		// not, then this is a core operation, and
+		// let's indicate we will need to fail fast
+		if(dojo.storage.initialized == false){
+			dojo.debug("failed initialization!");
+			this.coreOperationFailed = true;
+			this.enabled = false;
+		}
 		
 		if(this._pageLoaded == true
 			&& this._storageLoaded == true
