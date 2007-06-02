@@ -103,14 +103,14 @@ dojo.off.files = {
 		this.refreshing = true;
 		
 		// get our local server
-		var localServer = google.scour.factory.create("com.google.beta.localserver", "1.0");
+		var localServer = google.gears.factory.create("beta.localserver", "1.0");
 		var storeName = dojo.off.STORAGE_NAMESPACE + "_store";
 		
 		// refresh everything by simply removing
 		// any older stores
 		// FIXME: Explore whether this is truly needed -
 		// workaround for versioning without using
-		// Scour's ManagedResourceStore
+		// Gears ManagedResourceStore
 		localServer.removeStore(storeName);
 		
 		// open/create the resource store

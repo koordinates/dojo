@@ -113,6 +113,74 @@ if(typeof window != 'undefined'){
 
 	dojo.render.name = dojo.hostenv.name_ = 'browser';
 	dojo.hostenv.searchIds = [];
+	
+	dojo.hostenv.getGearsObject = function(){
+		// summary: factory method to get a Google Gears plugin instance
+		// to expose in the browser runtime environment, if present
+		var factory = null;
+		var results = null;
+		
+		if(typeof window.google != "undefined"
+			&& typeof google.gears != "undefined"){
+			return null; // already defined elsewhere
+		}
+		
+		if(typeof GearsFactory != "undefined"){ // Firefox
+			factory = new GearsFactory();
+		}else{
+			try{ // IE?
+				factory = new ActiveXObject("Gears.Factory");
+			}catch(exp){
+				// Safari?
+				if(navigator.mimeTypes["application/x-googlegears"]){
+					factory = document.createElement("object");
+					factory.setAttribute("type", "application/x-googlegears");
+					factory.setAttribute("width", 0);
+					factory.setAttribute("height", 0);
+					factory.style.display = "none";
+					document.documentElement.appendChild(factory);
+				}
+			}
+		}
+		
+		// still nothing?
+		if(factory == null || typeof factory == "undefined"){
+			return null;
+		}
+		
+		// define the global objects now; don't overwrite them though if they
+		// were somehow set internally by the Gears plugin, which is on their
+		// dev roadmap for the future
+		if(typeof window.google == "undefined"){
+			window.google = new Object();
+		}
+		
+		if(typeof google.gears == "undefined"){
+			google.gears = new Object();
+			google.gears.factory = factory;
+		}
+		
+		if(typeof window.google != "undefined"
+			&& typeof google.gears != "undefined"){
+			results = google.gears;
+		}
+		
+		return results;
+	}
+	
+	// see if we have Google Gears installed, and if
+	// so, make it available in the runtime environment
+	// and in the Google standard 'google.gears' global object
+	var drh = dojo.render.html
+	drh.gears = new Object();
+	drh.gears.plugin = dojo.hostenv.getGearsObject();
+	drh.gears.version = null;
+	if(drh.gears.plugin == null){
+		drh.gears.capable = false;
+	}else{
+		drh.gears.capable = true;
+		drh.gears.version = drh.gears.plugin.factory.getBuildInfo();
+	}
 
 	// These are in order of decreasing likelihood; this will change in time.
 	dojo.hostenv._XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
@@ -250,7 +318,7 @@ if(typeof window != 'undefined'){
 			}
 		}
 	}
-
+	
 	dojo.addOnLoad(function(){
 		dojo.hostenv._println_safe = true;
 		while(dojo.hostenv._println_buffer.length > 0){

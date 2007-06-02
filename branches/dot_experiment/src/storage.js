@@ -307,27 +307,31 @@ dojo.storage.manager = new function(){
 		// go through each provider, seeing if it can be used
 		var providerToUse = null;
 		for(var i = 0; i < this._providers.length; i++){
-			providerToUse = this._providers[i];
+			var checkMe = this._providers[i];
 			// a flag to force the storage manager to use a particular 
 			// storage provider type, such as 
 			// djConfig = {forceStorageProvider: "dojo.storage.browser.WhatWGStorageProvider"};
 			if(dojo.lang.isUndefined(djConfig["forceStorageProvider"]) == false
-				&& providerToUse.getType() == djConfig["forceStorageProvider"]){
+				&& checkMe.getType() == djConfig["forceStorageProvider"]){
 				// still call isAvailable for this provider, since this helps some
 				// providers internally figure out if they are available
-				providerToUse.isAvailable();
+				checkMe.isAvailable();
 				break;
 			}else if(dojo.lang.isUndefined(djConfig["forceStorageProvider"]) == true
-						&& providerToUse.isAvailable()){
+						&& checkMe.isAvailable() == true){
+				providerToUse = checkMe;
 				break;
 			}
 		}	
+		
+		//dojo.debug("dojo.storage.manager.providerToUse="+providerToUse.getType());
 		
 		if(providerToUse == null){ // no provider available
 			this._initialized = true;
 			this.available = false;
 			this.currentProvider = null;
-			dojo.raise("No storage provider found for this platform");
+			dojo.debug("No storage provider found for this platform");
+			return;
 		}
 			
 		// create this provider and copy over it's properties
@@ -339,7 +343,6 @@ dojo.storage.manager = new function(){
 		
 		// have the provider initialize itself
 		dojo.storage.initialize();
-		
 		this._initialized = true;
 		this.available = true;
 	};
@@ -389,7 +392,8 @@ dojo.storage.manager = new function(){
 
 		// FIXME: This should REALLY not be in here, but it fixes a tricky
 		// Flash timing bug
-		if(this.currentProvider.getType() == "dojo.storage.browser.FlashStorageProvider"
+		if(this.available == true
+			&& this.currentProvider.getType() == "dojo.storage.browser.FlashStorageProvider"
 			&& dojo.flash.ready == false){
 			return false;
 		}else{

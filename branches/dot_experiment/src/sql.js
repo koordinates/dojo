@@ -54,9 +54,9 @@ dojo.sql = function(){
 	
 	// 'args' now just has the SQL parameters
 	
-	// get the Scour Database object
+	// get the Gears Database object
 	if(dojo.sql.db == null || typeof dojo.sql.db == "undefined"){
-		dojo.sql.db = google.scour.factory.create('com.google.beta.database', '1.0');
+		dojo.sql.db = google.gears.factory.create("beta.database", "1.0");
 	}
 	
 	// print out debug SQL output if the developer wants that
@@ -85,7 +85,7 @@ dojo.sql = function(){
 		}
 	}
 	
-	// Scour's ResultSet object's are ugly -- normalize
+	// Gears ResultSet object's are ugly -- normalize
 	// these into something JavaScript programmers know
 	// how to work with, basically an array of 
 	// JavaScript objects where each property name is
@@ -100,13 +100,8 @@ if(typeof dojo.sql.debug == "undefined"){
 }
 
 dojo.sql.open = function(dbName){
-	// init Scour if it has never been initialized
-	if(typeof google == "undefined"){
-		dojo.sql._initScour();
-	}
-	
 	if(dojo.sql.db == null || typeof dojo.sql.db == "undefined"){
-		dojo.sql.db = google.scour.factory.create('com.google.beta.database', '1.0');
+		dojo.sql.db = google.gears.factory.create('beta.database', '1.0');
 	}
 	
 	if(typeof dbName == "undefined"){
@@ -118,7 +113,7 @@ dojo.sql.open = function(dbName){
 
 dojo.sql.close = function(dbName){
 	if(dojo.sql.db == null || typeof dojo.sql.db == "undefined"){
-		dojo.sql.db = google.scour.factory.create('com.google.beta.database', '1.0');
+		dojo.sql.db = google.gears.factory.create('beta.database', '1.0');
 	}
 	
 	if(typeof dbName == "undefined"){
@@ -265,7 +260,7 @@ dojo.sql._encrypt = function(sql, password, args, encryptColumns, callback){
 			// update the total number of encryptions we know must be done asynchronously
 			dojo.sql._totalCrypto++;
 			
-			// do the actual encryption now, asychronously on a Scour worker thread
+			// do the actual encryption now, asychronously on a Gears worker thread
 			dojo.crypto.DES.encrypt(sqlParam, password, function(results){
 				//dojo.debug("Encrypted results returned, results="+results);
 				
@@ -453,27 +448,4 @@ dojo.sql._decryptSingleColumn = function(columnName, columnValue, password, curr
 			callback(dojo.sql._finalResultSet);
 		}
 	});
-}
-
-dojo.sql._initScour = function(){
-	// FIXME: Move this into the Dojo hostenv code
-	google = new Object();
-	google.scour = new Object();
-	google.scour.factory = null;
-	
-	try{
-		google.scour.factory = new ActiveXObject("Scour.Factory");
-		return;
-	}catch(e){
-		// ignore
-	}
-	
-	if(typeof ScourFactory != "undefined"){
-		google.scour.factory = new ScourFactory();
-		return;
-	}
-
-	if(google.scour.factory == null){
-		google = undefined;
-	}
 }

@@ -12,14 +12,10 @@ dojo.crypto.DES.encrypt = function(plaintext, password, callback){
 	// returns:
 	//	Return encrypted text as string
 	
-	// FIXME: google.scour.factory won't be present unless Dojo Offline
-	// initialized it; initialization of google.scour.factory should be
-	// moved into the bootstrap runtime environment code of Dojo
-	
 	// FIXME: Create a synchronous version of this that doesn't 
-	// depend on Scour if the callback is not present
+	// depend on Gears if the callback is not present
 	
-	var workerPool = google.scour.factory.create("com.google.beta.workerpool", "1.0");
+	var workerPool = google.gears.factory.create("beta.workerpool", "1.0");
 
 	workerPool.onmessage = function(msg, sender){
 		callback(msg);
@@ -28,7 +24,6 @@ dojo.crypto.DES.encrypt = function(plaintext, password, callback){
 						String(_dojo_crypto_DES_workerInit) + " " +
                  		String(_dojo_crypto_DES_workerHandler) + " " +
                  		"_dojo_crypto_DES_workerInit();";
-dojo.debug("workerCode="+workerCode);
 	var workerID;
 	try{
 		workerID = workerPool.createWorker(workerCode);
@@ -39,7 +34,7 @@ dojo.debug("workerCode="+workerCode);
 			throw exp;
 		}
 	}
-	dojo.debug("next");
+	
 	var args = {plaintext: plaintext, password: password};
 	args = dojo.json.serialize(args);
 	
@@ -47,14 +42,10 @@ dojo.debug("workerCode="+workerCode);
 }
 
 dojo.crypto.DES.decrypt = function(ciphertext, password, callback){
-    // FIXME: google.scour.factory won't be present unless Dojo Offline
-	// initialized it; initialization of google.scour.factory should be
-	// moved into the bootstrap runtime environment code of Dojo
-	
 	// FIXME: Create a synchronous version of this that doesn't 
-	// depend on Scour if the callback is not present
+	// depend on Gears if the callback is not present
 	
-	var workerPool = google.scour.factory.create("com.google.beta.workerpool", "1.0");
+	var workerPool = google.gears.factory.create("beta.workerpool", "1.0");
 	workerPool.onmessage = function(msg, sender){
 		callback(msg);
 	}
@@ -72,7 +63,7 @@ dojo.crypto.DES.decrypt = function(ciphertext, password, callback){
 // supporting functions
 
 function _dojo_crypto_DES_workerInit() {
-	scourWorkerPool.onmessage = _dojo_crypto_DES_workerHandler;
+	gearsWorkerPool.onmessage = _dojo_crypto_DES_workerHandler;
 }
 
 function _dojo_crypto_DES_workerHandler(msg, sender){
@@ -83,13 +74,13 @@ function _dojo_crypto_DES_workerHandler(msg, sender){
 		var plaintext = arg.plaintext;
 		var password = arg.password;
 		var results = encrypt(plaintext, password);
-		scourWorkerPool.sendMessage(String(results), sender);
+		gearsWorkerPool.sendMessage(String(results), sender);
 	}else if(cmd == "decr"){
 		arg = eval("(" + arg + ")");
 		var ciphertext = arg.ciphertext;
 		var password = arg.password;
 		var results = decrypt(ciphertext, password);
-		scourWorkerPool.sendMessage(String(results), sender);
+		gearsWorkerPool.sendMessage(String(results), sender);
 	}
 
 	function encrypt(plaintext, password){
