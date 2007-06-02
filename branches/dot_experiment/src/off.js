@@ -183,7 +183,7 @@ dojo.lang.mixin(dojo.off, {
 		// summary:
 		//	Causes the Dojo Offline framework to load its configuration data
 		//	from local storage
-		//dojo.sync.load(finishedCallback);
+		dojo.sync.load(finishedCallback);
 	},
 	
 	initialize: function(){ /* void */
@@ -331,6 +331,8 @@ dojo.lang.mixin(dojo.off, {
 		dojo.debug("dojo.off._onOfflineCacheChecked");
 		// this method is part of our _onLoad series of startup tasks
 		dojo.debug("hasOfflineCache="+this.hasOfflineCache);
+		dojo.debug("coreOperationFailed="+this.coreOperationFailed);
+		dojo.debug("enabled="+this.enabled);
 		
 		// if we have an offline cache, see if we have been added to the 
 		// list of available offline web apps yet
