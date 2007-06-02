@@ -169,7 +169,7 @@ dojo.lang.mixin(dojo.off.ui, {
 		// so that the user can orient themselves -
 		// 1 second
 		if(dojo.sync.autoSync == true){
-			//window.setTimeout(dojo.lang.hitch(dojo.sync, dojo.sync.synchronize), 1000);
+			window.setTimeout(dojo.lang.hitch(dojo.sync, dojo.sync.synchronize), 1000);
 		}
 	},
 	
