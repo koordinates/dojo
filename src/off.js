@@ -62,9 +62,10 @@ dojo.lang.mixin(dojo.off, {
 	//	an offline cache is a facility that can truely cache offline
 	//	resources, such as JavaScript, HTML, etc. in such a way that
 	//	they won't be removed from the cache inappropriately like
-	//	a browser cache would. If this is false, and 
-	//	dojo.off.requireOfflineCache is true, then an offline cache
-	//	will be installed
+	//	a browser cache would. If this is false then an offline cache
+	//	will be installed. Only Google Gears is currently supported as
+	//	an offline cache. Future possible offline caches include
+	//	Firefox 3.
 	hasOfflineCache: null,
 	
 	// browserRestart: boolean
@@ -179,6 +180,8 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	initialize: function(){ /* void */
+		//dojo.debug("dojo.off.initialize");
+		
 		// summary:
 		//	Called when a Dojo Offline-enabled application
 		//	is finished configuring Dojo Offline, and is ready
@@ -271,12 +274,7 @@ dojo.lang.mixin(dojo.off, {
 	
 	_checkOfflineCacheAvailable: function(finishedCallback){
 		// is a true, offline cache running on this machine?
-		if(typeof google != "undefined" 
-			&& google.scour && google.scour.factory){
-			this.hasOfflineCache = true;
-		}else{
-			this.hasOfflineCache = false;
-		}
+		this.hasOfflineCache = dojo.render.html.gears.capable;
 		
 		finishedCallback();
 	},
@@ -284,9 +282,6 @@ dojo.lang.mixin(dojo.off, {
 	_onLoad: function(){
 		//dojo.debug("dojo.off._onLoad");
 		// both local storage and the page are finished loading
-		
-		// initialize Scour
-		this._initScour();
 		
 		// cache the Dojo JavaScript -- just use the default dojo.js
 		// name for the most common scenario
@@ -296,7 +291,7 @@ dojo.lang.mixin(dojo.off, {
 		
 		// if we are debugging, we must individually add all dojo.require()
 		// JS files to offline cache
-		this._initDebugResources();
+		this._cacheDebugResources();
 		
 		// workaround or else we will get an error on page load
 		// from Dojo that it can't find 'dojo.debug' for optimized builds
@@ -306,42 +301,6 @@ dojo.lang.mixin(dojo.off, {
 		// Dojo Storage storage providers will be available
 		// offline
 		dojo.off.files.cache(dojo.storage.manager.getResourceList());
-		
-		// load framework data; when we are finished, continue
-		// initializing ourselves
-		this.load(dojo.lang.hitch(this, this._onFrameworkDataLoaded));
-	},
-	
-	// FIXME: Move this into the Dojo hostenv code
-	_initScour: function(){
-		google = new Object();
-		google.scour = new Object();
-		google.scour.factory = null;
-		
-		try{
-			google.scour.factory = new ActiveXObject("Scour.Factory");
-			return;
-		}catch(e){
-			// ignore
-		}
-		
-		if(typeof ScourFactory != "undefined"){
-			google.scour.factory = new ScourFactory();
-			return;
-		}
-
-		if(google.scour.factory == null){
-			google = undefined;
-		}
-	},
-	
-	_onFrameworkDataLoaded: function(){
-		// this method is part of our _onLoad series of startup tasks
-		
-		if(this.requireOfflineCache == false){
-			this._finishStartingUp();
-			return;
-		}
 		
 		// see if we have an offline cache; when done, move
 		// on to the rest of our startup tasks
@@ -354,7 +313,9 @@ dojo.lang.mixin(dojo.off, {
 		// if we have an offline cache, see if we have been added to the 
 		// list of available offline web apps yet
 		if(this.hasOfflineCache == true){
-			this._finishStartingUp();
+			// load framework data; when we are finished, continue
+			// initializing ourselves
+			this.load(dojo.lang.hitch(this, this._finishStartingUp));
 		}else{
 			this._keepCheckingUntilInstalled();
 		}
@@ -367,13 +328,14 @@ dojo.lang.mixin(dojo.off, {
 		// checking to see if an offline cache has been
 		// installed since this page loaded
 			
-		// FIXME: SCOUR: See if we are installed somehow
+		// FIXME: Gears: See if we are installed somehow
 		
 		// now continue starting up
 		this._finishStartingUp();
 	},
 	
 	_finishStartingUp: function(){
+		//dojo.debug("dojo.off._finishStartingUp");
 		// this method is part of our _onLoad series of startup tasks
 		
 		// kick off a thread to check network status on
@@ -391,6 +353,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_onPageLoad: function(){
+		//dojo.debug("dojo.off._onPageLoad");
 		this._pageLoaded = true;
 		
 		if(this._pageLoaded == true
@@ -401,6 +364,7 @@ dojo.lang.mixin(dojo.off, {
 	},
 	
 	_onStorageLoad: function(){
+		//dojo.debug("dojo.off._onStorageLoad");
 		this._storageLoaded = true;
 		
 		if(this._pageLoaded == true
@@ -513,7 +477,7 @@ dojo.lang.mixin(dojo.off, {
 		}
 	},
 	
-	_initDebugResources: function(){
+	_cacheDebugResources: function(){
 		// if we are debugging, we must add all of the 
 		// individual dojo.require() JS files to our offline
 		// cache list so that this app will load while offline

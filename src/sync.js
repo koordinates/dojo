@@ -257,6 +257,8 @@ dojo.sync.CommandLog.prototype = {
 	},
 	
 	save: function(finishedCallback){ /* void */
+		//dojo.debug("dojo.sync.save");
+		
 		// summary:
 		//	Saves this command log to persistent, client-side storage
 		// description:
@@ -291,6 +293,8 @@ dojo.sync.CommandLog.prototype = {
 	},
 	
 	load: function(finishedCallback){ /* void */
+		//dojo.debug("dojo.sync.load");
+		
 		// summary:
 		//	Loads our command log from reliable, persistent local storage;
 		//	you should never have to do this since the Dojo Offline Framework

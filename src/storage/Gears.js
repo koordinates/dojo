@@ -54,11 +54,7 @@ dojo.lang.extend(dojo.storage.GearsStorageProvider, {
 	
 	isAvailable: function(){
 		// is Google Gears available and defined?
-		if(typeof google == "undefined"){
-			this._available = false;
-		}else{
-			this._available = true;
-		}
+		this._available = dojo.render.html.gears.capable;
 		
 		return this._available;
 	},
@@ -153,7 +149,6 @@ dojo.lang.extend(dojo.storage.GearsStorageProvider, {
 	},
 
 	getKeys: function(namespace){
-		dojo.debug("getKeys, namespace="+namespace);
 		if(namespace == null || typeof namespace == "undefined"){
 			namespace = dojo.storage.DEFAULT_NAMESPACE;
 		}

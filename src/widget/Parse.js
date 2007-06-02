@@ -26,7 +26,6 @@ dojo.widget.Parse = function(/*Object*/fragment){
 		// if we have items to parse/create at this level, do it!
 		try{
 			if(frag && frag.tagName && (frag != frag.nodeRef)){
-				
 				// these are in fact, not ever for widgets per-se anymore, 
 				// but for other markup elements (aka components)
 				var djTags = dojo.widget.tags;
@@ -59,7 +58,6 @@ dojo.widget.Parse = function(/*Object*/fragment){
 				}
 			}
 		}catch(e){
-			dojo.debug("dojo.widget.Parse: error:", e);
 			// note, commenting out the next line is breaking several widgets for me
 			// throw e;
 			// IE is such a pain sometimes

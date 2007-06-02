@@ -40,23 +40,4 @@ window.onload = function(){
 		runLinkElem.innerHTML = "";
 		runLinkElem.appendChild(document.createTextNode(runLinkText));
 	}
-	
-	// get our dojo install path and update where the downloads
-	// of the client runtime are available
-	matches = href.match(/baseRelativePath=([^\&]*)/);
-	if(matches && matches.length > 0){
-		var baseRelativePath = decodeURIComponent(matches[1]);
-		
-		var winDownloadElem = document.getElementById("dot-windows-download");
-		var macDownloadElem = document.getElementById("dot-mac-download");
-		var linuxDownloadElem = document.getElementById("dot-linux-download");
-		
-		var winDownload = baseRelativePath + "src/dot/installers/scour-win32.msi";
-		var macDownload = baseRelativePath + "src/dot/installers/scour-osx.xpi";
-		var linuxDownload = baseRelativePath + "src/dot/installers/scour-linux.xpi";
-		
-		winDownloadElem.setAttribute("href", winDownload);
-		macDownloadElem.setAttribute("href", macDownload);
-		linuxDownloadElem.setAttribute("href", linuxDownload);
-	}
 }
