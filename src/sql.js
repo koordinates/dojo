@@ -32,65 +32,65 @@ dojo.sql = function(){
 	//				FOOBAR WHERE SOMECOL3 = ?", someParam,
 	//				"somePassword", callbackFunction)
 	
-	// determine our parameters
-	var sql = null;
-	var callbackFunction = null;
-	var password = null;
-	
-	var args = new Array(arguments.length);
-	for(var i = 0; i < arguments.length; i++){
-		args[i] = arguments[i];
-	}
-	
-	sql = args.splice(0, 1)[0];
-	
-	// does this SQL statement use the ENCRYPT or DECRYPT
-	// keywords? if so, extract our callbackFunction and crypto
-	// password
-	if(dojo.sql._needsEncrypt(sql) || dojo.sql._needsDecrypt(sql)){
-		callbackFunction = args.splice(args.length - 1, 1)[0];
-		password = args.splice(args.length - 1, 1)[0];
-	}
-	
-	// 'args' now just has the SQL parameters
-	
-	// get the Gears Database object
-	if(dojo.sql.db == null || typeof dojo.sql.db == "undefined"){
-		dojo.sql.db = google.gears.factory.create("beta.database", "1.0");
-	}
-	
-	// print out debug SQL output if the developer wants that
-	if(dojo.sql.debug == true){
-		dojo.sql._printDebugSQL(sql, args);
-	}
-	
-	// handle SQL that needs encryption/decryption differently
-	// do we have an ENCRYPT SQL statement? if so, handle that first
-	if(dojo.sql._needsEncrypt(sql)){
-		dojo.sql._execEncryptSQL(sql, password, args, callbackFunction);
-		return; // encrypted results will arrive asynchronously
-	}else if(dojo.sql._needsDecrypt(sql)){ // otherwise we have a DECRYPT statement
-		dojo.sql._execDecryptSQL(sql, password, args, callbackFunction);
-		return; // decrypted results will arrive asynchronously
-	}
-
-	// execute the SQL and get the results
 	try{
+		// determine our parameters
+		var sql = null;
+		var callbackFunction = null;
+		var password = null;
+	
+		var args = new Array(arguments.length);
+		for(var i = 0; i < arguments.length; i++){
+			args[i] = arguments[i];
+		}
+	
+		sql = args.splice(0, 1)[0];
+	
+		// does this SQL statement use the ENCRYPT or DECRYPT
+		// keywords? if so, extract our callbackFunction and crypto
+		// password
+		if(dojo.sql._needsEncrypt(sql) || dojo.sql._needsDecrypt(sql)){
+			callbackFunction = args.splice(args.length - 1, 1)[0];
+			password = args.splice(args.length - 1, 1)[0];
+		}
+	
+		// 'args' now just has the SQL parameters
+	
+		// get the Gears Database object
+		if(dojo.sql.db == null || typeof dojo.sql.db == "undefined"){
+			dojo.sql.db = google.gears.factory.create("beta.database", "1.0");
+		}
+	
+		// print out debug SQL output if the developer wants that
+		if(dojo.sql.debug == true){
+			dojo.sql._printDebugSQL(sql, args);
+		}
+	
+		// handle SQL that needs encryption/decryption differently
+		// do we have an ENCRYPT SQL statement? if so, handle that first
+		if(dojo.sql._needsEncrypt(sql)){
+			dojo.sql._execEncryptSQL(sql, password, args, callbackFunction);
+			return; // encrypted results will arrive asynchronously
+		}else if(dojo.sql._needsDecrypt(sql)){ // otherwise we have a DECRYPT statement
+			dojo.sql._execDecryptSQL(sql, password, args, callbackFunction);
+			return; // decrypted results will arrive asynchronously
+		}
+
+		// execute the SQL and get the results
 		var rs = dojo.sql.db.execute(sql, args);
-	}catch(exp){
-		if(typeof exp.message != "undefined"){
-			throw exp.message;
+	
+		// Gears ResultSet object's are ugly -- normalize
+		// these into something JavaScript programmers know
+		// how to work with, basically an array of 
+		// JavaScript objects where each property name is
+		// simply the field name for a column of data
+		return dojo.sql._normalizeResults(rs);
+	}catch(e){
+		if(typeof e.message != "undefined"){
+			throw e.message;
 		}else{
-			throw exp;
+			throw e;
 		}
 	}
-	
-	// Gears ResultSet object's are ugly -- normalize
-	// these into something JavaScript programmers know
-	// how to work with, basically an array of 
-	// JavaScript objects where each property name is
-	// simply the field name for a column of data
-	return dojo.sql._normalizeResults(rs);
 }
 
 dojo.sql.dbName = "PersistentStorage";
@@ -100,27 +100,43 @@ if(typeof dojo.sql.debug == "undefined"){
 }
 
 dojo.sql.open = function(dbName){
-	if(dojo.sql.db == null || typeof dojo.sql.db == "undefined"){
-		dojo.sql.db = google.gears.factory.create('beta.database', '1.0');
-	}
+	try{
+		if(dojo.sql.db == null || typeof dojo.sql.db == "undefined"){
+			dojo.sql.db = google.gears.factory.create('beta.database', '1.0');
+		}
 	
-	if(typeof dbName == "undefined"){
-		name = dojo.sql.dbName;
-	}
+		if(typeof dbName == "undefined"){
+			name = dojo.sql.dbName;
+		}
 	
-	dojo.sql.db.open(dbName);
+		dojo.sql.db.open(dbName);
+	}catch(e){
+		if(typeof e.message != "undefined"){
+			throw e.message;
+		}else{
+			throw e;
+		}
+	}
 }
 
 dojo.sql.close = function(dbName){
-	if(dojo.sql.db == null || typeof dojo.sql.db == "undefined"){
-		dojo.sql.db = google.gears.factory.create('beta.database', '1.0');
-	}
+	try{
+		if(dojo.sql.db == null || typeof dojo.sql.db == "undefined"){
+			dojo.sql.db = google.gears.factory.create('beta.database', '1.0');
+		}
 	
-	if(typeof dbName == "undefined"){
-		name = dojo.sql.dbName;
-	}
+		if(typeof dbName == "undefined"){
+			name = dojo.sql.dbName;
+		}
 	
-	dojo.sql.db.close(dbName);
+		dojo.sql.db.close(dbName);
+	}catch(e){
+		if(typeof e.message != "undefined"){
+			throw e.message;
+		}else{
+			throw e;
+		}
+	}
 }
 
 dojo.sql._printDebugSQL = function(sql, args){

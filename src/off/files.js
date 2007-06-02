@@ -99,47 +99,60 @@ dojo.off.files = {
 		//	occurred, which is a boolean; and an array of error message strings
 		//	with details on errors encountered. If no error occured then message is
 		//	empty array with length 0.
+		try{
+			this.refreshing = true;
 		
-		this.refreshing = true;
+			// get our local server
+			var localServer = google.gears.factory.create("beta.localserver", "1.0");
+			var storeName = dojo.off.STORAGE_NAMESPACE + "_store";
 		
-		// get our local server
-		var localServer = google.gears.factory.create("beta.localserver", "1.0");
-		var storeName = dojo.off.STORAGE_NAMESPACE + "_store";
+			// refresh everything by simply removing
+			// any older stores
+			// FIXME: Explore whether this is truly needed -
+			// workaround for versioning without using
+			// Gears ManagedResourceStore
+			localServer.removeStore(storeName);
 		
-		// refresh everything by simply removing
-		// any older stores
-		// FIXME: Explore whether this is truly needed -
-		// workaround for versioning without using
-		// Gears ManagedResourceStore
-		localServer.removeStore(storeName);
+			// open/create the resource store
+			localServer.openStore(storeName);
+			var store = localServer.createStore(storeName);
+			this._store = store;
 		
-		// open/create the resource store
-		localServer.openStore(storeName);
-		var store = localServer.createStore(storeName);
-		this._store = store;
-		
-		// add our list of files to capture
-		var self = this;
-		this._currentFileIndex = 0;
-		this._cancelID = store.capture(this.listOfURLs, function(url, success, captureId){
-			//dojo.debug("store.capture, url="+url+", success="+success);
-			if(success == false){
-				self._cancelID = null;
-				self.refreshing = false;
-				var errorMsgs = new Array();
-				errorMsgs.push("Unable to capture: " + url);
-				finishedCallback(true, errorMsgs);
-				return;
-			}else{
-				self._currentFileIndex++;
+			// add our list of files to capture
+			var self = this;
+			this._currentFileIndex = 0;
+			this._cancelID = store.capture(this.listOfURLs, function(url, success, captureId){
+				//dojo.debug("store.capture, url="+url+", success="+success);
+				if(success == false){
+					self._cancelID = null;
+					self.refreshing = false;
+					var errorMsgs = new Array();
+					errorMsgs.push("Unable to capture: " + url);
+					finishedCallback(true, errorMsgs);
+					return;
+				}else{
+					self._currentFileIndex++;
+				}
+			
+				if(self._currentFileIndex >= self.listOfURLs.length){
+					self._cancelID = null;
+					self.refreshing = false;
+					finishedCallback(false, new Array());
+				}
+			});
+		}catch(e){
+			this.refreshing = false;
+	
+			if(typeof e.message != "undefined"){
+				e = e.message;
 			}
 			
-			if(self._currentFileIndex >= self.listOfURLs.length){
-				self._cancelID = null;
-				self.refreshing = false;
-				finishedCallback(false, new Array());
-			}
-		});
+			// can't refresh files -- core operation --
+			// fail fast
+			dojo.off.coreOperationFailed = true;
+			dojo.off.enabled = false;
+			dojo.off.onCoreOperationFailed();
+		}
 	},
 	
 	abortRefresh: function(){
