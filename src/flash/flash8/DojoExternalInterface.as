@@ -58,7 +58,7 @@ class DojoExternalInterface{
 		DojoExternalInterface.flashMethods[methodName] = instance;
 		
 		// tell JavaScript about DojoExternalInterface new method so we can create a proxy
-		ExternalInterface.call("dojo.flash.comm._addExternalInterfaceCallback", 
+		ExternalInterface.call("dojox.flash.comm._addExternalInterfaceCallback", 
 													 methodName);
 													 
 		return true;
@@ -87,12 +87,12 @@ class DojoExternalInterface{
 	/** 
 			Called by Flash to indicate to JavaScript that we are ready to have
 			our Flash functions called. Calling loaded()
-			will fire the dojo.flash.loaded() event, so that JavaScript can know that
+			will fire the dojox.flash.loaded() event, so that JavaScript can know that
 			Flash has finished loading and adding its callbacks, and can begin to
 			interact with the Flash file.
 	*/
 	public static function loaded(){
-		DojoExternalInterface.call("dojo.flash.loaded");
+		DojoExternalInterface.call("dojox.flash.loaded");
 	}
 	
 	public static function startExec():Void{
@@ -107,7 +107,7 @@ class DojoExternalInterface{
 	}
 	
 	public static function chunkArgumentData(value, argIndex:Number):Void{
-		//getURL("javascript:dojo.debug('FLASH: chunkArgumentData, value="+value+", argIndex="+argIndex+"')");
+		//getURL("javascript:console.debug('FLASH: chunkArgumentData, value="+value+", argIndex="+argIndex+"')");
 		var currentValue = DojoExternalInterface.argData[argIndex];
 		if(currentValue == null || typeof currentValue == "undefined"){
 			DojoExternalInterface.argData[argIndex] = value;
@@ -130,7 +130,7 @@ class DojoExternalInterface{
 		DojoExternalInterface.resultData = 
 			DojoExternalInterface.encodeData(DojoExternalInterface.resultData);
 			
-		//getURL("javascript:dojo.debug('FLASH: encoded result data="+DojoExternalInterface.resultData+"')");
+		//getURL("javascript:console.debug('FLASH: encoded result data="+DojoExternalInterface.resultData+"')");
 	}
 	
 	public static function getReturnLength():Number{
@@ -152,7 +152,7 @@ class DojoExternalInterface{
 			
 		var piece = DojoExternalInterface.resultData.substring(startCut, endCut);
 		
-		//getURL("javascript:dojo.debug('FLASH: chunking return piece="+piece+"')");
+		//getURL("javascript:console.debug('FLASH: chunking return piece="+piece+"')");
 		
 		return piece;
 	}
@@ -173,7 +173,7 @@ class DojoExternalInterface{
 	}
 	
 	private static function encodeData(data){
-		//getURL("javascript:dojo.debug('inside flash, data before="+data+"')");
+		//getURL("javascript:console.debug('inside flash, data before="+data+"')");
 
 		// double encode all entity values, or they will be mis-decoded
 		// by Flash when returned
@@ -194,7 +194,7 @@ class DojoExternalInterface{
 		data = DojoExternalInterface.replaceStr(data, "'", "\\'");
 		data = DojoExternalInterface.replaceStr(data, '"', '\"');
 		
-		//getURL("javascript:dojo.debug('inside flash, data after="+data+"')");
+		//getURL("javascript:console.debug('inside flash, data after="+data+"')");
 		return data;
 	}
 	

@@ -66,6 +66,6 @@ class ExpressInstall {
 	}
 
 	public function onInstallStatus(msg):Void{
-		getURL("javascript:dojo.flash.install._onInstallStatus('"+msg+"')");
+		getURL("javascript:dojox.flash.install._onInstallStatus('"+msg+"')");
 	}
 }

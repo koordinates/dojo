@@ -13,13 +13,13 @@ class DojoExternalInterface{
 	public static var _callbacks = new Array();
 
 	public static function initialize(){ 
-		//getURL("javascript:dojo.debug('FLASH:DojoExternalInterface initialize')");
+		//getURL("javascript:console.debug('FLASH:DojoExternalInterface initialize')");
 		// FIXME: Set available variable by testing for capabilities
 		DojoExternalInterface.available = true;
 		
 		// extract the dojo base path
 		DojoExternalInterface.dojoPath = DojoExternalInterface.getDojoPath();
-		//getURL("javascript:dojo.debug('FLASH:dojoPath="+DojoExternalInterface.dojoPath+"')");
+		//getURL("javascript:console.debug('FLASH:dojoPath="+DojoExternalInterface.dojoPath+"')");
 		
 		// Sometimes, on IE, the fscommand infrastructure can take a few hundred
 		// milliseconds the first time a page loads. Set a timer to keep checking
@@ -110,12 +110,12 @@ class DojoExternalInterface{
 	/** 
 			Called by Flash to indicate to JavaScript that we are ready to have
 			our Flash functions called. Calling loaded()
-			will fire the dojo.flash.loaded() event, so that JavaScript can know that
+			will fire the dojox.flash.loaded() event, so that JavaScript can know that
 			Flash has finished loading and adding its callbacks, and can begin to
 			interact with the Flash file.
 	*/
 	public static function loaded(){
-		//getURL("javascript:dojo.debug('FLASH:loaded')");
+		//getURL("javascript:console.debug('FLASH:loaded')");
 		
 		// one more step: see if fscommands are ready to be executed; if not,
 		// set an interval that will keep running until fscommands are ready;
@@ -171,7 +171,7 @@ class DojoExternalInterface{
 		for(var i = 0; i < _callbacks.length; i++){
 			fscommand("addCallback", _callbacks[i]);
 		}
-		call("dojo.flash.loaded");
+		call("dojox.flash.loaded");
 	}
 	
 	/** 
