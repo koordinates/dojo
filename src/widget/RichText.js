@@ -509,10 +509,6 @@ dojo.widget.defineWidget(
 			//		Draws an iFrame using the existing one if one exists.
 			//		Used by Mozilla, Safari, and Opera
 
-			// detect firefox < 1.5, which has some iframe loading issues
-			var oldMoz = Boolean(dojo.render.html.moz && (
-									typeof window.XML == 'undefined'))
-
 			if(!this.iframe){
 				this.iframe = dojo.doc().createElement("iframe");
 //				dojo.body().appendChild(this.iframe);
@@ -650,11 +646,10 @@ dojo.widget.defineWidget(
 
 			if(this.editNode){
 				ifrFunc(); // iframe already exists, just set content
-			}else if(dojo.render.html.moz){
-//				// FIXME: if we put this on a delay, we get a height of 20px.
-//				// Otherwise we get the correctly specified minHeight value.
+			}else if(dojo.render.html.mozilla){
+				// mozilla needs some time to have the iframe ready
 				setTimeout(ifrFunc, 250);
-			}else{ // new mozillas, opera, safari
+			}else{ // opera, safari
 				ifrFunc();
 			}
 		},
