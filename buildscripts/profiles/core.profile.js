@@ -9,7 +9,7 @@ var dependencies = [
 	"dojo.lang.extras",
 	"dojo.lang.declare",
 	"dojo.lang.func",
-	"dojo.event",
+	"dojo.event.*",
 	"dojo.string.common",
 	"dojo.string.extras",
 	"dojo.io.*",
