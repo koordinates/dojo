@@ -348,7 +348,7 @@ dojo.widget.defineWidget(
 				//in the array below, ul can not come directly after ol, otherwise the queryCommandValue returns Normal for it
 				var formats = ['p', 'pre', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'div', 'ul'];
 				var localhtml = "";
-				for(var i in formats){
+				for(var i=0;i<formats.length;i++){
 					if(formats[i].charAt(1) != 'l'){
 						localhtml += "<"+formats[i]+"><span>content</span></"+formats[i]+">";
 					}else{
