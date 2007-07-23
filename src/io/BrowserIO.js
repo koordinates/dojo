@@ -48,6 +48,18 @@ dojo.io.updateNode = function(/*DOMNode*/node, /*String or Object*/urlOrArgs){
 	dojo.io.bind(args);
 }
 
+dojo.io._getAttribute = function(node, key){
+	//	summary:	
+	//		Function to get around IE problems with getAttribute.
+	//		See tracker: 2844	
+	var attrNode = node.getAttributeNode(key);
+	if(attrNode){
+		return attrNode.value;
+	}
+	return null;
+}
+
+
 dojo.io.formFilter = function(/*DOMNode*/node) {
 	//summary: Returns true if the node is an input element that is enabled, has
 	//a name, and whose type is one of the following values: ["file", "submit", "image", "reset", "button"]
@@ -476,9 +488,9 @@ dojo.io.XMLHTTPTransport = new function(){
 		var url = kwArgs.url;
 		var query = "";
 		if(kwArgs["formNode"]){
-			var ta = kwArgs.formNode.getAttribute("action");
+			var ta = dojo.io._getAttribute(kwArgs.formNode, "action");
 			if((ta)&&(!kwArgs["url"])){ url = ta; }
-			var tp = kwArgs.formNode.getAttribute("method");
+			var tp = dojo.io._getAttribute(kwArgs.formNode, "method");
 			if((tp)&&(!kwArgs["method"])){ kwArgs.method = tp; }
 			query += dojo.io.encodeForm(kwArgs.formNode, kwArgs.encoding, kwArgs["formFilter"]);
 		}

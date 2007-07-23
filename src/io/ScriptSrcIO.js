@@ -119,9 +119,9 @@ dojo.io.ScriptSrcTransport = new function(){
 		var query = "";
 		
 		if(kwArgs["formNode"]){
-			var ta = kwArgs.formNode.getAttribute("action");
+			var ta = dojo.io._getAttribute(kwArgs.formNode, "action");
 			if((ta)&&(!kwArgs["url"])){ url = ta; }
-			var tp = kwArgs.formNode.getAttribute("method");
+			var tp = dojo.io._getAttribute(kwArgs.formNode, "method");
 			if((tp)&&(!kwArgs["method"])){ kwArgs.method = tp; }
 			query += dojo.io.encodeForm(kwArgs.formNode, kwArgs.encoding, kwArgs["formFilter"]);
 		}

@@ -107,10 +107,10 @@ dojo.io.IframeTransport = new function(){
 					}
 				}
 				if(cr["url"]){
-					cr._originalAction = fn.getAttribute("action");
+					cr._originalAction = dojo.io._getAttribute(fn, "action");
 					fn.setAttribute("action", cr.url);
 				}
-				if(!fn.getAttribute("method")){
+				if(!dojo.io._getAttribute(fn, "method")){
 					fn.setAttribute("method", (cr["method"]) ? cr["method"] : "post");
 				}
 				cr._originalTarget = fn.getAttribute("target");
