@@ -1,0 +1,99 @@
+<html>
+	<head>
+		<title>Test of dojo.io.FormBind</title>
+	</head>
+	<body>
+		NB: This page uses some "document.write" statements to print JS variables, please allow the blocked content for it to operate properly!
+
+		<br>
+		<br>
+
+		<b>
+			The two forms below both use dojo.io.FormBind to submit through Dojo.
+			<br>
+			The response handler simply uses alert() to signal that the rsponse was received.
+			<br>
+			The purpose of this test is to verify that form submission behavior is consistent between IE and Firefox.
+			Notably, that the problem reported in tracker #2844 is fixed.
+		</b>
+
+		<br>
+		<br>
+
+		Here is a good form:
+		<form name="testform_good" id="testform_good_id" action="test_FormBind.html" method="POST">
+			<input type="submit" name="input1" value="input1"/>
+			<br>
+			<input type="submit" name="not_action" value="not_action"/>
+		</form>
+
+		Here is a bad (from IE's handling of attributes such as action and method) form:
+		<form name="testform_bad" id="testform_ie_bad_id" action="test_FormBind.html" method="POST">
+			<input type="submit" name="input1" value="input1"/>
+			<br>
+			<input type="submit" name="action" value="action"/>
+		</form>
+
+		<br>
+		<br>
+
+		<b>
+			Below you can see the various ways to try to get the form's action and their results for each form.
+			<br>
+			Load this page on FF and on IE and verify the form submission works properly.
+		</b>
+
+		<script src="../../dojo.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.io.BrowserIO");
+			var tfgood = document.getElementById( "testform_good_id" );
+			var tfiebad = document.getElementById( "testform_ie_bad_id" );
+
+			var handler = function(){
+				alert( "response received" );
+			};
+
+			// Bind the form submission (by button click) to the callback method
+			var reqHeaders = new Array();
+			reqHeaders["If-Modified-Since"] = "Sat, 1 Jan 2000 00:00:00 GMT";
+			var x = new dojo.io.FormBind(
+				{
+					headers:  reqHeaders,
+					mimetype: "text/html",
+					formNode: tfgood,
+					load:     handler
+				}
+			);
+			var y = new dojo.io.FormBind(
+				{
+					headers:  reqHeaders,
+					mimetype: "text/html",
+					formNode: tfiebad,
+					load:     handler
+				}
+			);
+
+
+			document.write( "<br><br><b>form.action</b><br>" );
+			document.write( "This will return an input element named 'action' on both browsers." );
+			document.write( "<br>" );
+			document.write( "testform_good.action: " + tfgood.action );
+			document.write( "<br>" );
+			document.write( "testform_bad.action: " + tfiebad.action );
+
+			document.write( "<br><br><b>form.getAttribute( 'action' )</b><br>" );
+			document.write( "This will return an input element named 'action' on IE, but the form action on FF." );
+			document.write( "<br>" );
+			document.write( "testform_good.getAttribute( 'action' ): " + tfgood.getAttribute( "action" ) );
+			document.write( "<br>" );
+			document.write( "testform_bad.getAttribute( 'action' ): " + tfiebad.getAttribute( "action" ) );
+
+			document.write( "<br><br><b>form.getAttributeNode( 'action' ).value</b><br>" );
+			document.write( "This will return the form action on both browsers." );
+			document.write( "<br>" );
+			document.write( "testform_good.getAttributeNode( 'action' ).value: " + tfgood.getAttributeNode( "action" ).value );
+			document.write( "<br>" );
+			document.write( "testform_bad.getAttributeNode( 'action' ).value: " + tfiebad.getAttributeNode( "action" ).value );
+		</script>
+	</body>
+</html>
