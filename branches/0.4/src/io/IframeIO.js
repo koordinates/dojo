@@ -106,15 +106,32 @@ dojo.io.IframeTransport = new function(){
 						}
 					}
 				}
+				//IE requires going through getAttributeNode instead of just getAttribute in some form cases, 
+				//so use it for all.  See #2844
+				var actnNode = fn.getAttributeNode("action");
+				var mthdNode = fn.getAttributeNode("method");
+				var trgtNode = fn.getAttributeNode("target");
 				if(cr["url"]){
-					cr._originalAction = dojo.io._getAttribute(fn, "action");
-					fn.setAttribute("action", cr.url);
+					cr._originalAction = actnNode ? actnNode.value : null;
+					if(actnNode){
+						actnNode.value = cr.url;
+					}else{
+						fn.setAttribute("action", cr.url);
+					}
 				}
-				if(!dojo.io._getAttribute(fn, "method")){
-					fn.setAttribute("method", (cr["method"]) ? cr["method"] : "post");
+				if(!mthdNode || !mthdNode.value){
+					if(mthdNode){
+						mthdNode.value = (cr["method"]) ? cr["method"] : "post";
+					}else{
+						fn.setAttribute("method", (cr["method"]) ? cr["method"] : "post");
+					}
 				}
-				cr._originalTarget = fn.getAttribute("target");
-				fn.setAttribute("target", this.iframeName);
+				cr._originalTarget = trgtNode ? trgtNode.value : null;
+				if(trgtNode){
+					trgtNode.value = this.iframeName;
+				}else{
+					fn.setAttribute("target", this.iframeName);
+				}
 				fn.target = this.iframeName;
 				fn.submit();
 			}else{
