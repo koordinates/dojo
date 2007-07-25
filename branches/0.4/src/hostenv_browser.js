@@ -91,6 +91,12 @@ if(typeof window != 'undefined'){
 		var tdoc = window["document"];
 		var tdi = tdoc["implementation"];
 
+		//Check how dojo was loaded.  If it was a file/local URL, then engage the xhrForce on IE
+		//Workaround to deal with IE 7 and local file loads that do not work through native xhr.
+		if(drh.ie && (window.location.protocol=="file:")){
+			djConfig.ieForceActiveXXhr = true;
+		} 
+
 		if((tdi)&&(tdi["hasFeature"])&&(tdi.hasFeature("org.w3c.dom.svg", "1.0"))){
 			drs.capable = t;
 			drs.support.builtin = t;
@@ -121,7 +127,9 @@ if(typeof window != 'undefined'){
 		// summary: does the work of portably generating a new XMLHTTPRequest object.
 		var http = null;
 		var last_e = null;
-		try{ http = new XMLHttpRequest(); }catch(e){}
+		if(!dojo.render.html.ie || !djConfig.ieForceActiveXXhr){
+			try{ http = new XMLHttpRequest(); }catch(e){}
+		}
 		if(!http){
 			for(var i=0; i<3; ++i){
 				var progid = dojo.hostenv._XMLHTTP_PROGIDS[i];
