@@ -51,6 +51,11 @@ function(params, srcNodeRef){
 	dijit.registry.add(this);
 
 	this.buildRendering();
+
+	// Copy attributes listed in genericMap into the newly created DOM for the widget
+	// The placement of these attributes is according to the property mapping in genericMap
+	// Note special handling for 'style' and 'class' attributes which are lists and can
+	// have elements from both old and new structures.
 	for(var attr in this.genericMap){
 		if(this.domNode){
 			var node = this[this.genericMap[attr] || "domNode"];
@@ -66,8 +71,23 @@ function(params, srcNodeRef){
 						domValue = null;
 					}
 				}
+				// Let template override attribute values
 				if(domValue === null){
-					node.setAttribute(attr, value);
+					// Deal with IE quirks for setting 'class' and 'style'
+					switch(attr){
+					case "style":
+						if(node.style && dojo.isObject(node.style)){ // IE
+							node.style.cssText = value;
+						}else{
+							node.setAttribute(attr, value);
+						}
+						break;
+					case "class":
+						node.className = value;
+						break;
+					default:
+						node.setAttribute(attr, value);
+					}
 				}
 			}
 		}
@@ -75,6 +95,7 @@ function(params, srcNodeRef){
 	if(this.domNode){
 		this.domNode.setAttribute("widgetId", this.id);
 	}
+
 	this.postCreate();
 
 	// If srcNodeRef has been processed and removed from the DOM (e.g. TemplatedWidget) then delete it to allow GC.
