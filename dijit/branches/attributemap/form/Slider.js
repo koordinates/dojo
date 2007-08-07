@@ -41,6 +41,9 @@ dojo.declare(
 
 	widgetsInTemplate: true,
 
+	genericMap: dojo.mixin(dojo.clone(dijit._Widget.prototype.genericMap),
+		{id:"", name:"valueNode"}),
+
 	_mousePixelCoord: "pageX",
 	_pixelCount: "w",
 	_startingPixelCoord: "x",
@@ -49,7 +52,7 @@ dojo.declare(
 	_progressPixelSize: "width",
 	_upsideDown: false,
 
-	 setDisabled: function(/*Boolean*/ disabled){
+	setDisabled: function(/*Boolean*/ disabled){
 		if(this.showButtons){
 			this.incrementButton.disabled = disabled;
 			this.decrementButton.disabled = disabled;

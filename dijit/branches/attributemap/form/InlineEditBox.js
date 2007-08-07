@@ -157,8 +157,9 @@ dojo.declare(
 				var _this=this;
 				var isFirst = true;
 				dojo.forEach(value.split("\n"), function(line){
-					if(isFirst){ isFirst = false; }
-					else {
+					if(isFirst){
+						isFirst = false;
+					}else{
 						_this.editable.appendChild(document.createElement("BR")); // preserve line breaks
 					}
 					_this.editable.appendChild(document.createTextNode(line)); // use text nodes so that imbedded tags can be edited

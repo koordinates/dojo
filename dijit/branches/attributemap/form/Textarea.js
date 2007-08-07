@@ -16,14 +16,17 @@ dojo.declare(
 	// usage:
 	//	<textarea dojoType="dijit.form.TextArea">...</textarea>
 
-	templateString: (dojo.isIE || dojo.isSafari || dojo.isMozilla) ? '<fieldset id="${id}" class="dijitInlineBox dijitInputField dijitTextArea">'
-				+ ((dojo.isIE || dojo.isSafari) ? '<div dojoAttachPoint="editNode" waiRole="textarea" tabIndex="${tabIndex}" style="text-decoration:none;_padding-bottom:16px;display:block;overflow:auto;" contentEditable="true"></div>'
+	templateString: (dojo.isIE || dojo.isSafari || dojo.isMozilla) ? '<fieldset class="dijitInlineBox dijitInputField dijitTextArea">'
+				+ ((dojo.isIE || dojo.isSafari) ? '<div dojoAttachPoint="editNode" waiRole="textarea" style="text-decoration:none;_padding-bottom:16px;display:block;overflow:auto;" contentEditable="true"></div>'
 					: '<iframe dojoAttachPoint="iframe" dojoAttachEvent="onblur:_onIframeBlur" src="javascript:void(0)" style="border:0px;margin:0px;padding:0px;display:block;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;"></iframe>')
-				+ '<textarea name="${name}" value="${value}" dojoAttachPoint="formValueNode" style="display:none;"></textarea>'
+				+ '<textarea dojoAttachPoint="formValueNode" style="display:none;"></textarea>'
 				+ '</fieldset>'
-			: '<textarea id="${id}" name="${name}" value="${value}" dojoAttachPoint="formValueNode,editNode" class="dijitInputField dijitTextArea"></textarea>',
+			: '<textarea dojoAttachPoint="formValueNode,editNode" class="dijitInputField dijitTextArea"></textarea>',
 
 	_nlsResources: null,	// Needed for screen readers on FF2
+
+	genericMap: dojo.mixin(dojo.clone(dijit.form._FormWidget.prototype.genericMap),
+		{id:"", name:"formValueNode", tabIndex:"editNode", value:"formValueNode"}),
 
 	focus: function(){
 		// summary: Received focus, needed for the InlineEditBox widget
@@ -94,7 +97,9 @@ dojo.declare(
 		if(!this.value){ this.value = ""; }
 	},
 
-	postCreate: function(){
+//TODO: ok to change this form postCreate to buildRendering?  Need attachpoints defined earlier
+	buildRendering: function(){
+		this.inherited('buildRendering', arguments);
 		if(dojo.isIE || dojo.isSafari){
 			this.domNode.style.overflowY = 'hidden';
 			this.eventNode = this.focusNode = this.editNode;
@@ -110,9 +115,9 @@ dojo.declare(
 			//
 			// An additional problem is that the browser gives the document object a
 			// very cryptic accessible name, e.g.
-			// wyciwyg://13/http://archive.dojotoolkit.org/nightly/dojotoolkit/dijit/tests/form/test_InlineEditBox.html
+			// wysiwyg://13/http://archive.dojotoolkit.org/nightly/dojotoolkit/dijit/tests/form/test_InlineEditBox.html
 			// When focus is fired from the document object, the screen reader speaks
-			// the accessible name.  The cyptic accessile name is confusing.
+			// the accessible name.  The cryptic accessible name is confusing.
 			//
 			// A workaround for both of these problems is to give the iframe's
 			// document a title, the name of which is similar to a role name, i.e.
@@ -144,7 +149,6 @@ dojo.declare(
 		if(this.editNode){
 			this.connect(this.editNode, "change", this._changed); // needed for mouse paste events per #3479
 		}
-		this.inherited('postCreate', arguments);
 	},
 
 	// event handlers, you can over-ride these in your own subclasses

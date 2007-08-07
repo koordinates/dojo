@@ -28,13 +28,16 @@ dojo.declare(
 
 		// size: String
 		//		HTML INPUT tag size declaration.
-		size: "20",
+		size: "",
 
 		// maxlength: String
 		//		HTML INPUT tag maxlength declaration.
-		maxlength: "999999",
+		maxlength: "",
 
 		templatePath: dojo.moduleUrl("dijit.form", "templates/TextBox.html"),
+
+		genericMap: dojo.mixin(dojo.clone(dijit.form._FormWidget.prototype.genericMap),
+			{size:"focusNode", maxlength:"focusNode"}),
 
 		getTextValue: function(){
 			return this.filter(this.textbox.value);
@@ -47,10 +50,10 @@ dojo.declare(
 		setValue: function(value, /*Boolean, optional*/ priorityChange, /*String, optional*/ formattedValue){
 			if(value == null){ value = ""; }
 			value = this.filter(value);
-			if(typeof formattedValue == "undefined" ){
+			if(typeof formattedValue == "undefined"){
 				formattedValue = (typeof value == "undefined" || value == null || value == NaN) ? null : this.format(value, this.constraints);
 			}
-			if(formattedValue != null){
+			if(formattedValue){
 				var _this = this;
 				// synchronous value set needed for InlineEditBox
 				this.textbox.value = formattedValue;

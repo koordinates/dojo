@@ -41,21 +41,39 @@ function(params, srcNodeRef){
 		dojo.mixin(this,params);
 	}
 	this.postMixInProperties();
-	
+
 	// generate an id for the widget if one wasn't specified
 	// (be sure to do this before buildRendering() because that function might
 	// expect the id to be there.
 	if(!this.id){
-		this.id=dijit.getUniqueId(this.declaredClass.replace(/\./g,"_"));
+		this.id = dijit.getUniqueId(this.declaredClass.replace(/\./g,"_"));
 	}
 	dijit.registry.add(this);
 
 	this.buildRendering();
+	for(var attr in this.genericMap){
+		if(this.domNode){
+			var node = this[this.genericMap[attr] || "domNode"];
+			var value = this[attr];
+			if(value !== "" || (params && params[attr])){
+				var domValue = node.getAttribute(attr);
+				if(domValue){
+					var delim = {style: ";", "class": " "}[attr];
+					// style and class attributes are special and contain lists
+					// which need to be combined
+					if(delim){
+						value += delim + domValue;
+						domValue = null;
+					}
+				}
+				if(domValue === null){
+					node.setAttribute(attr, value);
+				}
+			}
+		}
+	}
 	if(this.domNode){
 		this.domNode.setAttribute("widgetId", this.id);
-		if(this.srcNodeRef && this.srcNodeRef.dir){
-			this.domNode.dir = this.srcNodeRef.dir;
-		}
 	}
 	this.postCreate();
 
@@ -81,6 +99,18 @@ function(params, srcNodeRef){
 	//  Bi-directional support, as defined by the HTML DIR attribute. Either left-to-right "ltr" or right-to-left "rtl".
 	dir: "",
 
+	// class: String
+	// HTML class attribute
+	"class": "",
+
+	// style: String
+	// HTML style attribute
+	style: "",
+
+	// title: String
+	// HTML title attribute
+	title: "",
+
 	// srcNodeRef: DomNode
 	//		pointer to original dom node
 	srcNodeRef: null,
@@ -91,6 +121,12 @@ function(params, srcNodeRef){
 	//		template system's dojoAttachPonit syntax, but the domNode
 	//		property is the canonical "top level" node in widget UI.
 	domNode: null,
+
+	// genericMap Object:
+	//		A map of attributes -- typically standard HTML attributes -- to transfer
+	//		from the parsed node into the new dom, at the widget's domNode, by default.
+	//		Other node references can be specified as properties of 'this'
+	genericMap: {id:"", dir:"", lang:"", "class":"", style:"", title:""},  // TODO: add on* handlers?
 
 	//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
@@ -276,7 +312,7 @@ function(params, srcNodeRef){
 		//		See HTML spec, DIR attribute for more information.
 
 		if(typeof this._ltr == "undefined"){
-			this._ltr = (this.dir || dojo.getComputedStyle(this.domNode).direction) != "rtl";
+			this._ltr = dojo.getComputedStyle(this.domNode).direction != "rtl";
 		}
 		return this._ltr; //Boolean
 	}

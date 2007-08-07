@@ -365,7 +365,7 @@ dojo.declare(
 			switch(evt.keyCode){				
 				case dojo.keys.LEFT_ARROW:
 				case dojo.keys.UP_ARROW:
-					forward=false;
+					forward = false;
 					// fall through
 				case dojo.keys.RIGHT_ARROW:
 				case dojo.keys.DOWN_ARROW:
@@ -373,12 +373,10 @@ dojo.declare(
 					dojo.stopEvent(evt);
 					break;
 				case dojo.keys.DELETE:
-					if (this._currentChild.closable){
+					if(this._currentChild.closable){
 						this.onCloseButtonClick(this._currentChild);
 						dojo.stopEvent(evt); // so we don't close a browser tab!
 					}
-				default:
-					return;
 			}
 		}
 	}
