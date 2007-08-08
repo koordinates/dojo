@@ -1654,6 +1654,7 @@ dojo.widget.defineWidget(
 				var sameSite = new RegExp("(<img[^>]*\ src=[\"'])("+siteBase+"("+pathBase+")?)", "ig");
 				ec = ec.replace(sameSite, "$1");
 			}
+			if(!ec.replace(/^(?:\s|\xA0)+/g, "").replace(/(?:\s|\xA0)+$/g,"").length){ ec = ""; }
 			return ec;
 		},
 
