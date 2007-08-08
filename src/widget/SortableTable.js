@@ -564,7 +564,8 @@ dojo.widget.defineWidget(
 		postCreate:function(){ 
 			// 	summary
 			//	overridden from HtmlWidget, initializes and renders the widget.
-			var thead=this.domNode.getElementsByTagName("thead")[0];
+			var heads = this.domNode.getElementsByTagName("thead");
+			var thead = heads[heads.length-1];
 			if(this.headClass.length>0){
 				thead.className=this.headClass;
 			}
