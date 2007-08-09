@@ -7,7 +7,7 @@ dojo.require("dojo.html.display");
 dojo.html.sumAncestorProperties = function(/* HTMLElement */node, /* string */prop){
 	//	summary
 	//	Returns the sum of the passed property on all ancestors of node.
-	node = dojo.byId(node);
+	node = (dojo.byId(node)||0).parentNode;
 	if(!node){ return 0; } // FIXME: throw an error?
 	
 	var retVal = 0;
