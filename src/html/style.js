@@ -9,7 +9,7 @@ dojo.html.getClass = function(/* HTMLElement */node){
 	node = dojo.byId(node);
 	if(!node){ return ""; }
 	var cs = "";
-	if(node.className){
+	if(typeof node.className == "string"){ 
 		cs = node.className;
 	}else if(dojo.html.hasAttribute(node, "class")){
 		cs = dojo.html.getAttribute(node, "class");
@@ -66,7 +66,8 @@ dojo.html.setClass = function(/* HTMLElement */node, /* string */classStr){
 			node.className = cs;
 		}else if(node.setAttribute){
 			node.setAttribute("class", classStr);
-			node.className = cs;
+			// squelch on SVG nodes, in particular
+			try{node.className = cs;}catch(e){}
 		}else{
 			return false;
 		}
