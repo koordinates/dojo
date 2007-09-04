@@ -6,10 +6,10 @@ dojo.require("dijit._Templated");
 dojo.declare("dijit.form._FormMixin", null,
 	{
 		/*
-		summary: 
+		summary:
 			Widget corresponding to <form> tag, for validation and serialization
-		
-		usage: 
+
+		usage:
 			<form dojoType="dijit.form.Form" id="myForm">
 				Name: <input type="text" name="name" />
 			</form>
@@ -38,14 +38,14 @@ dojo.declare("dijit.form._FormMixin", null,
 		//	(user shouldn't override)
 		onExecute: function(){},
 
-   		templateString: "<form dojoAttachPoint='containerNode' dojoAttachEvent='onsubmit:_onSubmit' enctype='multipart/form-data'></form>",
+		templateString: "<form dojoAttachPoint='containerNode' dojoAttachEvent='onsubmit:_onSubmit' enctype='multipart/form-data'></form>",
 
- 		_onSubmit: function(/*event*/e) {
+		_onSubmit: function(/*event*/e) {
 			// summary: callback when user hits submit button
 			dojo.stopEvent(e);
 			this.onExecute();	// notify container that we are about to execute
 			this.execute(this.getValues());
-  		},
+		},
 
 		submit: function() {
 			// summary: programatically submit form
@@ -54,7 +54,7 @@ dojo.declare("dijit.form._FormMixin", null,
 
 		setValues: function(/*object*/obj) {
 			// summary: fill in form values from a JSON structure
-			
+
 			// generate map from name --> [list of widgets with that name]
 			var map = {};
 			dojo.forEach(this.getDescendants(), function(widget){
@@ -82,7 +82,7 @@ dojo.declare("dijit.form._FormMixin", null,
 					});					
 				}
 			}
-			
+
 			/***
 			 * 	TODO: code for plain input boxes (this shouldn't run for inputs that are part of widgets
 
@@ -105,8 +105,8 @@ dojo.declare("dijit.form._FormMixin", null,
 							myObj[nameA[0]][nameIndex]={};
 						}
 						myObj=myObj[nameA[0]][nameIndex];
-           				continue;
-  					 }  // repeater support ends
+						continue;
+					} // repeater support ends
 
 					if(typeof(myObj[p]) == "undefined") {
 						myObj=undefined;
@@ -126,7 +126,7 @@ dojo.declare("dijit.form._FormMixin", null,
 
 				switch(element.type) {
 					case "checkbox":
-						element.checked = (name in myObj) && 
+						element.checked = (name in myObj) &&
 							dojo.some(myObj[name], function(val){ return val==element.value; });
 						break;
 					case "radio":
@@ -151,8 +151,8 @@ dojo.declare("dijit.form._FormMixin", null,
 						element.value = myObj[name] || "";
 						break;
 				}
-      		});
-      		*/
+	  		});
+	  		*/
 		},
 
 		getValues: function() {
@@ -258,10 +258,9 @@ dojo.declare("dijit.form._FormMixin", null,
 	 		});
 		}
 	});
-	
+
 dojo.declare(
 	"dijit.form.Form",
 	[dijit._Widget, dijit._Templated, dijit.form._FormMixin],
 	null
 );
-

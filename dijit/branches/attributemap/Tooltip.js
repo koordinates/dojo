@@ -24,13 +24,9 @@ dojo.declare(
 
 			this.bgIframe = new dijit.BackgroundIframe(this.domNode);
 
-			// Setup fade-in and fade-out functions.  An IE bug prevents the arrow from showing up
-			// unless opacity==1, because it's displayed via overflow: visible on the main div.
-			var opacity = dojo.isIE ? 1 : dojo.style(this.domNode, "opacity");
-			this.fadeIn = dojo._fade({node: this.domNode, duration: this.duration, end: opacity});
-			dojo.connect(this.fadeIn, "onEnd", this, "_onShow");
-			this.fadeOut = dojo._fade({node: this.domNode, duration: this.duration, end: 0});
-			dojo.connect(this.fadeOut, "onEnd", this, "_onHide");
+			// Setup fade-in and fade-out functions.
+			this.fadeIn = dojo.fadeIn({ node: this.domNode, duration: this.duration, onEnd: dojo.hitch(this, "_onShow") }),
+			this.fadeOut = dojo.fadeOut({ node: this.domNode, duration: this.duration, onEnd: dojo.hitch(this, "_onHide") });
 
 		},
 
@@ -45,16 +41,16 @@ dojo.declare(
 				return;
 			}
 			this.containerNode.innerHTML=innerHTML;
-			
+
 			// Firefox bug. when innerHTML changes to be shorter than previous
-			// one, the node size will not be updated until it moves.  
-			this.domNode.style.top = (this.domNode.offsetTop + 1) + "px"; 
+			// one, the node size will not be updated until it moves.
+			this.domNode.style.top = (this.domNode.offsetTop + 1) + "px";
 
 			// position the element and change CSS according to position	
 			var align = this.isLeftToRight() ? {'BR': 'BL', 'BL': 'BR'} : {'BL': 'BR', 'BR': 'BL'};
 			var pos = dijit.placeOnScreenAroundElement(this.domNode, aroundNode, align);
 			this.domNode.className="dijitTooltip dijitTooltip" + (pos.corner=='BL' ? "Right" : "Left");
-			
+
 			// show it
 			dojo.style(this.domNode, "opacity", 0);
 			this.fadeIn.play();

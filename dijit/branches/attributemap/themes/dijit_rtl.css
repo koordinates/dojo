@@ -8,9 +8,16 @@
 	float:right;
 }
 
+/* can't specify .dijitRtl and .dijit_a11y on this rule, since they are on the same node */
+.dijitRtl .dijitExpandoText { 
+	float: right; 
+	padding-left: 3px;
+	padding-right: 0; 
+} 
+
 /* ComboBox */
 
-.dijitRtl .dijitComboBoxInput {
+.dijitRtl .dijitComboBox .dijitInputField {
 	border-right-width:1px !important;
 	border-left-width:0px !important;
 }

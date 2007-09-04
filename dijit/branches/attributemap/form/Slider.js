@@ -22,19 +22,19 @@ dojo.declare(
 	// minimum:: integer
 	//	The minimum value allowed.
 	minimum: 0,
-	
+
 	// maximum: integer
 	//	The maximum allowed value.
 	maximum: 100,
-	
+
 	// discreteValues: integer
 	//	The maximum allowed values dispersed evenly between minimum and maximum (inclusive).
 	discreteValues: Infinity,
-	
+
 	// pageIncrement: integer
 	//	The amount of change with shift+arrow
 	pageIncrement: 2,
-	
+
 	// clickSelect: boolean
 	//	If clicking the progress bar changes the value or not
 	clickSelect: true,
@@ -57,7 +57,7 @@ dojo.declare(
 			this.incrementButton.disabled = disabled;
 			this.decrementButton.disabled = disabled;
 		}
-		dijit.form.HorizontalSlider.superclass.setDisabled.apply(this, arguments); 
+		dijit.form.HorizontalSlider.superclass.setDisabled.apply(this, arguments);
 	 },
 
 	_onKeyPress: function(/*Event*/ e){
@@ -103,7 +103,7 @@ dojo.declare(
 	_setPixelValue: function(/*Number*/ pixelValue, /*Number*/ maxPixels, /*Boolean, optional*/ priorityChange){
 		pixelValue = pixelValue < 0 ? 0 : maxPixels < pixelValue ? maxPixels : pixelValue;
 		var count = this.discreteValues;
-		if(count > maxPixels){ count = maxPixels; }
+		if(count <= 1 || count == Infinity){ count = maxPixels; }
 		count--;
 		var pixelsPerValue = maxPixels / count;
 		var wholeIncrements = Math.round(pixelValue / pixelsPerValue);
@@ -122,7 +122,7 @@ dojo.declare(
 		var s = dojo.getComputedStyle(this.sliderBarContainer);
 		var c = dojo._getContentBox(this.sliderBarContainer, s);
 		var count = this.discreteValues;
-		if(count > c[this._pixelCount]){ count = c[this._pixelCount]; }
+		if(count <= 1 || count == Infinity){ count = c[this._pixelCount]; }
 		count--;
 		var value = (this.value - this.minimum) * count / (this.maximum - this.minimum) + signedChange;
 		if(value < 0){ value = 0; }
@@ -175,11 +175,23 @@ dojo.declare(
 			this.incrementButton.domNode.style.display="";
 			this.decrementButton.domNode.style.display="";
 		}
-		this.sliderHandle.widget = this;
-
 		this.connect(this.domNode, dojo.isIE ? "onmousewheel" : 'DOMMouseScroll', "_mouseWheeled");
-		new dojo.dnd.Moveable(this.sliderHandle, {mover: dijit.form._slider});
+
+		// define a custom constructor for a SliderMover that points back to me
+		var _self = this;
+		var mover = function(node, e){
+			dijit.form._SliderMover.call(this, node, e);
+			this.widget = _self;
+		};
+		dojo.extend(mover, dijit.form._SliderMover.prototype);
+
+		this._movable = new dojo.dnd.Moveable(this.sliderHandle, {mover: mover});
 		this.inherited('postCreate', arguments);
+	},
+
+	destroy: function(){
+		this._movable.destroy();
+		dijit.form.HorizontalSlider.superclass.destroy.apply(this, arguments);	
 	}
 });
 
@@ -200,11 +212,11 @@ dojo.declare(
 	_upsideDown: true
 });
 
-dojo.declare("dijit.form._slider",
+dojo.declare("dijit.form._SliderMover",
 	dojo.dnd.Mover,
 {
 	onMouseMove: function(e){
-		var widget = this.node.widget;
+		var widget = this.widget;
 		var c = this.constraintBox;
 		if(!c){
 			var container = widget.sliderBarContainer;
@@ -219,11 +231,12 @@ dojo.declare("dijit.form._slider",
 	},
 
 	destroy: function(e){
-		var widget = this.node.widget;
+		var widget = this.widget;
 		widget.setValue(widget.value, true);
-		this.inherited('destroy', arguments);
+		dojo.dnd.Mover.prototype.destroy.call(this);
 	}
 });
+
 
 dojo.declare("dijit.form.HorizontalRule", [dijit._Widget, dijit._Templated],
 {
@@ -232,15 +245,15 @@ dojo.declare("dijit.form.HorizontalRule", [dijit._Widget, dijit._Templated],
 	templateString: '<div class="RuleContainer HorizontalRuleContainer"></div>',
 
 	// count: Integer
-	//      Number of hash marks to generate
+	//		Number of hash marks to generate
 	count: 3,
 
 	// container: Node
-	//      If this is a child widget, connect it to this parent node 
+	//		If this is a child widget, connect it to this parent node
 	container: "containerNode",
 
 	// ruleStyle: String
-	//      CSS style to apply to individual hash marks
+	//		CSS style to apply to individual hash marks
 	ruleStyle: "",
 
 	_positionPrefix: '<div class="RuleMark HorizontalRuleMark" style="left:',
@@ -281,7 +294,7 @@ dojo.declare("dijit.form.HorizontalRuleLabels", dijit.form.HorizontalRule,
 	templateString: '<div class="RuleContainer HorizontalRuleContainer"></div>',
 
 	// labelStyle: String
-	//      CSS style to apply to individual text labels
+	//		CSS style to apply to individual text labels
 	labelStyle: "",
 
 	// labels: Array

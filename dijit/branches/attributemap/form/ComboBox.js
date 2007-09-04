@@ -18,6 +18,10 @@ dojo.declare(
 		//
 		//		Some of the options to the ComboBox are actually arguments to the data
 		//		provider.
+		//
+		//		You can assume that all the form widgets (and thus anything that mixes
+		//		in ComboBoxMixin) will inherit from _FormWidget and thus the "this"
+		//		reference will also "be a" _FormWidget.
 
 		// pageSize: Integer
 		//		Argument to data provider.
@@ -28,9 +32,9 @@ dojo.declare(
 		//		Reference to data provider object used by this ComboBox
 		store: null,
 
-		// query: Object 
-		//		A query that can be passed to 'store' to initially filter the items, 
-		//		before doing further filtering based on searchAttr and the key. 
+		// query: Object
+		//		A query that can be passed to 'store' to initially filter the items,
+		//		before doing further filtering based on searchAttr and the key.
 		query: {},
 
 		// autoComplete: Boolean
@@ -56,12 +60,15 @@ dojo.declare(
 
 		_popupClass:"dijit.form._ComboBoxMenu",
 
+		_lastDisplayedValue: "",
+
 		getValue:function(){
 			// don't get the textbox value but rather the previously set hidden value
 			return dijit.form.TextBox.superclass.getValue.apply(this, arguments);
 		},
 
 		setDisplayedValue:function(/*String*/ value){
+			_lastDisplayedValue = value;
 			this.setValue(value, true);
 		},
 
@@ -164,19 +171,24 @@ dojo.declare(
 
 				case dojo.keys.ENTER:
 					// prevent submitting form if user presses enter
-					dojo.stopEvent(evt);
 					// also prevent accepting the value if either Next or Previous are selected
 					if(this._isShowingNow){
+						// only stop event on prev/next
 						var highlighted=this._popupWidget.getHighlightedOption();
 						if(highlighted==this._popupWidget.nextButton){
 							this._nextSearch(1);
+							dojo.stopEvent(evt);
 							break;
 						}
 						else if(highlighted==this._popupWidget.previousButton){
 							this._nextSearch(-1);
+							dojo.stopEvent(evt);
 							break;
 						}
 					}
+					// default case:
+					// prevent submit, but allow event to bubble
+					evt.preventDefault();
 					// fall through
 
 				case dojo.keys.TAB:
@@ -210,7 +222,13 @@ dojo.declare(
 					this._prev_key_backspace = false;
 					this._prev_key_esc = true;
 					this._hideResultList();
-					this.setValue(this.getValue());
+					if(this._lastDisplayedValue != this.getDisplayedValue()){
+						this.setValue(this._lastValueReported);
+						this.setDisplayedValue(this._lastDisplayedValue);
+						dojo.stopEvent(evt);
+					}else{
+						this.setValue(this.getValue());
+					}
 					break;
 
 				case dojo.keys.DELETE:
@@ -362,7 +380,6 @@ dojo.declare(
 				this._setCaretPos(this.focusNode, this.store.getValue(tgt.item, this.searchAttr).length);
 			}
 			this._doSelect(tgt);
-			this.focus();
 		},
 
 		_doSelect: function(tgt){
@@ -406,6 +423,11 @@ dojo.declare(
 			return this.searchAttr;
 		},
 
+		//////////// INITIALIZATION METHODS ///////////////////////////////////////
+		constructor: function(){
+			this.query={};
+		},
+
 		postMixInProperties: function(){
 			dijit.form._DropDownTextBox.prototype.postMixInProperties.apply(this, arguments);
 			if(!this.store){
@@ -424,8 +446,6 @@ dojo.declare(
 					this.value=items[this.srcNodeRef.selectedIndex!=-1?this.srcNodeRef.selectedIndex:0][this._getValueField()];
 				}
 			}
-			// instantiate query so comboboxes with different data stores and default query work together
-			if(this.query==dijit.form.ComboBoxMixin.prototype.query){query={};}
 		},
 
 		postCreate: function(){
@@ -557,7 +577,15 @@ dojo.declare(
 
 		onmouseover:function(/*Event*/ evt){
 			if(evt.target === this.domNode){ return; }
-			this._focusOptionNode(evt.target);
+			var tgt=evt.target;
+			if(!(tgt==this.previousButton||tgt==this.nextButton)){
+				// while the clicked node is inside the div
+				while(!tgt.item){
+					// recurse to the top
+					tgt=tgt.parentNode;
+				}
+			}
+			this._focusOptionNode(tgt);
 		},
 
 		onmouseout:function(/*Event*/ evt){
@@ -667,5 +695,15 @@ dojo.declare(
 dojo.declare(
 	"dijit.form.ComboBox",
 	[dijit.form.ValidationTextBox, dijit.form.ComboBoxMixin],
-	{}
+	{
+		postMixInProperties: function(){
+			dijit.form.ComboBoxMixin.prototype.postMixInProperties.apply(this, arguments);
+			dijit.form.ValidationTextBox.prototype.postMixInProperties.apply(this, arguments);
+		},
+
+		postCreate: function(){
+			dijit.form.ComboBoxMixin.prototype.postCreate.apply(this, arguments);
+			dijit.form.ValidationTextBox.prototype.postCreate.apply(this, arguments);
+		}
+	}
 );

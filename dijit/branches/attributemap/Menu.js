@@ -8,6 +8,10 @@ dojo.declare(
 	"dijit.Menu",
 	[dijit._Widget, dijit._Templated, dijit._Container],
 {
+	constructor: function() {
+		this._bindings = [];
+	},
+
 	templateString:
 			'<table class="dijit dijitMenu dijitReset dijitMenuTable" waiRole="menu" dojoAttachEvent="onkeypress:_onKeyPress">' +
 				'<tbody class="dijitReset" dojoAttachPoint="containerNode"></tbody>'+
@@ -62,17 +66,8 @@ dojo.declare(
 
 	_moveToPopup: function(/*Event*/ evt){
 		if(this._focusedItem && this._focusedItem.popup && !this._focusedItem.disabled){
-			return this._activateCurrentItem(evt);
-		}
-		return false;
-	},
-
-	_activateCurrentItem: function(/*Event*/ evt){
-		if(this._focusedItem){
 			this._focusedItem._onClick(evt);
-			return true; //do not pass to parent menu
 		}
-		return false;
 	},
 
 	_onKeyPress: function(/*Event*/ evt){
@@ -95,14 +90,11 @@ dojo.declare(
 				dojo.stopEvent(evt);
 				break;
 			case dojo.keys.LEFT_ARROW:
-				this.onCancel(false);
-				break;
-			case dojo.keys.TAB:
-				dojo.stopEvent(evt);
-				// Hmm, there's no good infrastructure to support cancel closing the whole tree
-				// of menus, but it's close to an execute event, in the sense that focus is returned
-				// to the previously focused node (for a context menu) or to the DropDownButton
-				this.onExecute();
+				if(this.parentMenu){
+					this.onCancel(false);
+				}else{
+					dojo.stopEvent(evt);
+				}
 				break;
 		}
 	},
@@ -246,17 +238,20 @@ dojo.declare(
 		// to capture these events at the top level,
 		// attach to document, not body
 		var cn = (node == dojo.body() ? dojo.doc : node);
-		node[this.id+'_connect'] = [
+
+		node[this.id] = this._bindings.push([
 			dojo.connect(cn, "oncontextmenu", this, "_openMyself"),
 			dojo.connect(cn, "onkeydown", this, "_contextKey"),
 			dojo.connect(cn, "onmousedown", this, "_contextMouse")
-		];
+		]);
 	},
 
 	unBindDomNode: function(/*String|DomNode*/ nodeName){
 		// summary: detach menu from given node
 		var node = dojo.byId(nodeName);
-		dojo.forEach(node[this.id+'_connect'], dojo.disconnect);
+		var bid = node[this.id]-1, b = this._bindings[bid];
+		dojo.forEach(b, dojo.disconnect);
+		delete this._bindings[bid];
 	},
 
 	_contextKey: function(e){
@@ -286,7 +281,7 @@ dojo.declare(
 		//		does a right-click or something similar
 
 		dojo.stopEvent(e);
-		
+
 		// Get coordinates.
 		// if we are opening the menu with the mouse or on safari open
 		// the menu at the mouse cursor
@@ -320,7 +315,7 @@ dojo.declare(
 			orient: this.isLeftToRight() ? 'L' : 'R'
 		});
 		this.focus();
-		
+
 		this._onBlur = function(){
 			// Usually the parent closes the child widget but if this is a context
 			// menu then there is no parent
@@ -369,10 +364,10 @@ dojo.declare(
 				self.currentPopup = null;
 			}
 		});
-			
+
 
 		this.currentPopup = popup;
-		
+
 		if(popup.focus){
 			popup.focus();
 		}
@@ -395,9 +390,9 @@ dojo.declare(
 		+'<td class="dijitReset"><div class="dijitMenuItemIcon ${iconClass}"></div></td>'
 		+'<td tabIndex="-1" class="dijitReset dijitMenuItemLabel" dojoAttachPoint="containerNode" waiRole="menuitem"></td>'
 		+'<td class="dijitReset" dojoAttachPoint="arrowCell">'
-			+'<span class="dijitMenuExpand" dojoAttachPoint="expand" style="display:none">'
+			+'<div class="dijitMenuExpand" dojoAttachPoint="expand" style="display:none">'
 			+'<span class="dijit_a11y dijitInline dijitArrowNode dijitMenuExpandInner">+</span>'
-			+'</span>'
+			+'</div>'
 		+'</td>'
 		+'</tr>',
 
@@ -483,7 +478,7 @@ dojo.declare(
 		if(this.srcNodeRef){
 			var nodes = dojo.query("*", this.srcNodeRef);
 			dijit.PopupMenuItem.superclass._fillContent.call(this, nodes[0]);
-			
+
 			// save pointer to srcNode so we can grab the drop down widget after it's instantiated
 			this.dropDownContainer = this.srcNodeRef;
 		}

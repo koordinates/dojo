@@ -2,13 +2,16 @@ dojo.provide("dijit.layout.AccordionContainer");
 
 dojo.require("dojo.fx");
 
+dojo.require("dijit._Container");
+dojo.require("dijit._Templated");
 dojo.require("dijit.layout.StackContainer");
+dojo.require("dijit.layout.ContentPane");
 
 dojo.declare(
 	"dijit.layout.AccordionContainer",
 	dijit.layout.StackContainer,
 	{
-		// summary: 
+		// summary:
 		//		Holds a set of panes where every pane's title is visible, but only one pane's content is visible at a time,
 		//		and switching between panes is visualized by sliding the other panes up/down.
 		// usage:
@@ -33,6 +36,7 @@ dojo.declare(
 		},
 
 		startup: function(){
+			if(this._started){ return; }
 			dijit.layout.StackContainer.prototype.startup.apply(this, arguments);
 			if(this.selectedChildWidget){
 				var style = this.selectedChildWidget.containerNode.style;
@@ -78,14 +82,9 @@ inside the AccordionPane??
 				newWidget.setSelected(true);
 				var newContents = newWidget.containerNode;
 				newContents.style.display = "";
-				dojo.forEach(newWidget.getChildren(), function(widget){
-					if(widget.resize){
-						widget.resize({h: paneHeight});
-					}
-				});
 
-				animations.push(dojo.animateProperty({ 
-					node: newContents, 
+				animations.push(dojo.animateProperty({
+					node: newContents,
 					duration: this.duration,
 					properties: {
 						height: { start: "1", end: paneHeight }
@@ -99,11 +98,11 @@ inside the AccordionPane??
 				oldWidget.setSelected(false);
 				var oldContents = oldWidget.containerNode;
 				oldContents.style.overflow = "hidden";
-				animations.push(dojo.animateProperty({ 
+				animations.push(dojo.animateProperty({
 					node: oldContents,
 					duration: this.duration,
 					properties: {
-						height: { start: paneHeight, end: "1" } 
+						height: { start: paneHeight, end: "1" }
 					},
 					onEnd: function(){
 						oldContents.style.display = "none";
@@ -142,15 +141,11 @@ inside the AccordionPane??
 
 dojo.declare(
 	"dijit.layout.AccordionPane",
-	[dijit.layout._LayoutWidget, dijit._Templated],
+	[dijit.layout.ContentPane, dijit._Templated, dijit._Contained],
 {
 	// summary
 	//		AccordionPane is a box with a title that contains another widget (often a ContentPane).
 	//		It's a widget used internally by AccordionContainer.
-
-	// selected: Boolean
-	//	if true, this is the open pane
-	selected: false,
 
 	templatePath: dojo.moduleUrl("dijit.layout", "templates/AccordionPane.html"),
 
@@ -176,13 +171,13 @@ dojo.declare(
 		evt._dijitWidget = this;
 		return this.getParent().processKey(evt);
 	},
-	
+
 	_setSelectedState: function(/*Boolean*/ isSelected){
 		this.selected = isSelected;
 		(isSelected ? dojo.addClass : dojo.removeClass)(this.domNode, "dijitAccordionPane-selected");
 		this.focusNode.setAttribute("tabIndex",(isSelected)? "0":"-1");
 	},
-	
+
 	setSelected: function(/*Boolean*/ isSelected){
 		// summary: change the selected state on this pane
 		this._setSelectedState(isSelected);

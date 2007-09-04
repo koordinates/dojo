@@ -34,22 +34,26 @@ dojo.declare(
 	editing: false,
 
 	// autoSave: Boolean
-	//				Changing the value automatically saves it, don't have to push save button
+	//		Changing the value automatically saves it, don't have to push save button
 	autoSave: true,
 
 	// buttonSave: String
-	//              Save button label
+	//		Save button label
 	buttonSave: "",
 
 	// buttonCancel: String
-	//              Cancel button label
+	//		Cancel button label
 	buttonCancel: "",
 
 	// renderAsHtml: Boolean
-	//              should text render as HTML(true) or plain text(false)
+	//		should text render as HTML(true) or plain text(false)
 	renderAsHtml: false,
 
 	widgetsInTemplate: true,
+
+	// _display: String
+	//	srcNodeRef display style
+	_display:"",
 
 	startup: function(){
 		// look for the input widget as a child of the containerNode
@@ -62,33 +66,61 @@ dojo.declare(
 			}
 			// #3209: copy the style from the source
 			// don't copy ALL properties though, just the necessary/applicable ones
-			dojo.forEach(["fontSize","fontFamily","fontWeight"], function(prop){
-				this.editWidget.focusNode.style[prop]=this._srcStyle[prop];
-				this.editable.style[prop]=this._srcStyle[prop];
+			var srcStyle=dojo.getComputedStyle(this.domNode);
+			dojo.forEach(["fontWeight","fontFamily","fontSize","fontStyle"], function(prop){
+				this.editWidget.focusNode.style[prop]=srcStyle[prop];
 			}, this);
 			this._setEditValue = dojo.hitch(this.editWidget,this.editWidget.setDisplayedValue||this.editWidget.setValue);
 			this._getEditValue = dojo.hitch(this.editWidget,this.editWidget.getDisplayedValue||this.editWidget.getValue);
 			this._setEditFocus = dojo.hitch(this.editWidget,this.editWidget.focus);
-			this.editWidget.onChange = dojo.hitch(this,"_onChange");
+			this._isEditValid = dojo.hitch(this.editWidget,this.editWidget.isValid || function(){return true;});
+			this.editWidget.onChange = dojo.hitch(this, "_onChange");
+
+			if(!this.autoSave){ // take over the setValue method so we can know when the value changes
+				this._oldSetValue = this.editWidget.setValue;
+				var _this = this;
+				this.editWidget.setValue = dojo.hitch(this, function(value){
+					_this._oldSetValue.apply(_this.editWidget, arguments);
+					_this._onEditWidgetKeyPress(null); // check the Save button
+				});
+			}
 			this._showText();
 
 			this._started = true;
 		}
 	},
 
-	postCreate: function(){
-		if(this.autoSave){
-			this.buttonSpan.style.display="none";
-		}
-	},
-
 	postMixInProperties: function(){
 		this._srcStyle=dojo.getComputedStyle(this.srcNodeRef);
-		dijit.form.InlineEditBox.superclass.postMixInProperties.apply(this, arguments);
+		// getComputedStyle is not good until after onLoad is called
+		var srcNodeStyle = this.srcNodeRef.style;
+		this._display="";
+		if(srcNodeStyle && srcNodeStyle.display){ this._display=srcNodeStyle.display; }
+		else{
+			switch(this.srcNodeRef.tagName.toLowerCase()){
+				case 'span':
+				case 'input':
+				case 'img':
+				case 'button':
+					this._display='inline';
+					break;
+				default:
+					this._display='block';
+					break;
+			}
+		}
+		this.inherited('postMixInProperties', arguments);
 		this.messages = dojo.i18n.getLocalization("dijit", "common", this.lang);
 		dojo.forEach(["buttonSave", "buttonCancel"], function(prop){
 			if(!this[prop]){ this[prop] = this.messages[prop]; }
 		}, this);
+	},
+
+	postCreate: function(){
+		// don't call setValue yet since the editing widget is not setup
+		if(this.autoSave){
+			dojo.style(this.buttonContainer, "display", "none");
+		}
 	},
 
 	_onKeyPress: function(e){
@@ -103,14 +135,14 @@ dojo.declare(
 	_onMouseOver: function(){
 		if(!this.editing){
 			var classname = this.disabled ? "dijitDisabledClickableRegion" : "dijitClickableRegion";
-			dojo.addClass(this.editable, classname);
+			dojo.addClass(this.textNode, classname);
 		}
 	},
 
 	_onMouseOut: function(){
 		if(!this.editing){
 			var classStr = this.disabled ? "dijitDisabledClickableRegion" : "dijitClickableRegion";
-			dojo.removeClass(this.editable, classStr);
+			dojo.removeClass(this.textNode, classStr);
 		}
 	},
 
@@ -124,10 +156,9 @@ dojo.declare(
 		this.editing = true;
 
 		// show the edit form and hide the read only version of the text
-		this._setEditValue(this._isEmpty ? '' : (this.renderAsHtml ? this.editable.innerHTML : this.editable.innerHTML.replace(/<br\/?>/gi, "\n")));
+		this._setEditValue(this._isEmpty ? '' : (this.renderAsHtml ? this.textNode.innerHTML : this.textNode.innerHTML.replace(/\s*\r?\n\s*/g,"").replace(/<br\/?>/gi, "\n").replace(/&gt;/g,">").replace(/&lt;/g,"<").replace(/&amp;/g,"&")));
 		this._initialText = this._getEditValue();
 		this._visualize();
-
 		// Before changing the focus, give the browser time to render.
 		setTimeout(dojo.hitch(this, function(){	
 			this._setEditFocus();
@@ -136,10 +167,11 @@ dojo.declare(
 	},
 
 	_visualize: function(){
-		// #3209: resize the textarea to match the text
-		this.editWidget.resize(dojo.contentBox(this.editable));
-		dojo.style(this.editNode, "display", this.editing ? "" : "none");
-		dojo.style(this.editable, "display", this.editing ? "none" : "");
+		dojo.style(this.editNode, "display", this.editing ? this._display : "none");
+		// #3749: try to set focus now to fix missing caret
+		// #3997: call right after this.containerNode appears
+		if(this.editing){this._setEditFocus();}
+		dojo.style(this.textNode, "display", this.editing ? "none" : this._display);
 	},
 
 	_showText: function(){
@@ -150,9 +182,9 @@ dojo.declare(
 		if(/^\s*$/.test(value)){ value = "?"; this._isEmpty = true; }
 		else { this._isEmpty = false; }
 		if(this.renderAsHtml){
-			this.editable.innerHTML = value;
+			this.textNode.innerHTML = value;
 		}else{
-			this.editable.innerHTML = "";
+			this.textNode.innerHTML = "";
 			if(value.split){
 				var _this=this;
 				var isFirst = true;
@@ -160,12 +192,12 @@ dojo.declare(
 					if(isFirst){
 						isFirst = false;
 					}else{
-						_this.editable.appendChild(document.createElement("BR")); // preserve line breaks
+						_this.textNode.appendChild(document.createElement("BR")); // preserve line breaks
 					}
-					_this.editable.appendChild(document.createTextNode(line)); // use text nodes so that imbedded tags can be edited
+					_this.textNode.appendChild(document.createTextNode(line)); // use text nodes so that imbedded tags can be edited
 				});
 			}else{
-				this.editable.appendChild(document.createTextNode(value));
+				this.textNode.appendChild(document.createTextNode(value));
 			}
 		}
 		this._visualize();
@@ -176,6 +208,7 @@ dojo.declare(
 		// e is passed in if click on save button or user presses Enter.  It's not
 		// passed in when called by _onBlur.
 		if(e){ dojo.stopEvent(e); }
+		if(!this.enableSave()){ return; }
 		this.editing = false;
 		this._showText();
 		// If save button pressed on non-autoSave widget or Enter pressed on autoSave
@@ -210,8 +243,9 @@ dojo.declare(
 		// summary:
 		//		Callback when keypress in the edit box (see template).
 		//		For autoSave widgets, if Esc/Enter, call cancel/save.
-		//		For non-autoSave widgets, enable save button if the text value is 
+		//		For non-autoSave widgets, enable save button if the text value is
 		//		different than the original value.
+		if(!this.editing){ return; }
 		if(this.autoSave){
 			// If Enter/Esc pressed, treat as save/cancel.
 			if(e.keyCode == dojo.keys.ESCAPE){
@@ -221,17 +255,18 @@ dojo.declare(
 			}
 		}else{
 			var _this = this;
+			// Delay before calling _getEditValue.
+			// The delay gives the browser a chance to update the textarea.
 			setTimeout(
 				function(){
-					_this.saveButton.setDisabled(_this._getEditValue() == _this._initialText);	// ignore the tab key
-				}, 100); // the delay gives the browser a chance to update the textarea
+					_this.saveButton.setDisabled(_this._getEditValue() == _this._initialText);
+				}, 100);
 		}
-
 	},
 
 	_onBlur: function(){
 		// summary:
-		//	Called by the focus manager in focus.js when focus moves outside of the 
+		//	Called by the focus manager in focus.js when focus moves outside of the
 		//	InlineEditBox widget (or it's descendants).
 		if(this.autoSave && this.editing){
 			if(this._getEditValue() == this._initialText){
@@ -242,25 +277,34 @@ dojo.declare(
 		}
 	},
 
+
+	enableSave: function(){
+		// summary: User replacable function returning a Boolean to indicate
+		// if the Save button should be enabled or not - usually due to invalid conditions
+		return this._isEditValid();
+	},
+
 	_onChange: function(){
 		// summary:
 		//	This is called when the underlying widget fires an onChange event,
 		//	which means that the user has finished entering the value
-		if(this.autoSave){
+		if(!this.editing){
+			this._showText(); // asynchronous update made famous by ComboBox/FilteringSelect
+		}else if(this.autoSave){
 			this.save();
 		}else{
 			// #3752
 			// if the keypress does not bubble up to the div, (iframe in TextArea blocks it for example)
 			// make sure the save button gets enabled
-			this.saveButton.setDisabled(false);
+			this.saveButton.setDisabled((this._getEditValue() == this._initialText) || !this.enabledSave());
 		}
 	},
 
 	setDisabled: function(/*Boolean*/ disabled){
 		this.saveButton.setDisabled(disabled);
 		this.cancelButton.setDisabled(disabled);
-		this.editable.disabled = disabled;
+		this.textNode.disabled = disabled;
 		this.editWidget.setDisabled(disabled);
-		dijit.form.InlineEditBox.superclass.setDisabled.apply(this, arguments);
+		this.inherited('setDisabled', arguments);
 	}
 });

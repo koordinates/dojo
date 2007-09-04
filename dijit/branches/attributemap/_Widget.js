@@ -2,108 +2,7 @@ dojo.provide("dijit._Widget");
 
 dojo.require("dijit._base");
 
-dojo.declare("dijit._Widget", null,
-function(params, srcNodeRef){
-	// summary:
-	//		To understand the process by which widgets are instantiated, it
-	//		is critical to understand what other methods the constructor calls and
-	//		which of them you'll want to over-ride. Of course, adventurous
-	//		developers could over-ride the constructor entirely, but this should
-	//		only be done as a last resort.
-	//
-	//		Below is a list of the methods that are called, in the order
-	//		they are fired, along with notes about what they do and if/when
-	//		you should over-ride them in your widget:
-	//			
-	//			postMixInProperties:
-	//				a stub function that you can over-ride to modify
-	//				variables that may have been naively assigned by
-	//				mixInProperties
-	//			# widget is added to manager object here
-	//			buildRendering
-	//				Subclasses use this method to handle all UI initialization
-	//				Sets this.domNode.  Templated widgets do this automatically
-	//				and otherwise it just uses the source dom node.
-	//			postCreate
-	//				a stub function that you can over-ride to modify take
-	//				actions once the widget has been placed in the UI
-
-	// store pointer to original dom tree
-	this.srcNodeRef = dojo.byId(srcNodeRef);
-
-	// For garbage collection.  An array of handles returned by Widget.connect()
-	// Each handle returned from Widget.connect() is an array of handles from dojo.connect()
-	this._connects=[];
-
-	//mixin our passed parameters
-	if(this.srcNodeRef && (typeof this.srcNodeRef.id == "string")){ this.id = this.srcNodeRef.id; }
-	if(params){
-		dojo.mixin(this,params);
-	}
-	this.postMixInProperties();
-
-	// generate an id for the widget if one wasn't specified
-	// (be sure to do this before buildRendering() because that function might
-	// expect the id to be there.
-	if(!this.id){
-		this.id = dijit.getUniqueId(this.declaredClass.replace(/\./g,"_"));
-	}
-	dijit.registry.add(this);
-
-	this.buildRendering();
-
-	// Copy attributes listed in genericMap into the newly created DOM for the widget
-	// The placement of these attributes is according to the property mapping in genericMap
-	// Note special handling for 'style' and 'class' attributes which are lists and can
-	// have elements from both old and new structures.
-	for(var attr in this.genericMap){
-		if(this.domNode){
-			var node = this[this.genericMap[attr] || "domNode"];
-			var value = this[attr];
-			if(value !== "" || (params && params[attr])){
-				var domValue = node.getAttribute(attr);
-				if(domValue){
-					var delim = {style: ";", "class": " "}[attr];
-					// style and class attributes are special and contain lists
-					// which need to be combined
-					if(delim){
-						value += delim + domValue;
-						domValue = null;
-					}
-				}
-				// Let template override attribute values
-				if(domValue === null){
-					// Deal with IE quirks for setting 'class' and 'style'
-					switch(attr){
-					case "style":
-						if(node.style && dojo.isObject(node.style)){ // IE
-							node.style.cssText = value;
-						}else{
-							node.setAttribute(attr, value);
-						}
-						break;
-					case "class":
-						node.className = value;
-						break;
-					default:
-						node.setAttribute(attr, value);
-					}
-				}
-			}
-		}
-	}
-	if(this.domNode){
-		this.domNode.setAttribute("widgetId", this.id);
-	}
-
-	this.postCreate();
-
-	// If srcNodeRef has been processed and removed from the DOM (e.g. TemplatedWidget) then delete it to allow GC.
-	if(this.srcNodeRef && !this.srcNodeRef.parentNode){
-		delete this.srcNodeRef;
-	}
-},
-{
+dojo.declare("dijit._Widget", null, {
 	// id: String
 	//		a unique, opaque ID string that can be assigned by users or by the
 	//		system. If the developer passes an ID which is known not to be
@@ -150,6 +49,115 @@ function(params, srcNodeRef){
 	genericMap: {id:"", dir:"", lang:"", "class":"", style:"", title:""},  // TODO: add on* handlers?
 
 	//////////// INITIALIZATION METHODS ///////////////////////////////////////
+
+	postscript: function(params, srcNodeRef){
+		this.create(params, srcNodeRef);
+	},
+
+	create: function(params, srcNodeRef){
+		// summary:
+		//		To understand the process by which widgets are instantiated, it
+		//		is critical to understand what other methods create calls and
+		//		which of them you'll want to override. Of course, adventurous
+		//		developers could override create entirely, but this should
+		//		only be done as a last resort.
+		//
+		//		Below is a list of the methods that are called, in the order
+		//		they are fired, along with notes about what they do and if/when
+		//		you should over-ride them in your widget:
+		//			
+		//			postMixInProperties:
+		//				a stub function that you can over-ride to modify
+		//				variables that may have been naively assigned by
+		//				mixInProperties
+		//			# widget is added to manager object here
+		//			buildRendering
+		//				Subclasses use this method to handle all UI initialization
+		//				Sets this.domNode.  Templated widgets do this automatically
+		//				and otherwise it just uses the source dom node.
+		//			postCreate
+		//				a stub function that you can over-ride to modify take
+		//				actions once the widget has been placed in the UI
+
+		// store pointer to original dom tree
+		this.srcNodeRef = dojo.byId(srcNodeRef);
+
+		// For garbage collection.  An array of handles returned by Widget.connect()
+		// Each handle returned from Widget.connect() is an array of handles from dojo.connect()
+		this._connects=[];
+
+		// _attaches: String[]
+		// 		names of all our dojoAttachPoint variables
+		this._attaches=[];
+
+		//mixin our passed parameters
+		if(this.srcNodeRef && (typeof this.srcNodeRef.id == "string")){ this.id = this.srcNodeRef.id; }
+		if(params){
+			dojo.mixin(this,params);
+		}
+		this.postMixInProperties();
+
+		// generate an id for the widget if one wasn't specified
+		// (be sure to do this before buildRendering() because that function might
+		// expect the id to be there.
+		if(!this.id){
+			this.id=dijit.getUniqueId(this.declaredClass.replace(/\./g,"_"));
+		}
+		dijit.registry.add(this);
+
+		this.buildRendering();
+
+		// Copy attributes listed in genericMap into the newly created DOM for the widget
+		// The placement of these attributes is according to the property mapping in genericMap
+		// Note special handling for 'style' and 'class' attributes which are lists and can
+		// have elements from both old and new structures.
+		for(var attr in this.genericMap){
+			if(this.domNode){
+				var node = this[this.genericMap[attr] || "domNode"];
+				var value = this[attr];
+				if(value !== "" || (params && params[attr])){
+					var domValue = node.getAttribute(attr);
+					if(domValue){
+						var delim = {style: ";", "class": " "}[attr];
+						// style and class attributes are special and contain lists
+						// which need to be combined
+						if(delim){
+							value += delim + domValue;
+							domValue = null;
+						}
+					}
+					// Let template override attribute values
+					if(domValue === null){
+						// Deal with IE quirks for setting 'class' and 'style'
+						switch(attr){
+						case "style":
+							if(node.style && dojo.isObject(node.style)){ // IE
+								node.style.cssText = value;
+							}else{
+								node.setAttribute(attr, value);
+							}
+							break;
+						case "class":
+							node.className = value;
+							break;
+						default:
+							node.setAttribute(attr, value);
+						}
+					}
+				}
+			}
+		}
+
+		if(this.domNode){
+			this.domNode.setAttribute("widgetId", this.id);
+		}
+		this.postCreate();
+
+		// If srcNodeRef has been processed and removed from the DOM (e.g. TemplatedWidget) then delete it to allow GC.
+		if(this.srcNodeRef && !this.srcNodeRef.parentNode){
+			delete this.srcNodeRef;
+		}
+	},
 
 	postMixInProperties: function(){
 		// summary
@@ -285,7 +293,7 @@ function(params, srcNodeRef){
 				handles.push(dojo.connect(obj, "onkeydown", this,
 					function(e){
 						if(e.keyCode == dojo.keys.ENTER){
-							return (dojo.isString(method))? 
+							return (dojo.isString(method))?
 								w[method](e) : method.call(w, e);
 						}else if(e.keyCode == dojo.keys.SPACE){
 							// stop space down as it causes IE to scroll
@@ -296,7 +304,7 @@ function(params, srcNodeRef){
 				handles.push(dojo.connect(obj, "onkeyup", this,
 					function(e){
 						if(e.keyCode == dojo.keys.SPACE){
-							return dojo.isString(method) ? 
+							return dojo.isString(method) ?
 								w[method](e) : method.call(w, e);
 						}
 			 		}));

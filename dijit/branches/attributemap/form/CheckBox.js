@@ -41,7 +41,11 @@ dojo.declare(
 		},
 
 		setChecked: function(/*Boolean*/ checked){
-			this.inputNode.checked = this.checked = checked;
+			this.checked = checked;
+			if(dojo.isIE){
+				if(checked){ this.inputNode.setAttribute('checked', 'checked'); }
+				else{ this.inputNode.removeAttribute('checked'); }
+			}else{ this.inputNode.checked = checked; }
 			dijit.form.ToggleButton.prototype.setChecked.apply(this, arguments);
 		},
 

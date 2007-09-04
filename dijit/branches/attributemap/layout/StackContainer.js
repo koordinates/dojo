@@ -23,6 +23,8 @@ dojo.declare(
 	_started: false,
 
 	startup: function(){
+		if(this._started){ return; }
+
 		var children = this.getChildren();
 
 		// Setup each page panel
@@ -68,19 +70,16 @@ dojo.declare(
 		dijit._Container.prototype.addChild.apply(this, arguments);
 		child = this._setupChild(child);
 
-		var started = this._started;
-		if(started){
+		if(this._started){
 			// in case the tab titles have overflowed from one line to two lines
 			this.layout();
-		}
 
-		if(started){
 			dojo.publish(this.id+"-addChild", [child]);
-		}
 
-		// if this is the first child, then select it
-		if(!this.selectedChildWidget && started){
-			this.selectChild(child);
+			// if this is the first child, then select it
+			if(!this.selectedChildWidget){
+				this.selectChild(child);
+			}
 		}
 	},
 
@@ -162,7 +161,9 @@ dojo.declare(
 			switch(e.keyCode){
 				case dojo.keys.PAGE_DOWN:
 				case dojo.keys.PAGE_UP:
-					if (e.keyCode == dojo.keys.PAGE_DOWN){
+				case dojo.keys.TAB:
+					if ((e.keyCode == dojo.keys.PAGE_DOWN) ||
+						(e.keyCode == dojo.keys.TAB && !e.shiftKey)){
 						this.forward();
 					}else{
 						this.back();
@@ -172,10 +173,11 @@ dojo.declare(
 					return false;
 					break;
 				default:
-					if((e.keyChar == "w") &&
-						(this.selectedChildWidget.closable)){
+					if(e.keyChar == "w"){
+						if (this.selectedChildWidget.closable){
 							this.closeChild(this.selectedChildWidget);
-							dojo.stopEvent(e);
+						}
+						dojo.stopEvent(e); // avoid browser tab closing.
 					}
 			}
 		}
@@ -344,7 +346,7 @@ dojo.declare(
 				dijit.focus(b.focusNode || b.domNode);
 			}
 		},
-		
+
 		// TODO: this is a bit redundant with forward, back api in StackContainer
 		adjacent: function(/*Boolean*/ forward){
 			// find currently focused button in children array
@@ -375,7 +377,7 @@ dojo.declare(
 				case dojo.keys.DELETE:
 					if(this._currentChild.closable){
 						this.onCloseButtonClick(this._currentChild);
-						dojo.stopEvent(evt); // so we don't close a browser tab!
+						dojo.stopEvent(evt);
 					}
 			}
 		}

@@ -8,7 +8,7 @@ dojo.declare(
 		//		Mixin text box with drop down
 
 		templatePath: dojo.moduleUrl("dijit.form", "templates/ComboBox.html"),
-		
+
 		baseClass:"dijitComboBox",
 
 		// hasDownArrow: Boolean
@@ -34,7 +34,7 @@ dojo.declare(
 		// _popupArgs: Object
 		//	Object to pass to popup widget on initialization
 		_popupArgs:{},
-		
+
 		// _hasFocus: Boolean
 		// Represents focus state of the textbox
 		_hasFocus:false,
@@ -58,7 +58,6 @@ dojo.declare(
 			function _createNewPopup(){
 				// common code from makePopup
 				var node=document.createElement("div");
-				document.body.appendChild(node);
 				var popupProto=dojo.getObject(_this._popupClass, false);
 				return new popupProto(_this._popupArgs, node);
 			}
@@ -125,41 +124,6 @@ dojo.declare(
 			this.validate(false);
 		},
 
-		onkeypress: function(/*Event*/ evt){
-			// summary: generic handler for popup keyboard events
-			if(evt.ctrlKey || evt.altKey){
-				return;
-			}
-			switch(evt.keyCode){
-				case dojo.keys.PAGE_DOWN:
-				case dojo.keys.DOWN_ARROW:
-					if(!this._isShowingNow||this._prev_key_esc){
-						this.makePopup();
-						this._arrowPressed();
-						this._openResultList();
-					}
-					dojo.stopEvent(evt);
-					this._prev_key_backspace = false;
-					this._prev_key_esc = false;
-					break;
-
-				case dojo.keys.PAGE_UP:
-				case dojo.keys.UP_ARROW:
-				case dojo.keys.ENTER:
-					// prevent default actions
-					dojo.stopEvent(evt);
-					// fall through
-				case dojo.keys.ESCAPE:
-				case dojo.keys.TAB:
-					if(this._isShowingNow){
-						this._prev_key_backspace = false;
-						this._prev_key_esc = (evt.keyCode==dojo.keys.ESCAPE);
-						this._hideResultList();
-					}
-					break;
-			}
-		},
-
 		compositionend: function(/*Event*/ evt){
 			// summary: When inputting characters using an input method, such as Asian
 			// languages, it will generate this event instead of onKeyDown event
@@ -202,7 +166,7 @@ dojo.declare(
 		},
 
 		uninitialize:function(){
-			if(this._popupWidget){
+			if(this._popupWidget&&!this._hasMasterPopup){
 				this._hideResultList();
 				this._popupWidget.destroy()
 			};

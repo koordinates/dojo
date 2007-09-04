@@ -40,7 +40,7 @@ dojo.declare(
 			{size:"focusNode", maxlength:"focusNode"}),
 
 		getTextValue: function(){
-			return this.filter(this.textbox.value);
+			return this.textbox.value;
 		},
 
 		getValue: function(){
@@ -48,17 +48,14 @@ dojo.declare(
 		},
 
 		setValue: function(value, /*Boolean, optional*/ priorityChange, /*String, optional*/ formattedValue){
-			if(value == null){ value = ""; }
-			value = this.filter(value);
-			if(typeof formattedValue == "undefined"){
-				formattedValue = (typeof value == "undefined" || value == null || value == NaN) ? null : this.format(value, this.constraints);
+			var filteredValue = this.filter(value);
+			if(filteredValue != "" && (formattedValue == null || formattedValue == undefined)){
+				formattedValue = this.format(filteredValue, this.constraints);
 			}
-			if(formattedValue){
-				var _this = this;
-				// synchronous value set needed for InlineEditBox
+			if(formattedValue != null && formattedValue != undefined){
 				this.textbox.value = formattedValue;
 			}
-			dijit.form.TextBox.superclass.setValue.call(this, value, priorityChange);
+			dijit.form.TextBox.superclass.setValue.call(this, filteredValue, priorityChange);
 		},
 
 		forWaiValuenow: function(){
@@ -67,7 +64,7 @@ dojo.declare(
 
 		format: function(/* String */ value, /* Object */ constraints){
 			// summary: Replacable function to convert a value to a properly formatted string
-			return value;
+			return (value.toString ? value.toString() : value);
 		},
 
 		parse: function(/* String */ value, /* Object */ constraints){
@@ -88,7 +85,7 @@ dojo.declare(
 
 		filter: function(val){
 			// summary: Apply various filters to textbox value
-			if(val == null){ return null; }
+			if(val == undefined || val == null){ val = ""; }
 			if(this.trim){
 				val = dojo.trim(val);
 			}
@@ -115,7 +112,7 @@ dojo.declare(
 		_onBlur: function(){
 			dojo.removeClass(this.nodeWithBorder, "dijitInputFieldFocused");
 
-			this.setValue(this.getValue(), true);
+			this.setValue(this.getValue(), (this.isValid ? this.isValid() : true));
 		},
 
 		onkeyup: function(){
@@ -123,11 +120,6 @@ dojo.declare(
 			// but this messes up the cursor position if you are typing into the middle of a word, and
 			// also trimming doesn't work correctly (it prevents spaces between words too!)
 			// this.setValue(this.getValue());
-		},
-
-		resize:function(/*Object*/ contentBox){
-			// summary: set content box size
-			dojo.contentBox(this.focusNode, contentBox);
 		}
 	}
 );
