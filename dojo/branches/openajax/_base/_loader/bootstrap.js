@@ -19,7 +19,25 @@
 //		nothing at all.
 
 
+//TODOC:  HOW TO DOC THIS?
+dojo.version = {
+	// summary: version number of this instance of dojo.
+	major: 0, minor: 9, patch: 0, flag: "dev",
+	revision: Number("$Rev$".match(/[0-9]+/)[0]),
+	toString: function(){
+		with(dojo.version){
+			return major + "." + minor + "." + patch + flag + " (" + revision + ")";	// String
+		}
+	}
+}
+
 (function(){
+	// Register with the OpenAjax hub
+	var v = dojo.version;
+	if(typeof OpenAjax != "undefined"){
+		OpenAjax.hub.registerLibrary("dojo", "http://dojotoolkit.org", v.major + "." + v.minor + "." + v.patch, v); //FIXME: v.toString() doesn't conform to the hub specs
+	}
+
 	// make sure djConfig is defined
 	if(typeof this["djConfig"] == "undefined"){
 		this.djConfig = {};
@@ -81,18 +99,6 @@
 
 // Override locale setting, if specified
 dojo.locale = djConfig.locale;
-
-//TODOC:  HOW TO DOC THIS?
-dojo.version = {
-	// summary: version number of this instance of dojo.
-	major: 0, minor: 9, patch: 0, flag: "dev",
-	revision: Number("$Rev$".match(/[0-9]+/)[0]),
-	toString: function(){
-		with(dojo.version){
-			return major + "." + minor + "." + patch + flag + " (" + revision + ")";	// String
-		}
-	}
-}
 
 dojo._getProp = function(/*Array*/parts, /*Boolean*/create, /*Object*/context){
 	var obj=context||dojo.global;
