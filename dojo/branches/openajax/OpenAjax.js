@@ -106,7 +106,7 @@ if(!window["OpenAjax"]){
 		h._publish = function(tree, path, index, name, msg){
 			if(typeof tree != "undefined"){
 				var node;
-				if(index == path.length) {
+				if(index == path.length){
 					node = tree;
 				}else{
 					this._publish(tree.c[path[index]], path, index + 1, name, msg);
@@ -131,7 +131,7 @@ if(!window["OpenAjax"]){
 								fcb = sc[fcb];
 							}
 							if((!fcb) || 
-							   (fcb.call(sc, name, msg, d))) {
+							   (fcb.call(sc, name, msg, d))){
 								cb.call(sc, name, msg, d);
 							}
 						}
@@ -140,31 +140,32 @@ if(!window["OpenAjax"]){
 			}
 		}
 			
-		h._unsubscribe = function(tree, path, index, sid) {
-			if(typeof tree != "undefined") {
-				if(index < path.length) {
+		h._unsubscribe = function(tree, path, index, sid){
+			if(typeof tree != "undefined"){
+				if(index < path.length){
 					var childNode = tree.c[path[index]];
 					this._unsubscribe(childNode, path, index + 1, sid);
-					if(childNode.s.length == 0) {
-						for(var x in childNode.c) 
-					 		return;		
+					if(childNode.s.length == 0){
+						for(var x in childNode.c){
+					 		return;
+					 	}
 						delete tree.c[path[index]];	
 					}
 					return;
-				}
-				else {
+				}else{
 					var callbacks = tree.s;
 					var max = callbacks.length;
-					for(var i = 0; i < max; i++) 
-						if(sid == callbacks[i].sid) {
-							if(this._pubDepth > 0) {
+					for(var i = 0; i < max; i++){
+						if(sid == callbacks[i].sid){
+							if(this._pubDepth > 0){
 								callbacks[i].cb = null;	
 								this._cleanup.push(callbacks[i]);						
-							}
-							else
+							}else{
 								callbacks.splice(i, 1);
-							return; 	
+							}
+							return;
 						}
+					}
 				}
 			}
 		}
@@ -172,7 +173,7 @@ if(!window["OpenAjax"]){
 		// It is not expected to be deployed in run-time OpenAjax Hub implementations.
 		h.reinit = function()
 		{
-			for (var lib in OpenAjax.hub.libraries) {
+			for (var lib in OpenAjax.hub.libraries){
 				delete OpenAjax.hub.libraries[lib];
 			}
 			OpenAjax.hub.registerLibrary("OpenAjax", "http://openajax.org/hub", "0.6", {});
