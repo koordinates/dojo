@@ -277,6 +277,7 @@ if(dojo.isIE){
 		if(!tn){
 			tn = dojo.doc.createElement("div");
 			tn.style.display="none";
+			dojo.body().appendChild(tn);
 		}
 		var tableType = "none";
 		var rtext = text.replace(/^\s+/, "");
@@ -290,7 +291,6 @@ if(dojo.isIE){
 		}
 
 		tn.innerHTML = text;
-		dojo.body().appendChild(tn);
 		if(tn.normalize){
 			tn.normalize();
 		}
