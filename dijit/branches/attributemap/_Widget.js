@@ -123,7 +123,7 @@ dojo.declare("dijit._Widget", null, {
 						domValue = node.className;
 						break;
 					case "style":
-						if(dojo.isObject(domValue)){
+						if(domValue && dojo.isObject(domValue)){
 							domValue = domValue.cssText; // IE
 						}
 					}
