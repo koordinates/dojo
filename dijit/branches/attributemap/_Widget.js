@@ -120,7 +120,7 @@ dojo.declare("dijit._Widget", null, {
 					// Deal with IE quirks for 'class' and 'style'
 					switch(attr){
 					case "class":
-						node.className = value;
+						domValue = node.className;
 						break;
 					case "style":
 						if(dojo.isObject(domValue)){
