@@ -117,6 +117,16 @@ dojo.declare("dijit._Widget", null, {
 				var value = this[attr];
 				if(value !== "" || (params && params[attr])){
 					var domValue = node.getAttribute(attr);
+					// Deal with IE quirks for 'class' and 'style'
+					switch(attr){
+					case "class":
+						node.className = value;
+						break;
+					case "style":
+						if(dojo.isObject(domValue)){
+							domValue = domValue.cssText; // IE
+						}
+					}
 					if(domValue){
 						var delim = {style: ";", "class": " "}[attr];
 						// style and class attributes are special and contain lists
@@ -128,18 +138,16 @@ dojo.declare("dijit._Widget", null, {
 					}
 					// Let template override attribute values
 					if(domValue === null){
-						// Deal with IE quirks for setting 'class' and 'style'
 						switch(attr){
-						case "style":
-							if(node.style && dojo.isObject(node.style)){ // IE
-								node.style.cssText = value;
-							}else{
-								node.setAttribute(attr, value);
-							}
-							break;
 						case "class":
 							node.className = value;
 							break;
+						case "style":
+							if(node.style && dojo.isObject(node.style)){ // IE
+								node.style.cssText = value;
+								break;
+							}
+							// fallthrough...
 						default:
 							node.setAttribute(attr, value);
 						}
