@@ -17,15 +17,15 @@ dojo.declare(
 	//	<textarea dojoType="dijit.form.TextArea">...</textarea>
 	templateString: (dojo.isIE || dojo.isSafari || dojo.isMozilla) ?
 				((dojo.isIE || dojo.isSafari) ? '<fieldset class="dijitInlineBox dijitInputField dijitTextArea"><div dojoAttachPoint="editNode" waiRole="textarea" style="text-decoration:none;_padding-bottom:16px;display:block;overflow:auto;" contentEditable="true"></div>'
-					: '<span id="${id}" class="dijitReset">'+
-						'<iframe src="javascript:<html><head><title>${_iframeEditTitle}</title></head><body><script>var _postCreate=window.frameElement.postCreate;if(_postCreate)_postCreate();</script></body></html>"'+
-							' dojoAttachPoint="iframe, styleNode" dojoAttachEvent="onblur:_onIframeBlur" class="dijitInlineBox dijitInputField dijitTextArea"></iframe>')
+					: '<span class="dijitReset">'+
+						'<iframe src="javascript:<html><head><title>${_iframeEditTitle}</title></head><body><script>var _postCreate=window.frameElement.postCreate;_postCreate&&_postCreate();</script></body></html>"'+
+							' dojoAttachPoint="iframe,stateNode" dojoAttachEvent="onblur:_onIframeBlur" class="dijitInlineBox dijitInputField dijitTextArea"></iframe>')
 				+ '<textarea dojoAttachPoint="formValueNode" style="display:none;"></textarea>'
 				+ ((dojo.isIE || dojo.isSafari) ? '</fieldset>':'</span>')
 			: '<textarea dojoAttachPoint="formValueNode,editNode" class="dijitInputField dijitTextArea"></textarea>',
 
 	genericMap: dojo.mixin(dojo.clone(dijit.form._FormWidget.prototype.genericMap),
-		{id:"", name:"formValueNode", tabIndex:"editNode", value:"formValueNode"}),
+		{id:"", name:"formValueNode", style:"iframe", tabIndex:"editNode", value:"formValueNode"}),
 
 	focus: function(){
 		// summary: Received focus, needed for the InlineEditBox widget
