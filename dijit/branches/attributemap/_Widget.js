@@ -110,7 +110,12 @@ dojo.declare("dijit._Widget", null, {
 		// Copy attributes listed in genericMap into the newly created DOM for the widget
 		// The placement of these attributes is according to the property mapping in genericMap
 		// Note special handling for 'style' and 'class' attributes which are lists and can
-		// have elements from both old and new structures.
+		// have elements from both old and new structures, and some attributes like "type"
+		// cannot be processed this way as they are not mutable.
+
+//KLUDGE: skip for the widgets which aren't yet working.  See #3058
+//if(this.declaredClass!="dijit.form.Slider" && this.declaredClass != "dijit.form.TextArea" && this.declaredClass != "dijit.form.ComboBox" && this.declaredClass != "dijit.form.FilteringSelect")
+
 		for(var attr in this.genericMap){
 			if(this.domNode){
 				var node = this[this.genericMap[attr] || "domNode"];
