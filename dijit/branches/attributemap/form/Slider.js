@@ -41,7 +41,7 @@ dojo.declare(
 
 	widgetsInTemplate: true,
 
-	genericMap: dojo.mixin(dojo.clone(dijit._Widget.prototype.genericMap),
+	attributeMap: dojo.mixin(dojo.clone(dijit._Widget.prototype.attributeMap),
 		{id:"", name:"valueNode"}),
 
 	baseClass: "dijitSlider",

@@ -91,7 +91,7 @@ dojo.declare(
 
 		_lastFocusItem:null,
 
-		genericMap: dojo.mixin(dojo.clone(dijit._Widget.prototype.genericMap),
+		attributeMap: dojo.mixin(dojo.clone(dijit._Widget.prototype.attributeMap),
 			{title: "titleBar"}),
 
 		postCreate: function(){

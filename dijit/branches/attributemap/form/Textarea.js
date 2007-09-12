@@ -24,7 +24,7 @@ dojo.declare(
 				+ ((dojo.isIE || dojo.isSafari) ? '</fieldset>':'</span>')
 			: '<textarea dojoAttachPoint="formValueNode,editNode" class="dijitInputField dijitTextArea"></textarea>',
 
-	genericMap: dojo.mixin(dojo.clone(dijit.form._FormWidget.prototype.genericMap),
+	attributeMap: dojo.mixin(dojo.clone(dijit.form._FormWidget.prototype.attributeMap),
 		{id:"", name:"formValueNode", style:"iframe", tabIndex:"editNode", value:"formValueNode"}),
 
 	focus: function(){

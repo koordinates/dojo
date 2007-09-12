@@ -59,7 +59,7 @@ lists within dojoAttachPoint, dojoAttachEvent, waiRole, and waiState are now com
 (not separated by semi-colons)
 
 Standard HTML attributes like 'id', 'name', 'lang', etc. are carried over programmatically
-by the _Widget constructor and do not need to be declared in the template (see _Widget.genericMap)
+by the _Widget constructor and do not need to be declared in the template (see _Widget.attributeMap)
 
 Parent/Child relationships
 --------------------------

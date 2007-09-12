@@ -234,7 +234,7 @@ dojo.declare("dijit.form.ComboButton", dijit.form.DropDownButton, {
 	//		left side is normal button, right side displays menu
 	templatePath: dojo.moduleUrl("dijit.form", "templates/ComboButton.html"),
 
-	genericMap: dojo.mixin(dojo.clone(dijit.form._FormWidget.prototype.genericMap),
+	attributeMap: dojo.mixin(dojo.clone(dijit.form._FormWidget.prototype.attributeMap),
 		{id:"", name:""}),
 
 	// optionsTitle: String

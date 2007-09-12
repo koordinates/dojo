@@ -60,7 +60,7 @@ dojo.declare("dijit.form._FormWidget", [dijit._Widget, dijit._Templated],
 	// These mixins assume that the focus node is an INPUT, as many but not all _FormWidgets are.
 	// Don't attempt to mixin the 'type' attribute here programatically -- it must be declared
 	// directly in the template as read by the parser in order to function
-	genericMap: dojo.mixin(dojo.clone(dijit._Widget.prototype.genericMap),
+	attributeMap: dojo.mixin(dojo.clone(dijit._Widget.prototype.attributeMap),
 		{id:"focusNode", name:"focusNode", value:"focusNode", tabIndex:"focusNode", alt:"focusNode"}),
 
 	setDisabled: function(/*Boolean*/ disabled){

@@ -36,7 +36,7 @@ dojo.declare(
 
 		templatePath: dojo.moduleUrl("dijit.form", "templates/TextBox.html"),
 
-		genericMap: dojo.mixin(dojo.clone(dijit.form._FormWidget.prototype.genericMap),
+		attributeMap: dojo.mixin(dojo.clone(dijit.form._FormWidget.prototype.attributeMap),
 			{size:"focusNode", maxlength:"focusNode"}),
 
 		getTextValue: function(){

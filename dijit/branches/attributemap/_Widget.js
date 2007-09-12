@@ -35,18 +35,18 @@ dojo.declare("dijit._Widget", null, {
 	//		pointer to original dom node
 	srcNodeRef: null,
 
-	// domNode DomNode:
+	// domNode: DomNode
 	//		this is our visible representation of the widget! Other DOM
 	//		Nodes may by assigned to other properties, usually through the
 	//		template system's dojoAttachPonit syntax, but the domNode
 	//		property is the canonical "top level" node in widget UI.
 	domNode: null,
 
-	// genericMap Object:
+	// attributeMap: Object
 	//		A map of attributes -- typically standard HTML attributes -- to transfer
 	//		from the parsed node into the new dom, at the widget's domNode, by default.
 	//		Other node references can be specified as properties of 'this'
-	genericMap: {id:"", dir:"", lang:"", "class":"", style:"", title:""},  // TODO: add on* handlers?
+	attributeMap: {id:"", dir:"", lang:"", "class":"", style:"", title:""},  // TODO: add on* handlers?
 
 	//////////// INITIALIZATION METHODS ///////////////////////////////////////
 
@@ -107,8 +107,8 @@ dojo.declare("dijit._Widget", null, {
 
 		this.buildRendering();
 
-		// Copy attributes listed in genericMap into the newly created DOM for the widget
-		// The placement of these attributes is according to the property mapping in genericMap
+		// Copy attributes listed in attributeMap into the newly created DOM for the widget
+		// The placement of these attributes is according to the property mapping in attributeMap
 		// Note special handling for 'style' and 'class' attributes which are lists and can
 		// have elements from both old and new structures, and some attributes like "type"
 		// cannot be processed this way as they are not mutable.
@@ -116,9 +116,9 @@ dojo.declare("dijit._Widget", null, {
 //KLUDGE: skip for the widgets which aren't yet working.  See #3058
 //if(this.declaredClass!="dijit.form.Slider" && this.declaredClass != "dijit.form.TextArea" && this.declaredClass != "dijit.form.ComboBox" && this.declaredClass != "dijit.form.FilteringSelect")
 
-		for(var attr in this.genericMap){
+		for(var attr in this.attributeMap){
 			if(this.domNode){
-				var node = this[this.genericMap[attr] || "domNode"];
+				var node = this[this.attributeMap[attr] || "domNode"];
 				var value = this[attr];
 				if(value !== "" || (params && params[attr])){
 					var domValue = node.getAttribute(attr);
@@ -129,7 +129,7 @@ dojo.declare("dijit._Widget", null, {
 						break;
 					case "style":
 						if(domValue && dojo.isObject(domValue)){
-							domValue = domValue.cssText; // IE
+							domValue = domValue.cssText; // required for IE, doesn't work in Opera
 						}
 					}
 					if(domValue){
@@ -143,13 +143,14 @@ dojo.declare("dijit._Widget", null, {
 					}
 					// Let template override attribute values
 					if(domValue === null){
+						// Deal with IE quirks for 'class' and 'style'
 						switch(attr){
 						case "class":
 							node.className = value;
 							break;
 						case "style":
-							if(node.style && dojo.isObject(node.style)){ // IE
-								node.style.cssText = value;
+							if(node.style && dojo.isObject(node.style)){
+								node.style.cssText = value; // required for IE, doesn't work in Opera
 								break;
 							}
 							// fallthrough...
