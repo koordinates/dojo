@@ -7,7 +7,7 @@
 
 .dj_safari .tundra .dijitPopup {
 	/* -webkit-border-radius: 5px; */
-	-webkit-box-shadow: 0px 3px 7px #adadad;
+	-webkit-box-shadow: 0px 5px 10px #adadad;
 }
 
 /*
@@ -35,6 +35,13 @@
 }
 .dj_ie6 .tundra .dijitButtonNode {
 	position:relative; 
+}
+
+.tundra .dijitA11yDownArrow,
+.tundra .dijitDownArrowButton,
+.tundra .dijitUpArrowButton {
+	font-size: 0.75em;
+	color: #848484;
 }
 
 
@@ -180,7 +187,7 @@
 
 .tundra .dijitComboBox {
 	/* put margin on the outer element of the autocompleter rather than the input */
-	margin:.0em .1em .2em .1em;
+	margin: 0em 0.1em 0.2em 0.1em;
 }
 
 .tundra .dijitInputField,
@@ -200,6 +207,7 @@
 	/* input field when focused (eg: typing affects it) */
 	border-color:#366dba;
 	border-style:inset;
+	/* outline: auto 5px -webkit-focus-ring-color; */
 }
 
 .tundra .dijitComboBoxDisabled .dijitInputField {
@@ -255,6 +263,11 @@ HTML.dj_ie6 .tundra .dijitInputFieldValidationError,
 
 .tundra .dijitInputFieldValidationIconText {
 	visibility: hidden;
+}
+
+.tundra td.dijitInputField {
+	margin: 0px;
+	padding: 0px 0px 0px 0.3em;
 }
 
 /*
@@ -383,7 +396,7 @@ HTML.dj_ie6 .tundra .dijitInputFieldValidationError,
 }
 
 .tundra .dijitMenuItemHover {
-	background-color: #95a0b0; /* #555555; #aaaaaa; #646464;  #60a1ea; */
+	background-color: #808080; /* #95a0b0; #555555; #aaaaaa; #646464;  #60a1ea; #848484; */
 	color:#fff;
 }
 
@@ -656,7 +669,7 @@ HTML.dj_ie6 .tundra .dijitInputFieldValidationError,
 .tundra .dijitDialog {
 	background: #eee;
 	border: 1px solid #999;
-	-webkit-box-shadow: 0px 3px 7px #adadad;
+	-webkit-box-shadow: 0px 5px 10px #adadad;
 }
 
 .tundra .dijitDialog .dijitDialogTitle {
@@ -825,15 +838,18 @@ HTML.dj_ie6 .tundra .dijitInputFieldValidationError,
 
 .tundra .dijitAccordionPane .dijitAccordionTitle {
 	background:#fafafa url("images/titleBar.png") repeat-x bottom left;
-	border: 1px solid #bfbfbf;
+	border-left: 1px solid #bfbfbf;
+	border-top: 1px solid #bfbfbf;
+	border-right: 1px solid #bfbfbf;
 	padding:4px 4px 2px 4px;
 }
 
 .tundra .dijitAccordionPane-selected .dijitAccordionTitle {
 	background: #ededed url("images/buttonActive.png") bottom repeat-x;
 	font-weight: bold;
-	/* border:1px solid #84a3d1; */
-	border: 1px solid #aaaaaa;
+	border-left: 1px solid #aaaaaa;
+	border-top: 1px solid #aaaaaa;
+	border-right: 1px solid #aaaaaa;
 	padding: 4px 4px 2px 4px;
 }
 
@@ -857,7 +873,12 @@ HTML.dj_ie6 .tundra .dijitInputFieldValidationError,
 
 .tundra .dijitAccordionPane .dijitAccordionBody {
 	background: #fff;
+	/*
 	border:1px solid #bfbfbf;
+	*/
+	border-left: 1px solid #bfbfbf;
+	border-top: 1px solid #bfbfbf;
+	border-right: 1px solid #bfbfbf;
 }
 
 /* Tree */

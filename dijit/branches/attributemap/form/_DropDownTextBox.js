@@ -152,8 +152,10 @@ dojo.declare(
 				// prevents issues with scroll bars appearing when they shouldn't when node is made wider (fractional pixels cause this)
 				var popupbox=dojo.marginBox(this._popupWidget.domNode);
 				this._popupWidget.domNode.style.overflow=((best.h==popupbox.h)&&(best.w==popupbox.w))?"hidden":"auto";
-				dojo.marginBox(this._popupWidget.domNode, {h:best.h,w:Math.max(best.w,this.domNode.offsetWidth)});
-
+				// #4134: borrow TextArea scrollbar test so content isn't covered by scrollbar and horizontal scrollbar doesn't appear
+				var newwidth=best.w;
+				if(best.h<this._popupWidget.domNode.scrollHeight){newwidth+=16;}
+				dojo.marginBox(this._popupWidget.domNode, {h:best.h,w:Math.max(newwidth,this.domNode.offsetWidth)});
 			}
 		},
 
@@ -174,8 +176,7 @@ dojo.declare(
 
 		open:function(){
 			this.makePopup();
-			var self=this;
-			self._isShowingNow=true;
+			this._isShowingNow=true;
 			return dijit.popup.open({
 				popup: this._popupWidget,
 				around: this.domNode,
