@@ -1,4 +1,0 @@
-{
- jp: "Japanese",
- hello: "こにちは"
-}

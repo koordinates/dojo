@@ -1,3 +1,0 @@
-({
-		"messageText": "Hello World"
-})
