@@ -1,0 +1,147 @@
+
+/* Tabs */
+
+.tundra .dijitTabPaneWrapper {
+	background:#fff;
+	border:1px solid #ccc;
+}
+
+.tundra .dijitTab {
+	line-height:normal;
+	margin-right:4px;	/* space between one tab and the next in top/bottom mode */
+	padding:0px;
+	border:1px solid #ccc;
+	background:#e2e2e2 url("../images/tabEnabled.png") repeat-x;
+}
+
+.tundra .dijitTabContainerLeft-tabs .dijitTab,
+.tundra .dijitTabContainerRight-tabs .dijitTab {
+	margin-right:0px;
+	margin-bottom:4px;	/* space between one tab and the next in left/right mode */
+}
+
+.tundra .dijitTabInnerDiv {
+	padding:6px 7px 4px 7px;
+}
+
+.tundra .dijitTabChecked .dijitTabInnerDiv {
+	padding: 6px 7px 3px 7px;
+	border-bottom: 1px solid #fff;
+}
+
+.tundra .dijitTabChecked,
+.tundra .dijitTabCloseButtonChecked
+{
+	/* the selected tab (with or without hover) */
+	background-color:#fff;
+	border-color: #ccc;
+	background-image:none;
+}
+
+.tundra .dijitTabHover,
+.tundra .dijitTabCloseButtonHover {
+	color: #243C5F;
+	border-top-color:#92a0b3;
+	border-left-color:#92a0b3;
+	border-right-color:#92a0b3;
+	background:#e2e2e2 url("../images/tabHover.png") repeat-x;
+}
+
+.dj_ie6 .tundra .dijitTabHover,
+.dj_ie6 .tundra .dijitTabCloseButtonHover {
+	background-image: url("../images/tabHover.gif");
+}
+
+.tundra .dijitTabCheckedHover,
+.dj_ie6 .tundra .dijitTabCheckedHover {
+	color: inherit;
+	border:1px solid #ccc;
+	background:#fff;
+}
+
+/* make the active tab white on the side next to the content pane */
+.tundra .dijitTabContainerTop-tabs .dijitTabChecked,
+.tundra .dijitTabContainerTop-tabs .dijitTabCloseButtonChecked
+{
+	border-bottom-color:white;
+	vertical-align:bottom;
+}
+
+.tundra .dijitTabContainerBottom-tabs .dijitTabChecked,
+.tundra .dijitTabContainerBottom-tabs .dijitTabCloseButtonChecked
+{
+	border-top-color:white;
+	-moz-border-radius:2px 2px 0px 0px;	/* eliminate some border detritrus on moz */
+}
+
+.tundra .dijitTabContainerLeft-tabs .dijitTabChecked,
+.tundra .dijitTabContainerLeft-tabs .dijitTabCloseButtonChecked
+{
+	border-right-color:white;
+}
+
+.tundra .dijitTabContainerRight-tabs .dijitTabChecked,
+.tundra .dijitTabContainerRight-tabs .dijitTabCloseButtonChecked
+{
+	border-left-color:white;
+}
+
+
+/* make space for a positioned close button */
+.tundra .dijitTab .dijitClosable {
+	position: relative;
+	padding:6px 20px 4px 7px;
+}
+
+.tundra .dijitTabChecked .dijitClosable {
+	padding: 6px 20px 3px 7px;
+	border-bottom: 1px solid #fff;
+}
+
+.tundra .dijitTab .dijitClosable .closeImage {
+	position:absolute;
+	top: 5px;
+	right: 3px;
+	height: 12px;
+	width: 12px;
+	padding: 0;
+	margin: 0;
+	background: url("../images/tabClose.png") no-repeat right top;
+}
+.dj_ie6 .dijitTab .dijitClosable .closeImage {
+	background-image:url("../images/tabClose.gif");
+}
+
+.tundra .dijitTabCloseButton .dijitClosable .closeImage {
+	background-image : url("../images/tabClose.png");
+}
+.dj_ie6 .tundra .dijitTabCloseButton .dijitClosable .closeImage {
+	background-image : url("../images/tabClose.gif");
+}
+
+.tundra .dijitTabCloseButtonHover .dijitClosable .closeImage {
+	background-image : url("../images/tabCloseHover.png");
+}
+.dj_ie6 .tundra .dijitTabCloseButtonHover .dijitClosable .closeImage {
+	background-image : url("../images/tabCloseHover.gif");
+}
+
+.tundra .dijitTabContainerLeft-tabs .dijitTab .dijitClosable {
+	padding:6px 10px 4px 20px;
+}
+
+.tundra .dijitTabContainerBottom-tabs .dijitTab .dijitClosable .closeImage {
+	top: auto;
+	bottom: 4px;
+	right: 3px;
+}
+
+.tundra .dijitTabContainerLeft-tabs .dijitTab .dijitClosable .closeImage {
+	top: 5px;
+	left: 3px;
+}
+
+.tundra .dijitTabContainerRight-tabs .dijitTab .dijitClosable .closeImage {
+	top: 5px;
+	right: 3px;
+}
