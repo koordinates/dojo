@@ -14,7 +14,7 @@ dojo.require("dojo.parser");
 
 dojo.declare("dojo.dnd.Container", null, {
 	// summary: a Container object, which knows when mouse hovers over it, 
-	//	and know over which element it hovers
+	//	and over which element it hovers
 	
 	// object attributes (for markup)
 	skipForm: false,
@@ -36,8 +36,6 @@ dojo.declare("dojo.dnd.Container", null, {
 		this.skipForm = params.skipForm;
 		this.parent = params.dropParent && dojo.byId(params.dropParent);
 		
-		this.defaultCreator = dojo.dnd._defaultCreator(this.node);
-
 		// class-specific variables
 		this.map = {};
 		this.current = null;
@@ -84,7 +82,7 @@ dojo.declare("dojo.dnd.Container", null, {
 		var m = this.map, e = dojo.dnd._empty;
 		for(var i in m){
 			if(i in e){ continue; }
-			f.call(o, m[i], i, m);
+			f.call(o, m[i], i, this);
 		}
 	},
 	clearItems: function(){
@@ -96,6 +94,29 @@ dojo.declare("dojo.dnd.Container", null, {
 	getAllNodes: function(){
 		// summary: returns a list (an array) of all valid child nodes
 		return dojo.query("> .dojoDndItem", this.parent);	// NodeList
+	},
+	sync: function(){
+		// summary: synch up the node list with the data map
+		var map = {};
+		this.getAllNodes().forEach(function(node){
+			if(node.id){
+				var item = this.getItem(node.id);
+				if(item){
+					map[node.id] = item;
+					return;
+				}
+			}else{
+				node.id = dojo.dnd.getUniqueId();
+			}
+			var type = node.getAttribute("dndType"),
+				data = node.getAttribute("dndData");
+			map[node.id] = {
+				data: data || node.innerHTML,
+				type: type ? type.split(/\s*,\s*/) : ["text"]
+			};
+		}, this);
+		this.map = map;
+		return this;	// self
 	},
 	insertNodes: function(data, before, anchor){
 		// summary: inserts an array of new nodes before/after an anchor node
@@ -152,17 +173,10 @@ dojo.declare("dojo.dnd.Container", null, {
 				if(c && c.length){ this.parent = c[0]; }
 			}
 		}
+		this.defaultCreator = dojo.dnd._defaultCreator(this.parent);
 
 		// process specially marked children
-		this.getAllNodes().forEach(function(node){
-			if(!node.id){ node.id = dojo.dnd.getUniqueId(); }
-			var type = node.getAttribute("dndType"),
-				data = node.getAttribute("dndData");
-			this.setItem(node.id, {
-				data: data ? data : node.innerHTML,
-				type: type ? type.split(/\s*,\s*/) : ["text"]
-			});
-		}, this);
+		this.sync();
 	},
 
 	// mouse events
@@ -257,7 +271,7 @@ dojo.declare("dojo.dnd.Container", null, {
 	},
 	_normalizedCreator: function(item, hint){
 		// summary: adds all necessary data to the output of the user-supplied creator function
-		var t = (this.creator ? this.creator : this.defaultCreator)(item, hint);
+		var t = (this.creator || this.defaultCreator).call(this, item, hint);
 		if(!dojo.isArray(t.type)){ t.type = ["text"]; }
 		if(!t.node.id){ t.node.id = dojo.dnd.getUniqueId(); }
 		dojo.addClass(t.node, "dojoDndItem");
@@ -299,15 +313,25 @@ dojo.dnd._createSpan = function(text){
 dojo.dnd._defaultCreatorNodes = {ul: "li", ol: "li", div: "div", p: "div"};
 
 dojo.dnd._defaultCreator = function(node){
-	// summary: takes a container node, and returns an appropriate creator function
+	// summary: takes a parent node, and returns an appropriate creator function
 	// node: Node: a container node
 	var tag = node.tagName.toLowerCase();
-	var c = tag == "table" ? dojo.dnd._createTrTd : dojo.dnd._createNode(dojo.dnd._defaultCreatorNodes[tag]);
+	var c = tag == "tbody" || tag == "thead" ? dojo.dnd._createTrTd :
+			dojo.dnd._createNode(dojo.dnd._defaultCreatorNodes[tag]);
 	return function(item, hint){	// Function
-		var isObj = dojo.isObject(item) && item;
-		var data = (isObj && item.data) ? item.data : item;
-		var type = (isObj && item.type) ? item.type : ["text"];
-		var t = String(data), n = (hint == "avatar" ? dojo.dnd._createSpan : c)(t);
+		var isObj = item && dojo.isObject(item), data, type, n;
+		if(isObj && item.tagName && item.nodeType && item.getAttribute){
+			// process a DOM node
+			data = item.getAttribute("dndData") || item.innerHTML;
+			type = item.getAttribute("dndType");
+			type = type ? type.split(/\s*,\s*/) : ["text"];
+			n = item;	// this node is going to be moved rather than copied
+		}else{
+			// process a DnD item object or a string
+			data = (isObj && item.data) ? item.data : item;
+			type = (isObj && item.type) ? item.type : ["text"];
+			n = (hint == "avatar" ? dojo.dnd._createSpan : c)(String(data));
+		}
 		n.id = dojo.dnd.getUniqueId();
 		return {node: n, data: data, type: type};
 	};

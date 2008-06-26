@@ -26,6 +26,7 @@ dojo.declare("dojo.dnd.Manager", null, {
 		// source: Object: the reporter
 		if(this.avatar){
 			this.target = (source && source.targetState != "Disabled") ? source : null;
+			this.canDropFlag = Boolean(this.target);
 			this.avatar.update();
 		}
 		dojo.publish("/dnd/source/over", [source]);
@@ -80,7 +81,7 @@ dojo.declare("dojo.dnd.Manager", null, {
 		this.events = [];
 		this.avatar.destroy();
 		this.avatar = null;
-		this.source = null;
+		this.source = this.target = null;
 		this.nodes = [];
 	},
 	makeAvatar: function(){
@@ -91,6 +92,7 @@ dojo.declare("dojo.dnd.Manager", null, {
 		// summary: updates the avatar, it is separate to be overwritten dynamically, if needed
 		this.avatar.update();
 	},
+	
 	// mouse event processors
 	onMouseMove: function(e){
 		// summary: event processor for onmousemove
@@ -115,7 +117,8 @@ dojo.declare("dojo.dnd.Manager", null, {
 				(dojo.isSafari && dojo.dnd._isMac && this.source.mouseButton == 2 ? 
 					e.button == 0 : this.source.mouseButton == e.button))){
 			if(this.target && this.canDropFlag){
-				var params = [this.source, this.nodes, Boolean(this.source.copyState(dojo.dnd.getCopyKeyState(e))), this.target];
+				var copy = Boolean(this.source.copyState(dojo.dnd.getCopyKeyState(e))),
+				params = [this.source, this.nodes, copy, this.target];
 				dojo.publish("/dnd/drop/before", params);
 				dojo.publish("/dnd/drop", params);
 			}else{
@@ -124,6 +127,7 @@ dojo.declare("dojo.dnd.Manager", null, {
 			this.stopDrag();
 		}
 	},
+	
 	// keyboard event processors
 	onKeyDown: function(e){
 		// summary: event processor for onkeydown:
@@ -154,6 +158,7 @@ dojo.declare("dojo.dnd.Manager", null, {
 			}
 		}
 	},
+	
 	// utilities
 	_setCopyStatus: function(copy){
 		// summary: changes the copy status
