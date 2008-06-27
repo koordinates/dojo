@@ -1,72 +1,67 @@
-.dojoxFilePicker {
-	border: 1px solid #000;
-	height: 20em;
-	overflow: scroll;
-	overflow-y: hidden;
-	overflow-x: scroll;
-	white-space: nowrap;
-}
-
-.dojoxPickerPane {
-	overflow: scroll;
-	overflow-x: hidden;
-	overflow-y: scroll;
-}
-
-.dojoxPickerPane .dijitMenuItemLabel {
-	position: static;
-}
-
-.dj_safari .dojoxPickerPane,
-.dj_ie .dojoxPickerPane {
-	padding-right: 15px; /* Account for scroll bar */
-}
-
-.dojoxPickerPane .dijitMenu {
-	border: none;
-}
+@import url("../RollingList/RollingList.css");
 
 .dojoxFileInfoLabel {
 	font-weight: bold;
 }
 
-/* Background colors to match menus */
-.tundra .dojoxPickerPane {
-	background-color: #f7f7f7;
+.tundra .dojoxFilePickerItem .dijitMenuItemIcon {
+	background-image: url("images/tundraFileIcons.gif");
+	background-repeat: no-repeat;
 }
-.tundra .dojoxPickerPane .dijitMenuItemHover {
-	color: #000;
-	background-color: #e3e3e3;
+.tundra .dojoxFilePickerItem .dojoxEmpty {
+	background-image: none;
 }
-.tundra .dojoxPickerPane .dojoxPickerItemSelected {
-	color: #fff;
-	background-color: #3559ac;
-	font-weight: bold;
+.tundra .dojoxFilePickerItem .dojoxDirectoryItemIcon {
+	background-position: 0px;
 }
-
-.soria .dojoxPickerPane {
-	background-color: #fff;
+.tundra .dojoxFilePickerItemSelected .dojoxDirectoryItemIcon {
+	background-position: -16px;
 }
-.soria .dojoxPickerPane .dijitMenuItemHover
-{
-	color: #000;
-	background-color: #e3e3e3;
+.tundra .dojoxFilePickerItem .dojoxFileItemIcon {
+	background-position: -32px;
 }
-.soria .dojoxPickerPane .dojoxPickerItemSelected {
-	color: #243C5F;
-	background-color: #d9e6f9;
-	font-weight: bold;
+.tundra .dojoxFilePickerItemSelected .dojoxFileItemIcon {
+	background-position: -48px;
 }
 
-.nihilo .dojoxPickerPane {
-	background-color: #fff;
+.soria .dojoxFilePickerItem .dijitMenuItemIcon {
+	background-image: url("images/soriaFileIcons.gif");
+	background-repeat: no-repeat;
 }
-.nihilo .dojoxPickerPane .dijitMenuItemHover {
-	color: #000;
-	background-color: #e3e3e3;
+.soria .dojoxFilePickerItem .dojoxEmpty {
+	background-image: none;
 }
-.nihilo .dojoxPickerPane .dojoxPickerItemSelected {
-	color: #243C5F;
-	background-color: #ffe284;
-	font-weight: bold;
+.soria .dojoxFilePickerItem .dojoxDirectoryItemIcon {
+	background-position: 0px;
 }
+.soria .dojoxFilePickerItemSelected .dojoxDirectoryItemIcon {
+	background-position: -16px;
+}
+.soria .dojoxFilePickerItem .dojoxFileItemIcon {
+	background-position: -32px;
+}
+.soria .dojoxFilePickerItemSelected .dojoxFileItemIcon {
+	background-position: -48px;
+}
+
+
+.nihilo .dojoxFilePickerItem .dijitMenuItemIcon {
+	background-image: url("images/nihiloFileIcons.gif");
+	background-repeat: no-repeat;
+}
+.nihilo .dojoxFilePickerItem .dojoxEmpty {
+	background-image: none;
+}
+.nihilo .dojoxFilePickerItem .dojoxDirectoryItemIcon {
+	background-position: 0px;
+}
+.nihilo .dojoxFilePickerItemSelected .dojoxDirectoryItemIcon {
+	background-position: -16px;
+}
+.nihilo .dojoxFilePickerItem .dojoxFileItemIcon {
+	background-position: -32px;
+}
+.nihilo .dojoxFilePickerItemSelected .dojoxFileItemIcon {
+	background-position: -48px;
+}
+

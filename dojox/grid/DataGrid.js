@@ -20,6 +20,9 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 	_requests: 0,
 	rowCount: 0,
 
+	_isLoaded: false,
+	_isLoading: false,
+	
 	postCreate: function(){
 		this._pages = [];
 		this._store_connects = [];
@@ -48,7 +51,7 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 	},
 
 	_addItem: function(item, index){
-		var idty = this.store.getIdentity(item);
+		var idty = this._hasIdentity ? this.store.getIdentity(item) : dojo.toJson(this.query) + ":idx:" + index + ":sort:" + dojo.toJson(this.getSortProps());
 		var o = { idty: idty, item: item };
 		this._by_idty[idty] = this._by_idx[index] = o;
 		this.updateRow(index);
@@ -91,7 +94,8 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 			var f = this.store.getFeatures();
 			var h = [];
 
-			this._canEdit = !!f["dojo.data.api.Write"];
+			this._canEdit = !!f["dojo.data.api.Write"] && !!f["dojo.data.api.Identity"];
+			this._hasIdentity = !!f["dojo.data.api.Identity"];
 
 			if(!!f["dojo.data.api.Notification"]){
 				h.push(this.connect(this.store, "onSet", "_onSet"));
@@ -127,11 +131,25 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 				this.postrender();
 			}
 		}
+		if(!this._isLoaded){
+			this._isLoading = false;
+			this._isLoaded = true;
+			if(!items || !items.length){
+				this.showMessage(this.noDataMessage);
+			}else{
+				this.showMessage();
+			}
+		}
 		this._pending_requests[req.start] = false;
 	},
 
 	_onFetchError: function(err, req){
 		console.log(err);
+		if(!this._isLoaded){
+			this._isLoading = false;
+			this._isLoaded = true;
+			this.showMessage(this.errorMessage);
+		}
 		this.onFetchError(err, req);
 	},
 
@@ -141,6 +159,10 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 	_fetch: function(start, isRender){
 		var start = start || 0;
 		if(this.store && !this._pending_requests[start]){
+			if(!this._isLoaded && !this._isLoading){
+				this._isLoading = true;
+				this.showMessage(this.loadingMessage);
+			}
 			this._pending_requests[start] = true;
 			//console.log("fetch: ", start);
 			this.store.fetch({
@@ -183,11 +205,11 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 			return -1;
 		}
 
-		var idty = this.store.getIdentity(item);
+		var idty = this._hasIdentity ? this.store.getIdentity(item) : null;
 
 		for(var i=0, l=this._by_idx.length; i<l; i++){
 			var d = this._by_idx[i];
-			if(d && d.idty == idty){
+			if(d && ((idty && d.idty == idty) || (d.item === item))){
 				return i;
 			}
 		}
@@ -379,108 +401,11 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 });
 
 dojox.grid.DataGrid.markupFactory = function(props, node, ctor){
-	// handle setting up a data store for a store if one
-	// isn't provided. There are some caveats:
-	//		* we only really handle dojo.data sources well. They're the future
-	//		  so it's no big deal, but it's something to be aware of.
-	//		* I'm pretty sure that colgroup introspection is missing some of
-	//		  the available settable properties.
-	//		* No handling of cell formatting and content getting is done
-	var d = dojo;
-	var widthFromAttr = function(n){
-		var w = d.attr(n, "width")||"auto";
-		if((w != "auto")&&(w.slice(-2) != "em")&&(w.slice(-1) != "%")){
-			w = parseInt(w)+"px";
+	return dojox.grid._Grid.markupFactory(props, node, ctor, function(node, cellDef){
+		var field = dojo.trim(dojo.attr(node, "field")||"");
+		if(field){
+			cellDef.field = field;
 		}
-		return w;
-	}
-	// if(!props.store){ console.debug("no store!"); }
-	// if a structure isn't referenced, do we have enough
-	// data to try to build one automatically?
-	if(	!props.structure &&
-		node.nodeName.toLowerCase() == "table"){
-
-		// try to discover a structure
-		props.structure = d.query("> colgroup", node).map(function(cg){
-			var sv = d.attr(cg, "span");
-			var v = {
-				noscroll: (d.attr(cg, "noscroll") == "true") ? true : false,
-				__span: (!!sv ? parseInt(sv) : 1),
-				cells: []
-			};
-			if(d.hasAttr(cg, "width")){
-				v.width = widthFromAttr(cg);
-			}
-			return v; // for vendetta
-		});
-		if(!props.structure.length){
-			props.structure.push({
-				__span: Infinity,
-				cells: [] // catch-all view
-			});
-		}
-		// check to see if we're gonna have more than one view
-
-		// for each tr in our th, create a row of cells
-		d.query("thead > tr", node).forEach(function(tr, tr_idx){
-			var cellCount = 0;
-			var viewIdx = 0;
-			var lastViewIdx;
-			var cView = null;
-			d.query("> th", tr).map(function(th){
-				// what view will this cell go into?
-
-				// NOTE:
-				//		to prevent extraneous iteration, we start counters over
-				//		for each row, incrementing over the surface area of the
-				//		structure that colgroup processing generates and
-				//		creating cell objects for each <th> to place into those
-				//		cell groups.  There's a lot of state-keepking logic
-				//		here, but it is what it has to be.
-				if(!cView){ // current view book keeping
-					lastViewIdx = 0;
-					cView = props.structure[0];
-				}else if(cellCount >= (lastViewIdx+cView.__span)){
-					viewIdx++;
-					// move to allocating things into the next view
-					lastViewIdx += cView.__span;
-					lastView = cView;
-					cView = props.structure[viewIdx];
-				}
-
-				// actually define the cell from what markup hands us
-				var cell = {
-					name: d.trim(d.attr(th, "name")||th.innerHTML),
-					field: d.trim(d.attr(th, "field")||""),
-					colSpan: parseInt(d.attr(th, "colspan")||1),
-					type: d.trim(d.attr(th, "cellType")||"")
-				};
-				cellCount += cell.colSpan;
-				var rowSpan = d.attr(th, "rowspan");
-				if(rowSpan){
-					cell.rowSpan = rowSpan;
-				}
-				cell.field = cell.field||cell.name;
-				if(d.hasAttr(th, "width")){
-					cell.width = widthFromAttr(th);
-				}
-				if(d.hasAttr(th, "relWidth")){
-					cell.relWidth = window.parseInt(dojo.attr(th, "relWidth"), 10);
-				}
-
-				cell.type = cell.type ? dojo.getObject(cell.type) : dojox.grid.cells.Cell;
-
-				if(cell.type && cell.type.markupFactory){
-					cell.type.markupFactory(th, cell);
-				}
-
-				if(!cView.cells[tr_idx]){
-					cView.cells[tr_idx] = [];
-				}
-				cView.cells[tr_idx].push(cell);
-			});
-		});
-		// console.debug(dojo.toJson(props.structure, true));
-	}
-	return new dojox.grid.DataGrid(props, node);
+		cellDef.field = cellDef.field||cellDef.name;
+	});
 }

@@ -13,6 +13,11 @@ dojo.require("dojox.grid.Selection");
 dojo.require("dojox.grid._RowSelector");
 dojo.require("dojox.grid._Events");
 
+dojo.require("dijit.Menu");
+
+dojo.requireLocalization("dijit", "loading");
+dojo.requireLocalization("dojox.grid", "grid");
+
 (function(){
 	var jobs = {
 		cancel: function(inHandle){
@@ -144,12 +149,34 @@ dojo.require("dojox.grid._Events");
 		// 		If set to true, will add drag and drop reordering to views with one row of columns.
 		columnReordering: false,
 
+		// headerMenu: dijit.Menu
+		// 		If set to a dijit.Menu, will use this as a context menu for the grid headers.
+		headerMenu: null,
+
+		// placeholderLabel: String
+		// 		Label of placeholders to search for in the header menu to replace with column toggling
+		// 		menu items.
+		placeholderLabel: "GridColumns",
+		
 		// Used to store the last two clicks, to ensure double-clicking occurs based on the intended row
 		_click: null,
+		
+		// loadingMessage: String
+		//  Message that shows while the grid is loading
+		loadingMessage: "<span class='dojoxGridLoading'>${loadingState}</span>",
+
+		// errorMessage: String
+		//  Message that shows when the grid encounters an error loading
+		errorMessage: "<span class='dojoxGridError'>${errorState}</span>",
+
+		// noDataMessage: String
+		//  Message that shows if the grid has no data
+		noDataMessage: "<span class='dojoxGridNoData'>${noData}</span>",
 
 		// private
 		sortInfo: 0,
 		themeable: true,
+		_placeholders: null,
 
 		// initialization
 		buildRendering: function(){
@@ -171,9 +198,21 @@ dojo.require("dojox.grid._Events");
 			dojox.grid.util.funnelEvents(this.domNode, this, 'doKeyEvent', dojox.grid.util.keyEvents);
 			this.connect(this, "onShow", "renderOnIdle");
 		},
+		
+		postMixInProperties: function(){
+			this.inherited(arguments);
+			var messages = dojo.mixin(dojo.i18n.getLocalization("dijit", "loading", this.lang),
+								dojo.i18n.getLocalization("dojox.grid", "grid", this.lang));
+			this.loadingMessage = dojo.string.substitute(this.loadingMessage, messages);
+			this.errorMessage = dojo.string.substitute(this.errorMessage, messages);
+			this.noDataMessage = dojo.string.substitute(this.noDataMessage, messages);
+		},
+		
 		postCreate: function(){
 			// replace stock styleChanged with one that triggers an update
 			this.styleChanged = this._styleChanged;
+			this._placeholders = [];
+			this.setHeaderMenu(this.headerMenu);
 			this.setStructure(this.structure);
 			this._click = [];
 		},
@@ -193,6 +232,10 @@ dojo.require("dojox.grid._Events");
 			if(this.focus){
 				this.focus.destroy();
 				delete this.focus;
+			}
+			if(this.headerMenu&&this._placeholders.length){
+				dojo.forEach(this._placeholders, function(p){ p.unReplace(true); });
+				this.headerMenu.unBindDomNode(this.viewsHeaderNode);
 			}
 			this.inherited(arguments);
 		},
@@ -318,6 +361,82 @@ dojo.require("dojox.grid._Events");
 			}
 			this._structureChanged();
 		},
+		
+		getColumnTogglingItems: function(){
+			// Summary: returns an array of dijit.CheckedMenuItem widgets that can be
+			//		added to a menu for toggling columns on and off.
+			return dojo.map(this.layout.cells, function(cell){
+				if(!cell.menuItems){ cell.menuItems = []; }
+
+				var self = this;
+				var item = new dijit.CheckedMenuItem({
+					label: cell.name,
+					checked: !cell.hidden,
+					_gridCell: cell,
+					onChange: function(checked){
+						if(self.layout.setColumnVisibility(this._gridCell.index, checked)){
+							var items = this._gridCell.menuItems;
+							if(items.length > 1){
+								dojo.forEach(items, function(item){
+									if(item !== this){
+										item.setAttribute("checked", checked);
+									}
+								}, this);
+							}
+							var checked = dojo.filter(self.layout.cells, function(c){
+								if(c.menuItems.length > 1){
+									dojo.forEach(c.menuItems, "item.setDisabled(false);");
+								}else{
+									c.menuItems[0].setDisabled(false);
+								}
+								return !c.hidden;
+							});
+							if(checked.length == 1){
+								dojo.forEach(checked[0].menuItems, "item.setDisabled(true);");
+							}
+						}
+					},
+					destroy: function(){
+						var index = dojo.indexOf(this._gridCell.menuItems, this);
+						this._gridCell.menuItems.splice(index, 1);
+						delete this._gridCell;
+						dijit.CheckedMenuItem.prototype.destroy.apply(this, arguments);
+					}
+				});
+				cell.menuItems.push(item);
+				return item;
+			}, this); // dijit.CheckedMenuItem[]
+		},
+
+		setHeaderMenu: function(menu){
+			if(this._placeholders.length){
+				dojo.forEach(this._placeholders, function(p){
+					p.unReplace(true);
+				});
+				this._placeholders = [];
+			}
+			if(this.headerMenu){
+				this.headerMenu.unBindDomNode(this.viewsHeaderNode);
+			}
+			this.headerMenu = menu;
+			if(!menu){ return; }
+
+			this.headerMenu.bindDomNode(this.viewsHeaderNode);
+			if(this.headerMenu.getPlaceholders){
+				this._placeholders = this.headerMenu.getPlaceholders(this.placeholderLabel);
+			}
+		},
+		
+		setupHeaderMenu: function(){
+			if(this._placeholders && this._placeholders.length){
+				dojo.forEach(this._placeholders, function(p){
+					if(p._replaced){
+						p.unReplace(true);
+					}
+					p.replace(this.getColumnTogglingItems());
+				}, this);
+			}
+		},
 
 		_fetch: function(start){
 			this.setScrollTop(0);
@@ -325,6 +444,16 @@ dojo.require("dojox.grid._Events");
 
 		getItem: function(inRowIndex){
 			return null;
+		},
+		
+		showMessage: function(message){
+			if(message){
+				this.messagesNode.innerHTML = message;
+				this.messagesNode.style.display = "";
+			}else{
+				this.messagesNode.innerHTML = "";
+				this.messagesNode.style.display = "none";
+			}
 		},
 
 		_structureChanged: function() {
@@ -471,7 +600,8 @@ dojo.require("dojox.grid._Events");
 		postresize: function(){
 			// views are position absolute, so they do not inflate the parent
 			if(this.autoHeight){
-				this.viewsNode.style.height = this.views.measureContent() + 'px';
+				var size = Math.max(this.views.measureContent(), dojo.marginBox(this.messagesNode).h) + 'px';
+				this.viewsNode.style.height = size;
 			}
 		},
 
@@ -824,4 +954,109 @@ dojo.require("dojox.grid._Events");
 		}
 
 	});
+
+	dojox.grid._Grid.markupFactory = function(props, node, ctor, cellFunc){
+		var d = dojo;
+		var widthFromAttr = function(n){
+			var w = d.attr(n, "width")||"auto";
+			if((w != "auto")&&(w.slice(-2) != "em")&&(w.slice(-1) != "%")){
+				w = parseInt(w)+"px";
+			}
+			return w;
+		}
+		// if(!props.store){ console.debug("no store!"); }
+		// if a structure isn't referenced, do we have enough
+		// data to try to build one automatically?
+		if(	!props.structure &&
+			node.nodeName.toLowerCase() == "table"){
+
+			// try to discover a structure
+			props.structure = d.query("> colgroup", node).map(function(cg){
+				var sv = d.attr(cg, "span");
+				var v = {
+					noscroll: (d.attr(cg, "noscroll") == "true") ? true : false,
+					__span: (!!sv ? parseInt(sv) : 1),
+					cells: []
+				};
+				if(d.hasAttr(cg, "width")){
+					v.width = widthFromAttr(cg);
+				}
+				return v; // for vendetta
+			});
+			if(!props.structure.length){
+				props.structure.push({
+					__span: Infinity,
+					cells: [] // catch-all view
+				});
+			}
+			// check to see if we're gonna have more than one view
+
+			// for each tr in our th, create a row of cells
+			d.query("thead > tr", node).forEach(function(tr, tr_idx){
+				var cellCount = 0;
+				var viewIdx = 0;
+				var lastViewIdx;
+				var cView = null;
+				d.query("> th", tr).map(function(th){
+					// what view will this cell go into?
+
+					// NOTE:
+					//		to prevent extraneous iteration, we start counters over
+					//		for each row, incrementing over the surface area of the
+					//		structure that colgroup processing generates and
+					//		creating cell objects for each <th> to place into those
+					//		cell groups.  There's a lot of state-keepking logic
+					//		here, but it is what it has to be.
+					if(!cView){ // current view book keeping
+						lastViewIdx = 0;
+						cView = props.structure[0];
+					}else if(cellCount >= (lastViewIdx+cView.__span)){
+						viewIdx++;
+						// move to allocating things into the next view
+						lastViewIdx += cView.__span;
+						lastView = cView;
+						cView = props.structure[viewIdx];
+					}
+
+					// actually define the cell from what markup hands us
+					var cell = {
+						name: d.trim(d.attr(th, "name")||th.innerHTML),
+						colSpan: parseInt(d.attr(th, "colspan")||1, 10),
+						type: d.trim(d.attr(th, "cellType")||"")
+					};
+					cellCount += cell.colSpan;
+					var rowSpan = d.attr(th, "rowspan");
+					if(rowSpan){
+						cell.rowSpan = rowSpan;
+					}
+					if(d.hasAttr(th, "width")){
+						cell.width = widthFromAttr(th);
+					}
+					if(d.hasAttr(th, "relWidth")){
+						cell.relWidth = window.parseInt(dojo.attr(th, "relWidth"), 10);
+					}
+					if(d.hasAttr(th, "hidden")){
+						cell.hidden = d.getAttr(th, "hidden") == "true";
+					}
+
+					if(cellFunc){
+						cellFunc(th, cell);
+					}
+
+					cell.type = cell.type ? dojo.getObject(cell.type) : dojox.grid.cells.Cell;
+
+					if(cell.type && cell.type.markupFactory){
+						cell.type.markupFactory(th, cell);
+					}
+
+					if(!cView.cells[tr_idx]){
+						cView.cells[tr_idx] = [];
+					}
+					cView.cells[tr_idx].push(cell);
+				});
+			});
+		}
+
+		return new ctor(props, node);
+	}
 })();
