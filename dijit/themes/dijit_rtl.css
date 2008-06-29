@@ -1,0 +1,167 @@
+.dj_gecko-rtl .dijitInputField {
+	direction: ltr; /* Firefox needs this - probably a bug */
+}
+.dj_gecko-rtl .dijitInputField * {
+	direction: rtl; /* Firefox needs dijitInputField to be ltr, so fix the contained tags */
+}
+
+/* Tree */
+
+.dijitRtl .dijitComboBox .dijitInputField {
+	border-right-width:1px !important;
+	border-left-width:0 !important;
+}
+
+/* Calendar */
+
+.dijitRtl .dijitCalendarNextYear {
+	margin:0 0.55em 0 0;
+}
+
+.dijitRtl .dijitCalendarPreviousYear {
+	margin:0 0 0 0.55em;
+}
+
+.dijitRtl .dijitProgressBarFull .dijitProgressBarLabel {
+	right:0; /* FF workaround */
+}
+
+.dijitRtl .dijitA11ySideArrow {
+	margin-left:1em;
+	margin-right:0;
+}
+
+/* Slider */
+
+.dijitRtl .dijitSliderImageHandleV {
+	left:auto;
+	right:-6px;
+}
+
+.dj_ie-rtl .dijitSliderImageHandleV {
+	right:-10px;
+}
+
+.dijitRtl .dijitSliderMoveableH {
+	right:auto;
+	left:0;
+}
+
+.dijitRtl .dijitRuleContainerV {
+	float:right;
+}
+
+.dj_gecko-rtl .dijitRuleContainerV {
+	float:left;
+}
+
+.dj_ie-rtl .dijitRuleContainerV {
+	text-align:right;
+}
+
+.dj_ie-rtl .dijitRuleLabelV {
+	text-align:left;
+}
+
+.dj_ie-rtl .dijitRuleLabelH {
+	zoom:1;
+}
+
+.dj_ie-rtl .dijitSliderProgressBarH {
+	right:0;
+	left:auto;
+}
+
+.dj_gecko-rtl .dijitSliderProgressBarH {
+	float:right;
+	right:0;
+	left:auto;
+}
+
+/* TabContainer */
+
+.dijitRtl .dijitTabContainerTop-tabs .dijitTab,
+.dijitRtl .dijitTabContainerBottom-tabs .dijitTab {
+	float:right;
+}
+
+
+.dj_ie-rtl .dijitTab,
+.dj_ie-rtl .dijitTab .dijitTabInnerDiv,
+.dj_ie-rtl .dijitTab .dijitTabInnerDiv span {
+	position:static;
+	zoom:1;
+}
+
+.dj_ie-rtl .dijitTabContainerLeft-tabs {
+	margin-left:1px !important;
+}
+
+.dj_ie-rtl .dijitTabContainerRight-tabs {
+	margin-right:1px !important;
+}
+
+.dj_ie6-rtl .dijitTab {
+	/* force ie6 to render each tab based on the tab's label */
+	width:1px;
+}
+
+.dj_ie6-rtl .dijitTabContainerLeft-tabs {
+	overflow-x:visible;
+	margin-left:2px !important;
+}
+
+.dj_ie6-rtl .dijitTabContainerRight-tabs {
+	overflow-x:visible;
+	margin-right:2px !important;
+}
+
+.dj_ie7-rtl .dijitTab .dijitTabInnerDiv {
+	float:left;
+}
+
+.dj_ie7-rtl .dijitTab .closeImage {
+	padding: 0 0 0 12px;
+}
+
+.dj_ie-rtl .dijitTabContainerRight-tabs .dijitTab {
+	position:relative;
+}
+
+.dj_ie-rtl .dijitTabContainerRight-tabs .closeImage {
+	position: absolute !important;
+}
+.dj_ie6-rtl .dijitTabContainerRight-tabs .closeImage {
+	width: 12px !important;
+}
+.dj_ie7-rtl .dijitTabContainerRight-tabs .closeImage {
+	padding: 0px !important;
+}
+
+
+/* Spinner */
+
+.dijitRtl .dijitSpinner .dijitInputLayoutContainer .dijitArrowButton {
+	right: auto;
+	left: 0;
+	border-width: 0 1px 0 0 !important;
+}
+
+.dijitRtl .dijitSpinnerButtonContainer {
+	float: left;
+}
+
+.dijitRtl .dijit_a11y .dijitSpinnerButtonContainer {
+	margin-left: none;
+	margin-right: 2px;
+}
+
+.dijitRtl DIV.dijitArrowButton, .dijitRtl .dijitValidationIcon, .dijitRtl .dijitValidationIconText {
+	float: left;
+}
+
+/* ContentPane*/
+.dijitRtl .dijitContentPaneLoading, .dijitRtl .dijitContentPaneError {
+	background-position:right;
+	padding-right:25px;
+}

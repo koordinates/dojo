@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------------
+DojoX IO
+-------------------------------------------------------------------------------
+Version 0.4.0
+Release date: 07/04/2008
+-------------------------------------------------------------------------------
+Project state:
+experimental
+-------------------------------------------------------------------------------
+Credits
+	Bryan Forbes (bryan@reigndropsfall.net)
+	Kris Zyp (kris@sitepen.com)
+-------------------------------------------------------------------------------
+Project description
+xhrMultiPart.js - Cross-domain fragment identifier messaging based XHR Proxy
+xhrPlugins.js - An adapter registry for having multiple XHR handlers (like
+	XDomainRequest, CS-XHR, proxy, and window.name)
+windowName.js - Cross-domain transport using window.name
+xhrWindowNamePlugin.js - window.name plugin for XHR adapter registry
+httpParse.js - HTTP message parser. Parses to an XHR like interface.
+-------------------------------------------------------------------------------
+Dependencies:
+
+DojoX IO xhrMultiPart depends on Dojo Core and DojoX UUID's generateRandomUuid 
+function.
+xhrWindowNamePlugin depends on dojox.secure.capability for safe JSON parsing
+-------------------------------------------------------------------------------
+Documentation
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/uuid.js
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/uuid/*
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/secure/*
+
+Install into the following directory structure:
+/dojox/uuid/
+/dojox/secure/
+
+AND
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/io/*
+
+Install into the following directory structure:
+/dojox/io/
+
+...both of which should be at the same level as your Dojo checkout.
+-------------------------------------------------------------------------------
+Additional Notes
+
+The information contained in this README does not pertain to DojoX XHR IFrame Proxy.  
+For that information see proxy/README.
