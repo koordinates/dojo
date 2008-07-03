@@ -9,9 +9,13 @@ dojo.require("dojo.i18n");
 dojo.requireLocalization("dojox.widget", "RollingList"); 
 
 dojo.declare("dojox.widget._RollingListPane",
-	[dijit.layout.ContentPane, dijit._Contained], {
+	[dijit.layout.ContentPane, dijit._Templated, dijit._Contained], {
 	// summary: a core pane that can be attached to a RollingList.  All panes
 	//  should extend this one
+
+	// templateString: string
+	//	our template
+	templateString: '<div class="dojoxRollingListPane"><table><tbody><tr><td dojoAttachPoint="containerNode"></td></tr></tbody></div>',
 
 	// class: string
 	//  We override this to dijitInline so things display correctly
@@ -45,7 +49,11 @@ dojo.declare("dojox.widget._RollingListPane",
 	//  query options to be passed to the datastore
 	queryOptions: null,
 	
-	_setContentAndScroll: function(cont){
+	// focusByNode: boolean
+	//  set to false if the subclass will handle its own node focusing
+	_focusByNode: true,
+	
+	_setContentAndScroll: function(/*String|DomNode|Nodelist*/cont){
 		// summary: sets the value of the content and scrolls it into view
 		this._setContent(cont);
 		this.parentWidget.scrollIntoView(this);
@@ -63,18 +71,43 @@ dojo.declare("dojox.widget._RollingListPane",
 				this.connect(this.store, "onDelete", "_onDeleteItem");
 			}), 1);
 		}
+		this.connect(this.focusNode||this.domNode, "onkeypress", "_focusKey");
 		this.parentWidget._updateClass(this.domNode, "Pane");
 		this.inherited(arguments);
 	},
 
+	_focusKey: function(/*Event*/e){
+		// summary: called when a keypress happens on the widget
+		if(e.charOrCode == dojo.keys.BACKSPACE){
+			dojo.stopEvent(e);
+			return;
+		}else if(e.charOrCode == dojo.keys.LEFT_ARROW && this.parentPane){
+			this.parentPane.focus();
+			this.parentWidget.scrollIntoView(this.parentPane);
+		}else if(e.charOrCode == dojo.keys.ENTER){
+			this.parentWidget.onExecute();
+		}
+	},
+	
+	focus: function(/*boolean*/force){
+		// summary: sets the focus to this current widget
+		if(this.parentWidget._focusedPane != this){
+			this.parentWidget._focusedPane = this;
+			this.parentWidget.scrollIntoView(this);
+			if(this._focusByNode && (!this.parentWidget._savedFocus || force)){
+				try{(this.focusNode||this.domNode).focus();}catch(e){}
+			}
+		}
+	},
+	
 	_loadCheck: function(/* Boolean? */ forceLoad){
+		// summary: checks that the store is loaded
 		if(!this._started){
 			var c = this.connect(this, "startup", function(){
 				this.disconnect(c);
 				this._loadCheck(forceLoad);
 			});
 		}
-		// summary: checks that the store is loaded
 		var displayState = this._isShown();
 		if((this.store || this.items) && (forceLoad || (this.refreshOnShow && displayState) || (!this.isLoaded && displayState))){
 			this._doQuery();
@@ -124,7 +157,7 @@ dojo.declare("dojox.widget._RollingListPane",
 		//  pane
 		var items = this.items || [];
 		for(var i = 0, myItem; (myItem = items[i]); i++){
-			if(myItem == item){
+			if(this.parentWidget._itemsMatch(myItem, item)){
 				return true;
 			}
 		}
@@ -146,7 +179,7 @@ dojo.declare("dojox.widget._RollingListPane",
 		var sel;
 		if((!parentInfo && !this.parentPane) ||
 			(parentInfo && this.parentPane && this.parentPane._hasItem(parentInfo.item) &&
-			(sel = this.parentPane._getSelected()) && sel.item == parentInfo.item)){
+			(sel = this.parentPane._getSelected()) && this.parentWidget._itemsMatch(sel.item, parentInfo.item))){
 			this.items.push(newItem);
 			this._loadCheck(true);
 		}else if(parentInfo && this.parentPane && this._hasItem(parentInfo.item)){
@@ -198,7 +231,7 @@ dojo.declare("dojox.widget._RollingListPane",
 });
 
 dojo.declare("dojox.widget._RollingListGroupPane",
-	[dojox.widget._RollingListPane, dijit._Templated], {
+	[dojox.widget._RollingListPane], {
 	// summary: a pane that will handle groups (treats them as menu items)
 	
 	// templateString: string
@@ -220,6 +253,13 @@ dojo.declare("dojox.widget._RollingListGroupPane",
 		}
 	},
 	
+	_setContent: function(/*String|DomNode|Nodelist*/cont){
+		if(!this._menu){
+			// Only set the content if we don't already have a menu
+			this.inherited(arguments);
+		}
+	},
+
 	onItems: function(){
 		// summary:
 		//	called after a fetch or load - at this point, this.items should be
@@ -235,7 +275,7 @@ dojo.declare("dojox.widget._RollingListGroupPane",
 			dojo.forEach(this.items, function(item){
 				child = this.parentWidget._getMenuItemForItem(item, this);
 				if(child){
-					if(selectItem && child.item == selectItem.item){
+					if(selectItem && this.parentWidget._itemsMatch(child.item, selectItem.item)){
 						selectMenuItem = child;
 					}
 					this._menu.addChild(child);
@@ -256,7 +296,7 @@ dojo.declare("dojox.widget._RollingListGroupPane",
 					this.parentWidget.addChild(itemPane, this.getIndexInParent() + 1);
 				}else{
 					this.parentWidget._removeAfter(this);
-					this.parentWidget.onItemClick(selectMenuItem.item, this, selectMenuItem.children);
+					this.parentWidget._onItemClick(null, this, selectMenuItem.item, selectMenuItem.children);
 				}
 			}
 		}else if(selectItem){
@@ -273,21 +313,45 @@ dojo.declare("dojox.widget._RollingListGroupPane",
 		this.parentWidget._updateClass(this.domNode, "GroupPane");
 	},
 	
-	focus: function(){
+	focus: function(/*boolean*/force){
+		// summary: sets the focus to this current widget
 		if(this._menu){
-			var focusDom = dojo.query(".dojoxRollingListItemSelected", 
-						this.domNode)[0] || this._menu.getChildren()[0].domNode;
-			if(focusDom){
-				var focusWidget = dijit.byNode(focusDom);
-				if(focusWidget && focusWidget.focusNode){
-					focusWidget.focusNode.focus();
+			if(this._pendingFocus){
+				this.disconnect(this._pendingFocus);
+			}
+			delete this._pendingFocus;
+			
+			// We focus the right widget - either the focusedChild, the
+			//   selected node, the first menu item, or the menu itself
+			var focusWidget = this._menu.focusedChild;
+			if(!focusWidget)
+			{
+				var focusNode = dojo.query(".dojoxRollingListItemSelected", this.domNode)[0];
+				if(focusNode){
+					focusWidget = dijit.byNode(focusNode);
 				}
 			}
-		}else{
-			var conn = this.connect(this, "onItems", function(){
-				this.disconnect(conn);
-				this.focus();
-			});			
+			if(!focusWidget){
+				focusWidget = this._menu.getChildren()[0] || this._menu;
+			}
+			this._focusByNode = false;
+			if(focusWidget.focusNode){
+				if(!this.parentWidget._savedFocus || force){
+					try{focusWidget.focusNode.focus();}catch(e){}
+				}
+				window.setTimeout(function(){
+					dijit.scrollIntoView(focusWidget.focusNode);
+				}, 1);
+			}else if(focusWidget.focus){
+				if(!this.parentWidget._savedFocus || force){
+					focusWidget.focus();
+				}
+			}else{
+				this._focusByNode = true;
+			}
+			this.inherited(arguments);
+		}else if(!this._pendingFocus){
+			this._pendingFocus = this.connect(this, "onItems", "focus");
 		}
 	},
 	
@@ -297,8 +361,8 @@ dojo.declare("dojox.widget._RollingListGroupPane",
 		var menu = new dijit.Menu({
 			parentMenu: this.parentPane ? this.parentPane._menu : null,
 			onCancel: function(/*Boolean*/ closeAll){ 
-				if(self.parentPane &&self.parentPane.focus){
-					self.parentPane.focus();
+				if(self.parentPane){
+					self.parentPane.focus(true);
 				}
 			},
 			_moveToPopup: function(/*Event*/ evt){
@@ -310,16 +374,21 @@ dojo.declare("dojox.widget._RollingListGroupPane",
 		this.connect(menu, "onItemClick", function(/*dijit.MenuItem*/ item, /*Event*/ evt){
 			if(item.disabled){ return; }
 			evt.alreadySelected = dojo.hasClass(item.domNode, "dojoxRollingListItemSelected");
-			if(evt.alreadySelected && evt.type == "keypress"){
+			if(evt.alreadySelected && 
+				((evt.type == "keypress" && evt.charOrCode != dojo.keys.ENTER) ||
+				(evt.type == "internal"))){
 				var p = this.parentWidget.getChildren()[this.getIndexInParent() + 1];
-				if(p && p.focus){
-					p.focus();
+				if(p){
+					p.focus(true);
+					this.parentWidget.scrollIntoView(p);
 				}
-				this.parentWidget.scrollIntoView(this);
-				return;
+			}else{
+				this._setSelected(item, menu);
+				this.parentWidget._onItemClick(evt, this, item.item, item.children);
+				if(evt.type == "keypress" && evt.charOrCode == dojo.keys.ENTER){
+					this.parentWidget.onExecute();
+				}
 			}
-			this._setSelected(item, menu);
-			this.parentWidget._onItemClick(evt, this, item.item, item.children);
 		});
 		if(!menu._started){
 			menu.startup();
@@ -360,7 +429,7 @@ dojo.declare("dojox.widget.RollingList",
 		
 	// templateString: string
 	//  our template string to use
-	templateString: '<div class="dojoxRollingList ${className}" dojoAttachPoint="containerNode"></div>',
+	templateString: '<div class="dojoxRollingList ${className}" dojoAttachPoint="containerNode" dojoAttachEvent="onkeypress:_onKey"></div>',
 	
 	// className: string
 	//  an additional class (or space-separated classes) to add for our widget
@@ -382,10 +451,26 @@ dojo.declare("dojox.widget.RollingList",
 	//		one ore more attributes that holds children of a node
 	childrenAttrs: ["children"],
 
-	// scrollDuration: integer
-	//  time (in millis) to animate the smooth scroll across
-	scrollDuration: 150,
+	// parentAttr: string
+	//	the attribute to read for finding our parent item (if any)
+	parentAttr: "",
+	
+	// value: item
+	//		The value that has been selected
+	value: null,
 
+	_itemsMatch: function(/*item*/ item1, /*item*/ item2){
+		// Summary: returns whether or not the two items match - checks ID if
+		//  they aren't the exact same object
+		if(!item1 && !item2){ 
+			return true;
+		}else if(!item1 || !item2){
+			return false;
+		}
+		return (item1 == item2 || 
+			(this._isIdentity && this.store.getIdentity(item1) == this.store.getIdentity(item2)));
+	},
+	
 	_removeAfter: function(/*Widget or int*/ idx){
 		// summary: removes all widgets after the given widget (or index)
 		if(typeof idx != "number"){
@@ -398,6 +483,18 @@ dojo.declare("dojox.widget.RollingList",
 					c.destroyRecursive();
 				}
 			}, this);
+		}
+		var children = this.getChildren(), child = children[children.length - 1];
+		var selItem = null;
+		while(child && !selItem){
+			var val = child._getSelected ? child._getSelected() : null;
+			if(val){
+				selItem = val.item;
+			}
+			child = child.parentPane;
+		}
+		if(!this._setInProgress){
+			this._setValue(selItem);
 		}
 	},
 	
@@ -413,7 +510,9 @@ dojo.declare("dojox.widget.RollingList",
 			widget.startup();
 		}
 		this.layout();
-		this.scrollIntoView(widget, this.getChildren().length > 1);
+		if(!this._savedFocus){
+			widget.focus();
+		}
 	},
 	
 	_updateClass: function(/* Node */ node, /* String */ type, /* Object? */ options){
@@ -431,36 +530,26 @@ dojo.declare("dojox.widget.RollingList",
 				for(var k in options||{}){
 					dojo.toggleClass(node, c + type + k, options[k]);
 				}
+				dojo.toggleClass(node, c + type + "FocusSelected", 
+					(dojo.hasClass(node, c + type + "Focus") && dojo.hasClass(node, c + type + "Selected")));
+				dojo.toggleClass(node, c + type + "HoverSelected", 
+					(dojo.hasClass(node, c + type + "Hover") && dojo.hasClass(node, c + type + "Selected")));
 			}
 		});
 	},
 	
-	scrollIntoView: function(/* Widget */ childWidget, /* Boolean? */ doFocus){
-		// summary: smoothly scrolls the given widget into view
-		window.setTimeout(dojo.hitch(this, function(){
-			var node = this.domNode;
-			if(this._currentAnim && this._currentAnim.status() == "playing"){
-				this._currentAnim.stop();
+	scrollIntoView: function(/* Widget */ childWidget){
+		// summary: scrolls the given widget into view
+		if(this._scrollingTimeout){ 
+			window.clearTimeout(this._scrollingTimeout);
+		}
+		delete this._scrollingTimeout;
+		this._scrollingTimeout = window.setTimeout(dojo.hitch(this, function(){
+			if(childWidget.domNode){
+				dijit.scrollIntoView(childWidget.domNode);
 			}
-			delete this._currentAnim;
-			var tgt = node.scrollWidth - node.clientWidth;
-			var _doFocus = function(){
-				if(doFocus && childWidget.focus){
-					childWidget.focus();
-				}
-			};
-			if(node.scrollLeft != tgt){
-				this._currentAnim = new dojo._Animation({
-					curve: new dojo._Line(node.scrollLeft, tgt),
-					onAnimate: function(val){
-						node.scrollLeft = val;
-					},
-					duration: this.scrollDuration,
-					onEnd: _doFocus
-				}).play();
-			}else{
-				_doFocus();
-			}
+			delete this._scrollingTimeout;
+			return;
 		}), 1);
 	},
 	
@@ -476,28 +565,174 @@ dojo.declare("dojox.widget.RollingList",
 				dojo.marginBox(c.domNode, {h: height});
 			});
 		}
-		this.scrollIntoView(children[children.length-1]);
+		if(this._focusedPane){
+			var foc = this._focusedPane;
+			delete this._focusedPane;
+			if(!this._savedFocus){
+				foc.focus();
+			}
+		}else if(children && children.length){
+			if(!this._savedFocus){
+				children[0].focus();
+			}
+		}
+	},
+	
+	_onChange: function(/*item*/ value){
+		this.onChange(value);
+	},
+
+	_setValue: function(/* item */ value){
+		// summary: internally sets the value and fires onchange
+		delete this._setInProgress;
+		if(!this._itemsMatch(this.value, value)){
+			this.value = value;
+			this._onChange(value);
+		}
+	},
+	
+	setValue: function(/* item */ value){
+		// summary: sets the value of this widget to the given store item
+		if(this._itemsMatch(this.value, value)){ return; }
+		if(this._setInProgress && this._setInProgress === value){ return; }
+		this._setInProgress = value;
+		if(!value || !this.store.isItem(value)){
+			var pane = this.getChildren()[0];
+			pane._setSelected(null);
+			this._onItemClick(null, pane, null, null);
+			return;
+		}
+		
+		var fetchParentItems = dojo.hitch(this, function(/*item*/ item, /*function*/callback){
+			// Summary: Fetchs the parent items for the given item
+			var store = this.store, id;
+			if(this.parentAttr && store.getFeatures()["dojo.data.api.Identity"] &&
+				(id = this.store.getValue(item, this.parentAttr))){
+				// Fetch by parent attribute
+				var cb = function(i){
+					if(store.getIdentity(i) == store.getIdentity(item)){
+						callback(null);
+					}else{
+						callback([i]);
+					}
+				};
+				if(typeof id == "string"){
+					store.fetchItemByIdentity({identity: id, onItem: cb});
+				}else if(store.isItem(id)){
+					cb(id);
+				}
+			}else{
+				// Fetch by finding children
+				var numCheck = this.childrenAttrs.length;
+				var parents = [];
+				dojo.forEach(this.childrenAttrs, function(attr){
+					var q = {};
+					q[attr] = item;
+					store.fetch({query: q, scope: this, 
+						onComplete: function(items){
+							if(this._setInProgress !== value){
+								return;
+							}
+							parents = parents.concat(items);
+							numCheck--;
+							if(numCheck === 0){
+								callback(parents);
+							}
+						}
+					});
+				}, this);
+			}
+		});
+		
+		var setFromChain = dojo.hitch(this, function(/*item[]*/itemChain, /*integer*/idx){
+			// Summary: Sets the value of the widget at the given index in the chain - onchanges are not 
+			// fired here
+			var set = itemChain[idx];
+			var child = this.getChildren()[idx];
+			var conn;
+			if(set && child){
+				var fx = dojo.hitch(this, function(){
+					if(conn){
+						this.disconnect(conn);
+					}
+					delete conn;
+					if(this._setInProgress !== value){
+						return;
+					}
+					var selOpt = dojo.filter(child._menu.getChildren(), function(i){
+						return this._itemsMatch(i.item, set);
+					}, this)[0];
+					if(selOpt){
+						idx++;
+						child._menu.onItemClick(selOpt, {type: "internal",
+													stopPropagation: function(){},
+													preventDefault: function(){}});
+						if(itemChain[idx]){
+							setFromChain(itemChain, idx);
+						}else{
+							this._setValue(set);
+							this.onItemClick(set, child, this.getChildItems(set));
+						}
+					}
+				});
+				if(!child.isLoaded){
+					conn = this.connect(child, "onLoad", fx);
+				}else{
+					fx();
+				}
+			}else if(idx === 0){
+				this.setValue(null);
+			}
+		});
+		
+		var parentChain = [];
+		var onParents = dojo.hitch(this, function(/*item[]*/ parents){
+			// Summary: recursively grabs the parents - only the first one is followed
+			if(parents && parents.length){
+				parentChain.push(parents[0]);
+				fetchParentItems(parents[0], onParents);
+			}else{
+				if(!parents){
+					parentChain.pop();
+				}
+				parentChain.reverse();
+				setFromChain(parentChain, 0);
+			}
+		});
+		onParents([value]);
 	},
 	
 	_onItemClick: function(/* Event */ evt, /* dijit._Contained */ pane, /* item */ item, /* item[]? */ children){
 		// summary: internally called when a widget should pop up its child
-		var itemPane = this._getPaneForItem(item, pane, children);
-		var alreadySelected = (evt.type == "click" && evt.alreadySelected);
+		
+		if(evt){
+			var itemPane = this._getPaneForItem(item, pane, children);
+			var alreadySelected = (evt.type == "click" && evt.alreadySelected);
 
-		if(alreadySelected && itemPane){
-			this._removeAfter(pane.getIndexInParent() + 1);
-			var next = pane.getNextSibling();
-			if(next && next._setSelected){
-				next._setSelected(null);
+			if(alreadySelected && itemPane){
+				this._removeAfter(pane.getIndexInParent() + 1);
+				var next = pane.getNextSibling();
+				if(next && next._setSelected){
+					next._setSelected(null);
+				}
+				this.scrollIntoView(next);
+			}else if(itemPane){
+				this.addChild(itemPane, pane.getIndexInParent() + 1);
+				if(this._savedFocus){
+					itemPane.focus(true);
+				}
+			}else{
+				this._removeAfter(pane);
+				this.scrollIntoView(pane);
 			}
-			this.scrollIntoView(next);
-		}else if(itemPane){
-			this.addChild(itemPane, pane.getIndexInParent() + 1);
-		}else{
+		}else if(pane){
 			this._removeAfter(pane);
 			this.scrollIntoView(pane);
 		}
-		this.onItemClick(item, pane, children);
+		if(!evt || evt.type != "internal"){
+			this._setValue(item);
+			this.onItemClick(item, pane, children);
+		}
 	},
 	
 	_getPaneForItem: function(/* item? */ item, /* dijit._Contained? */ parentPane, /* item[]? */ children){		// summary: gets the pane for the given item, and mixes in our needed parts
@@ -562,13 +797,23 @@ dojo.declare("dojox.widget.RollingList",
 				var self = this;
 				widgetItem.focus = function(){
 					// Don't set our class
-					if(!this.disabled){try{dijit.focus(this.focusNode);}catch(e){}}
+					if(!this.disabled){try{this.focusNode.focus();}catch(e){}}
 				};
-				widgetItem.connect(widgetItem.focusNode, "blur", function(){
+				widgetItem.connect(widgetItem.focusNode, "onmouseenter", function(){
+					self._updateClass(this.domNode, "Item", {"Hover": true});
+				});
+				widgetItem.connect(widgetItem.focusNode, "onmouseleave", function(){
 					self._updateClass(this.domNode, "Item", {"Hover": false});
 				});
+				widgetItem.connect(widgetItem.focusNode, "blur", function(){
+					self._updateClass(this.domNode, "Item", {"Focus": false});
+				});
 				widgetItem.connect(widgetItem.focusNode, "focus", function(){
-					self._updateClass(this.domNode, "Item", {"Hover": true});
+					self._updateClass(this.domNode, "Item", {"Focus": true});
+					self._focusedPane = parentPane;
+				});
+				widgetItem.connect(widgetItem.focusNode, "ondblclick", function(){
+					self.onExecute();
 				});
 			}
 			return widgetItem;
@@ -579,10 +824,63 @@ dojo.declare("dojox.widget.RollingList",
 		// summary: sets the store for this widget */
 		if(store === this.store && this._started){ return; }
 		this.store = store;
+		this._isIdentity = store.getFeatures()["dojo.data.api.Identity"];
 		var rootPane = this._getPaneForItem();
 		this.addChild(rootPane, 0);
 	},
 	
+	_onKey: function(/*Event*/ e){
+		// summary: called when a keypress event happens on this widget
+		if(e.charOrCode == dojo.keys.BACKSPACE){
+			dojo.stopEvent(e);
+			return;
+		}else if(e.charOrCode == dojo.keys.ESCAPE && this._savedFocus){
+			try{dijit.focus(this._savedFocus);}catch(e){}
+			dojo.stopEvent(e);
+			return;
+		}else if(e.charOrCode == dojo.keys.LEFT_ARROW || 
+			e.charOrCode == dojo.keys.RIGHT_ARROW){
+			dojo.stopEvent(e);
+			return;
+		}
+	},
+	
+	focus: function(){
+		// summary: sets the focus state of this widget
+		var wasSaved = this._savedFocus;
+		this._savedFocus = dijit.getFocus(this);
+		if(!this._savedFocus.node){
+			delete this._savedFocus;
+		}
+		if(!this._focusedPane){
+			var child = this.getChildren()[0];
+			if(child && !wasSaved){
+				child.focus(true);
+			}
+		}else{
+			this._savedFocus = dijit.getFocus(this);
+			var foc = this._focusedPane;
+			delete this._focusedPane;
+			if(!wasSaved){
+				foc.focus(true);
+			}
+		}
+	},
+	
+	handleKey:function(/*Event*/e){
+		// summary: handle the key for the given event - called by dropdown
+		//	widgets
+		if(e.charOrCode == dojo.keys.DOWN_ARROW){
+			delete this._savedFocus;
+			this.focus();
+			return false;
+		}else if(e.charOrCode == dojo.keys.ESCAPE){
+			this.onCancel();
+			return false;
+		}
+		return true;
+	},
+
 	startup: function(){
 		if(this._started){ return; }
 		if(!this.getParent || !this.getParent()){
@@ -626,6 +924,18 @@ dojo.declare("dojox.widget.RollingList",
 
 	onItemClick: function(/* item */ item, /* dijit._Contained */ pane, /* item[]? */ children){
 		// summary: called when an item is clicked - it receives the store item
+	},
+	
+	onExecute: function(){
+		// summary: exists so that popups don't disappear too soon
+	},
+	
+	onCancel: function(){
+		// summary: exists so that we can close ourselves if we wish
+	},
+	
+	onChange: function(/* item */ value){
+		// summary: called when the value of this widget has changed
 	}
 	
 });
