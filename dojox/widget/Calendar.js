@@ -347,8 +347,13 @@ dojo.declare("dojox.widget._CalendarDayView", [dojox.widget._CalendarView, dijit
 	_onDayClick: function(e) {
 		// summary: executed when a day value is clicked.
 		var date = this.getValue();
-		date.setDate(e.target._date);
+		var p = e.target.parentNode;
+		var c = "dijitCalendar";
+		var d = dojo.hasClass(p, c + "PreviousMonth") ? -1 :
+							(dojo.hasClass(p, c + "NextMonth") ? 1 : 0);
+		if (d){date = dojo.date.add(date, "month", d)}
 
+		date.setDate(e.target._date);
 		this.value = date;
 		this.parent._onDateSelected(date);
 	},
