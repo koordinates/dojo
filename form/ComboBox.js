@@ -2,6 +2,8 @@ dojo.provide("dijit.form.ComboBox");
 
 dojo.require("dijit.form.ValidationTextBox");
 dojo.require("dojo.data.util.simpleFetch");
+dojo.require("dojo.data.util.filter");
+
 dojo.requireLocalization("dijit.form", "ComboBox");
 
 dojo.declare(
@@ -26,6 +28,12 @@ dojo.declare(
 		// store: Object
 		//		Reference to data provider object used by this ComboBox
 		store: null,
+
+		// fetchProperties: Object
+		//		Mixin to the dojo.data store's fetch.
+		//		For example, to set the sort order of the ComboBox menu, pass:
+		//		{sort:{attribute:"name",descending:true}}
+		fetchProperties:{},
 
 		// query: Object
 		//		A query that can be passed to 'store' to initially filter the items,
@@ -228,8 +236,9 @@ dojo.declare(
 					if(this._isShowingNow){
 						dojo.stopEvent(evt);
 						this._hideResultList();
+					}else{
+						this.inherited(arguments);
 					}
-					this.inherited(arguments);
 					break;
 
 				case dk.DELETE:
@@ -520,7 +529,7 @@ dojo.declare(
 			// otherwise, if the user types and the last query returns before the timeout,
 			// _lastQuery won't be set and their input gets rewritten
 			this.searchTimer=setTimeout(dojo.hitch(this, function(query, _this){
-				var dataObject = this.store.fetch({
+				var fetch = {
 					queryOptions: {
 						ignoreCase: this.ignoreCase, 
 						deep: true
@@ -534,7 +543,9 @@ dojo.declare(
 					},
 					start:0,
 					count:this.pageSize
-				});
+				};
+				dojo.mixin(fetch, _this.fetchProperties);
+				var dataObject = _this.store.fetch(fetch);
 
 				var nextSearch = function(dataObject, direction){
 					dataObject.start += dataObject.count*direction;
@@ -587,6 +598,7 @@ dojo.declare(
 
 		constructor: function(){
 			this.query={};
+			this.fetchProperties={};
 		},
 
 		postMixInProperties: function(){
@@ -1065,13 +1077,13 @@ dojo.declare("dijit.form._ComboBoxDataStore", null, {
 		if(!args.query){ args.query = {}; }
 		if(!args.query.name){ args.query.name = ""; }
 		if(!args.queryOptions){ args.queryOptions = {}; }
-		var query = "^" + args.query.name
-				.replace(/([\\\|\(\)\[\{\^\$\+\?\.\<\>])/g, "\\$1")
-				.replace("*", ".*") + "$",
-			matcher = new RegExp(query, args.queryOptions.ignoreCase ? "i" : ""),
+		var matcher = dojo.data.util.filter.patternToRegExp(args.query.name, args.queryOptions.ignoreCase),
 			items = dojo.query("> option", this.root).filter(function(option){
 				return (option.innerText || option.textContent || '').match(matcher);
 			} );
+		if(args.sort){
+			items.sort(dojo.data.util.sorter.createSortFunction(args.sort, this));
+		}
 		findCallback(items, args);
 	},
 

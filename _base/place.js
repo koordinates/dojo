@@ -1,5 +1,7 @@
 dojo.provide("dijit._base.place");
 
+dojo.require("dojo.AdapterRegistry");
+
 // ported from dojo.html.util
 
 dijit.getViewport = function(){
@@ -161,7 +163,7 @@ dijit._place = function(/*DomNode*/ node, /* Array */ choices, /* Function */ la
 	return best;
 }
 
-dijit.placeOnScreenAroundElement = function(
+dijit.placeOnScreenAroundNode = function(
 	/* DomNode */		node,
 	/* DomNode */		aroundNode,
 	/* Object */		aroundCorners,
@@ -181,7 +183,6 @@ dijit.placeOnScreenAroundElement = function(
 	//		for things like tooltip, they are displayed differently (and have different dimensions)
 	//		based on their orientation relative to the parent.   This adjusts the popup based on orientation.
 
-
 	// get coordinates of aroundNode
 	aroundNode = dojo.byId(aroundNode);
 	var oldDisplay = aroundNode.style.display;
@@ -196,7 +197,33 @@ dijit.placeOnScreenAroundElement = function(
 	return dijit._placeOnScreenAroundRect(node, 
 		aroundNodePos.x, aroundNodePos.y, aroundNodeW, aroundNodeH,	// rectangle
 		aroundCorners, layoutNode);
-}
+};
+
+dijit.placeOnScreenAroundRectangle = function(
+	/* DomNode */		node,
+	/* Object */		aroundRect,
+	/* Object */		aroundCorners,
+	/* Function */		layoutNode){
+
+	//	summary
+	//	Like placeOnScreen, except it accepts aroundRect (x, y, width, height)
+	//	instead of x,y and attempts to place node around it.
+	//
+	//	aroundCorners
+	//		specify Which corner of aroundNode should be
+	//		used to place the node => which corner(s) of node to use (see the
+	//		corners parameter in dijit.placeOnScreen)
+	//		e.g. {'TL': 'BL', 'BL': 'TL'}
+	//
+	//	layoutNode: Function(node, aroundNodeCorner, nodeCorner)
+	//		for things like tooltip, they are displayed differently (and have different dimensions)
+	//		based on their orientation relative to the parent.   This adjusts the popup based on orientation.
+
+	// place the node around the rectangle
+	return dijit._placeOnScreenAroundRect(node, 
+		aroundRect.x, aroundRect.y, aroundRect.width, aroundRect.height,	// rectangle
+		aroundCorners, layoutNode);
+};
 
 dijit._placeOnScreenAroundRect = function(
 	/* DomNode */		node,
@@ -247,4 +274,41 @@ dijit._placeOnScreenAroundRect = function(
 	}
 
 	return dijit._place(node, choices, layoutNode);
-}
+};
+
+dijit.placementRegistry = new dojo.AdapterRegistry();
+dijit.placementRegistry.register("node",
+	function(n, x){
+		return typeof x == "object" &&
+			typeof x.offsetWidth != "undefined" && typeof x.offsetHeight != "undefined";
+	},
+	dijit.placeOnScreenAroundNode);
+dijit.placementRegistry.register("rect",
+	function(n, x){
+		return typeof x == "object" &&
+			"x" in x && "y" in x && "width" in x && "height" in x;
+	},
+	dijit.placeOnScreenAroundRectangle);
+
+dijit.placeOnScreenAroundElement = function(
+	/* DomNode */		node,
+	/* Object */		aroundElement,
+	/* Object */		aroundCorners,
+	/* Function */		layoutNode){
+
+	//	summary
+	//	Like placeOnScreen, except it accepts an arbitrary object,
+	//	and finds a proper processor to place a node.
+	//
+	//	aroundCorners
+	//		specify Which corner of aroundNode should be
+	//		used to place the node => which corner(s) of node to use (see the
+	//		corners parameter in dijit.placeOnScreen)
+	//		e.g. {'TL': 'BL', 'BL': 'TL'}
+	//
+	//	layoutNode: Function(node, aroundNodeCorner, nodeCorner)
+	//		for things like tooltip, they are displayed differently (and have different dimensions)
+	//		based on their orientation relative to the parent.   This adjusts the popup based on orientation.
+
+	return dijit.placementRegistry.match.apply(dijit.placementRegistry, arguments);
+};
