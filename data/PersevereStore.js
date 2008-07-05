@@ -30,7 +30,7 @@ dojo.declare("dojox.data.PersevereStore",dojox.data.JsonRestStore,{
 				jsonQuery = "";
 			}
 			args.queryStr = jsonQuery.replace(/\\"|"/g,function(t){return t == '"' ? "'" : t;});
-		}else if(!args.query){
+		}else if(!args.query || args.query == '*'){
 			args.query = "";
 		}
 		
@@ -53,7 +53,7 @@ dojo.declare("dojox.data.PersevereStore",dojox.data.JsonRestStore,{
 		var index = dojox.rpc.Rest._index;
 		if(dojox.json.query && !args.dontCache && index[this.target] && !index[this.target]._loadObject){
 			// we can do the query locally
-			jsonQuery = args.queryStr || args.query;
+			jsonQuery = typeof args.queryStr == 'string' ? args.queryStr : args.query;
 			// do the query locally with dojox.json.query and then sneak the results in the cache, so the 
 			//	inherited fetch can handle it
 			index[this.target + jsonQuery] = dojox.json.query(jsonQuery,index[this.target]);
@@ -64,7 +64,7 @@ dojo.declare("dojox.data.PersevereStore",dojox.data.JsonRestStore,{
 		return this.inherited(arguments);
 	}
 });
-dojox.data.PersevereStore.getStores = function(/*String?*/path,/*Function?*/callback){
+dojox.data.PersevereStore.getStores = function(/*String?*/path,/*Boolean?*/sync){
 	// summary:
 	//		Creates Dojo data stores for all the table/classes on a Persevere server
 	// target:
@@ -78,25 +78,19 @@ dojox.data.PersevereStore.getStores = function(/*String?*/path,/*Function?*/call
 	path = (path && (path.match(/\/$/) ? path : (path + '/'))) || '/';
 	var rootService= dojox.rpc.Rest(path,true);
 	var lastSync = dojox.rpc._sync;
-	dojox.rpc._sync = !callback;
+	dojox.rpc._sync = sync;
 	var dfd = rootService("root");//dojo.xhrGet({url: target, sync:!callback, handleAs:'json'});
 	var results;
-	dfd.addCallback(function(schemas){
+	dfd.addBoth(function(schemas){
 		for(var i in schemas){
 			if(typeof schemas[i] == 'object'){
 				schemas[i] = new dojox.data.PersevereStore({target:new dojo._Url(path,i+'/') + '',schema:schemas[i]});
 			}
 		}
-		if(callback){
-			callback(schemas);
-		}
 		return (results = schemas);
 	});
-	dfd.addErrback(function(error){
-		console.log(error);
-	});
 	dojox.rpc._sync = lastSync;
-	return results;
+	return sync ? results : dfd;
 };
 dojox.data.PersevereStore.addProxy = function(){
 	// summary:

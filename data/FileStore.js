@@ -56,6 +56,8 @@ dojo.declare("dojox.data.FileStore", null, {
 
 	_attributes: ["children", "directory", "name", "path", "modified", "size", "parentDir"],  //Attributes all file items should have.
 	
+	pathSeparator: "/",		//The path separator to use when chaining requests for children - can be overriden by the server on initial load
+	
 	options: [],	//Array of options to always send when doing requests.  Back end service controls this, like 'dirsOnly', 'showHiddenFiles', 'expandChildren', etc.
 
 	_assertIsItem: function(/* item */ item){
@@ -150,7 +152,7 @@ dojo.declare("dojox.data.FileStore", null, {
 		}
 
 		if (this.pathAsQueryParam) {
-			content.path = item.parentPath + "/" + item.name;
+			content.path = item.parentPath + this.pathSeparator + item.name;
 		}
 		var xhrData = {
 			url: this.pathAsQueryParam? this.url : this.url + "/" + item.parentPath + "/" + item.name,
@@ -329,6 +331,10 @@ dojo.declare("dojox.data.FileStore", null, {
 	_processResult: function(data, request){
 		 var scope = request.scope || dojo.global;
 		 try{
+			 //If the data contains a path separator, set ours
+			 if(data.pathSeparator){
+				 this.pathSeparator = data.pathSeparator;
+			 }
 			 //Invoke the onBegin handler, if any, to return the
 			 //size of the dataset as indicated by the service.
 			 if(request.onBegin){
@@ -370,6 +376,7 @@ dojo.declare("dojox.data.FileStore", null, {
 		//		Internal function for processing an item returned from the store.
 		//		It sets up the store ref as well as sets up the attributes necessary
 		//		to invoke a lazy load on a child, if there are any.
+		if(!item){return null;}
 		item[this._storeRef] = this;
 		if(item.children && item.directory){
 			if(dojo.isArray(item.children)){

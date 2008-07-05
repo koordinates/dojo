@@ -14,7 +14,7 @@
 	<link id="themeStyles" rel="stylesheet" href="../../../dijit/themes/tundra/tundra.css">
 	
 	<!-- the additional styles for the widget -->
-	<link id="widgetStyle" rel="stylesheet" href="../FilePicker/FilePicker.css">
+	<link id="widgetStyle" rel="stylesheet" href="../resources/FilePickerTextBox.css">
 	
 	<!-- required: dojo.js -->
 	<script type="text/javascript" src="../../../dojo/dojo.js"
@@ -24,20 +24,25 @@
 	<script type="text/javascript" src="../../../dijit/tests/_testCommon.js"></script>
 
 	<script type="text/javascript">
-		dojo.require("dojox.widget.FilePicker");
+		dojo.require("dojox.form.FilePickerTextBox");
 		dojo.require("dojox.data.FileStore");
+		dojo.require("dijit.form.Form");
+		dojo.require("dijit.form.Button");
 	</script>
 </head>
 
 <body class="tundra">
 	<h1>
-		Demo: File Browser widget using dojox.data.FileStore
+		Demo: File Picker text box widget using dojox.data.FileStore
 	</h1>
 	<p>The picker below uses the dojox.data.FileStore and a PHP implementation for the serverside to browse the dojo tree hierarchy in a lazy-load fashion.</p>
 	<p><i><b>This demo must be run from a web-server with PHP support enabled.  Without PHP support, this demo cannot function.</b></i></p>
 	<hr>
 	<div dojoType="dojox.data.FileStore" url="../../data/demos/stores/filestore_dojotree.php" jsId="fileStore" pathAsQueryParam="true"></div>
-	<div dojoType="dojox.widget.FilePicker" jsId="myPicker" id="myPicker" style="width: 50%;" store="fileStore" query="{}"></div>
+	<form dojoType="dijit.form.Form" onSubmit="if(this.validate()){console.dir(this.getValues());}else{console.log('NOT VALID');} return false;">
+		<label>Choose a file:<input required="true" name="fileName" type="text" dojoType="dojox.form.FilePickerTextBox" constraints="{store: fileStore, query:{}}" /></label><br>
+		<button dojoType="dijit.form.Button" type="submit">Submit</button>
+	</form>
 </body>
 </html>
 

@@ -1,44 +1,11 @@
 dojo.provide("dojox.data.JsonRestStore");
+
 dojo.require("dojox.data.ServiceStore");
 dojo.require("dojox.rpc.JsonRest");
-dojo.require("dojox.json.ref"); // this provides json indexing
 
 
-// A JsonRestStore takes a REST service or a URL and uses it the remote communication for a
-// read/write dojo.data implementation. A JsonRestStore can be created with a simple URL like:
-// new JsonRestStore({target:"/MyData/"});
-// To use a JsonRestStore with a service, you should create a
-// service with a REST transport. This can be configured with an SMD:
-//{
-//    services: {
-//        jsonRestStore: {
-//			transport: "REST",
-//			envelope: "URL",
-//                    target: "store.php",
-//					contentType:"application/json",
-//                    parameters: [
-//                            {name: "location", type: "string", optional: true}
-//                    ]
-//            }
-//    }
-//}
-// The SMD can then be used to create service, and the service can be passed to a JsonRestStore. For example:
-// var myServices = new dojox.rpc.Service(dojo.moduleUrl("dojox.rpc.tests.resources", "test.smd"));
-// var jsonStore = new dojox.data.JsonRestStore({service:myServices.jsonRestStore});
-//
-// The JsonRestStore will then cause all saved modifications to be server using Rest commands (PUT, POST, or DELETE).
-// The JsonRestStore also supports lazy loading. References can be made to objects that have not been loaded.
-//  For example if a service returned:
-// {"name":"Example","lazyLoadedObject":{"$ref":"obj2"}}
-//
-// And this object has accessed using the dojo.data API:
-// var obj = jsonStore.getValue(myObject,"lazyLoadedObject");
-// The object would automatically be requested from the server (with an object id of "obj2").
-//
-// When using a Rest store on a public network, it is important to implement proper security measures to
-// control access to resources
 dojo.declare("dojox.data.JsonRestStore",
-	dojox.data.ServiceStore,
+	dojox.rpc.LocalStorageRest ? [dojox.data.ServiceStore, dojox.rpc.LocalStorageRest.LiveResultSets] : dojox.data.ServiceStore, // use live result sets if available
 	{
 		constructor: function(options){
 			//summary:
@@ -77,7 +44,41 @@ dojo.declare("dojox.data.JsonRestStore",
 			//
 			// The *lazyLoadValues* parameter
 			//		Setting this to true will cause any getValue call to automatically load the value
-			// 		if the returned value is a lazy item. This defaults to true. 
+			// 		if the returned value is a lazy item. This defaults to true.
+			//	description:
+			//		The JsonRestStore will then cause all saved modifications to be server using Rest commands (PUT, POST, or DELETE).
+			// 		When using a Rest store on a public network, it is important to implement proper security measures to
+			//		control access to resources
+			//	example:
+			// 		A JsonRestStore takes a REST service or a URL and uses it the remote communication for a
+			// 		read/write dojo.data implementation. A JsonRestStore can be created with a simple URL like:
+			// 	|	new JsonRestStore({target:"/MyData/"});
+			//	example:
+			// 		To use a JsonRestStore with a service, you should create a
+			// 		service with a REST transport. This can be configured with an SMD:
+			//	|	{
+			//	|		services: {
+			//	|			jsonRestStore: {
+			//	|				transport: "REST",
+			//	|				envelope: "URL",
+			//	|				target: "store.php",
+			//	|				contentType:"application/json",
+			//	|				parameters: [
+			//	|					{name: "location", type: "string", optional: true}
+			//	|				]
+			//	|			}
+			//	|		}
+			//	|	}
+			// 		The SMD can then be used to create service, and the service can be passed to a JsonRestStore. For example:
+			//	|	var myServices = new dojox.rpc.Service(dojo.moduleUrl("dojox.rpc.tests.resources", "test.smd"));
+			//	|	var jsonStore = new dojox.data.JsonRestStore({service:myServices.jsonRestStore});
+			//	example:
+			//		The JsonRestStore also supports lazy loading. References can be made to objects that have not been loaded.
+			//		For example if a service returned:
+			//	|	{"name":"Example","lazyLoadedObject":{"$ref":"obj2"}}
+			// 		And this object has accessed using the dojo.data API:
+			//	|	var obj = jsonStore.getValue(myObject,"lazyLoadedObject");
+			//		The object would automatically be requested from the server (with an object id of "obj2").
 
 			dojo.connect(dojox.rpc.Rest._index,"onUpdate",this,function(obj,attrName,oldValue,newValue){
 				var prefix = this.service.servicePath;
@@ -91,14 +92,10 @@ dojo.declare("dojox.data.JsonRestStore",
 			//setup a byId alias to the api call
 			if(this.target && !this.service){
 				this.service = dojox.rpc.Rest(this.target,true); // create a default Rest service
-				this.service._schema = this.schema || {};
-				this.target = this.schema._idPrefix = this.service.servicePath;
 			}
-			dojox.rpc.services = dojox.rpc.services || {};
-			dojox.rpc.services[this.service.servicePath] = this.service;
-			/*else if(!(this.service.contentType + '').match(/application\/.*json/)){
-				throw new Error("A service must use a contentType of 'application/json' in order to be used in a JsonRestStore");
-			}*/
+			dojox.rpc.JsonRest.registerService(this.service, this.target, this.schema);
+			this.schema = this.service._schema;
+			// wrap the service with so it goes through JsonRest manager 
 			this.service._store = this;
 			this._constructor = dojox.rpc.JsonRest.getConstructor(this.service);
 			this._liveRequests = []; // a list of the "live" requests
@@ -154,6 +151,13 @@ dojo.declare("dojox.data.JsonRestStore",
 
 			var old = item[attribute];
 			var store = dojox.data._getStoreForItem(item);
+			if(dojox.json.schema && store.schema && store.schema.properties){
+				// if we have a schema and schema validator available we will validate the property change
+				var result = dojox.json.schema.checkPropertyChange(value,store.schema.properties[attribute]);
+				if(!result.valid){
+					throw new Error(dojo.map(result.errors,function(error){return error.message;}).join(","));
+				}
+			}
 			if(old != value){
 				store.changing(item);
 				item[attribute]=value;
@@ -169,10 +173,7 @@ dojo.declare("dojox.data.JsonRestStore",
 			if(!dojo.isArray(values)){
 				throw new Error("setValues expects to be passed an Array object as its value");
 			}
-			this.changing(item);
-			var old = item[attribute];
-			item[attribute]=values;
-			this.onSet(item,attribute,old,values);
+			this.setValue(item,attribute,values);
 		},
 
 		unsetAttribute: function(item, attribute){
@@ -235,7 +236,7 @@ dojo.declare("dojox.data.JsonRestStore",
 			//
 			//	item: /* object */
 			//	attribute: /* string */
-			return item && item.__id && this.service == dojox.rpc.Rest.getServiceAndId(item.__id).service;
+			return item && item.__id && this.service == dojox.rpc.JsonRest.getServiceAndId(item.__id).service;
 		},
 
 		fetch: function(args){
@@ -252,7 +253,10 @@ dojo.declare("dojox.data.JsonRestStore",
 			}
 			queryInfo.dontCache = args.dontCache; // TODO: Add TTL maybe?
 			dojox.rpc.Rest.setQueryInfo(queryInfo);
-			return dojox.data.ServiceStore.prototype.fetch.apply(this,arguments);
+			return this.inherited(arguments);
+		},
+		_doQuery: function(query){
+			return dojox.rpc.JsonRest.get(this.service,query);
 		},
 		_processResults: function(results, deferred){
 			// index the results
@@ -266,6 +270,7 @@ dojo.declare("dojox.data.JsonRestStore",
 			// convert the different spellings
 			args.query = args.identity;
 			args.onComplete = args.onItem;
+			delete args.onItem;
 			// we can rely on the Rest service to provide the index/cache
 			return this.fetch(args).results;
 		},
@@ -293,5 +298,5 @@ dojo.declare("dojox.data.JsonRestStore",
 	}
 );
 dojox.data._getStoreForItem = function(item){
-	return dojox.rpc.services[item.__id.match(/.*\//)[0]]._store;
+	return dojox.rpc.JsonRest.services[item.__id.match(/.*\//)[0]]._store;
 };

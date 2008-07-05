@@ -1,6 +1,7 @@
 dojo.provide("dojox.data.tests.stores.JsonRestStore");
 dojo.require("dojox.rpc.Service");
 dojo.require("dojox.data.JsonRestStore");
+dojo.require("dojox.json.schema");
 dojo.require("dojo.data.api.Read");
 
 dojox.data.tests.stores.JsonRestStore.error = function(t, d, errData){
@@ -64,40 +65,18 @@ doh.register("dojox.data.tests.stores.JsonRestStore",
 						jsonStore.setValue(items[0],"obj",{foo:'bar'});
 						jsonStore.setValue(items[0],"obj dup",items[0].obj);
 						jsonStore.setValue(items[0],"testArray",[1,2,3,4]);
-						jsonStore.save();
-						jsonStore.fetch({query:"obj1",
-							onComplete: function(item, request){
-								t.is("Object 1", item.name);
-								t.is(now, item.updated);
-								t.is("bar", item.obj.foo);
-								t.is(item.obj, item['obj dup']);
-								d.callback(true);
-							},
-							onError: dojo.partial(dojox.data.tests.stores.JsonRestStore.error, doh, d)
-						});
-					},
-					onError: dojo.partial(dojox.data.tests.stores.JsonRestStore.error, doh, d)
-				});
-				return d; //Object
-			}
-		},
-		{
-			name: "Post, delete, and put",
-			timeout:	10000, //10 seconds.
-			runTest: function(t) {
-				//	summary: 
-				//		append/post an item, delete it, sort the lists, resort the list, saving each time.
-				var d = new doh.Deferred();
-				jsonStore.fetch({query:"obj1", 
-					onComplete: function(item, request){
-						var now = new Date().getTime();
-						var testArray = item.testArray;
-						var newObject = {"name":"new object"};
-						newObject = jsonStore.newItem(newObject);
-						jsonStore.save();
-						jsonStore.deleteItem(newObject,{parent:testArray});
-						jsonStore.save();
-						d.callback(true);
+						jsonStore.save({onComplete:function(){
+							jsonStore.fetch({query:"obj1",
+								onComplete: function(item, request){
+									t.is("Object 1", item.name);
+									t.is(now, item.updated);
+									t.is("bar", item.obj.foo);
+									t.is(item.obj, item['obj dup']);
+									d.callback(true);
+								},
+								onError: dojo.partial(dojox.data.tests.stores.JsonRestStore.error, doh, d)
+							});
+						}});
 					},
 					onError: dojo.partial(dojox.data.tests.stores.JsonRestStore.error, doh, d)
 				});
@@ -174,29 +153,23 @@ doh.register("dojox.data.tests.stores.JsonRestStore",
 			}
 		},
 		
-		/*{ // TODO: This should be moved to a unit test for JSData
-			name: "Array manipulation",
-			timeout:	10000, //10 seconds.
+		{
+			name: "IdentityAPI: fetchItemByIdentity and getIdentity",
+			timeout: 30000,
 			runTest: function(t) {
-				//	summary: 
-				//		test array manipulation
+				//	summary:
+				//		Verify the fetchItemByIdentity method works
 				var d = new doh.Deferred();
-				jsonStore.fetch({query:"obj1", 
-					onComplete: function(item, request){
-						var testArray = item.testArray;
-						testArray.reverse();
-						testArray.unshift(testArray.pop());
-						jsonStore.onSave = function(data) {
-							t.is(data.length,1);						
-							d.callback(true);
-							jsonStore.onSave = function(){};
-						};
-						jsonStore.save();
-					},
-					onError: dojo.partial(dojox.data.tests.stores.JsonRestStore.error, doh, d)});
-				return d; //Object
+		
+				jsonStore.fetchItemByIdentity({identity:"obj3", 
+					onItem: function(item, request){
+						t.t(jsonStore.isItemLoaded(item));
+						t.is(jsonStore.getIdentity(item),"obj3");
+					}
+				});
 			}
-		},*/
+		},
+
 		
 		{
 			name: "ReadAPI:  Fetch_20_Streaming",
@@ -228,6 +201,29 @@ doh.register("dojox.data.tests.stores.JsonRestStore",
 				});
 				return d; //Object
 			}
+		},
+		function testSchema(t){
+			var d = new doh.Deferred();
+			jsonStore.fetchItemByIdentity({identity:"obj3", 
+				onItem: function(item, request){
+					var set = false;
+					try{
+						jsonStore.setValue(item,"name",333); // should only take a string, so it should throw an exception
+						set = true;
+					}catch(e){
+						console.log("Correctly blocked invalid property change by schema:",e);
+					}
+					try{
+						jsonStore.setValue(item,"name","a"); // should be at least three character, so it should throw an execption
+						set = true;
+					}catch(e){
+						console.log("Correctly blocked invalid property change by schema:",e);
+					}
+					t.f(set);
+					d.callback(true);
+				}
+			});
+			
 		},
 		function testReadAPI_functionConformance(t){
 			//	summary: 

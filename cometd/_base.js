@@ -51,7 +51,7 @@ dojox.cometd = {
 			_handshook: false,
 	        
 			expectedNetworkDelay: 10000, // expected max network delay
-			connectTimeout: 0,	  // If set, used as ms to wait for a connect response and sent as the advised timeout
+			connectTimeout: 0,	     // If set, used as ms to wait for a connect response and sent as the advised timeout
 	        
 			version:	"1.0",
 			minimumVersion: "0.9",
@@ -95,8 +95,9 @@ dojox.cometd = {
 			//		until a handshake response is received and the first successful connect message
 			//		has returned.
 			//		The protocol state changes may be monitored
-			//		by subscribing to the dojo topic "/cometd/meta" where events are
-			//		published in the form {cometd:this,action:"handshake",successful:true,state:this.state()}
+			//		by subscribing to the dojo topic "/prefix/meta" (typically "/cometd/meta") where 
+			//		events are published in the form 
+			//		   {cometd:this,action:"handshake",successful:true,state:this.state()}
 			//	root:
 			//		The URL of the cometd server. If the root is absolute, the host
 			//		is examined to determine if xd transport is needed. Otherwise the
@@ -187,14 +188,6 @@ dojox.cometd = {
 			}else{
 				r = dojo.xhrPost(bindArgs);
 			}
-			dojo.publish(prefix + "/meta", [
-				{
-					cometd: this,
-					action: "handshake",
-					successful: true,
-					state: this.state()
-				}
-			]);
 			return r;
 		}
 		
@@ -469,11 +462,12 @@ dojox.cometd = {
 			// If all OK
 			if(successful){
 				// pick a transport
-				var transport = this.currentTransport = dojox.cometd.connectionTypes.match(
+				this.currentTransport = dojox.cometd.connectionTypes.match(
 					data.supportedConnectionTypes,
 					data.version,
 					this._isXD
 				);
+				var transport = this.currentTransport;
 				// initialize the transport
 				transport._cometd = this;
 				transport.version = data.version;
@@ -665,7 +659,7 @@ dojox.cometd = {
 				advised = this._advice.timeout + this.expectedNetworkDelay;
 			}
 			
-			if(this.connectTimeout > 0 && this.connectTimeout < _advised){
+			if(this.connectTimeout > 0 && this.connectTimeout < advised){
 				return this.connectTimeout;
 			}
 			
