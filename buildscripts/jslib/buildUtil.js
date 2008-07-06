@@ -77,6 +77,14 @@ buildUtil.DojoBuildOptions = {
 			+ "separated list of CSS files names to ignore. The file names should match whatever strings "
 			+ "are used for the @import calls."
 	},
+	
+	"stripConsole": {
+		defaultValue: "",
+		helpText: "Strips console method calls from JS source. Applied to layers and individual modules "
+			+ "resource files. Valid values are \"normal\" (strips all but console.warn and console.error "
+			+ "calls), \"all\" (strips all console calls), \"normal,warn\" (strips all but console.error "
+			+ "calls), \"normal,error\" (strips all but console.warn errors)."
+	},
 
 	"copyTests": {
 		defaultValue: true,
@@ -418,8 +426,7 @@ buildUtil.getDependencyList = function(/*Object*/dependencies, /*String or Array
 			if(dependencies["dojoLoaded"]){
 				dependencies["dojoLoaded"]();
 			}
-		
-			
+	
 			//Add the loader files if this is a loader layer.
 			if(layerName == "dojo.js"){
 				buildUtil.includeLoaderFiles("default", hostenvType, buildscriptsPath);
@@ -445,8 +452,7 @@ buildUtil.getDependencyList = function(/*Object*/dependencies, /*String or Array
 
 			//Get the final list of dependencies in this layer
 			var depList = buildUtil.determineUriList(layer.dependencies, layerUris, dependencies["filters"]); 
-			
-			
+
 			//If dojo.xd.js, need to put dojo.i18n before the code in dojo._base.browser that does the 
 			//auto dojo.require calls based on dojo.config.require array.
 			//This is a little bit hackish, but it allows dojo.i18n to use any Base methods
@@ -465,15 +471,21 @@ buildUtil.getDependencyList = function(/*Object*/dependencies, /*String or Array
 				//Only operate if we have an i18n entry. We may allow building without
 				//dojo.i18n as part of the xd file.
 				if(i18nXdEntry){
+					var foundBrowserJs = false;
 					for(i18nIndex = depList.length - 1; i18nIndex >= 0; i18nIndex--){
 						if(depList[i18nIndex].match(/dojo\/_base\/browser\.js$/)){
 							depList.splice(i18nIndex, 0, i18nXdEntry);
+							foundBrowserJs = true;
 							break;
 						}
 					}
+					//If did not find browser entry (maybe a customBase build),
+					//Just add the i18n entry to the end.
+					if(!foundBrowserJs){
+						depList.push(i18nXdEntry);
+					}
 				}
 			}
-			
 			
 			//Add the final closure guard to the list.
 			if(layerName == "dojo.js" || layerName == "dojo.xd.js"){
@@ -1120,10 +1132,17 @@ buildUtil.setupPacker = function(){
 	}
 }
 
-buildUtil.stripComments = function(/*String*/startDir, /*RegeExp*/optimizeIgnoreRegExp, /*String*/copyrightText, /*String*/optimizeType){
+buildUtil.optimizeJsDir = function(/*String*/startDir, /*RegeExp*/optimizeIgnoreRegExp, /*String*/copyrightText, /*String*/optimizeType, /*String*/stripConsole){
 	//summary: strips the JS comments from all the files in "startDir", and all subdirectories.
+	//Also runs shrinksafe or packer minification, and console call removal.
 	var copyright = (copyrightText || fileUtil.readFile("copyright.txt")) + fileUtil.getLineSeparator();
 	var fileList = fileUtil.getFilteredFileList(startDir, /\.js$/, true);
+	
+	var messageType = optimizeType;
+	if(stripConsole){
+		messageType += (optimizeType ? ", " : "") + "stripConsole=" + stripConsole;
+	}
+
 	if(fileList){
 		for(var i = 0; i < fileList.length; i++){
 			//Don't process dojo.js since it has already been processed.
@@ -1133,18 +1152,29 @@ buildUtil.stripComments = function(/*String*/startDir, /*RegeExp*/optimizeIgnore
 				&& !fileList[i].match(/buildscripts/)
 				&& !fileList[i].match(/nls/)
 				&& !fileList[i].match(/tests\//)){
-				logger.trace("Optimizing (" + optimizeType + ") file: " + fileList[i]);
-				
+
+				logger.trace("Optimizing (" + messageType + ") file: " + fileList[i]);
+
 				//Read in the file. Make sure we have a JS string.
 				var fileContents = fileUtil.readFile(fileList[i]);
 
 				//Do comment removal.
-				try{
-					fileContents = buildUtil.optimizeJs(fileList[i], fileContents, copyright, optimizeType);
-				}catch(e){
-					logger.error("Could not strip comments for file: " + fileList[i] + ", error: " + e);
+				if(optimizeType){
+					try{
+						fileContents = buildUtil.optimizeJs(fileList[i], fileContents, copyright, optimizeType);
+					}catch(e){
+						logger.error("Could not strip comments for file: " + fileList[i] + ", error: " + e);
+					}
 				}
 
+				if(stripConsole){
+					try{
+						fileContents = buildUtil.stripConsole(fileContents, stripConsole);
+					}catch(e){
+						logger.error("Could not strip console calls for file: " + fileList[i] + ", error: " + e);
+					}
+				}
+				
 				//Write out the file with appropriate copyright.
 				fileUtil.saveUtf8File(fileList[i], fileContents);
 			}
@@ -1309,11 +1339,14 @@ buildUtil.flattenCss = function(/*String*/fileName, /*String*/fileContents, /*St
 	});
 }
 
-buildUtil.guardProvideRegExp = /dojo\.provide\(([\'\"][^\'\"]*[\'\"])\)/;
+buildUtil.guardProvideRegExpString = "dojo\\.provide\\(([\\'\\\"][^\\'\\\"]*[\\'\\\"])\\)";
+buildUtil.guardProvideRegExp = new RegExp(buildUtil.guardProvideRegExpString);
+buildUtil.guardProvideRegExpGlobal = new RegExp(buildUtil.guardProvideRegExpString, "g");
 
-buildUtil.addGuards = function(/*String || Array*/startDir){
+buildUtil.addGuardsAndBaseRequires = function(/*String || Array*/startDir, /*Boolean*/needBaseRequires){
 	//summary: adds a definition guard around code in a file to protect
-	//against redefinition cases when layered builds are used. Accepts a string
+	//against redefinition cases when layered builds are used. Also injects
+	//dojo._base require calls if needBaseRequires is true. Accepts a string
 	//of the start directory to use, or an array of file name strings to process.
 	var lineSeparator = fileUtil.getLineSeparator();
 
@@ -1332,6 +1365,52 @@ buildUtil.addGuards = function(/*String || Array*/startDir){
 	if(fileList){
 		for(i = 0; i < fileList.length; i++){
 			var fileContents = fileUtil.readFile(fileList[i]);
+			
+			//See if we need to inject dojo._base require calls.
+			//Do not process _base.js since it already has the require calls in there.
+			if(needBaseRequires
+				&& fileList[i].indexOf("/tests/") == -1
+				&& fileList[i].indexOf("/demos/") == -1
+				&& fileList[i].indexOf("/themes/") == -1
+				&& fileList[i].indexOf("dojo/_base.js") == -1){
+				buildUtil.baseMappingRegExp.lastIndex = 0;
+				var matches = null;
+				
+				//Strip out comments to get a better picture.
+				var tempContents = buildUtil.removeComments(fileContents);
+				
+				//Find where we can place the new require calls. This should be after
+				//any dojo.provide calls, so we do not hit a weird problem with a circular dependency
+				//that does not get resolved since the dojo.provide call does not fire indicating
+				//the file has been loaded.
+				buildUtil.guardProvideRegExpGlobal.lastIndex = 0;
+				var lastPosition = -1;
+				while((matches = buildUtil.guardProvideRegExpGlobal.exec(fileContents))){
+					lastPosition = buildUtil.guardProvideRegExpGlobal.lastIndex;
+				}
+				
+				//If no dojo.provide calls found, do not bother with the file.
+				if(lastPosition != -1){
+					var contentChunks = [
+						fileContents.substring(0, lastPosition + 1) + "\n",
+						fileContents.substring(lastPosition + 1, fileContents.length)
+					];
+					
+					var addedResources = {};
+					while((matches = buildUtil.baseMappingRegExp.exec(tempContents))){
+						var baseResource = buildUtil.baseMappings[matches[1]];
+						//Make sure we do not add the dependency to its source resource.
+						if(!addedResources[baseResource] && fileList[i].indexOf("_base/" + baseResource) == -1){
+							logger.trace("Adding dojo._base." + baseResource + " because of match: " + matches[1] + " to file: " + fileList[i]);
+							contentChunks[0] += 'dojo.require("dojo._base.' + baseResource + '");\n';
+							addedResources[baseResource] = true;
+						}
+					}
+					
+					fileContents = contentChunks.join("");
+				}
+			}
+
 			buildUtil.guardProvideRegExp.lastIndex = 0;
 			var match = buildUtil.guardProvideRegExp.exec(fileContents);
 			if(match){
@@ -1353,6 +1432,151 @@ buildUtil.addGuards = function(/*String || Array*/startDir){
 		}
 	}
 }
+
+//TODO: generate this via an algorithm.
+buildUtil.baseMappings = {
+	"trim": "lang",
+	"clone": "lang",
+	"_toArray": "lang",
+	"partial": "lang",
+	"delegate": "lang",
+	"_delegate": "lang",
+	"hitch": "lang",
+	"_hitchArgs": "lang",
+	"extend": "lang",
+	"isAlien": "lang",
+	"isArrayLike": "lang",
+	"isObject": "lang",
+	"isFunction": "lang",
+	"isArray": "lang",
+	"isString": "lang",
+	
+	"declare": "declare",
+	
+	"subscribe": "connect",
+	"unsubscribe": "connect",
+	"publish": "connect",
+	"connectPublisher": "connect",
+	
+	"Deferred": "Deferred",
+	
+	"fromJson": "json",
+	"_escapeString": "json",
+	"toJson": "json",
+	
+	"indexOf": "array",
+	"lastIndexOf": "array",
+	"forEach": "array",
+	"_everyOrSome": "array",
+	"every": "array",
+	"some": "array",
+	"map": "array",
+	"filter": "array",
+	
+	"Color": "Color",
+	"blendColors": "Color",
+	"colorFromRgb": "Color",
+	"colorFromHex": "Color",
+	"colorFromArray": "Color",
+	"colorFromString": "Color",
+	
+	"_gearsObject": "window",
+	"isGears": "window",
+	"doc": "window",
+	"body": "window",
+	"setContext": "window",
+	"_fireCallback": "window",
+	"withGlobal": "window",
+	"withDoc": "window",
+	
+	"connect": "event",
+	"disconnect": "event",
+	"fixEvent": "event",
+	"stopEvent": "event",
+	"_connect": "event",
+	"_disconnect": "event",
+	"_ieDispatcher": "event",
+	"_getIeDispatcher": "event",
+	
+	"byId": "html",
+	"_destroyElement": "html",
+	"isDescendant": "html",
+	"setSelectable": "html",
+	"place": "html", 
+	"getComputedStyle": "html", 
+	"_toPixelValue": "html", 
+	"_getOpacity": "html",
+	"_setOpacity": "html", 
+	"style": "html", 
+	"_getPadExtents": "html", 
+	"_getBorderExtents": "html",
+	"_getPadBorderExtents": "html", 
+	"_getMarginExtents": "html", 
+	"_getMarginBox": "html",
+	"_getContentBox": "html", 
+	"_getBorderBox": "html", 
+	"_setBox": "html", 
+	"_usesBorderBox": "html",
+	"_setContentSize": "html", 
+	"_setMarginBox": "html", 
+	"marginBox": "html", 
+	"contentBox": "html",
+	"_docScroll": "html", 
+	"_isBodyLtr": "html", 
+	"_getIeDocumentElementOffset": "html",
+	"_fixIeBiDiScrollLeft": "html",
+	"_abs": "html", 
+	"coords": "html", 
+	"hasAttr": "html", 
+	"attr": "html",
+	"removeAttr": "html", 
+	"hasClass": "html", 
+	"addClass": "html", 
+	"removeClass": "html",
+	"toggleClass": "html",
+	
+	"NodeList": "NodeList",
+	
+	"_filterQueryResult": "query",
+	"query": "query",
+	
+	"formToObject": "xhr", 
+	"objectToQuery": "xhr",
+	"formToQuery": "xhr",
+	"formToJson": "xhr",
+	"queryToObject": "xhr", 
+	"_ioSetArgs": "xhr",
+	"_ioCancelAll": "xhr",
+	"_ioAddQueryToUrl": "xhr",
+	"xhr": "xhr",
+	"xhrGet": "xhr",
+	"rawXhrPost": "xhr",
+	"rawXhrPut": "xhr",
+	"xhrDelete": "xhr",
+	"wrapForm": "xhr",
+	
+	"_Line": "fx",
+	"_Animation": "fx",
+	"_fade": "fx",
+	"fadeIn": "fx",
+	"fadeOut": "fx",
+	"_defaultEasing": "fx",
+	"animateProperty": "fx",
+	"anim": "fx"
+};
+
+(function(){
+	var names = "(";
+	for(var param in buildUtil.baseMappings){
+		if(names != "("){
+			names += "|";
+		}
+		names += param;
+	}
+	names += ")";
+	
+	buildUtil.baseMappingRegExp = new RegExp("\\." + names + "\\W", "g");
+})();
 
 buildUtil.processConditionalsForDir = function(/*String*/startDir, /*RegExp*/layerIgnoreRegExp, /*Object*/kwArgs){
 	//summary: processes build conditionals for a directory, but ignores files in the layerIgnoreRegExp argument.
@@ -1536,3 +1760,87 @@ buildUtil.insertSymbols = function(/*String*/startDir, /*Object*/kwArgs){
 		}
 	}
 }
+
+buildUtil.stripConsole = function(/*String*/fileContents, /*String*/stripConsole){
+	//summary: removes console.* calls from the fileContents.
+	//stripConsole can have values of "normal", "all" or "normal,warn" or "normal,error"
+	if(stripConsole){
+		var methods = "assert|count|debug|dir|dirxml|group|groupEnd|info|profile|profileEnd|time|timeEnd|trace|log";
+		if(stripConsole.indexOf("all") != -1){
+			methods += "|warn|error";
+		}else{
+			if(stripConsole.indexOf("warn") != -1){
+				methods += "|warn";
+			}
+			if(stripConsole.indexOf("error") != -1){
+				methods += "|error";
+			}
+		}
+		var regexp = new RegExp("console\\.(" + methods + ")\\s*\\(", "g");
+		
+		var results = buildUtil.extractMatchedParens(regexp, fileContents, true);
+		fileContents = results ? results[0] : fileContents;
+	}
+
+	return fileContents;
+}
+
+buildUtil.extractMatchedParens = function(/*RegExp*/ regexp, /*String*/fileContents, /*Boolean*/removeTrailingComma){
+	//summary: Pass in a regexp that includes a start parens: (, and this function will
+	//find the matching end parens for that regexp, remove the matches from fileContents,
+	//and return an array where the first member of the array is the modified fileContents
+	//and the rest of the array members are the matches found. If no matches are found,
+	//then returns null.
+
+	//Extracts
+	regexp.lastIndex = 0;
+
+	var parenRe = /[\(\)]/g;
+	parenRe.lastIndex = 0;
+
+	var results = [];
+	var matches;
+	while((matches = regexp.exec(fileContents))){
+		//Find end of the call by finding the matching end paren
+		parenRe.lastIndex = regexp.lastIndex;
+		var matchCount = 1;
+		var parenMatch;
+		while((parenMatch = parenRe.exec(fileContents))){
+			if(parenMatch[0] == ")"){
+				matchCount -= 1;
+			}else{
+				matchCount += 1;
+			}
+			if(matchCount == 0){
+				break;
+			}
+		}
+
+		if(matchCount != 0){
+			throw "unmatched paren around character " + parenRe.lastIndex + " in: " + fileContents;
+		}
+
+		//Put the master matching string in the results.
+		var startIndex = regexp.lastIndex - matches[0].length;
+		results.push(fileContents.substring(startIndex, parenRe.lastIndex));
+
+		//Remove the matching section. Account for ending semicolon if desired.
+		var endPoint = parenRe.lastIndex;
+		if(removeTrailingComma && fileContents.charAt(endPoint) == ";"){
+			endPoint += 1;
+		}
+		var remLength = endPoint - startIndex;
+
+		fileContents = fileContents.substring(0, startIndex) + fileContents.substring(endPoint, fileContents.length);
+
+		//Move the master regexp past the last matching paren point.
+		regexp.lastIndex = endPoint - remLength;
+	}
+
+	if(results.length > 0){
+		results.unshift(fileContents);
+	}
+
+	return (results.length ? results : null);
+}
+

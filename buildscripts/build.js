@@ -41,6 +41,10 @@ function help(){
 		+ "> java -jar ../shrinksafe/custom_rhino.jar build.js [name=value...]\n\n"
 		+ "Here is an example of a typical release build:\n\n"
 		+ "> java -jar ../shrinksafe/custom_rhino.jar build.js profile=base action=release\n\n"
+		+ "If you get a 'java.lang.OutOfMemoryError: Java heap space' error, try increasing the "
+		+ "memory Java can use for the command:\n\n"
+		+ "> java -Xms256m -Xmx256m -jar ../shrinksafe/custom_rhino.jar build.js profile=base action=release\n\n"
+		+ "Change the 256 number to the number of megabytes you want to give Java.\n\n"
 		+ "The possible name=value build options are shown below with the defaults as their values:\n\n"
 		+ buildOptionText;
 	
@@ -170,6 +174,9 @@ function release(){
 		//Flatten resources
 		fileContents = i18nUtil.flattenLayerFileBundles(fileName, fileContents, kwArgs);
 
+		//Remove console statements if desired
+		fileContents = buildUtil.stripConsole(fileContents, kwArgs.stripConsole);
+
 		//Save uncompressed file.
 		var uncompressedFileName = fileName + ".uncompressed.js";
 		var uncompressedContents = layerLegalText + fileContents;
@@ -227,7 +234,6 @@ function release(){
 
 	//Copy over DOH if tests where copied.
 	if(kwArgs.copyTests){
-		copyRegExp = new RegExp(prefixName.replace(/\\/g, "/") + "/(?!tests)");
 		fileUtil.copyDir("../doh", kwArgs.releaseDir + "/util/doh", /./);
 	}
 
@@ -245,7 +251,8 @@ function _copyToRelease(/*String*/prefixName, /*String*/prefixPath, /*Object*/kw
 	
 	//Use the copyRegExp to filter out tests if requested.
 	if(!kwArgs.copyTests){
-		copyRegExp = new RegExp(prefixName.replace(/\\/g, "/") + "/(?!tests)");
+		copyRegExp = /\/tests\//;
+		copyRegExp.dojoMatchReverse = true;
 	}
 
 	logger.info("Copying: " + prefixPath + " to: " + releasePath);
@@ -279,9 +286,20 @@ function _copyToRelease(/*String*/prefixName, /*String*/prefixPath, /*Object*/kw
 	}
 
 	//Put in code guards for each resource, to protect against redefinition of
-	//code in the layered build cases. Do this here before the layers are built.
+	//code in the layered build cases. Also inject base require calls if there is 
+	//a layer with the customBase attribute. Do this here before the layers are built.
 	if(copiedFiles){
-		buildUtil.addGuards(copiedFiles);
+		var needBaseRequires = false;
+		var layers = kwArgs.profileProperties.dependencies.layers;
+		if(layers){
+			for(var i = 0; i < layers.length; i++){
+				if((needBaseRequires = layers[i].customBase)){
+					break;
+				}
+			}
+		}
+
+		buildUtil.addGuardsAndBaseRequires(copiedFiles, needBaseRequires);
 	}
 }
 //********* End _copyToRelease *********
@@ -315,9 +333,8 @@ function _optimizeReleaseDirs(
 		buildUtilXd.xdgen(prefixName, prefixPath, prefixes, layerIgnoreRegExp, kwArgs);
 	}
 
-	//FIXME: call stripComments. Maybe rename, inline with optimize? need build options too.
-	if(kwArgs.optimize){
-		buildUtil.stripComments(releasePath, layerIgnoreRegExp, copyrightText, kwArgs.optimize);
+	if(kwArgs.optimize || kwArgs.stripConsole){
+		buildUtil.optimizeJsDir(releasePath, layerIgnoreRegExp, copyrightText, kwArgs.optimize, kwArgs.stripConsole);
 	}
 	
 	if(kwArgs.cssOptimize){

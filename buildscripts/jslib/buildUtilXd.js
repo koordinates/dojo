@@ -113,25 +113,27 @@ buildUtilXd.makeXdContents = function(fileContents, prefixes, kwArgs){
 		}
 	}
 
-
 	//Build the xd file contents.
 	var xdContentsBuffer = [];
+	var scopeArgs = kwArgs.xdScopeArgs || "dojo, dijit, dojox";
+
+	//Start the module function wrapper.
+	xdContentsBuffer.push((kwArgs.xdDojoScopeName || "dojo") + "._xdResourceLoaded(function(" + scopeArgs + "){\n");
 
 	//See if there are any dojo.loadInit calls
 	var loadInitCalls = buildUtilXd.extractLoadInits(fileContents);
 	if(loadInitCalls){
 		//Adjust fileContents since extractLoadInits removed something.
 		fileContents = loadInitCalls[0];
-		
-		//Add any loadInit calls to the top of the xd file.
+
+		//Add any loadInit calls to an array passed _xdResourceLoaded
 		for(i = 1; i < loadInitCalls.length; i++){
 			xdContentsBuffer.push(loadInitCalls[i] + ";\n");
 		}
 	}
 
-	//Start the module function wrapper.
-	xdContentsBuffer.push((kwArgs.xdDojoScopeName || "dojo") + "._xdResourceLoaded({\n");
-	
+	xdContentsBuffer.push("return {");
+
 	//Add in dependencies section.
 	if(dependencies.length > 0){
 		xdContentsBuffer.push("depends: [");
@@ -146,12 +148,11 @@ buildUtilXd.makeXdContents = function(fileContents, prefixes, kwArgs){
 	
 	//Add the contents of the file inside a function.
 	//Pass in module names to allow for multiple versions of modules in a page.
-	var scopeArgs = kwArgs.xdScopeArgs || "dojo, dijit, dojox";
 	xdContentsBuffer.push("\ndefineResource: function(" + scopeArgs + "){");
 	//Remove requireLocalization calls, since that will mess things up.
 	//String() part is needed since fileContents is a Java object.
 	xdContentsBuffer.push(String(fileContents).replace(/dojo\.(requireLocalization|i18n\._preloadLocalizations)\([^\)]*\)/g, ""));
-	xdContentsBuffer.push("\n}});");
+	xdContentsBuffer.push("\n}};});");
 
 	return xdContentsBuffer.join("");
 }
@@ -185,53 +186,7 @@ buildUtilXd.makeXdBundleContents = function(prefix, prefixPath, srcFileName, fil
 	return buildUtilXd.makeXdContents(fileContents, prefixes, kwArgs);
 }
 
+buildUtilXd.loadInitRegExp = /dojo\.loadInit\s*\(/g;
 buildUtilXd.extractLoadInits = function(/*String*/fileContents){
-	//Extracts
-	var regexp = /dojo.loadInit\s*\(/g;
-	regexp.lastIndex = 0;
-
-	var parenRe = /[\(\)]/g;
-	parenRe.lastIndex = 0;
-
-	var results = [];
-	var matches;
-	while((matches = regexp.exec(fileContents))){
-		//Find end of the call by finding the matching end paren
-		parenRe.lastIndex = regexp.lastIndex;
-		var matchCount = 1;
-		var parenMatch;
-		while((parenMatch = parenRe.exec(fileContents))){
-			if(parenMatch[0] == ")"){
-				matchCount -= 1;
-			}else{
-				matchCount += 1;
-			}
-			if(matchCount == 0){
-				break;
-			}
-		}
-		
-		if(matchCount != 0){
-			throw "unmatched paren around character " + parenRe.lastIndex + " in: " + fileContents;
-		}
-
-		//Put the master matching string in the results.
-		var startIndex = regexp.lastIndex - matches[0].length;
-		results.push(fileContents.substring(startIndex, parenRe.lastIndex));
-
-		//Remove the matching section.
-		var remLength = parenRe.lastIndex - startIndex;
-		fileContents = fileContents.substring(0, startIndex) + fileContents.substring(parenRe.lastIndex, fileContents.length);
-
-		//Move the master regexp past the last matching paren point.
-		regexp.lastIndex = parenRe.lastIndex - remLength;
-
-		regexp.lastIndex = parenRe.lastIndex;
-	}
-
-	if(results.length > 0){
-		results.unshift(fileContents);
-	}
-
-	return (results.length ? results : null);
+	return buildUtil.extractMatchedParens(buildUtilXd.loadInitRegExp, fileContents);
 }
