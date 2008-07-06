@@ -284,7 +284,9 @@ dojo.require("dojo._base.query");
 		//	error: Function?
 		//		function(response, ioArgs){}. response is an Object, ioArgs
 		//		is of type dojo.__IoCallbackArgs. The error function will
-		//		be called in an error case. 
+		//		be called in an error case.  The error case is when the 
+		//		send or receive of a request fails, the url is invalid, the
+		//		connection times out, etc. 
 		//	handle: Function?
 		//		function(response, ioArgs){}. response is an Object, ioArgs
 		//		is of type dojo.__IoCallbackArgs. The handle function will
@@ -458,8 +460,7 @@ dojo.require("dojo._base.query");
 	}
 	var _deferError = function(/*Error*/error, /*Deferred*/dfd){
 		//summary: errHandler function for dojo._ioSetArgs call.
-		
-		// console.debug("xhr error in:", dfd.ioArgs.xhr);
+
 		console.debug(error);
 		return error;
 	}
@@ -506,9 +507,7 @@ dojo.require("dojo._base.query");
 					try{
 						func.call(this);
 					}catch(e){
-						// FIXME: make sure we errback! (fixed?  remove console.debug?)
-						console.debug(e);
-						dfd.errback(new Error("_watchInFlightError!"));
+						dfd.errback(e);
 					}
 				}
 			}
