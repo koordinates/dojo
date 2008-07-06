@@ -12,7 +12,7 @@
 		form { margin-bottom : 0; }
 		table { border: none; }
 		#dialog3_underlay { background-color: #027 }
-		#reallyWide { width:2222px; } 
+	/*	#reallyWide { width:2222px; }  */
 	</style>		
 
 	<!-- required: a default dijit theme: -->
@@ -46,7 +46,7 @@
 
 		// make dojo.toJson() print dates correctly (this feels a bit dirty)
 		Date.prototype.json = function(){ return dojo.date.stamp.toISOString(this, {selector: 'date'});};
-
+		
 		var thirdDlg;
 		function createDialog() {
 			if(!thirdDlg){	
@@ -58,7 +58,7 @@
 					title: "Programatic Dialog Creation"
 				},pane);
 			}
-			setTimeout(function(){thirdDlg.show();},"3000");
+			setTimeout(function(){ thirdDlg.show(); },"3000");
 		}
 	</script>
 </head>
@@ -324,7 +324,16 @@
 	consectetuer dapibus eros. Aliquam nisl.
 	</p>
 
-	<a href="javascript:dijit.byId('dialog1').show()">Show Dialog</a>
+	<p>
+	<button dojoType="dijit.form.Button" onClick="dijit.byId('dialog1').show()">Show Dialog</button> |
+	<!-- showing a dialog from an anchor with inline onclick="" is a solution to page onUnLoad firing 
+		but you must return false; alternatively, you can dojo.connect() to the anchor links, and
+		e.preventDefault() on the event object passed. using href="javascript:" inline causes onUnLoad 
+		to destroy all widgets in IE6
+	-->
+	<a href="http://dojotoolkit.org" onclick="dijit.byId('dialog1').show(); return false; ">Show Dialog</a>
+	</p>
+	
 	<p>
 	Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
 	semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
