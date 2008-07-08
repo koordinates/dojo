@@ -70,7 +70,7 @@ dojo.declare(
 
 		validator: function(/*anything*/value, /*dijit.form.ValidationTextBox.__Constraints*/constraints){
 			// summary: user replaceable function used to validate the text input against the regular expression.
-			return (new RegExp("^(" + this.regExpGen(constraints) + ")"+(this.required?"":"?")+"$")).test(value) &&
+			return (new RegExp("^(?:" + this.regExpGen(constraints) + ")"+(this.required?"":"?")+"$")).test(value) &&
 				(!this.required || !this._isEmpty(value)) &&
 				(this._isEmpty(value) || this.parse(value, constraints) !== undefined); // Boolean
 		},
@@ -243,7 +243,7 @@ dojo.declare(
 		},
 
 		validate: function(){
-			this.valueNode.value = this.toString();
+			if(this.valueNode){ this.valueNode.value = this.toString(); } // test valueNode in case this is called before postCreate runs
 			return this.inherited(arguments);
 		},
 
