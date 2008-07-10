@@ -8,7 +8,8 @@
 		@import "../../../dijit/themes/tundra/tundra.css";
 		@import "../../../dijit/themes/dijit.css";
 	</style>
-    <link href="../editorPlugin.css" type="text/css" rel="stylesheet" />
+    
+    <link href="../resources/editorPlugin.css" type="text/css" rel="stylesheet" />
 
 <script type="text/javascript">
 var djConfig = {
@@ -24,7 +25,7 @@ var djConfig = {
 <script>
 	dojo.require("dojo.parser");
 	dojo.require("dijit.Editor");
-	dojo.require("dojox.editorPlugins.TablePlugins");
+	dojo.require("dojox.editorPlugins.tablePlugins");
 	
 	dojo.addOnLoad(function(){
 		console.log(dojo.version.toString())
