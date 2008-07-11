@@ -93,10 +93,7 @@ dojo.declare(
 		if(region){
 			this.inherited(arguments);
 
-			// set position directly; we could set a class name like dijitBorderContainerPane with
-			// position:absolute but it might be overridden by (for example) a position:relative
-			// in the dijitTabContainer class
-			child.domNode.style.position = "absolute";
+			dojo.addClass(child.domNode, this["class"]+"Pane");
 
 			var ltr = this.isLeftToRight();
 			if(region == "leading"){ region = ltr ? "left" : "right"; }
@@ -158,7 +155,7 @@ dojo.declare(
 		if(this._started){
 			this._layoutChildren(child.region);
 		}
-		this.inherited(arguments);
+		dojo.removeClass(child.domNode, this["class"]+"Pane");
 	},
 
 	getChildren: function(){
@@ -178,7 +175,7 @@ dojo.declare(
 			dojo.style(this.domNode, "padding", "0px");
 		}
 
-		this.inherited(arguments);		
+		this.inherited(arguments);
 	},
 
 	_layoutChildren: function(/*String?*/changedRegion){
@@ -357,6 +354,17 @@ dojo.declare(
 				}
 			}, this);
 		}
+	},
+
+	destroy: function(){
+		for(region in this._splitters){
+			var splitter = this._splitters[region];
+			dijit.byNode(splitter).destroy();
+			dojo._destroyElement(splitter);
+		}
+		delete this._splitters;
+		delete this._splitterThickness;
+		this.inherited(arguments);
 	}
 });
 
@@ -545,11 +553,9 @@ dojo.declare("dijit.layout._Gutter", [dijit._Widget, dijit._Templated ],
 	//		Basically a trick to lookup the gutter/splitter width from the theme.
 
 	templateString: '<div class="dijitGutter" waiRole="presentation"></div>',
-	
+
 	postCreate: function(){
 		this.horizontal = /top|bottom/.test(this.region);
 		dojo.addClass(this.domNode, "dijitGutter" + (this.horizontal ? "H" : "V"));
 	}
 });
-
-
