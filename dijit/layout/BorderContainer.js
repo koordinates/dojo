@@ -63,7 +63,7 @@ dojo.declare(
 	postMixInProperties: function(){
 		// change class name to indicate that BorderContainer is being used purely for
 		// layout (like LayoutContainer) rather than for pretty formatting.
-		if(!this.gutters && !("class" in this.params)){
+		if(!this.gutters && !(this.params && this.params["class"])){
 			this["class"] += "NoGutter";
 		}
 	},
@@ -168,11 +168,13 @@ dojo.declare(
 		// resetting potential padding to 0px to provide support for 100% width/height + padding
 		// TODO: this hack doesn't respect the box model and is a temporary fix
 		if (!this.cs || !this.pe){
-			this.cs = dojo.getComputedStyle(this.domNode);
-			this.pe = dojo._getPadExtents(this.domNode, this.cs);
-			this.pe.r = parseFloat(this.cs.paddingRight); this.pe.b = parseFloat(this.cs.paddingBottom);
+			var node = this.domNode;
+			this.cs = dojo.getComputedStyle(node);
+			this.pe = dojo._getPadExtents(node, this.cs);
+			this.pe.r = dojo._toPixelValue(node, this.cs.paddingRight);
+			this.pe.b = dojo._toPixelValue(node, this.cs.paddingBottom);
 
-			dojo.style(this.domNode, "padding", "0px");
+			dojo.style(node, "padding", "0px");
 		}
 
 		this.inherited(arguments);
@@ -290,7 +292,7 @@ dojo.declare(
 
 		// More calculations about sizes of panes
 		var containerHeight = this._borderBox.h - pe.t - pe.b;
-		var middleHeight = containerHeight - ( topHeight + topSplitterThickness + bottomHeight + bottomSplitterThickness);
+		var middleHeight = containerHeight - ( topHeight + topSplitterThickness + bottomHeight + bottomSplitterThickness);			
 		var sidebarHeight = sidebarLayout ? containerHeight : middleHeight;
 
 		var containerWidth = this._borderBox.w - pe.l - pe.r;
@@ -559,3 +561,5 @@ dojo.declare("dijit.layout._Gutter", [dijit._Widget, dijit._Templated ],
 		dojo.addClass(this.domNode, "dijitGutter" + (this.horizontal ? "H" : "V"));
 	}
 });
+
+
