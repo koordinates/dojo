@@ -128,6 +128,9 @@ dojo.declare(
 		var percent = (value - this.minimum) / (this.maximum - this.minimum);
 		var progressBar = (this._descending === false) ? this.remainingBar : this.progressBar;
 		var remainingBar = (this._descending === false) ? this.progressBar : this.remainingBar;
+		if(this._inProgressAnim && this._inProgressAnim.status != "stopped"){
+			this._inProgressAnim.stop(true);
+		}
 		if(priorityChange && this.slideDuration > 0 && progressBar.style[this._progressPixelSize]){
 			// animate the slider
 			var _this = this;
@@ -137,10 +140,12 @@ dojo.declare(
 			if(duration == 0){ return; }
 			if(duration < 0){ duration = 0 - duration; }
 			props[this._progressPixelSize] = { start: start, end: percent*100, units:"%" };
-			dojo.animateProperty({ node: progressBar, duration: duration, 
+			this._inProgressAnim = dojo.animateProperty({ node: progressBar, duration: duration, 
 				onAnimate: function(v){ remainingBar.style[_this._progressPixelSize] = (100-parseFloat(v[_this._progressPixelSize])) + "%"; },
-			        properties: props
-			}).play();
+				onEnd: function(){ delete _this._inProgressAnim; },
+				properties: props
+			})
+			this._inProgressAnim.play();
 		}
 		else{
 			progressBar.style[this._progressPixelSize] = (percent*100) + "%";
@@ -239,6 +244,9 @@ dojo.declare(
 
 	destroy: function(){
 		this._movable.destroy();
+		if(this._inProgressAnim && this._inProgressAnim.status != "stopped"){
+			this._inProgressAnim.stop(true);
+		}
 		this.inherited(arguments);	
 	}
 });
@@ -385,7 +393,7 @@ dojo.declare("dijit.form.HorizontalRuleLabels", dijit.form.HorizontalRule,
 {
 	//	Summary:
 	//		Create labels for the Horizontal slider
-	templateString: '<div class="dijitRuleContainer dijitRuleContainerH"></div>',
+	templateString: '<div class="dijitRuleContainer dijitRuleContainerH dijitRuleLabelsContainer dijitRuleLabelsContainerH"></div>',
 
 	// labelStyle: String
 	//		CSS style to apply to individual text labels
@@ -458,7 +466,7 @@ dojo.declare("dijit.form.VerticalRuleLabels", dijit.form.HorizontalRuleLabels,
 {
 	//	Summary:
 	//		Create labels for the Vertical slider
-	templateString: '<div class="dijitRuleContainer dijitRuleContainerV"></div>',
+	templateString: '<div class="dijitRuleContainer dijitRuleContainerV dijitRuleLabelsContainer dijitRuleLabelsContainerV"></div>',
 
 	_positionPrefix: '<div class="dijitRuleLabelContainer dijitRuleLabelContainerV" style="top:',
 	_labelPrefix: '"><span class="dijitRuleLabel dijitRuleLabelV">',
