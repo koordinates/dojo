@@ -1078,6 +1078,8 @@ if(dojo.isIE || dojo.isOpera){
 				// to pick up for attrib set in markup via getAttribute() IE<8 uses "htmlFor" and others use "for"
 				// get/setAttribute works in all as long use same value for both get/set
 				return ieLT8 ? "htmlFor" : "for";
+			case "class" :
+				return d.isIE ? "className" : "class";
 			default:
 				return name;
 		}
@@ -1112,9 +1114,10 @@ if(dojo.isIE || dojo.isOpera){
 		//	returns:
 		//		true if the requested attribute is specified on the
 		//		given element, and false otherwise
+		node = d.byId(node);
 		var fixName = _fixAttrName(name);
 		fixName = fixName == "htmlFor" ? "for" : fixName; //IE<8 uses htmlFor except in this case
-		var attr = d.byId(node).getAttributeNode(fixName);
+		var attr = node.getAttributeNode && node.getAttributeNode(fixName);
 		return attr ? attr.specified : false; // Boolean
 	}
 
