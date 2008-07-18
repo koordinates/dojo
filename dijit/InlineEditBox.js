@@ -24,9 +24,10 @@ dojo.declare("dijit.InlineEditBox",
 	//		inline values a TextBox), but you can specify an editor such as
 	//		dijit.Editor (for editing HTML) or a Slider (for adjusting a number).
 	//		An edit widget must support the following API to be used:
-	//		String getDisplayedValue() OR String getValue()
-	//		void setDisplayedValue(String) OR void setValue(String)
-	//		void focus()
+	//			String getDisplayedValue() OR String getValue()
+	//			void setDisplayedValue(String) OR void setValue(String)
+	//			void focus()
+	//			DOM-node focusNode = node containing editable text
 	//
 	// editing: Boolean
 	//		Is the node currently in edit mode?
@@ -108,7 +109,7 @@ dojo.declare("dijit.InlineEditBox",
 		//		Set disabled state of widget.
 
 		this.disabled = disabled;
-		dijit.setWaiState(this.focusNode || this.domNode, "disabled", disabled);
+		dijit.setWaiState(this.domNode, "disabled", disabled);
 	},
 
 	_onMouseOver: function(){
@@ -125,12 +126,14 @@ dojo.declare("dijit.InlineEditBox",
 		this._onMouseOut();
 
 		// Since FF gets upset if you move a node while in an event handler for that node...
-		setTimeout(dojo.hitch(this, "_edit"), 0);
+		setTimeout(dojo.hitch(this, "edit"), 0);
 	},
 
-	_edit: function(){
-		// summary: display the editor widget in place of the original (read only) markup
+	edit: function(){
+		// summary:
+		//		Display the editor widget in place of the original (read only) markup.
 
+		if(this.disabled || this.editing){ return; }
 		this.editing = true;
 
 		var editValue = 
@@ -206,6 +209,7 @@ dojo.declare("dijit.InlineEditBox",
 		//		Save the contents of the editor and revert to display mode.
 		// focus: Boolean
 		//		Focus on the display mode text
+		if(this.disabled || !this.editing){ return; }
 		this.editing = false;
 
 		var value = this.editWidget.getValue() + "";
@@ -300,11 +304,7 @@ dojo.declare(
 		// Monitor keypress on the edit widget.   Note that edit widgets do a stopEvent() on ESC key (to
 		// prevent Dialog from closing when the user just wants to revert the value in the edit widget),
 		// so this is the only way we can see the key press event.
-		if(dojo.isFunction(ew.onKeyPress)){
-			this.connect(ew, "onKeyPress", "_onKeyPress");
-		}else{
-			this.connect(ew.focusNode || ew.domNode, "onkeypress", "_onKeyPress");
-		}
+		this.connect(ew, "onKeyPress", "_onKeyPress");
 
 		// priorityChange=false will prevent bogus onChange event
 		(this.editWidget.setDisplayedValue||this.editWidget.setValue).call(this.editWidget, this.value, false);
