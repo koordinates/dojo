@@ -7,7 +7,7 @@ dojo.require( "dijit._base" );
 dojo.connect(dojo, "connect", 
 	function(/*Widget*/ widget, /*String*/ event){
 		if(widget && dojo.isFunction(widget._onConnect)){
-			widget._onConnect.apply(widget, arguments);
+			widget._onConnect(event);
 		}
 	});
 
@@ -209,27 +209,26 @@ dojo.declare("dijit._Widget", null, {
 	_blankGif: (dojo.config.blankGif || dojo.moduleUrl("dojo", "resources/blank.gif")),
 
 	//////////// INITIALIZATION METHODS ///////////////////////////////////////
-//TODOC: params and srcNodeRef need docs.  Is srcNodeRef optional?
-//TODOC: summary needed for postscript
+
 	postscript: function(/*Object?*/params, /*DomNode|String*/srcNodeRef){
+		// summary: kicks off widget instantiation, see create() for details.
 		this.create(params, srcNodeRef);
 	},
 
-	constructor: function(){
-		this._deferredConnects = dojo.clone(this._deferredConnects);
-		for(var attr in this.attributeMap){
-			delete this._deferredConnects[attr]; // can't be in both attributeMap and _deferredConnects
-		}
-		for(var attr in this._deferredConnects){
-			if(this[attr] !== dijit._connectOnUseEventHandler){
-				delete this._deferredConnects[attr];
-			}
-		}
-	},
-
-	create: function(/*Object?*/params, /*DomNode|String*/srcNodeRef){
+	create: function(/*Object?*/params, /*DomNode|String?*/srcNodeRef){
 		//	summary:
 		//		Kick off the life-cycle of a widget
+		//	params:
+		//		Hash of initialization parameters for widget, including
+		//		scalar values (like title, duration etc.) and functions,
+		//		typically callbacks like onClick.
+		//	srcNodeRef:
+		//		If a srcNodeRef (dom node) is specified:
+		//			- use srcNodeRef.innerHTML as my contents
+		//			- if this is a behavioral widget then apply behavior
+		//			  to that srcNodeRef 
+		//			- otherwise, replace srcNodeRef with my generated DOM
+		//			  tree
 		//	description:
 		//		To understand the process by which widgets are instantiated, it
 		//		is critical to understand what other methods create calls and
@@ -261,9 +260,19 @@ dojo.declare("dijit._Widget", null, {
 		// Each handle returned from Widget.connect() is an array of handles from dojo.connect()
 		this._connects = [];
 
-		// _attaches: String[]
-		// 		names of all our dojoAttachPoint variables
-		this._attaches = [];
+		// To avoid double-connects, remove entries from _deferredConnects
+		// that have been setup manually by a subclass (ex, by dojoAttachEvent).
+		// If a subclass has redefined a callback (ex: onClick) then assume it's being
+		// connected to manually.
+		this._deferredConnects = dojo.clone(this._deferredConnects);
+		for(var attr in this.attributeMap){
+			delete this._deferredConnects[attr]; // can't be in both attributeMap and _deferredConnects
+		}
+		for(var attr in this._deferredConnects){
+			if(this[attr] !== dijit._connectOnUseEventHandler){
+				delete this._deferredConnects[attr];	// redefined, probably dojoAttachEvent exists
+			}
+		}
 
 		//mixin our passed parameters
 		if(this.srcNodeRef && (typeof this.srcNodeRef.id == "string")){ this.id = this.srcNodeRef.id; }
@@ -275,7 +284,7 @@ dojo.declare("dijit._Widget", null, {
 
 		// generate an id for the widget if one wasn't specified
 		// (be sure to do this before buildRendering() because that function might
-		// expect the id to be there.
+		// expect the id to be there.)
 		if(!this.id){
 			this.id = dijit.getUniqueId(this.declaredClass.replace(/\./g,"_"));
 		}
@@ -283,23 +292,20 @@ dojo.declare("dijit._Widget", null, {
 
 		this.buildRendering();
 
-		// Copy attributes listed in attributeMap into the [newly created] DOM for the widget.
-		// The placement of these attributes is according to the property mapping in attributeMap.
-		// Note special handling for 'style' and 'class' attributes which are lists and can
-		// have elements from both old and new structures, and some attributes like "type"
-		// cannot be processed this way as they are not mutable.
 		if(this.domNode){
+			// Copy attributes listed in attributeMap into the [newly created] DOM for the widget.
 			for(var attr in this.attributeMap){
 				var value = this[attr];
 				if((typeof value != "undefined") && (typeof value != "object") && ((value !== "" && value !== false) || (params && params[attr]))){
 					this.setAttribute(attr, value);
 				}
 			}
-			for(var attr in this._deferredConnects){
-				var value = this[attr];
-				if(value !== dijit._connectOnUseEventHandler){
-					this._onConnect(this, attr);
-				}
+
+			// If the developer has specified a handler as a widget parameter
+			// (ex: new Button({onClick: ...})
+			// then naturally need to connect from dom node to that handler immediately, 
+			for(var attr in this.params){
+				this._onConnect(attr);
 			}
 		}
 
@@ -460,11 +466,14 @@ dojo.declare("dijit._Widget", null, {
 		this.onBlur();
 	},
 
-	_onConnect: function(/*Widget*/ _this, /*String*/ event){
-		if(typeof this._deferredConnects[event] != "undefined"){
-			delete this._deferredConnects[event];
+	_onConnect: function(/*String*/ event){
+		// summary:
+		//		Called when someone connects to one of my handlers.
+		//		"Turn on" that handler if it isn't active yet.
+		if(event in this._deferredConnects){
 			var mapNode = this[this._deferredConnects[event]||'domNode'];
 			this.connect(mapNode, event.toLowerCase(), this[event]);
+			delete this._deferredConnects[event];
 		}
 	},
 
@@ -472,8 +481,14 @@ dojo.declare("dijit._Widget", null, {
 		//	summary:
 		//		Set native HTML attributes reflected in the widget,
 		//		such as readOnly, disabled, and maxLength in TextBox widgets.
+		//		The placement of these attributes is according to the property mapping in attributeMap.
+		//
 		//	description:
-		//		In general, a widget's "value" is controlled via setValue()/getValue(), 
+		//		Note special handling for 'style' and 'class' attributes which are lists and can
+		//		have elements from both old and new structures, and some attributes like "type"
+		//		cannot be processed this way as they are not mutable.
+		//
+		//		Also, in general, a widget's "value" is controlled via setValue()/getValue(), 
 		//		rather than this method.  The exception is for widgets where the
 		//		end user can't adjust the value, such as Button and CheckBox;
 		//		in the unusual case that you want to change the value attribute of
