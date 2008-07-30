@@ -26,9 +26,7 @@ dojo.declare(
 	//  if true, change the size of my currently displayed child to match my size
 	doLayout: true,
 
-	// class: String
-	//	Class name to apply to this.domNode
-	"class": "dijitStackContainer",
+	baseClass: "dijitStackContainer",
 
 	_started: false,
 /*=====
@@ -38,6 +36,7 @@ dojo.declare(
 	selectedChildWidget: null,
 =====*/
 	postCreate: function(){
+		this.inherited(arguments);
 		dijit.setWaiRole(this.containerNode, "tabpanel");
 		this.connect(this.domNode, "onkeypress", this._onKeyPress);
 	},
