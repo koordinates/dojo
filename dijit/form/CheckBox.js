@@ -104,37 +104,17 @@ dojo.declare(
 		type: "radio",
 		baseClass: "dijitRadio",
 
-		// This shared object keeps track of all widgets, grouped by name
-		_groups: {},
-
-		postCreate: function(){
-			// add this widget to _groups
-			(this._groups[this.name] = this._groups[this.name] || []).push(this);
-
-			this.inherited(arguments);
-		},
-
-		uninitialize: function(){
-			// remove this widget from _groups
-			dojo.forEach(this._groups[this.name], function(widget, i, arr){
-				if(widget === this){
-					arr.splice(i, 1);
-					return;
-				}
-			}, this);
-		},
-
 		setAttribute: function(/*String*/ attr, /*anything*/ value){
 			// If I am being checked then have to deselect currently checked radio button
 			this.inherited(arguments);
 			switch(attr){
 				case "checked":
 					if(this.checked){
-						dojo.forEach(this._groups[this.name], function(widget){
-							if(widget != this && widget.checked){
-								widget.setAttribute('checked', false);
+						dojo.query('[widgetId]:not([widgetId='+this.domNode.getAttribute('widgetId')+']) INPUT:checked[type=radio][name='+this.name+']', this.focusNode.form||dojo.doc).forEach(
+							function(inputNode){
+								dijit.getEnclosingWidget(inputNode).setAttribute('checked', false);
 							}
-						}, this);
+						);
 					}
 			}
 		},
