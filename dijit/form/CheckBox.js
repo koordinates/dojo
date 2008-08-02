@@ -92,14 +92,6 @@ dojo.declare(
 	{
 		// summary:
 		// 		Same as an HTML radio, but with fancy styling.
-		//
-		// description:
-		// Implementation details
-		//
-		// Specialization:
-		// We keep track of dijit radio groups so that we can update the state
-		// of all the siblings (the "context") in a group based on input
-		// events. We don't rely on browser radio grouping.
 
 		type: "radio",
 		baseClass: "dijitRadio",
@@ -110,7 +102,7 @@ dojo.declare(
 			switch(attr){
 				case "checked":
 					if(this.checked){
-						dojo.query('[widgetId]:not([widgetId='+this.domNode.getAttribute('widgetId')+']) INPUT:checked[type=radio][name='+this.name+']', this.focusNode.form||dojo.doc).forEach(
+						dojo.query('[widgetId]:not([widgetId='+this.id+']) INPUT:checked[type=radio][name='+this.name+']', this.focusNode.form||dojo.doc).forEach(
 							function(inputNode){
 								dijit.getEnclosingWidget(inputNode).setAttribute('checked', false);
 							}
