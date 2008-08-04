@@ -75,7 +75,7 @@ dojo.declare("dojox.layout.ExpandoPane",
 		}
 		dojo.style(this.domNode, {
 			overflow: "hidden",
-			padding:0,
+			padding:0
 		});
 	},
 	
@@ -160,8 +160,8 @@ dojo.declare("dojox.layout.ExpandoPane",
 		}));
 
 		this._animConnects = [
-			dojo.connect(this._showAnim,"onEnd",this,"_showEnd"),
-			dojo.connect(this._hideAnim,"onEnd",this,"_hideEnd")
+			dojo.connect(this._showAnim, "onEnd", this, "_showEnd"),
+			dojo.connect(this._hideAnim, "onEnd", this, "_hideEnd")
 		];
 	},
 	

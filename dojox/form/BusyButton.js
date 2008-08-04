@@ -2,17 +2,24 @@ dojo.provide("dojox.form.BusyButton");
 
 dojo.require("dijit.form.Button");
 
+dojo.requireLocalization("dijit", "loading");
+
 dojo.declare("dojox.form.BusyButton",
 	[dijit.form.Button], 
 	{
 		
 	isBusy: false,	
-	busyLabel: "Loading...", // text while button is busy
+	busyLabel: "", // text while button is busy
 	timeout: null, // timeout, should be controlled by xhr call
 	useIcon: true, // use a busy icon
  
-	iconSrc: dojo.moduleUrl("dojox.form.resources", "loading.gif"),
-		
+	postMixInProperties: function(){
+		this.inherited(arguments);
+		if(!this.busyLabel){
+			this.busyLabel = dojo.i18n.getLocalization("dijit", "loading", this.lang).loadingState;
+		}
+	},
+	
 	postCreate: function(){
 		// summary:
 		//	stores initial label and timeout for reference
@@ -20,7 +27,7 @@ dojo.declare("dojox.form.BusyButton",
 		this._initTimeout = this.timeout;
 		
 		// for initial busy buttons
-		if (this.isBusy){
+		if(this.isBusy){
 			this.makeBusy();
 		}
 	},
@@ -41,19 +48,19 @@ dojo.declare("dojox.form.BusyButton",
 		this.setAttribute("disabled", false);
 		this.isBusy = false;
 		this.setLabel(this._label);
-		if (this._timeout){	clearTimeout(this._timeout); }
+		if(this._timeout){	clearTimeout(this._timeout); }
 		this.timeout = this._initTimeout;
 	},
 	
 	resetTimeout: function(/*Int*/ timeout){
 		// summary:
 		//	to reset existing timeout and setting a new timeout
-		if (this._timeout){	
+		if(this._timeout){	
 			clearTimeout(this._timeout); 
 		}
 		
 		// new timeout
-		if (timeout){
+		if(timeout){
 			this._timeout = setTimeout(dojo.hitch(this, function(){
 				this.cancel();
 			}), timeout);			
@@ -76,22 +83,22 @@ dojo.declare("dojox.form.BusyButton",
 		this.containerNode.appendChild(document.createTextNode(this.label));
 		
 		this._layoutHack();
-		if (this.showLabel == false && !(dojo.attr(this.domNode, "title"))){
+		if(this.showLabel == false && !(dojo.attr(this.domNode, "title"))){
 			this.titleNode.title=dojo.trim(this.containerNode.innerText || this.containerNode.textContent || '');
 		}
 		// End IE hack
 		
 		// setting timeout
-		if (timeout){
+		if(timeout){
 			this.resetTimeout(timeout);
 		}else{
 			this.timeout = null;
 		}
 		
 		// create optional busy image
-		if (this.useIcon && this.isBusy){
+		if(this.useIcon && this.isBusy){
 			var node = new Image();
-			node.src = this.iconSrc;
+			node.src = this._blankGif;
 			dojo.attr(node, "id", this.id+"_icon");
 			dojo.addClass(node, "dojoxBusyButtonIcon");
 			this.containerNode.appendChild(node);
@@ -103,7 +110,7 @@ dojo.declare("dojox.form.BusyButton",
 		//	on button click the button state gets changed 
 		
 		// only do somethin gif button is not busy
-		if (!this.isBusy){ 
+		if(!this.isBusy){ 
 			this.makeBusy();
 		}
 	}
