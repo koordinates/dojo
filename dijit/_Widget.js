@@ -571,18 +571,21 @@ dojo.declare("dijit._Widget", null, {
 		if(args == 2){ // setter
 			if(this[names.s]){
 				// use the explicit setter
-				this[names.s](value);
+				return this[names.s](value) || this;
 			}else if(this.set){
 				// default setter
-				this.set(name, value);
-			}else if(name in this.attributeMap){
-				this.setAttribute(name, value);
+				return this.set(name, value) || this;
 			}else{
-				// else try to innerHTML on node values
+				// if param is specified as DOM node attribute, copy it
+				if(name in this.attributeMap){
+					this.setAttribute(name, value);
+				}
 
 				// assign directly first
 				// FIXME: what about function assignments? Any way to connect() here?
 				this[name] = value;
+
+				// if attribute corresponds to some node's innerHTML, copy it
 				var node = this[names.n];
 				if(node && dojo.isString(value)){
 					if(dojo.isArray(node)){
@@ -784,15 +787,7 @@ dojo.declare("dijit._Widget", null, {
 		// |	// create a contentpane and add it to a TabContainer
 		// |	var tc = dijit.byId("myTabs");
 		// |	new dijit.layout.ContentPane({ href:"foo.html", title:"Wow!" }).placeAt(tc)
-		//
-		// example: 
-		// |	// add a new pane to a BorderContainer and set the content in one pass.	
-		// |	var bc = dijit.byId("bc1");
-		// |	new dijit.layout.ContentPane({
-		// |		region:"left",
-		// |		style:"width:100px"
-		// |	}).placeAt(bc).setContent("<p>wowzers</p>");
-		//
+
 		if(reference["declaredClass"] && reference["addChild"]){
 			reference.addChild(this, position);
 		}else{
