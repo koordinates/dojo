@@ -64,6 +64,8 @@ dojo.declare("dojox.form.BusyButton",
 			this._timeout = setTimeout(dojo.hitch(this, function(){
 				this.cancel();
 			}), timeout);			
+		}else if(timeout == undefined || timeout === 0){
+			this.cancel();
 		}
 	},
 	
@@ -105,11 +107,11 @@ dojo.declare("dojox.form.BusyButton",
 		}
 	},
 	
-	_onClick: function(){
+	_clicked: function(e){
 		// summary:
 		//	on button click the button state gets changed 
 		
-		// only do somethin gif button is not busy
+		// only do something if button is not busy
 		if(!this.isBusy){ 
 			this.makeBusy();
 		}
