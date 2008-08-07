@@ -37,12 +37,21 @@ dojo.declare(
 
 		getDisplayedValue: function(){
 			//	summary:
-			//		Returns the formatted value that the user sees in the textbox, which may be different
-			//		from the serialized value that's actually sent to the server (see dijit.form.ValidationTextBox.serialize)
+			//		Returns the displayed value (what the user sees on the screen),
+			// 		after filtering (ie, trimming spaces etc.).
+			//		The displayed value may be different from the serialized value that's actually 
+			//		sent to the server (see dijit.form.ValidationTextBox.serialize)
+			
 			return this.filter(this.textbox.value);
 		},
 
-		getValue: function(){
+		_attrGetValue: function(){
+			// summary:
+			//		Hook so attr('value') works as we like.
+			// description:
+			//		For TextBox this simply returns the value of the <input>,
+			//		but the parse() call is so subclasses can change this
+			//		behavior w/out overriding this method.
 			return this.parse(this.getDisplayedValue(), this.constraints);
 		},
 
@@ -85,11 +94,12 @@ dojo.declare(
 			//		but not necessarily the same, value.
 			//
 			//	priorityChange:
-			//		If true, an onChange event is fired immediately instead of 
+			// 		If true, an onChange event is fired immediately instead of 
 			//		waiting for the next blur event.
+			//		Only used internally, users should not set this flag.
 
 			this.textbox.value = value;
-			this.setValue(this.getValue(), priorityChange);
+			this.setValue(this.attr('value'), priorityChange);
 		},
 
 		format: function(/* String */ value, /* Object */ constraints){
@@ -119,7 +129,8 @@ dojo.declare(
 
 		filter: function(val){
 			//	summary:
-			//		Apply specified filters to textbox value
+			//		Auto-corrections (such as trimming) that are applied to textbox
+			//		value on blur or form submit
 			if(typeof val != "string"){ return val; }
 			if(this.trim){
 				val = dojo.trim(val);
@@ -139,7 +150,7 @@ dojo.declare(
 		},
 
 		_setBlurValue: function(){
-			this.setValue(this.getValue(), (this.isValid ? this.isValid() : true));
+			this.setValue(this.attr('value'), (this.isValid ? this.isValid() : true));
 		},
 
 		_onBlur: function(){
