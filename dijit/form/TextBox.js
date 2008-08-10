@@ -35,7 +35,7 @@ dojo.declare(
 		attributeMap: dojo.mixin(dojo.clone(dijit.form._FormValueWidget.prototype.attributeMap),
 			{maxLength:"focusNode"}),
 
-		_attrGetValue: function(){
+		_getValueAttr: function(){
 			// summary:
 			//		Hook so attr('value') works as we like.
 			// description:
@@ -45,7 +45,7 @@ dojo.declare(
 			return this.parse(this.attr('displayedValue'), this.constraints);
 		},
 
-		setValue: function(value, /*Boolean?*/ priorityChange, /*String?*/ formattedValue){
+		_setValueAttr: function(value, /*Boolean?*/ priorityChange, /*String?*/ formattedValue){
 			//	summary: 
 			//		Sets the value of the widget to "value" which can be of
 			//		any type as determined by the widget.
@@ -74,7 +74,7 @@ dojo.declare(
 			if(formattedValue != null && formattedValue != undefined){
 				this.textbox.value = formattedValue;
 			}
-			dijit.form.TextBox.superclass.setValue.call(this, filteredValue, priorityChange);
+			dijit.form.TextBox.superclass._setValueAttr.call(this, filteredValue, priorityChange);
 		},
 
 		// displayedValue: String
@@ -96,7 +96,7 @@ dojo.declare(
 			return this.attr('displayedValue');
 		},
 
-		_attrGetDisplayedValue: function(){
+		_getDisplayedValueAttr: function(){
 			//	summary:
 			//		Hook so attr('displayedValue') works.
 			//	description:
@@ -115,7 +115,7 @@ dojo.declare(
 			this.attr('displayedValue', value);
 		},
 			
-		_attrSetDisplayedValue: function(/*String*/value){
+		_setDisplayedValueAttr: function(/*String*/value){
 			// summary:
 			//		Hook so attr('displayedValue', ...) works.
 			//	description: 
@@ -124,7 +124,7 @@ dojo.declare(
 			//		but not necessarily the same, value.
 
 			this.textbox.value = value;
-			this.setValue(this.attr('value'));
+			this._setValueAttr(this.attr('value'));
 		},
 
 		format: function(/* String */ value, /* Object */ constraints){
@@ -175,7 +175,7 @@ dojo.declare(
 		},
 
 		_setBlurValue: function(){
-			this.setValue(this.attr('value'), (this.isValid ? this.isValid() : true));
+			this._setValueAttr(this.attr('value'), (this.isValid ? this.isValid() : true));
 		},
 
 		_onBlur: function(){

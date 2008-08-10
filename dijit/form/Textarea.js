@@ -56,7 +56,7 @@ dojo.declare(
 		dijit.focus(this.iframe || this.focusNode);
 	},
 
-	setValue: function(/*String*/ value, /*Boolean, optional*/ priorityChange){
+	_setValueAttr: function(/*String*/ value, /*Boolean, optional*/ priorityChange){
 		var editNode = this.editNode;
 		if(typeof value == "string"){
 			editNode.innerHTML = ""; // wipe out old nodes
@@ -105,10 +105,10 @@ dojo.declare(
 			}
 			editNode.removeChild(sizeNode);
 		}
-		dijit.form.Textarea.superclass.setValue.call(this, this.attr('value'), priorityChange);
+		dijit.form.Textarea.superclass._setValueAttr.call(this, this.attr('value'), priorityChange);
 	},
 
-	_attrGetValue: function(){
+	_getValueAttr: function(){
 		// summary:
 		//		Hook so attr('value') works.
 		return this.value.replace(/\r/g,"");
@@ -261,6 +261,6 @@ dojo.declare(
 		if(this.iframe && this.iframe.contentDocument.designMode != "on" && !this.disabled && !this.readOnly){
 			this.iframe.contentDocument.designMode="on"; // in case this failed on init due to being hidden
 		}
-		this.setValue(null, priorityChange || false);
+		this._setValueAttr(null, priorityChange || false);
 	}
 });

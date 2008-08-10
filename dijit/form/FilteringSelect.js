@@ -56,7 +56,7 @@ dojo.declare(
 				//this._setValue("", "");
 				//#3285: change CSS to indicate error
 				if(!this._focused){ this.valueNode.value=""; }
-				dijit.form.TextBox.superclass.setValue.call(this, "", !this._focused);
+				dijit.form.TextBox.superclass._setValueAttr.call(this, "", !this._focused);
 				this._isvalid=false;
 				this.validate(this._focused);
 				this.item=null;
@@ -75,7 +75,7 @@ dojo.declare(
 			dijit.form.ComboBoxMixin.prototype._openResultList.apply(this, arguments);
 		},
 
-		_attrGetValue: function(){
+		_getValueAttr: function(){
 			// summary:
 			//		Hook for attr('value') to work.
 
@@ -94,11 +94,11 @@ dojo.declare(
 					/*String*/ displayedValue, 
 					/*Boolean?*/ priorityChange){
 			this.valueNode.value = value;
-			dijit.form.FilteringSelect.superclass.setValue.call(this, value, priorityChange, displayedValue);
+			dijit.form.FilteringSelect.superclass._setValueAttr.call(this, value, priorityChange, displayedValue);
 			this._lastDisplayedValue = displayedValue;
 		},
 
-		setValue: function(/*String*/ value, /*Boolean?*/ priorityChange){
+		_setValueAttr: function(/*String*/ value, /*Boolean?*/ priorityChange){
 			// summary
 			//	Sets the value of the select.
 			//	Also sets the label to the corresponding value by reverse lookup.
@@ -166,7 +166,7 @@ dojo.declare(
 			this._setValueFromItem(tgt.item, true);
 		},
 
-		_attrSetDisplayedValue: function(/*String*/ label, /*Boolean?*/ priorityChange){
+		_setDisplayedValueAttr: function(/*String*/ label, /*Boolean?*/ priorityChange){
 			// summary:
 			//		Hook so attr('displayedValue', label) works.
 			// description:

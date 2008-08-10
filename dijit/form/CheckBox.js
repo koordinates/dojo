@@ -34,7 +34,7 @@ dojo.declare(
 		//	the value when form is submitted)
 		value: "on",
 
-		setValue: function(/*String or Boolean*/ newValue){
+		_setValueAttr: function(/*String or Boolean*/ newValue){
 			// summary:
 			//		When passed a boolean, controls whether or not the CheckBox is checked.
 			//		If passed a string, changes the value attribute of the CheckBox (the one
@@ -47,7 +47,7 @@ dojo.declare(
 			this.setAttribute('checked', newValue);
 		},
 
-		_attrGetValue: function(){
+		_getValueAttr: function(){
 			// summary:
 			//		Hook so attr('value') works.
 			// description:
@@ -61,6 +61,11 @@ dojo.declare(
 				this.value = "on";
 			}
 			this.inherited(arguments);
+		},
+
+		 _fillContent: function(/*DomNode*/ source){
+			// Override handler in Button.js since it doesn't make sense here,
+			// since CheckBox doesn't even have a container
 		},
 
 		reset: function(){
