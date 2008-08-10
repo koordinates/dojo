@@ -335,6 +335,7 @@ dojo.require("dojox.dtl.Context");
 
 			if(node.nodeType == 1 && !this.rootNode){
 				this.rootNode = node || true;
+				return this;
 			}
 
 			if(!parent){
@@ -560,6 +561,7 @@ dojo.require("dojox.dtl.Context");
 
 			buffer = dd.HtmlTemplate.prototype.getBuffer();
 			nodelist.unshift(new dd.ChangeNode(div));
+			nodelist.unshift(new dd._HtmlNode(div));
 			nodelist.push(new dd.ChangeNode(div, true));
 			nodelist.render(context, buffer);
 
@@ -612,6 +614,18 @@ dojo.require("dojox.dtl.Context");
 			}
 
 			return nodelist;
+		},
+		rtrim: function(){
+			while(1){
+				i = this.contents.length - 1;
+				if(this.contents[i] instanceof dd._HtmlTextNode && this.contents[i].isEmpty()){
+					this.contents.pop();
+				}else{
+					break;
+				}
+			}
+
+			return this;
 		}
 	});
 
@@ -635,6 +649,7 @@ dojo.require("dojox.dtl.Context");
 					if(str.nodeType){
 						type = "node";
 					}else if(str.toString){
+						str = str.toString();
 						type = "html";
 					}
 				}
@@ -812,6 +827,9 @@ dojo.require("dojox.dtl.Context");
 		},
 		unrender: function(context, buffer){
 			return buffer.remove(this.contents);
+		},
+		isEmpty: function(){
+			return !dojo.trim(this.contents.data);
 		},
 		clone: function(){
 			return new this.constructor(this.contents.data);

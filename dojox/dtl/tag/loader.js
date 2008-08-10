@@ -13,7 +13,7 @@ dojo.require("dojox.dtl._base");
 	{
 		"super": function(){
 			if(this.parent){
-				var html = this.parent.nodelist.dummyRender(this.context);
+				var html = this.parent.nodelist.dummyRender(this.context, null, true);
 				if(typeof html == "string"){
 					html = new String(html);
 				}
@@ -34,6 +34,7 @@ dojo.require("dojox.dtl._base");
 					block.used = true;
 				}
 			}
+
 			this.rendered = nodelist;
 
 			context = context.push();
@@ -229,7 +230,7 @@ dojo.require("dojox.dtl._base");
 			parser._blocks[name] = parser._blocks[name] || [];
 			parser._blocks[name].push(name);
 
-			var nodelist = parser.parse(["endblock", "endblock " + name]);
+			var nodelist = parser.parse(["endblock", "endblock " + name]).rtrim();
 			parser.next_token();
 			return new dojox.dtl.tag.loader.BlockNode(name, nodelist);
 		},

@@ -400,6 +400,8 @@ dojo.require("dojox.string.tokenize");
 							}else{
 								current = current.call(base);
 							}
+						}else if(current instanceof Date){
+							current = dd._Context.prototype._normalize(current);
 						}
 					}else{
 						return "";
@@ -422,6 +424,9 @@ dojo.require("dojox.string.tokenize");
 		render: function(context, buffer){
 			// summary: Adds content onto the buffer
 			return buffer.concat(this.contents);
+		},
+		isEmpty: function(){
+			return !dojo.trim(this.contents);
 		},
 		clone: function(){ return this; }
 	});
@@ -453,7 +458,19 @@ dojo.require("dojox.string.tokenize");
 			return this.render(context, dd.Template.prototype.getBuffer()).toString();
 		},
 		unrender: function(){ return arguments[1]; },
-		clone: function(){ return this; }
+		clone: function(){ return this; },
+		rtrim: function(){
+			while(1){
+				i = this.contents.length - 1;
+				if(this.contents[i] instanceof dd._TextNode && this.contents[i].isEmpty()){
+					this.contents.pop();
+				}else{
+					break;
+				}
+			}
+
+			return this;
+		}
 	});
 
 	dd._VarNode = dojo.extend(function(str){
@@ -630,7 +647,7 @@ dojo.require("dojox.string.tokenize");
 	var escapedblqt = /"/g;
 	dd._base.escape = function(value){
 		// summary: Escapes a string's HTML
-		return value.replace(escapeamp, '&amp;').replace(escapelt, '&lt;').replace(escapegt, '&gt;').replace(escapedblqt, '&quot;').replace(escapeqt, '&#39;');
+		return dd.mark_safe(value.replace(escapeamp, '&amp;').replace(escapelt, '&lt;').replace(escapegt, '&gt;').replace(escapedblqt, '&quot;').replace(escapeqt, '&#39;'));
 	}
 
 	dd._base.safe = function(value){
@@ -642,6 +659,7 @@ dojo.require("dojox.string.tokenize");
 		}
 		return value;
 	}
+	dd.mark_safe = dd._base.safe;
 
 	dd.register.tags("dojox.dtl.tag", {
 		"date": ["now"],
@@ -652,7 +670,7 @@ dojo.require("dojox.string.tokenize");
 	});
 	dd.register.filters("dojox.dtl.filter", {
 		"dates": ["date", "time", "timesince", "timeuntil"],
-		"htmlstrings": ["escape", "linebreaks", "linebreaksbr", "removetags", "striptags"],
+		"htmlstrings": ["linebreaks", "linebreaksbr", "removetags", "striptags"],
 		"integers": ["add", "get_digit"],
 		"lists": ["dictsort", "dictsortreversed", "first", "join", "length", "length_is", "random", "slice", "unordered_list"],
 		"logic": ["default", "default_if_none", "divisibleby", "yesno"],
