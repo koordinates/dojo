@@ -51,13 +51,12 @@ dojo.declare(
 	templatePath: dojo.moduleUrl("dijit", "templates/TitlePane.html"),
 
 	postCreate: function(){
-		this.setTitle(this.title);
+		this.attr("title", this.title);
 		if(!this.open){
 			this.hideNode.style.display = this.wipeNode.style.display = "none";
 		}
 		this._setCss();
 		dojo.setSelectable(this.titleNode, false);
-		this.inherited(arguments);
 		dijit.setWaiState(this.containerNode, "labelledby", this.titleNode.id);
 		dijit.setWaiState(this.focusNode, "haspopup", "true");
 
@@ -77,6 +76,7 @@ dojo.declare(
 				hideNode.style.display="none";
 			}
 		});
+		this.inherited(arguments);
 	},
 
 	_setContentAttr: function(content){
