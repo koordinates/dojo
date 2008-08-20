@@ -36,7 +36,7 @@ dojo.declare("dijit.form.Button",
 	showLabel: true,
 
 	// iconClass: String
-	//	class to apply to div in button to make it display an icon
+	//		Class to apply to div in button to make it display an icon
 	iconClass: "",
 
 	type: "button",
@@ -44,7 +44,8 @@ dojo.declare("dijit.form.Button",
 	templatePath: dojo.moduleUrl("dijit.form", "templates/Button.html"),
 
 	attributeMap: dojo.mixin(dojo.clone(dijit.form._FormWidget.prototype.attributeMap), {
-		label: {node: "containerNode", type: "innerHTML" }
+		label: {node: "containerNode", type: "innerHTML" },
+		iconClass: {node: "iconNode", type: "class" }
 	}),
 		
 
@@ -317,8 +318,11 @@ dojo.declare("dijit.form.ComboButton", dijit.form.DropDownButton, {
 
 	templatePath: dojo.moduleUrl("dijit.form", "templates/ComboButton.html"),
 
-	attributeMap: dojo.mixin(dojo.clone(dijit.form.Button.prototype.attributeMap),
-		{id:"", name:""}),
+	attributeMap: dojo.mixin(dojo.clone(dijit.form.Button.prototype.attributeMap), {
+		id:"",
+		name:"",
+		tabIndex: ["focusNode", "titleNode"]
+	}),
 
 	// optionsTitle: String
 	//  text that describes the options menu (accessibility)
