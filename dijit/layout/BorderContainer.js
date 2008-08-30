@@ -101,12 +101,11 @@ dojo.declare(
 			if((child.splitter || this.gutters) && !this._splitters[region]){
 				var _Splitter = dojo.getObject(child.splitter ? this._splitterClass : "dijit.layout._Gutter");
 				var flip = {left:'right', right:'left', top:'bottom', bottom:'top', leading:'trailing', trailing:'leading'};
-				var oppNodeList = dojo.query('[region=' + flip[child.region] + ']', this.domNode);
 				var splitter = new _Splitter({
 					container: this,
 					child: child,
 					region: region,
-					oppNode: oppNodeList[0],
+					oppNode: dojo.query('[region=' + flip[child.region] + ']', this.domNode)[0],
 					live: this.liveSplitters
 				});
 				splitter.isSplitter = true;
@@ -159,12 +158,13 @@ dojo.declare(
 			return !widget.isSplitter;
 		});
 	},
-	
-	getSplitter: function(/*String*/region) {
+
+	getSplitter: function(/*String*/region){
+		// summary: returns the widget responsible for rendering the splitter associated with region 
 		var splitter = this._splitters[region];
-		return (splitter) ? dijit.byNode(splitter) : null;
+		return splitter ? dijit.byNode(splitter) : null;
 	},
-	
+
 	resize: function(newSize, currentSize){
 		// resetting potential padding to 0px to provide support for 100% width/height + padding
 		// TODO: this hack doesn't respect the box model and is a temporary fix
@@ -414,9 +414,9 @@ dojo.declare("dijit.layout._Splitter", [ dijit._Widget, dijit._Templated ],
 		this._factor = /top|left/.test(this.region) ? 1 : -1;
 		this._minSize = this.child.minSize;
 
-		this._computeMaxSize();
-		//TODO: might be more accurate to recompute constraints on resize?
-		this.connect(this.container, "layout", dojo.hitch(this, this._computeMaxSize));
+		// trigger constraints calculations
+		this.child.domNode._recalc = true;
+		this.connect(this.container, "resize", dojo.hitch(this, this._computeMaxSize));
 
 		this._cookieName = this.container.id + "_" + this.region;
 		if(this.container.persist){
@@ -435,6 +435,11 @@ dojo.declare("dijit.layout._Splitter", [ dijit._Widget, dijit._Templated ],
 	},
 
 	_startDrag: function(e){
+		if(this.child.domNode._recalc){
+			this._computeMaxSize();
+			delete this.child.domNode._recalc;
+		}
+
 		if(!this.cover){
 			this.cover = dojo.doc.createElement('div');
 			dojo.addClass(this.cover, "dijitSplitterCover");
@@ -500,6 +505,7 @@ dojo.declare("dijit.layout._Splitter", [ dijit._Widget, dijit._Templated ],
 			this._drag(e, true);
 		}finally{
 			this._cleanupHandlers();
+			if(this.oppNode){ this.oppNode._recalc = true; }
 			delete this._drag;
 		}
 
@@ -514,6 +520,11 @@ dojo.declare("dijit.layout._Splitter", [ dijit._Widget, dijit._Templated ],
 	},
 
 	_onKeyPress: function(/*Event*/ e){
+		if(this.child.domNode._recalc){
+			_computeMaxSize();
+			delete this.child.domNode._recalc;
+		}
+
 		// should we apply typematic to this?
 		this._resize = true;
 		var horizontal = this.horizontal;
@@ -522,7 +533,7 @@ dojo.declare("dijit.layout._Splitter", [ dijit._Widget, dijit._Templated ],
 		switch(e.charOrCode){
 			case horizontal ? dk.UP_ARROW : dk.LEFT_ARROW:
 				tick *= -1;
-				break;
+//				break;
 			case horizontal ? dk.DOWN_ARROW : dk.RIGHT_ARROW:
 				break;
 			default:
@@ -533,6 +544,7 @@ dojo.declare("dijit.layout._Splitter", [ dijit._Widget, dijit._Templated ],
 		var mb = {};
 		mb[ this.horizontal ? "h" : "w"] = Math.max(Math.min(childSize, this._maxSize), this._minSize);
 		dojo.marginBox(this.child.domNode, mb);
+		if(this.oppNode){ this.oppNode._recalc = true; }
 		this.container._layoutChildren(this.region);
 		dojo.stopEvent(e);
 	},
