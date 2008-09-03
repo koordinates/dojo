@@ -556,7 +556,8 @@ dojo.requireLocalization("dojox.grid", "grid");
 		
 		_resize: function(){
 			// if we have set up everything except the DOM, we cannot resize
-			if(!this.domNode.parentNode || this.domNode.parentNode.nodeType != 1 || !this.hasLayout()){
+			var pn = this.domNode.parentNode;
+			if(!pn || pn.nodeType != 1 || !this.hasLayout() || pn.style.visibility == "hidden" || pn.style.display == "none"){
 				return;
 			}
 			// useful measurement
@@ -571,7 +572,7 @@ dojo.requireLocalization("dojox.grid", "grid");
 				this.domNode.style.height = h + "px";
 			}else if(this.flex > 0){
 			}else if(this.domNode.clientHeight <= padBorder.h){
-				if(this.domNode.parentNode == document.body){
+				if(pn == document.body){
 					this.domNode.style.height = this.defaultHeight;
 				}else if(this.height){
 					this.domNode.style.height = this.height;
@@ -583,7 +584,7 @@ dojo.requireLocalization("dojox.grid", "grid");
 			if(this._sizeBox){
 				dojo.contentBox(this.domNode, this._sizeBox);
 			}else if(this.fitTo == "parent"){
-				var h = dojo._getContentBox(this.domNode.parentNode).h;
+				var h = dojo._getContentBox(pn).h;
 				dojo.marginBox(this.domNode, { h: Math.max(0, h) });
 			}
 
@@ -774,6 +775,27 @@ dojo.requireLocalization("dojox.grid", "grid");
 			}else{
 				this.views.updateRow(inRowIndex);
 				this.scroller.rowHeightChanged(inRowIndex);
+			}
+		},
+
+		updateRows: function(startIndex, howMany){
+			// summary:
+			//		Render consecutive rows at once.
+			// startIndex: Integer
+			//		Index of the starting row to render
+			// howMany: Integer
+			//		How many rows to update.
+			startIndex = Number(startIndex);
+			howMany = Number(howMany);
+			if(this.updating){
+				for(var i=0; i<howMany; i++){
+					this.invalidated[i+startIndex]=true;
+				}
+			}else{
+				for(var i=0; i<howMany; i++){
+					this.views.updateRow(i+startIndex);
+				}
+				this.scroller.rowHeightChanged(startIndex);
 			}
 		},
 
