@@ -770,6 +770,7 @@ dojo.declare(
 		},
 
 		createOptions: function(results, dataObject, labelFunc){
+			// TODOC: needs summary. What does this do and what are the params supposed to mean? 
 			//this._dataObject=dataObject;
 			//this._dataObject.onComplete=dojo.hitch(comboBox, comboBox._openResultList);
 			// display "Previous . . ." button
@@ -791,7 +792,7 @@ dojo.declare(
 			if(dataObject._maxOptions && dataObject._maxOptions != -1){
 				if((dataObject.start + dataObject.count) < dataObject._maxOptions){
 					displayMore = true;
-				}else if((dataObject.start + dataObject.length) > (dataObject._maxOptions - 1)){
+				}else if((dataObject.start + dataObject.count) > (dataObject._maxOptions - 1)){
 					//Weird return from a datastore, where a start + count > maxOptions
 					//implies maxOptions isn't really valid and we have to go into faking it.
 					//And more or less assume more if count == results.length
