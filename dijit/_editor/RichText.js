@@ -455,6 +455,8 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		}else{
 			lineHeight = "1.0";
 		}
+		var userStyle = "";
+		this.style.replace(/(^|;)(line-|font-?)[^;]+/g, function(match){ userStyle += match.replace(/^;/g,"") + ';' });
 		return [
 			this.isLeftToRight() ? "<html><head>" : "<html dir='rtl'><head>",
 			(dojo.isMoz ? "<title>" + this._localizedIframeTitles.iframeEditTitle + "</title>" : ""),
@@ -483,7 +485,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			"li{ min-height:1.2em; }",
 			"</style>",
 			this._applyEditingAreaStyleSheets(),
-			"</head><body>"+html+"</body></html>"
+			"</head><body style='"+userStyle+"'>"+html+"</body></html>"
 		].join(""); // String
 	},
 
@@ -547,20 +549,9 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		var _iframeInitialized = false;
 		// console.debug(this.iframe);
-		// var contentDoc = this.iframe.contentWindow.document;
-
 
 		// note that on Safari lower than 420+, we have to get the iframe
 		// by ID in order to get something w/ a contentDocument property
-
-		var contentDoc = this.iframe.contentDocument;
-		contentDoc.open();
-		if(dojo.isAIR){
-			contentDoc.body.innerHTML = html;
-		}else{
-			contentDoc.write(this._getIframeDocTxt(html));
-		}
-		contentDoc.close();
 
 		// now we wait for onload. Janky hack!
 		var ifrFunc = dojo.hitch(this, function(){
@@ -585,6 +576,15 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 					_iframeInitialized = false;
 					return;
 				}
+
+				var contentDoc = this.document;
+					contentDoc.open();
+				if(dojo.isAIR){
+					contentDoc.body.innerHTML = html;
+				}else{
+					contentDoc.write(this._getIframeDocTxt(html));
+				}
+				contentDoc.close();
 
 				dojo._destroyElement(tmpContent);
 				this.onLoad();
