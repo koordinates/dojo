@@ -12,7 +12,7 @@ dojo.require("dojox.lang.oo.chain");
 
 		defaultFilter = function(name){ return name; },
 
-		useChainAfter = {"init": 1}, useChainBefore = {"destroy": 1},
+		useChainAfter = {init: 1}, useChainBefore = {destroy: 1},
 
 		defaultDecorator = oo.defaultDecorator = function(name, newValue, oldValue){
 			//	summary:
@@ -34,22 +34,22 @@ dojo.require("dojox.lang.oo.chain");
 			return newValue;
 		},
 
-		applyDecorator = oo.applyDecorator = function(name, newValue, oldValue, decorator){
+		applyDecorator = oo.applyDecorator = function(decorator, name, newValue, oldValue){
 			//	summary:
 			//		applies a decorator unraveling all embedded decorators
+			//	decorator: Function:
+			//		top-level decorator to apply
 			//	name: String:
 			//		name of the property
 			//	newValue: Object:
 			//		new value of the property
 			//	oldValue: Object:
 			//		old value of the property
-			//	decorator: Function:
-			//		top-level decorator to apply
 			//	returns: Object:
 			//		returns the final value of the property
 			if(newValue instanceof Decorator){
 				var d = newValue.decorator;
-				newValue = applyDecorator(name, newValue.value, oldValue, decorator);
+				newValue = applyDecorator(decorator, name, newValue.value, oldValue);
 				return d(name, newValue, oldValue);
 			}
 			return decorator(name, newValue, oldValue);
@@ -65,7 +65,8 @@ dojo.require("dojox.lang.oo.chain");
 		// returns: Object:
 		//		target
 
-		var decorator, filter, i, l = arguments.length, name, targetName, prop;
+		var decorator, filter, i, l = arguments.length, name, targetName,
+			prop, newValue, oldValue;
 
 		for(i = 1; i < l; ++i){
 			// set up the new mixin cycle
@@ -93,7 +94,11 @@ dojo.require("dojox.lang.oo.chain");
 					targetName = filter(name);
 					if(targetName){
 						// name is accepted
-						target[targetName] = applyDecorator(targetName, prop, target[targetName], decorator);
+						oldValue = target[targetName];
+						newValue = applyDecorator(decorator, targetName, prop, oldValue);
+						if(oldValue !== newValue){
+							target[targetName] = newValue;
+						}
 					}
 				}
 			}
