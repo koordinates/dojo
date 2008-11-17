@@ -64,8 +64,7 @@ dojo.experimental = function(/* String */ moduleName, /* String? */ extra){
 if(	
    !dojo.config.useCustomLogger &&
    !dojo.isAIR &&									// isDebug triggers AIRInsector, not Firebug
-   (!dojo.isMoz || 									// if not Firefox, there's no firebug
-	(dojo.isMoz && !("console" in window)) || 		// Firefox, but Firebug is not installed.
+   ((("console" in window) && ("fromDojo" in window.console)) || 		// Firefox, but Firebug is not installed.
 	(dojo.isMoz && !(window.loadFirebugConsole || console.firebug)) && 	// Firefox, but Firebug is disabled (1.2 check, 1.0 check)
 	!dojo.config.noFirebugLite						// Deprecated: Should be isDebug=false
 )){
@@ -82,6 +81,41 @@ if(
 			return; 
 		}
 	}catch(e){/*squelch*/}
+
+
+	// ***************************************************************************
+	// Placing these variables before the functions that use them to avoid a 
+	// shrinksafe bug where variable renaming does not happen correctly otherwise.
+
+	// most of the objects in this script are run anonomously
+	var _firebugDoc = document;
+	var _firebugWin = window;
+	var __consoleAnchorId__ = 0;
+	
+	var consoleFrame = null;
+	var consoleBody = null;
+	var consoleObjectInspector = null;
+	var fireBugTabs = null;
+	var commandLine = null;
+	var consoleToolbar = null;
+	
+	var frameVisible = false;
+	var messageQueue = [];
+	var groupStack = [];
+	var timeMap = {};
+	
+	var consoleDomInspector = null;
+	var _inspectionMoveConnection;
+	var _inspectionClickConnection;
+	var _inspectionEnabled = false;
+	var _inspectionTimer = null;
+	var _inspectTempNode = document.createElement("div");
+			
+			
+	var _inspectCurrentNode;
+	var _restoreBorderStyle;
+
+	// ***************************************************************************
 
 	window.console = {
 		_connects: [],
@@ -299,36 +333,6 @@ if(
 			}
 		}
 	};
-	
-	// ***************************************************************************
-	
-	// most of the objects in this script are run anonomously
-	var _firebugDoc = document;
-	var _firebugWin = window;
-	var __consoleAnchorId__ = 0;
-	
-	var consoleFrame = null;
-	var consoleBody = null;
-	var consoleObjectInspector = null;
-	var fireBugTabs = null;
-	var commandLine = null;
-	var consoleToolbar = null;
-	
-	var frameVisible = false;
-	var messageQueue = [];
-	var groupStack = [];
-	var timeMap = {};
-	
-	var consoleDomInspector = null;
-	var _inspectionMoveConnection;
-	var _inspectionClickConnection;
-	var _inspectionEnabled = false;
-	var _inspectionTimer = null;
-	var _inspectTempNode = document.createElement("div");
-			
-			
-	var _inspectCurrentNode;
-	var _restoreBorderStyle;
 
 	// ***************************************************************************
 
