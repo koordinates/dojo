@@ -233,9 +233,11 @@ dojo.require("dojo._base.query");
 		"xml": function(xhr){
 			var result = xhr.responseXML;
 			if(_d.isIE && (!result || !result.documentElement)){
-				_d.some(["MSXML2", "Microsoft", "MSXML", "MSXML3"], function(prefix){
+				var sf = [".DOMDocument", ".XMLDOM"];
+				var dp = ["Microsoft"+sf[1], "MSXML6"+sf[0], "MSXML4"+sf[0], "MSXML3"+sf[0], "MSXML2"+sf[0]];
+				_d.some(dp, function(p){
 					try{
-						var dom = new ActiveXObject(prefix + ".XMLDOM");
+						var dom = new ActiveXObject(p);
 						dom.async = false;
 						dom.loadXML(xhr.responseText);
 						result = dom;
