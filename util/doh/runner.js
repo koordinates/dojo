@@ -814,7 +814,7 @@ doh._runFixture = function(groupName, fixture){
 		if(threw){
 			this._handleFailure(groupName, fixture, err);
 		}
-		this._testFinished(groupName, fixture, (!threw));
+		this._testFinished(groupName, fixture, !threw);
 
 		if((!tg.inFlight)&&(tg.iterated)){
 			doh._groupFinished(groupName, !tg.failures);
@@ -852,7 +852,7 @@ doh.runGroup = function(/*String*/ groupName, /*Integer*/ idx){
 		if(idx<=tg.length){
 			if((!tg.inFlight)&&(tg.iterated == true)){
 				if(tg["tearDown"]){ tg.tearDown(this); }
-				doh._groupFinished(groupName, (!tg.failures));
+				doh._groupFinished(groupName, !tg.failures);
 				return;
 			}
 		}
@@ -885,7 +885,7 @@ doh.runGroup = function(/*String*/ groupName, /*Integer*/ idx){
 		tg.iterated = true;
 		if(!tg.inFlight){
 			if(tg["tearDown"]){ tg.tearDown(this); }
-			doh._groupFinished(groupName, (!tg.failures));
+			doh._groupFinished(groupName, !tg.failures);
 		}
 	}
 }
