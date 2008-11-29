@@ -8,29 +8,29 @@ dojo.declare("dojox.form.manager._ValueMixin", null, {
 	//		in terms of name-value regardless of the underlying type of
 	//		an element. It should be used together with dojox.form.manager.Mixin.
 
-	elementValue: function(/* String */ name, /* Object? */ value){
+	elementValue: function(name, value){
 		// summary:
 		//		Set or get a form widget/element or an attached point node by name.
-		// name:
+		// name: String:
 		//		The name.
-		// value:
+		// value: Object?:
 		//		Optional. The value to set.
 
 		if(name in this.formWidgets){
 			return this.formWidgetValue(name, value);	// Object
 		}
 
-		if(name in this.formNodes){
+		if(this.formNodes && name in this.formNodes){
 			return this.formNodeValue(name, value);	// Object
 		}
 
 		return this.formPointValue(name, value);	// Object
 	},
 
-	gatherFormValues: function(/* Object? */ names){
+	gatherFormValues: function(names){
 		// summary:
 		//		Collect form values.
-		// names:
+		// names: Object?:
 		//		If it is an array, it is a list of names of form elements to be collected.
 		//		If it is an object, dictionary keys are names to be collected.
 		//		If it is omitted, all known form elements are to be collected.
@@ -39,9 +39,11 @@ dojo.declare("dojox.form.manager._ValueMixin", null, {
 			return this.formWidgetValue(name);
 		}, names);
 
-		dojo.mixin(result, this.inspectFormNodes(function(name){
-			return this.formNodeValue(name);
-		}, names));
+		if(this.inspectFormNodes){
+			dojo.mixin(result, this.inspectFormNodes(function(name){
+				return this.formNodeValue(name);
+			}, names));
+		}
 
 		dojo.mixin(result, this.inspectAttachedPoints(function(name){
 			return this.formPointValue(name);
@@ -50,17 +52,21 @@ dojo.declare("dojox.form.manager._ValueMixin", null, {
 		return result;	// Object
 	},
 
-	setFormValues: function(/* Object */ values){
+	setFormValues: function(values){
 		// summary:
 		//		Set values to form elements
+		// values: Object:
+		//		A dictionary of key-value pairs.
 		if(values){
 			this.inspectFormWidgets(function(name, widget, value){
 				this.formWidgetValue(name, value);
 			}, values);
 
-			this.inspectFormNodes(function(name, node, value){
-				this.formNodeValue(name, value);
-			}, values);
+			if(this.inspectFormNodes){
+				this.inspectFormNodes(function(name, node, value){
+					this.formNodeValue(name, value);
+				}, values);
+			}
 
 			this.inspectAttachedPoints(function(name, node, value){
 				this.formPointValue(name, value);

@@ -139,7 +139,10 @@
 							rows="3" cols="15" style="width: 15em;" intermediateChanges="true">w07</textarea>
 					</div>
 					<div>
-						<button dojoType="dijit.form.Button" name="w08" observer="showValues">w08 button dijit.form.Button</button>&nbsp;
+						<button dojoType="dijit.form.Button" name="w08" observer="showValues">w08 button</button>&nbsp;
+						<button type="button" dojoType="dijit.form.Button" name="w09" observer="showValues">w09 type=button</button>&nbsp;
+						<button type="reset" dojoType="dijit.form.Button" name="w10" observer="showValues">w10 type=reset</button>&nbsp;
+						<button type="submit" dojoType="dijit.form.Button" name="w11" observer="showValues">w11 typesubmit</button>
 					</div>
 				</fieldset>
 				<script type="dojo/method" event="onSubmit">
@@ -151,7 +154,12 @@
 					var values = this.gatherFormValues(["e02", "w02"]);
 					console.log("e02: " + values.e02 + ", w02: " + values.w02);
 				</script>
-				<script type="dojo/method" event="showValues">
+				<script type="dojo/method" event="showValues" args="value,name">
+					if(name){
+						// first time this method is called with no parameters
+						// show the name and the value otherwise
+						console.log("name = ", name, " value = ", value);
+					}
 					var values = this.gatherFormValues(),
 						table = dojo.byId("table"), names = [];
 					// clear the table
