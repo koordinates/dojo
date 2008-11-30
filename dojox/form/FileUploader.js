@@ -36,7 +36,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 	//		so that you may link to that file (could of course be the same SWF in 
 	//		dojox resource folder). The SWF will *NOT* work from the
 	//		CDN server. This would require a special XML file that would allow 
-	//		acces to your server, and the logistics to that is impossible.
+	//		access to your server, and the logistics to that is impossible.
 	//		
 	// LIMITATIONS -
 	//		Because of the nature of this "hack" - floating a zero-opacity fileInput
@@ -570,8 +570,19 @@ dojo.declare("dojox.form.FileUploader", null, {
 		}));
 		this._cons.push(dojo.connect(this._fileInput, "mouseout", this, function(evt){
 			this.onMouseOut(evt);
+			this._checkHtmlCancel("off");
 		}));
+		this._cons.push(dojo.connect(this._fileInput, "mousedown", this, function(evt){
+			this.onMouseDown(evt);
+		}));
+		this._cons.push(dojo.connect(this._fileInput, "mouseup", this, function(evt){
+			this.onMouseUp(evt);
+			this._checkHtmlCancel("up");
+		}));
+		
 		this._cons.push(dojo.connect(this._fileInput, "change", this, function(){
+			console.log("html change")
+			this._checkHtmlCancel("change");
 			this._change([{
 				name: this._fileInput.value,
 				type: "",
@@ -581,7 +592,18 @@ dojo.declare("dojox.form.FileUploader", null, {
 		this._connectCommon();
 		
 	},
-	
+	_checkHtmlCancel: function(mouseType){
+		if(mouseType=="change"){
+			this.dialogIsOpen = false;
+		}
+		if(mouseType=="up"){
+			this.dialogIsOpen = true;
+		}
+		if(mouseType=="off"){
+			this.dialogIsOpen = false;
+			this.onCancel();
+		}
+	},
 	_connectCommon: function(){
 		this._cons.push(dojo.connect(window, "resize", this, "setPosition"));
 		
@@ -735,9 +757,20 @@ dojo.declare("dojox.form.FileUploader", null, {
 		else {
 			node.appendChild(this._formNode);
 		}
+		this._setHtmlPostData();
 		this._setFormStyle();
 	},
-	
+	_setHtmlPostData: function(){
+		if(this.postData){
+			for (var nm in this.postData) {
+				var f = document.createElement('input');
+				dojo.attr(f, "type", "hidden");
+				dojo.attr(f, "name", nm);
+				dojo.attr(f, "value", this.postData[nm]);
+				this._formNode.appendChild(f);
+			}
+		}
+	},
 	
 	
 	_setFormStyle: function(){
