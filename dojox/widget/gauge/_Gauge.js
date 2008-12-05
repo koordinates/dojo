@@ -1,4 +1,4 @@
-dojo.provide("dojox.widget._Gauge");
+dojo.provide("dojox.widget.gauge._Gauge");
 
 dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
@@ -7,9 +7,9 @@ dojo.require("dijit.Tooltip");
 dojo.require("dojo.fx.easing");
 dojo.require("dojox.gfx");
 
-dojo.experimental("dojox.widgets._Gauge");
+dojo.experimental("dojox.widget.gauge._Gauge");
 
-dojo.declare("dojox.widget._Gauge",[dijit._Widget, dijit._Templated, dijit._Container],{
+dojo.declare("dojox.widget.gauge._Gauge",[dijit._Widget, dijit._Templated, dijit._Container],{
 	// summary:
 	//		a gauge built using the dojox.gfx package.
 	//
@@ -29,10 +29,13 @@ dojo.declare("dojox.widget._Gauge",[dijit._Widget, dijit._Templated, dijit._Cont
 	// the height of the gauge (default is 200)
 	height: 0,
 
-	// gaugeBackground: Object|String
-	// background color.  if this parameter is an object, it is
-	// interpreted as a 'fill' object to set a gradient on the background.
-	gaugeBackground: '#e0e0e0',
+	// background: Object
+	// the color of the background.  This must be an object of one of two forms:
+	// {'color': 'color-name'}
+	// OR
+	// (for a gradient:)
+	// {'type': 'linear', 'x1': 0, 'x2': 0, 'y1': 0, 'y2': 200, 'colors': [{offset: 0, color:'#C0C0C0'}, {offset: 1, color: '#E0E0E0'}] }
+	background: null,
 
 	// min: Number
 	// minimum value displayed by gauge (default is lowest range value)
@@ -102,9 +105,15 @@ dojo.declare("dojox.widget._Gauge",[dijit._Widget, dijit._Templated, dijit._Cont
 	// The SVG/VML surface that the shapes are drawn on.  Can be accessed/used by indicators to draw themselves
 	surface: null,
 
+	// hideValues: Boolean
+	// indicates whether the text boxes showing the value of the indicator (as text 
+	// content) should be hidden or shown.  Default is not hidden, aka shown.
+	hideValues: false,
+
 	// internal data
 	gaugeContent: undefined,
-	templatePath: dojo.moduleUrl("dojox.widget", "Gauge/_Gauge.html"),
+	templatePath: dojo.moduleUrl("dojox.widget.gauge", "_Gauge.html"),
+	_backgroundDefault: {color: '#E0E0E0'},
 	_rangeData: null,
 	_indicatorData: null,
 	_drag: null,
@@ -138,23 +147,17 @@ dojo.declare("dojox.widget._Gauge",[dijit._Widget, dijit._Templated, dijit._Cont
 					continue;
 				}
 				switch(children[i].declaredClass){
-					case "dojox.widget.Range":
+					case "dojox.widget.gauge.Range":
 						ranges.push(children[i]);
-						break;
-					case "dojox.widget.Gradient":
-						var tmp = children[i].getFillObject();
-						if(tmp.x1 == -1){tmp.x1 = this.width;}
-						if(tmp.x2 == -1){tmp.x2 = this.width;}
-						if(tmp.y1 == -1){tmp.y1 = this.height;}
-						if(tmp.y2 == -1){tmp.y2 = this.height;}
-						this.gaugeBackground = tmp;
 						break;
 				}
 			}
 			this.ranges = this.ranges.concat(ranges);
 			this.indicators = this.indicators.concat(indicators);
 		}
-		if (!this.surface){this.createSurface();}
+		if(!this.background){ this.background = this._backgroundDefault; }
+		this.background = this.background.color || this.background;
+		if(!this.surface){ this.createSurface(); }
 
 		this.addRanges(this.ranges);
 		if(this.minorTicks && this.minorTicks.interval){
@@ -224,8 +227,8 @@ dojo.declare("dojox.widget._Gauge",[dijit._Widget, dijit._Templated, dijit._Cont
 		this.gaugeContent.style.width = this.width + 'px';
 		this.gaugeContent.style.height = this.height + 'px';
 		this.surface = dojox.gfx.createSurface(this.gaugeContent, this.width, this.height);
-		var background = this.surface.createRect({x: 0, y: 0, width: this.width, height: this.height });
-		background.setFill(this.gaugeBackground);
+		this._background = this.surface.createRect({x: 0, y: 0, width: this.width, height: this.height });
+		this._background.setFill(this.background);
 
 		if(this.image.url){
 			this._img = this.surface.createImage({width: this.image.width || this.width, height: this.image.height || this.height, src: this.image.url});
@@ -246,6 +249,24 @@ dojo.declare("dojox.widget._Gauge",[dijit._Widget, dijit._Templated, dijit._Cont
 		}
 	},
 
+	setBackground: function(background){
+		// summary:
+		//		This method is used to set the background of the gauge after it is created.
+		// description:
+		//		Sets the background using the given object.  Must be the same 'type' of object 
+		//		as the original background argument.
+		// background:
+		//		An object in one of the two forms:
+		//			{'color': 'color-name'}
+		//				OR
+		//			(for a gradient:)
+		//			{'type': 'linear', 'colors': [{offset: 0, color:'#C0C0C0'}, {offset: 1, color: '#E0E0E0'}] }
+		//		If background is null or undefined, this will set the fill to this._backgroundDefault
+		if(!background){ background = this._backgroundDefault; }
+		this.background = background.color || background;
+		this._background.setFill(this.background);
+	},
+
 	addRange: function(/*Object*/range){
 		// summary:
 		//		This method is used to add a range to the gauge.
@@ -253,7 +274,7 @@ dojo.declare("dojox.widget._Gauge",[dijit._Widget, dijit._Templated, dijit._Cont
 		//		Creates a range (colored area on the background of the gauge)
 		//		based on the given arguments.
 		// range:
-		//		A range is either a dojox.widget.Range object, or a object
+		//		A range is either a dojox.widget.gauge.Range object, or a object
 		//		with similar parameters (low, high, hover, etc.).
 		this.addRanges([range]);
 	},
@@ -265,7 +286,7 @@ dojo.declare("dojox.widget._Gauge",[dijit._Widget, dijit._Templated, dijit._Cont
 		//		Creates a range (colored area on the background of the gauge) 
 		//		based on the given arguments.
 		// range:
-		//		A range is either a dojox.widget.Range object, or a object 
+		//		A range is either a dojox.widget.gauge.Range object, or a object 
 		//		with similar parameters (low, high, hover, etc.).
 		if(!this._rangeData){ 
 			this._rangeData = [];
@@ -298,15 +319,15 @@ dojo.declare("dojox.widget._Gauge",[dijit._Widget, dijit._Templated, dijit._Cont
 		//		This method adds an indicator, such as a tick mark or needle,
 		//		to the bar graph.
 		// indicator:
-		//		A dojox.widget._Indicator or an object with similar parameters
+		//		A dojox.widget.gauge._Indicator or an object with similar parameters
 		//		(value, color, offset, etc.).
 
 		indicator._gauge = this;
-		if(!indicator.declaredClass){// !== 'dojox.widget.Indicator'){
+		if(!indicator.declaredClass){// !== 'dojox.widget.gauge.Indicator'){
 			// We were passed a plain object, need to make an indicator out of it.
 			indicator = new this._defaultIndicator(indicator);
 		}
-		if(!indicator.hideValues){
+		if(!indicator.hideValue){
 			this.containerNode.appendChild(indicator.domNode);
 		}
 		if(!this._indicatorData){this._indicatorData = [];}
@@ -333,7 +354,7 @@ dojo.declare("dojox.widget._Gauge",[dijit._Widget, dijit._Templated, dijit._Cont
 		//		This function is used to move an indicator the the front (top)
 		//		of the gauge
 		// indicator:
-		//		A dojox.widget._Indicator or an object with similar parameters
+		//		A dojox.widget.gauge._Indicator or an object with similar parameters
 		//		(value, color, offset, etc.).
 		if(indicator.shapes){
 			for(var i=0; i<indicator.shapes.length; i++){
@@ -488,7 +509,7 @@ dojo.declare("dojox.widget._Gauge",[dijit._Widget, dijit._Templated, dijit._Cont
 	}
 });
 
-dojo.declare("dojox.widget.Range",[dijit._Widget, dijit._Container, dijit._Contained],{
+dojo.declare("dojox.widget.gauge.Range",[dijit._Widget, dijit._Contained],{
 	// summary:
 	//		a range to be used in a _Gauge
 	//
@@ -498,7 +519,6 @@ dojo.declare("dojox.widget.Range",[dijit._Widget, dijit._Container, dijit._Conta
 	// usage:
 	//		<script type="text/javascript">
 	//			dojo.require("dojox.widget.AnalogGauge");
-	//			dojo.require("dojox.widget.Range");
 	//			dojo.require("dijit.util.parser");
 	//		</script>
 	//		...
@@ -515,12 +535,12 @@ dojo.declare("dojox.widget.Range",[dijit._Widget, dijit._Container, dijit._Conta
 	//				imageHeight="155"
 	//				imageX="12"
 	//				imageY="38">
-	//			<div	dojoType="dojox.widget.Range"
+	//			<div	dojoType="dojox.widget.gauge.Range"
 	//					low=5
 	//					high=10
 	//					hover="5 - 10"
 	//			></div>
-	//			<div	dojoType="dojox.widget.Range"
+	//			<div	dojoType="dojox.widget.gauge.Range"
 	//					low=10
 	//					high=20
 	//					hover="10 - 20"
@@ -539,192 +559,24 @@ dojo.declare("dojox.widget.Range",[dijit._Widget, dijit._Container, dijit._Conta
 	// the text to put in the tooltip for the gauge
 	hover: '',
 	
-	// color: String|Gradient
-	// the color of the range.  this could be a string or a dojox.widget.Gradient
-	color: '',
+	// color: Object
+	// the color of the range.  This must be an object of one of two forms:
+	// {'color': 'color-name'}
+	// OR
+	// (for a gradient:)
+	// {'type': 'linear', 'colors': [{offset: 0, color:'#C0C0C0'}, {offset: 1, color: '#E0E0E0'}] }
+	color: null,
 	
 	// size: Number
 	// for a circular gauge (such as an AnalogGauge), this dictates the size of the arc 
 	size: 0,
 
 	startup: function(){
-		if(this.getChildren){
-			dojo.forEach(this.getChildren(), function(child){ child.startup(); });
-		}
-
-		if(this.hasChildren()){
-			var children = this.getChildren();
-			for(var i=0; i<children.length; i++){
-				if(children[i].declaredClass === "dojox.widget.Gradient"){
-					this.color = children[i].getFillObject();
-				}
-			}
-		}
+		this.color = this.color.color || this.color;
 	}
 });
 
-dojo.declare("dojox.widget.Gradient",[dijit._Widget, dijit._Templated, dijit._Container, dijit._Contained],{
-	// summary:
-	//		a gradient background, to be used by a _Gauge
-	//
-	// description:
-	//		a gradient background, which has given properties.  drawn by a _Gauge.
-	//
-	// usage:
-	//		<script type="text/javascript">
-	//			dojo.require("dojox.widget.AnalogGauge");
-	//			dojo.require("dojox.widget.Range");
-	//			dojo.require("dijit.util.parser");
-	//		</script>
-	//		...
-	//		<div	dojoType="dojox.widget.AnalogGauge"
-	//				id="testGauge"
-	//				width="300"
-	//				height="200"
-	//				cx=150
-	//				cy=175
-	//				radius=125
-	//				image="gaugeOverlay.png"
-	//				imageOverlay="false"
-	//				imageWidth="280"
-	//				imageHeight="155"
-	//				imageX="12"
-	//				imageY="38">
-	//			<div	dojoType="dojox.widget.Gradient"
-	//					type="linear"
-	//					x1=0
-	//					x2=0
-	//					y2=0>
-	//				<div	dojoType="dojox.widget.GradientColor"
-	//						offset=0
-	//						color="#ECECEC"></div>
-	//				<div	dojoType="dojox.widget.GradientColor"
-	//						offset=1
-	//						color="white"></div>
-	//			</div>
-	//		</div>
-	templateString: '<div type="${type}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" dojoattachpoint="containerNode"></div>',
-
-	// type: String
-	// type of gradient, see dojox.gfx.*
-	type: "linear",
-
-	// x1: Number?
-	// x coordinate of where the gradient should start. if ommitted, during startup
-	// this will be initialized to the parent gauge's width
-	x1: -1,
-
-	// x2: Number?
-	// x coordinate of where the gradient should end.  if ommitted, during startup
-	// this will be initialized to the parent gauge's width
-	x2: -1,
-
-	// y1: Number?
-	// y coordinate of where the gradient should start.  if ommitted, during startup
-	// this will be initialized to the parent gauge's height
-	y1: -1,
-
-	// y2: Number?
-	// y coordinate of where the gradient should end.  if ommitted, during startup
-	// this will be initialized to the parent gauge's height
-	y2: -1,
-
-	// colors: Array
-	// array of colors to be used in the gradient.  this is initialized during startup()
-	colors: null,
-
-	startup: function(){
-		if(this.getChildren){
-			dojo.forEach(this.getChildren(), function(child){ child.startup(); });
-		}
-
-		this.colors = [];
-
-		if(this.hasChildren()){
-			var children = this.getChildren();
-			for(var i=0; i<children.length; i++){
-				if(children[i].declaredClass === "dojox.widget.GradientColor"){
-					this.colors.push(children[i].getColorObject());
-				}
-			}
-		}
-	},
-
-	getFillObject: function(){
-		// summary:
-		//		Gets the fill object that this widget represents.
-		var fill = {
-			'type': this.type,
-			'x1': this.x1,
-			'x2': this.x2,
-			'y1': this.y1,
-			'y2': this.y2,
-			'colors': []
-		};
-		for(var i=0; i<this.colors.length; i++){
-			fill.colors.push(this.colors[i]);
-		}
-		return fill ;
-	}
-});
-
-dojo.declare("dojox.widget.GradientColor",[dijit._Widget, dijit._Contained],{
-	// summary:
-	//		a color to be used in a Gradient
-	//
-	// description:
-	//		a gradient color widget, which has given properties.  drawn by a gradient. 
-	//
-	// usage:
-	//		<script type="text/javascript">
-	//			dojo.require("dojox.widget.AnalogGauge");
-	//			dojo.require("dojox.widget.Range");
-	//			dojo.require("dijit.util.parser");
-	//		</script>
-	//		...
-	//		<div	dojoType="dojox.widget.AnalogGauge"
-	//				id="testGauge"
-	//				width="300"
-	//				height="200"
-	//				cx=150
-	//				cy=175
-	//				radius=125
-	//				image="gaugeOverlay.png"
-	//				imageOverlay="false"
-	//				imageWidth="280"
-	//				imageHeight="155"
-	//				imageX="12"
-	//				imageY="38">
-	//			<div	dojoType="dojox.widget.Gradient"
-	//					type="linear"
-	//					x1=0
-	//					x2=0
-	//					y2=0>
-	//				<div	dojoType="dojox.widget.GradientColor"
-	//						offset=0
-	//						color="#ECECEC"></div>
-	//				<div	dojoType="dojox.widget.GradientColor"
-	//						offset=1
-	//						color="white"></div>
-	//			</div>
-	//		</div>
-
-	// offset: Number
-	// the offset of this color (normally 0 or 1)
-	offset: -1,
-
-	// color: String
-	// the color!
-	color: "white",
-
-	getColorObject: function(){
-		// summary:
-		//		Gets the color object that this widget represents.
-		return {offset: this.offset, color: this.color};
-	}
-});
-
-dojo.declare("dojox.widget._Indicator",[dijit._Widget, dijit._Contained, dijit._Templated],{
+dojo.declare("dojox.widget.gauge._Indicator",[dijit._Widget, dijit._Contained, dijit._Templated],{
 	// summary:
 	//		a indicator to be used in a gauge
 	//
@@ -734,7 +586,6 @@ dojo.declare("dojox.widget._Indicator",[dijit._Widget, dijit._Contained, dijit._
 	// usage:
 	//		<script type="text/javascript">
 	//			dojo.require("dojox.widget.AnalogGauge");
-	//			dojo.require("dojox.widget.Range");
 	//			dojo.require("dijit.util.parser");
 	//		</script>
 	//		...
@@ -751,7 +602,7 @@ dojo.declare("dojox.widget._Indicator",[dijit._Widget, dijit._Contained, dijit._
 	//				imageHeight="155"
 	//				imageX="12"
 	//				imageY="38">
-	//			<div 	dojoType="dojox.widget.Indicator"
+	//			<div 	dojoType="dojox.widget.gauge.Indicator"
 	//					value=17
 	//					type="arrow"
 	//					length=135
@@ -820,7 +671,7 @@ dojo.declare("dojox.widget._Indicator",[dijit._Widget, dijit._Contained, dijit._
 	// hideValues: Boolean
 	// indicates whether the text boxes showing the value of the indicator (as text 
 	// content) should be hidden or shown.  Default is not hidden, aka shown.
-	hideValues: false,
+	hideValue: false,
 
 	// noChange: Boolean
 	// indicates whether the indicator's value can be changed.  Useful for 
@@ -833,7 +684,7 @@ dojo.declare("dojox.widget._Indicator",[dijit._Widget, dijit._Contained, dijit._
 	// The title of the indicator, to be displayed next to it's input box for the text-representation.
 	title: "",
 
-	templatePath: dojo.moduleUrl("dojox.widget", "Gauge/Indicator.html"),
+	templatePath: dojo.moduleUrl("dojox.widget.gauge", "_Indicator.html"),
 
 	startup: function() {
 		if(this.onDragMove){
