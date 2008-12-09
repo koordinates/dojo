@@ -44,19 +44,16 @@
 }
 
 /* hovered tab */
-.soria .dijitTabHover,
-.soria .dijitTabCloseButtonHover {
+.soria .dijitTabHover {
 	color: #243C5F;
 	background: url("../images/tabContainerSprite.gif") no-repeat 0px -150px;
 }
 
-.soria .dijitTabHover .dijitTabInnerDiv,
-.soria .dijitTabCloseButtonHover .dijitTabInnerDiv {
+.soria .dijitTabHover .dijitTabInnerDiv {
 	background: url("../images/tabContainerSprite.gif") no-repeat right -250px;
 }
 
-.soria .dijitTabHover .dijitTabInnerDiv .dijitTabContent,
-.soria .dijitTabCloseButtonHover .dijitTabInnerDiv .dijitTabContent {
+.soria .dijitTabHover .dijitTabInnerDiv .dijitTabContent {
 	background: url("../images/tabContainerSprite.gif") repeat-x 0 -200px;
 }
 
@@ -77,6 +74,38 @@
 	color: #243C5F !important;
 }
 
+/* Nested Tabs */
+.soria .dijitTabContainer .dijitTabContainer .dijitTabContainerTop-tabs {
+	background: #F0F4FC;
+	background: #D9E9F9;
+	border: none;
+}
+.soria .dijitTabContainer .dijitTabContainer .dijitTab {
+	background: none;
+	border: none;
+	top: 0px;	/* override top:1px setting of top-level tabs */
+}
+.soria .dijitTabContainer .dijitTabContainer .dijitTab .dijitTabInnerDiv,
+.soria .dijitTabContainer .dijitTabContainer .dijitTab .dijitTabContent {
+	background: none;
+}
+.soria .dijitTabContainer .dijitTabContainer .dijitTabHover .dijitTabContent {
+	text-decoration: underline;
+}
+.soria .dijitTabContainer .dijitTabContainer .dijitTabChecked {
+	text-decoration: underline;
+	font-weight: bold;
+}
+.soria .dijitTabContainer .dijitTabContainer .dijitTabSpacer {
+	/* thinner line between tab (labels) and content */
+	height: 0px;
+}
+.soria .dijitTabContainer .dijitTabContainer .dijitTabPaneWrapper {
+	border: none;	/* prevent double border */
+}
+
+
+/* Close Button */
 .soria .dijitTab .closeImage {
 	width: 15px;
 	height: 15px;
@@ -162,19 +191,16 @@
 	background: url("../images/tabBottomEnabledSpriteLR.gif") no-repeat bottom right;
 }
 
-.soria .dijitTabContainerBottom-tabs .dijitTabHover,
-.soria .dijitTabContainerBottom-tabs .dijitTabCloseButtonHover {
+.soria .dijitTabContainerBottom-tabs .dijitTabHover {
 	color: #243C5F;
 	background: url("../images/tabBottomHoverSpriteLR.gif") no-repeat bottom left;
 }
 
-.soria .dijitTabContainerBottom-tabs .dijitTabHover .dijitTabInnerDiv,
-.soria .dijitTabContainerBottom-tabs .dijitTabCloseButtonHover .dijitTabInnerDiv {
+.soria .dijitTabContainerBottom-tabs .dijitTabHover .dijitTabInnerDiv {
 	background: url("../images/tabBottomHoverSpriteLR.gif") no-repeat bottom right;
 }
 
-.soria .dijitTabContainerBottom-tabs .dijitTabHover .dijitTabInnerDiv .dijitTabContent,
-.soria .dijitTabContainerBottom-tabs .dijitTabCloseButtonHover .dijitTabInnerDiv .dijitTabContent {
+.soria .dijitTabContainerBottom-tabs .dijitTabHover .dijitTabInnerDiv .dijitTabContent {
 	background: url("../images/tabBottomHoverC.gif") repeat-x bottom left;
 }
 
