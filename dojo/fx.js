@@ -150,11 +150,13 @@ dojo.fx = {
 		}, this);
 		
 		this._pseudoAnimation = new dojo._Animation({curve: [0, 1], duration: this.duration});
+		var self = this;
 		dojo.forEach(["beforeBegin", "onBegin", "onPlay", "onAnimate", "onPause", "onStop"], 
 			function(evt){
-				this._connects.push(dojo.connect(this._pseudoAnimation, evt, dojo.hitch(this, "_fire", evt)));
-			},
-			this
+				self._connects.push(dojo.connect(self._pseudoAnimation, evt,
+					function(){ self._fire(evt, arguments); }
+				));
+			}
 		);
 	};
 	dojo.extend(_combine, {
