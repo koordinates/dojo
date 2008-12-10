@@ -122,6 +122,19 @@ dojo.provide("dojox.html.metrics");
 		dhm.onFontResize();
 	}
 
+	dojo.addOnUnload(function(){
+		// destroy our font resize iframe if we have one
+		var f = dhm._fontResizeNode;
+		if(f){
+			if(dojo.isIE && f.onresize){
+				f.onresize = null;
+			}else if(f.contentWindow && f.contentWindow.onresize){
+				f.contentWindow.onresize = null;
+			}
+			dhm._fontResizeNode = null;
+		}
+	});
+
 	dojo.addOnLoad(function(){
 		// getScrollbar metrics node
 		try{
