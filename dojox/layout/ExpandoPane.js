@@ -6,7 +6,7 @@ dojo.require("dijit._Templated");
 dojo.require("dijit._Container");
 
 dojo.declare("dojox.layout.ExpandoPane",
-	[dijit.layout.ContentPane, dijit._Templated, dijit._Contained],
+	[dijit.layout.ContentPane, dijit._Templated],
 	{
 	// summary: An experimental expando-pane for dijit.layout.BorderContainer
 	//
@@ -50,7 +50,7 @@ dojo.declare("dojox.layout.ExpandoPane",
 			this.easeIn = dojo.getObject(this.easeIn); 
 		}
 	
-		var thisClass = "", ltr = this.isLeftToRight();
+		var thisClass = "", ltr = !this.isLeftToRight();
 		if(this.region){
 			// FIXME: add suport for alternate region types?
 			switch(this.region){
