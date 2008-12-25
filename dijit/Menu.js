@@ -109,7 +109,8 @@ dojo.declare("dijit._MenuBase",
 				dijit.popup.close(popup);
 				from_item.focus();	// put focus back on my node
 				self.currentPopup = null;
-			}
+			},
+			onExecute: dojo.hitch(this, "_onDescendantExecute")
 		});
 
 		this.currentPopup = popup;
@@ -134,6 +135,17 @@ dojo.declare("dijit._MenuBase",
 			this._onChildBlur(this.focusedChild);
 			this.focusedChild = null;
 		}
+	},
+	
+	_onBlur: function(){
+		// If user blurs/clicks away from a MenuBar (or always visible Menu), then close all popped up submenus etc.
+		this.onClose();
+	},
+
+	_onDescendantExecute: function(){
+		// summary:
+		//		Called when submenu is clicked; close hierarchy of menus
+		this.onClose();
 	}
 });
 
