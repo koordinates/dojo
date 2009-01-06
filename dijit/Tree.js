@@ -62,7 +62,9 @@ dojo.declare(
 		//		grandchildren, etc.
 		this.indent = indent;
 
-		var pixels = (indent*19) + "px";	// TODO: use width of expandoIcon instead of hardcoding value
+		// Math.max() is to prevent negative padding on hidden root node (when indent == -1)
+		// 19 is the width of the expandoIcon (TODO: get this from CSS instead of hardcoding)
+		var pixels = (Math.max(indent, 0) * 19) + "px";	
 
 		dojo.style(this.domNode, "backgroundPosition",  pixels + " 0px");
 		dojo.style(this.rowNode, dojo._isBodyLtr() ? "paddingLeft" : "paddingRight", pixels);
@@ -1415,6 +1417,7 @@ dojo.declare("dijit.tree.ForestStoreModel", dijit.tree.TreeStoreModel, {
 		dijit.tree.TreeStoreModel.prototype.pasteItem.call(this, childItem,
 			oldParentItem === this.root ? null : oldParentItem,
 			newParentItem === this.root ? null : newParentItem,
+			bCopy,
 			insertIndex
 		);
 		if(newParentItem === this.root){
