@@ -140,8 +140,56 @@
 							}, dojo.body());
 							
 							doh.is(1, dojo.query(".restored").length);
-						}
+						},
 						
+						function emptyDiv(t){
+							var n = dojo.create("div", {
+								innerHTML: "1<span class='red'>2</span>3<em custom='x'>4</em>5"
+							});
+							doh.isNot("", n.innerHTML);
+							dojo.empty(n);
+							doh.is("", n.innerHTML);
+							dojo.destroy(n);
+						},
+						
+						function emptyTable(t){
+							var table = dojo.create("table", null, dojo.body()),
+								tr1 = dojo.create("tr", null, table),
+								td1 = dojo.create("td", {innerHTML: "a"}, tr1),
+								td2 = dojo.create("td", {innerHTML: "b"}, tr1),
+								tr2 = dojo.create("tr", null, table),
+								td3 = dojo.create("td", {innerHTML: "c"}, tr2),
+								td4 = dojo.create("td", {innerHTML: "d"}, tr2);
+							doh.isNot("", table.innerHTML);
+							dojo.empty(table);
+							doh.is("", table.innerHTML);
+							dojo.destroy(table);
+						},
+
+						function toDomSpans(t){
+							var t = dojo.toDom("<span>1</span><span>2</span>");
+							doh.is(2, t.childNodes.length);
+							doh.is("span", t.firstChild.tagName.toLowerCase());
+							doh.is("1", t.firstChild.innerHTML);
+							doh.is("span", t.lastChild.tagName.toLowerCase());
+							doh.is("2", t.lastChild.innerHTML);
+						},
+
+						function toDomTr(t){
+							var t = dojo.toDom("<tr><td>First!</td></tr>");
+							doh.is(1, t.childNodes.length);
+							doh.is("tr", t.firstChild.tagName.toLowerCase());
+							doh.is(1, t.firstChild.childNodes.length);
+							doh.is("td", t.firstChild.firstChild.tagName.toLowerCase());
+							doh.is("First!", t.firstChild.firstChild.innerHTML);
+						},
+
+						function toDomText(t){
+							var t = dojo.toDom("Hello, world!");
+							doh.is(1, t.childNodes.length);
+							doh.is(3, t.firstChild.nodeType);
+							doh.is("Hello, world!", t.firstChild.nodeValue);
+						}
 					]
 				);
 				doh.run();
