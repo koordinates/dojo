@@ -6,8 +6,10 @@ dojo.require("dojo.fx");
 
 dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
+dojo.require("dijit.form._FormMixin");
+dojo.require("dijit._DialogMixin");
+dojo.require("dijit.DialogUnderlay")
 dojo.require("dijit.layout.ContentPane");
-dojo.require("dijit.form.Form");
 dojo.requireLocalization("dijit", "common");
 
 /*=====
@@ -20,137 +22,6 @@ dijit._underlay = function(kwArgs){
 	//		or subclass thereof is shown.
 };
 =====*/
-
-dojo.declare(
-	"dijit.DialogUnderlay",
-	[dijit._Widget, dijit._Templated],
-	{
-		// summary: The component that blocks the screen behind a `dijit.Dialog`
-		//
-		// description:
-		// 		A component used to block input behind a `dijit.Dialog`. Only a single
-		//		instance of this widget is created by `dijit.Dialog`, and saved as 
-		//		a reference to be shared between all Dialogs as `dijit._underlay`
-		//	
-		//		The underlay itself can be styled based on and id:
-		//	|	#myDialog_underlay { background-color:red; }
-		//
-		//		In the case of `dijit.Dialog`, this id is based on the id of the Dialog,
-		//		suffixed with _underlay. 
-		
-		// Template has two divs; outer div is used for fade-in/fade-out, and also to hold background iframe.
-		// Inner div has opacity specified in CSS file.
-		templateString: "<div class='dijitDialogUnderlayWrapper'><div class='dijitDialogUnderlay' dojoAttachPoint='node'></div></div>",
-
-		// Parameters on creation or updatable later
-		dialogId: "",
-		"class": "",
-
-		attributeMap: { id: "domNode" },
-
-		_setDialogIdAttr: function(id){
-			dojo.attr(this.node, "id", id + "_underlay");
-		},
-
-		_setClassAttr: function(clazz){
-			this.node.className = "dijitDialogUnderlay " + clazz;
-		},
-
-		postCreate: function(){
-			// summary: Append the underlay to the body
-			dojo.body().appendChild(this.domNode);
-			this.bgIframe = new dijit.BackgroundIframe(this.domNode);
-		},
-
-		layout: function(){
-			// summary: Sets the background to the size of the viewport
-			//
-			// description:
-			//	Sets the background to the size of the viewport (rather than the size
-			//	of the document) since we need to cover the whole browser window, even
-			//	if the document is only a few lines long.
-
-			var is = this.node.style,
-				os = this.domNode.style;
-
-			// hide the background temporarily, so that the background itself isn't
-			// causing scrollbars to appear (might happen when user shrinks browser
-			// window and then we are called to resize)
-			os.display = "none";
-
-			// then resize and show
-			var viewport = dijit.getViewport();
-			os.top = viewport.t + "px";
-			os.left = viewport.l + "px";
-			is.width = viewport.w + "px";
-			is.height = viewport.h + "px";
-			os.display = "block";
-		},
-
-		show: function(){
-			// summary: Show the dialog underlay
-			this.domNode.style.display = "block";
-			this.layout();
-			if(this.bgIframe.iframe){
-				this.bgIframe.iframe.style.display = "block";
-			}
-		},
-
-		hide: function(){
-			// summary: hides the dialog underlay
-			this.domNode.style.display = "none";
-			if(this.bgIframe.iframe){
-				this.bgIframe.iframe.style.display = "none";
-			}
-		},
-
-		uninitialize: function(){
-			if(this.bgIframe){
-				this.bgIframe.destroy();
-			}
-		}
-	}
-);
-
-
-dojo.declare("dijit._DialogMixin", null,
-	{
-		attributeMap: dijit._Widget.prototype.attributeMap,
-
-		// execute: Function
-		//	User defined function to do stuff when the user hits the submit button
-		execute: function(/*Object*/ formContents){},
-
-		// onCancel: Function
-		//      Callback when user has canceled dialog, to notify container
-		//      (user shouldn't override)
-		onCancel: function(){},
-
-		// onExecute: Function
-		//	Callback when user is about to execute dialog, to notify container
-		//	(user shouldn't override)
-		onExecute: function(){},
-
-		_onSubmit: function(){
-			// summary: callback when user hits submit button
-			this.onExecute();	// notify container that we are about to execute
-			this.execute(this.attr('value'));
-		},
-
-		_getFocusItems: function(/*Node*/ dialogNode){
-			// find focusable Items each time a dialog is opened
-			
-			var elems = dijit._getTabNavigable(dojo.byId(dialogNode));
-			this._firstFocusItem = elems.lowest || elems.first || dialogNode;
-			this._lastFocusItem = elems.last || elems.highest || this._firstFocusItem;
-			if(dojo.isMoz && this._firstFocusItem.tagName.toLowerCase() == "input" && dojo.attr(this._firstFocusItem, "type").toLowerCase() == "file"){
-					//FF doesn't behave well when first element is input type=file, set first focusable to dialog container
-					dojo.attr(dialogNode, "tabindex", "0");
-					this._firstFocusItem = dialogNode;
-			}
-		}
-	}
-);
 
 dojo.declare(
 	"dijit.Dialog",
@@ -502,93 +373,6 @@ dojo.declare(
 	}
 );
 
-dojo.declare(
-	"dijit.TooltipDialog",
-	[dijit.layout.ContentPane, dijit._Templated, dijit.form._FormMixin, dijit._DialogMixin],
-	{
-		// summary:
-		//		Pops up a dialog that appears like a Tooltip
-		//
-		// title: String
-		// 		Description of tooltip dialog (required for a11Y)
-		title: "",
-
-		// doLayout: Boolean
-		//		Don't change this parameter from the default value.
-		//		This ContentPane parameter doesn't make sense for TooltipDialog, since TooltipDialog
-		//		is never a child of a layout container, nor can you specify the size of
-		//		TooltipDialog in order to control the size of an inner widget. 
-		doLayout: false,
-
-		// autofocus: Boolean
-		// 		A Toggle to modify the default focus behavior of a Dialog, which
-		// 		is to focus on the first dialog element after opening the dialog.
-		//		False will disable autofocusing. Default: true
-		autofocus: true,
-
-		"class": "dijitTooltipDialog",
-
-		// _firstFocusItem: DomNode
-		//		The pointer to the first focusable node in the dialog
-		_firstFocusItem:null,
-		
-		// _lastFocusItem: DomNode
-		//		The domNode that had focus before we took it.
-		_lastFocusItem: null,
-
-		templateString: null,
-		templatePath: dojo.moduleUrl("dijit", "templates/TooltipDialog.html"),
-
-		postCreate: function(){
-			this.inherited(arguments);
-			this.connect(this.containerNode, "onkeypress", "_onKey");
-			this.containerNode.title = this.title;
-		},
-
-		orient: function(/*DomNode*/ node, /*String*/ aroundCorner, /*String*/ corner){
-			// summary: configure widget to be displayed in given position relative to the button
-			this.domNode.className = this["class"] +" dijitTooltipAB"+(corner.charAt(1)=='L'?"Left":"Right")+" dijitTooltip"+(corner.charAt(0)=='T' ? "Below" : "Above");
-		},
-
-		onOpen: function(/*Object*/ pos){
-			// summary: called when dialog is displayed
-		
-			this.orient(this.domNode,pos.aroundCorner, pos.corner);
-			this._onShow(); // lazy load trigger
-			
-			if(this.autofocus){
-				this._getFocusItems(this.containerNode);
-				dijit.focus(this._firstFocusItem);
-			}
-		},
-		
-		_onKey: function(/*Event*/ evt){
-			// summary: keep keyboard focus in dialog; close dialog on escape key
-			var node = evt.target;
-			var dk = dojo.keys;
-			if (evt.charOrCode === dk.TAB){
-				this._getFocusItems(this.containerNode);
-			}
-			var singleFocusItem = (this._firstFocusItem == this._lastFocusItem);
-			if(evt.charOrCode == dk.ESCAPE){
-				this.onCancel();
-				dojo.stopEvent(evt);
-			}else if(node == this._firstFocusItem && evt.shiftKey && evt.charOrCode === dk.TAB){
-				if(!singleFocusItem){
-					dijit.focus(this._lastFocusItem); // send focus to last item in dialog
-				}
-				dojo.stopEvent(evt);
-			}else if(node == this._lastFocusItem && evt.charOrCode === dk.TAB && !evt.shiftKey){
-				if(!singleFocusItem){
-					dijit.focus(this._firstFocusItem); // send focus to first item in dialog
-				}
-				dojo.stopEvent(evt);
-			}else if(evt.charOrCode === dk.TAB){
-				// we want the browser's default tab handling to move focus
-				// but we don't want the tab to propagate upwards
-				evt.stopPropagation();
-			}
-		}
-	}	
-);
+// For back-compat.  TODO: remove in 2.0
+dojo.require("dijit.TooltipDialog");
 
