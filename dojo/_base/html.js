@@ -1316,11 +1316,8 @@ if(dojo.isIE || dojo.isOpera){
 				d.style(node, value);
 			}else if(name === "innerHTML"){
 				if(d.isIE && node.tagName.toLowerCase() in _roInnerHtml){
-					var frag = d.toDom(value, node.ownerDocument), c;
 					d.empty(node);
-					while(c = frag.firstChild){ // intentional assignment
-						node.appendChild(c);
-					}
+					node.appendChild(d.toDom(value, node.ownerDocument));
 				}else{
 					node[name] = value;
 				}
@@ -1549,11 +1546,17 @@ if(dojo.isIE || dojo.isOpera){
 			master.innerHTML = frag;
 		}
 
+		// one node shortcut => return the node itself
+		if(master.childNodes.length == 1){
+			return master.removeChild(master.firstChild); // DOMNode
+		}
+		
+		// return multiple nodes as a document fragment
 		df = doc.createDocumentFragment();
 		while(fc = master.firstChild){ // intentional assignment
 			df.appendChild(fc);
 		}
-		return df;
+		return df; // DOMNode
 	}
 
 	// =============================
