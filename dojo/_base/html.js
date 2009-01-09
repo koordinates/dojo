@@ -179,7 +179,7 @@ if(dojo.isIE || dojo.isOpera){
 		//		Attempt to insert node into the DOM, choosing from various positioning options.
 		//		Returns true if successful, false otherwise.
 		//	node: 
-		//		id or node reference to place relative to refNode
+		//		id or node reference, or HTML fragment starting with "<" to place relative to refNode
 		//	refNode: 
 		//		id or node reference to use as basis for placement
 		//	position:
@@ -216,8 +216,10 @@ if(dojo.isIE || dojo.isOpera){
 		if(!node || !refNode){
 			return false;	//	boolean 
 		}
-		node = d.byId(node);
 		refNode = d.byId(refNode);
+		if(d.isString(node)){
+			node = node.charAt(0) == "<" ? d._toDom(node, refNode.ownerDocument) : d.byId(node);
+		}
 		if(typeof position == "number"){
 			var cn = refNode.childNodes;
 			if(!cn.length || cn.length <= position){
@@ -1317,7 +1319,7 @@ if(dojo.isIE || dojo.isOpera){
 			}else if(name === "innerHTML"){
 				if(d.isIE && node.tagName.toLowerCase() in _roInnerHtml){
 					d.empty(node);
-					node.appendChild(d.toDom(value, node.ownerDocument));
+					node.appendChild(d._toDom(value, node.ownerDocument));
 				}else{
 					node[name] = value;
 				}
@@ -1461,7 +1463,7 @@ if(dojo.isIE || dojo.isOpera){
 		};
 
 	/*=====
-	dojo.toDom = function(frag, doc){
+	dojo._toDom = function(frag, doc){
 			//	summary:
 			//		instantiates an HTML fragment returning the corresponding DOM.
 			//	frag: String
@@ -1473,14 +1475,12 @@ if(dojo.isIE || dojo.isOpera){
 			//
 			//	example:
 			//	Create a table row:
-			//	| var tr = dojo.toDom("<tr><td>First!</td></tr>");
+			//	| var tr = dojo._toDom("<tr><td>First!</td></tr>");
 	}
 	=====*/
 
-	// support stuff for dojo.toDom
-	var selfClosedTags = {img: 1, meta: 1, hr: 1, br: 1, col: 1, param: 1,
-			link: 1, base: 1, input: 1},
-		tagWrap = {
+	// support stuff for dojo._toDom
+	var tagWrap = {
 			option: ["select"],
 			tbody: ["table"],
 			thead: ["table"],
@@ -1488,14 +1488,12 @@ if(dojo.isIE || dojo.isOpera){
 			tr: ["table", "tbody"],
 			td: ["table", "tbody", "tr"],
 			th: ["table", "thead", "tr"],
-			fieldset: ["form"],
-			legend: ["form", "fieldset"],
+			legend: ["fieldset"],
 			caption: ["table"],
 			colgroup: ["table"],
 			col: ["table", "colgroup"],
 			li: ["ul"]
 		},
-		reSelfClosedTag = /<\s*(\w+)([^\/\>]*)\/\s*>/g,
 		reTag = /<\s*([\w\:]+)/,
 		masterNode = {}, masterNum = 0,
 		masterName = "__" + d._scopeName + "ToDomId";
@@ -1510,7 +1508,7 @@ if(dojo.isIE || dojo.isOpera){
 		// but we don't care at this point
 	}
 
-	d.toDom = function(frag, doc){
+	d._toDom = function(frag, doc){
 		// summary converts HTML string into DOM nodes.
 
 		doc = doc || d.doc;
@@ -1520,16 +1518,8 @@ if(dojo.isIE || dojo.isOpera){
 			masterNode[masterId] = doc.createElement("div");
 		}
 
-		// make sure frag is a string.
+		// make sure the frag is a string.
 		frag += "";
-
-		// convert <tag/> into <tag></tag>
-		frag = frag.replace(reSelfClosedTag, function(tag, name, contents){
-			if(name in selfClosedTags){
-				return tag;
-			}
-			return "<" + name + contents + "></" + name + ">";
-		});
 
 		// find the starting tag, and get node wrapper
 		var match = frag.match(reTag),
