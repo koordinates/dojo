@@ -100,7 +100,6 @@ djConfig = {
 	//		Save dojo/resources/blank.html to your domain and set `djConfig.dojoBlankHtmlUrl` 
 	//		to the path on your domain your copy of blank.html.
 	dojoBlankHtmlUrl: undefined
-	
 }
 =====*/
 
@@ -191,8 +190,6 @@ dojo.global = {
 	};
 =====*/
 	dojo.locale = d.config.locale;
-	
-	var rev = "$Rev$".match(/\d+/);
 
 	dojo.version = {
 		// summary: 
@@ -207,8 +204,8 @@ dojo.global = {
 		//		Descriptor flag. If total version is "1.2.0beta1", will be "beta1"
 		//	revision: Number
 		//		The SVN rev from which dojo was pulled
-		major: 1, minor: 1, patch: 0, flag: "dev",
-		revision: rev ? +rev[0] : 999999, //FIXME: use NaN?
+		major: 1, minor: 3, patch: 0, flag: "dev",
+		revision: +"$Rev$".match(/\d+/)[0],
 		toString: function(){
 			with(d.version){
 				return major + "." + minor + "." + patch + flag + " (" + revision + ")";	// String
