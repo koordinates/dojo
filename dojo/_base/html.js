@@ -1364,35 +1364,24 @@ if(dojo.isIE || dojo.isOpera){
 		//		and placement. 
 		//
 		// description:
-		//		A DOM Element creation function. A shorthand method for creating a node of
-		//		type `tag`, and allowing for a convenient optional attribute setting step, 
+		//		A DOM Element creation function. A shorthand method for creating a node or
+		//		a fragment, and allowing for a convenient optional attribute setting step, 
 		//		as well as an optional DOM placement reference.
 		//|
-		//		Attributes are set by passing the optional object through `dojo.attr`. See
-		//		`dojo.attr` for noted caevats and nuances, and API if applicable. 
+		//		Attributes are set by passing the optional object through `dojo.attr`.
+		//		See `dojo.attr` for noted caevats and nuances, and API if applicable. 
 		//|
 		//		Placement is done via `dojo.place`, assuming the new node to be the action 
 		//		node, passing along the optional reference node and position. 
-		//|
-		//		NOTE: 
-		//		This is explicitly documented as NOT an alias to `dojo.doc.createElement`, 
-		//		as complex markup creation is planned in future versions. If you are using
-		//		`dojo.doc.createElement` with complex markup to work around known browser
-		//		quirks, you should remain doing so. 
-		//|	
-		//		eg: dojo.doc.createElement(dojo.isIE < 7 ? "<iframe name='baz'></iframe>" : "iframe");
-		//|
-		//		Do NOT expect passing the complex markup through `dojo.create` to continue
-		//		to work in all versions. `dojo.create` currently only supports single tag creation, though
-		//		as a byproduct of it's design APPEARS to support creating complex markup in 
-		//		these edge cases. `dojo.create` should NOT be used in that way until it
-		//		supports complex markup officially, as defined by this API. 
 		//
-		// tag: String
-		//		A string of the element to create (eg: "div", "a", "p", "li", "script", "br") 
+		// tag: String|DomNode
+		//		A string of the element to create (eg: "div", "a", "p", "li", "script", "br"),
+		//		or an HTML fragment to instantiate (eg: "<div><span>1</span></div>"),
+		//		or an existing DOM node to process.
 		//
 		// attrs: Object?
-		//		An optional object-hash of attributes to set on the newly created node. 
+		//		An optional object-hash of attributes to set on the newly created node.
+		//		In case of a fragment, it should have a single root node to be processed.
 		//		See: `dojo.attr` for a description of available attributes.
 		//
 		// refNode: String?|DomNode?
@@ -1402,21 +1391,32 @@ if(dojo.isIE || dojo.isOpera){
 		//	
 		// pos: String?
 		//		Optional positional reference. Defaults to "last" by way of `dojo.place`,
-		//		though can be set to "first","after","before","last" to further control
-		//		the placement of the new node relative to the refNode. 'refNode' is
-		//		required if a 'pos' is specified.
+		//		though can be set to "first","after","before","last", "replace" or "only"
+		//		to further control the placement of the new node relative to the refNode.
+		//		'refNode' is required if a 'pos' is specified.
 		//
 		// example:
-		//	Create a div:
+		//	Create a DIV:
 		//	| var n = dojo.create("div");
 		//
 		// example:
-		//	Create a div with content:
+		//	Create a DIV with content:
 		//	| var n = dojo.create("div", { innerHTML:"<p>hi</p>" });
 		//
 		// example:
 		//	Place a new DIV in the BODY, with no attributes set
 		//	| var n = dojo.create("div", null, dojo.body());
+		//
+		// example:
+		//	Create a DIV with content, and append it to the BODY:
+		//	| var n = dojo.create("<div><p>hi</p></div>", null, dojo.body());
+		//
+		// example:
+		//	Create a DIV with content, add attributes, and append to the BODY:
+		//	| var n = dojo.create("<div><p>hi</p></div>", {
+		//	|                       id: "abc", style: {color: "red"}
+		//	|                     },
+		//	|                     dojo.body());
 		//
 		// example:
 		//	Create an UL, and populate it with LI's. Place the list as the first-child of a 
@@ -1437,11 +1437,24 @@ if(dojo.isIE || dojo.isOpera){
 		//	|		.addClass("newDiv")
 		//	|		.onclick(function(e){ console.log('clicked', e.target) })
 		//	|		.place("#someNode"); // redundant, but cleaner.
-		
-		var n = d.doc.createElement(tag);
-		if(attrs){ d.attr(n, attrs); }
-		if(refNode){ d.place(n, refNode, pos); }
-		return n; // DomNode
+
+		var doc = d.doc;
+		if(attrs && (typeof attrs == "string" || attrs.nodeType === 1 && attrs.tagName && attrs.appendChild)){
+			// attrs is a DOM node => attrs is missing, and refNode is used
+			pos = refNode;
+			refNode = attrs;
+			attrs = null;
+		}
+		if(refNode){		
+			refNode = d.byId(refNode);
+			doc = refNode.ownerDocument;
+		}
+		if(d.isString(tag)){
+			tag = tag.charAt(0) == "<" ? d._toDom(tag, doc) : doc.createElement(tag);
+		}
+		if(attrs && tag.nodeType == 1 /* ELEMENT_NODE */){ d.attr(tag, attrs); }
+		if(refNode){ d.place(tag, refNode, pos); }
+		return tag; // DomNode
 	}
 	
 	/*=====
