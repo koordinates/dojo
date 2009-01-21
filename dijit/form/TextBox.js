@@ -147,7 +147,7 @@ dojo.declare(
 		},
 
 		_onInput: function(e){
-			if(/key/i.test(e.type) && e.keyCode){
+			if(e && e.type && /key/i.test(e.type) && e.keyCode){
 				switch(e.keyCode){
 					case dojo.keys.SHIFT:
 					case dojo.keys.ALT:
@@ -212,11 +212,13 @@ dojo.declare(
 		},
 
 		_onBlur: function(e){
+			if(this.disabled){ return; }
 			this._setBlurValue();
 			this.inherited(arguments);
 		},
 
 		_onFocus: function(e){
+			if(this.disabled){ return; }
 			this._refreshState();
 			this.inherited(arguments);
 		},
