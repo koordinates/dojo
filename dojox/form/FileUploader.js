@@ -1,7 +1,6 @@
 dojo.provide("dojox.form.FileUploader");
 dojo.experimental("dojox.form.FileUploader");
 var swfPath = dojo.config.uploaderPath || dojo.moduleUrl("dojox.form", "resources/uploader.swf");
-console.log(location)
 
 dojo.require("dojox.embed.Flash");
 dojo.require("dojo.io.iframe");
@@ -143,6 +142,9 @@ dojo.declare("dojox.form.FileUploader", null, {
 	//		FLASH ONLY - In HTML, append the vars to the uploadUrl
 	//		Sends data via POST to the server along with the uploaded
 	//		files.
+	//	NEW:
+	//		You can also pass postData in the upload method
+	//		which can be different with each upload
 	postData:null,
 	//
 	//	swfPath: String
@@ -299,12 +301,18 @@ dojo.declare("dojox.form.FileUploader", null, {
 		console.warn("FLASH/ERROR " + evtObject.type.toUpperCase() + ":", evtObject);
 	},
 	
-	upload: function(){
+	upload: function(/*Object ? */data){
 		// summary:
-		// 		When called, begins file upload 
-		this.log("UPLOAD.TYPE:", this.uploaderType)
+		// 		When called, begins file upload
+		//	data: Object
+		//		postData to be sent to server
+		if(data){
+			this.postData = data;
+		}
+		this.log("UPLOAD.TYPE:", this.uploaderType, "postData:", this.postData);
+		
 		if (this.uploaderType == "flash") {
-			this.flashMovie.doUpload();
+			this.flashMovie.doUpload(this.postData);
 		}else{
 			//this.log("POST FORM")
 			//this.log("FORM:", this._formNode)
@@ -351,6 +359,18 @@ dojo.declare("dojox.form.FileUploader", null, {
 		dojo.style(this.domNode, "display", "");
 	},
 	
+	disable: function(/*Boolean*/disabled){
+		// summary:
+		//	This method is connected to the "fake" dijit
+		//	button, and hides and shows on the disabling.
+		//	If the "fake" button is a dom node, this method
+		//	would need to be called directly.
+		if(disabled){
+			this.hide();
+		}else{
+			this.show();
+		}
+	},
 	destroyAll: function(){
 		//	summary:
 		// 		Destroys everything including 'fake' button
@@ -457,18 +477,26 @@ dojo.declare("dojox.form.FileUploader", null, {
 		
 		this.flashObject = new dojox.embed.Flash(args, this.flashDiv);
 		this.flashObject.onLoad = dojo.hitch(this, function(mov){
-			this.log("ONLOAD")
+			this.log("ONLOAD", mov)
 			this.flashMovie = mov;
-			this.flashMovie.setFileMask(this.fileMask);
-			if(this.postData){
-				this.flashMovie.setPostData(this.postData);
-			}
-			//
+			this.setFlashVars();
 		});
 		
 		
 	},
-		
+	
+	setFlashVars: function(){
+		console.log("setFlashVars postData --------> ", this.postData);
+		try{	
+			this.flashMovie.setFileMask(this.fileMask);
+			if(this.postData){
+				this.flashMovie.setPostData(this.postData);
+			}
+		}catch(e){
+			setTimeout(dojo.hitch(this, "setFlashVars"), 100);
+		}
+			
+	},
 	
 	createHtmlUploader: function(){
 		// summary:
@@ -506,13 +534,16 @@ dojo.declare("dojox.form.FileUploader", null, {
 		// IE mainly needs the help for the timeout.
 		// but may as well do it for all then the check
 		// for whether we are in a dialog 
-		setTimeout(dojo.partial(dojo.style, this.flashDiv, {
-			position:"absolute",
-			top: dim.y + "px",
-			left: dim.x + "px",
-			width: dim.w + "px",
-			height: dim.h + "px",
-			zIndex: 2001
+		setTimeout(dojo.hitch(this, function(){
+			dojo.style(this.flashDiv, {
+				position:"absolute",
+				top: dim.y + "px",
+				left: dim.x + "px",
+				width: dim.w + "px",
+				height: dim.h + "px",
+				zIndex: 2001
+			});
+			this.log("this.flashDiv:", this.flashDiv)
 		}), 100);
 	},
 	
@@ -617,9 +648,14 @@ dojo.declare("dojox.form.FileUploader", null, {
 				this.show();
 				this.setPosition();
 			}));	
-			this._cons.push(dojo.connect(dialog, "hide", this, "hide"));
-			this._cons.push(dojo.connect(dialog, "destroy", this, "destroy")); // this one may not be needed
+			this._cons.push(
+				dojo.connect(dialog, "hide", this, "hide"),
+				dojo.connect(dialog, "destroy", this, "destroy") // this one may not be needed
+			);
 			this._subs.push(dojo.subscribe("/dnd/move/stop",this,"setPosition"));
+		}
+		if(this.button.domNode){
+			this._cons.push(dojo.connect(this.button, "_setDisabledAttr", this, "disable"));
 		}
 		// in some cases, mainly due to scrollbars, the buttons
 		//	are initially misplaced
@@ -816,8 +852,8 @@ dojo.declare("dojox.form.FileUploader", null, {
 			//		overwritten with more precise paramters
 			//
 			var fakeNode = (this.button.domNode) ? dojo.byId(this.button.id).parentNode : dojo.byId(this.button.id) || this.button;
-			this.log(this.id, "fakeNode", fakeNode)
-			//PATCH
+			//this.log(this.id, "fakeNode", fakeNode)
+			
 			// This should be tested - or allow an ability to overwrite the settings
 			if (fakeNode.tagName.toLowerCase() == "span") {
 				fakeNode = dojo.byId(this.button.id)
@@ -846,17 +882,4 @@ dojo.declare("dojox.form.FileUploader", null, {
 			return fake;
 		}
 		
-});
-//
-// Messages to be removed post 1.3.0
-//
-dojo.declare("dojox.form.FileInputOverlay", null, {
-	constructor: function(){
-		console.warn("dojox.form.FileInputOverlay has been removed. Use dojox.form.FileUploader directly, with the param force:'html'");
-	}
-});
-dojo.declare("dojox.form.FileInputFlash", null, {
-	constructor: function(){
-		console.warn("dojox.form.FileInputFlash has been removed. Use dojox.form.FileUploader directly, with the param force:'flash'");
-	}
 });
