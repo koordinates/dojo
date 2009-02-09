@@ -1,12 +1,11 @@
 dojo.provide("dojox.layout.ScrollPane");
 dojo.experimental("dojox.layout.ScrollPane");
 
-dojo.require("dijit.layout._LayoutWidget");
+dojo.require("dijit.layout.ContentPane");
 dojo.require("dijit._Templated");
-dojo.require("dijit._Container");
 
 dojo.declare("dojox.layout.ScrollPane",
-	[dijit.layout._LayoutWidget, dijit._Templated],
+	[dijit.layout.ContentPane, dijit._Templated],
 	{
 	// summary: A pane that "scrolls" its content based on the mouse poisition inside
 	//
@@ -40,16 +39,32 @@ dojo.declare("dojox.layout.ScrollPane",
 	
 	templatePath: dojo.moduleUrl("dojox.layout","resources/ScrollPane.html"),
 	
-	resize: function(){
+	resize: function(size){
 		// summary: calculates required sizes. Call this if you add/remove content manually, or reload the content.
+		
+		// if size is passed, it means we need to take care of sizing ourself (this is for IE<8)
+		if(size){
+			if(size.h){
+				dojo.style(this.domNode,'height',size.h+'px');
+			}
+			if(size.w){
+				dojo.style(this.domNode,'width',size.w+'px');
+			}
+		}
 		var dir = this._dir,
 			vert = this._vertical,
 			val = this.containerNode[(vert ? "scrollHeight" : "scrollWidth")];
 
-		dojo.style(this.wrapper, dir, "100%");
+		//dojo.style(this.wrapper, dir, "100%");
 		this._lo = dojo.coords(this.wrapper, true);
 		
 		this._size = Math.max(0, val - this._lo[(vert ? "h" : "w")]);
+		if(!this._size){
+			this.helper.style.display="none";
+			return;
+		}else{
+			this.helper.style.display="";
+		}
 		this._line = new dojo._Line(0 - this._offset, this._size + (this._offset * 2));
 	
 		// share a relative position w the scroll offset via a line
@@ -90,6 +105,7 @@ dojo.declare("dojox.layout.ScrollPane",
 	},	
 	
 	_set: function(/* Float */n){
+		if(!this._size){ return; }
 		// summary: set the pane's scroll offset, and position the virtual scroll helper 
 		this.wrapper[this._scroll] = Math.floor(this._line.getValue(n));
 		dojo.style(this.helper, this._edge, Math.floor(this._helpLine.getValue(n)) + "px");    
