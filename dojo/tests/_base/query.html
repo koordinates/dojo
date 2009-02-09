@@ -47,6 +47,9 @@
 						"doh.is(2, (dojo.query('.baz')).length);",
 						"doh.is(3, (dojo.query('#t > h3')).length);",
 
+
+						"doh.is(2, (dojo.query('#baz,#foo,#t')).length);",
+
 						// syntactic equivalents
 						"doh.is(12, (dojo.query('#t > *')).length);",
 						"doh.is(12, (dojo.query('#t >')).length);",
@@ -100,6 +103,7 @@
 
 						// failed scope arg
 						"doh.is(0, (dojo.query('*', 'thinger')).length);",
+						"doh.is(0, (dojo.query('div#foo').length));",
 
 						// sibling selectors
 						"doh.is(1, dojo.query('+', 'container').length);",
