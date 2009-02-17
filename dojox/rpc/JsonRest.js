@@ -10,6 +10,9 @@ dojo.require("dojox.rpc.Rest");
 	var jr;
 	function resolveJson(service, deferred, value, defaultId){
 		var timeStamp = deferred.ioArgs && deferred.ioArgs.xhr && deferred.ioArgs.xhr.getResponseHeader("Last-Modified");
+		if(timeStamp && Rest._timeStamps){
+			Rest._timeStamps[defaultId] = timeStamp;
+		}
 		return value && dojox.json.ref.resolveJson(value, {
 			defaultId: defaultId, 
 			index: Rest._index,
@@ -131,7 +134,7 @@ dojo.require("dojox.rpc.Rest");
 								object.__id = newId;
 								Rest._index[newId] = object;
 							}
-							value = resolveJson(service, dfd, value);
+							value = resolveJson(service, dfd, value, object && object.__id);
 						}catch(e){}
 						if(!(--left)){
 							if(kwArgs.onComplete){
@@ -140,7 +143,7 @@ dojo.require("dojox.rpc.Rest");
 						}
 						return value;
 					});
-				})(isPost && action.content, dfd, service);
+				})(action.content, dfd, service);
 								
 				dfd.addErrback(function(value){
 					
@@ -241,17 +244,28 @@ dojo.require("dojox.rpc.Rest");
 				//
 				//	data:
 				//		object to mixed in
-				if(service._schema){
-					var properties = service._schema.properties;
-					for(var i in properties){
-						if("default" in properties[i]){
-							this[i] = properties[i]["default"];
+				var self = this;
+				var args = arguments;
+				var properties;
+				function addDefaults(schema){
+					if(schema){
+						addDefaults(schema['extends']);
+						properties = schema.properties;
+						for(var i in properties){
+							var propDef = properties[i]; 
+							if(propDef && (typeof propDef == 'object') && ("default" in propDef)){
+								self[i] = propDef["default"];
+							}
 						}
 					}
+					if(data){
+						dojo.mixin(self,data);
+					}
+					if(schema && schema.prototype && schema.prototype.initialize){
+						schema.prototype.initialize.apply(self, args);
+					}
 				}
-				if(data){
-					dojo.mixin(this,data);
-				}
+				addDefaults(service._schema);
 				var idAttribute = jr.getIdAttribute(service);
 				Rest._index[this.__id = this.__clientId = 
 						service.servicePath + (this[idAttribute] || 
