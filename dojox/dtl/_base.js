@@ -627,7 +627,7 @@ dojo.experimental("dojox.dtl");
 		_any: function(type, base, locations){
 			for(var path in locations){
 				for(var i = 0, fn; fn = locations[path][i]; i++){
-					var key = fn.toLowerCase();
+					var key = fn;
 					if(dojo.isArray(fn)){
 						key = fn[0];
 						fn = fn[1];
