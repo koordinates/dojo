@@ -140,12 +140,10 @@ dojo.declare(
 		},
 
 		_setDisabledAttr: function(/*Boolean*/ value){
-			// summary:
-			//		Call this from superclass as part of _setDisabledAttr() method.
-			//		Superclass _must_ define _setDisabledAttr().
-			// description:
-			//		Additional code to set disabled state of combobox node
-				dijit.setWaiState(this.comboNode, "disabled", value);
+			// Additional code to set disabled state of combobox node.
+			// Overrides _FormValueWidget._setDisabledAttr() or ValidationTextBox._setDisabledAttr().
+			this.inherited(arguments);
+			dijit.setWaiState(this.comboNode, "disabled", value);
 		},	
 		
 		_onKeyPress: function(/*Event*/ evt){
@@ -651,15 +649,13 @@ dojo.declare(
 					}
 				}
 			}
+			this.inherited(arguments);
 		},
 		
-		_postCreate: function(){
+		postCreate: function(){
 			// summary:
 			//		Subclasses must call this method from their postCreate() methods
 			// tags: protected
-
-			// TODO: can't we just call this postCreate() and do this.inherited() everywhere?
-			// dojo.declare() with this.inherited() calls postCreate() in the superclass and mixins
 
 			//find any associated label element and add to combobox node.
 			var label=dojo.query('label[for="'+this.id+'"]');
@@ -669,6 +665,7 @@ dojo.declare(
 				dijit.setWaiState(cn, "labelledby", label[0].id);
 				
 			}
+			this.inherited(arguments);
 		},
 
 		uninitialize: function(){
@@ -1098,27 +1095,6 @@ dojo.declare(
 		// 
 		//		Some of the options to the ComboBox are actually arguments to the data
 		//		provider.
-
-		postMixInProperties: function(){
-			// FIXME: shouldn't this just be a call to inherited?  dojo.declare() makes
-			// this.inherited() call every function in every superclass + every mixin.
-			dijit.form.ComboBoxMixin.prototype.postMixInProperties.apply(this, arguments);
-			dijit.form.ValidationTextBox.prototype.postMixInProperties.apply(this, arguments);
-		},
-
-		postCreate: function(){
-			// FIXME: shouldn't this just be a call to inherited?  dojo.declare() makes
-			// this.inherited() call every function in every superclass + every mixin.
-			dijit.form.ComboBoxMixin.prototype._postCreate.apply(this, arguments);
-			dijit.form.ValidationTextBox.prototype.postCreate.apply(this, arguments);
-		},
-
-		_setDisabledAttr: function(/*Boolean*/ value){
-			// FIXME: shouldn't this just be a call to inherited?  dojo.declare() makes
-			// this.inherited() call every function in every superclass + every mixin.
-			dijit.form.ValidationTextBox.prototype._setDisabledAttr.apply(this, arguments);
-			dijit.form.ComboBoxMixin.prototype._setDisabledAttr.apply(this, arguments);
-		},
 
 		_setValueAttr: function(/*String*/ value, /*Boolean?*/ priorityChange){
 			// summary:
