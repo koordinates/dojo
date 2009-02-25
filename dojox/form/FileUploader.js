@@ -299,7 +299,10 @@ dojo.declare("dojox.form.FileUploader", null, {
 	},
 	
 	onError: function(evtObject){
-		console.warn("FLASH/ERROR " + evtObject.type.toUpperCase() + ":", evtObject);
+		//FIXME: Unsure of a standard form for receieving errors
+		var type = evtObject.type ? evtObject.type.toUpperCase() : "ERROR";
+		var msg = evtObject.msg ? evtObject.msg : evtObject;
+		console.warn("FLASH/ERROR/"+type , msg);
 	},
 	
 	upload: function(/*Object ? */data){
@@ -439,6 +442,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 		var w = "100%";
 		var h = "100%";
 		var args = {
+			expressInstall:true,
 			path: this.swfPath.uri || this.swfPath,
 			width: w,
 			height: h,
@@ -482,6 +486,9 @@ dojo.declare("dojox.form.FileUploader", null, {
 		this.setPosition();
 		
 		this.flashObject = new dojox.embed.Flash(args, this.flashDiv);
+		this.flashObject.onError = function(msg){
+			console.warn("Flash Error:", msg);
+		}
 		this.flashObject.onLoad = dojo.hitch(this, function(mov){
 			this.log("ONLOAD", mov)
 			this.flashMovie = mov;
@@ -700,6 +707,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 	},
 	
 	_complete: function(dataArray){
+		this.log("_complete", dataArray);
 		for (var i = 0; i < this.fileList.length; i++) {
 			this.fileList[i].percent = 100;
 		}
@@ -710,6 +718,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 	},
 	
 	_progress: function(dataObject){
+		this.log("_progress", dataObject);
 		for (var i = 0; i < this.fileList.length; i++) {
 			var f = this.fileList[i];
 			if (f.name == dataObject.name) {
