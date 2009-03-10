@@ -94,7 +94,7 @@ dojo.require("dojo.dnd.Moveable");
 			// SLOT: result[5] => content
 			result.push('');
 			// result[6] => td closes
-			result.push('</td>');
+			result.push(isHeader?'</th>':'</td>');
 			return result; // Array
 		},
 
@@ -299,7 +299,7 @@ dojo.require("dojo.dnd.Moveable");
 							cell.headerClasses = 'dojoDndItem';
 						}
 						if(cell.attrs){
-							if(cell.attrs.indexOf("dndType='gridColumn'") == -1){
+							if(cell.attrs.indexOf("dndType='gridColumn_") == -1){
 								cell.attrs += " dndType='gridColumn_" + this.grid.id + "'";
 							}
 						}else{
