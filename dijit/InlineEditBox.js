@@ -237,10 +237,10 @@ dojo.declare("dijit.InlineEditBox",
 		setTimeout(function(){
 			ew.destroy();
 			delete ew;
-			if(dojo.isIE){
+			//if(dojo.isIE){
 				// messing with the DOM tab order can cause IE to focus the body - so restore
 				dijit.focus(dijit.getFocus());
-			}
+			//}
 		}, 1000); // no hurry - wait for things to quiesce
 	},
 

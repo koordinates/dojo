@@ -22,12 +22,12 @@ dijit.scrollIntoView = function(/* DomNode */node){
 	var html = body.parentNode;
 	// if FF2 (which is perfect) or an untested browser, then use the native method
 
-	if((!(dojo.isFF >= 3 || dojo.isIE || dojo.isWebKit) || node == body || node == html) && (typeof node.scrollIntoView == "function")){ // FF2 is perfect, too bad FF3 is not
+	if(typeof node.scrollIntoView == "function" || typeof node.scrollIntoView == "object"){ // *** FF2 is perfect, too bad FF3 is not
 		node.scrollIntoView(false); // short-circuit to native if possible
 		return;
 	}
 	var ltr = dojo._isBodyLtr();
-	var rtl = !(ltr || (dojo.isIE >= 8 && !compatMode)); // IE8 mostly flips everything transparently (except border)
+	var rtl = !(ltr || (dojo.isReallyIE8 && !dojo.isQuirks)); // IE8 mostly flips everything transparently (except border)
 	// body and html elements are all messed up due to browser bugs and inconsistencies related to doctype
 	// normalize the values before proceeding (FF2 is not listed since its native behavior is perfect)
 	// for computation simplification, client and offset width and height are the same for body and html

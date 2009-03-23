@@ -15,7 +15,7 @@ dojo.require("dojo._base.connect");
 			var oname = name;
 			if(
 				//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-				!dojo.isIE && 
+				typeof document.documentElement.onmouseenter == 'undefined' && 
 				//>>excludeEnd("webkitMobile");
 				(name == "mouseenter" || name == "mouseleave")
 			){
@@ -23,13 +23,13 @@ dojo.require("dojo._base.connect");
 				//oname = name;
 				name = (name == "mouseenter") ? "mouseover" : "mouseout";
 				fp = function(e){		
-					if(dojo.isFF <= 2) {
+					//if(dojo.isFF <= 2) {
 						// check tagName to fix a FF2 bug with invalid nodes (hidden child DIV of INPUT)
 						// which causes isDescendant to return false which causes
 						// spurious, and more importantly, incorrect mouse events to fire.
 						// TODO: remove tagName check when Firefox 2 is no longer supported
 						try{ e.relatedTarget.tagName; }catch(e2){ return; }
-					}
+					//}
 					if(!dojo.isDescendant(e.relatedTarget, node)){
 						// e.type = oname; // FIXME: doesn't take? SJM: event.type is generally immutable.
 						return ofp.call(this, e); 

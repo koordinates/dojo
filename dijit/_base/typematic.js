@@ -143,10 +143,10 @@ dijit.typematic = {
 			}),
 			dc(node, "dblclick", this, function(evt){
 				dojo.stopEvent(evt);
-				if(dojo.isIE){
+				//if(dojo.isIE){
 					dijit.typematic.trigger(evt, _this, node, callback, node, subsequentDelay, initialDelay);
 					setTimeout(dojo.hitch(this, dijit.typematic.stop), 50);
-				}
+				//}
 			})
 		];
 	},

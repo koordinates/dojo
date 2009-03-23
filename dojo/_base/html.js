@@ -1,4 +1,3 @@
-dojo.require("dojo._base.lang");
 dojo.provide("dojo._base.html");
 
 // FIXME: need to add unit tests for all the semi-public methods
@@ -47,40 +46,23 @@ dojo.byId = function(id, doc){
 =====*/
 
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-if(dojo.isIE || dojo.isOpera){
+//if(dojo.isIE || dojo.isOpera){
 	dojo.byId = function(id, doc){
 		if(dojo.isString(id)){
 			var _d = doc || dojo.doc;
 			var te = _d.getElementById(id);
-			// attributes.id.value is better than just id in case the 
-			// user has a name=id inside a form
-			if(te && (te.attributes.id.value == id || (typeof te.id == "string" && te.id == id))){
-				return te;
-			}else{
-				var eles = _d.all[id];
-				if(!eles || eles.nodeName){
-					eles = [eles];
-				}
-				// if more than 1, choose first with the correct id
-				var i=0;
-				while((te=eles[i++])){
-					if((te.attributes && te.attributes.id && te.attributes.id.value == id)
-						|| (typeof te.id == "string" && te.id == id)){
-						return te;
-					}
-				}
-			}
-		}else{
-			return id; // DomNode
+
+			return (te && te.id == id) ? te : null;                
 		}
+		return id; // DomNode
 	};
-}else{
+//}else{
 //>>excludeEnd("webkitMobile");
-	dojo.byId = function(id, doc){
-		return dojo.isString(id) ? (doc || dojo.doc).getElementById(id) : id; // DomNode
-	};
+//	dojo.byId = function(id, doc){
+//		return dojo.isString(id) ? (doc || dojo.doc).getElementById(id) : id; // DomNode
+//	};
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-}
+//}
 //>>excludeEnd("webkitMobile");
 /*=====
 }
@@ -163,18 +145,17 @@ if(dojo.isIE || dojo.isOpera){
 		//		allows selection.
 		node = d.byId(node);
 		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-		if(d.isMozilla){
+		if(typeof node.style.MozUserSelect == 'string'){
 			node.style.MozUserSelect = selectable ? "" : "none";
-		}else if(d.isKhtml || d.isWebKit){
+		}else if(typeof node.style.KhtmlUserSelect == 'string'){
 		//>>excludeEnd("webkitMobile");
 			node.style.KhtmlUserSelect = selectable ? "auto" : "none";
 		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-		}else if(d.isIE){
+		}else if(typeof node.unselectable == 'string'){
 			var v = (node.unselectable = selectable ? "" : "on");
 			d.query("*", node).forEach("item.unselectable = '"+v+"'");
 		}
 		//>>excludeEnd("webkitMobile");
-		//FIXME: else?  Opera?
 	};
 
 	var _insertBefore = function(/*DomNode*/node, /*DomNode*/ref){

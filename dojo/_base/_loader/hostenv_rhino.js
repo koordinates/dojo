@@ -18,7 +18,7 @@ if(typeof print == "function"){
 
 if(!("byId" in dojo)){
 	dojo.byId = function(id, doc){
-		if(id && (typeof id == "string" || id instanceof String)){
+		if(id && (typeof id == "string")){
 			if(!doc){ doc = document; }
 			return doc.getElementById(id);
 		}
@@ -249,3 +249,9 @@ if(dojo.config["modulePaths"]){
 		dojo.registerModulePath(param, dojo.config["modulePaths"][param]);
 	}
 }
+
+dojo.provide("dojo._base");
+dojo.require("dojo._base.base");
+dojo.require("dojo._base.connect");
+dojo.require("dojo._base.json");
+dojo.require("dojo._base.Color");

@@ -236,23 +236,24 @@ dijit._frames = new function(){
 	var queue = [];
 
 	this.pop = function(){
-		var iframe;
+		var iframe, style;
 		if(queue.length){
 			iframe = queue.pop();
 			iframe.style.display="";
 		}else{
-			if(dojo.isIE){
-				var burl = dojo.config["dojoBlankHtmlUrl"] || (dojo.moduleUrl("dojo", "resources/blank.html")+"") || "javascript:\"\"";
-				var html="<iframe src='" + burl + "'"
-					+ " style='position: absolute; left: 0px; top: 0px;"
-					+ "z-index: -1; filter:Alpha(Opacity=\"0\");'>";
-				iframe = dojo.doc.createElement(html);
-			}else{
-			 	iframe = dojo.create("iframe");
-				iframe.src = 'javascript:""';
-				iframe.className = "dijitBackgroundIframe";
+		 	iframe = dojo.create("iframe");
+			iframe.src = 'javascript:""';
+			iframe.className = "dijitBackgroundIframe";
+			// *** why are these styles not in a class?
+			// *** were IE-only, now inferred from DirectX filter
+			style = iframe.style;
+			if (typeof iframe.style.filter == 'string') {
+				style.filter = 'Alpha(Opacity=0)';
+				style.zIndex = '-1';
+				style.position = 'absolute';
+				style.top = style.left = '0';
 			}
-			iframe.tabIndex = -1; // Magic to prevent iframe from getting focus on tab keypress - as style didnt work.
+			iframe.tabIndex = -1; // Prevent iframe from getting focus on tab keypress - as style didnt work.
 			dojo.body().appendChild(iframe);
 		}
 		return iframe;
@@ -279,10 +280,10 @@ dijit.BackgroundIframe = function(/* DomNode */node){
 	//			area (and position) of node
 
 	if(!node.id){ throw new Error("no id"); }
-	if(dojo.isIE < 7 || (dojo.isFF < 3 && dojo.hasClass(dojo.body(), "dijit_a11y"))){
+	if(dojo.isIE < 7 || (dojo.hasClass(dojo.body(), "dijit_a11y"))){
 		var iframe = dijit._frames.pop();
 		node.appendChild(iframe);
-		if(dojo.isIE){
+		if(iframe.style.setExpression){
 			iframe.style.setExpression("width", dojo._scopeName + ".doc.getElementById('" + node.id + "').offsetWidth");
 			iframe.style.setExpression("height", dojo._scopeName + ".doc.getElementById('" + node.id + "').offsetHeight");
 		}

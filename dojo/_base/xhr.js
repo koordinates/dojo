@@ -1,7 +1,5 @@
 dojo.provide("dojo._base.xhr");
-dojo.require("dojo._base.Deferred");
 dojo.require("dojo._base.json");
-dojo.require("dojo._base.lang");
 dojo.require("dojo._base.query");
 
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
@@ -235,7 +233,7 @@ dojo.require("dojo._base.query");
 		xml: function(xhr){
 			var result = xhr.responseXML;
 			//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-			if(_d.isIE && (!result || !result.documentElement)){
+			if(window.ActiveXObject && (!result || !result.documentElement)){
 				var ms = function(n){ return "MSXML" + n + ".DOMDocument"; }
 				var dp = ["Microsoft.XMLDOM", ms(6), ms(4), ms(3), ms(2)];
 				_d.some(dp, function(p){

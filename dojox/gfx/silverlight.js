@@ -543,7 +543,7 @@ dojox.gfx.createSurface = function(parentNode, width, height){
 	s._nodes.push(t);
 
 	// build the object
-	var obj, pluginName = dojox.gfx._base._getUniqueId(),
+	var pluginName = dojox.gfx._base._getUniqueId(),
 		onLoadName = "__" + dojox.gfx._base._getUniqueId() + "_onLoad";
 	s._onLoadName = onLoadName;
 	window[onLoadName] = function(sender){
@@ -556,28 +556,8 @@ dojox.gfx.createSurface = function(parentNode, width, height){
 			console.log("Silverlight: assigned");
 		}
 	};
-	if(dojo.isSafari){
-		obj = "<embed type='application/x-silverlight' id='" +
-		pluginName + "' width='" + width + "' height='" + height +
-		" background='transparent'" +
-		" source='#" + t.id + "'" +
-		" windowless='true'" +
-		" maxFramerate='60'" +
-		" onLoad='" + onLoadName + "'" +
-		" onError='__dojoSilverlightError'" +
-		" /><iframe style='visibility:hidden;height:0;width:0'/>";
-	}else{
-		obj = "<object type='application/x-silverlight' data='data:application/x-silverlight,' id='" +
-		pluginName + "' width='" + width + "' height='" + height + "'>" +
-		"<param name='background' value='transparent' />" +
-		"<param name='source' value='#" + t.id + "' />" +
-		"<param name='windowless' value='true' />" +
-		"<param name='maxFramerate' value='60' />" +
-		"<param name='onLoad' value='" + onLoadName + "' />" +
-		"<param name='onError' value='__dojoSilverlightError' />" +
-		"</object>";
-	}
-	parentNode.innerHTML = obj;
+
+	parentNode.innerHTML = "<object type='application/x-silverlight' data='data:application/x-silverlight,' id='" + pluginName + "' width='" + width + "' height='" + height + "'><param name='background' value='transparent'><param name='source' value='#" + t.id + "'><param name='windowless' value='true'><param name='maxFramerate' value='60'><param name='onLoad' value='" + onLoadName + "'><param name='onError' value='__dojoSilverlightError'><iframe style='visibility:hidden;display:none;height:0;width:0'></object>";
 
 	var pluginNode = dojo.byId(pluginName);
 	if(pluginNode.content && pluginNode.content.root){
@@ -772,5 +752,4 @@ dojo.extend(dojox.gfx.Surface, dojox.gfx.shape.Creator);
 	dojox.gfx.equalSources = function(a, b){
 		return a && b && a.equals(b);
 	}
-
 })();

@@ -1,6 +1,4 @@
 dojo.provide("dojo._base.NodeList");
-dojo.require("dojo._base.lang");
-dojo.require("dojo._base.array");
 
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 (function(){

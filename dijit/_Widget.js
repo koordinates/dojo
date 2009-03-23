@@ -458,6 +458,7 @@ dojo.declare("dijit._Widget", null, {
 		//		method.
 		// tags:
 		//		protected
+		window.alert('build rendering');
 		this.domNode = this.srcNodeRef || dojo.create('div');
 	},
 

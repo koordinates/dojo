@@ -21,7 +21,7 @@ dojo.isSafari = {
 	//	|	if(dojo.isSafari){ ... }
 	//	example: 
 	//		Detect iPhone:
-	//	|	if(dojo.isSafari && navigator.userAgent.indexOf("iPhone") != -1){ 
+	//	|	if(dojo.isSafari && typeof window.orientation == 'number'){ 
 	//	|		// we are iPhone. Note, iPod touch reports "iPod" above and fails this test.
 	//	|	}
 };
@@ -33,11 +33,11 @@ dojo = {
 	//	isFF: Number | undefined
 	//		Version as a Number if client is FireFox. undefined otherwise. Corresponds to
 	//		major detected FireFox version (1.5, 2, 3, etc.)
-	isFF: 2,
+	isFF: 0,
 	//	isIE: Number | undefined
 	//		Version as a Number if client is MSIE(PC). undefined otherwise. Corresponds to
 	//		major detected IE version (6, 7, 8, etc.)
-	isIE: 6,
+	isIE: 0,
 	//	isKhtml: Number | undefined
 	//		Version as a Number if client is a KHTML browser. undefined otherwise. Corresponds to major
 	//		detected version.
@@ -63,8 +63,10 @@ dojo = {
 }
 =====*/
 
+var dojo;
+
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-if(typeof window != 'undefined'){
+if(typeof window != 'undefined' && window.document){
 //>>excludeEnd("webkitMobile");
 	dojo.isBrowser = true;
 	dojo._name = "browser";
@@ -81,13 +83,13 @@ if(typeof window != 'undefined'){
 
 		// grab the node we were loaded from
 		if(document && document.getElementsByTagName){
-			var scripts = document.getElementsByTagName("script");
+			var m, src, scripts = document.getElementsByTagName("script");
 			var rePkg = /dojo(\.xd)?\.js(\W|$)/i;
+
 			for(var i = 0; i < scripts.length; i++){
-				var src = scripts[i].getAttribute("src");
-				if(!src){ continue; }
-				var m = src.match(rePkg);
-				if(m){
+				src = scripts[i].src;
+
+				if(src && (m = src.match(rePkg))){
 					// find out where we came from
 					if(!d.config.baseUrl){
 						d.config.baseUrl = src.substring(0, m.index);
@@ -95,9 +97,11 @@ if(typeof window != 'undefined'){
 					// and find out if we need to modify our behavior
 					var cfg = scripts[i].getAttribute("djConfig");
 					if(cfg){
-						var cfgo = eval("({ "+cfg+" })");
+						var cfgo = (new Function("return { "+cfg+" };"))();
 						for(var x in cfgo){
-							dojo.config[x] = cfgo[x];
+							if (dojo.isOwnProperty(cfgo, x)) {
+								dojo.config[x] = cfgo[x];
+							}
 						}
 					}
 					break; // "first Dojo wins"
@@ -112,8 +116,11 @@ if(typeof window != 'undefined'){
 			dav = n.appVersion,
 			tv = parseFloat(dav);
 
-		if(dua.indexOf("Opera") >= 0){ d.isOpera = tv; }
-		if(dua.indexOf("AdobeAIR") >= 0){ d.isAIR = 1; }
+		if(window.opera && Object.prototype.toString.call(window.opera) == '[object Opera]'){
+			d.isOpera = tv;
+		} else if(dua.indexOf("AdobeAIR") >= 0){
+			d.isAIR = 1;
+		}
 		d.isKhtml = (dav.indexOf("Konqueror") >= 0) ? tv : 0;
 		d.isWebKit = parseFloat(dua.split("WebKit/")[1]) || undefined;
 		d.isChrome = parseFloat(dua.split("Chrome/")[1]) || undefined;
@@ -138,29 +145,39 @@ if(typeof window != 'undefined'){
 			//We really need to get away from this. Consider a sane isGecko approach for the future.
 			d.isFF = parseFloat(dua.split("Firefox/")[1] || dua.split("Minefield/")[1] || dua.split("Shiretoko/")[1]) || undefined;
 		}
-		if(document.all && !d.isOpera){
-			d.isIE = parseFloat(dav.split("MSIE ")[1]) || undefined;
+
+		// *** Want comditional compilation around this
+
+		if(typeof document.all == 'object' && typeof window.ActiveXObject != 'undefined' && typeof window.external != 'undefined' && !d.isOpera){
 			//In cases where the page has an HTTP header or META tag with
 			//X-UA-Compatible, then it is in emulation mode, for a previous
 			//version. Make sure isIE reflects the desired version.
-			//document.documentMode of 5 means quirks mode.
-			if(d.isIE >= 8 && document.documentMode != 5){
+
+			if(typeof document.documentMode == 'number'){
 				d.isIE = document.documentMode;
-			}
+				d.isReallyIE8OrGreater = true;
+			} else if (typeof document.compatMode == 'string') {
+				d.isIE = typeof window.XMLHttpRequest == 'undefined' ? 6 : 7 ;
+			} else {
+				d.isIE = 5;
+			}			
 		}
 
 		//Workaround to get local file loads of dojo to work on IE 7
 		//by forcing to not use native xhr.
-		if(dojo.isIE && window.location.protocol === "file:"){
+		if(window.ActiveXObject && window.location.protocol == "file:"){
 			dojo.config.ieForceActiveXXhr=true;
 		}
 		//>>excludeEnd("webkitMobile");
 
-		var cm = document.compatMode;
-		d.isQuirks = cm == "BackCompat" || cm == "QuirksMode" || d.isIE < 6;
+		var cm = document.compatMode || '';
 
-		// TODO: is the HTML LANG attribute relevant?
-		d.locale = dojo.config.locale || (d.isIE ? n.userLanguage : n.language).toLowerCase();
+		// This covers all quirks modes, so isn't very useful for inferences
+		// Should be deprecated
+
+		d.isQuirks = !(/css/i.test(cm));
+
+		d.locale = (dojo.config.locale || (n.userLanguage || n.language) || (document.documentElement && document.documentElement.lang) || '').toLowerCase();
 
 		// These are in order of decreasing likelihood; this will change in time.
 		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
@@ -172,18 +189,18 @@ if(typeof window != 'undefined'){
 			//		does the work of portably generating a new XMLHTTPRequest object.
 			var http, last_e;
 			//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-			if(!dojo.isIE || !dojo.config.ieForceActiveXXhr){
+			if(window.XMLHttpRequest && !dojo.config.ieForceActiveXXhr){
 			//>>excludeEnd("webkitMobile");
 				try{ http = new XMLHttpRequest(); }catch(e){}
 			//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 			}
-			if(!http){
+			if(!http && d.global.ActiveXObject){
 				for(var i=0; i<3; ++i){
 					var progid = d._XMLHTTP_PROGIDS[i];
 					try{
-						http = new ActiveXObject(progid);
-					}catch(e){
-						last_e = e;
+						http = new d.global.ActiveXObject(progid);
+					}catch(e2){
+						last_e = e2;
 					}
 
 					if(http){
@@ -199,7 +216,7 @@ if(typeof window != 'undefined'){
 			}
 
 			return http; // XMLHTTPRequest instance
-		}
+		};
 
 		d._isDocumentOk = function(http){
 			var stat = http.status || 0;
@@ -207,7 +224,7 @@ if(typeof window != 'undefined'){
 				stat == 304 || 						// allow any 2XX response code
 				stat == 1223 || 						// get it out of the cache
 				(!stat && (location.protocol=="file:" || location.protocol=="chrome:") ); // Internet Explorer mangled the status code
-		}
+		};
 
 		//See if base tag is in use.
 		//This is to fix http://trac.dojotoolkit.org/ticket/3973,
@@ -217,11 +234,22 @@ if(typeof window != 'undefined'){
 		//Opera still has problems, but perhaps a larger issue of base tag support
 		//with XHR requests (hasBase is true, but the request is still made to document
 		//path, not base path).
-		var owloc = window.location+"";
+		var owloc = window.location.href;
 		var base = document.getElementsByTagName("base");
-		var hasBase = (base && base.length > 0);
+		var hasBase;
+		var baseIndex = base.length;
 
-		d._getText = function(/*URI*/ uri, /*Boolean*/ fail_ok){
+		while (baseIndex--) {
+			if (base[baseIndex].href) {
+				hasBase = true;
+				break;
+			}
+		}
+
+		var emptyFunction = function() {};
+
+		d._getText = function(/*URI*/ uri, /*Boolean*/ fail_ok, /*Function*/ cb){
+
 			// summary: Read the contents of the specified uri and return those contents.
 			// uri:
 			//		A relative or absolute uri. If absolute, it still must be in
@@ -229,51 +257,77 @@ if(typeof window != 'undefined'){
 			// fail_ok:
 			//		Default false. If fail_ok and loading fails, return null
 			//		instead of throwing.
+			// cb:
+			//		Callback
+			//              Requests are asynchronous only in the event that cb is passed (and dojo.config.syncXhrForModules is false)
+			//
 			// returns: The response text. null is returned when there is a
 			//		failure and failure is okay (an exception otherwise)
 
 			// NOTE: must be declared before scope switches ie. this._xhrObj()
 			var http = this._xhrObj();
+			var async = cb && !this.config.syncXhrForModules;
 
 			if(!hasBase && dojo._Url){
 				uri = (new dojo._Url(owloc, uri)).toString();
 			}
 
 			if(d.config.cacheBust){
-				//Make sure we have a string before string methods are used on uri
-				uri += "";
 				uri += (uri.indexOf("?") == -1 ? "?" : "&") + String(d.config.cacheBust).replace(/\W+/g,"");
 			}
 
-			http.open('GET', uri, false);
+			try {
+				if (async) {
+					http.onreadystatechange = function() {
+						if (http.readyState == 4) {
+							if (d._isDocumentOk(http)) {
+								cb(http.responseText);
+								http.onreadystatechange = emptyFunction;
+							}
+						}
+					};
+				}
+				http.open('GET', uri, async);
+			}catch(e) {
+				if(fail_ok){ return null; } // null
+				// re-throw the exception
+				throw e;				
+			}
 			try{
 				http.send(null);
-				if(!d._isDocumentOk(http)){
-					var err = Error("Unable to load "+uri+" status:"+ http.status);
-					err.status = http.status;
-					err.responseText = http.responseText;
+				if(!async && !d._isDocumentOk(http)){
+					var err = new Error("Unable to load "+uri+" status:"+ http.status);					
 					throw err;
 				}
-			}catch(e){
+			}catch(e3){
 				if(fail_ok){ return null; } // null
-				// rethrow the exception
-				throw e;
+				// re-throw the exception
+				throw e3;
 			}
-			return http.responseText; // String
-		}
+
+
+			if (async) {
+				return true; // Boolean - indicates pending response
+			} else {
+				if (cb) {
+					cb(http.responseText);
+				}
+				return http.responseText;  // String
+			}
+		};
 		
 
-		var _w = window;
+		// *** Odd name
 		var _handleNodeEvent = function(/*String*/evtName, /*Function*/fp){
 			// summary:
 			//		non-destructively adds the specified function to the node's
 			//		evtName handler.
 			// evtName: should be in the form "onclick" for "onclick" handlers.
 			// Make sure you pass in the "on" part.
-			var oldHandler = _w[evtName] || function(){};
-			_w[evtName] = function(){
-				fp.apply(_w, arguments);
-				oldHandler.apply(_w, arguments);
+			var oldHandler = window[evtName];
+			window[evtName] = function(){
+				fp.apply(window, arguments);
+				if (oldHandler) { oldHandler.apply(window, arguments); }
 			};
 		};
 
@@ -305,7 +359,7 @@ if(typeof window != 'undefined'){
 			//		The first time that addOnWindowUnload is called Dojo
 			//		will register a page listener to trigger your unload
 			//		handler with. Note that registering these handlers may
-			//		destory "fastback" page caching in browsers that support
+			//		destroy "fastback" page caching in browsers that support
 			//		it. Be careful trying to modify the DOM or access
 			//		JavaScript properties during this phase of page unloading:
 			//		they may not always be available. Consider
@@ -371,43 +425,43 @@ if(typeof window != 'undefined'){
 		var type = e && e.type ? e.type.toLowerCase() : "load";
 		if(arguments.callee.initialized || (type != "domcontentloaded" && type != "load")){ return; }
 		arguments.callee.initialized = true;
-		if("_khtmlTimer" in dojo){
-			clearInterval(dojo._khtmlTimer);
+		if(dojo._khtmlTimer){
+			window.clearInterval(dojo._khtmlTimer);
 			delete dojo._khtmlTimer;
 		}
 
-		if(dojo._inFlightCount == 0){
+		if(!dojo._inFlightCount){
 			dojo._modulesLoaded();
 		}
-	}
+	};
 
 	if(!dojo.config.afterOnLoad){
 		//	START DOMContentLoaded
-		// Mozilla and Opera 9 expose the event we could use
 		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 		if(document.addEventListener){
 			// NOTE: 
 			//		due to a threading issue in Firefox 2.0, we can't enable
 			//		DOMContentLoaded on that platform. For more information, see:
 			//		http://trac.dojotoolkit.org/ticket/1704
-			if(dojo.isWebKit > 525 || dojo.isOpera || dojo.isFF >= 3 || (dojo.isMoz && dojo.config.enableMozDomContentLoaded === true)){
+
+			if(!dojo.config.syncXhrForModules && dojo.config.enableMozDomContentLoaded !== false){
 		//>>excludeEnd("webkitMobile");
 				document.addEventListener("DOMContentLoaded", dojo._loadInit, null);
 		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 			}
-	
-			//	mainly for Opera 8.5, won't be fired if DOMContentLoaded fired already.
-			//  also used for Mozilla because of trac #1640
+		}
+
+		if (window.addEventListener) {
 			window.addEventListener("load", dojo._loadInit, null);
 		}
+
 		//>>excludeEnd("webkitMobile");
 	
 		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-		if(dojo.isAIR){
-			window.addEventListener("load", dojo._loadInit, null);
-		}else if((dojo.isWebKit < 525) || dojo.isKhtml){
-			dojo._khtmlTimer = setInterval(function(){
-				if(/loaded|complete/.test(document.readyState)){
+
+		if(!dojo.isIE && typeof document.readyState == 'string' && window.setInterval){
+			dojo._khtmlTimer = window.setInterval(function(){
+				if(/loaded|complete/i.test(document.readyState)){
 					dojo._loadInit(); // call the onload handler
 				}
 			}, 10);
@@ -423,17 +477,21 @@ if(typeof window != 'undefined'){
 		// 	because we don't know if there are other functions added that
 		// 	might.  Note that this has changed because the build process
 		// 	strips all comments -- including conditional ones.
+
 		if(!dojo.config.afterOnLoad){
-			document.write('<scr'+'ipt defer src="//:" '
-				+ 'onreadystatechange="if(this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}">'
-				+ '</scr'+'ipt>'
-			);
+			document.write('<script defer src="//:" onreadystatechange="if(this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
 		}
 
-		try{
+		// *** Should be in VML module?
+
+		//try{
+		if (document.namespaces && document.namespaces.add) {
 			document.namespaces.add("v","urn:schemas-microsoft-com:vml");
-			document.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML);  display:inline-block");
-		}catch(e){}
+			if (document.createStyleSheet) {
+				document.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML); display:inline-block");
+			}
+		}
+		//}catch(e){}
 	}
 	//>>excludeEnd("webkitMobile");
 
@@ -457,10 +515,12 @@ if(typeof window != 'undefined'){
 //script tag's attribute.
 (function(){
 //>>excludeEnd("webkitMobile");
-	var mp = dojo.config["modulePaths"];
+	var mp = dojo.config.modulePaths;
 	if(mp){
 		for(var param in mp){
-			dojo.registerModulePath(param, mp[param]);
+			if (dojo.isOwnProperty(mp, param)) {
+				dojo.registerModulePath(param, mp[param]);
+			}
 		}
 	}
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
@@ -478,3 +538,62 @@ if(dojo.config.debugAtAllCosts){
 	dojo.require("dojo._base._loader.loader_debug");
 	dojo.require("dojo.i18n");
 }
+
+dojo.provide("dojo._base"); // All environments
+dojo.provide("dojo._base.browser");
+
+// Delete unused files
+
+dojo.require("dojo._base.base");
+
+if (!dojo.config.noQuery) {
+	dojo.require("dojo._base.query");
+}
+if (!dojo.config.noJson) { // FIXME: XHR should not require JSON
+	dojo.require("dojo._base.json");
+	if (!dojo.config.noXhr) {
+		if (dojo.config.noQuery) {
+			throw new Error("XHR requires query"); // FIXME: XHR should not be tangled with query
+		}
+		dojo.require("dojo._base.xhr");
+	}
+}
+
+if (!dojo.config.noHtml) {
+	dojo.require("dojo._base.html");
+}
+
+if (!dojo.config.noNodeList) {
+	dojo.require("dojo._base.NodeList");
+}
+
+if (!dojo.config.noConnect) {
+	dojo.require("dojo._base.connect");
+
+	if (!dojo.config.noFx) {
+		if (dojo.config.noHtml) {
+			throw new Error("FX requires HTML");
+		}
+		if (dojo.config.noNodeList) {
+			throw new Error("FX requires NodeList"); // FIXME: FX should not require NodeList
+		}
+		dojo.require("dojo._base.fx");
+	}
+	if (!dojo.config.noEvent) {
+		dojo.require("dojo._base.event");
+	}
+}
+
+//Need this to be the last code segment in base, so do not place any
+//dojo.requireIf calls in this file. Otherwise, due to how the build system
+//puts all requireIf dependencies after the current file, the require calls
+//could be called before all of base is defined.
+
+(function() {
+	var i, require = dojo.config.require;
+	for (i in require) {
+		if (dojo.isOwnProperty(require, i)) {
+			dojo.require(i);
+		}
+	}
+})();

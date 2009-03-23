@@ -1,8 +1,8 @@
 dojo.provide("dojo._base.fx");
-dojo.require("dojo._base.Color");
+if (!dojo.config.noColor) {
+	dojo.require("dojo._base.Color");
+}
 dojo.require("dojo._base.connect");
-dojo.require("dojo._base.declare");
-dojo.require("dojo._base.lang");
 dojo.require("dojo._base.html");
 
 /*
@@ -333,15 +333,17 @@ dojo.require("dojo._base.html");
 
 	var _makeFadeable = 
 		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-		d.isIE ? function(node){
+		document.documentElement.currentStyle ? function(node){
 			// only set the zoom if the "tickle" value would be the same as the
 			// default
-			var ns = node.style;
+			//var ns = node.style;
 			// don't set the width to auto if it didn't already cascade that way.
 			// We don't want to f anyones designs
-			if(!ns.width.length && d.style(node, "width") == "auto"){
-				ns.width = "auto";
-			}
+			//if(!ns.width.length && d.style(node, "width") == "auto"){
+			//	ns.width = "auto";
+			//}
+			if (node.currentStyle && !node.currentStyle.hasLayout) { node.style.zoom = 1; }
+
 		} : 
 		//>>excludeEnd("webkitMobile");
 		function(){};
@@ -409,7 +411,7 @@ dojo.require("dojo._base.html");
 		this._properties = properties;
 		for(var p in properties){
 			var prop = properties[p];
-			if(prop.start instanceof d.Color){
+			if(d.Color && prop.start instanceof d.Color){
 				// create a reusable temp color object to keep intermediate results
 				prop.tempColor = new d.Color();
 			}
@@ -421,7 +423,7 @@ dojo.require("dojo._base.html");
 		for(var p in this._properties){
 			var prop = this._properties[p],
 				start = prop.start;
-			if(start instanceof d.Color){
+			if(d.Color && start instanceof d.Color){
 				ret[p] = d.blendColors(start, prop.end, r, prop.tempColor).toCss();
 			}else if(!d.isArray(start)){
 				ret[p] = ((prop.end - start) * r) + start + (p != "opacity" ? prop.units || "px" : 0);

@@ -11,6 +11,8 @@
 //		Simply doing a require on this module will
 //		establish this CSS.  Modified version of Morris' CSS hack.
 
+// *** Should be deprecated with browser-specific classes
+
 dojo.provide("dijit._base.sniff");
 
 (function(){

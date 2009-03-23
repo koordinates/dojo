@@ -92,7 +92,7 @@ abbr, acronym {
 */
 body { 
 	font: 12px Myriad,Helvetica,Tahoma,Arial,clean,sans-serif; 
-	*font-size: 75%;
+
 }
 
 /* Headings */
@@ -147,7 +147,6 @@ ol li, ul li {
 /* pre and code */
 pre, code { 
 	font-size:115%;
-	*font-size:100%;
 	font-family: Courier, "Courier New"; 
 	background-color: #efefef; 
 	border: 1px solid #ccc;

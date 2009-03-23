@@ -78,3 +78,10 @@ if(dojo.config["modulePaths"]){
 		dojo.registerModulePath(param, dojo.config["modulePaths"][param]);
 	}
 }
+
+dojo.provide("dojo._base");
+
+dojo.require("dojo._base.base");
+dojo.require("dojo._base.connect");
+dojo.require("dojo._base.json");
+dojo.require("dojo._base.Color");

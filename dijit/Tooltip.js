@@ -104,11 +104,13 @@ dojo.declare(
 		},
 
 		_onShow: function(){
+
 			// summary:
 			//		Called at end of fade-in operation
 			// tags:
 			//		protected
-			if(dojo.isIE){
+
+			if(typeof this.domNode.style.filter == 'string'){
 				// the arrow won't show up on a node w/an opacity filter
 				this.domNode.style.filter="";
 			}
@@ -211,9 +213,9 @@ dojo.declare(
 					dojo.forEach(["onMouseEnter", "onMouseLeave", "onFocus", "onBlur"], function(event){
 						this.connect(node, event.toLowerCase(), "_"+event);
 					}, this);
-					if(dojo.isIE){
+					if(typeof node.style.zoom == 'string'){
 						// BiDi workaround
-						node.style.zoom = 1;
+						node.style.zoom = '1';
 					}
 				}
 			}, this);

@@ -3,7 +3,6 @@ if(typeof dojo != "undefined"){
 //>>excludeEnd("webkitMobile");
 	dojo.provide("dojo._base.query");
 	dojo.require("dojo._base.NodeList");
-	dojo.require("dojo._base.lang");
 
 //>>excludeStart("acmeExclude", fileName.indexOf("dojo") != -1);
 
@@ -117,7 +116,7 @@ if(typeof dojo != "undefined"){
 			5.) matched nodes are pruned to ensure they are unique (if necessary)
 */
 
-;(function(d){
+(function(d){
 	// define everything in a closure for compressability reasons. "d" is an
 	// alias to "dojo" (or the toolkit alias object, e.g., "acme").
 
@@ -894,7 +893,7 @@ if(typeof dojo != "undefined"){
 	
 	/*
 	// thanks, Dean!
-	var itemIsAfterRoot = d.isIE ? function(item, root){
+	var itemIsAfterRoot = !item.compareDocumentPosition ? function(item, root){
 		return (item.sourceIndex > root.sourceIndex);
 	} : function(item, root){
 		return (item.compareDocumentPosition(root) == 2);
@@ -1176,14 +1175,10 @@ if(typeof dojo != "undefined"){
 	// IE QSA queries may incorrectly include comment nodes, so we throw the
 	// zipping function into "remove" comments mode instead of the normal "skip
 	// it" which every other QSA-clued browser enjoys
-	var noZip = d.isIE ? "commentStrip" : "nozip";
+	var noZip = "commentStrip";
 
 	var qsa = "querySelectorAll";
-	var qsaAvail = (
-		!!getDoc()[qsa] && 
-		// see #5832
-		(!d.isSafari || (d.isSafari > 3.1) || is525 )
-	); 
+	var qsaAvail = !!(getDoc()[qsa]); 
 	var getQueryFunc = function(query, forceDOM){
 
 		if(qsaAvail){
@@ -1217,7 +1212,7 @@ if(typeof dojo != "undefined"){
 			//		http://www.w3.org/TR/css3-selectors/#w3cselgrammar
 			(specials.indexOf(qcz) == -1) && 
 			// IE's QSA impl sucks on pseudos
-			(!d.isIE || (query.indexOf(":") == -1)) &&
+			(query.indexOf(":") == -1) &&
 
 			(!(cssCaseBug && (query.indexOf(".") >= 0))) &&
 
@@ -1288,7 +1283,7 @@ if(typeof dojo != "undefined"){
 	// NOTE:
 	//		this function is Moo inspired, but our own impl to deal correctly
 	//		with XML in IE
-	var _nodeUID = d.isIE ? function(node){
+	var _nodeUID = document.documentElement.uniqueID ? function(node){
 		if(caseSensitive){
 			// XML docs don't have uniqueID on their nodes
 			return (node.getAttribute("_uid") || node.setAttribute("_uid", ++_zipIdx) || _zipIdx);
@@ -1332,7 +1327,7 @@ if(typeof dojo != "undefined"){
 		
 		// we have to fork here for IE and XML docs because we can't set
 		// expandos on their nodes (apparently). *sigh*
-		if(d.isIE && caseSensitive){
+		if(caseSensitive){
 			var szidx = _zipIdx+"";
 			arr[0].setAttribute(_zipIdxName, szidx);
 			for(var x = 1, te; te = arr[x]; x++){
@@ -1341,7 +1336,7 @@ if(typeof dojo != "undefined"){
 				}
 				te.setAttribute(_zipIdxName, szidx);
 			}
-		}else if(d.isIE && arr.commentStrip){
+		}else if(arr.commentStrip){
 			try{
 				for(var x = 1, te; te = arr[x]; x++){
 					if(_isElement(te)){ 
@@ -1533,9 +1528,8 @@ if(typeof dojo != "undefined"){
 		// 		Opera in XHTML mode doesn't detect case-sensitivity correctly
 		// 		and it's not clear that there's any way to test for it
 		caseSensitive = (root.contentType && root.contentType=="application/xml") || 
-						(d.isOpera && root.doctype) ||
 						(!!od) && 
-						(d.isIE ? od.xml : (root.xmlVersion||od.xmlVersion));
+						!!(od.xml || (root.xmlVersion||od.xmlVersion));
 
 		// NOTE: 
 		//		adding "true" as the 2nd argument to getQueryFunc is useful for

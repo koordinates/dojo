@@ -1,4 +1,8 @@
 dojo.provide("dojo._firebug.firebug");
+
+if (typeof this.loadFirebugConsole == 'function') {
+	this.loadFirebugConsole();
+}
 	
 dojo.deprecated = function(/*String*/ behaviour, /*String?*/ extra, /*String?*/ removal){
 	// summary: 
@@ -63,10 +67,8 @@ dojo.experimental = function(/* String */ moduleName, /* String? */ extra){
 if(
    !window.firebug &&								// Testing for mozilla firebug lite 
    !dojo.config.useCustomLogger &&
-	!dojo.isAIR &&									// isDebug triggers AIRInsector, not Firebug
-    (!dojo.isMoz || 								// if not Firefox, there's no firebug
-	(dojo.isMoz && !("console" in window)) || 		// Firefox, but Firebug is not installed.
-	(dojo.isMoz && !(window.loadFirebugConsole || console.firebug)) 	// Firefox, but Firebug is disabled (1.2 check, 1.0 check)
+   (!("console" in window) || 		// Firefox, but Firebug is not installed.
+   !(window.loadFirebugConsole || !console || console.firebug) 	// Firefox, but Firebug is disabled (1.2 check, 1.0 check)
 )){
 
 (function(){
@@ -75,7 +77,7 @@ if(
 	try{
 		if(window != window.parent){ 
 			// but if we've got a parent logger, connect to it
-			if(window.parent["console"]){
+			if(window.parent.console){
 				window.console = window.parent.console;
 			}
 			return; 

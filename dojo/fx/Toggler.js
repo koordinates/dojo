@@ -22,6 +22,8 @@ dojo.declare("dojo.fx.Toggler", null, {
 	// time show/hide are called if we're stopped somewhere in the
 	// middle.
 
+	// *** Should not stop in the middle on toggle
+	// *** Or start where it stopped
 	constructor: function(args){
 		var _t = this;
 

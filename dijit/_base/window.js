@@ -10,7 +10,10 @@ dijit.getDocumentWindow = function(doc){
 	// reference to the real window object (maybe a copy), so we must fix it as well
 	// We use IE specific execScript to attach the real window reference to
 	// document._parentWindow for later use
-	if(dojo.isIE && window !== document.parentWindow && !doc._parentWindow){
+
+	// *** Last test doesn't make sense (expando is nulled after use)
+
+	if(doc.parentWindow.execScript && window !== document.parentWindow && !doc._parentWindow){
 		/*
 		In IE 6, only the variable "window" can be used to connect events (others
 		may be only copies).
@@ -23,5 +26,7 @@ dijit.getDocumentWindow = function(doc){
 		return win;	//	Window
 	}
 
-	return doc._parentWindow || doc.parentWindow || doc.defaultView;	//	Window
+	// FIXME: defaultView may not point to window object
+
+	return doc._parentWindow || doc.parentWindow || doc.__parent__ || doc.defaultView;	//	Window
 }

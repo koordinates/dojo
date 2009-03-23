@@ -266,7 +266,7 @@ dojox.flash.Info.prototype = {
 		
 		// loop backwards through the versions until we find the newest version	
 		for(var testVersion = 25; testVersion > 0; testVersion--){
-			if(dojo.isIE){
+			if(window.ActiveXObject){
 				var axo;
 				try{
 					if(testVersion > 6){
@@ -502,19 +502,7 @@ dojox.flash.Embed.prototype = {
 	get: function(){ /* Object */
 		// summary: Gets the Flash object DOM node.
 
-		if(dojo.isIE || dojo.isWebKit){
-			//TODO: should this really be the else?
-			return dojo.byId(this.id);
-		}else{
-			// different IDs on OBJECT and EMBED tags or
-			// else Firefox will return wrong one and
-			// communication won't work; 
-			// also, document.getElementById() returns a
-			// plugin but ExternalInterface calls don't
-			// work on it so we have to use
-			// document[id] instead
-			return document[this.id + "Embed"];
-		}
+		return dojo.byId(this.id);
 	},
 	
 	setVisible: function(/* Boolean */ visible){
@@ -523,11 +511,11 @@ dojox.flash.Embed.prototype = {
 		// summary: Sets the visibility of this Flash object.		
 		var container = dojo.byId(this.id + "Container");
 		if(visible){
-			container.style.position = "absolute"; // IE -- Brad Neuberg
+			container.style.position = "absolute";
 			container.style.visibility = "visible";
 		}else{
 			container.style.position = "absolute";
-			container.style.y = "-1000px";
+			//container.style.y = "-1000px";
 			container.style.visibility = "hidden";
 		}
 	},

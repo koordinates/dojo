@@ -32,7 +32,7 @@ dojo.provide("dojox.embed.Quicktime");
 	}
 	
 	var getQTMarkup = 'This content requires the <a href="http://www.apple.com/quicktime/download/" title="Download and install QuickTime.">QuickTime plugin</a>.';
-	if(dojo.isIE){
+	if(window.ActiveXObject){
 		qtVersion = 0;
 		installed = (function(){
 			try{
@@ -203,7 +203,7 @@ dojo.provide("dojox.embed.Quicktime");
 			if(o){
 				node.innerHTML = o.markup;
 				if(o.id){
-					return (dojo.isIE)? dojo.byId(o.id) : document[o.id];	//	QuickTimeObject
+					return dojo.byId(o.id);	//	QuickTimeObject
 				}
 			}
 			return null;	//	QuickTimeObject
@@ -211,7 +211,7 @@ dojo.provide("dojox.embed.Quicktime");
 	});
 
 	//	go get the info
-	if(!dojo.isIE){
+	if(navigator.plugins && navigator.plugins.length){
 		// FIXME: Opera does not like this at all for some reason, and of course there's no event references easily found.
 		qtVersion = dojox.embed.Quicktime.version = { major: 0, minor: 0, rev: 0 };
 		var o = qtMarkup({ path: testMovieUrl, width:4, height:4 });
@@ -238,17 +238,13 @@ dojo.provide("dojox.embed.Quicktime");
 			} else {
 				if(o.id) {
 					qtInsert();
-					if(!dojo.isOpera){
-						setTimeout(function(){ qtGetInfo(document[o.id]); }, 50);
+					var fn=function(){ 
+						setTimeout(function(){ qtGetInfo(document[o.id]) }, 50); 
+					};
+					if(!dojo._initFired){
+						dojo.addOnLoad(fn);
 					} else {
-						var fn=function(){ 
-							setTimeout(function(){ qtGetInfo(document[o.id]) }, 50); 
-						};
-						if(!dojo._initFired){
-							dojo.addOnLoad(fn);
-						} else {
-							dojo.connect(document[o.id], "onload", fn);
-						}
+						dojo.connect(document[o.id], "onload", fn);
 					}
 				}
 				return;
@@ -280,7 +276,7 @@ dojo.provide("dojox.embed.Quicktime");
 
 		qtGetInfo();
 	}
-	else if(dojo.isIE && installed){
+	else if(installed){
 		dojox.embed.Quicktime.onInitialize();
 	}
 })();

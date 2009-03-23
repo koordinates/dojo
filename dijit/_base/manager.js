@@ -134,8 +134,10 @@ dijit.findWidgets = function(/*DomNode*/ root){
 	
 	var outAry = [];
 
+	// *** Create once
+
 	function getChildrenHelper(root){
-		var list = dojo.isIE ? root.children : root.childNodes, i = 0, node;
+		var list = root.childNodes || root.children, i = 0, node;
 		while(node = list[i++]){
 			if(node.nodeType != 1){ continue; }
 			var widgetId = node.getAttribute("widgetId");
@@ -152,7 +154,7 @@ dijit.findWidgets = function(/*DomNode*/ root){
 	return outAry;
 };
 
-if(dojo.isIE){
+if(window.attachEvent && !document.addEventListener){ // *** IE memory leak issue?  Should remove circular references so as not to need this
 	// Only run this for IE because we think it's only necessary in that case,
 	// and because it causes problems on FF.  See bug #3531 for details.
 	dojo.addOnWindowUnload(function(){

@@ -195,9 +195,9 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			"\\": exec("insertunorderedlist")
 		};
 
-		if(!dojo.isIE){
+		//if(!dojo.isIE){
 			ctrlKeyHandlers.Z = exec("redo"); //FIXME: undo?
-		}
+		//}
 
 		for(var key in ctrlKeyHandlers){
 			this.addKeyHandler(key, true, false, ctrlKeyHandlers[key]);
@@ -324,17 +324,17 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 					top: "-1000px"
 				});
 
-				if(dojo.isIE){ //nasty IE bug: abnormal formatting if overflow is not hidden
+				//if(dojo.isIE){ //nasty IE bug: abnormal formatting if overflow is not hidden
 					var s = ta.style;
 					this.__overflow = s.overflow;
 					s.overflow = "hidden";
-				}
+				//}
 			});
-			if(dojo.isIE){
+			//if(dojo.isIE){
 				setTimeout(tmpFunc, 10);
-			}else{
-				tmpFunc();
-			}
+			//}else{
+			//	tmpFunc();
+			//}
 
 			// this.domNode.innerHTML = html;
 
@@ -380,6 +380,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			}
 
 			// FIXME: need to do something different for Opera/Safari
+			// *** Why?
 			this.connect(window, "onbeforeunload", "_saveContent");
 			// dojo.connect(window, "onunload", this, "_saveContent");
 		}
@@ -388,10 +389,11 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		// Safari's selections go all out of whack if we do it inline,
 		// so for now IE is our only hero
-		//if(typeof dojo.doc.body.contentEditable != "undefined")
-		if(dojo.isIE || dojo.isWebKit || dojo.isOpera){
+		//if(typeof dojo.doc.body.contentEditable != "undefined") {
+		//if(dojo.isIE || dojo.isWebKit || dojo.isOpera){
 			// In 0.4, this was the contentEditable code path, but now it creates an iframe, same as for Firefox.
 			// However, firefox's iframe is handled by _drawIframe() rather than this code for some reason :-(
+			// *** Why?
 			var ifr = (this.editorObject = this.iframe = dojo.doc.createElement('iframe'));
 			ifr.id = this.id+"_iframe";
 			this._iframeSrc = this._getIframeDocTxt(html);
@@ -402,16 +404,16 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				// <div> (which has the correct height set by Editor
 				ifr.style.height = "100%";
 			}else{
-				if(dojo.isIE >= 7){
+				//if(dojo.isIE >= 7){
 					if(this.height){
 						ifr.style.height = this.height;
 					}
-					if(this.minHeight){
+					if(this.minHeight && typeof ifr.style.minHeight == 'string'){
 						ifr.style.minHeight = this.minHeight;
 					}
-				}else{
-					ifr.style.height = this.height ? this.height : this.minHeight;
-				}
+				//}else{
+				//	ifr.style.height = this.height ? this.height : this.minHeight;
+				//}
 			}
 			ifr.frameBorder = 0;
 			// ifr.style.scrolling = this.height ? "auto" : "vertical";
@@ -427,18 +429,19 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				this.savedContent = this.getValue(true);
 			});
 			var s = 'javascript:parent.dijit.byId("'+this.id+'")._iframeSrc';
-			ifr.setAttribute('src', s);
+			ifr.src = s;
 			this.editingArea.appendChild(ifr);
-			if(dojo.isWebKit){ // Safari seems to always append iframe with src=about:blank
-				setTimeout(function(){ifr.setAttribute('src', s)},0);
-			}
-		}else{
+			//if(dojo.isWebKit){ // Safari seems to always append iframe with src=about:blank
+			//	setTimeout(function(){ifr.setAttribute('src', s)},0);
+			//}
+		//}else{
 			// Firefox code path
-			this._drawIframe(html);
-			this.savedContent = this.getValue(true);
-		}
+		//	this._drawIframe(html);
+		//	this.savedContent = this.getValue(true);
+		//}
 		
 		// TODO: this is a guess at the default line-height, kinda works
+		// *** Need more information
 		if(dn.nodeName == "LI"){
 			dn.lastChild.style.marginTop = "-1.2em";
 		}
@@ -458,9 +461,9 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// tags:
 		//		private
 		var _cs = dojo.getComputedStyle(this.domNode);
-		if(dojo.isIE || (!this.height && !dojo.isMoz)){
+		//if(dojo.isIE || (!this.height && !dojo.isMoz)){
 			html="<div>"+html+"</div>";
-		}
+		//}
 		var font = [ _cs.fontWeight, _cs.fontSize, _cs.fontFamily ].join(" ");
 		
 		// line height is tricky - applying a units value will mess things up.
@@ -478,7 +481,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		this.style.replace(/(^|;)(line-|font-?)[^;]+/g, function(match){ userStyle += match.replace(/^;/g,"") + ';' });
 		return [
 			this.isLeftToRight() ? "<html><head>" : "<html dir='rtl'><head>",
-			(dojo.isMoz ? "<title>" + this._localizedIframeTitles.iframeEditTitle + "</title>" : ""),
+			(this._localizedIframeTitles && this._localizedIframeTitles.iframeEditTitle ? "<title>" + this._localizedIframeTitles.iframeEditTitle + "</title>" : ""),
 			"<style>",
 			"body,html {",
 			"\tbackground:transparent;",

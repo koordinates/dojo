@@ -57,12 +57,15 @@ dojo.loadInit(function(){
 					break;
 				case "silverlight":
 					try{
-						if(dojo.isIE){
-							sl = new ActiveXObject("AgControl.AgControl");
+						if(window.ActiveXObject){
+							sl = new window.ActiveXObject("AgControl.AgControl");
 							if(sl && sl.IsVersionSupported("1.0")){
 								flag = true;
 							}
 						}else{
+
+							// *** Make sure it is enabled
+							
 							if(navigator.plugins["Silverlight Plug-In"]){
 								flag = true;
 							}

@@ -29,7 +29,7 @@ dijit.wai = {
 			var bkImg = cs.backgroundImage;
 			var needsA11y = (cs.borderTopColor==cs.borderRightColor) || (bkImg != null && (bkImg == "none" || bkImg == "url(invalid-url:)" ));
 			dojo[needsA11y ? "addClass" : "removeClass"](dojo.body(), "dijit_a11y");
-			if(dojo.isIE){
+			if(typeof div.outerHTML == 'string'){
 				div.outerHTML = "";		// prevent mixed-content warning, see http://support.microsoft.com/kb/925014
 			}else{
 				dojo.body().removeChild(div);
@@ -40,9 +40,9 @@ dijit.wai = {
 
 // Test if computer is in high contrast mode.
 // Make sure the a11y test runs first, before widgets are instantiated.
-if(dojo.isIE || dojo.isMoz){	// NOTE: checking in Safari messes things up
+//if(dojo.isIE || dojo.isMoz){	// NOTE: checking in Safari messes things up
 	dojo._loaders.unshift(dijit.wai.onload);
-}
+//}
 
 dojo.mixin(dijit,
 {

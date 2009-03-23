@@ -146,7 +146,7 @@ dojo.declare("dojox.widget.Roller", dijit._Widget, {
 		var m = this._anim, 
 			t = this._timeout;
 
-		if(t){ clearTimeout(t); }
+		if(t){ window.clearTimeout(t); }
 		m["in"].stop();
 		m["out"].stop();
 	},
@@ -178,8 +178,7 @@ dojo.declare("dojox.widget.RollerSlide", dojox.widget.Roller, {
 			props = {
 				top: { end: 0, start: 25 },
 				opacity: 1
-			}
-		;
+			};
 		
 		dojo.style(n, pos, "relative");
 		dojo.style(this._roller, pos, "absolute");

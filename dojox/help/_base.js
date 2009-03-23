@@ -412,7 +412,7 @@ dojox.help = {
 				|| item === dojox.help._toString
 				|| item === dojox.help._help
 				|| item === null
-				|| (+dojo.isIE && item.tagName)
+				|| item.tagName
 				|| item.__seen__
 			) {
 				continue;

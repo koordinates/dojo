@@ -73,7 +73,7 @@ dojo.mixin(dojox.sql, {
 		// database -- just don't close it on this platform
 		// since we are running into a Gears bug; the Gears team
 		// said it's ok to not close a database connection
-		if(dojo.isIE){ return; }
+		//if(dojo.isIE){ return; }
 		
 		if(!this._dbOpen && (!dbName || dbName == this.dbName)){
 			return;
@@ -85,10 +85,10 @@ dojo.mixin(dojox.sql, {
 		
 		try{
 			this.db.close(dbName);
-			this._dbOpen = false;
 		}catch(exp){
-			throw exp.message||exp;
+			//throw exp.message||exp;
 		}
+		this._dbOpen = false;
 	},
 	
 	_exec: function(params){

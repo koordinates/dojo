@@ -330,3 +330,47 @@ if(dojo.config.isDebug){
 	}
 	// FIXME: what about the rest of the console.* methods? And is there any way to reach into firebug and log into it directly?
 }
+
+dojo.provide("dojo._base");
+dojo.require("dojo._base.base");
+
+if (dojo.isBrowser) { // *** Is any of this necessary in this environment?
+
+if (!dojo.config.noQuery) {
+	dojo.require("dojo._base.query");
+}
+if (!dojo.config.noJson) { // FIXME: XHR should not require JSON
+	dojo.require("dojo._base.json");
+	if (!dojo.config.noXhr) {
+		if (dojo.config.noQuery) {
+			throw new Error("XHR requires query"); // FIXME: XHR should not be tangled with query
+		}
+		dojo.require("dojo._base.xhr");
+	}
+}
+
+if (!dojo.config.noHtml) {
+	dojo.require("dojo._base.html");
+}
+
+if (!dojo.config.noNodeList) {
+	dojo.require("dojo._base.NodeList");
+}
+
+if (!dojo.config.noConnect) {
+	dojo.require("dojo._base.connect");
+
+	if (!dojo.config.noFx) {
+		if (dojo.config.noHtml) {
+			throw new Error("FX requires HTML");
+		}
+		if (dojo.config.noNodeList) {
+			throw new Error("FX requires NodeList"); // FIXME: FX should not require NodeList
+		}
+		dojo.require("dojo._base.fx");
+	}
+	if (!dojo.config.noEvent) {
+		dojo.require("dojo._base.event");
+	}
+}
+}

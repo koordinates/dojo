@@ -96,7 +96,7 @@ dojo.declare(
 					this._currentChild = page;
 				}
 				//make sure all tabs have the same length
-				if(!this.isLeftToRight() && dojo.isIE && this._rectifyRtlTabList){
+				if(!this.isLeftToRight() && this._rectifyRtlTabList){
 					this._rectifyRtlTabList();
 				}
 			},

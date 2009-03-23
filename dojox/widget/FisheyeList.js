@@ -652,18 +652,18 @@ dojo.declare("dojox.widget.FisheyeListItem", [dijit._Widget, dijit._Templated, d
 	postCreate: function() {
 
 		// set image
-		if((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4)==".png") && dojo.isIE < 7){
+		if((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4)==".png") && dojo.isIE < 7 && typeof this.imgNode.style.filter == 'string'){
 			/* we set the id of the new fisheyeListItem to the id of the div defined in the HTML */
 			if(this._hasParent(this.imgNode) && this.id != ""){
 				var parent = this.imgNode.parentNode;
-				parent.setAttribute("id", this.id);
+				parent.id = this.id;
 			}
 			this.imgNode.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+this.iconSrc+"', sizingMethod='scale')";
 			this.imgNode.src = this._blankGif.toString();
 		}else{
 			if(this._hasParent(this.imgNode) && this.id != ""){
 				var parent = this.imgNode.parentNode;
-				parent.setAttribute("id", this.id);
+				parent.id = this.id;
 			}
 			this.imgNode.src = this.iconSrc;
 		}

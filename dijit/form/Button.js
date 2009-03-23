@@ -369,13 +369,13 @@ dojo.declare("dijit.form.ComboButton", dijit.form.DropDownButton, {
 		this.inherited(arguments);
 		this._focalNodes = [this.titleNode, this.popupStateNode];
 		dojo.forEach(this._focalNodes, dojo.hitch(this, function(node){
-			if(dojo.isIE){
+			//if(dojo.isIE){
 				this.connect(node, "onactivate", this._onNodeFocus);
 				this.connect(node, "ondeactivate", this._onNodeBlur);
-			}else{
+			//}else{
 				this.connect(node, "onfocus", this._onNodeFocus);
 				this.connect(node, "onblur", this._onNodeBlur);
-			}
+			//}
 		}));
 	},
 

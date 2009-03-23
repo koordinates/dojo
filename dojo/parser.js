@@ -193,7 +193,10 @@ dojo.parser = new function(){
 				var connects = [],	// functions to connect after instantiation
 					calls = [];		// functions to call after instantiation
 
-				d.query("> script[type^='dojo/']", node).orphan().forEach(function(script){
+				var query = d.query("> script[type^='dojo/']", node);
+				if (query.orphan) {
+
+				query.orphan().forEach(function(script){
 					var event = script.getAttribute("event"),
 						type = script.getAttribute("type"),
 						nf = d.parser._functionFromScript(script);
@@ -207,6 +210,7 @@ dojo.parser = new function(){
 						calls.push(nf);
 					}
 				});
+				} else { console.log('OOPS no orphan method ' + node.id); }
 			}
 
 			var markupFactory = clazz["markupFactory"];
@@ -243,6 +247,7 @@ dojo.parser = new function(){
 				!instance._started && 
 				(!instance.getParent || !instance.getParent())
 			){
+				window.alert('instance startup ' + instance.startup);
 				instance.startup();
 			}
 		});

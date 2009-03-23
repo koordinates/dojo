@@ -20,7 +20,7 @@ dijit._editor.getNodeHtml=function(/* DomNode */node){
 			//store the list of attributes and sort it to have the
 			//attributes appear in the dictionary order
 			var attrarray = [];
-			if(dojo.isIE && node.outerHTML){
+			if(typeof node.outerHTML == 'string' && node.outerHTML){
 				var s = node.outerHTML;
 				s = s.substr(0, s.indexOf('>'))
 					.replace(/(['"])[^"']*\1/g, ''); //to make the following regexp safe
@@ -36,6 +36,9 @@ dijit._editor.getNodeHtml=function(/* DomNode */node){
 							}
 						}
 						var val;
+
+						// *** Incomplete
+
 						switch(key){
 							case 'style':
 								val = node.style.cssText.toLowerCase();
@@ -99,13 +102,15 @@ dijit._editor.getChildrenHtml = function(/* DomNode */dom){
 	// summary: Returns the html content of a DomNode and children
 	var out = "";
 	if(!dom){ return out; }
-	var nodes = dom["childNodes"] || dom;
+	var nodes = dom["childNodes"];
 
 	//IE issue.
 	//If we have an actual node we can check parent relationships on for IE, 
 	//We should check, as IE sometimes builds invalid DOMS.  If no parent, we can't check
 	//And should just process it and hope for the best.
-	var checkParent = !dojo.isIE || nodes !== dom;
+	//var checkParent = !dojo.isIE || nodes !== dom;
+
+// *** Issue is whether the node(s) are in the range of the selection?
 
 	var node, i = 0;
 	while((node = nodes[i++])){
@@ -114,9 +119,9 @@ dijit._editor.getChildrenHtml = function(/* DomNode */dom){
 		//such is what it is.  We have to keep track and check for this because otherise the source output HTML will have dups.
 		//No other browser generates a graph.  Leave it to IE to break a fundamental DOM rule.  So, we check the parent if we can
 		//If we can't, nothing more we can do other than walk it.
-		if(!checkParent || node.parentNode == dom){
+		//if(!checkParent || node.parentNode == dom){
 			out += dijit._editor.getNodeHtml(node);
-		}
+		//}
 	}
 	return out; // String
 };

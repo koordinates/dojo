@@ -59,9 +59,9 @@ dojo.declare(
 			//see whether user clicks out of a focus editor, if so, save selection (focus will
 			//only lost after onmousedown event is fired, so we can obtain correct caret pos.)
 			//2) when user tabs away from the editor, which is handled in onKeyDown below.
-			if(dojo.isIE){
+			//if(dojo.isIE){
 				this.events.push("onBeforeDeactivate");
-			}
+			//}
 		},
 
 		postCreate: function(){
@@ -207,7 +207,7 @@ dojo.declare(
 		//		browser support. By default, we only enable customUndo for IE, as it
 		//		has broken native undo/redo support. Note: the implementation does
 		//		support other browsers which have W3C DOM2 Range API implemented.
-		customUndo: dojo.isIE,
+		customUndo: true,
 
 		// editActionInterval: Integer
 		//		When using customUndo, not every keystroke will be saved as a step.

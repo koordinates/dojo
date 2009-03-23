@@ -175,7 +175,7 @@ dojo.mixin(dijit,
 			}
 			try{
 				dojo.withGlobal(openedForWindow||dojo.global, dijit.moveToBookmark, null, [bookmark]);
-			}catch(e){
+			}catch(e2){
 				/*squelch IE internal error, see http://trac.dojotoolkit.org/ticket/1984 */
 			}
 		}
@@ -214,11 +214,14 @@ dojo.mixin(dijit,
 		// or if Editor stops using <iframe> altogether than we can probably just drop
 		// the whole public API.
 
+		var _attachDocListener;
+
 		dojo.connect(targetWindow.document, "onmousedown", function(evt){
 			dijit._justMouseDowned = true;
 			setTimeout(function(){ dijit._justMouseDowned = false; }, 0);
 			dijit._onTouchNode(effectiveNode||evt.target||evt.srcElement);
 		});
+
 		//dojo.connect(targetWindow, "onscroll", ???);
 
 		// Listen for blur and focus events on targetWindow's document.
@@ -227,27 +230,45 @@ dojo.mixin(dijit,
 		// fire.
 		var doc = targetWindow.document;
 		if(doc){
-			if(dojo.isIE){
-				doc.attachEvent('onactivate', function(evt){
-					if(evt.srcElement.tagName.toLowerCase() != "#document"){
-						dijit._onFocusNode(effectiveNode||evt.srcElement);
-					}
-				});
-				doc.attachEvent('ondeactivate', function(evt){
-					dijit._onBlurNode(effectiveNode||evt.srcElement);
-				});
-			}else{
-				doc.addEventListener('focus', function(evt){
-					dijit._onFocusNode(effectiveNode||evt.target);
-				}, true);
-				doc.addEventListener('blur', function(evt){
-					dijit._onBlurNode(effectiveNode||evt.target);
-				}, true);
+		var _focusOrBlurNode = function(evt) {
+			var target = effectiveNode || evt.target || evt.srcElement;
+			var eventType = /^focus|activate$/i.test(evt.type) ? 'Focus' : 'Blur';
+
+			// Apparently can be document on activate event in IE (others?)
+			// Why are we attaching the listener to the document node?
+
+			if(eventType == 'Blur' || target.nodeType == 1){
+				dijit['_on' + eventType + 'Node'](target);
+			}
+		};
+
+		// Why is this not using the events module?
+		// *** Capture on addEventListener branch?
+
+		var _attachListener;
+
+		if (dojo.isHostMethod(doc, 'attachEvent')) {
+			_attachDocListener = function(eventType, listener) {
+				doc.attachEvent('on' + eventType, listener);
+			};
+		}else if (dojo.isHostMethod(doc, 'addEventListener')) {
+			_attachDocListener = function(eventType, listener) {
+				doc.addEventListener(eventType, listener, true);
+			};	
+		}
+
+		if(_attachDocListener){
+			if (typeof doc.documentElement.onactivate != 'undefined') {
+				_attachDocListener('activate', _focusOrBlurNode);
+				_attachDocListener('deactivate', _focusOrBlurNode);
+			}else {
+				_attachDocListener('focus', _focusOrBlurNode);
+				_attachDocListener('blur', _focusOrBlurNode);
 			}
 		}
 		doc = null;	// prevent memory leak (apparent circular reference via closure)
+		}
 	},
-
 	_onBlurNode: function(/*DomNode*/ node){
 		// summary:
 		// 		Called when focus leaves a node.
