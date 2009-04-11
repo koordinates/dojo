@@ -642,6 +642,14 @@ function jsdoc_doc_insert($node) {
   }
 }
 
+function jsdoc_doc_delete(&$node) {
+  $query = db_query("SELECT nid FROM {jsdoc_objects} WHERE did = %d", $node->nid);
+  while ($nid = db_fetch_object($query)) {
+    set_time_limit(30);
+    node_delete($nid->nid);
+  }
+}
+
 // Implemented node-type hook functions
 // ====================================
 
@@ -676,7 +684,12 @@ function jsdoc_object_update($node) {
 /**
  * Implementation of hook_delete
  */
-function jsdoc_object_delete(&$node, $vid=null) {
+function jsdoc_object_delete(&$node) {
+  $type = 'jsdoc_' . $node->title;
+  $query = db_query("SELECT sid FROM {jsdoc_variables} WHERE variable = '%s'", $node->title);
+  if ($sid = db_fetch_object($query)) {
+    search_wipe($sid->sid, $type);
+  }
   db_query("DELETE FROM {jsdoc_objects} WHERE nid = %d", $node->nid);
 }
 
@@ -720,10 +733,17 @@ function _jsdoc_convert_object(&$node, $object, $parent = FALSE, $method = FALSE
   $node->jsdoc_mixins = $object->mixins;
 
   if (!empty($object->tags)) {
-    $node->jsdoc_tags = explode(' ', $object->tags);
+    $node->jsdoc_tags = array();
+    foreach (explode(' ', $object->tags) as $tag) {
+      $node->jsdoc_tags[$tag] = TRUE;
+    }
   }
 
   $node->jsdoc_private = $object->private;
+
+  $node->jsdoc_protected = $object->protected;
+
+  $node->jsdoc_deprecated = $object->deprecated;
 
   $node->jsdoc_private_parent = $object->privateparent;
 
@@ -1001,15 +1021,20 @@ function jsdoc_is_function(&$node) {
 }
 
 function jsdoc_is_private(&$node) {
-  if ($node->jsdoc_private || (is_array($node->jsdoc_tags) && (in_array('private', $node->jsdoc_tags) || in_array('protected', $node->jsdoc_tags)))) {
-    return true;
-  }
-  return false;
+  return $node->jsdoc_private;
+}
+
+function jsdoc_is_protected(&$node) {
+  return $node->jsdoc_protected;
+}
+
+function jsdoc_is_deprecated(&$node) {
+  return $node->jsdoc_deprecated;
 }
 
 function jsdoc_has_private_parent(&$node) {
   foreach (jsdoc_get_namespace_parents($node) as $parent) {
-    if ($parent->jsdoc_private || (is_array($node->jsdoc_tags) && (in_array('private', $node->jsdoc_tags) || in_array('protected', $node->jsdoc_tags)))) {
+    if ($parent->jsdoc_private) {
       return true;
     }
   }
@@ -1258,6 +1283,16 @@ function jsdoc_object_nodes_load($name, $version=false, $exact=true, $broad=fals
       $nodes = array();
       foreach ($cache[$cache_key] as $nid) {
         $nodes[] = node_load($nid);
+      }
+      if (empty($nodes)) {
+        if ($broad) {
+          return array((object)array(
+            'title' => $name
+          ));
+        }
+        else {
+          return array();
+        }
       }
       return $nodes;
     }
@@ -1935,6 +1970,8 @@ function _jsdoc_get_object_themed($node, $title=null, $depth=0) {
     'singleton' => jsdoc_is_initialized($node),
     'namespace' => jsdoc_is_namespace($node) && !jsdoc_is_classlike($node),
     'private' => jsdoc_is_private($node),
+    'protected' => jsdoc_is_protected($node),
+    'deprecated' => jsdoc_is_deprecated($node),
     'private_parent' => jsdoc_has_private_parent($node)
   );
 
