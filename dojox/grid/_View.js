@@ -666,6 +666,9 @@ dojo.require("dojo.dnd.Manager");
 		},
 
 		update: function(){
+			if(!this.domNode){
+				return;
+			}
 			this.content.update();
 			this.grid.update();
 			//get scroll after update or scroll left setting goes wrong on IE.
