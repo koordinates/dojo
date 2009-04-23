@@ -109,7 +109,9 @@ dojo.declare("dijit.form.Button",
 	},
 
 	_setShowLabelAttr: function(val){
-		dojo.toggleClass(this.containerNode, "dijitDisplayNone", !val);
+		if(this.containerNode){
+			dojo.toggleClass(this.containerNode, "dijitDisplayNone", !val);
+		}
 		this.showLabel = val;
 	},
 
@@ -220,7 +222,7 @@ dojo.declare("dijit.form.DropDownButton", [dijit.form.Button, dijit._Container],
 		// we want to prevent opening our menu in this situation
 		// and only do so if we have seen a keydown on this button;
 		// e.detail != 0 means that we were fired by mouse
-		var isMacFFlessThan3 = dojo.isFF && dojo.isFF < 3
+		var isMacFFlessThan3 = dojo.isFF < 3
 			&& navigator.appVersion.indexOf("Macintosh") != -1;
 		if(!isMacFFlessThan3 || e.detail != 0 || this._seenKeydown){
 			this._onArrowClick(e);
