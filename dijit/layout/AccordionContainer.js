@@ -7,7 +7,7 @@ dojo.require("dijit._Templated");
 dojo.require("dijit.layout.StackContainer");
 dojo.require("dijit.layout.ContentPane");
 
-dojo.require("dijit.layout.AccordionPane");	// for back compat
+dojo.require("dijit.layout.AccordionPane");	// for back compat, remove for 2.0
 
 dojo.declare(
 	"dijit.layout.AccordionContainer",
@@ -29,13 +29,17 @@ dojo.declare(
 		//		Amount of time (in ms) it takes to slide panes
 		duration: dijit.defaultDuration,
 
+		// buttonWidget: [const] String
+		//		The name of the widget used to display the title of each pane
+		buttonWidget: "dijit.layout._AccordionButton",
+		
 		// _verticalSpace: Number
 		//		Pixels of space available for the open pane
 		//		(my content box size minus the cumulative size of all the title bars)
 		_verticalSpace: 0,
 
 		baseClass: "dijitAccordionContainer",
-		
+
 		postCreate: function(){
 			this.domNode.style.overflow = "hidden";
 			this.inherited(arguments); 
@@ -97,12 +101,28 @@ dojo.declare(
 			// Setup clickable title to sit above the child widget,
 			// and stash pointer to it inside the widget itself.
 
-			child._buttonWidget = new dijit.layout._AccordionButton({
+			var cls = dojo.getObject(this.buttonWidget);
+			var button = child._buttonWidget = new cls({
 				contentWidget: child,
 				title: child.title,
+				iconClass: child.iconClass,
 				id: child.id + "_button",
 				parent: this
 			});
+
+			child._accordionConnectHandle = this.connect(child, 'attr', function(name, value){
+				if(arguments.length == 2){
+					switch(name){
+					case 'title':
+						button.attr('title', value);
+						break;
+					case 'iconClass':
+						button.attr('iconClass', value);
+						break;
+					}
+				}
+			});
+
 			dojo.place(child._buttonWidget.domNode, child.domNode, "before");
 
 			this.inherited(arguments);
@@ -110,7 +130,12 @@ dojo.declare(
 
 		removeChild: function(child){
 			// Overrides _LayoutWidget.removeChild().
+			this.disconnect(child._accordionConnectHandle);
+			delete child._accordionConnectHandle;
+
 			child._buttonWidget.destroy();
+			delete child._buttonWidget;
+
 			this.inherited(arguments);
 		},
 
@@ -230,7 +255,8 @@ dojo.declare("dijit.layout._AccordionButton",
 
 	templatePath: dojo.moduleUrl("dijit.layout", "templates/AccordionButton.html"),
 	attributeMap: dojo.mixin(dojo.clone(dijit.layout.ContentPane.prototype.attributeMap), {
-		title: {node: "titleTextNode", type: "innerHTML" }
+		title: {node: "titleTextNode", type: "innerHTML" },
+		iconClass: { node: "iconNode", type: "class" }
 	}),
 
 	baseClass: "dijitAccordionTitle",
