@@ -587,6 +587,11 @@ function jsdoc_doc_form(&$node) {
 		'#type' => 'file'
 	);
 
+	$form['download'] = array(
+		'#title' => t('Documentation URL'),
+		'#type' => 'textfield'
+	);
+
 	return $form;
 }
 
@@ -605,54 +610,60 @@ function jsdoc_doc_update($node) {
 }
 
 function jsdoc_doc_insert($node) {
+  $start = time();
   if ($file = file_check_upload()) {
-    $start = time();
-
     $doc = fopen($file->filepath, 'r');
-    $buffer = array();
-    while (!feof($doc)) {
-      set_time_limit(30);
+  }
+  elseif ($node->download) {
+    $doc = fopen($node->download, 'r');
+  }
+  else {
+    return;
+  }
 
-      $line = stream_get_line($doc, 9999, "\n");
-      if (preg_match('%^\t"([^"]+)": \{%', $line, $match)) {
-        $id = $match[1];
-        $in = true;
-      }
-      elseif (preg_match('%^\t\}%', $line, $match)) {
-        $in = false;
-        $json = json_decode('{' . implode("\n", $buffer) . '}');
+  $buffer = array();
+  while (!feof($doc)) {
+    set_time_limit(30);
 
-        if ($nid = db_result(db_query("SELECT n.nid FROM {node} AS n INNER JOIN {jsdoc_objects} j ON (j.nid = n.nid) WHERE BINARY n.title = '%s' AND j.did = %d", $id, $node->nid))) {
-          $object = node_load($nid);
-          $object->json = $json;
-        }
-        else {
-          $object = (object)array(
-            'title' => $id,
-            'type' => 'jsdoc_object',
-            'version' => $node,
-            'json' => $json
-          );
-        }
-
-        node_save($object);
-        node_load($object->nid, NULL, TRUE);
-        $buffer = array();
-      }
-      elseif($in) {
-        $buffer[] = $line;
-      }
+    $line = stream_get_line($doc, 9999, "\n");
+    if (preg_match('%^\t"([^"]+)": \{%', $line, $match)) {
+      $id = $match[1];
+      $in = true;
     }
+    elseif (preg_match('%^\t\}%', $line, $match)) {
+      $in = false;
+      $json = json_decode('{' . implode("\n", $buffer) . '}');
 
-    // cache_set("jsdoc_namespaces_{$version->title}
+      if ($nid = db_result(db_query("SELECT n.nid FROM {node} AS n INNER JOIN {jsdoc_objects} j ON (j.nid = n.nid) WHERE BINARY n.title = '%s' AND j.did = %d", $id, $node->nid))) {
+        $object = node_load($nid);
+        $object->json = $json;
+      }
+      else {
+        $object = (object)array(
+          'title' => $id,
+          'type' => 'jsdoc_object',
+          'version' => $node,
+          'json' => $json
+        );
+      }
 
-    $query = db_query("DELETE FROM {cache} WHERE cid LIKE 'jsdoc_namespaces_%s:%%'", $node->title);
-
-    $query = db_query("SELECT n.nid FROM {node} AS n INNER JOIN {jsdoc_objects} AS j ON (j.nid = n.nid) WHERE type = 'jsdoc_object' AND j.did = %d AND changed < %d", $node->nid, $start);
-    while ($nid = db_fetch_object($query)) {
-      set_time_limit(30);
-      node_delete($nid->nid);
+      node_save($object);
+      node_load($object->nid, NULL, TRUE);
+      $buffer = array();
     }
+    elseif($in) {
+      $buffer[] = $line;
+    }
+  }
+
+  // cache_set("jsdoc_namespaces_{$version->title}
+
+  $query = db_query("DELETE FROM {cache} WHERE cid LIKE 'jsdoc_namespaces_%s:%%'", $node->title);
+
+  $query = db_query("SELECT n.nid FROM {node} AS n INNER JOIN {jsdoc_objects} AS j ON (j.nid = n.nid) WHERE type = 'jsdoc_object' AND j.did = %d AND changed < %d", $node->nid, $start);
+  while ($nid = db_fetch_object($query)) {
+    set_time_limit(30);
+    node_delete($nid->nid);
   }
 }
 
@@ -951,7 +962,7 @@ function jsdoc_get_return_summary(&$node) {
 }
 
 function jsdoc_get_return_types(&$node) {
-  if (empty($node->jsdoc_get_return_types)) {
+  if (empty($node->jsdoc_return_types)) {
     return array();
   }
   return $node->jsdoc_return_types;
@@ -1023,7 +1034,7 @@ function jsdoc_get_body(&$node) {
   $body = trim($node->body);
   $variables = _jsdoc_get_variables();
   foreach (array_unique(preg_split('%\s+%', strip_tags($body))) as $variable) {
-    if ($variables[$variable]) {
+    if ($variables[$variable] && $variable != $node->title) {
       $body = str_replace($variable, l($variable, 'jsdoc/' . $version . '/' . $variable), $body);
     }
   }
@@ -1514,7 +1525,7 @@ function jsdoc_jsonp($batch=false, $json=false) {
               'summary' => jsdoc_get_return_summary($node)
             );
             foreach (jsdoc_get_return_types($node) as $type) {
-              $themed = _jsdoc_get_type_themed($type, $node, true);
+              $themed = _jsdoc_get_type_themed($type->type, $node, true);
               if ($themed) {
                 $formatted->returns['types'][] = $themed;
               }
@@ -2002,7 +2013,7 @@ function _jsdoc_get_title_themed($node) {
     'summary' => jsdoc_get_return_summary($node)
   );
   foreach (jsdoc_get_return_types($node) as $type) {
-    $themed->return->types[] = _jsdoc_get_type_themed($type, $node, false);
+    $themed->return->types[] = _jsdoc_get_type_themed($type->type, $node, false);
   }
 
   $parts = explode('.', $node->title);
@@ -2093,7 +2104,7 @@ function _jsdoc_get_object_themed($node, $title=null, $depth=0) {
         'summary' => jsdoc_get_return_summary($node)
       );
       foreach (jsdoc_get_return_types($node) as $type) {
-        $object->return->types[] = _jsdoc_get_type_themed($type, $node, false);
+        $object->return->types[] = _jsdoc_get_type_themed($type->type, $node, false);
       }
 
       $signature = _jsdoc_build_function_signature($node, $parameters);
@@ -2581,12 +2592,42 @@ function _jsdoc_markup_text($text, $version, $format = false){
     $format = variable_get('jsdoc_input_format', 1);
   }
 
+  $lines = array();
+  $tabbed = FALSE;
+  foreach (explode("\n", $text) as $line) {
+    if ($line{0} == "\t") {
+      if (!$tabbed) {
+        $lines[] = "";
+      }
+      $tabbed = TRUE;
+    }
+    else {
+      $tabbed = FALSE;
+    }
+    $lines[] = $line;
+  }
+  $text = implode("\n", $lines);
+
+  $tokens = array();
+  if (preg_match_all('%`([^`]+)`%', $text, $matches)) {
+    foreach (array_unique($matches[0]) as $i => $match) {
+      $code = substr($match, 1, -1);
+      $tokens[$i] = "<code>$code</code>";
+      $text = str_replace($match, "!$i!", $text);
+    }
+  }
+
   $text = check_markup($text, $format, FALSE);
+
   if (preg_match_all('%(?:\s*(?:<pre>|<code>)\s*)+(.*?)(?:\s*(?:</pre>|</code>)\s*)+%s', $text, $matches, PREG_SET_ORDER)) {
     foreach ($matches as $match) {
       $match[1] = str_replace('&lt;', '<', str_replace('&gt;', '>', $match[1]));
       $text = str_replace($match[0], _jsdoc_markup_code($match[1], $version), $text);
     }
+  }
+
+  foreach ($tokens as $i => $token) {
+    $text = str_replace("!$i!", $token, $text);
   }
 
   return $text;
