@@ -1076,8 +1076,13 @@ function jsdoc_get_type(&$node) {
     return $node->jsdoc_type;
   }
 
-  $type = $node->jsdoc_raw_type;
-  unset($node->jsdoc_raw_type);
+  if (isset($node->type)) {
+    $type = $node->type->title;
+  }
+  else {
+    $type = $node->jsdoc_raw_type;
+    unset($node->jsdoc_raw_type);
+  }
 
   if ($type == 'Function') {
     if (jsdoc_is_classlike($node)) {
@@ -1807,11 +1812,17 @@ function jsdoc_get_oo_info(&$node, $child=NULL) {
     'node' => $node
   );
 
+  $child_attribute = false;
+  if ($child) {
+    list($child_attribute) = array_slice(explode('.', $child), -1);
+  }
   $children = array();
   foreach ($mixin_chain as $mixin) {
     foreach (array('methods', 'properties') as $child_type) {
       foreach ($mixin->$child_type as $item) {
-        if ($child && $item->title != $child) {
+        list($item_attribute) = array_slice(explode('.', $item->title), -1);
+
+        if ($child_attribute && $item_attribute != $child_attribute) {
           continue;
         }
 
@@ -1819,7 +1830,7 @@ function jsdoc_get_oo_info(&$node, $child=NULL) {
           $title = $item->title;
         }
         else {
-          list($title) = array_slice(explode('.', $item->title), -1);
+          $title = $item_attribute;
         }
 
         if (jsdoc_get_type($item) == 'Constructor' && ($resolved = jsdoc_resolve_constructor($item))) {
@@ -2156,44 +2167,42 @@ function _jsdoc_get_fields($type, $node) {
     list($prototype_chain, $mixin_chain, $children) = jsdoc_get_oo_info($obj);
 
     foreach ($children as $child) {
-      if (jsdoc_get_type($child) != 'Function') {
-        $title = $child->title;
+      $title = $child->title;
 
-        $field = (object)array(
-          'title' => $title,
-          'summary' => $child->summary,
-          'types' => false
+      $field = (object)array(
+        'title' => $title,
+        'summary' => $child->summary,
+        'types' => false
         );
-        if (!$cleaned) {
-          $field->url = 'jsdoc/' . jsdoc_get_version($node)->title . '/' . $obj->title . '.' . $child->title;
-          $field->a = l($title, $field->url);
-        }
-
-        $field_types = preg_split('%\|+%', jsdoc_get_type($node));
-        foreach ($field_types as $field_type) {
-          $found = 0;
-          $field_type = str_replace('?', '', $field_type, $found);
-          $optional = ($found > 0);
-          $found = 0;
-          $field_type = str_replace('...', '', $field_type, $found);
-          $repeating = ($found > 0);
-
-          $field_obj = jsdoc_object_node_load($field_type, jsdoc_get_version($node));
-          $field_type = (object)array(
-            'title' => $field_obj->title,
-            'repeating' => $repeating,
-            'optional' => $optional,
-            'summary' => jsdoc_get_teaser($field_obj)
-          );
-          if (!$cleaned) {
-            $field_type->url = $field_obj->jsdoc_url;
-            $field_type->a = l($field_obj->title, $field_obj->jsdoc_url);
-          }
-          $field->types[] = $field_type;
-        }
-
-        $fields[$field->title] = $field;
+      if (!$cleaned) {
+        $field->url = 'jsdoc/' . jsdoc_get_version($node)->title . '/' . $obj->title . '.' . $child->title;
+        $field->a = l($title, $field->url);
       }
+
+      $field_types = preg_split('%\|+%', jsdoc_get_type($child));
+      foreach ($field_types as $field_type) {
+        $found = 0;
+        $field_type = str_replace('?', '', $field_type, $found);
+        $optional = ($found > 0);
+        $found = 0;
+        $field_type = str_replace('...', '', $field_type, $found);
+        $repeating = ($found > 0);
+
+        $field_obj = jsdoc_object_node_load($field_type, jsdoc_get_version($node));
+        $field_type = (object)array(
+          'title' => $field_obj->title,
+          'repeating' => $repeating,
+          'optional' => $optional,
+          'summary' => jsdoc_get_teaser($field_obj)
+          );
+        if (!$cleaned) {
+          $field_type->url = $field_obj->jsdoc_url;
+          $field_type->a = l($field_obj->title, $field_obj->jsdoc_url);
+        }
+        $field->types[] = $field_type;
+      }
+
+      $fields[$field->title] = $field;
     }
 
     if (empty($fields)) {
