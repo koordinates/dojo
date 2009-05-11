@@ -1703,6 +1703,13 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		if(this.interval){ clearInterval(this.interval); }
 
+		// Guard against memory leaks on IE (see #9268)
+		if(dojo.isIE){
+		   this.iframe.onfocus = null;
+		}
+		this.iframe._loadFunc = null;
+
+
 		if(this.textarea){
 			var s = this.textarea.style;
 			s.position = "";
@@ -1725,8 +1732,11 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			//			this.domNode.innerHTML = this._content;
 			//		}
 			// }
+					
+			// Note that this destroys the iframe
 			this.domNode.innerHTML = save ? this._content : this.savedContent;
 		}
+		delete this.iframe;
 
 		dojo.removeClass(this.domNode, "RichTextEditable");
 		this.isClosed = true;
@@ -1746,12 +1756,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		return changed; // Boolean: whether the content has been modified
 	},
 
-	destroyRendering: function(){
-		// summary: stub	
-	}, 
-
 	destroy: function(){
-		this.destroyRendering();
 		if(!this.isClosed){ this.close(false); }
 		this.inherited(arguments);
 	},
