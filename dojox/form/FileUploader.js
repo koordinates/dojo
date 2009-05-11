@@ -976,7 +976,7 @@ dojo.require("dojox.embed.flashVars");
 			//		Internal. You could use this, but you should use upload() or submit();
 			//		which can also handle the post data.
 			//
-			// NOTE on deferredUploading 
+			// NOTE on deferredUploading:
 			// This is not enabled for HTML. Workaround would be to force
 			//	singleFile uploads.
 			//	TODO:
@@ -1095,12 +1095,12 @@ dojo.require("dojox.embed.flashVars");
 			// summary:
 			//		Build the form that holds the fileInput
 			//
-			if (this._formNode) { return };
+			if(this._formNode){ return; }
 			
-			if (dojo.isIE) {
+			if(dojo.isIE){
 				this._formNode = document.createElement('<form enctype="multipart/form-data" method="post">');
 				this._formNode.encoding = "multipart/form-data";
-			}else {
+			}else{
 				this._formNode = document.createElement('form');
 				this._formNode.setAttribute("enctype", "multipart/form-data");
 			}
