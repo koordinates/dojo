@@ -120,7 +120,7 @@ doh.register("dojox.data.tests.stores.JsonRestStore",
 				var d = new doh.Deferred();
 				jsonStore.fetchItemByIdentity({identity:"obj1", 
 					onItem: function(item, request){
-						var newItem = jsonStore.newItem({directRef: item});
+						var newItem = jsonStore.newItem({directRef: item, name:"Foo"});
 						jsonStore.setValue(newItem, "arrayRef", [1,{subobject:item},item]);
 						jsonStore.deleteItem(item);
 						t.is(jsonStore.getValue(newItem, "directRef"), undefined);
@@ -295,7 +295,15 @@ doh.register("dojox.data.tests.stores.JsonRestStore",
 					}
 				}
 			}
-		}
+		},
+		function tryToLoadSameTarget(t){
+			t.is(jsonStore, new dojox.data.JsonRestStore({service:testServices.jsonRestStore}));
+			t.is(
+				new dojox.data.JsonRestStore({target:"/something/"}),
+				new dojox.data.JsonRestStore({target:"/something/"}));
+			
+		},
+		
 	]
 );
 performanceTest = function (){
