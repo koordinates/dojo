@@ -163,7 +163,7 @@ dojo.byId = function(id, doc){
 		if(parent){
 			parent.insertBefore(node, ref);
 		}
-	}
+	};
 
 	var _insertAfter = function(/*DomNode*/node, /*DomNode*/ref){
 		//	summary:
@@ -176,7 +176,7 @@ dojo.byId = function(id, doc){
 				parent.insertBefore(node, ref.nextSibling);
 			}
 		}
-	}
+	};
 
 	dojo.place = function(node, refNode, position){
 		//	summary:
@@ -260,7 +260,7 @@ dojo.byId = function(id, doc){
 			}
 		}
 		return node; // DomNode
-	}
+	};
 
 	// Box functions will assume this model.
 	// On IE/Opera, BORDER_BOX will be set if the primary document is in quirks mode.
@@ -389,25 +389,25 @@ dojo.byId = function(id, doc){
 			// style values can be floats, client code may
 			// want to round this value for integer pixels.
 			if(avalue.slice && avalue.slice(-2) == 'px'){ return parseFloat(avalue); }
-			with(element){
-				var sLeft = style.left;
-				var rsLeft = runtimeStyle.left;
-				runtimeStyle.left = currentStyle.left;
+			//with(element){
+				var sLeft = element.style.left;
+				var rsLeft = element.runtimeStyle.left;
+				element.runtimeStyle.left = element.currentStyle.left;
 				try{
 					// 'avalue' may be incompatible with style.left, which can cause IE to throw
 					// this has been observed for border widths using "thin", "medium", "thick" constants
 					// those particular constants could be trapped by a lookup
 					// but perhaps there are more
-					style.left = avalue;
-					avalue = style.pixelLeft;
+					element.style.left = avalue;
+					avalue = element.style.pixelLeft;
 				}catch(e){
 					avalue = 0;
 				}
-				style.left = sLeft;
-				runtimeStyle.left = rsLeft;
-			}
+				element.style.left = sLeft;
+				element.runtimeStyle.left = rsLeft;
+			//}
 			return avalue;
-		}
+		};
 	}
 	//>>excludeEnd("webkitMobile");
 	var px = d._toPixelValue;
@@ -434,7 +434,7 @@ dojo.byId = function(id, doc){
 		}catch(e){
 			return f ? {} : null;
 		}
-	}
+	};
 
 	//>>excludeEnd("webkitMobile");
 	dojo._getOpacity = 
@@ -491,7 +491,8 @@ dojo.byId = function(id, doc){
 		} : 
 		//>>excludeEnd("webkitMobile");
 		function(node, opacity){
-			return node.style.opacity = opacity;
+			node.style.opacity = opacity;
+			return opacity;
 		};
 
 	var _pixelNamesCache = {
@@ -519,7 +520,7 @@ dojo.byId = function(id, doc){
 			_pixelNamesCache[type] = _pixelRegExp.test(type);
 		}
 		return _pixelNamesCache[type] ? px(node, value) : value;
-	}
+	};
 
 	var _floatStyle = d.isIE ? "styleFloat" : "cssFloat",
 		_floatAliases = { "cssFloat": _floatStyle, "styleFloat": _floatStyle, "float": _floatStyle }
@@ -609,7 +610,7 @@ dojo.byId = function(id, doc){
 			return s;
 		}
 		return (args == 1) ? s : _toStyleValue(n, style, s[style] || n.style[style]); /* CSS2Properties||String||Number */
-	}
+	};
 
 	// =============================
 	// Box Functions
@@ -638,7 +639,7 @@ dojo.byId = function(id, doc){
 			w: l+px(n, s.paddingRight),
 			h: t+px(n, s.paddingBottom)
 		};
-	}
+	};
 
 	dojo._getBorderExtents = function(/*DomNode*/n, /*Object*/computedStyle){
 		//	summary:
@@ -663,7 +664,7 @@ dojo.byId = function(id, doc){
 			w: bl + (s.borderRightStyle!=ne ? px(n, s.borderRightWidth) : 0),
 			h: bt + (s.borderBottomStyle!=ne ? px(n, s.borderBottomWidth) : 0)
 		};
-	}
+	};
 
 	dojo._getPadBorderExtents = function(/*DomNode*/n, /*Object*/computedStyle){
 		//	summary:
@@ -687,7 +688,7 @@ dojo.byId = function(id, doc){
 			w: p.w + b.w,
 			h: p.h + b.h
 		};
-	}
+	};
 
 	dojo._getMarginExtents = function(n, computedStyle){
 		//	summary:
@@ -722,7 +723,7 @@ dojo.byId = function(id, doc){
 			w: l+r,
 			h: t+b
 		};
-	}
+	};
 
 	// Box getters work in any box context because offsetWidth/clientWidth
 	// are invariant wrt box context
@@ -754,7 +755,7 @@ dojo.byId = function(id, doc){
 			// computed left/top which is more stable.
 			var sl = parseFloat(s.left), st = parseFloat(s.top);
 			if(!isNaN(sl) && !isNaN(st)){
-				l = sl, t = st;
+				l = sl; t = st;
 			}else{
 				// If child's computed left/top are not parseable as a number (e.g. "auto"), we
 				// have no choice but to examine the parent's computed style.
@@ -762,7 +763,7 @@ dojo.byId = function(id, doc){
 					var pcs = gcs(p);
 					if(pcs.overflow != "visible"){
 						var be = d._getBorderExtents(p, pcs);
-						l += be.l, t += be.t;
+						l += be.l; t += be.t;
 					}
 				}
 			}
@@ -781,7 +782,7 @@ dojo.byId = function(id, doc){
 			w: node.offsetWidth + me.w, 
 			h: node.offsetHeight + me.h 
 		};
-	}
+	};
 	
 	dojo._getContentBox = function(node, computedStyle){
 		// summary:
@@ -798,13 +799,13 @@ dojo.byId = function(id, doc){
 			h
 		;
 		if(!w){
-			w = node.offsetWidth, h = node.offsetHeight;
+			w = node.offsetWidth; h = node.offsetHeight;
 		}else{
-			h = node.clientHeight, be.w = be.h = 0; 
+			h = node.clientHeight; be.w = be.h = 0; 
 		}
 		// On Opera, offsetLeft includes the parent's border
 		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-		if(d.isOpera){ pe.l += be.l; pe.t += be.t; };
+		if(d.isOpera){ pe.l += be.l; pe.t += be.t; }
 		//>>excludeEnd("webkitMobile");
 		return { 
 			l: pe.l, 
@@ -812,7 +813,7 @@ dojo.byId = function(id, doc){
 			w: w - pe.w - be.w, 
 			h: h - pe.h - be.h
 		};
-	}
+	};
 
 	dojo._getBorderBox = function(node, computedStyle){
 		var s = computedStyle || gcs(node), 
@@ -825,7 +826,7 @@ dojo.byId = function(id, doc){
 			w: cb.w + pe.w, 
 			h: cb.h + pe.h
 		};
-	}
+	};
 
 	// Box setters depend on box context because interpretation of width/height styles
 	// vary wrt box context.
@@ -865,9 +866,8 @@ dojo.byId = function(id, doc){
 	dojo._isButtonTag = function(/*DomNode*/node) {
 		// summary:
 		//		True if the node is BUTTON or INPUT.type="button".
-		return node.tagName == "BUTTON" 
-			|| node.tagName=="INPUT" && node.getAttribute("type").toUpperCase() == "BUTTON"; // boolean
-	}
+		return node.tagName == "BUTTON" || node.tagName=="INPUT" && node.getAttribute("type").toUpperCase() == "BUTTON"; // boolean
+	};
 	
 	dojo._usesBorderBox = function(/*DomNode*/node){
 		//	summary: 
@@ -882,7 +882,7 @@ dojo.byId = function(id, doc){
 		
 		var n = node.tagName;
 		return d.boxModel=="border-box" || n=="TABLE" || d._isButtonTag(node); // boolean
-	}
+	};
 
 	dojo._setContentSize = function(/*DomNode*/node, /*Number*/widthPx, /*Number*/heightPx, /*Object*/computedStyle){
 		//	summary:
@@ -894,7 +894,9 @@ dojo.byId = function(id, doc){
 			if(heightPx >= 0){ heightPx += pb.h; }
 		}
 		d._setBox(node, NaN, NaN, widthPx, heightPx);
-	}
+	};
+
+	var _nilExtents = { l:0, t:0, w:0, h:0 };
 
 	dojo._setMarginBox = function(/*DomNode*/node, 	/*Number?*/leftPx, /*Number?*/topPx, 
 													/*Number?*/widthPx, /*Number?*/heightPx, 
@@ -926,9 +928,7 @@ dojo.byId = function(id, doc){
 		if(widthPx >= 0){ widthPx = Math.max(widthPx - pb.w - mb.w, 0); }
 		if(heightPx >= 0){ heightPx = Math.max(heightPx - pb.h - mb.h, 0); }
 		d._setBox(node, leftPx, topPx, widthPx, heightPx);
-	}
-	
-	var _nilExtents = { l:0, t:0, w:0, h:0 };
+	};
 
 	// public API
 	
@@ -950,7 +950,7 @@ dojo.byId = function(id, doc){
 		//		above format. All properties are optional if passed.
 		var n = d.byId(node), s = gcs(n), b = box;
 		return !b ? d._getMarginBox(n, s) : d._setMarginBox(n, b.l, b.t, b.w, b.h, s); // Object
-	}
+	};
 
 	dojo.contentBox = function(/*DomNode|String*/node, /*Object?*/box){
 		//	summary:
@@ -972,14 +972,14 @@ dojo.byId = function(id, doc){
 		//		above format. All properties are optional if passed.
 		var n = d.byId(node), s = gcs(n), b = box;
 		return !b ? d._getContentBox(n, s) : d._setContentSize(n, b.w, b.h, s); // Object
-	}
+	};
 	
 	// =============================
 	// Positioning 
 	// =============================
 	
 	var _sumAncestorProperties = function(node, prop){
-		if(!(node = (node||0).parentNode)){return 0}
+		if(!(node = (node||0).parentNode)){return 0;}
 		var val, retVal = 0, _b = d.body();
 		while(node && node.style){
 			if(gcs(node).position == "fixed"){
@@ -995,7 +995,7 @@ dojo.byId = function(id, doc){
 			node = node.parentNode;
 		}
 		return retVal;	//	integer
-	}
+	};
 
 	dojo._docScroll = function(){
 		var 
@@ -1012,7 +1012,7 @@ dojo.byId = function(id, doc){
 		//FIXME: could check html and body tags directly instead of computed style?  need to ignore case, accept empty values
 		return ("_bodyLtr" in d) ? d._bodyLtr :
 			d._bodyLtr = gcs(d.body()).direction == "ltr"; // Boolean 
-	}
+	};
 	
 	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 	dojo._getIeDocumentElementOffset = function(){
@@ -1063,7 +1063,7 @@ dojo.byId = function(id, doc){
 		}
 		//>>excludeEnd("webkitMobile");
 		return scrollLeft; // Integer
-	}
+	};
 
 	dojo._abs = function(/*DomNode*/node, /*Boolean?*/includeScroll){
 		//	summary:
@@ -1082,7 +1082,7 @@ dojo.byId = function(id, doc){
 		
 		// targetBoxType == "border-box"
 		var db = d.body(), dh = d.body().parentNode, ret;
-		if(node["getBoundingClientRect"]){
+		if(node.getBoundingClientRect){
 			// IE6+, FF3+, super-modern WebKit, and Opera 9.6+ all take this branch
 			var client = node.getBoundingClientRect();
 			ret = { x: client.left, y: client.top };
@@ -1108,7 +1108,7 @@ dojo.byId = function(id, doc){
 				x: 0,
 				y: 0
 			};
-			if(node["offsetParent"]){
+			if(node.offsetParent){
 				ret.x -= _sumAncestorProperties(node, "scrollLeft");
 				ret.y -= _sumAncestorProperties(node, "scrollTop");
 				
@@ -1167,7 +1167,7 @@ dojo.byId = function(id, doc){
 		}
 
 		return ret; // Object
-	}
+	};
 
 	// FIXME: need a setter for coords or a moveTo!!
 	dojo.coords = function(/*DomNode|String*/node, /*Boolean?*/includeScroll){
@@ -1187,86 +1187,125 @@ dojo.byId = function(id, doc){
 		mb.x = abs.x;
 		mb.y = abs.y;
 		return mb;
-	}
+	};
 
 	// =============================
 	// Element attribute Functions
 	// =============================
 
-	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-	var ieLT8 = d.isIE < 8;
-	//>>excludeEnd("webkitMobile");
-
-	var _fixAttrName = function(/*String*/name){
-		switch(name.toLowerCase()){
-			// Internet Explorer will only set or remove tabindex/readonly
-			// if it is spelled "tabIndex"/"readOnly"
-			//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-			case "tabindex":
-				return ieLT8 ? "tabIndex" : "tabindex";
-			//>>excludeEnd("webkitMobile");
-			case "readonly":
-				return "readOnly";
-			case "class":
-				return "className";
-			//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-			case "for": case "htmlfor":
-				// to pick up for attrib set in markup via getAttribute() IE<8 uses "htmlFor" and others use "for"
-				// get/setAttribute works in all as long use same value for both get/set
-				return ieLT8 ? "htmlFor" : "for";
-			//>>excludeEnd("webkitMobile");
-			default:
-				return name;
-		}
-	}
-
-	// non-deprecated HTML4 attributes with default values
-	// http://www.w3.org/TR/html401/index/attributes.html
-	// FF and Safari will return the default values if you
-	// access the attributes via a property but not
-	// via getAttribute()
-	var _attrProps = {
-		colspan: "colSpan",
-		enctype: "enctype",
-		frameborder: "frameborder",
-		method: "method",
-		rowspan: "rowSpan",
-		scrolling: "scrolling",
-		shape: "shape",
-		span: "span",
-		type: "type",
-		valuetype: "valueType",
-		// the following attributes don't have the default but should be treated like properties
-		classname: "className",
-		innerhtml: "innerHTML"
-	}
-
-	dojo.hasAttr = function(/*DomNode|String*/node, /*String*/name){
-		//	summary:
-		//		Returns true if the requested attribute is specified on the
-		//		given element, and false otherwise.
-		//	node:
-		//		id or reference to the element to check
-		//	name:
-		//		the name of the attribute
-		//	returns:
-		//		true if the requested attribute is specified on the
-		//		given element, and false otherwise
-		node = d.byId(node);
-		var fixName = _fixAttrName(name);
-		fixName = fixName == "htmlFor" ? "for" : fixName; //IE<8 uses htmlFor except in this case
-		var attr = node.getAttributeNode && node.getAttributeNode(fixName);
-		return attr ? attr.specified : false; // Boolean
-	}
-
 	var _evtHdlrMap = {}, _ctr = 0,
-		_attrId = dojo._scopeName + "attrid",
-		// the next dictionary lists elements with read-only innerHTML on IE
-		_roInnerHtml = {col: 1, colgroup: 1,
-			// frameset: 1, head: 1, html: 1, style: 1,
-			table: 1, tbody: 1, tfoot: 1, thead: 1, tr: 1, title: 1};
+		_attrId = dojo._scopeName + "attrid";
+	var html = document.documentElement;
+	var attributesBad = !!(typeof html.getAttribute != 'undefined' && html.getAttribute('style') && typeof html.getAttribute('style') != 'string');
+	var attributeAliases = {'for':'htmlFor', accesskey:'accessKey', maxlength:'maxLength', 'class':'className', readonly:'readOnly', longdesc:'longDesc', tabindex:'tabIndex', rowspan:'rowSpan', colspan:'colSpan', codebase:'codeBase', ismap:'isMap', innerhtml:'innerHTML'}; // Last for backwards compatibility
+	var reCamel = new RegExp('([^-]*)-(.)(.*)');
 
-	dojo.attr = function(/*DomNode|String*/node, /*String|Object*/name, /*String?*/value){
+	var camelize = function(name) {
+		var m = name.match(reCamel);
+		return (m)?([m[1], m[2].toUpperCase(), m[3]].join('')):name;
+	};
+
+	var setElementHTML = function(node, html) {
+		try { // Throws exceptions in IE, XHTML DOM's, etc.
+			node.innerHTML = html;
+		} catch(e) {
+			d.empty(node);
+			node.appendChild(d._toDom(html, node.ownerDocument));
+		}
+	};
+
+	var connectEvent = function(node, name, value) {
+		// Get ID
+
+		var h, attrId = d.attr(node, _attrId);
+
+		// Create ID and set if none exists
+
+		if(!attrId){
+			attrId = _ctr++;
+			d.attr(node, _attrId, attrId);
+		}
+
+		// Create map object for event handlers if none exists
+
+		if(!_evtHdlrMap[attrId]){
+			_evtHdlrMap[attrId] = {};
+		}
+
+		// Get connected handler
+
+		h = _evtHdlrMap[attrId][name];
+
+		if(h){
+			// If previously connected, disconnect
+
+			d.disconnect(h);
+		}else if (typeof node[name] == 'function') {
+
+			// Clear existing property
+
+			node[name] = null;
+		}
+
+		// Connect in normal fashion
+
+		_evtHdlrMap[attrId][name] = d.connect(node, name, value);
+	};
+
+	// For use with HTML DOM elements only
+
+	dojo.hasAttr = (function() {
+		var attributeSpecified, value;
+		if (typeof html.hasAttribute != 'undefined') {
+			return function(el, name) {
+				return el.hasAttribute(name);
+			};
+		}
+		if (typeof html.attributes != 'undefined') {
+			attributeSpecified = function(el, name) {
+				value = el.attributes[name];
+				return !!(value && value.specified);
+			};
+			if (attributesBad) {
+				return function(el, name) {
+					name = name.toLowerCase();
+					var alias = attributeAliases[name];
+
+					if (alias && alias.toLowerCase() == name) {
+						name = alias;
+					}
+					return attributeSpecified(el, name);
+	          		};
+			}
+			return attributeSpecified;
+		}
+	})();
+
+	html = null;
+
+	// Handles setter add-ons (should be deprecated)
+
+	var specialNames = /^(on.+|style|innerHTML)$/;
+
+	var specialSet = function(node, name, value) {
+		switch(name) {
+
+		// Special case for "style", value must be a dictionary (Object object)
+
+		case 'style':
+			d.style(node, value);
+			break;
+		case 'innerHTML':
+			setElementHTML(node, value);
+			break;
+		default: // Event properties
+			connectEvent(node, name, value);
+		}
+	};
+
+	// For use with HTML DOM elements only
+
+	dojo.attr = function(/*DomNode*/node, /*String|Object*/name, /*String|Boolean|Function|Number?*/value) {
 		//	summary:
 		//		Gets or sets an attribute on an HTML element.
 		//	description:
@@ -1346,83 +1385,125 @@ dojo.byId = function(id, doc){
 		//	|
 		//	|	// though shorter to use `dojo.style` in this case:
 		//	|	dojo.style("someNode", obj);
-		
-		node = d.byId(node);
-		var args = arguments.length;
-		if(args == 2 && !d.isString(name)){
-			// the object form of setter: the 2nd argument is a dictionary
-			for(var x in name){ d.attr(node, x, name[x]); }
-			// FIXME: return the node in this case? could be useful.
+
+		var x;
+
+		if (d.isString(node)) {
+			node = d.byId(node);
+		}
+
+		if (!d.isString(name)) {
+
+			// Multiple setter: the 2nd argument is a dictionary (Object object)
+
+			// TODO: all for-in loops should be filtered
+
+			for (x in name) {
+				value = name[x];
+
+				// Code duplicated for performance (avoids unnecessary document reflows)
+
+				// Convert attribute name to property name
+
+				x = x.toLowerCase();
+				x = attributeAliases[x] || x;
+
+				// Convert hyphenated attribute names to camel-case (e.g. http-equiv => httpEquiv)
+
+				if (name.indexOf('-') != -1) {
+					name = camelize(name);
+				}
+
+				// Only detours (exits execution context) for special cases
+
+				if (specialNames.test(x)) {
+					specialSet(node, x, value);
+				} else {
+					node[x] = value;
+				}
+			}
 			return;
 		}
-		name = _fixAttrName(name);
-		if(args == 3){ // setter
-			if(d.isFunction(value)){
-				// clobber if we can
-				var attrId = d.attr(node, _attrId);
-				if(!attrId){
-					attrId = _ctr++;
-					d.attr(node, _attrId, attrId);
-				}
-				if(!_evtHdlrMap[attrId]){
-					_evtHdlrMap[attrId] = {};
-				}
-				var h = _evtHdlrMap[attrId][name];
-				if(h){
-					d.disconnect(h);
-				}else{
-					try{
-						delete node[name];
-					}catch(e){}
-				}
 
-				// ensure that event objects are normalized, etc.
-				_evtHdlrMap[attrId][name] = d.connect(node, name, value);
+		// Convert attribute name to property name
 
-			}else if(typeof value == "boolean"){ // e.g. onsubmit, disabled
-				node[name] = value;
-			}else if(name === "style" && !d.isString(value)){
-				// when the name is "style" and value is an object, pass along
-				d.style(node, value);
-			}else if(name == "className"){
-				node.className = value;
-			}else if(name === "innerHTML"){
-				//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-				if(d.isIE && node.tagName.toLowerCase() in _roInnerHtml){
-					d.empty(node);
-					node.appendChild(d._toDom(value, node.ownerDocument));
-				}else{
-				//>>excludeEnd("webkitMobile");
-					node[name] = value;
-				//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-				}
-				//>>excludeEnd("webkitMobile");
-			}else{
-				node.setAttribute(name, value);
-			}
-		}else{
-			// getter
-			// should we access this attribute via a property or
-			// via getAttribute()?
-			var prop = _attrProps[name.toLowerCase()];
-			if(prop){
-				return node[prop];
-			}
-			var attrValue = node[name];
-			return (typeof attrValue == 'boolean' || typeof attrValue == 'function') ? attrValue
-				: (d.hasAttr(node, name) ? node.getAttribute(name) : null);
+		name = name.toLowerCase();
+		name = attributeAliases[name] || name;
+
+		// Convert hyphenated attribute names to camel-case (e.g. http-equiv => httpEquiv)
+
+		if (name.indexOf('-') != -1) {
+			name = camelize(name);
 		}
-	}
+
+		if (arguments.length == 2) { // Getter
+			return node[name];
+		}
+
+		// Special case for "style", value must be a dictionary (Object object)
+
+		if (name == 'style') {
+			d.style(node, value);
+		}
+
+		// Single setter
+
+		// Only detours (exits execution context) for special cases
+
+		if (specialNames.test(name)) {
+			specialSet(node, name, value);
+		} else {
+			node[name] = value;
+		}
+	};
+
+	// For use with HTML DOM elements only
 
 	dojo.removeAttr = function(/*DomNode|String*/node, /*String*/name){
-		//	summary:
-		//		Removes an attribute from an HTML element.
-		//	node:
-		//		id or reference to the element to remove the attribute from
-		//	name:
-		//		the name of the attribute to remove
-		d.byId(node).removeAttribute(_fixAttrName(name));
-	}
+		//summary: Removes an attribute from an HTML element.
+		//
+		//node: id or reference to the element to remove the attribute from
+		//
+		//name: the name of the attribute to remove
+		//
+
+		if (typeof node == 'string') {
+			node = d.byId(node);
+		}
+		if (attributesBad) {
+			name = name.toLowerCase();
+			var alias = attributeAliases[name];
+
+			if (alias && alias.toLowerCase() == name) {
+				name = alias;
+			}
+		}
+		node.removeAttribute(name);
+	};
+
+	// For use with XML elements and custom HTML DOM attributes (e.g. djconfig)
+
+	dojo.realAttr = function(node, name, value) {
+		var x;
+
+		if (d.isString(node)) {
+			node = d.byId(node);
+		}
+		if (typeof name != 'string') {
+			// TODO: all for-in loops should be filtered
+
+			for (x in name) {
+				node.setAttribute(x, name[x]);
+			}
+		}
+		if (arguments.length == 2) { // Getter
+			return node.getAttribute(name);
+		}
+
+		// Setter
+
+		node.setAttribute(node, name, value);
+	};
 	
 	dojo.create = function(tag, attrs, refNode, pos){
 		// summary: Create an element, allowing for optional attribute decoration
@@ -1504,7 +1585,7 @@ dojo.byId = function(id, doc){
 		if(attrs){ d.attr(tag, attrs); }
 		if(refNode){ d.place(tag, refNode, pos); }
 		return tag; // DomNode
-	}
+	};
 	
 	/*=====
 	dojo.empty = function(node){
@@ -1620,7 +1701,7 @@ dojo.byId = function(id, doc){
 			df.appendChild(fc);
 		}
 		return df; // DOMNode
-	}
+	};
 
 	// =============================
 	// (CSS) Class Functions
