@@ -305,7 +305,6 @@ if(typeof window != 'undefined' && window.document){
 				throw e3;
 			}
 
-
 			if (async) {
 				return true; // Boolean - indicates pending response
 			} else {
@@ -542,9 +541,14 @@ if(dojo.config.debugAtAllCosts){
 dojo.provide("dojo._base"); // All environments
 dojo.provide("dojo._base.browser");
 
-// Delete unused files
+dojo.require("dojo._base.lang");
+dojo.require("dojo._base.declare");
+dojo.require("dojo._base.Deferred");
+dojo.require("dojo._base.array");
+dojo.require("dojo._base.Color");
+dojo.require("dojo._base.window");
 
-dojo.require("dojo._base.base");
+// Delete unused files
 
 if (!dojo.config.noQuery) {
 	dojo.require("dojo._base.query");
