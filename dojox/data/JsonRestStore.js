@@ -150,7 +150,9 @@ dojo.declare("dojox.data.JsonRestStore",
 				// get the previous value or any empty array
 				var values = this.getValue(parentInfo.parent,parentInfo.attribute,[]);
 				// set the new value
-				this.setValue(parentInfo.parent,parentInfo.attribute,values.concat([data]));
+				values = values.concat([data]);
+				data.__parent = values;
+				this.setValue(parentInfo.parent, parentInfo.attribute, values);
 			}
 			return data;
 		},
@@ -249,6 +251,9 @@ dojo.declare("dojox.data.JsonRestStore",
 			}
 			store.changing(item);
 			item[attribute]=value;
+			if(value && !value.__parent){
+				value.__parent = item;
+			}
 			store.onSet(item,attribute,old,value);
 		},
 		setValues: function(item, attribute, values){
@@ -384,6 +389,15 @@ dojo.declare("dojox.data.JsonRestStore",
 			features["dojo.data.api.Write"] = true;
 			features["dojo.data.api.Notification"] = true;
 			return features;
+		},
+		
+		getParent: function(item){
+			//	summary:
+			//		Returns the parent item (or query) for the given item
+			//	item:
+			//		The item to find the parent of
+			
+			return item && item.__parent;
 		}
 
 
