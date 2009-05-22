@@ -3,10 +3,8 @@ dojo.provide("dojo._base.html");
 // FIXME: need to add unit tests for all the semi-public methods
 
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-try{
+if (typeof document.execCommand != 'undefined') {
 	document.execCommand("BackgroundImageCache", false, true);
-}catch(e){
-	// sane browsers don't have cache "issues"
 }
 //>>excludeEnd("webkitMobile");
 
@@ -1438,12 +1436,6 @@ dojo.byId = function(id, doc){
 
 		if (arguments.length == 2) { // Getter
 			return node[name];
-		}
-
-		// Special case for "style", value must be a dictionary (Object object)
-
-		if (name == 'style') {
-			d.style(node, value);
 		}
 
 		// Single setter
