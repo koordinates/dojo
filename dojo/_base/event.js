@@ -12,10 +12,9 @@ dojo.require("dojo._base.connect");
 			if(!node){return;} 
 			name = del._normalizeEventName(name);
 			fp = del._fixCallback(name, fp);
-			var oname = name;
 			if(
 				//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-				typeof document.documentElement.onmouseenter == 'undefined' && 
+				!('onmouseenter' in document.documentElement) && 
 				//>>excludeEnd("webkitMobile");
 				(name == "mouseenter" || name == "mouseleave")
 			){
@@ -28,13 +27,13 @@ dojo.require("dojo._base.connect");
 						// which causes isDescendant to return false which causes
 						// spurious, and more importantly, incorrect mouse events to fire.
 						// TODO: remove tagName check when Firefox 2 is no longer supported
-						try{ e.relatedTarget.tagName; }catch(e2){ return; }
+						try{ var x = (e.relatedTarget.tagName); }catch(e2){ return; }
 					//}
 					if(!dojo.isDescendant(e.relatedTarget, node)){
 						// e.type = oname; // FIXME: doesn't take? SJM: event.type is generally immutable.
 						return ofp.call(this, e); 
 					}
-				}
+				};
 			}
 			node.addEventListener(name, fp, false);
 			return fp; /*Handle*/
@@ -50,7 +49,7 @@ dojo.require("dojo._base.connect");
 			//		the handle returned from add
 			if(node){
 				event = del._normalizeEventName(event);
-				if(!dojo.isIE && (event == "mouseenter" || event == "mouseleave")){
+				if(!('onmouseenter' in window.document.documentElement) && (event == "mouseenter" || event == "mouseleave")){
 					event = (event == "mouseenter") ? "mouseover" : "mouseout";
 				}
 
@@ -75,10 +74,8 @@ dojo.require("dojo._base.connect");
 			// _fixCallback only attaches us to keypress.
 			// Switch on evt.type anyway because we might 
 			// be called directly from dojo.fixEvent.
-			switch(evt.type){
-				case "keypress":
-					del._setKeyChar(evt);
-					break;
+			if(evt.type == "keypress"){
+				del._setKeyChar(evt);
 			}
 			return evt;
 		},
@@ -117,7 +114,7 @@ dojo.require("dojo._base.connect");
 		// sender: DOMNode
 		//		node to treat as "currentTarget"
 		return del._fixEvent(evt, sender);
-	}
+	};
 
 	dojo.stopEvent = function(/*Event*/evt){
 		// summary:
@@ -128,7 +125,7 @@ dojo.require("dojo._base.connect");
 		evt.preventDefault();
 		evt.stopPropagation();
 		// NOTE: below, this method is overridden for IE
-	}
+	};
 
 	// the default listener to use on dontFix nodes, overriden for IE
 	var node_listener = dojo._listener;
@@ -148,11 +145,11 @@ dojo.require("dojo._base.connect");
 		// instead we return a listener id, which requires custom _disconnect below.
 		// return disconnect package
 		return [ obj, event, h, lid ];
-	}
+	};
 
 	dojo._disconnect = function(obj, event, handle, listener){
 		([dojo._listener, del, node_listener][listener]).remove(obj, event, handle);
-	}
+	};
 
 	// Constants
 
@@ -223,19 +220,19 @@ dojo.require("dojo._base.connect");
 	
 	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 	// IE event normalization
-	if(dojo.isIE){ 
+	if (typeof window.attachEvent != 'undefined' && typeof window.document.addEventListener == 'undefined') {
 		var _trySetKeyCode = function(e, code){
 			try{
 				// squelch errors when keyCode is read-only
 				// (e.g. if keyCode is ctrl or shift)
 				return (e.keyCode = code);
-			}catch(e){
+			}catch(e4){
 				return 0;
 			}
-		}
+		};
 
 		// by default, use the standard listener
-		var iel = dojo._listener;
+		var ieh, iel = dojo._listener;
 		var listenersName = (dojo._ieListenersName = "_" + dojo._scopeName + "_listeners");
 		// dispatcher tracking property
 		if(!dojo.config._allow_leaks){
@@ -269,7 +266,7 @@ dojo.require("dojo._base.connect");
 				}
 			};
 			// alias used above
-			var ieh = iel.handlers;
+			ieh = iel.handlers;
 		}
 
 		dojo.mixin(del, {
@@ -329,9 +326,7 @@ dojo.require("dojo._base.connect");
 				// avoid dependency on that entire module. Now that HTML is in
 				// Base, we should convert back to something similar there.
 				var se = evt.srcElement, doc = (se && se.ownerDocument) || document;
-				// DO NOT replace the following to use dojo.body(), in IE, document.documentElement should be used
-				// here rather than document.body
-				var docBody = ((dojo.isIE < 6) || (doc["compatMode"] == "BackCompat")) ? doc.body : doc.documentElement;
+				var docBody = (doc.documentElement.clientWidth === 0) ? doc.body : doc.documentElement;
 				var offset = dojo._getIeDocumentElementOffset();
 				evt.pageX = evt.clientX + dojo._fixIeBiDiScrollLeft(docBody.scrollLeft || 0) - offset.x;
 				evt.pageY = evt.clientY + (docBody.scrollTop || 0) - offset.y;
@@ -346,23 +341,21 @@ dojo.require("dojo._base.connect");
 				return del._fixKeys(evt);
 			},
 			_fixKeys: function(evt){
-				switch(evt.type){
-					case "keypress":
-						var c = ("charCode" in evt ? evt.charCode : evt.keyCode);
-						if (c==10){
-							// CTRL-ENTER is CTRL-ASCII(10) on IE, but CTRL-ENTER on Mozilla
-							c=0;
-							evt.keyCode = 13;
-						}else if(c==13||c==27){
-							c=0; // Mozilla considers ENTER and ESC non-printable
-						}else if(c==3){
-							c=99; // Mozilla maps CTRL-BREAK to CTRL-c
-						}
-						// Mozilla sets keyCode to 0 when there is a charCode
-						// but that stops the event on IE.
-						evt.charCode = c;
-						del._setKeyChar(evt);
-						break;
+				if(evt.type == "keypress"){
+					var c = ("charCode" in evt ? evt.charCode : evt.keyCode);
+					if (c==10){
+						// CTRL-ENTER is CTRL-ASCII(10) on IE, but CTRL-ENTER on Mozilla
+						c=0;
+						evt.keyCode = 13;
+					}else if(c==13||c==27){
+						c=0; // Mozilla considers ENTER and ESC non-printable
+					}else if(c==3){
+						c=99; // Mozilla maps CTRL-BREAK to CTRL-c
+					}
+					// Mozilla sets keyCode to 0 when there is a charCode
+					// but that stops the event on IE.
+					evt.charCode = c;
+					del._setKeyChar(evt);
 				}
 				return evt;
 			},
@@ -421,7 +414,7 @@ dojo.require("dojo._base.connect");
 			evt = evt || window.event;
 			del._stopPropagation.call(evt);
 			del._preventDefault.call(evt);
-		}
+		};
 	}
 	//>>excludeEnd("webkitMobile");
 
@@ -434,27 +427,26 @@ dojo.require("dojo._base.connect");
 			faux.preventDefault = function(){ evt.preventDefault(); }; 
 			faux.stopPropagation = function(){ evt.stopPropagation(); }; 
 			return faux;
-	}
+	};
 	
 	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 	// Opera event normalization
 	if(dojo.isOpera){
 		dojo.mixin(del, {
 			_fixEvent: function(evt, sender){
-				switch(evt.type){
-					case "keypress":
-						var c = evt.which;
-						if(c==3){
-							c=99; // Mozilla maps CTRL-BREAK to CTRL-c
-						}
-						// can't trap some keys at all, like INSERT and DELETE
-						// there is no differentiating info between DELETE and ".", or INSERT and "-"
-						c = c<41 && !evt.shiftKey ? 0 : c;
-						if(evt.ctrlKey && !evt.shiftKey && c>=65 && c<=90){
-							// lowercase CTRL-[A-Z] keys
-							c += 32;
-						}
-						return del._synthesizeEvent(evt, { charCode: c });
+				if (evt.type == "keypress"){
+					var c = evt.which;
+					if(c==3){
+						c=99; // Mozilla maps CTRL-BREAK to CTRL-c
+					}
+					// can't trap some keys at all, like INSERT and DELETE
+					// there is no differentiating info between DELETE and ".", or INSERT and "-"
+					c = c<41 && !evt.shiftKey ? 0 : c;
+					if(evt.ctrlKey && !evt.shiftKey && c>=65 && c<=90){
+						// lowercase CTRL-[A-Z] keys
+						c += 32;
+					}
+					return del._synthesizeEvent(evt, { charCode: c });
 				}
 				return evt;
 			}
@@ -516,12 +508,11 @@ dojo.require("dojo._base.connect");
 				}
 			},
 			_fixEvent: function(evt, sender){
-				switch(evt.type){
-					case "keypress":
-						if(evt.faux){ return evt; }
-						var c = evt.charCode;
-						c = c>=32 ? c : 0;
-						return del._synthesizeEvent(evt, {charCode: c, faux: true});
+				if(evt.type == "keypress"){
+					if(evt.faux){ return evt; }
+					var c = evt.charCode;
+					c = c>=32 ? c : 0;
+					return del._synthesizeEvent(evt, {charCode: c, faux: true});
 				}
 				return evt;
 			}
@@ -533,12 +524,10 @@ dojo.require("dojo._base.connect");
 })();
 //>>excludeEnd("webkitMobile");
 
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-if(dojo.isIE){
-	// keep this out of the closure
-	// closing over 'iel' or 'ieh' b0rks leak prevention
-	// ls[i] is an index into the master handler array
-	dojo._ieDispatcher = function(args, sender){
+// keep this out of the closure
+// closing over 'iel' or 'ieh' b0rks leak prevention
+// ls[i] is an index into the master handler array
+dojo._ieDispatcher = function(args, sender){
 		var ap=Array.prototype, h=dojo._ie_listener.handlers, c=args.callee, ls=c[dojo._ieListenersName], t=h[c.target];
 		// return value comes from original target function
 		var r = t && t.apply(sender, args);
@@ -551,15 +540,20 @@ if(dojo.isIE){
 			}
 		}
 		return r;
-	}
-	dojo._getIeDispatcher = function(){
-		// ensure the returned function closes over nothing ("new Function" apparently doesn't close)
-		return new Function(dojo._scopeName + "._ieDispatcher(arguments, this)"); // function
-	}
+};
+dojo._getIeDispatcher = function(){
+	// ensure the returned function closes over nothing ("new Function" apparently doesn't close)
+	return new Function(dojo._scopeName + "._ieDispatcher(arguments, this)"); // function
+};
+
+if (typeof window.attachEvent != 'undefined' && typeof window.document.addEventListener == 'undefined') {
+
 	// keep this out of the closure to reduce RAM allocation
+
 	dojo._event_listener._fixCallback = function(fp){
 		var f = dojo._event_listener._fixEvent;
-		return function(e){ return fp.call(this, f(e, this)); };
-	}
+		return function(e){
+			return fp.call(this, f(e, this));
+		};
+	};
 }
-//>>excludeEnd("webkitMobile");
