@@ -22,13 +22,7 @@ dojo.require("dojo._base.connect");
 				//oname = name;
 				name = (name == "mouseenter") ? "mouseover" : "mouseout";
 				fp = function(e){		
-					//if(dojo.isFF <= 2) {
-						// check tagName to fix a FF2 bug with invalid nodes (hidden child DIV of INPUT)
-						// which causes isDescendant to return false which causes
-						// spurious, and more importantly, incorrect mouse events to fire.
-						// TODO: remove tagName check when Firefox 2 is no longer supported
-						try{ var x = (e.relatedTarget.tagName); }catch(e2){ return; }
-					//}
+					try{ var x = (e.relatedTarget.tagName); }catch(e2){ return; }
 					if(!dojo.isDescendant(e.relatedTarget, node)){
 						// e.type = oname; // FIXME: doesn't take? SJM: event.type is generally immutable.
 						return ofp.call(this, e); 
@@ -218,10 +212,55 @@ dojo.require("dojo._base.connect");
 		SCROLL_LOCK: 145
 	};
 	
-	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
+	var listenersName, _trySetKeyCode, _stealthKeyDown = function(evt){
+		// Some browsers don't fire keypress for most non-printable characters.
+		// other browsers do, we simulate it here.
+		var kp = evt.currentTarget.onkeypress;
+		// only works if kp exists and is a dispatcher
+
+		// Only considered in IE
+
+		if(listenersName && (!kp || !kp[listenersName])){ return; }
+		// munge key/charCode
+		var k=evt.keyCode;
+		// These are Windows Virtual Key Codes
+		// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/VirtualKeyCodes.asp
+		var unprintable = k!=13 && k!=32 && k!=27 && (k<48||k>90) && (k<96||k>111) && (k<186||k>192) && (k<219||k>222);
+		// synthesize keypress for most unprintables and CTRL-keys
+		if(unprintable||evt.ctrlKey){
+			var c = unprintable ? 0 : k;
+			if(evt.ctrlKey){
+				if(k==3 || k==13){
+					return; // Will post CTRL-BREAK, CTRL-ENTER as keypress natively
+				}else if(c>95 && c<106){ 
+					c -= 48; // map CTRL-[numpad 0-9] to ASCII
+				}else if((!evt.shiftKey)&&(c>=65&&c<=90)){ 
+					c += 32; // map CTRL-[A-Z] to lowercase
+				}else{ 
+					c = del._punctMap[c] || c; // map other problematic CTRL combinations to ASCII
+				}
+			}
+
+			// simulate a keypress event
+
+			var faux = del._synthesizeEvent(evt, {type: 'keypress', faux: true, charCode: c});
+			kp.call(evt.currentTarget, faux);
+			if (typeof evt.cancelBubble != 'undefined') {
+				evt.cancelBubble = faux.cancelBubble;
+				evt.returnValue = faux.returnValue;
+			}
+
+			// Defined only in IE
+
+			if (_trySetKeyCode) {
+				_trySetKeyCode(evt, faux.keyCode);
+			}
+		}
+	};
+
 	// IE event normalization
 	if (typeof window.attachEvent != 'undefined' && typeof window.document.addEventListener == 'undefined') {
-		var _trySetKeyCode = function(e, code){
+		_trySetKeyCode = function(e, code){
 			try{
 				// squelch errors when keyCode is read-only
 				// (e.g. if keyCode is ctrl or shift)
@@ -233,7 +272,7 @@ dojo.require("dojo._base.connect");
 
 		// by default, use the standard listener
 		var ieh, iel = dojo._listener;
-		var listenersName = (dojo._ieListenersName = "_" + dojo._scopeName + "_listeners");
+		listenersName = (dojo._ieListenersName = "_" + dojo._scopeName + "_listeners");
 		// dispatcher tracking property
 		if(!dojo.config._allow_leaks){
 			// custom listener that handles leak protection for DOM events
@@ -359,39 +398,7 @@ dojo.require("dojo._base.connect");
 				}
 				return evt;
 			},
-			_stealthKeyDown: function(evt){
-				// IE doesn't fire keypress for most non-printable characters.
-				// other browsers do, we simulate it here.
-				var kp = evt.currentTarget.onkeypress;
-				// only works if kp exists and is a dispatcher
-				if(!kp || !kp[listenersName]){ return; }
-				// munge key/charCode
-				var k=evt.keyCode;
-				// These are Windows Virtual Key Codes
-				// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/VirtualKeyCodes.asp
-				var unprintable = k!=13 && k!=32 && k!=27 && (k<48||k>90) && (k<96||k>111) && (k<186||k>192) && (k<219||k>222);
-				// synthesize keypress for most unprintables and CTRL-keys
-				if(unprintable||evt.ctrlKey){
-					var c = unprintable ? 0 : k;
-					if(evt.ctrlKey){
-						if(k==3 || k==13){
-							return; // IE will post CTRL-BREAK, CTRL-ENTER as keypress natively 
-						}else if(c>95 && c<106){ 
-							c -= 48; // map CTRL-[numpad 0-9] to ASCII
-						}else if((!evt.shiftKey)&&(c>=65&&c<=90)){ 
-							c += 32; // map CTRL-[A-Z] to lowercase
-						}else{ 
-							c = del._punctMap[c] || c; // map other problematic CTRL combinations to ASCII
-						}
-					}
-					// simulate a keypress event
-					var faux = del._synthesizeEvent(evt, {type: 'keypress', faux: true, charCode: c});
-					kp.call(evt.currentTarget, faux);
-					evt.cancelBubble = faux.cancelBubble;
-					evt.returnValue = faux.returnValue;
-					_trySetKeyCode(evt, faux.keyCode);
-				}
-			},
+			_stealthKeyDown: _stealthKeyDown,
 			// Called in Event scope
 			_stopPropagation: function(){
 				this.cancelBubble = true; 
@@ -415,10 +422,9 @@ dojo.require("dojo._base.connect");
 			del._stopPropagation.call(evt);
 			del._preventDefault.call(evt);
 		};
-	}
-	//>>excludeEnd("webkitMobile");
+	} else {
 
-	del._synthesizeEvent = function(evt, props){
+		del._synthesizeEvent = function(evt, props){
 			var faux = dojo.mixin({}, evt, props);
 			del._setKeyChar(faux);
 			// FIXME: would prefer to use dojo.hitch: dojo.hitch(evt, evt.preventDefault); 
@@ -427,37 +433,9 @@ dojo.require("dojo._base.connect");
 			faux.preventDefault = function(){ evt.preventDefault(); }; 
 			faux.stopPropagation = function(){ evt.stopPropagation(); }; 
 			return faux;
-	};
-	
-	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-	// Opera event normalization
-	if(dojo.isOpera){
-		dojo.mixin(del, {
-			_fixEvent: function(evt, sender){
-				if (evt.type == "keypress"){
-					var c = evt.which;
-					if(c==3){
-						c=99; // Mozilla maps CTRL-BREAK to CTRL-c
-					}
-					// can't trap some keys at all, like INSERT and DELETE
-					// there is no differentiating info between DELETE and ".", or INSERT and "-"
-					c = c<41 && !evt.shiftKey ? 0 : c;
-					if(evt.ctrlKey && !evt.shiftKey && c>=65 && c<=90){
-						// lowercase CTRL-[A-Z] keys
-						c += 32;
-					}
-					return del._synthesizeEvent(evt, { charCode: c });
-				}
-				return evt;
-			}
-		});
-	}
-	//>>excludeEnd("webkitMobile");
+		};
 
-	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-	// Webkit event normalization
-	if(dojo.isWebKit){
-		//>>excludeEnd("webkitMobile");
+
 		del._add = del.add;
 		del._remove = del.remove;
 
@@ -469,32 +447,7 @@ dojo.require("dojo._base.connect");
 					// we need to listen to onkeydown to synthesize
 					// keypress events that otherwise won't fire
 					// in Safari 3.1+: https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
-					handle._stealthKeyDownHandle = del._add(node, "keydown", function(evt){
-						//A variation on the IE _stealthKeydown function
-						//Synthesize an onkeypress event, but only for unprintable characters.
-						var k=evt.keyCode;
-						// These are Windows Virtual Key Codes
-						// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/VirtualKeyCodes.asp
-						var unprintable = k!=13 && k!=32 && k!=27 && (k<48 || k>90) && (k<96 || k>111) && (k<186 || k>192) && (k<219 || k>222);
-						// synthesize keypress for most unprintables and CTRL-keys
-						if(unprintable || evt.ctrlKey){
-							var c = unprintable ? 0 : k;
-							if(evt.ctrlKey){
-								if(k==3 || k==13){
-									return; // IE will post CTRL-BREAK, CTRL-ENTER as keypress natively 
-								}else if(c>95 && c<106){ 
-									c -= 48; // map CTRL-[numpad 0-9] to ASCII
-								}else if(!evt.shiftKey && c>=65 && c<=90){ 
-									c += 32; // map CTRL-[A-Z] to lowercase
-								}else{ 
-									c = del._punctMap[c] || c; // map other problematic CTRL combinations to ASCII
-								}
-							}
-							// simulate a keypress event
-							var faux = del._synthesizeEvent(evt, {type: 'keypress', faux: true, charCode: c});
-							fp.call(evt.currentTarget, faux);
-						}
-					});
+					handle._stealthKeyDownHandle = del._add(node, "keydown", _stealthKeyDown);
 				}
 				return handle; /*Handle*/
 			},
@@ -508,21 +461,29 @@ dojo.require("dojo._base.connect");
 				}
 			},
 			_fixEvent: function(evt, sender){
+				if(evt.faux){ return evt; }
 				if(evt.type == "keypress"){
-					if(evt.faux){ return evt; }
-					var c = evt.charCode;
-					c = c>=32 ? c : 0;
-					return del._synthesizeEvent(evt, {charCode: c, faux: true});
+					var c = evt.which;
+					if(c==3){
+						c=99; // Maps CTRL-BREAK to CTRL-c
+					}
+					// can't trap some keys at all, like INSERT and DELETE
+					// there is no differentiating info between DELETE and ".", or INSERT and "-"
+					c = c<41 && !evt.shiftKey ? 0 : c;
+					if(evt.ctrlKey && !evt.shiftKey && c>=65 && c<=90){
+						// lowercase CTRL-[A-Z] keys
+						c += 32;
+					}
+
+					var c2 = evt.charCode;
+					c2 = c2>=32 ? c2 : 0;
+					return del._synthesizeEvent(evt, {which: c, charCode: c2, faux: true});
 				}
 				return evt;
 			}
 		});
-	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 	}
-	//>>excludeEnd("webkitMobile");
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 })();
-//>>excludeEnd("webkitMobile");
 
 // keep this out of the closure
 // closing over 'iel' or 'ieh' b0rks leak prevention
