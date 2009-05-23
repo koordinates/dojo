@@ -449,9 +449,9 @@ dojo.global = {
 		//		is "prototype extension safe", so that instances of objects
 		//		will not pass along prototype defaults.
 		for(var x in props){
-			if(isOwnProperty(props, x)){
+//			if(isOwnProperty(props, x)){
 				obj[x] = props[x];
-			}
+//			}
 		}
 		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 		var p;
@@ -769,7 +769,7 @@ dojo.global = {
 			try {
 				var result = d['eval'](contents);
 			} catch(e) {
-				console.log('oops ' + uri + (e.description || e));
+				console.log('oops ' + uri + ' ' + (e.description || e));
 			}
 			if(cb){ cb(result); }
 		};
@@ -1396,15 +1396,6 @@ dojo.global = {
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 })();
 //>>excludeEnd("webkitMobile");
-
-
-
-
-
-
-
-
-
 
 // *** TODO: Exclude this if not cross-domain build
 
