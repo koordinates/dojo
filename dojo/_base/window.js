@@ -13,7 +13,7 @@ dojo.doc = {
 	// 	|	n.appendChild(dojo.doc.createElement('div'));
 }
 =====*/
-dojo.doc = window["document"] || null;
+dojo.doc = window.document || null;
 
 dojo.body = function(){
 	// summary:
@@ -25,7 +25,7 @@ dojo.body = function(){
 	// Note: document.body is not defined for a strict xhtml document
 	// Would like to memoize this, but dojo.doc can change vi dojo.withDoc().
 	return dojo.doc.body || dojo.doc.getElementsByTagName("body")[0]; // Node
-}
+};
 
 dojo.setContext = function(/*Object*/globalObject, /*DocumentElement*/globalDocument){
 	// summary:
@@ -59,7 +59,7 @@ dojo.withGlobal = function(	/*Object*/globalObject,
 	}finally{
 		dojo.global = oldGlob;
 	}
-}
+};
 
 dojo.withDoc = function(	/*DocumentElement*/documentObject, 
 							/*Function*/callback, 
@@ -90,4 +90,3 @@ dojo.withDoc = function(	/*DocumentElement*/documentObject,
 		if(oldLtr !== undefined){ dojo._bodyLtr = oldLtr; }
 	}
 };
-	
