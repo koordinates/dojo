@@ -76,7 +76,7 @@ dojo.require("dojo._base.query");
 			}
 		});
 		return ret; // Object
-	}
+	};
 
 	dojo.objectToQuery = function(/*Object*/ map){
 		//	summary:
@@ -115,21 +115,21 @@ dojo.require("dojo._base.query");
 			}
 		}
 		return pairs.join("&"); // String
-	}
+	};
 
 	dojo.formToQuery = function(/*DOMNode||String*/ formNode){
 		// summary:
 		//		Returns a URL-encoded string representing the form passed as either a
 		//		node or string ID identifying the form to serialize
 		return _d.objectToQuery(_d.formToObject(formNode)); // String
-	}
+	};
 
 	dojo.formToJson = function(/*DOMNode||String*/ formNode, /*Boolean?*/prettyPrint){
 		// summary:
 		//		return a serialized JSON string from a form node or string
 		//		ID identifying the form to serialize
 		return _d.toJson(_d.formToObject(formNode), prettyPrint); // String
-	}
+	};
 
 	dojo.queryToObject = function(/*String*/ str){
 		// summary:
@@ -171,7 +171,7 @@ dojo.require("dojo._base.query");
 			}
 		});
 		return ret; // Object
-	}
+	};
 
 	/*
 		from refactor.txt:
@@ -211,11 +211,7 @@ dojo.require("dojo._base.query");
 			// "JavaScript Hijacking", but it is less secure than standard JSON. Use
 			// standard JSON instead. JSON prefixing can be used to subvert hijacking.
 			if(!dojo.config.useCommentedJson){
-				console.warn("Consider using the standard mimetype:application/json."
-					+ " json-commenting can introduce security issues. To"
-					+ " decrease the chances of hijacking, use the standard the 'json' handler and"
-					+ " prefix your json with: {}&&\n"
-					+ "Use djConfig.useCommentedJson=true to turn off this message.");
+				console.warn("Consider using the standard mimetype:application/json. json-commenting can introduce security issues. To decrease the chances of hijacking, use the standard the 'json' handler and prefix your json with: {}&&\n Use djConfig.useCommentedJson=true to turn off this message.");
 			}
 
 			var value = xhr.responseText;
@@ -234,7 +230,7 @@ dojo.require("dojo._base.query");
 			var result = xhr.responseXML;
 			//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 			if(window.ActiveXObject && (!result || !result.documentElement)){
-				var ms = function(n){ return "MSXML" + n + ".DOMDocument"; }
+				var ms = function(n){ return "MSXML" + n + ".DOMDocument"; };
 				var dp = ["Microsoft.XMLDOM", ms(6), ms(4), ms(3), ms(2)];
 				_d.some(dp, function(p){
 					try{
@@ -256,7 +252,7 @@ dojo.require("dojo._base.query");
 		if(xhr.responseText && xhr.responseText.indexOf("\/*") != -1){
 			return handlers["json-comment-filtered"](xhr);
 		}else{
-			return handlers["json"](xhr);
+			return handlers.json(xhr);
 		}
 	};
 
@@ -307,7 +303,7 @@ dojo.require("dojo._base.query");
 		this.load = load;
 		this.error = error;
 		this.handle = handle;
-	}
+	};
 	=====*/
 
 	/*=====
@@ -445,7 +441,7 @@ dojo.require("dojo._base.query");
 		// FIXME: need to wire up the xhr object's abort method to something
 		// analagous in the Deferred
 		return d;
-	}
+	};
 
 	var _deferredCancel = function(/*Deferred*/dfd){
 		//summary: canceller function for dojo._ioSetArgs call.
@@ -462,19 +458,19 @@ dojo.require("dojo._base.query");
 			err.dojoType="cancel";
 		}
 		return err;
-	}
+	};
 	var _deferredOk = function(/*Deferred*/dfd){
 		//summary: okHandler function for dojo._ioSetArgs call.
 
 		var ret = _d._contentHandlers[dfd.ioArgs.handleAs](dfd.ioArgs.xhr);
 		return ret === undefined ? null : ret;
-	}
+	};
 	var _deferError = function(/*Error*/error, /*Deferred*/dfd){
 		//summary: errHandler function for dojo._ioSetArgs call.
 
 		console.error(error);
 		return error;
-	}
+	};
 
 	// avoid setting a timer per request. It degrades performance on IE
 	// something fierece if we don't use unified loops.
@@ -492,26 +488,28 @@ dojo.require("dojo._base.query");
 		if(!_d._blockAsync){
 			// we need manual loop because we often modify _inFlight (and therefore 'i') while iterating
 			// note: the second clause is an assigment on purpose, lint may complain
-			for(var i = 0, tif; i < _inFlight.length && (tif = _inFlight[i]); i++){
-				var dfd = tif.dfd;
-				var func = function(){
-					if(!dfd || dfd.canceled || !tif.validCheck(dfd)){
-						_inFlight.splice(i--, 1); 
-					}else if(tif.ioCheck(dfd)){
+
+			var func = function(){
+				if(!dfd || dfd.canceled || !tif.validCheck(dfd)){
+					_inFlight.splice(i--, 1); 
+				}else if(tif.ioCheck(dfd)){
+					_inFlight.splice(i--, 1);
+					tif.resHandle(dfd);
+				}else if(dfd.startTime){
+					//did we timeout?
+					if(dfd.startTime + (dfd.ioArgs.args.timeout || 0) < now){
 						_inFlight.splice(i--, 1);
-						tif.resHandle(dfd);
-					}else if(dfd.startTime){
-						//did we timeout?
-						if(dfd.startTime + (dfd.ioArgs.args.timeout || 0) < now){
-							_inFlight.splice(i--, 1);
-							var err = new Error("timeout exceeded");
-							err.dojoType = "timeout";
-							dfd.errback(err);
-							//Cancel the request so the io module can do appropriate cleanup.
-							dfd.cancel();
-						}
+						var err = new Error("timeout exceeded");
+						err.dojoType = "timeout";
+						dfd.errback(err);
+						//Cancel the request so the io module can do appropriate cleanup.
+						dfd.cancel();
 					}
-				};
+				}
+			};
+
+			for(var i = 0, tif; i < _inFlight.length && (tif = _inFlight[i]); i++){
+				var dfd = tif.dfd;				
 				if(dojo.config.debugAtAllCosts){
 					func.call(this);
 				}else{
@@ -530,7 +528,7 @@ dojo.require("dojo._base.query");
 			return;
 		}
 
-	}
+	};
 
 	dojo._ioCancelAll = function(){
 		//summary: Cancels all pending IO requests, regardless of IO type
@@ -542,7 +540,7 @@ dojo.require("dojo._base.query");
 				}catch(e){/*squelch*/}
 			});
 		}catch(e){/*squelch*/}
-	}
+	};
 
 	//Automatically call cancel all io calls on unload
 	//in IE for trac issue #2357.
@@ -584,16 +582,16 @@ dojo.require("dojo._base.query");
 		if(args.sync){
 			_watchInFlight();
 		}
-	}
+	};
 
 	var _defaultContentType = "application/x-www-form-urlencoded";
 
 	var _validCheck = function(/*Deferred*/dfd){
 		return dfd.ioArgs.xhr.readyState; //boolean
-	}
+	};
 	var _ioCheck = function(/*Deferred*/dfd){
 		return 4 == dfd.ioArgs.xhr.readyState; //boolean
-	}
+	};
 	var _resHandle = function(/*Deferred*/dfd){
 		var xhr = dfd.ioArgs.xhr;
 		if(_d._isDocumentOk(xhr)){
@@ -604,7 +602,7 @@ dojo.require("dojo._base.query");
 			err.responseText = xhr.responseText;
 			dfd.errback(err);
 		}
-	}
+	};
 
 	dojo._ioAddQueryToUrl = function(/*dojo.__IoCallbackArgs*/ioArgs){
 		//summary: Adds query params discovered by the io deferred construction to the URL.
@@ -613,7 +611,7 @@ dojo.require("dojo._base.query");
 			ioArgs.url += (ioArgs.url.indexOf("?") == -1 ? "?" : "&") + ioArgs.query;
 			ioArgs.query = null;
 		}		
-	}
+	};
 
 	/*=====
 	dojo.declare("dojo.__XhrArgs", dojo.__IoArgs, {
@@ -698,13 +696,13 @@ dojo.require("dojo._base.query");
 		_d._ioWatch(dfd, _validCheck, _ioCheck, _resHandle);
 		xhr = null;
 		return dfd; // dojo.Deferred
-	}
+	};
 
 	dojo.xhrGet = function(/*dojo.__XhrArgs*/ args){
 		//	summary: 
 		//		Sends an HTTP GET request to the server.
 		return _d.xhr("GET", args); // dojo.Deferred
-	}
+	};
 
 	dojo.rawXhrPost = dojo.xhrPost = function(/*dojo.__XhrArgs*/ args){
 		//	summary:
@@ -713,7 +711,7 @@ dojo.require("dojo._base.query");
 		//	postData:
 		//		String. Send raw data in the body of the POST request.
 		return _d.xhr("POST", args, true); // dojo.Deferred
-	}
+	};
 
 	dojo.rawXhrPut = dojo.xhrPut = function(/*dojo.__XhrArgs*/ args){
 		//	summary:
@@ -722,13 +720,13 @@ dojo.require("dojo._base.query");
 		//	putData:
 		//		String. Send raw data in the body of the PUT request.
 		return _d.xhr("PUT", args, true); // dojo.Deferred
-	}
+	};
 
 	dojo.xhrDelete = function(/*dojo.__XhrArgs*/ args){
 		//	summary:
 		//		Sends an HTTP DELETE request to the server.
 		return _d.xhr("DELETE", args); //dojo.Deferred
-	}
+	};
 
 	/*
 	dojo.wrapForm = function(formNode){
@@ -739,7 +737,7 @@ dojo.require("dojo._base.query");
 		// want. What should we allow folks to do w/ this? What events to
 		// set/send?
 		throw new Error("dojo.wrapForm not yet implemented");
-	}
+	};
 	*/
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 })();
