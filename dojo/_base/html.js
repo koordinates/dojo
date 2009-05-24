@@ -347,7 +347,7 @@ dojo.byId = function(id, doc){
 	}
 	=====*/
 
-	dojo.getOpacity = (function(el) {
+	dojo._getOpacity = (function(el) {
         var i, s, reOpacity = new RegExp('opacity=([^\\)]*)', 'i');
 
 	var fn = function(el) {
@@ -397,7 +397,7 @@ dojo.byId = function(id, doc){
 	}
 	=====*/
 
-	dojo.setOpacity = (function(el) { 
+	dojo._setOpacity = (function(el) { 
         var i, s, so;
         var reOpacity = new RegExp('alpha\\(opacity=[^\\)]+\\)', 'i');
 	var fn = function(el, o) { el.style[s] = o; };
