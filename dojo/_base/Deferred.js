@@ -277,7 +277,7 @@ dojo.extend(dojo.Deferred, {
 				}
 				this.errback(err);
 			}
-		}else if(	(this.fired == 0) &&
+		}else if((!this.fired) &&
 					(this.results[0] instanceof dojo.Deferred)
 		){
 			this.results[0].cancel();
@@ -350,7 +350,7 @@ dojo.extend(dojo.Deferred, {
 		// summary: 
 		//		Add separate callback and errback to the end of the callback
 		//		sequence.
-		this.chain.push([cb, eb])
+		this.chain.push([cb, eb]);
 		if(this.fired >= 0){
 			this._fire();
 		}
@@ -366,36 +366,38 @@ dojo.extend(dojo.Deferred, {
 		var res = this.results[fired];
 		var self = this;
 		var cb = null;
+
+		var func = function(){
+			var ret = f(res);
+			//If no response, then use previous response.
+			if(typeof ret != "undefined"){
+				res = ret;
+			}
+			fired = ((res instanceof Error) ? 1 : 0);
+			if(res instanceof dojo.Deferred){
+				cb = function(res){
+					self._resback(res);
+					// inlined from _pause()
+					self.paused--;
+					if(
+						(!self.paused) && 
+						(self.fired >= 0)
+					){
+						self._fire();
+					}
+				};
+				// inlined from _unpause
+				this.paused++;
+			}
+		};			
+
 		while(
 			(chain.length > 0) &&
-			(this.paused == 0)
+			(!this.paused)
 		){
 			// Array
 			var f = chain.shift()[fired];
 			if(!f){ continue; }
-			var func = function(){
-				var ret = f(res);
-				//If no response, then use previous response.
-				if(typeof ret != "undefined"){
-					res = ret;
-				}
-				fired = ((res instanceof Error) ? 1 : 0);
-				if(res instanceof dojo.Deferred){
-					cb = function(res){
-						self._resback(res);
-						// inlined from _pause()
-						self.paused--;
-						if(
-							(self.paused == 0) && 
-							(self.fired >= 0)
-						){
-							self._fire();
-						}
-					}
-					// inlined from _unpause
-					this.paused++;
-				}
-			};
 			if(dojo.config.debugAtAllCosts){
 				func.call(this);
 			}else{

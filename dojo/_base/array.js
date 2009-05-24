@@ -29,7 +29,7 @@ dojo.provide("dojo._base.array");
 				i = end - 1;
 				step = end = -1;
 			}
-			if(fromIndex != undefined){ i = fromIndex; }
+			if(fromIndex !== undefined){ i = fromIndex; }
 			if((findLast && i > end) || i < end){
 				for(; i != end; i += step){
 					if(array[i] == value){ return i; }

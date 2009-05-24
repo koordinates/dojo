@@ -40,14 +40,14 @@ dojo._listener = {
 			}
 
 			// invoke listeners after target function
-			for(var i in lls){
+			for(i in lls){
 				if(!(i in ap)){
 					lls[i].apply(this, arguments);
 				}
 			}
 			// return value comes from original target function
 			return r;
-		}
+		};
 	},
 	// add a listener to an object
 	add: function(/*Object*/ source, /*String*/ method, /*Function*/ listener){
@@ -196,13 +196,13 @@ dojo.connect = function(/*Object|null*/ obj,
 	for(var l=a.length; i<l; i++){	args.push(a[i]); }
 	// do the actual work
 	return dojo._connect.apply(this, args); /*Handle*/
-}
+};
 
 // used by non-browser hostenvs. always overriden by event.js
 dojo._connect = function(obj, event, context, method){
 	var l=dojo._listener, h=l.add(obj, event, dojo.hitch(context, method)); 
 	return [obj, event, h, l]; // Handle
-}
+};
 
 dojo.disconnect = function(/*Handle*/ handle){
 	// summary:
@@ -216,11 +216,11 @@ dojo.disconnect = function(/*Handle*/ handle){
 		// let's not keep this reference
 		delete handle[0];
 	}
-}
+};
 
 dojo._disconnect = function(obj, event, handle, listener){
 	listener.remove(obj, event, handle);
-}
+};
 
 // topic publish/subscribe
 
@@ -242,7 +242,7 @@ dojo.subscribe = function(/*String*/ topic, /*Object|null*/ context, /*String|Fu
 
 	// support for 2 argument invocation (omitting context) depends on hitch
 	return [topic, dojo._listener.add(dojo._topics, topic, dojo.hitch(context, method))]; /*Handle*/
-}
+};
 
 dojo.unsubscribe = function(/*Handle*/ handle){
 	//	summary:
@@ -256,7 +256,7 @@ dojo.unsubscribe = function(/*Handle*/ handle){
 	if(handle){
 		dojo._listener.remove(dojo._topics, handle[0], handle[1]);
 	}
-}
+};
 
 dojo.publish = function(/*String*/ topic, /*Array*/ args){
 	//	summary:
@@ -277,7 +277,7 @@ dojo.publish = function(/*String*/ topic, /*Array*/ args){
 	if(f){
 		f.apply(this, args||[]);
 	}
-}
+};
 
 dojo.connectPublisher = function(	/*String*/ topic, 
 									/*Object|null*/ obj, 
@@ -297,6 +297,6 @@ dojo.connectPublisher = function(	/*String*/ topic,
 	//	 	I.e. identifies a property obj[event].
 	//	example:
 	//	|	dojo.connectPublisher("/ajax/start", dojo, "xhrGet");
-	var pf = function(){ dojo.publish(topic, arguments); }
+	var pf = function(){ dojo.publish(topic, arguments); };
 	return (event) ? dojo.connect(obj, event, pf) : dojo.connect(obj, pf); //Handle
 };
