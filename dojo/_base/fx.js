@@ -6,7 +6,7 @@ dojo.require("dojo._base.connect");
 dojo.require("dojo._base.html");
 
 /*
-	Animation losely package based on Dan Pupius' work, contributed under CLA: 
+	Animation package loosely based on Dan Pupius' work, contributed under CLA: 
 		http://pupius.co.uk/js/Toolkit.Drawing.js
 */
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
@@ -26,12 +26,12 @@ dojo.require("dojo._base.html");
 		//		Ending value for range
 		this.start = start;
 		this.end = end;
-	}
+	};
 	dojo._Line.prototype.getValue = function(/*float*/ n){
 		//	summary: Returns the point on the line
 		//	n: a floating point number greater than 0 and less than 1
 		return ((this.end - this.start) * n) + this.start; // Decimal
-	}
+	};
 	
 	d.declare("dojo._Animation", null, {
 		//	summary
@@ -294,14 +294,13 @@ dojo.require("dojo._base.html");
 		
 		_clearTimer: function(){
 			// summary: Clear the play delay timer
-			clearTimeout(this._delayTimer);
+			window.clearTimeout(this._delayTimer);
 			delete this._delayTimer;
 		}
 		
 	});
 
 	var ctr = 0,
-		_globalTimerList = [],
 		timer = null,
 		runner = {
 			run: function(){ }
@@ -314,7 +313,7 @@ dojo.require("dojo._base.html");
 			ctr++;
 		}
 		if(!timer){
-			timer = setInterval(d.hitch(runner, "run"), this.rate);
+			timer = window.setInterval(d.hitch(runner, "run"), this.rate);
 		}
 	};
 
@@ -325,7 +324,7 @@ dojo.require("dojo._base.html");
 			ctr--;
 		}
 		if(ctr <= 0){
-			clearInterval(timer);
+			window.clearInterval(timer);
 			timer = null;
 			ctr = 0;
 		}
@@ -334,14 +333,6 @@ dojo.require("dojo._base.html");
 	var _makeFadeable = 
 		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 		document.documentElement.currentStyle ? function(node){
-			// only set the zoom if the "tickle" value would be the same as the
-			// default
-			//var ns = node.style;
-			// don't set the width to auto if it didn't already cascade that way.
-			// We don't want to f anyones designs
-			//if(!ns.width.length && d.style(node, "width") == "auto"){
-			//	ns.width = "auto";
-			//}
 			if (node.currentStyle && !node.currentStyle.hasLayout) { node.style.zoom = 1; }
 
 		} : 
@@ -356,7 +347,7 @@ dojo.require("dojo._base.html");
 
 		args.node = d.byId(args.node);
 		var fArgs = _mixin({ properties: {} }, args),
-		 	props = (fArgs.properties.opacity = {});
+		 	props = fArgs.properties.opacity = {};
 		
 		props.start = !("start" in fArgs) ?
 			function(){ 
@@ -368,7 +359,7 @@ dojo.require("dojo._base.html");
 		d.connect(anim, "beforeBegin", d.partial(_makeFadeable, fArgs.node));
 
 		return anim; // dojo._Animation
-	}
+	};
 
 	/*=====
 	dojo.__FadeArgs = function(node, duration, easing){
@@ -389,19 +380,19 @@ dojo.require("dojo._base.html");
 		//		Returns an animation that will fade node defined in 'args' from
 		//		its current opacity to fully opaque.
 		return d._fade(_mixin({ end: 1 }, args)); // dojo._Animation
-	}
+	};
 
 	dojo.fadeOut = function(/*dojo.__FadeArgs*/  args){
 		// summary: 
 		//		Returns an animation that will fade node defined in 'args'
 		//		from its current opacity to fully transparent.
 		return d._fade(_mixin({ end: 0 }, args)); // dojo._Animation
-	}
+	};
 
 	dojo._defaultEasing = function(/*Decimal?*/ n){
 		// summary: The default easing function for dojo._Animation(s)
 		return 0.5 + ((Math.sin((n + 1.5) * Math.PI))/2);
-	}
+	};
 
 	var PropLine = function(properties){
 		// PropLine is an internal class which is used to model the values of
@@ -416,7 +407,7 @@ dojo.require("dojo._base.html");
 				prop.tempColor = new d.Color();
 			}
 		}
-	}
+	};
 
 	PropLine.prototype.getValue = function(r){
 		var ret = {};
@@ -430,7 +421,7 @@ dojo.require("dojo._base.html");
 			}
 		}
 		return ret;
-	}
+	};
 
 	/*=====
 	dojo.declare("dojo.__AnimArgs", [dojo.__FadeArgs], {
@@ -515,6 +506,15 @@ dojo.require("dojo._base.html");
 		args.node = d.byId(args.node);
 		if(!args.easing){ args.easing = d._defaultEasing; }
 
+		var isColor;
+		function getStyle(node, p){
+			// dojo.style(node, "height") can return "auto" or "" on IE; this is more reliable:
+			var v = {height: node.offsetHeight, width: node.offsetWidth}[p];
+			if(v !== undefined){ return v; }
+			v = d.style(node, p);
+			return (p == "opacity") ? +v : (isColor ? v : parseFloat(v));
+		}
+
 		var anim = new d._Animation(args);
 		d.connect(anim, "beforeBegin", anim, function(){
 			var pm = {};
@@ -535,14 +535,7 @@ dojo.require("dojo._base.html");
 				if(d.isFunction(prop.end)){
 					prop.end = prop.end();
 				}
-				var isColor = (p.toLowerCase().indexOf("color") >= 0);
-				function getStyle(node, p){
-					// dojo.style(node, "height") can return "auto" or "" on IE; this is more reliable:
-					var v = {height: node.offsetHeight, width: node.offsetWidth}[p];
-					if(v !== undefined){ return v; }
-					v = d.style(node, p);
-					return (p == "opacity") ? +v : (isColor ? v : parseFloat(v));
-				}
+				isColor = (p.toLowerCase().indexOf("color") >= 0);
 				if(!("end" in prop)){
 					prop.end = getStyle(this.node, p);
 				}else if(!("start" in prop)){
@@ -560,7 +553,7 @@ dojo.require("dojo._base.html");
 		});
 		d.connect(anim, "onAnimate", d.hitch(d, "style", anim.node));
 		return anim; // dojo._Animation
-	}
+	};
 
 	dojo.anim = function(	/*DOMNode|String*/ 	node, 
 							/*Object*/ 			properties, 
@@ -613,7 +606,7 @@ dojo.require("dojo._base.html");
 			easing: easing,
 			onEnd: onEnd 
 		}).play(delay||0);
-	}
+	};
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 })();
 //>>excludeEnd("webkitMobile");
