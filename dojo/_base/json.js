@@ -7,8 +7,8 @@ dojo.fromJson = function(/*String*/ json){
 	//		a string literal of a JSON item, for instance:
 	//			`'{ "foo": [ "bar", 1, { "baz": "thud" } ] }'`
 
-	return eval("(" + json + ")"); // Object
-}
+	return (new Function('return (' + json + ')'))(); // Object
+};
 
 dojo._escapeString = function(/*String*/str){
 	//summary:
@@ -18,7 +18,7 @@ dojo._escapeString = function(/*String*/str){
 	return ('"' + str.replace(/(["\\])/g, '\\$1') + '"').
 		replace(/[\f]/g, "\\f").replace(/[\b]/g, "\\b").replace(/[\n]/g, "\\n").
 		replace(/[\t]/g, "\\t").replace(/[\r]/g, "\\r"); // string
-}
+};
 
 dojo.toJsonIndentStr = "\t";
 dojo.toJson = function(/*Object*/ it, /*Boolean?*/ prettyPrint, /*String?*/ _indentStr){
@@ -128,4 +128,4 @@ dojo.toJson = function(/*Object*/ it, /*Boolean?*/ prettyPrint, /*String?*/ _ind
 		output.push(newLine + nextIndent + keyStr + ":" + sep + val);
 	}
 	return "{" + output.join("," + sep) + newLine + _indentStr + "}"; // String
-}
+};
