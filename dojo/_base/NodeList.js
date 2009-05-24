@@ -89,7 +89,7 @@ dojo.provide("dojo._base.NodeList");
 	var magicGuard = function(a){
 		//	summary:
 		//		the guard function for dojo.attr() and dojo.style()
-		return a.length == 1 && d.isString(a[0])
+		return a.length == 1 && d.isString(a[0]);
 	};
 	
 	var orphan = function(node){
@@ -564,7 +564,8 @@ dojo.provide("dojo._base.NodeList");
 			//		|	"only"
 			//		|	"replace"
 			// 		or an offset in the childNodes property
-			return d.query(queryOrListOrNode).place(item[0], position);	// dojo.NodeList
+			var item = d.query(queryOrListOrNode)[0];
+			return d.query(queryOrListOrNode).place(item, position);	// dojo.NodeList
 		},
 
 		// FIXME: do we need this?
@@ -694,9 +695,9 @@ dojo.provide("dojo._base.NodeList");
 			//		Create a new instance of a specified class, using the
 			//		specified properties and each node in the nodeList as a
 			//		srcNodeRef
-			var c = d.isFunction(declaredClass) ? declaredClass : d.getObject(declaredClass);
+			var C = d.isFunction(declaredClass) ? declaredClass : d.getObject(declaredClass);
 			properties = properties || {};
-			return this.forEach(function(node){ new c(properties, node); });	// dojo.NodeList
+			return this.forEach(function(node){ var x = new C(properties, node); }); // dojo.NodeList
 		},
 
 		at: function(/*===== index =====*/){
@@ -724,7 +725,7 @@ dojo.provide("dojo._base.NodeList");
 			var _oe = "on"+evt;
 			nlp[_oe] = function(a, b){
 				return this.connect(_oe, a, b);
-			}
+			};
 				// FIXME: should these events trigger publishes?
 				/*
 				return (a ? this.connect(_oe, a, b) : 
