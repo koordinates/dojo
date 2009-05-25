@@ -6,7 +6,6 @@ dojo.fx = {
 };
 =====*/
 (function(){
-	
 	var d = dojo, 
 		_baseObj = {
 			_fire: function(evt, args){
