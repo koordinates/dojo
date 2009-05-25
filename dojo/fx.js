@@ -1,10 +1,12 @@
 dojo.provide("dojo.fx");
 dojo.require("dojo.fx.Toggler");
+
 /*=====
 dojo.fx = {
 	// summary: Effects library on top of Base animations
 };
 =====*/
+
 (function(){
 	var d = dojo, 
 		_baseObj = {
