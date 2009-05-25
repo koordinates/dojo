@@ -277,7 +277,7 @@ dojo.fx = {
 		});
 
 		return anim; // dojo._Animation
-	}
+	};
 
 	dojo.fx.wipeOut = function(/*Object*/ args){
 		// summary:
@@ -305,7 +305,7 @@ dojo.fx = {
 		});
 
 		return anim; // dojo._Animation
-	}
+	};
 
 	dojo.fx.slideTo = function(/*Object?*/ args){
 		// summary:
@@ -322,8 +322,8 @@ dojo.fx = {
 			return function(){
 				var cs = d.getComputedStyle(n);
 				var pos = cs.position;
-				top = (pos == 'absolute' ? n.offsetTop : parseInt(cs.top) || 0);
-				left = (pos == 'absolute' ? n.offsetLeft : parseInt(cs.left) || 0);
+				top = (pos == 'absolute' ? n.offsetTop : parseInt(cs.top, 10) || 0);
+				left = (pos == 'absolute' ? n.offsetLeft : parseInt(cs.left, 10) || 0);
 				if(pos != 'absolute' && pos != 'relative'){
 					var ret = d.coords(n, true);
 					top = ret.y;
@@ -345,6 +345,5 @@ dojo.fx = {
 		d.connect(anim, "beforeBegin", anim, init);
 
 		return anim; // dojo._Animation
-	}
-
+	};
 })();
