@@ -3,8 +3,11 @@ dojo.provide("dojo._base.html");
 // FIXME: need to add unit tests for all the semi-public methods
 
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-if (typeof document.execCommand != 'undefined') {
-	document.execCommand("BackgroundImageCache", false, true);
+if (typeof window.document.execCommand != 'undefined') {
+	try {
+		window.document.execCommand("BackgroundImageCache", false, true);
+	} catch(e) {
+	}
 }
 //>>excludeEnd("webkitMobile");
 
@@ -522,6 +525,7 @@ dojo.byId = function(id, doc){
 		//	|	});
 
 		var n = d.byId(node), args = arguments.length, op = (style == "opacity"), s;
+		
 		style = _floatAliases[style] || style;
 
 		// Opacity
@@ -556,56 +560,44 @@ dojo.byId = function(id, doc){
 
 	// Feature testing for box and positioning functions
 
-	var divInner, divOuter, body = window.document.body;
+	var offsetIncludesBorder, scrollerOffsetSubtractsBorder;
 
-	// Opera oddity
+	dojo.addOnLoad(function() {
+		var doc = window.document;
+		var body = doc.body;
+		var divInner = doc.createElement('div');
+		var divOuter = doc.createElement('div');
 
-	var offsetIncludesBorder = (function() {
-		var b;
-              d.style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px'});
-              d.style(divInner, {position:'absolute', left:'0', top:'0', margin:'0'});
-              divOuter.appendChild(divInner);
-              body.appendChild(divOuter);
-              b = (divInner.offsetLeft == 1);
-              body.removeChild(divOuter);
-              divOuter.removeChild(divInner);
-              return b;
-	})();
+		// Opera oddity
 
-	// As seen in FF
+		offsetIncludesBorder = (function() {
+			var b;
+			d.style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px'});
+	              d.style(divInner, {position:'absolute', left:'0', top:'0', margin:'0'});
+        	      divOuter.appendChild(divInner);
+	              body.appendChild(divOuter);
+        	      b = (divInner.offsetLeft == 1);
+	              body.removeChild(divOuter);
+        	      divOuter.removeChild(divInner);
+	              return b;
+		})();
 
-	var scrollerOffsetSubtractsBorder = (function() {
-		var b;
-              d.style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px black', 'overflow':'auto'});
-              d.style(divInner, {position:'static', left:'0', top:'0'});
-              divOuter.appendChild(divInner);
-              body.appendChild(divOuter);
-              b = (divInner.offsetLeft == -1);
-              body.removeChild(divOuter);
-              divOuter.removeChild(divInner);
-              return b;
-	})();
+		// As seen in FF
 
-	body = null;
+		scrollerOffsetSubtractsBorder = (function() {
+			var b;
+			d.style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px black', 'overflow':'auto'});
+			d.style(divInner, {position:'static', left:'0', top:'0'});
+			divOuter.appendChild(divInner);
+			body.appendChild(divOuter);
+			b = (divInner.offsetLeft == -1);
+			body.removeChild(divOuter);
+			divOuter.removeChild(divInner);
+			return b;
+		})();
 
-	var htmlOffsetsOrigin;
-
-	if (typeof window.document.documentElement.getBoundingClientRect != 'undefined') {
-	        (function(html) {
-			var m = d._getMarginExtents(html);
-			var rect = window.document.getBoundingClientRect(html);
-
-			if ((m[0] || m[1]) && (rect.top == m.t && rect.left == m.l)) { // FF3
-				htmlOffsetsOrigin = function(docNode) {
-					var html = docNode.documentElement;
-					var margins = d._getMarginExtents(html);
-					var borders = d._getBorderExtents(html);
-
-					return { t: margins.t + borders.t, l: margins.l + borders.l };
-				};
-			}
-		})(d.doc.documentElement);
-	}
+		doc = divInner = divOuter = body = null;
+	});
 
 	// =============================
 	// Box Functions
@@ -837,11 +829,24 @@ dojo.byId = function(id, doc){
 		if(h >= 0){ s.height = h + u; }
 	};
 
-	dojo._isButtonTag = function(/*DomNode*/node) {
-		// summary:
-		//		True if the node is BUTTON or INPUT.type="button".
-		return node.tagName == "BUTTON" || node.tagName=="INPUT" && node.getAttribute("type").toUpperCase() == "BUTTON"; // boolean
-	};
+	var htmlOffsetsOrigin;
+
+	if (typeof window.document.documentElementgetBoundingClientRect != 'undefined') {
+	        (function(html) {
+			var m = d._getMarginExtents(html);
+			var rect = html.getBoundingClientRect();
+
+			if ((m[0] || m[1]) && (rect.top == m.t && rect.left == m.l)) { // FF3
+				htmlOffsetsOrigin = function(docNode) {
+					var html = docNode.documentElement;
+					var margins = d._getMarginExtents(html);
+					var borders = d._getBorderExtents(html);
+
+					return { t: margins.t + borders.t, l: margins.l + borders.l };
+				};
+			}
+		})(window.document.documentElement);
+	}
 	
 	dojo._usesBorderBox = function(/*DomNode*/node){
 		//	summary: 
@@ -850,12 +855,7 @@ dojo.byId = function(id, doc){
 		// We could test the computed style of node to see if a particular box
 		// has been specified, but there are details and we choose not to bother.
 		
-		// TABLE and BUTTON (and INPUT type=button) are always border-box by default.
-		// If you have assigned a different box to either one via CSS then
-		// box functions will break.
-		
-		var n = node.tagName;
-		return d.boxModel=="border-box" || n=="TABLE" || d._isButtonTag(node); // boolean
+		return d.boxModel=="border-box"; // boolean
 	};
 
 	dojo._setContentSize = function(/*DomNode*/node, /*Number*/widthPx, /*Number*/heightPx, /*Object*/computedStyle){
@@ -888,16 +888,7 @@ dojo.byId = function(id, doc){
 			bb = d._usesBorderBox(node),
 			pb = bb ? _nilExtents : d._getPadBorderExtents(node, s)
 		;
-		if(d.isWebKit){
-			// on Safari (3.1.2), button nodes with no explicit size have a default margin
-			// setting an explicit size eliminates the margin.
-			// We have to swizzle the width to get correct margin reading.
-			if(d._isButtonTag(node)){
-				var ns = node.style;
-				if(widthPx >= 0 && !ns.width) { ns.width = "4px"; }
-				if(heightPx >= 0 && !ns.height) { ns.height = "4px"; }
-			}
-		}
+
 		var mb = d._getMarginExtents(node, s);
 		if(widthPx >= 0){ widthPx = Math.max(widthPx - pb.w - mb.w, 0); }
 		if(heightPx >= 0){ heightPx = Math.max(heightPx - pb.h - mb.h, 0); }
