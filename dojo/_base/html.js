@@ -550,11 +550,12 @@ dojo.byId = function(id, doc){
 			for(var x in style){
 				d.style(node, x, style[x]);
 			}
-			return s;
+			return style;
 		}
 
 		// Get
 
+		s = gcs(n);
 		return (args == 1) ? s : _toStyleValue(n, style, s[style] || n.style[style]); /* CSS2Properties||String||Number */
 	};
 

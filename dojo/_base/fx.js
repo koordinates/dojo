@@ -517,8 +517,9 @@ dojo.require("dojo._base.html");
 
 		var anim = new d._Animation(args);
 		d.connect(anim, "beforeBegin", anim, function(){
-			var pm = {};
-			for(var p in this.properties){
+			try {
+			var p, prop, pm = {};
+			for(p in this.properties){
 				// Make shallow copy of properties into pm because we overwrite
 				// some values below. In particular if start/end are functions
 				// we don't want to overwrite them or the functions won't be
@@ -526,15 +527,18 @@ dojo.require("dojo._base.html");
 				if(p == "width" || p == "height"){
 					this.node.display = "block";
 				}
-				var prop = this.properties[p];
+				prop = this.properties[p];
 				prop = pm[p] = _mixin({}, (d.isObject(prop) ? prop: { end: prop }));
 
 				if(d.isFunction(prop.start)){
+					window.alert(prop.start);
 					prop.start = prop.start();
 				}
+
 				if(d.isFunction(prop.end)){
 					prop.end = prop.end();
 				}
+
 				isColor = (p.toLowerCase().indexOf("color") >= 0);
 				if(!("end" in prop)){
 					prop.end = getStyle(this.node, p);
@@ -549,7 +553,11 @@ dojo.require("dojo._base.html");
 					prop.start = (p == "opacity") ? +prop.start : parseFloat(prop.start);
 				}
 			}
+
 			this.curve = new PropLine(pm);
+			} catch(e) {
+				window.alert(e.description || e);
+			}
 		});
 		d.connect(anim, "onAnimate", d.hitch(d, "style", anim.node));
 		return anim; // dojo._Animation
