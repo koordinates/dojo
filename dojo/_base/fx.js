@@ -517,7 +517,6 @@ dojo.require("dojo._base.html");
 
 		var anim = new d._Animation(args);
 		d.connect(anim, "beforeBegin", anim, function(){
-			try {
 			var p, prop, pm = {};
 			for(p in this.properties){
 				// Make shallow copy of properties into pm because we overwrite
@@ -531,7 +530,6 @@ dojo.require("dojo._base.html");
 				prop = pm[p] = _mixin({}, (d.isObject(prop) ? prop: { end: prop }));
 
 				if(d.isFunction(prop.start)){
-					window.alert(prop.start);
 					prop.start = prop.start();
 				}
 
@@ -555,9 +553,6 @@ dojo.require("dojo._base.html");
 			}
 
 			this.curve = new PropLine(pm);
-			} catch(e) {
-				window.alert(e.description || e);
-			}
 		});
 		d.connect(anim, "onAnimate", d.hitch(d, "style", anim.node));
 		return anim; // dojo._Animation
