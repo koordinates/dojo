@@ -210,7 +210,8 @@ dojo.byId = function(id, doc){
 	//	"border-box"
 	//	"content-box" (default)
 
-	// TODO: Flag should be deprecated
+	// TODO: boxModel property is no longer used internally;
+	//       should be deprecated
 
 	dojo.boxModel = "content-box";
 	if (document.documentElement.clientWidth === 0) {
@@ -849,29 +850,51 @@ dojo.byId = function(id, doc){
 		})(window.document.documentElement);
 	}
 	
-	dojo._usesBorderBox = function(/*DomNode*/node){
-		//	summary: 
-		//		True if the node uses border-box layout.
-
-		// We could test the computed style of node to see if a particular box
-		// has been specified, but there are details and we choose not to bother.
-		
-		return d.boxModel=="border-box"; // boolean
-	};
-
 	dojo._setContentSize = function(/*DomNode*/node, /*Number*/widthPx, /*Number*/heightPx, /*Object*/computedStyle){
 		//	summary:
-		//		Sets the size of the node's contents, irrespective of margins,
+		//		Sets the size of the node's contents, irrespective of
 		//		padding, or borders.
-		if(d._usesBorderBox(node)){
-			var pb = d._getPadBorderExtents(node, computedStyle);
-			if(widthPx >= 0){ widthPx += pb.w; }
-			if(heightPx >= 0){ heightPx += pb.h; }
-		}
-		d._setBox(node, NaN, NaN, widthPx, heightPx);
-	};
 
-	var _nilExtents = { l:0, t:0, w:0, h:0 };
+		var borderBoxCheck, style = node.style, offsetWidth = node.offsetWidth, offsetHeight = node.offsetHeight;
+		var borderStyle = style.border, paddingStyle = style.padding;
+		var deltaHeight, deltaWidth;
+
+		// TODO: configuration setting to disable box model check
+
+		// Preserve inline styles
+
+		style.border = style.padding = '0';
+
+		// Check if borders or padding exists
+		// If not, box model doesn't matter
+
+		if (offsetWidth != node.offsetWidth || offsetHeight != node.offsetHeight) {
+			borderBoxCheck = true;
+			deltaWidth = offsetWidth - node.offsetWidth;
+			deltaHeight = offsetHeight - node.offsetHeight;
+		}
+
+		// Restore inline styles
+
+		style.border = borderStyle;
+		style.padding = paddingStyle;
+
+		// Set style dimensions
+
+		style.width = widthPx + 'px';
+		style.height = heightPx + 'px';
+
+		// If box model matters and border-box is in use
+
+		if (borderBoxCheck && node.offsetWidth == widthPx) {
+
+			// Adjust dimensions for border-box
+
+			style.width = (widthPx + deltaWidth) + 'px';
+			style.height = (heightPx + deltaHeight) + 'px';
+		}
+		
+	};
 
 	dojo._setMarginBox = function(/*DomNode*/node, 	/*Number?*/leftPx, /*Number?*/topPx, 
 													/*Number?*/widthPx, /*Number?*/heightPx, 
@@ -882,18 +905,56 @@ dojo.byId = function(id, doc){
 		//		passthrough to dojo._setBox that handles box-model vagaries for
 		//		you.
 
-		var s = computedStyle || gcs(node),
-		// Some elements have special padding, margin, and box-model settings. 
-		// To use box functions you may need to set padding, margin explicitly.
-		// Controlling box-model is harder, in a pinch you might set dojo.boxModel.
-			bb = d._usesBorderBox(node),
-			pb = bb ? _nilExtents : d._getPadBorderExtents(node, s)
-		;
+		var cs = computedStyle || gcs(node);
+		var marginWidth = px(n, cs.marginLeft) + px(n, cs.marginRight);
+		var marginHeight = px(n, cs.marginTop) + px(n, cs.marginBottom);
+		var borderBoxCheck, pb, style = node.style, offsetWidth = node.offsetWidth, offsetHeight = node.offsetHeight;
+		var borderStyle = style.border, paddingStyle = style.padding;
+		var deltaHeight = 0, deltaWidth = 0;
 
-		var mb = d._getMarginExtents(node, s);
-		if(widthPx >= 0){ widthPx = Math.max(widthPx - pb.w - mb.w, 0); }
-		if(heightPx >= 0){ heightPx = Math.max(heightPx - pb.h - mb.h, 0); }
-		d._setBox(node, leftPx, topPx, widthPx, heightPx);
+		widthPx = widthPx - marginWidth;
+		heightPx = heightPx - marginHeight;
+
+		// TODO: configuration setting to disable box model check
+
+		// Preserve inline styles
+
+		style.border = style.padding = '0';
+
+		// Check if borders or padding exists
+		// If not, box model doesn't matter
+
+		if (offsetWidth != node.offsetWidth || offsetHeight != node.offsetHeight) {
+			borderBoxCheck = true;
+			deltaWidth = offsetWidth - node.offsetWidth;
+			deltaHeight = offsetHeight - node.offsetHeight;
+		}
+
+		// Restore inline styles
+
+		style.border = borderStyle;
+		style.padding = paddingStyle;
+
+		var oldWidthPx = widthPx;
+		var oldHeightPx = heightPx;
+
+		widthPx = Math.max(widthPx - deltaWidth, 0);
+		heightPx = Math.max(heightPx - deltaHeight, 0);
+
+		style.left = leftPx + 'px';
+		style.top = topPx + 'px';
+		style.width = widthPx + 'px';
+		style.height = heightPx + 'px';
+
+		// If box model matters and border-box is in use
+
+		if (borderBoxCheck && node.offsetWidth == widthPx) {
+
+			// Adjust dimensions for border-box
+
+			style.width = Math.max(oldWidthPx + deltaWidth, 0) + 'px';
+			style.height = Math.max(oldHeightPx + deltaHeight, 0) + 'px';
+		}
 	};
 
 	// public API
