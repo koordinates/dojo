@@ -6,15 +6,34 @@ dojo.require("dojo._base.connect");
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 (function(){
 //>>excludeEnd("webkitMobile");
+
+	function testEvent(eventName) {
+		var el, doc = window.document, propertyName = 'on' + eventName;
+
+		// If no property exists, try to create by setting the attribute
+
+		if (!(propertyName in doc.documentElement)) {
+			el = doc.createElement('div');
+			el.setAttribute(propertyName, 'window.alert("")');
+			return typeof el[propertyName] == 'function';
+		}
+		return true;
+	}
+
+	var canDoMouseEnter = testEvent('mouseenter');
+
 	// DOM event listener machinery
 	var del = (dojo._event_listener = {
 		add: function(/*DOMNode*/node, /*String*/name, /*Function*/fp){
 			if(!node){return;} 
 			name = del._normalizeEventName(name);
 			fp = del._fixCallback(name, fp);
+
+
+
 			if(
 				//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-				!('onmouseenter' in document.documentElement) && 
+				!canDoMouseEnter && 
 				//>>excludeEnd("webkitMobile");
 				(name == "mouseenter" || name == "mouseleave")
 			){
@@ -43,7 +62,7 @@ dojo.require("dojo._base.connect");
 			//		the handle returned from add
 			if(node){
 				event = del._normalizeEventName(event);
-				if(!('onmouseenter' in window.document.documentElement) && (event == "mouseenter" || event == "mouseleave")){
+				if(!canDoMouseEnter && (event == "mouseenter" || event == "mouseleave")){
 					event = (event == "mouseenter") ? "mouseover" : "mouseout";
 				}
 
