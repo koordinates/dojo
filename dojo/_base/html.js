@@ -906,8 +906,8 @@ dojo.byId = function(id, doc){
 		//		you.
 
 		var cs = computedStyle || gcs(node);
-		var marginWidth = px(n, cs.marginLeft) + px(n, cs.marginRight);
-		var marginHeight = px(n, cs.marginTop) + px(n, cs.marginBottom);
+		var marginWidth = px(node, cs.marginLeft) + px(node, cs.marginRight);
+		var marginHeight = px(node, cs.marginTop) + px(node, cs.marginBottom);
 		var borderBoxCheck, pb, style = node.style, offsetWidth = node.offsetWidth, offsetHeight = node.offsetHeight;
 		var borderStyle = style.border, paddingStyle = style.padding;
 		var deltaHeight = 0, deltaWidth = 0;
