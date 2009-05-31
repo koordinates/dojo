@@ -443,25 +443,38 @@ dojo.global = {
 	}
 	//>>excludeEnd("webkitMobile");
 
+	// Test for enumeration bug in IE
+
+	var maskedDontEnumBleedsThrough = (function() {
+		var x, o = { toString:1 };
+		for (x in o) {
+			if (x == 'toString') {
+				return false;
+			}
+		}
+		return true;
+	})();
+
 	dojo._mixin = function(/*Object*/ obj, /*Object*/ props){
 		// summary:
 		//		Adds all properties and methods of props to obj. This addition
 		//		is "prototype extension safe", so that instances of objects
 		//		will not pass along prototype defaults.
 		for(var x in props){
-//			if(isOwnProperty(props, x)){
-				obj[x] = props[x];
-//			}
+			obj[x] = props[x];
 		}
-		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-		var p;
-		if (isOwnProperty(props, 'toString')) {
-			p = props.toString;
-			if(typeof p != "undefined"){
-				obj.toString = p;
+
+		if (maskedDontEnumBleedsThrough) {
+			var index, val, names = ['constructor', 'toString', 'valueOf', 'toLocaleString', 'isPrototypeOf', 'propertyIsEnumerable', 'hasOwnProperty'];
+			for (index = names.length; index--;) {
+				if (isOwnProperty(props, names[index])) {
+					val = props[names[index]];
+					if(typeof val != "undefined"){
+						obj[names[index]] = val;
+					}
+				}
 			}
 		}
-		//>>excludeEnd("webkitMobile");
 		return obj; // Object
 	};
 
