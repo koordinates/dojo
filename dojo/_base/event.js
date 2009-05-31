@@ -3,10 +3,7 @@ dojo.require("dojo._base.connect");
 
 // this file courtesy of the TurboAjax Group, licensed under a Dojo CLA
 
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 (function(){
-//>>excludeEnd("webkitMobile");
-
 	function testEvent(eventName) {
 		var el, doc = window.document, propertyName = 'on' + eventName;
 
@@ -29,23 +26,16 @@ dojo.require("dojo._base.connect");
 			name = del._normalizeEventName(name);
 			fp = del._fixCallback(name, fp);
 
-
-
-			if(
-				//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-				!canDoMouseEnter && 
-				//>>excludeEnd("webkitMobile");
-				(name == "mouseenter" || name == "mouseleave")
-			){
+			if(!canDoMouseEnter && (name == "mouseenter" || name == "mouseleave")){
 				var ofp = fp;
-				//oname = name;
 				name = (name == "mouseenter") ? "mouseover" : "mouseout";
 				fp = function(e){		
-					try{ var x = (e.relatedTarget.tagName); }catch(e2){ return; }
-					if(!dojo.isDescendant(e.relatedTarget, node)){
-						// e.type = oname; // FIXME: doesn't take? SJM: event.type is generally immutable.
-						return ofp.call(this, e); 
-					}
+					try{
+						if(dojo.isDescendant(e.relatedTarget, node)){
+							return;
+						}
+					}catch(e2){ return; }
+					return ofp.call(this, e);
 				};
 			}
 			node.addEventListener(name, fp, false);
