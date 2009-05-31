@@ -2,14 +2,12 @@ dojo.provide("dojo._base.html");
 
 // FIXME: need to add unit tests for all the semi-public methods
 
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 if (typeof window.document.execCommand != 'undefined') {
 	try {
 		window.document.execCommand("BackgroundImageCache", false, true);
 	} catch(e) {
 	}
 }
-//>>excludeEnd("webkitMobile");
 
 // =============================
 // DOM Functions
@@ -64,39 +62,44 @@ dojo.byId = function(id, doc){
 		//		Returns true if node is a descendant of ancestor
 		//	node: string id or node reference to test
 		//	ancestor: string id or node reference of potential parent to test against
-		try{
-			node = d.byId(node);
-			ancestor = d.byId(ancestor);
-			while(node){
-				if(node === ancestor){
-					return true; // Boolean
-				}
-				node = node.parentNode;
+
+		node = d.byId(node);
+		ancestor = d.byId(ancestor);
+		while(node){
+			if(node === ancestor){
+				return true; // Boolean
 			}
-		}catch(e){ /* squelch, return false */ }
+			node = node.parentNode;
+		}
+
 		return false; // Boolean
 	};
 
-	dojo.setSelectable = function(/*DomNode|String*/node, /*Boolean*/selectable){
-		//	summary: enable or disable selection on a node
-		//	node:
-		//		id or reference to node
-		//	selectable:
-		//		state to put the node in. false indicates unselectable, true 
-		//		allows selection.
-		node = d.byId(node);
+	var html = window.document.documentElement;
 
-		// TODO: one-off feature test
+	dojo.setSelectable = (function() {
+		var i, style, selectStyles = ['MozUserSelect', 'KhtmlUserSelect', 'OUserSelect', 'userSelect'];
 
-		if(typeof node.style.MozUserSelect == 'string'){
-			node.style.MozUserSelect = selectable ? "" : "none";
-		}else if(typeof node.style.KhtmlUserSelect == 'string'){
-			node.style.KhtmlUserSelect = selectable ? "auto" : "none";
-		}else if(typeof node.unselectable == 'string'){
-			var v = (node.unselectable = selectable ? "" : "on");
-			d.query("*", node).forEach("item.unselectable = '"+v+"'");
+		var fn = function(node, selectable) {
+			node = d.byId(node);
+			node.style[style] = selectable ? "auto" : "none";
+		};
+
+		for (i = selectStyles.length; i--;) {
+			style = selectStyles[i];
+			if(typeof html.style[style] == 'string'){
+				return fn;
+			}
 		}
-	};
+
+		return function(node, selectable) {
+			var v = (selectable ? "" : "on");
+
+			node = d.byId(node);
+			node.unselectable = v;
+			d.query("*", node).forEach(function(item) { item.unselectable = v; });
+		};
+	})();
 
 	var _insertBefore = function(/*DomNode*/node, /*DomNode*/ref){
 		var parent = ref.parentNode;
@@ -176,27 +179,28 @@ dojo.byId = function(id, doc){
 			}
 		}else{
 			switch(position){
-				case "before":
-					_insertBefore(node, refNode);
+			case "before":
+				_insertBefore(node, refNode);
+				break;
+			case "after":
+				_insertAfter(node, refNode);
+				break;
+			case "replace":
+				refNode.parentNode.replaceChild(node, refNode);
+				break; 
+			case "only":
+				d.empty(refNode);
+				refNode.appendChild(node);
+				break;
+			case "first":
+				if(refNode.firstChild){
+					_insertBefore(node, refNode.firstChild);
 					break;
-				case "after":
-					_insertAfter(node, refNode);
-					break;
-				case "replace":
-					refNode.parentNode.replaceChild(node, refNode);
-					break; 
-				case "only":
-					d.empty(refNode);
-					refNode.appendChild(node);
-					break;
-				case "first":
-					if(refNode.firstChild){
-						_insertBefore(node, refNode.firstChild);
-						break;
-					}
-					// else fallthrough...
-				default: // aka: last
-					refNode.appendChild(node);
+				}
+				refNode.appendChild(node);
+				break;
+			default: // aka: last
+				refNode.appendChild(node);
 			}
 		}
 		return node; // DomNode
@@ -204,7 +208,6 @@ dojo.byId = function(id, doc){
 
 	// Box functions will assume this model.
 	// BORDER_BOX will be set if the primary document is in quirks mode.
-	// Can be set to change behavior of box setters.
 	
 	// can be either:
 	//	"border-box"
@@ -264,8 +267,6 @@ dojo.byId = function(id, doc){
 		return; // CSS2Properties
 	}
 =====*/
-
-	var html = window.document.documentElement;
 
 	// Although we normally eschew argument validation at this
 	// level, here we test argument 'node' for (duck)type.
@@ -352,38 +353,38 @@ dojo.byId = function(id, doc){
 	=====*/
 
 	dojo._getOpacity = (function(el) {
-        var i, s, reOpacity = new RegExp('opacity=([^\\)]*)', 'i');
+	        var i, s, reOpacity = new RegExp('opacity=([^\\)]*)', 'i');
 
-	var fn = function(el) {
-              var o = el.style[s];
-              if (o) { return parseFloat(o); }
-              o = d.style(el).opacity;
-              if (o !== null) { return parseFloat(o); }
-              return 1;
-	};
+		var fn = function(el) {
+        	      var o = el.style[s];
+	              if (o) { return parseFloat(o); }
+        	      o = d.style(el).opacity;
+	              if (o !== null) { return parseFloat(o); }
+        	      return 1;
+		};
 
-        if (typeof html.style.filter == 'string') {
-          return (function() {
-            var m;
-            if (html.filters) {
-              return function(el) {
-                return (typeof el.filters.alpha != 'undefined' && el.filters.alpha.enabled)?el.filters.alpha.opacity / 100:1;
-              };
-            }				
-            return function(el) {
-              m = el.style.filter.match(reOpacity);
-              return (m)?parseFloat(m[1]) / 100:1;
-            };				
-          })();
-        }
+	        if (typeof html.style.filter == 'string') {
+        	  return (function() {
+	            var m;
+        	    if (html.filters) {
+	              return function(el) {
+        	        return (typeof el.filters.alpha != 'undefined' && el.filters.alpha.enabled)?el.filters.alpha.opacity / 100:1;
+	              };
+        	    }				
+	            return function(el) {
+        	      m = el.style.filter.match(reOpacity);
+	              return (m)?parseFloat(m[1]) / 100:1;
+        	    };				
+	          })();
+	        }
 
-        i = opacityStyles.length;
-        while (i--) {
-          if (typeof el.style[opacityStyles[i]] == 'string') {
-            s = opacityStyles[i];
-            return fn;
-          }
-        }
+	        i = opacityStyles.length;
+	        while (i--) {
+        	  if (typeof el.style[opacityStyles[i]] == 'string') {
+	            s = opacityStyles[i];
+        	    return fn;
+	          }
+        	}
 	})(html);
 
 	/*=====
@@ -402,29 +403,29 @@ dojo.byId = function(id, doc){
 	=====*/
 
 	dojo._setOpacity = (function(el) { 
-        var i, s, so;
-        var reOpacity = new RegExp('alpha\\(opacity=[^\\)]+\\)', 'i');
-	var fn = function(el, o) { el.style[s] = o; };
+	        var i, s, so;
+	        var reOpacity = new RegExp('alpha\\(opacity=[^\\)]+\\)', 'i');
+		var fn = function(el, o) { el.style[s] = o; };
 
-        i = opacityStyles.length;
-        while (i--) {
-          if (typeof el.style[opacityStyles[i]] == 'string') {
-            s = opacityStyles[i];
-            return fn;
-          }
-        }
+	        i = opacityStyles.length;
+        	while (i--) {
+	          if (typeof el.style[opacityStyles[i]] == 'string') {
+        	    s = opacityStyles[i];
+	            return fn;
+        	  }
+	        }
 
-        if (typeof el.style.filter == 'string') {
-          return function(el, o) {
-            so = el.style;
-            if (so.filter.indexOf('alpha(opacity=') == -1) {
-              so.filter += ' alpha(opacity=' + (o * 100) + ')';
-            }
-            else {
-              so.filter = so.filter.replace(reOpacity, (o >= 0.9999)?'':'alpha(opacity=' + (o * 100) + ')');
-            }
-          };
-        }
+	        if (typeof el.style.filter == 'string') {
+        	  return function(el, o) {
+	            so = el.style;
+        	    if (so.filter.indexOf('alpha(opacity=') == -1) {
+	              so.filter += ' alpha(opacity=' + (o * 100) + ')';
+        	    }
+	            else {
+        	      so.filter = so.filter.replace(reOpacity, (o >= 0.9999)?'':'alpha(opacity=' + (o * 100) + ')');
+	            }
+        	  };
+	        }
 	})(html);
 
 	var _pixelNamesCache = {
@@ -450,7 +451,7 @@ dojo.byId = function(id, doc){
 		return _pixelNamesCache[type] ? px(node, value) : value;
 	};
 
-	// TODO: Should be deprecated, apps should pass 'float'
+	// TODO: Aliases should be deprecated, apps should pass 'float'
 
 	var _floatStyle = typeof html.style.styleFloat == 'string' ? "styleFloat" : "cssFloat",
 		_floatAliases = { "cssFloat": _floatStyle, "styleFloat": _floatStyle, "float": _floatStyle };
@@ -460,8 +461,8 @@ dojo.byId = function(id, doc){
 	// public API
 	
 	dojo.style = function(	/*DomNode|String*/ node, 
-							/*String?|Object?*/ style, 
-							/*String?*/ value){
+				/*String?|Object?*/ style, 
+				/*String?*/ value){
 		//	summary:
 		//		Accesses styles on a node. If 2 arguments are
 		//		passed, acts as a getter. If 3 arguments are passed, acts
@@ -727,7 +728,7 @@ dojo.byId = function(id, doc){
 		// summary:
 		//		returns an object that encodes the width, height, left and top
 		//		positions of the node's margin box.
-		var s = computedStyle || gcs(node), me = d._getMarginExtents(node, s);
+		var me = d._getMarginExtents(node, computedStyle);
 		var l = node.offsetLeft - me.l, t = node.offsetTop - me.t, p = node.parentNode;
 
 		if(scrollerOffsetSubtractsBorder){
@@ -756,44 +757,59 @@ dojo.byId = function(id, doc){
 		};
 	};
 	
-	dojo._getContentBox = function(node, computedStyle){
+	dojo._getContentBox = function(node, computedStyle, ignorePadding){
 		// summary:
 		//		Returns an object that encodes the width, height, left and top
 		//		positions of the node's content box, irrespective of the
 		//		current box model.
 
-		// clientWidth/Height are important since the automatically account for scrollbars
-		// fallback to offsetWidth/Height for special cases (see #3378)
-		var s = computedStyle || gcs(node),
-			pe = d._getPadExtents(node, s),
-			be = d._getBorderExtents(node, s),
-			w = node.clientWidth, 
-			h
-		;
-		if(!w){
-			w = node.offsetWidth; h = node.offsetHeight;
-		}else{
-			h = node.clientHeight; be.w = be.h = 0; 
+		var ow = node.offsetWidth, oh = node.offsetHeight;
+		var cw = node.clientWidth, ch = node.clientHeight;
+		var left, top, paddingHeight, paddingWidth, style;
+
+		left = top = paddingHeight = paddingWidth = 0;
+
+		if (!ignorePadding) {
+			 style = node.style;
+
+			// Preserve inline styles
+
+			var paddingStyle = style.padding;
+			var paddingLeftStyle = style.paddingLeft;
+			var paddingTopStyle = style.paddingTop;
+
+			// Measure left and top padding
+
+			style.paddingLeft = style.paddingTop = '0';
+			left = ow - node.offsetWidth;
+			top = oh - node.offsetHeight;
+
+			// Measure padding width and height
+
+			style.padding = '0';
+			paddingWidth = ow - node.offsetWidth;
+			paddingHeight = oh - node.offsetHeight;
+
+			// Restore inline styles
+
+			style.paddingLeft = paddingLeftStyle;
+			style.paddingTop = paddingTopStyle;
+			style.paddingStyle = paddingStyle;
 		}
+
 		return { 
-			l: pe.l, 
-			t: pe.t, 
-			w: w - pe.w - be.w, 
-			h: h - pe.h - be.h
+			l: left, 
+			t: top, 
+			w: cw - paddingWidth, 
+			h: ch - paddingHeight
 		};
 	};
 
 	dojo._getBorderBox = function(node, computedStyle){
-		var s = computedStyle || gcs(node), 
-			pe = d._getPadExtents(node, s),
-			cb = d._getContentBox(node, s)
-		;
-		return { 
-			l: cb.l - pe.l, 
-			t: cb.t - pe.t, 
-			w: cb.w + pe.w, 
-			h: cb.h + pe.h
-		};
+		// TODO: should just return client* properties
+		//       need to look into history of these methods
+
+		return d._getContentBox(node, computedStyle, true);
 	};
 
 	// Box setters depend on box context because interpretation of width/height styles
@@ -849,6 +865,8 @@ dojo.byId = function(id, doc){
 			}
 		})(window.document.documentElement);
 	}
+
+	var pxUnit = 'px';
 	
 	dojo._setContentSize = function(/*DomNode*/node, /*Number*/widthPx, /*Number*/heightPx, /*Object*/computedStyle){
 		//	summary:
@@ -858,6 +876,8 @@ dojo.byId = function(id, doc){
 		var borderBoxCheck, style = node.style, offsetWidth = node.offsetWidth, offsetHeight = node.offsetHeight;
 		var borderStyle = style.border, paddingStyle = style.padding;
 		var deltaHeight, deltaWidth;
+
+
 
 		// TODO: configuration setting to disable box model check
 
@@ -881,8 +901,8 @@ dojo.byId = function(id, doc){
 
 		// Set style dimensions
 
-		style.width = widthPx + 'px';
-		style.height = heightPx + 'px';
+		style.width = widthPx + pxUnit;
+		style.height = heightPx + pxUnit;
 
 		// If box model matters and border-box is in use
 
@@ -890,15 +910,13 @@ dojo.byId = function(id, doc){
 
 			// Adjust dimensions for border-box
 
-			style.width = (widthPx + deltaWidth) + 'px';
-			style.height = (heightPx + deltaHeight) + 'px';
+			style.width = (widthPx + deltaWidth) + pxUnit;
+			style.height = (heightPx + deltaHeight) + pxUnit;
 		}
 		
 	};
 
-	dojo._setMarginBox = function(/*DomNode*/node, 	/*Number?*/leftPx, /*Number?*/topPx, 
-													/*Number?*/widthPx, /*Number?*/heightPx, 
-													/*Object*/computedStyle){
+	dojo._setMarginBox = function(/*DomNode*/node, 	/*Number?*/leftPx, /*Number?*/topPx, /*Number?*/widthPx, /*Number?*/heightPx, /*Object*/computedStyle){
 		//	summary:
 		//		sets the size of the node's margin box and placement
 		//		(left/top), irrespective of box model. Think of it as a
@@ -906,9 +924,10 @@ dojo.byId = function(id, doc){
 		//		you.
 
 		var cs = computedStyle || gcs(node);
+		var oldHeightPx, oldWidthPx;
 		var marginWidth = px(node, cs.marginLeft) + px(node, cs.marginRight);
 		var marginHeight = px(node, cs.marginTop) + px(node, cs.marginBottom);
-		var borderBoxCheck, pb, style = node.style, offsetWidth = node.offsetWidth, offsetHeight = node.offsetHeight;
+		var borderBoxCheck, style = node.style, offsetWidth = node.offsetWidth, offsetHeight = node.offsetHeight;
 		var borderStyle = style.border, paddingStyle = style.padding;
 		var deltaHeight = 0, deltaWidth = 0;
 
@@ -935,16 +954,16 @@ dojo.byId = function(id, doc){
 		style.border = borderStyle;
 		style.padding = paddingStyle;
 
-		var oldWidthPx = widthPx;
-		var oldHeightPx = heightPx;
+		oldWidthPx = widthPx;
+		oldHeightPx = heightPx;
 
 		widthPx = Math.max(widthPx - deltaWidth, 0);
 		heightPx = Math.max(heightPx - deltaHeight, 0);
 
-		style.left = leftPx + 'px';
-		style.top = topPx + 'px';
-		style.width = widthPx + 'px';
-		style.height = heightPx + 'px';
+		style.left = leftPx + pxUnit;
+		style.top = topPx + pxUnit;
+		style.width = widthPx + pxUnit;
+		style.height = heightPx + pxUnit;
 
 		// If box model matters and border-box is in use
 
@@ -952,8 +971,8 @@ dojo.byId = function(id, doc){
 
 			// Adjust dimensions for border-box
 
-			style.width = Math.max(oldWidthPx + deltaWidth, 0) + 'px';
-			style.height = Math.max(oldHeightPx + deltaHeight, 0) + 'px';
+			style.width = Math.max(oldWidthPx + deltaWidth, 0) + pxUnit;
+			style.height = Math.max(oldHeightPx + deltaHeight, 0) + pxUnit;
 		}
 	};
 
@@ -1785,7 +1804,4 @@ dojo.byId = function(id, doc){
 		}
 		d[condition ? "addClass" : "removeClass"](node, classStr);
 	};
-
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 })();
-//>>excludeEnd("webkitMobile");
