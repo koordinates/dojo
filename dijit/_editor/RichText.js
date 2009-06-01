@@ -421,7 +421,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				this.window = win;
 				this.document = this.window.document;
 
-				if(dojo.isIE){
+				if(this._localizeEditorCommands){
 					this._localizeEditorCommands();
 				}
 
@@ -770,11 +770,11 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		}else{
 			this.editNode=this.document.body.firstChild;
 			var _this = this;
-			if(dojo.isIE){ // #4996 IE wants to focus the BODY tag
+			//if(dojo.isIE){ // #4996 IE wants to focus the BODY tag
 				var tabStop = (this.tabStop = dojo.doc.createElement('<div tabIndex=-1>'));
 				this.editingArea.appendChild(tabStop);
 				this.iframe.onfocus = function(){ _this.editNode.setActive(); }
-			}
+			//}
 		}
 		this.focusNode = this.editNode; // for InlineEditBox
 
@@ -787,11 +787,11 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			this.connect(ap, item.toLowerCase(), item);
 		}, this);
 
-		if(dojo.isIE){ // IE contentEditable
+		//if(dojo.isIE){ // IE contentEditable
 			// give the node Layout on IE
 			this.connect(this.document, "onmousedown", "_onIEMouseDown"); // #4996 fix focus
 			this.editNode.style.zoom = 1.0;
-		}
+		//}
 
 		this.isLoaded = true;
 
@@ -1711,16 +1711,13 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		this._content = this.getValue();
 		var changed = (this.savedContent != this._content);
 
-		// line height is squashed for iframes
-		// FIXME: why was this here? if (this.iframe){ this.domNode.style.lineHeight = null; }
-
 		if(this.interval){ clearInterval(this.interval); }
 
 		if(this.textarea){
 			var s = this.textarea.style;
 			s.position = "";
 			s.left = s.top = "";
-			if(dojo.isIE){
+			if(this.__overflow){
 				s.overflow = this.__overflow;
 				this.__overflow = null;
 			}
@@ -1751,10 +1748,11 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			this.window._frameElement = null;
 		}
 
-		this.window = null;
-		this.document = null;
-		this.editingArea = null;
-		this.editorObject = null;
+		this.window = this.document = this.editingArea = this.editorObject = null;
+
+		if (this.iframe) {
+			this.iframe.onfocus = this.iframe._loadFunc = null;
+		}
 
 		return changed; // Boolean: whether the content has been modified
 	},
