@@ -7,7 +7,6 @@ dojo.require("doh.robot");
 // instead of computing the absolute coordinates of their elements themselves
 dojo.mixin(doh.robot,{
 
-	// TODO: point to dojo.scrollIntoView post 1.2
 	_scrollIntoView : function(/*String||DOMNode||Function*/ node){
 		// summary:
 		//		Scroll the passed node into view, if it is not.
@@ -16,7 +15,7 @@ dojo.mixin(doh.robot,{
 			// if the user passed a function returning a node, evaluate it
 			node = node();
 		}
-		node.scrollIntoView(false);
+		dijit.scrollIntoView(node);
 	},
 
 	scrollIntoView : function(/*String||DOMNode||Function*/ node, /*Number, optional*/ delay){
@@ -73,25 +72,26 @@ dojo.mixin(doh.robot,{
 		doh.robot._assertRobot();
 		duration = duration||100;
 		this.sequence(function(){
-		if(typeof node == "function"){
-			// if the user passed a function returning a node, evaluate it
-			node = node();
-		}
-		if(!node) return;
-		node=dojo.byId(node);
-		if(offsetY === undefined){
-			var box=dojo.contentBox(node);
-			offsetX=box.w/2;
-			offsetY=box.h/2;
-		}
-		var x = offsetX;
-		var y = offsetY;
-		doh.robot._scrollIntoView(node);
-		// coords relative to viewport be default
-		var c = dojo.coords(node);
-		x += c.x;
-		y += c.y;
-		doh.robot._mouseMove(x, y, false, duration);
+			if(typeof node == "function"){
+				// if the user passed a function returning a node, evaluate it
+				node = node();
+			}
+			if(node) {
+				node=dojo.byId(node);
+				if(offsetY === undefined){
+					var box=dojo.contentBox(node);
+					offsetX=box.w/2;
+					offsetY=box.h/2;
+				}
+				var x = offsetX;
+				var y = offsetY;
+				doh.robot._scrollIntoView(node);
+				// coords relative to viewport be default
+				var c = dojo.coords(node);
+				x += c.x;
+				y += c.y;
+				doh.robot._mouseMove(x, y, false, duration);
+			}
 		},delay,duration);
 	}
 });

@@ -48,7 +48,7 @@ document.write('<div id="robotconsole" style="position:absolute;left:0px;top:75%
 iframe = document.createElement('iframe');
 iframe.setAttribute("ALLOWTRANSPARENCY","true");
 dojo.style(iframe,{visibility:'hidden', border:'0px none', padding:'0px', margin:'0px', position:'absolute', left:'0px', top:'0px', width:'100%', height:'75%', zIndex:'1'});
-if(iframe['attachEvent'] !== undefined){
+if(typeof iframe.attachEvent != 'undefined'){
 	iframe.attachEvent('onload', iframeLoad);
 }else{
 	dojo.connect(iframe, 'onload', iframeLoad);
@@ -58,7 +58,7 @@ dojo.mixin(doh.robot,{
 	_updateDocument: function(){
 		dojo.setContext(iframe.contentWindow, iframe.contentWindow.document);
 		var win = dojo.global;
-		if(win["dojo"]){
+		if(win.dojo){
 			// allow the tests to subscribe to topics published by the iframe
 			dojo._topics = win.dojo._topics;
 		}
