@@ -564,8 +564,9 @@ dojo.provide("dojo._base.NodeList");
 			//		|	"only"
 			//		|	"replace"
 			// 		or an offset in the childNodes property
-			var item = d.query(queryOrListOrNode)[0];
-			return d.query(queryOrListOrNode).place(item, position);	// dojo.NodeList
+			var query = d.query(queryOrListOrNode); 
+			var item = query[0];
+			return query.place(item, position);	// dojo.NodeList
 		},
 
 		// FIXME: do we need this?
