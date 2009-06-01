@@ -1,7 +1,7 @@
 dojo.provide("dojo.parser");
 dojo.require("dojo.date.stamp");
 
-dojo.parser = new function(){
+dojo.parser = function(){
 	// summary: The Dom/Widget parsing package
 
 	var d = dojo;
@@ -14,19 +14,17 @@ dojo.parser = new function(){
 		//		Creates a reference to anonFuncPtr in thisObj with a completely
 		//		unique name. The new name is returned as a String. 
 		var nso = thisObj || _anon;
-		if(dojo.isIE){
-			var cn = anonFuncPtr["__dojoNameCache"];
-			if(cn && nso[cn] === anonFuncPtr){
-				return cn;
-			}
+		var cn = anonFuncPtr.__dojoNameCache;
+		if(cn && nso[cn] === anonFuncPtr){
+			return cn;
 		}
 		var name;
 		do{
 			name = "__" + _anonCtr++;
-		}while(name in nso)
+		}while(name in nso);
 		nso[name] = anonFuncPtr;
 		return name; // String
-	}
+	};
 
 	function val2type(/*Object*/ value){
 		// summary:
@@ -46,21 +44,12 @@ dojo.parser = new function(){
 		// summary:
 		//		Convert given string value to given type
 		switch(type){
-			case "string":
-				return value;
 			case "number":
 				return value.length ? Number(value) : NaN;
 			case "boolean":
 				// for checked/disabled value might be "" or "checked".  interpret as true.
 				return typeof value == "boolean" ? value : !(value.toLowerCase()=="false");
-			case "function":
-				if(d.isFunction(value)){
-					// IE gives us a function, even when we say something like onClick="foo"
-					// (in which case it gives us an invalid function "function(){ foo }"). 
-					//  Therefore, convert to string
-					value=value.toString();
-					value=d.trim(value.substring(value.indexOf('{')+1, value.length-1));
-				}
+			case "function":				
 				try{
 					if(value.search(/[^\w\.]+/i) != -1){
 						// TODO: "this" here won't work
@@ -72,9 +61,12 @@ dojo.parser = new function(){
 				return value ? value.split(/\s*,\s*/) : [];
 			case "date":
 				switch(value){
-					case "": return new Date("");	// the NaN of dates
-					case "now": return new Date();	// current date
-					default: return d.date.stamp.fromISOString(value);
+				case "":
+					return new Date("");	// the NaN of dates
+				case "now":
+					return new Date();	// current date
+				default:
+					return d.date.stamp.fromISOString(value);
 				}
 			case "url":
 				return d.baseUrl + value;
@@ -138,7 +130,7 @@ dojo.parser = new function(){
 			});
 		}
 		return new Function(preamble+script.innerHTML+suffix);
-	}
+	};
 
 	this.instantiate = function(/* Array */nodes, /* Object? */mixin){
 		// summary:
@@ -153,34 +145,44 @@ dojo.parser = new function(){
 		mixin = mixin||{};
 		d.forEach(nodes, function(node){
 			if(!node){ return; }
-			var type = dtName in mixin?mixin[dtName]:node.getAttribute(dtName);
+			var value, type = dtName in mixin?mixin[dtName]:node.getAttribute(dtName);
 			if(!type || !type.length){ return; }
 			var clsInfo = getClassInfo(type),
 				clazz = clsInfo.cls,
 				ps = clazz._noScript || clazz.prototype._noScript;
 
-			// read parameters (ie, attributes).
+			// read parameters (attributes)
+
 			// clsInfo.params lists expected params like {"checked": "boolean", "n": "number"}
-			var params = {},
-				attributes = node.attributes;
+			// use null for standard attributes to convert automatically
+
+			var params = {};
+			var expectedType;
 			for(var name in clsInfo.params){
-				var item = name in mixin?{value:mixin[name],specified:true}:attributes.getNamedItem(name);
-				if(!item || (!item.specified && (!dojo.isIE || name.toLowerCase()!="value"))){ continue; }
-				var value = item.value;
-				// Deal with IE quirks for 'class' and 'style'
-				switch(name){
-				case "class":
-					value = "className" in mixin?mixin.className:node.className;
-					break;
-				case "style":
-					value = "style" in mixin?mixin.style:(node.style && node.style.cssText); // FIXME: Opera?
+				if (name in mixin) {
+					value = mixin[name];
+				} else {
+					if (d.hasAttr(node, name)) {
+						// Get property, with exception of style
+
+						value = name == 'style' ? node.style.cssText : d.attr(node, name);
+
+						// Undefined result is an expando or empty attribute (e.g. onclick in FF)
+						// Try real getAttribute
+
+						if (typeof value == 'undefined') {
+							value = d.realAttr(node, name);
+						}
+					}
 				}
-				var _type = clsInfo.params[name];
-				if(typeof value == "string"){
-					params[name] = str2obj(value, _type);
-				}else{
-					params[name] = value;
+				expectedType = clsInfo.params[name];
+
+				// Convert custom attributes as specified, making sure style is not
+
+				if (expectedType !== null && typeof value == 'string' && expectedType != 'string' && name != 'style') {
+					value = str2obj(value, expectedType);
 				}
+				params[name] = value;				
 			}
 
 			// Process <script type="dojo/*"> script tags
@@ -213,9 +215,9 @@ dojo.parser = new function(){
 				} else { console.log('OOPS no orphan method ' + node.id); }
 			}
 
-			var markupFactory = clazz["markupFactory"];
-			if(!markupFactory && clazz["prototype"]){
-				markupFactory = clazz.prototype["markupFactory"];
+			var markupFactory = clazz.markupFactory;
+			if(!markupFactory && clazz.prototype){
+				markupFactory = clazz.prototype.markupFactory;
 			}
 			// create the instance
 			var instance = markupFactory ? markupFactory(params, node, clazz) : new clazz(params, node);
@@ -271,7 +273,7 @@ dojo.parser = new function(){
 
 (function(){
 	var parseRunner = function(){ 
-		if(dojo.config["parseOnLoad"] == true){
+		if(dojo.config.parseOnLoad){
 			dojo.parser.parse(); 
 		}
 	};
