@@ -158,6 +158,14 @@ dojo.parser = function(){
 
 			var params = {};
 			var expectedType;
+
+			// For backward compatibility
+			// Copy className to class
+
+			if (mixin.className && !mixin['class']) {
+				mixin['class'] = mixin.className;
+			}
+
 			for(var name in clsInfo.params){
 				if (name in mixin) {
 					value = mixin[name];
@@ -167,7 +175,7 @@ dojo.parser = function(){
 
 						value = name == 'style' ? node.style.cssText : d.attr(node, name);
 
-						// Undefined result is an expando or empty attribute (e.g. onclick in FF)
+						// Undefined result is an expando or missing attribute (e.g. onclick in FF)
 						// Try real getAttribute
 
 						if (typeof value == 'undefined') {
