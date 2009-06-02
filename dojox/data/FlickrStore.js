@@ -21,11 +21,17 @@ dojo.require("dojo.AdapterRegistry");
 			if(args && args.label){
 				this.label = args.label;
 			}
+			if(args && ("urlPreventCache" in args)){
+				this.urlPreventCache = args.urlPreventCache?true:false;
+			}
 		},
 
 		_storeRef: "_S",
 
 		label: "title",
+
+		//Flag to allor control of if cache prevention is enabled or not.
+		urlPreventCache: true,
 
 		_assertIsItem: function(/* item */ item){
 			//	summary:
@@ -202,7 +208,7 @@ dojo.require("dojo.AdapterRegistry");
 			var handle = null;
 			var getArgs = {
 				url: dojox.data.FlickrStore.urlRegistry.match(request),
-				preventCache: true,
+				preventCache: this.urlPreventCache,
 				content: content
 			};
 			var myHandler = d.hitch(this, function(data){
