@@ -162,7 +162,7 @@ dojo.parser = function(){
 			// For backward compatibility
 			// Copy className to class
 
-			if (mixin.className && !mixin['class']) {
+			if ('className' in mixin && !('class' in mixin)) {
 				mixin['class'] = mixin.className;
 			}
 
