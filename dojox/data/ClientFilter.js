@@ -11,7 +11,7 @@ dojo.require("dojo.data.util.filter");
 					remove:remove && item
 				});
 			cf.onUpdate();
-		}
+		};
 	};
 	cf = dojo.declare("dojox.data.ClientFilter",
 		null,
@@ -177,7 +177,7 @@ dojo.require("dojo.data.util.filter");
 					delete args._loading;
 					// update the result set in case anything changed while we were waiting for the fetch
 					if(results){
-						args._version = version;
+						args._version = typeof args._version == "number" ? args._version : version;
 						self.updateResultSet(results,args);
 						args.cacheResults = results;
 					}
