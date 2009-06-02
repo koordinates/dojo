@@ -31,7 +31,7 @@ dojo.AdapterRegistry = function(/*Boolean?*/ returnWrappers){
 
 	this.pairs = [];
 	this.returnWrappers = returnWrappers || false; // Boolean
-}
+};
 
 dojo.extend(dojo.AdapterRegistry, {
 	register: function(/*String*/ name, /*Function*/ check, /*Function*/ wrap, /*Boolean?*/ directReturn, /*Boolean?*/ override){
