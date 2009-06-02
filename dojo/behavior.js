@@ -1,6 +1,6 @@
 dojo.provide("dojo.behavior");
 
-dojo.behavior = new function(){
+dojo.behavior = function(){
 	// summary: 
 	//		Utility for unobtrusive/progressive event binding, DOM traversal,
 	//		and manipulation.
@@ -147,10 +147,9 @@ dojo.behavior = new function(){
 		//	|	});
 		//   
 
-		var tmpObj = {};
 		forIn(behaviorObj, this, function(behavior, name){
 			var tBehavior = arrIn(this._behaviors, name);
-			if(typeof tBehavior["id"] != "number"){
+			if(typeof tBehavior.id != "number"){
 				tBehavior.id = _inc++;
 			}
 			var cversion = [];
@@ -162,7 +161,7 @@ dojo.behavior = new function(){
 				arrIn(cversion, ruleName).push(rule);
 			});
 		});
-	}
+	};
 
 	var _applyToNode = function(node, action, ruleSetName){
 		if(dojo.isString(action)){
@@ -180,7 +179,7 @@ dojo.behavior = new function(){
 				dojo.connect(node, ruleSetName, action);
 			}
 		}
-	}
+	};
 
 	this.apply = function(){
 		// summary:
@@ -233,7 +232,7 @@ dojo.behavior = new function(){
 				}
 			);
 		});
-	}
-}
+	};
+};
 
 dojo.addOnLoad(dojo.behavior, "apply");
