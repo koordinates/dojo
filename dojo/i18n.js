@@ -50,9 +50,9 @@ dojo.i18n.getLocalization = function(/*String*/packageName, /*String*/bundleName
 
 		// make a singleton prototype so that the caller won't accidentally change the values globally
 		if(localization){
-			var clazz = function(){};
-			clazz.prototype = localization;
-			return new clazz(); // Object
+			var Clazz = function(){};
+			Clazz.prototype = localization;
+			return new Clazz(); // Object
 		}
 	}
 
@@ -103,7 +103,7 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 			//Locale must match from start of string.
 			//Using ["indexOf"] so customBase builds do not see
 			//this as a dojo._base.array dependency.
-			if(targetLocale["indexOf"](flatLocales[i]) == 0){
+			if(!targetLocale["indexOf"](flatLocales[i])){
 				if(flatLocales[i].length > bestLocale.length){
 					bestLocale = flatLocales[i];
 				}
@@ -126,7 +126,7 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 	}
 
 	if(!localizedBundle){
-		bundle = dojo["provide"](bundlePackage);
+		bundle = dojo.provide(bundlePackage);
 		var syms = dojo._getModuleSymbols(moduleName);
 		var modpath = syms.concat("nls").join("/");
 		var parent;
@@ -137,16 +137,16 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 			var loaded = false;
 			if(!dojo._loadedModules[translationPackage]){
 				// Mark loaded whether it's found or not, so that further load attempts will not be made
-				dojo["provide"](translationPackage);
+				dojo.provide(translationPackage);
 				var module = [modpath];
 				if(loc != "ROOT"){module.push(loc);}
 				module.push(bundleName);
 				var filespec = module.join("/") + '.js';
 				loaded = dojo._loadPath(filespec, null, function(hash){
 					// Use singleton with prototype to point to parent bundle, then mix-in result from loadPath
-					var clazz = function(){};
-					clazz.prototype = parent;
-					bundle[jsLoc] = new clazz();
+					var Clazz = function(){};
+					Clazz.prototype = parent;
+					bundle[jsLoc] = new Clazz();
 					for(var j in hash){ bundle[jsLoc][j] = hash[j]; }
 				});
 			}else{
@@ -232,7 +232,7 @@ dojo.i18n._preloadLocalizations = function(/*String*/bundlePrefix, /*Array*/loca
 		dojo.i18n._searchLocalePath(locale, true, function(loc){
 			for(var i=0; i<localesGenerated.length;i++){
 				if(localesGenerated[i] == loc){
-					dojo["require"](bundlePrefix+"_"+loc);
+					dojo.require(bundlePrefix+"_"+loc);
 					return true; // Boolean
 				}
 			}
