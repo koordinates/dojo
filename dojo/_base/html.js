@@ -1272,7 +1272,10 @@ dojo.byId = function(id, doc){
 		if (typeof html.attributes != 'undefined') {
 			attributeSpecified = function(el, name) {
 				value = el.attributes[name];
-				return !!(value && value.specified);
+
+				// Value workaround moved from parser.js (?)
+
+				return !!((value && value.specified) || name == 'value');
 			};
 			if (attributesBad) {
 				return function(el, name) {
@@ -1733,7 +1736,7 @@ dojo.byId = function(id, doc){
 		return ((" "+ d.byId(node).className +" ").indexOf(" "+ classStr +" ") >= 0);  // Boolean
 	};
 
-	dojo.addClass = function(/*DomNode|String*/node, /*String*/classStr){
+	dojo.addClass = function(/*DomNode|String*/node, /*String*/className){
 		//	summary:
 		//		Adds the specified classes to the end of the class list on the
 		//		passed node. Will not re-apply duplicate classes, except in edge
@@ -1754,14 +1757,23 @@ dojo.byId = function(id, doc){
 		//	Available in `dojo.NodeList` for multiple additions
 		//	| dojo.query("ul > li").addClass("firstLevel");
 		
-		node = d.byId(node);
-		var cls = node.className;
-		if((" "+ cls +" ").indexOf(" " + classStr + " ") < 0){
-			node.className = cls + (cls ? ' ' : '') + classStr;
+		var re;
+
+		if (typeof node == 'string') {
+			node = d.byId(node);
+		}
+		if (!node.className) {
+			node.className = className;
+		}
+		else {
+			re = new RegExp('(^|\\s)' + className + '(\\s|$)');
+			if (!re.test(node.className)) {
+				node.className += ' ' + className;
+			}
 		}
 	};
 
-	dojo.removeClass = function(/*DomNode|String*/node, /*String*/classStr){
+	dojo.removeClass = function(/*DomNode|String*/node, /*String*/className){
 		// summary: Removes the specified classes from node. No `dojo.hasClass` 
 		//		check is required. 
 		//
@@ -1775,10 +1787,21 @@ dojo.byId = function(id, doc){
 		// example:
 		//	Available in `dojo.NodeList` for multiple removal
 		//	| dojo.query(".foo").removeClass("foo");
-		
-		node = d.byId(node);
-		var t = d.trim((" " + node.className + " ").replace(" " + classStr + " ", " "));
-		if(node.className != t){ node.className = t; }
+
+		var re, m;
+
+		if (typeof node == 'string') {		
+			node = d.byId(node);
+		}
+		if (node.className) {
+			if (node.className == className) {
+				node.className = '';
+			} else {		
+				re = new RegExp('(^|\\s)' + className + '(\\s|$)');
+				m = node.className.match(re);
+				if (m && m.length == 3) { node.className = node.className.replace(re, (m[1] && m[2])?' ':''); }
+          		}
+        	}
 	};
 
 	dojo.toggleClass = function(/*DomNode|String*/node, /*String*/classStr, /*Boolean?*/condition){
