@@ -179,7 +179,7 @@ dojo.parser = function(){
 						// Try real getAttribute
 
 						if (typeof value == 'undefined') {
-							value = d.realAttr(node, name);
+							value = node.getAttribute(name);
 						}
 					}
 				}
@@ -205,22 +205,23 @@ dojo.parser = function(){
 
 				var query = d.query("> script[type^='dojo/']", node);
 				if (query.orphan) {
-
-				query.orphan().forEach(function(script){
-					var event = script.getAttribute("event"),
-						type = script.getAttribute("type"),
-						nf = d.parser._functionFromScript(script);
-					if(event){
-						if(type == "dojo/connect"){
-							connects.push({event: event, func: nf});
-						}else{
-							params[event] = nf;
+					query.orphan().forEach(function(script){
+						var event = script.getAttribute("event"),
+							type = script.getAttribute("type"),
+							nf = d.parser._functionFromScript(script);
+						if(event){
+							if(type == "dojo/connect"){
+								connects.push({event: event, func: nf});
+							}else{
+								params[event] = nf;
+							}
+							}else{
+							calls.push(nf);
 						}
-					}else{
-						calls.push(nf);
-					}
-				});
-				} else { console.log('OOPS no orphan method ' + node.id); }
+					});
+				} else {
+					console.log('OOPS no orphan method ' + node.id);
+				}
 			}
 
 			var markupFactory = clazz.markupFactory;
