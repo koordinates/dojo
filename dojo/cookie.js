@@ -73,19 +73,23 @@ dojo.cookie = function(/*String*/name, /*String?*/value, /*dojo.__cookieProps?*/
 	}
 };
 
-dojo.cookie.isSupported = function(){
+dojo.cookie.isSupported = (function(){
 	//	summary:
 	//		Use to determine if the current browser supports cookies or not.
 	//		
 	//		Returns true if user allows cookies.
 	//		Returns false if user doesn't allow cookies.
 
-	if(!("cookieEnabled" in navigator)){
-		this("__djCookieTest__", "CookiesAllowed");
-		navigator.cookieEnabled = this("__djCookieTest__") == "CookiesAllowed";
-		if(navigator.cookieEnabled){
-			this("__djCookieTest__", "", {expires: -1});
+	var cookieEnabled;
+
+	return function() {
+		if(typeof cookieEnabled == 'undefined'){
+			this("__djCookieTest__", "CookiesAllowed");
+			cookieEnabled = this("__djCookieTest__") == "CookiesAllowed";
+			if(cookieEnabled){
+				this("__djCookieTest__", "", {expires: -1});
+			}
 		}
-	}
-	return navigator.cookieEnabled;
-};
+		return cookieEnabled;
+	};
+})();
