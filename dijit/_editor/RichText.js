@@ -394,7 +394,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			// In 0.4, this was the contentEditable code path, but now it creates an iframe, same as for Firefox.
 			// However, firefox's iframe is handled by _drawIframe() rather than this code for some reason :-(
 			// *** Why?
-			var ifr = (this.editorObject = this.iframe = dojo.doc.createElement('iframe'));
+			var ifr = this.editorObject = this.iframe = dojo.doc.createElement('iframe');
 			ifr.id = this.id+"_iframe";
 			this._iframeSrc = this._getIframeDocTxt(html);
 			ifr.style.border = "none";
@@ -434,6 +434,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			//if(dojo.isWebKit){ // Safari seems to always append iframe with src=about:blank
 			//	setTimeout(function(){ifr.setAttribute('src', s)},0);
 			//}
+			ifr = null;
 		//}else{
 			// Firefox code path
 		//	this._drawIframe(html);
@@ -493,8 +494,8 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			"body{",
 			"\ttop:0px; left:0px; right:0px;",
 			"\tfont:", font, ";",
-				((this.height||dojo.isOpera) ? "" : "position: fixed;"),
-			// FIXME: IE 6 won't understand min-height?
+				((this.height) ? "" : "position: fixed;"),
+			// FIXME: IE 6 won't understand min-height
 			"\tmin-height:", this.minHeight, ";",
 			"\tline-height:", lineHeight,
 			"}",
@@ -506,7 +507,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			"li{ min-height:1.2em; }",
 			"</style>",
 			this._applyEditingAreaStyleSheets(),
-			"</head><body onload='frameElement._loadFunc(window,document)' style='"+userStyle+"'>"+html+"</body></html>"
+			"</head><body onload='frameElement._loadFunc(window,document); frameElement._loadFunc = null' style='"+userStyle+"'>"+html+"</body></html>"
 		].join(""); // String
 	},
 
@@ -768,13 +769,17 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		if(!dojo.isIE && (this.height || dojo.isMoz)){
 			this.editNode=this.document.body;
 		}else{
-			this.editNode=this.document.body.firstChild;
-			var _this = this;
-			//if(dojo.isIE){ // #4996 IE wants to focus the BODY tag
-				var tabStop = (this.tabStop = dojo.doc.createElement('<div tabIndex=-1>'));
+			var editNode = this.editNode = this.document.body.firstChild;
+			var tabStop = this.tabStop = dojo.doc.createElement('div');
+			tabStop.tabIndex = -1;
+
+			if (typeof editNode.setActive != 'undefined') {
 				this.editingArea.appendChild(tabStop);
-				this.iframe.onfocus = function(){ _this.editNode.setActive(); }
-			//}
+				this.iframe.onfocus = function(){
+					editNode.setActive();
+				};
+			}
+			tabStop = null; // Don't need this one
 		}
 		this.focusNode = this.editNode; // for InlineEditBox
 
@@ -808,6 +813,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			// onNormalizedDisplayChanged has run to avoid input caret issues
 			dojo.addOnLoad(dojo.hitch(this, function(){ setTimeout(dojo.hitch(this, "focus"), this.updateInterval) }));
 		}
+		ap = null;
 	},
 
 	onKeyDown: function(/* Event */ e){
@@ -1762,7 +1768,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 	}, 
 
 	destroy: function(){
-		this.destroyRendering();
+		//this.destroyRendering();
 		if(!this.isClosed){ this.close(false); }
 		this.inherited(arguments);
 	},
