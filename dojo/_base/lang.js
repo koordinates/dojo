@@ -5,43 +5,35 @@ dojo.provide("dojo._base.lang");
 dojo.isString = function(/*anything*/ it){
 	//	summary:
 	//		Return true if it is a String
-	return !!arguments.length && it != null && (typeof it == "string" || it instanceof String); // Boolean
-}
+	return typeof it == "string"; // Boolean
+};
 
 dojo.isArray = function(/*anything*/ it){
 	//	summary:
 	//		Return true if it is an Array
-	return it && (it instanceof Array || typeof it == "array"); // Boolean
-}
+	//		Will not work across frames
+	return it instanceof Array; // Boolean
+};
 
 /*=====
 dojo.isFunction = function(it){
 	// summary: Return true if it is a Function
-	// it: anything
+	// it: anything (except host objects)
 	return; // Boolean
 }
 =====*/
 
-dojo.isFunction = (function(){
-	var _isFunction = function(/*anything*/ it){
-		return it && (typeof it == "function" || it instanceof Function); // Boolean
-	};
-
-	return dojo.isSafari ?
-		// only slow this down w/ gratuitious casting in Safari (not WebKit)
-		function(/*anything*/ it){
-			if(typeof it == "function" && it == "[object NodeList]"){ return false; }
-			return _isFunction(it); // Boolean
-		} : _isFunction;
-})();
+dojo.isFunction = function(/*anything*/ it){
+	return typeof it == "function"; // Boolean	
+};
 
 dojo.isObject = function(/*anything*/ it){
 	// summary: 
 	//		Returns true if it is a JavaScript object (or an Array, a Function
 	//		or null)
-	return it !== undefined &&
-		(it === null || typeof it == "object" || dojo.isArray(it) || dojo.isFunction(it)); // Boolean
-}
+	//		Do not pass host objects
+	return (/^(function|object)$/i).test(typeof it); // Boolean
+};
 
 dojo.isArrayLike = function(/*anything*/ it){
 	//	summary:
@@ -55,20 +47,21 @@ dojo.isArrayLike = function(/*anything*/ it){
 	//	returns:
 	//		If it walks like a duck and quacks like a duck, return `true`
 	var d = dojo;
-	return it && it !== undefined && // Boolean
+	return it && 
 		// keep out built-in constructors (Number, String, ...) which have length
 		// properties
 		!d.isString(it) && !d.isFunction(it) &&
-		!(it.tagName && it.tagName.toLowerCase() == 'form') &&
-		(d.isArray(it) || isFinite(it.length));
-}
+		(d.isArray(it) || isFinite(it.length)); // Boolean
+};
+
+// DOCME: Why do we need this one?
 
 dojo.isAlien = function(/*anything*/ it){
 	// summary: 
 	//		Returns true if it is a built-in function or some other kind of
 	//		oddball that *should* report as a function but doesn't
-	return it && !dojo.isFunction(it) && /\{\s*\[native code\]\s*\}/.test(String(it)); // Boolean
-}
+	return it && !dojo.isFunction(it) && dojo.isFunction(it.call); // Boolean
+};
 
 dojo.extend = function(/*Object*/ constructor, /*Object...*/ props){
 	// summary:
@@ -79,7 +72,7 @@ dojo.extend = function(/*Object*/ constructor, /*Object...*/ props){
 		dojo._mixin(constructor.prototype, arguments[i]);
 	}
 	return constructor; // Object
-}
+};
 
 dojo._hitchArgs = function(scope, method /*,...*/){
 	var pre = dojo._toArray(arguments, 2);
@@ -91,8 +84,8 @@ dojo._hitchArgs = function(scope, method /*,...*/){
 		var f = named ? (scope||dojo.global)[method] : method;
 		// invoke with collected args
 		return f && f.apply(scope || this, pre.concat(args)); // mixed
- 	} // Function
-}
+ 	}; // Function
+};
 
 dojo.hitch = function(/*Object*/scope, /*Function|String*/method /*,...*/){
 	//	summary: 
@@ -129,7 +122,7 @@ dojo.hitch = function(/*Object*/scope, /*Function|String*/method /*,...*/){
 		return function(){ return scope[method].apply(scope, arguments || []); }; // Function
 	}
 	return !scope ? method : function(){ return method.apply(scope, arguments || []); }; // Function
-}
+};
 
 /*=====
 dojo.delegate = function(obj, props){
@@ -172,7 +165,7 @@ dojo.delegate = dojo._delegate = (function(){
 			dojo._mixin(tmp, props);
 		}
 		return tmp; // Object
-	}
+	};
 })();
 
 /*=====
@@ -194,29 +187,27 @@ dojo._toArray = function(obj, offset, startWith){
 }
 =====*/
 
-(function(){
-	var efficient = function(obj, offset, startWith){
-		return (startWith||[]).concat(Array.prototype.slice.call(obj, offset||0));
+dojo._toArray = (function(){
+
+	// Start with efficient version
+	var fn = function(obj, offset, startWith){
+		return (startWith || []).concat(Array.prototype.slice.call(obj, offset||0));
 	};
 
-	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-	var slow = function(obj, offset, startWith){
-		var arr = startWith||[]; 
-		for(var x = offset || 0; x < obj.length; x++){ 
-			arr.push(obj[x]); 
-		} 
-		return arr;
-	};
-	//>>excludeEnd("webkitMobile");
+	try {
+		fn(window.document.childNodes);
+	} catch(e) {
+		fn = function(obj, offset, startWith){
+			var arr = startWith||[];
+			var length = obj.length;
+			for(var x = offset || 0; x < length; x++){ 
+				arr.push(obj[x]); 
+			} 
+			return arr;
+		};
+	}
 
-	dojo._toArray = 
-		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-		dojo.isIE ?  function(obj){
-			return ((obj.item) ? slow : efficient).apply(this, arguments);
-		} : 
-		//>>excludeEnd("webkitMobile");
-		efficient;
-
+	return fn;
 })();
 
 dojo.partial = function(/*Function|String*/method /*, ...*/){
@@ -228,7 +219,7 @@ dojo.partial = function(/*Function|String*/method /*, ...*/){
 	//		|	dojo.hitch(null, funcName, ...);
 	var arr = [ null ];
 	return dojo.hitch.apply(dojo, arr.concat(dojo._toArray(arguments))); // Function
-}
+};
 
 dojo.clone = function(/*anything*/ o){
 	// summary:
@@ -259,7 +250,7 @@ dojo.clone = function(/*anything*/ o){
 		}
 	}
 	return r; // Object
-}
+};
 
 /*=====
 dojo.trim = function(str){
