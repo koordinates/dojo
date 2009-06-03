@@ -13,7 +13,7 @@ dojo.date.getDaysInMonth = function(/*Date*/dateObject){
 	var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 	if(month == 1 && dojo.date.isLeapYear(dateObject)){ return 29; } // Number
 	return days[month]; // Number
-}
+};
 
 dojo.date.isLeapYear = function(/*Date*/dateObject){
 	//	summary:
@@ -27,7 +27,7 @@ dojo.date.isLeapYear = function(/*Date*/dateObject){
 
 	var year = dateObject.getFullYear();
 	return !(year%400) || (!(year%4) && !!(year%100)); // Boolean
-}
+};
 
 // FIXME: This is not localized
 dojo.date.getTimezoneName = function(/*Date*/dateObject){
@@ -72,7 +72,7 @@ dojo.date.getTimezoneName = function(/*Date*/dateObject){
 
 	// Make sure it doesn't somehow end up return AM or PM
 	return (tz == 'AM' || tz == 'PM') ? '' : tz; // String
-}
+};
 
 // Utility methods to do arithmetic calculations with Dates
 
@@ -144,7 +144,7 @@ dojo.date.add = function(/*Date*/date, /*String*/interval, /*int*/amount){
 				weeks = (amount > 0) ? ((amount-5)/5) : ((amount+5)/5);
 			}else{
 				days = mod;
-				weeks = parseInt(amount/5);
+				weeks = parseInt(amount/5, 10);
 			}
 			// Get weekday value for orig date param
 			var strt = date.getDay();
@@ -153,7 +153,7 @@ dojo.date.add = function(/*Date*/date, /*String*/interval, /*int*/amount){
 			var adj = 0;
 			if(strt == 6 && amount > 0){
 				adj = 1;
-			}else if(strt == 0 && amount < 0){
+			}else if(!strt && amount < 0){
 			// Orig date is Sun / negative incrementer
 			// Jump back over Sat
 				adj = -1;
@@ -161,7 +161,7 @@ dojo.date.add = function(/*Date*/date, /*String*/interval, /*int*/amount){
 			// Get weekday val for the new date
 			var trgt = strt + days;
 			// New date is on Sat or Sun
-			if(trgt == 0 || trgt == 6){
+			if(!trgt || trgt == 6){
 				adj = (amount > 0) ? 2 : -2;
 			}
 			// Increment by number of weeks plus leftover days plus
@@ -236,11 +236,11 @@ dojo.date.difference = function(/*Date*/date1, /*Date?*/date2, /*String?*/interv
 			break;
 		case "weekday":
 			var days = Math.round(dojo.date.difference(date1, date2, "day"));
-			var weeks = parseInt(dojo.date.difference(date1, date2, "week"));
+			var weeks = parseInt(dojo.date.difference(date1, date2, "week"), 10);
 			var mod = days % 7;
 
 			// Even number of weeks
-			if(mod == 0){
+			if(!mod){
 				days = weeks*5;
 			}else{
 				// Weeks plus spare change (< 7 days)
@@ -248,7 +248,7 @@ dojo.date.difference = function(/*Date*/date1, /*Date?*/date2, /*String?*/interv
 				var aDay = date1.getDay();
 				var bDay = date2.getDay();
 
-				weeks = parseInt(days/7);
+				weeks = parseInt(days/7, 10);
 				mod = days % 7;
 				// Mark the date advanced by the number of
 				// round weeks (may be zero)
@@ -264,7 +264,7 @@ dojo.date.difference = function(/*Date*/date1, /*Date?*/date2, /*String?*/interv
 							adj = -1;
 							break;
 						// Range starts on Sun
-						case aDay == 0:
+						case !aDay:
 							adj = 0;
 							break;
 						// Range ends on Sat
@@ -272,7 +272,7 @@ dojo.date.difference = function(/*Date*/date1, /*Date?*/date2, /*String?*/interv
 							adj = -1;
 							break;
 						// Range ends on Sun
-						case bDay == 0:
+						case !bDay:
 							adj = -2;
 							break;
 						// Range contains weekend
@@ -286,7 +286,7 @@ dojo.date.difference = function(/*Date*/date1, /*Date?*/date2, /*String?*/interv
 							adj = 0;
 							break;
 						// Range starts on Sun
-						case aDay == 0:
+						case !aDay:
 							adj = 1;
 							break;
 						// Range ends on Sat
@@ -294,7 +294,7 @@ dojo.date.difference = function(/*Date*/date1, /*Date?*/date2, /*String?*/interv
 							adj = 2;
 							break;
 						// Range ends on Sun
-						case bDay == 0:
+						case !bDay:
 							adj = 1;
 							break;
 						// Range contains weekend
@@ -316,7 +316,7 @@ dojo.date.difference = function(/*Date*/date1, /*Date?*/date2, /*String?*/interv
 		case "week":
 			// Truncate instead of rounding
 			// Don't use Math.floor -- value may be negative
-			delta = parseInt(dojo.date.difference(date1, date2, "day")/7);
+			delta = parseInt(dojo.date.difference(date1, date2, "day")/7, 10);
 			break;
 		case "day":
 			delta /= 24;
