@@ -737,6 +737,14 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		this._disabledOK = true;
 	},
 
+	onFocusFactory: function() {
+		var id = this.id;
+
+		return function() {
+			dijit.byId(id).editNode.setActive();
+		};
+	},
+
 /* Event handlers
  *****************/
 
@@ -751,8 +759,10 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		// TODO: rename this to _onLoad, make empty public onLoad() method, deprecate/make protected onLoadDeferred handler?
 
-		this.window = win;
-		this.document = this.window.document;
+		if (win) {
+			this.window = win;
+			this.document = this.window.document;
+		}
 
 		if(this._localizeEditorCommands){
 			this._localizeEditorCommands();
@@ -771,11 +781,8 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 			if (typeof editNode.setActive != 'undefined') {
 				this.editingArea.appendChild(tabStop);
-				this.iframe.onfocus = function(){
-					editNode.setActive();
-				};
+				this.iframe.onfocus = this._onFocusFactory();
 			}
-			tabStop = null; // Don't need this one
 		}
 		this.focusNode = this.editNode; // for InlineEditBox
 
@@ -807,12 +814,12 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		if(this.focusOnLoad){
 			// after the document loads, then set focus after updateInterval expires so that 
 			// onNormalizedDisplayChanged has run to avoid input caret issues
-			dojo.addOnLoad(dojo.hitch(this, function(){ setTimeout(dojo.hitch(this, "focus"), this.updateInterval) }));
+			dojo.addOnLoad(dojo.hitch(this, this._focusTimer));
 		}
 
 		this.savedContent = this.getValue(true);
 
-		ap = null;
+		editNode = tabStop = win = ap = null;
 	},
 
 	onKeyDown: function(/* Event */ e){
