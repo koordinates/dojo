@@ -47,44 +47,8 @@ dojo.require("dojo.parser");
 		}
 
 		if(typeof cont == "string"){
-			// there's some hoops to jump through before we can set innerHTML on the would-be parent element. 
-	
-			// rationale for this block:
-			// if node is a table derivate tag, some browsers dont allow innerHTML on those
-			// TODO: <select>, <dl>? what other elements will give surprises if you naively set innerHTML?
-			
-			var pre = '', post = '', walk = 0, name = node.nodeName.toLowerCase();
-			switch(name){
-				case 'tr':
-					pre = '<tr>'; post = '</tr>';
-					walk += 1;//fallthrough
-				case 'tbody': case 'thead':// children of THEAD is of same type as TBODY
-					pre = '<tbody>' + pre; post += '</tbody>';
-					walk += 1;// falltrough
-				case 'table':
-					pre = '<table>' + pre; post += '</table>';
-					walk += 1;
-					break;
-			}
-			if(walk){
-				var n = node.ownerDocument.createElement('div');
-				n.innerHTML = pre + cont + post;
-				do{
-					n = n.firstChild;
-				}while(--walk);
-				// now we can safely add the child nodes...
-				dojo.forEach(n.childNodes, function(n){
-					node.appendChild(n.cloneNode(true));
-				});
-			}else{
-				// innerHTML the content as-is into the node (element)
-				// should we ever support setting content on non-element node types? 
-				// e.g. text nodes, comments, etc.?
-				node.innerHTML = cont;
-			}
-
-		}else{
-			// DomNode or NodeList
+			node = dojo._toDom(cont);
+		}else{// DomNode or NodeList
 			if(cont.nodeType){ // domNode (htmlNode 1 or textNode 3)
 				node.appendChild(cont);
 			}else{// nodelist or array such as dojo.Nodelist
@@ -188,8 +152,8 @@ dojo.require("dojo.parser");
 					var errMess = this.onContentError(e); 
 					try{
 						node.innerHTML = errMess;
-					}catch(e){
-						console.error('Fatal ' + this.declaredClass + '.setContent could not change content due to '+e.message, e);
+					}catch(e2){
+						console.error('Fatal ' + this.declaredClass + '.setContent could not change content due to '+e2.message, e2);
 					}
 				}
 				// always put back the node for the next method
@@ -334,7 +298,7 @@ dojo.require("dojo.parser");
 			//		dojo.html.set(node, "some string"); 
 			//		dojo.html.set(node, contentNode, {options}); 
 			//		dojo.html.set(node, myNode.childNodes, {options}); 
-		if(undefined == cont){
+		if(typeof cont == 'undefined'){
 			console.warn("dojo.html.set: no cont argument provided, using empty string");
 			cont = "";
 		}	
