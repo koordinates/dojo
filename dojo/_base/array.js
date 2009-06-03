@@ -100,7 +100,7 @@ dojo.provide("dojo._base.array");
 			//	|		dojo.hitch(obj, "callback")
 			//	|	);
 
-			// match the behavior of the built-in forEach WRT empty arrs
+			// match the behavior of the built-in forEach WRT empty arrays
 			if(!arr || !arr.length){ return; }
 
 			// FIXME: there are several ways of handilng thisObject. Is
