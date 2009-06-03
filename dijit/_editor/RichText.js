@@ -417,17 +417,6 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			}
 			ifr.frameBorder = 0;
 			// ifr.style.scrolling = this.height ? "auto" : "vertical";
-			ifr._loadFunc = dojo.hitch( this, function(win){
-				this.window = win;
-				this.document = this.window.document;
-
-				if(this._localizeEditorCommands){
-					this._localizeEditorCommands();
-				}
-
-				this.onLoad();
-				this.savedContent = this.getValue(true);
-			});
 			var s = 'javascript:parent.dijit.byId("'+this.id+'")._iframeSrc';
 			ifr.src = s;
 			this.editingArea.appendChild(ifr);
@@ -495,7 +484,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			"\ttop:0px; left:0px; right:0px;",
 			"\tfont:", font, ";",
 				((this.height) ? "" : "position: fixed;"),
-			// FIXME: IE 6 won't understand min-height
+			// FIXME: IE 6 won't understand min-height (nor will IE7+ in quirks mode.)
 			"\tmin-height:", this.minHeight, ";",
 			"\tline-height:", lineHeight,
 			"}",
@@ -507,7 +496,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			"li{ min-height:1.2em; }",
 			"</style>",
 			this._applyEditingAreaStyleSheets(),
-			"</head><body onload='frameElement._loadFunc(window,document); frameElement._loadFunc = null' style='"+userStyle+"'>"+html+"</body></html>"
+			"</head><body onload=\"parent.dijit.byId('", this.id, "').onLoad(window);\" style='", userStyle, "'>", html, "</body></html>"
 		].join(""); // String
 	},
 
@@ -754,13 +743,20 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 	// TODO: _isResized seems to be unused anywhere; remove for 2.0
 	_isResized: function(){ return false; },
 
-	onLoad: function(/* Event */ e){
+	onLoad: function(win){
 		// summary:
 		//		Handler after the content of the document finishes loading.
 		// tags:
 		//		protected
 
 		// TODO: rename this to _onLoad, make empty public onLoad() method, deprecate/make protected onLoadDeferred handler?
+
+		this.window = win;
+		this.document = this.window.document;
+
+		if(this._localizeEditorCommands){
+			this._localizeEditorCommands();
+		}
 
 		if(!this.window.__registeredWindow){
 			this.window.__registeredWindow = true;
@@ -813,6 +809,9 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			// onNormalizedDisplayChanged has run to avoid input caret issues
 			dojo.addOnLoad(dojo.hitch(this, function(){ setTimeout(dojo.hitch(this, "focus"), this.updateInterval) }));
 		}
+
+		this.savedContent = this.getValue(true);
+
 		ap = null;
 	},
 
