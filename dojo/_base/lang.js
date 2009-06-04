@@ -53,10 +53,32 @@ dojo.isArrayLike = function(/*anything*/ it){
 
 dojo.isAlien = function(/*anything*/ it){
 	// summary: 
-	//		Returns true if it is a built-in function or some other kind of
-	//		oddball that *should* report as a function but doesn't
+	//		Returns true if it is a built-in function or something else
+	//		callable that does not report as a function
 	return !dojo.isFunction(it) && dojo.isFunction(it.call); // Boolean
 };
+
+// Feature detection
+
+(function() {
+	var reFeaturedMethod = new RegExp('^function|object$', 'i');
+
+	// Test for host object properties that are typically callable (e.g. document.getElementById) or known to be callable in some implementations (e.g. document.all in Safari)
+	// which may be of type function, object (IE and possibly others) or unknown (IE ActiveX methods)
+
+	dojo.isHostMethod = function(o, m) {
+		var t = typeof o[m];
+		return !!((reFeaturedMethod.test(t) && o[m]) || t == 'unknown');
+	};
+
+	// Test for object or function types. Used when the property will be assigned to a variable (e.g. el = document.all) or type converted.
+	// Similar to isHostMethod, but does not allow unknown types, which are known to throw errors when evaluated.
+
+	dojo.isHostObjectProperty = function(o, p) {
+		var t = typeof o[p];
+		return !!(reFeaturedMethod.test(t) && o[p]);
+	};
+})();
 
 dojo.extend = function(/*Object*/ constructor, /*Object...*/ props){
 	// summary:
@@ -69,20 +91,20 @@ dojo.extend = function(/*Object*/ constructor, /*Object...*/ props){
 	return constructor; // Object
 };
 
-dojo._hitchArgs = function(scope, method /*,...*/){
+dojo._hitchArgs = function(thisObject, method /*,...*/){
 	var pre = dojo._toArray(arguments, 2);
 	var named = dojo.isString(method);
 	return function(){
 		// arrayify arguments
 		var args = dojo._toArray(arguments);
 		// locate our method
-		var f = named ? (scope||dojo.global)[method] : method;
+		var f = named ? (thisObject||dojo.global)[method] : method;
 		// invoke with collected args
-		return f && f.apply(scope || this, pre.concat(args)); // mixed
+		return f && f.apply(thisObject || this, pre.concat(args)); // mixed
  	}; // Function
 };
 
-dojo.hitch = function(/*Object*/scope, /*Function|String*/method /*,...*/){
+dojo.hitch = function(/*Object*/thisObject, /*Function|String*/method /*,...*/){
 	//	summary: 
 	//		Returns a function that will only ever execute in the a given scope. 
 	//		This allows for easy use of object member functions
@@ -92,9 +114,9 @@ dojo.hitch = function(/*Object*/scope, /*Function|String*/method /*,...*/){
 	//		beyond "method".
 	//		Each of these values will be used to "placehold" (similar to curry)
 	//		for the hitched function. 
-	//	scope: 
-	//		The scope to use when method executes. If method is a string, 
-	//		scope is also the object containing method.
+	//	thisObject: 
+	//		The - this - identifier will be set to reference this object (or the Global Object if null is passed)
+	//		If method is a string it names the method of this object to call as well
 	//	method:
 	//		A function to be hitched to scope, or the name of the method in
 	//		scope to be hitched.
@@ -107,16 +129,25 @@ dojo.hitch = function(/*Object*/scope, /*Function|String*/method /*,...*/){
 	if(arguments.length > 2){
 		return dojo._hitchArgs.apply(dojo, arguments); // Function
 	}
+
+	// Just method passed
+
 	if(!method){
-		method = scope;
-		scope = null;
+		method = thisObject;
+		thisObject = null;
 	}
+
+	// Call named method of this object
+
 	if(dojo.isString(method)){
-		scope = scope || dojo.global;
-		if(!scope[method]){ throw(['dojo.hitch: scope["', method, '"] is null (scope="', scope, '")'].join('')); }
-		return function(){ return scope[method].apply(scope, arguments || []); }; // Function
+		thisObject = thisObject || dojo.global;
+		if(!thisObject[method]){ throw(['dojo.hitch: method["', method, '"] is null (thisObject="', thisObject, '")'].join('')); }
+		return function(){ return thisObject[method].apply(thisObject, arguments || []); }; // Function
 	}
-	return !scope ? method : function(){ return method.apply(scope, arguments || []); }; // Function
+
+	// Function passed through or hitched to this object
+
+	return !thisObject ? method : function(){ return method.apply(thisObject, arguments); }; // Function
 };
 
 /*=====
@@ -192,6 +223,9 @@ dojo._toArray = (function(){
 	try {
 		fn(window.document.childNodes);
 	} catch(e) {
+
+		// Fall back to slow version
+
 		fn = function(obj, offset, startWith){
 			var arr = startWith||[];
 			var length = obj.length;
