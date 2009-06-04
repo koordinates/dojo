@@ -1206,8 +1206,17 @@ dojo.byId = function(id, doc){
 	html = window.document.documentElement;
 	var attributesBad = !!(typeof html.getAttribute != 'undefined' && html.getAttribute('style') && typeof html.getAttribute('style') != 'string');
 	var attributeAliases = {'for':'htmlFor', accesskey:'accessKey', maxlength:'maxLength', 'class':'className', readonly:'readOnly', longdesc:'longDesc', tabindex:'tabIndex', rowspan:'rowSpan', colspan:'colSpan', codebase:'codeBase', ismap:'isMap', innerhtml:'innerHTML'}; // Last for backwards compatibility
-	var reCamel = new RegExp('([^-]*)-(.)(.*)');
 
+	// Used by realAttr to fix broken attributes
+
+	if (attributesBad) {
+            var reEvent = new RegExp('^on');
+            var reNewLine = new RegExp('[\\n\\r]', 'g');
+            var reFunction = new RegExp('^function anonymous\\(\\) *{(.*)}$');
+            var reURI = new RegExp('(href|src|data)');
+	}
+
+	var reCamel = new RegExp('([^-]*)-(.)(.*)');
 	var camelize = function(name) {
 		var m = name.match(reCamel);
 		return (m)?([m[1], m[2].toUpperCase(), m[3]].join('')):name;
@@ -1487,11 +1496,13 @@ dojo.byId = function(id, doc){
 	};
 
 	// For use with XML elements and custom HTML DOM attributes (e.g. djconfig)
+	// Also used by query module, regardless of DOM as it needs attributes rather than properties
+	// Returns a string or null
 
 	dojo.realAttr = function(node, name, value) {
-		var x;
+		var x, nn, nameC, att, alias;
 
-		if (d.isString(node)) {
+		if (typeof node == 'string') {
 			node = d.byId(node);
 		}
 		if (typeof name != 'string') {
@@ -1502,7 +1513,52 @@ dojo.byId = function(id, doc){
 			}
 		}
 		if (arguments.length == 2) { // Getter
-			return node.getAttribute(name);
+			if (attributesBad) {
+				var doc = node.ownerDocument || d.doc;
+        	      		if (typeof(doc.selectNodes) != 'undefined') {
+					return node.getAttribute(name);
+				} // XML document in IE
+
+				if (d.hasAttribute(node, name)) {               
+					name = name.toLowerCase();
+					alias = attributeAliases[name];
+					if (!alias) {
+						if (name == 'style') { return node.style.cssText; }
+						if (reURI.test(name)) { return node.getAttribute(name, 2); }
+						if (reEvent.test(name) && node[name]) {
+							att = node[name].toString();
+							if (att) {
+								att = att.replace(reNewLine, '');
+								if (reFunction.test(att)) { return att.replace(reFunction, '$1'); }
+							}
+							return null;
+						}
+						nn = node.tagName.toLowerCase();
+						if (nn == 'select' && name == 'type') {
+							return null;
+						}
+						if (nn == 'form' && typeof node.getAttributeNode != 'undefined') {
+							att = node.getAttributeNode(name);
+							return (att && att.nodeValue) ?att.nodeValue:null;
+						}
+					}
+                			nameC = camelize(alias || name);
+                			if (typeof node[nameC] == 'unknown') {
+						return '[unknown]';
+					}
+					var val = node[nameC];
+                  			if (name == 'longdesc') {
+						return node.getAttribute(name, 2);
+					}
+					if (typeof val == 'boolean') {
+						return val?'':null;
+                  			}
+					return typeof val != 'string' && typeof val != 'undefined' && val !== null ? String(val) : val;
+				}
+				return null;
+			} else {
+				return node.getAttribute(name); // String
+			}		
 		}
 
 		// Setter
