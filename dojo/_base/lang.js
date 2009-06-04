@@ -11,8 +11,7 @@ dojo.isString = function(/*anything*/ it){
 dojo.isArray = function(/*anything*/ it){
 	//	summary:
 	//		Return true if it is an Array
-	//		Will not work across frames
-	return it instanceof Array; // Boolean
+	return typeof it == 'object' && it && typeof it.length == 'number' && isFinite(it.length) && dojo.isOwnProperty(it, 'length') && typeof it.slice == 'function' && dojo.isOwnProperty(it, 'slice'); // Boolean
 };
 
 /*=====
@@ -46,12 +45,7 @@ dojo.isArrayLike = function(/*anything*/ it){
 	//		dojo.isArray().
 	//	returns:
 	//		If it walks like a duck and quacks like a duck, return `true`
-	var d = dojo;
-	return it && 
-		// keep out built-in constructors (Number, String, ...) which have length
-		// properties
-		!d.isString(it) && !d.isFunction(it) &&
-		(d.isArray(it) || isFinite(it.length)); // Boolean
+	return typeof it == 'object' && it && typeof it.length == 'number' && isFinite(it.length) && dojo.isOwnProperty(it, 'length'); // Boolean
 };
 
 // DOCME: Why do we need this one?
