@@ -58,20 +58,28 @@ dojo.declare(
 			// tags:
 			//      protected
 			if(!this.value || dojo.date.compare(value, this.value)){
-				value = new Date(value);
-				value.setHours(1); // to avoid DST issues in Brazil see #8521
+				this.value = value = new Date(value);
 				this.displayMonth = new Date(value);
 				if(!this.isDisabledDate(value, this.lang)){
-					this.onChange(this.value = value);
+					this.onChange(value);
 				}
 				this._populateGrid();
 			}
 		},
 
+		_getValueAttr: function(){
+			// summary:
+			//              Support getter attr('value')
+
+			var value = new Date(this.value);
+			value.setHours(0, 0, 0, 0); // return midnight, local time for back-compat
+			return value; 
+		}, 
+
 		_setText: function(node, text){
 			// summary:
 			//		This just sets the content of node to the specified text.
-			//		Can't do "node.innerHTML=text" because of an IE bug w/tables, see #3434.
+			//		Can't do "node.innerHTML=text" because IE does not support innerHTML w/tables, see #3434.
 			// tags:
 			//      private
 			while(node.firstChild){
@@ -139,8 +147,10 @@ dojo.declare(
 
 				template.className =  clazz + "Month dijitCalendarDateTemplate";
 				template.dijitDateValue = date.valueOf();
+				var dayOfMonth = date.getDate();
+				template.dijitDateDayOfMonth = dayOfMonth;
 				var label = dojo.query(".dijitCalendarDateLabel", template)[0];
-				this._setText(label, date.getDate());
+				this._setText(label, dayOfMonth);
 			}, this);
 
 			// Fill in localized month name
@@ -231,10 +241,15 @@ dojo.declare(
 			//      Handler for when user clicks a day
 			// tags:
 			//      protected
+
+			var value;
+
 			dojo.stopEvent(evt);
 			for(var node = evt.target; node && !node.dijitDateValue; node = node.parentNode);
 			if(node && !dojo.hasClass(node, "dijitCalendarDisabledDate")){
-				this.attr('value', node.dijitDateValue);
+				value = node.dijitDateValue;
+				value = dojo.date.adjustForUnderflowIfNeeded(new Date(value), node.dijitDayOfMonth);
+				this.attr('value', value);
 				this.onValueSelected(this.value);
 			}
 		},
@@ -257,6 +272,9 @@ dojo.declare(
 			// tags:
 			//      protected
 			if(!this._currentNode){ return; }
+
+			// TODO: use mouseenter/leave
+
 			for(var node = evt.relatedTarget; node;){
 				if(node == this._currentNode){ return; }
 				try{
