@@ -511,9 +511,9 @@ if(typeof dojo != "undefined"){
 				inBrackets = x;
 				// provide a new structure for the attribute match to fill-in
 				_cp = {
-				
+				/*
 					attr: null, type: null, matchFor: null
-				
+				*/
 				};
 			}else if(cc == "("){
 				// we really only care if we've entered a parenthetical
