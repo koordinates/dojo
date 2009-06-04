@@ -145,6 +145,32 @@ dojo.requireLocalization("dojo.cldr", "gregorian");
 		});
 	}
 
+	function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
+		//summary: Process a pattern with literals in it
+
+		// Break up on single quotes, treat every other one as a literal, except '' which becomes '
+		var identity = function(x){return x;};
+		applyPattern = applyPattern || identity;
+		applyLiteral = applyLiteral || identity;
+		applyAll = applyAll || identity;
+
+		//split on single quotes (which escape literals in date format strings) 
+		//but preserve escaped single quotes (e.g., o''clock)
+		var chunks = pattern.match(/(''|[^'])+/g); 
+		var literal = pattern.charAt(0) == "'";
+
+		dojo.forEach(chunks, function(chunk, i){
+			if(!chunk){
+				chunks[i]='';
+			}else{
+				chunks[i]=(literal ? applyLiteral : applyPattern)(chunk);
+				literal = !literal;
+			}
+		});
+		return applyAll(chunks.join(''));
+	}
+
+
 /*=====
 	dojo.date.locale.__FormatOptions = function(){
 	//	selector: String
@@ -230,6 +256,87 @@ dojo.date.locale.regexp = function(/*dojo.date.locale.__FormatOptions?*/options)
 	return dojo.date.locale._parseInfo(options).regexp; // String
 };
 
+function _buildDateTimeRE(tokens, bundle, options, pattern){
+	pattern = dojo.regexp.escapeString(pattern);
+	if(!options.strict){ pattern = pattern.replace(" a", " ?a"); } // kludge to tolerate no space before am/pm
+	return pattern.replace(/([a-z])\1*/ig, function(match){
+		// Build a simple regexp.  Avoid captures, which would ruin the tokens list
+		var s;
+		var c = match.charAt(0);
+		var l = match.length;
+		var p2 = '', p3 = '';
+		if(options.strict){
+			if(l > 1){ p2 = '0' + '{'+(l-1)+'}'; }
+			if(l > 2){ p3 = '0' + '{'+(l-2)+'}'; }
+		}else{
+			p2 = '0?'; p3 = '0{0,2}';
+		}
+		switch(c){
+			case 'y':
+				s = '\\d{2,4}';
+				break;
+			case 'M':
+				s = (l>2) ? '\\S+?' : p2+'[1-9]|1[0-2]';
+				break;
+			case 'D':
+				s = p2+'[1-9]|'+p3+'[1-9][0-9]|[12][0-9][0-9]|3[0-5][0-9]|36[0-6]';
+				break;
+			case 'd':
+				s = '[12]\\d|'+p2+'[1-9]|3[01]';
+				break;
+			case 'w':
+				s = p2+'[1-9]|[1-4][0-9]|5[0-3]';
+				break;
+		    case 'E':
+				s = '\\S+';
+				break;
+			case 'h': //hour (1-12)
+				s = p2+'[1-9]|1[0-2]';
+				break;
+			case 'k': //hour (0-11)
+				s = p2+'\\d|1[01]';
+				break;
+			case 'H': //hour (0-23)
+				s = p2+'\\d|1\\d|2[0-3]';
+				break;
+			case 'K': //hour (1-24)
+				s = p2+'[1-9]|1\\d|2[0-4]';
+				break;
+			case 'm':
+			case 's':
+				s = '[0-5]\\d';
+				break;
+			case 'S':
+				s = '\\d{'+l+'}';
+				break;
+			case 'a':
+				var am = options.am || bundle.am || 'AM';
+				var pm = options.pm || bundle.pm || 'PM';
+				if(options.strict){
+					s = am + '|' + pm;
+				}else{
+					s = am + '|' + pm;
+					if(am != am.toLowerCase()){ s += '|' + am.toLowerCase(); }
+					if(pm != pm.toLowerCase()){ s += '|' + pm.toLowerCase(); }
+					if(s.indexOf('.') != -1){ s += '|' + s.replace(/\./g, ""); }
+				}
+				s = s.replace(/\./g, "\\.");
+				break;
+			default:
+			// case 'v':
+			// case 'z':
+			// case 'Z':
+				s = ".*";
+//				console.log("parse of date format, pattern=" + pattern);
+		}
+
+		if(tokens){ tokens.push(match); }
+
+		return "(" + s + ")"; // add capture
+	}).replace(/[\xa0 ]/g, "[\\s\\xa0]"); // normalize whitespace.  Need explicit handling of \xa0 for IE.
+}
+
+
 dojo.date.locale._parseInfo = function(/*dojo.date.locale.__FormatOptions?*/options){
 	options = options || {};
 	var locale = dojo.i18n.normalizeLocale(options.locale);
@@ -249,6 +356,15 @@ dojo.date.locale._parseInfo = function(/*dojo.date.locale.__FormatOptions?*/opti
 	var tokens = [];
 	var re = _processPattern(pattern, dojo.hitch(this, _buildDateTimeRE, tokens, bundle, options));
 	return {regexp: re, tokens: tokens, bundle: bundle};
+};
+
+// Called by parse, but will be needed by widgets that store dates only (e.g. calendar.)
+
+dojo.date.adjustForUnderflowIfNeeded = function(dateObject, expectedDate) {
+	if(dateObject.getDate() != expectedDate){
+		dateObject = dojo.date.add(dateObject, "day", 1); // Bump day
+		dateObject.setHours(0, 0, 0, 0);  // Zero hour
+	}			
 };
 
 dojo.date.locale.parse = function(/*String*/value, /*dojo.date.locale.__FormatOptions?*/options){
@@ -422,122 +538,27 @@ dojo.date.locale.parse = function(/*String*/value, /*dojo.date.locale.__FormatOp
 		dateObject.setFullYear(result[0]);
 	}
 
+	var allTokens = tokens.join(""),
+		dateToken = allTokens.indexOf('d') != -1, 
+		monthToken = allTokens.indexOf('M') != -1;
+
+	// Check for underflow, due to DST shifts.  See #9633
+	// Only does this when options.dateOnly is set
+
+	if (options.dateOnly && dateToken) {
+		dojo.date.adjustForUnderflowIfNeeded(dateObject, result[2]);
+	}
+
 	// Check for overflow.  The Date() constructor normalizes things like April 32nd...
-	//TODO: why isn't this done for times as well?
-	var allTokens = tokens.join("");
+ 
 	if(!valid ||
-		(allTokens.indexOf('M') != -1 && dateObject.getMonth() != result[1]) ||
-		(allTokens.indexOf('d') != -1 && dateObject.getDate() != result[2])){
+		(monthToken && dateObject.getMonth() != result[1]) ||
+		(dateToken && dateObject.getDate() != result[2])){
 		return null;
 	}
 
 	return dateObject; // Date
 };
-
-function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
-	//summary: Process a pattern with literals in it
-
-	// Break up on single quotes, treat every other one as a literal, except '' which becomes '
-	var identity = function(x){return x;};
-	applyPattern = applyPattern || identity;
-	applyLiteral = applyLiteral || identity;
-	applyAll = applyAll || identity;
-
-	//split on single quotes (which escape literals in date format strings) 
-	//but preserve escaped single quotes (e.g., o''clock)
-	var chunks = pattern.match(/(''|[^'])+/g); 
-	var literal = pattern.charAt(0) == "'";
-
-	dojo.forEach(chunks, function(chunk, i){
-		if(!chunk){
-			chunks[i]='';
-		}else{
-			chunks[i]=(literal ? applyLiteral : applyPattern)(chunk);
-			literal = !literal;
-		}
-	});
-	return applyAll(chunks.join(''));
-}
-
-function _buildDateTimeRE(tokens, bundle, options, pattern){
-	pattern = dojo.regexp.escapeString(pattern);
-	if(!options.strict){ pattern = pattern.replace(" a", " ?a"); } // kludge to tolerate no space before am/pm
-	return pattern.replace(/([a-z])\1*/ig, function(match){
-		// Build a simple regexp.  Avoid captures, which would ruin the tokens list
-		var s;
-		var c = match.charAt(0);
-		var l = match.length;
-		var p2 = '', p3 = '';
-		if(options.strict){
-			if(l > 1){ p2 = '0' + '{'+(l-1)+'}'; }
-			if(l > 2){ p3 = '0' + '{'+(l-2)+'}'; }
-		}else{
-			p2 = '0?'; p3 = '0{0,2}';
-		}
-		switch(c){
-			case 'y':
-				s = '\\d{2,4}';
-				break;
-			case 'M':
-				s = (l>2) ? '\\S+?' : p2+'[1-9]|1[0-2]';
-				break;
-			case 'D':
-				s = p2+'[1-9]|'+p3+'[1-9][0-9]|[12][0-9][0-9]|3[0-5][0-9]|36[0-6]';
-				break;
-			case 'd':
-				s = '[12]\\d|'+p2+'[1-9]|3[01]';
-				break;
-			case 'w':
-				s = p2+'[1-9]|[1-4][0-9]|5[0-3]';
-				break;
-		    case 'E':
-				s = '\\S+';
-				break;
-			case 'h': //hour (1-12)
-				s = p2+'[1-9]|1[0-2]';
-				break;
-			case 'k': //hour (0-11)
-				s = p2+'\\d|1[01]';
-				break;
-			case 'H': //hour (0-23)
-				s = p2+'\\d|1\\d|2[0-3]';
-				break;
-			case 'K': //hour (1-24)
-				s = p2+'[1-9]|1\\d|2[0-4]';
-				break;
-			case 'm':
-			case 's':
-				s = '[0-5]\\d';
-				break;
-			case 'S':
-				s = '\\d{'+l+'}';
-				break;
-			case 'a':
-				var am = options.am || bundle.am || 'AM';
-				var pm = options.pm || bundle.pm || 'PM';
-				if(options.strict){
-					s = am + '|' + pm;
-				}else{
-					s = am + '|' + pm;
-					if(am != am.toLowerCase()){ s += '|' + am.toLowerCase(); }
-					if(pm != pm.toLowerCase()){ s += '|' + pm.toLowerCase(); }
-					if(s.indexOf('.') != -1){ s += '|' + s.replace(/\./g, ""); }
-				}
-				s = s.replace(/\./g, "\\.");
-				break;
-			default:
-			// case 'v':
-			// case 'z':
-			// case 'Z':
-				s = ".*";
-//				console.log("parse of date format, pattern=" + pattern);
-		}
-
-		if(tokens){ tokens.push(match); }
-
-		return "(" + s + ")"; // add capture
-	}).replace(/[\xa0 ]/g, "[\\s\\xa0]"); // normalize whitespace.  Need explicit handling of \xa0 for IE.
-}
 })();
 
 (function(){
@@ -616,7 +637,7 @@ dojo.date.locale.displayPattern = function(/*String*/fixedPattern, /*String?*/lo
 		 var i = fixed.indexOf(c);
 		 return i < 0 ? c : local.charAt(i);
 	}).join(""); // String
-}
+};
 
 dojo.date.locale.isWeekend = function(/*Date?*/dateObject, /*String?*/locale){
 	// summary:
