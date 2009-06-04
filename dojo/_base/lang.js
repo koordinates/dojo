@@ -11,7 +11,8 @@ dojo.isString = function(/*anything*/ it){
 dojo.isArray = function(/*anything*/ it){
 	//	summary:
 	//		Return true if it is an Array
-	return typeof it == 'object' && it && typeof it.length == 'number' && isFinite(it.length) && dojo.isOwnProperty(it, 'length') && typeof it.slice == 'function' && dojo.isOwnProperty(it, 'slice'); // Boolean
+
+	return Object.prototype.toString.call(it) === '[object Array]';
 };
 
 /*=====
@@ -45,7 +46,7 @@ dojo.isArrayLike = function(/*anything*/ it){
 	//		dojo.isArray().
 	//	returns:
 	//		If it walks like a duck and quacks like a duck, return `true`
-	return typeof it == 'object' && it && typeof it.length == 'number' && isFinite(it.length) && dojo.isOwnProperty(it, 'length'); // Boolean
+	return dojo.isObject(it) && it && typeof it.length == 'number' && isFinite(it.length); // Boolean
 };
 
 // DOCME: Why do we need this one?
@@ -54,7 +55,7 @@ dojo.isAlien = function(/*anything*/ it){
 	// summary: 
 	//		Returns true if it is a built-in function or some other kind of
 	//		oddball that *should* report as a function but doesn't
-	return it && !dojo.isFunction(it) && dojo.isFunction(it.call); // Boolean
+	return !dojo.isFunction(it) && dojo.isFunction(it.call); // Boolean
 };
 
 dojo.extend = function(/*Object*/ constructor, /*Object...*/ props){
