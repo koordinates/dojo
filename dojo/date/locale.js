@@ -364,7 +364,8 @@ dojo.date.adjustForUnderflowIfNeeded = function(dateObject, expectedDate) {
 	if(dateObject.getDate() != expectedDate){
 		dateObject = dojo.date.add(dateObject, "day", 1); // Bump day
 		dateObject.setHours(0, 0, 0, 0);  // Zero hour
-	}			
+	}
+	return dateObject;
 };
 
 dojo.date.locale.parse = function(/*String*/value, /*dojo.date.locale.__FormatOptions?*/options){
@@ -546,7 +547,7 @@ dojo.date.locale.parse = function(/*String*/value, /*dojo.date.locale.__FormatOp
 	// Only does this when options.dateOnly is set
 
 	if (options.dateOnly && dateToken) {
-		dojo.date.adjustForUnderflowIfNeeded(dateObject, result[2]);
+		dateObject = dojo.date.adjustForUnderflowIfNeeded(dateObject, result[2]);
 	}
 
 	// Check for overflow.  The Date() constructor normalizes things like April 32nd...
