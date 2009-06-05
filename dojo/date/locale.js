@@ -561,7 +561,7 @@ dojo.date.locale.parse = function(/*String*/value, /*dojo.date.locale.__FormatOp
 		dateToken = allTokens.indexOf('d') != -1, 
 		monthToken = allTokens.indexOf('M') != -1;
 
-	// Check for underflow, due to DST shifts.  See #9633
+	// Check for underflow, due to DST shifts.  See #9366
 	// Only does this when options.dateOnly is set
 
 	if (options.dateOnly && dateToken) {
