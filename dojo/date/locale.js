@@ -360,10 +360,28 @@ dojo.date.locale._parseInfo = function(/*dojo.date.locale.__FormatOptions?*/opti
 
 // Called by parse, but will be needed by widgets that store dates only (e.g. calendar.)
 
-dojo.date.adjustForUnderflowIfNeeded = function(dateObject, expectedDate) {
+dojo.date.adjustForUnderflowIfNeeded = function(/*Date*/ dateObject, /*Number*/ expectedDate) {
+	var value;
 	if(dateObject.getDate() != expectedDate){
+
+		// Check if underflow exists
+
 		dateObject = dojo.date.add(dateObject, "day", 1); // Bump day
-		dateObject.setHours(0, 0, 0, 0);  // Zero hour
+
+		if (dateObject.getDate() == expectedDate) {
+			value = dateObject.valueOf();
+
+			// Loop backwards one hour until date changes
+
+			do {
+				value -= 3600000;				
+			} while(new Date(value).getDate() == expectedDate);
+
+			// Bump to first hour of expected date
+			// Converting to string may not yield midnight (See #9366)
+
+			dateObject = new Date(value + 3600000);
+		}
 	}
 	return dateObject;
 };
