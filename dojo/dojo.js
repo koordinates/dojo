@@ -120,7 +120,7 @@ if(typeof dojo == "undefined"){
 		// Pass only names of properties universally implemented as methods
 		// This does NOT include properties that are methods in some browsers but not others
 		// This test will not discriminate between such implementations and
-		// applications should never call such properties
+		// applications should never call such objects
 		//
 		// example:
 		//
