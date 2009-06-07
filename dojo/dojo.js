@@ -1,50 +1,53 @@
-// summary:
-//		This is the "source loader" for Dojo. This dojo.js ensures that all
-//		Base APIs are available once its execution is complete and attempts to
-//		automatically determine the correct host environment to use.
-// description:
-//		"dojo.js" is the basic entry point into the toolkit for all uses and
-//		users. The "source loader" is replaced by environment-specific builds
-//		and so you should not assume that built versions of the toolkit will
-//		function in all supported platforms (Browsers, Rhino, Spidermonkey,
-//		etc.). In most cases, users will receive pre-built dojo.js files which
-//		contain all of the Base APIs in a single file and which specialize for
-//		the Browser platform. After loading dojo.js, you will be able to do the
-//		following with the toolkit:
-//			All platforms:
-//				- load other packages (dojo core, dijit, dojox, and custom
-//				  modules) to better structure your code and take advantage of
-//				  the inventive capabilities developed by the broad Dojo
-//				  community
-//				- perform basic network I/O
-//				- use Dojo's powerful language supplementing APIs
-//				- take advantage of the Dojo event system to better structure
-//				  your application
-//			Browser only:
-//				- use Dojo's powerful and blisteringly-fast CSS query engine to
-//				  upgrade and active your web pages without embedding
-//				  JavaScript in your markup
-//				- get and set accurate information about element style 
-//				- shorten the time it takes to build and manipulate DOM
-//				  structures with Dojo's HTML handling APIs
-//				- create more fluid UI transitions with Dojo's robust and
-//				  battle-tested animation facilities
+/*
 
-// NOTE:
-//		If you are reading this file, you have received a "source" build of
-//		Dojo. Unless you are a Dojo developer, it is very unlikely that this is
-//		what you want. While functionally identical to builds, source versions
-//		of Dojo load more slowly than pre-processed builds.
-//
-//		We strongly recommend that your applications always use a build of
-//		Dojo. To download such a build or find out how you can create
-//		customized, high-performance packages of Dojo suitable for use with
-//		your application, please visit:
-//
-//			http://dojotoolkit.org
-//
-//		Regards,
-//		The Dojo Team
+ summary:
+		This is the "source loader" for Dojo. This dojo.js ensures that all
+		Base APIs are available once its execution is complete and attempts to
+		automatically determine the correct host environment to use.
+ description:
+		"dojo.js" is the basic entry point into the toolkit for all uses and
+		users. The "source loader" is replaced by environment-specific builds
+		and so you should not assume that built versions of the toolkit will
+		function in all supported platforms (Browsers, Rhino, Spidermonkey,
+		etc.). In most cases, users will receive pre-built dojo.js files which
+		contain all of the Base APIs in a single file and which specialize for
+		the Browser platform. After loading dojo.js, you will be able to do the
+		following with the toolkit:
+			All platforms:
+				- load other packages (dojo core, dijit, dojox, and custom
+				  modules) to better structure your code and take advantage of
+				  the inventive capabilities developed by the broad Dojo
+				  community
+				- perform basic network I/O
+				- use Dojo's powerful language supplementing APIs
+				- take advantage of the Dojo event system to better structure
+				  your application
+			Browser only:
+				- use Dojo's powerful and blisteringly-fast CSS query engine to
+				  upgrade and active your web pages without embedding
+				  JavaScript in your markup
+				- get and set accurate information about element style 
+				- shorten the time it takes to build and manipulate DOM
+				  structures with Dojo's HTML handling APIs
+				- create more fluid UI transitions with Dojo's robust and
+				  battle-tested animation facilities
+
+ NOTE:
+		If you are reading this file, you have received a "source" build of
+		Dojo. Unless you are a Dojo developer, it is very unlikely that this is
+		what you want. While functionally identical to builds, source versions
+		of Dojo load more slowly than pre-processed builds.
+
+		We strongly recommend that your applications always use a build of
+		Dojo. To download such a build or find out how you can create
+		customized, high-performance packages of Dojo suitable for use with
+		your application, please visit:
+
+			http://dojotoolkit.org
+
+		Regards,
+		The Dojo Team
+*/
 
 var dojo;
 
@@ -98,7 +101,56 @@ if(typeof dojo == "undefined"){
 
 	// only try to load Dojo if we don't already have one. Dojo always follows
 	// a "first Dojo wins" policy.
+
 	(function(){
+
+		// Feature detection
+
+		var reFeaturedMethod = new RegExp('^function|object$', 'i');
+
+		// summary:
+		// Test for host object property referencing an object to be called
+		//
+		// description:
+		// If the referenced object will not be called, use isHostObjectProperty
+		// Allowed properties may be of type function, object (IE and possibly others) or unknown (IE ActiveX methods)
+		// Object types exclude null.
+		//
+		// Does NOT assert that an arbitrary property is callable
+		// Pass only names of properties universally implemented as methods
+		// This does NOT include properties that are methods in some browsers but not others
+		// This test will not discriminate between such implementations and
+		// applications should never call such properties
+		//
+		// example:
+		//
+		// if (isHostMethod(document, 'getElementById')) {
+		//     anElement = document.getElementById(id);
+		// }
+
+		dojo.isHostMethod = function(/* Host object */ o, /* String */ m) {
+			var t = typeof o[m];
+			return !!((reFeaturedMethod.test(t) && o[m]) || t == 'unknown'); /* Boolean */
+		};
+
+		// summary:
+		// Test for host object property that will be evaluated (e.g. assigned, type converted)
+		//
+		// description:
+		// Similar to isHostMethod, but does not allow unknown types, which are known to throw errors when evaluated
+		// If the property will be called, use isHostMethod
+		//
+		// example:
+		//
+		// if (isHostObjectProperty(document, 'all')) {
+		//     allElements = document.all;
+		// }
+
+		dojo.isHostObjectProperty = function(/* Host object */ o, /* String */ p) {
+			var t = typeof o[p];
+			return !!(reFeaturedMethod.test(t) && o[p]); /* Boolean */
+		};
+
 		var getRootNode = function(){
 			// attempt to figure out the path to dojo if it isn't set in the config
 			if(this.document && this.document.getElementsByTagName){
@@ -463,7 +515,6 @@ dojo.global = {
 		for(var x in props){
 			obj[x] = props[x];
 		}
-
 		if (maskedDontEnumBleedsThrough) {
 			var index, val, names = ['constructor', 'toString', 'valueOf', 'toLocaleString', 'isPrototypeOf', 'propertyIsEnumerable', 'hasOwnProperty'];
 			for (index = names.length; index--;) {
