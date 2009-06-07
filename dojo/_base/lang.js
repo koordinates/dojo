@@ -58,28 +58,6 @@ dojo.isAlien = function(/*anything*/ it){
 	return !dojo.isFunction(it) && dojo.isFunction(it.call); // Boolean
 };
 
-// Feature detection
-
-(function() {
-	var reFeaturedMethod = new RegExp('^function|object$', 'i');
-
-	// Test for host object properties that are typically callable (e.g. document.getElementById) or known to be callable in some implementations (e.g. document.all in Safari)
-	// which may be of type function, object (IE and possibly others) or unknown (IE ActiveX methods)
-
-	dojo.isHostMethod = function(o, m) {
-		var t = typeof o[m];
-		return !!((reFeaturedMethod.test(t) && o[m]) || t == 'unknown');
-	};
-
-	// Test for object or function types. Used when the property will be assigned to a variable (e.g. el = document.all) or type converted.
-	// Similar to isHostMethod, but does not allow unknown types, which are known to throw errors when evaluated.
-
-	dojo.isHostObjectProperty = function(o, p) {
-		var t = typeof o[p];
-		return !!(reFeaturedMethod.test(t) && o[p]);
-	};
-})();
-
 dojo.extend = function(/*Object*/ constructor, /*Object...*/ props){
 	// summary:
 	//		Adds all properties and methods of props to constructor's
