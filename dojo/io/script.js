@@ -195,9 +195,7 @@ dojo.io.script = {
 		//Check for finished "checkString" case.
 		var checkString = dfd.ioArgs.args.checkString;
 
-		// NOTE: dojo.global guaranteed set at this point?
-
-		return !!(checkString && typeof (dojo.global || window)[checkString] != 'undefined');
+		return !!(checkString && new Function('return typeof (' + checkString + ') != "undefined"')());
 	},
 
 	_resHandle: function(/*Deferred*/dfd){
