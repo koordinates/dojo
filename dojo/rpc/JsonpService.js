@@ -15,7 +15,10 @@ dojo.declare("dojo.rpc.JsonpService", dojo.rpc.RpcService, {
 			}
 
 			dojo.forEach(this.required, function(req){
-				if(req=="" || req==undefined){
+
+				// DOCME: what is req expected to be?
+
+				if(!req){
 					throw new Error("Required Service Argument not found: "+req); 
 				}
 			});
@@ -52,6 +55,8 @@ dojo.declare("dojo.rpc.JsonpService", dojo.rpc.RpcService, {
 		//      create a JSONP req
 		//      params: array
 		//              The array of parameters for this request;
+
+		// NOTE: why isArrayLike?
 
 		var params = (dojo.isArrayLike(parameters) && parameters.length==1) ?
 				parameters[0] : {};
