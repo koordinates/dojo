@@ -45,7 +45,7 @@ dojo.byId = function(id, doc){
 =====*/
 
 	dojo.byId = function(id, doc){
-		if(dojo.isString(id)){
+		if(typeof id == 'string'){
 			var _d = doc || dojo.doc;
 			var te = _d.getElementById(id);
 
@@ -356,7 +356,7 @@ dojo.byId = function(id, doc){
 		var fn = function(el) {
         	      var o = el.style[s];
 	              if (o) { return parseFloat(o); }
-        	      o = dojo.getComputedStyle(el).opacity;
+        	      o = gcs(el).opacity;
 	              if (o !== null) { return parseFloat(o); }
         	      return 1;
 		};
@@ -543,7 +543,7 @@ dojo.byId = function(id, doc){
 
 			n.style[style] = value; /*Number*/
 			return value;
-		} else if(args == 2 && !dojo.isString(style)){
+		} else if(args == 2 && typeof style != 'string'){
 
 			// Multiple sets
 
