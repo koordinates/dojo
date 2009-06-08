@@ -94,17 +94,26 @@ dojo.declare("dojo.dnd.move.parentConstrainedMoveable", dojo.dnd.move.constraine
 				return mb;	// Object
 			}
 			var t = dojo._getMarginExtents(n, s);
-			mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
+			mb.l += t.l;
+			mb.t += t.t;
+			mb.w -= t.w;
+			mb.h -= t.h;
 			if(area == "border"){
 				return mb;	// Object
 			}
 			t = dojo._getBorderExtents(n, s);
-			mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
+			mb.l += t.l;
+			mb.t += t.t;
+			mb.w -= t.w;
+			mb.h -= t.h;
 			if(area == "padding"){
 				return mb;	// Object
 			}
 			t = dojo._getPadExtents(n, s);
-			mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
+			mb.l += t.l;
+			mb.t += t.t;
+			mb.w -= t.w;
+			mb.h -= t.h;
 			return mb;	// Object
 		};
 	}
@@ -175,17 +184,26 @@ dojo.dnd.move.parentConstrainedMover = function(area, within){
 			return mb;	// Object
 		}
 		var t = dojo._getMarginExtents(n, s);
-		mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
+		mb.l += t.l;
+		mb.t += t.t;
+		mb.w -= t.w;
+		mb.h -= t.h;
 		if(area == "border"){
 			return mb;	// Object
 		}
 		t = dojo._getBorderExtents(n, s);
-		mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
+		mb.l += t.l;
+		mb.t += t.t;
+		mb.w -= t.w;
+		mb.h -= t.h;
 		if(area == "padding"){
 			return mb;	// Object
 		}
 		t = dojo._getPadExtents(n, s);
-		mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
+		mb.l += t.l;
+		mb.t += t.t;
+		mb.w -= t.w;
+		mb.h -= t.h;
 		return mb;	// Object
 	};
 	return dojo.dnd.move.constrainedMover(fun, within);	// Object
