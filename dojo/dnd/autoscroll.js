@@ -3,18 +3,53 @@ dojo.provide("dojo.dnd.autoscroll");
 dojo.dnd.getViewport = function(){
 	// summary: returns a viewport size (visible part of the window)
 
-	// FIXME: need more docs!!
-	var d = dojo.doc, dd = d.documentElement, w = window, b = dojo.body();
-	if(dojo.isMozilla){
-		return {w: dd.clientWidth, h: w.innerHeight};	// Object
-	}else if(!dojo.isOpera && w.innerWidth){
-		return {w: w.innerWidth, h: w.innerHeight};		// Object
-	}else if (!dojo.isOpera && dd && dd.clientWidth){
-		return {w: dd.clientWidth, h: dd.clientHeight};	// Object
-	}else if (b.clientWidth){
-		return {w: b.clientWidth, h: b.clientHeight};	// Object
+	// TODO: Feature test for broken documentElement.clientHeight (as seen in Opera 8)
+	// NOTE: Are dojo.global and dojo.doc guaranteed set at this point?
+
+	var fn, d = window.document, dd = d.documentElement;
+
+	if (typeof d.clientWidth == 'number') {
+
+		// Use document.client* when present (rare)
+
+		fn = function() {
+			var d = dojo.doc;
+			return { w: d.clientWidth, h: d.clientHeight };
+		};
+	} else if (typeof dd.clientWidth == 'number') {
+
+		// Use container otherwise (most modern browsers should stop here)
+
+		fn = function() {
+			var dd = dojo.doc.documentElement;
+
+			// NOTE: Call to body method necessary only for XML parse mode
+
+			var container = dd.clientWidth ? dd : dojo.body();
+			return { w: container.clientWidth, h: container.clientHeight };
+		};
+	} else if (typeof window.innerWidth == 'number') {
+
+		// Bad news here, includes scroll bars
+
+		fn = function() {
+			var w = dojo.global.window;
+			return { w: w.innerWidth, h: w.innerHeight };
+		};
+	} else {
+
+		// For backwards compatibility
+
+		fn = function() {
+			return null;
+		};
 	}
-	return null;	// Object
+
+	d = dd = null; // Discard unneeded host object references
+
+	dojo.dnd.getViewport = fn; // Lazy pattern
+
+	return fn(); // Object
 };
 
 dojo.dnd.V_TRIGGER_AUTOSCROLL = 32;
@@ -69,7 +104,8 @@ dojo.dnd.autoScrollNodes = function(e){
 					// FIXME: this code should not be here, it should be taken into account 
 					// either by the event fixing code, or the dojo._abs()
 					// FIXME: this code doesn't work on Opera 9.5 Beta
-					rx += dojo.body().scrollLeft, ry += dojo.body().scrollTop;
+					rx += dojo.body().scrollLeft;
+					ry += dojo.body().scrollTop;
 				}
 				if(rx > 0 && rx < b.w){
 					if(rx < w){
