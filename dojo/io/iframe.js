@@ -55,80 +55,60 @@ dojo.io.iframe = {
 		//		The value of the src attribute on the iframe element. If a
 		//		value is not given, then dojo/resources/blank.html will be
 		//		used.
-		if(window[fname]){ return window[fname]; }
 		if(window.frames[fname]){ return window.frames[fname]; }
 		var cframe = null;
 		var turi = uri;
 		if(!turi){
-			if(dojo.config["useXDomain"] && !dojo.config["dojoBlankHtmlUrl"]){
-				console.warn("dojo.io.iframe.create: When using cross-domain Dojo builds,"
-					+ " please save dojo/resources/blank.html to your domain and set djConfig.dojoBlankHtmlUrl"
-					+ " to the path on your domain to blank.html");
+			if(dojo.config.useXDomain && !dojo.config.dojoBlankHtmlUrl){
+				console.warn("dojo.io.iframe.create: When using cross-domain Dojo builds," + " please save dojo/resources/blank.html to your domain and set djConfig.dojoBlankHtmlUrl" + " to the path on your domain to blank.html");
 			}
-			turi = (dojo.config["dojoBlankHtmlUrl"]||dojo.moduleUrl("dojo", "resources/blank.html"));
+			turi = (dojo.config.dojoBlankHtmlUrl||dojo.moduleUrl("dojo", "resources/blank.html"));
 		}
-		var ifrstr = dojo.isIE ? '<iframe name="'+fname+'" src="'+turi+'" onload="'+onloadstr+'">' : 'iframe';
-		cframe = dojo.doc.createElement(ifrstr);
-		with(cframe){
-			name = fname;
-			setAttribute("name", fname);
-			id = fname;
-		}
+		cframe = dojo.doc.createElement('iframe');
+		cframe.name = fname;
+		cframe.id = fname;
 		dojo.body().appendChild(cframe);
-		window[fname] = cframe;
 	
-		with(cframe.style){
-			if(!(dojo.isSafari < 3)){
-				//We can't change the src in Safari 2.0.3 if absolute position. Bizarro.
-				position = "absolute";
-			}
-			left = top = "1px";
-			height = width = "1px";
-			visibility = "hidden";
-		}
+		var style = cframe.style;
 
-		if(!dojo.isIE){
-			this.setSrc(cframe, turi, true);
-			cframe.onload = new Function(onloadstr);
-		}
+		//if(!(dojo.isSafari < 3)){
+			//We can't change the src in Safari 2.0.3 if absolute position. Bizarre.
+			style.position = "absolute";
+		//}
+
+		style.left = style.top = "0";
+		style.height = style.width = "0";
+		style.visibility = "hidden";
+
+		this.setSrc(cframe, turi, true);
+		cframe.onload = new Function(onloadstr);
 
 		return cframe;
 	},
-
+	_getWindow: function(iframe) {
+		return iframe.contentWindow || window.frames[iframe.name];
+	},
 	setSrc: function(/*DOMNode*/iframe, /*String*/src, /*Boolean*/replace){
 		//summary:
 		//		Sets the URL that is loaded in an IFrame. The replace parameter
 		//		indicates whether location.replace() should be used when
 		//		changing the location of the iframe.
 		try{
-			if(!replace){
-				if(dojo.isWebKit){
-					iframe.location = src;
-				}else{
-					frames[iframe.name].location = src;
+
+
+			// Find window object
+			// Last one (actually a document) may not be needed (Safari was indicated)
+
+			var iWin = this._getWindow(iframe) || iframe.document;
+
+			if (iWin && iWin.location) {
+				if(replace && typeof iWin.location.replace != 'undefined'){
+					iWin.location.replace(src);
+				} else {
+					iWin.location.href = src;
 				}
-			}else{
-				// Fun with DOM 0 incompatibilities!
-				var idoc;
-				//WebKit > 521 corresponds with Safari 3, which started with 522 WebKit version.
-				if(dojo.isIE || dojo.isWebKit > 521){
-					idoc = iframe.contentWindow.document;
-				}else if(dojo.isSafari){
-					idoc = iframe.document;
-				}else{ //  if(d.isMozilla){
-					idoc = iframe.contentWindow;
-				}
-	
-				//For Safari (at least 2.0.3) and Opera, if the iframe
-				//has just been created but it doesn't have content
-				//yet, then iframe.document may be null. In that case,
-				//use iframe.location and return.
-				if(!idoc){
-					iframe.location = src;
-					return;
-				}else{
-					idoc.location.replace(src);
-				}
+			} else {
+				iframe.src = src;
 			}
 		}catch(e){ 
 			console.log("dojo.io.iframe.setSrc: ", e); 
@@ -137,18 +117,7 @@ dojo.io.iframe = {
 
 	doc: function(/*DOMNode*/iframeNode){
 		//summary: Returns the document object associated with the iframe DOM Node argument.
-		var doc = iframeNode.contentDocument || // W3
-			(
-				(
-					(iframeNode.name) && (iframeNode.document) && 
-					(document.getElementsByTagName("iframe")[iframeNode.name].contentWindow) &&
-					(document.getElementsByTagName("iframe")[iframeNode.name].contentWindow.document)
-				)
-			) ||  // IE
-			(
-				(iframeNode.name)&&(document.frames[iframeNode.name])&&
-				(document.frames[iframeNode.name].document)
-			) || null;
+		var doc = this._getWindow(iframeNode).document || iframeNode.document;
 		return doc;
 	},
 
@@ -156,7 +125,7 @@ dojo.io.iframe = {
 		//summary: function that sends the request to the server.
 		//This transport can only process one send() request at a time, so if send() is called
 		//multiple times, it will queue up the calls and only process one at a time.
-		if(!this["_frame"]){
+		if(!this._frame){
 			this._frame = this.create(this._iframeName, dojo._scopeName + ".io.iframe._iframeOnload();");
 		}
 
@@ -191,7 +160,7 @@ dojo.io.iframe = {
 								//Reusing some code in base dojo for handling XML content.  Simpler and keeps
 								//Core from duplicating the effort needed to locate the XML Parser on IE.
 								var fauxXhr = { responseText: xmlText };
-								value = dojo._contentHandlers["xml"](fauxXhr); // DOMDocument
+								value = dojo._contentHandlers.xml(fauxXhr); // DOMDocument
 							}
 						}else{
 							value = ifd.getElementsByTagName("textarea")[0].value; //text
@@ -220,12 +189,12 @@ dojo.io.iframe = {
 		//Set up a function that will fire the next iframe request. Make sure it only
 		//happens once per deferred.
 		dfd.ioArgs._callNext = function(){
-			if(!this["_calledNext"]){
+			if(!this._calledNext){
 				this._calledNext = true;
 				dojo.io.iframe._currentDfd = null;
 				dojo.io.iframe._fireNextRequest();
 			}
-		}
+		};
 
 		this._dfdQueue.push(dfd);
 		this._fireNextRequest();
@@ -235,11 +204,11 @@ dojo.io.iframe = {
 			dfd,
 			function(/*Deferred*/dfd){
 				//validCheck
-				return !dfd.ioArgs["_hasError"];
+				return !dfd.ioArgs._hasError;
 			},
 			function(dfd){
 				//ioCheck
-				return (!!dfd.ioArgs["_finished"]);
+				return (!!dfd.ioArgs._finished);
 			},
 			function(dfd){
 				//resHandle
@@ -261,14 +230,14 @@ dojo.io.iframe = {
 	_fireNextRequest: function(){
 		//summary: Internal method used to fire the next request in the bind queue.
 		try{
-			if((this._currentDfd)||(this._dfdQueue.length == 0)){ return; }
+			if((this._currentDfd)||(!this._dfdQueue.length)){ return; }
 			var dfd = this._currentDfd = this._dfdQueue.shift();
 			var ioArgs = dfd.ioArgs;
 			var args = ioArgs.args;
 
 			ioArgs._contentToClean = [];
-			var fn = dojo.byId(args["form"]);
-			var content = args["content"] || {};
+			var fn = dojo.byId(args.form);
+			var content = args.content || {};
 			if(fn){
 				if(content){
 					// if we have things in content, we need to add them to the form
@@ -307,7 +276,7 @@ dojo.io.iframe = {
 				var actnNode = fn.getAttributeNode("action");
 				var mthdNode = fn.getAttributeNode("method");
 				var trgtNode = fn.getAttributeNode("target");
-				if(args["url"]){
+				if(args.url){
 					ioArgs._originalAction = actnNode ? actnNode.value : null;
 					if(actnNode){
 						actnNode.value = args.url;
@@ -317,9 +286,9 @@ dojo.io.iframe = {
 				}
 				if(!mthdNode || !mthdNode.value){
 					if(mthdNode){
-						mthdNode.value= (args["method"]) ? args["method"] : "post";
+						mthdNode.value= (args.method) ? args.method : "post";
 					}else{
-						fn.setAttribute("method", (args["method"]) ? args["method"] : "post");
+						fn.setAttribute("method", (args.method) ? args.method : "post");
 					}
 				}
 				ioArgs._originalTarget = trgtNode ? trgtNode.value: null;
@@ -374,10 +343,10 @@ dojo.io.iframe = {
 			}
 	
 			// restore original action + target
-			if(ioArgs["_originalAction"]){
+			if(ioArgs._originalAction){
 				fNode.setAttribute("action", ioArgs._originalAction);
 			}
-			if(ioArgs["_originalTarget"]){
+			if(ioArgs._originalTarget){
 				fNode.setAttribute("target", ioArgs._originalTarget);
 				fNode.target = ioArgs._originalTarget;
 			}
@@ -385,4 +354,4 @@ dojo.io.iframe = {
 
 		ioArgs._finished = true;
 	}
-}
+};
