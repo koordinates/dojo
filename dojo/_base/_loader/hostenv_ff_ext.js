@@ -40,27 +40,27 @@ if(typeof window != 'undefined'){
 
 		d._xhrObj = function(){
 			return new XMLHttpRequest();
-		}
+		};
 
 		// monkey-patch _loadUri to handle file://, chrome://, and resource:// url's
 		var oldLoadUri = d._loadUri;
 		d._loadUri = function(uri, cb){
 			var handleLocal = ["file:", "chrome:", "resource:"].some(function(prefix){
-				return String(uri).indexOf(prefix) == 0;
+				return !String(uri).indexOf(prefix);
 			});
 			if(handleLocal){
 				// see:
 				//		http://developer.mozilla.org/en/mozIJSSubScriptLoader
 				var l = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
 					.getService(Components.interfaces.mozIJSSubScriptLoader);
-				var value = l.loadSubScript(uri, d.global)
+				var value = l.loadSubScript(uri, d.global);
 				if(cb){ cb(value); }
 				return true;
 			}else{
 				// otherwise, call the pre-existing version
 				return oldLoadUri.apply(d, arguments);
 			}
-		}
+		};
 
 		// FIXME: PORTME
 		d._isDocumentOk = function(http){
@@ -69,7 +69,7 @@ if(typeof window != 'undefined'){
 				stat == 304 || 						// allow any 2XX response code
 				stat == 1223 || 						// get it out of the cache
 				(!stat && (location.protocol=="file:" || location.protocol=="chrome:") );
-		}
+		};
 
 		// FIXME: PORTME
 		// var owloc = window.location+"";
@@ -102,7 +102,7 @@ if(typeof window != 'undefined'){
 				uri += (uri.indexOf("?") == -1 ? "?" : "&") + String(d.config.cacheBust).replace(/\W+/g,"");
 			}
 			var handleLocal = ["file:", "chrome:", "resource:"].some(function(prefix){
-				return String(uri).indexOf(prefix) == 0;
+				return !String(uri).indexOf(prefix);
 			});
 			if(handleLocal){
 				// see:
@@ -126,7 +126,7 @@ if(typeof window != 'undefined'){
 					http.send(null);
 					// alert(http);
 					if(!d._isDocumentOk(http)){
-						var err = Error("Unable to load "+uri+" status:"+ http.status);
+						var err = new Error("Unable to load "+uri+" status:"+ http.status);
 						err.status = http.status;
 						err.responseText = http.responseText;
 						throw err;
@@ -138,7 +138,7 @@ if(typeof window != 'undefined'){
 				}
 				return http.responseText; // String
 			}
-		}
+		};
 		
 		d._windowUnloaders = [];
 		
@@ -152,7 +152,7 @@ if(typeof window != 'undefined'){
 			while(mll.length){
 				(mll.pop())();
 			}
-		}
+		};
 
 		// FIXME: PORTME
 		d.addOnWindowUnload = function(/*Object?*/obj, /*String|Function?*/functionName){
@@ -168,7 +168,7 @@ if(typeof window != 'undefined'){
 			//	|	dojo.addOnWindowUnload(object, function(){ /* ... */});
 	
 			d._onto(d._windowUnloaders, obj, functionName);
-		}
+		};
 
 		// XUL specific APIs
 		var contexts = [];
@@ -262,10 +262,10 @@ if(typeof window != 'undefined'){
 		var type = (e && e.type) ? e.type.toLowerCase() : "load";
 		if(arguments.callee.initialized || (type != "domcontentloaded" && type != "load")){ return; }
 		arguments.callee.initialized = true;
-		if(dojo._inFlightCount == 0){
+		if(!dojo._inFlightCount){
 			dojo._modulesLoaded();
 		}
-	}
+	};
 
 	/*
 	(function(){
@@ -308,7 +308,7 @@ if(typeof window != 'undefined'){
 //in the hostenvs since hostenv_browser can read djConfig from a
 //script tag's attribute.
 (function(){
-	var mp = dojo.config["modulePaths"];
+	var mp = dojo.config.modulePaths;
 	if(mp){
 		for(var param in mp){
 			dojo.registerModulePath(param, mp[param]);
@@ -324,10 +324,10 @@ if(dojo.config.isDebug){
 			Components.interfaces.nsIConsoleService
 		);
 		s.logStringMessage(m);
-	}
+	};
 	console.debug = function(){
 		console.log(dojo._toArray(arguments).join(" "));
-	}
+	};
 	// FIXME: what about the rest of the console.* methods? And is there any way to reach into firebug and log into it directly?
 }
 
