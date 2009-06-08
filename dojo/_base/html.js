@@ -1586,7 +1586,7 @@ dojo.byId = function(id, doc){
 				case 'multiple':
 				case 'readonly':
 				case 'ismap':
-					node[name] = value.toLowerCase() == name; // HTML attributes are case insensitive
+					node[name] = !name || value.toLowerCase() == name; // HTML attributes are case insensitive
 					break;
 				case 'type':
 					if (nn != 'select') {
