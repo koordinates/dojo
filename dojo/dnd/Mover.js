@@ -52,35 +52,20 @@ dojo.declare("dojo.dnd.Mover", null, {
 	onFirstMove: function(){
 		// summary: makes the node absolute; it is meant to be called only once. 
 		// 	relative and absolutely positioned nodes are assumed to use pixel units
-		var s = this.node.style, l, t, h = this.host;
+		var s = dojo.getComputedStyle(this.node), l, t, h = this.host, coords;
 		switch(s.position){
-			case "relative":
-			case "absolute":
-				// assume that left and top values are in pixels already
-				l = Math.round(parseFloat(s.left));
-				t = Math.round(parseFloat(s.top));
-				break;
-			default:
-				s.position = "absolute";	// enforcing the absolute mode
-				var m = dojo.marginBox(this.node);
-
-				// FIXME: ?
-
-				// event.pageX/pageY (which we used to generate the initial
-				// margin box) includes padding and margin set on the body.
-				// However, setting the node's position to absolute and then
-				// doing dojo.marginBox on it *doesn't* take that additional
-				// space into account - so we need to subtract the combined
-				// padding and margin.  We use getComputedStyle and
-				// _getMarginBox/_getContentBox to avoid the extra lookup of
-				// the computed style. 
-				var b = dojo.doc.body;
-				var bs = dojo.getComputedStyle(b);
-				var bm = dojo._getMarginBox(b, bs);
-				var bc = dojo._getContentBox(b, bs);
-				l = m.l - (bc.l - bm.l);
-				t = m.t - (bc.t - bm.t);
-				break;
+		case "fixed":
+		case "relative":
+		case "absolute":
+			l = dojo._toPixelValue(s.left);
+			t = dojo._toPixelValue(s.top);
+			break;
+		default: // Static position
+			this.node.style.position = "absolute"; // Make absolute
+			coords = dojo.coords(this.node, true);
+			l = coords.x;
+			t = coords.y;
+			break;
 		}
 		this.marginBox.l = l - this.marginBox.l;
 		this.marginBox.t = t - this.marginBox.t;
