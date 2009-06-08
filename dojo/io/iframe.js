@@ -281,13 +281,13 @@ dojo.io.iframe = {
 
 				if(args.url){
 					ioArgs._originalAction = actn;
-					fn.action = args.url;
+					dojo.realAttr(fn, 'action', args.url);
 				}
 				if(!mthd){
-					fn.method = args.method || "post";
+					dojo.realAttr(fn, 'method', args.method || "post");
 				}
 				ioArgs._originalTarget = trgt;
-				fn.target = this._iframeName;
+				dojo.realAttr(fn, 'target', this._iframeName);
 				fn.submit();
 			}else{
 				// otherwise we post a GET string by changing URL location for the
@@ -322,10 +322,10 @@ dojo.io.iframe = {
 	
 			// restore original action + target
 			if(ioArgs._originalAction){
-				fNode.setAttribute("action", ioArgs._originalAction);
+				dojo.realAttr(fNode, "action", ioArgs._originalAction);
 			}
 			if(ioArgs._originalTarget){
-				fNode.setAttribute("target", ioArgs._originalTarget);
+				dojo.realAttr(fNode, "target", ioArgs._originalTarget);
 				fNode.target = ioArgs._originalTarget;
 			}
 		}
