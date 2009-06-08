@@ -124,6 +124,9 @@ dojo.declare("dojo.dnd.Container", null, {
 		// data: Array: a list of data items, which should be processed by the creator function
 		// before: Boolean: insert before the anchor, if true, and after the anchor otherwise
 		// anchor: Node: the anchor node to be used as a point of insertion
+
+		var i, len, t;
+
 		if(!this.parent.firstChild){
 			anchor = null;
 		}else if(before){
@@ -135,15 +138,16 @@ dojo.declare("dojo.dnd.Container", null, {
 				anchor = anchor.nextSibling;
 			}
 		}
+		len = data.length;
 		if(anchor){
-			for(var i = 0; i < data.length; ++i){
-				var t = this._normalizedCreator(data[i]);
+			for(i = 0; i < len; ++i){
+				t = this._normalizedCreator(data[i]);
 				this.setItem(t.node.id, {data: t.data, type: t.type});
 				this.parent.insertBefore(t.node, anchor);
 			}
 		}else{
-			for(var i = 0; i < data.length; ++i){
-				var t = this._normalizedCreator(data[i]);
+			for(i = 0; i < len; ++i){
+				t = this._normalizedCreator(data[i]);
 				this.setItem(t.node.id, {data: t.data, type: t.type});
 				this.parent.appendChild(t.node);
 			}
@@ -273,6 +277,9 @@ dojo.declare("dojo.dnd.Container", null, {
 	_normalizedCreator: function(item, hint){
 		// summary: adds all necessary data to the output of the user-supplied creator function
 		var t = (this.creator || this.defaultCreator).call(this, item, hint);
+
+		// NOTE: what are the possible values for type?
+
 		if(!dojo.isArray(t.type)){ t.type = ["text"]; }
 		if(!t.node.id){ t.node.id = dojo.dnd.getUniqueId(); }
 		dojo.addClass(t.node, "dojoDndItem");
