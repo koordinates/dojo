@@ -91,10 +91,7 @@ dojo.io.script = {
 			if(ioArgs.query.length > 0){
 				ioArgs.query += "&";
 			}
-			ioArgs.query += args.callbackParamName
-				+ "="
-				+ (args.frameDoc ? "parent." : "")
-				+ dojo._scopeName + ".io.script.jsonp_" + ioArgs.id + "._jsonpCallback";
+			ioArgs.query += args.callbackParamName + "=" + (args.frameDoc ? "parent." : "") + dojo._scopeName + ".io.script.jsonp_" + ioArgs.id + "._jsonpCallback";
 
 			ioArgs.frameDoc = args.frameDoc;
 
@@ -197,11 +194,10 @@ dojo.io.script = {
 
 		//Check for finished "checkString" case.
 		var checkString = dfd.ioArgs.args.checkString;
-		if(checkString && eval("typeof(" + checkString + ") != 'undefined'")){
-			return true;
-		}
 
-		return false;
+		// NOTE: dojo.global guaranteed set at this point?
+
+		return !!(checkString && typeof (dojo.global || window)[checkString] != 'undefined');
 	},
 
 	_resHandle: function(/*Deferred*/dfd){
@@ -229,4 +225,4 @@ dojo.io.script = {
 		//		request.
 		this.ioArgs.json = json;
 	}
-}
+};
