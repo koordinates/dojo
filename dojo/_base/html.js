@@ -643,16 +643,15 @@ dojo.byId = function(id, doc){
 		//		The w/h are used for calculating boxes.
 		//		Normally application code will not need to invoke this
 		//		directly, and will use the ...box... functions instead.
-		var 
-			ne = "none",
-			s = computedStyle||gcs(n), 
-			bl = (s.borderLeftStyle != ne ? px(n, s.borderLeftWidth) : 0),
-			bt = (s.borderTopStyle != ne ? px(n, s.borderTopWidth) : 0);
+		var s = computedStyle||gcs(n);
+		var bl = px(n, s.borderLeftWidth) || n.clientLeft || 0;
+		var bt = px(n, s.borderTopWidth) || n.clientTop || 0;
+
 		return { 
 			l: bl,
 			t: bt,
-			w: bl + (s.borderRightStyle!=ne ? px(n, s.borderRightWidth) : 0),
-			h: bt + (s.borderBottomStyle!=ne ? px(n, s.borderBottomWidth) : 0)
+			w: bl + px(n, s.borderRightWidth),
+			h: bt + px(n, s.borderBottomWidth)
 		};
 	};
 
@@ -739,7 +738,8 @@ dojo.byId = function(id, doc){
 				var pcs = gcs(p);
 				if(pcs.overflow != "visible"){
 					var be = d._getBorderExtents(p, pcs);
-					l += be.l; t += be.t;
+					l += be.l;
+					t += be.t;
 				}
 			}
 		} else if(offsetIncludesBorder){
