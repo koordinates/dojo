@@ -314,10 +314,10 @@ dojo.byId = function(id, doc){
 			return parseFloat(value); 
 		};
 	}else{
-		px = function(element, avalue){
+		px = function(element, avalue, nohack){
 			if (avalue) {
 				if(/px$/i.test(avalue)){ return parseFloat(avalue); }
-				if (/^(-)?[\d\.]+(em|pt)$/i.test(avalue)) { // TODO: other units appropriate for this?
+				if (!nohack && /^(-)?[\d\.]+(em|pt)$/i.test(avalue)) { // TODO: other units appropriate for this?
 					var sLeft = element.style.left;
 					var rsLeft = element.runtimeStyle.left;
 					element.runtimeStyle.left = element.currentStyle.left;
@@ -331,8 +331,14 @@ dojo.byId = function(id, doc){
 		};
 	}
 
-	dojo._toPixelValue = function(element, value) {
-		return px(element, value) || 0;
+	// Preserved temporarily (in case others call this internal method)
+
+	dojo._toPixelValue = function(node, value) {
+		return px(node, value) || 0;
+	};
+
+	dojo.getStylePixels = function(node, style, computedStyle, nohack) { // NOTE: Hack will be removed
+		return px(node, (computedStyle || gcs(node))[style], nohack);
 	};
 
 	var opacityStyles = ['KhtmlOpacity', 'MozOpacity', 'opacity'];

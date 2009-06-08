@@ -13,6 +13,8 @@ dojo.require("dojo._base.html");
 (function(){
 
 	var _mixin = dojo.mixin;
+	var byId = dojo.byId;
+	var isOwnProperty = dojo.isOwnProperty;
 	
 	dojo._Line = function(/*int*/ start, /*int*/ end){
 		//	summary:
@@ -343,7 +345,7 @@ dojo.require("dojo._base.html");
 		//		args.node from the start to end values passed (args.start
 		//		args.end) (end is mandatory, start is optional)
 
-		args.node = dojo.byId(args.node);
+		args.node = byId(args.node);
 		var fArgs = _mixin({ properties: {} }, args),
 		 	props = fArgs.properties.opacity = {};
 		
@@ -399,7 +401,7 @@ dojo.require("dojo._base.html");
 		// values between start and end for a particular CSS value.
 		this._properties = properties;
 		for(var p in properties){
-			if (dojo.isOwnProperty(properties, p)) {
+			if (isOwnProperty(properties, p)) {
 				var prop = properties[p];
 				if(dojo.Color && prop.start instanceof dojo.Color){
 					// create a reusable temp color object to keep intermediate results
@@ -414,7 +416,7 @@ dojo.require("dojo._base.html");
 		var properties = this._properties;
 
 		for(var p in this._properties){
-			if (dojo.isOwnProperty(properties, p)) {
+			if (isOwnProperty(properties, p)) {
 				var prop = this._properties[p],
 					start = prop.start;
 				if(dojo.Color && start instanceof dojo.Color){
@@ -507,26 +509,37 @@ dojo.require("dojo._base.html");
 		//	|	// play the animation now:
 		//	|	anim.play();
 		
-		args.node = dojo.byId(args.node);
+		args.node = byId(args.node);
 		if(!args.easing){ args.easing = dojo._defaultEasing; }
 
-		var isColor;
-		function getStyle(node, p){
-			// dojo.style(node, "height") can return "auto" or "" on IE; this is more reliable:
+		// FIXME: Create this function once
 
-			// FIXME: Need computed height/width
+		function getStyle(node, style, isColor){
+			if (/^(height|width)$/i.test(style)) {
+				style = style.toLowerCase();
+				var computedHeightOrWidth = dojo.getStylePixels(node, style, null, true); // IE hack disabled
+				if (isNaN(computedHeightOrWidth)) {
+					var prop = style == 'height' ? 'offsetHeight' : 'offsetWidth';
+					var offset = node[prop];
+					node.style[style] = node[prop] + 'px';
 
-			var v = {height: node.offsetHeight, width: node.offsetWidth}[p];
-			if(v !== undefined){ return v; }
-			v = dojo.style(node, p);
-			return (p == "opacity") ? +v : (isColor ? v : parseFloat(v));
+					if (node[prop] != offset) {
+						offset -= (node[prop] - offset);
+						if (offset >= 0) { node.style[style] = offset + 'px'; }
+					}
+					return offset;
+				}
+				return computedHeightOrWidth;
+			}
+			var v = dojo.style(node, style);
+			return (style == "opacity") ? +v : (isColor ? v : parseFloat(v));
 		}
 
 		var anim = new dojo._Animation(args);
 		dojo.connect(anim, "beforeBegin", anim, function(){
-			var p, prop, pm = {}, properties = this.properties;
+			var isColor, p, prop, pm = {}, properties = this.properties;
 			for(p in properties){
-				if (dojo.isOwnProperty(properties, p)) {
+				if (isOwnProperty(properties, p)) {
 					// Make shallow copy of properties into pm because we overwrite
 					// some values below. In particular if start/end are functions
 					// we don't want to overwrite them or the functions won't be
@@ -550,9 +563,9 @@ dojo.require("dojo._base.html");
 
 					isColor = (p.toLowerCase().indexOf("color") >= 0);
 					if(!("end" in prop)){
-						prop.end = getStyle(this.node, p);
+						prop.end = getStyle(this.node, p, isColor);
 					}else if(!("start" in prop)){
-						prop.start = getStyle(this.node, p);
+						prop.start = getStyle(this.node, p, isColor);
 					}
 
 					if(isColor){
@@ -634,14 +647,14 @@ dojo.require("dojo._base.html");
             if (el.currentStyle && !el.currentStyle.hasLayout) { el.style.zoom = '1'; }
             if (el.filters.length && (f = el.filters['DXImageTransform.Microsoft.' + name])) {
               f.duration = duration / 1000;
-              if (params) { for (index in params) { if (dojo.isOwnProperty(params, index)) { f[index] = params[index]; } } }
+              if (params) { for (index in params) { if (isOwnProperty(params, index)) { f[index] = params[index]; } } }
               if (f.status == 2) { f.stop(); }
               f.enabled = true;
             }
             else {
               if (typeof el.style.filter == 'string') {
                 p = '';
-                if (params) { for (index in params) { if (dojo.isOwnProperty(params, index)) { p += ',' + index + '=' + params[index]; } } }
+                if (params) { for (index in params) { if (isOwnProperty(params, index)) { p += ',' + index + '=' + params[index]; } } }
                 el.style.filter += ((el.style.filter)?' ':'') + 'progid:DXImageTransform.Microsoft.' + name + '(duration=' + (duration / 1000) + p + ')';
               }
             }
