@@ -332,7 +332,13 @@ if(dojo.config.isDebug){
 }
 
 dojo.provide("dojo._base");
-dojo.require("dojo._base.base");
+
+dojo.require("dojo._base.lang");
+dojo.require("dojo._base.declare");
+dojo.require("dojo._base.Deferred");
+dojo.require("dojo._base.array");
+dojo.require("dojo._base.Color");
+dojo.require("dojo._base.window");
 
 if (dojo.isBrowser) { // *** Is any of this necessary in this environment?
 
