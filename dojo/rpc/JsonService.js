@@ -62,7 +62,9 @@ dojo.declare("dojo.rpc.JsonService", dojo.rpc.RpcService, {
 			//	obj: Object
 			//		Object containing envelope of data we recieve from the server
 
-			if(dojo.isObject(obj)){
+			// Note: isObject allows Function objects (as well as null.)  Are Function objects to be allowed?
+
+			if(dojo.isObject(obj) && obj){
 				if("result" in obj){
 					return obj.result;
 				}
