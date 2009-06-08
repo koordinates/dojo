@@ -524,7 +524,7 @@ dojo.byId = function(id, doc){
 		//	|		fontSize:"13pt"
 		//	|	});
 
-		var n = dojo.byId(node), args = arguments.length, op = (style == "opacity"), s;
+		var n = dojo.byId(node), args = arguments.length, op = (style == "opacity"), prop, s;
 		
 		style = _floatAliases[style] || style;
 
@@ -548,7 +548,14 @@ dojo.byId = function(id, doc){
 			// Multiple sets
 
 			for(var x in style){
-				dojo.style(node, x, style[x]);
+
+				// For-in filter duplicated from dojo.isOwnProperty for performance (avoids document re-flows)
+				// NOTE: JSLint wrongly flags this pattern as unfiltered
+
+				prop = style.constructor.prototype[x];
+				if (typeof prop == 'undefined' || prop !== style[x]) {
+					dojo.style(node, x, style[x]);
+				}
 			}
 			return style;
 		}
@@ -1408,7 +1415,7 @@ dojo.byId = function(id, doc){
 		//	|	// though shorter to use `dojo.style` in this case:
 		//	|	dojo.style("someNode", obj);
 
-		var x;
+		var x, prop;
 
 		if (dojo.isString(node)) {
 			node = dojo.byId(node);
@@ -1421,27 +1428,33 @@ dojo.byId = function(id, doc){
 			// TODO: all for-in loops should be filtered
 
 			for (x in name) {
-				value = name[x];
 
-				// Code duplicated for performance (avoids unnecessary document reflows)
+				// For-in filter duplicated from dojo.isOwnProperty for performance (avoids document re-flows)
 
-				// Convert attribute name to property name
+				prop = name.constructor.prototype[x];
+				if (typeof prop == 'undefined' || prop !== name[x]) {
+					value = name[x];
 
-				x = x.toLowerCase();
-				x = attributeAliases[x] || x;
+					// Code duplicated for performance (avoids unnecessary document reflows)
 
-				// Convert hyphenated attribute names to camel-case (e.g. http-equiv => httpEquiv)
+					// Convert attribute name to property name
 
-				if (name.indexOf('-') != -1) {
-					name = camelize(name);
-				}
+					x = x.toLowerCase();
+					x = attributeAliases[x] || x;
 
-				// Only detours (exits execution context) for special cases
+					// Convert hyphenated attribute names to camel-case (e.g. http-equiv => httpEquiv)
 
-				if (specialNames.test(x)) {
-					specialSet(node, x, value);
-				} else {
-					node[x] = value;
+					if (name.indexOf('-') != -1) {
+						name = camelize(name);
+					}
+
+					// Only detours (exits execution context) for special cases
+
+					if (specialNames.test(x)) {
+						specialSet(node, x, value);
+					} else {
+						node[x] = value;
+					}
 				}
 			}
 			return;
@@ -1502,16 +1515,17 @@ dojo.byId = function(id, doc){
 	// Returns a string or null
 
 	dojo.realAttr = function(node, name, value) {
-		var x, nn, nameC, doc, att, alias;
+		var x, nn, nameC, prop, doc, att, alias;
 
 		if (typeof node == 'string') {
 			node = dojo.byId(node);
 		}
 		if (typeof name != 'string') {
-			// TODO: all for-in loops should be filtered
-
 			for (x in name) {
-				node.setAttribute(x, name[x]);
+				prop = name.constructor.prototype[x];
+				if (typeof prop == 'undefined' || prop !== name[x]) {
+					node.setAttribute(x, name[x]);
+				}
 			}
 		}
 		if (arguments.length == 2) { // Getter
@@ -1764,11 +1778,13 @@ dojo.byId = function(id, doc){
 	// generate start/end tag strings to use
 	// for the injection for each special tag wrap case.
 	for(var param in tagWrap){
-		var tw = tagWrap[param];
-		tw.pre  = param == "option" ? '<select multiple="multiple">' : "<" + tw.join("><") + ">";
-		tw.post = "</" + tw.reverse().join("></") + ">";
-		// the last line is destructive: it reverses the array,
-		// but we don't care at this point
+		if (dojo.isOwnProperty(tagWrap, param)) {
+			var tw = tagWrap[param];
+			tw.pre  = param == "option" ? '<select multiple="multiple">' : "<" + tw.join("><") + ">";
+			tw.post = "</" + tw.reverse().join("></") + ">";
+			// the last line is destructive: it reverses the array,
+			// but we don't care at this point
+		}
 	}
 
 	dojo._toDom = function(frag, doc){
