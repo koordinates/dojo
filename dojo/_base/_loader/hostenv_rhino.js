@@ -2,8 +2,41 @@
 * Rhino host environment
 */
 
-if(dojo.config["baseUrl"]){
-	dojo.baseUrl = dojo.config["baseUrl"];
+function dj_readInputStream(is, encoding){
+	var input = new java.io.BufferedReader(new java.io.InputStreamReader(is, encoding));
+	try {
+		var sb = new java.lang.StringBuffer();
+		var line = "";
+		while((line = input.readLine()) !== null){
+			sb.append(line);
+			sb.append(java.lang.System.getProperty("line.separator"));
+		}
+		return sb.toString();
+	} finally {
+		input.close();
+	}
+}
+
+// reading a file from disk in Java is a humiliating experience by any measure.
+// Lets avoid that and just get the freaking text
+function readText(path, encoding){
+	encoding = encoding || "utf-8";
+	// NOTE: we intentionally avoid handling exceptions, since the caller will
+	// want to know
+	var jf = new java.io.File(path);
+	var is = new java.io.FileInputStream(jf);
+	return dj_readInputStream(is, encoding);
+}
+
+function readUri(uri, encoding){
+	var conn = (new java.net.URL(uri)).openConnection();
+	encoding = encoding || conn.getContentEncoding() || "utf-8";
+	var is = conn.getInputStream();
+	return dj_readInputStream(is, encoding);
+}
+
+if(dojo.config.baseUrl){
+	dojo.baseUrl = dojo.config.baseUrl;
 }else{
 	dojo.baseUrl = "./";
 }
@@ -23,7 +56,7 @@ if(!("byId" in dojo)){
 			return doc.getElementById(id);
 		}
 		return id; // assume it's a node
-	}
+	};
 }
 
 // see comments in spidermonkey loadUri
@@ -49,7 +82,7 @@ dojo._loadUri = function(uri, cb){
 			if(!eval("'\u200f'").length){
 				contents = String(contents).replace(/[\u200E\u200F\u202A-\u202E]/g, function(match){ 
 					return "\\u" + match.charCodeAt(0).toString(16); 
-				})
+				});
 			}
 
 			cb(eval('('+contents+')'));
@@ -57,15 +90,15 @@ dojo._loadUri = function(uri, cb){
 			load(uri);
 		}
 		return true;
-	}catch(e){
-		console.debug("rhino load('" + uri + "') failed. Exception: " + e);
+	}catch(e2){
+		console.debug("rhino load('" + uri + "') failed. Exception: " + e2);
 		return false;
 	}
-}
+};
 
 dojo.exit = function(exitcode){ 
 	quit(exitcode);
-}
+};
 
 // Hack to determine current script...
 //
@@ -126,7 +159,7 @@ dojo._rhinoCurrentScriptViaJava = function(depth){
 	//   at org.mozilla.javascript.gen.c3.call(/Users/mda/Sites/burstproject/burst/Runtime.js)
 	var matches = s.match(/[^\(]*\.js\)/gi);
 	if(!matches){
-		throw Error("cannot parse printStackTrace output: " + s);
+		throw new Error("cannot parse printStackTrace output: " + s);
 	}
 
 	// matches[0] is entire string, matches[1] is this function, matches[2] is caller, ...
@@ -134,43 +167,10 @@ dojo._rhinoCurrentScriptViaJava = function(depth){
 	fname = matches[3];
 	if(!fname){ fname = matches[1]; }
 	// print("got fname '" + fname + "' from stack string '" + s + "'");
-	if (!fname){ throw Error("could not find js file in printStackTrace output: " + s); }
+	if (!fname){ throw new Error("could not find js file in printStackTrace output: " + s); }
 	//print("Rhino getCurrentScriptURI returning '" + fname + "' from: " + s); 
 	return fname;
-}
-
-// reading a file from disk in Java is a humiliating experience by any measure.
-// Lets avoid that and just get the freaking text
-function readText(path, encoding){
-	encoding = encoding || "utf-8";
-	// NOTE: we intentionally avoid handling exceptions, since the caller will
-	// want to know
-	var jf = new java.io.File(path);
-	var is = new java.io.FileInputStream(jf);
-	return dj_readInputStream(is, encoding);
-}
-
-function readUri(uri, encoding){
-	var conn = (new java.net.URL(uri)).openConnection();
-	encoding = encoding || conn.getContentEncoding() || "utf-8";
-	var is = conn.getInputStream();
-	return dj_readInputStream(is, encoding);
-}
-
-function dj_readInputStream(is, encoding){
-	var input = new java.io.BufferedReader(new java.io.InputStreamReader(is, encoding));
-	try {
-		var sb = new java.lang.StringBuffer();
-		var line = "";
-		while((line = input.readLine()) !== null){
-			sb.append(line);
-			sb.append(java.lang.System.getProperty("line.separator"));
-		}
-		return sb.toString();
-	} finally {
-		input.close();
-	}
-}
+};
 
 // call this now because later we may not be on the top of the stack
 if(
@@ -181,7 +181,7 @@ if(
 		dojo.config.libraryScriptUri = dojo._rhinoCurrentScriptViaJava(1);
 	}catch(e){
 		// otherwise just fake it
-		if(dojo.config["isDebug"]){
+		if(dojo.config.isDebug){
 			print("\n");
 			print("we have no idea where Dojo is located.");
 			print("Please try loading rhino in a non-interpreted mode or set a");
@@ -201,20 +201,20 @@ dojo.doc = typeof document != "undefined" ? document : null;
 
 dojo.body = function(){
 	return document.body;	
-}
+};
 
 // Supply setTimeout/clearTimeout implementations if they aren't already there
 // Note: this assumes that we define both if one is not provided... there might
 // be a better way to do this if there is a use case where one is defined but
 // not the other
-if(typeof setTimeout == "undefined" || typeof clearTimeout == "undefined"){
+if(typeof this.setTimeout == "undefined" || typeof this.clearTimeout == "undefined"){
 	dojo._timeouts = [];
-	function clearTimeout(idx){
+	this.clearTimeout = function(idx){
 		if(!dojo._timeouts[idx]){ return; }
 		dojo._timeouts[idx].stop();
-	}
+	};
 
-	function setTimeout(func, delay){
+	this.setTimeout = function(func, delay){
 		// summary: provides timed callbacks using Java threads
 
 		var def={
@@ -238,20 +238,31 @@ if(typeof setTimeout == "undefined" || typeof clearTimeout == "undefined"){
 		var thread = new java.lang.Thread(runnable);
 		thread.start();
 		return dojo._timeouts.push(thread)-1;
-	}
+	};
 }
 
 //Register any module paths set up in djConfig. Need to do this
 //in the hostenvs since hostenv_browser can read djConfig from a
 //script tag's attribute.
-if(dojo.config["modulePaths"]){
-	for(var param in dojo.config["modulePaths"]){
-		dojo.registerModulePath(param, dojo.config["modulePaths"][param]);
+if(dojo.config.modulePaths){
+	for(var param in dojo.config.modulePaths){
+		dojo.registerModulePath(param, dojo.config.modulePaths[param]);
 	}
 }
 
 dojo.provide("dojo._base");
-dojo.require("dojo._base.base");
-dojo.require("dojo._base.connect");
-dojo.require("dojo._base.json");
+
+dojo.require("dojo._base.lang");
+dojo.require("dojo._base.declare");
+dojo.require("dojo._base.Deferred");
+dojo.require("dojo._base.array");
 dojo.require("dojo._base.Color");
+dojo.require("dojo._base.window");
+
+if (!dojo.config.noConnect) {
+	dojo.require("dojo._base.connect");
+}
+
+if (!dojo.config.noJson) {
+	dojo.require("dojo._base.json");
+}

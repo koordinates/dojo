@@ -2,8 +2,8 @@
  * SpiderMonkey host environment
  */
 
-if(dojo.config["baseUrl"]){
-	dojo.baseUrl = dojo.config["baseUrl"];
+if(dojo.config.baseUrl){
+	dojo.baseUrl = dojo.config.baseUrl;
 }else{
 	dojo.baseUrl = "./";
 }
@@ -17,9 +17,11 @@ dojo.isSpidermonkey = {
 =====*/
 
 dojo.isSpidermonkey = true;
-dojo.exit = function(exitcode){ 
-	quit(exitcode); 
-}
+dojo.exit = function(exitcode){
+	if (typeof quit == 'function') {
+		quit(exitcode);
+	}
+};
 
 if(typeof print == "function"){
 	console.debug = print;
@@ -41,47 +43,54 @@ dojo._spidermonkeyCurrentFile = function(depth){
 	//	
     var s = '';
     try{
-		throw Error("whatever");
+		throw new Error("whatever");
 	}catch(e){
 		s = e.stack;
 	}
     // lines are like: bu_getCurrentScriptURI_spidermonkey("ScriptLoader.js")@burst/Runtime.js:101
     var matches = s.match(/[^@]*\.js/gi);
     if(!matches){ 
-		throw Error("could not parse stack string: '" + s + "'");
+		throw new Error("could not parse stack string: '" + s + "'");
 	}
     var fname = (typeof depth != 'undefined' && depth) ? matches[depth + 1] : matches[matches.length - 1];
     if(!fname){ 
-		throw Error("could not find file name in stack string '" + s + "'");
+		throw new Error("could not find file name in stack string '" + s + "'");
 	}
     //print("SpiderMonkeyRuntime got fname '" + fname + "' from stack string '" + s + "'");
     return fname;
-}
-
-// print(dojo._spidermonkeyCurrentFile(0)); 
+};
 
 dojo._loadUri = function(uri){
 	// spidermonkey load() evaluates the contents into the global scope (which
 	// is what we want).
-	// TODO: sigh, load() does not return a useful value. 
+	// TODO: load() does not return a useful value. 
 	// Perhaps it is returning the value of the last thing evaluated?
-	var ok = load(uri);
-	// console.log("spidermonkey load(", uri, ") returned ", ok);
+	load(uri);
 	return 1;
-}
+};
 
 //Register any module paths set up in djConfig. Need to do this
 //in the hostenvs since hostenv_browser can read djConfig from a
 //script tag's attribute.
-if(dojo.config["modulePaths"]){
-	for(var param in dojo.config["modulePaths"]){
-		dojo.registerModulePath(param, dojo.config["modulePaths"][param]);
+if(dojo.config.modulePaths){
+	for(var param in dojo.config.modulePaths){
+		dojo.registerModulePath(param, dojo.config.modulePaths[param]);
 	}
 }
 
 dojo.provide("dojo._base");
 
-dojo.require("dojo._base.base");
-dojo.require("dojo._base.connect");
-dojo.require("dojo._base.json");
+dojo.require("dojo._base.lang");
+dojo.require("dojo._base.declare");
+dojo.require("dojo._base.Deferred");
+dojo.require("dojo._base.array");
 dojo.require("dojo._base.Color");
+dojo.require("dojo._base.window");
+
+if (!dojo.config.noConnect) {
+	dojo.require("dojo._base.connect");
+}
+
+if (!dojo.config.noJson) {
+	dojo.require("dojo._base.json");
+}
