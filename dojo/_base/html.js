@@ -1500,7 +1500,7 @@ dojo.byId = function(id, doc){
 	// Returns a string or null
 
 	dojo.realAttr = function(node, name, value) {
-		var x, nn, nameC, att, alias;
+		var x, nn, nameC, doc, att, alias;
 
 		if (typeof node == 'string') {
 			node = d.byId(node);
@@ -1514,7 +1514,7 @@ dojo.byId = function(id, doc){
 		}
 		if (arguments.length == 2) { // Getter
 			if (attributesBad) {
-				var doc = node.ownerDocument || d.doc;
+				doc = node.ownerDocument || d.doc;
         	      		if (typeof(doc.selectNodes) != 'undefined') {
 					return node.getAttribute(name);
 				} // XML document in IE
@@ -1563,7 +1563,50 @@ dojo.byId = function(id, doc){
 
 		// Setter
 
-		node.setAttribute(node, name, value);
+		if (attributesBad) {
+			doc = dojo.doc;
+
+			// Check for XML document
+
+			if (doc && typeof(doc.selectNodes) != 'undefined') {
+				node.setAttribute(name, value);
+			} else {
+
+				// Broken by design MSHTML DOM (IE < 8 and compatibility modes)
+
+				name = name.toLowerCase();
+			        nn = node.tagName;
+				switch(name) {
+				case 'style':
+					node.style.cssText = value;
+					break;
+				case 'checked':
+				case 'selected':
+				case 'disabled':
+				case 'multiple':
+				case 'readonly':
+				case 'ismap':
+					node[name] = value.toLowerCase() == name; // HTML attributes are case insensitive
+					break;
+				case 'type':
+					if (nn != 'select') {
+						// no such attribute, but there is a property
+						// NOTE: warn here?
+
+						node.type = value;
+					}
+					break;
+				default:
+					if (reEvent.test(name)) {
+						node[name] = new Function(value);
+					} else {
+						node[camelize(attributeAliases[name] || name)] = value;
+					}					
+				}
+			}
+		} else {
+			node.setAttribute(node, name, value);
+		}
 	};
 	
 	dojo.create = function(tag, attrs, refNode, pos){
