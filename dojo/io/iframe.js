@@ -65,9 +65,9 @@ dojo.io.iframe = {
 			turi = (dojo.config.dojoBlankHtmlUrl||dojo.moduleUrl("dojo", "resources/blank.html"));
 		}
 		cframe = dojo.doc.createElement('iframe');
+		dojo.body().appendChild(cframe);
 		cframe.name = fname;
 		cframe.id = fname;
-		dojo.body().appendChild(cframe);
 	
 		var style = cframe.style;
 
@@ -271,32 +271,22 @@ dojo.io.iframe = {
 						}
 					}
 				}
-				//IE requires going through getAttributeNode instead of just getAttribute in some form cases, 
-				//so use it for all.  See #2844
-				var actnNode = fn.getAttributeNode("action");
-				var mthdNode = fn.getAttributeNode("method");
-				var trgtNode = fn.getAttributeNode("target");
+
+				var actn = dojo.realAttr(fn, 'action');
+				var mthd = dojo.realAttr(fn, 'method');
+				var trgt = dojo.realAttr(fn, 'target');
+
+				// FIXME: Need to add setAttribute fix(es) to realAttr setter
+				//        These may three may be shadowed in IE
+
 				if(args.url){
-					ioArgs._originalAction = actnNode ? actnNode.value : null;
-					if(actnNode){
-						actnNode.value = args.url;
-					}else{
-						fn.setAttribute("action",args.url);
-					}
+					ioArgs._originalAction = actn;
+					fn.action = args.url;
 				}
-				if(!mthdNode || !mthdNode.value){
-					if(mthdNode){
-						mthdNode.value= (args.method) ? args.method : "post";
-					}else{
-						fn.setAttribute("method", (args.method) ? args.method : "post");
-					}
+				if(!mthd){
+					fn.method = args.method || "post";
 				}
-				ioArgs._originalTarget = trgtNode ? trgtNode.value: null;
-				if(trgtNode){
-					trgtNode.value = this._iframeName;
-				}else{
-					fn.setAttribute("target", this._iframeName);
-				}
+				ioArgs._originalTarget = trgt;
 				fn.target = this._iframeName;
 				fn.submit();
 			}else{
@@ -324,22 +314,10 @@ dojo.io.iframe = {
 		if(fNode){
 			// remove all the hidden content inputs
 			var toClean = ioArgs._contentToClean;
-			for(var i = 0; i < toClean.length; i++) {
-				var key = toClean[i];
-				if(dojo.isSafari < 3){
-					//In Safari (at least 2.0.3), can't use form[key] syntax to find the node,
-					//for nodes that were dynamically added.
-					for(var j = 0; j < fNode.childNodes.length; j++){
-						var chNode = fNode.childNodes[j];
-						if(chNode.name == key){
-							dojo.destroy(chNode);
-							break;
-						}
-					}
-				}else{
-					dojo.destroy(fNode[key]);
-					fNode[key] = null;
-				}
+			var len = toClean.length;
+			for(var i = 0; i < len; i++) {
+				var key = toClean[i];				
+				dojo.destroy(fNode.elements[key]);				
 			}
 	
 			// restore original action + target
