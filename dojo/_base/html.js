@@ -1514,7 +1514,7 @@ dojo.byId = function(id, doc){
 		}
 		if (arguments.length == 2) { // Getter
 			if (attributesBad) {
-				doc = node.ownerDocument || d.doc;
+				doc = node.ownerDocument;
         	      		if (typeof(doc.selectNodes) != 'undefined') {
 					return node.getAttribute(name);
 				} // XML document in IE
@@ -1564,7 +1564,7 @@ dojo.byId = function(id, doc){
 		// Setter
 
 		if (attributesBad) {
-			doc = dojo.doc;
+			doc = node.ownerDocument;
 
 			// Check for XML document
 
