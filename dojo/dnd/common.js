@@ -1,13 +1,10 @@
 dojo.provide("dojo.dnd.common");
 
-dojo.dnd._isMac = navigator.appVersion.indexOf("Macintosh") >= 0;
-dojo.dnd._copyKey = dojo.dnd._isMac ? "metaKey" : "ctrlKey";
-
 dojo.dnd.getCopyKeyState = function(e) {
 	// summary: abstracts away the difference between selection on Mac and PC,
 	//	and returns the state of the "copy" key to be pressed.
 	// e: Event: mouse event
-	return e[dojo.dnd._copyKey];	// Boolean
+	return typeof e.ctrlKey == 'boolean' ? e.ctrlKey : e.metaKey;	// Boolean
 };
 
 dojo.dnd._uniqueId = 0;
@@ -28,12 +25,17 @@ dojo.dnd.isFormElement = function(/*Event*/ e){
 	if(t.nodeType == 3 /*TEXT_NODE*/){
 		t = t.parentNode;
 	}
-	return " button textarea input select option ".indexOf(" " + t.tagName.toLowerCase() + " ") >= 0;	// Boolean
+	return (/^(button|textarea|input|select|option)$/i).test(t.tagName);	// Boolean
 };
 
 // doesn't take into account when multiple buttons are pressed
-dojo.dnd._lmb = dojo.isIE ? 1 : 0;	// left mouse button
 
-dojo.dnd._isLmbPressed = dojo.isIE ?
-	function(e){ return e.button & 1; } : // intentional bit-and
-	function(e){ return e.button === 0; };
+// FIXME: This logic should be in event module
+// DOCME: What calls this and why is it marked private?
+
+dojo.dnd._isLmbPressed = function(e){
+      if (typeof e.which != 'undefined') {
+        return (e.which == 1);
+      }
+      return e.button & 1; // Intentional bitwise - and - operation
+};
