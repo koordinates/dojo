@@ -92,7 +92,7 @@ dojo.declare("dojo.rpc.RpcService", null, {
 
 		var tf = dojo.hitch(this, 
 			function(obj){
-				if(obj.error!=null){
+				if(obj.error){
 					var err;
 					if(typeof obj.error == 'object'){
 						err = new Error(obj.error.message);
@@ -127,7 +127,7 @@ dojo.declare("dojo.rpc.RpcService", null, {
 
 			// if params weren't specified, then we can assume it's varargs
 			if( (this.strictArgChecks) &&
-				(parameters != null) &&
+				(parameters !== null && parameters !== undefined) &&
 				(arguments.length != parameters.length)
 			){
 				// put error stuff here, no enough params
