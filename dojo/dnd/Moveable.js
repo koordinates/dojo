@@ -91,7 +91,10 @@ dojo.declare("dojo.dnd.Moveable", null, {
 	onDragDetected: function(/* Event */ e){
 		// summary: called when the drag is detected,
 		// responsible for creation of the mover
-		new this.mover(this.node, e, this);
+
+		// NOTE: why is this a constructor?
+
+		var mover = new this.mover(this.node, e, this);
 	},
 	onMoveStart: function(/* dojo.dnd.Mover */ mover){
 		// summary: called before every move operation
