@@ -40,9 +40,9 @@ dojo.require("dojo.dnd.Moveable");
 		onMoveStop: function(/* dojo.dnd.Mover */ mover){
 			if(mover._timer){
 				// stop timer
-				clearTimeout(mover._timer)
+				window.clearTimeout(mover._timer);
 				// reflect the last received position
-				oldOnMove.call(this, mover, mover._leftTop)
+				oldOnMove.call(this, mover, mover._leftTop);
 			}
 			dojo.dnd.Moveable.prototype.onMoveStop.apply(this, arguments);
 		},
