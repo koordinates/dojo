@@ -40,8 +40,10 @@ dojo.declare("dojo.dnd.Mover", null, {
 		dojo.stopEvent(e);
 	},
 	onMouseUp: function(e){
-		if(dojo.isWebKit && dojo.dnd._isMac && this.mouseButton == 2 ? 
-				e.button == 0 : this.mouseButton == e.button){
+
+		// NOTE: what is this line for?
+
+		if(this.mouseButton == 2 ? e.button === 0 : this.mouseButton == e.button){
 			this.destroy();
 		}
 		dojo.stopEvent(e);
@@ -61,6 +63,9 @@ dojo.declare("dojo.dnd.Mover", null, {
 			default:
 				s.position = "absolute";	// enforcing the absolute mode
 				var m = dojo.marginBox(this.node);
+
+				// FIXME: ?
+
 				// event.pageX/pageY (which we used to generate the initial
 				// margin box) includes padding and margin set on the body.
 				// However, setting the node's position to absolute and then
