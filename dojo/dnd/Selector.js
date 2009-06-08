@@ -156,6 +156,9 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 	onMouseDown: function(e){
 		// summary: event processor for onmousedown
 		// e: Event: mouse event
+
+		var node;
+
 		if(this.autoSync){ this.sync(); }
 		if(!this.current){ return; }
 		if(!this.singular && !dojo.dnd.getCopyKeyState(e) && !e.shiftKey && (this.current.id in this.selection)){
@@ -181,11 +184,11 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 				if(this.anchor != this.current){
 					var i = 0;
 					for(; i < c.length; ++i){
-						var node = c[i];
+						node = c[i];
 						if(node == this.anchor || node == this.current){ break; }
 					}
 					for(++i; i < c.length; ++i){
-						var node = c[i];
+						node = c[i];
 						if(node == this.anchor || node == this.current){ break; }
 						this._addItemClass(node, "Selected");
 						this.selection[node.id] = 1;
