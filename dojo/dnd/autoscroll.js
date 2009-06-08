@@ -1,5 +1,7 @@
 dojo.provide("dojo.dnd.autoscroll");
 
+// DOCME: Requirements?
+
 dojo.dnd.getViewport = function(){
 	// summary: returns a viewport size (visible part of the window)
 
@@ -66,6 +68,11 @@ dojo.dnd.autoScroll = function(e){
 	//		onmousemove event
 
 	// FIXME: needs more docs!
+
+	var win = dojo.global.window;
+
+	// FIXME: mouse position logic
+
 	var v = dojo.dnd.getViewport(), dx = 0, dy = 0;
 	if(e.clientX < dojo.dnd.H_TRIGGER_AUTOSCROLL){
 		dx = -dojo.dnd.H_AUTOSCROLL_VALUE;
@@ -77,7 +84,7 @@ dojo.dnd.autoScroll = function(e){
 	}else if(e.clientY > v.h - dojo.dnd.V_TRIGGER_AUTOSCROLL){
 		dy = dojo.dnd.V_AUTOSCROLL_VALUE;
 	}
-	window.scrollBy(dx, dy);
+	win.scrollBy(dx, dy);
 };
 
 dojo.dnd._validNodes = {"div": 1, "p": 1, "td": 1};
@@ -96,17 +103,12 @@ dojo.dnd.autoScrollNodes = function(e){
 			var s = dojo.getComputedStyle(n);
 			if(s.overflow.toLowerCase() in dojo.dnd._validOverflow){
 				var b = dojo._getContentBox(n, s), t = dojo._abs(n, true);
-				//console.log(b.l, b.t, t.x, t.y, n.scrollLeft, n.scrollTop);
+
+				// FIXME: mouse position logic
+
 				var w = Math.min(dojo.dnd.H_TRIGGER_AUTOSCROLL, b.w / 2), 
 					h = Math.min(dojo.dnd.V_TRIGGER_AUTOSCROLL, b.h / 2),
 					rx = e.pageX - t.x, ry = e.pageY - t.y, dx = 0, dy = 0;
-				if(dojo.isWebKit || dojo.isOpera){
-					// FIXME: this code should not be here, it should be taken into account 
-					// either by the event fixing code, or the dojo._abs()
-					// FIXME: this code doesn't work on Opera 9.5 Beta
-					rx += dojo.body().scrollLeft;
-					ry += dojo.body().scrollTop;
-				}
 				if(rx > 0 && rx < b.w){
 					if(rx < w){
 						dx = -w;
@@ -114,7 +116,6 @@ dojo.dnd.autoScrollNodes = function(e){
 						dx = w;
 					}
 				}
-				//console.log("ry =", ry, "b.h =", b.h, "h =", h);
 				if(ry > 0 && ry < b.h){
 					if(ry < h){
 						dy = -h;
