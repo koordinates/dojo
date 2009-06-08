@@ -55,14 +55,16 @@ dojo.byId = function(id, doc){
 	};
 
 (function(){
+	var byId = dojo.byId;
+
 	dojo.isDescendant = function(/*DomNode|String*/node, /*DomNode|String*/ancestor){
 		//	summary:
 		//		Returns true if node is a descendant of ancestor
 		//	node: string id or node reference to test
 		//	ancestor: string id or node reference of potential parent to test against
 
-		node = dojo.byId(node);
-		ancestor = dojo.byId(ancestor);
+		node = byId(node);
+		ancestor = byId(ancestor);
 		while(node){
 			if(node === ancestor){
 				return true; // Boolean
@@ -79,7 +81,7 @@ dojo.byId = function(id, doc){
 		var i, style, selectStyles = ['MozUserSelect', 'KhtmlUserSelect', 'OUserSelect', 'userSelect'];
 
 		var fn = function(node, selectable) {
-			node = dojo.byId(node);
+			node = byId(node);
 			node.style[style] = selectable ? "auto" : "none";
 		};
 
@@ -93,7 +95,7 @@ dojo.byId = function(id, doc){
 		return function(node, selectable) {
 			var v = (selectable ? "" : "on");
 
-			node = dojo.byId(node);
+			node = byId(node);
 			node.unselectable = v;
 			dojo.query("*", node).forEach(function(item) { item.unselectable = v; });
 		};
@@ -164,9 +166,9 @@ dojo.byId = function(id, doc){
 		// Put a new LI as the first child of a list by id:
 		// | 	dojo.place(dojo.create('li'), "someUl", "first");
 
-		refNode = dojo.byId(refNode);
-		if(dojo.isString(node)){
-			node = node.charAt(0) == "<" ? dojo._toDom(node, refNode.ownerDocument) : dojo.byId(node);
+		refNode = byId(refNode);
+		if(typeof node == 'string'){
+			node = node.charAt(0) == "<" ? dojo._toDom(node, refNode.ownerDocument) : byId(node);
 		}
 		if(typeof position == "number"){
 			var cn = refNode.childNodes;
@@ -256,11 +258,11 @@ dojo.byId = function(id, doc){
 		//		A reference to a DOM node. Does NOT support taking an
 		//		ID string for speed reasons.
 		//	example:
-		//	|	dojo.getComputedStyle(dojo.byId('foo')).borderWidth;
+		//	|	dojo.getComputedStyle(byId('foo')).borderWidth;
 		//
 		//	example:
 		//	Reusing the returned object, avoiding multiple lookups:
-		//	|	var cs = dojo.getComputedStyle(dojo.byId("someNode"));
+		//	|	var cs = dojo.getComputedStyle(byId("someNode"));
 		//	|	var w = cs.width, h = cs.height;
 		return; // CSS2Properties
 	}
@@ -305,14 +307,14 @@ dojo.byId = function(id, doc){
 
 	dojo.getComputedStyle = gcs;
 
-	var toPixelValue;
+	var px;
 
 	if(typeof html.runtimeStyle == 'undefined'){
-		toPixelValue = function(element, value){
+		px = function(element, value){
 			return parseFloat(value); 
 		};
 	}else{
-		toPixelValue = function(element, avalue){
+		px = function(element, avalue){
 			if (avalue) {
 				if(/px$/i.test(avalue)){ return parseFloat(avalue); }
 				if (/^(-)?[\d\.]+(em|pt)$/i.test(avalue)) { // TODO: other units appropriate for this?
@@ -328,11 +330,9 @@ dojo.byId = function(id, doc){
 			return avalue || NaN;
 		};
 	}
-	
-	var px = toPixelValue;
 
 	dojo._toPixelValue = function(element, value) {
-		return toPixelValue(element, value) || 0;
+		return px(element, value) || 0;
 	};
 
 	var opacityStyles = ['KhtmlOpacity', 'MozOpacity', 'opacity'];
@@ -356,7 +356,7 @@ dojo.byId = function(id, doc){
 		var fn = function(el) {
         	      var o = el.style[s];
 	              if (o) { return parseFloat(o); }
-        	      o = dojo.style(el).opacity;
+        	      o = dojo.getComputedStyle(el).opacity;
 	              if (o !== null) { return parseFloat(o); }
         	      return 1;
 		};
@@ -491,7 +491,7 @@ dojo.byId = function(id, doc){
 		//	example:
 		//		Passing a node and a style property returns the current
 		//		normalized, computed value for that property:
-		//	|	dojo.style("thinger", "opacity"); // 1 by default
+		//	|	44:58 PM 6/8/2009("thinger", "opacity"); // 1 by default
 		//
 		//	example:
 		//		Passing a node, a style property, and a value changes the
@@ -524,7 +524,7 @@ dojo.byId = function(id, doc){
 		//	|		fontSize:"13pt"
 		//	|	});
 
-		var n = dojo.byId(node), args = arguments.length, op = (style == "opacity"), prop, s;
+		var n = byId(node), args = arguments.length, op = (style == "opacity"), prop, s;
 		
 		style = _floatAliases[style] || style;
 
@@ -554,7 +554,11 @@ dojo.byId = function(id, doc){
 
 				prop = style.constructor.prototype[x];
 				if (typeof prop == 'undefined' || prop !== style[x]) {
-					dojo.style(node, x, style[x]);
+					if (x == 'opacity') {
+						dojo._setOpacity(n, style[x]);
+					} else {
+						n.style[x] = style[x];
+					}
 				}
 			}
 			return style;
@@ -575,27 +579,29 @@ dojo.byId = function(id, doc){
 		var body = doc.body;
 		var divInner = doc.createElement('div');
 		var divOuter = doc.createElement('div');
+		var style = dojo.style;
 
 		// Opera oddity
 
 		offsetIncludesBorder = (function() {
 			var b;
-			dojo.style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px'});
-	              dojo.style(divInner, {position:'absolute', left:'0', top:'0', margin:'0'});
-        	      divOuter.appendChild(divInner);
-	              body.appendChild(divOuter);
-        	      b = (divInner.offsetLeft == 1);
-	              body.removeChild(divOuter);
-        	      divOuter.removeChild(divInner);
-	              return b;
+
+			style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px'});
+			style(divInner, {position:'absolute', left:'0', top:'0', margin:'0'});
+			divOuter.appendChild(divInner);
+			body.appendChild(divOuter);
+			b = (divInner.offsetLeft == 1);
+			body.removeChild(divOuter);
+			divOuter.removeChild(divInner);
+			return b;
 		})();
 
 		// As seen in FF
 
 		scrollerOffsetSubtractsBorder = (function() {
 			var b;
-			dojo.style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px black', 'overflow':'auto'});
-			dojo.style(divInner, {position:'static', left:'0', top:'0'});
+			style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px black', 'overflow':'auto'});
+			style(divInner, {position:'static', left:'0', top:'0'});
 			divOuter.appendChild(divInner);
 			body.appendChild(divOuter);
 			b = (divInner.offsetLeft == -1);
@@ -1001,7 +1007,7 @@ dojo.byId = function(id, doc){
 		//		If passed, denotes that dojo.marginBox() should
 		//		update/set the margin box for node. Box is an object in the
 		//		above format. All properties are optional if passed.
-		var n = dojo.byId(node), s = gcs(n), b = box;
+		var n = byId(node), s = gcs(n), b = box;
 		return !b ? dojo._getMarginBox(n, s) : dojo._setMarginBox(n, b.l, b.t, b.w, b.h, s); // Object
 	};
 
@@ -1023,7 +1029,7 @@ dojo.byId = function(id, doc){
 		//		If passed, denotes that dojo.contentBox() should
 		//		update/set the content box for node. Box is an object in the
 		//		above format. All properties are optional if passed.
-		var n = dojo.byId(node), s = gcs(n), b = box;
+		var n = byId(node), s = gcs(n), b = box;
 		return !b ? dojo._getContentBox(n, s) : dojo._setContentSize(n, b.w, b.h, s); // Object
 	};
 	
@@ -1199,7 +1205,7 @@ dojo.byId = function(id, doc){
 		//			`{ l: 50, t: 200, w: 300: h: 150, x: 100, y: 300 }`
 		//		Does not act as a setter. If includeScroll is passed, the x and
 		//		y params are affected as one would expect in dojo._abs().
-		var n = dojo.byId(node), s = gcs(n), mb = dojo._getMarginBox(n, s);
+		var n = byId(node), s = gcs(n), mb = dojo._getMarginBox(n, s);
 		var abs = dojo._abs(n, includeScroll);
 		mb.x = abs.x;
 		mb.y = abs.y;
@@ -1369,7 +1375,7 @@ dojo.byId = function(id, doc){
 		//
 		//	example:
 		//	|	// get the current value of the "foo" attribute on a node
-		//	|	dojo.attr(dojo.byId("nodeId"), "foo");
+		//	|	dojo.attr(byId("nodeId"), "foo");
 		//	|	// or we can just pass the id:
 		//	|	dojo.attr("nodeId", "foo");
 		//
@@ -1418,7 +1424,7 @@ dojo.byId = function(id, doc){
 		var x, prop;
 
 		if (dojo.isString(node)) {
-			node = dojo.byId(node);
+			node = byId(node);
 		}
 
 		if (!dojo.isString(name)) {
@@ -1497,7 +1503,7 @@ dojo.byId = function(id, doc){
 		//
 
 		if (typeof node == 'string') {
-			node = dojo.byId(node);
+			node = byId(node);
 		}
 		if (attributesBad) {
 			name = name.toLowerCase();
@@ -1518,7 +1524,7 @@ dojo.byId = function(id, doc){
 		var x, nn, nameC, prop, doc, att, alias;
 
 		if (typeof node == 'string') {
-			node = dojo.byId(node);
+			node = byId(node);
 		}
 		if (typeof name != 'string') {
 			for (x in name) {
@@ -1696,7 +1702,7 @@ dojo.byId = function(id, doc){
 
 		var doc = dojo.doc;
 		if(refNode){		
-			refNode = dojo.byId(refNode);
+			refNode = byId(refNode);
 			doc = refNode.ownerDocument;
 		}
 		if(dojo.isString(tag)){
@@ -1725,9 +1731,9 @@ dojo.byId = function(id, doc){
 
 	dojo.empty = function(node){
 		try {
-			dojo.byId(node).innerHTML = "";
+			byId(node).innerHTML = "";
 		} catch(e) {
-			node = dojo.byId(node);
+			node = byId(node);
 			for(var c; c = node.lastChild;){ // intentional assignment
 				node.removeChild(c);
 			}
@@ -1850,7 +1856,7 @@ dojo.byId = function(id, doc){
 		//	example:
 		//	| if(dojo.hasClass("someNode","aSillyClassName")){ ... }
 		
-		return ((" "+ dojo.byId(node).className +" ").indexOf(" "+ classStr +" ") >= 0);  // Boolean
+		return ((" "+ byId(node).className +" ").indexOf(" "+ classStr +" ") >= 0);  // Boolean
 	};
 
 	dojo.addClass = function(/*DomNode|String*/node, /*String*/className){
@@ -1877,7 +1883,7 @@ dojo.byId = function(id, doc){
 		var re;
 
 		if (typeof node == 'string') {
-			node = dojo.byId(node);
+			node = byId(node);
 		}
 		if (!node.className) {
 			node.className = className;
@@ -1908,7 +1914,7 @@ dojo.byId = function(id, doc){
 		var re, m;
 
 		if (typeof node == 'string') {		
-			node = dojo.byId(node);
+			node = byId(node);
 		}
 		if (node.className) {
 			if (node.className == className) {
