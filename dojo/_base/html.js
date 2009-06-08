@@ -55,16 +55,14 @@ dojo.byId = function(id, doc){
 	};
 
 (function(){
-	var d = dojo;
-
 	dojo.isDescendant = function(/*DomNode|String*/node, /*DomNode|String*/ancestor){
 		//	summary:
 		//		Returns true if node is a descendant of ancestor
 		//	node: string id or node reference to test
 		//	ancestor: string id or node reference of potential parent to test against
 
-		node = d.byId(node);
-		ancestor = d.byId(ancestor);
+		node = dojo.byId(node);
+		ancestor = dojo.byId(ancestor);
 		while(node){
 			if(node === ancestor){
 				return true; // Boolean
@@ -81,7 +79,7 @@ dojo.byId = function(id, doc){
 		var i, style, selectStyles = ['MozUserSelect', 'KhtmlUserSelect', 'OUserSelect', 'userSelect'];
 
 		var fn = function(node, selectable) {
-			node = d.byId(node);
+			node = dojo.byId(node);
 			node.style[style] = selectable ? "auto" : "none";
 		};
 
@@ -95,9 +93,9 @@ dojo.byId = function(id, doc){
 		return function(node, selectable) {
 			var v = (selectable ? "" : "on");
 
-			node = d.byId(node);
+			node = dojo.byId(node);
 			node.unselectable = v;
-			d.query("*", node).forEach(function(item) { item.unselectable = v; });
+			dojo.query("*", node).forEach(function(item) { item.unselectable = v; });
 		};
 	})();
 
@@ -166,9 +164,9 @@ dojo.byId = function(id, doc){
 		// Put a new LI as the first child of a list by id:
 		// | 	dojo.place(dojo.create('li'), "someUl", "first");
 
-		refNode = d.byId(refNode);
-		if(d.isString(node)){
-			node = node.charAt(0) == "<" ? d._toDom(node, refNode.ownerDocument) : d.byId(node);
+		refNode = dojo.byId(refNode);
+		if(dojo.isString(node)){
+			node = node.charAt(0) == "<" ? dojo._toDom(node, refNode.ownerDocument) : dojo.byId(node);
 		}
 		if(typeof position == "number"){
 			var cn = refNode.childNodes;
@@ -189,7 +187,7 @@ dojo.byId = function(id, doc){
 				refNode.parentNode.replaceChild(node, refNode);
 				break; 
 			case "only":
-				d.empty(refNode);
+				dojo.empty(refNode);
 				refNode.appendChild(node);
 				break;
 			case "first":
@@ -219,7 +217,7 @@ dojo.byId = function(id, doc){
 	dojo.boxModel = "content-box";
 	if (document.documentElement.clientWidth === 0) {
 		// client code may have to adjust if compatMode varies across iframes
-		d.boxModel =  "border-box";
+		dojo.boxModel =  "border-box";
 	}
 
 	// =============================
@@ -307,15 +305,14 @@ dojo.byId = function(id, doc){
 
 	dojo.getComputedStyle = gcs;
 
-	// DOCME: What is allowed for value?
-	// NOTE: Changed behavior (internal only?)
+	var toPixelValue;
 
 	if(typeof html.runtimeStyle == 'undefined'){
-		d._toPixelValue = function(element, value){
+		toPixelValue = function(element, value){
 			return parseFloat(value); 
 		};
 	}else{
-		d._toPixelValue = function(element, avalue){
+		toPixelValue = function(element, avalue){
 			if (avalue) {
 				if(/px$/i.test(avalue)){ return parseFloat(avalue); }
 				if (/^(-)?[\d\.]+(em|pt)$/i.test(avalue)) { // TODO: other units appropriate for this?
@@ -332,7 +329,11 @@ dojo.byId = function(id, doc){
 		};
 	}
 	
-	var px = d._toPixelValue;
+	var px = toPixelValue;
+
+	dojo._toPixelValue = function(element, value) {
+		return toPixelValue(element, value) || 0;
+	};
 
 	var opacityStyles = ['KhtmlOpacity', 'MozOpacity', 'opacity'];
 
@@ -355,7 +356,7 @@ dojo.byId = function(id, doc){
 		var fn = function(el) {
         	      var o = el.style[s];
 	              if (o) { return parseFloat(o); }
-        	      o = d.style(el).opacity;
+        	      o = dojo.style(el).opacity;
 	              if (o !== null) { return parseFloat(o); }
         	      return 1;
 		};
@@ -523,7 +524,7 @@ dojo.byId = function(id, doc){
 		//	|		fontSize:"13pt"
 		//	|	});
 
-		var n = d.byId(node), args = arguments.length, op = (style == "opacity"), s;
+		var n = dojo.byId(node), args = arguments.length, op = (style == "opacity"), s;
 		
 		style = _floatAliases[style] || style;
 
@@ -531,9 +532,9 @@ dojo.byId = function(id, doc){
 
 		if (op) {
 			if(args == 3){
-				return d._setOpacity(n, value);
+				return dojo._setOpacity(n, value);
 			}
-			return d._getOpacity(n);
+			return dojo._getOpacity(n);
 		}
 
 		if (args == 3) {
@@ -542,12 +543,12 @@ dojo.byId = function(id, doc){
 
 			n.style[style] = value; /*Number*/
 			return value;
-		} else if(args == 2 && !d.isString(style)){
+		} else if(args == 2 && !dojo.isString(style)){
 
 			// Multiple sets
 
 			for(var x in style){
-				d.style(node, x, style[x]);
+				dojo.style(node, x, style[x]);
 			}
 			return style;
 		}
@@ -572,8 +573,8 @@ dojo.byId = function(id, doc){
 
 		offsetIncludesBorder = (function() {
 			var b;
-			d.style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px'});
-	              d.style(divInner, {position:'absolute', left:'0', top:'0', margin:'0'});
+			dojo.style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px'});
+	              dojo.style(divInner, {position:'absolute', left:'0', top:'0', margin:'0'});
         	      divOuter.appendChild(divInner);
 	              body.appendChild(divOuter);
         	      b = (divInner.offsetLeft == 1);
@@ -586,8 +587,8 @@ dojo.byId = function(id, doc){
 
 		scrollerOffsetSubtractsBorder = (function() {
 			var b;
-			d.style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px black', 'overflow':'auto'});
-			d.style(divInner, {position:'static', left:'0', top:'0'});
+			dojo.style(divOuter, {position:'absolute', visibility:'hidden', left:'0', top:'0', padding:'0', border:'solid 1px black', 'overflow':'auto'});
+			dojo.style(divInner, {position:'static', left:'0', top:'0'});
 			divOuter.appendChild(divInner);
 			body.appendChild(divOuter);
 			b = (divInner.offsetLeft == -1);
@@ -670,8 +671,8 @@ dojo.byId = function(id, doc){
 		//		directly, and will use the ...box... functions instead.
 		var 
 			s = computedStyle||gcs(n), 
-			p = d._getPadExtents(n, s),
-			b = d._getBorderExtents(n, s);
+			p = dojo._getPadExtents(n, s),
+			b = dojo._getBorderExtents(n, s);
 		return { 
 			l: p.l + b.l,
 			t: p.t + b.t,
@@ -726,7 +727,7 @@ dojo.byId = function(id, doc){
 		// summary:
 		//		returns an object that encodes the width, height, left and top
 		//		positions of the node's margin box.
-		var me = d._getMarginExtents(node, computedStyle);
+		var me = dojo._getMarginExtents(node, computedStyle);
 		var l = node.offsetLeft - me.l, t = node.offsetTop - me.t, p = node.parentNode;
 
 		if(scrollerOffsetSubtractsBorder){
@@ -736,14 +737,14 @@ dojo.byId = function(id, doc){
 			if(p && p.nodeType == 1){
 				var pcs = gcs(p);
 				if(pcs.overflow != "visible"){
-					var be = d._getBorderExtents(p, pcs);
+					var be = dojo._getBorderExtents(p, pcs);
 					l += be.l;
 					t += be.t;
 				}
 			}
 		} else if(offsetIncludesBorder){
 			if(p){
-				be = d._getBorderExtents(p);
+				be = dojo._getBorderExtents(p);
 				l -= be.l;
 				t -= be.t;
 			}
@@ -808,7 +809,7 @@ dojo.byId = function(id, doc){
 		// TODO: should just return client* properties
 		//       need to look into history of these methods
 
-		return d._getContentBox(node, computedStyle, true);
+		return dojo._getContentBox(node, computedStyle, true);
 	};
 
 	// Box setters depend on box context because interpretation of width/height styles
@@ -850,14 +851,14 @@ dojo.byId = function(id, doc){
 
 	if (typeof window.document.documentElementgetBoundingClientRect != 'undefined') {
 	        (function(html) {
-			var m = d._getMarginExtents(html);
+			var m = dojo._getMarginExtents(html);
 			var rect = html.getBoundingClientRect();
 
 			if ((m[0] || m[1]) && (rect.top == m.t && rect.left == m.l)) { // FF3
 				htmlOffsetsOrigin = function(docNode) {
 					var html = docNode.documentElement;
-					var margins = d._getMarginExtents(html);
-					var borders = d._getBorderExtents(html);
+					var margins = dojo._getMarginExtents(html);
+					var borders = dojo._getBorderExtents(html);
 
 					return { t: margins.t + borders.t, l: margins.l + borders.l };
 				};
@@ -993,8 +994,8 @@ dojo.byId = function(id, doc){
 		//		If passed, denotes that dojo.marginBox() should
 		//		update/set the margin box for node. Box is an object in the
 		//		above format. All properties are optional if passed.
-		var n = d.byId(node), s = gcs(n), b = box;
-		return !b ? d._getMarginBox(n, s) : d._setMarginBox(n, b.l, b.t, b.w, b.h, s); // Object
+		var n = dojo.byId(node), s = gcs(n), b = box;
+		return !b ? dojo._getMarginBox(n, s) : dojo._setMarginBox(n, b.l, b.t, b.w, b.h, s); // Object
 	};
 
 	dojo.contentBox = function(/*DomNode|String*/node, /*Object?*/box){
@@ -1015,8 +1016,8 @@ dojo.byId = function(id, doc){
 		//		If passed, denotes that dojo.contentBox() should
 		//		update/set the content box for node. Box is an object in the
 		//		above format. All properties are optional if passed.
-		var n = d.byId(node), s = gcs(n), b = box;
-		return !b ? d._getContentBox(n, s) : d._setContentSize(n, b.w, b.h, s); // Object
+		var n = dojo.byId(node), s = gcs(n), b = box;
+		return !b ? dojo._getContentBox(n, s) : dojo._setContentSize(n, b.w, b.h, s); // Object
 	};
 	
 	// =============================
@@ -1025,7 +1026,7 @@ dojo.byId = function(id, doc){
 	
 	var _sumAncestorProperties = function(node, prop){
 		if(!(node = (node||0).parentNode)){return 0;}
-		var val, retVal = 0, _b = d.body();
+		var val, retVal = 0, _b = dojo.body();
 		while(node && node.style){
 			if(gcs(node).position == "fixed"){
 				return 0;
@@ -1044,26 +1045,26 @@ dojo.byId = function(id, doc){
 
 	dojo._docScroll = function(){
 		var 
-			_b = d.body(),
-			_w = d.global,
-			de = d.doc.documentElement;
+			_b = dojo.body(),
+			_w = dojo.global,
+			de = dojo.doc.documentElement;
 		return {
 			y: (_w.pageYOffset || de.scrollTop || _b.scrollTop || 0),
-			x: (_w.pageXOffset || d._fixBiDiScrollLeft(de.scrollLeft) || _b.scrollLeft || 0)
+			x: (_w.pageXOffset || dojo._fixBiDiScrollLeft(de.scrollLeft) || _b.scrollLeft || 0)
 		};
 	};
 	
 	dojo._isBodyLtr = function(){
 		//FIXME: could check body attributes instead (or?) of computed style?  need to ignore case, accept empty values
-		if (typeof d._bodyLtr == 'undefined') {
-			var dir = gcs(d.body()).direction;
+		if (typeof dojo._bodyLtr == 'undefined') {
+			var dir = gcs(dojo.body()).direction;
 			if (dir) {
-				d._bodyLtr = /ltr/.test(dir); // Boolean
+				dojo._bodyLtr = /ltr/.test(dir); // Boolean
 			} else {
-				d._bodyLtr = false;
+				dojo._bodyLtr = false;
 			}
 		}
-		return d._bodyLtr;
+		return dojo._bodyLtr;
 	};
 	
 	dojo._fixBiDiScrollLeft = function(/*Integer*/ scrollLeft){
@@ -1072,9 +1073,9 @@ dojo.byId = function(id, doc){
 		// must call this function to fix this error, otherwise the position
 		// will offset to right when there is a horizontal scrollbar.
 
-		var dd = d.doc;
+		var dd = dojo.doc;
 		var de = typeof dd.documentElement.clientWidth ? dd.documentElement : dd.body;
-		if(!d._isBodyLtr()){
+		if(!dojo._isBodyLtr()){
 			return scrollLeft + de.clientWidth - de.scrollWidth; // Integer
 		}
 		return scrollLeft; // Integer
@@ -1092,7 +1093,7 @@ dojo.byId = function(id, doc){
 		//		document offsets that may affect the position relative to the
 		//		viewport.
 
-		var client, cs, db = d.doc.body, dh = d.doc.documentElement, ret, scroll;
+		var client, cs, db = dojo.doc.body, dh = dojo.doc.documentElement, ret, scroll;
 		if(typeof node.getBoundingClientRect != 'undefined'){
 
 			// IE6+, FF3+, super-modern WebKit, and Opera 9.6+ all take this branch
@@ -1107,7 +1108,7 @@ dojo.byId = function(id, doc){
 
 				// Subtract the document element margins
 
-				var offsets = htmlOffsetsOrigin(d.doc);
+				var offsets = htmlOffsetsOrigin(node.ownerDocument || dojo.doc);
 
 				ret.x -= offsets.l;
 				ret.y -= offsets.t;
@@ -1116,7 +1117,7 @@ dojo.byId = function(id, doc){
 				ret.y -= root.clientTop;
 			}
 			if (includeScroll) {
-				scroll = d._docScroll();
+				scroll = dojo._docScroll();
 				ret.x += scroll.x;
 				ret.y += scroll.y;
 			}
@@ -1170,7 +1171,7 @@ dojo.byId = function(id, doc){
 		// if offsetParent is used, ret value already includes scroll position
 		// so we may have to actually remove that value if !includeScroll
 		if(includeScroll){
-			scroll = d._docScroll();
+			scroll = dojo._docScroll();
 			ret.x += scroll.x;
 			ret.y += scroll.y;
 		}
@@ -1191,8 +1192,8 @@ dojo.byId = function(id, doc){
 		//			`{ l: 50, t: 200, w: 300: h: 150, x: 100, y: 300 }`
 		//		Does not act as a setter. If includeScroll is passed, the x and
 		//		y params are affected as one would expect in dojo._abs().
-		var n = d.byId(node), s = gcs(n), mb = d._getMarginBox(n, s);
-		var abs = d._abs(n, includeScroll);
+		var n = dojo.byId(node), s = gcs(n), mb = dojo._getMarginBox(n, s);
+		var abs = dojo._abs(n, includeScroll);
 		mb.x = abs.x;
 		mb.y = abs.y;
 		return mb;
@@ -1227,21 +1228,21 @@ dojo.byId = function(id, doc){
 		try { // Throws exceptions in IE, XHTML DOM's, etc.
 			node.innerHTML = html;
 		} catch(e) {
-			d.empty(node);
-			node.appendChild(d._toDom(html, node.ownerDocument));
+			dojo.empty(node);
+			node.appendChild(dojo._toDom(html, node.ownerDocument));
 		}
 	};
 
 	var connectEvent = function(node, name, value) {
 		// Get ID
 
-		var h, attrId = d.attr(node, _attrId);
+		var h, attrId = dojo.attr(node, _attrId);
 
 		// Create ID and set if none exists
 
 		if(!attrId){
 			attrId = _ctr++;
-			d.attr(node, _attrId, attrId);
+			dojo.attr(node, _attrId, attrId);
 		}
 
 		// Create map object for event handlers if none exists
@@ -1257,7 +1258,7 @@ dojo.byId = function(id, doc){
 		if(h){
 			// If previously connected, disconnect
 
-			d.disconnect(h);
+			dojo.disconnect(h);
 		}else if (typeof node[name] == 'function') {
 
 			// Clear existing property
@@ -1267,7 +1268,7 @@ dojo.byId = function(id, doc){
 
 		// Connect in normal fashion
 
-		_evtHdlrMap[attrId][name] = d.connect(node, name, value);
+		_evtHdlrMap[attrId][name] = dojo.connect(node, name, value);
 	};
 
 	// For use with HTML DOM elements only
@@ -1314,7 +1315,7 @@ dojo.byId = function(id, doc){
 		// Special case for "style", value must be a dictionary (Object object)
 
 		case 'style':
-			d.style(node, value);
+			dojo.style(node, value);
 			break;
 		case 'innerHTML':
 			setElementHTML(node, value);
@@ -1409,11 +1410,11 @@ dojo.byId = function(id, doc){
 
 		var x;
 
-		if (d.isString(node)) {
-			node = d.byId(node);
+		if (dojo.isString(node)) {
+			node = dojo.byId(node);
 		}
 
-		if (!d.isString(name)) {
+		if (!dojo.isString(name)) {
 
 			// Multiple setter: the 2nd argument is a dictionary (Object object)
 
@@ -1483,7 +1484,7 @@ dojo.byId = function(id, doc){
 		//
 
 		if (typeof node == 'string') {
-			node = d.byId(node);
+			node = dojo.byId(node);
 		}
 		if (attributesBad) {
 			name = name.toLowerCase();
@@ -1504,7 +1505,7 @@ dojo.byId = function(id, doc){
 		var x, nn, nameC, doc, att, alias;
 
 		if (typeof node == 'string') {
-			node = d.byId(node);
+			node = dojo.byId(node);
 		}
 		if (typeof name != 'string') {
 			// TODO: all for-in loops should be filtered
@@ -1520,7 +1521,7 @@ dojo.byId = function(id, doc){
 					return node.getAttribute(name);
 				} // XML document in IE
 
-				if (d.hasAttribute(node, name)) {               
+				if (dojo.hasAttribute(node, name)) {               
 					name = name.toLowerCase();
 					alias = attributeAliases[name];
 					if (!alias) {
@@ -1679,16 +1680,16 @@ dojo.byId = function(id, doc){
 		//	|		.onclick(function(e){ console.log('clicked', e.target) })
 		//	|		.place("#someNode"); // redundant, but cleaner.
 
-		var doc = d.doc;
+		var doc = dojo.doc;
 		if(refNode){		
-			refNode = d.byId(refNode);
+			refNode = dojo.byId(refNode);
 			doc = refNode.ownerDocument;
 		}
-		if(d.isString(tag)){
+		if(dojo.isString(tag)){
 			tag = doc.createElement(tag);
 		}
-		if(attrs){ d.attr(tag, attrs); }
-		if(refNode){ d.place(tag, refNode, pos); }
+		if(attrs){ dojo.attr(tag, attrs); }
+		if(refNode){ dojo.place(tag, refNode, pos); }
 		return tag; // DomNode
 	};
 	
@@ -1708,11 +1709,11 @@ dojo.byId = function(id, doc){
 	}
 	=====*/
 
-	d.empty = function(node){
+	dojo.empty = function(node){
 		try {
-			d.byId(node).innerHTML = "";
+			dojo.byId(node).innerHTML = "";
 		} catch(e) {
-			node = d.byId(node);
+			node = dojo.byId(node);
 			for(var c; c = node.lastChild;){ // intentional assignment
 				node.removeChild(c);
 			}
@@ -1758,7 +1759,7 @@ dojo.byId = function(id, doc){
 		},
 		reTag = /<\s*([\w\:]+)/,
 		masterNode = {}, masterNum = 0,
-		masterName = "__" + d._scopeName + "ToDomId";
+		masterName = "__" + dojo._scopeName + "ToDomId";
 
 	// generate start/end tag strings to use
 	// for the injection for each special tag wrap case.
@@ -1770,10 +1771,10 @@ dojo.byId = function(id, doc){
 		// but we don't care at this point
 	}
 
-	d._toDom = function(frag, doc){
+	dojo._toDom = function(frag, doc){
 		// summary converts HTML string into DOM nodes.
 
-		doc = doc || d.doc;
+		doc = doc || dojo.doc;
 		var masterId = doc[masterName];
 		if(!masterId){
 			doc[masterName] = masterId = ++masterNum + "";
@@ -1833,7 +1834,7 @@ dojo.byId = function(id, doc){
 		//	example:
 		//	| if(dojo.hasClass("someNode","aSillyClassName")){ ... }
 		
-		return ((" "+ d.byId(node).className +" ").indexOf(" "+ classStr +" ") >= 0);  // Boolean
+		return ((" "+ dojo.byId(node).className +" ").indexOf(" "+ classStr +" ") >= 0);  // Boolean
 	};
 
 	dojo.addClass = function(/*DomNode|String*/node, /*String*/className){
@@ -1860,7 +1861,7 @@ dojo.byId = function(id, doc){
 		var re;
 
 		if (typeof node == 'string') {
-			node = d.byId(node);
+			node = dojo.byId(node);
 		}
 		if (!node.className) {
 			node.className = className;
@@ -1891,7 +1892,7 @@ dojo.byId = function(id, doc){
 		var re, m;
 
 		if (typeof node == 'string') {		
-			node = d.byId(node);
+			node = dojo.byId(node);
 		}
 		if (node.className) {
 			if (node.className == className) {
@@ -1923,8 +1924,8 @@ dojo.byId = function(id, doc){
 		//	| dojo.query(".toggleMe").toggleClass("toggleMe");
 		
 		if(condition === undefined){
-			condition = !d.hasClass(node, classStr);
+			condition = !dojo.hasClass(node, classStr);
 		}
-		d[condition ? "addClass" : "removeClass"](node, classStr);
+		dojo[condition ? "addClass" : "removeClass"](node, classStr);
 	};
 })();
