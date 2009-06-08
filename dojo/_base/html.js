@@ -308,17 +308,14 @@ dojo.byId = function(id, doc){
 	dojo.getComputedStyle = gcs;
 
 	// DOCME: What is allowed for value?
+	// NOTE: Changed behavior (internal only?)
 
 	if(typeof html.runtimeStyle == 'undefined'){
 		d._toPixelValue = function(element, value){
-			// style values can be floats, client code may want
-			// to round for integer pixels.
-			return parseFloat(value) || 0; 
+			return parseFloat(value); 
 		};
 	}else{
 		d._toPixelValue = function(element, avalue){
-			// style values can be floats, client code may
-			// wish to round this value for integer pixels.
 			if (avalue) {
 				if(/px$/i.test(avalue)){ return parseFloat(avalue); }
 				if (/^(-)?[\d\.]+(em|pt)$/i.test(avalue)) { // TODO: other units appropriate for this?
@@ -331,7 +328,7 @@ dojo.byId = function(id, doc){
 					element.runtimeStyle.left = rsLeft;
 				}
 			}
-			return avalue || 0;
+			return avalue || NaN;
 		};
 	}
 	
@@ -448,7 +445,7 @@ dojo.byId = function(id, doc){
 		if(!_pixelNamesCache[type]){
 			_pixelNamesCache[type] = _pixelRegExp.test(type);
 		}
-		return _pixelNamesCache[type] ? px(node, value) : value;
+		return _pixelNamesCache[type] ? px(node, value) || 0 : value;
 	};
 
 	// TODO: Aliases should be deprecated, apps should pass 'float'
@@ -619,15 +616,15 @@ dojo.byId = function(id, doc){
 		//		The w/h are used for calculating boxes.
 		//		Normally application code will not need to invoke this
 		//		directly, and will use the ...box... functions instead.
-		var 
-			s = computedStyle||gcs(n), 
-			l = px(n, s.paddingLeft), 
-			t = px(n, s.paddingTop);
+		var s = computedStyle||gcs(n),
+			l = px(n, s.paddingLeft) || 0,
+			t = px(n, s.paddingTop) || 0;
+
 		return { 
 			l: l,
 			t: t,
-			w: l+px(n, s.paddingRight),
-			h: t+px(n, s.paddingBottom)
+			w: l + (px(n, s.paddingRight) || 0),
+			h: t + (px(n, s.paddingBottom) || 0)
 		};
 	};
 
@@ -643,15 +640,19 @@ dojo.byId = function(id, doc){
 		//		The w/h are used for calculating boxes.
 		//		Normally application code will not need to invoke this
 		//		directly, and will use the ...box... functions instead.
-		var s = computedStyle||gcs(n);
-		var bl = px(n, s.borderLeftWidth) || n.clientLeft || 0;
-		var bt = px(n, s.borderTopWidth) || n.clientTop || 0;
+		var s = computedStyle||gcs(n),
+			clientLeft = n.clientLeft || 0,
+			clientTop = n.clientTop || 0,
+			bl = px(n, s.borderLeftWidth) || clientLeft || 0,
+			bt = px(n, s.borderTopWidth) || clientTop || 0;
+
+		// FIXME: Assumes border symmetry when right and/or bottom cannot be computed
 
 		return { 
 			l: bl,
 			t: bt,
-			w: bl + px(n, s.borderRightWidth),
-			h: bt + px(n, s.borderBottomWidth)
+			w: bl + (px(n, s.borderRightWidth) || clientLeft),
+			h: bt + (px(n, s.borderBottomWidth) || clientTop)
 		};
 	};
 
@@ -692,11 +693,9 @@ dojo.byId = function(id, doc){
 		//		Normally application code will not need to invoke this
 		//		directly, and will use the ...box... functions instead.
 		var 
-			s = computedStyle||gcs(n), 
-			l = px(n, s.marginLeft),
-			t = px(n, s.marginTop),
-			r = px(n, s.marginRight),
-			b = px(n, s.marginBottom);
+			s = computedStyle||gcs(n),
+			l = px(n, s.marginLeft) || 0,
+			t = px(n, s.marginTop) || 0;
 
 			// FIXME: Safari's version of the computed right margin
 			// is the space between our right edge and the right edge 
@@ -709,8 +708,8 @@ dojo.byId = function(id, doc){
 		return { 
 			l: l,
 			t: t,
-			w: l+r,
-			h: t+b
+			w: l + (px(n, s.marginRight) || 0),
+			h: t + (px(n, s.marginBottom) || 0)
 		};
 	};
 
@@ -925,8 +924,8 @@ dojo.byId = function(id, doc){
 
 		var cs = computedStyle || gcs(node);
 		var oldHeightPx, oldWidthPx;
-		var marginWidth = px(node, cs.marginLeft) + px(node, cs.marginRight);
-		var marginHeight = px(node, cs.marginTop) + px(node, cs.marginBottom);
+		var marginWidth = (px(node, cs.marginLeft) || 0) + (px(node, cs.marginRight) || 0);
+		var marginHeight = (px(node, cs.marginTop) || 0) + (px(node, cs.marginBottom) || 0);
 		var borderBoxCheck, style = node.style, offsetWidth = node.offsetWidth, offsetHeight = node.offsetHeight;
 		var borderStyle = style.border, paddingStyle = style.padding;
 		var deltaHeight = 0, deltaWidth = 0;
@@ -1133,17 +1132,18 @@ dojo.byId = function(id, doc){
 				ret.x -= _sumAncestorProperties(node, "scrollLeft");
 				ret.y -= _sumAncestorProperties(node, "scrollTop");
 				
-				var curnode = node;
+				var be, curnode = node;
 				do{
 					var n = curnode.offsetLeft,
 						t = curnode.offsetTop;
-					ret.x += isNaN(n) ? 0 : n;
-					ret.y += isNaN(t) ? 0 : t;
+					ret.x += n || 0;
+					ret.y += t || 0;
 
 					cs = gcs(curnode);
-					if(curnode != node){						
-						ret.x += px(curnode, cs.borderLeftWidth);
-						ret.y += px(curnode, cs.borderTopWidth);						
+					if(curnode != node){
+						be = dojo._getBorderExtents(curnode, cs);					
+						ret.x += be.l || 0;
+						ret.y += be.t || 0;						
 					}
 					// static children in a static div in FF2 are affected by the div's border as well
 					// but offsetParent will skip this div!
@@ -1152,17 +1152,18 @@ dojo.byId = function(id, doc){
 						while(parent!=curnode.offsetParent){
 							var pcs=gcs(parent);
 							if(pcs.position=="static"){
-								ret.x += px(curnode,pcs.borderLeftWidth);
-								ret.y += px(curnode,pcs.borderTopWidth);
+								be = dojo._getBorderExtents(parent, pcs);
+								ret.x += be.l || 0;
+								ret.y += be.t || 0;
 							}
 							parent=parent.parentNode;
 						}
 					}
 					curnode = curnode.offsetParent;
 				}while((curnode != dh) && curnode);
-			}else if(node.x && node.y){
-				ret.x += isNaN(node.x) ? 0 : node.x;
-				ret.y += isNaN(node.y) ? 0 : node.y;
+			}else {
+				ret.x += node.x || 0;
+				ret.y += node.y || 0;
 			}
 		}
 		// account for document scrolling
