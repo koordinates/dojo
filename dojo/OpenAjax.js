@@ -19,14 +19,11 @@
  ******************************************************************************/
 
 // prevent re-definition of the OpenAjax object
-if(!window["OpenAjax"]){
-	OpenAjax = new function(){
+if(typeof OpenAjax == 'undefined'){
+	OpenAjax = function(){
 		// summary: the OpenAjax hub
 		// description: see http://www.openajax.org/member/wiki/OpenAjax_Hub_Specification
 
-		var t = true;
-		var f = false;
-		var g = window;
 		var libs;
 		var ooh = "org.openajax.hub.";
 
@@ -36,7 +33,7 @@ if(!window["OpenAjax"]){
 		h.implVersion = "0.6";
 		h.specVersion = "0.6";
 		h.implExtraData = {};
-		var libs = {};
+		libs = {};
 		h.libraries = libs;
 
 		h.registerLibrary = function(prefix, nsURL, version, extra){
@@ -47,11 +44,11 @@ if(!window["OpenAjax"]){
 				extraData: extra 
 			};
 			this.publish(ooh+"registerLibrary", libs[prefix]);
-		}
+		};
 		h.unregisterLibrary = function(prefix){
 			this.publish(ooh+"unregisterLibrary", libs[prefix]);
 			delete libs[prefix];
-		}
+		};
 
 		h._subscriptions = { c:{}, s:[] };
 		h._cleanup = [];
@@ -67,27 +64,27 @@ if(!window["OpenAjax"]){
 			var path = name.split(".");
 	 		this._subscribe(this._subscriptions, path, 0, sub);
 			return handle;
-		}
+		};
 
 		h.publish = function(name, message){
 			var path = name.split(".");
 			this._pubDepth++;
 			this._publish(this._subscriptions, path, 0, name, message);
 			this._pubDepth--;
-			if((this._cleanup.length > 0) && (this._pubDepth == 0)){
+			if((this._cleanup.length > 0) && !this._pubDepth){
 				for(var i = 0; i < this._cleanup.length; i++){ 
 					this.unsubscribe(this._cleanup[i].hdl);
 				}
 				delete(this._cleanup);
 				this._cleanup = [];
 			}
-		}
+		};
 
 		h.unsubscribe = function(sub){
 			var path = sub.split(".");
 			var sid = path.pop();
 			this._unsubscribe(this._subscriptions, path, 0, sid);
-		}
+		};
 		
 		h._subscribe = function(tree, path, index, sub){
 			var token = path[index];
@@ -104,7 +101,7 @@ if(!window["OpenAjax"]){
 					this._subscribe( tree.c[token], path, index + 1, sub);
 				}
 			}
-		}
+		};
 
 		h._publish = function(tree, path, index, name, msg){
 			if(typeof tree != "undefined"){
@@ -141,16 +138,21 @@ if(!window["OpenAjax"]){
 					}
 				}
 			}
-		}
+		};
 			
 		h._unsubscribe = function(tree, path, index, sid) {
 			if(typeof tree != "undefined") {
 				if(index < path.length) {
-					var childNode = tree.c[path[index]];
+					var prop, childNode = tree.c[path[index]];
 					this._unsubscribe(childNode, path, index + 1, sid);
-					if(childNode.s.length == 0) {
-						for(var x in childNode.c) 
-					 		return;		
+					if(!childNode.s.length) {
+						var c = childNode.c;
+						for(var x in c) {
+							prop = c.constructor.prototype[x];
+							if (typeof prop == 'undefined' || prop !== c[x]) {
+					 			return;
+							}
+						}
 						delete tree.c[path[index]];	
 					}
 					return;
@@ -158,25 +160,30 @@ if(!window["OpenAjax"]){
 				else {
 					var callbacks = tree.s;
 					var max = callbacks.length;
-					for(var i = 0; i < max; i++) 
+					for(var i = 0; i < max; i++) {
 						if(sid == callbacks[i].sid) {
 							if(this._pubDepth > 0) {
 								callbacks[i].cb = null;	
 								this._cleanup.push(callbacks[i]);						
 							}
-							else
+							else {
 								callbacks.splice(i, 1);
+							}
 							return; 	
 						}
+					}
 				}
 			}
-		}
+		};
 		// The following function is provided for automatic testing purposes.
 		// It is not expected to be deployed in run-time OpenAjax Hub implementations.
-		h.reinit = function()
-		{
-			for (var lib in OpenAjax.hub.libraries) {
-				delete OpenAjax.hub.libraries[lib];
+		h.reinit = function() {
+			var prop, libraries = OpenAjax.hub.libraries;
+			for (var lib in libraries) {
+				prop = libraries.constructor.prototype[lib];
+				if (typeof prop == 'undefined' || prop !== libraries[lib]) {
+					delete OpenAjax.hub.libraries[lib];
+				}
 			}
 			OpenAjax.hub.registerLibrary("OpenAjax", "http://openajax.org/hub", "0.6", {});
 
@@ -186,7 +193,7 @@ if(!window["OpenAjax"]){
 			OpenAjax._cleanup = [];
 			OpenAjax._subIndex = 0;
 			OpenAjax._pubDepth = 0;
-		}
+		};
 	};
 	// Register the OpenAjax Hub itself as a library.
 	OpenAjax.hub.registerLibrary("OpenAjax", "http://openajax.org/hub", "0.6", {});
