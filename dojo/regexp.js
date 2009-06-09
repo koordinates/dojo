@@ -12,13 +12,13 @@ dojo.regexp.escapeString = function(/*String*/str, /*String?*/except){
 	// except:
 	//		a String with special characters to be left unescaped
 
-	return str.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, function(ch){
+	return str.replace(/([\.$?*|{}\(\)\[\]\\\/\+\^])/g, function(ch){
 		if(except && except.indexOf(ch) != -1){
 			return ch;
 		}
 		return "\\" + ch;
 	}); // String
-}
+};
 
 dojo.regexp.buildGroupRE = function(/*Object|Array*/arr, /*Function*/re, /*Boolean?*/nonCapture){
 	//	summary:
@@ -39,20 +39,21 @@ dojo.regexp.buildGroupRE = function(/*Object|Array*/arr, /*Function*/re, /*Boole
 	//		by regular expression. Defaults to false
 
 	// case 1: a is a single value.
-	if(!(arr instanceof Array)){
+	if(!dojo.isArray(arr)){
 		return re(arr); // String
 	}
 
 	// case 2: a is an array
 	var b = [];
-	for(var i = 0; i < arr.length; i++){
+	var index = arr.length;
+	while(index--){
 		// convert each elem to a RE
-		b.push(re(arr[i]));
+		b[index] = re(arr[index]);
 	}
 
 	 // join the REs as alternatives in a RE group.
 	return dojo.regexp.group(b.join("|"), nonCapture); // String
-}
+};
 
 dojo.regexp.group = function(/*String*/expression, /*Boolean?*/nonCapture){
 	// summary:
@@ -61,4 +62,4 @@ dojo.regexp.group = function(/*String*/expression, /*Boolean?*/nonCapture){
 	//		If true, uses non-capturing match, otherwise matches are retained
 	//		by regular expression. 
 	return "(" + (nonCapture ? "?:":"") + expression + ")"; // String
-}
+};
