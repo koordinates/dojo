@@ -143,7 +143,7 @@ dojo.declare(
 				this._relativePosition = {
 					t: p.t - vp.t,
 					l: p.l - vp.l
-				}			
+				};
 			}
 		},
 		
@@ -158,9 +158,7 @@ dojo.declare(
 			var node = this.domNode;
 
 			if(this.titleBar && this.draggable){
-				this._moveable = (dojo.isIE == 6) ?
-					new dojo.dnd.TimedMoveable(node, { handle: this.titleBar }) :	// prevent overload, see #5285
-					new dojo.dnd.Moveable(node, { handle: this.titleBar, timeout: 0 });
+				this._moveable = new dojo.dnd.Moveable(node, { handle: this.titleBar, timeout: 0 });
 				dojo.subscribe("/dnd/move/stop",this,"_endDrag");
 			}else{
 				dojo.addClass(node,"dijitDialogFixed"); 
@@ -299,8 +297,9 @@ dojo.declare(
 					// this key is for the disabled document window
 					if(evt.charOrCode !== dk.TAB){ // allow tabbing into the dialog for a11y
 						dojo.stopEvent(evt);
-					// opera won't tab to a div
-					}else if(!dojo.isOpera){
+					}else {
+						// FIXME: detect ability of DIV to focus (supports focus listener)
+						//        logic is in event module (private at the moment)
 						try{
 							this._firstFocusItem.focus();
 						}catch(e){ /*squelch*/ }
