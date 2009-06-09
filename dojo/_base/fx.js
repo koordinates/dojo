@@ -429,6 +429,27 @@ dojo.require("dojo._base.html");
 		return ret;
 	};
 
+	function getStyle(node, style, isColor){
+		if (/^(height|width)$/i.test(style)) {
+			style = style.toLowerCase();
+			var computedHeightOrWidth = dojo.getStylePixels(node, style);
+			if (isNaN(computedHeightOrWidth)) {
+				var prop = style == 'height' ? 'offsetHeight' : 'offsetWidth';
+				var offset = node[prop];
+				node.style[style] = node[prop] + 'px';
+
+				if (node[prop] != offset) {
+					offset -= (node[prop] - offset);
+					if (offset >= 0) { node.style[style] = offset + 'px'; }
+				}
+				return offset;
+			}
+			return computedHeightOrWidth;
+		}
+		var v = dojo.style(node, style);
+		return (style == "opacity") ? +v : (isColor ? v : parseFloat(v));
+	}
+
 	/*=====
 	dojo.declare("dojo.__AnimArgs", [dojo.__FadeArgs], {
 		// Properties: Object?
@@ -511,29 +532,6 @@ dojo.require("dojo._base.html");
 		
 		args.node = byId(args.node);
 		if(!args.easing){ args.easing = dojo._defaultEasing; }
-
-		// FIXME: Create this function once
-
-		function getStyle(node, style, isColor){
-			if (/^(height|width)$/i.test(style)) {
-				style = style.toLowerCase();
-				var computedHeightOrWidth = dojo.getStylePixels(node, style, null, true); // IE hack disabled
-				if (isNaN(computedHeightOrWidth)) {
-					var prop = style == 'height' ? 'offsetHeight' : 'offsetWidth';
-					var offset = node[prop];
-					node.style[style] = node[prop] + 'px';
-
-					if (node[prop] != offset) {
-						offset -= (node[prop] - offset);
-						if (offset >= 0) { node.style[style] = offset + 'px'; }
-					}
-					return offset;
-				}
-				return computedHeightOrWidth;
-			}
-			var v = dojo.style(node, style);
-			return (style == "opacity") ? +v : (isColor ? v : parseFloat(v));
-		}
 
 		var anim = new dojo._Animation(args);
 		dojo.connect(anim, "beforeBegin", anim, function(){
