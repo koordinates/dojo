@@ -1429,15 +1429,13 @@ dojo.byId = function(id, doc){
 
 		var x, prop;
 
-		if (dojo.isString(node)) {
+		if (typeof node == 'string') {
 			node = byId(node);
 		}
 
-		if (!dojo.isString(name)) {
+		if (typeof name != 'string') {
 
 			// Multiple setter: the 2nd argument is a dictionary (Object object)
-
-			// TODO: all for-in loops should be filtered
 
 			for (x in name) {
 
@@ -1526,116 +1524,117 @@ dojo.byId = function(id, doc){
 	// Also used by query module, regardless of DOM as it needs attributes rather than properties
 	// Returns a string or null
 
-	dojo.realAttr = function(node, name, value) {
-		var x, nn, nameC, prop, doc, att, alias;
+	// NOTE: Does not support multiple sets (name must be a string)
 
-		if (typeof node == 'string') {
-			node = byId(node);
-		}
-		if (typeof name != 'string') {
-			for (x in name) {
-				prop = name.constructor.prototype[x];
-				if (typeof prop == 'undefined' || prop !== name[x]) {
-					node.setAttribute(x, name[x]);
-				}
-			}
-		}
-		if (arguments.length == 2) { // Getter
-			if (attributesBad) {
-				doc = node.ownerDocument;
-        	      		if (typeof(doc.selectNodes) != 'undefined') {
-					return node.getAttribute(name);
-				} // XML document in IE
-
-				if (dojo.hasAttribute(node, name)) {               
-					name = name.toLowerCase();
-					alias = attributeAliases[name];
-					if (!alias) {
-						if (name == 'style') { return node.style.cssText; }
-						if (reURI.test(name)) { return node.getAttribute(name, 2); }
-						if (reEvent.test(name) && node[name]) {
-							att = node[name].toString();
-							if (att) {
-								att = att.replace(reNewLine, '');
-								if (reFunction.test(att)) { return att.replace(reFunction, '$1'); }
-							}
-							return null;
-						}
-						nn = node.tagName.toLowerCase();
-						if (nn == 'select' && name == 'type') {
-							return null;
-						}
-						if (nn == 'form' && typeof node.getAttributeNode != 'undefined') {
-							att = node.getAttributeNode(name);
-							return (att && att.nodeValue) ?att.nodeValue:null;
-						}
-					}
-                			nameC = camelize(alias || name);
-                			if (typeof node[nameC] == 'unknown') {
-						return '[unknown]';
-					}
-					var val = node[nameC];
-                  			if (name == 'longdesc') {
-						return node.getAttribute(name, 2);
-					}
-					if (typeof val == 'boolean') {
-						return val?'':null;
-                  			}
-					return typeof val != 'string' && typeof val != 'undefined' && val !== null ? String(val) : val;
-				}
-				return null;
-			} else {
-				return node.getAttribute(name); // String
-			}		
-		}
-
-		// Setter
+	dojo.realAttr = (function() {
+		var x, nn, nameC, prop, hasAttribute, doc, att, alias;
 
 		if (attributesBad) {
-			doc = node.ownerDocument;
-
-			// Check for XML document
-
-			if (doc && typeof(doc.selectNodes) != 'undefined') {
-				node.setAttribute(name, value);
-			} else {
-
-				// Broken by design MSHTML DOM (IE < 8 and compatibility modes)
-
-				name = name.toLowerCase();
-			        nn = node.tagName;
-				switch(name) {
-				case 'style':
-					node.style.cssText = value;
-					break;
-				case 'checked':
-				case 'selected':
-				case 'disabled':
-				case 'multiple':
-				case 'readonly':
-				case 'ismap':
-					node[name] = !name || value.toLowerCase() == name; // HTML attributes are case insensitive
-					break;
-				case 'type':
-					if (nn != 'select') {
-						// no such attribute, but there is a property
-						// NOTE: warn here?
-
-						node.type = value;
-					}
-					break;
-				default:
-					if (reEvent.test(name)) {
-						node[name] = new Function(value);
-					} else {
-						node[camelize(attributeAliases[name] || name)] = value;
-					}					
+			hasAttribute = dojo.hasAttribute;
+			return function(node, name, value) {
+				if (typeof node == 'string') {
+					node = byId(node);
 				}
-			}
+				if (arguments.length == 2) { // Getter
+					doc = node.ownerDocument;
+	        	      		if (typeof(doc.selectNodes) != 'undefined') {
+						return node.getAttribute(name);
+					} // XML document in IE
+
+					if (hasAttribute(node, name)) {               
+						name = name.toLowerCase();
+						alias = attributeAliases[name];
+						if (!alias) {
+							if (name == 'style') { return node.style.cssText; }
+							if (reURI.test(name)) { return node.getAttribute(name, 2); }
+							if (reEvent.test(name) && node[name]) {
+								att = node[name].toString();
+								if (att) {
+									att = att.replace(reNewLine, '');
+									if (reFunction.test(att)) { return att.replace(reFunction, '$1'); }
+								}
+								return null;
+							}
+							nn = node.tagName.toLowerCase();
+							if (nn == 'select' && name == 'type') {
+								return null;
+							}
+							if (nn == 'form' && typeof node.getAttributeNode != 'undefined') {
+								att = node.getAttributeNode(name);
+								return (att && att.nodeValue) ? att.nodeValue : null;
+							}
+						}
+        	        			nameC = camelize(alias || name);
+                				if (typeof node[nameC] == 'unknown') {
+							return '[unknown]';
+						}
+						var val = node[nameC];
+	                  			if (name == 'longdesc') {
+							return node.getAttribute(name, 2);
+						}
+						if (typeof val == 'boolean') {
+							return val?'':null;
+                  				}
+						return typeof val != 'string' && typeof val != 'undefined' && val !== null ? String(val) : val;
+					}
+					return null;
+				}
+
+				// Setter
+
+				doc = node.ownerDocument;
+
+				// Check for XML document
+
+				if (doc && typeof(doc.selectNodes) != 'undefined') {
+					node.setAttribute(name, value);
+				} else {
+
+					// Broken by design MSHTML DOM (IE < 8 and compatibility modes)
+
+					name = name.toLowerCase();
+				        nn = node.tagName;
+					switch(name) {
+					case 'style':
+						node.style.cssText = value;
+						break;
+					case 'checked':
+					case 'selected':
+					case 'disabled':
+					case 'multiple':
+					case 'readonly':
+					case 'ismap':
+						node[name] = !name || value.toLowerCase() == name; // HTML attributes are case insensitive
+						break;
+					case 'type':
+						if (nn != 'select') {
+							// no such attribute, but there is a property
+							// NOTE: warn here?
+
+							node.type = value;
+						}
+						break;
+					default:
+						if (reEvent.test(name)) {
+							node[name] = new Function(value);
+						} else {
+							node[camelize(attributeAliases[name] || name)] = value;
+						}					
+					}
+				}
+			};
 		} else {
-			node.setAttribute(node, name, value);
-		}
-	};
+			return function(node, name, value) {
+				if (typeof node == 'string') {
+					node = byId(node);
+				}
+				if (arguments.length == 2) { // Getter
+					return node.getAttribute(name); // String
+				}
+				node.setAttribute(node, name, value);
+			};
+		}		
+	})();
 	
 	dojo.create = function(tag, attrs, refNode, pos){
 		// summary: Create an element, allowing for optional attribute decoration
