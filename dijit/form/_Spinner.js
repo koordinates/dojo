@@ -86,6 +86,8 @@ dojo.declare(
 
 			dojo.stopEvent(evt);	
 			// FIXME: Safari bubbles
+			// NOTE: Can be detected (logic is in event module but private at the moment)
+			// NOTE: Need de-bounce or detect event support on connect
 
 			// be nice to DOH and scroll as much as the event says to
 			var scrollAmount = evt.detail ? (evt.detail * -1) : (evt.wheelDelta / 120);
@@ -106,12 +108,13 @@ dojo.declare(
 			this.inherited(arguments);
 
 			// extra listeners
-			this.connect(this.domNode, !dojo.isMozilla ? "onmousewheel" : 'DOMMouseScroll', "_mouseWheeled");
+			this.connect(this.domNode, "onmousewheel", "_mouseWheeled");
+			this.connect(this.domNode, 'DOMMouseScroll', "_mouseWheeled");
 			this._connects.push(dijit.typematic.addListener(this.upArrowNode, this.textbox, {charOrCode:dojo.keys.UP_ARROW,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout));
 			this._connects.push(dijit.typematic.addListener(this.downArrowNode, this.textbox, {charOrCode:dojo.keys.DOWN_ARROW,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout));
 			this._connects.push(dijit.typematic.addListener(this.upArrowNode, this.textbox, {charOrCode:dojo.keys.PAGE_UP,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout));
 			this._connects.push(dijit.typematic.addListener(this.downArrowNode, this.textbox, {charOrCode:dojo.keys.PAGE_DOWN,ctrlKey:false,altKey:false,shiftKey:false}, this, "_typematicCallback", this.timeoutChangeRate, this.defaultTimeout));
-			if(dojo.isIE){
+			//if(dojo.isIE){
 				var _this = this;
 				this.connect(this.domNode, "onresize",
 					function(){ setTimeout(dojo.hitch(_this,
@@ -127,6 +130,6 @@ dojo.declare(
 						}), 0);
 					}
 				);
-			}
+			//}
 		}
 });
