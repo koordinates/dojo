@@ -44,7 +44,7 @@ dojo.declare("dijit._Templated",
 			return dojo.string.substitute(tmpl, this, function(value, key){
 				if(key.charAt(0) == '!'){ value = dojo.getObject(key.substr(1), _this); }
 				if(typeof value == "undefined"){ throw new Error(className+" template:"+key); } // a debugging aide
-				if(value == null){ return ""; }
+				if(!value){ return ""; }
 
 				// Substitution keys beginning with ! will skip the transform step,
 				// in case a user wishes to insert unescaped markup, e.g. ${!foo}
@@ -119,17 +119,30 @@ dojo.declare("dijit._Templated",
 			// rootNode: DomNode|Array[Widgets]
 			//		the node to search for properties. All children will be searched.
 			// getAttrFunc: Function?
-			//		a function which will be used to obtain property for a given
+			//		a function which will be used to obtain attribute for a given
 			//		DomNode/Widget
 			// tags:
 			//		private
 
-			getAttrFunc = getAttrFunc || function(n,p){ return n.getAttribute(p); };
+			var x, nodes, baseNode;
+			var fn = function(stateValue){
+				if(stateValue.indexOf('-') != -1){
+					var pair = stateValue.split('-');
+					dijit.setWaiState(baseNode, pair[0], pair[1]);
+				}
+			};
 
-			var nodes = dojo.isArray(rootNode) ? rootNode : (rootNode.all || rootNode.getElementsByTagName("*"));
-			var x = dojo.isArray(rootNode) ? 0 : -1;
+			getAttrFunc = getAttrFunc || dojo.realAttr;
+
+			if (typeof rootNode.nodeType == 'number') {
+				nodes = rootNode.all || rootNode.getElementsByTagName("*");
+				x = -1;
+			} else {
+				nodes = rootNode;
+				x = 0;
+			}
 			for(; x<nodes.length; x++){
-				var baseNode = (x == -1) ? rootNode : nodes[x];
+				baseNode = (x == -1) ? rootNode : nodes[x];
 				if(this.widgetsInTemplate && getAttrFunc(baseNode, "dojoType")){
 					continue;
 				}
@@ -157,7 +170,6 @@ dojo.declare("dijit._Templated",
 						if(event){
 							var thisFunc = null;
 							if(event.indexOf(":") != -1){
-								// oh, if only JS had tuple assignment
 								var funcNameArr = event.split(":");
 								event = trim(funcNameArr[0]);
 								thisFunc = trim(funcNameArr[1]);
@@ -178,13 +190,9 @@ dojo.declare("dijit._Templated",
 					dijit.setWaiRole(baseNode, role);
 				}
 				var values = getAttrFunc(baseNode, "waiState");
+
 				if(values){
-					dojo.forEach(values.split(/\s*,\s*/), function(stateValue){
-						if(stateValue.indexOf('-') != -1){
-							var pair = stateValue.split('-');
-							dijit.setWaiState(baseNode, pair[0], pair[1]);
-						}
-					});
+					dojo.forEach(values.split(/\s*,\s*/), fn);
 				}
 			}
 		}
@@ -253,16 +261,20 @@ dijit._Templated._sanitizeTemplateString = function(/*String*/tString){
 	return tString; //String
 };
 
+// IE memory leak
+// NOTE: will be removed with circular references
 
-if(window.attachEvent && !window.addEventListener){ // IE memory leak
+if(dojo.isHostMethod(window, 'attachEvent') && !dojo.isHostMethod(window, 'addEventListener')){
 	dojo.addOnWindowUnload(function(){
 		var cache = dijit._Templated._templateCache;
 		for(var key in cache){
-			var value = cache[key];
-			if(!isNaN(value.nodeType)){ // isNode equivalent
-				dojo.destroy(value);
+			if (dojo.isOwnProperty(cache, key)) {
+				var value = cache[key];
+				if(typeof value.nodeType == 'number'){ // isNode equivalent
+					dojo.destroy(value);
+				}
+				delete cache[key];
 			}
-			delete cache[key];
 		}
 	});
 }
