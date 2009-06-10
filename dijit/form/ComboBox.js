@@ -109,14 +109,17 @@ dojo.declare(
 		_getCaretPos: function(/*DomNode*/ element){
 			// khtml 3.5.2 has selection* methods as does webkit nightlies from 2005-06-22
 			var pos = 0;
+
+			// NOTE: Text selection and range logic should be centralized
+
 			if(typeof(element.selectionStart)=="number"){
 				// FIXME: this is totally borked on Moz < 1.3. Any recourse?
 				pos = element.selectionStart;
-			}else if(dojo.isIE){
+			}else if(dojo.doc.selection && dojo.isHostMethod(dojo.doc.selection, 'createRange')){
 				// in the case of a mouse click in a popup being handled,
 				// then the dojo.doc.selection is not the textarea, but the popup
 				// var r = dojo.doc.selection.createRange();
-				// hack to get IE 6 to play nice. What a POS browser.
+				// hack to get IE 6 to play nice.
 				var tr = dojo.doc.selection.createRange().duplicate();
 				var ntr = element.createTextRange();
 				tr.move("character",0);
@@ -135,7 +138,7 @@ dojo.declare(
 		},
 
 		_setCaretPos: function(/*DomNode*/ element, /*Number*/ location){
-			location = parseInt(location);
+			location = parseInt(location, 10);
 			dijit.selectInputText(element, location, location);
 		},
 
@@ -216,8 +219,8 @@ dojo.declare(
 					//		if the user had More Choices selected fall into the
 					//		_onBlur handler
 					if(pw && (
-						newvalue == pw._messages["previousMessage"] ||
-						newvalue == pw._messages["nextMessage"])
+						newvalue == pw._messages.previousMessage ||
+						newvalue == pw._messages.nextMessage)
 					){
 						break;
 					}
@@ -295,7 +298,7 @@ dojo.declare(
 			dijit.selectInputText(fn, fn.value.length);
 			// does text autoComplete the value in the textbox?
 			var caseFilter = this.ignoreCase? 'toLowerCase' : 'substr';
-			if(text[caseFilter](0).indexOf(this.focusNode.value[caseFilter](0)) == 0){
+			if(!text[caseFilter](0).indexOf(this.focusNode.value[caseFilter](0))){
 				var cpos = this._getCaretPos(fn);
 				// only try to extend if we added the last character at the end of the input
 				if((cpos+1) > fn.value.length){
@@ -332,7 +335,7 @@ dojo.declare(
 			// highlighted.
 
 			this.item = null;
-			var zerothvalue = new String(this.store.getValue(results[0], this.searchAttr));
+			var zerothvalue = String(this.store.getValue(results[0], this.searchAttr));
 			if(zerothvalue && this.autoComplete && !this._prev_key_backspace &&
 				(dataObject.query[this.searchAttr] != "*")){
 				// when the user clicks the arrow button to show the full list,
@@ -367,8 +370,6 @@ dojo.declare(
 
 		_showResultList: function(){
 			this._hideResultList();
-			var items = this._popupWidget.getItems(),
-				visibleCount = Math.min(items.length,this.maxListLength);   // TODO: unused, remove
 			this._arrowPressed();
 			// hide the tooltip
 			this.displayMessage("");
@@ -430,8 +431,8 @@ dojo.declare(
 			var newvalue=this.attr('displayedValue');
 			var pw = this._popupWidget;
 			if(pw && (
-				newvalue == pw._messages["previousMessage"] ||
-				newvalue == pw._messages["nextMessage"]
+				newvalue == pw._messages.previousMessage ||
+				newvalue == pw._messages.nextMessage
 				)
 			){
 				this._setValueAttr(this._lastValueReported, true);
@@ -455,7 +456,7 @@ dojo.declare(
 			//		This way screen readers will know what is happening in the
 			//		menu.
 
-			if(node == null){
+			if(!node){
 				return;
 			}
 			// pull the text value from the item attached to the DOM node
@@ -744,10 +745,10 @@ dojo.declare(
 		// tags:
 		//		private
 
-		templateString: "<ul class='dijitReset dijitMenu' dojoAttachEvent='onmousedown:_onMouseDown,onmouseup:_onMouseUp,onmouseover:_onMouseOver,onmouseout:_onMouseOut' tabIndex='-1' style='overflow: \"auto\"; overflow-x: \"hidden\";'>"
-				+"<li class='dijitMenuItem dijitMenuPreviousButton' dojoAttachPoint='previousButton' waiRole='option'></li>"
-				+"<li class='dijitMenuItem dijitMenuNextButton' dojoAttachPoint='nextButton' waiRole='option'></li>"
-			+"</ul>",
+		templateString: "<ul class='dijitReset dijitMenu' dojoAttachEvent='onmousedown:_onMouseDown,onmouseup:_onMouseUp,onmouseover:_onMouseOver,onmouseout:_onMouseOut' tabIndex='-1' style='overflow: \"auto\"; overflow-x: \"hidden\";'>" +
+				"<li class='dijitMenuItem dijitMenuPreviousButton' dojoAttachPoint='previousButton' waiRole='option'></li>" +
+				"<li class='dijitMenuItem dijitMenuNextButton' dojoAttachPoint='nextButton' waiRole='option'></li>" +
+				"</ul>",
 
 		// _messages: Object
 		//		Holds "next" and "previous" text for paging buttons on drop down
@@ -780,8 +781,8 @@ dojo.declare(
 
 		postCreate: function(){
 			// fill in template with i18n messages
-			this.previousButton.innerHTML = this._messages["previousMessage"];
-			this.nextButton.innerHTML = this._messages["nextMessage"];
+			this.previousButton.innerHTML = this._messages.previousMessage;
+			this.nextButton.innerHTML = this._messages.nextMessage;
 			this.inherited(arguments);
 		},
 
@@ -809,7 +810,7 @@ dojo.declare(
 				);
 			}
 			// #3250: in blank options, assign a normal height
-			if(menuitem.innerHTML == ""){
+			if(!menuitem.innerHTML){
 				menuitem.innerHTML = "&nbsp;";
 			}
 			menuitem.item=item;
@@ -829,7 +830,7 @@ dojo.declare(
 			//this._dataObject=dataObject;
 			//this._dataObject.onComplete=dojo.hitch(comboBox, comboBox._openResultList);
 			// display "Previous . . ." button
-			this.previousButton.style.display = (dataObject.start == 0) ? "none" : "";
+			this.previousButton.style.display = !dataObject.start ? "none" : "";
 			dojo.attr(this.previousButton, "id", this.id + "_prev");
 			// create options using _createOption function defined by parent
 			// ComboBox (or FilteringSelect) class
