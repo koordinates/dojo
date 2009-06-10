@@ -136,7 +136,6 @@ dojo.declare(
 			if(this._inTransition){ return; }
 			this._inTransition = true;
 			var animations = [];
-			var paneHeight = this._verticalSpace;
 			if(newWidget){
 				newWidget._buttonWidget.setSelected(true);
 
@@ -290,7 +289,7 @@ dojo.declare("dijit.layout._AccordionButton",
 		dojo[(isSelected ? "addClass" : "removeClass")](this.titleNode,"dijitAccordionTitle-selected");
 		dijit.setWaiState(this.focusNode, "expanded", isSelected);
 		dijit.setWaiState(this.focusNode, "selected", isSelected);
-		this.focusNode.setAttribute("tabIndex", isSelected ? "0" : "-1");
+		this.focusNode.tabIndex = isSelected ? 0 : -1;
 	},
 
 	_handleFocus: function(/*Event*/e){
