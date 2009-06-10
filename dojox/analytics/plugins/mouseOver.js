@@ -1,10 +1,10 @@
 dojo.provide("dojox.analytics.plugins.mouseOver");
 
-dojox.analytics.plugins.mouseOver = new (function(){
-	this.watchMouse = dojo.config["watchMouseOver"] || true;
-	this.mouseSampleDelay = dojo.config["sampleDelay"] || 2500;
+dojox.analytics.plugins.mouseOver = (function(){
+	this.watchMouse = dojo.config.watchMouseOver || true;
+	this.mouseSampleDelay = dojo.config.sampleDelay || 2500;
 	this.addData = dojo.hitch(dojox.analytics, "addData", "mouseOver");
-	this.targetProps = dojo.config["targetProps"] || ["id","className","localName","href", "spellcheck", "lang", "textContent", "value" ];
+	this.targetProps = dojo.config.targetProps || ["id","className","localName","href", "spellcheck", "lang", "textContent", "value" ];
 
 	this.toggleWatchMouse=function(){
 		if (this._watchingMouse){
@@ -13,7 +13,7 @@ dojox.analytics.plugins.mouseOver = new (function(){
 			return;
 		}	
 		dojo.connect(dojo.doc, "onmousemove", this, "sampleMouse");
-	}
+	};
 
 	if (this.watchMouse){
 		dojo.connect(dojo.doc, "onmouseover", this, "toggleWatchMouse");	
@@ -35,7 +35,7 @@ dojox.analytics.plugins.mouseOver = new (function(){
 		}	
 		this._lastMouseEvent = e;
 		return e;
-	}
+	};
 
 	this.trimMouseEvent=function(e){
 		var t = {};
@@ -49,10 +49,10 @@ dojox.analytics.plugins.mouseOver = new (function(){
 					t[i]={};
 					//console.log(e, i, e[i]);
 					for(var j=0;j<props.length;j++){
-						if(dojo.isObject(e[i]) && props[j] in e[i]){
+						if(dojo.isObject(e[i]) && e[i] && props[j] in e[i]){
 							 
 							if (props[j]=="text" || props[j]=="textContent"){
-								if (e[i]["localName"] && (e[i]["localName"]!="HTML")&&(e[i]["localName"]!="BODY")){
+								if (e[i].localName && !(/^(html|body)$/i.test(e[i].localName))){
 									t[i][props[j]]=e[i][props[j]].substr(0,50);
 								}
 							}else{
@@ -82,5 +82,5 @@ dojox.analytics.plugins.mouseOver = new (function(){
 			}
 		}
 		return t;
-	}	
+	};	
 })();
