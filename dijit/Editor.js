@@ -67,7 +67,7 @@ dojo.declare(
 		postCreate: function(){
 			//for custom undo/redo
 			if(this.customUndo){
-				dojo['require']("dijit._editor.range");
+				dojo.require("dijit._editor.range");
 				this._steps=this._steps.slice(0);
 				this._undoedSteps=this._undoedSteps.slice(0);
 //				this.addKeyHandler('z',this.KEY_CTRL,this.undo);

@@ -109,7 +109,9 @@ dojo.declare("dijit.InlineEditBox",
 			onblur: "_onMouseOut"			
 		};
 		for(var name in events){
-			this.connect(this.displayNode, name, events[name]);
+			if (dojo.isOwnProperty(events, name)) {
+				this.connect(this.displayNode, name, events[name]);
+			}
 		}
 		dijit.setWaiRole(this.displayNode, "button");
 		if(!this.displayNode.getAttribute("tabIndex")){
@@ -236,7 +238,7 @@ dojo.declare("dijit.InlineEditBox",
 		// and hide the edit widget before garbage collecting the edit widget
 		setTimeout(function(){
 			ew.destroy();
-			delete ew;
+			ew = null;
 			//if(dojo.isIE){
 				// messing with the DOM tab order can cause IE to focus the body - so restore
 				dijit.focus(dijit.getFocus());

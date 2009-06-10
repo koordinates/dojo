@@ -1,5 +1,7 @@
 dojo.provide("dijit.dijit");
 
+// NOTE: dijit.common would be more descriptive
+
 /*=====
 dijit.dijit = {
 	// summary: A roll-up for common dijit methods
