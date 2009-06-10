@@ -14,8 +14,8 @@ dojo.declare("dijit._Contained",
 				// summary:
 				//		Returns the parent widget of this widget, assuming the parent
 				//		implements dijit._Container
-				for(var p=this.domNode.parentNode; p; p=p.parentNode){
-					var id = p.getAttribute && p.getAttribute("widgetId");
+				for(var p=this.domNode.parentNode; p && p.nodeType == 1; p=p.parentNode){
+					var id = p.getAttribute("widgetId");
 					if(id){
 						var parent = dijit.byId(id);
 						return parent.isContainer ? parent : null;
