@@ -50,10 +50,9 @@ dojo.declare("dijit.MenuBar", dijit._MenuBase, {
 
 		if(evt.ctrlKey || evt.altKey){ return; }
 
-		switch(evt.charOrCode){
-			case dojo.keys.DOWN_ARROW:
-				this._moveToPopup(evt);
-				dojo.stopEvent(evt);
+		if (evt.charOrCode == dojo.keys.DOWN_ARROW){
+			this._moveToPopup(evt);
+			dojo.stopEvent(evt);
 		}
 	}
 });

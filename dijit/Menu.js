@@ -337,11 +337,24 @@ dojo.declare("dijit.Menu",
 		//		Returns the window reference of the passed iframe
 		// tags:
 		//		private
-		var win = dijit.getDocumentWindow(dijit.Menu._iframeContentDocument(iframe_el)) ||
-			// Moz. TODO: is this available when defaultView isn't?
-			dijit.Menu._iframeContentDocument(iframe_el)['__parent__'] ||
-			(iframe_el.name && dojo.doc.frames[iframe_el.name]) || null;
-		return win;	//	Window
+
+		// NOTE: Move getDocumentWindow to core
+		//       Also, duplicates IFrame logic found in core (frame io)
+		//       __parent__ is rarely used, but should go in getDocumentWindow
+
+		var win, doc;
+
+		// Try direct approach
+
+		win = iframe_el.contentWindow || (iframe_el.name && dojo.doc.frames[iframe_el.name]);
+
+		// If not, try to get window from document
+
+		if (!win) {
+			doc = dijit.Menu._iframeContentDocument(iframe_el);
+			win = dijit.getDocumentWindow(doc) || doc.__parent__;
+		}
+		return win || null;	// Window
 	},
 
 	_iframeContentDocument: function(/* HTMLIFrameElement */iframe_el){
@@ -349,10 +362,7 @@ dojo.declare("dijit.Menu",
 		//		Returns a reference to the document object inside iframe_el
 		// tags:
 		//		protected
-		var doc = iframe_el.contentDocument // W3
-			|| (iframe_el.contentWindow && iframe_el.contentWindow.document) // IE
-			|| (iframe_el.name && dojo.doc.frames[iframe_el.name] && dojo.doc.frames[iframe_el.name].document)
-			|| null;
+		var doc = iframe_el.contentDocument || (iframe_el.contentWindow && iframe_el.contentWindow.document) || (iframe_el.name && dojo.doc.frames[iframe_el.name] && dojo.doc.frames[iframe_el.name].document) || null;
 		return doc;	//	HTMLDocument
 	},
 
@@ -439,7 +449,10 @@ dojo.declare("dijit.Menu",
 		// and we don't currently have a reliable way to determine
 		// _contextMenuWithMouse on Safari)
 		var x,y;
-		if(dojo.isSafari || this._contextMenuWithMouse){
+
+		// NOTE: mouse position logic
+
+		if(this._contextMenuWithMouse){
 			x=e.pageX;
 			y=e.pageY;
 		}else{
