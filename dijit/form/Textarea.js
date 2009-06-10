@@ -24,17 +24,11 @@ dojo.declare(
 	cols: "",
 
 	_previousNewlines: 0,
-	_strictMode: (dojo.doc.compatMode != 'BackCompat'), // not the same as !dojo.isQuirks
 
 	_getHeight: function(textarea){
-		var newH = textarea.scrollHeight;
-		if(dojo.isIE){
-			newH += textarea.offsetHeight - textarea.clientHeight - ((dojo.isIE < 8 && this._strictMode)? dojo._getPadBorderExtents(textarea).h : 0);
-		}else if(dojo.isMoz){
-			newH += textarea.offsetHeight - textarea.clientHeight; // creates room for horizontal scrollbar
-		}else{
-			newH += dojo._getPadBorderExtents(textarea).h;
-		}
+		// NOTE: Something wrong here (scroll height + borders and padding?)
+
+		var newH = textarea.scrollHeight + dojo._getPadBorderExtents(textarea).h;
 		return newH;
 	},
 
@@ -45,29 +39,27 @@ dojo.declare(
 		this._busyResizing = true;
 		var textarea = this.domNode;
 		textarea.scrollTop = 0;
-		var oldH = parseFloat(dojo.getComputedStyle(textarea).height);  // TODO: unused, remove
 		var newH = this._getHeight(textarea);
 		if(newH > 0 && textarea.style.height != newH){
 			textarea.style.maxHeight = textarea.style.height = newH + "px";
 		}
 		this._busyResizing = false;
-		if(dojo.isMoz || dojo.isWebKit){
-			var newlines = (textarea.value.match(/\n/g) || []).length;
-			if(newlines < this._previousNewlines){
-				this._shrink();
-			}
-			this._previousNewlines = newlines;
+
+		var newlines = (textarea.value.match(/\n/g) || []).length;
+		if(newlines < this._previousNewlines){
+			this._shrink();
 		}
+		this._previousNewlines = newlines;
 	},
 
 	_busyResizing: false,
 	_shrink: function(){
 		// grow paddingBottom to see if scrollHeight shrinks (when it is unneccesarily big)
-		if((dojo.isMoz || dojo.isSafari/*NOT isWebKit*/) && !this._busyResizing){
+		if(!this._busyResizing){
 			this._busyResizing = true;
 			var textarea = this.domNode;
 			var empty = false;
-			if(textarea.value == ''){
+			if(!textarea.value){
 				textarea.value = ' '; // prevent collapse all the way back to 0
 				empty = true;
 			}
