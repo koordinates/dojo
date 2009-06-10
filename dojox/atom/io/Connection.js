@@ -270,7 +270,7 @@ dojo.declare("dojox.atom.io.Connection",null,{
 			dojo.rawXhrPost(xhrArgs);
 		}else{
 			xhrArgs.putData = entry.toString(true); //Set the content to send.
-			var xhr = dojo.rawXhrPut(xhrArgs);
+			dojo.rawXhrPut(xhrArgs);
 		}
 	},
 
