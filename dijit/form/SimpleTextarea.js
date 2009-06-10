@@ -52,7 +52,7 @@ dojo.declare("dijit.form.SimpleTextarea",
 
 	postCreate: function(){
 		this.inherited(arguments);
-		if(dojo.isIE && this.cols){ // attribute selectors is not supported in IE6
+		if(this.cols){
 			dojo.addClass(this.domNode, "dijitTextAreaCols");
 		}
 	},
@@ -61,7 +61,7 @@ dojo.declare("dijit.form.SimpleTextarea",
 	_onInput: function(e){
 		// Override TextBox._onInput() to enforce maxLength restriction
 		if(this.maxLength){
-			var maxLength = parseInt(this.maxLength);
+			var maxLength = parseInt(this.maxLength, 10);
 			var value = this.textbox.value.replace(/\r/g,'');
 			var overflow = value.length - maxLength;
 			if(overflow > 0){
@@ -70,9 +70,12 @@ dojo.declare("dijit.form.SimpleTextarea",
 				if(textarea.selectionStart){
 					var pos = textarea.selectionStart;
 					var cr = 0;
-					if(dojo.isOpera){
+
+					// NOTE: Text selection/range logic should be centralized
+
+					//if(dojo.isOpera){
 						cr = (this.textbox.value.substring(0,pos).match(/\r/g)||[]).length;
-					}
+					//}
 					this.textbox.value = value.substring(0,pos-overflow-cr)+value.substring(pos-cr);
 					textarea.setSelectionRange(pos-overflow, pos-overflow);
 				}else if(dojo.doc.selection){ //IE
