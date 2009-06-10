@@ -239,7 +239,12 @@ dojo.declare("dijit._TimePicker",
 			}
 
 			// assign typematic mouse listeners to the arrow buttons
-			this.connect(this.timeMenu, dojo.isIE ? "onmousewheel" : 'DOMMouseScroll', "_mouseWheeled");
+
+			// NOTE: Need to detect event support
+
+			this.connect(this.timeMenu, "onmousewheel", "_mouseWheeled");
+			this.connect(this.timeMenu, "DOMMouseScroll", "_mouseWheeled");
+			
 			var _this = this;
 			var typematic = function(){
 				_this._connects.push(
@@ -394,9 +399,16 @@ dojo.declare("dijit._TimePicker",
 			//		Handle the mouse wheel events
 			// tags:
 			//		private
+
+			// NOTE: need de-bounce (or detect event support when connecting)
+
 			dojo.stopEvent(e);
 			// we're not _measuring_ the scroll amount, just direction
-			var scrollAmount = (dojo.isIE ? e.wheelDelta : -e.detail);
+
+			var scrollAmount = e.detail ? -(e.detail) : e.wheelDelta;
+
+			// NOTE: New DOM node?
+
 			this[(scrollAmount>0 ? "_onArrowUp" : "_onArrowDown")](); // yes, we're making a new dom node every time you mousewheel, or click
 		},
 
