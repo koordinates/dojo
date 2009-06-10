@@ -42,7 +42,7 @@ dojo.declare(
 
 		isValid: function(){
 			// Overrides ValidationTextBox.isValid()
-			return this._isvalid || (!this.required && this.attr('displayedValue') == ""); // #5974
+			return this._isvalid || (!this.required && !this.attr('displayedValue')); // #5974
 		},
 
 		_callbackSetLabel: function(	/*Array*/ result, 
@@ -80,7 +80,7 @@ dojo.declare(
 			if(dataObject.query[this.searchAttr] != this._lastQuery){
 				return;
 			}
-			this._isvalid = results.length != 0; // FIXME: should this be greater-than?
+			this._isvalid = results.length > 0;
 			this.validate(true);
 			dijit.form.ComboBoxMixin.prototype._openResultList.apply(this, arguments);
 		},
