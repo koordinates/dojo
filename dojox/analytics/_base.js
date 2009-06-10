@@ -11,11 +11,11 @@ dojox.analytics = function(){
 	this._id = 1;
 
 	//some default values
-	this.sendInterval = dojo.config["sendInterval"] || 5000;
-	this.inTransitRetry = dojo.config["inTransitRetry"] || 200;
-	this.dataUrl = dojo.config["analyticsUrl"] || dojo.moduleUrl("dojox.analytics.logger", "dojoxAnalytics.php");
-	this.sendMethod = dojo.config["sendMethod"] || "xhrPost";
-	this.maxRequestSize = dojo.isIE ? 2000 : dojo.config["maxRequestSize"] || 4000;
+	this.sendInterval = dojo.config.sendInterval || 5000;
+	this.inTransitRetry = dojo.config.inTransitRetry || 200;
+	this.dataUrl = dojo.config.analyticsUrl || dojo.moduleUrl("dojox.analytics.logger", "dojoxAnalytics.php");
+	this.sendMethod = dojo.config.sendMethod || "xhrPost";
+	this.maxRequestSize = dojo.config.maxRequestSize || 2000;
 
 	//while we can go ahead and being logging as soon as this constructor is completed
 	//we're not going to schedule pushing data to the server until after the page
@@ -68,24 +68,20 @@ dojo.extend(dojox.analytics, {
 			this._inTransit = this._data;
 			this._data = [];
 			var def;
-			switch(this.sendMethod){
-				case "script":
-					def = dojo.io.script.get({
-						url: this.getQueryPacket(),
-						preventCache: 1,
-						callbackParamName: "callback"
-					});
-					break;
-				case "xhrPost":
-				default:
-					def = dojo.xhrPost({
-						url:this.dataUrl,
-						content:{
-							id: this._id++,
-							data: dojo.toJson(this._inTransit)
-						}
-					});
-					break;
+			if(this.sendMethod == 'script'){				
+				def = dojo.io.script.get({
+					url: this.getQueryPacket(),
+					preventCache: 1,
+					callbackParamName: "callback"
+				});
+			} else {
+				def = dojo.xhrPost({
+					url:this.dataUrl,
+					content:{
+						id: this._id++,
+						data: dojo.toJson(this._inTransit)
+					}
+				});
 			}
 			def.addCallback(this, "onPushComplete");
 			return def;
@@ -101,7 +97,7 @@ dojo.extend(dojox.analytics, {
 				data: dojo.toJson(this._inTransit)
 			};
 			
-			//FIXME would like a much better way to get the query down to lenght
+			//FIXME: would like a much better way to get the query down to length
 			var query = this.dataUrl + '?' + dojo.objectToQuery(content);
 			if(query.length > this.maxRequestSize){
 				this._data.unshift(this._inTransit.pop());
