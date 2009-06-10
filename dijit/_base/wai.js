@@ -1,5 +1,7 @@
 dojo.provide("dijit._base.wai");
 
+// NOTE: Detect HTML 
+
 dijit.wai = {
 	onload: function(){
 		// summary:
@@ -14,12 +16,12 @@ dijit.wai = {
 		var div = dojo.create("div",{
 			id: "a11yTestNode",
 			style:{
-				cssText:'border: 1px solid;'
-					+ 'border-color:red green;'
-					+ 'position: absolute;'
-					+ 'height: 5px;'
-					+ 'top: -999px;'
-					+ 'background-image: url("' + (dojo.config.blankGif || dojo.moduleUrl("dojo", "resources/blank.gif")) + '");'
+				cssText:'border: 1px solid;' +
+					'border-color:red green;' +
+					'position: absolute;' +
+					'height: 5px;' +
+					'top: -999px;' +
+					'background-image: url("' + (dojo.config.blankGif || dojo.moduleUrl("dojo", "resources/blank.gif")) + '");'
 			}
 		}, dojo.body());
 
@@ -27,7 +29,7 @@ dijit.wai = {
 		var cs = dojo.getComputedStyle(div);
 		if(cs){
 			var bkImg = cs.backgroundImage;
-			var needsA11y = (cs.borderTopColor==cs.borderRightColor) || (bkImg != null && (bkImg == "none" || bkImg == "url(invalid-url:)" ));
+			var needsA11y = cs.borderTopColor==cs.borderRightColor || bkImg == "none" || bkImg == "url(invalid-url:)";
 			dojo[needsA11y ? "addClass" : "removeClass"](dojo.body(), "dijit_a11y");
 			if(typeof div.outerHTML == 'string'){
 				div.outerHTML = "";		// prevent mixed-content warning, see http://support.microsoft.com/kb/925014
@@ -46,7 +48,7 @@ dijit.wai = {
 
 dojo.mixin(dijit,
 {
-	_XhtmlRoles: /banner|contentinfo|definition|main|navigation|search|note|secondary|seealso/,
+	_XhtmlRoles: /(banner|contentinfo|definition|main|navigation|search|note|secondary|seealso)/,
 
 	hasWaiRole: function(/*Element*/ elem, /*String*/ role){
 		// summary:
@@ -65,7 +67,7 @@ dojo.mixin(dijit,
 		// returns:
 		//		The non-XHTML role of elem or an empty string if elem
 		//		does not have a role.
-		 return dojo.trim((dojo.attr(elem, "role") || "").replace(this._XhtmlRoles,"").replace("wairole:",""));
+		return dojo.trim((elem.getAttribute("role") || "").replace(this._XhtmlRoles,"").replace("wairole:",""));
 	},
 
 	setWaiRole: function(/*Element*/ elem, /*String*/ role){
@@ -79,15 +81,18 @@ dojo.mixin(dijit,
 		//		On Firefox 2 and below, "wairole:" is
 		//		prepended to the provided role value.
 
-		var curRole = dojo.attr(elem, "role") || "";
-		if(dojo.isFF < 3 || !this._XhtmlRoles.test(curRole)){
-			dojo.attr(elem, "role", dojo.isFF < 3 ? "wairole:" + role : role);
-		}else{
-			if((" "+ curRole +" ").indexOf(" " + role + " ") < 0){
-				var clearXhtml = dojo.trim(curRole.replace(this._XhtmlRoles, ""));
-				var cleanRole = dojo.trim(curRole.replace(clearXhtml, ""));	 
-         		dojo.attr(elem, "role", cleanRole + (cleanRole ? ' ' : '') + role);
-			}
+		// NOTE: Collision here (need detection for ARIA support)
+
+		var curRole = elem.getAttribute("role") || "";
+
+		if(!curRole && !this._XhtmlRoles.test(curRole)){
+			elem.setAttribute("role", "wairole:" + role);
+		}
+
+		if((" "+ curRole +" ").indexOf(" " + role + " ") == -1){
+			var clearXhtml = dojo.trim(curRole.replace(this._XhtmlRoles, ""));
+			var cleanRole = dojo.trim(curRole.replace(clearXhtml, ""));
+	        		elem.setAttribute("role", cleanRole + (cleanRole ? ' ' : '') + role);
 		}
 	},
 
@@ -96,12 +101,13 @@ dojo.mixin(dijit,
 		//		Removes the specified non-XHTML role from an element.
 		// 		Removes role attribute if no specific role provided (for backwards compat.)
 
-		var roleValue = dojo.attr(elem, "role"); 
+		var roleValue = elem.getAttribute("role"); 
 		if(!roleValue){ return; }
 		if(role){
-			var searchRole = dojo.isFF < 3 ? "wairole:" + role : role;
+			var searchRole = "wairole:" + role;
 			var t = dojo.trim((" " + roleValue + " ").replace(" " + searchRole + " ", " "));
-			dojo.attr(elem, "role", t);
+			t = dojo.trim((" " + t + " ").replace(" " + role + " ", " "));
+			elem.setAttribute("role", t);
 		}else{
 			elem.removeAttribute("role");	
 		}
@@ -118,10 +124,13 @@ dojo.mixin(dijit,
 		// returns:
 		//		true if elem has a value for the given state and
 		//		false if it does not.
-		if(dojo.isFF < 3){
-			return elem.hasAttributeNS("http://www.w3.org/2005/07/aaa", state);
+
+		var val;
+
+		if (dojo.isHostMethod(elem, 'hasAttributeNS')) {
+			val = elem.hasAttributeNS("http://www.w3.org/2005/07/aaa", state);
 		}
-		return elem.hasAttribute ? elem.hasAttribute("aria-"+state) : !!elem.getAttribute("aria-"+state);
+		return val || dojo.hasAttr("aria-"+state);
 	},
 
 	getWaiState: function(/*Element*/ elem, /*String*/ state){
@@ -135,10 +144,13 @@ dojo.mixin(dijit,
 		// returns:
 		//		The value of the requested state on elem
 		//		or an empty string if elem has no value for state.
-		if(dojo.isFF < 3){
-			return elem.getAttributeNS("http://www.w3.org/2005/07/aaa", state);
-		}
-		return elem.getAttribute("aria-"+state) || "";
+
+		var value;
+
+		if (dojo.isHostMethod(elem, 'getAttributeNS')) {
+			value = elem.getAttributeNS("http://www.w3.org/2005/07/aaa", state);
+		}		
+		return value || elem.getAttribute("aria-"+state) || "";
 	},
 
 	setWaiState: function(/*Element*/ elem, /*String*/ state, /*String*/ value){
@@ -149,12 +161,10 @@ dojo.mixin(dijit,
 		//		"http://www.w3.org/2005/07/aaa" with a name of the given state.
 		//		On all other browsers, we set an attribute called
 		//		"aria-"+state.
-		if(dojo.isFF < 3){
-			elem.setAttributeNS("http://www.w3.org/2005/07/aaa",
-				"aaa:"+state, value);
-		}else{
-			elem.setAttribute("aria-"+state, value);
+		if (dojo.isHostMethod(elem, 'setAttributeNS')) {
+			elem.setAttributeNS("http://www.w3.org/2005/07/aaa", "aaa:"+state, value);
 		}
+		elem.setAttribute("aria-"+state, value);
 	},
 
 	removeWaiState: function(/*Element*/ elem, /*String*/ state){
@@ -165,10 +175,9 @@ dojo.mixin(dijit,
 		//		"http://www.w3.org/2005/07/aaa" with a name of the given state.
 		//		On all other browsers, we remove the attribute called
 		//		"aria-"+state.
-		if(dojo.isFF < 3){
+		if (dojo.isHostMethod(elem, 'removeAttributeNS')) {
 			elem.removeAttributeNS("http://www.w3.org/2005/07/aaa", state);
-		}else{
-			elem.removeAttribute("aria-"+state);
 		}
+		elem.removeAttribute("aria-"+state);
 	}
 });
