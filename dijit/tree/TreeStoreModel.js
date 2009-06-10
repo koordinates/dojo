@@ -117,17 +117,17 @@ dojo.declare(
 			var _waitCount = 0;
 			dojo.forEach(childItems, function(item){ if(!store.isItemLoaded(item)){ _waitCount++; } });
 
-			if(_waitCount == 0){
+			if(!_waitCount){
 				// all items are already loaded.  proceed...
 				onComplete(childItems);
 			}else{
 				// still waiting for some or all of the items to load
 				var onItem = function onItem(item){
-					if(--_waitCount == 0){
+					if(!(--_waitCount)){
 						// all nodes have been loaded, send them to the tree
 						onComplete(childItems);
 					}
-				}
+				};
 				dojo.forEach(childItems, function(item){
 					if(!store.isItemLoaded(item)){
 						store.loadItem({
