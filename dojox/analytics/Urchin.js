@@ -10,6 +10,8 @@ dojo.mixin(djConfig,{
 });
 =====*/
 
+var _gat;
+
 dojo.declare("dojox.analytics.Urchin", null, {
 	// summary: A Google-analytics helper, for post-onLoad inclusion of the tracker, and 
 	//		dynamic tracking during long-lived page cycles. 
@@ -92,7 +94,7 @@ dojo.declare("dojox.analytics.Urchin", null, {
 		// summary: sniff the global _gat variable Google defines and either check again
 		//		or fire onLoad if ready.
 		if(this.loadInterval > this.timeout){ return; }
-		setTimeout(dojo.hitch(this, !window["_gat"] ? "_checkGA" : "_gotGA"), this.loadInterval);
+		setTimeout(dojo.hitch(this, !_gat ? "_checkGA" : "_gotGA"), this.loadInterval);
 		this.loadInterval *= (this.decay + 1);
 	},
 
