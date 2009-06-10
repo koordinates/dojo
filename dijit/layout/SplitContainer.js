@@ -56,21 +56,21 @@ dojo.declare("dijit.layout.SplitContainer",
 		this.inherited(arguments);
 		this.sizers = [];
 
+		// NOTE: Review this issue
+
 		// overflow has to be explicitly hidden for splitContainers using gekko (trac #1435)
 		// to keep other combined css classes from inadvertantly making the overflow visible
-		if(dojo.isMozilla){
-			this.domNode.style.overflow = '-moz-scrollbars-none'; // hidden doesn't work
-		}
+		this.domNode.style.overflow = 'hidden'; // hidden doesn't work (?)
 
 		// create the fake dragger
-		if(typeof this.sizerWidth == "object"){
-			try{ //FIXME: do this without a try/catch
-				this.sizerWidth = parseInt(this.sizerWidth.toString());
-			}catch(e){ this.sizerWidth = 7; }
+		if(typeof this.sizerWidth == "object"){			
+			this.sizerWidth = parseInt(this.sizerWidth.toString(), 10) || 7;
 		}
 		var sizer = dojo.doc.createElement('div');
 		this.virtualSizer = sizer;
 		sizer.style.position = 'relative';
+
+		// NOTE: Review this issue
 
 		// #1681: work around the dreaded 'quirky percentages in IE' layout bug
 		// If the splitcontainer's dimensions are specified in percentages, it
@@ -155,7 +155,7 @@ dojo.declare("dijit.layout.SplitContainer",
 		// summary: Remove sizer, but only if widget is really our child and
 		// we have at least one sizer to throw away
 		if(this.sizers.length){
-			var i=dojo.indexOf(this.getChildren(), widget)
+			var i=dojo.indexOf(this.getChildren(), widget);
 			if(i != -1){
 				if(i==this.sizers.length){
 					i--;
@@ -280,10 +280,12 @@ dojo.declare("dijit.layout.SplitContainer",
 	},
 
 	_movePanel: function(panel, pos, size){
+		var box;
+
 		if(this.isHorizontal){
 			panel.domNode.style.left = pos + 'px';	// TODO: resize() takes l and t parameters too, don't need to set manually
 			panel.domNode.style.top = 0;
-			var box = {w: size, h: this.paneHeight};
+			box = {w: size, h: this.paneHeight};
 			if(panel.resize){
 				panel.resize(box);
 			}else{
@@ -292,7 +294,7 @@ dojo.declare("dijit.layout.SplitContainer",
 		}else{
 			panel.domNode.style.left = 0;	// TODO: resize() takes l and t parameters too, don't need to set manually
 			panel.domNode.style.top = pos + 'px';
-			var box = {w: this.paneWidth, h: size};
+			box = {w: this.paneWidth, h: size};
 			if(panel.resize){
 				panel.resize(box);
 			}else{
@@ -393,14 +395,19 @@ dojo.declare("dijit.layout.SplitContainer",
 		this.sizingSplitter.style.zIndex = 6;
 
 		// TODO: REVISIT - we want MARGIN_BOX and core hasn't exposed that yet (but can't we use it anyway if we pay attention? we do elsewhere.)
+		// NOTE: Same issue is present in drag and drop module
+		// NOTE: Mouse position logic needs to be centralized in event module
+
+		var client, screen;
+
 		this.originPos = dojo.coords(children[0].domNode, true);
 		if(this.isHorizontal){
-			var client = e.layerX || e.offsetX || 0;
-			var screen = e.pageX;
+			client = e.layerX || e.offsetX || 0;
+			screen = e.pageX;
 			this.originPos = this.originPos.x;
 		}else{
-			var client = e.layerY || e.offsetY || 0;
-			var screen = e.pageY;
+			client = e.layerY || e.offsetY || 0;
+			screen = e.pageY;
 			this.originPos = this.originPos.y;
 		}
 		this.startPoint = this.lastPoint = screen;
@@ -539,8 +546,8 @@ dojo.declare("dijit.layout.SplitContainer",
 			var cookieName = this._getCookieName(i);
 			var cookieValue = dojo.cookie(cookieName);
 			if(cookieValue){
-				var pos = parseInt(cookieValue);
-				if(typeof pos == "number"){
+				var pos = parseInt(cookieValue, 10);
+				if(typeof pos == "number" && !isNaN(pos)){
 					child.sizeShare = pos;
 				}
 			}
