@@ -340,9 +340,8 @@ dojo.declare("dijit.Menu",
 
 		// NOTE: Move getDocumentWindow to core
 		//       Also, duplicates IFrame logic found in core (frame io)
-		//       __parent__ is rarely used, but should go in getDocumentWindow
 
-		var win, doc;
+		var win;
 
 		// Try direct approach
 
@@ -351,8 +350,7 @@ dojo.declare("dijit.Menu",
 		// If not, try to get window from document
 
 		if (!win) {
-			doc = dijit.Menu._iframeContentDocument(iframe_el);
-			win = dijit.getDocumentWindow(doc) || doc.__parent__;
+			win = dijit.getDocumentWindow(dijit.Menu._iframeContentDocument(iframe_el));
 		}
 		return win || null;	// Window
 	},
