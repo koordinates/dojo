@@ -38,13 +38,18 @@ dojo.declare("dijit.layout.TabController",
 		if(!this.pane2button){ return; }
 
 		var maxWidth = 0;
+		var pane2button = this.pane2button;
 		for(var pane in this.pane2button){
-			var ow = this.pane2button[pane].innerDiv.scrollWidth;
-			maxWidth = Math.max(maxWidth, ow);
+			if (dojo.isOwnProperty(pane2button, pane)) {
+				var ow = pane2button[pane].innerDiv.scrollWidth;
+				maxWidth = Math.max(maxWidth, ow);
+			}
 		}
 		//unify the length of all the tabs
-		for(pane in this.pane2button){
-			this.pane2button[pane].innerDiv.style.width = maxWidth + 'px';
+		for(pane in pane2button){
+			if (dojo.isOwnProperty(pane2button, pane)) {
+				pane2button[pane].innerDiv.style.width = maxWidth + 'px';
+			}
 		}	
 	}
 });
