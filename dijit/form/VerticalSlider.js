@@ -25,7 +25,7 @@ dojo.declare(
 	startup: function(){
 		if(this._started){ return; }
 
-		if(!this.isLeftToRight() && dojo.isMoz){
+		if(!this.isLeftToRight()){
 			if(this.leftDecoration){this._rtlRectify(this.leftDecoration);}
 			if(this.rightDecoration){this._rtlRectify(this.rightDecoration);}
 		}
