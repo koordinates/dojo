@@ -104,7 +104,7 @@ dojo.declare("dijit.form.Button",
 	},
 
 	postCreate: function(){
-		if (this.showLabel == false){
+		if (!this.showLabel){
 			dojo.addClass(this.containerNode,"dijitDisplayNone");
 		}
 		dojo.setSelectable(this.focusNode, false);
@@ -138,7 +138,7 @@ dojo.declare("dijit.form.Button",
 		//		Set the label (text) of the button; takes an HTML string.
 		this.containerNode.innerHTML = this.label = content;
 		this._layoutHack();
-		if (this.showLabel == false && !this.params.title){
+		if (!this.showLabel && !this.params.title){
 			this.titleNode.title = dojo.trim(this.containerNode.innerText || this.containerNode.textContent || '');
 		}
 	}		
@@ -212,15 +212,13 @@ dojo.declare("dijit.form.DropDownButton", [dijit.form.Button, dijit._Container],
 	},
 
 	_onDropDownClick: function(/*Event*/ e){
-		// on Firefox 2 on the Mac it is possible to fire onclick
-		// by pressing enter down on a second element and transferring
-		// focus to the DropDownButton;
 		// we want to prevent opening our menu in this situation
 		// and only do so if we have seen a keydown on this button;
 		// e.detail != 0 means that we were fired by mouse
-		var isMacFFlessThan3 = dojo.isFF && dojo.isFF < 3
-			&& navigator.appVersion.indexOf("Macintosh") != -1;
-		if(!isMacFFlessThan3 || e.detail != 0 || this._seenKeydown){
+
+		// NOTE: Check event type, not detail
+
+		if(e.detail || this._seenKeydown){
 			this._onArrowClick(e);
 		}
 		this._seenKeydown = false;
