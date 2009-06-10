@@ -54,8 +54,11 @@ dojo.declare(
 			},
 
 			destroy: function(){
-				for(var pane in this.pane2button){
-					this.onRemoveChild(pane);
+				var pane2button = this.pane2button;
+				for(var pane in pane2button){
+					if (dojo.isOwnProperty(pane2button, pane)) {
+						this.onRemoveChild(pane);
+					}
 				}
 				dojo.forEach(this._subscriptions, dojo.unsubscribe);
 				this.inherited(arguments);
