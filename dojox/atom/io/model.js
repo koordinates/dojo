@@ -143,10 +143,9 @@ dojox.atom.io.model.util = {
 		//		The string to escape
 		//	returns: 
 		//		HTML String with special characters (<,>,&, ", etc,) escaped.
-		str = str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;").replace(/>/gm, "&gt;").replace(/"/gm, "&quot;");
-		str = str.replace(/'/gm, "&#39;"); 
-		return str;
+		return str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;").replace(/>/gm, "&gt;").replace(/"/gm, "&quot;").replace(/'/gm, "&#39;");
 	},
+
 	unEscapeHtml: function(/*String*/str){
 		//	summary: 
 		//		Utility function to un-escape XML special characters in an HTML string.
@@ -157,9 +156,7 @@ dojox.atom.io.model.util = {
 		//		The string to un-escape.
 		//	returns: 
 		//		HTML String converted back to the normal text (unescaped) characters (<,>,&, ", etc,).
-		str = str.replace(/&amp;/gm, "&").replace(/&lt;/gm, "<").replace(/&gt;/gm, ">").replace(/&quot;/gm, "\"");
-		str = str.replace(/&#39;/gm, "'"); 
-		return str;
+		return str.replace(/&#39;/gm, "'").replace(/&lt;/gm, "<").replace(/&gt;/gm, ">").replace(/&quot;/gm, '"').replace(/&amp;/gm, '&');
 	},
 	getNodename: function(/*DOM node*/node){
 		//	summary: 
@@ -224,20 +221,21 @@ dojo.declare('dojox.atom.io.model.Node', null, {
 		this.textContent = dojox.xml.parser.textContent(node);
 	},
 	_saveAttributes: function(node){
-		if(!this.attributes){this.attributes = [];}
+		if(!this.attributes){
+			this.attributes = [];
+		}
+
 		// Work around lack of hasAttributes() in IE
-		var hasAttributes = function(node){
-			var attrs = node.attributes;
-			if(attrs === null){return false;}
-			return (attrs.length !== 0);
-		};
+		
+		var attrs = node.attributes;	
 	
-		if(hasAttributes(node) && this._getAttributeNames){
-			var names = this._getAttributeNames(node);
-			if(names && names.length > 0){
-				for(var x in names){
-					var attrib = node.getAttribute(names[x]);
-					if(attrib){this.attributes[names[x]] = attrib;}
+		if(attrs && attrs.length && this._getAttributeNames){
+			var attrib, names = this._getAttributeNames(node);
+			var x = names.length;
+			while(x--){
+				attrib = dojo.realAttr(node, names[x]);
+				if(attrib){
+					this.attributes[names[x]] = attrib;
 				}
 			}
 		}
@@ -252,8 +250,9 @@ dojo.declare('dojox.atom.io.model.Node', null, {
 	//to return an array of attrib names
 	_getAttributeNames: function(node){
 		var names = [];
-		for(var i =0; i<node.attributes.length; i++){
-			names.push(node.attributes[i].nodeName);
+		var i = node.attributes.length;
+		while(i--){
+			names[i] = node.attributes[i].nodeName;
 		}
 		return names;
 	},
@@ -262,6 +261,11 @@ dojo.declare('dojox.atom.io.model.Node', null, {
 		var x;
 		var name = (this.shortNs?this.shortNs+":":'')+this.name;
 		var cdata = (this.name == "#cdata-section");
+		var attributes = this.attributes;
+		var content = this.content;
+		var escapeHtml = dojox.atom.io.model.util.escapeHtml;
+		var isOwnProperty = dojo.isOwnProperty;
+
 		if(cdata){ 
 			xml.push("<![CDATA[");
 			xml.push(this.textContent);
@@ -272,15 +276,19 @@ dojo.declare('dojox.atom.io.model.Node', null, {
 			if(this.name_space){
 				xml.push(" xmlns='" + this.name_space + "'");
 			}
-			if(this.attributes){
-				for(x in this.attributes){
-					xml.push(" " + x + "='" + this.attributes[x] + "'");
+			if(attributes){
+				for(x in attributes){
+					if (isOwnProperty(attributes, x)) {
+						xml.push(" " + x + "='" + escapeHtml(attributes[x]) + "'");
+					}
 				}
 			}
-			if(this.content){
+			if(content){
 				xml.push(">");
-				for(x in this.content){ 
-					xml.push(this.content[x]);
+				for(x in content){ 
+					if (isOwnProperty(content, x)) {
+						xml.push(content[x]);
+					}
 				}
 				xml.push("</" + name + ">\n");
 			}else{
@@ -868,14 +876,18 @@ dojo.declare("dojox.atom.io.model.Entry",dojox.atom.io.model.AtomItem,{
 		//		Function to construct string form of the entry tag, which is an XML structure.
 		//	description: 
 		//		Function to construct string form of the entry tag, which is an XML structure.
-		var s = [];
-		var i;
+		var i, s = [];
+		var name_spaces = this.name_spaces;
 		if(amPrimary){
 			s.push("<?xml version='1.0' encoding='UTF-8'?>");
 			s.push("<entry xmlns='"+dojox.atom.io.model._Constants.ATOM_URI+"'");
 		}else{s.push("<entry");}
 		if(this.xmlBase){s.push(' xml:base="'+this.xmlBase+'" ');}
-		for(i in this.name_spaces){s.push(' xmlns:'+i+'="'+this.name_spaces[i]+'"');}
+		for(i in name_spaces){
+			if (dojo.isOwnProperty(name_spaces, i)) {
+				s.push(' xmlns:'+i+'="'+name_spaces[i]+'"');
+			}
+		}
 		s.push('>\n');
 		s.push('<id>' + (this.id ? this.id: '') + '</id>\n'); 
 		if(this.issued && !this.published){this.published = this.issued;}
@@ -892,11 +904,15 @@ dojo.declare("dojox.atom.io.model.Entry",dojox.atom.io.model.AtomItem,{
 		if(this.rights){s.push('<rights>'+this.rights+'</rights>\n');}
 		if(this.title){s.push(this.title.toString());}
 		if(this.summary){s.push(this.summary.toString());}
-		var arrays = [this.authors,this.categories,this.links,this.contributors,this.extensions];
-		for(var x in arrays){
-			if(arrays[x]){
-				for(var y in arrays[x]){
-					s.push(arrays[x][y]);
+		var j, array, arrays = [this.authors,this.categories,this.links,this.contributors,this.extensions];
+
+		i = arrays.length;
+		while(i--){
+			if(arrays[i]){
+				array = arrays[i];
+				j = array.length;
+				while(j--){
+					s.push(array[j]);
 				}
 			}
 		}
@@ -1030,8 +1046,10 @@ dojo.declare("dojox.atom.io.model.Feed",dojox.atom.io.model.AtomItem,{
 		//
 		//	arrayOfEntry: 
 		//		An array of entry objects to add to the feed.
-		for(var x in arrayOfEntry){
-			this.addEntry(arrayOfEntry[x]);
+
+		var i = arrayOfEntry.length;
+		while(i--){
+			this.addEntry(arrayOfEntry[i]);
 		}
 	},
 	toString: function(){
@@ -1039,12 +1057,16 @@ dojo.declare("dojox.atom.io.model.Feed",dojox.atom.io.model.AtomItem,{
 		//		Function to construct string form of the feed tag, which is an XML structure.
 		//	description: 
 		//		Function to construct string form of the feed tag, which is an XML structure.
-		var s = [];
-		var i;
+		var i, s = [];
+		var name_spaces = this.name_spaces;
 		s.push('<?xml version="1.0" encoding="utf-8"?>\n');
 		s.push('<feed xmlns="'+dojox.atom.io.model._Constants.ATOM_URI+'"');
 		if(this.xmlBase){s.push(' xml:base="'+this.xmlBase+'"');}
-		for(i in this.name_spaces){s.push(' xmlns:'+i+'="'+this.name_spaces[i]+'"');}
+		for(i in name_spaces){
+			if (dojo.isOwnProperty(name_spaces, i)) {
+				s.push(' xmlns:'+i+'="'+name_spaces[i]+'"');
+			}
+		}
 		s.push('>\n');
 		s.push('<id>' + (this.id ? this.id: '') + '</id>\n'); 
 		if(this.title){s.push(this.title);}
@@ -1064,11 +1086,17 @@ dojo.declare("dojox.atom.io.model.Feed",dojox.atom.io.model.AtomItem,{
 		if(this.subtitle){s.push(this.subtitle.toString());}
 		if(this.tagline){s.push(this.tagline.toString());}
 		//TODO: need to figure out what to do with xmlBase
-		var arrays = [this.alternateLinks,this.authors,this.categories,this.contributors,this.otherLinks,this.extensions,this.entries];
-		for(i in arrays){
+		var j, array, arrays = [this.alternateLinks,this.authors,this.categories,this.contributors,this.otherLinks,this.extensions,this.entries];
+
+		// NOTE: Duplicated logic
+
+		i = arrays.length;
+		while(i--){
 			if(arrays[i]){
-				for(var x in arrays[i]){
-					s.push(arrays[i][x]);
+				array = arrays[i];
+				j = array.length;
+				while(j--){
+					s.push(array[j]);
 				}
 			}
 		}
@@ -1124,9 +1152,7 @@ dojo.declare("dojox.atom.io.model.Service",dojox.atom.io.model.AtomItem,{
 		//
 		//	node: 
 		//		The DOM node to process for content.
-		var href;
 		var i;
-		var len = node.childNodes ? node.childNodes.length : 0;
 		this.workspaces = [];
 		if(node.tagName != "service"){
 			// FIXME: Need 0.9 DOM util...
