@@ -52,8 +52,11 @@ dojo.declare("dijit.WidgetSet", null, {
 		//		|	dijit.registry.forEach(function(widget){
 		//		|		console.log(widget.declaredClass);	
 		//		|	});
-		for(var id in this._hash){
-			func(this._hash[id]);
+		var hash = this._hash;
+		for(var id in hash){
+			if (dojo.isOwnProperty(hash, id)) {
+				func(this._hash[id]);
+			}
 		}
 	},
 
@@ -134,7 +137,7 @@ dijit.findWidgets = function(/*DomNode*/ root){
 	
 	var outAry = [];
 
-	// *** Create once
+	// NOTE: Create once
 
 	function getChildrenHelper(root){
 		var list = root.childNodes || root.children, i = 0, node;
@@ -206,11 +209,9 @@ dijit._tabElements = {
 
 dijit._isElementShown = function(/*Element*/elem){
 	var style = dojo.style(elem);
-	return (style.visibility != "hidden")
-		&& (style.visibility != "collapsed")
-		&& (style.display != "none")
-		&& (dojo.attr(elem, "type") != "hidden");
-}
+
+	return (style.visibility != "hidden") && (style.visibility != "collapsed") && (style.display != "none") && (elem.tagName.toLowerCase() != 'input' || elem.type != "hidden");
+};
 
 dijit.isTabNavigable = function(/*Element*/elem){
 	// summary:
@@ -222,9 +223,7 @@ dijit.isTabNavigable = function(/*Element*/elem){
 		return true; // boolean
 	}
 	var name = elem.nodeName.toLowerCase();
-	if(((name == "a" && dojo.hasAttr(elem, "href"))
-			|| dijit._tabElements[name])
-		&& (!hasTabindex || tabindex >= 0)){
+	if(((name == "a" && dojo.hasAttr(elem, "href")) || dijit._tabElements[name]) && (!hasTabindex || tabindex >= 0)){
 		return true; // boolean
 	}
 	return false; // boolean
@@ -250,7 +249,7 @@ dijit._getTabNavigable = function(/*DOMNode*/root){
 			var isShown = dijit._isElementShown(child);
 			if(isShown && dijit.isTabNavigable(child)){
 				var tabindex = dojo.attr(child, "tabindex");
-				if(!dojo.hasAttr(child, "tabindex") || tabindex == 0){
+				if(!dojo.hasAttr(child, "tabindex") || !tabindex){
 					if(!first){ first = child; }
 					last = child;
 				}else if(tabindex > 0){
@@ -264,12 +263,12 @@ dijit._getTabNavigable = function(/*DOMNode*/root){
 					}
 				}
 			}
-			if(isShown && child.nodeName.toUpperCase() != 'SELECT'){ walkTree(child) }
+			if(isShown && child.nodeName.toUpperCase() != 'SELECT'){ walkTree(child); }
 		});
 	};
-	if(dijit._isElementShown(root)){ walkTree(root) }
+	if(dijit._isElementShown(root)){ walkTree(root); }
 	return { first: first, last: last, lowest: lowest, highest: highest };
-}
+};
 dijit.getFirstInTabbingOrder = function(/*String|DOMNode*/root){
 	// summary:
 	//		Finds the descendant of the specified root node
@@ -297,4 +296,4 @@ dojo.mixin(dijit, {
 });
 =====*/
 
-dijit.defaultDuration = dojo.config["defaultDuration"] || 200;
+dijit.defaultDuration = dojo.config.defaultDuration || 200;
