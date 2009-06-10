@@ -1,32 +1,22 @@
 dojo.provide("dijit._base.window");
 
 // TODO: remove this in 2.0, it's not used anymore, or at least not internally
+// NOTE: It is used by Dijit internally (e.g. menus)
 
-dijit.getDocumentWindow = function(doc){
-	// summary:
-	// 		Get window object associated with document doc
+// NOTE: move to core
 
-	// In some IE versions (at least 6.0), document.parentWindow does not return a
-	// reference to the real window object (maybe a copy), so we must fix it as well
-	// We use IE specific execScript to attach the real window reference to
-	// document._parentWindow for later use
+dijit.getDocumentWindow = (function() {
+	var propName, doc = window.document;
 
-	// *** Last test doesn't make sense (expando is nulled after use)
-
-	if(doc.parentWindow.execScript && window !== document.parentWindow && !doc._parentWindow){
-		/*
-		In IE 6, only the variable "window" can be used to connect events (others
-		may be only copies).
-		*/
-		doc.parentWindow.execScript("document._parentWindow = window;", "Javascript");
-		//to prevent memory leak, unset it after use
-		//another possibility is to add an onUnload handler which seems overkill to me (liucougar)
-		var win = doc._parentWindow;
-		doc._parentWindow = null;
-		return win;	//	Window
+	if (dojo.isHostObjectProperty(doc, 'parentWindow')) {
+		propName = 'parentWindow';
+	} else if (dojo.isHostObjectProperty(doc, 'defaultView') && doc.defaultView == this) { // defaultView is not always window/global object (e.g. IceBrowser, Safari 2)
+		propName = 'defaultView';
+	} else if (dojo.isHostObjectProperty(doc, '__parent__')) { // IceBrowser
+		propName = '__parent__';
 	}
+	return function(docNode) {
+		return docNode[propName] || null;
+	};
+})();
 
-	// FIXME: defaultView may not point to window object
-
-	return doc._parentWindow || doc.parentWindow || doc.__parent__ || doc.defaultView;	//	Window
-}
