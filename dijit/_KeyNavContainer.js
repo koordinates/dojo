@@ -82,8 +82,8 @@ dojo.declare("dijit._KeyNavContainer",
 			//		with multiple focal nodes) within this container.
 			// tags:
 			//		protected
-			if(this.focusedChild && this.focusedChild.hasNextFocalNode
-					&& this.focusedChild.hasNextFocalNode()){
+			if(this.focusedChild && this.focusedChild.hasNextFocalNode &&
+					this.focusedChild.hasNextFocalNode()){
 				this.focusedChild.focusNext();
 				return;
 			}
@@ -101,8 +101,8 @@ dojo.declare("dijit._KeyNavContainer",
 			//		with multiple focal nodes) within this container.
 			// tags:
 			//		protected
-			if(this.focusedChild && this.focusedChild.hasPrevFocalNode
-					&& this.focusedChild.hasPrevFocalNode()){
+			if(this.focusedChild && this.focusedChild.hasPrevFocalNode &&
+					this.focusedChild.hasPrevFocalNode()){
 				this.focusedChild.focusPrev();
 				return;
 			}
@@ -142,13 +142,13 @@ dojo.declare("dijit._KeyNavContainer",
 			//		private
 			if(widget.getFocalNodes){
 				dojo.forEach(widget.getFocalNodes(), function(node){
-					dojo.attr(node, "tabindex", -1);
+					node.tabIndex = -1;
 					this._connectNode(node);
 				}, this);
 			}else{
 				var node = widget.focusNode || widget.domNode;
 				if(widget.isFocusable()){
-					dojo.attr(node, "tabindex", -1);
+					node.tabIndex = -1;
 				}
 				this._connectNode(node);
 			}
@@ -176,7 +176,7 @@ dojo.declare("dijit._KeyNavContainer",
 			// _onFocus() handler confuses the focus.js code
 			// (because it causes _onFocusNode() to be called recursively)
 
-			// focus bubbles on Firefox,
+			// focus bubbles in agents that allow all elements to be focused,
 			// so just make sure that focus has really gone to the container
 			if(evt.target !== this.domNode){ return; }
 
@@ -185,7 +185,7 @@ dojo.declare("dijit._KeyNavContainer",
 			// and then remove the container's tabIndex,
 			// so that tab or shift-tab will go to the fields after/before
 			// the container, rather than the container itself
-			dojo.removeAttr(this.domNode, "tabIndex");
+			dojo.removeAttr(this.domNode, "tabindex");
 		},
 
 		_onBlur: function(evt){
@@ -194,7 +194,7 @@ dojo.declare("dijit._KeyNavContainer",
 			// Note that using _onBlur() so that this doesn't happen when focus is shifted
 			// to one of my child widgets (typically a popup)
 			if(this.tabIndex){
-				dojo.attr(this.domNode, "tabindex", this.tabIndex);
+				this.domNode.tabIndex = this.tabIndex;
 			}
 			// TODO: this.inherited(arguments);
 		},
