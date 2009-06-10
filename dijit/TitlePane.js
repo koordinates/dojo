@@ -66,14 +66,14 @@ dojo.declare(
 		// setup open/close animations
 		var hideNode = this.hideNode, wipeNode = this.wipeNode;
 		this._wipeIn = dojo.fx.wipeIn({
-			node: this.wipeNode,
+			node: wipeNode,
 			duration: this.duration,
 			beforeBegin: function(){
 				hideNode.style.display="";
 			}
 		});
 		this._wipeOut = dojo.fx.wipeOut({
-			node: this.wipeNode,
+			node: wipeNode,
 			duration: this.duration,
 			onEnd: function(){
 				hideNode.style.display="none";
@@ -130,7 +130,7 @@ dojo.declare(
 			}
 		});
 
-		var anim = this[this.open ? "_wipeOut" : "_wipeIn"]
+		var anim = this[this.open ? "_wipeOut" : "_wipeIn"];
 		if(anim){
 			anim.play();
 		}else{
