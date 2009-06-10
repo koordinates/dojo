@@ -86,9 +86,9 @@ dojo.declare("dijit.form.NumberTextBoxMixin",
 			// tags:
 			//		protected
 
-			if(typeof value != "number") { return String(value) }
+			if(typeof value != "number") { return String(value); }
 			if(isNaN(value)){ return ""; }
-			if(("rangeCheck" in this) && !this.rangeCheck(value, constraints)){ return String(value) }
+			if(("rangeCheck" in this) && !this.rangeCheck(value, constraints)){ return String(value); }
 			if(this.editOptions && this._focused){
 				constraints = dojo.mixin(dojo.mixin({}, this.editOptions), constraints);
 			}
@@ -139,7 +139,7 @@ dojo.declare("dijit.form.NumberTextBoxMixin",
 			//		Hook so attr('value', ...) works.
 			if(value !== undefined && formattedValue === undefined){
 				if(typeof value == "number"){
-					if(isNaN(value)){ formattedValue = '' }
+					if(isNaN(value)){ formattedValue = ''; }
 					else if(("rangeCheck" in this) && !this.rangeCheck(value, this.constraints)){
 						formattedValue = String(value);
 					}
@@ -168,7 +168,7 @@ dojo.declare("dijit.form.NumberTextBoxMixin",
 			if(isNaN(v) && this.textbox.value !== ''){ // if displayed value other than ''
 				var n = Number(this.textbox.value); // check for exponential notation that parse() rejected (erroneously?)
 				return (String(n)===this.textbox.value)? n : undefined; // return exponential Number or undefined for random text
-			}else{ return v } // Number or NaN for ''
+			}else{ return v; } // Number or NaN for ''
 		}
 	}
 );
