@@ -4,7 +4,7 @@ dojo.require("dijit._base.focus");
 dojo.require("dijit._base.place");
 dojo.require("dijit._base.window");
 
-dijit.popup = new function(){
+dijit.popup = function(){
 	// summary:
 	//		This class is used to show/hide widgets as popups.
 
@@ -153,7 +153,7 @@ dijit.popup.__OpenArgs = function(){
 				/* do nothing, just trying to get right value for pi */
 			}
 			return stack[pi];
-		}
+		};
 
 		// provide default escape and tab key handling
 		// (this will work for any widget, not just menu)
@@ -204,7 +204,10 @@ dijit.popup.__OpenArgs = function(){
 	this.close = function(/*Widget*/ popup){
 		// summary:
 		//		Close specified popup and any popups that it parented
-		while(dojo.some(stack, function(elem){return elem.widget == popup;})){
+
+		var fn = function(elem){return elem.widget == popup;};
+
+		while(dojo.some(stack, fn)){
 			var top = stack.pop(),
 				wrapper = top.wrapper,
 				iframe = top.iframe,
@@ -231,7 +234,7 @@ dijit.popup.__OpenArgs = function(){
 	};
 }();
 
-dijit._frames = new function(){
+dijit._frames = function(){
 	// summary: cache of iframes
 	var queue = [];
 
@@ -242,12 +245,12 @@ dijit._frames = new function(){
 			iframe.style.display="";
 		}else{
 		 	iframe = dojo.create("iframe");
-			iframe.src = 'javascript:""';
 			iframe.className = "dijitBackgroundIframe";
-			// *** why are these styles not in a class?
-			// *** were IE-only, now inferred from DirectX filter
+
+			// NOTE: why are these styles not in a class?
+
 			style = iframe.style;
-			if (typeof iframe.style.filter == 'string') {
+			if (typeof style.filter == 'string' && dojo.isHostObjectProperty(iframe, 'filters')) {
 				style.filter = 'Alpha(Opacity=0)';
 				style.zIndex = '-1';
 				style.position = 'absolute';
@@ -261,12 +264,12 @@ dijit._frames = new function(){
 
 	this.push = function(iframe){
 		iframe.style.display="none";
-		if(dojo.isIE){
+		if(dojo.isHostMethod(iframe.style, 'removeExpression')){
 			iframe.style.removeExpression("width");
 			iframe.style.removeExpression("height");
 		}
 		queue.push(iframe);
-	}
+	};
 }();
 
 
@@ -280,7 +283,7 @@ dijit.BackgroundIframe = function(/* DomNode */node){
 	//			area (and position) of node
 
 	if(!node.id){ throw new Error("no id"); }
-	if(dojo.isIE < 7 || (dojo.hasClass(dojo.body(), "dijit_a11y"))){
+	if(dojo.hasClass(dojo.body(), "dijit_a11y")){
 		var iframe = dijit._frames.pop();
 		node.appendChild(iframe);
 		if(iframe.style.setExpression){
