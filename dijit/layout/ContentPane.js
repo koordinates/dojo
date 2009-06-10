@@ -501,13 +501,13 @@ dojo.declare(
 					var errMess = this.onContentError(e);
 					try{
 						this.containerNode.innerHTML = errMess;
-					}catch(e){
-						console.error('Fatal '+this.id+' could not change content due to '+e.message, e);
+					}catch(e2){
+						console.error('Fatal '+this.id+' could not change content due to '+e.message, e2);
 					}
 				})/*,
 				_onError */
 			});
-		};
+		}
 
 		var setterParams = dojo.mixin({
 			cleanContent: this.cleanContent, 
