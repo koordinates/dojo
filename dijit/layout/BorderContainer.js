@@ -131,7 +131,13 @@ dojo.declare(
 
 	layout: function(){
 		// Implement _LayoutWidget.layout() virtual method.
-		for(var region in this._splitters){ this._computeSplitterThickness(region); }
+		var splitters = this._splitters;
+		var isOwnProperty = dojo.isOwnProperty;
+		for(var region in splitters){
+			if (isOwnProperty(splitters, region)) {
+				this._computeSplitterThickness(region);
+			}
+		}
 		this._layoutChildren();
 	},
 
@@ -249,9 +255,13 @@ dojo.declare(
 			setTimeout(dojo.hitch(this, function(){
 				// Results are invalid.  Clear them out.
 				this._splitterThickness = {};
+				var splitters = this._splitters;
+				var isOwnProperty = dojo.isOwnProperty;
 
-				for(var region in this._splitters){
-					this._computeSplitterThickness(region);
+				for(var region in splitters){
+					if (isOwnProperty(splitters, region)) {
+						this._computeSplitterThickness(region);
+					}
 				}
 				this._layoutChildren();
 			}), 50);
@@ -378,10 +388,14 @@ dojo.declare(
 	},
 
 	destroy: function(){
-		for(var region in this._splitters){
-			var splitter = this._splitters[region];
-			dijit.byNode(splitter).destroy();
-			dojo.destroy(splitter);
+		var splitters = this._splitters;
+		var isOwnProperty = dojo.isOwnProperty;
+		for(var region in splitters){
+			if (isOwnProperty(splitters, region)) {
+				var splitter = splitters[region];
+				dijit.byNode(splitter).destroy();
+				dojo.destroy(splitter);
+			}
 		}
 		delete this._splitters;
 		delete this._splitterThickness;
@@ -580,8 +594,8 @@ dojo.declare("dijit.layout._Splitter", [ dijit._Widget, dijit._Templated ],
 		var dk = dojo.keys;
 		switch(e.charOrCode){
 			case horizontal ? dk.UP_ARROW : dk.LEFT_ARROW:
-				tick *= -1;
-//				break;
+				tick = -tick;
+				break;
 			case horizontal ? dk.DOWN_ARROW : dk.RIGHT_ARROW:
 				break;
 			default:
