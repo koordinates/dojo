@@ -4,11 +4,13 @@ dojo.require("dojo.AdapterRegistry");
 
 // ported from dojo.html.util
 
+// NOTE: Duplicates logic from core drag and drop (should be in window?)
+
 dijit.getViewport = function(){
 	// summary:
 	//		Returns the dimensions and scroll position of the viewable area of a browser window
 
-	var scrollRoot = (dojo.doc.compatMode == 'BackCompat')? dojo.body() : dojo.doc.documentElement;
+	var scrollRoot = (dojo.doc.documentElement.clientWidth)? dojo.doc.documentElement : dojo.body();
 
 	// get scroll position
 	var scroll = dojo._docScroll(); // scrollRoot.scrollTop/Left should work
@@ -65,7 +67,7 @@ dijit.placeOnScreen = function(
 	});
 
 	return dijit._place(node, choices);
-}
+};
 
 dijit._place = function(/*DomNode*/ node, /* Array */ choices, /* Function */ layoutNode){
 	// summary:
@@ -121,7 +123,7 @@ dijit._place = function(/*DomNode*/ node, /* Array */ choices, /* Function */ la
 			height = endY - startY,
 			overflow = (mb.w - width) + (mb.h - height);
 
-		if(best == null || overflow < best.overflow){
+		if(!best || overflow < best.overflow){
 			best = {
 				corner: corner,
 				aroundCorner: choice.aroundCorner,
@@ -141,7 +143,7 @@ dijit._place = function(/*DomNode*/ node, /* Array */ choices, /* Function */ la
 		layoutNode(node, best.aroundCorner, best.corner);
 	}
 	return best;
-}
+};
 
 dijit.placeOnScreenAroundNode = function(
 	/* DomNode */		node,
@@ -253,14 +255,16 @@ dijit._placeOnScreenAroundRect = function(
 	// Generate list of possible positions for node
 	var choices = [];
 	for(var nodeCorner in aroundCorners){
-		choices.push( {
-			aroundCorner: nodeCorner,
-			corner: aroundCorners[nodeCorner],
-			pos: {
-				x: x + (nodeCorner.charAt(1) == 'L' ? 0 : width),
-				y: y + (nodeCorner.charAt(0) == 'T' ? 0 : height)
-			}
-		});
+		if (dojo.isOwnProperty(aroundCorners, nodeCorner)) {
+			choices.push( {
+				aroundCorner: nodeCorner,
+				corner: aroundCorners[nodeCorner],
+				pos: {
+					x: x + (nodeCorner.charAt(1) == 'L' ? 0 : width),
+					y: y + (nodeCorner.charAt(0) == 'T' ? 0 : height)
+				}
+			});
+		}
 	}
 
 	return dijit._place(node, choices, layoutNode);
