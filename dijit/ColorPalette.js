@@ -123,7 +123,7 @@ dojo.declare("dijit.ColorPalette",
 
                 var cellNode = dojo.create("span", {
 					"class":"dijitPaletteCell",
-					"tabindex":"-1",
+					"tabindex":-1,
 					title: this.colorNames[color],
 					style:{
 						top: coords.topOffset + (row * coords.cHeight) + "px",
@@ -137,7 +137,6 @@ dojo.declare("dijit.ColorPalette",
 					alt: this.colorNames[color]
 				}, cellNode);
 				
-				// FIXME: color is an attribute of img?
 				imgNode.color = colorValue.toHex();
 				var imgStyle = imgNode.style;
 				imgStyle.color = imgStyle.backgroundColor = imgNode.color;
@@ -172,14 +171,16 @@ dojo.declare("dijit.ColorPalette",
 			LEFT_ARROW: -1
 		};
 		for(var key in keyIncrementMap){
-			this._connects.push(dijit.typematic.addKeyListener(this.domNode,
-				{charOrCode:dojo.keys[key], ctrlKey:false, altKey:false, shiftKey:false},
-				this,
-				function(){
-					var increment = keyIncrementMap[key];
-					return function(count){ this._navigateByKey(increment, count); };
-				}(),
-				this.timeoutChangeRate, this.defaultTimeout));
+			if (dojo.isOwnProperty(keyIncrementMap, key)) {
+				this._connects.push(dijit.typematic.addKeyListener(this.domNode,
+					{charOrCode:dojo.keys[key], ctrlKey:false, altKey:false, shiftKey:false},
+					this,
+					(function(){
+						var increment = keyIncrementMap[key];
+						return function(count){ this._navigateByKey(increment, count); };
+					})(),
+					this.timeoutChangeRate, this.defaultTimeout));
+			}
 		}
 	},
 
@@ -205,7 +206,7 @@ dojo.declare("dijit.ColorPalette",
 		//		private
 		this._currentFocus = 0;
 		var cellNode = this._cellNodes[this._currentFocus];
-		window.setTimeout(function(){dijit.focus(cellNode)}, 0);
+		window.setTimeout(function(){dijit.focus(cellNode);}, 0);
 	},
 
 	_onDivNodeFocus: function(evt){
@@ -258,7 +259,7 @@ dojo.declare("dijit.ColorPalette",
 		var target = evt.currentTarget;
 		if (this._currentFocus != target.index){
 			this._currentFocus = target.index;
-			window.setTimeout(function(){dijit.focus(target)}, 0);
+			window.setTimeout(function(){dijit.focus(target);}, 0);
 		}
 		this._selectColor(target);
 		dojo.stopEvent(evt);
@@ -274,7 +275,7 @@ dojo.declare("dijit.ColorPalette",
 
 		var target = evt.currentTarget;
 		this._setCurrent(target);	// redundant, but needed per safari bug where onCellFocus never called
-		window.setTimeout(function(){dijit.focus(target)}, 0);
+		window.setTimeout(function(){dijit.focus(target);}, 0);
 	},
 
 	_onCellFocus: function(/*Event*/ evt){
