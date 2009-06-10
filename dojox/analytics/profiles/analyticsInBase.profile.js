@@ -1,4 +1,4 @@
-dependencies = {
+var dependencies = {
         layers: [
                 {
 			//name: "../dojox/analytics.js",
@@ -19,4 +19,4 @@ dependencies = {
                 [ "dojox", "../dojox" ],
                 [ "dijit", "../dijit" ]
         ]
-}
+};
