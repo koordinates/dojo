@@ -58,7 +58,7 @@ dojo.declare(
 			//		dojoType="dijit.CheckBox" value="chicken">)
 			if(typeof newValue == "string"){
 				this.value = newValue;
-				dojo.attr(this.focusNode, 'value', newValue);
+				this.focusNode.value = newValue;
 				newValue = true;
 			}
 			if(this._created){
@@ -75,13 +75,16 @@ dojo.declare(
 		},
 
 		postMixInProperties: function(){
-			if(this.value == ""){
+			if(!this.value){
 				this.value = "on";
 			}
 
 			// Need to set initial checked state as part of template, so that form submit works.
-			// dojo.attr(node, "checked", bool) doesn't work on IEuntil node has been attached
+			// dojo.attr(node, "checked", bool) doesn't work on IE until node has been attached
 			// to <body>, see #8666
+
+			// NOTE: Look into this--old attr method had issues
+
 			this.checkedAttrSetting = this.checked ? "checked" : "";
 
 			this.inherited(arguments);
@@ -101,7 +104,7 @@ dojo.declare(
 
 			// Handle unlikely event that the <input type=checkbox> value attribute has changed
 			this.value = this.params.value || "on";
-			dojo.attr(this.focusNode, 'value', this.value);
+			this.focusNode.value = this.value;
 		},
 		
 		_onFocus: function(){
@@ -135,6 +138,9 @@ dojo.declare(
 			if(value){
 				var _this = this;
 				// search for radio buttons with the same name that need to be unchecked
+
+				// NOTE: refactor without query
+
 				dojo.query("INPUT[type=radio]", this.focusNode.form||dojo.doc).forEach( // can't use name= since dojo.query doesn't support [] in the name
 					function(inputNode){
 						if(inputNode.name == _this.name && inputNode != _this.focusNode && inputNode.form == _this.focusNode.form){
