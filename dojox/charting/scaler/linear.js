@@ -188,11 +188,11 @@ dojo.require("dojox.charting.scaler.common");
 				nextMinor = scaler.minor.start, 
 				nextMicro = scaler.micro.start;
 			if(kwArgs.microTicks && scaler.micro.tick){
-				step = scaler.micro.tick, next = nextMicro;
+				step = scaler.micro.tick; next = nextMicro;
 			}else if(kwArgs.minorTicks && scaler.minor.tick){
-				step = scaler.minor.tick, next = nextMinor;
+				step = scaler.minor.tick; next = nextMinor;
 			}else if(scaler.major.tick){
-				step = scaler.major.tick, next = nextMajor;
+				step = scaler.major.tick; next = nextMajor;
 			}else{
 				// no ticks
 				return null;
