@@ -18,7 +18,7 @@ dojo.declare("dojox.av.widget.ProgressSlider", [dijit._Widget, dijit._Templated]
 		this.seeking = false;
 		this.handleWidth = dojo.marginBox(this.handle).w;
 		var dim = dojo.coords(this.domNode);
-		this.finalWidth = dim.w
+		this.finalWidth = dim.w;
 		this.width = dim.w-this.handleWidth;
 		this.x = dim.x;
 		
@@ -46,8 +46,8 @@ dojo.declare("dojox.av.widget.ProgressSlider", [dijit._Widget, dijit._Templated]
 		});
 		
 		dojo.connect(this.media, "onDownloaded", this, function(percent){
-			this.setLoadedPosition(percent*.01);
-			this.width = this.finalWidth * .01 * percent;													
+			this.setLoadedPosition(percent * 0.01);
+			this.width = this.finalWidth * 0.01 * percent;													
 		});
 		
 	},
@@ -56,8 +56,12 @@ dojo.declare("dojox.av.widget.ProgressSlider", [dijit._Widget, dijit._Templated]
 		//		Fired when the mouse is moved. Sets the slider.
 		//
 		var x = evt.clientX - this.x;
-		if(x<0) x = 0;
-		if(x>this.width-this.handleWidth) x=this.width-this.handleWidth;
+		if(x<0) {
+			x = 0;
+		}
+		if(x>this.width-this.handleWidth) {
+			x=this.width-this.handleWidth;
+		}
 		
 		var p = x/this.finalWidth;
 		this.media.seek( this.duration * p );
@@ -79,8 +83,12 @@ dojo.declare("dojox.av.widget.ProgressSlider", [dijit._Widget, dijit._Templated]
 		//
 		dojo.setSelectable(this.playerWidget.domNode, true);
 		this.seeking = false;
-		if(this.cmove) dojo.disconnect(this.cmove);
-		if(this.cup) dojo.disconnect(this.cup);
+		if(this.cmove) {
+			dojo.disconnect(this.cmove);
+		}
+		if(this.cup) {
+			dojo.disconnect(this.cup);
+		}
 		this.handleOut();
 	},
 	
