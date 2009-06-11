@@ -2,6 +2,7 @@ dojo.provide("dojox.collections.BinaryTree");
 dojo.require("dojox.collections._base");
 
 dojox.collections.BinaryTree=function(data){
+	var root;
 	function node(data, rnode, lnode){
 		this.value=data||null;
 		this.right=rnode||null;
@@ -13,24 +14,24 @@ dojox.collections.BinaryTree=function(data){
 			}else{ 
 				c.value=this.value;
 			}
-			if(this.left!=null){
+			if(this.left){
 				c.left=this.left.clone();
 			}
-			if(this.right!=null){
+			if(this.right){
 				c.right=this.right.clone();
 			}
 			return c;
-		}
+		};
 		this.compare=function(n){
 			if(this.value>n.value){ return 1; }
 			if(this.value<n.value){ return -1; }
 			return 0;
-		}
+		};
 		this.compareData=function(d){
 			if(this.value>d){ return 1; }
 			if(this.value<d){ return -1; }
 			return 0;
-		}
+		};
 	}
 
 	function inorderTraversalBuildup(current, a){
@@ -72,7 +73,7 @@ dojox.collections.BinaryTree=function(data){
 	function searchHelper(current, data){
 		if(!current){ return null; }
 		var i=current.compareData(data);
-		if(i==0){ return current; }
+		if(i===0){ return current; }
 		if(i>0){ return searchHelper(current.left, data); }
 		else{ return searchHelper(current.right, data); }
 	}
@@ -84,7 +85,7 @@ dojox.collections.BinaryTree=function(data){
 		var parent=null;
 		while(current){
 			i=current.compare(n);
-			if(i==0){ return; }
+			if(i===0){ return; }
 			parent=current;
 			if(i>0){ current=current.left; }
 			else{ current=current.right; }
@@ -114,13 +115,13 @@ dojox.collections.BinaryTree=function(data){
 		return c;
 	};
 	this.contains=function(data){
-		return this.search(data) != null;
+		return this.search(data) !== null;
 	};
 	this.deleteData=function(data){
 		var current=root;
 		var parent=null;
 		var i=current.compareData(data);
-		while(i!=0&&current!=null){
+		while(i && current){
 			if(i>0){
 				parent=current;
 				current=current.left;
@@ -153,7 +154,7 @@ dojox.collections.BinaryTree=function(data){
 		else{
 			var leftmost=current.right.left;
 			var lmParent=current.right;
-			while(leftmost.left!=null){
+			while(leftmost.left!==null){
 				lmParent=leftmost;
 				leftmost=leftmost.left;
 			}
@@ -182,26 +183,26 @@ dojox.collections.BinaryTree=function(data){
 		if(!sep){ sep=","; }
 		var s="";
 		switch(order){
-			case dojox.collections.BinaryTree.TraversalMethods.Preorder:
-				s=preorderTraversal(root, sep);
-				break;
-			case dojox.collections.BinaryTree.TraversalMethods.Inorder:
-				s=inorderTraversal(root, sep);
-				break;
-			case dojox.collections.BinaryTree.TraversalMethods.Postorder:
-				s=postorderTraversal(root, sep);
-				break;
-		};
-		if(s.length==0){ return ""; }
+		case dojox.collections.BinaryTree.TraversalMethods.Preorder:
+			s=preorderTraversal(root, sep);
+			break;
+		case dojox.collections.BinaryTree.TraversalMethods.Inorder:
+			s=inorderTraversal(root, sep);
+			break;
+		case dojox.collections.BinaryTree.TraversalMethods.Postorder:
+			s=postorderTraversal(root, sep);
+			break;
+		}
+		if(!s.length){ return ""; }
 		else{ return s.substring(0, s.length - sep.length); }
 	};
 
 	this.count=0;
-	var root=this.root=null;
+	root=this.root=null;
 	if(data){
 		this.add(data);
 	}
-}
+};
 dojox.collections.BinaryTree.TraversalMethods={
 	Preorder: 1, Inorder: 2, Postorder: 3
 };
