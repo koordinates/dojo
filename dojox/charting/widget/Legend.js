@@ -70,7 +70,7 @@ dojo.declare("dojox.charting.widget.Legend", [dijit._Widget, dijit._Templated], 
 		}
 		
 		var s = this.series;
-		if(s.length == 0){
+		if(!s.length){
 			return;
 		}
 		if(s[0].chart.stack[0].declaredClass == "dojox.charting.plot2d.Pie"){
