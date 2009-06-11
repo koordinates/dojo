@@ -20,11 +20,17 @@ dojo.mixin(dojox.color, {
 		//	All colors should be expressed as 0-100 (percentage)
 
 		if(dojo.isArray(cyan)){
-			magenta=cyan[1], yellow=cyan[2], cyan=cyan[0];
+			magenta=cyan[1];
+			yellow=cyan[2];
+			cyan=cyan[0];
 		} else if(dojo.isObject(cyan)){
-			magenta=cyan.m, yellow=cyan.y, cyan=cyan.c;
+			magenta=cyan.m;
+			yellow=cyan.y;
+			cyan=cyan.c;
 		}
-		cyan/=100, magenta/=100, yellow/=100;
+		cyan/=100;
+		magenta/=100;
+		yellow/=100;
 
 		var r=1-cyan, g=1-magenta, b=1-yellow;
 		return new dojox.color.Color({ r:Math.round(r*255), g:Math.round(g*255), b:Math.round(b*255) });	//	dojox.color.Color
@@ -36,11 +42,20 @@ dojo.mixin(dojox.color, {
 		//	All colors should be expressed as 0-100 (percentage)
 
 		if(dojo.isArray(cyan)){
-			magenta=cyan[1], yellow=cyan[2], black=cyan[3], cyan=cyan[0];
+			magenta=cyan[1];
+			yellow=cyan[2];
+			black=cyan[3];
+			cyan=cyan[0];
 		} else if(dojo.isObject(cyan)){
-			magenta=cyan.m, yellow=cyan.y, black=cyan.b, cyan=cyan.c;
+			magenta=cyan.m;
+			yellow=cyan.y;
+			black=cyan.b;
+			cyan=cyan.c;
 		}
-		cyan/=100, magenta/=100, yellow/=100, black/=100;
+		cyan/=100;
+		magenta/=100;
+		yellow/=100;
+		black/=100;
 		var r,g,b;
 		r = 1-Math.min(1, cyan*(1-black)+black);
 		g = 1-Math.min(1, magenta*(1-black)+black);
@@ -54,9 +69,13 @@ dojo.mixin(dojox.color, {
 		//	hue from 0-359 (degrees), saturation and luminosity 0-100.
 
 		if(dojo.isArray(hue)){
-			saturation=hue[1], luminosity=hue[2], hue=hue[0];
+			saturation=hue[1];
+			luminosity=hue[2];
+			hue=hue[0];
 		} else if(dojo.isObject(hue)){
-			saturation=hue.s, luminosity=hue.l, hue=hue.h;
+			saturation=hue.s;
+			luminosity=hue.l;
+			hue=hue.h;
 		}
 		saturation/=100;
 		luminosity/=100;
@@ -66,18 +85,26 @@ dojo.mixin(dojox.color, {
 		
 		var r, g, b;
 		if(hue<120){
-			r=(120-hue)/60, g=hue/60, b=0;
+			r=(120-hue)/60;
+			g=hue/60;
+			b=0;
 		} else if (hue<240){
-			r=0, g=(240-hue)/60, b=(hue-120)/60;
+			r=0;
+			g=(240-hue)/60;
+			b=(hue-120)/60;
 		} else {
-			r=(hue-240)/60, g=0, b=(360-hue)/60;
+			r=(hue-240)/60;
+			g=0;
+			b=(360-hue)/60;
 		}
 		
 		r=2*saturation*Math.min(r, 1)+(1-saturation);
 		g=2*saturation*Math.min(g, 1)+(1-saturation);
 		b=2*saturation*Math.min(b, 1)+(1-saturation);
 		if(luminosity<0.5){
-			r*=luminosity, g*=luminosity, b*=luminosity;
+			r*=luminosity;
+			g*=luminosity;
+			b*=luminosity;
 		}else{
 			r=(1-luminosity)*r+2*luminosity-1;
 			g=(1-luminosity)*g+2*luminosity-1;
@@ -92,9 +119,13 @@ dojo.mixin(dojox.color, {
 		//	hue from 0-359 (degrees), saturation and value 0-100.
 
 		if(dojo.isArray(hue)){
-			saturation=hue[1], value=hue[2], hue=hue[0];
+			saturation=hue[1];
+			value=hue[2];
+			hue=hue[0];
 		} else if (dojo.isObject(hue)){
-			saturation=hue.s, value=hue.v, hue=hue.h;
+			saturation=hue.s;
+			value=hue.v;
+			hue=hue.h;
 		}
 		
 		if(hue==360){ hue=0; }
@@ -102,20 +133,22 @@ dojo.mixin(dojox.color, {
 		value/=100;
 		
 		var r, g, b;
-		if(saturation==0){
-			r=value, b=value, g=value;
+		if(!saturation){
+			r=value;
+			b=value;
+			g=value;
 		}else{
 			var hTemp=hue/60, i=Math.floor(hTemp), f=hTemp-i;
 			var p=value*(1-saturation);
 			var q=value*(1-(saturation*f));
 			var t=value*(1-(saturation*(1-f)));
 			switch(i){
-				case 0:{ r=value, g=t, b=p; break; }
-				case 1:{ r=q, g=value, b=p; break; }
-				case 2:{ r=p, g=value, b=t; break; }
-				case 3:{ r=p, g=q, b=value; break; }
-				case 4:{ r=t, g=p, b=value; break; }
-				case 5:{ r=value, g=p, b=q; break; }
+				case 0: r=value; g=t; b=p; break;
+				case 1: r=q; g=value; b=p; break;
+				case 2: r=p; g=value; b=t; break;
+				case 3: r=p; g=q; b=value; break;
+				case 4: r=t; g=p; b=value; break;
+				case 5: r=value; g=p; b=q; break;
 			}
 		}
 		return new dojox.color.Color({ r:Math.round(r*255), g:Math.round(g*255), b:Math.round(b*255) });	//	dojox.color.Color
@@ -174,8 +207,8 @@ dojo.extend(dojox.color.Color, {
 		var r=this.r/255, g=this.g/255, b=this.b/255;
 		var min = Math.min(r, b, g), max = Math.max(r, g, b);
 		var delta = max-min;
-		var h = null, s = (max==0)?0:(delta/max);
-		if(s==0){
+		var h = null, s = max?(delta/max):0;
+		if(!s){
 			h = 0;
 		}else{
 			if(r==max){
