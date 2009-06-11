@@ -11,7 +11,6 @@ dojo.require("dojox.lang.functional.fold");
 	var DEFAULT_SCALE = 1.05,
 		DEFAULT_SHIFT = 7,	// px
 		m = dojox.gfx.matrix,
-		gf = dojox.gfx.fx,
 		df = dojox.lang.functional;
 	
 	dojo.declare("dojox.charting.action2d.MoveSlice", dojox.charting.action2d.Base, {
