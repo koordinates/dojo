@@ -170,8 +170,7 @@ dojo.require("dojox.charting.plot2d.Bubble");
 		removeSeries: function(name){
 			if(name in this.runs){
 				// get the index and remove the name
-				var index = this.runs[name],
-					plotName = this.series[index].plot;
+				var index = this.runs[name];
 				delete this.runs[name];
 				// destroy the run
 				this.series[index].destroy();
@@ -347,7 +346,7 @@ dojo.require("dojox.charting.plot2d.Bubble");
 			this._makeClean();
 
 			// BEGIN FOR HTML CANVAS
-			if(this.surface.render){ this.surface.render(); };
+			if(this.surface.render){ this.surface.render(); }
 			// END FOR HTML CANVAS
 
 			return this;
@@ -389,7 +388,7 @@ dojo.require("dojox.charting.plot2d.Bubble");
 			}
 
 			// go over the stack backwards
-			df.foldr(this.stack, function(z, plot){ return plot.render(dim, offsets), 0; }, 0);
+			df.foldr(this.stack, function(z, plot){ return plot.render(dim, offsets) || 0; }, 0);
 
 			// pseudo-clipping: matting
 			fill   = this.fill   ? this.fill   : (t.chart && t.chart.fill);
@@ -398,8 +397,9 @@ dojo.require("dojox.charting.plot2d.Bubble");
 			//	TRT: support for "inherit" as a named value in a theme.
 			if(fill == "inherit"){
 				//	find the background color of the nearest ancestor node, and use that explicitly.
-				var node = this.node, fill = new dojo.Color(dojo.style(node, "backgroundColor"));
-				while(fill.a==0 && node!=document.documentElement){
+				var node = this.node;
+				fill = new dojo.Color(dojo.style(node, "backgroundColor"));
+				while(fill.a===0 && node!=document.documentElement){
 					fill = new dojo.Color(dojo.style(node, "backgroundColor"));
 					node = node.parentNode;
 				}
@@ -446,7 +446,7 @@ dojo.require("dojox.charting.plot2d.Bubble");
 			this._makeClean();
 
 			// BEGIN FOR HTML CANVAS
-			if(this.surface.render){ this.surface.render(); };
+			if(this.surface.render){ this.surface.render(); }
 			// END FOR HTML CANVAS
 
 			return this;
