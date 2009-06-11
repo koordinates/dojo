@@ -39,9 +39,9 @@ dojo.declare("dojox.av.widget.VolumeButton", [dijit._Widget, dijit._Templated], 
 		vol = (vol===undefined) ? this.media.volume() : vol;
 		if(vol===0){
 			dojo.attr(this.domNode, "class", "Volume mute");
-		}else if(vol<.334){
+		}else if(vol<0.334){
 			dojo.attr(this.domNode, "class", "Volume low");
-		}else if(vol<.667){
+		}else if(vol<0.667){
 			dojo.attr(this.domNode, "class", "Volume med");
 		}else{
 			dojo.attr(this.domNode, "class", "Volume high");
@@ -52,7 +52,7 @@ dojo.declare("dojox.av.widget.VolumeButton", [dijit._Widget, dijit._Templated], 
 		// summary:
 		//		Shows the volume slider.
 		//
-		if(this.showing==undefined){
+		if(this.showing===undefined){
 			dojo.body().appendChild(this.volumeSlider);
 			this.showing = false;
 		}
@@ -108,10 +108,14 @@ dojo.declare("dojox.av.widget.VolumeButton", [dijit._Widget, dijit._Templated], 
 		//		Fired on mousemove. Updates volume and position of 
 		//		slider handle.
 		var beg = this.handleWidth/2;
-		var end = beg + this.slotWidth
+		var end = beg + this.slotWidth;
 		var x = evt.clientX - this.x;
-		if(x<beg) x = beg;
-		if(x>end) x=end;
+		if(x<beg) {
+			x = beg;
+		}
+		if(x>end) {
+			x=end;
+		}
 		dojo.style(this.handle, "left", (x)+"px");
 		
 		var p = (x-beg)/(end-beg);
@@ -131,8 +135,12 @@ dojo.declare("dojox.av.widget.VolumeButton", [dijit._Widget, dijit._Templated], 
 		//		Fired on mouseup of the slider handle.
 		//
 		this.isDragging = false;
-		if(this.cmove) dojo.disconnect(this.cmove);
-		if(this.cup) dojo.disconnect(this.cup);
+		if(this.cmove) {
+			dojo.disconnect(this.cmove);
+		}
+		if(this.cup) {
+			dojo.disconnect(this.cup);
+		}
 		this.handleOut();
 	},
 	
