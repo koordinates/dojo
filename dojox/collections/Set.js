@@ -3,7 +3,7 @@ dojo.require("dojox.collections.ArrayList");
 
 (function(){
 	var dxc=dojox.collections;
-	dxc.Set=new (function(){
+	dxc.Set= (function(){
 		function conv(arr){
 			if(arr.constructor==Array){
 				return new dojox.collections.ArrayList(arr);	//	dojox.collections.ArrayList
