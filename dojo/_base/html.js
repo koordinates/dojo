@@ -1533,7 +1533,7 @@ dojo.byId = function(id, doc){
 		var x, nn, nameC, prop, hasAttribute, doc, att, alias;
 
 		if (attributesBad) {
-			hasAttribute = dojo.hasAttribute;
+			hasAttribute = dojo.hasAttr;
 			return function(node, name, value) {
 				if (typeof node == 'string') {
 					node = byId(node);
@@ -1578,7 +1578,10 @@ dojo.byId = function(id, doc){
 						if (typeof val == 'boolean') {
 							return val?'':null;
                   				}
-						return typeof val != 'string' && typeof val != 'undefined' && val !== null ? String(val) : val;
+						if (typeof val == 'undefined') {
+							return null;
+						}
+						return typeof val != 'string' && val !== null ? String(val) : val;
 					}
 					return null;
 				}
