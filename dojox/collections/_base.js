@@ -11,7 +11,7 @@ dojox.collections.DictionaryEntry=function(/* string */k, /* object */v){
 	this.toString=function(){ 
 		return String(this.value);	//	string 
 	};
-}
+};
 
 /*	Iterators
  *	The collections.Iterators (Iterator and DictionaryIterator) are built to
@@ -49,7 +49,7 @@ dojox.collections.Iterator=function(/* array */arr){
 		position=0;
 		this.element=a[position];
 	};
-}
+};
 
 /*	Notes:
  *	The DictionaryIterator no longer supports a key and value property;
