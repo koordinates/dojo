@@ -64,7 +64,7 @@ dojo.require("dojox.charting.action2d.Tooltip");
 			});
 			
 			this.actions = actions.map(function(action){
-				return new action.action(c, action.plot, action.kwArgs)
+				return new action.action(c, action.plot, action.kwArgs);
 			});
 			
 			var render = df.foldl(series, function(render, series){
@@ -130,16 +130,20 @@ dojo.require("dojox.charting.action2d.Tooltip");
 		var dp = eval("(" + type + ".prototype.defaultParams)");
 		var x, attr;
 		for(x in dp){
-			if(x in kw){ continue; }
-			attr = node.getAttribute(x);
-			kw[x] = du.coerceType(dp[x], attr == null || typeof attr == "undefined" ? dp[x] : attr);
+			if (d.isOwnProperty(dp, x)) {
+				if(x in kw){ continue; }
+				attr = d.realAttr(node, x);
+				kw[x] = du.coerceType(dp[x], attr === null ? dp[x] : attr);
+			}
 		}
 		var op = eval("(" + type + ".prototype.optionalParams)");
 		for(x in op){
-			if(x in kw){ continue; }
-			attr = node.getAttribute(x);
-			if(attr != null){
-				kw[x] = du.coerceType(op[x], attr);
+			if (d.isOwnProperty(op, x)) {
+				if(x in kw){ continue; }
+				attr = d.realAttr(node, x);
+				if(attr !== null){
+					kw[x] = du.coerceType(op[x], attr);
+				}
 			}
 		}
 	};
@@ -199,38 +203,42 @@ dojo.require("dojox.charting.action2d.Tooltip");
 	};
 
 	collectDataParams = function(node){
-		var ga = d.partial(d.attr, node);
+
+		// NOTE: What is allowed for these attributes?
+		//       Remove eval's in any case
+
+		var ga = d.partial(d.realAttr, node);
 		var name = ga("name");
 		if(!name){ return null; }
 		var o = { name: name, kwArgs: {} }, kw = o.kwArgs, t;
 		t = ga("plot");
-		if(t != null){ kw.plot = t; }
+		if(t !== null){ kw.plot = t; }
 		t = ga("marker");
-		if(t != null){ kw.marker = t; }
+		if(t !== null){ kw.marker = t; }
 		t = ga("stroke");
-		if(t != null){ kw.stroke = eval("(" + t + ")"); }
+		if(t !== null){ kw.stroke = eval("(" + t + ")"); }
 		t = ga("fill");
-		if(t != null){ kw.fill = eval("(" + t + ")"); }
+		if(t !== null){ kw.fill = eval("(" + t + ")"); }
 		t = ga("legend");
-		if(t != null){ kw.legend = t; }
+		if(t !== null){ kw.legend = t; }
 		t = ga("data");
-		if(t != null){
+		if(t !== null){
 			o.type = "data";
 			o.data = dojo.map(String(t).split(','), Number);
 			return o;
 		}
 		t = ga("array");
-		if(t != null){
+		if(t !== null){
 			o.type = "data";
 			o.data = eval("(" + t + ")");
 			return o;
 		}
 		t = ga("store");
-		if(t != null){
+		if(t !== null){
 			o.type = "store";
 			o.data = eval("(" + t + ")");
 			t = ga("field");
-			o.field = t != null ? t : "value";
+			o.field = t;
 			t = ga("query");
 			if(!!t){ kw.query = t; }
 			t = ga("queryOptions");
