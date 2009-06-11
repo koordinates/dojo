@@ -36,7 +36,7 @@ dojox.collections.Dictionary=function(/* dojox.collections.Dictionary? */diction
 		if(testObject[k]){
 			return false;			// bool
 		}
-		return (items[k]!=null);	//	bool
+		return (items[k]!==null && items[k]!==undefined);	//	bool
 	};
 	this.containsValue=function(/* object */v){
 		//	summary
