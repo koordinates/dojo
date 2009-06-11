@@ -5,7 +5,7 @@ dojox.collections.Stack=function(/* array? */arr){
 	//	summary
 	//	returns an object of type dojox.collections.Stack
 	var q=[];
-	if (arr) q=q.concat(arr);
+	if (arr) { q=q.concat(arr); }
 	this.count=q.length;
 	this.clear=function(){
 		//	summary
@@ -65,4 +65,4 @@ dojox.collections.Stack=function(/* array? */arr){
 		//	create and return an array based on the internal collection
 		return [].concat(q);	//	array
 	};
-}
+};
