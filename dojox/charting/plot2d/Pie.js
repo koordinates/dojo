@@ -105,7 +105,8 @@ dojo.require("dojox.gfx");
 			if(!this.dirty){ return this; }
 			this.dirty = false;
 			this.cleanGroup();
-			var s = this.group, color, t = this.chart.theme;
+			var v, s = this.group, t = this.chart.theme;
+			var color, elem, fill, shape, stroke;
 			this.resetEvents();
 
 			if(!this.run || !this.run.data.length){
@@ -119,7 +120,7 @@ dojo.require("dojox.gfx");
 				taFont = "font" in this.opt ? this.opt.font : t.axis.font,
 				size = taFont ? g.normalizedLength(g.splitFontString(taFont).size) : 0,
 				taFontColor = "fontColor" in this.opt ? this.opt.fontColor : t.axis.fontColor,
-				start = 0, step, filteredRun, slices, labels, shift, labelR,
+				start = 0, filteredRun, slices, labels, shift, labelR,
 				run = this.run.data,
 				events = this.events();
 			if(typeof run[0] == "number"){
@@ -176,7 +177,6 @@ dojo.require("dojox.gfx");
 				var v = run[i];
 				if(slice >= 1){
 					// whole pie
-					var color, fill, stroke;
 					if(typeof v == "object"){
 						color  = "color"  in v ? v.color  : new dojo.Color(t.next("color"));
 						fill   = "fill"   in v ? v.fill   : dc.augmentFill(t.series.fill, color);
@@ -186,7 +186,7 @@ dojo.require("dojox.gfx");
 						fill   = dc.augmentFill(t.series.fill, color);
 						stroke = dc.augmentStroke(t.series.stroke, color);
 					}
-					var shape = s.createCircle(circle).setFill(fill).setStroke(stroke);
+					shape = s.createCircle(circle).setFill(fill).setStroke(stroke);
 					this.dyn.push({color: color, fill: fill, stroke: stroke});
 
 					if(events){
@@ -218,7 +218,6 @@ dojo.require("dojox.gfx");
 					x2 = circle.cx + r * Math.cos(end),
 					y2 = circle.cy + r * Math.sin(end);
 				// draw the slice
-				var color, fill, stroke;
 				if(typeof v == "object"){
 					color  = "color"  in v ? v.color  : new dojo.Color(t.next("color"));
 					fill   = "fill"   in v ? v.fill   : dc.augmentFill(t.series.fill, color);
@@ -228,7 +227,7 @@ dojo.require("dojox.gfx");
 					fill   = dc.augmentFill(t.series.fill, color);
 					stroke = dc.augmentStroke(t.series.stroke, color);
 				}
-				var shape = s.createPath({}).
+				shape = s.createPath({}).
 						moveTo(circle.cx, circle.cy).
 						lineTo(x1, y1).
 						arcTo(r, r, 0, step > Math.PI, true, x2, y2).
@@ -239,7 +238,7 @@ dojo.require("dojox.gfx");
 				this.dyn.push({color: color, fill: fill, stroke: stroke});
 
 				if(events){
-					var o = {
+					o = {
 						element: "slice",
 						index:   i,
 						run:     this.run,
@@ -268,14 +267,16 @@ dojo.require("dojox.gfx");
 					}
 					if(slice >= 1){
 						// whole pie
-						var v = run[i], elem = da.createText[this.opt.htmlLabels && dojox.gfx.renderer != "vml" ? "html" : "gfx"]
+						v = run[i];
+						elem = da.createText[this.opt.htmlLabels && dojox.gfx.renderer != "vml" ? "html" : "gfx"]
 									(this.chart, s, circle.cx, circle.cy + size / 2, "middle",
 										labels[i], taFont, (typeof v == "object" && "fontColor" in v) ? v.fontColor : taFontColor);
 						if(this.opt.htmlLabels){ this.htmlElements.push(elem); }
 						return true;	// stop iteration
 					}
 					// calculate the geometry of the slice
-					var end = start + slice * 2 * Math.PI, v = run[i];
+					var end = start + slice * 2 * Math.PI;
+					v = run[i];
 					if(i + 1 == slices.length){
 						end = 2 * Math.PI;
 					}
@@ -283,11 +284,11 @@ dojo.require("dojox.gfx");
 						x = circle.cx + labelR * Math.cos(labelAngle),
 						y = circle.cy + labelR * Math.sin(labelAngle) + size / 2;
 					// draw the label
-					var elem = da.createText[this.opt.htmlLabels && dojox.gfx.renderer != "vml" ? "html" : "gfx"]
+					elem = da.createText[this.opt.htmlLabels && dojox.gfx.renderer != "vml" ? "html" : "gfx"]
 									(this.chart, s, x, y, "middle",
 										labels[i], taFont,
-										(typeof v == "object" && "fontColor" in v)
-											? v.fontColor : taFontColor);
+										(typeof v == "object" && "fontColor" in v) ?
+										v.fontColor : taFontColor);
 					if(this.opt.htmlLabels){ this.htmlElements.push(elem); }
 					start = end;
 					return false;	// continue
