@@ -89,10 +89,13 @@ dojo.require("dojox.lang.functional");
 				// squelch
 			}
 			// draw vertical stripes and lines
-			try{
+
+			// NOTE: Removed try-catch
+
+			//try{
 				var hScaler = this._hAxis.getScaler(),
-					ht = hScaler.scaler.getTransformerFromModel(hScaler),
-					ticks = this._hAxis.getTicks();
+					ht = hScaler.scaler.getTransformerFromModel(hScaler);
+				ticks = this._hAxis.getTicks();
 				if(ticks && this.opt.vMinorLines){
 					dojo.forEach(ticks.minor, function(tick){
 						var x = offsets.l + ht(tick.value);
@@ -115,9 +118,9 @@ dojo.require("dojox.lang.functional");
 						}).setStroke(ta.majorTick);
 					});
 				}
-			}catch(e){
+			//}catch(e2){
 				// squelch
-			}
+			//}
 			this.dirty = false;
 			return this;
 		}
