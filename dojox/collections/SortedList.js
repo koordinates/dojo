@@ -9,8 +9,8 @@ dojox.collections.SortedList=function(/* object? */ dictionary){
 	var items={};
 	var q=[];
 	var sorter=function(a,b){
-		if (a.key > b.key) return 1;
-		if (a.key < b.key) return -1;
+		if (a.key > b.key) { return 1; }
+		if (a.key < b.key) { return -1; }
 		return 0;
 	};
 	var build=function(){
@@ -51,7 +51,7 @@ dojox.collections.SortedList=function(/* object? */ dictionary){
 		if(testObject[k]){
 			return false;			//	bool
 		}
-		return (items[k]!=null);	//	bool
+		return (items[k]!==null && items[k]!==undefined);	//	bool
 	};
 	this.containsValue=function(/* object */ o){
 		//	summary
@@ -191,4 +191,4 @@ dojox.collections.SortedList=function(/* object? */ dictionary){
 		}
 		q.sort(sorter);
 	}
-}
+};
