@@ -267,21 +267,21 @@ dojo.declare("dojox.av.FLVideo", [dijit._Widget, dojox.av._Media], {
 			return;
 		}
 		
-		if(!this.isBuffering && bufferLength<.1){
+		if(!this.isBuffering && bufferLength<0.1){
 			this.onBuffer(true);
 			this.flashMedia.pause();
 			return;
 		}
 		
-		var timePercentLoad = this.percentDownloaded*.01*this.duration;
+		var timePercentLoad = this.percentDownloaded*0.01*this.duration;
 		
 		// check if start buffer needed
-		if(!this.isBuffering && time+this.minBufferTime*.001>timePercentLoad){
+		if(!this.isBuffering && time+this.minBufferTime*0.001>timePercentLoad){
 			this.onBuffer(true);
 			this.flashMedia.pause();
 		
 		// check if end buffer needed
-		}else if(this.isBuffering && time+this.bufferTime*.001<=timePercentLoad){
+		}else if(this.isBuffering && time+this.bufferTime*0.001<=timePercentLoad){
 			this.onBuffer(false);
 			this.flashMedia.doPlay();
 		}
