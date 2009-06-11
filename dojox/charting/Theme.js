@@ -105,14 +105,14 @@ dojo.require("dojox.color.Palette");
 			//	summary:
 			//		Generate a set of colors for the theme based on keyword
 			//		arguments
-			var kwArgs=obj||{};
+			var l, kwArgs=obj||{};
 
 			//	note that we've changed the default number from 32 to 4 colors
 			//	are cycled anyways.
 			var c=[], n=kwArgs.num||5;	//	the number of colors to generate
 			if(kwArgs.colors){
 				//	we have an array of colors predefined, so fix for the number of series.
-				var l=kwArgs.colors.length;
+				l=kwArgs.colors.length;
 				for(var i=0; i<n; i++){
 					c.push(kwArgs.colors[i%l]);
 				}
@@ -123,7 +123,7 @@ dojo.require("dojox.color.Palette");
 				var st=kwArgs.low||30;
 				var end=kwArgs.high||90;
 				//	we'd like it to be a little on the darker side.
-				var l=(end+st)/2;
+				l=(end+st)/2;
 
 				//	alternately, use "shades"
 				this.colors = dojox.color.Palette.generate(
@@ -137,7 +137,12 @@ dojo.require("dojox.color.Palette");
 	
 		_buildMarkerArray: function(){
 			this._markers = [];
-			for(var p in this.markers){ this._markers.push(this.markers[p]); }
+			var markers = this.markers, _markers = this._markers;
+			for(var p in markers){
+				if (dojo.isOwnProperty(markers, p)) {
+					_markers.push(markers[p]);
+				}
+			}
 			//	reset the position
 			this._current.marker=0;
 		},
