@@ -18,9 +18,9 @@ dojo.declare("dojox.av.widget.Status", [dijit._Widget, dijit._Templated], {
 		this.durNode = dojo.query(".Duration", this.domNode);
 		this.timeNode = dojo.query(".Time", this.domNode);
 		
-		console.log("this.timeNode:", this.timeNode)
-		console.log("this.durNode:", this.durNode)
-		console.log("this.titleNode:", this.titleNode)
+		console.log("this.timeNode:", this.timeNode);
+		console.log("this.durNode:", this.durNode);
+		console.log("this.titleNode:", this.titleNode);
 		
 	},
 	
@@ -34,9 +34,9 @@ dojo.declare("dojox.av.widget.Status", [dijit._Widget, dijit._Templated], {
 			this.duration = data.duration;
 			this.durNode.innerHTML = this.toSeconds(this.duration);
 		});
-		dojo.connect(this.media, "onPosition", this, function(time){
-			//this.timeNode.innerHTML = this.toSeconds(time);													  
-		});
+		//dojo.connect(this.media, "onPosition", this, function(time){
+			// NOTE: Flag needed?
+		//});
 		
 		var cons = ["onMetaData", "onPosition", "onStart", "onBuffer", "onPlay", "onPause", "onStop", "onEnd", "onError", "onLoad"];
 		dojo.forEach(cons, function(c){
@@ -65,8 +65,7 @@ dojo.declare("dojox.av.widget.Status", [dijit._Widget, dijit._Templated], {
 		}
 	},
 	onPosition:function(time){
-		//console.log("onPosition:", time)
-		//	this.timeNode.innerHTML = this.toSeconds(time);													  
+		//NOTE: Stub?
 	},
 	onStart: function(){
 		this.setStatus("Starting");
@@ -84,10 +83,10 @@ dojo.declare("dojox.av.widget.Status", [dijit._Widget, dijit._Templated], {
 		this.setStatus("Stopped");
 	},
 	onError: function(evt){
-		console.log("status error:", evt)
+		console.log("status error:", evt);
 		var msg = evt.info.code;
 		if(msg == "NetStream.Play.StreamNotFound"){
-			msg = "Stream Not Found"
+			msg = "Stream Not Found";
 		}
 		this.setStatus("ERROR: "+ msg, true);
 	},
@@ -104,19 +103,18 @@ dojo.declare("dojox.av.widget.Status", [dijit._Widget, dijit._Templated], {
 				str = "buffering...";	
 			}
 		}
-		//console.log(this.titleNode, "title:",this.title, "str:",str)
 		this.titleNode.innerHTML = '<span class="statusTitle">'+this.title+'</span> <span class="statusInfo">'+str+'</span>';
 	},
 	
 	toSeconds: function(time){
-		var ts = time.toString()
+		var ts = time.toString();
 
 		if(ts.indexOf(".")<0){
-			ts += ".00"
+			ts += ".00";
 		}else if(ts.length - ts.indexOf(".")==2){
-			ts+="0"
+			ts+="0";
 		}else if(ts.length - ts.indexOf(".")>2){
-			ts = ts.substring(0, ts.indexOf(".")+3)
+			ts = ts.substring(0, ts.indexOf(".")+3);
 		}
 		return ts;
 	}
