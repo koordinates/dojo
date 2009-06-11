@@ -154,7 +154,6 @@ dojo.declare("dojox.av.FLAudio", null, {
 		if(dojox.timing.doLater(this.flashMedia, this)){ return false; }
 		if(!options.url){
 			throw new Error("An url is required for loading media");
-			return false;
 		}else{
 			options.url = this._normalizeUrl(options.url);
 		}
@@ -265,7 +264,7 @@ dojo.declare("dojox.av.FLAudio", null, {
 	onError: function(msg){
 		// summary:
 		//		stub fired when an error occurs
-		console.warn("SWF ERROR:", msg)
+		console.warn("SWF ERROR:", msg);
 	},
 	
 	onLoadStatus: function(/*Array*/events){
@@ -323,7 +322,7 @@ dojo.declare("dojox.av.FLAudio", null, {
 		//
 		if(vol>1){
 			while(vol>1){
-				vol*=.1	
+				vol*=0.1;
 			}
 		}
 		return vol;
@@ -334,7 +333,7 @@ dojo.declare("dojox.av.FLAudio", null, {
 		//		Checks that path is relative to HTML file or
 		//		convertes it to an absolute path. 
 		//
-		if(_url && _url.toLowerCase().indexOf("http")<0){
+		if(_url && _url.toLowerCase().indexOf("http") == -1){
 			//
 			// Appears to be a relative path. Attempt to  convert it to absolute, 
 			// so it will better target the SWF.
