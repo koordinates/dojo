@@ -559,12 +559,9 @@ dojo.declare("dojox.atom.widget.FeedEntryEditor",dojox.atom.widget.FeedEntryView
 		dojo.style(this.entryEditButton, 'display', '');
 		dojo.style(this.entryNewButton, 'display', '');
 		var modifiedEntry = false;
-		var value;
-		var i;
-		var changed;
-		var entry;
-		var authors;
-		var contributors;
+		var changed, entry, authors, contributors;
+		var i, name, value, obj, isOwnProperty = dojo.isOwnProperty;
+
 		if(!this._new){
 			entry = this.getEntry();
 			if(this._editors.title && (this._editors.title.attr('value') != entry.title.value || this.entryTitleSelect.value != entry.title.type)){
@@ -613,16 +610,22 @@ dojo.declare("dojox.atom.widget.FeedEntryEditor",dojox.atom.widget.FeedEntryView
 					entry.authors = [];
 					authors = this._editors.authors.getValues();
 					for(i in authors){
-						if(authors[i].name || authors[i].email || authors[i].uri){
-							entry.addAuthor(authors[i].name, authors[i].email, authors[i].uri);
+						if (isOwnProperty(authors, i)) {
+							obj = authors[i];
+							if(obj.name || obj.email || obj.uri){
+								entry.addAuthor(obj.name, obj.email, obj.uri);
+							}
 						}
 					}
 				}else{
 					var currentAuthors = entry.authors;
 					var searchAuthors = function(name, email, uri){
 						for(i in currentAuthors){
-							if(currentAuthors[i].name === name && currentAuthors[i].email === email && currentAuthors[i].uri === uri){
-								return true;
+							if (isOwnProperty(currentAuthors, i)) {
+								obj = currentAuthors[i];
+								if(obj.name === name && obj.email === email && obj.uri === uri){
+									return true;
+								}
 							}
 						}
 						return false;
@@ -630,16 +633,22 @@ dojo.declare("dojox.atom.widget.FeedEntryEditor",dojox.atom.widget.FeedEntryView
 					authors = this._editors.authors.getValues();
 					changed = false;
 					for(i in authors){
-						if(!searchAuthors(authors[i].name, authors[i].email, authors[i].uri)){
-							changed = true;
-							break;
+						if (isOwnProperty(authors, i)) {
+							obj = authors[i];
+							if(!searchAuthors(obj.name, obj.email, obj.uri)){
+								changed = true;
+								break;
+							}
 						}
 					}
 					if(changed){
 						entry.authors = [];
 						for(i in authors){
-							if(authors[i].name || authors[i].email || authors[i].uri){
-								entry.addAuthor(authors[i].name, authors[i].email, authors[i].uri);
+							if (isOwnProperty(authors, i)) {
+								obj = authors[i];
+								if(obj.name || obj.email || obj.uri){
+									entry.addAuthor(obj.name, obj.email, obj.uri);
+								}
 							}
 						}
 						modifiedEntry = true;
@@ -652,16 +661,22 @@ dojo.declare("dojox.atom.widget.FeedEntryEditor",dojox.atom.widget.FeedEntryView
 					entry.contributors = [];
 					contributors = this._editors.contributors.getValues();
 					for(i in contributors){
-						if(contributors[i].name || contributors[i].email || contributors[i].uri){
-							entry.addAuthor(contributors[i].name, contributors[i].email, contributors[i].uri);
+						if (isOwnProperty(contributors, i)) {
+							obj = contributors[i];
+							if(obj.name || obj.email || obj.uri){
+								entry.addAuthor(obj.name, obj.email, obj.uri);
+							}
 						}
 					}
 				}else{
 					var currentContributors = entry.contributors;
 					var searchContributors = function(name, email, uri){
 						for(i in currentContributors){
-							if(currentContributors[i].name === name && currentContributors[i].email === email && currentContributors[i].uri === uri){
-								return true;
+							if (isOwnProperty(currentContributors, i)) {
+								obj = currentContributors[i];
+								if(obj.name === name && obj.email === email && obj.uri === uri){
+									return true;
+								}
 							}
 						}
 						return false;
@@ -677,8 +692,11 @@ dojo.declare("dojox.atom.widget.FeedEntryEditor",dojox.atom.widget.FeedEntryView
 					if(changed){
 						entry.contributors = [];
 						for(i in contributors){
-							if(contributors[i].name || contributors[i].email || contributors[i].uri){
-								entry.addContributor(contributors[i].name, contributors[i].email, contributors[i].uri);
+							if (isOwnProperty(contributors, i)) {
+								obj = contributors[i];
+								if(obj.name || obj.email || obj.uri){
+									entry.addContributor(obj.name, obj.email, obj.uri);
+								}
 							}
 						}
 						modifiedEntry = true;
@@ -688,12 +706,6 @@ dojo.declare("dojox.atom.widget.FeedEntryEditor",dojox.atom.widget.FeedEntryView
 
 			if(modifiedEntry){
 				dojo.publish(this.entrySelectionTopic, [{action: "update", source: this, entry: entry, callback: this._handleSave }]);
-				//TODO: REMOVE BELOW
-				//var atomIO = new dojox.atom.io.Connection();
-				//atomIO.updateEntry(entry, dojo.hitch(this,this._handleSave));
-				//WARNING: Use above when testing with SimpleProxy (or any other servlet which
-				// 			doesn't actually create a new entry and return it properly)
-				//atomIO.updateEntry(entry, dojo.hitch(this,this._handleSave), true);
 			}
 		}else{
 			this._new = false;
@@ -803,11 +815,15 @@ dojo.declare("dojox.atom.widget.FeedEntryEditor",dojox.atom.widget.FeedEntryView
 	},
 	
 	clearEditors: function(){
-		for(var key in this._editors){
-			if(this._editors[key].declaredClass === "dijit.Editor"){
-				this._editors[key].close(false, true);
+		var editor, editors = this._editors, isOwnProperty = dojo.isOwnProperty;
+		for(var i in editors){
+			if (isOwnProperty(editors, i)) {
+				editor = editors[i];
+				if(editor.declaredClass === "dijit.Editor"){
+					editor.close(false, true);
+				}
+				editor.destroy();
 			}
-			this._editors[key].destroy();
 		}
 		this._editors = {};
 	},
@@ -952,6 +968,8 @@ dojo.declare("dojox.atom.widget.FeedEntryEditor",dojox.atom.widget.FeedEntryView
 	_displaySections: function(){
 		// summary: Function to display the appropriate sections based on validity.
 		// description: Function to display the appropriate sections based on validity.
+
+		var toLoad, oneToLoad, editor, isOwnProperty = dojo.isOwnProperty;
 		
 		// Hide select boxes.
 		dojo.style(this.entrySummarySelect, 'display', 'none');
@@ -973,15 +991,18 @@ dojo.declare("dojox.atom.widget.FeedEntryEditor",dojox.atom.widget.FeedEntryView
 		
 		// If we have editors to load after the nodes are created on the page, execute those now.
 		if(this._toLoad){
-			for(var i in this._toLoad){
-				var editor;
-				if(this._toLoad[i].generateEditor){
-					editor = dojo.hitch(this._toLoad[i], this._toLoad[i].generateEditor)();
-				}else{
-					editor = this._toLoad[i];
+			toLoad = this._toLoad;
+			for(var i in toLoad){
+				if (isOwnProperty(toLoad, i)) {
+					oneToLoad = toLoad[i];
+					if(oneToLoad.generateEditor){
+						editor = dojo.hitch(oneToLoad, oneToLoad.generateEditor)();
+					}else{
+						editor = oneToLoad;
+					}
+					this._editors[oneToLoad.name] = editor;
+					toLoad[i] = null;
 				}
-				this._editors[this._toLoad[i].name] = editor;
-				this._toLoad[i] = null;
 			}
 			this._toLoad = null;
 		}
@@ -1003,7 +1024,7 @@ dojo.declare("dojox.atom.widget.PeopleEditor",[dijit._Widget, dijit._Templated, 
 		
 		postCreate: function(){
 			// Initializer function for the PeopleEditor widget.
-			var _nlsResources = dojo.i18n.getLocalization("dojox.atom.widget", "PeopleEditor");
+			var datum, data, _nlsResources = dojo.i18n.getLocalization("dojox.atom.widget", "PeopleEditor");
 			if(this.name){
 				if(this.name == "Author"){
 					this.peopleEditorButton.appendChild(document.createTextNode("["+_nlsResources.addAuthor+"]"));
@@ -1019,18 +1040,27 @@ dojo.declare("dojox.atom.widget.PeopleEditor",[dijit._Widget, dijit._Templated, 
 				this._createEditors(null, null, null, 0, this.name);
 				this._index = 1;
 			}else{
-				for(var i in this.data){
-					this._createEditors(this.data[i].name, this.data[i].email, this.data[i].uri, i);
-					this._index++;
-					this._numRows++;
+				data = this.data;
+				for(var i in data){
+					if (dojo.isOwnProperty(data, i)) {
+						datum = data[i];
+						this._createEditors(datum.name, datum.email, datum.uri, i);
+						this._index++;
+						this._numRows++;
+					}
 				}
 			}
 		},
 		
 		destroy: function(){
-			for(var key in this._editors){
-				for(var key2 in this._editors[key]){
-					this._editors[key][key2].destroy();
+			var editors = this._editors, isOwnProperty = dojo.isOwnProperty;
+			for(var i in editors){
+				if (isOwnProperty(editors, i)) {
+					for(var j in editors[i]){
+						if (isOwnProperty(editors, i)) {
+							editors[i][j].destroy();
+						}
+					}
 				}
 			}
 			this._editors = [];
@@ -1160,18 +1190,18 @@ dojo.declare("dojox.atom.widget.PeopleEditor",[dijit._Widget, dijit._Templated, 
 			//
 			//	event:
 			//		The event generated when the remove button is pressed on the page.
-			var target = null;
 		
-			if(dojo.isIE){
-				target = event.srcElement;
-			}else{
-				target = event.target;
+			var target = event.target || event.srcElement;				
+
+			if (target.nodeType == 3) {
+				target = target.parentNode;
 			}
-				
-			var id = target.id;
-			id = id.substring(6);
-			for(var key in this._editors[id]){
-				this._editors[id][key].destroy();
+			var id = target.id.substring(6);
+			var editors = this._editors[id];
+			for(var i in editors){
+				if (dojo.isOwnProperty(editors, i)) {
+					editors[id][i].destroy();
+				}
 			}
 			
 			var node = dojo.byId("editorsRow"+id);
