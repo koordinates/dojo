@@ -55,7 +55,14 @@ dojo.require("dojox.gfx3d");
 		},
 		_remove: function(array, item){
 			var a = dojo.filter(array, function(i){ return i != item; });
-			return a.length < array.length ? (array = a, this.invalidate()) : this;
+			if (a.length < array.length) {
+
+				// NOTE: Why was this assignment made?
+
+				//array = a;
+				this.invalidate();
+			}
+			return this;
 		},
 		_generateWalls: function(){
 			for(var i = 0; i < this.walls.length; ++i){
