@@ -19,7 +19,7 @@ dojo.declare("dojox.av.widget.Player", [dijit._Widget, dijit._Templated], {
 	//
 	// example:
 	//		|	<div dojoType="dojox.av.widget.Player" playerWidth="100%">
-    //		| 		<div controlType="video" initialVolume=".1"
+        //		| 		<div controlType="video" initialVolume=".1"
 	//		| 			mediaUrl="video/Grog.flv" autoPlay="true" 
 	//		|			isDebug="false" dojoType="dojox.av.FLVideo"></div>
     //		|     	<div controlType="play" dojoType="dojox.av.widget.PlayButton"></div>
@@ -64,7 +64,6 @@ dojo.declare("dojox.av.widget.Player", [dijit._Widget, dijit._Templated], {
 			dojo.connect(window, "resize", this, "onResize");	
 		}
 		this.children = [];
-		var domNode;
 		dojo.forEach(this.items, function(n, i){
 			n.id = dijit.getUniqueId("player_control");
 			switch(dojo.attr(n, "controlType")){
@@ -108,7 +107,7 @@ dojo.declare("dojox.av.widget.Player", [dijit._Widget, dijit._Templated], {
 				var child = dijit.byId(id);
 				this.children.push(child);	
 				if(child){
-					console.log("child:", child.declaredClass, "this.media:", this.media)	
+					console.log("child:", child.declaredClass, "this.media:", this.media);
 					child.setMedia(this.media, this);
 				}
 			}
