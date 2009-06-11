@@ -17,7 +17,7 @@ dojo.require("dojox.color");
 		hl = function(color){
 			var a = new c.Color(color),
 				x = a.toHsl();
-			if(x.s == 0){
+			if(x.s === 0){
 				x.l = x.l < 50 ? 100 : 0;
 			}else{
 				x.s = DEFAULT_SATURATION;
@@ -47,6 +47,7 @@ dojo.require("dojox.color");
 		constructor: function(chart, plot, kwArgs){
 			// process optional named parameters
 			var a = kwArgs && kwArgs.highlight;
+
 			this.colorFun = a ? (dojo.isFunction(a) ? a : cc(a)) : hl;
 			
 			this.connect();
@@ -55,7 +56,7 @@ dojo.require("dojox.color");
 		process: function(o){
 			if(!o.shape || !(o.type in this.overOutEvents)){ return; }
 			
-			var runName = o.run.name, index = o.index, anim, startFill, endFill;
+			var runName = o.run.name, index = o.index, anim;
 	
 			if(runName in this.anim){
 				anim = this.anim[runName][index];
