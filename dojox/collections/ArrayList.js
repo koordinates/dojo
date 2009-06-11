@@ -5,7 +5,7 @@ dojox.collections.ArrayList=function(/* array? */arr){
 	//	summary
 	//	Returns a new object of type dojox.collections.ArrayList
 	var items=[];
-	if(arr) items=items.concat(arr);
+	if(arr) { items=items.concat(arr); }
 	this.count=items.length;
 	this.add=function(/* object */obj){
 		//	summary
@@ -120,7 +120,7 @@ dojox.collections.ArrayList=function(/* array? */arr){
 		//	summary
 		//	Return a new array with all of the items of the internal array concatenated.
 		return [].concat(items);
-	}
+	};
 	this.toString=function(/* string */ delim){
 		//	summary
 		//	implementation of toString, follows [].toString();
