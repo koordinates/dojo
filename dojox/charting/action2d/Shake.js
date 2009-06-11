@@ -51,7 +51,7 @@ dojo.require("dojox.gfx.matrix");
 				duration:  this.duration,
 				easing:    this.easing,
 				transform: [
-					{name: "translate", start: [this.shiftX, this.shiftY], end: [0, 0]},
+					{name: "translate", start: [shiftX, shiftY], end: [0, 0]},
 					m.identity
 				]
 			};
