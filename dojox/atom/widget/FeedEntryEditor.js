@@ -1238,10 +1238,10 @@ dojo.declare("dojox.atom.widget.PeopleEditor",[dijit._Widget, dijit._Templated, 
 			//
 			//	returns: 
 			//		An array of anonymous objects representing dojox.atom.io.model.Persons.
-			var values = [];
-			for(var i in this._editors){
-				if(this._editors[i]){
-					values.push({name: this._editors[i][0].attr('value'), email: this._editors[i][1].attr('value'), uri: this._editors[i][2].attr('value')});
+			var values = [], editors = this._editors;
+			for(var i in editors){
+				if(dojo.isOwnProperty(editors, i) && editors[i]){
+					values.push({name: editors[i][0].attr('value'), email: editors[i][1].attr('value'), uri: editors[i][2].attr('value')});
 				}
 			}
 			return values;
