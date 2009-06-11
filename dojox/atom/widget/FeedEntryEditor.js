@@ -1057,7 +1057,7 @@ dojo.declare("dojox.atom.widget.PeopleEditor",[dijit._Widget, dijit._Templated, 
 			for(var i in editors){
 				if (isOwnProperty(editors, i)) {
 					for(var j in editors[i]){
-						if (isOwnProperty(editors, i)) {
+						if (isOwnProperty(editors, j)) {
 							editors[i][j].destroy();
 						}
 					}
