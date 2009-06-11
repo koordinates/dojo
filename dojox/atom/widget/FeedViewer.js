@@ -51,12 +51,14 @@ dojo.declare("dojox.atom.widget.FeedViewer",[dijit._Widget, dijit._Templated, di
 		//	description: 
 		//		The startup function.  Parses the filters and sets the feed based on the given url.
 		this.containerNode = this.feedViewerTableBody;
-		var children = this.getDescendants();
+		var child, children = this.getDescendants();
 		for(var i in children){
-			var child = children[i];
-			if (child && child.isFilter) {
-				this._includeFilters.push(new dojox.atom.widget.FeedViewer.CategoryIncludeFilter(child.scheme, child.term, child.label));
-				child.destroy();
+			if (dojo.isOwnProperty(children, i)) {
+				child = children[i];
+				if (child && child.isFilter) {
+					this._includeFilters.push(new dojox.atom.widget.FeedViewer.CategoryIncludeFilter(child.scheme, child.term, child.label));
+					child.destroy();
+				}
 			}
 		}
 		
