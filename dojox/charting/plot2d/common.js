@@ -29,7 +29,6 @@ dojo.require("dojox.lang.functional");
 			return s;
 		},
 		augmentFill: function(fill, color){
-			var fc, c = new dojo.Color(color);
 			if(typeof fill == "string" || fill instanceof dojo.Color){
 				return dc.augmentColor(fill, color);
 			}
@@ -40,39 +39,43 @@ dojo.require("dojox.lang.functional");
 			vmin: Number.POSITIVE_INFINITY, vmax: Number.NEGATIVE_INFINITY},
 
 		collectSimpleStats: function(series){
-			var stats = dojo.clone(dc.defaultStats);
+			var old_hmin, old_hmax, old_vmin, old_vmax, stats = dojo.clone(dc.defaultStats);
+			var setStats = function(val, i){
+				var x = val.x, y = val.y;
+				if(isNaN(x)){ x = 0; }
+				if(isNaN(y)){ y = 0; }
+				stats.hmin = Math.min(stats.hmin, x);
+				stats.hmax = Math.max(stats.hmax, x);
+				stats.vmin = Math.min(stats.vmin, y);
+				stats.vmax = Math.max(stats.vmax, y);
+			};
+
+			var setStatsY = function(val, i){
+				var x = i + 1, y = val;
+				if(isNaN(y)){ y = 0; }
+				stats.hmin = Math.min(stats.hmin, x);
+				stats.hmax = Math.max(stats.hmax, x);
+				stats.vmin = Math.min(stats.vmin, y);
+				stats.vmax = Math.max(stats.vmax, y);
+			};
+
 			for(var i = 0; i < series.length; ++i){
 				var run = series[i];
 				if(!run.data.length){ continue; }
 				if(typeof run.data[0] == "number"){
 					// 1D case
-					var old_vmin = stats.vmin, old_vmax = stats.vmax;
+					old_vmin = stats.vmin; old_vmax = stats.vmax;
 					if(!("ymin" in run) || !("ymax" in run)){
-						dojo.forEach(run.data, function(val, i){
-							var x = i + 1, y = val;
-							if(isNaN(y)){ y = 0; }
-							stats.hmin = Math.min(stats.hmin, x);
-							stats.hmax = Math.max(stats.hmax, x);
-							stats.vmin = Math.min(stats.vmin, y);
-							stats.vmax = Math.max(stats.vmax, y);
-						});
+						dojo.forEach(run.data, setStatsY);
 					}
 					if("ymin" in run){ stats.vmin = Math.min(old_vmin, run.ymin); }
 					if("ymax" in run){ stats.vmax = Math.max(old_vmax, run.ymax); }
 				}else{
 					// 2D case
-					var old_hmin = stats.hmin, old_hmax = stats.hmax,
-						old_vmin = stats.vmin, old_vmax = stats.vmax;
+					old_hmin = stats.hmin; old_hmax = stats.hmax;
+					old_vmin = stats.vmin; old_vmax = stats.vmax;
 					if(!("xmin" in run) || !("xmax" in run) || !("ymin" in run) || !("ymax" in run)){
-						dojo.forEach(run.data, function(val, i){
-							var x = val.x, y = val.y;
-							if(isNaN(x)){ x = 0; }
-							if(isNaN(y)){ y = 0; }
-							stats.hmin = Math.min(stats.hmin, x);
-							stats.hmax = Math.max(stats.hmax, x);
-							stats.vmin = Math.min(stats.vmin, y);
-							stats.vmax = Math.max(stats.vmax, y);
-						});
+						dojo.forEach(run.data, setStats);
 					}
 					if("xmin" in run){ stats.hmin = Math.min(old_hmin, run.xmin); }
 					if("xmax" in run){ stats.hmax = Math.max(old_hmax, run.xmax); }
@@ -131,7 +134,7 @@ dojo.require("dojox.lang.functional");
 				arr[arr.length] = arr[0];   // add a last element equal to the first, closing the loop
 			}
 			var p=dojo.map(arr, function(item, i){
-				if(i==0){ return "M" + item.x + "," + item.y; }
+				if(!i){ return "M" + item.x + "," + item.y; }
 				if(!isNaN(tension)) { // use standard Dojo smoothing in tension is numeric
 					var dx=item.x-arr[i-1].x, dy=arr[i-1].y;
 					return "C"+(item.x-(tension-1)*(dx/tension))+","+dy+" "+(item.x-(dx/tension))+","+item.y+" "+item.x+","+item.y;
