@@ -208,8 +208,8 @@ dojo.declare("dojox.av._Media", null, {
 			this.status = "ended";
 			this.onEnd(this._eventFactory());
 			
-		}else if(this.duration && pos>this.duration-.5){
-			this.status="ending"
+		}else if(this.duration && pos>this.duration-0.5){
+			this.status="ending";
 		
 		}else if(pos===0 ){//|| this.status == "stopped"
 			if(this.status == "ready"){
@@ -239,7 +239,7 @@ dojo.declare("dojox.av._Media", null, {
 			
 			}else if(!this.isStopped && this.status == "playing" && pos == this._prevPos){
 				this.status = "paused";
-				console.warn("pause", pos, this._prevPos)
+				console.warn("pause", pos, this._prevPos);
 				if(this.status != this._prevStatus){
 					this.onPause(this._eventFactory());	
 				}
@@ -266,7 +266,7 @@ dojo.declare("dojox.av._Media", null, {
 			//seconds:this.toSeconds(this._channel.position*.001),
 			//percentPlayed:this._getPercent(),
 			status:this.status
-		}
+		};
 		return evt; // Object
 	},
 	
@@ -284,7 +284,7 @@ dojo.declare("dojox.av._Media", null, {
 		//
 		if(vol>1){
 			while(vol>1){
-				vol*=.1	
+				vol*=0.1;
 			}
 		}
 		return vol;
