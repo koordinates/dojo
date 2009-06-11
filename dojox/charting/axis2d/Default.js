@@ -118,7 +118,7 @@ dojo.require("dojox.lang.utils");
 				// re-calculate the scaler
 				this.scaler = lin.buildScaler(min, max, span, this.opt);
 				// cleanup
-				if(this.scale == 1 && this.offset == 0){
+				if(this.scale == 1 && this.offset === 0){
 					delete this.scale;
 					delete this.offset;
 				}
@@ -320,7 +320,7 @@ dojo.require("dojox.lang.utils");
 				dx = tickVector.x * taMicroTick.length;
 				dy = tickVector.y * taMicroTick.length;
 				dojo.forEach(t.micro, function(tick){
-					var offset = f(tick.value), elem,
+					var offset = f(tick.value),
 						x = start.x + axisVector.x * offset,
 						y = start.y + axisVector.y * offset;
 						s.createLine({
