@@ -102,9 +102,7 @@ dojo.declare("dojox.atom.widget.FeedEntryViewer",[dijit._Widget, dijit._Template
 				while(this[part].firstChild){
                     dojo.destroy(this[part].firstChild);
 				}
-			}
-		,this);
-		
+			},this);		
 	},
 
 	setEntry: function(/*object*/entry, /*object*/feed, /*boolean*/leaveMenuState){
@@ -217,7 +215,7 @@ dojo.declare("dojox.atom.widget.FeedEntryViewer",[dijit._Widget, dijit._Template
 		//		The Feed Entry to work with.
 		if(entry.title && entry.title.value && entry.title.value !== null){
 			if(entry.title.type == "text"){
-				var titleNode = document.createTextNode(entry.title.value);
+				var titleNode = dojo.doc.createTextNode(entry.title.value);
 				titleAnchorNode.appendChild(titleNode);
 			} else {
 				var titleViewNode = document.createElement("span");
@@ -303,7 +301,7 @@ dojo.declare("dojox.atom.widget.FeedEntryViewer",[dijit._Widget, dijit._Template
 	},
 
 
-	setContributors: function(/*DOM node*/contributorsAnchorNode, /*boolean*/editMode, /*object*/entry){
+	setContributors: function(/*DOM node*/contributorsAnchorNode, /*boolean*/editMode, /*object*/entry){		
 		//	summary:
 		//		Function to set the contents of the contributor node in the template to some value from the entry.
 		//	description:
@@ -316,13 +314,17 @@ dojo.declare("dojox.atom.widget.FeedEntryViewer",[dijit._Widget, dijit._Template
 		//		Boolean to indicate if the display should be in edit mode or not.
 		//	entry:
 		//		The Feed Entry to work with.
+		var contributors;
 		if(entry.contributors && entry.contributors.length > 0){
+			contributors = entry.contributors;
 			for (var i in entry.contributors){
-				var contributorNode = document.createTextNode(entry.contributors[i].name);
-				contributorsAnchorNode.appendChild(contributorNode);
-				var breakNode = document.createElement("br");
-				contributorsAnchorNode.appendChild(breakNode);
-				this.setFieldValidity("contributors", true);
+				if (dojo.isOwnProperty(contributors, i)) {
+					var contributorNode = document.createTextNode(entry.contributors[i].name);
+					contributorsAnchorNode.appendChild(contributorNode);
+					var breakNode = document.createElement("br");
+					contributorsAnchorNode.appendChild(breakNode);
+					this.setFieldValidity("contributors", true);
+				}
 			}
 		}
 	},
@@ -503,30 +505,33 @@ dojo.declare("dojox.atom.widget.FeedEntryViewer",[dijit._Widget, dijit._Template
 		dojo.style(this.entryIdRow, 'display', 'none');
 		dojo.style(this.entryUpdatedRow, 'display', 'none');
 
-		for (var i in this._displayEntrySections){
-			var section = this._displayEntrySections[i].toLowerCase();
-			if(section === "title" && this.isFieldValid("title")){
-				dojo.style(this.entryTitleRow, 'display', '');
-			}
-			if(section === "authors" && this.isFieldValid("authors")){
-				dojo.style(this.entryAuthorRow, 'display', '');
-			}
-			if(section === "contributors" && this.isFieldValid("contributors")){
-				dojo.style(this.entryContributorRow, 'display', '');
-			}
-			if(section === "summary" && this.isFieldValid("summary")){
-				dojo.style(this.entrySummaryRow, 'display', '');
-			}
-			if(section === "content" && this.isFieldValid("content")){
-				dojo.style(this.entryContentRow, 'display', '');
-			}
-			if(section === "id" && this.isFieldValid("id")){
-				dojo.style(this.entryIdRow, 'display', '');
-			}
-			if(section === "updated" && this.isFieldValid("updated")){
-				dojo.style(this.entryUpdatedRow, 'display', '');
-			}
+		var section, displayEntrySections = this._displayEntrySections;
 
+		for (var i in displayEntrySections){
+			if (dojo.isOwnProperty(displayEntrySections, i)) {
+				section = displayEntrySections[i].toLowerCase();
+				if(section === "title" && this.isFieldValid("title")){
+					dojo.style(this.entryTitleRow, 'display', '');
+				}
+				if(section === "authors" && this.isFieldValid("authors")){
+					dojo.style(this.entryAuthorRow, 'display', '');
+				}
+				if(section === "contributors" && this.isFieldValid("contributors")){
+					dojo.style(this.entryContributorRow, 'display', '');
+				}
+				if(section === "summary" && this.isFieldValid("summary")){
+					dojo.style(this.entrySummaryRow, 'display', '');
+				}
+				if(section === "content" && this.isFieldValid("content")){
+					dojo.style(this.entryContentRow, 'display', '');
+				}
+				if(section === "id" && this.isFieldValid("id")){
+					dojo.style(this.entryIdRow, 'display', '');
+				}
+				if(section === "updated" && this.isFieldValid("updated")){
+					dojo.style(this.entryUpdatedRow, 'display', '');
+				}
+			}
 		}
 	},
 
@@ -637,7 +642,6 @@ dojo.declare("dojox.atom.widget.FeedEntryViewer",[dijit._Widget, dijit._Template
 		//	returns:
 		//		Nothing
 		if(this.enableMenu){
-			var fade = null;
 			var anim;
 			var anim2;
 			if(this._optionButtonDisplayed){
@@ -715,8 +719,7 @@ dojo.declare("dojox.atom.widget.FeedEntryViewer",[dijit._Widget, dijit._Template
 		//	returns:
 		//		Nothing.
 		if(field){
-			var lowerField = field.toLowerCase();
-			this._validEntryFields[field] = isValid;
+			this._validEntryFields[field.toLowerCase()] = isValid;
 		}
 	},
 	
