@@ -137,20 +137,22 @@ dojo.require("dojo.data.util.filter");
 			
 			cachingFetch: function(args){
 				var self = this;
+				var clientQuery, defResult;
+				var cb = function(results){
+					results = self.clientSideFetch({query:clientQuery,sort:args.sort,start:args.start,count:args.count}, results);
+					defResult.fullLength = results._fullLength;
+					return results;
+				};
 				for(var i = 0; i < this._fetchCache.length;i++){
 					var cachedArgs = this._fetchCache[i];
-					var clientQuery = this.querySuperSet(cachedArgs,args);
+					clientQuery = this.querySuperSet(cachedArgs,args);
 					if(clientQuery !== false){
-						var defResult = cachedArgs._loading;
+						defResult = cachedArgs._loading;
 						if(!defResult){
 							defResult = new dojo.Deferred();
 							defResult.callback(cachedArgs.cacheResults);
 						}
-						defResult.addCallback(function(results){
-							results = self.clientSideFetch({query:clientQuery,sort:args.sort,start:args.start,count:args.count}, results);
-							defResult.fullLength = results._fullLength;
-							return results;
-						});
+						defResult.addCallback(cb);
 					}
 				}
 				if(!defResult){
@@ -230,13 +232,15 @@ dojo.require("dojo.data.util.filter");
 				var query = request.query; 
 				var ignoreCase = request.queryOptions && request.queryOptions.ignoreCase;
 				for(var i in query){
-					// if anything doesn't match, than this should be in the query
-					var match = query[i];
-					var value = this.getValue(item,i);
-					if((typeof match == 'string' && (match.match(/[\*\.]/) || ignoreCase)) ?
-						!dojo.data.util.filter.patternToRegExp(match, ignoreCase).test(value) :
-						value != match){	  
-						return false;
+					if (dojo.isOwnProperty(query, i)) {
+						// if anything doesn't match, than this should be in the query
+						var match = query[i];
+						var value = this.getValue(item,i);
+						if((typeof match == 'string' && (match.match(/[\*\.]/) || ignoreCase)) ?
+							!dojo.data.util.filter.patternToRegExp(match, ignoreCase).test(value) :
+							value != match){	  
+							return false;
+						}
 					}
 				}
 				return true;
