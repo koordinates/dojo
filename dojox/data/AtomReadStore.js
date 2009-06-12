@@ -139,8 +139,11 @@ dojo.declare("dojox.data.AtomReadStore", null, {
 			this._parseItem(item);
 		}
 		var attrNames = [];
-		for(var x in item._attribs){
-			attrNames.push(x);
+		var attribs = item._attribs;
+		for(var x in attribs){
+			if (dojo.isOwnProperty(attribs, x)) {
+				attrNames.push(x);
+			}
 		}
 		return attrNames; //array
 	},
@@ -352,12 +355,14 @@ dojo.declare("dojox.data.AtomReadStore", null, {
 		}
 		var queryString = "";
 		for(var name in query){
-			var value = query[name];
-			if(value){
-				if(queryString){
-					queryString += "&";
+			if (dojo.isOwnProperty(query, name)) {
+				var value = query[name];
+				if(value){
+					if(queryString){
+						queryString += "&";
+					}
+					queryString += (encodeURIComponent(name) + "=" + encodeURIComponent(value));
 				}
-				queryString += (name + "=" + value);
 			}
 		}
 		if(!queryString){
@@ -389,8 +394,6 @@ dojo.declare("dojox.data.AtomReadStore", null, {
 		}
 		
 		var feedNodes = dojo.filter(document.childNodes, "return item.tagName && item.tagName.toLowerCase() == 'feed'");
-
-		var query = request.query;
 
 		if(!feedNodes || feedNodes.length != 1){
 			console.log("dojox.data.AtomReadStore: Received an invalid Atom document, number of feed tags = " + (feedNodes? feedNodes.length : 0));
@@ -430,8 +433,6 @@ dojo.declare("dojox.data.AtomReadStore", null, {
 
 	_parseItem: function(item) {
 		var attribs = item._attribs;
-		var _this = this;
-		var text, type;
 
 		function getNodeText(node){
 			var txt = node.textContent || node.innerHTML || node.innerXML;			
@@ -499,7 +500,7 @@ dojo.declare("dojox.data.AtomReadStore", null, {
 					attribs[tagName].push(link);
 
 					if(link.rel == "alternate") {
-						attribs["alternate"] = link;
+						attribs.alternate = link;
 					}
 					break;
 				default:
