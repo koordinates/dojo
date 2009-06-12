@@ -13,17 +13,18 @@ dojo.declare("dojox.data.CouchDBRestStore",
 		save: function(kwArgs) {
 			var actions = this.inherited(arguments); // do the default save and then update for version numbers
 			var prefix = this.service.servicePath;
+			var addCallback = function(item, dfd){
+				dfd.addCallback(function(result){
+					if(result){
+						item.__id = prefix + result.id; // update the object with the results of the post
+						item._rev = result.rev;
+					}
+					return result;
+				});
+			};
 			for(var i = 0; i < actions.length; i++){
 				// need to update the item's version number after it has been committed
-				(function(item,dfd){
-					dfd.addCallback(function(result){
-						if(result){
-							item.__id = prefix + result.id; // update the object with the results of the post
-							item._rev = result.rev;
-						}
-						return result;
-					});
-				})(actions[i].content,actions[i].deferred);
+				addCallback(actions[i].content,actions[i].deferred);
 			}
 		},
 		fetch: function(args){
@@ -45,17 +46,18 @@ dojo.declare("dojox.data.CouchDBRestStore",
 			if(rows){
 				var prefix = this.service.servicePath;
 				var self = this;
+				var loadObject = function(callback){
+					self.fetchItemByIdentity({
+						identity: this._id,
+						onItem: callback
+					});
+					delete this._loadObject;
+				};
 				for(var i = 0; i < rows.length;i++){
 					rows[i] = {
 						__id: prefix + rows[i].id, 
 						_id: rows[i].id,
-						_loadObject: function(callback){
-							self.fetchItemByIdentity({
-								identity: this._id,
-								onItem: callback
-							});
-							delete this._loadObject;
-						}
+						_loadObject: loadObject
 					};
 				}
 				return {totalCount:results.total_rows, items:results.rows};
