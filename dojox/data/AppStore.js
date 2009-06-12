@@ -105,10 +105,10 @@ dojo.declare("dojox.data.AppStore",
 		//	item:
 		//		The item to test for being contained by the store.
 		if(!this.isItem(item)){ 
-			throw new Error("This error message is provided when a function is called in the following form: "
-				+ "getAttribute(argument, attributeName).  The argument variable represents the member "
-				+ "or owner of the object. The error is created when an item that does not belong "
-				+ "to this store is specified as an argument.");
+			throw new Error("This error message is provided when a function is called in the following form: " +
+				"getAttribute(argument, attributeName).  The argument variable represents the member " +
+				"or owner of the object. The error is created when an item that does not belong " +
+				"to this store is specified as an argument.");
 		}
 	},
 
@@ -123,8 +123,8 @@ dojo.declare("dojox.data.AppStore",
 		//
 		// returns: Returns a boolean indicating whether this is a valid attribute.
 		if(typeof attribute !== "string"){ 
-			throw new Error("The attribute argument must be a string. The error is created "
-			+ "when a different type of variable is specified such as an array or object.");
+			throw new Error("The attribute argument must be a string. The error is created " +
+			"when a different type of variable is specified such as an array or object.");
 		}
 
 		for(var key in dojox.atom.io.model._actions){
@@ -325,22 +325,25 @@ dojo.declare("dojox.data.AppStore",
 			//See if there are any string values that can be regexp parsed first to avoid multiple regexp gens on the
 			//same value for each item examined.  Much more efficient.
 			var regexpList = {};
-			var key;
-			var value;
-			for(key in request.query){
-				value = request.query[key]+'';
-				if(typeof value === "string"){
-					regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+			var key, value, query = request.query;
+			for(key in query){
+				if (dojo.isOwnProperty(query, key)) {
+					value = query[key]+'';
+					if(typeof value === "string"){
+						regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+					}
 				}
 			}
 
 			for(var i = 0; i < arrayOfAllItems.length; ++i){
 				var match = true;
 				var candidateItem = arrayOfAllItems[i];
-				for(key in request.query){
-					value = request.query[key]+'';
-					if (!this._containsValue(candidateItem, key, value, regexpList[key], request.trim)){
-						match = false;
+				for(key in query){
+					if (dojo.isOwnProperty(query, key)) {
+						value = request.query[key]+'';
+						if (!this._containsValue(candidateItem, key, value, regexpList[key], request.trim)){
+							match = false;
+						}
 					}
 				}
 				if(match){
@@ -435,36 +438,46 @@ dojo.declare("dojox.data.AppStore",
 	newItem: function(/* Object? */ keywordArgs){
 		//	summary: 
 		//		See dojo.data.api.Write.newItem()
+		var isOwnProperty = dojo.isOwnProperty;
 		var entry = new dojox.atom.io.model.Entry();
 		var value = null;
 		var temp = null;
 		var i;
 		for(var key in keywordArgs){
-			if(this._assertIsAttribute(key)) {
-				value = keywordArgs[key];
-				switch(key){
+			if (isOwnProperty(keywordArgs, key)) {
+				if(this._assertIsAttribute(key)) {
+					value = keywordArgs[key];
+					switch(key){
 					case "link":
 						for(i in value) {
-							temp = value[i];
-							entry.addLink(temp.href,temp.rel,temp.hrefLang,temp.title,temp.type);
+							if (isOwnProperty(value, i)) {
+								temp = value[i];
+								entry.addLink(temp.href,temp.rel,temp.hrefLang,temp.title,temp.type);
+							}
 						}
 						break;
 					case "author":
 						for(i in value) {
-							temp = value[i];
-							entry.addAuthor(temp.name, temp.email, temp.uri);
+							if (isOwnProperty(value, i)) {
+								temp = value[i];
+								entry.addAuthor(temp.name, temp.email, temp.uri);
+							}
 						}
 						break;
 					case "contributor":
 						for(i in value) {
-							temp = value[i];
-							entry.addContributor(temp.name, temp.email, temp.uri);
+							if (isOwnProperty(value, i)) {
+								temp = value[i];
+								entry.addContributor(temp.name, temp.email, temp.uri);
+							}
 						}
 						break;
 					case "category":
 						for(i in value){
-							temp = value[i];
-							entry.addCategory(temp.scheme, temp.term, temp.label);
+							if (isOwnProperty(value, i)) {
+								temp = value[i];
+								entry.addCategory(temp.scheme, temp.term, temp.label);
+							}
 						}
 						break;
 					case "icon":
@@ -489,7 +502,7 @@ dojo.declare("dojox.data.AppStore",
 						break;
 					default:
 						entry[key] = value;
-						break;
+					}
 				}
 			}
 		}
@@ -630,6 +643,7 @@ dojo.declare("dojox.data.AppStore",
 		}
 		this._assertIsItem(item);
 		
+		var isOwnProperty = dojo.isOwnProperty;
 		var update = {item: item};
 		var value;
 		var i;
@@ -639,8 +653,10 @@ dojo.declare("dojox.data.AppStore",
 					update.links = item.links;
 					item.links = null;
 					for(i in values) {
-						value = values[i];
-						item.addLink(value.href,value.rel,value.hrefLang,value.title,value.type);
+						if (isOwnProperty(values, i)) {
+							value = values[i];
+							item.addLink(value.href,value.rel,value.hrefLang,value.title,value.type);
+						}
 					}
 					item.isDirty = true;
 					return true;
@@ -648,8 +664,10 @@ dojo.declare("dojox.data.AppStore",
 					update.authors = item.authors;
 					item.authors = null;
 					for(i in values) {
-						value = values[i];
-						item.addAuthor(value.name, value.email, value.uri);
+						if (isOwnProperty(values, i)) {
+							value = values[i];
+							item.addAuthor(value.name, value.email, value.uri);
+						}
 					}
 					item.isDirty = true;
 					return true;
@@ -657,8 +675,10 @@ dojo.declare("dojox.data.AppStore",
 					update.contributors = item.contributors;
 					item.contributors = null;
 					for(i in values) {
-						value = values[i];
-						item.addContributor(value.name, value.email, value.uri);
+						if (isOwnProperty(values, i)) {
+							value = values[i];
+							item.addContributor(value.name, value.email, value.uri);
+						}
 					}
 					item.isDirty = true;
 					return true;
@@ -666,8 +686,10 @@ dojo.declare("dojox.data.AppStore",
 					update.categories = item.categories;
 					item.categories = null;
 					for(i in values) {
-						value = values[i];
-						item.addCategory(value.scheme, value.term, value.label);
+						if (isOwnProperty(values, i)) {
+							value = values[i];
+							item.addCategory(value.scheme, value.term, value.label);
+						}
 					}
 					item.isDirty = true;
 					return true;
@@ -747,21 +769,28 @@ dojo.declare("dojox.data.AppStore",
 		//			onError: function
 		//			scope: object
 		//		}
-		var i;
-		for(i in this._adds){
-			this._atomIO.addEntry(this._adds[i], null, function(){}, keywordArgs.onError, false, keywordArgs.scope);
+		var isOwnProperty = dojo.isOwnProperty, fn = function(){};
+		var i, adds = this._adds, updates = this._updates, deletes = this._deletes;
+		for(i in adds){
+			if (isOwnProperty(adds, i)) {
+				this._atomIO.addEntry(adds[i], null, fn, keywordArgs.onError, false, keywordArgs.scope);
+			}
 		}
 			
 		this._adds = null;
 		
-		for(i in this._updates){
-			this._atomIO.updateEntry(this._updates[i].item, function(){}, keywordArgs.onError, false, this.xmethod, keywordArgs.scope);
+		for(i in updates){
+			if (isOwnProperty(updates, i)) {
+				this._atomIO.updateEntry(updates[i].item, fn, keywordArgs.onError, false, this.xmethod, keywordArgs.scope);
+			}
 		}
 			
 		this._updates = null;
 		
-		for(i in this._deletes){
-			this._atomIO.removeEntry(this._deletes[i], function(){}, keywordArgs.onError, this.xmethod, keywordArgs.scope);
+		for(i in deletes){
+			if (isOwnProperty(deletes, i)) {
+				this._atomIO.removeEntry(deletes[i], fn, keywordArgs.onError, this.xmethod, keywordArgs.scope);
+			}
 		}
 			
 		this._deletes = null;
@@ -778,28 +807,42 @@ dojo.declare("dojox.data.AppStore",
 		//	summary: 
 		//		See dojo.data.api.Write.revert()
 		var i;
-		for(i in this._adds){
-			this._feed.removeEntry(this._adds[i]);
+		var adds = this._adds, updates = this._updates, deletes = this._deletes;
+		var isOwnProperty = dojo.isOwnProperty;
+		var update, item, key;
+
+		for(i in adds){
+			if (isOwnProperty(adds, i)) {
+				this._feed.removeEntry(this._adds[i]);
+			}
 		}
 			
 		this._adds = null;
-		
-		var update, item, key;
-		for(i in this._updates){
-			update = this._updates[i];
-			item = update.item;
-			for(key in update){
-				if(key !== "item"){
-					item[key] = update[key];
+
+		for(i in updates){
+			if (isOwnProperty(adds, i)) {
+				update = updates[i];
+				item = update.item;
+				for(key in update){
+					if (isOwnProperty(update, key)) {
+						if(key !== "item"){
+							item[key] = update[key];
+						}
+					}
 				}
 			}
 		}
+
 		this._updates = null;
 		
-		for(i in this._deletes){
-			this._feed.addEntry(this._deletes[i]);
+		for(i in deletes){
+			if (isOwnProperty(deletes, i)) {
+				this._feed.addEntry(deletes[i]);
+			}
 		}
+
 		this._deletes = null;
+
 		return true;
 	},
 
