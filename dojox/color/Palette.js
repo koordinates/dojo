@@ -53,7 +53,7 @@ dojo.require("dojox.color");
 		else if (dojo.isString(base)){
 			this.colors = [ null, null, new dojox.color.Color(base), null, null ];
 		}
-	}
+	};
 
 	//	private functions ---------------------------------------------------------------
 
@@ -65,7 +65,7 @@ dojo.require("dojox.color");
 			var r=(param=="dr")?item.r+val:item.r,
 				g=(param=="dg")?item.g+val:item.g,
 				b=(param=="db")?item.b+val:item.b,
-				a=(param=="da")?item.a+val:item.a
+				a=(param=="da")?item.a+val:item.a;
 			ret.colors.push(new dojox.color.Color({
 				r: Math.min(255, Math.max(0, r)),
 				g: Math.min(255, Math.max(0, g)),
@@ -168,11 +168,11 @@ dojo.require("dojox.color");
 			if(kwArgs.use){
 				//	we are being specific about the algo we want to use.
 				var use=kwArgs.use.toLowerCase();
-				if(use.indexOf("hs")==0){
+				if(!use.indexOf("hs")){
 					if(use.charAt(2)=="l"){ fn=tHSL; }
 					else { fn=tHSV; }
 				}
-				else if(use.indexOf("cmy")==0){
+				else if(!use.indexOf("cmy")){
 					if(use.charAt(3)=="k"){ fn=tCMYK; }
 					else { fn=tCMY; }
 				}
@@ -189,9 +189,11 @@ dojo.require("dojox.color");
 
 			var palette = this;
 			for(var p in kwArgs){
-				//	ignore use
-				if(p=="use"){ continue; }
-				palette = fn(palette, p, kwArgs[p]);
+				if (dojo.isOwnProperty(kwArgs, p)) {
+					//	ignore use
+					if(p=="use"){ continue; }
+					palette = fn(palette, p, kwArgs[p]);
+				}
 			}
 			return palette;		//	dojox.color.Palette
 		},
@@ -225,7 +227,7 @@ dojo.require("dojox.color");
 					v1=(hsv.v>=92)?hsv.v-9:Math.max(hsv.v+9, 20),
 					v2=(hsv.v<=90)?Math.max(hsv.v+5, 20):(95+Math.ceil((hsv.v-90)/2)),
 					s=[ s1, s2, hsv.s, s1, s1 ],
-					v=[ v1, v2, hsv.v, v1, v2 ]
+					v=[ v1, v2, hsv.v, v1, v2 ];
 
 				return new dxc.Palette(dojo.map(h, function(hue, i){
 					return dojox.color.fromHsv(hue, s[i], v[i]);
@@ -344,7 +346,7 @@ dojo.require("dojox.color");
 				var base = dojo.isString(args.base)?new dojox.color.Color(args.base):args.base,
 					hsv = base.toHsv();
 
-				var s  = (hsv.s==100 && hsv.v==0)?0:hsv.s,
+				var s  = (hsv.s==100 && !hsv.v)?0:hsv.s,
 					v1 = (hsv.v-50>20)?hsv.v-50:hsv.v+30,
 					v2 = (hsv.v-25>=20)?hsv.v-25:hsv.v+55,
 					v3 = (hsv.v-75>=20)?hsv.v-75:hsv.v+5,
