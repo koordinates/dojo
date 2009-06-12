@@ -60,7 +60,7 @@ dojo.declare("dojox.data.CssClassStore", dojox.data.CssRuleStore, {
 		//		Handles the creation of an item based on the passed rule.  In this store, this implies
 		//		parsing out all available class names.
 		var obj = {};
-		var s = rule['selectorText'].split(" ");
+		var s = rule.selectorText.split(" ");
 		for(var j=0; j<s.length; j++){
 			var tmp = s[j];
 			var first = tmp.indexOf('.');
@@ -83,13 +83,16 @@ dojo.declare("dojox.data.CssClassStore", dojox.data.CssRuleStore, {
 	_handleReturn: function(){
 		//	summary:
 		//		Handles the return from a fetching action.  Delegates requests to act on the resulting
-		//		item set to eitehr the _handleFetchReturn or _handleFetchByIdentityReturn depending on
+		//		item set to either the _handleFetchReturn or _handleFetchByIdentityReturn depending on
 		//		where the request originated.  
 		var _inProgress = [];
 		
 		var items = {};
-		for(var i in this._allItems){
-			items[i] = this._allItems[i];
+		var allItems = this._allItems;
+		for(var i in allItems){
+			if (dojo.isOwnProperty(allItems, i)) {
+				items[i.toLowerCase()] = allItems[i];
+			}
 		}
 		var requestInfo;
 		// One-level deep clone (can't use dojo.clone, since we don't want to clone all those store refs!)
@@ -113,9 +116,10 @@ dojo.declare("dojox.data.CssClassStore", dojox.data.CssRuleStore, {
 		//	summary:
 		//		Handles a fetchByIdentity request by finding the correct item.
 		var items = request._items;
-		// Per https://bugs.webkit.org/show_bug.cgi?id=17935 , Safari 3.x always returns the selectorText 
-		// of a rule in full lowercase.
-		var item = items[(dojo.isWebKit?request.identity.toLowerCase():request.identity)];
+
+		// Note: keys case-insensitive
+
+		var item = items[request.identity.toLowerCase()];
 		if(!this.isItem(item)){
 			item = null;
 		}
