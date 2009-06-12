@@ -33,8 +33,8 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 			_deletedItems:{}
 		};
 
-		if(!this._datatypeMap['Date'].serialize){
-			this._datatypeMap['Date'].serialize = function(obj){
+		if(!this._datatypeMap.Date.serialize){
+			this._datatypeMap.Date.serialize = function(obj){
 				return dojo.date.stamp.toISOString(obj, {zulu:true});
 			};
 		}
@@ -75,7 +75,9 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 			this._forceLoad();
 		}
 
-		if(typeof keywordArgs != "object" && typeof keywordArgs != "undefined"){
+		// NOTE: Previously allowed undefined or null
+
+		if(typeof keywordArgs != "object" || !keywordArgs){
 			throw new Error("newItem() was passed something other than an object");
 		}
 		var newIdentity = null;
@@ -84,7 +86,7 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 			newIdentity = this._arrayOfAllItems.length;
 		}else{
 			newIdentity = keywordArgs[identifierAttribute];
-			if (typeof newIdentity === "undefined"){
+			if (typeof newIdentity == "undefined"){
 				throw new Error("newItem() was not passed an identity for the new item");
 			}
 			if (dojo.isArray(newIdentity)){
@@ -151,21 +153,22 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 		
 		//Clone over the properties to the new item
 		for(var key in keywordArgs){
-			if(key === this._storeRefPropName || key === this._itemNumPropName){
-				// Bummer, the user is trying to do something like
-				// newItem({_S:"foo"}).  Unfortunately, our superclass,
-				// ItemFileReadStore, is already using _S in each of our items
-				// to hold private info.  To avoid a naming collision, we 
-				// need to move all our private info to some other property 
-				// of all the items/objects.  So, we need to iterate over all
-				// the items and do something like: 
-				//    item.__S = item._S;
-				//    item._S = undefined;
-				// But first we have to make sure the new "__S" variable is 
-				// not in use, which means we have to iterate over all the 
-				// items checking for that.
-				throw new Error("encountered bug in ItemFileWriteStore.newItem");
-			}
+			if (dojo.isOwnProperty(keywordArgs, key)) {
+				if(key === this._storeRefPropName || key === this._itemNumPropName){
+					// FIXME: the user is trying to do something like
+					// newItem({_S:"foo"}).  Unfortunately, our superclass,
+					// ItemFileReadStore, is already using _S in each of our items
+					// to hold private info.  To avoid a naming collision, we 
+					// need to move all our private info to some other property 
+					// of all the items/objects.  So, we need to iterate over all
+					// the items and do something like: 
+					//    item.__S = item._S;
+					//    item._S = undefined;
+					// But first we have to make sure the new "__S" variable is 
+					// not in use, which means we have to iterate over all the 
+					// items checking for that.
+					throw new Error("encountered bug in ItemFileWriteStore.newItem");
+				}
 			var value = keywordArgs[key];
 			if(!dojo.isArray(value)){
 				value = [value];
@@ -178,6 +181,7 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 						this._addReferenceToMap(val, newItem, key);
 					}
 				}
+			}
 			}
 		}
 		this.onNew(newItem, pInfo); // dojo.data.api.Notification call
@@ -237,27 +241,33 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 
 			//Next, see if we have references to this item, if we do, we have to clean them up too.
 			var references = item[this._reverseRefMap];
+			var filterId = function(possibleItem){
+			   return !(this.isItem(possibleItem) && this.getIdentity(possibleItem) == identity);
+			};
+
 			if(references){
 				//Look through all the items noted as references to clean them up.
 				for(var itemId in references){
-					var containingItem = null;
-					if(this._itemsByIdentity){
-						containingItem = this._itemsByIdentity[itemId];
-					}else{
-						containingItem = this._arrayOfAllItems[itemId];
-					}
-					//We have a reference to a containing item, now we have to process the
-					//attributes and clear all references to the item being deleted.
-					if(containingItem){
-						for(var attribute in references[itemId]){
-							var oldValues = this.getValues(containingItem, attribute) || [];
-							var newValues = dojo.filter(oldValues, function(possibleItem){
-							   return !(this.isItem(possibleItem) && this.getIdentity(possibleItem) == identity);
-							}, this);
-							//Remove the note of the reference to the item and set the values on the modified attribute.
-							this._removeReferenceFromMap(item, containingItem, attribute); 
-							if(newValues.length < oldValues.length){
-								this._setValueOrValues(containingItem, attribute, newValues);
+					if (dojo.isOwnProperty(references, itemId)) {
+						var containingItem = null;
+						if(this._itemsByIdentity){
+							containingItem = this._itemsByIdentity[itemId];
+						}else{
+							containingItem = this._arrayOfAllItems[itemId];
+						}
+						//We have a reference to a containing item, now we have to process the
+						//attributes and clear all references to the item being deleted.
+						if(containingItem){
+							for(var attribute in references[itemId]){
+								if (dojo.isOwnProperty(references[itemId], attribute)) {
+									var oldValues = this.getValues(containingItem, attribute) || [];
+									var newValues = dojo.filter(oldValues, filterId , this);
+									//Remove the note of the reference to the item and set the values on the modified attribute.
+									this._removeReferenceFromMap(item, containingItem, attribute); 
+									if(newValues.length < oldValues.length){
+										this._setValueOrValues(containingItem, attribute, newValues);
+									}
+								}
 							}
 						}
 					}
@@ -297,6 +307,8 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 	},
 	
 	_setValueOrValues: function(/* item */ item, /* attribute-name-string */ attribute, /* anything */ newValueOrValues, /*boolean?*/ callOnSet){
+		var i, oldValues, value;
+
 		this._assert(!this._saveInProgress);
 		
 		// Check for valid arguments
@@ -324,12 +336,14 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 			// have a record of the original state.						
 			var copyOfItemState = {};
 			for(var key in item){
-				if((key === this._storeRefPropName) || (key === this._itemNumPropName) || (key === this._rootItemPropName)){
-					copyOfItemState[key] = item[key];
-				}else if(key === this._reverseRefMap){
-					copyOfItemState[key] = dojo.clone(item[key]);
-				}else{
-					copyOfItemState[key] = item[key].slice(0, item[key].length);
+				if (dojo.isOwnProperty(item, key)) {
+					if((key === this._storeRefPropName) || (key === this._itemNumPropName) || (key === this._rootItemPropName)){
+						copyOfItemState[key] = item[key];
+					}else if(key === this._reverseRefMap){
+						copyOfItemState[key] = dojo.clone(item[key]);
+					}else{
+						copyOfItemState[key] = item[key].slice(0, item[key].length);
+					}
 				}
 			}
 			// Now mark the item as dirty, and save the copy of the original state
@@ -339,7 +353,7 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 		// Okay, now we can actually change this attribute on the item
 		var success = false;
 		
-		if(dojo.isArray(newValueOrValues) && newValueOrValues.length === 0){
+		if(dojo.isArray(newValueOrValues) && !newValueOrValues.length){
 			
 			// If we were passed an empty array as the value, that counts
 			// as "unsetting" the attribute, so we need to remove this 
@@ -348,12 +362,12 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 			newValueOrValues = undefined; // used in the onSet Notification call below
 
 			if(this.referenceIntegrity && oldValueOrValues){
-				var oldValues = oldValueOrValues;
+				oldValues = oldValueOrValues;
 				if (!dojo.isArray(oldValues)){
 					oldValues = [oldValues];
 				}
-				for(var i = 0; i < oldValues.length; i++){
-					var value = oldValues[i];
+				for(i = 0; i < oldValues.length; i++){
+					value = oldValues[i];
 					if(this.isItem(value)){
 						this._removeReferenceFromMap(value, item, attribute);
 					}
@@ -362,7 +376,6 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 		}else{
 			var newValueArray;
 			if(dojo.isArray(newValueOrValues)){
-				var newValues = newValueOrValues;
 				// Unfortunately, it's not safe to just do this:
 				//    newValueArray = newValues;
 				// Instead, we need to copy the array, which slice() does very nicely.
@@ -379,7 +392,7 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 			//and update the reference tracking map accordingly.
 			if(this.referenceIntegrity){
 				if(oldValueOrValues){
-					var oldValues = oldValueOrValues;
+					oldValues = oldValueOrValues;
 					if(!dojo.isArray(oldValues)){
 						oldValues = [oldValues];
 					}
@@ -406,19 +419,21 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 						}
 					}, this);
 					for(var rId in map){
-						var removedItem;
-						if(this._itemsByIdentity){
-							removedItem = this._itemsByIdentity[rId];
-						}else{
-							removedItem = this._arrayOfAllItems[rId];
+						if (dojo.isOwnProperty(map, rId)) {
+							var removedItem;
+							if(this._itemsByIdentity){
+								removedItem = this._itemsByIdentity[rId];
+							}else{
+								removedItem = this._arrayOfAllItems[rId];
+							}
+							this._removeReferenceFromMap(removedItem, item, attribute);
 						}
-						this._removeReferenceFromMap(removedItem, item, attribute);
 					}
 				}else{
 					//Everything is new (no old values) so we have to just
 					//insert all the references, if any.
-					for(var i = 0; i < newValueArray.length; i++){
-						var value = newValueArray[i];
+					for(i = 0; i < newValueArray.length; i++){
+						value = newValueArray[i];
 						if(this.isItem(value)){
 							this._addReferenceToMap(value, item, attribute);
 						}
@@ -533,19 +548,21 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 			var referenceObject = {_reference: identity};
 			return referenceObject;
 		}else{
-			if(typeof value === "object"){
+			if(typeof value == "object" && value){
 				for(var type in this._datatypeMap){
-					var typeMap = this._datatypeMap[type];
-					if (dojo.isObject(typeMap) && !dojo.isFunction(typeMap)){
-						if(value instanceof typeMap.type){
-							if(!typeMap.serialize){
-								throw new Error("ItemFileWriteStore:  No serializer defined for type mapping: [" + type + "]");
+					if (dojo.isOwnProperty(this._datatypeMap, type)) {
+						var typeMap = this._datatypeMap[type];
+						if (typeof typeMap == 'object' && typeMap){
+							if(value instanceof typeMap.type){
+								if(!typeMap.serialize){
+									throw new Error("ItemFileWriteStore:  No serializer defined for type mapping: [" + type + "]");
+								}
+								return {_type: type, _value: typeMap.serialize(value)};
 							}
-							return {_type: type, _value: typeMap.serialize(value)};
+						} else if(value instanceof typeMap){
+							//Simple mapping, therefore, return as a toString serialization.
+							return {_type: type, _value: value.toString()};
 						}
-					} else if(value instanceof typeMap){
-						//SImple mapping, therefore, return as a toString serialization.
-						return {_type: type, _value: value.toString()};
 					}
 				}
 			}
@@ -600,15 +617,18 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 		//	something:
 		//		The array or object to examine.
 		var empty = true;
-		if(dojo.isObject(something)){
+		if(dojo.isArray(something)){
+			empty = !something.length;
+		} else if(dojo.isObject(something) && something){
+
+			// NOTE: isObject allows Function objects
+
 			var i;
 			for(i in something){
-				empty = false;
-				break;
-			}
-		}else if(dojo.isArray(something)){
-			if(something.length > 0){
-				empty = false;
+				if (dojo.isOwnProperty(something, i)) {
+					empty = false;
+					break;
+				}
 			}
 		}
 		return empty; //boolean
@@ -663,86 +683,105 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 		this._assert(!this._saveInProgress);
 
 		var identity;
-		for(identity in this._pending._modifiedItems){
-			// find the original item and the modified item that replaced it
-			var originalItem = this._pending._modifiedItems[identity];
-			var modifiedItem = null;
-			if(this._itemsByIdentity){
-				modifiedItem = this._itemsByIdentity[identity];
-			}else{
-				modifiedItem = this._arrayOfAllItems[identity];
-			}
-			
-			// make the original item into a full-fledged item again
-			originalItem[this._storeRefPropName] = this;
-			modifiedItem[this._storeRefPropName] = null;
+		var pendingItems = this._pending._modifiedItems;
 
-			// replace the modified item with the original one
-			var arrayIndex = modifiedItem[this._itemNumPropName];
-			this._arrayOfAllItems[arrayIndex] = originalItem;
+		for(identity in pendingItems){
+			if (dojo.isOwnProperty(pendingItems, identity)) {
+				// find the original item and the modified item that replaced it
+				var originalItem = this._pending._modifiedItems[identity];
+				var modifiedItem = null;
+				if(this._itemsByIdentity){
+					modifiedItem = this._itemsByIdentity[identity];
+				}else{
+					modifiedItem = this._arrayOfAllItems[identity];
+				}
 			
-			if(modifiedItem[this._rootItemPropName]){
-				var i;
-				for (i = 0; i < this._arrayOfTopLevelItems.length; i++) {
-					var possibleMatch = this._arrayOfTopLevelItems[i];
-					if (this.getIdentity(possibleMatch) == identity){
-						this._arrayOfTopLevelItems[i] = originalItem;
-						break;
+				// make the original item into a full-fledged item again
+				originalItem[this._storeRefPropName] = this;
+				modifiedItem[this._storeRefPropName] = null;
+
+				// replace the modified item with the original one
+				var arrayIndex = modifiedItem[this._itemNumPropName];
+				this._arrayOfAllItems[arrayIndex] = originalItem;
+			
+				if(modifiedItem[this._rootItemPropName]){
+					var i;
+					for (i = 0; i < this._arrayOfTopLevelItems.length; i++) {
+						var possibleMatch = this._arrayOfTopLevelItems[i];
+						if (this.getIdentity(possibleMatch) == identity){
+							this._arrayOfTopLevelItems[i] = originalItem;
+							break;
+						}
 					}
 				}
-			}
-			if(this._itemsByIdentity){
-				this._itemsByIdentity[identity] = originalItem;
+				if(this._itemsByIdentity){
+					this._itemsByIdentity[identity] = originalItem;
+				}
 			}			
 		}
-		var deletedItem;
-		for(identity in this._pending._deletedItems){
-			deletedItem = this._pending._deletedItems[identity];
-			deletedItem[this._storeRefPropName] = this;
-			var index = deletedItem[this._itemNumPropName];
 
-			//Restore the reverse refererence map, if any.
-			if(deletedItem["backup_" + this._reverseRefMap]){
-				deletedItem[this._reverseRefMap] = deletedItem["backup_" + this._reverseRefMap];
-				delete deletedItem["backup_" + this._reverseRefMap];
+		var deletedItem;
+		pendingItems = this._pending._deletedItems;
+
+		for(identity in pendingItems){
+			if (dojo.isOwnProperty(pendingItems, identity)) {
+				deletedItem = pendingItems[identity];
+				deletedItem[this._storeRefPropName] = this;
+				var index = deletedItem[this._itemNumPropName];
+
+				//Restore the reverse refererence map, if any.
+				if(deletedItem["backup_" + this._reverseRefMap]){
+					deletedItem[this._reverseRefMap] = deletedItem["backup_" + this._reverseRefMap];
+					delete deletedItem["backup_" + this._reverseRefMap];
+				}
+				this._arrayOfAllItems[index] = deletedItem;
+				if (this._itemsByIdentity) {
+					this._itemsByIdentity[identity] = deletedItem;
+				}
+				if(deletedItem[this._rootItemPropName]){
+					this._arrayOfTopLevelItems.push(deletedItem);
+				}
 			}
-			this._arrayOfAllItems[index] = deletedItem;
-			if (this._itemsByIdentity) {
-				this._itemsByIdentity[identity] = deletedItem;
-			}
-			if(deletedItem[this._rootItemPropName]){
-				this._arrayOfTopLevelItems.push(deletedItem);
-			}	  
 		}
 		//We have to pass through it again and restore the reference maps after all the
 		//undeletes have occurred.
-		for(identity in this._pending._deletedItems){
-			deletedItem = this._pending._deletedItems[identity];
-			if(deletedItem["backupRefs_" + this._reverseRefMap]){
-				dojo.forEach(deletedItem["backupRefs_" + this._reverseRefMap], function(reference){
-					var refItem;
-					if(this._itemsByIdentity){
-						refItem = this._itemsByIdentity[reference.id];
-					}else{
-						refItem = this._arrayOfAllItems[reference.id];
-					}
-					this._addReferenceToMap(refItem, deletedItem, reference.attr);
-				}, this);
-				delete deletedItem["backupRefs_" + this._reverseRefMap]; 
+
+		pendingItems = this._pending._deletedItems;
+		var addReference = function(reference){
+			var refItem;
+			if(this._itemsByIdentity){
+				refItem = this._itemsByIdentity[reference.id];
+			}else{
+				refItem = this._arrayOfAllItems[reference.id];
+			}
+			this._addReferenceToMap(refItem, deletedItem, reference.attr);
+		};
+
+		for(identity in pendingItems){
+			if (dojo.isOwnProperty(pendingItems, identity)) {
+				deletedItem = pendingItems[identity];
+				if(deletedItem["backupRefs_" + this._reverseRefMap]){
+					dojo.forEach(deletedItem["backupRefs_" + this._reverseRefMap], addReference, this);
+					delete deletedItem["backupRefs_" + this._reverseRefMap]; 
+				}
 			}
 		}
+
+		pendingItems = this._pending._newItems;
 		
-		for(identity in this._pending._newItems){
-			var newItem = this._pending._newItems[identity];
-			newItem[this._storeRefPropName] = null;
-			// null out the new item, but don't change the array index so
-			// so we can keep using _arrayOfAllItems.length.
-			this._arrayOfAllItems[newItem[this._itemNumPropName]] = null;
-			if(newItem[this._rootItemPropName]){
-				this._removeArrayElement(this._arrayOfTopLevelItems, newItem);
-			}
-			if(this._itemsByIdentity){
-				delete this._itemsByIdentity[identity];
+		for(identity in pendingItems){
+			if (dojo.isOwnProperty(pendingItems, identity)) {
+				var newItem = pendingItems[identity];
+				newItem[this._storeRefPropName] = null;
+				// null out the new item, but don't change the array index so
+				// so we can keep using _arrayOfAllItems.length.
+				this._arrayOfAllItems[newItem[this._itemNumPropName]] = null;
+				if(newItem[this._rootItemPropName]){
+					this._removeArrayElement(this._arrayOfTopLevelItems, newItem);
+				}
+				if(this._itemsByIdentity){
+					delete this._itemsByIdentity[identity];
+				}
 			}
 		}
 
@@ -759,7 +798,7 @@ dojo.declare("dojox.data.AndOrWriteStore", dojox.data.AndOrReadStore, {
 		if(item){
 			// return true if the item is dirty
 			var identity = this.getIdentity(item);
-			return new Boolean(this._pending._newItems[identity] || 
+			return Boolean(this._pending._newItems[identity] || 
 				this._pending._modifiedItems[identity] ||
 				this._pending._deletedItems[identity]).valueOf(); // boolean
 		}else{
