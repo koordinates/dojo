@@ -12,7 +12,7 @@ dojo.requireLocalization("dijit.form", "Textarea");
 // dojo.doc.write will only work if RichText.js is included in the dojo.js
 // file. If it is included in dojo.js and you want to allow rich text saving
 // for back/forward actions, then set dojo.config.allowXdRichTextSave = true.
-if(!dojo.config["useXDomain"] || dojo.config["allowXdRichTextSave"]){
+if(!dojo.config.useXDomain || dojo.config.allowXdRichTextSave){
 	if(dojo._postLoad){
 		(function(){
 			var savetextarea = dojo.doc.createElement('textarea');
@@ -200,7 +200,9 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//}
 
 		for(var key in ctrlKeyHandlers){
-			this.addKeyHandler(key, true, false, ctrlKeyHandlers[key]);
+			if (dojo.isOwnProperty(ctrlKeyHandlers, key)) {
+				this.addKeyHandler(key, true, false, ctrlKeyHandlers[key]);
+			}
 		}
 	},
 
@@ -365,9 +367,9 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		this.editingArea = dn.ownerDocument.createElement("div");
 		dn.appendChild(this.editingArea);
 
-		if(this.name != "" && (!dojo.config["useXDomain"] || dojo.config["allowXdRichTextSave"])){
+		if(this.name && (!dojo.config.useXDomain || dojo.config.allowXdRichTextSave)){
 			var saveTextarea = dojo.byId(dijit._scopeName + "._editor.RichText.savedContent");
-			if(saveTextarea.value != ""){
+			if(saveTextarea.value){
 				var datas = saveTextarea.value.split(this._SEPARATOR), i=0, dat;
 				while((dat=datas[i++])){
 					var data = dat.split(":");
@@ -468,7 +470,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			lineHeight = "1.0";
 		}
 		var userStyle = "";
-		this.style.replace(/(^|;)(line-|font-?)[^;]+/g, function(match){ userStyle += match.replace(/^;/g,"") + ';' });
+		this.style.replace(/(^|;)(line-|font-?)[^;]+/g, function(match){ userStyle += match.replace(/^;/g,"") + ';'; });
 		return [
 			this.isLeftToRight() ? "<html><head>" : "<html dir='rtl'><head>",
 			(this._localizedIframeTitles && this._localizedIframeTitles.iframeEditTitle ? "<title>" + this._localizedIframeTitles.iframeEditTitle + "</title>" : ""),
@@ -576,7 +578,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 					try{
 						if(this.iframe.contentWindow){
 							this.window = this.iframe.contentWindow;
-							this.document = this.iframe.contentWindow.document
+							this.document = this.iframe.contentWindow.document;
 						}else if(this.iframe.contentDocument){
 							// for opera
 							// TODO: this method is only being called for FF2; can we remove this?
@@ -642,7 +644,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		while((url=files[i++])){
 			var abstring = (new dojo._Url(dojo.global.location, url)).toString();
 			this.editingAreaStyleSheets.push(abstring);
-			text += '<link rel="stylesheet" type="text/css" href="'+abstring+'"/>'
+			text += '<link rel="stylesheet" type="text/css" href="'+abstring+'"/>';
 		}
 		return text;
 	},
@@ -691,7 +693,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			return;
 		}
 		delete this.editingAreaStyleSheets[index];
-		dojo.withGlobal(this.window,'query', dojo, ['link:[href="'+url+'"]']).orphan()
+		dojo.withGlobal(this.window,'query', dojo, ['link:[href="'+url+'"]']).orphan();
 	},
 
 	// disabled: Boolean
@@ -704,7 +706,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		if(!this.isLoaded){ return; } // this method requires init to be complete
 		value = !!value;
 		if(dojo.isIE || dojo.isWebKit || dojo.isOpera){
-			var preventIEfocus = dojo.isIE && (this.isLoaded || !this.focusOnLoad);
+			var preventIEfocus = (this.isLoaded || !this.focusOnLoad);
 			if(preventIEfocus){ this.editNode.unselectable = "on"; }
 			this.editNode.contentEditable = !value;
 			if(preventIEfocus){
@@ -725,7 +727,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 					if(ps.hasOwnProperty(n)){
 						try{
 							this.document.execCommand(n,false,ps[n]);
-						}catch(e){}
+						}catch(e2){}
 					}
 				}
 			}
@@ -743,6 +745,14 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		return function() {
 			dijit.byId(id).editNode.setActive();
 		};
+	},
+
+	_focusTimer: function(){
+		window.setTimeout(dojo.hitch(this, "focus"), this.updateInterval);
+	},
+
+	_connectEvent: function(item){
+		this.connect(this.iframe ? this.document : this.editNode, item.toLowerCase(), item);
 	},
 
 /* Event handlers
@@ -789,11 +799,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		this._preDomFilterContent(this.editNode);
 
 		var events = this.events.concat(this.captureEvents);
-		var ap = this.iframe ? this.document : this.editNode;
-		dojo.forEach(events, function(item){
-			// dojo.connect(ap, item.toLowerCase(), console, "debug");
-			this.connect(ap, item.toLowerCase(), item);
-		}, this);
+		dojo.forEach(events, this._connectEvent, this);
 
 		//if(dojo.isIE){ // IE contentEditable
 			// give the node Layout on IE
@@ -819,7 +825,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		this.savedContent = this.getValue(true);
 
-		editNode = tabStop = win = ap = null;
+		editNode = tabStop = win = null;
 	},
 
 	onKeyDown: function(/* Event */ e){
@@ -925,7 +931,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//		protected
 
 		//console.debug("keyup char:", e.keyChar, e.ctrlKey);
-		var c = (e.keyChar && e.keyChar.toLowerCase()) || e.keyCode
+		var c = (e.keyChar && e.keyChar.toLowerCase()) || e.keyCode;
 		var handlers = this._keyHandlers[c];
 		//console.debug("handler:", handlers);
 		var args = arguments;
@@ -1129,7 +1135,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		// memoizing version. See _queryCommandAvailable for computing version
 		var ca = this._qcaCache[command];
-		if(ca != undefined){ return ca; }
+		if(ca !== undefined && ca !== null){ return ca; }
 		return (this._qcaCache[command] = this._queryCommandAvailable(command));
 	},
 	
@@ -1139,13 +1145,13 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// tags:
 		//		private
 
+		// NOTE: Needs review, remove sniffing
+
 		var ie = 1;
 		var mozilla = 1 << 1;
 		var webkit = 1 << 2;
 		var opera = 1 << 3;
 		var webkit420 = 1 << 4;
-
-		var gt420 = dojo.isWebKit;
 
 		function isSupportedBy(browsers){
 			return {
@@ -1154,7 +1160,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				webkit: Boolean(browsers & webkit),
 				webkit420: Boolean(browsers & webkit420),
 				opera: Boolean(browsers & opera)
-			}
+			};
 		}
 
 		var supportedBy = null;
@@ -1225,7 +1231,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		command = this._normalizeCommand(command);
 
-		if(argument != undefined){
+		if(argument !== undefined){
 			if(command == "heading"){
 				throw new Error("unimplemented");
 			}else if((command == "formatblock") && dojo.isIE){
@@ -1551,7 +1557,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		}else if(this.window && this.window.getSelection){ // Moz
 			html = this._preFilterContent(html);
 			this.execCommand("selectall");
-			if(dojo.isMoz && !html){ html = "&nbsp;" }
+			if(!html){ html = "&nbsp;"; }
 			this.execCommand("inserthtml", html);
 			this._preDomFilterContent(this.editNode);
 		}else if(this.document && this.document.selection){//IE
