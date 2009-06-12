@@ -4,7 +4,7 @@ dojo.provide("dojox.data.util.JsonQuery");
 dojo.declare("dojox.data.util.JsonQuery", null, {
 	useFullIdInQueries: false,
 	_toJsonQuery: function(args, jsonQueryPagination){
-		var first = true;
+		var i, jsonQuery, first = true;
 		var self = this;
 		function buildQuery(path, query){
 			if(query.__id){
@@ -13,24 +13,26 @@ dojo.declare("dojox.data.util.JsonQuery", null, {
 				newQuery[self.idAttribute] = self.useFullIdInQueries ? query.__id : query[self.idAttribute];
 				query = newQuery;
 			}
-			for(var i in query){
-				// iterate through each property, adding them to the overall query
-				var value = query[i];
-				var newPath = path + (/^[a-zA-Z_][\w_]*$/.test(i) ? '.' + i : '[' + dojo._escapeString(i) + ']');
-				if(value && typeof value == "object"){
-					buildQuery(newPath, value);
-				}else if(value!="*"){ // full wildcards can be ommitted
-					jsonQuery += (first ? "" : "&") + newPath +
-						((args.queryOptions && args.queryOptions.ignoreCase) ? "~" : "=") +
-						 dojo.toJson(value);
-					first = false;
+			for(i in query){
+				if (dojo.isOwnProperty(query, i)) {
+					// iterate through each property, adding them to the overall query
+					var value = query[i];
+					var newPath = path + (/^[a-zA-Z_][\w_]*$/.test(i) ? '.' + i : '[' + dojo._escapeString(i) + ']');
+					if(value && typeof value == "object"){
+						buildQuery(newPath, value);
+					}else if(value!="*"){ // full wildcards can be ommitted
+						jsonQuery += (first ? "" : "&") + newPath +
+							((args.queryOptions && args.queryOptions.ignoreCase) ? "~" : "=") +
+							 dojo.toJson(value);
+						first = false;
+					}
 				}
 			}			
 		}
 		// performs conversion of Dojo Data query objects and sort arrays to JSONQuery strings
 		if(args.query && typeof args.query == "object"){
 			// convert Dojo Data query objects to JSONQuery
-			var jsonQuery = "[?(";
+			jsonQuery = "[?(";
 			buildQuery("@", args.query);
 			if(!first){
 				// use ' instead of " for quoting in JSONQuery, and end with ]
