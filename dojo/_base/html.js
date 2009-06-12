@@ -319,6 +319,9 @@ dojo.byId = function(id, doc){
 				if(/px$/i.test(avalue)){
 					return parseFloat(avalue);
 				}
+				if(/^0/.test(avalue)){
+					return 0;
+				}
 				if (!nohack && /^(-)?[\d\.]+(em|pt)$/i.test(avalue)) { // TODO: other units appropriate for this?
 					var sLeft = element.style.left;
 					var rsLeft = element.runtimeStyle.left;
@@ -1530,7 +1533,7 @@ dojo.byId = function(id, doc){
 	// NOTE: Does not support multiple sets (name must be a string)
 
 	dojo.realAttr = (function() {
-		var x, nn, nameC, prop, hasAttribute, doc, att, alias;
+		var nn, nameC, hasAttribute, doc, att, alias;
 
 		if (attributesBad) {
 			hasAttribute = dojo.hasAttr;

@@ -440,7 +440,11 @@ dojo.require("dojo._base.html");
 
 				if (node[prop] != offset) {
 					offset -= (node[prop] - offset);
-					if (offset >= 0) { node.style[style] = offset + 'px'; }
+					if (offset >= 0) {
+						node.style[style] = offset + 'px';
+					} else {
+						return 0;
+					}
 				}
 				return offset;
 			}
