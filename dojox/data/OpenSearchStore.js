@@ -178,8 +178,8 @@ dojo.declare("dojox.data.OpenSearchStore", null, {
 		template = template.substring(0, index) + request.query.searchTerms + template.substring(index+13);
 		
 		dojo.forEach([	{'name': 'count', 'test': request.count, 'def': '10'},
-						{'name': 'startIndex', 'test': request.start, 'def': this.urlElement.attributes.getNamedItem("indexOffset")?this.urlElement.attributes.getNamedItem("indexOffset").nodeValue:0},
-						{'name': 'startPage', 'test': request.startPage, 'def': this.urlElement.attributes.getNamedItem("pageOffset")?this.urlElement.attributes.getNamedItem("pageOffset").nodeValue:0},
+						{'name': 'startIndex', 'test': request.start, 'def': attrs.getNamedItem("indexOffset")?this.urlElement.attributes.getNamedItem("indexOffset").nodeValue:0},
+						{'name': 'startPage', 'test': request.startPage, 'def': attrs.getNamedItem("pageOffset")?this.urlElement.attributes.getNamedItem("pageOffset").nodeValue:0},
 						{'name': 'language', 'test': request.language, 'def': "*"},
 						{'name': 'inputEncoding', 'test': request.inputEncoding, 'def': 'UTF-8'},
 						{'name': 'outputEncoding', 'test': request.outputEncoding, 'def': 'UTF-8'}
@@ -340,7 +340,6 @@ dojo.declare("dojox.data.OpenSearchStore", null, {
 		// We'll be using urlnodes[index] as it's the best option (ATOM > RSS > XML)
 		var label = urlnodes[index].nodeName.toLowerCase();
 		if(label == 'url'){
-			var urlattrs = urlnodes[index].attributes;
 			this.urlElement = urlnodes[index];
 			switch(types[index]){
 				case this.ATOM_CONTENT_TYPE:
