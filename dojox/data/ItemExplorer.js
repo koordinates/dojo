@@ -15,7 +15,7 @@ dojo.require("dijit.form.FilteringSelect");
             value = store.getValue(item, prop);
         }
         return value;
-    }
+    };
     
 dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
     useSelect: false,
@@ -39,31 +39,15 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
 			getChildren: function(parentModelNode, onComplete, onError){
 				var keys, parent, item = parentModelNode.value;
 				var children = [];
-				if(item == initialRootValue){
-					onComplete([]);
-					return;
-				}
 				var isItem = self.store && self.store.isItem(item, true);
-				if(isItem && !self.store.isItemLoaded(item)){
-					// if it is not loaded, do so now.
-					self.store.loadItem({
-						item:item,
-						onItem:function(loadedItem){
-							item = loadedItem;
-							enumerate();
-						}
-					});
-				}else{
-					enumerate();
-				}
-				function enumerate(){
+				var enumerate = function(){
 					// once loaded, enumerate the keys
 					if(isItem){
 						// get the properties through the dojo data API
 						keys = self.store.getAttributes(item);
-	                    parent = item;
+	                    			parent = item;
 					}else if(item && typeof item == 'object'){
-	                    parent = parentModelNode.value;
+	                    			parent = parentModelNode.value;
 						keys = [];
 						// also we want to be able to drill down into plain JS objects/arrays
 						for(var i in item){
@@ -82,7 +66,25 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
 						children.push({addNew:true, parent: parent, parentNode : parentModelNode});
 					}
 					onComplete(children);
+				};
+
+				if(item == initialRootValue){
+					onComplete([]);
+					return;
 				}
+				if(isItem && !self.store.isItemLoaded(item)){
+					// if it is not loaded, do so now.
+					self.store.loadItem({
+						item:item,
+						onItem:function(loadedItem){
+							item = loadedItem;
+							enumerate();
+						}
+					});
+				}else{
+					enumerate();
+				}
+				
 			},
 			getIdentity: function(modelNode){
 				if(!modelNode.id){
@@ -151,13 +153,13 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
                     // TODO: Object - allow Edit when mutli-value editing is possible
                 }else if(item.property && dojo.indexOf(this.store.getIdentityAttributes(), item.property) >= 0){ // id node
                     this.focusNode(node);
-                    alert("Cannot modify an Identifier node.");
+                    window.alert("Cannot modify an Identifier node.");
                 }else if(item.addNew){
                     this.focusNode(node);
                 }else{
                     contextMenu.getChildren().forEach(function(widget){
                         widget.attr("disabled", (widget.label != "Edit") && (widget.label != "Delete"));
-                    })
+                    });
                     // this won't focus the node but gives us a way to reference the node
                     this.lastFocused = node;
                 }
@@ -187,16 +189,18 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
 		dojo.connect(store, "onSet", function(item, attribute, oldValue, newValue){
 			var nodes, i, identity = self.store.getIdentity(item);
 			nodes = self._modelNodeIdMap[identity];
+
+			var fn = function(node){
+				self.model.getChildren(node, function(children){
+					self.model.onChildrenChange(node, children);
+				});
+			};
 			
 			if(nodes && 
 					(oldValue === undefined || newValue === undefined || 
 					oldValue instanceof Array || newValue instanceof Array || typeof oldValue == 'object' || typeof newValue == 'object')){
 				for(i = 0; i < nodes.length; i++){
-					(function(node){
-						self.model.getChildren(node, function(children){
-							self.model.onChildrenChange(node, children);
-						});
-					})(nodes[i]);
+					fn(nodes[i]);
 				}
 			}
 			nodes = self._modelNodePropMap[identity + "." + attribute];
@@ -243,31 +247,31 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
         var labelProp = dojo.doc.createElement('label');
         dojo.attr(labelProp, "for", "property");
         dojo.style(labelProp, "fontWeight", "bold");
-        dojo.attr(labelProp, "innerHTML", "Property:")
+        dojo.attr(labelProp, "innerHTML", "Property:");
         pane.appendChild(labelProp);
 
         // property name field
-        var propName = new dijit.form.ValidationTextBox({
+        (new dijit.form.ValidationTextBox({
             name: "property",
             value: "",
             required: true,
             disabled: true
-        }).placeAt(pane);
+        }).placeAt(pane));
         
         pane.appendChild(dojo.doc.createElement("br"));
         pane.appendChild(dojo.doc.createElement("br"));
         
         // radio button for "value"
-        var value = new dijit.form.RadioButton({
+        (new dijit.form.RadioButton({
             name: "itemType",
             value: "value",
             onClick: dojo.hitch(this, function(){this._enableFields("value");})
-        }).placeAt(pane);
+        }).placeAt(pane));
         
         // label for value
         var labelVal = dojo.doc.createElement('label');
         dojo.attr(labelVal, "for", "value");
-        dojo.attr(labelVal, "innerHTML", "Value (JSON):")
+        dojo.attr(labelVal, "innerHTML", "Value (JSON):");
         pane.appendChild(labelVal);
        
          // container for value fields
@@ -275,22 +279,22 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
         dojo.addClass(valueDiv, "value");
              
         // textarea
-        var textarea = new dijit.form.Textarea({
+        (new dijit.form.Textarea({
             name: "jsonVal"
-        }).placeAt(valueDiv);
+        }).placeAt(valueDiv));
         pane.appendChild(valueDiv);
         
         // radio button for "reference"
-        var reference = new dijit.form.RadioButton({
+        (new dijit.form.RadioButton({
             name: "itemType",
             value: "reference",
             onClick: dojo.hitch(this, function(){this._enableFields("reference");})
-        }).placeAt(pane);
+        }).placeAt(pane));
         
         // label for reference
         var labelRef = dojo.doc.createElement('label');
         dojo.attr(labelRef, "for", "_reference");
-        dojo.attr(labelRef, "innerHTML", "Reference (ID):")
+        dojo.attr(labelRef, "innerHTML", "Reference (ID):");
         pane.appendChild(labelRef);
         pane.appendChild(dojo.doc.createElement("br"));
         
@@ -301,16 +305,16 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
         if(this.useSelect){
             // filteringselect
             // TODO: see if there is a way to sort the items in this list
-            var refSelect = new dijit.form.FilteringSelect({
+            (refSelect = new dijit.form.FilteringSelect({
                 name: "_reference",
                 store: this.store,
                 searchAttr: this.refSelectSearchAttr || this.store.getIdentityAttributes()[0],
                 required: false,
                 value: null,        // need to file a ticket about the fetch that happens when declared with value: null
                 pageSize: 10
-            }).placeAt(refDiv);
+            }).placeAt(refDiv));
         }else{
-            var refTextbox = new dijit.form.ValidationTextBox({
+            (new dijit.form.ValidationTextBox({
                 name: "_reference",
                 value: "",
                 promptMessage: "Enter the ID of the item to reference",
@@ -318,18 +322,23 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
                     // don't validate while it's focused
                     return true;//isFocused || this.store.getItemByIdentity(this._editDialog.attr("value")._reference);
                 })
-            }).placeAt(refDiv);
+            }).placeAt(refDiv));
         }
         pane.appendChild(refDiv);
         pane.appendChild(dojo.doc.createElement("br"));
         pane.appendChild(dojo.doc.createElement("br"));
         
         // buttons
-        var buttons = document.createElement('div');
+        var buttons = dojo.doc.createElement('div');
         buttons.setAttribute("dir", "rtl");
         var cancelButton = new dijit.form.Button({type: "reset", label: "Cancel"}).placeAt(buttons);
         cancelButton.onClick = dojo.hitch(this._editDialog, "onCancel");
-        var okButton = new dijit.form.Button({type: "submit", label: "OK"}).placeAt(buttons);
+
+	// NOTE: Circular reference with host object still exists (need to make hitch safe for this sort of thing)
+
+	cancelButton = null;
+
+        (new dijit.form.Button({type: "submit", label: "OK"}).placeAt(buttons));
         pane.appendChild(buttons);
         
         this._editDialog.attr("content", pane);
@@ -362,7 +371,7 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
 		var store = this.store;
         function setValue(){
         	try{
-	            var itemVal, propPath = [];
+	            var value, itemVal, propPath = [];
 	            var prop = vals.property;
 	            if(editingItem){
 	                while(!store.isItem(item.parent, true)){
@@ -370,7 +379,7 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
 	                    propPath.push(item.property);
 	                    item = node.item;
 	                }
-	                if(propPath.length == 0){
+	                if(!propPath.length){
 	                    // working with an item attribute already
 	                    store.setValue(item.parent, item.property, val);
 	                }else{
@@ -430,7 +439,7 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
 	                }
 	            }
         	}catch(e){
-        		alert(e);
+        		window.alert(e);
         	}
         }
 
@@ -456,7 +465,7 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
                     		setValue();
                     	},
                     	onError:function(){
-                    		alert("The id could not be found");
+                    		window.alert("The id could not be found");
                     	}
                 	});
                     break;
@@ -467,7 +476,7 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
                     if(typeof val == 'function'){
                     	val.toString = function(){
                     		return jsonVal;
-                    	}
+                    	};
                     }
                     setValue();
                     break;
@@ -489,7 +498,7 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
         }
         // not allowed to edit an item's id - so check for that and stop it.
         if(dojo.indexOf(this.store.getIdentityAttributes(), item.property) >= 0){
-            alert("Cannot Edit an Identifier!");
+            window.alert("Cannot Edit an Identifier!");
         }else{
             this._editDialog.attr("title", "Edit Property");
             // make sure the property input is disabled
@@ -537,7 +546,7 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
         }
         // this will prevent any part of the identifier from being changed
         if(dojo.indexOf(this.store.getIdentityAttributes(), item.property) >= 0){
-            alert("Cannot Delete an Identifier!");
+            window.alert("Cannot Delete an Identifier!");
         }else{
         	try{
 	            if(propPath.length > 0){
@@ -563,7 +572,7 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
 	                this.store.unsetAttribute(item.parent, item.property);
 	            }
         	}catch(e){
-        		alert(e);
+        		window.alert(e);
         	}       
         }
     },
@@ -603,7 +612,7 @@ dojo.declare("dojox.data.ItemExplorer", dijit.Tree, {
             value = this.lastFocused.item.parent;
         }
         if(item.property && dojo.indexOf(this.store.getIdentityAttributes(), item.property) >= 0){
-            alert("Cannot add properties to an ID node!");
+            window.alert("Cannot add properties to an ID node!");
         }else{
             // if the value is an item then we need to get the item's value
             if(this.store.isItem(value, true) && !this.store.isItemLoaded(value)) {
