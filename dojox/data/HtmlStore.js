@@ -56,8 +56,9 @@ dojo.declare("dojox.data.HtmlStore", null, {
 		//		dataId:	The id of the table element in the remote page
 		
 		if(args.url){
-			if(!args.dataId)
+			if(!args.dataId) {
 				throw new Error("dojo.data.HtmlStore: Cannot instantiate using url without an id!");
+			}
 			this.url = args.url;
 			this.dataId = args.dataId;
 		}else{
@@ -151,7 +152,6 @@ dojo.declare("dojox.data.HtmlStore", null, {
 		//		Returns the index (column) that the attribute resides in the row.
 		if(typeof attribute !== "string"){ 
 			throw new Error("dojo.data.HtmlStore: a function was passed an attribute argument that was not an attribute name string");
-			return -1;
 		}
 		return dojo.indexOf(this._headings, attribute); //int
 	},
@@ -193,8 +193,9 @@ dojo.declare("dojox.data.HtmlStore", null, {
 		this._assertIsItem(item);
 		var attributes = [];
 		for(var i=0; i<this._headings.length; i++){
-			if(this.hasAttribute(item, this._headings[i]))
+			if(this.hasAttribute(item, this._headings[i])) {
 				attributes.push(this._headings[i]);
+			}
 		}
 		return attributes; //Array
 	},
@@ -319,7 +320,7 @@ dojo.declare("dojox.data.HtmlStore", null, {
 							}
 						}
 						return null; //null
-					}
+					};
 
 					var d = document.createElement("div");
 					d.innerHTML = data;
@@ -347,21 +348,23 @@ dojo.declare("dojox.data.HtmlStore", null, {
 			//same value for each item examined.  Much more efficient.
 			var regexpList = {};
 			var key;
-                        var value;
-			for(key in request.query){
-				value = request.query[key]+'';
-				if(typeof value === "string"){
-					regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+                        var value, query = request.query;
+			for(key in query){
+				if (dojo.isOwnProperty(query, key)) {
+					value = String(query[key]);					
+					regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);					
 				}
 			}
 
 			for(var i = 0; i < arrayOfAllItems.length; ++i){
 				var match = true;
 				var candidateItem = arrayOfAllItems[i];
-				for(key in request.query){
-					value = request.query[key]+'';
-					if (!this._containsValue(candidateItem, key, value, regexpList[key])){
-						match = false;
+				for(key in query){
+					if (dojo.isOwnProperty(query, key)) {
+						value = String(query[key]);
+						if (!this._containsValue(candidateItem, key, value, regexpList[key])){
+							match = false;
+						}
 					}
 				}
 				if(match){
@@ -485,7 +488,7 @@ dojo.declare("dojox.data.HtmlStore", null, {
 							}
 						}
 						return null; //null
-					}
+					};
 					var d = document.createElement("div");
 					d.innerHTML = data;
 					self._rootNode = findNode(d, self.dataId);
