@@ -1,4 +1,4 @@
-dojo.provide("dojox.date.HebrewNumerals");
+﻿dojo.provide("dojox.date.HebrewNumerals");
 dojo.experimental("dojox.date.HebrewNumerals");
 
 //Conversion from "Hindi" numerals to Hebrew numerals and vice versa
@@ -24,7 +24,7 @@ dojo.experimental("dojox.date.HebrewNumerals");
 	
 		year = year%1000;
 		
-		var i=0, n=4,j=9;
+		var n=4,j=9;
 		while(year){ 
 			if(year >= n*100){
 				str=str.concat(_HUN[n-1]);
@@ -154,8 +154,9 @@ dojo.experimental("dojox.date.HebrewNumerals");
 				}
 			}
 			for(i=1; i <= 9; i++){
-				if(day.charAt(j) == _DIG[i-1])
+				if(day.charAt(j) == _DIG[i-1]) {
 					nDay += i;
+				}
 			}						
 		} 
 		//if (nDay > this.getDaysInHebrewMonth(_month, this._year)){
