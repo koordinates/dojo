@@ -34,7 +34,7 @@ dojox.data.PersevereStore.getStores = function(/*String?*/path,/*Boolean?*/sync)
 	dojo.xhr = function(method,args){
 		(args.headers = args.headers || {})['Server-Methods'] = false;
 		return plainXhr.apply(dojo,arguments);
-	}
+	};
 	var rootService= dojox.rpc.Rest(path,true);
 	dojox.rpc._sync = sync;
 	var dfd = rootService("Class/");//dojo.xhrGet({url: target, sync:!callback, handleAs:'json'});
@@ -56,34 +56,38 @@ dojox.data.PersevereStore.getStores = function(/*String?*/path,/*Boolean?*/sync)
 			}
 		}
 		function setupMethods(methodsDefinitions, methodsTarget){
+			var callFactory = function(methodName){
+				return function(){
+					// execute a JSON-RPC call
+					var deferred = dojo.rawXhrPost({
+						url: this.__id,
+						// the JSON-RPC call
+						postData: dojo.toJson({
+							method: methodName,
+							id: callId++,
+							params: dojo._toArray(arguments)
+						}),
+						handleAs: "json"
+					});
+					deferred.addCallback(function(response){
+						// handle the response
+						return response.error ?
+							new Error(response.error) :
+							response.result;
+					});
+					return deferred;
+				};
+			};
+
 			if(methodsDefinitions && methodsTarget){
 				for(var j in methodsDefinitions){
-					var methodDef = methodsDefinitions[j];
-					// if any method definitions indicate that the method should run on the server, than add 
-					// it to the prototype as a JSON-RPC method
-					if(methodDef.runAt == "server" && !methodsTarget[j]){
-						methodsTarget[j] = (function(methodName){
-							return function(){
-								// execute a JSON-RPC call
-								var deferred = dojo.rawXhrPost({
-									url: this.__id,
-									// the JSON-RPC call
-									postData: dojo.toJson({
-										method: methodName,
-										id: callId++,
-										params: dojo._toArray(arguments)
-									}),
-									handleAs: "json"
-								});
-								deferred.addCallback(function(response){
-									// handle the response
-									return response.error ?
-										new Error(response.error) :
-										response.result;
-								});
-								return deferred;
-							}
-						})(j);	
+					if (dojo.isOwnProperty(methodsDefinitions, j)) {
+						var methodDef = methodsDefinitions[j];
+						// if any method definitions indicate that the method should run on the server, than add 
+						// it to the prototype as a JSON-RPC method
+						if(methodDef.runAt == "server" && !methodsTarget[j]){
+							methodsTarget[j] = callFactory(j);
+						}
 					}
 				}
 			}
