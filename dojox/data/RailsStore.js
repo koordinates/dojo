@@ -20,8 +20,10 @@ dojo.declare("dojox.data.RailsStore", dojox.data.JsonRestStore, {
 				var url = target;
 				var query;
 				var ident;
+
+				// NOTE: isObject allows null
 				
-				if(dojo.isObject(id)){
+				if(dojo.isObject(id) && id){
 					ident = '';
 					query = '?' + dojo.objectToQuery(id);
 				}else if(args.queryStr && args.queryStr.indexOf('?') != -1){
@@ -56,12 +58,12 @@ dojo.declare("dojox.data.RailsStore", dojox.data.JsonRestStore, {
 					sync : isSync,
 					headers : {
 						Accept : 'application/json,application/javascript',
-						Range : args && (args.start >= 0 || args.count >= 0)
-								? "items="
-										+ (args.start || '0')
-										+ '-'
-										+ ((args.count && (args.count
-												+ (args.start || 0) - 1)) || '')
+						Range : args && (args.start >= 0 || args.count >= 0) ?
+								"items=" +
+										(args.start || '0') +
+										'-' +
+										((args.count && (args.count +
+												(args.start || 0) - 1)) || '')
 								: undefined
 					}
 				};
@@ -75,10 +77,16 @@ dojo.declare("dojox.data.RailsStore", dojox.data.JsonRestStore, {
 		args = args || {};
 		function addToQueryStr(obj){
 			function buildInitialQueryString(){
-				if(args.queryStr == null){
+
+				// NOTE: What is the default for this?
+
+				if(args.queryStr === null || args.queryStr === undefined){
 					args.queryStr = '';
 				}
-				if(dojo.isObject(args.query)){
+
+				// NOTE: isObject allows null
+
+				if(dojo.isObject(args.query) && args.query){
 					args.queryStr = '?' + dojo.objectToQuery(args.query);
 				}else if(dojo.isString(args.query)){
 					args.queryStr = args.query;
@@ -91,7 +99,10 @@ dojo.declare("dojox.data.RailsStore", dojox.data.JsonRestStore, {
 					return '&';
 				}
 			}
-			if (args.queryStr == null){
+
+			// NOTE: What is the default for this?
+
+			if (args.queryStr === null || args.queryStr === undefined){
 				buildInitialQueryString();
 			}
 			args.queryStr = args.queryStr + separator() + dojo.objectToQuery(obj);
