@@ -104,12 +104,13 @@ dojo.declare("dojox.data.CssRuleStore", null, {
 		//	summary: 
 		//		See dojo.data.api.Read.getAttributes()
 		this._assertIsItem(item);
-		var attrs = ['selector', 'classes', 'rule', 'style', 'cssText', 'styleSheet', 'parentStyleSheet', 'parentStyleSheetHref'];
+		var key, attrs = ['selector', 'classes', 'rule', 'style', 'cssText', 'styleSheet', 'parentStyleSheet', 'parentStyleSheetHref'];
 		var style = item.rule.style;
 		if(style){
-			var key;
 			for(key in style){
-				attrs.push("style." + key);
+				if (dojo.isOwnProperty(style, key)) {
+					attrs.push("style." + key);
+				}
 			}
 		}
 		return attrs;
@@ -119,7 +120,6 @@ dojo.declare("dojox.data.CssRuleStore", null, {
 		//	summary: 
 		//		See dojo.data.api.Read.getValue()
 		var values = this.getValues(item, attribute);
-		var value = defaultValue;
 		if(values && values.length > 0){
 			return values[0];
 		}
@@ -133,35 +133,43 @@ dojo.declare("dojox.data.CssRuleStore", null, {
 		this._assertIsAttribute(attribute);
 		var value = null;
 		if(attribute === "selector"){
-			value = item.rule["selectorText"];
+			value = item.rule.selectorText;
 			if(value && dojo.isString(value)){
+
+				// Array here
+
 				value = value.split(",");
 			}
 		}else if(attribute === "classes"){
+
+			// Array here
+
 			value = item.classes;
 		}else if(attribute === "rule"){
 			value = item.rule.rule;
 		}else if(attribute === "style"){
 			value = item.rule.style;
 		}else if(attribute === "cssText"){
-			if (dojo.isIE) {
-				if(item.rule.style){
-					value = item.rule.style.cssText;
-					if(value){
-						value = "{ " + value.toLowerCase() + " }";
-					}
-				}
-			}else{
+
+			// Not an array
+
+			value = item.rule.style && item.rule.style.cssText;
+			if(value){
+				value = "{ " + value.toLowerCase() + " }";
+			} else {
 				value = item.rule.cssText;
-				if(value){
+				if(value && value.indexOf('{') != -1){
 					value = value.substring(value.indexOf("{"), value.length);
 				}
-			}
+			}			
 		}else if(attribute === "styleSheet"){
 			value = item.rule.styleSheet;
 		}else if(attribute === "parentStyleSheet"){
 			value = item.rule.parentStyleSheet;
 		}else if(attribute === "parentStyleSheetHref"){
+
+			// Not an array
+
 			if(item.href){
 				value = item.href;
 			}
@@ -169,9 +177,17 @@ dojo.declare("dojox.data.CssRuleStore", null, {
 			var attr = attribute.substring(attribute.indexOf("."), attribute.length);
 			value = item.rule.style[attr];
 		}else{
+
+			// Array here
+
 			value = [];
 		}
 		if(value !== undefined){
+
+			// NOTE: Should not need isArray here
+			//       (which of the above are arrays?)
+			//       Method should be deprecated (requires "duck typing" across frames)
+
 			if(!dojo.isArray(value)){
 				value = [value];
 			}
@@ -223,8 +239,6 @@ dojo.declare("dojox.data.CssRuleStore", null, {
 		if(!request.store){
 			request.store = this;
 		}
-
-		var scope = request.scope || dojo.global;
 		if(this._pending && this._pending.length > 0){
 			this._pending.push({request: request, fetch: true});
 		}else{
@@ -261,7 +275,7 @@ dojo.declare("dojox.data.CssRuleStore", null, {
 		//	summary:
 		//		Handles the creation of an item based on the passed rule.  In this store, this implies
 		//		parsing out all available class names.
-		var selector = rule['selectorText'];
+		var selector = rule.selectorText;
 		var s = selector.split(" ");
 		var classes = [];
 		for(var j=0; j<s.length; j++){
@@ -288,16 +302,19 @@ dojo.declare("dojox.data.CssRuleStore", null, {
 	_handleReturn: function(){
 		//	summary:
 		//		Handles the return from a fetching action.  Delegates requests to act on the resulting
-		//		item set to eitehr the _handleFetchReturn or _handleFetchByIdentityReturn depending on
+		//		item set to either the _handleFetchReturn or _handleFetchByIdentityReturn depending on
 		//		where the request originated.  
 		var _inProgress = [];
 		
-		var items = [];
-		var item = null;
-		for(var i in this._allItems){
-			item = this._allItems[i];
-			for(var j in item){
-				items.push(item[j]);
+		var i, j, len, items = [];
+		var item = null, allItems = this._allItems;
+		for(i in allItems){
+			if (dojo.isOwnProperty(allItems, i)) {
+				item = this._allItems[i]; // Array
+				len = item.length;
+				for(j = 0; j < len; j++){
+					items.push(item[j]);
+				}
 			}
 		}
 
@@ -318,8 +335,9 @@ dojo.declare("dojox.data.CssRuleStore", null, {
 	_handleFetchReturn: function(/*Request */ request){
 		//	summary:
 		//		Handles a fetchByIdentity request by finding the correct items.
+		var isOwnProperty = dojo.isOwnProperty;
 		var scope = request.scope || dojo.global;
-		var items = [];
+		var item, items = [], requestItems = request._items;
 		//Check to see if we've looked this query up before
 		//If so, just reuse it, much faster.  Only regen if query changes.
 		var cacheKey = "all";
@@ -330,35 +348,43 @@ dojo.declare("dojox.data.CssRuleStore", null, {
 		if(this._cache[cacheKey]){
 			items = this._cache[cacheKey];
 		}else if(request.query){
-			for(i in request._items){
-				var item = request._items[i];
-				// Per https://bugs.webkit.org/show_bug.cgi?id=17935 , Safari 3.x always returns the selectorText 
-				// of a rule in full lowercase.
-				var ignoreCase = dojo.isWebKit ? true : (request.queryOptions ? request.queryOptions.ignoreCase : false); 
-				var regexpList = {};
-				var key;
-				var value;
-				for(key in request.query){
-					value = request.query[key];
-					if(typeof value === "string"){
-						regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+			for(i in requestItems){
+				if (isOwnProperty(requestItems, i)) {
+					item = requestItems[i];
+
+					// NOTE: Default option unworkable (some agents won't allow case sensitive queries)
+
+					var ignoreCase = request.queryOptions && request.queryOptions.ignoreCase;
+					var regexpList = {};
+					var key, value, query = request.query;
+					for(key in query){
+						if (isOwnProperty(query, key)) {
+							value = query[key];
+							if(typeof value === "string"){
+								regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+							}
+						}
 					}
-				}
-				var match = true;
-				for(key in request.query){
-					value = request.query[key];
-					if(!this._containsValue(item, key, value, regexpList[key])){
-						match = false;
+					var match = true;
+					for(key in request.query){
+						if (isOwnProperty(query, key)) {
+							value = request.query[key];
+							if(!this._containsValue(item, key, value, regexpList[key])){
+								match = false;
+							}
+						}
 					}
-				}
-				if(match){
-					items.push(item); 
+					if(match){
+						items.push(item); 
+					}
 				}
 			}
 			this._cache[cacheKey] = items;
 		}else{
-			for(i in request._items){
-				items.push(request._items[i]);
+			for(i in requestItems){
+				if (isOwnProperty(requestItems, i)) {
+					items.push(requestItems[i]);
+				}
 			}
 		}
 		var total = items.length;
@@ -385,15 +411,13 @@ dojo.declare("dojox.data.CssRuleStore", null, {
 		if(request.onBegin){
 			request.onBegin.call(scope, total, request);
 		}
-		if(request.onItem){
-			if(dojo.isArray(items)){
-				for(i = 0; i < items.length; i++){
-					request.onItem.call(scope, items[i], request); 
-				}
-				if(request.onComplete){
-					request.onComplete.call(scope, null, request);
-				}
+		if(request.onItem){			
+			for(i = 0; i < items.length; i++){
+				request.onItem.call(scope, items[i], request); 
 			}
+			if(request.onComplete){
+				request.onComplete.call(scope, null, request);
+			}			
 		}else if(request.onComplete){
 			request.onComplete.call(scope, items, request); 
 		}
@@ -450,14 +474,18 @@ dojo.declare("dojox.data.CssRuleStore", null, {
 		//		Optional regular expression generated off value if value was of string type to handle wildcarding.
 		//		If present and attribute values are string, then it can be used for comparison instead of 'value'
 		return dojo.some(this.getValues(item, attribute), function(possibleValue){
-			if(possibleValue !== null && !dojo.isObject(possibleValue) && regexp){
-				if(possibleValue.toString().match(regexp)){
-					return true; // Boolean
+
+			// NOTE: isObject allows null, Function and Object objects
+			//       (appears undefined is not a possibility here)
+
+			if(!dojo.isObject(possibleValue) && regexp){
+				if (typeof possibleValue != 'string') {
+					possibleValue = possibleValue.toString();
 				}
+				return regexp.test(possibleValue); // Boolean
 			}else if(value === possibleValue){
 				return true; // Boolean
-			}
-			return false;
+			}			
 		});
 	}
 });
