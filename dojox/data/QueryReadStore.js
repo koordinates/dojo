@@ -139,8 +139,11 @@ dojo.declare("dojox.data.QueryReadStore",
 		getAttributes: function(/* item */ item){
 			this._assertIsItem(item);
 			var ret = [];
-			for(var i in item.i){
-				ret.push(i);
+			var items = item.i;
+			for(var i in items){
+				if (dojo.isOwnProperty(items, i)) {
+					ret.push(i);
+				}
 			}
 			return ret;
 		},
@@ -225,8 +228,11 @@ dojo.declare("dojox.data.QueryReadStore",
 				var aborted = false;
 				
 				var startIndex = requestObject.start?requestObject.start:0;
-				if (self.doClientPaging==false) {
-					// For client paging we dont need no slicing of the result.
+
+				// NOTE: What is the default for this?
+
+				if (self.doClientPaging === false) {
+					// For client paging we don't need to slice the result.
 					startIndex = 0;
 				}
 				var endIndex   = requestObject.count?(startIndex + requestObject.count):items.length;
