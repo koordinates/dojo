@@ -13,17 +13,23 @@ dojo.declare("dojox.data.S3Store",
 			var keyElements = results.getElementsByTagName("Key");
 			var jsResults = [];
 			var self = this;
+
+			var callbackFactory = function(key,val){
+				return function(callback){
+					// when a callback is added we will fetch it
+					delete this._loadObject;
+					self.service(key).addCallback(callback);
+				};
+			};
+
 			for(var i=0; i <keyElements.length;i++){
 				var keyElement = keyElements[i];
 				// manually create lazy loaded Deferred items for each item in the result array
+
+				// NOTE: Why is val passed?
+
 				var val = {
-					_loadObject: (function(key,val){
-						return function(callback){
-							// when a callback is added we will fetch it
-							delete this._loadObject;
-							self.service(key).addCallback(callback);
-						};
-					})(keyElement.firstChild.nodeValue,val)
+					_loadObject: callbackFactory(keyElement.firstChild.nodeValue,val)
 				};
 				jsResults.push(val);
 			}
