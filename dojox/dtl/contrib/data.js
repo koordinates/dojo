@@ -48,6 +48,8 @@ dojo.require("dojox.dtl._base");
 				}
 
 				values = dojo.map(values, function(value){
+					// NOTE: isObject allows null
+
 					if(dojo.isObject(value) && store.isItem(value)){
 						return new ddcd._BoundItem(value, store);
 					}
