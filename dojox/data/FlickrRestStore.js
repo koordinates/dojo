@@ -117,7 +117,7 @@ dojo.declare("dojox.data.FlickrRestStore",
 			request.query.apikey = content.api_key;
 			secondaryKey.push("api"+content.api_key);
 		}else{
-			throw Error("dojox.data.FlickrRestStore: An API key must be specified.");
+			throw new Error("dojox.data.FlickrRestStore: An API key must be specified.");
 		}
 
 		request._curCount = request.count;
@@ -125,7 +125,7 @@ dojo.declare("dojox.data.FlickrRestStore",
 		if(query.page){
 			content.page = request.query.page;
 			secondaryKey.push("page" + content.page);
-		}else if(typeof(request.start) != "undefined" && request.start != null){
+		}else if(typeof request.start != "undefined" && request.start !== null){
 			if(!request.count){
 				request.count = 20;
 			}
@@ -133,7 +133,7 @@ dojo.declare("dojox.data.FlickrRestStore",
 			var start = request.start, count = request.count;
 			// If the count does not divide cleanly into the start number,
 			// more work has to be done to figure out the best page to request
-			if(diff != 0) {
+			if(diff) {
 				if(start < count / 2){
 					// If the first record requested is less than half the
 					// amount requested, then request from 0 to the count record
@@ -142,7 +142,7 @@ dojo.declare("dojox.data.FlickrRestStore",
 				}else{
 					var divLimit = 20, div = 2;
 					for(var i = divLimit; i > 0; i--){
-						if(start % i == 0 && (start/i) >= count){
+						if(!(start % i) && (start/i) >= count){
 							div = i;
 							break;
 						}
@@ -188,8 +188,8 @@ dojo.declare("dojox.data.FlickrRestStore",
 			}
 			primaryKey.push("tags" + content.tags);
 			
-			if(query["tag_mode"] && (query.tag_mode.toLowerCase() == "any"
-				|| query.tag_mode.toLowerCase() == "all")){
+			if(query.tag_mode && (query.tag_mode.toLowerCase() == "any" ||
+				query.tag_mode.toLowerCase() == "all")){
 				content.tag_mode = query.tag_mode;
 			}
 		}
@@ -257,9 +257,12 @@ dojo.declare("dojox.data.FlickrRestStore",
   		this._handlers[requestKey] = [thisHandler];
 
   		//Linking this up to Flickr is a PAIN!
+
+		// NOTE: How so?
+
   		var handle = null;
   		var getArgs = {
-			url: this._flickrRestUrl,
+			url: url,
 			preventCache: true,
 			content: content,
 			callbackParamName: "jsoncallback"
@@ -271,7 +274,7 @@ dojo.declare("dojox.data.FlickrRestStore",
 			var maxPhotos;
 			var req = handler.request;
 			
-			if(typeof(req._realStart) != undefined && req._realStart != null){
+			if(typeof req._realStart != 'undefined' && req._realStart !== null){
 				req.start = req._realStart;
 				req.count = req._realCount;
 				req._realStart = req._realCount = null;
@@ -284,7 +287,7 @@ dojo.declare("dojox.data.FlickrRestStore",
 				if(data){
 					photos = (data.photoset ? data.photoset : data.photos);
 				}
-				if(photos && typeof(photos.perpage) != "undefined" && typeof(photos.pages) != "undefined"){
+				if(photos && typeof photos.perpage != "undefined" && typeof photos.pages != "undefined"){
 					if(photos.perpage * photos.pages <= handler.request.start + handler.request.count){
 						//If the final page of results has been received, it is possible to 
 						//know exactly how many photos there are
