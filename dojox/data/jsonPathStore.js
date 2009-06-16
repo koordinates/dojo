@@ -107,7 +107,7 @@ dojo.declare("dojox.data.jsonPathStore",
 			this.index={};
 
 			//regex to identify when we're travelling down metaObject (which we don't want to do) 
-			var expr="("+this.metaLabel+"\'\])";
+			var expr = "(" + this.metaLabel + "\'\\])";
 			this.metaRegex = new RegExp(expr);
 
 
@@ -198,14 +198,13 @@ dojo.declare("dojox.data.jsonPathStore",
 			var data = this.fetch({query: path,mode: dojox.data.SYNC_MODE});
 			for(var i=0; i<data.length;i++){
 				var parts, attribute;
-				if(dojo.isObject(data[i])){
-					var newPath = data[i][this.metaLabel]["path"];
+
+				// NOTE: isObject allows null
+
+				if(dojo.isObject(data[i]) && data[i]){
+					var newPath = data[i][this.metaLabel].path;
 					if (origPath){
-						//console.log("newPath: ", newPath);
-						//console.log("origPath: ", origPath);
-						//console.log("path: ", path);
-						//console.log("data[i]: ", data[i]);
-						parts = origPath.split("\[\'");
+						parts = origPath.split("['");
 						attribute = parts[parts.length-1].replace(this._replaceRegex,'');
 						//console.log("attribute: ", attribute);
 						//console.log("ParentItem: ", item, attribute);
@@ -216,7 +215,7 @@ dojo.declare("dojox.data.jsonPathStore",
 							this.buildIndex(newPath,item);
 						}
 					}else{
-						parts = newPath.split("\[\'");
+						parts = newPath.split("['");
 						attribute = parts[parts.length-1].replace(this._replaceRegex,'');
 						this._addReference(data[i], {parent: this._data, attribute:attribute});
 						this.buildIndex(newPath, data[i]);
@@ -274,8 +273,10 @@ dojo.declare("dojox.data.jsonPathStore",
 			item = this._correctReference(item);
 			var res = [];
 			for (var i in item){
-				if (this.hideMetaAttributes && (i==this.metaLabel)){continue;}
-				res.push(i);
+				if (dojo.isOwnProperty(item, i)) {
+					if (this.hideMetaAttributes && (i==this.metaLabel)){continue;}
+					res.push(i);
+				}
 			}
 			return res;
 		},
@@ -301,9 +302,12 @@ dojo.declare("dojox.data.jsonPathStore",
 			//	value: /* anything */
 			item = this._correctReference(item);
 
-			if (item[attribute] && item[attribute]==value){return true}
-			if (dojo.isObject(item[attribute]) || dojo.isObject(value)){
-				if (this._shallowCompare(item[attribute],value)){return true}
+			if (item[attribute] && item[attribute]==value){return true;}
+
+			// NOTE: isObject allows null
+
+			if ((dojo.isObject(item[attribute]) && item[attribute]) || (dojo.isObject(value) && value)){
+				if (this._shallowCompare(item[attribute],value)){return true;}
 			}
 			return false;	
 		},
@@ -314,34 +318,34 @@ dojo.declare("dojox.data.jsonPathStore",
 			//true if all props match. It will not descend into child objects
 			//but it will compare child date objects
 
-			if ((dojo.isObject(a) && !dojo.isObject(b))|| (dojo.isObject(b) && !dojo.isObject(a))) {
+			if ((dojo.isObject(a) && !dojo.isObject(b)) || (dojo.isObject(b) && !dojo.isObject(a))) {
 				return false;
 			}
 
-			if ( a["getFullYear"] || b["getFullYear"] ){
+			if ( a.getFullYear || b.getFullYear ){
 				//confirm that both are dates
-				if ( (a["getFullYear"] && !b["getFullYear"]) || (b["getFullYear"] && !a["getFullYear"]) ){
+				if ( (a.getFullYear && !b.getFullYear) || (b.getFullYear && !a.getFullYear) ){
 					return false;
 				}else{
-					if (!dojo.date.compare(a,b)){
-						return true;
-					}
-					return false;
+					return !dojo.date.compare(a,b);
        				}
 			}
 
-			for (var i in b){	
-				if (dojo.isObject(b[i])){
-					if (!a[i] || !dojo.isObject(a[i])){return false}
+			for (var i in b){
 
-					if (b[i]["getFullYear"]){
-						if(!a[i]["getFullYear"]){return false}
-						if (dojo.date.compare(a,b)){return false}	
+				// NOTE: isObject allows null
+
+				if (dojo.isObject(b[i]) && b[i]){
+					if (!a[i] || !dojo.isObject(a[i])){return false;}
+
+					if (b[i].getFullYear){
+						if(!a[i].getFullYear){return false;}
+						if (dojo.date.compare(a,b)){return false;}
 					}else{
-						if (!this._shallowCompare(a[i],b[i])){return false}
+						if (!this._shallowCompare(a[i],b[i])){return false;}
 					}
 				}else{	
-					if (!b[i] || (a[i]!=b[i])){return false}
+					if (!b[i] || (a[i]!=b[i])){return false;}
 				}
 			}
 
@@ -349,7 +353,9 @@ dojo.declare("dojox.data.jsonPathStore",
 			//the previous section will have already evaluated things.
 
 			for (i in a){
-				if (!b[i]){return false}
+				if (dojo.isOwnProperty(a, i)) {
+					if (!b[i]){return false;}
+				}
 			}
 			
 			return true;
@@ -364,9 +370,11 @@ dojo.declare("dojox.data.jsonPathStore",
 			//
 			//	item: /* object */
 			//	attribute: /* string */
+
+			// NOTE: isObject allows null
 		
-			if (!dojo.isObject(item) || !item[this.metaLabel]){return false}
-			if (this.requireId && this._hasId && !item[this._id]){return false}
+			if (!dojo.isObject(item) || (item && !item[this.metaLabel])){return false;}
+			if (this.requireId && this._hasId && !item[this._id]){return false;}
 			return true;
 		},
 
@@ -419,7 +427,10 @@ dojo.declare("dojox.data.jsonPathStore",
 
 			if(dojo.isArray(data)){
 				for(var i=0; i<data.length;i++){
-					if(dojo.isObject(data[i]) || dojo.isArray(data[i]) ){
+
+					// NOTE: isObject allows null
+
+					if(dojo.isObject(data[i]) && data[i]) {
 						this.cleanMeta(data[i]);
 					}
 				}
@@ -484,22 +495,19 @@ dojo.declare("dojox.data.jsonPathStore",
 			//	onError: /* function */
 			//		colled in the event of an error
 
-			// we're not started yet, add this request to a queue and wait till we do	
+			var query;
+
+			// we're not started yet, add this request to a queue and wait till we do
 			if (!this._data){
 				this._fetchQueue.push(args);
 				return args;
 			}	
 			if(dojo.isString(args)){
-					query = args;
-					args={query: query, mode: dojox.data.SYNC_MODE};
-					
+				query = args;
+				args={query: query, mode: dojox.data.SYNC_MODE};					
 			}
-
-			var query;
 			if (!args || !args.query){
-				if (!args){
-					var args={};	
-				}
+				args=args || {};
 
 				if (!args.query){
 					args.query="$..*";
@@ -515,7 +523,7 @@ dojo.declare("dojox.data.jsonPathStore",
 					query = args.query = "$..*";
 				}
 				if (args.query.queryOptions){
-					args.queryOptions=args.query.queryOptions
+					args.queryOptions=args.query.queryOptions;
 				}
 			}else{
 				query=args.query;
@@ -532,9 +540,12 @@ dojo.declare("dojox.data.jsonPathStore",
 				if(args.start && i<args.start){continue;}
 				if (args.count && (count >= args.count)) { continue; }
 
-				var item = results[i]["value"];
-				var path = results[i]["path"];
-				if (!dojo.isObject(item)){continue;}
+				var item = results[i].value;
+				var path = results[i].path;
+
+				// NOTE: isObject allows null
+
+				if (!dojo.isObject(item) || !item){continue;}
 				if(this.metaRegex.exec(path)){continue;}
 
 				//this automatically records the objects path
@@ -548,7 +559,7 @@ dojo.declare("dojox.data.jsonPathStore",
 				}
 
 				//add item to the item index if appropriate
-				if(item[this.idAttribute]){this.index[item[this.idAttribute]]=item}
+				if(item[this.idAttribute]){this.index[item[this.idAttribute]]=item;}
 				count++;
 				tmp.push(item);
 			}
@@ -561,20 +572,20 @@ dojo.declare("dojox.data.jsonPathStore",
 
 			if (args.mode==dojox.data.SYNC_MODE){ 
 				return results; 
-			};
+			}
 
 			if (args.onBegin){	
-				args["onBegin"].call(scope, results.length, args);
+				args.onBegin.call(scope, results.length, args);
 			}
 
 			if (args.onItem){
-				for (var i=0; i<results.length;i++){	
-					args["onItem"].call(scope, results[i], args);
+				for (i=0; i<results.length;i++){	
+					args.onItem.call(scope, results[i], args);
 				}
 			}
  
 			if (args.onComplete){
-				args["onComplete"].call(scope, results, args);
+				args.onComplete.call(scope, results, args);
 			}
 
 			return args;
@@ -614,34 +625,30 @@ dojo.declare("dojox.data.jsonPathStore",
 			//		json before returning it. 'raw' will just return a
 			//		reference to the object	 
 
-			var options = options || {};
-			var d = options.data || this._data;
+			options = options || {};
+			var data, d = options.data || this._data;
 	
 			if (!options.suppressExportMeta && options.clone){
 				data = dojo.clone(d);
 				if (data[this.metaLabel]){
-					data[this.metaLabel]["clone"]=true;
+					data[this.metaLabel].clone=true;
 				}
 			}else{
-				var data=d;
+				data=d;
 			}
 
 			if (!options.suppressExportMeta &&  data[this.metaLabel]){
-				data[this.metaLabel]["last_export"]=new Date().toString()
+				data[this.metaLabel].last_export=new Date().toString();
 			}
 
 			if(options.cleanMeta){
 				this.cleanMeta(data);
 			}
 
-			//console.log("Exporting: ", options, dojo.toJson(data));	
-			switch(options.type){
-				case "raw":
-					return data;
-				case "json":
-				default:
-					return dojo.toJson(data, options.pretty || false);
-			}
+			if(options.type == 'raw'){
+				return data;
+			}			
+			return dojo.toJson(data, options.pretty || false);			
 		},	
 
 		getFeatures: function(){
@@ -653,7 +660,7 @@ dojo.declare("dojox.data.jsonPathStore",
 				"dojo.data.api.Identity": true,
 				"dojo.data.api.Write": true,
 				"dojo.data.api.Notification": true
-			}
+			};
 		},
 
 		getLabel: function(item){
@@ -742,22 +749,22 @@ dojo.declare("dojox.data.jsonPathStore",
 			var id;	
 			if (dojo.isString(args)){
 				id = args;
-				args = {identity: id, mode: dojox.data.SYNC_MODE}
+				args = {identity: id, mode: dojox.data.SYNC_MODE};
 			}else{
 				if (args){
-					id = args["identity"];		
+					id = args.identity;
 				}
-				if (!args.mode){args.mode = this.mode}	
+				if (!args.mode){args.mode = this.mode;}
 			}
 
-			if (this.index && (this.index[id] || this.index["identity"])){
+			if (this.index && (this.index[id] || this.index.identity)){
 				
 				if (args.mode==dojox.data.SYNC_MODE){
 					return this.index[id];
 				}
 
 				if (args.onItem){
-					args["onItem"].call(args.scope || dojo.global, this.index[id], args);
+					args.onItem.call(args.scope || dojo.global, this.index[id], args);
 				}
 
 				return args;
@@ -769,7 +776,7 @@ dojo.declare("dojox.data.jsonPathStore",
 
 
 			if(args.onError){
-				args["onItem"].call(args.scope || dojo.global, new Error("Item Not Found: " + id), args);
+				args.onItem.call(args.scope || dojo.global, new Error("Item Not Found: " + id), args);
 			}
 			
 			return args;
@@ -805,7 +812,7 @@ dojo.declare("dojox.data.jsonPathStore",
 				this.index[data[this.idAttribute]]=data;
 			}
 
-			this._updateMeta(data, meta)
+			this._updateMeta(data, meta);
 
 			//keep track of all references in the store so we can delete them as necessary
 			this._addReference(data, {parent: pInfo.item, attribute: pInfo.attribute});
@@ -895,11 +902,11 @@ dojo.declare("dojox.data.jsonPathStore",
 
 			//console.log("_addReference: ", item, pInfo);	
 			var rid = '_ref_' + this._referenceId++;
-			if (!item[this.metaLabel]["referenceIds"]){
-				item[this.metaLabel]["referenceIds"]=[];
+			if (!item[this.metaLabel].referenceIds){
+				item[this.metaLabel].referenceIds=[];
 			}
 
-			item[this.metaLabel]["referenceIds"].push(rid);
+			item[this.metaLabel].referenceIds.push(rid);
 			this._references[rid] = pInfo;				
 		},
 
@@ -912,10 +919,10 @@ dojo.declare("dojox.data.jsonPathStore",
 			item = this._correctReference(item);
 			console.log("Item: ", item);
 			if (this.isItem(item)){
-				while(item[this.metaLabel]["referenceIds"].length>0){
+				while(item[this.metaLabel].referenceIds.length>0){
 					console.log("refs map: " , this._references);
 					console.log("item to delete: ", item);
-					var rid = item[this.metaLabel]["referenceIds"].pop();
+					var rid = item[this.metaLabel].referenceIds.pop();
 					var pInfo = this._references[rid];
 
 					console.log("deleteItem(): ", pInfo, pInfo.parent);
@@ -939,8 +946,7 @@ dojo.declare("dojox.data.jsonPathStore",
 
 						if (found){
 							this._setDirty(parentItem);
-							var del =  parentItem[attribute].splice(i-1,1);
-							delete del;
+							parentItem[attribute].splice(i-1,1);
 						}
 
 						var newValue = this._trimItem(parentItem[attribute]);
@@ -1001,7 +1007,7 @@ dojo.declare("dojox.data.jsonPathStore",
 			if (!dojo.isArray(values)){throw new Error("setValues expects to be passed an Array object as its value");}
 			this._setDirty(item);
 			var old = item[attribute] || null;
-			item[attribute]=values
+			item[attribute]=values;
 			this.onSet(item,attribute,old,values);
 		},
 
@@ -1028,18 +1034,15 @@ dojo.declare("dojox.data.jsonPathStore",
 
 			var data = [];
 		
-			if (!kwArgs){kwArgs={}}
+			if (!kwArgs){kwArgs={};}
 			while (this._dirtyItems.length > 0){
-				var item = this._dirtyItems.pop()["item"];
+				var item = this._dirtyItems.pop().item;
 				var t = this._trimItem(item);
 				var d;	
-				switch(kwArgs.format){	
-					case "json":
-						d = dojo.toJson(t);	
-						break;
-					case "raw":
-					default:
-						d = t;
+				if(kwArgs.format == 'json'){	
+					d = dojo.toJson(t);
+				} else {
+					d = t;
 				}
 				data.push(d);
 				this._markClean(item);
@@ -1052,8 +1055,8 @@ dojo.declare("dojox.data.jsonPathStore",
 			// summary
 			//	remove this meta information marking an item as "dirty"
 
-			if (item && item[this.metaLabel] && item[this.metaLabel]["isDirty"]){
-				delete item[this.metaLabel]["isDirty"];
+			if (item && item[this.metaLabel] && item[this.metaLabel].isDirty){
+				delete item[this.metaLabel].isDirty;
 			}	
 		},
 
@@ -1071,18 +1074,26 @@ dojo.declare("dojox.data.jsonPathStore",
 		_mixin: function(target, data){
 			// summary:
 			//	specialized mixin that hooks up objects in the store where references are identified.
-			var mix;
+			var mix, isOwnProperty = dojo.isOwnProperty;
 
-			if (dojo.isObject(data)){
+			// NOTE: isObject allows null
+
+			if (dojo.isObject(data) && data){
+
+				// NOTE: Virtually impossible to discriminate between Array objects and array-like Object objects
+
 				if (dojo.isArray(data)){
 					while(target.length>0){target.pop();}
 					for (var i=0; i<data.length;i++){
-						if (dojo.isObject(data[i])){
+
+						// NOTE: isObject allows null
+
+						if (dojo.isObject(data[i]) && data[i]){
 							if (dojo.isArray(data[i])){
 								mix=[];
 							}else{
 								mix={};
-								if (data[i][this.metaLabel] && data[i][this.metaLabel]["type"] && data[i][this.metaLabel]["type"]=='reference'){
+								if (data[i][this.metaLabel] && data[i][this.metaLabel].type && data[i][this.metaLabel].type=='reference'){
 									target[i]=this.index[data[i][this.idAttribute]];
 									continue;
 								}
@@ -1091,21 +1102,28 @@ dojo.declare("dojox.data.jsonPathStore",
 							this._mixin(mix, data[i]);
 							target.push(mix);
 						}else{
+
+							// NOTE: null objects will pass through to here (possible in this context?)
+
 							target.push(data[i]);
 						}
 					}	
 				}else{
-					for (var i in target){
-						if (i in data){continue;}
-						delete target[i];
+					for (i in target){
+						if (isOwnProperty(target, i) && !(i in data)) {
+							delete target[i];
+						}
 					}
 
-					for (var i in data){
-						if (dojo.isObject(data[i])){
+					for (i in data){
+
+						// NOTE: isObject allows null
+
+						if (data[i] && isOwnProperty(data, i) && dojo.isObject(data[i])){
 							if (dojo.isArray(data[i])){
 								mix=[];
 							}else{
-								if (data[i][this.metaLabel] && data[i][this.metaLabel]["type"] && data[i][this.metaLabel]["type"]=='reference'){
+								if (data[i][this.metaLabel] && data[i][this.metaLabel].type && data[i][this.metaLabel].type=='reference'){
 									target[i]=this.index[data[i][this.idAttribute]];
 									continue;
 								}
@@ -1128,7 +1146,7 @@ dojo.declare("dojox.data.jsonPathStore",
 			//	returns true if the item is marked as dirty.
 
 			item = this._correctReference(item);
-			return item && item[this.metaLabel] && item[this.metaLabel]["isDirty"];
+			return item && item[this.metaLabel] && item[this.metaLabel].isDirty;
 		},
 
 		_createReference: function(item){
@@ -1154,9 +1172,9 @@ dojo.declare("dojox.data.jsonPathStore",
 				copy = [];
 				for (var i=0; i<item.length;i++){
 					if (dojo.isArray(item[i])){
-						copy.push(this._trimItem(item[i]))
-					}else if (dojo.isObject(item[i])){
-						if (item[i]["getFullYear"]){
+						copy.push(this._trimItem(item[i]));
+					}else if (dojo.isObject(item[i]) && item[i]){ // NOTE: isObject allows null
+						if (item[i].getFullYear){
 							copy.push(dojo.date.stamp.toISOString(item[i]));
 						}else if (item[i][this.idAttribute]){
 							copy.push(this._createReference(item[i]));
@@ -1173,20 +1191,26 @@ dojo.declare("dojox.data.jsonPathStore",
 			if (dojo.isObject(item)){
 				copy = {};
 
-				for (var attr in item){
-					if (!item[attr]){ copy[attr]=undefined;continue;}
-					if (dojo.isArray(item[attr])){
-						copy[attr] = this._trimItem(item[attr]);
-					}else if (dojo.isObject(item[attr])){
-						if (item[attr]["getFullYear"]){
-							copy[attr] =  dojo.date.stamp.toISOString(item[attr]);
-						}else if(item[attr][this.idAttribute]){
-							copy[attr]=this._createReference(item[attr]);
-						} else {
-							copy[attr]=this._trimItem(item[attr]);
+				// NOTE: isObject allows null
+
+				if (item) {
+					for (var attr in item){
+						if (dojo.isOwnProperty(item, attr)) {
+							if (!item[attr]){ copy[attr]=undefined;continue;}
+							if (dojo.isArray(item[attr])){
+								copy[attr] = this._trimItem(item[attr]);
+							}else if (dojo.isObject(item[attr]) && item[attr]){ // NOTE: isObject allows null
+								if (item[attr].getFullYear){
+									copy[attr] =  dojo.date.stamp.toISOString(item[attr]);
+								}else if(item[attr][this.idAttribute]){
+									copy[attr]=this._createReference(item[attr]);
+								} else {
+									copy[attr]=this._trimItem(item[attr]);
+								}
+							} else {
+								copy[attr]=item[attr];
+							}
 						}
-					} else {
-						copy[attr]=item[attr];
 					}
 				}
 				return copy;
