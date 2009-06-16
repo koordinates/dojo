@@ -14,6 +14,119 @@ dojo.require("dojo.i18n");
 dojo.requireLocalization("dojo.cldr", "hebrew");
 
 (function(){
+
+function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
+	//summary: Process a pattern with literals in it
+
+	// Break up on single quotes, treat every other one as a literal, except '' which becomes '
+	var identity = function(x){return x;};
+	applyPattern = applyPattern || identity;
+	applyLiteral = applyLiteral || identity;
+	applyAll = applyAll || identity;
+
+	//split on single quotes (which escape literals in date format strings) 
+	//but preserve escaped single quotes (e.g., o''clock)
+	var chunks = pattern.match(/(''|[^'])+/g); 
+	var literal = pattern.charAt(0) == "'";
+
+	dojo.forEach(chunks, function(chunk, i){
+		if(!chunk){
+			chunks[i]='';
+		}else{
+			chunks[i]=(literal ? applyLiteral : applyPattern)(chunk);
+			literal = !literal;
+		}
+	});
+	return applyAll(chunks.join(''));
+}
+
+function _buildDateTimeRE  (tokens, bundle, options, pattern){
+		// based on and similar to dojo.date.locale._buildDateTimeRE 
+		//
+	
+	pattern = dojo.regexp.escapeString(pattern); 
+	var locale = dojo.i18n.normalizeLocale(options.locale);
+	
+	return pattern.replace(/([a-z])\1*/ig, function(match){
+	
+			// Build a simple regexp.  Avoid captures, which would ruin the tokens list
+			var s;
+			var c = match.charAt(0);
+			var l = match.length;
+			var p2 = '', p3 = '';
+			if(options.strict){
+				if(l > 1){ p2 = '0' + '{'+(l-1)+'}'; }
+				if(l > 2){ p3 = '0' + '{'+(l-2)+'}'; }
+			}else{
+				p2 = '0?'; p3 = '0{0,2}';
+			}
+			switch(c){
+				case 'y':
+					s = '\\S+';
+					break;
+				case 'M':
+					if (locale == 'he')
+					{
+						s =  (l>2) ? '\\S+ ?\\S+' : '\\S{1,4}';
+					}else{
+						s = (l>2) ?  '\\S+ ?\\S+' : p2+'[1-9]|1[0-2]';
+					}	
+					break;
+				case 'd':
+					if (locale == 'he'){
+						s = '\\S[\'\"\']{1,2}\\S?';
+					}else{
+						s = '[12]\\d|'+p2+'[1-9]|30';
+					}
+					break;
+				case 'E':
+					if (locale == 'he')
+					{
+						s = (l>3) ? '\\S+ ?\\S+' : '\\S';
+					}else{
+						s = '\\S+';
+					}
+					break;
+				case 'h': //hour (1-12)
+					s = p2+'[1-9]|1[0-2]';
+					break;
+				case 'k': //hour (0-11)
+					s = p2+'\\d|1[01]';
+					break;
+				case 'H': //hour (0-23)
+					s = p2+'\\d|1\\d|2[0-3]';
+					break;
+				case 'K': //hour (1-24)
+					s = p2+'[1-9]|1\\d|2[0-4]';
+					break;
+				case 'm':
+				case 's':
+					s = p2+'\\d|[0-5]\\d';
+					break;
+				case 'S':
+					s = '\\d{'+l+'}';
+					break;
+				case 'a':
+					var am = options.am || bundle.am || 'AM';
+					var pm = options.pm || bundle.pm || 'PM';
+					if(options.strict){
+						s = am + '|' + pm;
+					}else{
+						s = am + '|' + pm;
+						if(am != am.toLowerCase()){ s += '|' + am.toLowerCase(); }
+						if(pm != pm.toLowerCase()){ s += '|' + pm.toLowerCase(); }
+					}
+					break;
+				default:
+					s = ".*";
+			}	 
+			if(tokens){ tokens.push(match); }
+
+			return "(" + s + ")"; // add capture
+		}).replace(/[\xa0 ]/g, "[\\s\\xa0]"); // normalize whitespace.  Need explicit handling of \xa0 for IE. */
+}
+
+
 	// Format a pattern without literals
 	function formatPattern(dateObject, bundle, locale, fullYear,  pattern){
 
@@ -177,9 +290,6 @@ dojox.date.HebrewLocale._parseInfo = function(/*oblect?*/options){
 	return {regexp: re, tokens: tokens, bundle: bundle};
 };
 
-
-
-
 dojox.date.HebrewLocale.parse= function(/*String*/value, /*object?*/options){
 		// based on and similar to dojo.date.locale.parse
 		// summary: This function parse string date value according to options
@@ -213,14 +323,11 @@ dojox.date.HebrewLocale.parse= function(/*String*/value, /*object?*/options){
 		return null;
 	} // null
 	
-	var date, date1;
-	
-	//var result = [1970,0,1,0,0,0,0]; // 
 	var result = [5730,3,23,0,0,0,0];  // hebrew date for [1970,0,1,0,0,0,0] used in gregorian locale
 	var amPm = "";
 	var mLength = 0;
 	var widthList = ["abbr", "wide", "narrow"];
-	var valid = dojo.every(match, function(v, i){
+	dojo.every(match, function(v, i){
 		if(!i){return true;}
 		var token=tokens[i-1];
 		var l=token.length;
@@ -321,116 +428,6 @@ dojox.date.HebrewLocale.parse= function(/*String*/value, /*object?*/options){
 };
 
 
-function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
-	//summary: Process a pattern with literals in it
-
-	// Break up on single quotes, treat every other one as a literal, except '' which becomes '
-	var identity = function(x){return x;};
-	applyPattern = applyPattern || identity;
-	applyLiteral = applyLiteral || identity;
-	applyAll = applyAll || identity;
-
-	//split on single quotes (which escape literals in date format strings) 
-	//but preserve escaped single quotes (e.g., o''clock)
-	var chunks = pattern.match(/(''|[^'])+/g); 
-	var literal = pattern.charAt(0) == "'";
-
-	dojo.forEach(chunks, function(chunk, i){
-		if(!chunk){
-			chunks[i]='';
-		}else{
-			chunks[i]=(literal ? applyLiteral : applyPattern)(chunk);
-			literal = !literal;
-		}
-	});
-	return applyAll(chunks.join(''));
-}
-
-function _buildDateTimeRE  (tokens, bundle, options, pattern){
-		// based on and similar to dojo.date.locale._buildDateTimeRE 
-		//
-	
-	pattern = dojo.regexp.escapeString(pattern); 
-	var locale = dojo.i18n.normalizeLocale(options.locale);
-	
-	return pattern.replace(/([a-z])\1*/ig, function(match){
-	
-			// Build a simple regexp.  Avoid captures, which would ruin the tokens list
-			var s;
-			var c = match.charAt(0);
-			var l = match.length;
-			var p2 = '', p3 = '';
-			if(options.strict){
-				if(l > 1){ p2 = '0' + '{'+(l-1)+'}'; }
-				if(l > 2){ p3 = '0' + '{'+(l-2)+'}'; }
-			}else{
-				p2 = '0?'; p3 = '0{0,2}';
-			}
-			switch(c){
-				case 'y':
-					s = '\\S+';
-					break;
-				case 'M':
-					if (locale == 'he')
-					{
-						s =  (l>2) ? '\\S+ ?\\S+' : '\\S{1,4}';
-					}else{
-						s = (l>2) ?  '\\S+ ?\\S+' : p2+'[1-9]|1[0-2]';
-					}	
-					break;
-				case 'd':
-					if (locale == 'he'){
-						s = '\\S[\'\"\']{1,2}\\S?';
-					}else{
-						s = '[12]\\d|'+p2+'[1-9]|30';
-					}
-					break;
-				case 'E':
-					if (locale == 'he')
-					{
-						s = (l>3) ? '\\S+ ?\\S+' : '\\S';
-					}else{
-						s = '\\S+';
-					}
-					break;
-				case 'h': //hour (1-12)
-					s = p2+'[1-9]|1[0-2]';
-					break;
-				case 'k': //hour (0-11)
-					s = p2+'\\d|1[01]';
-					break;
-				case 'H': //hour (0-23)
-					s = p2+'\\d|1\\d|2[0-3]';
-					break;
-				case 'K': //hour (1-24)
-					s = p2+'[1-9]|1\\d|2[0-4]';
-					break;
-				case 'm':
-				case 's':
-					s = p2+'\\d|[0-5]\\d';
-					break;
-				case 'S':
-					s = '\\d{'+l+'}';
-					break;
-				case 'a':
-					var am = options.am || bundle.am || 'AM';
-					var pm = options.pm || bundle.pm || 'PM';
-					if(options.strict){
-						s = am + '|' + pm;
-					}else{
-						s = am + '|' + pm;
-						if(am != am.toLowerCase()){ s += '|' + am.toLowerCase(); }
-						if(pm != pm.toLowerCase()){ s += '|' + pm.toLowerCase(); }
-					}
-					break;
-				default:
-					s = ".*";
-			}	 
-			if(tokens){ tokens.push(match); }
-
-			return "(" + s + ")"; // add capture
-		}).replace(/[\xa0 ]/g, "[\\s\\xa0]"); // normalize whitespace.  Need explicit handling of \xa0 for IE. */
-}
 })();
 
 
