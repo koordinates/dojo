@@ -387,7 +387,13 @@ dojo.declare("dojox.data.FileStore", null, {
 				var i;
 				for (i = 0; i < children.length; i++ ){
 					var name = children[i];
+
+					// NOTE: isObject allows null
+
 					if (dojo.isObject(name)) {
+
+						// NOTE: children[i] can be null
+
 						children[i] = this._processItem(name);
 					}else{
 						children[i] = {name: name, _loaded: false, parentPath: item.path};
