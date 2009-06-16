@@ -301,7 +301,7 @@ dojo.declare("dojox.data.GoogleSearchStore",null,{
 		var myHandler = function(start, data){
 			if(finished){return;}
 			var results = _this._getItems(data);
-			var cursor = data ? data['cursor']: null;
+			var cursor = data ? data.cursor : null;
 			if(results){
 				//Process the results, adding the store reference to them
 				for(var i = 0; i < results.length && i + start < request.count + request.start; i++) {
@@ -414,7 +414,7 @@ dojo.declare("dojox.data.GoogleSearchStore",null,{
 	},
 
 	_getItems: function(data){
-		return data['results'] || data;
+		return data.results || data;
 	},
 
 	_createContent: function(query, callback, request){
