@@ -264,7 +264,7 @@ dojo.require("dojo.AdapterRegistry");
 	var reg = dojox.data.FlickrStore.urlRegistry = new d.AdapterRegistry(true);
 
 	reg.register("group pool",
-		function(request){ return !!request.query["groupid"]; },
+		function(request){ return !!request.query.groupid; },
 		feedsUrl+"groups_pool.gne"
 	);
 
@@ -275,8 +275,12 @@ dojo.require("dojo.AdapterRegistry");
 })();
 
 
-//We have to define this because of how the Flickr API works.  
-//This somewhat stinks, but what can you do?
-if(!jsonFlickrFeed){
-	var jsonFlickrFeed = function(data){};
+//We have to define this because of how the Flickr API works.
+
+// NOTE: Why?
+
+var jsonFlickrFeed;
+
+if(typeof jsonFlickrFeed != 'function'){
+	jsonFlickrFeed = function(data){};
 }
