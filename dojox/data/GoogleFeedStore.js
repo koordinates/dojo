@@ -27,12 +27,12 @@ dojo.declare("dojox.data.GoogleFeedStore", dojox.data.GoogleSearchStore,{
 
 	_processItem: function(item, request) {
 		this.inherited(arguments);
-		item["summary"] = item["contentSnippet"];
-		item["published"] = item["publishedDate"];
+		item.summary = item.contentSnippet;
+		item.published = item.publishedDate;
 	},
 
 	_getItems: function(data){
-		return data['feed'] && data.feed[['entries']] ? data.feed[['entries']] : null;
+		return data.feed && data.feed[['entries']] ? data.feed[['entries']] : null;
 	},
 
 	_createContent: function(query, callback, request){
