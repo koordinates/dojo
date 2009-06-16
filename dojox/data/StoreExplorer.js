@@ -11,7 +11,7 @@ dojo.declare("dojox.data.StoreExplorer", dijit.layout.BorderContainer, {
 	store: null,
 	stringQueries: false,
 	postCreate: function(){
-		var self = this;
+		var grid, self = this;
 		this.inherited(arguments);
 		var contentPane = new dijit.layout.ContentPane({
 			region:'top'
@@ -43,7 +43,7 @@ dojo.declare("dojox.data.StoreExplorer", dijit.layout.BorderContainer, {
 		this.setItemName = function(name){
 			createNewButton.attr('label',"<img style='width:12px; height:12px' src='" + dojo.moduleUrl("dijit.themes.tundra.images","dndCopy.png") + "' /> Create New " + name);
 			deleteButton.attr('label',"Delete " + name);
-		}
+		};
 		addButton("Save",function(){
 			self.store.save();
 			//refresh the tree
@@ -67,14 +67,14 @@ dojo.declare("dojox.data.StoreExplorer", dijit.layout.BorderContainer, {
         var centerCP = new dijit.layout.ContentPane({
             region:'center'
         }).placeAt(this);
-		var grid = this.grid = new dojox.grid.DataGrid(
+		grid = this.grid = new dojox.grid.DataGrid(
 				{store: this.store}
 			);
         centerCP.attr("content", grid);
 		grid.canEdit = function(inCell, inRowIndex){
 			var value = this._copyAttr(inRowIndex, inCell.field);
 			return !(value && typeof value == 'object') || value instanceof Date; 
-		}
+		};
 		
 		var trailingCP = new dijit.layout.ContentPane({
 			region: 'trailing', 
@@ -164,12 +164,14 @@ dojo.declare("dojox.data.StoreExplorer", dijit.layout.BorderContainer, {
 			}
 			grid._onFetchComplete = defaultOnComplete; 
 			grid.attr("structure",layout);
-			var retValue = defaultOnComplete.apply(this, arguments);
-			
-		}
+			defaultOnComplete.apply(this, arguments);	
+		};
  		grid.setStore(store);
  		this.queryOptions = {cache:true};
 		this.tree.setStore(store);
+
+		// NOTE: What is this supposed to return?
+
 	},
 	createNew: function(){
 		var props = prompt("Enter any properties to put in the new item (in JSON literal form):","{ }");
