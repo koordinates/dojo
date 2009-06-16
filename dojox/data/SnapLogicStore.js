@@ -154,7 +154,7 @@ dojo.declare("dojox.data.SnapLogicStore", null, {
 		//		with a single element containing the total pipeline result row count. See fetch() for details
 		//		on this optimization.
 
-		var scope = request.scope || dojo.global;
+		var i, scope = request.scope || dojo.global;
 
 		if(request.onBegin){
 			// Check for the record count optimization
@@ -175,7 +175,7 @@ dojo.declare("dojox.data.SnapLogicStore", null, {
 				var field_names = response.shift();
 				
 				var items = [];
-				for(var i = 0; i < response.length; ++i){
+				for(i = 0; i < response.length; ++i){
 					if(request._aborted){
 						break;
 					}
@@ -192,7 +192,7 @@ dojo.declare("dojox.data.SnapLogicStore", null, {
 			}
 
 			if(request.onItem){
-				for(var i = 0; i < items.length; ++i){
+				for(i = 0; i < items.length; ++i){
 					if (request._aborted) {
 						break;
 					}
@@ -253,6 +253,8 @@ dojo.declare("dojox.data.SnapLogicStore", null, {
 		//		for retrieving the total count of records in the Pipeline without retrieving the data. To
 		//		use this optimization, simply provide an onBegin handler without an onItem or onComplete handler.
 
+		var content, getArgs;
+
 		request._countResponse = null;
 		request._dataResponse = null;
 		request._aborted = false;
@@ -271,7 +273,7 @@ dojo.declare("dojox.data.SnapLogicStore", null, {
 		// Only make the call for data if onItem or onComplete is used. Otherwise, onBegin will only
 	    // require the total row count.
 		if(request.onItem || request.onComplete){
-			var content = this._parameters || {};
+			content = this._parameters || {};
 			if(request.start){
 				if(request.start < 0){
 					throw new Error("dojox.data.SnapLogicStore: request start value must be 0 or greater");
@@ -287,14 +289,20 @@ dojo.declare("dojox.data.SnapLogicStore", null, {
 			
 			content['sn.content_type'] = 'application/javascript';
 
-			var store = this;
-			var handler = function(response, ioArgs){
-				if(response instanceof Error){
-					store._fetchHandler(response, request);
-				}
-			};
+			// NOTE: Not used (?)
 
-			var getArgs = {
+			// var store = this;
+
+			//var handler = function(response, ioArgs){
+
+			//	// NOTE: Remove instanceof
+
+			//	if(response instanceof Error){
+			//		store._fetchHandler(response, request);
+			//	}
+			//};
+
+			getArgs = {
 				url: this.url,
 				content: content,
 				// preventCache: true,
@@ -307,11 +315,14 @@ dojo.declare("dojox.data.SnapLogicStore", null, {
 		}
 		
 		if(request.onBegin){
-			var content = {};
+			content = {};
+
+			// NOTE: This should be avoided
+
 			content['sn.count'] = 'records';
 			content['sn.content_type'] = 'application/javascript';
 
-			var getArgs = {
+			getArgs = {
 				url: this.url,
 				content: content,
 				timeout: 60000,
