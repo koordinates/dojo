@@ -42,8 +42,9 @@ dojo.declare("dojox.data.HtmlTableStore", null, {
 		//		tableId:	The id of the table element in the remote page
 		
 		if(args.url){
-			if(!args.tableId)
+			if(!args.tableId) {
 				throw new Error("dojo.data.HtmlTableStore: Cannot instantiate using url without an id!");
+			}
 			this.url = args.url;
 			this.tableId = args.tableId;
 		}else{
@@ -103,7 +104,6 @@ dojo.declare("dojox.data.HtmlTableStore", null, {
 		//		Returns the index (column) that the attribute resides in the row.
 		if(typeof attribute !== "string"){ 
 			throw new Error("dojo.data.HtmlTableStore: a function was passed an attribute argument that was not an attribute name string");
-			return -1;
 		}
 		return dojo.indexOf(this._headings, attribute); //int
 	},
@@ -141,8 +141,9 @@ dojo.declare("dojox.data.HtmlTableStore", null, {
 		this._assertIsItem(item);
 		var attributes = [];
 		for(var i=0; i<this._headings.length; i++){
-			if(this.hasAttribute(item, this._headings[i]))
+			if(this.hasAttribute(item, this._headings[i])) {
 				attributes.push(this._headings[i]);
+			}
 		}
 		return attributes; //Array
 	},
@@ -271,9 +272,9 @@ dojo.declare("dojox.data.HtmlTableStore", null, {
 							}
 						}
 						return null; //null
-					}
+					};
 
-					var d = document.createElement("div");
+					var d = dojo.doc.createElement("div");
 					d.innerHTML = data;
 					self._rootNode = findNode(d, self.tableId);
 					self._getHeadings.call(self);
@@ -301,11 +302,11 @@ dojo.declare("dojox.data.HtmlTableStore", null, {
 			//See if there are any string values that can be regexp parsed first to avoid multiple regexp gens on the
 			//same value for each item examined.  Much more efficient.
 			var regexpList = {};
-                        var value;
+                        var value, query = request.query;
                         var key;
-			for(key in request.query){
-				value = request.query[key]+'';
-				if(typeof value === "string"){
+			for(key in query){
+				if (dojo.isOwnProperty(query, key)) {
+					value = String(query[key]);
 					regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
 				}
 			}
@@ -313,10 +314,12 @@ dojo.declare("dojox.data.HtmlTableStore", null, {
 			for(var i = 0; i < arrayOfAllItems.length; ++i){
 				var match = true;
 				var candidateItem = arrayOfAllItems[i];
-				for(key in request.query){
-					value = request.query[key]+'';
-					if (!this._containsValue(candidateItem, key, value, regexpList[key])){
-						match = false;
+				for(key in query){
+					if (dojo.isOwnProperty(query, key)) {
+						value = String(query[key]);
+						if (!this._containsValue(candidateItem, key, value, regexpList[key])){
+							match = false;
+						}
 					}
 				}
 				if(match){
@@ -352,8 +355,9 @@ dojo.declare("dojox.data.HtmlTableStore", null, {
 	getLabel: function(/* item */ item){
 		//	summary: 
 		//		See dojo.data.api.Read.getLabel()
-		if(this.isItem(item))
+		if(this.isItem(item)) {
 			return "Table Row #" + this.getIdentity(item);
+		}
 		return undefined;
 	},
 
@@ -371,13 +375,10 @@ dojo.declare("dojox.data.HtmlTableStore", null, {
 		//	summary: 
 		//		See dojo.data.api.Identity.getIdentity()
 		this._assertIsItem(item);
-		//Opera doesn't support the sectionRowIndex, 
-		//So, have to call the indexOf to locate it. 
-		//Blah.
-		if(!dojo.isOpera){
+		if (typeof item.sectionRowIndex == 'number') {
 			return item.sectionRowIndex; // int	
 		}else{
-			return (dojo.indexOf(this._rootNode.rows, item) - 1) // int
+			return (dojo.indexOf(this._rootNode.rows, item) - 1); // int
 		}
 	},
 
@@ -429,7 +430,7 @@ dojo.declare("dojox.data.HtmlTableStore", null, {
 							}
 						}
 						return null; //null
-					}
+					};
 					var d = document.createElement("div");
 					d.innerHTML = data;
 					self._rootNode = findNode(d, self.tableId);
