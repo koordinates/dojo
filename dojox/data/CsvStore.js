@@ -290,21 +290,25 @@ dojo.declare("dojox.data.CsvStore", null, {
 
 				//See if there are any string values that can be regexp parsed first to avoid multiple regexp gens on the
 				//same value for each item examined.  Much more efficient.
-				var regexpList = {};
-				for(key in requestArgs.query){
-					value = requestArgs.query[key];
-					if(typeof value === "string"){
-						regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+				var regexpList = {}, query = requestArgs.query;
+				for(key in query){
+					if (dojo.isOwnProperty(query, key)) {
+						value = query[key];
+						if(typeof value === "string"){
+							regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+						}
 					}
 				}
 
 				for(var i = 0; i < arrayOfAllItems.length; ++i){
 					var match = true;
 					var candidateItem = arrayOfAllItems[i];
-					for(key in requestArgs.query){
-						value = requestArgs.query[key];
-						if(!self._containsValue(candidateItem, key, value, regexpList[key])){
-							match = false;
+					for(key in query){
+						if (dojo.isOwnProperty(query, key)) {
+							value = query[key];
+							if(!self._containsValue(candidateItem, key, value, regexpList[key])){
+								match = false;
+							}
 						}
 					}
 					if(match){
@@ -407,7 +411,9 @@ dojo.declare("dojox.data.CsvStore", null, {
 		 *     { "Title":0, "Year":1, "Producer":2 }
 		 */
 		if(dojo.isString(csvFileContents)){
-			var lineEndingCharacters = new RegExp("\r\n|\n|\r");
+
+			// NOTE: Create these RegExp objects once
+
 			var leadingWhiteSpaceCharacters = new RegExp("^\\s+",'g');
 			var trailingWhiteSpaceCharacters = new RegExp("\\s+$",'g');
 			var doubleQuotes = new RegExp('""','g');
@@ -515,7 +521,7 @@ dojo.declare("dojox.data.CsvStore", null, {
 		//Check that the specified Identifier is actually a column title, if provided.
 		if(this.identifier){
 			if(this._attributeIndexes[this.identifier] === undefined){
-				throw new Error(this.declaredClass + ": Identity specified is not a column header in the data set.")
+				throw new Error(this.declaredClass + ": Identity specified is not a column header in the data set.");
 			}
 		}
 
