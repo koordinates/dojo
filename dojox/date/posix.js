@@ -51,12 +51,12 @@ dojox.date.posix.strftime = function(/*Date*/dateObject, /*String*/format, /*Str
 					
 			case "e": // day of the month as a decimal number, a single digit is
 				      // preceded by a space (range ' 1' to '31')
-				if(padChar == null){ padChar = " "; }
+				if(padChar === null){ padChar = " "; }
 				return _(dateObject.getDate());
 			
 			case "f": // month as a decimal number, a single digit is
 							// preceded by a space (range ' 1' to '12')
-				if(padChar == null){ padChar = " "; }
+				if(padChar === null){ padChar = " "; }
 				return _(dateObject.getMonth()+1);				
 			
 			case "g": // like %G, but without the century.
@@ -85,12 +85,12 @@ dojox.date.posix.strftime = function(/*Date*/dateObject, /*String*/format, /*Str
 
 			case "k": // Hour as a decimal number using a 24-hour clock (range
 					  // 0 to 23 (space-padded))
-				if(padChar == null){ padChar = " "; }
+				if(padChar === null){ padChar = " "; }
 				return _(dateObject.getHours());
 
 			case "l": // Hour as a decimal number using a 12-hour clock (range
 					  // 1 to 12 (space-padded))
-				if(padChar == null){ padChar = " "; }
+				if(padChar === null){ padChar = " "; }
 				return _(dateObject.getHours() % 12 || 12);
 
 			case "m": // month as a decimal number (range 01 to 12)
@@ -248,7 +248,7 @@ dojox.date.posix.getStartOfWeek = function(/*Date*/dateObject, /*Number*/firstDa
 	var date = new Date(dateObject);
 	date.setHours(0, 0, 0, 0);
 	return dojo.date.add(date, "day", offset); // Date
-}
+};
 
 dojox.date.posix.setIsoWeekOfYear = function(/*Date*/dateObject, /*Number*/week){
 	// summary: Set the ISO8601 week number of the given date.
@@ -263,7 +263,7 @@ dojox.date.posix.setIsoWeekOfYear = function(/*Date*/dateObject, /*Number*/week)
 		offset = (weeks + week + 1) - currentWeek;
 	}
 	return dojo.date.add(dateObject, "week", offset); // Date
-}
+};
 
 dojox.date.posix.getIsoWeekOfYear = function(/*Date*/dateObject){
 	// summary: Get the ISO8601 week number of the given date.
@@ -275,7 +275,7 @@ dojox.date.posix.getIsoWeekOfYear = function(/*Date*/dateObject){
 	var diff = weekStart.getTime() - yearStart.getTime();
 	if(diff < 0){ return dojox.date.posix.getIsoWeeksInYear(weekStart); } // Integer
 	return Math.ceil(diff / 604800000) + 1; // Integer
-}
+};
 
 dojox.date.posix.getIsoWeeksInYear = function(/*Date*/dateObject) {
 	// summary: Determine the number of ISO8601 weeks in the year of the given 
@@ -286,4 +286,4 @@ dojox.date.posix.getIsoWeeksInYear = function(/*Date*/dateObject) {
 	}
 	var y = dateObject.getFullYear();
 	return ( p(y) % 7 == 4 || p(y-1) % 7 == 3 ) ? 53 : 52;	//	Integer
-}
+};
