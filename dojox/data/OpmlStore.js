@@ -301,28 +301,32 @@ dojo.declare("dojox.data.OpmlStore", null, {
 		
 		var self = this;
 		var filter = function(requestArgs, arrayOfItems){
-			var items = null;
+			var key, value, items = null, isOwnProperty = dojo.isOwnProperty;
 			if(requestArgs.query){
 				items = [];
 				var ignoreCase = requestArgs.queryOptions ? requestArgs.queryOptions.ignoreCase : false; 
 
 				//See if there are any string values that can be regexp parsed first to avoid multiple regexp gens on the
 				//same value for each item examined.  Much more efficient.
-				var regexpList = {};
-				for(var key in requestArgs.query){
-					var value = requestArgs.query[key];
-					if(typeof value === "string"){
-						regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+				var regexpList = {}, query = requestArgs.query;
+				for(key in query){
+					if (isOwnProperty(query, key)) {
+						value = query[key];
+						if(typeof value == "string"){
+							regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+						}
 					}
 				}
 
 				for(var i = 0; i < arrayOfItems.length; ++i){
 					var match = true;
 					var candidateItem = arrayOfItems[i];
-					for(var key in requestArgs.query){
-						var value = requestArgs.query[key];
-						if(!self._containsValue(candidateItem, key, value, regexpList[key])){
-							match = false;
+					for(key in query){
+						if (isOwnProperty(query, key)) {
+							value = query[key];
+							if(!self._containsValue(candidateItem, key, value, regexpList[key])){
+								match = false;
+							}
 						}
 					}
 					if(match){
@@ -408,7 +412,7 @@ dojo.declare("dojox.data.OpmlStore", null, {
 
 		//Hasn't loaded yet, we have to trigger the load.
 		if(!this._loadFinished){
-			var self = this;
+			var scope, item, self = this;
 			if(this.url !== ""){
 				//If fetches come in before the loading has finished, but while
 				//a load is in progress, we have to defer the fetching to be 
@@ -451,23 +455,23 @@ dojo.declare("dojox.data.OpmlStore", null, {
 			}else if(this._opmlData){
 				this._processRawXmlTree(this._opmlData);
 				this._opmlData = null;
-				var item = this._identityMap[keywordArgs.identity];
+				item = this._identityMap[keywordArgs.identity];
 				if(!self.isItem(item)){
 					item = null;
 				}
 				if(keywordArgs.onItem){
-					var scope =  keywordArgs.scope?keywordArgs.scope:dojo.global;
+					scope = keywordArgs.scope?keywordArgs.scope:dojo.global;
 					keywordArgs.onItem.call(scope, item);
 				}
 			}
 		}else{
 			//Already loaded.  We can just look it up and call back.
-			var item = this._identityMap[keywordArgs.identity];
+			item = this._identityMap[keywordArgs.identity];
 			if(!this.isItem(item)){
 				item = null;
 			}
 			if(keywordArgs.onItem){
-				var scope =  keywordArgs.scope?keywordArgs.scope:dojo.global;
+				scope = keywordArgs.scope?keywordArgs.scope:dojo.global;
 				keywordArgs.onItem.call(scope, item);
 			}
 		}
