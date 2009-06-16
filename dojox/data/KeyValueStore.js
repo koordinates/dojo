@@ -212,7 +212,7 @@ dojo.declare("dojox.data.KeyValueStore", null, {
 		//	summary: 
 		//		See dojo.data.util.simpleFetch.fetch()
 		
-		var self = this;
+		var self = this, isOwnProperty = dojo.isOwnProperty;
 
 		var filter = function(requestArgs, arrayOfAllItems){
 			var items = null;
@@ -222,21 +222,25 @@ dojo.declare("dojox.data.KeyValueStore", null, {
 
 				//See if there are any string values that can be regexp parsed first to avoid multiple regexp gens on the
 				//same value for each item examined.  Much more efficient.
-				var regexpList = {};
-				for(var key in requestArgs.query){
-					var value = requestArgs.query[key];
-					if(typeof value === "string"){
-						regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+				var key, value, regexpList = {}, query = requestArgs.query;
+				for(key in query){
+					if (isOwnProperty(query, key)) {
+						value = query[key];
+						if(typeof value == "string"){
+							regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+						}
 					}
 				}
 
 				for(var i = 0; i < arrayOfAllItems.length; ++i){
 					var match = true;
 					var candidateItem = arrayOfAllItems[i];
-					for(var key in requestArgs.query){
-						var value = requestArgs.query[key];
-						if(!self._containsValue(candidateItem, key, value, regexpList[key])){
-							match = false;
+					for(key in query){
+						if (isOwnProperty(query, key)) {
+							value = query[key];
+							if(!self._containsValue(candidateItem, key, value, regexpList[key])){
+								match = false;
+							}
 						}
 					}
 					if(match){
@@ -246,7 +250,8 @@ dojo.declare("dojox.data.KeyValueStore", null, {
 			}else if(requestArgs.identity){
 				items = [];
 				var item;
-				for(var key in arrayOfAllItems){
+				var len = arrayOfAllItems.length;
+				for(key = 0; key < len; key++){
 					item = arrayOfAllItems[key];
 					if(item[self._keyAttribute] == requestArgs.identity){
 						items.push(item);
@@ -290,6 +295,10 @@ dojo.declare("dojox.data.KeyValueStore", null, {
 					});
 				}
 			}else if(this._keyValueString){
+
+				// NOTE: What is allowed for this value?
+				//       Remove eval in any event
+
 				this._processData(eval(this._keyValueString));
 				this._keyValueString = null;
 				filter(keywordArgs, this._arrayOfAllItems);
@@ -336,9 +345,11 @@ dojo.declare("dojox.data.KeyValueStore", null, {
 		var item = {};
 		item[this._storeProp] = this;
 		for(var i in something){
-			item[this._keyAttribute] = i;
-			item[this._valueAttribute] = something[i];
-			break;
+			if (dojo.isOwnProperty(something, i)) {
+				item[this._keyAttribute] = i;
+				item[this._valueAttribute] = something[i];
+				break;
+			}
 		}
 		return item; //Object
 	},
