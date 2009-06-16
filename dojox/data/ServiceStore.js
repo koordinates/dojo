@@ -235,7 +235,7 @@ dojo.declare("dojox.data.ServiceStore",
 			// index the results, assigning ids as necessary
 
 			if (results && typeof results == 'object'){
-				var id = results.__id;
+				var id = results.__id, isOwnProperty = dojo.isOwnProperty;
 				if(!id){// if it hasn't been assigned yet
 					if(this.idAttribute){
 						// use the defined id if available
@@ -247,7 +247,9 @@ dojo.declare("dojox.data.ServiceStore",
 						var existingObj = this._index[id];
 						if(existingObj){
 							for(var j in existingObj){
-								delete existingObj[j]; // clear it so we can mixin
+								if (isOwnProperty(existingObj, j)) {
+									delete existingObj[j]; // clear it so we can mixin
+								}
 							}
 							results = dojo.mixin(existingObj,results);
 						}
@@ -256,7 +258,9 @@ dojo.declare("dojox.data.ServiceStore",
 					}
 				}
 				for (var i in results){
-					results[i] = this._processResults(results[i], deferred).items;
+					if (isOwnProperty(results, i)) {
+						results[i] = this._processResults(results[i], deferred).items;
+					}
 				}
 			}
 			var count = results.length;
