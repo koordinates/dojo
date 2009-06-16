@@ -99,13 +99,18 @@ dojo.declare("dojox.data.WikipediaStore", dojox.data.ServiceStore,{
 			// so we mark our items as incomplete
 			results = results.query.search;
 			var _thisStore = this;
+
+			var fn = function(callback){
+				_thisStore.fetch({
+					query: { action:"parse", title:this.title },
+					onItem: callback
+				});
+				delete this._loadObject;
+			};
+
 			for(var i in results){
-				results[i]._loadObject = function(callback){
-					_thisStore.fetch({
-						query: { action:"parse", title:this.title },
-						onItem: callback
-					});
-					delete this._loadObject;
+				if (dojo.isOwnProperty(results, i)) {
+					results[i]._loadObject = fn;
 				}
 			}
 		}
