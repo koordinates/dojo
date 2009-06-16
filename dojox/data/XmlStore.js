@@ -238,15 +238,18 @@ dojo.declare("dojox.data.XmlStore", null, {
 			attributes.push("@" + element.attributes[i].nodeName);
 		}
 		if(this._attributeMap){
-			for (var key in this._attributeMap){
-				i = key.indexOf('.');
-				if(i > 0){
-					var tagName = key.substring(0, i);
-					if (tagName === element.nodeName){
-						attributes.push(key.substring(i + 1));
+			var attributeMap = this._attributeMap;
+			for (var key in attributeMap){
+				if (dojo.isOwnProperty(attributeMap, key)) {
+					i = key.indexOf('.');
+					if(i > 0){
+						var tagName = key.substring(0, i);
+						if (tagName === element.nodeName){
+							attributes.push(key.substring(i + 1));
+						}
+					}else{ // global attribute
+						attributes.push(key);
 					}
-				}else{ // global attribute
-					attributes.push(key);
 				}
 			}
 		}
@@ -431,12 +434,14 @@ dojo.declare("dojox.data.XmlStore", null, {
 		}
 		var queryString = "";
 		for(var name in query){
-			var value = query[name];
-			if(value){
-				if(queryString){
-					queryString += "&";
+			if (dojo.isOwnProperty(query, name)) {
+				var value = query[name];
+				if(value){
+					if(queryString){
+						queryString += "&";
+					}
+					queryString += (name + "=" + value);
 				}
-				queryString += (name + "=" + value);
 			}
 		}
 		if(!queryString){
@@ -490,7 +495,7 @@ dojo.declare("dojox.data.XmlStore", null, {
 			if(node.nodeType != 1 /*ELEMENT_NODE*/){
 				continue;
 			}
-            var item = this._getItem(node);
+            		var item = this._getItem(node);
 			if(query){
 				var found = true;
 				var ignoreCase = request.queryOptions ? request.queryOptions.ignoreCase : false; 
@@ -500,36 +505,40 @@ dojo.declare("dojox.data.XmlStore", null, {
 				//same value for each item examined.  Much more efficient.
 				var regexpList = {};
 				for(var key in query){
-					value = query[key];
-					if(typeof value === "string"){
-						regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+					if (dojo.isOwnProperty(query, key)) {
+						value = query[key];
+						if(typeof value === "string"){
+							regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+						}
 					}
 				}
 				for(var attribute in query){
-					value = this.getValue(item, attribute);
-					if(value){
-						var queryValue = query[attribute];
-						if ((typeof value) === "string" && 
-							(regexpList[attribute])){
-							if((value.match(regexpList[attribute])) !== null){
-								continue;
-							}
-						}else if((typeof value) === "object"){
-							if(	value.toString && 
+					if (dojo.isOwnProperty(query, attribute)) {
+						value = this.getValue(item, attribute);
+						if(value){
+							var queryValue = query[attribute];
+							if ((typeof value) === "string" && 
 								(regexpList[attribute])){
-								var stringValue = value.toString();
-								if((stringValue.match(regexpList[attribute])) !== null){
+								if((value.match(regexpList[attribute])) !== null){
 									continue;
 								}
-							}else{
-								if(queryValue === "*" || queryValue === value){
-									continue;
+							}else if((typeof value) === "object"){
+								if(	value.toString && 
+									(regexpList[attribute])){
+									var stringValue = value.toString();
+									if((stringValue.match(regexpList[attribute])) !== null){
+										continue;
+									}
+								}else{
+									if(queryValue === "*" || queryValue === value){
+										continue;
+									}
 								}
 							}
 						}
+						found = false;
+						break;
 					}
-					found = false;
-					break;
 				}
 				if(!found){
 					continue;
@@ -593,22 +602,24 @@ dojo.declare("dojox.data.XmlStore", null, {
 		var document = this._getDocument();
 		var element = document.createElement(tagName);
 		for(var attribute in keywordArgs){
-			var text;
-			if(attribute === "tagName"){
-				continue;
-			}else if(attribute === "text()"){
-				text = document.createTextNode(keywordArgs[attribute]);
-				element.appendChild(text);
-			}else{
-				attribute = this._getAttribute(tagName, attribute);
-				if(attribute.charAt(0) === '@'){
-					var name = attribute.substring(1);
-					element.setAttribute(name, keywordArgs[attribute]);
-				}else{
-					var child = document.createElement(attribute);
+			if (dojo.isOwnProperty(keywordArgs, attribute)) {
+				var text;
+				if(attribute === "tagName"){
+					continue;
+				}else if(attribute === "text()"){
 					text = document.createTextNode(keywordArgs[attribute]);
-					child.appendChild(text);
-					element.appendChild(child);
+					element.appendChild(text);
+				}else{
+					attribute = this._getAttribute(tagName, attribute);
+					if(attribute.charAt(0) === '@'){
+						var name = attribute.substring(1);
+						element.setAttribute(name, keywordArgs[attribute]);
+					}else{
+						var child = document.createElement(attribute);
+						text = document.createTextNode(keywordArgs[attribute]);
+						child.appendChild(text);
+						element.appendChild(child);
+					}
 				}
 			}
 		}
