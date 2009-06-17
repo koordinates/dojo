@@ -16,7 +16,7 @@ dojo.declare(
 	required: false,
 
 	adjust: function(/* Object */ val, /*Number*/ delta){
-		return dojo.date.add(val, "minute", delta)
+		return dojo.date.add(val, "minute", delta);
 	},
 
 	//FIXME should we allow for constraints in this widget?
