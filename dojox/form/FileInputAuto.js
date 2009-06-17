@@ -58,14 +58,14 @@ dojo.declare("dojox.form.FileInputAuto",
 
 	_onFocus: function(){
 		// summary: clear the upload timer
-		if(this._blurTimer){ clearTimeout(this._blurTimer); }
+		if(this._blurTimer){ window.clearTimeout(this._blurTimer); }
 	},
 
 	_onBlur: function(){
 		// summary: start the upload timer
-		if(this._blurTimer){ clearTimeout(this._blurTimer); }
+		if(this._blurTimer){ window.clearTimeout(this._blurTimer); }
 		if(!this._sent){
-			this._blurTimer = setTimeout(dojo.hitch(this,"_sendFile"),this.blurDelay);		
+			this._blurTimer = window.setTimeout(dojo.hitch(this,"_sendFile"),this.blurDelay);		
 		}
 	},
 
@@ -75,7 +75,7 @@ dojo.declare("dojox.form.FileInputAuto",
 		// innerHTML throws errors in IE! so use DOM manipulation instead
 		//this.overlay.innerHTML = title;
 		this.overlay.removeChild(this.overlay.firstChild);
-		this.overlay.appendChild(document.createTextNode(title));
+		this.overlay.appendChild(dojo.doc.createTextNode(title));
 	},
 	
 	_sendFile: function(/* Event */e){
@@ -95,16 +95,18 @@ dojo.declare("dojox.form.FileInputAuto",
 		dojo.fadeIn({ node: this.overlay, duration:this.duration }).play();
 
 		var _newForm; 
-		if(dojo.isIE){
-			// just to reiterate, IE is a steaming pile of code. 
-			_newForm = document.createElement('<form enctype="multipart/form-data" method="post">');
-			_newForm.encoding = "multipart/form-data";
-			
-		}else{
-			// this is how all other sane browsers do it
-			_newForm = document.createElement('form');
-			_newForm.setAttribute("enctype","multipart/form-data");
+
+		_newForm = dojo.doc.createElement('form');
+		if (typeof _newForm.enctype == 'string') {
+			_newForm.enctype = "multipart/form-data";
+		} else {
+			// Never supported in IE prior to 8 (according to MSDN.)
+
+			// NOTE: Update realAttr to deal with this in bad attribute branch.
+
+			dojo.realAttr(_newForm, 'enctype', "multipart/form-data");
 		}
+
 		_newForm.appendChild(this.fileInput);
 		dojo.body().appendChild(_newForm);
 	
@@ -147,7 +149,7 @@ dojo.declare("dojox.form.FileInputAuto",
 
 	reset: function(e){
 		// summary: accomodate our extra focusListeners
-		if(this._blurTimer){ clearTimeout(this._blurTimer); }
+		if(this._blurTimer){ window.clearTimeout(this._blurTimer); }
 
 		this.disconnect(this._blurListener);
 		this.disconnect(this._focusListener);
@@ -186,11 +188,8 @@ dojo.declare("dojox.form.FileInputBlind",
 	
 	_fixPosition: function(){		
 		// summary: in this case, set the button under where the visible button is 
-		if(dojo.isIE){
-			dojo.style(this.fileInput,"width","1px");
-		}else{
-			dojo.style(this.fileInput,"left","-"+(this._off)+"px");
-		}
+		
+		dojo.style(this.fileInput,"left","-"+(this._off)+"px");		
 	},
 
 	reset: function(e){
