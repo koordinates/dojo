@@ -2,7 +2,12 @@ dojo.provide("dojox.flash._base");
 dojo.experimental("dojox.flash");
 
 // for dijit.getViewport(), needed by dojox.flash.Embed.center()
+
+// NOTE: Viewport logic should be moved to core
+
 dojo.require("dijit._base.place");
+
+// NOTE: Duplicates logic from embed module
 
 dojox.flash = function(){
 	// summary:
@@ -91,7 +96,7 @@ dojox.flash = function(){
 	//	methods, since Dojo Storage only needs strings
 	//		
 	//	Author- Brad Neuberg, http://codinginparadise.org
-}
+};
 
 dojox.flash = {
 	ready: false,
@@ -208,7 +213,7 @@ dojox.flash.Info = function(){
 	//	the page is finished loading.
 
 	this._detectVersion();
-}
+};
 
 dojox.flash.Info.prototype = {
 	// version: String
@@ -253,8 +258,8 @@ dojox.flash.Info.prototype = {
 		// 0.14
 		reqVer = parseFloat("." + reqVer);
 		
-		if(this.versionMajor >= reqMajorVer && this.versionMinor >= reqMinorVer
-			 && this.versionRevision >= reqVer){
+		if(this.versionMajor >= reqMajorVer && this.versionMinor >= reqMinorVer &&
+			this.versionRevision >= reqVer){
 			return true;
 		}else{
 			return false;
@@ -263,15 +268,17 @@ dojox.flash.Info.prototype = {
 	
 	_detectVersion: function(){
 		var versionStr;
+
+		// NOTE: Replace this
 		
 		// loop backwards through the versions until we find the newest version	
 		for(var testVersion = 25; testVersion > 0; testVersion--){
-			if(window.ActiveXObject){
+			var activeX = dojo.isHostObjectProperty(window, 'ActiveXObject') && !dojo.isHostObjectProperty(window.navigator, 'plugins');
+			if(activeX){
 				var axo;
 				try{
 					if(testVersion > 6){
-						axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash." 
-																		+ testVersion);
+						axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash." + testVersion);
 					}else{
 						axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
 					}
@@ -288,12 +295,12 @@ dojox.flash.Info.prototype = {
 				versionStr = this._JSFlashInfo(testVersion);		
 			}
 				
-			if(versionStr == -1 ){
+			if(versionStr == '-1' ){
 				this.capable = false; 
 				return;
-			}else if(versionStr != 0){
+			}else if(versionStr == '0'){
 				var versionArray;
-				if(dojo.isIE){
+				if(activeX){
 					var tempArray = versionStr.split(" ");
 					var tempString = tempArray[1];
 					versionArray = tempString.split(",");
@@ -320,12 +327,11 @@ dojox.flash.Info.prototype = {
 	// information. Internet Explorer uses a corresponding Visual Basic
 	// version to interact with the Flash ActiveX control. 
 	_JSFlashInfo: function(testVersion){
-		// NS/Opera version >= 3 check for Flash plugin in plugin array
-		if(navigator.plugins != null && navigator.plugins.length > 0){
-			if(navigator.plugins["Shockwave Flash 2.0"] || 
-				 navigator.plugins["Shockwave Flash"]){
-				var swVer2 = navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "";
-				var flashDescription = navigator.plugins["Shockwave Flash" + swVer2].description;
+		if(dojo.isHostObjectProperty(window.navigator, 'plugins') && typeof window.navigator.plugins.length == 'number' && window.navigator.plugins.length){
+			if(window.navigator.plugins["Shockwave Flash 2.0"] || 
+				 window.navigator.plugins["Shockwave Flash"]){
+				var swVer2 = window.navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "";
+				var flashDescription = window.navigator.plugins["Shockwave Flash" + swVer2].description;
 				var descArray = flashDescription.split(" ");
 				var tempArrayMajor = descArray[2].split(".");
 				var versionMajor = tempArrayMajor[0];
@@ -350,7 +356,7 @@ dojox.flash.Embed = function(visible){
 	//	you must call this class before the page has finished loading.
 	
 	this._visible = visible;
-}
+};
 
 dojox.flash.Embed.prototype = {
 	// width: int
@@ -373,13 +379,10 @@ dojox.flash.Embed.prototype = {
 	_visible: true,
 
 	protocol: function(){
-		switch(window.location.protocol){
-			case "https:":
-				return "https";
-				break;
-			default:
-				return "http";
-				break;
+		if(window.location.protocol == 'https:'){
+			return "https";
+		} else {
+			return "http";
 		}
 	},
 	
@@ -399,21 +402,21 @@ dojox.flash.Embed.prototype = {
 		var swflocObject = swfloc;
 		var swflocEmbed = swfloc;
 		var dojoUrl = dojo.baseUrl;
-		var xdomainBase = document.location.protocol + '//' + document.location.host;
+		var xdomainBase = window.location.protocol + '//' + window.location.host;
 		if(doExpressInstall){
 			// the location to redirect to after installing
-			var redirectURL = escape(window.location);
-			document.title = document.title.slice(0, 47) + " - Flash Player Installation";
-			var docTitle = escape(document.title);
-			swflocObject += "?MMredirectURL=" + redirectURL
-			                + "&MMplayerType=ActiveX"
-			                + "&MMdoctitle=" + docTitle
-			                + "&baseUrl=" + escape(dojoUrl)
-			                + "&xdomain=" + escape(xdomainBase);
-			swflocEmbed += "?MMredirectURL=" + redirectURL 
-			                + "&MMplayerType=PlugIn"
-			                + "&baseUrl=" + escape(dojoUrl)
-			                + "&xdomain=" + escape(xdomainBase);
+			var redirectURL = encodeURIComponent(window.location);
+			dojo.doc.title = dojo.doc.title.slice(0, 47) + " - Flash Player Installation";
+			var docTitle = encodeURIComponent(dojo.doc.title);
+			swflocObject += "?MMredirectURL=" + redirectURL +
+			                "&MMplayerType=ActiveX" +
+			                "&MMdoctitle=" + docTitle +
+			                "&baseUrl=" + encodeURIComponent(dojoUrl) +
+			                "&xdomain=" + encodeURIComponent(xdomainBase);
+			swflocEmbed += "?MMredirectURL=" + redirectURL +
+			                "&MMplayerType=PlugIn" +
+			                "&baseUrl=" + encodeURIComponent(dojoUrl) +
+			                "&xdomain=" + encodeURIComponent(xdomainBase);
 		}else{
 			// IE/Flash has an evil bug that shows up some time: if we load the
 			// Flash and it isn't in the cache, ExternalInterface works fine --
@@ -421,55 +424,63 @@ dojox.flash.Embed.prototype = {
 			// bug can keep ExternalInterface from working. The trick below 
 			// simply invalidates the Flash object in the cache all the time to
 			// keep it loading fresh. -- Brad Neuberg
+
+			// NOTE: Investigate this, should not need cache-buster
+
 			swflocObject += "?cachebust=" + new Date().getTime();
-			swflocObject += "&baseUrl=" + escape(dojoUrl);
-			swflocObject += "&xdomain=" + escape(xdomainBase);
+			swflocObject += "&baseUrl=" + encodeURIComponent(dojoUrl);
+			swflocObject += "&xdomain=" + encodeURIComponent(xdomainBase);
 		}
 
 		if(swflocEmbed.indexOf("?") == -1){
-			swflocEmbed += '?baseUrl='+escape(dojoUrl);
+			swflocEmbed += '?baseUrl='+encodeURIComponent(dojoUrl);
 		}else{
-		  swflocEmbed += '&baseUrl='+escape(dojoUrl);
+		  swflocEmbed += '&baseUrl='+encodeURIComponent(dojoUrl);
 		}
-		swflocEmbed += '&xdomain='+escape(xdomainBase);
+		swflocEmbed += '&xdomain='+encodeURIComponent(xdomainBase);
+
+		// NOTE: Remove unneeded concatentation
 		
 		objectHTML =
-			'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" '
-			  + 'codebase="'
-				+ this.protocol()
-				+ '://fpdownload.macromedia.com/pub/shockwave/cabs/flash/'
-				+ 'swflash.cab#version=8,0,0,0"\n '
-			  + 'width="' + this.width + '"\n '
-			  + 'height="' + this.height + '"\n '
-			  + 'id="' + this.id + '"\n '
-			  + 'name="' + this.id + '"\n '
-			  + 'align="middle">\n '
-			  + '<param name="allowScriptAccess" value="always"></param>\n '
-			  + '<param name="movie" value="' + swflocObject + '"></param>\n '
-			  + '<param name="quality" value="high"></param>\n '
-			  + '<param name="bgcolor" value="#ffffff"></param>\n '
-			  + '<embed src="' + swflocEmbed + '" '
-			  	  + 'quality="high" '
-				  + 'bgcolor="#ffffff" '
-				  + 'width="' + this.width + '" '
-				  + 'height="' + this.height + '" '
-				  + 'id="' + this.id + 'Embed' + '" '
-				  + 'name="' + this.id + '" '
-				  + 'swLiveConnect="true" '
-				  + 'align="middle" '
-				  + 'allowScriptAccess="always" '
-				  + 'type="application/x-shockwave-flash" '
-				  + 'pluginspage="'
-				  + this.protocol()
-				  +'://www.macromedia.com/go/getflashplayer" '
-				  + '></embed>\n'
-			+ '</object>\n';
+			'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' +
+			  'codebase="' +
+				this.protocol() +
+				'://fpdownload.macromedia.com/pub/shockwave/cabs/flash/' +
+				'swflash.cab#version=8,0,0,0"\n ' +
+				'width="' + this.width + '"\n ' +
+			  'height="' + this.height + '"\n ' +
+			  'id="' + this.id + '"\n ' +
+			  'name="' + this.id + '"\n ' +
+			  'align="middle">\n ' +
+			  '<param name="allowScriptAccess" value="always"></param>\n ' +
+			  '<param name="movie" value="' + swflocObject + '"></param>\n ' +
+			  '<param name="quality" value="high"></param>\n ' +
+			  '<param name="bgcolor" value="#ffffff"></param>\n ' +
+			  '<embed src="' + swflocEmbed + '" ' +
+			  	  'quality="high" ' +
+				  'bgcolor="#ffffff" ' +
+				  'width="' + this.width + '" ' +
+				  'height="' + this.height + '" ' +
+				  'id="' + this.id + 'Embed' + '" ' +
+				  'name="' + this.id + '" ' +
+				  'swLiveConnect="true" ' +
+				  'align="middle" ' +
+				  'allowScriptAccess="always" ' +
+				  'type="application/x-shockwave-flash" ' +
+				  'pluginspage="' +
+				  this.protocol() +
+				  '://www.macromedia.com/go/getflashplayer" ' +
+				  '></embed>\n' +
+			'</object>\n';
 					
 		// using same mechanism on all browsers now to write out
 		// Flash object into page
 
 		// document.write no longer works correctly due to Eolas patent workaround
 		// in IE; nothing happens (i.e. object doesn't go into page if we use it)
+
+		// NOTE: Should not need document.write for this
+
 		dojo.connect(dojo, "loaded", dojo.hitch(this, function(){
 			// Prevent putting duplicate SWFs onto the page
 			var containerId = this.id + "Container";
@@ -477,7 +488,7 @@ dojox.flash.Embed.prototype = {
 				return;
 			}
 			
-			var div = document.createElement("div");
+			var div = dojo.doc.createElement("div");
 			div.id = this.id + "Container";
 			
 			div.style.width = this.width + "px";
@@ -490,7 +501,7 @@ dojox.flash.Embed.prototype = {
 
 			div.innerHTML = objectHTML;
 
-			var body = document.getElementsByTagName("body");
+			var body = dojo.doc.getElementsByTagName("body");
 			if(!body || !body.length){
 				throw new Error("No body tag for this page");
 			}
@@ -547,7 +558,7 @@ dojox.flash.Communicator = function(){
 	//	This class helps mediate Flash and JavaScript communication. Internally
 	//	it uses Flash 8's ExternalInterface API, but adds functionality to fix 
 	//	various encoding bugs that ExternalInterface has.
-}
+};
 
 dojox.flash.Communicator.prototype = {
 	// Registers the existence of a Flash method that we can call with
@@ -605,8 +616,11 @@ dojox.flash.Communicator.prototype = {
 			return data;
 		}
 		
-		// needed for IE; \0 is the NULL character 
-		data = data.replace(/\&custom_null\;/g, "\0");
+		// needed for IE; \0 is the NULL character
+
+		// NOTE: What is this supposed to do? Was substituting a "0".
+
+		data = data.replace(/\&custom_null\;/g, "\\0");
 	
 		// certain XMLish characters break Flash's wire serialization for
 		// ExternalInterface; these are encoded on the 
@@ -614,6 +628,9 @@ dojox.flash.Communicator.prototype = {
 		// the standard entity encoding, because otherwise we won't be able to
 		// differentiate between our own encoding and any entity characters
 		// that are being used in the string itself
+
+		// NOTE: Re-factor with DojoExternalInterface
+
 		data = data.replace(/\&custom_lt\;/g, "<")
 			.replace(/\&custom_gt\;/g, ">")
 			.replace(/\&custom_backslash\;/g, '\\');
@@ -645,12 +662,15 @@ dojox.flash.Communicator.prototype = {
 		// used document.write but doesn't now that
 		// we use dynamic DOM insertion of the Flash object
 		// -- Brad Neuberg
-		var flashExec = function(){ 
+
+		// NOTE: Replace this (should not need eval.)
+
+		var flashExec = function(){
 			return eval(plugin.CallFunction(
-						 "<invoke name=\"" + methodName
-						+ "\" returntype=\"javascript\">" 
-						+ __flash__argumentsToXML(methodArgs, 0) 
-						+ "</invoke>")); 
+						 "<invoke name=\"" + methodName +
+						 "\" returntype=\"javascript\">" +
+						 __flash__argumentsToXML(methodArgs, 0) +
+						 "</invoke>")); 
 		};
 		var results = flashExec.call(methodArgs);
 		
@@ -660,7 +680,7 @@ dojox.flash.Communicator.prototype = {
 			
 		return results;
 	}
-}
+};
 
 // FIXME: dojo.declare()-ify this
 
@@ -675,7 +695,7 @@ dojox.flash.Install = function(){
 	//		Figures out the best way to automatically install the Flash plugin
 	//		for this browser and platform. Also determines if installation or
 	//		revving of the current plugin is needed on this platform.
-}
+};
 
 dojox.flash.Install.prototype = {
 	needed: function(){ /* Boolean */
@@ -705,7 +725,7 @@ dojox.flash.Install.prototype = {
 		dojox.flash.info.installing = true;
 		dojox.flash.installing();
 		
-		if(dojox.flash.info.capable == false){ // we have no Flash at all
+		if(!dojox.flash.info.capable){ // we have no Flash at all
 			// write out a simple Flash object to force the browser to prompt
 			// the user to install things
 			installObj = new dojox.flash.Embed(false);
@@ -716,9 +736,11 @@ dojox.flash.Install.prototype = {
 			installObj.setVisible(true);
 			installObj.center();
 		}else{ // older Flash install than version 6r65
-			alert("This content requires a more recent version of the Macromedia "
-						+" Flash Player.");
-			window.location.href = + dojox.flash.Embed.protocol() +
+
+			// NOTE: No alerts
+
+			window.alert("This content requires a more recent version of the Macromedia Flash Player.");
+			window.location.href = dojox.flash.Embed.protocol() +
 						"://www.macromedia.com/go/getflashplayer";
 		}
 	},
@@ -730,18 +752,18 @@ dojox.flash.Install.prototype = {
 			// Installation is complete.
 			dojox.flash._initialize();
 		}else if(msg == "Download.Cancelled"){
-			alert("This content requires a more recent version of the Macromedia "
-						+" Flash Player.");
+			window.alert("This content requires a more recent version of the Macromedia " +
+				" Flash Player.");
 			window.location.href = dojox.flash.Embed.protocol() +
-						"://www.macromedia.com/go/getflashplayer";
+				"://www.macromedia.com/go/getflashplayer";
 		}else if (msg == "Download.Failed"){
 			// The end user failed to download the installer due to a network failure
-			alert("There was an error downloading the Flash Player update. "
-						+ "Please try again later, or visit macromedia.com to download "
-						+ "the latest version of the Flash plugin.");
+			window.alert("There was an error downloading the Flash Player update. " +
+				"Please try again later, or visit macromedia.com to download " +
+				"the latest version of the Flash plugin.");
 		}	
 	}
-}
+};
 
 // find out if Flash is installed
 dojox.flash.info = new dojox.flash.Info();
