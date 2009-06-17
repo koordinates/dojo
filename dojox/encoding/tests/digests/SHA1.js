@@ -14,7 +14,10 @@ dojo.require("dojox.encoding.digests.SHA1");
 		function testHexCompute(t){
 			t.assertEqual(hex, ded.SHA1(message, ded.outputTypes.Hex)); 
 		},
-		function testStringCompute(t){
+
+		// NOTE: s was missing (?)
+
+		function testStringCompute(t, s){
 			t.assertEqual(s, ded.SHA1(message, ded.outputTypes.String)); 
 		}
 	]);
