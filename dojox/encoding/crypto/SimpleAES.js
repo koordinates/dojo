@@ -1,4 +1,4 @@
-dojo.provide("dojox.encoding.crypto.SimpleAES");
+﻿dojo.provide("dojox.encoding.crypto.SimpleAES");
 
 dojo.require("dojox.encoding.base64");
 dojo.require("dojox.encoding.crypto._base");
@@ -33,57 +33,31 @@ dojo.require("dojox.encoding.crypto._base");
 					 [0x40, 0x00, 0x00, 0x00],
 					 [0x80, 0x00, 0x00, 0x00],
 					 [0x1b, 0x00, 0x00, 0x00],
-					 [0x36, 0x00, 0x00, 0x00] ]; 
+					 [0x36, 0x00, 0x00, 0x00] ];
 
-		/*
-		 * AES Cipher function: encrypt 'input' with Rijndael algorithm
-		 *
-		 *	 takes	 byte-array 'input' (16 bytes)
-		 *			 2D byte-array key schedule 'w' (Nr+1 x Nb bytes)
-		 *
-		 *	 applies Nr rounds (10/12/14) using key schedule w for 'add round key' stage
-		 *
-		 *	 returns byte-array encrypted value (16 bytes)
-		 */
-		function Cipher(input, w) {	   // main Cipher function [§5.1]
-		  var Nb = 4;				// block size (in words): no of columns in state (fixed at 4 for AES)
-		  var Nr = w.length/Nb - 1; // no of rounds: 10/12/14 for 128/192/256-bit keys
-
-		  var state = [[],[],[],[]];  // initialise 4xNb byte-array 'state' with input [§3.4]
-		  for (var i=0; i<4*Nb; i++) state[i%4][Math.floor(i/4)] = input[i];
-
-		  state = AddRoundKey(state, w, 0, Nb);
-
-		  for (var round=1; round<Nr; round++) {
-			state = SubBytes(state, Nb);
-			state = ShiftRows(state, Nb);
-			state = MixColumns(state, Nb);
-			state = AddRoundKey(state, w, round, Nb);
-		  }
-
-		  state = SubBytes(state, Nb);
-		  state = ShiftRows(state, Nb);
-		  state = AddRoundKey(state, w, Nr, Nb);
-
-		  var output = new Array(4*Nb);	 // convert state to 1-d array before returning [§3.4]
-		  for (var i=0; i<4*Nb; i++) output[i] = state[i%4][Math.floor(i/4)];
-		  return output;
+		function SubWord(w) {	 // apply SBox to 4-byte word w
+		  for (var i=0; i<4; i++) { w[i] = Sbox[w[i]]; }
+		  return w;
 		}
 
+		function RotWord(w) {	 // rotate 4-byte word w left by one byte
+		  w[4] = w[0];
+		  for (var i=0; i<4; i++) { w[i] = w[i+1]; }
+		  return w;
+		}
 
 		function SubBytes(s, Nb) {	  // apply SBox to state S [§5.1.1]
 		  for (var r=0; r<4; r++) {
-			for (var c=0; c<Nb; c++) s[r][c] = Sbox[s[r][c]];
+			for (var c=0; c<Nb; c++) { s[r][c] = Sbox[s[r][c]]; }
 		  }
 		  return s;
 		}
 
-
 		function ShiftRows(s, Nb) {	   // shift row r of state S left by r bytes [§5.1.2]
-		  var t = new Array(4);
+		  var c, t = new Array(4);
 		  for (var r=1; r<4; r++) {
-			for (var c=0; c<4; c++) t[c] = s[r][(c+r)%Nb];	// shift into temp copy
-			for (var c=0; c<4; c++) s[r][c] = t[c];			// and copy back
+			for (c=0; c<4; c++) { t[c] = s[r][(c+r)%Nb]; }	// shift into temp copy
+			for (c=0; c<4; c++) { s[r][c] = t[c]; }		// and copy back
 		  }			 // note that this will work for Nb=4,5,6, but not 7,8 (always 4 for AES):
 		  return s;	 // see fp.gladman.plus.com/cryptography_technology/rijndael/aes.spec.311.pdf 
 		}
@@ -109,7 +83,7 @@ dojo.require("dojox.encoding.crypto._base");
 
 		function AddRoundKey(state, w, rnd, Nb) {  // xor Round Key into state S [§5.1.4]
 		  for (var r=0; r<4; r++) {
-			for (var c=0; c<Nb; c++) state[r][c] ^= w[rnd*4+c][r];
+			for (var c=0; c<Nb; c++) { state[r][c] ^= w[rnd*4+c][r]; }
 		  }
 		  return state;
 		}
@@ -117,41 +91,66 @@ dojo.require("dojox.encoding.crypto._base");
 
 		function KeyExpansion(key) {  // generate Key Schedule (byte-array Nr+1 x Nb) from Key [§5.2]
 		  var Nb = 4;			 // block size (in words): no of columns in state (fixed at 4 for AES)
-		  var Nk = key.length/4	 // key length (in words): 4/6/8 for 128/192/256-bit keys
+		  var Nk = key.length/4;	 // key length (in words): 4/6/8 for 128/192/256-bit keys
 		  var Nr = Nk + 6;		 // no of rounds: 10/12/14 for 128/192/256-bit keys
 
-		  var w = new Array(Nb*(Nr+1));
+		  var i, t, w = new Array(Nb*(Nr+1));
 		  var temp = new Array(4);
 
-		  for (var i=0; i<Nk; i++) {
+		  for (i=0; i<Nk; i++) {
 			var r = [key[4*i], key[4*i+1], key[4*i+2], key[4*i+3]];
 			w[i] = r;
 		  }
 
-		  for (var i=Nk; i<(Nb*(Nr+1)); i++) {
+		  for (i=Nk; i<(Nb*(Nr+1)); i++) {
 			w[i] = new Array(4);
-			for (var t=0; t<4; t++) temp[t] = w[i-1][t];
-			if (i % Nk == 0) {
+			for (t=0; t<4; t++) { temp[t] = w[i-1][t]; }
+			if (!(i % Nk)) {
 			  temp = SubWord(RotWord(temp));
-			  for (var t=0; t<4; t++) temp[t] ^= Rcon[i/Nk][t];
+			  for (t=0; t<4; t++) { temp[t] ^= Rcon[i/Nk][t]; }
 			} else if (Nk > 6 && i%Nk == 4) {
 			  temp = SubWord(temp);
 			}
-			for (var t=0; t<4; t++) w[i][t] = w[i-Nk][t] ^ temp[t];
+			for (t=0; t<4; t++) { w[i][t] = w[i-Nk][t] ^ temp[t]; }
 		  }
 
 		  return w;
 		}
 
-		function SubWord(w) {	 // apply SBox to 4-byte word w
-		  for (var i=0; i<4; i++) w[i] = Sbox[w[i]];
-		  return w;
-		}
+		/*
+		 * AES Cipher function: encrypt 'input' with Rijndael algorithm
+		 *
+		 *	 takes	 byte-array 'input' (16 bytes)
+		 *			 2D byte-array key schedule 'w' (Nr+1 x Nb bytes)
+		 *
+		 *	 applies Nr rounds (10/12/14) using key schedule w for 'add round key' stage
+		 *
+		 *	 returns byte-array encrypted value (16 bytes)
+		 */
 
-		function RotWord(w) {	 // rotate 4-byte word w left by one byte
-		  w[4] = w[0];
-		  for (var i=0; i<4; i++) w[i] = w[i+1];
-		  return w;
+		function Cipher(input, w) {	   // main Cipher function [§5.1]
+		  var i, Nb = 4;				// block size (in words): no of columns in state (fixed at 4 for AES)
+		  var Nr = w.length/Nb - 1; // no of rounds: 10/12/14 for 128/192/256-bit keys
+
+		  var state = [[],[],[],[]];  // initialise 4xNb byte-array 'state' with input [§3.4]
+		  for (i=0; i<4*Nb; i++) { state[i%4][Math.floor(i/4)] = input[i]; }
+
+		  state = AddRoundKey(state, w, 0, Nb);
+
+		  for (var round=1; round<Nr; round++) {
+			state = SubBytes(state, Nb);
+			state = ShiftRows(state, Nb);
+			state = MixColumns(state, Nb);
+			state = AddRoundKey(state, w, round, Nb);
+		  }
+
+		  state = SubBytes(state, Nb);
+		  state = ShiftRows(state, Nb);
+		  state = AddRoundKey(state, w, Nr, Nb);
+
+		  var output = new Array(4*Nb);	 // convert state to 1-d array before returning [§3.4]
+		  for (i=0; i<4*Nb; i++) { output[i] = state[i%4][Math.floor(i/4)]; }
+		  return output;
 		}
 
 		/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -164,13 +163,13 @@ dojo.require("dojox.encoding.crypto._base");
 		 *	 - cipherblock = plaintext xor outputblock
 		 */
 		function AESEncryptCtr(plaintext, password, nBits) {
-		  if (!(nBits==128 || nBits==192 || nBits==256)) return '';	 // standard allows 128/192/256 bit keys
+		  if (!(nBits==128 || nBits==192 || nBits==256)) { return ''; }	 // standard allows 128/192/256 bit keys
 
 		  // for this example script, generate the key by applying Cipher to 1st 16/24/32 chars of password; 
 		  // for real-world applications, a more secure approach would be to hash the password e.g. with SHA-1
-		  var nBytes = nBits/8;	 // no bytes in key
+		  var i, c, nBytes = nBits/8;	 // no bytes in key
 		  var pwBytes = new Array(nBytes);
-		  for (var i=0; i<nBytes; i++) pwBytes[i] = password.charCodeAt(i) & 0xff;
+		  for (i=0; i<nBytes; i++) { pwBytes[i] = password.charCodeAt(i) & 0xff; }
 
 		  var key = Cipher(pwBytes, KeyExpansion(pwBytes));
 
@@ -183,8 +182,8 @@ dojo.require("dojox.encoding.crypto._base");
 		  var nonce = (new Date()).getTime();  // milliseconds since 1-Jan-1970
 
 		  // encode nonce in two stages to cater for JavaScript 32-bit limit on bitwise ops
-		  for (var i=0; i<4; i++) counterBlock[i] = (nonce >>> i*8) & 0xff;
-		  for (var i=0; i<4; i++) counterBlock[i+4] = (nonce/0x100000000 >>> i*8) & 0xff; 
+		  for (i=0; i<4; i++) { counterBlock[i] = (nonce >>> i*8) & 0xff; }
+		  for (i=0; i<4; i++) { counterBlock[i+4] = (nonce/0x100000000 >>> i*8) & 0xff; }
 
 		  // generate key schedule - an expansion of the key into distinct Key Rounds for each round
 		  var keySchedule = KeyExpansion(key);
@@ -195,8 +194,8 @@ dojo.require("dojox.encoding.crypto._base");
 		  for (var b=0; b<blockCount; b++) {
 			// set counter (block #) in last 8 bytes of counter block (leaving nonce in 1st 8 bytes)
 			// again done in two stages for 32-bit ops
-			for (var c=0; c<4; c++) counterBlock[15-c] = (b >>> c*8) & 0xff;
-			for (var c=0; c<4; c++) counterBlock[15-c-4] = (b/0x100000000 >>> c*8)
+			for (c=0; c<4; c++) { counterBlock[15-c] = (b >>> c*8) & 0xff; }
+			for (c=0; c<4; c++) { counterBlock[15-c-4] = (b/0x100000000 >>> c*8); }
 
 			var cipherCntr = Cipher(counterBlock, keySchedule);	 // -- encrypt counter block --
 
@@ -204,7 +203,7 @@ dojo.require("dojox.encoding.crypto._base");
 			var blockLength = b<blockCount-1 ? blockSize : (plaintext.length-1)%blockSize+1;
 
 			var ct = '';
-			for (var i=0; i<blockLength; i++) {	 // -- xor plaintext with ciphered counter byte-by-byte --
+			for (i=0; i<blockLength; i++) {	 // -- xor plaintext with ciphered counter byte-by-byte --
 			  var plaintextByte = plaintext.charCodeAt(b*blockSize+i);
 			  var cipherByte = plaintextByte ^ cipherCntr[i];
 			  //ct += String.fromCharCode(cipherByte);
@@ -217,7 +216,7 @@ dojo.require("dojox.encoding.crypto._base");
 
 		  // convert the nonce to a string to go on the front of the ciphertext
 		  var ctrTxt = '';
-		  for (var i=0; i<8; i++) ctrTxt += ((counterBlock[i] < 16) ? "0" : "") + counterBlock[i].toString(16); //String.fromCharCode(counterBlock[i]);
+		  for (i=0; i<8; i++) { ctrTxt += ((counterBlock[i] < 16) ? "0" : "") + counterBlock[i].toString(16); } //String.fromCharCode(counterBlock[i]);
 		  //ctrTxt = escCtrlChars(ctrTxt);
 
 		  // use '-' to separate blocks, use Array.join to concatenate arrays of strings for efficiency
@@ -240,11 +239,13 @@ dojo.require("dojox.encoding.crypto._base");
 		 *	 - cipherblock = plaintext xor outputblock
 		 */
 		function AESDecryptCtr(ciphertext, password, nBits) {
-		  if (!(nBits==128 || nBits==192 || nBits==256)) return '';	 // standard allows 128/192/256 bit keys
+                  var i, c;
+
+		  if (!(nBits==128 || nBits==192 || nBits==256)) { return ''; }	 // standard allows 128/192/256 bit keys
 
 		  var nBytes = nBits/8;	 // no bytes in key
 		  var pwBytes = new Array(nBytes);
-		  for (var i=0; i<nBytes; i++) pwBytes[i] = password.charCodeAt(i) & 0xff;
+		  for (i=0; i<nBytes; i++) { pwBytes[i] = password.charCodeAt(i) & 0xff; }
 		  var pwKeySchedule = KeyExpansion(pwBytes);
 		  var key = Cipher(pwBytes, pwKeySchedule);
 		  key = key.concat(key.slice(0, nBytes-16));  // key is now 16/24/32 bytes long
@@ -263,8 +264,8 @@ dojo.require("dojox.encoding.crypto._base");
 
 		  for (var b=1; b<ciphertext.length; b++) {
 			// set counter (block #) in last 8 bytes of counter block (leaving nonce in 1st 8 bytes)
-			for (var c=0; c<4; c++) counterBlock[15-c] = ((b-1) >>> c*8) & 0xff;
-			for (var c=0; c<4; c++) counterBlock[15-c-4] = ((b/0x100000000-1) >>> c*8) & 0xff;
+			for (c=0; c<4; c++) { counterBlock[15-c] = ((b-1) >>> c*8) & 0xff; }
+			for (c=0; c<4; c++) { counterBlock[15-c-4] = ((b/0x100000000-1) >>> c*8) & 0xff; }
 
 			var cipherCntr = Cipher(counterBlock, keySchedule);	 // encrypt counter block
 
@@ -272,9 +273,12 @@ dojo.require("dojox.encoding.crypto._base");
 
 			var pt = '';
 			var tmp = stringToHex(ciphertext[b]);
-			for (var i=0; i<tmp.length; i++) {
+			for (i=0; i<tmp.length; i++) {
 			  // -- xor plaintext with ciphered counter byte-by-byte --
-			  var ciphertextByte = ciphertext[b].charCodeAt(i);
+
+                          // NOTE: Unused
+
+			  //var ciphertextByte = ciphertext[b].charCodeAt(i);
 			  var plaintextByte = tmp[i] ^ cipherCntr[i];
 			  pt += String.fromCharCode(plaintextByte);
 			}
@@ -288,17 +292,19 @@ dojo.require("dojox.encoding.crypto._base");
 
 		/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-		function escCtrlChars(str) {  // escape control chars which might cause problems handling ciphertext
-		  return str.replace(/[\0\t\n\v\f\r\xa0!-]/g, function(c) { return '!' + c.charCodeAt(0) + '!'; });
-		}  // \xa0 to cater for bug in Firefox; include '-' to leave it free for use as a block marker
+		// NOTE: Not used
 
-		function unescCtrlChars(str) {	// unescape potentially problematic control characters
-		  return str.replace(/!\d\d?\d?!/g, function(c) { return String.fromCharCode(c.slice(1,-1)); });
-		}
+		//function escCtrlChars(str) {  // escape control chars which might cause problems handling ciphertext
+		//  return str.replace(/[\0\t\n\v\f\r\xa0!\-]/g, function(c) { return '!' + c.charCodeAt(0) + '!'; });
+		//}  // \xa0 to cater for bug in Firefox; include '-' to leave it free for use as a block marker
+
+		//function unescCtrlChars(str) {	// unescape potentially problematic control characters
+		//  return str.replace(/!\d\d?\d?!/g, function(c) { return String.fromCharCode(c.slice(1,-1)); });
+		//}
 
 		/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-	dojox.encoding.crypto.SimpleAES = new (function(){
+	dojox.encoding.crypto.SimpleAES = (function(){
 		// summary:
 		// 		SimpleAES, ported from dojox.sql, and done without the need for
 		// 		a Google Gears worker pool.
