@@ -1,6 +1,5 @@
 dojo.provide("dojox.form.FileUploader");
 dojo.experimental("dojox.form.FileUploader");
-var swfPath = dojo.config.uploaderPath || dojo.moduleUrl("dojox.form", "resources/uploader.swf");
 
 dojo.require("dojox.embed.Flash");
 dojo.require("dojo.io.iframe");
@@ -151,7 +150,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 	// 		optional: pass in a path to your own SWF file uploader. defaults to the one in dojox.
 	//		CDN USERS NOTE: For the Flash Uploader to work via CDN, the SWF must be from the 
 	//		same server as the HTML page. Pass the link to that file here.
-	swfPath: swfPath,
+	swfPath: dojo.config.uploaderPath || dojo.moduleUrl("dojox.form", "resources/uploader.swf"),
 	//
 	//	minFlashVersion: Number
 	//		Internal. Version of Flash Player to check for. Thi may be over-written
@@ -203,10 +202,10 @@ dojo.declare("dojox.form.FileUploader", null, {
 		//
 		dojo.mixin(this, options);
 		//this.isDebug = true;
-		console.info("isdebug:", this.isDebug, options.isDebug, this.id)
+		console.info("isdebug:", this.isDebug, options.isDebug, this.id);
 		this.id = this.id || dijit.getUniqueId("uploader");
 		dijit.registry.add(this);
-		this.log("init Flash:", (dojox.embed.Flash.available >= this.minFlashVersion || this.force=="flash"), dojox.embed.Flash.available >= this.minFlashVersion, this.force=="flash")
+		this.log("init Flash:", (dojox.embed.Flash.available >= this.minFlashVersion || this.force=="flash"), dojox.embed.Flash.available >= this.minFlashVersion, this.force=="flash");
 		
 		this.fileList = [];
 		this._subs = [];
@@ -221,14 +220,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 			this.fileInputs = [];
 			this.fileCount = 0;
 			
-			if (dojo.isIE && dojo.isIE<7) {
-				// if we are create more than one FileInputOverlay,
-				// IE6 needs a breather or it locks up
-				setTimeout(dojo.hitch(this, "createHtmlUploader"), 1);
-			}
-			else {
-				this.createHtmlUploader();
-			}
+			window.setTimeout(dojo.hitch(this, "createHtmlUploader"), 1);
 		}
 	},
 	
@@ -295,7 +287,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 		// 		Stub to connect 
 		// 		Fires when dialog box has been closed 
 		//		without a file selection
-		this.log("Upload Canceled")
+		this.log("Upload Canceled");
 	},
 	
 	onError: function(evtObject){
@@ -319,7 +311,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 			try{
 				this.flashMovie.doUpload(this.postData);	
 			}catch(err){
-				throw new Error("Sorry, the SWF failed to initialize properly. The page will have to be refreshed. ERROR:" + err)
+				throw new Error("Sorry, the SWF failed to initialize properly. The page will have to be refreshed. ERROR:" + err);
 			}
 			
 		}else{
@@ -418,9 +410,9 @@ dojo.declare("dojox.form.FileUploader", null, {
 	createFlashUploader: function(){
 		//	summary
 		//		Create embedded SWF
-		this.log("FLASH")
+		this.log("FLASH");
 		var uurl = this.uploadUrl.toLowerCase();
-		if(uurl.indexOf("http")<0 && uurl.indexOf("/")!=0){
+		if(uurl.indexOf("http")<0 && uurl.indexOf("/")){
 			// Appears to be a relative path. Attempt to 
 			//	convert it to absolute, so it will better 
 			//target the SWF.
@@ -436,7 +428,9 @@ dojo.declare("dojox.form.FileUploader", null, {
 		}
 		
 		
-		var dim = this.getFakeButtonSize();
+		// NOTE: Unused
+
+		//var dim = this.getFakeButtonSize();
 		
 		// the size of the embedded SWF, not it's containing DIV 
 		var w = "100%";
@@ -468,12 +462,11 @@ dojo.declare("dojox.form.FileUploader", null, {
 			
 			window.passthrough = function(){
 				console.log.apply(console, arguments);
-			}
-			window.passthrough("Flash trace enabled.")
+			};
+			window.passthrough("Flash trace enabled.");
 		}else{
-			window.passthrough = function(){}
+			window.passthrough = function(){};
 		}
-		//this.log("ARG VARS:", args.vars)
 		this.flashDiv = dojo.doc.createElement("div");
 		this.domNode = this.flashDiv;
 		dojo.body().appendChild(this.flashDiv);
@@ -483,14 +476,17 @@ dojo.declare("dojox.form.FileUploader", null, {
 		// Flash 10 BUG
 		// Must set the position before creating the embed object
 		//	or it will get created twice - seems okay after
+
+		// NOTE: Review this
+
 		this.setPosition();
 		
 		this.flashObject = new dojox.embed.Flash(args, this.flashDiv);
 		this.flashObject.onError = function(msg){
 			console.warn("Flash Error:", msg);
-		}
+		};
 		this.flashObject.onLoad = dojo.hitch(this, function(mov){
-			this.log("ONLOAD", mov)
+			this.log("ONLOAD", mov);
 			this.flashMovie = mov;
 			this.setFlashVars();
 		});
@@ -504,7 +500,10 @@ dojo.declare("dojox.form.FileUploader", null, {
 		this.flashMovie.setPostData(this.postData);
 		console.log("setFlashVars / postData --------> ", this.postData);
 		return;
-		try{	
+
+		// NOTE: Unreachable
+
+		/* try{	
 			this.flashMovie.setFileMask(this.fileMask);
 			if(this.postData){
 				this.flashMovie.setPostData(this.postData);
@@ -513,13 +512,12 @@ dojo.declare("dojox.form.FileUploader", null, {
 			if(this.setvarTries===undefined) this.setvarTries = 0;
 			this.setvarTries++
 			if(this.setvarTries<10){
-				setTimeout(dojo.hitch(this, "setFlashVars"), 500);	
+				window.setTimeout(dojo.hitch(this, "setFlashVars"), 500);	
 			}else{
 				console.warn("Tried to set Flash Vars and Post data but failed.")
 			}
 			
-		}
-			
+		} */			
 	},
 	
 	createHtmlUploader: function(){
@@ -534,7 +532,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 			//this.log(this.button.domNode);this.log(this.button.id);this.log(dojo.byId(this.button.id))
 			node = dojo.byId(this.button.id).parentNode.parentNode;
 			// killing this event on the dijit button - it takes over the FileInput
-			node.parentNode.onmousedown = function(){}
+			node.parentNode.onmousedown = function(){};
 		}else {
 			node = this.button.parentNode;
 		}
@@ -558,7 +556,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 		// IE mainly needs the help for the timeout.
 		// but may as well do it for all then the check
 		// for whether we are in a dialog 
-		setTimeout(dojo.hitch(this, function(){
+		window.setTimeout(dojo.hitch(this, function(){
 			dojo.style(this.flashDiv, {
 				position:"absolute",
 				top: dim.y + "px",
@@ -567,7 +565,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 				height: dim.h + "px",
 				zIndex: 2001
 			});
-			this.log("this.flashDiv:", this.flashDiv)
+			this.log("this.flashDiv:", this.flashDiv);
 		}), 100);
 	},
 	
@@ -640,7 +638,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 		}));
 		
 		this._cons.push(dojo.connect(this._fileInput, "change", this, function(){
-			console.log("html change")
+			console.log("html change");
 			this._checkHtmlCancel("change");
 			this._change([{
 				name: this._fileInput.value,
@@ -680,7 +678,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 		}
 		// in some cases, mainly due to scrollbars, the buttons
 		//	are initially misplaced
-		setTimeout(dojo.hitch(this, "setPosition"), 500);
+		window.setTimeout(dojo.hitch(this, "setPosition"), 500);
 	},
 	_checkHtmlCancel: function(mouseType){
 		if(mouseType=="change"){
@@ -775,7 +773,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 			this._disconnect();
 			dojo.style(this._fileInput, "display", "none");
 		}
-		this._fileInput = document.createElement('input');
+		this._fileInput = dojo.doc.createElement('input');
 		this.domNode = this._fileInput;
 		this._fileInput.setAttribute("type", "file");
 		this.fileInputs.push(this._fileInput);
@@ -793,7 +791,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 		dojo.addClass(this._fileInput, "dijitFileInputReal");
 		
 		if(this.devMode){
-			dojo.style(this._fileInput, "opacity", 1)
+			dojo.style(this._fileInput, "opacity", 1);
 		}
 		
 		this._formNode.appendChild(this._fileInput);
@@ -814,22 +812,25 @@ dojo.declare("dojox.form.FileUploader", null, {
 		//		This form also holds the class that targets
 		//		the input to change its size
 		//
-		if (this._formNode) return;
+		if (this._formNode) { return; }
 		
-		if (dojo.isIE) {
-			// just to reiterate, IE is a steaming pile of code. 
-			this._formNode = document.createElement('<form enctype="multipart/form-data" method="post">');
-			this._formNode.encoding = "multipart/form-data";
-			
+		// NOTE: Duplicates logic logic from an adjacent widget
+		
+		this._formNode = dojo.doc.createElement('form');
+
+		if (typeof this._formNode.enctype == 'string') {
+			this._formNode.enctype = "multipart/form-data";
+		} else {
+			// Never supported in IE prior to 8 (according to MSDN.)
+
+			// NOTE: Update realAttr to deal with this in bad attribute branch.
+
+			dojo.realAttr(this._formNode, 'enctype', "multipart/form-data");
 		}
-		else {
-			// this is how all other sane browsers do it
-			this._formNode = document.createElement('form');
-			this._formNode.setAttribute("enctype", "multipart/form-data");
-		}
+		
 		this._formNode.id = dijit.getUniqueId("form");
 		if (node && dojo.style(node, "display").indexOf("inline") > -1) {
-			document.body.appendChild(this._formNode);
+			dojo.doc.body.appendChild(this._formNode);
 		}
 		else {
 			node.appendChild(this._formNode);
@@ -839,12 +840,15 @@ dojo.declare("dojox.form.FileUploader", null, {
 	},
 	_setHtmlPostData: function(){
 		if(this.postData){
-			for (var nm in this.postData) {
-				var f = document.createElement('input');
-				dojo.attr(f, "type", "hidden");
-				dojo.attr(f, "name", nm);
-				dojo.attr(f, "value", this.postData[nm]);
-				this._formNode.appendChild(f);
+			var postData = this.postData;
+			for (var nm in postData) {
+				if (dojo.isOwnProperty(postData, nm)) {
+					var f = dojo.doc.createElement('input');
+					f.type = "hidden";
+					f.value = this.postData[nm];
+					this._formNode.appendChild(f);
+					f.name = nm;
+				}
 			}
 		}
 	},
@@ -869,6 +873,10 @@ dojo.declare("dojox.form.FileUploader", null, {
 		//		on the result.
 		// 		We want a minimum of 2em, because on a Mac, system buttons have 
 		//		rounded corners. The larger size moves that corner out of position
+
+
+		// NOTE: Review this
+
 		var fake = this.getFakeButtonSize();
 		var size = Math.max(2, Math.max(Math.ceil(fake.w / 60), Math.ceil(fake.h / 15)));
 		
@@ -891,7 +899,7 @@ dojo.declare("dojox.form.FileUploader", null, {
 			
 			// This should be tested - or allow an ability to overwrite the settings
 			if (fakeNode.tagName.toLowerCase() == "span") {
-				fakeNode = dojo.byId(this.button.id)
+				fakeNode = dojo.byId(this.button.id);
 			}
 			// can't memoize this, because we need the location. And the size could possibly change anyway.
 			var fake = dojo.coords(fakeNode, true);
