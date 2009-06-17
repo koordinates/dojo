@@ -4,7 +4,7 @@ dojo.require("dojox.date.php");
 
 dojox.dtl.utils.date.DateFormat = function(/*String*/ format){
 	dojox.date.php.DateFormat.call(this, format);
-}
+};
 dojo.extend(dojox.dtl.utils.date.DateFormat, dojox.date.php.DateFormat.prototype, {
 	f: function(){
 		// summary:
@@ -56,7 +56,7 @@ dojo.mixin(dojox.dtl.utils.date, {
 		var delta = Math.abs(now.getTime() - d.getTime());
 		for(var i = 0, chunk; chunk = dojox.dtl.utils.date._chunks[i]; i++){
 			var count = Math.floor(delta / chunk[0]);
-			if(count) break;
+			if(count) { break; }
 		}
 		return count + " " + chunk[1](count);
 	},
