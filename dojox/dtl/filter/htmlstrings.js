@@ -28,7 +28,7 @@ dojo.mixin(dojox.dtl.filter.htmlstrings, {
 		return value.replace(dh._linebreaksrn, "\n").replace(dh._linebreaksbr, "<br />");
 	},
 	removetags: function(value, arg){
-		// summary: Removes a space separated list of [X]HTML tags from the output"
+		// summary: Removes a space separated list of (X)HTML tags from the output"
 		var dh = dojox.dtl.filter.htmlstrings;
 		var tags = [];
 		var group;
@@ -36,7 +36,7 @@ dojo.mixin(dojox.dtl.filter.htmlstrings, {
 			tags.push(group[0]);
 		}
 		tags = "(" + tags.join("|") + ")";
-		return value.replace(new RegExp("</?\s*" + tags + "\s*[^>]*>", "gi"), "");
+		return value.replace(new RegExp("</?\\s*" + tags + "\\s*[^>]*>", "gi"), "");
 	},
 	striptags: function(value){
 		// summary: Strips all [X]HTML tags
