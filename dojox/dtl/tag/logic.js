@@ -3,9 +3,7 @@ dojo.provide("dojox.dtl.tag.logic");
 dojo.require("dojox.dtl._base");
 
 (function(){
-	var dd = dojox.dtl;
-	var ddt = dd.text;
-	var ddtl = dd.tag.logic;
+	var ddtl = dojox.dtl.tag.logic;
 
 	ddtl.IfNode = dojo.extend(function(bools, trues, falses, type){
 		this.bools = bools;
@@ -65,8 +63,8 @@ dojo.require("dojox.dtl._base");
 	});
 
 	ddtl.IfEqualNode = dojo.extend(function(var1, var2, trues, falses, negate){
-		this.var1 = new dd._Filter(var1);
-		this.var2 = new dd._Filter(var2);
+		this.var1 = new dojox.dtl._Filter(var1);
+		this.var2 = new dojox.dtl._Filter(var2);
 		this.trues = trues;
 		this.falses = falses;
 		this.negate = negate;
@@ -89,7 +87,7 @@ dojo.require("dojox.dtl._base");
 			return (this.falses) ? this.falses.render(context, buffer, this) : buffer;
 		},
 		unrender: function(context, buffer){
-			return ddtl.IfNode.prototype.unrender.call(this, context, buffer);
+			return dojox.dtl.tag.logic.IfNode.prototype.unrender.call(this, context, buffer);
 		},
 		clone: function(buffer){
 			var trues = this.trues ? this.trues.clone(buffer) : null;
@@ -100,7 +98,7 @@ dojo.require("dojox.dtl._base");
 
 	ddtl.ForNode = dojo.extend(function(assign, loop, reversed, nodelist){
 		this.assign = assign;
-		this.loop = new dd._Filter(loop);
+		this.loop = new dojox.dtl._Filter(loop);
 		this.reversed = reversed;
 		this.nodelist = nodelist;
 		this.pool = [];
@@ -131,11 +129,19 @@ dojo.require("dojox.dtl._base");
 				items = items.slice(0).reverse();
 			}
 
+			// NOTE: isObject allows null and Function objects
+			//       What is this object allowed to be?
+
 			var isObject = dojo.isObject(items) && !dojo.isArrayLike(items);
 			var arred = [];
 			if(isObject){
 				for(var key in items){
-					arred.push(items[key]);
+
+					// NOTE: What is items allowed to be?
+
+					if (dojo.isOwnProperty(items, key))  {
+						arred.push(items[key]);
+					}
 				}
 			}else{
 				arred = items;
@@ -144,7 +150,7 @@ dojo.require("dojox.dtl._base");
 			var forloop = context.forloop = {
 				parentloop: context.get("forloop", {})
 			};
-			var j = 0;
+			j = 0;
 			for(i = 0; i < arred.length; i++){
 				var item = arred[i];
 
@@ -216,20 +222,20 @@ dojo.require("dojox.dtl._base");
 			}
 			for(i = 0; part = parts[i]; i++){
 				var not = false;
-				if(part.indexOf("not ") == 0){
+				if(!part.indexOf("not ")){
 					part = part.slice(4);
 					not = true;
 				}
-				bools.push([not, new dd._Filter(part)]);
+				bools.push([not, new dojox.dtl._Filter(part)]);
 			}
 			var trues = parser.parse(["else", "endif"]);
 			var falses = false;
-			var token = parser.next_token();
+			token = parser.next_token();
 			if(token.contents == "else"){
 				falses = parser.parse(["endif"]);
 				parser.next_token();
 			}
-			return new ddtl.IfNode(bools, trues, falses, type);
+			return new dojox.dtl.tag.logic.IfNode(bools, trues, falses, type);
 		},
 		_ifequal: function(parser, token, negate){
 			var parts = token.split_contents();
@@ -239,18 +245,18 @@ dojo.require("dojox.dtl._base");
 			var end = 'end' + parts[0];
 			var trues = parser.parse(["else", end]);
 			var falses = false;
-			var token = parser.next_token();
+			token = parser.next_token();
 			if(token.contents == "else"){
 				falses = parser.parse([end]);
 				parser.next_token();
 			}
-			return new ddtl.IfEqualNode(parts[1], parts[2], trues, falses, negate);
+			return new dojox.dtl.tag.logic.IfEqualNode(parts[1], parts[2], trues, falses, negate);
 		},
 		ifequal: function(parser, token){
-			return ddtl._ifequal(parser, token);
+			return dojox.dtl.tag.logic._ifequal(parser, token);
 		},
 		ifnotequal: function(parser, token){
-			return ddtl._ifequal(parser, token, true);
+			return dojox.dtl.tag.logic._ifequal(parser, token, true);
 		},
 		for_: function(parser, token){
 			var parts = token.contents.split();
@@ -270,7 +276,9 @@ dojo.require("dojox.dtl._base");
 			}
 			var nodelist = parser.parse(["endfor"]);
 			parser.next_token();
-			return new ddtl.ForNode(loopvars, parts[parts.length + index + 1], reversed, nodelist);
+			return new dojox.dtl.tag.logic.ForNode(loopvars, parts[parts.length + index + 1], reversed, nodelist);
 		}
 	});
+
+	ddtl = null;
 })();
