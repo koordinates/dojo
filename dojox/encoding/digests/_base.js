@@ -43,7 +43,7 @@ dojo.provide("dojox.encoding.digests._base");
 			s.push(String.fromCharCode((wa[i>>5]>>>(i%32))&mask));
 		}
 		return s.join("");	//	string
-	}
+	};
 	
 	d.wordToHex=function(/* word[] */wa){
 		//	summary:
@@ -53,7 +53,7 @@ dojo.provide("dojox.encoding.digests._base");
 			s.push(h.charAt((wa[i>>2]>>((i%4)*8+4))&0xF)+h.charAt((wa[i>>2]>>((i%4)*8))&0xF));
 		}
 		return s.join("");	//	string
-	}
+	};
 	d.wordToBase64=function(/* word[] */wa){
 		//	summary:
 		//		convert an array of words to base64 encoding, should be more efficient
