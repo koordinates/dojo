@@ -15,7 +15,7 @@ dojo.require("dojox.dtl._base");
 			if(this.parent){
 				var html = this.parent.nodelist.dummyRender(this.context, null, true);
 				if(typeof html == "string"){
-					html = new String(html);
+					html = String(html);
 				}
 				html.safe = true;
 				return html;
@@ -54,7 +54,7 @@ dojo.require("dojox.dtl._base");
 				});
 			}
 			buffer = nodelist.render(context, buffer, this);
-			setParent && dojo.disconnect(setParent);
+			if (setParent) { dojo.disconnect(setParent); }
 			context = context.pop();
 			return buffer;
 		},
@@ -136,7 +136,7 @@ dojo.require("dojox.dtl._base");
 						shared: this.shared,
 						nodelist: node.nodelist,
 						used: false
-					}
+					};
 				}
 			}
 
@@ -160,7 +160,7 @@ dojo.require("dojox.dtl._base");
 	{
 		_cache: [{}, {}],
 		render: function(context, buffer){
-			var location = ((this.constant) ? this.path : this.path.resolve(context)).toString();
+			var i, child, node, location = ((this.constant) ? this.path : this.path.resolve(context)).toString();
 			var parsed = Number(this.parsed);
 			var dirty = false;
 			if(location != this.last){
@@ -203,12 +203,11 @@ dojo.require("dojox.dtl._base");
 					}
 					if(dirty){
 						this.nodelist = [];
-						var exists = true;
-						for(var i = 0, child; child = cache[location][i]; i++){
+						for(i = 0; child = cache[location][i]; i++){
 							this.nodelist.push(child.cloneNode(true));
 						}
-					}
-					for(var i = 0, node; node = this.nodelist[i]; i++){
+					}					
+					for(i = 0; node = this.nodelist[i]; i++){
 						buffer = buffer.concat(node);
 					}
 				}
@@ -254,7 +253,7 @@ dojo.require("dojox.dtl._base");
 			}else{
 				key = parts[1];
 			}
-			if(parent && parent.indexOf("shared:") == 0){
+			if(parent && !parent.indexOf("shared:")){
 				shared = true;
 				parent = parent.substring(7, parent.length);
 			}
