@@ -42,7 +42,7 @@ dojo.provide("dojox.encoding.ascii85");
 			for(j = 0; j < 5; ++j){ b[j] = input.charCodeAt(i + j) - 33; }
 			d = n - i;
 			if(d < 5){
-				for(j = d; j < 4; b[++j] = 0);
+				for(j = d; j < 4; b[++j] = 0) {}
 				b[d] = 85;
 			}
 			t = (((b[0] * 85 + b[1]) * 85 + b[2]) * 85 + b[3]) * 85 + b[4];
@@ -51,7 +51,7 @@ dojo.provide("dojox.encoding.ascii85");
 			y = t & 255;
 			t >>>= 8;
 			r.push(t >>> 8, t & 255, y, x);
-			for(j = d; j < 5; ++j, r.pop());
+			for(j = d; j < 5; ++j, r.pop()) {}
 			i += 4;
 		}
 		return r;
