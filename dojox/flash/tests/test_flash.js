@@ -4,77 +4,49 @@ dojo.require("dojox.flash");
 
 var flashLoaded = false;
 var pageLoaded = false;
-var testXML = testBook = null;
-
-function flashReady(){
-	console.debug("flashReady");
-	if (flashLoaded) {
-	  return; // prevent double loads
-	}
-	
-	flashLoaded = true;
-	
-	if(isReady()){
-		run();
-	}
-}
-
-function pageReady(){
-	console.debug("pageReady");
-	if (pageLoaded) { 
-	  return; // prevent double loads
-	}
-	
-	pageLoaded = true;
-	
-	loadResources();
-	
-	if(isReady()){
-		run();
-	}
-}
+var testXML, testBook;
+testXML = testBook = null;
 
 function isReady(){
 	return testXML && testBook && pageLoaded && flashLoaded;
 }
 
-function loadResources(){
-	console.debug("Trying to load resources");
-	
-	var d = dojo.xhrGet({
-		url: "../../storage/tests/resources/testXML.xml",
-		handleAs: "text"
-	});
-
-	d.addCallback(function(results){
-		console.debug("testXML loaded");
-		testXML = results;
-		if(isReady()){
-			run();
-		}
-	});
-
-	d.addErrback(function(error){ 
-		console.debug("Unable to load testXML.xml: " + error);
-	});
-	
-	d = dojo.xhrGet({
-		url: "../../storage/tests/resources/testBook.txt",
-		handleAs: "text"
-	});
-
-	d.addCallback(function(results){
-		console.debug("testBook loaded");
-		testBook = results;
-		if(isReady()){
-			run();
-		}
-	});
-
-	d.addErrback(function(error){ 
-		console.debug("Unable to load testXML.xml: " + error);
-	});
+function assert(correct, actual, msg){
+	if(correct != actual){
+	  var failed = document.createElement("p");
+		failed.style.backgroundColor = "red";
+		failed.style.color = "white";
+		failed.style.fontSize = "24pt";
+		failed.appendChild(document.createTextNode("Test failed: " + msg));
+		var body = document.getElementsByTagName("body")[0];
+		body.appendChild(failed);
+		
+		throw new Error("ASSERTION FAILED: " + msg);
+	}else{
+		//console.debug("Assertion passed");
+	}
 }
+
+function testSlice( testString, from, to){ 
+	var putSize = dojox.flash.comm.setMessageSlice( testString, from, to); 
+	var actual = dojox.flash.comm.getMessage(); 
+	var correct = testString.slice(from, to);
+	
+	var msg = "Put a string with " + testString.length +
+			" chars, but it got with " + putSize + " chars in the Flash layer";
+	assert(putSize, testString.length, msg);
+	
+	msg = "I got '" + actual + "' instead of '" + correct +"'";
+	assert(correct, actual, msg); 
+}
+
+function chop(testString){ 
+	console.debug("chopping '" + testString + "'"); 
+	for(var i = 0; i < Math.min(testString.length, 100); i++){ 
+		//console.debug("index = " + i); 
+		testSlice(testString, 0, i+1); 
+	} 
+} 
 
 function run(){
 	console.debug("run");
@@ -93,11 +65,11 @@ function run(){
 		// slashes; do a trick so that they can be compared easier
 		var doubleSlash = "\\";
 		doubleSlash = doubleSlash.charAt(0);
-		correct = "hello world\n\n\nasdfasdf!@#$@#%^[]{}&amp;<xml>" + doubleSlash 
-						+ "<div>$%^&%^&*^&()<><><>,./;\0\r\f\'][`~=\"+-]\\0MORE!\n\rLESS"; 
+		correct = "hello world\n\n\nasdfasdf!@#$@#%^[]{}&amp;<xml>" + doubleSlash +
+			"<div>$%^&%^&*^&()<><><>,./;\\0\r\f'][`~=\"+-]\\0MORE!\n\rLESS"; 
 		var putSize = dojox.flash.comm.setMessage(correct); 
-		assert(putSize, correct.length, "Failed putting. Correct length = " 
-						+ correct.length + ", Flash length = " + putSize);
+		assert(putSize, correct.length, "Failed putting. Correct length = " +
+			correct.length + ", Flash length = " + putSize);
 		dojox.flash.comm.setMessage(correct);
 		actual = dojox.flash.comm.getMessage();
 		assert(correct, actual, "Setting/getting message with evil characters did not work");
@@ -147,41 +119,69 @@ function run(){
 	}
 }
 
-function chop(testString){ 
-	console.debug("chopping '" + testString + "'"); 
-	for(var i = 0; i < Math.min(testString.length, 100); i++){ 
-		//console.debug("index = " + i); 
-		testSlice(testString, 0, i+1); 
-	} 
-} 
- 
-function testSlice( testString, from, to){ 
-	var putSize = dojox.flash.comm.setMessageSlice( testString, from, to); 
-	var actual = dojox.flash.comm.getMessage(); 
-	var correct = testString.slice(from, to);
+function loadResources(){
+	console.debug("Trying to load resources");
 	
-	var msg = "Put a string with " + testString.length 
-					+ " chars, but it got with " + putSize + " chars in the Flash layer";
-	assert(putSize, testString.length, msg);
-	
-	msg = "I got '" + actual + "' instead of '" + correct +"'";
-	assert(correct, actual, msg); 
-} 
+	var d = dojo.xhrGet({
+		url: "../../storage/tests/resources/testXML.xml",
+		handleAs: "text"
+	});
 
-function assert(correct, actual, msg){
-	//alert("correct="+correct+",\n\nactual="+actual);
-	if(correct != actual){
-	  var failed = document.createElement("p");
-		failed.style.backgroundColor = "red";
-		failed.style.color = "white";
-		failed.style.fontSize = "24pt";
-		failed.appendChild(document.createTextNode("Test failed: " + msg));
-		var body = document.getElementsByTagName("body")[0];
-		body.appendChild(failed);
-		
-		throw new Error("ASSERTION FAILED: " + msg);
-	}else{
-		//console.debug("Assertion passed");
+	d.addCallback(function(results){
+		console.debug("testXML loaded");
+		testXML = results;
+		if(isReady()){
+			run();
+		}
+	});
+
+	d.addErrback(function(error){ 
+		console.debug("Unable to load testXML.xml: " + error);
+	});
+	
+	d = dojo.xhrGet({
+		url: "../../storage/tests/resources/testBook.txt",
+		handleAs: "text"
+	});
+
+	d.addCallback(function(results){
+		console.debug("testBook loaded");
+		testBook = results;
+		if(isReady()){
+			run();
+		}
+	});
+
+	d.addErrback(function(error){ 
+		console.debug("Unable to load testXML.xml: " + error);
+	});
+}
+
+function flashReady(){
+	console.debug("flashReady");
+	if (flashLoaded) {
+	  return; // prevent double loads
+	}
+	
+	flashLoaded = true;
+	
+	if(isReady()){
+		run();
+	}
+}
+
+function pageReady(){
+	console.debug("pageReady");
+	if (pageLoaded) { 
+	  return; // prevent double loads
+	}
+	
+	pageLoaded = true;
+	
+	loadResources();
+	
+	if(isReady()){
+		run();
 	}
 }
 
