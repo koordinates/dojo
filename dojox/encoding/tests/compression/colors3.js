@@ -37,9 +37,10 @@ dojox.encoding.tests.compression.colors3 = {};
 		return v;
 	};
 	var i = new B(n), d = new D(27, 5), t = [];
+	var fn = function(x){ t.push(x); };
 	while(t.length < 1455){
 		var v = d.d(i);
-		dojo.forEach(v, function(x){ t.push(x); });
+		dojo.forEach(v, fn);
 	}
 	var n2 = dojo.map(t, function(x){ return String.fromCharCode(x); }).join("").split("{");
 	i = new B(c);
