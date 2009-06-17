@@ -4,7 +4,7 @@ dojo.require("dojox.dtl.dom");
 dojo.require("dojo.parser");
 
 (function(){
-	var dd = dojox.dtl;
+
 	var ddcd = dd.contrib.dijit;
 
 	ddcd.AttachNode = dojo.extend(function(keys, object){
@@ -73,6 +73,10 @@ dojo.require("dojo.parser");
 		//		Make sure we kill the actual tags (onclick problems, etc)
 		_clear: false,
 		render: function(context, buffer){
+			var resolveFilter = function(item){
+				return new dojox.dtl._Filter(item).resolve(context);
+			};
+
 			for(var i = 0, type; type = this._types[i]; i++){
 				if(!this._clear && !this._object){
 					buffer.getParent()[type] = null;
@@ -84,9 +88,7 @@ dojo.require("dojo.parser");
 						dojo.disconnect(this._rendered[i]);
 						this._rendered[i] = false;
 					}
-					args = dojo.map(fn.split(" ").slice(1), function(item){
-						return new dd._Filter(item).resolve(context);
-					});
+					args = dojo.map(fn.split(" ").slice(1), resolveFilter);
 					fn = fn.split(" ", 2)[0];
 				}
 				if(!this._rendered[i]){
@@ -114,13 +116,26 @@ dojo.require("dojo.parser");
 
 	function cloneNode(n1){
 		var n2 = n1.cloneNode(true);
-		if(dojo.isIE){
-			dojo.query("script", n2).forEach("item.text = this[index].text;", dojo.query("script", n1));
-		}
+		//if(dojo.isIE){
+
+		// NOTE: Feature test whether cloneNode copies scripts
+		//       The text property is not the only possibility
+
+		//var scripts1 = n1.getElementsByTagName('script');
+		//var scripts2 = n2.getElementsByTagName('script');
+
+		//var index = scripts2.length;
+
+		//while (index--) {
+		//	scripts2[index].text = scripts1[index].text
+		//}
+
+		//}
 		return n2;
 	}
 
 	ddcd.DojoTypeNode = dojo.extend(function(node, parsed){
+		var ddcd = dd.contrib.dijit;
 		this._node = node;
 		this._parsed = parsed;
 
@@ -139,14 +154,15 @@ dojo.require("dojo.parser");
 			node = cloneNode(node);
 			var old = ddcd.widgetsInTemplate;
 			ddcd.widgetsInTemplate = false;
-			this._template = new dd.DomTemplate(node);
+			this._template = new dojox.dtl.DomTemplate(node);
 			ddcd.widgetsInTemplate = old;
 		}
+		ddcd = null;
 	},
 	{
 		render: function(context, buffer){
 			if(this._parsed){
-				var _buffer = new dd.DomBuffer();
+				var _buffer = new dojox.dtl.DomBuffer();
 				this._template.render(context, _buffer);
 				var root = cloneNode(_buffer.getRootNode());
 				var div = document.createElement("div");
@@ -186,31 +202,33 @@ dojo.require("dojo.parser");
 	dojo.mixin(ddcd, {
 		widgetsInTemplate: true,
 		dojoAttachPoint: function(parser, token){
-			return new ddcd.AttachNode(token.contents.slice(16).split(/\s*,\s*/));
+			return new dd.contrib.dijit.AttachNode(token.contents.slice(16).split(/\s*,\s*/));
 		},
 		dojoAttachEvent: function(parser, token){
-			return new ddcd.EventNode(token.contents.slice(16));
+			return new dd.contrib.dijit.EventNode(token.contents.slice(16));
 		},
 		dojoType: function(parser, token){
-			if(ddcd.widgetsInTemplate){
+			if(dd.contrib.dijit.widgetsInTemplate){
 				var node = parser.swallowNode();
 				var parsed = false;
 				if(token.contents.slice(-7) == " parsed"){
 					parsed = true;
 					node.setAttribute("dojoType", token.contents.slice(0, -7));
 				}
-				return new ddcd.DojoTypeNode(node, parsed);
+				return new dd.contrib.dijit.DojoTypeNode(node, parsed);
 			}
-			return dd._noOpNode;
+			return dojox.dtl._noOpNode;
 		},
 		on: function(parser, token){
 			// summary: Associates an event type to a function (on the current widget) by name
 			var parts = token.contents.split();
-			return new ddcd.EventNode(parts[0] + ":" + parts.slice(1).join(" "));
+			return new dd.contrib.dijit.EventNode(parts[0] + ":" + parts.slice(1).join(" "));
 		}
 	});
 
-	dd.register.tags("dojox.dtl.contrib", {
+	dojox.dtl.register.tags("dojox.dtl.contrib", {
 		"dijit": ["attr:dojoType", "attr:dojoAttachPoint", ["attr:attach", "dojoAttachPoint"], "attr:dojoAttachEvent", [/(attr:)?on(click|key(up))/i, "on"]]
 	});
+
+	ddcd = null;
 })();
