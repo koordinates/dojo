@@ -1,6 +1,6 @@
 // *** This is here to get around the Eolas issue. ***************
 
-// NOTE: Should be deprecated
+// NOTE: Not used
 
 dojox.embed.Flash.place = function(kwArgs, node){
 	var o = dojox.embed.Flash.__ie_markup__(kwArgs);
