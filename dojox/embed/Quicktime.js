@@ -18,7 +18,6 @@ dojo.provide("dojox.embed.Quicktime");
 	//	reference to the test movie we will use for getting QT info from the browser.
 	var testMovieUrl=dojo.moduleUrl("dojox", "embed/resources/version.mov");
 
-	//	*** private methods *********************************************************
 	function prep(kwArgs){
 		kwArgs = dojo.mixin(dojo.clone(__def__), kwArgs || {});
 		if(!("path" in kwArgs)){
@@ -32,7 +31,7 @@ dojo.provide("dojox.embed.Quicktime");
 	}
 	
 	var getQTMarkup = 'This content requires the <a href="http://www.apple.com/quicktime/download/" title="Download and install QuickTime.">QuickTime plugin</a>.';
-	if(window.ActiveXObject){
+	if(dojo.isHostObjectProperty(window, 'ActiveXObject') && !dojo.isHostObjectProperty(window.navigator, 'plugins')){
 		qtVersion = 0;
 		installed = (function(){
 			try{
@@ -56,24 +55,27 @@ dojo.provide("dojox.embed.Quicktime");
 			
 			kwArgs = prep(kwArgs);
 			if(!kwArgs){ return null; }
-			var s = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" '
-				+ 'codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=6,0,2,0" '
-				+ 'id="' + kwArgs.id + '" '
-				+ 'width="' + kwArgs.width + '" '
-				+ 'height="' + kwArgs.height + '">'
-				+ '<param name="src" value="' + kwArgs.path + '" />';
+			var s = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" ' +
+				'codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=6,0,2,0" ' +
+				'id="' + kwArgs.id + '" ' +
+				'width="' + kwArgs.width + '" ' +
+				'height="' + kwArgs.height + '">' +
+				'<param name="src" value="' + kwArgs.path + '" />';
 			if(kwArgs.params){
-				for(var p in kwArgs.params){
-					s += '<param name="' + p + '" value="' + kwArgs.params[p] + '" />';
+				var params = kwArgs.params;
+				for(var p in params){
+					if (dojo.isOwnProperty(params, p)) {
+						s += '<param name="' + p + '" value="' + params[p] + '" />';
+					}
 				}
 			}
 			s += '</object>';
 			return { id: kwArgs.id, markup: s };
-		}
+		};
 	} else {
 		installed = (function(){
-			for(var i=0, l=navigator.plugins.length; i<l; i++){
-				if(navigator.plugins[i].name.indexOf("QuickTime")>-1){
+			for(var i=0, l=window.navigator.plugins.length; i<l; i++){
+				if(window.navigator.plugins[i].name.indexOf("QuickTime")>-1){
 					return true;
 				}
 			}
@@ -85,21 +87,24 @@ dojo.provide("dojox.embed.Quicktime");
 
 			kwArgs = prep(kwArgs);
 			if(!kwArgs){ return null; }
-			var s = '<embed type="video/quicktime" src="' + kwArgs.path + '" '
-				+ 'id="' + kwArgs.id + '" '
-				+ 'name="' + kwArgs.id + '" '
-				+ 'pluginspage="www.apple.com/quicktime/download" '
-				+ 'enablejavascript="true" '
-				+ 'width="' + kwArgs.width + '" '
-				+ 'height="' + kwArgs.height + '"';
+			var s = '<embed type="video/quicktime" src="' + kwArgs.path + '" ' +
+				'id="' + kwArgs.id + '" ' +
+				'name="' + kwArgs.id + '" ' +
+				'pluginspage="www.apple.com/quicktime/download" ' +
+				'enablejavascript="true" ' +
+				'width="' + kwArgs.width + '" ' +
+				'height="' + kwArgs.height + '"';
 			if(kwArgs.params){
-				for(var p in kwArgs.params){
-					s += ' ' + p + '="' + kwArgs.params[p] + '"';
+				var params = kwArgs.params;
+				for(var p in params){
+					if (dojo.isOwnProperty(params, p)) {
+						s += ' ' + p + '="' + params[p] + '"';
+					}
 				}
 			}
 			s += '></embed>';
 			return { id: kwArgs.id, markup: s };
-		}
+		};
 	}
 
 	/*=====
@@ -210,41 +215,50 @@ dojo.provide("dojox.embed.Quicktime");
 		}
 	});
 
+	// NOTE: Centralize plugin logic
+
 	//	go get the info
-	if(navigator.plugins && navigator.plugins.length){
+	if(window.navigator.plugins && window.navigator.plugins.length){
 		// FIXME: Opera does not like this at all for some reason, and of course there's no event references easily found.
+
+		// NOTE: In what way?
+
 		qtVersion = dojox.embed.Quicktime.version = { major: 0, minor: 0, rev: 0 };
 		var o = qtMarkup({ path: testMovieUrl, width:4, height:4 });
 
-		function qtInsert(){
+		var qtInsert = function(){
 			if(!dojo._initFired){
-				var s='<div style="top:0;left:0;width:1px;height:1px;;overflow:hidden;position:absolute;" id="-qt-version-test">'
-					+ o.markup
-					+ '</div>';
-				document.write(s);
+				var s='<div style="top:0;left:0;width:1px;height:1px;;overflow:hidden;position:absolute;" id="-qt-version-test">' +
+					o.markup +
+					'</div>';
+				dojo.doc.write(s);
 			} else {
-				var n = document.createElement("div");
+				var n = dojo.doc.createElement("div");
 				n.id="-qt-version-test";
 				n.style.cssText = "top:0;left:0;width:1px;height:1px;overflow:hidden;position:absolute;";
 				dojo.body().appendChild(n);
 				n.innerHTML = o.markup;
 			}
-		}
+		};
 
-		function qtGetInfo(mv){
+		var qtGetInfo = function(mv){
 			var qt, n, v = [ 0, 0, 0 ];
 			if(mv){
-				qt=mv, n=qt.parentNode;
+				qt=mv;
+				n=qt.parentNode;
 			} else {
 				if(o.id) {
 					qtInsert();
-					var fn=function(){ 
-						setTimeout(function(){ qtGetInfo(document[o.id]) }, 50); 
+					var fn=function(){
+
+						// NOTE: Why the timeout?
+
+						window.setTimeout(function(){ qtGetInfo(dojo.byId(o.id)); }, 50);
 					};
 					if(!dojo._initFired){
 						dojo.addOnLoad(fn);
 					} else {
-						dojo.connect(document[o.id], "onload", fn);
+						dojo.connect(dojo.byId(o.id), "onload", fn);
 					}
 				}
 				return;
@@ -253,7 +267,7 @@ dojo.provide("dojox.embed.Quicktime");
 			if(qt){
 				try {
 					v = qt.GetQuickTimeVersion().split(".");
-					qtVersion = { major: parseInt(v[0]||0), minor: parseInt(v[1]||0), rev: parseInt(v[2]||0) };
+					qtVersion = { major: parseInt(v[0], 10) || 0, minor: parseInt(v[1], 10) || 0, rev: parseInt(v[2], 10) || 0 };
 				} catch(e){ 
 					qtVersion = { major: 0, minor: 0, rev: 0 };
 				}
@@ -271,8 +285,8 @@ dojo.provide("dojox.embed.Quicktime");
 				if(!mv){
 					dojo.body().removeChild(n);
 				}
-			} catch(e){ }
-		}
+			} catch(e2){ }
+		};
 
 		qtGetInfo();
 	}
