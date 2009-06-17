@@ -58,15 +58,12 @@ dojo.declare("dojox.form.FileInput",
 		dojo.fadeOut({ node: this.cancelNode, duration:275 }).play(); 
 
 		// should we use cloneNode()? can we?
-		this.fileInput = document.createElement('input');
-		// dojo.attr(this.fileInput,{
-		//	"type":"file", "id":this.id, "name": this.name	
-		//});
-		this.fileInput.setAttribute("type","file");
-		this.fileInput.setAttribute("id", this.id);
-		this.fileInput.setAttribute("name", this.name);
+		this.fileInput = dojo.doc.createElement('input');
+		this.fileInput.type ="file";
+		this.fileInput.id = this.id;
 		dojo.addClass(this.fileInput,"dijitFileInputReal");
 		this.domNode.appendChild(this.fileInput);
+		this.fileInput.name = this.name;
 
 		this._keyListener = this.connect(this.fileInput, "onkeyup", "_matchValue");
 		this._listener = this.connect(this.fileInput, "onchange", "_matchValue"); 
