@@ -134,18 +134,14 @@ dojo.require("dojox.encoding.digests._base");
 		var out=outputType || dxd.outputTypes.Base64;
 		var wa=core(dxd.stringToWord(data), data.length*chrsz);
 		switch(out){
-			case dxd.outputTypes.Raw:{
+			case dxd.outputTypes.Raw:
 				return wa;	//	word[]
-			}
-			case dxd.outputTypes.Hex:{
+			case dxd.outputTypes.Hex:
 				return dxd.wordToHex(wa);	//	string
-			}
-			case dxd.outputTypes.String:{
+			case dxd.outputTypes.String:
 				return dxd.wordToString(wa);	//	string
-			}
-			default:{
+			default:
 				return dxd.wordToBase64(wa);	//	string
-			}
 		}
 	};
 
@@ -156,18 +152,14 @@ dojo.require("dojox.encoding.digests._base");
 		var out=outputType || dxd.outputTypes.Base64;
 		var wa=hmac(data, key);
 		switch(out){
-			case dxd.outputTypes.Raw:{
+			case dxd.outputTypes.Raw:
 				return wa;	//	word[]
-			}
-			case dxd.outputTypes.Hex:{
+			case dxd.outputTypes.Hex:
 				return dxd.wordToHex(wa);	//	string
-			}
-			case dxd.outputTypes.String:{
+			case dxd.outputTypes.String:
 				return dxd.wordToString(wa);	//	string
-			}
-			default:{
+			default:
 				return dxd.wordToBase64(wa);	//	string
-			}
 		}
 	};
 })();
