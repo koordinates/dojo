@@ -6,7 +6,7 @@ dojo.require("dojox.dtl.dom");
 dojox.dtl.render.dom.Render = function(/*DOMNode?*/ attachPoint, /*dojox.dtl.DomTemplate?*/ tpl){
 	this._tpl = tpl;
 	this.domNode = dojo.byId(attachPoint);
-}
+};
 dojo.extend(dojox.dtl.render.dom.Render, {
 	setAttachPoint: function(/*Node*/ node){
 		this.domNode = node;
