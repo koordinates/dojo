@@ -36,16 +36,31 @@ dojo.declare(
 		
 		format: function(value){return value.getDate();},
 		validator: function(value) {
-			var num = Number(value);
-			var isInt = /(^-?\d\d*$)/.test(String(value));
-			return value == "" || value == null || (isInt && num >= 1 && num <= 31);
+
+			// NOTE: What types are allowed for value?
+			//       Consolidate in one function
+
+			var num;
+
+			if (typeof value == 'number') {
+				num = value;
+			} else if (typeof value == 'string') { // Allow empty string
+				if (!value) {
+					return true;
+				}
+				num = Number(value);
+			} else {
+				return true; // Allow null and undefined
+			}
+
+			return num >= 1 && num <= 31 && Math.floor(num) == num; // Integers only
 		},		
 		_open: function(){
 			this.inherited(arguments);
 			
 			this._picker.onValueSelected = dojo.hitch(this, function(value){
 				this.focus(); // focus the textbox before the popup closes to avoid reopening the popup
-				setTimeout(dojo.hitch(this, "_close"), 1); // allow focus time to take
+				window.setTimeout(dojo.hitch(this, "_close"), 1); // allow focus time to take
 				dijit.form.TextBox.prototype._setValueAttr.call(this, value, true, String(value.getDate()));
 			});			
 		}
@@ -63,19 +78,34 @@ dojo.declare(
 		//  The popup widget to use. In this case, a calendar with just a Month view.
 		popupClass: "dojox.widget.MonthlyCalendar",
 
-		format: function(value){return value + 1},
+		format: function(value){return value + 1;},
 
 		validator: function(value) {
-			var num = Number(value);
-			var isInt = /(^-?\d\d*$)/.test(String(value));
-			return value == "" || value == null || (isInt && num >= 1 && num <= 12);
+
+			// NOTE: What types are allowed for value?
+
+			var num;
+
+			if (typeof value == 'number') {
+				num = value;
+			} else if (typeof value == 'string') { // Allow empty string
+				if (!value) {
+					return true;
+				}
+				num = Number(value);
+			} else {
+				return true; // Allow null and undefined
+			}
+
+			return num >= 1 && num <= 12 && Math.floor(num) == num; // Integers only
+
 		},
 		_open: function(){
 			this.inherited(arguments);
 			
 			this._picker.onValueSelected = dojo.hitch(this, function(value){
 				this.focus(); // focus the textbox before the popup closes to avoid reopening the popup
-				setTimeout(dojo.hitch(this, "_close"), 1); // allow focus time to take
+				window.setTimeout(dojo.hitch(this, "_close"), 1); // allow focus time to take
 				dijit.form.TextBox.prototype._setValueAttr.call(this,value + 1, true, value + 1);
 			});			
 		}
@@ -94,7 +124,23 @@ dojo.declare(
 		popupClass: "dojox.widget.YearlyCalendar",
 		format: function(value){return value;},
 		validator: function(value) {
-			return value == "" || value == null || /(^-?\d\d*$)/.test(String(value));
+
+			// NOTE: What types are allowed for value?
+
+			var num;
+
+			if (typeof value == 'number') {
+				num = value;
+			} else if (typeof value == 'string') { // Allow empty string
+				if (!value) {
+					return true;
+				}
+				num = Number(value);
+			} else {
+				return true; // Allow null and undefined
+			}
+
+			return num >= 0 && Math.floor(num) == num; // Integers only
 		},
 		
 		_open: function(){
@@ -102,7 +148,7 @@ dojo.declare(
 			
 			this._picker.onValueSelected = dojo.hitch(this, function(value){
 				this.focus(); // focus the textbox before the popup closes to avoid reopening the popup
-				setTimeout(dojo.hitch(this, "_close"), 1); // allow focus time to take
+				window.setTimeout(dojo.hitch(this, "_close"), 1); // allow focus time to take
 				dijit.form.TextBox.prototype._setValueAttr.call(this,value, true, value);
 			});						
 		}
