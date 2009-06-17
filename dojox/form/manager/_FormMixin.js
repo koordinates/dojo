@@ -112,15 +112,23 @@ dojo.require("dojox.form.manager._Mixin");
 		isValid: function(){
 			// summary:
 			//		Make sure that every widget that has a validator function returns true.
-			for(var name in this.formWidgets){
-				var stop = false;
-				aa(function(_, widget){
-					if(!widget.attr("disabled") && widget.isValid && !widget.isValid()){
-						stop = true;
+
+			// NOTE: What is first argument for?
+
+			var stop, fn = function(_, widget){
+				if(!widget.attr("disabled") && widget.isValid && !widget.isValid()){
+					stop = true;
+				}
+			};
+
+			var formWidgets = this.formWidgets;
+			for(var name in formWidgets){
+				if (dojo.isOwnProperty(formWidgets, name)) {
+					stop = false;
+					aa(fn).call(this, null, formWidgets[name].widget);
+					if(stop){
+						return false;
 					}
-				}).call(this, null, this.formWidgets[name].widget);
-				if(stop){
-					return false;
 				}
 			}
 			return true;
