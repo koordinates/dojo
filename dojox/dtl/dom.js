@@ -16,14 +16,14 @@ dojo.require("dojox.dtl.Context");
 	var ddh = dd.dom = {
 		_attributes: {},
 		_uppers: {},
-		_re4: /^function anonymous\(\)\s*{\s*(.*)\s*}$/,
+		_re4: /^function anonymous\(\)\s*\{\s*(.*)\s*\}$/,
 		_reTrim: /(?:^[\n\s]*(\{%)?\s*|\s*(%\})?[\n\s]*$)/g,
 		_reSplit: /\s*%\}[\n\s]*\{%\s*/g,
 		getTemplate: function(text){
 			if(typeof this._commentable == "undefined"){
 				// Check to see if the browser can handle comments
 				this._commentable = false;
-				var div = document.createElement("div");
+				var div = dojo.doc.createElement("div");
 				div.innerHTML = "<!--Test comment handling, and long comments, using comments whenever possible.-->";
 				if(div.childNodes.length && div.childNodes[0].nodeType == 8 && div.childNodes[0].data == "comment"){
 					this._commentable = true;
@@ -32,62 +32,74 @@ dojo.require("dojox.dtl.Context");
 
 			if(!this._commentable){
 				// Strip comments
-				text = text.replace(/<!--({({|%).*?(%|})})-->/g, "$1");
+				text = text.replace(/<!--(\{(\{|%).*?(%|\})\})-->/g, "$1");
 			}
 
-			if(dojo.isIE){
-				text = text.replace(/\b(checked|disabled|readonly|style)="/g, 't$1="');
-			}
+			// NOTE: What is this for?
+
+			//if(dojo.isIE){
+				//text = text.replace(/\b(checked|disabled|readonly|style)="/g, 't$1="');
+			//}
 			text = text.replace(/\bstyle="/g, 'tstyle="');
 
-			var match;
-			var table = dojo.isWebKit;
+			// NOTE: Duplication of core logic
+
+			var match, p, j, i;			
+
 			var pairs = [ // Format: [enable, parent, allowed children (first for nesting), nestings]
 				[true, "select", "option"],
-				[table, "tr", "td|th"],
-				[table, "thead", "tr", "th"],
-				[table, "tbody", "tr", "td"],
-				[table, "table", "tbody|thead|tr", "tr", "td"],
+				[true, "tr", "td|th"],
+				[true, "thead", "tr", "th"],
+				[true, "tbody", "tr", "td"],
+				[true, "table", "tbody|thead|tr", "tr", "td"]
 			];
-			var replacements = [];
+			var pair, replacements = [];
+			var tokens, tags;
+
+			var fn = function(data){
+				var tag = /<(\w+)/.exec(data)[1];
+				if(!tags[tag]){
+					tags[tag] = true;
+					tags.push(tag);
+				}
+				return {data: data};
+			};
+
 			// Some tags can't contain text. So we wrap the text in tags that they can have.
-			for(var i = 0, pair; pair = pairs[i]; i++){
+			for(i = 0; pair = pairs[i]; i++){
 				if(!pair[0]){
 					continue;
 				}
 				if(text.indexOf("<" + pair[1]) != -1){
 					var selectRe = new RegExp("<" + pair[1] + "(?:.|\n)*?>((?:.|\n)+?)</" + pair[1] + ">", "ig");
-					tagLoop: while(match = selectRe.exec(text)){
+					while(match = selectRe.exec(text)){
 						// Do it like this to make sure we don't double-wrap
 						var inners = pair[2].split("|");
-						var innerRe = [];
-						for(var j = 0, inner; inner = inners[j]; j++){
+						var inner, innerRe = [];
+						tags = [];						
+
+						for(j = 0; inner = inners[j]; j++){
 							innerRe.push("<" + inner + "(?:.|\n)*?>(?:.|\n)*?</" + inner + ">");
 						}
-						var tags = [];
-						var tokens = dojox.string.tokenize(match[1], new RegExp("(" + innerRe.join("|") + ")", "ig"), function(data){
-							var tag = /<(\w+)/.exec(data)[1];
-							if(!tags[tag]){
-								tags[tag] = true;
-								tags.push(tag);
-							}
-							return {data: data};
-						});
+						tokens = dojox.string.tokenize(match[1], new RegExp("(" + innerRe.join("|") + ")", "ig"), fn);
 						if(tags.length){
 							var tag = (tags.length == 1) ? tags[0] : pair[2].split("|")[0];
 
-							var replace = [];
-							for(var j = 0, jl = tokens.length; j < jl; j++) {
+							var jl, replace = [];
+							for(j = 0, jl = tokens.length; j < jl; j++) {
 								var token = tokens[j];
-								if(dojo.isObject(token)){
+
+								// NOTE: isObject allows null
+
+								if(dojo.isObject(token) && token){
 									replace.push(token.data);
 								}else{
 									var stripped = token.replace(this._reTrim, "");
 									if(!stripped){ continue; }
 									token = stripped.split(this._reSplit);
 									for(var k = 0, kl = token.length; k < kl; k++){
-										var replacement = "";
-										for(var p = 2, pl = pair.length; p < pl; p++){
+										var pl, replacement = "";
+										for(p = 2, pl = pair.length; p < pl; p++){
 											if(p == 2){
 												replacement += "<" + tag + ' dtlinstruction="{% ' + token[k].replace('"', '\\"') + ' %}">';
 											}else if(tag == pair[p]) {
@@ -97,7 +109,7 @@ dojo.require("dojox.dtl.Context");
 											}
 										}
 										replacement += "DTL";
-										for(var p = pair.length - 1; p > 1; p--){
+										for(p = pair.length - 1; p > 1; p--){
 											if(p == 2){
 												replacement += "</" + tag + ">";
 											}else if(tag == pair[p]) {
@@ -117,7 +129,7 @@ dojo.require("dojox.dtl.Context");
 				}
 			}
 
-			for(var i=replacements.length; i--;){
+			for(i=replacements.length; i--;){
 				text = text.replace("\xFF" + i, replacements[i]);
 			}
 
@@ -130,11 +142,11 @@ dojo.require("dojox.dtl.Context");
 				}
 				this._attributes[lower] = true;
 			}
-			var div = document.createElement("div");
+			div = dojo.doc.createElement("div");
 			div.innerHTML = text;
 			var output = {nodes: []};
 			while(div.childNodes.length){
-				output.nodes.push(div.removeChild(div.childNodes[0]))
+				output.nodes.push(div.removeChild(div.childNodes[0]));
 			}
 
 			return output;
@@ -156,7 +168,10 @@ dojo.require("dojox.dtl.Context");
 		_tokenize: function(/*Node*/ node, /*Array*/ tokens){
 			var first = false;
 			var swallowed = this._swallowed;
-			var i, j, tag, child;
+			var i, tag, child;
+
+			var throwOne = function(){ throw 1; };
+			var swallowNode = function(){ swallowed = true; return node; };
 
 			if(!tokens.first){
 				// Try to efficiently associate tags that use an attribute to
@@ -166,7 +181,7 @@ dojo.require("dojox.dtl.Context");
 				var tags = dd.register.getAttributeTags();
 				for(i = 0; tag = tags[i]; i++){
 					try{
-						(tag[2])({ swallowNode: function(){ throw 1; }}, new dd.Token(dd.TOKEN_ATTR, ""));
+						(tag[2])({ swallowNode: throwOne }, new dd.Token(dd.TOKEN_ATTR, ""));
 					}catch(e){
 						swallowed.push(tag);
 					}
@@ -175,10 +190,10 @@ dojo.require("dojox.dtl.Context");
 
 
 			for(i = 0; tag = swallowed[i]; i++){
-				var text = node.getAttribute(tag[0]);
+				var text = dojo.realAttr(node, tag[0]);
 				if(text){
-					var swallowed = false;
-					var custom = (tag[2])({ swallowNode: function(){ swallowed = true; return node; }}, new dd.Token(dd.TOKEN_ATTR, text));
+					swallowed = false;
+					var custom = (tag[2])({ swallowNode: swallowNode}, new dd.Token(dd.TOKEN_ATTR, text));
 					if(swallowed){
 						if(node.parentNode && node.parentNode.removeChild){
 							node.parentNode.removeChild(node);
@@ -190,7 +205,10 @@ dojo.require("dojox.dtl.Context");
 			}
 
 			var children = [];
-			if(dojo.isIE && node.tagName == "SCRIPT"){
+
+			// NOTE: Other possibilities
+
+			if(node.tagName.toLowerCase() == "script" && !node.childNodes.length && typeof node.text == 'string'){
 				children.push({
 					nodeType: 3,
 					data: node.text
@@ -211,46 +229,35 @@ dojo.require("dojox.dtl.Context");
 				change = true;
 			}
 
-			for(var key in this._attributes){
-				var clear = false;
+			var attributes = this._attributes;
 
-				var value = "";
-				if(key == "class"){
-					value = node.className || value;
-				}else if(key == "for"){
-					value = node.htmlFor || value;
-				}else if(key == "value" && node.value == node.innerHTML){
-					// Sometimes .value is set the same as the contents of the item (button)
-					continue;
-				}else if(node.getAttribute){
-					value = node.getAttribute(key, 2) || value;
-					if(key == "href" || key == "src"){
-						if(dojo.isIE){
-							var hash = location.href.lastIndexOf(location.hash);
-							var href = location.href.substring(0, hash).split("/");
-							href.pop();
-							href = href.join("/") + "/";
-							if(value.indexOf(href) == 0){
-								value = value.replace(href, "");
-							}
-							value = decodeURIComponent(value);
+			for(var key in attributes){
+				if (dojo.isOwnProperty(attributes, key)) {
+					var value, clear = false;
+
+					// Note: Why is this method detected here?
+					//       Should detect realAttr, which should be null when getAttribute is not featured
+
+					if(dojo.isHostMethod(node, 'getAttribute')){
+						value = dojo.realAttr(node, key) || value;
+
+						// NOTE: Re-factor
+
+						if(key == "tstyle"){
+							clear = key; // Placeholder because we can't use style
+							key = "style";
+						}else if(dd.BOOLS[key.slice(1)] && dojo.trim(value)){
+							key = key.slice(1);
+						}else if(this._uppers[key] && dojo.trim(value)){
+							clear = this._uppers[key]; // Replaced by lowercase
 						}
-					}else if(key == "tstyle"){
-						clear = key; // Placeholder because we can't use style
-						key = "style";
-					}else if(dd.BOOLS[key.slice(1)] && dojo.trim(value)){
-						key = key.slice(1);
-					}else if(this._uppers[key] && dojo.trim(value)){
-						clear = this._uppers[key]; // Replaced by lowercase
 					}
-				}
 
-				if(clear){
-					// Clear out values that are different than will
-					// be used in plugins
-					node.setAttribute(clear, "");
-					node.removeAttribute(clear);
-				}
+					if(clear){
+						// Clear out values that are different than will
+						// be used in plugins
+						dojo.removeAttr(node, clear);
+					}
 
 				if(typeof value == "function"){
 					value = value.toString().replace(this._re4, "$1");
@@ -265,10 +272,14 @@ dojo.require("dojox.dtl.Context");
 				// We'll have to resolve attributes during parsing (some ref plugins)
 
 				tokens.push([dd.TOKEN_ATTR, node, key, value]);
+				}
 			}
 
 			for(i = 0, child; child = children[i]; i++){
 				if(child.nodeType == 1){
+
+					// NOTE: Okay to use getAttribute here (custom attributes produce expandos in broken MSHTML DOM's.)
+
 					var instruction = child.getAttribute("dtlinstruction");
 					if(instruction){
 						child.parentNode.removeChild(child);
@@ -294,7 +305,7 @@ dojo.require("dojox.dtl.Context");
 			}
 		},
 		__tokenize: function(child, tokens){
-			var data = child.data;
+			var text, data = child.data;
 			switch(child.nodeType){
 				case 1:
 					this._tokenize(child, tokens);
@@ -302,7 +313,7 @@ dojo.require("dojox.dtl.Context");
 				case 3:
 					if(data.match(/[^\s\n]/) && (data.indexOf("{{") != -1 || data.indexOf("{%") != -1)){
 						var texts = ddt.tokenize(data);
-						for(var j = 0, text; text = texts[j]; j++){
+						for(var j = 0; text = texts[j]; j++){
 							if(typeof text == "string"){
 								tokens.push([dd.TOKEN_TEXT, text]);
 							}else{
@@ -312,23 +323,23 @@ dojo.require("dojox.dtl.Context");
 					}else{
 						tokens.push([child.nodeType, child]);
 					}
-					if(child.parentNode) child.parentNode.removeChild(child);
+					child.parentNode.removeChild(child);
 					return;
 				case 8:
-					if(data.indexOf("{%") == 0){
-						var text = dojo.trim(data.slice(2, -2));
+					if(!data.indexOf("{%")){
+						text = dojo.trim(data.slice(2, -2));
 						if(text.substr(0, 5) == "load "){
 							var parts = dojo.trim(text).split(/\s+/g);
 							for(var i = 1, part; part = parts[i]; i++){
-								dojo["require"](part);
+								dojo.require(part);
 							}
 						}
 						tokens.push([dd.TOKEN_BLOCK, text]);
 					}
-					if(data.indexOf("{{") == 0){
+					if(!data.indexOf("{{")){
 						tokens.push([dd.TOKEN_VAR, dojo.trim(data.slice(2, -2))]);
 					}
-					if(child.parentNode) child.parentNode.removeChild(child);
+					child.parentNode.removeChild(child);
 					return;
 			}
 		}
@@ -427,9 +438,9 @@ dojo.require("dojox.dtl.Context");
 					var caches = parent._cache;
 					if(caches){
 						for(var i = 0, cache; cache = caches[i]; i++){
-							this.onAddNode && this.onAddNode(cache);
+							if (this.onAddNode) { this.onAddNode(cache); }
 							parent.insertBefore(cache, node);
-							this.onAddNodeComplete && this.onAddNodeComplete(cache);
+							if (this.onAddNodeComplete) { this.onAddNodeComplete(cache); }
 						}
 						caches.length = 0;
 					}
@@ -455,7 +466,7 @@ dojo.require("dojox.dtl.Context");
 					return this;
 				}
 				if(obj.parentNode){
-					this.onRemoveNode && this.onRemoveNode(obj);
+					if (this.onRemoveNode) { this.onRemoveNode(obj); }
 					if(obj.parentNode){
 						obj.parentNode.removeChild(obj);
 					}
@@ -464,7 +475,7 @@ dojo.require("dojox.dtl.Context");
 			return this;
 		},
 		setAttribute: function(key, value){
-			var old = dojo.attr(this._parent, key);
+			var old = dojo.realAttr(this._parent, key);
 			if(this.onChangeAttribute && old != value){
 				this.onChangeAttribute(this._parent, key, old, value);
 			}
@@ -472,24 +483,24 @@ dojo.require("dojox.dtl.Context");
 				//console.log(value);
 				this._parent.style.cssText = value;
 			}else{
-				dojo.attr(this._parent, key, value);
+				dojo.realAttr(this._parent, key, value);
 				//console.log(this._parent, key, value);
 			}
 			return this;
 		},
 		addEvent: function(context, type, fn, /*Array|Function*/ args){
 			if(!context.getThis()){ throw new Error("You must use Context.setObject(instance)"); }
-			this.onAddEvent && this.onAddEvent(this.getParent(), type, fn);
+			if (this.onAddEvent) { this.onAddEvent(this.getParent(), type, fn); }
 			var resolved = fn;
 			if(dojo.isArray(args)){
 				resolved = function(e){
 					this[fn].apply(this, [e].concat(args));
-				}
+				};
 			}
 			return dojo.connect(this.getParent(), type, context.getThis(), resolved);
 		},
 		setParent: function(node, /*Boolean?*/ up, /*Boolean?*/ root){
-			if(!this._parent) this._parent = this._first = node;
+			if(!this._parent) { this._parent = this._first = node; }
 
 			if(up && root && node === this._first){
 				this._closed = true;
@@ -498,8 +509,18 @@ dojo.require("dojox.dtl.Context");
 			if(up){
 				var parent = this._parent;
 				var script = "";
-				var ie = dojo.isIE && parent.tagName == "SCRIPT";
-				if(ie){
+
+				// NOTE: Need to centralize get/set script text in DOM module
+
+				var canHaveChildren = parent.canHaveChildren || typeof parent.canHaveChildren == 'undefined';
+				var useTextProperty = !canHaveChildren &&
+						parent.tagName.toLowerCase() == "script" &&
+						typeof parent.text == 'string';
+
+				if(useTextProperty){
+
+					// NOTE: There are other possibilities
+
 					parent.text = "";
 				}
 				if(parent._dirty){
@@ -507,16 +528,18 @@ dojo.require("dojox.dtl.Context");
 					var select = (parent.tagName == "SELECT" && !parent.options.length);
 					for(var i = 0, cache; cache = caches[i]; i++){
 						if(cache !== parent){
-							this.onAddNode && this.onAddNode(cache);
-							if(ie){
-								script += cache.data;
-							}else{
+							if (this.onAddNode) { this.onAddNode(cache); }
+							
+							if (canHaveChildren) {
 								parent.appendChild(cache);
 								if(select && cache.defaultSelected && i){
 									select = i;
 								}
+							} else {
+								script += cache.data;
 							}
-							this.onAddNodeComplete && this.onAddNodeComplete(cache);
+
+							if (this.onAddNodeComplete) { this.onAddNodeComplete(cache); }
 						}
 					}
 					if(select){
@@ -525,13 +548,13 @@ dojo.require("dojox.dtl.Context");
 					caches.length = 0;
 					parent._dirty = false;
 				}
-				if(ie){
+				if(useTextProperty){
 					parent.text = script;
 				}
 			}
 
 			this._parent = node;
-			this.onSetParent && this.onSetParent(node, up, root);
+			if (this.onSetParent) { this.onSetParent(node, up, root); }
 			return this;
 		},
 		getParent: function(){
@@ -618,7 +641,7 @@ dojo.require("dojox.dtl.Context");
 			}
 			for(var i = 0; i < this.contents.length; i++){
 				buffer = this.contents[i].render(context, buffer);
-				if(!buffer) throw new Error("Template node render functions must return their buffer");
+				if(!buffer) { throw new Error("Template node render functions must return their buffer"); }
 			}
 			if(parent){
 				buffer.setParent(parent);
@@ -628,7 +651,7 @@ dojo.require("dojox.dtl.Context");
 		dummyRender: function(context, buffer, asNode){
 			// summary: A really expensive way of checking to see how a rendering will look.
 			//		Used in the ifchanged tag
-			var div = document.createElement("div");
+			var div = dojo.doc.createElement("div");
 
 			var parent = buffer.getParent();
 			var old = parent._clone;
@@ -654,7 +677,7 @@ dojo.require("dojox.dtl.Context");
 			}
 
 			var html = div.innerHTML;
-			return (dojo.isIE) ? html.replace(/\s*_(dirty|clone)="[^"]*"/g, "") : html;
+			return html.replace(/\s*_(dirty|clone)="[^"]*"/g, "");
 		},
 		unrender: function(context, buffer, instance){
 			if(instance){
@@ -662,7 +685,7 @@ dojo.require("dojox.dtl.Context");
 			}
 			for(var i = 0; i < this.contents.length; i++){
 				buffer = this.contents[i].unrender(context, buffer);
-				if(!buffer) throw new Error("Template node render functions must return their buffer");
+				if(!buffer) { throw new Error("Template node render functions must return their buffer"); }
 			}
 			if(parent){
 				buffer.setParent(parent);
@@ -672,12 +695,13 @@ dojo.require("dojox.dtl.Context");
 		clone: function(buffer){
 			// summary:
 			//		Used to create an identical copy of a NodeList, useful for things like the for tag.
+			var i, clone;
 			var parent = buffer.getParent();
 			var contents = this.contents;
 			var nodelist = new dd._DomNodeList();
 			var cloned = [];
-			for(var i = 0; i < contents.length; i++){
-				var clone = contents[i].clone(buffer);
+			for(i = 0; i < contents.length; i++){
+				clone = contents[i].clone(buffer);
 				if(clone instanceof dd.ChangeNode || clone instanceof dd._DomNode){
 					var item = clone.contents._clone;
 					if(item){
@@ -685,7 +709,7 @@ dojo.require("dojox.dtl.Context");
 					}else if(parent != clone.contents && clone instanceof dd._DomNode){
 						var node = clone.contents;
 						clone.contents = clone.contents.cloneNode(false);
-						buffer.onClone && buffer.onClone(node, clone.contents);
+						if (buffer.onClone) { buffer.onClone(node, clone.contents); }
 						cloned.push(node);
 						node._clone = clone.contents;
 					}
@@ -693,7 +717,7 @@ dojo.require("dojox.dtl.Context");
 				nodelist.push(clone);
 			}
 
-			for(var i = 0, clone; clone = cloned[i]; i++){
+			for(i = 0; clone = cloned[i]; i++){
 				clone._clone = null;
 			}
 
@@ -749,11 +773,11 @@ dojo.require("dojox.dtl.Context");
 			switch(type){
 			case "text":
 				this._rendered = true;
-				this._txt = this._txt || document.createTextNode(str);
+				this._txt = this._txt || dojo.doc.createTextNode(str);
 				if(this._txt.data != str){
 					var old = this._txt.data;
 					this._txt.data = str;
-					buffer.onChangeData && buffer.onChangeData(this._txt, old, this._txt.data);
+					if (buffer.onChangeData) { buffer.onChangeData(this._txt, old, this._txt.data); }
 				}
 				return buffer.concat(this._txt);
 			case "injection":
@@ -789,7 +813,7 @@ dojo.require("dojox.dtl.Context");
 				if(!this._rendered){
 					this._rendered = true;
 					this._html = this._html || [];
-					var div = (this._div = this._div || document.createElement("div"));
+					var div = (this._div = this._div || dojo.doc.createElement("div"));
 					div.innerHTML = str;
 					var children = div.childNodes;
 					while(children.length){
@@ -897,7 +921,7 @@ dojo.require("dojox.dtl.Context");
 
 	dd._DomTextNode = dojo.extend(function(str){
 		// summary: Adds a straight text node without any processing
-		this.contents = document.createTextNode(str);
+		this.contents = dojo.doc.createTextNode(str);
 		this.upcoming = str;
 	},
 	{
@@ -909,7 +933,7 @@ dojo.require("dojox.dtl.Context");
 			if(this.contents.data != this.upcoming){
 				var old = this.contents.data;
 				this.contents.data = this.upcoming;
-				buffer.onChangeData && buffer.onChangeData(this.contents, old, this.upcoming);
+				if (buffer.onChangeData) { buffer.onChangeData(this.contents, old, this.upcoming); }
 			}
 			return buffer.concat(this.contents);
 		},
@@ -934,7 +958,7 @@ dojo.require("dojox.dtl.Context");
 	{
 		i: 0,
 		parse: function(/*Array?*/ stop_at){
-			var terminators = {};
+			var fn, terminators = {};
 			var tokens = this.contents;
 			if(!stop_at){
 				stop_at = [];
@@ -954,10 +978,14 @@ dojo.require("dojox.dtl.Context");
 					value[changeNode.attr] = changeNode;
 					nodelist.push(changeNode);
 				}else if(type == dd.TOKEN_ATTR){
-					var fn = ddt.getTag("attr:" + token[2], true);
+					fn = ddt.getTag("attr:" + token[2], true);
 					if(fn && token[3]){
 						if (token[3].indexOf("{%") != -1 || token[3].indexOf("{{") != -1) {
-							value.setAttribute(token[2], "");
+
+							// NOTE: Needs review
+							// NOTE: Previously used setAttribute (what is this value?)
+
+							dojo.realAttr(value, token[2], "");
 						}
 						nodelist.push(fn(null, new dd.Token(type, token[2] + " " + token[3])));
 					}else if(dojo.isString(token[3])){
@@ -965,12 +993,15 @@ dojo.require("dojox.dtl.Context");
 							nodelist.push(new dd.AttributeNode(token[2], token[3]));
 						}else if(dojo.trim(token[3])){
 							try{
-								dojo.attr(value, token[2], token[3]);
+
+								// NOTE: Previously used dojo.attr (what is this value?)
+
+								dojo.realAttr(value, token[2], token[3]);
 							}catch(e){}
 						}
 					}
 				}else if(type == dd.TOKEN_NODE){
-					var fn = ddt.getTag("node:" + value.tagName.toLowerCase(), true);
+					fn = ddt.getTag("node:" + value.tagName.toLowerCase(), true);
 					if(fn){
 						// TODO: We need to move this to tokenization so that it's before the
 						// 				node and the parser can be passed here instead of null
@@ -989,7 +1020,7 @@ dojo.require("dojox.dtl.Context");
 					var cmd = value.split(/\s+/g);
 					if(cmd.length){
 						cmd = cmd[0];
-						var fn = ddt.getTag(cmd);
+						fn = ddt.getTag(cmd);
 						if(typeof fn != "function"){
 							throw new Error("Function not found for " + cmd);
 						}
