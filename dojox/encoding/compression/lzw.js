@@ -4,7 +4,7 @@ dojo.require("dojox.encoding.bits");
 (function(){
 	var _bits = function(x){
 		var w = 1;
-		for(var v = 2; x >= v; v <<= 1, ++w);
+		for(var v = 2; x >= v; v <<= 1, ++w) {}
 		return w;
 	};
 
@@ -31,7 +31,7 @@ dojo.require("dojox.encoding.bits");
 			}
 			stream.putBits(this.dict[this.p], this.width);
 			// if we need to increase the code length
-			if((this.code & (this.code + 1)) == 0){
+			if(!(this.code & (this.code + 1))){
 				stream.putBits(this.code++, r = this.width++);
 			}
 			// add new string
@@ -40,7 +40,7 @@ dojo.require("dojox.encoding.bits");
 			return r + this.width;
 		},
 		flush: function(stream){
-			if(this.p.length == 0){
+			if(!this.p.length){
 				return 0;
 			}
 			stream.putBits(this.dict[this.p], this.width);
@@ -71,7 +71,7 @@ dojo.require("dojox.encoding.bits");
 					this.codes.push(this.codes[this.p] + v.substr(0, 1));
 				}
 			}else{
-				if((c & (c + 1)) == 0){
+				if(!(c & (c + 1))){
 					this.codes.push("");
 					++this.width;
 					return "";
