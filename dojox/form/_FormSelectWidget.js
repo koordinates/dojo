@@ -72,7 +72,10 @@ dojo.declare("dojox.form._FormSelectWidget", dijit.form._FormValueWidget, {
 		if(dojo.isArray(lookupValue)){
 			return dojo.map(lookupValue, "return this.getOptions(item);", this); // dojox.form.__SelectOption[]
 		}
-		if(dojo.isObject(valueOrIdx)){
+
+		// NOTE: isObject allows null
+
+		if(dojo.isObject(lookupValue) && lookupValue){
 			// We were passed an option - so see if it's in our array (directly),
 			// and if it's not, try and find it by value.
 			if (!dojo.some(this.options, function(o, idx){
@@ -95,7 +98,7 @@ dojo.declare("dojox.form._FormSelectWidget", dijit.form._FormValueWidget, {
 			}
 		}
 		if(typeof lookupValue == "number" && lookupValue >= 0 && lookupValue < l){
-			return this.options[lookupValue] // dojox.form.__SelectOption
+			return this.options[lookupValue]; // dojox.form.__SelectOption
 		}
 		return null; // null
 	},
@@ -144,7 +147,11 @@ dojo.declare("dojox.form._FormSelectWidget", dijit.form._FormValueWidget, {
 		dojo.forEach(newOption, function(i){
 			var oldOpt = this.getOptions(i), k;
 			if(oldOpt){
-				for(k in i){ oldOpt[k] = i[k]; }
+				for(k in i){
+					if (dojo.isOwnProperty(i, k)) {
+						oldOpt[k] = i[k];
+					}
+				}
 			}
 		}, this);
 		this._loadChildren();
@@ -158,6 +165,9 @@ dojo.declare("dojox.form._FormSelectWidget", dijit.form._FormValueWidget, {
 			newValue = [newValue];
 		}
 		dojo.forEach(newValue, function(i, idx){
+
+			// NOTE: isObject allows null
+
 			if(!dojo.isObject(i)){
 				i = i + "";
 			}
@@ -258,7 +268,7 @@ dojo.declare("dojox.form._FormSelectWidget", dijit.form._FormValueWidget, {
 				return i.selected;
 			})[0];
 			if(opt && opt.value){
-				return opt.value
+				return opt.value;
 			}else{
 				opts[0].selected = true;
 				return opts[0].value;
