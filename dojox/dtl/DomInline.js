@@ -20,8 +20,8 @@ dijit._Widget.prototype,
 	},
 	declaredClass: "dojox.dtl.Inline",
 	buildRendering: function(){
-		var div = this.domNode = document.createElement("div");
-		this.containerNode = div.appendChild(document.createElement("div"));
+		var div = this.domNode = dojo.doc.createElement("div");
+		this.containerNode = div.appendChild(dojo.doc.createElement("div"));
 		var node = this.srcNodeRef;
 		if(node.parentNode){
 			node.parentNode.replaceChild(div, node);
