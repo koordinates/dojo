@@ -2,8 +2,7 @@ dojo.provide("dojox.dtl.tag.misc");
 dojo.require("dojox.dtl._base");
 
 (function(){
-	var dd = dojox.dtl;
-	var ddtm = dd.tag.misc;
+	var ddtm = dojox.dtl.tag.misc;
 
 	ddtm.DebugNode = dojo.extend(function(text){
 		this.text = text;
@@ -26,7 +25,7 @@ dojo.require("dojox.dtl._base");
 		clone: function(buffer){
 			return new this.constructor(this.text.clone(buffer));
 		},
-		toString: function(){ return "ddtm.DebugNode"; }
+		toString: function(){ return "dojox.dtl.tag.misc.DebugNode"; }
 	});
 
 	ddtm.FilterNode = dojo.extend(function(varnode, nodelist){
@@ -38,7 +37,7 @@ dojo.require("dojox.dtl._base");
 			// Doing this in HTML requires a different buffer with a fake root node
 			var output = this._nodelist.render(context, new dojox.string.Builder());
 			context = context.update({ "var": output.toString() });
-			var filtered = this._varnode.render(context, buffer);
+			this._varnode.render(context, buffer);
 			context = context.pop();
 			return buffer;
 		},
@@ -112,7 +111,6 @@ dojo.require("dojox.dtl._base");
 		},
 		_watch: function(node){
 			if(this._isEmpty(node)){
-				var remove = false;
 				if(node.parentNode.firstChild == node){
 					node.parentNode.removeChild(node);
 				}
@@ -170,8 +168,8 @@ dojo.require("dojox.dtl._base");
 	});
 
 	ddtm.WidthRatioNode = dojo.extend(function(current, max, width, text){
-		this.current = new dd._Filter(current);
-		this.max = new dd._Filter(max);
+		this.current = new dojox.dtl._Filter(current);
+		this.max = new dojox.dtl._Filter(max);
 		this.width = width;
 		this.contents = text;
 	},
@@ -195,7 +193,7 @@ dojo.require("dojox.dtl._base");
 	});
 
 	ddtm.WithNode = dojo.extend(function(target, alias, nodelist){
-		this.target = new dd._Filter(target);
+		this.target = new dojox.dtl._Filter(target);
 		this.alias = alias;
 		this.nodelist = nodelist;
 	},
@@ -220,11 +218,11 @@ dojo.require("dojox.dtl._base");
 		comment: function(parser, token){
 			// summary: Ignore everything between {% comment %} and {% endcomment %}
 			parser.skip_past("endcomment");
-			return dd._noOpNode;
+			return dojox.dtl._noOpNode;
 		},
 		debug: function(parser, token){
 			// summary: Output the current context, maybe add more stuff later.
-			return new ddtm.DebugNode(parser.create_text_node());
+			return new dojox.dtl.tag.misc.DebugNode(parser.create_text_node());
 		},
 		filter: function(parser, token){
 			// summary: Filter the contents of the blog through variable filters.
@@ -232,19 +230,19 @@ dojo.require("dojox.dtl._base");
 			var varnode = parser.create_variable_node("var|" + rest);
 			var nodelist = parser.parse(["endfilter"]);
 			parser.next_token();
-			return new ddtm.FilterNode(varnode, nodelist);
+			return new dojox.dtl.tag.misc.FilterNode(varnode, nodelist);
 		},
 		firstof: function(parser, token){
 			var parts = token.split_contents().slice(1);
 			if(!parts.length){
 				throw new Error("'firstof' statement requires at least one argument");
 			}
-			return new ddtm.FirstOfNode(parts, parser.create_text_node());
+			return new dojox.dtl.tag.misc.FirstOfNode(parts, parser.create_text_node());
 		},
 		spaceless: function(parser, token){
 			var nodelist = parser.parse(["endspaceless"]);
 			parser.delete_first_token();
-			return new ddtm.SpacelessNode(nodelist, parser.create_text_node());
+			return new dojox.dtl.tag.misc.SpacelessNode(nodelist, parser.create_text_node());
 		},
 		templatetag: function(parser, token){
 			var parts = token.contents.split();
@@ -252,15 +250,17 @@ dojo.require("dojox.dtl._base");
 				throw new Error("'templatetag' statement takes one argument");
 			}
 			var tag = parts[1];
-			var mapping = ddtm.TemplateTagNode.prototype.mapping;
+			var mapping = dojox.dtl.tag.misc.TemplateTagNode.prototype.mapping;
 			if(!mapping[tag]){
 				var keys = [];
 				for(var key in mapping){
-					keys.push(key);
+					if (dojo.isOwnProperty(mapping, key)) {
+						keys.push(key);
+					}
 				}
 				throw new Error("Invalid templatetag argument: '" + tag + "'. Must be one of: " + keys.join(", "));
 			}
-			return new ddtm.TemplateTagNode(tag, parser.create_text_node());
+			return new dojox.dtl.tag.misc.TemplateTagNode(tag, parser.create_text_node());
 		},
 		widthratio: function(parser, token){
 			var parts = token.contents.split();
@@ -271,7 +271,7 @@ dojo.require("dojox.dtl._base");
 			if(typeof width != "number"){
 				throw new Error("widthratio final argument must be an integer");
 			}
-			return new ddtm.WidthRatioNode(parts[1], parts[2], width, parser.create_text_node());
+			return new dojox.dtl.tag.misc.WidthRatioNode(parts[1], parts[2], width, parser.create_text_node());
 		},
 		with_: function(parser, token){
 			var parts = token.split_contents();
@@ -280,7 +280,9 @@ dojo.require("dojox.dtl._base");
 			}
 			var nodelist = parser.parse(["endwith"]);
 			parser.next_token();
-			return new ddtm.WithNode(parts[1], parts[3], nodelist);
+			return new dojox.dtl.tag.misc.WithNode(parts[1], parts[3], nodelist);
 		}
 	});
+
+	ddtm = null;
 })();
