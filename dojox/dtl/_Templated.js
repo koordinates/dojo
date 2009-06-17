@@ -81,10 +81,11 @@ dojo.declare("dojox.dtl._Templated", dijit._Templated, {
 
 		// If we always use a string, or find no variables, just store it as a node
 		if(alwaysUseString || !templateString.match(/\{[{%]([^\}]+)[%}]\}/g)){
-			return tmplts[key] = dojo._toDom(templateString);
-		}else{
-			return tmplts[key] = new dojox.dtl.Template(templateString);
+			tmplts[key] = dojo._toDom(templateString);
+		} else {
+			tmplts[key] = new dojox.dtl.Template(templateString);
 		}
+		return tmplts[key];
 	},
 	render: function(){
 		this.buildRendering();
