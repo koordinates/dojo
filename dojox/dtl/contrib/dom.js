@@ -9,25 +9,31 @@ dojo.require("dojox.dtl.dom");
 	var simple = {render: function(){ return this.contents; }};
 
 	ddch.StyleNode = dojo.extend(function(styles){
+		var node;
 		this.contents = {};
 		this._current = {};
 		this._styles = styles;
 		for(var key in styles){
-			if(styles[key].indexOf("{{") != -1){
-				var node = new dd.Template(styles[key]);
-			}else{
-				var node = dojo.delegate(simple);
-				node.contents = styles[key];
+			if (dojo.isOwnProperty(styles, key)) {
+				if(styles[key].indexOf("{{") != -1){
+					node = new dd.Template(styles[key]);
+				}else{
+					node = dojo.delegate(simple);
+					node.contents = styles[key];
+				}
+				this.contents[key] = node;
 			}
-			this.contents[key] = node;
 		}
 	},
 	{
 		render: function(context, buffer){
-			for(var key in this.contents){
-				var value = this.contents[key].render(context);
-				if(this._current[key] != value){
-					dojo.style(buffer.getParent(), key, this._current[key] = value);
+			var contents = this.contents;
+			for(var key in contents){
+				if (dojo.isOwnProperty(contents, key)) {
+					var value = contents[key].render(context);
+					if(this._current[key] != value){
+						dojo.style(buffer.getParent(), key, this._current[key] = value);
+					}
 				}
 			}
 			return buffer;
@@ -52,16 +58,12 @@ dojo.require("dojox.dtl.dom");
 					if((node.nodeType == 3 && !this.options.text) || (node.nodeType == 1 && !this.options.node)){
 						return;
 					}
-				}else if(type == "class"){
-					if(type != "class"){
-						return;
-					}
 				}
 
-				this.onAddNode && dojo.disconnect(this.onAddNode);
-				this.onRemoveNode && dojo.disconnect(this.onRemoveNode);
-				this.onChangeAttribute && dojo.disconnect(this.onChangeAttribute);
-				this.onChangeData && dojo.disconnect(this.onChangeData);
+				if (this.onAddNode) { dojo.disconnect(this.onAddNode); }
+				if (this.onRemoveNode) { dojo.disconnect(this.onRemoveNode); }
+				if (this.onChangeAttribute) { dojo.disconnect(this.onChangeAttribute); }
+				if (this.onChangeData) { dojo.disconnect(this.onChangeData); }
 
 				this.swapped = this.parent.cloneNode(true);
 				this.parent.parentNode.replaceChild(this.swapped, this.parent);
@@ -86,10 +88,10 @@ dojo.require("dojox.dtl.dom");
 				this.swapped.parentNode.replaceChild(this.parent, this.swapped);
 				dojo.destroy(this.swapped);
 			}else{
-				this.onAddNode && dojo.disconnect(this.onAddNode);
-				this.onRemoveNode && dojo.disconnect(this.onRemoveNode);
-				this.onChangeAttribute && dojo.disconnect(this.onChangeAttribute);
-				this.onChangeData && dojo.disconnect(this.onChangeData);
+				if (this.onAddNode) { dojo.disconnect(this.onAddNode); }
+				if (this.onRemoveNode) { dojo.disconnect(this.onRemoveNode); }
+				if (this.onChangeAttribute) { dojo.disconnect(this.onChangeAttribute); }
+				if (this.onChangeData) { dojo.disconnect(this.onChangeData); }
 			}
 
 			delete this.parent;
