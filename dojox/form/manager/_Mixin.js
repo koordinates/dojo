@@ -21,18 +21,7 @@ dojo.require("dijit._Widget");
 					action.apply(this, arguments);
 				}
 			};
-		},
-
-		ia = fm.inspectorAdapter = function(inspector){
-			// summary:
-			//		Adapter that applies an inspector only to the first item of the array.
-			// inspector: Function:
-			//		Function that takes three parameters: a name, an object
-			//		(usually node or widget), and a value.
-			return function(name, elem, value){
-				return inspector.call(this, name, dojo.isArray(elem) ? elem[0] : elem, value);
-			};
-		},
+		},		
 
 		skipNames = {domNode: 1, containerNode: 1, srcNodeRef: 1, bgIframe: 1},
 
@@ -117,6 +106,17 @@ dojo.require("dijit._Widget");
 			}
 		};
 
+		fm.inspectorAdapter = function(inspector){
+			// summary:
+			//		Adapter that applies an inspector only to the first item of the array.
+			// inspector: Function:
+			//		Function that takes three parameters: a name, an object
+			//		(usually node or widget), and a value.
+			return function(name, elem, value){
+				return inspector.call(this, name, dojo.isArray(elem) ? elem[0] : elem, value);
+			};
+		};
+
 	dojo.declare("dojox.form.manager._Mixin", null, {
 		// summary:
 		//		Mixin to orchestrate dynamic forms.
@@ -148,8 +148,11 @@ dojo.require("dijit._Widget");
 			// summary:
 			//		Called when the widget is being destroyed
 
-			for(var name in this.formWidgets){
-				dojo.forEach(this.formWidgets[name].connections, dojo.disconnect);
+			var formWidgets = this.formWidgets;
+			for(var name in formWidgets){
+				if (dojo.isOwnProperty(formWidgets, name)) {
+					dojo.forEach(formWidgets[name].connections, dojo.disconnect);
+				}
 			}
 			this.formWidgets = {};
 
@@ -376,15 +379,18 @@ dojo.require("dijit._Widget");
 						}
 					}, this);
 				}else{
-					for(name in state){
-						if(name in this.formWidgets){
+					for(name in state){						
+						if(dojo.isOwnProperty(state, name) && name in this.formWidgets){
 							result[name] = inspector.call(this, name, this.formWidgets[name].widget, state[name]);
 						}
 					}
 				}
 			}else{
-				for(name in this.formWidgets){
-					result[name] = inspector.call(this, name, this.formWidgets[name].widget, defaultValue);
+				var formWidgets = this.formWidgets;
+				for(name in formWidgets){
+					if (dojo.isOwnProperty(formWidgets, name)) {
+						result[name] = inspector.call(this, name, formWidgets[name].widget, defaultValue);
+					}
 				}
 			}
 
@@ -405,30 +411,28 @@ dojo.require("dijit._Widget");
 			// defaultValue: Object?:
 			//		Optional. The default state (true, if omitted).
 
-			var name, result = {};
+			var elem, name, result = {}, isOwnProperty = dojo.isOwnProperty;
 
-			if(state){
-				if(dojo.isArray(state)){
-					dojo.forEach(state, function(name){
-						var elem = this[name];
-						if(elem && elem.tagName && elem.cloneNode){
-							result[name] = inspector.call(this, name, elem, defaultValue);
-						}
-					}, this);
-				}else{
-					for(name in state){
-						var elem = this[name];
+			if(state) {
+				for(name in state){
+					if (isOwnProperty(state, name)) {
+						elem = this[name];
 						if(elem && elem.tagName && elem.cloneNode){
 							result[name] = inspector.call(this, name, elem, state[name]);
 						}
 					}
-				}
+				}				
 			}else{
 				for(name in this){
-					if(!(name in skipNames)){
-						var elem = this[name];
-						if(elem && elem.tagName && elem.cloneNode){
-							result[name] = inspector.call(this, name, elem, defaultValue);
+					if (isOwnProperty(this, name)) {
+
+						// NOTE: Same as above, other than skipNames check
+
+						if(!(name in skipNames)){
+							elem = this[name];
+							if(elem && elem.tagName && elem.cloneNode){
+								result[name] = inspector.call(this, name, elem, defaultValue);
+							}
 						}
 					}
 				}
