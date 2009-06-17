@@ -79,7 +79,7 @@ dojo.declare(
             case (this._descending === false ? dojo.keys.DOWN_ARROW : dojo.keys.UP_ARROW):
             case (this._descending === false ? dojo.keys.PAGE_DOWN : dojo.keys.PAGE_UP):
                 if (minSelected && maxSelected){
-                    signedChange = Array();
+                    signedChange = [];
                     signedChange[0] = {'change': e.keyCode == dojo.keys.PAGE_UP ? this.pageIncrement : 1, 'useMaxValue': true};
                     signedChange[1] = {'change': e.keyCode == dojo.keys.PAGE_UP ? this.pageIncrement : 1, 'useMaxValue': false};
                     this._bumpValue(signedChange);
@@ -95,7 +95,7 @@ dojo.declare(
             case (this._descending === false ? dojo.keys.UP_ARROW : dojo.keys.DOWN_ARROW):
             case (this._descending === false ? dojo.keys.PAGE_UP : dojo.keys.PAGE_DOWN):
                 if (minSelected && maxSelected){
-                    signedChange = Array();
+                    signedChange = [];
                     signedChange[0] = {'change': e.keyCode == dojo.keys.PAGE_DOWN ? -this.pageIncrement : -1, 'useMaxValue': false};
                     signedChange[1] = {'change': e.keyCode == dojo.keys.PAGE_DOWN ? -this.pageIncrement : -1, 'useMaxValue': true};
                     this._bumpValue(signedChange);
@@ -117,11 +117,14 @@ dojo.declare(
     
     _onHandleClickMax: function(e){
         if(this.disabled || this.readOnly){ return; }
-        if(!dojo.isIE){
+        //if(!dojo.isIE){
             // make sure you get focus when dragging the handle
             // (but don't do on IE because it causes a flicker on mouse up (due to blur then focus)
+
+		// NOTE: Review this
+
             dijit.focus(this.sliderHandleMax);
-        }
+        //}
         dojo.stopEvent(e);
     },
     
@@ -136,9 +139,9 @@ dojo.declare(
             value = this._getBumpValue(signedChange, useMaxValue);
         }
         else{
-            value = Array();
-            value[0] = this._getBumpValue(signedChange[0]['change'], signedChange[0]['useMaxValue']);
-            value[1] = this._getBumpValue(signedChange[1]['change'], signedChange[1]['useMaxValue']);
+            value = [];
+            value[0] = this._getBumpValue(signedChange[0].change, signedChange[0].useMaxValue);
+            value[1] = this._getBumpValue(signedChange[1].change, signedChange[1].useMaxValue);
         }
         this._setValueAttr(value, true, !dojo.isArray(signedChange) && ((signedChange > 0 && !useMaxValue) || (useMaxValue && signedChange < 0)));
     },
@@ -161,21 +164,21 @@ dojo.declare(
     
     _onBarClick: function(e){
         if(this.disabled || this.readOnly){ return; }
-        if(!dojo.isIE){
+        //if(!dojo.isIE){
             // make sure you get focus when dragging the handle
             // (but don't do on IE because it causes a flicker on mouse up (due to blur then focus)
             dijit.focus(this.progressBar);
-        }
+        //}
         dojo.stopEvent(e);  
     },
     
     _onRemainingBarClick: function(e){
         if(this.disabled || this.readOnly){ return; }
-        if(!dojo.isIE){
+        //if(!dojo.isIE){
             // make sure you get focus when dragging the handle
             // (but don't do on IE because it causes a flicker on mouse up (due to blur then focus)
             dijit.focus(this.progressBar);
-        }
+        //}
         // now we set the min/max-value of the slider!
         var abspos = dojo.coords(this.sliderBarContainer, true);
         var bar = dojo.coords(this.progressBar, true);
@@ -260,10 +263,12 @@ dojo.declare(
         var progressBarVal = this._isReversed() ? ((1-percentMax)*100) : (percentMin * 100);
         if (priorityChange && this.slideDuration > 0 && this.progressBar.style[this._progressPixelSize]){
             // animate the slider
-            var percent = isMaxVal ? percentMax : percentMin;
-            var _this = this;
-            var props = {};
-            var start = parseFloat(this.progressBar.style[this._handleOffsetCoord]);
+
+		// NOTE: Unused
+
+            //var percent = isMaxVal ? percentMax : percentMin;
+            //var start = parseFloat(this.progressBar.style[this._handleOffsetCoord]);
+
             var duration = this.slideDuration / 10; // * (percent-start/100);
             if(duration === 0){ return; }
             if(duration < 0){ duration = 0 - duration; }
