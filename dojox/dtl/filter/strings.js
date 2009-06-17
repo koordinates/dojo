@@ -113,9 +113,11 @@ dojo.mixin(dojox.dtl.filter.strings, {
 			}
 			return output;
 		}
-		if(typeof value == "object"){
+		if(typeof value == "object" && value){
 			for(var key in value){
-				output.push(value[key]);
+				if (dojo.isOwnProperty(value, key)) {
+					output.push(value[key]);
+				}
 			}
 			return output;
 		}
@@ -132,7 +134,7 @@ dojo.mixin(dojox.dtl.filter.strings, {
 	slugify: function(value){
 		// summary: Converts to lowercase, removes
 		//		non-alpha chars and converts spaces to hyphens
-		value = value.replace(/[^\w\s-]/g, "").toLowerCase();
+		value = value.replace(/[^\w\s\-]/g, "").toLowerCase();
 		return value.replace(/[\-\s]+/g, "-");
 	},
 	_strings: {},
@@ -221,7 +223,8 @@ dojo.mixin(dojox.dtl.filter.strings, {
 			var closing = tag[1];
 			var tagname = tag[2].toLowerCase();
 			var selfclosing = tag[3];
-			if(closing || strings._truncate_singlets[tagname]){
+
+			if(selfclosing || strings._truncate_singlets[tagname]){
 			}else if(closing){
 				var i = dojo.indexOf(open, tagname);
 				if(i != -1){
@@ -248,26 +251,32 @@ dojo.mixin(dojox.dtl.filter.strings, {
 		return dojox.dtl.filter.strings._urlquote(value);
 	},
 	_urlize: /^((?:[(>]|&lt;)*)(.*?)((?:[.,)>\n]|&gt;)*)$/,
-	_urlize2: /^\S+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+$/,
+	_urlize2: /^\S+@[a-zA-Z0-9._\-]+\.[a-zA-Z0-9._\-]+$/,
 	urlize: function(value){
 		return dojox.dtl.filter.strings.urlizetrunc(value);
 	},
 	urlizetrunc: function(value, arg){
-		arg = parseInt(arg);
+
+		// NOTE: What is arg allowed to be?
+
+		arg = parseInt(arg, 10);
 		return dojox.string.tokenize(value, /(\S+)/g, function(word){
 			var matches = dojox.dtl.filter.strings._urlize.exec(word);
 			if(!matches){
 				return word;
 			}
-			var lead = matches[1];
-			var middle = matches[2];
-			var trail = matches[3];
 
-			var startsWww = middle.indexOf("www.") == 0;
+			// NOTE: lead and trail are not used
+
+			//var lead = matches[1];
+			var middle = matches[2];
+			//var trail = matches[3];
+
+			var startsWww = !middle.indexOf("www.");
 			var hasAt = middle.indexOf("@") != -1;
 			var hasColon = middle.indexOf(":") != -1;
-			var startsHttp = middle.indexOf("http://") == 0;
-			var startsHttps = middle.indexOf("https://") == 0;
+			var startsHttp = !middle.indexOf("http://");
+			var startsHttps = !middle.indexOf("https://");
 			var firstAlpha = /[a-zA-Z0-9]/.test(middle.charAt(0));
 			var last4 = middle.substring(middle.length - 4);
 
@@ -292,20 +301,23 @@ dojo.mixin(dojox.dtl.filter.strings, {
 		return value.split(/\s+/g).length;
 	},
 	wordwrap: function(value, arg){
-		arg = parseInt(arg);
+
+		// NOTE: What is arg allowed to be?
+
+		arg = parseInt(arg, 10);
 		// summary: Wraps words at specified line length
 		var output = [];
 		var parts = value.split(/\s+/g);
 		if(parts.length){
-			var word = parts.shift();
+			var lines, word = parts.shift();
 			output.push(word);
 			var pos = word.length - word.lastIndexOf("\n") - 1;
 			for(var i = 0; i < parts.length; i++){
 				word = parts[i];
 				if(word.indexOf("\n") != -1){
-					var lines = word.split(/\n/g);
+					lines = word.split(/\n/g);
 				}else{
-					var lines = [word];
+					lines = [word];
 				}
 				pos += lines[0].length + 1;
 				if(arg && pos > arg){
