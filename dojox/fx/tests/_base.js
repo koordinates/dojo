@@ -43,7 +43,10 @@ tests.register("dojox.fx.tests._base", [
 		var line = new dojox.fx._Line(startSet, endSet);
 		
 		var start = line.getValue(0);
-		var mid = line.getValue(0.5);
+
+		// NOTE: Unused
+
+		//var mid = line.getValue(0.5);
 		var end = line.getValue(1);
 		
 		t.assertEqual(start.length, 7);
@@ -55,7 +58,7 @@ tests.register("dojox.fx.tests._base", [
 		
 		var expectedMid = 20;
 		dojo.forEach(line.getValue(0.5), function(val, i){
-			t.assertEqual(expectedMid, val)
+			t.assertEqual(expectedMid, val);
 		});
 		
 	}
