@@ -212,7 +212,7 @@ dojo.declare(
 						if(conn){
 							this.disconnect(conn);
 						}
-						delete conn;
+						conn = null;
 						var children = child._menu.getChildren();
 						var exact = dojo.filter(children, function(i){
 							return i.label == dir;
