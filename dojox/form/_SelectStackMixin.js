@@ -47,8 +47,8 @@ dojo.declare("dojox.form._SelectStackMixin", null, {
 		// summary: called when a pane is either shown or hidden (so that
 		//  we can toggle the widgets on it)
 		
-		if(pane._shown != undefined && pane._shown == shown){ return; }
-		var widgets = dojo.filter(pane.getDescendants(), "return item.name;");
+		if(pane._shown !== undefined && pane._shown == shown){ return; }
+		var savedStates, widgets = dojo.filter(pane.getDescendants(), "return item.name;");
 		if(!shown){
 			// We are hiding - save the current state and then disable them
 			savedStates = {};
@@ -59,10 +59,10 @@ dojo.declare("dojox.form._SelectStackMixin", null, {
 			pane._savedStates = savedStates;
 		}else{
 			// We are showing - restore our saved states
-			var savedStates = pane._savedStates||{};
+			savedStates = pane._savedStates||{};
 			dojo.forEach(widgets, function(w){
 				var state = savedStates[w.id];
-				if(state == undefined){
+				if(state === undefined){
 					state = false;
 				}
 				w.attr("disabled", state);
@@ -78,7 +78,7 @@ dojo.declare("dojox.form._SelectStackMixin", null, {
 			this._panes[pane.id] = pane;
 			this.addOption({value: this._optionValFromPane(pane.id), label: pane.title});
 		}
-		if(!pane.onShow || !pane.onHide || pane._shown == undefined){
+		if(!pane.onShow || !pane.onHide || pane._shown === undefined){
 			pane.onShow = dojo.hitch(this, "_togglePane", pane, true);
 			pane.onHide = dojo.hitch(this, "_togglePane", pane, false);
 			pane.onHide();
@@ -108,7 +108,7 @@ dojo.declare("dojox.form._SelectStackMixin", null, {
 				this._panes[c.id] = c;
 				toAdd = {value: v, label: c.title};
 			}
-			if(!c.onShow || !c.onHide || c._shown == undefined){
+			if(!c.onShow || !c.onHide || c._shown === undefined){
 				c.onShow = dojo.hitch(this, "_togglePane", c, true);
 				c.onHide = dojo.hitch(this, "_togglePane", c, false);
 				c.onHide();
