@@ -130,7 +130,8 @@ dojo.require("dojox.string.tokenize");
 	dojo.mixin(ddtl, {
 		cycle: function(parser, token){
 			// summary: Cycle among the given strings each time this tag is encountered
-			var args = token.split_contents();
+			
+			var name, args = token.split_contents();
 
 			if(args.length < 2){
 				throw new Error("'cycle' tag requires at least two arguments");
@@ -145,7 +146,7 @@ dojo.require("dojox.string.tokenize");
 			}
 
 			if(args.length == 2){
-				var name = args[args.length - 1];
+				name = args[args.length - 1];
 
 				if(!parser._namedCycleNodes){
 					throw new Error("No named cycles in template: '" + name + "' is not defined");
@@ -158,7 +159,7 @@ dojo.require("dojox.string.tokenize");
 			}
 
 			if(args.length > 4 && args[args.length - 2] == "as"){
-				var name = args[args.length - 1];
+				name = args[args.length - 1];
 
 				var node = new ddtl.CycleNode(args.slice(1, args.length - 2), name, parser.create_text_node());
 
