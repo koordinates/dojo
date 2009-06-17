@@ -24,7 +24,7 @@ dojo.declare("dojox.editor.plugins.UploadImage",
 			this.editor.commands[this.command] = "Upload Image";
 			this.inherited("_initButton", arguments);
 			delete this.command;
-			setTimeout(dojo.hitch(this, "createFileInput"), 200);
+			window.setTimeout(dojo.hitch(this, "createFileInput"), 200);
 		},
 		
 		createFileInput: function(){
@@ -49,7 +49,7 @@ dojo.declare("dojox.editor.plugins.UploadImage",
 			// download path is mainly used so we can access a PHP script
 			// not relative to this file. The server *should* return a qualified path.
 			if(this.downloadPath){
-				file = this.downloadPath+data.name
+				file = this.downloadPath+data.name;
 			}else{
 				file = data.file;
 			}
@@ -74,8 +74,7 @@ dojo.declare("dojox.editor.plugins.UploadImage",
 
 dojo.subscribe(dijit._scopeName + ".Editor.getPlugin",null,function(o){
 	if(o.plugin){ return; }
-	switch(o.args.name){
-	case "uploadImage":
+	if(o.args.name == 'uploadImage'){
 		o.plugin = new dojox.editor.plugins.UploadImage({url: o.args.url});
 	}
 });
