@@ -48,7 +48,7 @@ dojo.declare("dojox.form._BusyButtonMixin",
 		this.attr("disabled", false);
 		this.isBusy = false;
 		this.setLabel(this._label);
-		if(this._timeout){	clearTimeout(this._timeout); }
+		if(this._timeout){	window.clearTimeout(this._timeout); }
 		this.timeout = this._initTimeout;
 	},
 	
@@ -56,15 +56,15 @@ dojo.declare("dojox.form._BusyButtonMixin",
 		// summary:
 		//	to reset existing timeout and setting a new timeout
 		if(this._timeout){	
-			clearTimeout(this._timeout); 
+			window.clearTimeout(this._timeout); 
 		}
 		
 		// new timeout
 		if(timeout){
-			this._timeout = setTimeout(dojo.hitch(this, function(){
+			this._timeout = window.setTimeout(dojo.hitch(this, function(){
 				this.cancel();
 			}), timeout);			
-		}else if(timeout == undefined || timeout === 0){
+		}else {
 			this.cancel();
 		}
 	},
@@ -76,6 +76,9 @@ dojo.declare("dojox.form._BusyButtonMixin",
 		// this.inherited(arguments); FIXME: throws an Unknown runtime error
 		
 		// Begin IE hack
+
+		// NOTE: Hack for what?
+
 		// summary: reset the label (text) of the button; takes an HTML string
 		this.label = content;
 		// remove children
@@ -85,7 +88,7 @@ dojo.declare("dojox.form._BusyButtonMixin",
 		this.containerNode.innerHTML = this.label;
 		
 		this._layoutHack();
-		if(this.showLabel == false && !(dojo.attr(this.domNode, "title"))){
+		if(this.showLabel === false && !(this.domNode.title)){
 			this.titleNode.title=dojo.trim(this.containerNode.innerText || this.containerNode.textContent || '');
 		}
 		// End IE hack
@@ -99,10 +102,10 @@ dojo.declare("dojox.form._BusyButtonMixin",
 		
 		// create optional busy image
 		if(this.useIcon && this.isBusy){
-			var node = new Image();
+			var node = dojo.doc.createElement('img');
 			node.src = this._blankGif;
-			dojo.attr(node, "id", this.id+"_icon");
-			dojo.addClass(node, "dojoxBusyButtonIcon");
+			node.id = this.id+"_icon";
+			node.className = "dojoxBusyButtonIcon";
 			this.containerNode.appendChild(node);
 		}
 	},
