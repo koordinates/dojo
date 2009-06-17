@@ -15,7 +15,7 @@ dojo.extend(dojo.NodeList, {
 			self.forEach(function(node){
 				node.innerHTML = content;
 			});
-		}
+		};
 
 		d.text._resolveTemplateArg(template).addCallback(function(templateString){
 			template = new d.Template(templateString);
