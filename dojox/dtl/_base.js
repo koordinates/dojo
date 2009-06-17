@@ -22,7 +22,7 @@ dojo.experimental("dojox.dtl");
 		push: function(){
 			var last = this;
 			var context = dojo.delegate(this);
-			context.pop = function(){ return last; }
+			context.pop = function(){ return last; };
 			return context;
 		},
 		pop: function(){
@@ -85,16 +85,16 @@ dojo.experimental("dojox.dtl");
 		}
 		parts.push(this.slice(lastIndex));
 		return parts;
-	}
+	};
 
 	dd.Token = function(token_type, contents){
 		this.token_type = token_type;
-		this.contents = new String(dojo.trim(contents));
+		this.contents = String(dojo.trim(contents));
 		this.contents.split = split;
 		this.split = function(){
 			return String.prototype.split.apply(this.contents, arguments);
-		}
-	}
+		};
+	};
 	dd.Token.prototype.split_contents = function(/*Integer?*/ limit){
 		var bit, bits = [], i = 0;
 		limit = limit || 999;
@@ -109,7 +109,7 @@ dojo.experimental("dojox.dtl");
 			}
 		}
 		return bits;
-	}
+	};
 
 	var ddt = dd.text = {
 		_get: function(module, name, errorless){
@@ -131,7 +131,7 @@ dojo.experimental("dojox.dtl");
 				fn = parts.pop();
 			}
 
-			dojo["require"](require);
+			dojo.require(require);
 
 			var parent = dojo.getObject(require);
 
@@ -180,7 +180,7 @@ dojo.experimental("dojox.dtl");
 		_resolveContextArg: function(arg, sync){
 			if(arg.constructor == Object){
 				if(!sync){
-					var d = new dojo.Deferred;
+					var d = new dojo.Deferred();
 					d.callback(arg);
 					return d;
 				}
@@ -198,13 +198,13 @@ dojo.experimental("dojox.dtl");
 			}else if(load){
 				var parts = dojo.trim(tag).split(/\s+/g);
 				for(var i = 0, part; part = parts[i]; i++){
-					dojo["require"](part);
+					dojo.require(part);
 				}
 			}else{
 				return [dd.TOKEN_BLOCK, tag];
 			}
 		}
-	}
+	};
 
 	dd.Template = dojo.extend(function(/*String|dojo._Url*/ template, /*Boolean*/ isString){
 		// template:
@@ -255,7 +255,7 @@ dojo.experimental("dojox.dtl");
 				return new dd._Filter(token);
 			}));
 		}
-	}
+	};
 
 	dd._QuickNodeList = dojo.extend(function(contents){
 		this.contents = contents;
@@ -277,7 +277,7 @@ dojo.experimental("dojox.dtl");
 
 	dd._Filter = dojo.extend(function(token){
 		// summary: Uses a string to find (and manipulate) a variable
-		if(!token) throw new Error("Filter must be called with variable name");
+		if(!token) { throw new Error("Filter must be called with variable name"); }
 		this.contents = token;
 
 		var cache = this._cache[token];
@@ -334,7 +334,7 @@ dojo.experimental("dojox.dtl");
 				}
 				// Get a named filter
 				var fn = ddt.getFilter(arguments[3]);
-				if(!dojo.isFunction(fn)) throw new Error(arguments[3] + " is not registered as a filter");
+				if(!dojo.isFunction(fn)) { throw new Error(arguments[3] + " is not registered as a filter"); }
 				this.filters.push([fn, arg]);
 			}
 		},
@@ -368,8 +368,11 @@ dojo.experimental("dojox.dtl");
 			var current, parts;
 			var first = path.charAt(0);
 			var last = path.slice(-1);
-			if(!isNaN(parseInt(first))){
-				current = (path.indexOf(".") == -1) ? parseInt(path) : parseFloat(path);
+
+			// NOTE: What is the return value supposed to be?
+
+			if(!isNaN(parseInt(first, 10))){
+				current = parseFloat(path);
 			}else if(first == '"' && first == last){
 				current = path.slice(1, -1);
 			}else{
@@ -392,12 +395,18 @@ dojo.experimental("dojox.dtl");
 
 				for(var i = 1; i < parts.length; i++){
 					var part = parts[i];
-					if(current){
+					if(current){						
 						var base = current;
+
+						// NOTE: isObject allows Function objects and null (latter not a problem in this case)
+						//       Review this logic (shouldn't Function objects fall through?)
+
 						if(dojo.isObject(current) && part == "items" && typeof current[part] == "undefined"){
 							var items = [];
 							for(var key in current){
-								items.push([key, current[key]]);
+								if (dojo.isOwnProperty(current, key)) {
+									items.push([key, current[key]]);
+								}
 							}
 							current = items;
 							continue;
@@ -418,6 +427,9 @@ dojo.experimental("dojox.dtl");
 							}else{
 								current = current.call(base);
 							}
+
+						// NOTE: Should not use instanceof
+
 						}else if(current instanceof Date){
 							current = dd._Context.prototype._normalize(current);
 						}
@@ -468,7 +480,7 @@ dojo.experimental("dojox.dtl");
 			// summary: Adds all content onto the buffer
 			for(var i = 0; i < this.contents.length; i++){
 				buffer = this.contents[i].render(context, buffer);
-				if(!buffer) throw new Error("Template must return buffer");
+				if(!buffer) { throw new Error("Template must return buffer"); }
 			}
 			return buffer;
 		},
@@ -479,7 +491,7 @@ dojo.experimental("dojox.dtl");
 		clone: function(){ return this; },
 		rtrim: function(){
 			while(1){
-				i = this.contents.length - 1;
+				var i = this.contents.length - 1;
 				if(this.contents[i] instanceof dd._TextNode && this.contents[i].isEmpty()){
 					this.contents.pop();
 				}else{
@@ -505,11 +517,11 @@ dojo.experimental("dojox.dtl");
 		}
 	});
 
-	dd._noOpNode = new function(){
+	dd._noOpNode = function(){
 		// summary: Adds a no-op node. Useful in custom tags
-		this.render = this.unrender = function(){ return arguments[1]; }
-		this.clone = function(){ return this; }
-	}
+		this.render = this.unrender = function(){ return arguments[1]; };
+		this.clone = function(){ return this; };
+	};
 
 	dd._Parser = dojo.extend(function(tokens){
 		// summary: Parser used during initialization and for tag groups.
@@ -522,7 +534,7 @@ dojo.experimental("dojox.dtl");
 			// description: Steps into tags are they're found. Blocks use the parse object
 			//		to find their closing tag (the stop_at array). stop_at is inclusive, it
 			//		returns the node that matched.
-			var terminators = {};
+			var token, terminators = {};
 			stop_at = stop_at || [];
 			for(var i = 0; i < stop_at.length; i++){
 				terminators[stop_at[i]] = true;
@@ -626,27 +638,32 @@ dojo.experimental("dojox.dtl");
 		},
 		_any: function(type, base, locations){
 			for(var path in locations){
-				for(var i = 0, fn; fn = locations[path][i]; i++){
-					var key = fn;
-					if(dojo.isArray(fn)){
-						key = fn[0];
-						fn = fn[1];
-					}
-					if(typeof key == "string"){
-						if(key.substr(0, 5) == "attr:"){
-							var attr = fn.toLowerCase();
-							if(attr.substr(0, 5) == "attr:"){
-								attr = attr.slice(5);
-							}
-							dd.register._registry.attributes.push([attr, base + "." + path + "." + attr]);
+				if (dojo.isOwnProperty(locations, path)) {
+					for(var i = 0, fn; fn = locations[path][i]; i++){
+						var key = fn;
+
+						// NOTE: What are these allowed to be?
+
+						if(dojo.isArray(fn)){
+							key = fn[0];
+							fn = fn[1];
 						}
-						key = key.toLowerCase();
+						if(typeof key == "string"){
+							if(key.substr(0, 5) == "attr:"){
+								var attr = fn.toLowerCase();
+								if(attr.substr(0, 5) == "attr:"){
+									attr = attr.slice(5);
+								}
+								dd.register._registry.attributes.push([attr, base + "." + path + "." + attr]);
+							}
+							key = key.toLowerCase();
+						}
+						dd.register._registry[type].push([
+							key,
+							fn,
+							base + "." + path
+						]);
 					}
-					dd.register._registry[type].push([
-						key,
-						fn,
-						base + "." + path
-					]);
 				}
 			}
 		},
@@ -656,7 +673,7 @@ dojo.experimental("dojox.dtl");
 		filters: function(/*String*/ base, /*Object*/ locations){
 			dd.register._any("filters", base, locations);
 		}
-	}
+	};
 
 	var escapeamp = /&/g;
 	var escapelt = /</g;
@@ -666,17 +683,17 @@ dojo.experimental("dojox.dtl");
 	dd._base.escape = function(value){
 		// summary: Escapes a string's HTML
 		return dd.mark_safe(value.replace(escapeamp, '&amp;').replace(escapelt, '&lt;').replace(escapegt, '&gt;').replace(escapedblqt, '&quot;').replace(escapeqt, '&#39;'));
-	}
+	};
 
 	dd._base.safe = function(value){
 		if(typeof value == "string"){
-			value = new String(value);
+			value = String(value);
 		}
 		if(typeof value == "object"){
 			value.safe = true;
 		}
 		return value;
-	}
+	};
 	dd.mark_safe = dd._base.safe;
 
 	dd.register.tags("dojox.dtl.tag", {
