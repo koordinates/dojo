@@ -44,7 +44,7 @@ dojo.mixin(dojox.dtl.filter.misc, {
 		var output = "";
 		for(var i = 0; i < value.length; i++){
 			var chr = value.charAt(i).toLowerCase();
-			(dm._phone2numeric[chr]) ? output += dm._phone2numeric[chr] : output += value.charAt(i);
+			if (dm._phone2numeric[chr]) { output += dm._phone2numeric[chr]; } else { output += value.charAt(i); }
 		}
 		return output;
 	},
