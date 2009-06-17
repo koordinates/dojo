@@ -25,6 +25,14 @@ dojo.require("dojox.encoding.digests._base");
 	}
 	function KT(t){ return (t<20)?1518500249:(t<40)?1859775393:(t<60)?-1894007588:-899497514; }
 
+	function toWord(s){
+		var wa=[];
+		for(var i=0, l=s.length*chrsz; i<l; i+=chrsz){
+			wa[i>>5]|=(s.charCodeAt(i/chrsz)&mask)<<(32-chrsz-i%32);
+		}
+		return wa;	//	word[]
+	}
+
 	function core(x,len){
 		x[len>>5]|=0x80<<(24-len%32);
 		x[((len+64>>9)<<4)+15]=len;
@@ -61,14 +69,6 @@ dojo.require("dojox.encoding.digests._base");
 		return core(opad.concat(hash), 512+160);
 	}
 
-	function toWord(s){
-		var wa=[];
-		for(var i=0, l=s.length*chrsz; i<l; i+=chrsz){
-			wa[i>>5]|=(s.charCodeAt(i/chrsz)&mask)<<(32-chrsz-i%32);
-		}
-		return wa;	//	word[]
-	}
-
 	function toHex(wa){
 		//	slightly different than the common one.
 		var h="0123456789abcdef", s=[];
@@ -102,7 +102,7 @@ dojo.require("dojox.encoding.digests._base");
 			}
 		}
 		return s.join("");	//	string
-	};
+	}
 
 	//	public function
 	dxd.SHA1=function(/* String */data, /* dojox.encoding.digests.outputTypes? */outputType){
@@ -111,20 +111,16 @@ dojo.require("dojox.encoding.digests._base");
 		var out=outputType||dxd.outputTypes.Base64;
 		var wa=core(toWord(data), data.length*chrsz);
 		switch(out){
-			case dxd.outputTypes.Raw:{
+			case dxd.outputTypes.Raw:
 				return wa;	//	word[]
-			}
-			case dxd.outputTypes.Hex:{
+			case dxd.outputTypes.Hex:
 				return toHex(wa);	//	string
-			}
-			case dxd.outputTypes.String:{
+			case dxd.outputTypes.String:
 				return _toString(wa);	//	string
-			}
-			default:{
+			default:
 				return toBase64(wa);	//	string
-			}
 		}
-	}
+	};
 
 	//	make this private, for later use with a generic HMAC calculator.
 	dxd.SHA1._hmac=function(/* string */data, /* string */key, /* dojox.encoding.digests.outputTypes? */outputType){
@@ -133,18 +129,14 @@ dojo.require("dojox.encoding.digests._base");
 		var out=outputType || dxd.outputTypes.Base64;
 		var wa=hmac(data, key);
 		switch(out){
-			case dxd.outputTypes.Raw:{
+			case dxd.outputTypes.Raw:
 				return wa;	//	word[]
-			}
-			case dxd.outputTypes.Hex:{
+			case dxd.outputTypes.Hex:
 				return toHex(wa);	//	string
-			}
-			case dxd.outputTypes.String:{
+			case dxd.outputTypes.String:
 				return _toString(wa);	//	string
-			}
-			default:{
+			default:
 				return toBase64(wa);	//	string
-			}
 		}
 	};
 })();
