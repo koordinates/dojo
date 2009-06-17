@@ -14,11 +14,10 @@ dojo.declare("dojox.form.MultiComboBox",
 	_previousMatches: false,
 
 	_setValueAttr: function(value){
-		if (this.delimiter && value.length != 0){
-			value = value+this.delimiter+" ";
-			arguments[0] = this._addPreviousMatches(value);
+		if (this.delimiter && value.length){
+			value = this._addPreviousMatches(value+this.delimiter+" ");
 		}
-		this.inherited(arguments);
+		this.inherited.call(this, value);
 	},
 
 	_addPreviousMatches: function(/* String */text){
@@ -41,8 +40,10 @@ dojo.declare("dojox.form.MultiComboBox",
 	},
 			
 	_autoCompleteText: function(/* String */text){
-		arguments[0] = this._addPreviousMatches(text);
-		this.inherited(arguments);
+
+		// NOTE: Previously passed arguments object to inherited method (?)
+
+		this.inherited.call(this, this._addPreviousMatches(text));
 	},
 
 	_startSearch: function(/* String */text){
@@ -50,8 +51,8 @@ dojo.declare("dojox.form.MultiComboBox",
 		var re = new RegExp("^.*"+this.delimiter+" *");
 		
 		if((this._previousMatches = text.match(re))){
-			arguments[0] = text.replace(re, "");
+			text = text.replace(re, "");
 		}
-		this.inherited(arguments);
+		this.inherited.call(this, text);
 	}		
 });
