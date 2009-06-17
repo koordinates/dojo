@@ -27,7 +27,13 @@ dojo.declare("dojox.form.Rating",
 		
 		// TODO actually "dijitInline" should be applied to the surrounding div, but FF2
 		// screws up when we dojo.query() for the star nodes, it orders them randomly, because of the use
+
+		// NOTE: Don't use query here
+
 		// of display:--moz-inline-box ... very strange bug
+
+		// NOTE: Very strange rule (why is it used?)
+
 		// Since using ul and li in combintaion with dijitInline this problem doesnt exist anymore.
 		
 		// The focusNode is normally used to store the value, i dont know if that is right here, but seems standard for _FormWidgets
@@ -51,7 +57,7 @@ dojo.declare("dojox.form.Rating",
 	_onMouse: function(evt){
 		this.inherited(arguments);
 		if(this._hovering){
-			var hoverValue = +dojo.attr(evt.target, "value");
+			var hoverValue = +evt.target.value;
 			this.onMouseOver(evt, hoverValue);
 			this._renderStars(hoverValue, true);
 		}else{
@@ -75,9 +81,12 @@ dojo.declare("dojox.form.Rating",
 	onStarClick:function(/* Event */evt){
 		// summary: Connect on this method to get noticed when a star was clicked.
 		// example: dojo.connect(widget, "onStarClick", function(event){ ... })
-		var newVal = +dojo.attr(evt.target, "value");
-		this.setAttribute("value", newVal == this.value ? 0 : newVal);
+		var newVal = +evt.target.value;
+		this.value = newVal == this.value ? 0 : newVal;
 		this._renderStars(this.value);
+
+		// NOTE: Re-factor
+
 		this.onChange(this.value); // Do I have to call this by hand?
 	},
 	
@@ -87,9 +96,15 @@ dojo.declare("dojox.form.Rating",
 	
 	setAttribute: function(/*String*/key, /**/value){
 		// summary: When calling setAttribute("value", 4), set the value and render the stars accordingly.
+
+		// NOTE: What does the inherited method do?
+
 		this.inherited("setAttribute", arguments);
 		if (key=="value"){
 			this._renderStars(this.value);
+
+			// NOTE: Re-factor
+
 			this.onChange(this.value); // Do I really have to call this by hand? :-(
 		}
 	}
