@@ -56,7 +56,8 @@ dojo.declare("dojox.embed.Object", dijit._Widget, {
 		if(!this.width || !this.height){
 			//	get the width and height from the domNode
 			var box=dojo.marginBox(this.domNode);
-			this.width=box.w, this.height=box.h;
+			this.width=box.w;
+			this.height=box.h;
 		}
 
 		//	the default embed constructor.
