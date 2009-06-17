@@ -6,7 +6,9 @@ dojo.require("dojox.encoding.bits");
 	var msg2 = "The rain in Spain falls mainly on the plain.1";
 	var msg3 = "The rain in Spain falls mainly on the plain.ab";
 	var msg4 = "The rain in Spain falls mainly on the plain.!@#";
-	var dcb = dojox.encoding.bits;
+
+//	NOTE: Unused
+//	var dcb = dojox.encoding.bits;
 	
 	var s2b = function(s){
 		var b = [];
