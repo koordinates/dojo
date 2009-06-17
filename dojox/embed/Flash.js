@@ -25,7 +25,6 @@ dojo.provide("dojox.embed.Flash");
 	};
 
 	function prep(kwArgs){
-		// console.warn("KWARGS:", kwArgs)
 		kwArgs = dojo.delegate(_baseKwArgs, kwArgs);
 
 		if(!("path" in kwArgs)){
@@ -39,7 +38,7 @@ dojo.provide("dojox.embed.Flash");
 		return kwArgs;
 	}
 
-	if(dojo.isIE){
+	if(dojo.isHostObjectProperty(window, 'ActiveXObject') && !dojo.isHostObjectProperty(window.navigator, 'plugins')){
 		fMarkup = function(kwArgs){
 			kwArgs = prep(kwArgs);
 			if(!kwArgs){ return null; }
@@ -47,23 +46,27 @@ dojo.provide("dojox.embed.Flash");
 			var p;
 			var path = kwArgs.path;
 			if(kwArgs.vars){
-				var a = [];
-				for(p in kwArgs.vars){
-					a.push(p + '=' + kwArgs.vars[p]);
+				var a = [], vars = kwArgs.vars;
+				for(p in vars){
+					if (dojo.isOwnProperty(vars, p)) {
+						a.push(p + '=' + vars[p]);
+					}
 				}
 				path += ((path.indexOf("?") == -1) ? "?" : "&") + a.join("&");
 			}
-			// FIXME: really? +'s?
-			var s = '<object id="' + kwArgs.id + '" '
-				+ 'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" '
-				+ 'width="' + kwArgs.width + '" '
-				+ 'height="' + kwArgs.height + '"'
-				+ ((kwArgs.style)?' style="' + kwArgs.style + '"':'')
-				+ '>'
-				+ '<param name="movie" value="' + path + '" />';
+			var s = '<object id="' + kwArgs.id + '" ' +
+				'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
+				'width="' + kwArgs.width + '" ' +
+				'height="' + kwArgs.height + '"' +
+				((kwArgs.style)?' style="' + kwArgs.style + '"':'') +
+				'>' +
+				'<param name="movie" value="' + path + '">';
 			if(kwArgs.params){
-				for(p in kwArgs.params){
-					s += '<param name="' + p + '" value="' + kwArgs.params[p] + '" />';
+				var params = kwArgs.params;
+				for(p in params){
+					if (dojo.isOwnProperty(params, p)) {
+						s += '<param name="' + p + '" value="' + params[p] + '">';
+					}
 				}
 			}
 			s += '</object>';
@@ -80,9 +83,9 @@ dojo.provide("dojox.embed.Flash");
 			if(testObj){
 				var v = testObj.GetVariable("$version").split(" ")[1].split(",");
 				return {
-					major: (v[0]!=null) ? parseInt(v[0]) : 0, 
-					minor: (v[1]!=null) ? parseInt(v[1]) : 0, 
-					rev: (v[2]!=null) ? parseInt(v[2]) : 0 
+					major: parseInt(v[0], 10) || 0, 
+					minor: parseInt(v[1], 10) || 0, 
+					rev: parseInt(v[2], 10) || 0 
 				};
 			}
 			return { major: 0, minor: 0, rev: 0 };
@@ -91,7 +94,10 @@ dojo.provide("dojox.embed.Flash");
 		//	attach some cleanup for IE, thanks to deconcept :)
 		dojo.addOnUnload(function(){
 			var dummy = function(){};
-			var objs = dojo.query("object").
+
+			// NOTE: Remove query and chaining
+
+			dojo.query("object").
 				reverse().
 				style("display", "none").
 				forEach(function(i){
@@ -116,7 +122,7 @@ dojo.provide("dojox.embed.Flash");
 		});
 		*/
 	} else {
-		//	*** Sane browsers branch ******************************************************************
+		// Not IE
 		fMarkup = function(kwArgs){
 			kwArgs = prep(kwArgs);
 			if(!kwArgs){ return null; }
@@ -124,41 +130,48 @@ dojo.provide("dojox.embed.Flash");
 			var p;
 			var path = kwArgs.path;
 			if(kwArgs.vars){
-				var a = [];
-				for(p in kwArgs.vars){
-					a.push(p + '=' + kwArgs.vars[p]);
+				var a = [], vars = kwArgs.vars;
+				for(p in vars){
+					if (dojo.isOwnProperty(vars, p)) {
+						a.push(p + '=' + vars[p]);
+					}
 				}
 				path += ((path.indexOf("?") == -1) ? "?" : "&") + a.join("&");
 			}
-			var s = '<embed type="application/x-shockwave-flash" '
-				+ 'src="' + path + '" '
-				+ 'id="' + kwArgs.id + '" '
+			var s = '<embed type="application/x-shockwave-flash" ' +
+				'src="' + path + '" ' +
+				'id="' + kwArgs.id + '" ' +
 				//+ 'name="' + kwArgs.id + '" '
-				+ 'width="' + kwArgs.width + '" '
-				+ 'height="' + kwArgs.height + '"'
-				+ ((kwArgs.style)?' style="' + kwArgs.style + '" ':'')
-				+ 'swLiveConnect="'+kwArgs.swLiveConnect+'" '
-				+ 'allowScriptAccess="' +kwArgs.allowScriptAccess+  '" '
-				+ 'allowNetworking="' +kwArgs.allowNetworking+  '" '
-				
-				+ 'pluginspage="' + window.location.protocol + '//www.adobe.com/go/getflashplayer" ';
+				'width="' + kwArgs.width + '" ' +
+				'height="' + kwArgs.height + '"' + 
+				((kwArgs.style)?' style="' + kwArgs.style + '" ':'') +
+				'swLiveConnect="'+kwArgs.swLiveConnect+'" ' +
+				'allowScriptAccess="' +kwArgs.allowScriptAccess+  '" ' +
+				'allowNetworking="' +kwArgs.allowNetworking+  '" ' +				
+				'pluginspage="' + window.location.protocol + '//www.adobe.com/go/getflashplayer" ';
 			if(kwArgs.params){
-				for(p in kwArgs.params){
-					s += ' ' + p + '="' + kwArgs.params[p] + '"';
+				var params = kwArgs.params;
+				for(p in params){
+					if (dojo.isOwnProperty(params, p)) {
+
+						// NOTE: Need to publicize escapeHtml method (not in core at moment)
+
+						s += ' ' + p + '="' + params[p] + '"';
+					}
 				}
 			}
-			s += ' />';
+			s += '>';
 			return { id: kwArgs.id, markup: s };
 		};
 
 		fVersion=(function(){
-			var plugin = navigator.plugins["Shockwave Flash"];
+			var plugin = window.navigator.plugins["Shockwave Flash"];
 			if(plugin && plugin.description){
 				var v = plugin.description.replace(/([a-zA-Z]|\s)+/, "").replace(/(\s+r|\s+b[0-9]+)/, ".").split(".");
 				return { 
-					major: (v[0]!=null) ? parseInt(v[0]) : 0, 
-					minor: (v[1]!=null) ? parseInt(v[1]) : 0, 
-					rev: (v[2]!=null) ? parseInt(v[2]) : 0 
+					major: parseInt(v[0], 10) || 0, 
+					minor: parseInt(v[1], 10) || 0, 
+					rev: parseInt(v[2], 10) || 0 
 				};
 			}
 			return { major: 0, minor: 0, rev: 0 };
@@ -249,9 +262,12 @@ dojo.provide("dojox.embed.Flash");
 		//	|	}, myWrapperNode, "testLoaded");
 		//
 		// File can only be run from a server, due to SWF dependency.
-		if(location.href.toLowerCase().indexOf("file://")>-1){
-			throw new Error("dojox.embed.Flash can't be run directly from a file. To instatiate the required SWF correctly it must be run from a server, like localHost.");
-		}
+
+		// NOTE: Flash can run locally
+
+		//if(window.location.href.toLowerCase().indexOf("file://")!=-1){
+		//	throw new Error("dojox.embed.Flash can't be run directly from a file. To instatiate the required SWF correctly it must be run from a server, like localHost.");
+		//}
 		this.available = dojox.embed.Flash.available;
 		this.minimumVersion = kwArgs.minimumVersion || minimumVersion;
 		//console.log("AVAILABLE:", this);
@@ -263,7 +279,7 @@ dojo.provide("dojox.embed.Flash");
 		}
 		// setTimeout Fixes #8743 - creating double SWFs
 		// also allows time for code to attach to onError
-		setTimeout(dojo.hitch(this, function(){
+		window.setTimeout(dojo.hitch(this, function(){
 			if(this.available && this.available >= this.minimumVersion){
 				if(kwArgs && node){
 					this.init(kwArgs, node);
@@ -296,7 +312,7 @@ dojo.provide("dojox.embed.Flash");
 		_onload: function(){
 			// summary:
 			//	Internal. Cleans up before calling onLoad. 
-			clearInterval(this._poller);
+			window.clearInterval(this._poller);
 			delete this._poller;
 			delete this._pollCount;
 			delete this._pollMax;
@@ -310,7 +326,7 @@ dojo.provide("dojox.embed.Flash");
 			if(!node){ throw new Error("dojox.embed.Flash: no domNode reference has been passed."); }
 			
 			// vars to help determine load status
-			var p = 0, testLoaded=false;
+			var p = 0;
 			this._poller = null; this._pollCount = 0; this._pollMax = 5; this.pollTime = 100;
 			
 			if(dojox.embed.Flash.initialized){
@@ -318,11 +334,11 @@ dojo.provide("dojox.embed.Flash");
 				this.id = dojox.embed.Flash.place(kwArgs, node);
 				this.domNode = node;
 
-				setTimeout(dojo.hitch(this, function(){
+				window.setTimeout(dojo.hitch(this, function(){
 					this.movie = this.byId(this.id, kwArgs.doc);
 					this.onReady(this.movie);
 					
-					this._poller = setInterval(dojo.hitch(this, function(){
+					this._poller = window.setInterval(dojo.hitch(this, function(){
 						
 						// catch errors if not quite ready.
 						try{
@@ -330,16 +346,16 @@ dojo.provide("dojox.embed.Flash");
 						}catch(e){
 							/* squelch */
 							console.warn("this.movie.PercentLoaded() failed");
-						};
+						}
 						
 						if(p == 100){
 							// if percent = 100, movie is fully loaded and we're communicating
 							this._onload();
 						
-						}else if(p==0 && this._pollCount++ > this._pollMax){
+						}else if(!p && this._pollCount++ > this._pollMax){
 							// after several attempts, we're not past zero.
 							// FIXME: What if we get stuck on 33% or something?
-							clearInterval(this._poller);
+							window.clearInterval(this._poller);
 							throw new Error("Building SWF failed.");
 						}
 					}), this.pollTime);
@@ -382,7 +398,7 @@ dojo.provide("dojox.embed.Flash");
 				this._destroy();
 			}
 		},
-		byId: function (movieName, doc){
+		byId: function (id, doc){
 			// 	summary:
 			//		Gets Flash movie by id.
 			//	description:
@@ -397,20 +413,9 @@ dojo.provide("dojox.embed.Flash");
 			//	example:
 			//	| var movie = dojox.embed.Flash.byId("myId");
 			//
-			doc = doc || document;
-			if(doc.embeds[movieName]){
-				return doc.embeds[movieName];
-			}
-			if(doc[movieName]){
-				return doc[movieName];
-			}
-			if(window[movieName]){
-				return window[movieName];
-			}
-			if(document[movieName]){
-				return document[movieName];
-			}
-			return null;
+			doc = doc || dojo.doc;
+			
+			return doc.getElementById(id);
 		}
 	});
 	
@@ -470,53 +475,40 @@ dojo.provide("dojox.embed.Flash");
 			dojo.forEach((dojo.isArray(methods) ? methods : [ methods ]), function(item){
 				this[item] = dojo.hitch(this, function(){
 					return (function(){
+
+						// NOTE: What does CallFunction return?
+
 						return eval(this.movie.CallFunction(
-							'<invoke name="' + item + '" returntype="javascript">'
-							+ '<arguments>'
-							+ dojo.map(arguments, function(item){
-								// FIXME: 
-								//		investigate if __flash__toXML will
-								//		accept direct application via map()
-								//		(e.g., does it ignore args past the
-								//		first? or does it blow up?)
-								return __flash__toXML(item);
-							}).join("")
-							+ '</arguments>'
-							+ '</invoke>'
-						));
-					}).apply(this, arguments||[]);
+							'<invoke name="' + item + '" returntype="javascript"><arguments>' +
+								dojo.map(arguments, function(item){
+									// FIXME: 
+									//		investigate if __flash__toXML will
+									//		accept direct application via map()
+									//		(e.g., does it ignore args past the
+									//		first? or does it blow up?)
+									if (typeof __flash__toXML != 'undefined') {
+										return __flash__toXML(item);
+									}
+								}).join("") +'</arguments></invoke>'));
+					}).apply(this, arguments);
 				});
 			}, obj);
 		}
 	});
 
-	if(dojo.isIE){
-		//	Ugh!
-		if(dojo._initFired){
-			var e = document.createElement("script");
-			e.type = "text/javascript";
-			e.src = dojo.moduleUrl("dojox", "embed/IE/flash.js");
-			document.getElementsByTagName("head")[0].appendChild(e);
-		}else{
-			//	we can use document.write.  What a kludge.
-			document.write('<scr'+'ipt type="text/javascript" src="' + dojo.moduleUrl("dojox", "embed/IE/flash.js") + '">'
-				+ '</scr'+'ipt>');
+	dojox.embed.Flash.place = function(kwArgs, node){
+		var o = fMarkup(kwArgs);
+		node = dojo.byId(node);
+		if(!node){ 
+			node = dojo.doc.createElement("div");
+			node.id = o.id+"-container";
+			dojo.body().appendChild(node);
 		}
-	}else{
-		dojox.embed.Flash.place = function(kwArgs, node){
-			var o = fMarkup(kwArgs);
-			node = dojo.byId(node);
-			if(!node){ 
-				node = dojo.doc.createElement("div");
-				node.id = o.id+"-container";
-				dojo.body().appendChild(node);
-			}
-			if(o){
-				node.innerHTML = o.markup;
-				return o.id;
-			}
-			return null;
+		if(o){
+			node.innerHTML = o.markup;
+			return o.id;
 		}
-		dojox.embed.Flash.onInitialize();
-	}
+		return null;
+	};
+	dojox.embed.Flash.onInitialize();
 })();
