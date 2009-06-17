@@ -17,9 +17,12 @@ dojo.mixin(dojox.dtl.filter.lists, {
 
 		var i, item, items = [];
 		if(!dojo.isArray(value)){
-			var obj = value, value = [];
+			var obj = value;
+			value = [];
 			for(var key in obj){
-				value.push(obj[key]);
+				if (dojo.isOwnProperty(obj, key)) {
+					value.push(obj[key]);
+				}
 			}
 		}
 		for(i = 0; i < value.length; i++){
@@ -34,7 +37,7 @@ dojo.mixin(dojox.dtl.filter.lists, {
 	},
 	dictsortreversed: function(value, arg){
 		// summary: Takes a list of dicts, returns that list sorted in reverse order by the property given in the argument.
-		if(!arg) return value;
+		if(!arg) { return value; }
 
 		var dictsort = dojox.dtl.filter.lists.dictsort(value, arg);
 		return dictsort.reverse();
@@ -56,8 +59,11 @@ dojo.mixin(dojox.dtl.filter.lists, {
 		return (isNaN(value.length)) ? (value + "").length : value.length;
 	},
 	length_is: function(value, arg){
-		// summary: Returns a boolean of whether the value's length is the argument
-		return value.length == parseInt(arg);
+		// summary: Returns whether the value's length is the argument
+
+		// NOTE: what is arg allowed to be?
+
+		return value.length == parseInt(arg, 10); // Boolean
 	},
 	random: function(value){
 		// summary: Returns a random item from the list
@@ -77,7 +83,10 @@ dojo.mixin(dojox.dtl.filter.lists, {
 			if(!parts[i].length){
 				bits.push(null);
 			}else{
-				bits.push(parseInt(parts[i]));
+
+				// NOTE: What are these allowed to be?
+
+				bits.push(parseInt(parts[i], 10));
 			}
 		}
 
@@ -105,7 +114,7 @@ dojo.mixin(dojox.dtl.filter.lists, {
 		if(value[1] && value[1].length){
 			var recurse = [];
 			for(i = 0; i < value[1].length; i++){
-				recurse.push(ddl._unordered_list(value[1][i], tabs + 1))
+				recurse.push(ddl._unordered_list(value[1][i], tabs + 1));
 			}
 			return indent + "<li>" + value[0] + "\n" + indent + "<ul>\n" + recurse.join("\n") + "\n" + indent + "</ul>\n" + indent + "</li>";
 		}else{
