@@ -21,7 +21,7 @@ dojo.provide("dojox.encoding.easy64");
 			var t = input.slice(length);
 			while(t.length < 3){ t.push(0); }
 			c(t, 3, result);
-			for(var i = 3; i > reminder; result.pop(), --i);
+			for(var i = 3; i > reminder; result.pop(), --i) {}
 		}
 		return result.join("");	// String
 	};
@@ -33,13 +33,13 @@ dojo.provide("dojox.encoding.easy64");
 		for(i = 0; i < n; i += 4){
 			for(j = 0; j < 4; ++j){ b[j] = input.charCodeAt(i + j) - 33; }
 			d = n - i;
-			for(j = d; j < 4; b[++j] = 0);
+			for(j = d; j < 4; b[++j] = 0) {}
 			r.push(
 				(b[0] << 2) + (b[1] >>> 4),
 				((b[1] & 15) << 4) + (b[2] >>> 2),
 				((b[2] & 3) << 6) + b[3]
 			);
-			for(j = d; j < 4; ++j, r.pop());
+			for(j = d; j < 4; ++j, r.pop()) {}
 		}
 		return r;
 	};
