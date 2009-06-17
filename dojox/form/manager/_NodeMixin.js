@@ -113,8 +113,11 @@ dojo.require("dojox.form.manager._Mixin");
 			// summary:
 			//		Called when the widget is being destroyed
 
-			for(var name in this.formNodes){
-				dojo.forEach(this.formNodes[name].connections, dojo.disconnect);
+			var formNodes = this.formNodes;
+			for(var name in formNodes){
+				if (dojo.isOwnProperty(formNodes, name)) {
+					dojo.forEach(formNodes[name].connections, dojo.disconnect);
+				}
 			}
 			this.formNodes = {};
 
@@ -216,6 +219,8 @@ dojo.require("dojox.form.manager._Mixin");
 			//		For a getter it returns the value, for a setter it returns
 			//		self. If the elem is not valid, null will be returned.
 
+			// NOTE: Re-factor (should not try to discriminate between host and native objects)
+
 			var isSetter = arguments.length == 2 && value !== undefined, result;
 
 			if(typeof elem == "string"){
@@ -273,7 +278,7 @@ dojo.require("dojox.form.manager._Mixin");
 							return this;	// self
 						}
 						// getter
-						var result = dojo.query("> option", elem).filter(function(opt){
+						result = dojo.query("> option", elem).filter(function(opt){
 							return opt.selected;
 						}).map(function(opt){
 							return opt.value;
@@ -332,7 +337,7 @@ dojo.require("dojox.form.manager._Mixin");
 			// defaultValue: Object?:
 			//		Optional. The default state (true, if omitted).
 
-			var name, result = {};
+			var name, result = {}, formNodes = this.formNodes;
 
 			if(state){
 				if(dojo.isArray(state)){
@@ -343,14 +348,20 @@ dojo.require("dojox.form.manager._Mixin");
 					}, this);
 				}else{
 					for(name in state){
-						if(name in this.formNodes){
-							result[name] = inspector.call(this, name, this.formNodes[name].node, state[name]);
+						if (dojo.isOwnProperty(state, name)) {
+							if(name in formNodes){
+								if (dojo.isOwnProperty(formNodes, name)) {
+									result[name] = inspector.call(this, name, formNodes[name].node, state[name]);
+								}
+							}
 						}
 					}
 				}
 			}else{
-				for(name in this.formNodes){
-					result[name] = inspector.call(this, name, this.formNodes[name].node, defaultValue);
+				for(name in formNodes){
+					if (dojo.isOwnProperty(formNodes, name)) {
+						result[name] = inspector.call(this, name, formNodes[name].node, defaultValue);
+					}
 				}
 			}
 
