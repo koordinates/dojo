@@ -10,8 +10,9 @@ dojox.encoding.compression.Splay = function(n){
 
 dojo.extend(dojox.encoding.compression.Splay, {
 	reset: function(){
-		for(var i = 1; i < this.up.length; this.up[i] = Math.floor((i - 1) / 2), ++i);
-		for(var i = 0; i < this.left.length; this.left[i] = 2 * i + 1, this.right[i] = 2 * i + 2, ++i);
+		var i;
+		for(i = 1; i < this.up.length; this.up[i] = Math.floor((i - 1) / 2), ++i) {}
+		for(i = 0; i < this.left.length; this.left[i] = 2 * i + 1, this.right[i] = 2 * i + 2, ++i) {}
 	},
 	splay: function(i){
 		var a = i + this.left.length;
