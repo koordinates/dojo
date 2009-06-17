@@ -9,7 +9,7 @@ dojox.fx._arg.StyleArgs = function(/*Object*/ args){
 	//		The class to use during the manipulation
 	this.node = args.node;
 	this.cssClass = args.cssClass;
-}
+};
 
 dojox.fx._arg.ShadowResizeArgs = function(/*Object*/ args){
 	// summary: 
@@ -20,4 +20,4 @@ dojox.fx._arg.ShadowResizeArgs = function(/*Object*/ args){
 	//	the height to set	
 	this.x = args.x;
 	this.y = args.y;
-}
+};
