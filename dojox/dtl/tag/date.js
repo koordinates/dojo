@@ -7,7 +7,7 @@ dojox.dtl.tag.date.NowNode = function(format, node){
 	this._format = format;
 	this.format = new dojox.dtl.utils.date.DateFormat(format);
 	this.contents = node;
-}
+};
 dojo.extend(dojox.dtl.tag.date.NowNode, {
 	render: function(context, buffer){
 		this.contents.set(this.format.format(new Date()));
@@ -28,4 +28,4 @@ dojox.dtl.tag.date.now = function(parser, token){
 		throw new Error("'now' statement takes one argument");
 	}
 	return new dojox.dtl.tag.date.NowNode(parts[1].slice(1, -1), parser.create_text_node());
-}
+};
