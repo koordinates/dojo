@@ -17,11 +17,13 @@ dojo.require("dojox.encoding.bits");
 		return b;
 	};
 
-	var b2s = function(b){
-		var s = [];
-		dojo.forEach(b, function(c){ s.push(String.fromCharCode(c)); });
-		return s.join("");
-	};
+	// NOTE: Unused
+
+	//var b2s = function(b){
+	//	var s = [];
+	//	dojo.forEach(b, function(c){ s.push(String.fromCharCode(c)); });
+	//	return s.join("");
+	//};
 	
 	var encode = function(msg){
 		var x = new dcb.OutputStream(), encoder = new dcl.Encoder(128);
@@ -40,6 +42,8 @@ dojo.require("dojox.encoding.bits");
 		}
 		return t.join("");
 	};
+
+	// NOTE: What is the tests object?
 
 	tests.register("dojox.encoding.tests.compression.lzw", [
 		function testLzwMsg1(t){ t.assertEqual(msg1, decode(msg1.length, encode(msg1))); },
