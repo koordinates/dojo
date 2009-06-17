@@ -9,7 +9,7 @@ dojox.dtl.Context = dojo.extend(function(dict){
 	getKeys: function(){
 		var keys = [];
 		for(var key in this){
-			if(this.hasOwnProperty(key) && key != "_dicts" && key != "_this"){
+			if(dojo.isOwnProperty(this, key) && key != "_dicts" && key != "_this"){
 				keys.push(key);
 			}
 		}
@@ -30,7 +30,9 @@ dojox.dtl.Context = dojo.extend(function(dict){
 			keys = filter.getKeys();
 		}else if(typeof filter == "object"){
 			for(var key in filter){
-				keys.push(key);
+				if (dojo.isOwnProperty(filter, key)) {
+					keys.push(key);
+				}
 			}
 		}else{
 			for(i = 0; arg = arguments[i]; i++){
