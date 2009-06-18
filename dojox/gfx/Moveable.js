@@ -38,7 +38,7 @@ dojo.declare("dojox.gfx.Moveable", null, {
 			this._lastX = e.clientX;
 			this._lastY = e.clientY;
 		}else{
-			new this.mover(this.shape, e, this);
+			(new this.mover(this.shape, e, this));
 		}
 		dojo.stopEvent(e);
 	},
@@ -47,7 +47,7 @@ dojo.declare("dojox.gfx.Moveable", null, {
 		// e: Event: mouse event
 		if(Math.abs(e.clientX - this._lastX) > this.delay || Math.abs(e.clientY - this._lastY) > this.delay){
 			this.onMouseUp(e);
-			new this.mover(this.shape, e, this);
+			(new this.mover(this.shape, e, this));
 		}
 		dojo.stopEvent(e);
 	},
