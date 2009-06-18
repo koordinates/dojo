@@ -19,6 +19,7 @@ dojo.isArray = function(/*anything*/ it){
 	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
 		return (it && typeof it.length == 'number' && isFinite(it.length) && it.splice && !dojo.isOwnProperty(it, 'splice'));
 	}
+	return false;
 };
 
 /*=====
