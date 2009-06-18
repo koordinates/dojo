@@ -137,8 +137,7 @@ dojox.fx.text.explode = function(/*Object*/ args){
 	//		args.sync: Boolean - If args.unhide is true, all the pieces converge at the same time
 	//							 (default is true)
 
-	var node = args.node = dojo.byId(args.node);
-	var s = node.style;
+	args.node = dojo.byId(args.node);
 
 	args.distance = args.distance || 1;
 	args.duration = args.duration || 1000;
@@ -247,8 +246,7 @@ dojox.fx.text.disintegrate = function(/*Object*/ args){
 	//		args.reverseOrder: Boolean - If true, pieces animate in reversed order
 	//		args.unhide: Boolean - If true, the peices fall from above and land in place
 
-	var node = args.node = dojo.byId(args.node);
-	var s = node.style;
+	args.node = dojo.byId(args.node);
 
 	args.duration = args.duration || 1500;
 	args.distance = args.distance || 1.5;
@@ -260,9 +258,6 @@ dojox.fx.text.disintegrate = function(/*Object*/ args){
 
 	// Returns the animation object for each piece
 	args.pieceAnimation = function(piece, pieceCoords, coords, number, numPieces){
-		var pieceHeight = pieceCoords.h;
-		var pieceWidth = pieceCoords.w;
-
 		var interval = args.interval || (args.duration / (1.5 * numPieces));
 		var duration = (args.duration - numPieces * interval);
 
@@ -331,8 +326,7 @@ dojox.fx.text.blockFadeOut = function(/*Object*/ args){
 	//		args.reverseOrder: Boolean - If true, pieces animate in reversed order
 	//		args.unhide: Boolean - If true, the animation is reversed
 
-	var node = args.node = dojo.byId(args.node);;
-	var s = node.style;
+	args.node = dojo.byId(args.node);
 
 	args.duration = args.duration || 1000;
 	args.random = args.random || 0;
@@ -391,8 +385,7 @@ dojox.fx.text.backspace = function(/*Object*/ args){
 	//							   randomness is introduced (only effective when args.unhide = true)
 	//		args.unhide: Boolean - If true, the animation is reversed
 
-	var node = args.node = dojo.byId(args.node);
-	var s = node.style;
+	args.node = dojo.byId(args.node);
 
 	args.words = false;
 	args.duration = args.duration || 2000;
@@ -418,14 +411,14 @@ dojox.fx.text.backspace = function(/*Object*/ args){
 
 		if(args.fixed){
 			if(args.unhide){
-				var beforeBegin = function(){ dojo.style(piece,"opacity",0); };
+				beforeBegin = function(){ dojo.style(piece,"opacity",0); };
 			}
 		}else{
 			if(args.unhide){
-				var beforeBegin = function(){piece.style.display = "none";};
-				var onEnd = function(){piece.style.display = "inline";};
+				beforeBegin = function(){piece.style.display = "none";};
+				onEnd = function(){piece.style.display = "inline";};
 			}else{
-				var onEnd = function(){piece.style.display = "none";};
+				onEnd = function(){piece.style.display = "none";};
 			}
 		}
 
