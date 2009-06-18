@@ -17,7 +17,8 @@ dojo.require("dojox.gfx.matrix");
 		}else if(!isFinite(r2)){
 			return r1;	// Number
 		}
-		m1 = Math.abs(m1), m2 = Math.abs(m2);
+		m1 = Math.abs(m1);
+		m2 = Math.abs(m2);
 		return (m1 * r1 + m2 * r2) / (m1 + m2);	// Number
 	};
 
@@ -42,23 +43,30 @@ dojo.require("dojox.gfx.matrix");
 			vx1 = M.xy / (l1 - M.xx), vy1 = 1,
 			vx2 = M.xy / (l2 - M.xx), vy2 = 1;
 		if(eq(l1, l2)){
-			vx1 = 1, vy1 = 0, vx2 = 0, vy2 = 1;
+			vx1 = vy2 = 1;
+			vy1 = vx2 = 0;
 		}
 		if(!isFinite(vx1)){
-			vx1 = 1, vy1 = (l1 - M.xx) / M.xy;
+			vx1 = 1;
+			vy1 = (l1 - M.xx) / M.xy;
 			if(!isFinite(vy1)){
-				vx1 = (l1 - M.yy) / M.yx, vy1 = 1;
+				vx1 = (l1 - M.yy) / M.yx;
+				vy1 = 1;
 				if(!isFinite(vx1)){
-					vx1 = 1, vy1 = M.yx / (l1 - M.yy);
+					vx1 = 1;
+					vy1 = M.yx / (l1 - M.yy);
 				}
 			}
 		}
 		if(!isFinite(vx2)){
-			vx2 = 1, vy2 = (l2 - M.xx) / M.xy;
+			vx2 = 1;
+			vy2 = (l2 - M.xx) / M.xy;
 			if(!isFinite(vy2)){
-				vx2 = (l2 - M.yy) / M.yx, vy2 = 1;
+				vx2 = (l2 - M.yy) / M.yx;
+				vy2 = 1;
 				if(!isFinite(vx2)){
-					vx2 = 1, vy2 = M.yx / (l2 - M.yy);
+					vx2 = 1;
+					vy2 = M.yx / (l2 - M.yy);
 				}
 			}
 		}
