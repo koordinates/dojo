@@ -37,6 +37,8 @@ dojo.require("dojox.gfx.matrix");
 			// x: Number: the x coordinate of the end point of the arc
 			// y: Number: the y coordinate of the end point of the arc
 
+			var c1;
+
 			// calculate parameters
 			large = Boolean(large);
 			sweep = Boolean(sweep);
@@ -46,8 +48,8 @@ dojo.require("dojox.gfx.matrix");
 					m.rotate(-xRot),
 					{x: (last.x - x) / 2, y: (last.y - y) / 2}
 				),
-				pax2 = pa.x * pa.x, pay2 = pa.y * pa.y,
-				c1 = Math.sqrt((rx2 * ry2 - rx2 * pay2 - ry2 * pax2) / (rx2 * pay2 + ry2 * pax2));
+				pax2 = pa.x * pa.x, pay2 = pa.y * pa.y;
+			c1 = Math.sqrt((rx2 * ry2 - rx2 * pay2 - ry2 * pax2) / (rx2 * pay2 + ry2 * pax2));
 			if(isNaN(c1)){ c1 = 0; }
 			var	ca = {
 					x:  c1 * rx * pa.y / ry,
@@ -97,7 +99,7 @@ dojo.require("dojox.gfx.matrix");
 					step  = sweep ? alpha : -alpha;
 					angle = 0;	// stop the loop
 				}
-				var c1, c2, e,
+				var c2, e,
 					M = m.normalize([elliptic_transform, m.rotate(startAngle + step)]);
 				if(sweep){
 					c1 = m.multiplyPoint(M, curve.c1);
