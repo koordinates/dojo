@@ -9,8 +9,9 @@ dojo.declare("dojox.gfx.Mover", null, {
 		//	only clientX and clientY properties are used
 		// host: Object?: object which implements the functionality of the move,
 		//	 and defines proper events (onMoveStart and onMoveStop)
+
 		this.shape = shape;
-		this.lastX = e.clientX
+		this.lastX = e.clientX;
 		this.lastY = e.clientY;
 		var h = this.host = host, d = document,
 			firstEvent = dojo.connect(d, "onmousemove", this, "onFirstMove");
