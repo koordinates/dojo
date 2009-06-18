@@ -45,10 +45,10 @@ dojo.declare("dojox.gfx.path.Path", dojox.gfx.Shape, {
 
 		// we use {l, b, r, t} representation of a bbox
 		if(this.bbox && ("l" in this.bbox)){
-			if(this.bbox.l > x) this.bbox.l = x;
-			if(this.bbox.r < x) this.bbox.r = x;
-			if(this.bbox.t > y) this.bbox.t = y;
-			if(this.bbox.b < y) this.bbox.b = y;
+			if(this.bbox.l > x) { this.bbox.l = x; }
+			if(this.bbox.r < x) { this.bbox.r = x; }
+			if(this.bbox.t > y) { this.bbox.t = y; }
+			if(this.bbox.b < y) { this.bbox.b = y; }
 		}else{
 			this.bbox = {l: x, b: y, r: x, t: y};
 		}
@@ -73,14 +73,14 @@ dojo.declare("dojox.gfx.path.Path", dojox.gfx.Shape, {
 				this.absolute = true;
 				break;
 			case "H":
-				for(var i = 0; i < l; ++i){
+				for(i = 0; i < l; ++i){
 					this._updateBBox(n[i], this.last.y);
 				}
 				this.last.x = n[l - 1];
 				this.absolute = true;
 				break;
 			case "V":
-				for(var i = 0; i < l; ++i){
+				for(i = 0; i < l; ++i){
 					this._updateBBox(this.last.x, n[i]);
 				}
 				this.last.y = n[l - 1];
@@ -92,32 +92,32 @@ dojo.declare("dojox.gfx.path.Path", dojox.gfx.Shape, {
 					this._updateBBox(this.last.x = n[0], this.last.y = n[1]);
 					start = 2;
 				}
-				for(var i = start; i < l; i += 2){
+				for(i = start; i < l; i += 2){
 					this._updateBBox(this.last.x += n[i], this.last.y += n[i + 1]);
 				}
 				this.absolute = false;
 				break;
 			case "l":
 			case "t":
-				for(var i = 0; i < l; i += 2){
+				for(i = 0; i < l; i += 2){
 					this._updateBBox(this.last.x += n[i], this.last.y += n[i + 1]);
 				}
 				this.absolute = false;
 				break;
 			case "h":
-				for(var i = 0; i < l; ++i){
+				for(i = 0; i < l; ++i){
 					this._updateBBox(this.last.x += n[i], this.last.y);
 				}
 				this.absolute = false;
 				break;
 			case "v":
-				for(var i = 0; i < l; ++i){
+				for(i = 0; i < l; ++i){
 					this._updateBBox(this.last.x, this.last.y += n[i]);
 				}
 				this.absolute = false;
 				break;
 			case "c":
-				for(var i = 0; i < l; i += 6){
+				for(i = 0; i < l; i += 6){
 					this._updateBBox(this.last.x + n[i], this.last.y + n[i + 1]);
 					this._updateBBox(this.last.x + n[i + 2], this.last.y + n[i + 3]);
 					this._updateBBox(this.last.x += n[i + 4], this.last.y += n[i + 5]);
@@ -126,14 +126,14 @@ dojo.declare("dojox.gfx.path.Path", dojox.gfx.Shape, {
 				break;
 			case "s":
 			case "q":
-				for(var i = 0; i < l; i += 4){
+				for(i = 0; i < l; i += 4){
 					this._updateBBox(this.last.x + n[i], this.last.y + n[i + 1]);
 					this._updateBBox(this.last.x += n[i + 2], this.last.y += n[i + 3]);
 				}
 				this.absolute = false;
 				break;
 			case "A":
-				for(var i = 0; i < l; i += 7){
+				for(i = 0; i < l; i += 7){
 					this._updateBBox(n[i + 5], n[i + 6]);
 				}
 				this.last.x = n[l - 2];
@@ -141,7 +141,7 @@ dojo.declare("dojox.gfx.path.Path", dojox.gfx.Shape, {
 				this.absolute = true;
 				break;
 			case "a":
-				for(var i = 0; i < l; i += 7){
+				for(i = 0; i < l; i += 7){
 					this._updateBBox(this.last.x += n[i + 5], this.last.y += n[i + 6]);
 				}
 				this.absolute = false;
@@ -149,7 +149,7 @@ dojo.declare("dojox.gfx.path.Path", dojox.gfx.Shape, {
 		}
 		// add an SVG path segment
 		var path = [segment.action];
-		for(var i = 0; i < l; ++i){
+		for(i = 0; i < l; ++i){
 			path.push(dojox.gfx.formatNumber(n[i], true));
 		}
 		if(typeof this.shape.path == "string"){
@@ -166,16 +166,16 @@ dojo.declare("dojox.gfx.path.Path", dojox.gfx.Shape, {
 		// summary: adds a segment
 		// action: String: valid SVG code for a segment's type
 		// args: Array: a list of parameters for this segment
-		var group = this._validSegments[action.toLowerCase()];
+		var segment, group = this._validSegments[action.toLowerCase()];
 		if(typeof group == "number"){
 			if(group){
 				if(args.length >= group){
-					var segment = {action: action, args: args.slice(0, args.length - args.length % group)};
+					segment = {action: action, args: args.slice(0, args.length - args.length % group)};
 					this.segments.push(segment);
 					this._updateWithSegment(segment);
 				}
 			}else{
-				var segment = {action: action, args: []};
+				segment = {action: action, args: []};
 				this.segments.push(segment);
 				this._updateWithSegment(segment);
 			}
@@ -279,7 +279,7 @@ dojo.declare("dojox.gfx.path.Path", dojox.gfx.Shape, {
 		this.absolute = true;
 		this.bbox = {};
 		this.last = {};
-		if(!p) return;
+		if (!p) { return; }
 		// create segments
 		var action = "",	// current action
 			args = [],		// current arguments
