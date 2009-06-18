@@ -196,7 +196,7 @@ dojo.provide("dojox.gfx.matrix");
 			// matrix: dojox.gfx.matrix.Matrix2D: a 2D matrix-like object to be cloned
 			var obj = new m.Matrix2D();
 			for(var i in matrix){
-				if(typeof(matrix[i]) == "number" && typeof(obj[i]) == "number" && obj[i] != matrix[i]) obj[i] = matrix[i];
+				if(typeof matrix[i] == "number" && typeof(obj[i]) == "number" && obj[i] != matrix[i]) { obj[i] = matrix[i]; }
 			}
 			return obj; // dojox.gfx.matrix.Matrix2D
 		},
@@ -204,14 +204,13 @@ dojo.provide("dojox.gfx.matrix");
 			// summary: inverts a 2D matrix
 			// matrix: dojox.gfx.matrix.Matrix2D: a 2D matrix-like object to be inverted
 			var M = m.normalize(matrix),
-				D = M.xx * M.yy - M.xy * M.yx,
-				M = new m.Matrix2D({
-					xx: M.yy/D, xy: -M.xy/D,
-					yx: -M.yx/D, yy: M.xx/D,
-					dx: (M.xy * M.dy - M.yy * M.dx) / D,
-					dy: (M.yx * M.dx - M.xx * M.dy) / D
-				});
-			return M; // dojox.gfx.matrix.Matrix2D
+				D = M.xx * M.yy - M.xy * M.yx;
+			return new m.Matrix2D({
+				xx: M.yy/D, xy: -M.xy/D,
+				yx: -M.yx/D, yy: M.xx/D,
+				dx: (M.xy * M.dy - M.yy * M.dx) / D,
+				dy: (M.yx * M.dx - M.xx * M.dy) / D
+			}); // dojox.gfx.matrix.Matrix2D
 		},
 		_multiplyPoint: function(matrix, x, y){
 			// summary: applies a matrix to a point
