@@ -292,7 +292,7 @@ dojo.experimental("dojox.gfx.canvas");
 	dojo.declare("dojox.gfx.Text", gs.Text, {
 		// summary: a text shape (Canvas)
 		_renderShape: function(/* Object */ ctx){
-			var s = this.shape;
+			//var s = this.shape;
 			// nothing for the moment
 		}
 	});
@@ -507,6 +507,10 @@ dojo.experimental("dojox.gfx.canvas");
 		},
 		_arcTo: function(result, action, args){
 			var relative = action == "a";
+			var bezierCurveTo = function(p){
+				result.push("bezierCurveTo", p);
+			};
+
 			for(var i = 0; i < args.length; i += 7){
 				var x1 = args[i + 5], y1 = args[i + 6];
 				if(relative){
@@ -518,9 +522,7 @@ dojo.experimental("dojox.gfx.canvas");
 					args[i + 3] ? 1 : 0, args[i + 4] ? 1 : 0,
 					x1, y1
 				);
-				dojo.forEach(arcs, function(p){
-					result.push("bezierCurveTo", p);
-				});
+				dojo.forEach(arcs, bezierCurveTo);
 				this.last.x = x1;
 				this.last.y = y1;
 			}
@@ -539,7 +541,7 @@ dojo.experimental("dojox.gfx.canvas");
 	dojo.declare("dojox.gfx.TextPath", g.path.TextPath, {
 		// summary: a text shape (Canvas)
 		_renderShape: function(/* Object */ ctx){
-			var s = this.shape;
+			//var s = this.shape;
 			// nothing for the moment
 		}
 	});
@@ -557,7 +559,7 @@ dojo.experimental("dojox.gfx.canvas");
 			// height: String: height of surface, e.g., "100px"
 			this.width  = g.normalizedLength(width);	// in pixels
 			this.height = g.normalizedLength(height);	// in pixels
-			if(!this.rawNode) return this;
+			if(!this.rawNode) { return this; }
 			this.rawNode.width = width;
 			this.rawNode.height = height;
 			this.makeDirty();
@@ -578,14 +580,14 @@ dojo.experimental("dojox.gfx.canvas");
 			}
 			ctx.restore();
 			if("pendingRender" in this){
-				clearTimeout(this.pendingRender);
+				window.clearTimeout(this.pendingRender);
 				delete this.pendingRender;
 			}
 		},
 		makeDirty: function(){
 			// summary: internal method, which is called when we may need to redraw
 			if(!this.pendingImagesCount && !("pendingRender" in this)){
-				this.pendingRender = setTimeout(dojo.hitch(this, this._render), 0);
+				this.pendingRender = window.setTimeout(dojo.hitch(this, this._render), 0);
 			}
 		},
 		downloadImage: function(img, url){
@@ -597,7 +599,7 @@ dojo.experimental("dojox.gfx.canvas");
 			//		the url of the image
 			var handler = dojo.hitch(this, this.onImageLoad);
 			if(!this.pendingImageCount++ && "pendingRender" in this){
-				clearTimeout(this.pendingRender);
+				window.clearTimeout(this.pendingRender);
 				delete this.pendingRender;
 			}
 			img.onload  = handler;
