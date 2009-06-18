@@ -80,15 +80,26 @@ dojox.fx.sizeTo = function(/* Object */args){
 
 	var init = (function(n){
 		return function(){
-			var cs = dojo.getComputedStyle(n);
-			var pos = cs.position;
-			top = (pos == 'absolute' ? n.offsetTop : parseInt(cs.top) || 0);
-			left = (pos == 'absolute' ? n.offsetLeft : parseInt(cs.left) || 0);
-			width = parseInt(cs.width);
-			height = parseInt(cs.height);
 
-			newLeft = left - Math.floor((args.width - width) / 2); 
-			newTop = top - Math.floor((args.height - height) / 2); 
+			// NOTE: Duplication of core FX
+
+			var cs = dojo.getComputedStyle(n);
+
+			// NOTE: IE does not support computed styles (top/left properties could be anything)
+
+			var pos = cs.position;
+
+			// NOTE: Logic is incorrect (check style first, else calculate offset)
+
+			top = (pos == 'absolute' ? n.offsetTop : parseInt(cs.top, 10) || 0);
+			left = (pos == 'absolute' ? n.offsetLeft : parseInt(cs.left, 10) || 0);
+			width = parseInt(cs.width, 10);
+			height = parseInt(cs.height, 10);
+
+			newLeft = left - Math.floor((args.width - width) / 2);
+			newTop = top - Math.floor((args.height - height) / 2);
+
+			// NOTE: Missing fixed
 
 			if(pos != 'absolute' && pos != 'relative'){
 				var ret = dojo.coords(n, true);
@@ -98,7 +109,7 @@ dojox.fx.sizeTo = function(/* Object */args){
 				n.style.top = top + "px";
 				n.style.left = left + "px";
 			}
-		}
+		};
 	})(node);
 	init(); 
 
@@ -141,10 +152,13 @@ dojox.fx.slideBy = function(/* Object */args){
 
 	var init = (function(n){
 		return function(){
+
+			// NOTE: Duplication
+
 			var cs = dojo.getComputedStyle(n);
 			var pos = cs.position;
-			top = (pos == 'absolute' ? n.offsetTop : parseInt(cs.top) || 0);
-			left = (pos == 'absolute' ? n.offsetLeft : parseInt(cs.left) || 0);
+			top = (pos == 'absolute' ? n.offsetTop : parseInt(cs.top, 10) || 0);
+			left = (pos == 'absolute' ? n.offsetLeft : parseInt(cs.left, 10) || 0);
 			if(pos != 'absolute' && pos != 'relative'){
 				var ret = dojo.coords(n, true);
 				top = ret.y;
@@ -153,7 +167,7 @@ dojox.fx.slideBy = function(/* Object */args){
 				n.style.top = top + "px";
 				n.style.left = left + "px";
 			}
-		}
+		};
 	})(node);
 	init();
 	var _anim = dojo.animateProperty(dojo.mixin({
@@ -179,16 +193,22 @@ dojox.fx.crossFade = function(/* Object */args){
 	//
 	if(dojo.isArray(args.nodes)){
 		// simple check for which node is visible, maybe too simple?
+
+		// Note: Fades first in (and second out) if first has opacity 0, otherwise does the opposite
+
 		var node1 = args.nodes[0] = dojo.byId(args.nodes[0]);
 		var op1 = dojo.style(node1,"opacity");
 		var node2 = args.nodes[1] = dojo.byId(args.nodes[1]);
-		var op2 = dojo.style(node2, "opacity");
+
+		// Note: Unused
+
+		//var op2 = dojo.style(node2, "opacity");
 
 		var _anim = dojo.fx.combine([
-			dojo[(op1 == 0 ? "fadeIn" : "fadeOut")](dojo.mixin({
+			dojo[(!op1 ? "fadeIn" : "fadeOut")](dojo.mixin({
 				node: node1
 			},args)),
-			dojo[(op1 == 0 ? "fadeOut" : "fadeIn")](dojo.mixin({
+			dojo[(!op1 ? "fadeOut" : "fadeIn")](dojo.mixin({
 				node: node2
 			},args))
 		]);
