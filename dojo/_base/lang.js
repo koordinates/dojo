@@ -22,6 +22,20 @@ dojo.isArray = function(/*anything*/ it){
 	return false;
 };
 
+dojo.isDate = function(/*anything*/ it) {
+	//	summary:
+	//		Return true if it is a Date
+
+	var t = Object.prototype.toString.call(it);
+	switch (t) {
+	case '[object Date]':
+		return true;
+	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
+		return (it && it.getTime && !dojo.isOwnProperty(it, 'getTime'));
+	}
+	return false;
+};
+
 /*=====
 dojo.isFunction = function(it){
 	// summary: Return true if it is a Function
@@ -253,7 +267,7 @@ dojo.clone = function(/*anything*/ o){
 	if(o.nodeType && o.cloneNode){ // isNode
 		return o.cloneNode(true); // Node
 	}
-	if(o instanceof Date){
+	if(dojo.isDate(o)){
 		return new Date(o.getTime());	// Date
 	}
 	// Generic objects
