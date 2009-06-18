@@ -12,7 +12,13 @@ dojo.isArray = function(/*anything*/ it){
 	//	summary:
 	//		Return true if it is an Array
 
-	return Object.prototype.toString.call(it) === '[object Array]';
+	var t = Object.prototype.toString.call(it);
+	switch (t) {
+	case '[object Array]':
+		return true;
+	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
+		return (it && typeof it.length == 'number' && isFinite(it.length) && it.splice && !dojo.isOwnProperty(it, 'splice'));
+	}
 };
 
 /*=====
