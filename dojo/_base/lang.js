@@ -92,16 +92,32 @@ dojo.extend = function(/*Object*/ constructor, /*Object...*/ props){
 	return constructor; // Object
 };
 
+dojo._hitchedObjects = {};
+
+dojo._getHitchHandle = (function() {
+	var key = 0;
+	return function() {
+		return key++;
+	};
+})();
+
 dojo._hitchArgs = function(thisObject, method /*,...*/){
-	var pre = dojo._toArray(arguments, 2);
-	var named = dojo.isString(method);
+	var pre = Array.prototype.slice.call(arguments, 2);
+	var handle = dojo._getHitchHandle();
+
+	dojo._hitchedObjects[handle] = thisObject;
+
+	// locate our method
+
+	var f = dojo.isString(method) ? thisObject[method] : method;
+
+	// Should throw if can't locate?
+
+	thisObject = null;
+
 	return function(){
-		// arrayify arguments
-		var args = dojo._toArray(arguments);
-		// locate our method
-		var f = named ? (thisObject||dojo.global)[method] : method;
 		// invoke with collected args
-		return f && f.apply(thisObject || this, pre.concat(args)); // mixed
+		return f && f.apply(dojo._hitchedObjects[handle] || dojo.global, pre.concat(Array.prototype.slice.call(arguments, 0))); // mixed
  	}; // Function
 };
 
@@ -131,6 +147,8 @@ dojo.hitch = function(/*Object*/thisObject, /*Function|String*/method /*,...*/){
 		return dojo._hitchArgs.apply(dojo, arguments); // Function
 	}
 
+	var handle = dojo._getHitchHandle();
+
 	// Just method passed
 
 	if(!method){
@@ -138,17 +156,26 @@ dojo.hitch = function(/*Object*/thisObject, /*Function|String*/method /*,...*/){
 		thisObject = null;
 	}
 
+	dojo._hitchedObjects[handle] = thisObject;
+
 	// Call named method of this object
 
 	if(dojo.isString(method)){
-		thisObject = thisObject || dojo.global;
-		if(!thisObject[method]){ throw(['dojo.hitch: method["', method, '"] is null (thisObject="', thisObject, '")'].join('')); }
-		return function(){ return thisObject[method].apply(thisObject, arguments || []); }; // Function
+		// NOTE: The partial method passes null for thisObject, allowing global to be substituted later
+		//       As is, method must exist in current context
+
+		if(!(dojo._hitchedObjects[handle] || dojo.global)[method]){ throw(['dojo.hitch: method["', method, '"] is null (thisObject="', thisObject, '")'].join('')); }
+		return function(){ return (dojo._hitchedObjects[handle] || dojo.global)[method].apply(thisObject, arguments); }; // Function
 	}
 
 	// Function passed through or hitched to this object
 
-	return !thisObject ? method : function(){ return method.apply(thisObject, arguments); }; // Function
+	if (thisObject) {
+		thisObject = null;
+		return function(){ return method.apply(dojo._hitchedObjects[handle], arguments); }; // Function
+	}
+
+	return method; // Function	
 };
 
 /*=====
@@ -247,8 +274,8 @@ dojo.partial = function(/*Function|String*/method /*, ...*/){
 	//	description:
 	//		Calling dojo.partial is the functional equivalent of calling:
 	//		|	dojo.hitch(null, funcName, ...);
-	var arr = [ null ];
-	return dojo.hitch.apply(dojo, arr.concat(dojo._toArray(arguments))); // Function
+
+	return dojo.hitch.apply(dojo, [ null ].concat(Array.prototype.slice.call(arguments, 0))); // Function
 };
 
 dojo.clone = function(/*anything*/ o){
