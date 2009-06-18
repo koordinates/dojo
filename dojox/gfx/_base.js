@@ -11,7 +11,7 @@ dojo.provide("dojox.gfx._base");
 		// return (new RegExp('(^|\\s+)'+classStr+'(\\s+|$)')).test(node.className)	// Boolean
 		var cls = node.getAttribute("className");
 		return cls && (" " + cls + " ").indexOf(" " + classStr + " ") >= 0;  // Boolean
-	}
+	};
 	g._addClass = function(/*DomNode*/node, /*String*/classStr){
 		//	summary:
 		//		Adds the specified classes to the end of the class list on the
@@ -20,31 +20,34 @@ dojo.provide("dojox.gfx._base");
 		if(!cls || (" " + cls + " ").indexOf(" " + classStr + " ") < 0){
 			node.setAttribute("className", cls + (cls ? " " : "") + classStr);
 		}
-	}
+	};
 	g._removeClass = function(/*DomNode*/node, /*String*/classStr){
 		//	summary: Removes classes from node.
 		var cls = node.getAttribute("className");
 		if(cls){
 			node.setAttribute("className", cls.replace(new RegExp('(^|\\s+)' + classStr + '(\\s+|$)'), "$1$2"));
 		}
-	}
+	};
 
 	// candidate for dojox.html.metrics (dynamic font resize handler is not implemented here)
 
 	//	derived from Morris John's emResized measurer
+
+	// NOTE: Review this
+
 	b._getFontMeasurements = function(){
 		//	summary
-		//	Returns an object that has pixel equivilents of standard font size values.
+		//	Returns an object that has pixel equivalents of standard font size values.
 		var heights = {
 			'1em':0, '1ex':0, '100%':0, '12pt':0, '16px':0, 'xx-small':0, 'x-small':0,
 			'small':0, 'medium':0, 'large':0, 'x-large':0, 'xx-large':0
 		};
 
-		if(dojo.isIE){
+		//if(dojo.isIE){
 			//	we do a font-size fix if and only if one isn't applied already.
 			//	NOTE: If someone set the fontSize on the HTML Element, this will kill it.
-			dojo.doc.documentElement.style.fontSize="100%";
-		}
+		//	dojo.doc.documentElement.style.fontSize="100%";
+		//}
 
 		//	set up the measuring node.
 		var div=dojo.doc.createElement("div");
@@ -63,8 +66,10 @@ dojo.provide("dojox.gfx._base");
 
 		//	do the measurements.
 		for(var p in heights){
-			div.style.fontSize = p;
-			heights[p] = Math.round(div.offsetHeight * 12/16) * 16/12 / 1000;
+			if (dojo.isOwnProperty(heights, p)) {
+				div.style.fontSize = p;
+				heights[p] = Math.round(div.offsetHeight * 12/16) * 16/12 / 1000;
+			}
 		}
 
 		dojo.body().removeChild(div);
@@ -104,8 +109,10 @@ dojo.provide("dojox.gfx._base");
 		// set new style
 		if(arguments.length > 1 && style){
 			for(var i in style){
-				if(i in empty){ continue; }
-				m.style[i] = style[i];
+				if (dojo.isOwnProperty(style, i)) {
+					if(i in empty){ continue; }
+					m.style[i] = style[i];
+				}
 			}
 		}
 		// set classes
@@ -178,11 +185,13 @@ dojo.mixin(dojox.gfx, {
 		// summary: copies the original object, and all copied properties from the "update" object
 		// defaults: Object: the object to be cloned before updating
 		// update:   Object: the object, which properties are to be cloned during updating
-		if(!update) return dojo.clone(defaults);
+		if(!update) { return dojo.clone(defaults); }
 		var result = {};
 		for(var i in defaults){
-			if(!(i in result)){
-				result[i] = dojo.clone((i in update) ? update[i] : defaults[i]);
+			if (dojo.isOwnProperty(defaults, i)) {
+				if(!(i in result)){
+					result[i] = dojo.clone((i in update) ? update[i] : defaults[i]);
+				}
 			}
 		}
 		return result; // Object
@@ -260,7 +269,7 @@ dojo.mixin(dojox.gfx, {
 	normalizedLength: function(len) {
 		// summary: converts any length value to pixels
 		// len: String: a length, e.g., "12pc"
-		if(len.length == 0) return 0;
+		if(!len.length) { return 0; }
 		if(len.length > 2){
 			var px_in_pt = dojox.gfx.px_in_pt();
 			var val = parseFloat(len);
