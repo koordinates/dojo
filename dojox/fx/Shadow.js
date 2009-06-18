@@ -68,7 +68,10 @@ dojo.declare("dojox.fx.Shadow",
 		// summary: append a shadow pieces to the node, and position it
 		var img;
 		var url = this.shadowPng + name.toUpperCase() + ".png";
-		if(dojo.isIE < 7){
+
+		// NOTE: Should be in IE6-only style sheet
+
+		if(typeof img.style.filter == 'string' && dojo.isHostObjectProperty(img, 'filters')){
 			img = dojo.create("div");
 			img.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+url+"'"+
 				(sizing?", sizingMethod='"+sizing+"'":"") + ")";
@@ -90,7 +93,7 @@ dojo.declare("dojox.fx.Shadow",
 	setOpacity: function(/* Float */n,/* Object? */animArgs){
 		// summary: set the opacity of the underlay
 		// note: does not work in IE? FIXME.
-		if(dojo.isIE){ return; } 
+
 		if(!animArgs){ animArgs = {}; } 
 		if(this.animate){
 			var _anims = [];
@@ -131,16 +134,15 @@ dojo.declare("dojox.fx.Shadow",
 		if (sideHeight < 0) { sideHeight = 0; }
 		if (y < 1) { y = 1; }
 		if (x < 1) { x = 1; }
-		with(this.pieces){
-			l.style.height = sideHeight+"px";
-			r.style.height = sideHeight+"px";
-			b.style.width = x+"px";
-			bl.style.top = y+"px";
-			b.style.top = y+"px";
-			br.style.top = y+"px";
-			tr.style.left = x+"px";
-			r.style.left = x+"px";
-			br.style.left = x+"px";
-		}
+		var pieces = this.pieces;
+		pieces.l.style.height = sideHeight+"px";
+		pieces.r.style.height = sideHeight+"px";
+		pieces.b.style.width = x+"px";
+		pieces.bl.style.top = y+"px";
+		pieces.b.style.top = y+"px";
+		pieces.br.style.top = y+"px";
+		pieces.tr.style.left = x+"px";
+		pieces.r.style.left = x+"px";
+		pieces.br.style.left = x+"px";
 	}
 });
