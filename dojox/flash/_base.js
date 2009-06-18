@@ -618,9 +618,7 @@ dojox.flash.Communicator.prototype = {
 		
 		// needed for IE; \0 is the NULL character
 
-		// NOTE: What is this supposed to do? Was substituting a "0".
-
-		data = data.replace(/\&custom_null\;/g, "\\0");
+		data = data.replace(/\&custom_null\;/g, "\0");
 	
 		// certain XMLish characters break Flash's wire serialization for
 		// ExternalInterface; these are encoded on the 
