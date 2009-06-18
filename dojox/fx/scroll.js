@@ -13,7 +13,7 @@ dojox.fx.smoothScroll = function(/* Object */args){
 	
 	if(!args.target){ args.target = dojo.coords(args.node,true); }
 
-	var isWindow = dojo[(dojo.isIE ? "isObject" : "isFunction")](args["win"].scrollTo);
+	var isWindow = dojo.isHostMethod(args.win, 'scrollTo');
 
 	var _anim = (isWindow) ?
 		(function(val){
