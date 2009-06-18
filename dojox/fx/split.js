@@ -142,8 +142,8 @@ dojo.mixin(dojox.fx,{
 				distance = args.distance * 2,
 				duration = args.duration,
 				ps = piece.style,
-				startTop = parseInt(ps.top),
-				startLeft = parseInt(ps.left),
+				startTop = parseInt(ps.top, 10),
+				startLeft = parseInt(ps.left, 10),
 				delay = 0,
 				randomX = 0,
 				randomY = 0;
@@ -162,9 +162,11 @@ dojo.mixin(dojox.fx,{
 			var distanceY = ((coords.h - pieceHeight) / 2 - pieceHeight * y),
 				distanceX = ((coords.w - pieceWidth) / 2 - pieceWidth * x),
 				distanceXY = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2)),
-				endTop = parseInt(startTop - distanceY * distance + distanceXY * randomY),
-				endLeft = parseInt(startLeft - distanceX * distance + distanceXY * randomX)
-			;
+
+				// NOTE: Truncuating intended?
+
+				endTop = parseInt(startTop - distanceY * distance + distanceXY * randomY, 10),
+				endLeft = parseInt(startLeft - distanceX * distance + distanceXY * randomX, 10);
 
 			// Create the animation objects for the piece
 			// These are separate anim objects so they can have different curves
@@ -270,14 +272,14 @@ dojo.mixin(dojox.fx,{
 			;
 			if(args.unhide){
 				properties.top = {
-					start: (parseInt(ps.top) - coords.h * args.distance),
-					end: parseInt(ps.top)
+					start: (parseInt(ps.top, 10) - coords.h * args.distance),
+					end: parseInt(ps.top, 10)
 				};
 				if(args.fade){
 					properties.opacity = {start: "0", end: "1"};
 				}
 			}else{
-				properties.top = {end: (parseInt(ps.top) + coords.h * args.distance)};
+				properties.top = {end: (parseInt(ps.top, 10) + coords.h * args.distance)};
 				if(args.fade){
 					properties.opacity = {end: "0"};
 				}
@@ -377,8 +379,8 @@ dojo.mixin(dojox.fx,{
 			}
 
 			// Determine the piece's direction
-			var left = parseInt(ps.left),
-				top = parseInt(ps.top),
+			var left = parseInt(ps.left, 10),
+				top = parseInt(ps.top, 10),
 				distanceX = args.distance*coords.w,
 				distanceY = args.distance*coords.h
 			;
@@ -496,8 +498,8 @@ dojo.mixin(dojox.fx,{
 			}
 
 			// Determine the piece's direction
-			var left = parseInt(ps.left),
-				top = parseInt(ps.top)
+			var left = parseInt(ps.left, 10),
+				top = parseInt(ps.top, 10)
 			;
 			if(colIsOdd){
 				if(rowIsOdd){
