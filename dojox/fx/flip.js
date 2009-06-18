@@ -3,7 +3,10 @@ dojo.experimental("dojox.fx.flip");
 dojo.require("dojo.fx");
 (function(){
 	
-	// because ShrinkSafe will eat this up: 
+	// because ShrinkSafe will eat this up:
+
+	// NOTE: How so?
+
 	var borderConst = "border",
 		widthConst = "Width",
 		heightConst = "Height",
@@ -73,7 +76,7 @@ dojo.require("dojo.fx");
 			anims = [],
 			duration = args.duration ? args.duration / 2 : 250,
 			dir = args.dir || "left", 
-			pConst = .9,
+			pConst = 0.9,
 			transparentColor = "transparent",
 			whichAnim = args.whichAnim,
 			axis = args.axis || "center",
@@ -84,14 +87,21 @@ dojo.require("dojo.fx");
 			return ((new dojo.Color(color)).toHex() === "#000000") ? "#000001" : color;
 		};
 
-		if(dojo.isIE < 7){
-			endColor = convertColor(endColor);
-			lightColor = convertColor(lightColor);
-			darkColor = convertColor(darkColor);
-			bgColor = convertColor(bgColor);
-			transparentColor = "black";
-			helperNode.style.filter = "chroma(color='#000000')";
-		}
+		// NOTE: Should be in IE6-only style sheet
+
+		//if(dojo.isIE < 7){
+
+		// NOTE: Same for all IE for now (could use multiple object inference or check for cascaded chroma filter)
+
+			if (dojo.isHostObjectProperty(helperNode, 'filters') && typeof helperNode.style.filter == 'string') {
+				endColor = convertColor(endColor);
+				lightColor = convertColor(lightColor);
+				darkColor = convertColor(darkColor);
+				bgColor = convertColor(bgColor);
+				transparentColor = "black";
+				helperNode.style.filter = "chroma(color='#000000')";
+			}
+		//}
 
 		var init = (function(n){
 			return function(){
@@ -102,14 +112,14 @@ dojo.require("dojo.fx");
 					width: ret.w,
 					height: ret.h
 				};
-			}
+			};
 		})(node);
 		init();
 		// helperNode initialization
 		hs = {
 			position: "absolute",
-			top: dims["top"] + "px",
-			left: dims["left"] + "px",
+			top: dims.top + "px",
+			left: dims.left + "px",
 			height: "0",
 			width: "0",
 			zIndex: args.zIndex || (s.zIndex || 0),
@@ -119,8 +129,8 @@ dojo.require("dojo.fx");
 		};
 		var props = [ {}, 
 			{
-				top: dims["top"],
-				left: dims["left"]
+				top: dims.top,
+				left: dims.left
 			}
 		];
 		var dynProperties = {
@@ -135,9 +145,9 @@ dojo.require("dojo.fx");
 		// .4 <= pConst <= .9
 		if(typeof depth != "undefined"){
 			depth = Math.max(0, Math.min(1, depth)) / 2;
-			pConst = .4 + (.5 - depth);
+			pConst = 0.4 + (0.5 - depth);
 		}else{
-			pConst = Math.min(.9, Math.max(.4, dims[pn[5].toLowerCase()] / dims[pn[4].toLowerCase()]));
+			pConst = Math.min(0.9, Math.max(0.4, dims[pn[5].toLowerCase()] / dims[pn[4].toLowerCase()]));
 		}
 		var p0 = props[0];
 		for(var i = 4; i < 6; i++){
@@ -165,10 +175,9 @@ dojo.require("dojo.fx");
 
 		p0[borderConst + pn[1] + widthConst] = 0; 
 		p0[borderConst + pn[1] + "Color"] = darkColor; 
-		p0[borderConst + pn[2] + widthConst] = p0[borderConst + pn[3] + widthConst] = axis != "cube" 
-			? (dims["end" + pn[5] +  "Max"] - dims["end" + pn[5] + "Min"]) / 2
-			: dims[pn[6]] / 2
-		;
+		p0[borderConst + pn[2] + widthConst] = p0[borderConst + pn[3] + widthConst] = axis != "cube" ?
+			(dims["end" + pn[5] +  "Max"] - dims["end" + pn[5] + "Min"]) / 2 :
+			dims[pn[6]] / 2;
 		p0[pn[7].toLowerCase()] = dims[pn[7].toLowerCase()] + dims[pn[4].toLowerCase()] / 2 + (args.shift || 0);
 		p0[pn[5].toLowerCase()] = dims[pn[6]];
 
@@ -192,7 +201,9 @@ dojo.require("dojo.fx");
 		};
 		if(whichAnim == "last"){
 			for(i in p0){
-				p0[i] = { start: p0[i] };
+				if (dojo.isOwnProperty(p0, i)) {
+					p0[i] = { start: p0[i] };
+				}
 			}
 			p0[borderConst + pn[1] + "Color"] = { start: darkColor, end: endColor }; 
 			p1 = p0;
@@ -221,7 +232,7 @@ dojo.require("dojo.fx");
 
 		return dojo.fx.chain(anims); // dojo._Animation
 
-	}
+	};
 
 	dojox.fx.flipCube = function(/*Object*/ args){
 		// summary: An extension to `dojox.fx.flip` providing a more 3d-like rotation
@@ -304,7 +315,7 @@ dojo.require("dojo.fx");
 			p = d.args
 		;
 		args.duration = args.duration ? args.duration * 2 : 500; 
-		args.depth = .8;
+		args.depth = 0.8;
 		args.axis = "cube";
 		for(var i = p.length - 1; i >= 0; i--){
 			dojo.mixin(args, p[i]);
@@ -366,12 +377,11 @@ dojo.require("dojo.fx");
 				startColor = r ? endColor : args.startColor || n.style.backgroundColor
 			;
 			hn[i] = dojo.clone(helperNode);
-			var	finalize = function(x){
+			var finalize = function(x){
 					return function(){
 						dojo.destroy(hn[x]);
-					}
-				}(i)
-			;
+					};
+				}(i);
 			dojo.body().appendChild(hn[i]);
 			hs[i] = {
 				backgroundColor: r ? startColor : bgColor
@@ -451,8 +461,7 @@ dojo.require("dojo.fx");
 			anims[i] = [];
 			for(var j = 0; j < cols; j++){
 				var hn = dojo.clone(helperNode),
-					l = r ? j : cols - (j + 1)
-				; 
+					l = r ? j : cols - (j + 1);
 				var adjustClip = function(xn, yCounter, xCounter){
 					return function(){
 						if(!(yCounter % 2)){
@@ -464,20 +473,20 @@ dojo.require("dojo.fx");
 								clip: "rect(" + yCounter * h + "px," + nw + "px," + ((yCounter + 1) * h) + "px," + ((xCounter + 1) * w) + "px)"
 							});
 						}
-					}
+					};
 				}(cn, i, j);
 	     		dojo.body().appendChild(hn);
 	     		dojo.style(hn, {
 	     		    left: x + l * w + "px",
 	     		    top: y + i * h + "px",
-					visibility: "hidden"
+			    visibility: "hidden"
 	     		});
 				var a = dojox.fx.flipPage({
 				   node: hn,
 				   dir: d,
 				   duration: args.duration || 900,
 				   shift: signum * w/2,
-				   depth: .2,
+				   depth: 0.2,
 				   darkColor: args.darkColor,
 				   lightColor: args.lightColor,
 				   startColor: args.startColor || args.node.style.backgroundColor
@@ -485,9 +494,8 @@ dojo.require("dojo.fx");
 				removeHelper = function(xn){
 					return function(){
 						dojo.destroy(xn);
-					}
-				}(hn)
-				;
+					};
+				}(hn);
 				dojo.connect(a, "play", this, adjustClip);
 				dojo.connect(a, "play", this, removeHelper);
 				anims[i].push(a);
