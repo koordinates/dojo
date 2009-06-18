@@ -45,7 +45,7 @@ dojox.fx._Line = function(start, end){
 				res[i] = (d[i] * n) + s;
 			}, this);
 			return res; // Array
-		}
+		};
 	}else{
 		// single value branch, document here for both branches:
 		this.getValue = function(/*float*/ n){
@@ -53,6 +53,6 @@ dojox.fx._Line = function(start, end){
 			// n: a floating point number greater than 0 and less than 1
 			// returns: Mixed 
 			return (d * n) + this.start; // Decimal
-		}
+		};
 	}
 };
