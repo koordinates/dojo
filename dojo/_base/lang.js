@@ -8,16 +8,18 @@ dojo.isString = function(/*anything*/ it){
 	return typeof it == "string"; // Boolean
 };
 
+// NOTE: Do not pass host objects
+
 dojo.isArray = function(/*anything*/ it){
 	//	summary:
 	//		Return true if it is an Array
 
-	var t = Object.prototype.toString.call(it);
+	var t = Object.prototype.toString.call(it), isOwnProperty = dojo.isOwnProperty;
 	switch (t) {
 	case '[object Array]':
 		return true;
 	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
-		return (it && typeof it.length == 'number' && isFinite(it.length) && it.splice && !dojo.isOwnProperty(it, 'splice'));
+		return dojo.isObject(it) && it && typeof it.length == 'number' && isFinite(it.length) && dojo.isFunction(it.splice) && dojo.isFunction(it.reverse) && !isOwnProperty(it, 'splice') && !isOwnProperty(it, 'reverse') && !isOwnProperty(it, 'length');
 	}
 	return false;
 };
@@ -31,7 +33,7 @@ dojo.isDate = function(/*anything*/ it) {
 	case '[object Date]':
 		return true;
 	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
-		return (it && it.getTime && !dojo.isOwnProperty(it, 'getTime'));
+		return dojo.isObject(it) && it && dojo.isFunction(it.getTime) && !dojo.isOwnProperty(it, 'getTime');
 	}
 	return false;
 };
