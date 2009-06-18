@@ -55,7 +55,10 @@ dojo.require("dojo.fx");
 		d.forEach(dojox.fx._allowedProperties,function(prop){
 			if(_before[i] != _after[i]){
 				// FIXME: the static unit: px is not good, either. need to parse unit from computed style?
-				calculated[prop] = parseInt(_after[i]) /* start: parseInt(_before[i]), unit: 'px' */ ; 
+
+				// NOTE: Yes as IE does not compute styles (need to keep track of units)
+
+				calculated[prop] = parseInt(_after[i], 10) /* start: parseInt(_before[i]), unit: 'px' */ ; 
 			} 
 			i++;
 		});
@@ -83,7 +86,8 @@ dojo.require("dojo.fx");
 			// |	// animate to line-height:40px
 			// |	dojo.fx.addClass({ node:"test", cssClass:"foo" }).play();
 			// 
-			var node = args.node = d.byId(args.node); 
+			var node = args.node = d.byId(args.node);
+			var _beforeStyle;
 
 			var pushClass = (function(n){
 				// summary: onEnd we want to add the class to the node 
@@ -94,13 +98,13 @@ dojo.require("dojo.fx");
 				//	after the animation is done (potentially more flicker)
 				return function(){
 					d.addClass(n, args.cssClass); 
-					n.style.cssText = _beforeStyle; 
-				}
+					n.style.cssText = _beforeStyle;
+				};
 			})(node);
 
 			// _getCalculatedStleChanges is the core of our style/class animations
 			var mixedProperties = _getCalculatedStyleChanges(args,true);
-			var _beforeStyle = node.style.cssText; 
+			_beforeStyle = node.style.cssText; 
 			var _anim = d.animateProperty(d.mixin({
 				properties: mixedProperties
 			}, args));
@@ -126,7 +130,8 @@ dojo.require("dojo.fx");
 			// |		cssClass: "foo"
 			// |	}).play();
 
-			var node = (args.node = dojo.byId(args.node)); 
+			var node = (args.node = dojo.byId(args.node));
+			var _beforeStyle;
 
 			var pullClass = (function(n){
 				// summary: onEnd we want to remove the class from the node 
@@ -139,11 +144,11 @@ dojo.require("dojo.fx");
 				return function(){
 					d.removeClass(n, args.cssClass); 
 					n.style.cssText = _beforeStyle; 
-				}
+				};
 			})(node);
 
 			var mixedProperties = _getCalculatedStyleChanges(args, false);
-			var _beforeStyle = node.style.cssText; 
+			_beforeStyle = node.style.cssText; 
 			var _anim = d.animateProperty(d.mixin({
 				properties: mixedProperties
 			}, args));
