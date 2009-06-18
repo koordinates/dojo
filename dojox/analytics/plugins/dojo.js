@@ -8,6 +8,9 @@ dojox.analytics.plugins.dojo = (function(){
 		var data = {};
 		for(var i in dojo){
 			if (dojo.isOwnProperty(dojo, i)) {
+
+				// NOTE: What is allowed here?
+
 				if ((i=="version") || ((!dojo.isObject(dojo[i]))&&(i[0]!="_"))){
 					data[i]=dojo[i];
 				}
