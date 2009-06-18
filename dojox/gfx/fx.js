@@ -8,7 +8,8 @@ dojo.require("dojox.gfx.matrix");
 	// Generic interpolators. Should they be moved to dojox.fx?
 
 	var InterpolNumber = function(start, end){
-		this.start = start, this.end = end;
+		this.start = start;
+		this.end = end;
 	};
 	d.extend(InterpolNumber, {
 		getValue: function(r){
@@ -17,7 +18,8 @@ dojo.require("dojox.gfx.matrix");
 	});
 
 	var InterpolUnit = function(start, end, unit){
-		this.start = start, this.end = end;
+		this.start = start;
+		this.end = end;
 		this.unit = unit;
 	};
 	d.extend(InterpolUnit, {
@@ -27,7 +29,8 @@ dojo.require("dojox.gfx.matrix");
 	});
 
 	var InterpolColor = function(start, end){
-		this.start = start, this.end = end;
+		this.start = start;
+		this.end = end;
 		this.temp = new dojo.Color();
 	};
 	d.extend(InterpolColor, {
@@ -53,8 +56,11 @@ dojo.require("dojox.gfx.matrix");
 	d.extend(InterpolObject, {
 		getValue: function(r){
 			var ret = dojo.clone(this.def);
-			for(var i in this.values){
-				ret[i] = this.values[i].getValue(r);
+			var values = this.values;
+			for(var i in values){
+				if (dojo.isOwnProperty(values, i)) {
+					ret[i] = values[i].getValue(r);
+				}
 			}
 			return ret;
 		}
@@ -154,7 +160,7 @@ dojo.require("dojox.gfx.matrix");
 		var anim = new d._Animation(args), shape = args.shape, stroke;
 		d.connect(anim, "beforeBegin", anim, function(){
 			stroke = shape.getStroke();
-			var prop = args.color, values = {}, value, start, end;
+			var prop = args.color, values = {}, start, end;
 			if(prop){
 				values.color = getColorInterpol(prop, stroke, "color", transparent);
 			}
@@ -202,7 +208,7 @@ dojo.require("dojox.gfx.matrix");
 		var anim = new d._Animation(args), shape = args.shape, fill;
 		d.connect(anim, "beforeBegin", anim, function(){
 			fill = shape.getFill();
-			var prop = args.color, values = {};
+			var prop = args.color;
 			if(prop){
 				this.curve = getColorInterpol(prop, fill, "", transparent);
 			}
@@ -225,7 +231,7 @@ dojo.require("dojox.gfx.matrix");
 		var anim = new d._Animation(args), shape = args.shape, font;
 		d.connect(anim, "beforeBegin", anim, function(){
 			font = shape.getFont();
-			var prop = args.style, values = {}, value, start, end;
+			var prop = args.style, values = {}, start, end;
 			if(prop && prop.values){
 				values.style = new InterpolValues(prop.values);
 			}
