@@ -75,7 +75,7 @@ dojo.declare("dojox.grid.data.Mixer", null, {
 
 dojox.grid.data.compare = function(a, b){
 	return (a > b ? 1 : (a == b ? 0 : -1));
-}
+};
 
 dojo.declare('dojox.grid.data.Field', null, {
 	constructor: function(inName){
