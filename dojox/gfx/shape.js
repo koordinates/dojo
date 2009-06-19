@@ -193,6 +193,9 @@ dojo.declare("dojox.gfx.Shape", null, {
 			return this;	// self
 		}
 		// normalize the stroke
+
+		// NOTE: Trying to disciminate between Array objects and Object objects should be avoided
+
 		if(typeof stroke == "string" || dojo.isArray(stroke) || stroke instanceof dojo.Color){
 			stroke = {color: stroke};
 		}
@@ -432,13 +435,7 @@ dojo.declare("dojox.gfx.shape.Surface", null, {
 		dojo.forEach(this._events, dojo.disconnect);
 		this._events = [];
 		this.rawNode = null;	// recycle it in _nodes, if it needs to be recycled
-		if(dojo.isIE){
-			while(this._parent.lastChild){
-				dojo.destroy(this._parent.lastChild);
-			}
-		}else{
-			this._parent.innerHTML = "";
-		}
+		this._parent.innerHTML = "";		
 		this._parent = null;
 	},
 	getEventSource: function(){
@@ -590,10 +587,10 @@ dojo.declare("dojox.gfx.shape.Polyline", dojox.gfx.Shape, {
 			var bbox = {l: t.x, t: t.y, r: t.x, b: t.y};
 			for(var i = 1; i < l; ++i){
 				t = p[i];
-				if(bbox.l > t.x) bbox.l = t.x;
-				if(bbox.r < t.x) bbox.r = t.x;
-				if(bbox.t > t.y) bbox.t = t.y;
-				if(bbox.b < t.y) bbox.b = t.y;
+				if(bbox.l > t.x) { bbox.l = t.x; }
+				if(bbox.r < t.x) { bbox.r = t.x; }
+				if(bbox.t > t.y) { bbox.t = t.y; }
+				if(bbox.b < t.y) { bbox.b = t.y; }
 			}
 			this.bbox = {
 				x:		bbox.l,
