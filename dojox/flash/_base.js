@@ -268,13 +268,14 @@ dojox.flash.Info.prototype = {
 	
 	_detectVersion: function(){
 		var versionStr;
+		var useActiveX = dojo.isHostObjectProperty(window, 'ActiveXObject') && (!dojo.isHostObjectProperty(window.navigator, 'plugins') || typeof window.navigator.plugins.length != 'number' || !window.navigator.plugins.length);
 
 		// NOTE: Replace this
 		
 		// loop backwards through the versions until we find the newest version	
 		for(var testVersion = 25; testVersion > 0; testVersion--){
-			var activeX = dojo.isHostObjectProperty(window, 'ActiveXObject') && !dojo.isHostObjectProperty(window.navigator, 'plugins');
-			if(activeX){
+
+			if(useActiveX){
 				var axo;
 				try{
 					if(testVersion > 6){
