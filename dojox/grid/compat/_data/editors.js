@@ -49,12 +49,11 @@ dojo.declare("dojox.grid.editors.Base", null, {
 		//	cell data to edit
 		// inRowIndex: int
 		//	grid row index
-		if(dojo.isIE){
-			// IE sux bad
+		//if(dojo.isIE){
 			dojox.grid.whenIdle(this, "focus", inRowIndex, inNode);
-		}else{
-			this.focus(inRowIndex, inNode);
-		}
+		//}else{
+		//	this.focus(inRowIndex, inNode);
+		//}
 	},
 	dispatchEvent: function(m, e){
 		if(m in this){
@@ -80,8 +79,8 @@ dojo.declare("dojox.grid.editors.Base", null, {
 		//	value of editor
 		var n = this.getNode(inRowIndex);
 		if(n){
-			n[this._valueProp] = inValue
-		};
+			n[this._valueProp] = inValue;
+		}
 	},
 	focus: function(inRowIndex, inNode){
 		// summary:
