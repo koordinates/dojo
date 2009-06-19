@@ -3,28 +3,12 @@ dojo.provide("dojox.gfx.utils");
 dojo.require("dojox.gfx");
 
 (function(){
-	var d = dojo, g = dojox.gfx, gu = g.utils;
-
-	dojo.mixin(gu, {
-		forEach: function(
-			/* dojox.gfx.Surface || dojox.gfx.Shape */ object,
-			/*Function|String|Array*/ f, /*Object?*/ o
-		){
-			o = o || d.global;
-			f.call(o, object);
-			if(object instanceof g.Surface || object instanceof g.Group){
-				d.forEach(object.children, function(shape){
-					gu.inspect(shape, f, o);
-				});
-			}
-		},
-
-		serialize: function(
+	var serialize = function(
 			/* dojox.gfx.Surface || dojox.gfx.Shape */ object
 		){
-			var t = {}, v, isSurface = object instanceof g.Surface;
-			if(isSurface || object instanceof g.Group){
-				t.children = d.map(object.children, gu.serialize);
+			var t = {}, v, isSurface = object instanceof dojox.gfx.Surface;
+			if(isSurface || object instanceof dojox.gfx.Group){
+				t.children = dojo.map(object.children, dojox.gfx.utils.serialize);
 				if(isSurface){
 					return t.children;	// Array
 				}
@@ -48,21 +32,14 @@ dojo.require("dojox.gfx");
 				if(v){ t.font = v; }
 			}
 			return t;	// Object
-		},
+		};
 
-		toJson: function(
-			/* dojox.gfx.Surface || dojox.gfx.Shape */ object,
-			/* Boolean? */ prettyPrint
-		){
-			return d.toJson(gu.serialize(object), prettyPrint);	// String
-		},
-
-		deserialize: function(
+	var deserialize = function(
 			/* dojox.gfx.Surface || dojox.gfx.Shape */ parent,
 			/* dojox.gfx.Shape || Array */ object
 		){
-			if(object instanceof Array){
-				return d.map(object, d.hitch(null, gu.serialize, parent));	// Array
+			if(dojo.isArray(object)){
+				return dojo.map(object, dojo.hitch(null, serialize, parent));	// Array
 			}
 			var shape = ("shape" in object) ? parent.createShape(object.shape) : parent.createGroup();
 			if("transform" in object){
@@ -78,16 +55,41 @@ dojo.require("dojox.gfx");
 				shape.setFont(object.font);
 			}
 			if("children" in object){
-				d.forEach(object.children, d.hitch(null, gu.deserialize, shape));
+				dojo.forEach(object.children, dojo.hitch(null, deserialize, shape));
 			}
 			return shape;	// dojox.gfx.Shape
+		};
+
+	dojo.mixin(dojox.gfx.utils, {
+		forEach: function(
+			/* dojox.gfx.Surface || dojox.gfx.Shape */ object,
+			/*Function|String|Array*/ f, /*Object?*/ o
+		){
+			o = o || dojo.global;
+			f.call(o, object);
+			if(object instanceof dojox.gfx.Surface || object instanceof dojox.gfx.Group){
+				dojo.forEach(object.children, function(shape){
+					dojox.gfx.utils.inspect(shape, f, o);
+				});
+			}
 		},
+
+		serialize: serialize,
+
+		toJson: function(
+			/* dojox.gfx.Surface || dojox.gfx.Shape */ object,
+			/* Boolean? */ prettyPrint
+		){
+			return dojo.toJson(serialize(object), prettyPrint);	// String
+		},
+
+		deserialize: deserialize,
 
 		fromJson: function(
 			/* dojox.gfx.Surface || dojox.gfx.Shape */ parent,
 			/* String */ json
 		){
-			return gu.deserialize(parent, d.fromJson(json));	// Array || dojox.gfx.Shape
+			return deserialize(parent, dojo.fromJson(json));	// Array || dojox.gfx.Shape
 		}
 	});
 })();
