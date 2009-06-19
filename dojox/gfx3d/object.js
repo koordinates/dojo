@@ -123,7 +123,7 @@ dojo.declare("dojox.gfx3d.Object", null, {
 	},
 
 	toStdFill: function(lighting, normal){
-		return (this.fillStyle && typeof this.fillStyle['type'] != "undefined") ? lighting[this.fillStyle.type](normal, this.fillStyle.finish, this.fillStyle.color) : this.fillStyle;
+		return (this.fillStyle && typeof this.fillStyle.type != "undefined") ? lighting[this.fillStyle.type](normal, this.fillStyle.finish, this.fillStyle.color) : this.fillStyle;
 	},
 
 	invalidate: function(){
@@ -253,7 +253,7 @@ dojo.declare("dojox.gfx3d.Edges", dojox.gfx3d.Object, {
 	draw: function(){
 		var c = this.cache;
 		if(this.shape){
-			this.shape.setShape("")
+			this.shape.setShape("");
 		}else{
 			this.shape = this.renderer.createPath();
 		}
@@ -439,12 +439,12 @@ dojo.declare("dojox.gfx3d.Path3d", dojox.gfx3d.Object, {
 		var m = dojox.gfx3d.matrix.multiply(camera, this.matrix);
 		// iterate all the segments and convert them to 2D canvas
 		// TODO consider the relative mode
-		var path = ""
+		var path = "";
 		var _validSegments = this._validSegments;
 		dojo.forEach(this.segments, function(item){
 			path += item.action;
 			for(var i = 0; i < item.args.length; i+= _validSegments[item.action.toLowerCase()] ){
-				var pt = dojox.gfx3d.matrix.multiplyPoint(m, item.args[i], item.args[i+1], item.args[i+2])
+				var pt = dojox.gfx3d.matrix.multiplyPoint(m, item.args[i], item.args[i+1], item.args[i+2]);
 				path += " " + pt.x + " " + pt.y; 
 			}
 		});
@@ -612,7 +612,7 @@ dojo.declare("dojox.gfx3d.Polygon", dojox.gfx3d.Object, {
 	setObject: function(newObject){
 		// summary: setup the object
 		// newObject: Array of points || Object
-		this.object = dojox.gfx.makeParameters(this.object, (newObject instanceof Array) ? {path: newObject} : newObject)
+		this.object = dojox.gfx.makeParameters(this.object, (newObject instanceof Array) ? {path: newObject} : newObject);
 		return this;
 	},
 
@@ -789,7 +789,9 @@ dojo.declare("dojox.gfx3d.Cylinder", dojox.gfx3d.Object, {
 			: dojox.gfx3d.gradient(this.renderer.lighting, this.fillStyle, this.object.center, this.object.radius, Math.PI, 2 * Math.PI, m);
 		if(isNaN(rx) || isNaN(ry) || isNaN(theta)){
 			// in case the cap is invisible (parallel to the incident vector)
-			rx = this.object.radius, ry = 0, theta = 0;
+			rx = this.object.radius;
+			ry = 0;
+			theta = 0;
 		}
 		this.cache = {center: center, top: top, rx: rx, ry: ry, theta: theta, gradient: gradient};
 	},
@@ -937,8 +939,8 @@ dojo.declare("dojox.gfx3d.Viewport", dojox.gfx.Group, {
 
 	setDimensions: function(dim){
 		if(dim){
-			var w = dojo.isString(dim.width) ? parseInt(dim.width)  : dim.width;
-			var h = dojo.isString(dim.height) ? parseInt(dim.height) : dim.height;
+			var w = dojo.isString(dim.width) ? parseInt(dim.width, 10)  : dim.width;
+			var h = dojo.isString(dim.height) ? parseInt(dim.height, 10) : dim.height;
 			var trs = this.rawNode.style;
 			trs.height = h;
 			trs.width = w;
