@@ -20,7 +20,7 @@ dojo.declare("dojox.grid.data.Model", null, {
 		this.observers.push({o: inObserver, p: inPrefix||'model' });
 	},
 	notObserver: function(inObserver){
-		for(var i=0, m, o; (o=this.observers[i]); i++){
+		for(var i=0, o; (o=this.observers[i]); i++){
 			if(o.o==inObserver){
 				this.observers.splice(i, 1);
 				return;
@@ -31,7 +31,7 @@ dojo.declare("dojox.grid.data.Model", null, {
 		var a = inArgs || [];
 		for(var i=0, m, o; (o=this.observers[i]); i++){
 			m = o.p + inMsg; o = o.o;
-			(m in o)&&(o[m].apply(o, a));
+			if (m in o) { o[m].apply(o, a); }
 		}
 	},
 	// updates
@@ -79,13 +79,13 @@ dojo.declare("dojox.grid.data.Model", null, {
 	},
 	// sort
 	canSort: function(/* (+|-)column_index+1, ... */){
-		return this.sort != null;
+		return this.sort !== null && this.sort !== undefined;
 	},
 	generateComparator: function(inCompare, inField, inTrueForAscend, inSubCompare){
 		return function(a, b){
 			var ineq = inCompare(a[inField], b[inField]);
 			return ineq ? (inTrueForAscend ? ineq : -ineq) : inSubCompare && inSubCompare(a, b);
-		}
+		};
 	},
 	makeComparator: function(inIndices){
 		var idx, col, field, result = null;
@@ -250,9 +250,11 @@ dojo.declare("dojox.grid.data.Objects", dojox.grid.data.Table, {
 	autoAssignFields: function(){
 		var d = this.data[0], i = 0, field;
 		for(var f in d){
-			field = this.fields.get(i++);
-			if (!dojo.isString(field.key)){
-				field.key = f;
+			if (dojo.isOwnProperty(d, f)) {
+				field = this.fields.get(i++);
+				if (!dojo.isString(field.key)){
+					field.key = f;
+				}
 			}
 		}
 	},
@@ -313,7 +315,7 @@ dojo.declare("dojox.grid.data.Dynamic", dojox.grid.data.Table, {
 	},
 	rowsProvided: function(inRowIndex, inCount){
 		this.requests--;
-		if(this.requests == 0){
+		if(!this.requests){
 			this.requestsPending(false);
 		}
 	},
@@ -346,7 +348,7 @@ dojo.declare("dojox.grid.data.Dynamic", dojox.grid.data.Table, {
 	},
 	// removal
 	removePages: function(inRowIndexes){
-		for(var i=0, r; ((r=inRowIndexes[i]) != undefined); i++){
+		for(var i=0, r; r=inRowIndexes[i] !== undefined && r !== null; i++){
 			this.pages[this.rowToPage(r)] = false;
 		}
 		this.bop = this.eop =-1;
@@ -489,7 +491,7 @@ dojo.declare("dojox.grid.data.DojoData", dojox.grid.data.Dynamic, {
 	},
 	processRows: function(items, request){
 		// console.debug(arguments);
-		if(!items || items.length == 0){ return; }
+		if(!items || !items.length){ return; }
 		this._setupFields(items[0]);
 		dojo.forEach(items, function(item, idx){
 			var row = this._createRow(item);
@@ -622,12 +624,13 @@ dojo.declare("dojox.grid.data.DojoData", dojox.grid.data.Dynamic, {
 		}
 	},
 	_storeDatumDelete: function(item){
-		if(dojo.indexOf(this._currentlyProcessing, item) != -1)
+		if(dojo.indexOf(this._currentlyProcessing, item) != -1) {
 			return;
+		}
 		// the store has deleted some item under us, need to remove that item from
 		// the view if possible.  It may be the deleted item isn't even in the grid.
 		var rowId = this._getRowId(item, true);
-		if(rowId != null){
+		if(rowId !== null){
 			this._removeItems([rowId]);
 		}
 	},
@@ -651,10 +654,13 @@ dojo.declare("dojox.grid.data.DojoData", dojox.grid.data.Dynamic, {
 			this._setupFields(storeItem);
 		}
 		var row = this._createRow(storeItem);
-		for(var i in this._rowIdentities){ //increment all the remaining row ids up one
-			var rowIdentity = this._rowIdentities[i];
-			if(rowIdentity.rowId >= index){
-				rowIdentity.rowId++;
+		var rowIdentities = this._rowIdentities;
+		for(var i in rowIdentities){ //increment all the remaining row ids up one
+			if (dojo.isOwnProperty(rowIdentities, i)) {
+				var rowIdentity = rowIdentities[i];
+				if(rowIdentity.rowId >= index){
+					rowIdentity.rowId++;
+				}
 			}
 		}
 		this._setRowId(storeItem, 0, index);
