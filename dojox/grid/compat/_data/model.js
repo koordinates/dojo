@@ -325,7 +325,7 @@ dojo.declare("dojox.grid.data.Dynamic", dojox.grid.data.Table, {
 		if(count > 0){
 			this.requests++;
 			this.requestsPending(true);
-			setTimeout(dojo.hitch(this, "requestRows", row, count), 1);
+			window.setTimeout(dojo.hitch(this, "requestRows", row, count), 1);
 			//this.requestRows(row, count);
 		}
 	},
