@@ -56,7 +56,7 @@ dojo.extend(dojox.gfx.Shape, {
 		//	dojox.gfx.defaultPattern,
 		//	or dojo.Color)
 
-		var p = this.rawNode.getHost().content, r = this.rawNode, f;
+		var p = this.rawNode.getHost().content, f;
 		if(!fill){
 			// don't fill
 			this.fillStyle = null;
@@ -123,7 +123,7 @@ dojo.extend(dojox.gfx.Shape, {
 		// stroke: Object: a stroke object
 		//	(see dojox.gfx.defaultStroke)
 
-		var p = this.rawNode.getHost().content, r = this.rawNode;
+		var i, p = this.rawNode.getHost().content, r = this.rawNode;
 		if(!stroke){
 			// don't stroke
 			this.strokeStyle = null;
@@ -153,27 +153,31 @@ dojo.extend(dojox.gfx.Shape, {
 			}
 			var da = s.style.toLowerCase();
 			if(da in dojox.gfx.silverlight.dasharray){ da = dojox.gfx.silverlight.dasharray[da]; }
-			if(da instanceof Array){
+
+			if(typeof da == 'string'){
+				r.strokeDashArray = null;
+			}else{
+
+				// Array
+
 				da = dojo.clone(da);
 				/*
-				for(var i = 0; i < da.length; ++i){
+				for(i = 0; i < da.length; ++i){
 					da[i] *= s.width;
 				}
 				*/
 				if(s.cap != "butt"){
-					for(var i = 0; i < da.length; i += 2){
+					for(i = 0; i < da.length; i += 2){
 						//da[i] -= s.width;
-						--da[i]
+						--da[i];
 						if(da[i] < 1){ da[i] = 1; }
 					}
-					for(var i = 1; i < da.length; i += 2){
+					for(i = 1; i < da.length; i += 2){
 						//da[i] += s.width;
 						++da[i];
 					}
 				}
 				r.strokeDashArray = da.join(",");
-			}else{
-				r.strokeDashArray = null;
 			}
 		}
 		return this;	// self
@@ -181,7 +185,7 @@ dojo.extend(dojox.gfx.Shape, {
 
 	_getParentSurface: function(){
 		var surface = this.parent;
-		for(; surface && !(surface instanceof dojox.gfx.Surface); surface = surface.parent);
+		for(; surface && !(surface instanceof dojox.gfx.Surface); surface = surface.parent) {}
 		return surface;
 	},
 
@@ -580,7 +584,7 @@ dojox.gfx.createSurface = function(parentNode, width, height){
 
 // the function below is meant to be global, it is called from
 // the Silverlight's error handler
-__dojoSilverlightError = function(sender, err){
+var __dojoSilverlightError = function(sender, err){
 	var t = "Silverlight Error:\n" +
 		"Code: " + err.ErrorCode + "\n" +
 		"Type: " + err.ErrorType + "\n" +
@@ -593,7 +597,7 @@ __dojoSilverlightError = function(sender, err){
 			break;
 		case "RuntimeError":
 			t += "MethodName: " + err.methodName + "\n";
-			if(err.lineNumber != 0){
+			if(err.lineNumber){
 				t +=
 					"Line: " + err.lineNumber + "\n" +
 					"Position: " + err.charPosition + "\n";
@@ -751,5 +755,5 @@ dojo.extend(dojox.gfx.Surface, dojox.gfx.shape.Creator);
 	dojo.extend(dojox.gfx.Surface, eventsProcessing);
 	dojox.gfx.equalSources = function(a, b){
 		return a && b && a.equals(b);
-	}
+	};
 })();
