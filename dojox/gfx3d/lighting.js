@@ -196,8 +196,9 @@ dojo.require("dojox.gfx._base");
 				color = lite.scaleColor(pigment.a, lite.multiplyColor(pigment, lite.addColor(ambient, diffuse))),
 				cool = lite.addColor(this.npr_cool, lite.scaleColor(this.npr_alpha, color)),
 				warm = lite.addColor(this.npr_warm, lite.scaleColor(this.npr_beta,  color)),
-				d = (1 + lite.dot(this.incident, normal)) / 2,
-				color = lite.scaleColor(this.npr_scale, lite.addColor(color, lite.mixColor(cool, warm, d)));
+				d = (1 + lite.dot(this.incident, normal)) / 2;
+
+			color = lite.scaleColor(this.npr_scale, lite.addColor(color, lite.mixColor(cool, warm, d)));
 			color.a = pigment.a;
 			return lite.fromStdColor(lite.saturateColor(color));
 		}
