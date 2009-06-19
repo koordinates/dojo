@@ -11,7 +11,7 @@ dojo.mixin(dojox.gfx3d.vector, {
 	center: function(){
 		// summary: center of the vectors
 		var l = arguments.length;
-		if(l == 0){
+		if(!l){
 			return {x: 0, y: 0, z: 0};
 		} 
 		var v = dojox.gfx3d.vector.sum(arguments);
@@ -93,7 +93,7 @@ dojo.mixin(dojox.gfx3d.vector, {
 		// b: Object: a point
 		// c: Object: a point
 		var l, m, n; 
-		if(a instanceof Array){
+		if(dojo.isArray(a)){
 			l = a[0]; m = a[1]; n = a[2];
 		}else{
 			l = a; m = b; n = c;
