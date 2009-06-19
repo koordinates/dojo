@@ -225,7 +225,7 @@ dojo.mixin(dojox.gfx3d.matrix, {
 		// matrix: dojox.gfx3d.matrix.Matrix3D: a 3D matrix-like object to be cloned
 		var obj = new dojox.gfx3d.matrix.Matrix3D();
 		for(var i in matrix){
-			if(typeof(matrix[i]) == "number" && typeof(obj[i]) == "number" && obj[i] != matrix[i]) obj[i] = matrix[i];
+			if(typeof(matrix[i]) == "number" && typeof(obj[i]) == "number" && obj[i] != matrix[i]) { obj[i] = matrix[i]; }
 		}
 		return obj; // dojox.gfx3d.matrix.Matrix3D
 	},
