@@ -136,12 +136,15 @@ dojo.require("dojox.grid.util");
 			//	cell data to edit
 			// inRowIndex: int
 			//	grid row index
-			if(dojo.isIE){
+			//if(dojo.isIE){
 				// IE sux bad
+
+				// NOTE: How so?
+
 				whenIdle(this, "focus", inRowIndex, inNode);
-			}else{
-				this.focus(inRowIndex, inNode);
-			}
+			//}else{
+			//	this.focus(inRowIndex, inNode);
+			//}
 		},
 		dispatchEvent: function(m, e){
 			if(m in this){
@@ -167,8 +170,8 @@ dojo.require("dojox.grid.util");
 			//	value of editor
 			var n = this.getEditNode(inRowIndex);
 			if(n){
-				n[this._valueProp] = inValue
-			};
+				n[this._valueProp] = inValue;
+			}
 		},
 		focus: function(inRowIndex, inNode){
 			// summary:
@@ -224,30 +227,30 @@ dojo.require("dojox.grid.util");
 	});
 	dgc._Base.markupFactory = function(node, cellDef){
 		var d = dojo;
-		var formatter = d.trim(d.attr(node, "formatter")||"");
+		var formatter = d.trim(d.realAttr(node, "formatter")||"");
 		if(formatter){
 			cellDef.formatter = dojo.getObject(formatter);
 		}
-		var get = d.trim(d.attr(node, "get")||"");
+		var get = d.trim(d.realAttr(node, "get")||"");
 		if(get){
 			cellDef.get = dojo.getObject(get);
 		}
 		var getBoolAttr = function(attr){
-			var value = d.trim(d.attr(node, attr)||"");
-			return value ? !(value.toLowerCase()=="false") : undefined;
-		}
+			var value = d.trim(d.realAttr(node, attr)||"");
+			return value ? value.toLowerCase()!="false" : undefined;
+		};
 		cellDef.sortDesc = getBoolAttr("sortDesc");
 		cellDef.editable = getBoolAttr("editable");
 		cellDef.alwaysEditing = getBoolAttr("alwaysEditing");
 		cellDef.noresize = getBoolAttr("noresize");
 
-		var value = d.trim(d.attr(node, "loadingText")||d.attr(node, "defaultValue")||"");
+		var value = d.trim(d.realAttr(node, "loadingText")||d.realAttr(node, "defaultValue")||"");
 		if(value){
 			cellDef.defaultValue = value;
 		}
 
 		var getStrAttr = function(attr){
-			return d.trim(d.attr(node, attr)||"")||undefined;
+			return d.trim(d.realAttr(node, attr)||"")||undefined;
 		};
 		cellDef.styles = getStrAttr("styles");
 		cellDef.headerStyles = getStrAttr("headerStyles");
@@ -255,7 +258,7 @@ dojo.require("dojox.grid.util");
 		cellDef.classes = getStrAttr("classes");
 		cellDef.headerClasses = getStrAttr("headerClasses");
 		cellDef.cellClasses = getStrAttr("cellClasses");
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.Cell", dgc._Base, {
 		// summary
@@ -294,11 +297,11 @@ dojo.require("dojox.grid.util");
 	dgc.Cell.markupFactory = function(node, cellDef){
 		dgc._Base.markupFactory(node, cellDef);
 		var d = dojo;
-		var keyFilter = d.trim(d.attr(node, "keyFilter")||"");
+		var keyFilter = d.trim(d.realAttr(node, "keyFilter")||"");
 		if(keyFilter){
 			cellDef.keyFilter = new RegExp(keyFilter);
 		}
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.RowIndex", dgc.Cell, {
 		name: 'Row',
@@ -312,7 +315,7 @@ dojo.require("dojox.grid.util");
 	});
 	dgc.RowIndex.markupFactory = function(node, cellDef){
 		dgc.Cell.markupFactory(node, cellDef);
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.Select", dgc.Cell, {
 		// summary:
@@ -353,21 +356,21 @@ dojo.require("dojox.grid.util");
 	dgc.Select.markupFactory = function(node, cell){
 		dgc.Cell.markupFactory(node, cell);
 		var d=dojo;
-		var options = d.trim(d.attr(node, "options")||"");
+		var options = d.trim(d.realAttr(node, "options")||"");
 		if(options){
 			var o = options.split(',');
 			if(o[0] != options){
 				cell.options = o;
 			}
 		}
-		var values = d.trim(d.attr(node, "values")||"");
+		var values = d.trim(d.realAttr(node, "values")||"");
 		if(values){
 			var v = values.split(',');
 			if(v[0] != values){
 				cell.values = v;
 			}
 		}
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.AlwaysEdit", dgc.Cell, {
 		// summary:
@@ -384,7 +387,7 @@ dojo.require("dojox.grid.util");
 	});
 	dgc.AlwaysEdit.markupFactory = function(node, cell){
 		dgc.Cell.markupFactory(node, cell);
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.Bool", dgc.AlwaysEdit, {
 		// summary:
@@ -401,5 +404,5 @@ dojo.require("dojox.grid.util");
 	});
 	dgc.Bool.markupFactory = function(node, cell){
 		dgc.AlwaysEdit.markupFactory(node, cell);
-	}
+	};
 })();
