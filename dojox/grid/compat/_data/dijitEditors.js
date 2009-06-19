@@ -31,7 +31,10 @@ dojo.declare("dojox.grid.editors.Dijit", dojox.grid.editors.base, {
 			if(this.editor.onLoadDeferred){
 				var self = this;
 				this.editor.onLoadDeferred.addCallback(function(){
-					 self.editor.setValue(inValue==null?"":inValue); 
+
+					// NOTE: What is allowed for inValue?
+
+					 self.editor.setValue(typeof inValue == 'string' ? inValue : ""); 
 				});
 			}else{
 				this.editor.setValue(inValue); 
@@ -75,7 +78,7 @@ dojo.declare("dojox.grid.editors.Dijit", dojox.grid.editors.base, {
 	},
 	focus: function(inRowIndex, inNode){
 		if(this.editor){
-			setTimeout(dojo.hitch(this.editor, function(){
+			window.setTimeout(dojo.hitch(this.editor, function(){
 				dojox.grid.fire(this, "focus");
 			}), 0);
 		}
