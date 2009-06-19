@@ -38,7 +38,7 @@ dojo.provide("dojox.embed.Flash");
 		return kwArgs;
 	}
 
-	if(dojo.isHostObjectProperty(window, 'ActiveXObject') && !dojo.isHostObjectProperty(window.navigator, 'plugins')){
+	if(dojo.isHostObjectProperty(window, 'ActiveXObject') && (!dojo.isHostObjectProperty(window.navigator, 'plugins') || typeof window.navigator.plugins.length != 'number' || !window.navigator.plugins.length)){
 		fMarkup = function(kwArgs){
 			kwArgs = prep(kwArgs);
 			if(!kwArgs){ return null; }
