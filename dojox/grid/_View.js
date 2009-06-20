@@ -11,8 +11,8 @@ dojo.require("dojo.dnd.Manager");
 
 (function(){
 	// private
-	var getStyleText = function(inNode, inStyleText){
-		return inNode.style.cssText == undefined ? inNode.getAttribute("style") : inNode.style.cssText;
+	var getStyleText = function(inNode){
+		return dojo.realAttr(inNode, 'style');
 	};
 
 	// public
@@ -70,10 +70,24 @@ dojo.require("dojo.dnd.Manager");
 
 		// focus 
 		focus: function(){
-			if(dojo.isWebKit || dojo.isOpera){
-				this.hiddenFocusNode.focus();
-			}else{
-				this.scrollboxNode.focus();
+
+			// NOTE: Detect focus event support for these nodes
+
+			var done;
+
+			if (!done && this.scrollboxNode && dojo.isHostMethod(this.scrollboxNode, 'focus')) {
+				try {			
+					this.scrollboxNode.focus();
+					done = true;
+				} catch(e) {
+				}
+			}
+
+			if (this.hiddenFocusNode && dojo.isHostMethod(this.hiddenFocusNode, 'focus')) {
+				try {
+					this.hiddenFocusNode.focus();
+				} catch(e2) {
+				}
 			}
 		},
 
@@ -185,8 +199,18 @@ dojo.require("dojo.dnd.Manager");
 							if(this.grid.headerMenu){
 								this.grid.headerMenu.onCancel(true);
 							}
-							// IE reports a left click as 1, where everything else reports 0
-							if(e.button === (dojo.isIE ? 1 : 0)){
+
+							// NOTE: Centralize this in events module
+
+							var leftButton;
+
+							if (typeof e.which != 'undefined') {
+								leftButton = (e.which == 1);
+							} else {
+								leftButton = (e.button & 1);
+							}
+
+							if(leftButton){
 								dojo.dnd.Source.prototype.onMouseDown.call(this.source, e);
 							}
 						}
@@ -235,7 +259,7 @@ dojo.require("dojo.dnd.Manager");
 				var s = srcView.convertColPctToFixed();
 				var t = tgtView.convertColPctToFixed();
 				if(s || t){
-					setTimeout(function(){
+					window.setTimeout(function(){
 						srcView.update();
 						tgtView.update();
 					}, 50);
@@ -252,8 +276,8 @@ dojo.require("dojo.dnd.Manager");
 			}
 
 			var getIdx = function(n){
-				return n ? dojo.attr(n, "idx") : null;
-			}
+				return n ? dojo.realAttr(n, "idx") : null;
+			};
 			var w = dojo.marginBox(nodes[0]).w;
 			if(source.viewIndex !== this.index){
 				var views = this.grid.views.views;
@@ -297,6 +321,8 @@ dojo.require("dojo.dnd.Manager");
 		_getHeaderContent: function(inCell){
 			var n = inCell.name || inCell.grid.getCellName(inCell);
 			var ret = [ '<div class="dojoxGridSortNode' ];
+
+			// NOTE: Duplication and need feature detection for FF WAI collision
 			
 			if(inCell.index != inCell.grid.getSortIndex()){
 				ret.push('">');
@@ -305,7 +331,7 @@ dojo.require("dojo.dnd.Manager");
 							inCell.grid.sortInfo > 0 ? 'dojoxGridSortUp' : 'dojoxGridSortDown',
 							'"><div class="dojoxGridArrowButtonChar">',
 							inCell.grid.sortInfo > 0 ? '&#9650;' : '&#9660;',
-							'</div><div class="dojoxGridArrowButtonNode" role="'+(dojo.isFF<3 ? "wairole:" : "")+'presentation"></div>' ]);
+							'</div><div class="dojoxGridArrowButtonNode" role="presentation"></div>' ]);
 			}
 			ret = ret.concat([n, '</div>']);
 			return ret.join('');
@@ -317,7 +343,7 @@ dojo.require("dojo.dnd.Manager");
 		},
 
 		hasHScrollbar: function(reset){
-			if(this._hasHScroll == undefined || reset){
+			if(this._hasHScroll === undefined || reset){
 				if(this.noscroll){
 					this._hasHScroll = false;
 				}else{
@@ -335,7 +361,7 @@ dojo.require("dojo.dnd.Manager");
 		},
 
 		hasVScrollbar: function(reset){
-			if(this._hasVScroll == undefined || reset){
+			if(this._hasVScroll === undefined || reset){
 				if(this.noscroll){
 					this._hasVScroll = false;
 				}else{
@@ -358,7 +384,10 @@ dojo.require("dojo.dnd.Manager");
 			var cellNodes = dojo.query("th", this.headerContentNode);
 			var fixedWidths = dojo.map(cellNodes, function(c, vIdx){
 				var w = c.style.width;
-				dojo.attr(c, "vIdx", vIdx);
+
+				// NOTE: The realAttr method is not used to set expandos (won't read them back in broken MSHTML DOM's as they are not specified attributes.)
+
+				c.vIdx = vIdx;
 				if(w && w.slice(-1) == "%"){
 					hasPct = true;
 				}else if(w && w.slice(-2) == "px"){
@@ -371,7 +400,7 @@ dojo.require("dojo.dnd.Manager");
 					if(cell.view == this){
 						var cellNode = cell.view.getHeaderCellNode(cell.index);
 						if(cellNode && dojo.hasAttr(cellNode, "vIdx")){
-							var vIdx = window.parseInt(dojo.attr(cellNode, "vIdx"));
+							var vIdx = window.parseInt(dojo.realAttr(cellNode, "vIdx"));
 							this.setColWidth(idx, fixedWidths[vIdx]);
 							cellNodes[vIdx].style.width = cell.unitWidth;
 							dojo.removeAttr(cellNode, "vIdx");
@@ -441,9 +470,9 @@ dojo.require("dojo.dnd.Manager");
 		},
 
 		createRowNode: function(inRowIndex){
-			var node = document.createElement("div");
+			var node = dojo.doc.createElement("div");
 			node.className = this.classTag + 'Row';
-			dojo.attr(node,"role","row");
+			dojo.realAttr(node,"role","row");
 			node[dojox.grid.util.gridViewTag] = this.id;
 			node[dojox.grid.util.rowIndexTag] = inRowIndex;
 			this.rowNodes[inRowIndex] = node;
@@ -524,11 +553,14 @@ dojo.require("dojo.dnd.Manager");
 			//var s = dojo.marginBox(this.headerContentNode.firstChild);
 			var isLtr = dojo._isBodyLtr();
 			if(this.firstScroll < 2){
-				if((!isLtr && this.firstScroll == 1) || (isLtr && this.firstScroll == 0)){
+				if((!isLtr && this.firstScroll == 1) || (isLtr && this.firstScroll === 0)){
 					var s = dojo.marginBox(this.headerNodeContainer);
-					if(dojo.isIE){
-						this.headerNodeContainer.style.width = s.w + this.getScrollbarWidth() + 'px';
-					}else if(dojo.isMoz){
+
+					// NOTE: Duplication
+
+					//if(dojo.isIE){
+					//	this.headerNodeContainer.style.width = s.w + this.getScrollbarWidth() + 'px';
+					//}else if(dojo.isMoz){
 						//TODO currently only for FF, not sure for safari and opera
 						this.headerNodeContainer.style.width = s.w - this.getScrollbarWidth() + 'px';
 						//this.headerNodeContainer.style.width = s.w + 'px';
@@ -536,7 +568,7 @@ dojo.require("dojo.dnd.Manager");
 						this.scrollboxNode.scrollLeft = isLtr ?
 							this.scrollboxNode.clientWidth - this.scrollboxNode.scrollWidth :
 							this.scrollboxNode.scrollWidth - this.scrollboxNode.clientWidth;
-					}
+					//}
 				}
 				this.firstScroll++;
 			}
@@ -604,7 +636,7 @@ dojo.require("dojo.dnd.Manager");
 			a.style.zIndex = 1999;
 			a.style.margin = "0px"; // to avoid dojo.marginBox() problems with table's margins
 			var b = dd.createElement("tbody");
-			var tr = dd.createElement("tr");
+			var table, tbody, tr = dd.createElement("tr");
 			var td = dd.createElement("td");
 			var img = dd.createElement("td");
 			tr.className = "dojoxGridDndAvatarItem";
@@ -619,16 +651,16 @@ dojo.require("dojo.dnd.Manager");
 				node = this.manager.nodes[0].cloneNode(true);
 				if(node.tagName.toLowerCase() == "tr"){
 					// insert extra table nodes
-					var table = dd.createElement("table"),
-						tbody = dd.createElement("tbody");
+					table = dd.createElement("table");
+					tbody = dd.createElement("tbody");
 					tbody.appendChild(node);
 					table.appendChild(tbody);
 					node = table;
 				}else if(node.tagName.toLowerCase() == "th"){
 					// insert extra table nodes
-					var table = dd.createElement("table"),
-						tbody = dd.createElement("tbody"),
-						r = dd.createElement("tr");
+					table = dd.createElement("table");
+					tbody = dd.createElement("tbody");
+					var r = dd.createElement("tr");
 					table.cellPadding = table.cellSpacing = "0";
 					r.appendChild(node);
 					tbody.appendChild(r);
@@ -663,5 +695,5 @@ dojo.require("dojo.dnd.Manager");
 			return new dojox.grid._GridAvatar(this);
 		}
 		return oldMakeAvatar.call(dojo.dnd.manager());
-	}
+	};
 })();
