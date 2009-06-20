@@ -1,4 +1,4 @@
-dojo.require("dojo.io.script")
+dojo.require("dojo.io.script");
 dojo.require("dojox.rpc.Service");
 
 // model that works with Yahoo Search API
@@ -39,9 +39,13 @@ dojo.declare("dojox.grid.data.yahooSearch", dojox.grid.data.Dynamic, {
 	},
 	error: function(inOnError, inErr) {
 		var m = 'io error: ' + inErr.message;
-		alert(m);
-		if (inOnError)
+
+		// NOTE: Should not use alert
+
+		window.alert(m);
+		if (inOnError) {
 			inOnError(m);
+		}
 	},
 	encodeParam: function(inName, inValue) {
 		return dojo.string.substitute('&${0}=${1}', [inName, inValue]);
@@ -54,10 +58,10 @@ dojo.declare("dojox.grid.data.yahooSearch", dojox.grid.data.Dynamic, {
 	},
 	// request data 
 	requestRows: function(inRowIndex, inCount){
-		inRowIndex = (inRowIndex == undefined ? 0 : inRowIndex);
+		inRowIndex = (inRowIndex === undefined || inRowIndex === null ? 0 : inRowIndex);
 		var params = { 
 			start: inRowIndex + 1
-		}
+		};
 		this.send(true, params, dojo.hitch(this, this.processRows));
 	},
 	// server callbacks
@@ -76,7 +80,7 @@ dojo.declare("dojox.grid.data.yahooSearch", dojox.grid.data.Dynamic, {
 	getDatum: function(inRowIndex, inColIndex){
 		var row = this.getRow(inRowIndex);
 		var field = this.fields.get(inColIndex);
-		return (inColIndex == undefined ? row : (row ? row[field.name] : field.na));
+		return (inColIndex === undefined || inColIndex === null ? row : (row ? row[field.name] : field.na));
 	},
 	// events
 	onInitializeData: function(){ },
@@ -85,21 +89,21 @@ dojo.declare("dojox.grid.data.yahooSearch", dojox.grid.data.Dynamic, {
 });
 
 // report
-modelChange = function(){
+var modelChange = function(model){
 	var n = dojo.byId('rowCount');
 	if(n){
 		n.innerHTML = dojo.string.substitute('about ${0} row(s)', [model.count]);
 	}
-}
+};
 
 
 // some data formatters
-getCellData = function(inCell, inRowIndex, inField){
+var getCellData = function(inCell, inRowIndex, inField){
 	var m = inCell.grid.model;
 	return m.getDatum(inRowIndex, inField);
-}
+};
 
-formatLink = function(inData, inRowIndex){
+var formatLink = function(inData, inRowIndex){
 	if(!inData){ return '&nbsp;'; }
 	var text = getCellData(this, inRowIndex, this.extraField);
 	return dojo.string.substitute(
@@ -108,7 +112,7 @@ formatLink = function(inData, inRowIndex){
 	);
 };
 
-formatImage = function(inData, inRowIndex){
+var formatImage = function(inData, inRowIndex){
 	if(!inData){ return '&nbsp;'; }
 	var info = getCellData(this, inRowIndex, this.extraField);
 	var o = {
@@ -116,12 +120,12 @@ formatImage = function(inData, inRowIndex){
 		src: info.Url,
 		width: info.Width,
 		height: info.Height
-	}
+	};
 	return dojo.string.substitute(
 		'<a href="${href}" target="_blank"><img border=0 src="${src}" width="${width}" height="${height}"></a>', o);
 };
 
-formatDate = function(inDatum, inRowIndex){
+var formatDate = function(inDatum, inRowIndex){
 	if(!inDatum){ return '&nbsp;'; }
 	var d = new Date(inDatum * 1000);
 	return dojo.string.substitute(
@@ -130,8 +134,8 @@ formatDate = function(inDatum, inRowIndex){
 	);
 };
 
-formatDimensions = function(inData, inRowIndex){
+var formatDimensions = function(inData, inRowIndex){
 	if(!inData){ return '&nbsp;'; }
 	var w = inData, h = getCellData(this, inRowIndex, this.extraField);
 	return w + ' x ' + h;
-}
+};
