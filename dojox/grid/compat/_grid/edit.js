@@ -8,9 +8,9 @@ dojo.declare("dojox.grid.edit", null, {
 		//		The dojox.Grid this editor should be attached to
 		this.grid = inGrid;
 		this.connections = [];
-		if(dojo.isIE){
-			this.connections.push(dojo.connect(document.body, "onfocus", dojo.hitch(this, "_boomerangFocus")));
-		}
+		//if(dojo.isIE){
+			this.connections.push(dojo.connect(dojo.doc.body, "onfocus", dojo.hitch(this, "_boomerangFocus")));
+		//}
 	},
 	
 	info: {},
@@ -128,7 +128,7 @@ dojo.declare("dojox.grid.edit", null, {
 	},
 	_doCatchBoomerang: function(){
 		// give ourselves a few ms to boomerang IE focus effects
-		if(dojo.isIE){this._catchBoomerang = new Date().getTime() + this._boomerangWindow;}
+		this._catchBoomerang = new Date().getTime() + this._boomerangWindow;
 	},
 	// end boomerang fix API
 
@@ -156,9 +156,8 @@ dojo.declare("dojox.grid.edit", null, {
 	},
 
 	_editorDo: function(inMethod){
-		var c = this.info.cell
-		//c && c.editor && c.editor[inMethod](c, this.info.rowIndex);
-		c && c.editor && c.editor[inMethod](this.info.rowIndex);
+		var c = this.info.cell;
+		if (c && c.editor) { c.editor[inMethod](this.info.rowIndex); }
 	},
 
 	editorApply: function(){
