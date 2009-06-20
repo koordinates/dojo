@@ -50,10 +50,24 @@ dojo.declare('dojox.GridView',
 
 	// focus 
 	focus: function(){
-		if(dojo.isWebKit || dojo.isOpera){
-			this.hiddenFocusNode.focus();
-		}else{
-			this.scrollboxNode.focus();
+
+		// NOTE: Detect focus event support for these nodes
+
+		var done;
+
+		if (!done && this.scrollboxNode && dojo.isHostMethod(this.scrollboxNode, 'focus')) {
+			try {			
+				this.scrollboxNode.focus();
+				done = true;
+			} catch(e) {
+			}
+		}
+
+		if (this.hiddenFocusNode && dojo.isHostMethod(this.hiddenFocusNode, 'focus')) {
+			try {
+				this.hiddenFocusNode.focus();
+			} catch(e2) {
+			}
 		}
 	},
 
@@ -156,26 +170,25 @@ dojo.declare('dojox.GridView',
 		}
 		// FIXME: it should be easier to get w from this.scrollboxNode.clientWidth, 
 		// but clientWidth seemingly does not include scrollbar width in some cases
+
+		// NOTE: Note the node's clientWidth does not include scroll bar width
+		//       Should use DOM module box methods
+
 		var w = this.scrollboxNode.offsetWidth - this.getScrollbarWidth();
 		w = Math.max(w, this.getColumnsWidth()) + 'px';
-		with(this.contentNode){
-			style.width = '';
-			offsetWidth;
-			style.width = w;
-		}
+		// var node = this.contentNode;
+		// node.style.width = '';
+		// (node.offsetWidth);
+		this.contentNode.style.width = w;
 	},
 
 	setSize: function(w, h){
-		with(this.domNode.style){
-			if(w){
-				width = w;
-			}
-			height = (h >= 0 ? h + 'px' : '');
-		}
-		with(this.headerNode.style){
-			if(w){
-				width = w;
-			}
+		var node = this.domNode;
+		var headerNode = this.headerNode;
+		if(w){
+			node.style.width = w + 'px';
+			node.style.height = (h >= 0 ? h + 'px' : '');
+			headerNode.style.width = w + 'px';
 		}
 	},
 
@@ -187,7 +200,7 @@ dojo.declare('dojox.GridView',
 	},
 
 	createRowNode: function(inRowIndex){
-		var node = document.createElement("div");
+		var node = dojo.doc.createElement("div");
 		node.className = this.classTag + '-row';
 		node[dojox.grid.gridViewTag] = this.id;
 		node[dojox.grid.rowIndexTag] = inRowIndex;
@@ -203,7 +216,7 @@ dojo.declare('dojox.GridView',
 	buildRowContent: function(inRowIndex, inRowNode){
 		inRowNode.innerHTML = this.content.generateHtml(inRowIndex, inRowIndex); 
 		if(this.flexCells){
-			// FIXME: accessing firstChild here breaks encapsulation
+			// FIXME: Referencing firstChild here breaks encapsulation
 			inRowNode.firstChild.style.width = this.contentWidth;
 		}
 	},
@@ -262,21 +275,31 @@ dojo.declare('dojox.GridView',
 		//var s = dojo.marginBox(this.headerContentNode.firstChild);
 		var isLtr = dojo._isBodyLtr();
 		if(this.firstScroll < 2){
-			if((!isLtr && this.firstScroll == 1) || (isLtr && this.firstScroll == 0)){
+
+			// NOTE: Why 1 for RTL?
+
+			if((!isLtr && this.firstScroll == 1) || (isLtr && this.firstScroll === 0)){
 				var s = dojo.marginBox(this.headerNodeContainer);
-				if(dojo.isIE){
-					this.headerNodeContainer.style.width = s.w + this.getScrollbarWidth() + 'px';
-				}else if(dojo.isMoz){
-					//TODO currently only for FF, not sure for safari and opera
+
+				// NOTE: Should not need to compute the scroll bar width
+				//       What is this trying to do?
+
+				//if(dojo.isIE){
+				//	this.headerNodeContainer.style.width = s.w + this.getScrollbarWidth() + 'px';
+				//}else if(dojo.isMoz){
+					//TODO: currently only tested in FF, not sure for safari and opera
 					this.headerNodeContainer.style.width = s.w - this.getScrollbarWidth() + 'px';
 					//this.headerNodeContainer.style.width = s.w + 'px';
 					//set scroll to right in FF
+
+					// NOTE: Why?
+
 					if(isLtr){
 						this.scrollboxNode.scrollLeft = this.scrollboxNode.scrollWidth - this.scrollboxNode.clientWidth;
 					}else{
 						this.scrollboxNode.scrollLeft = this.scrollboxNode.clientWidth - this.scrollboxNode.scrollWidth;
 					}
-				}
+				//}
 			}
 			this.firstScroll++;
 		}
