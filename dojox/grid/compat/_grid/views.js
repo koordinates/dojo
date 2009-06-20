@@ -71,7 +71,7 @@ dojo.declare('dojox.grid.views', null, {
 	},
 
 	normalizeRowNodeHeights: function(inRowNodes){
-		var h = 0, i, n, o;
+		var h = 0, i, n;
 		for(i=0; (n=inRowNodes[i]); i++){
 			h = Math.max(h, (n.firstChild.clientHeight)||(n.firstChild.offsetHeight));
 		}
@@ -173,18 +173,18 @@ dojo.declare('dojox.grid.views', null, {
 			var headerNode = v.headerNode;
 
 			if(!dojo._isBodyLtr()){
-				v.domNode.right = l + 'px';
+				node.right = l + 'px';
 			}else{
-			 	v.domNode.left = l + 'px';
+			 	node.left = l + 'px';
 			}
-			v.domNode.top = 0 + 'px';
+			node.top = 0 + 'px';
 
 			if(!dojo._isBodyLtr()){
-				v.headerNode.right = l + 'px';
+				headerNode.right = l + 'px';
 			}else{
-				v.headerNode.left = l + 'px';
+				headerNode.left = l + 'px';
 			}
-			v.headerNode.top = 0;
+			headerNode.top = 0;
 		};
 
 		// for views left of the client
