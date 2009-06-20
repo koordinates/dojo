@@ -269,12 +269,8 @@ dojox.Grid.markupFactory = function(props, node, ctor){
 	//		* No handling of cell formatting and content getting is done
 	var d = dojo;
 	var widthFromAttr = function(n){
-		var w = d.attr(n, "width")||"auto";
-		if((w != "auto")&&(w.substr(-2) != "em")){
-			w = parseInt(w)+"px";
-		}
-		return w;
-	}
+		return d.realAttr(n, 'width');
+	};
 	if(!props.model && d.hasAttr(node, "store")){
 		// if a model isn't specified and we point to a store, assume
 		// we're also folding the definition for a model up into the
@@ -282,10 +278,8 @@ dojox.Grid.markupFactory = function(props, node, ctor){
 		// like "query", "rowsPerPage", and "clientSort" from the grid
 		// definition.
 		var mNode = node.cloneNode(false);
-		d.attr(mNode, {
-			"jsId": null,
-			"dojoType": d.attr(node, "dataModelClass") || "dojox.grid.data.DojoData"
-		});
+		d.realAttr(mNode, "jsId", null);
+		d.realAttr(mNode, "dojoType", d.realAttr(node, "dataModelClass") || "dojox.grid.data.DojoData");
 		props.model = d.parser.instantiate([mNode])[0];
 	}
 	// if(!props.model){ console.debug("no model!"); }
@@ -296,10 +290,10 @@ dojox.Grid.markupFactory = function(props, node, ctor){
 
 		// try to discover a structure
 		props.structure = d.query("> colgroup", node).map(function(cg){
-			var sv = d.attr(cg, "span");
+			var sv = d.realAttr(cg, "span");
 			var v = { 
-				noscroll: (d.attr(cg, "noscroll") == "true") ? true : false,
-				__span: (!!sv ? parseInt(sv) : 1),
+				noscroll: (d.realAttr(cg, "noscroll") == "true") ? true : false,
+				__span: (!!sv ? parseInt(sv, 10) : 1),
 				cells: []
 			};
 			if(d.hasAttr(cg, "width")){
@@ -315,6 +309,8 @@ dojox.Grid.markupFactory = function(props, node, ctor){
 		}
 		// check to see if we're gonna have more than one view
 		
+		// NOTE: Remove queries
+
 		// for each tr in our th, create a row of cells
 		d.query("thead > tr", node).forEach(function(tr, tr_idx){
 			var cellCount = 0;
@@ -338,15 +334,18 @@ dojox.Grid.markupFactory = function(props, node, ctor){
 					viewIdx++;
 					// move to allocating things into the next view
 					lastViewIdx += cView.__span;
-					var lastView = cView;
+
+					// NOTE: Unused
+
+					//var lastView = cView;
 					cView = props.structure[viewIdx];
 				}
 
 				// actually define the cell from what markup hands us
 				var cell = {
-					name: d.trim(d.attr(th, "name")||th.innerHTML),
-					field: d.trim(d.attr(th, "field")||""),
-					colSpan: parseInt(d.attr(th, "colspan")||1)
+					name: d.trim(d.realAttr(th, "name")||th.innerHTML),
+					field: d.trim(d.realAttr(th, "field")||""),
+					colSpan: parseInt(d.realAttr(th, "colspan")||1, 10)
 				};
 				cellCount += cell.colSpan;
 				cell.field = cell.field||cell.name;
@@ -357,10 +356,9 @@ dojox.Grid.markupFactory = function(props, node, ctor){
 				cView.cells[tr_idx].push(cell);
 			});
 		});
-		// console.debug(dojo.toJson(props.structure, true));
 	}
 	return new dojox.Grid(props, node);
-}
+};
 
 
 // alias us to the right location
