@@ -161,7 +161,7 @@ dojo.declare('dojox.VirtualGrid',
 	},
 	
 	textSizeChanged: function(){
-		setTimeout(dojo.hitch(this, "_textSizeChanged"), 1);
+		window.setTimeout(dojo.hitch(this, "_textSizeChanged"), 1);
 	},
 	
 	_textSizeChanged: function(){
@@ -178,7 +178,7 @@ dojo.declare('dojox.VirtualGrid',
 	},
 	
 	renderOnIdle: function() {
-		setTimeout(dojo.hitch(this, "render"), 1);
+		window.setTimeout(dojo.hitch(this, "render"), 1);
 	},
 	
 	createManagers: function(){
@@ -214,24 +214,8 @@ dojo.declare('dojox.VirtualGrid',
 		this.views.createView = dojo.hitch(this, "createView");
 	},
 	
-	createView: function(inClass){
-		if(dojo.isAIR){
-			var obj = window;
-			var names = inClass.split('.');
-			for(var i=0;i<names.length;i++){
-				if(typeof obj[names[i]]=='undefined'){
-					var undefstring = names[0];
-					for(var j=1;j<=i;j++){
-						undefstring+="."+names[j];
-					}
-					throw new Error(undefstring+" is undefined");
-				}
-				obj = obj[names[i]];
-			}
-			var c = obj;
-		}else{
-			var c = eval(inClass);
-		}
+	createView: function(inClass){		
+		var c = dojo.eval(inClass);
 		var view = new c({ grid: this });
 		this.viewsNode.appendChild(view.domNode);
 		this.viewsHeaderNode.appendChild(view.headerNode);
@@ -268,7 +252,7 @@ dojo.declare('dojox.VirtualGrid',
 			this.structure=dojox.grid.getProp(this.structure);
 		}
 		if(!this.structure){
-			this.structure=window["layout"];
+			this.structure=window.layout;
 		}
 		if(!this.structure){
 			return;
@@ -314,14 +298,14 @@ dojo.declare('dojox.VirtualGrid',
 			return;
 		}
 		// useful measurement
-		var padBorder = this._getPadBorder();
+		var h, padBorder = this._getPadBorder();
 		// grid height
 		if(this.autoHeight){
 			this.domNode.style.height = 'auto';
 			this.viewsNode.style.height = '';
 		}else if(this.flex > 0){
 		}else if(this.domNode.clientHeight <= padBorder.h){
-			if(this.domNode.parentNode == document.body){
+			if(this.domNode.parentNode == dojo.body()){
 				this.domNode.style.height = this.defaultHeight;
 			}else{
 				this.fitTo = "parent";
@@ -331,12 +315,12 @@ dojo.declare('dojox.VirtualGrid',
 		if(this._sizeBox){
 			dojo.contentBox(this.domNode, this._sizeBox);
 		}else if(this.fitTo == "parent"){
-			var h = dojo._getContentBox(this.domNode.parentNode).h;
+			h = dojo._getContentBox(this.domNode.parentNode).h;
 			dojo.marginBox(this.domNode, { h: Math.max(0, h) });
 		}
 		
-		var h = dojo._getContentBox(this.domNode).h;
-		if(h == 0 && !this.autoHeight){
+		h = dojo._getContentBox(this.domNode).h;
+		if(h === 0 && !this.autoHeight){
 			// We need to hide the header, since the Grid is essentially hidden.
 			this.viewsHeaderNode.style.display = "none";
 		}else{
@@ -363,8 +347,9 @@ dojo.declare('dojox.VirtualGrid',
 			w = this.autoWidth ? 0 : this.domNode.clientWidth || (this.domNode.offsetWidth - this._getPadBorder().w);
 			var vw = this.views.arrange(1, w);
 		this.views.onEach("adaptWidth");
-		if (this.autoWidth)
+		if (this.autoWidth) {
 			this.domNode.style.width = vw + "px";
+		}
 	},
 
 	adaptHeight: function(){
@@ -439,7 +424,7 @@ dojo.declare('dojox.VirtualGrid',
 	beginUpdate: function(){
 		// summary:
 		//		Use to make multiple changes to rows while queueing row updating.
-		if(this.invalidated == null){
+		if(this.invalidated === null || this.invalidated === undefined){
 			this.invalidated = {rows: [], count: 1, all: false, rowCount: undefined};
 		}else{
 			this.invalidated.count++;
@@ -453,13 +438,16 @@ dojo.declare('dojox.VirtualGrid',
 		var i = this.invalidated;
 		if(--i.count === 0){
 			this.updating = false;
-			if(i.rows.length > 0){
-				for(var r in i.rows){
-					this.updateRow(Number(r));
+			var rows = i.rows;
+			if(rows.length > 0){
+				for(var r in rows){
+					if (dojo.isOwnProperty(rows, r)) {
+						this.updateRow(Number(r));
+					}
 				}
 				this.invalidated.rows = [];
 			}
-			if(i.rowCount != undefined){
+			if(i.rowCount !== undefined){
 				this.updateRowCount(i.rowCount);
 				i.rowCount = undefined;
 			}
@@ -549,7 +537,7 @@ dojo.declare('dojox.VirtualGrid',
 
 	// scrollRedrawThreshold: int
 	//	pixel distance a user must scroll vertically to trigger grid scrolling.
-	scrollRedrawThreshold: (dojo.isIE ? 100 : 50),
+	scrollRedrawThreshold: 50,
 
 	// scroll methods
 	scrollTo: function(inTop){
@@ -635,14 +623,14 @@ dojo.declare('dojox.VirtualGrid',
 	getSortAsc: function(inSortInfo){
 		// summary:
 		//		Returns true if grid is sorted in an ascending direction.
-		inSortInfo = inSortInfo == undefined ? this.sortInfo : inSortInfo;
-		return Boolean(inSortInfo > 0); // Boolean
+		inSortInfo = inSortInfo === undefined ? this.sortInfo : inSortInfo;
+		return inSortInfo > 0; // Boolean
 	},
 	
 	getSortIndex: function(inSortInfo){
 		// summary:
 		//		Returns the index of the column on which the grid is sorted
-		inSortInfo = inSortInfo == undefined ? this.sortInfo : inSortInfo;
+		inSortInfo = inSortInfo === undefined ? this.sortInfo : inSortInfo;
 		return Math.abs(inSortInfo) - 1; // Integer
 	},
 	
@@ -654,7 +642,7 @@ dojo.declare('dojox.VirtualGrid',
 		// inAsc: Boolean
 		// 		If true, sort the grid in ascending order, otherwise in descending order
 		var si = inIndex +1;
-		if(inAsc != undefined){
+		if(inAsc !== undefined){
 			si *= (inAsc ? 1 : -1);
 		} else if(this.getSortIndex() == inIndex){
 			si = -this.sortInfo;
@@ -689,11 +677,11 @@ dojo.declare('dojox.VirtualGrid',
 	},
 	
 	dispatchContentEvent: function(e){
-		this.edit.dispatchEvent(e) || e.sourceView.dispatchContentEvent(e) || this._dispatch(e.dispatch, e);
+		if (!this.edit.dispatchEvent(e) && !e.sourceView.dispatchContentEvent(e)) { this._dispatch(e.dispatch, e); }
 	},
 	
 	dispatchHeaderEvent: function(e){
-		e.sourceView.dispatchHeaderEvent(e) || this._dispatch('doheader' + e.type, e);
+		if (!e.sourceView.dispatchHeaderEvent(e)) { this._dispatch('doheader' + e.type, e); }
 	},
 	
 	dokeydown: function(e){
