@@ -30,8 +30,9 @@ dojo.declare('dojox.grid.views', null, {
 	},
 
 	destroyViews: function(){
-		for (var i=0, v; v=this.views[i]; i++)
+		for (var i=0, v; v=this.views[i]; i++) {
 			v.destroy();
+		}
 		this.views = [];
 	},
 
@@ -63,39 +64,40 @@ dojo.declare('dojox.grid.views', null, {
 		var rowNodes = [];
 		for(var i=0, v; (v=this.views[i]); i++){
 			if(v.headerContentNode.firstChild){
-				rowNodes.push(v.headerContentNode)
-			};
+				rowNodes.push(v.headerContentNode);
+			}
 		}
 		this.normalizeRowNodeHeights(rowNodes);
 	},
 
 	normalizeRowNodeHeights: function(inRowNodes){
-		var h = 0; 
-		for(var i=0, n, o; (n=inRowNodes[i]); i++){
+		var h = 0, i, n, o;
+		for(i=0; (n=inRowNodes[i]); i++){
 			h = Math.max(h, (n.firstChild.clientHeight)||(n.firstChild.offsetHeight));
 		}
 		h = (h >= 0 ? h : 0);
-		//
+
 		var hpx = h + 'px';
-		for(var i=0, n; (n=inRowNodes[i]); i++){
+		for(i=0; (n=inRowNodes[i]); i++){
 			if(n.firstChild.clientHeight!=h){
 				n.firstChild.style.height = hpx;
 			}
 		}
-		//
-		//console.log('normalizeRowNodeHeights ', h);
-		//
 		// querying the height here seems to help scroller measure the page on IE
+
+		// NOTE: Should handle this on measurement (and should not be needed anyway)
+
 		if(inRowNodes&&inRowNodes[0]){
-			inRowNodes[0].parentNode.offsetHeight;
+			(inRowNodes[0].parentNode.offsetHeight);
 		}
 	},
 	
 	resetHeaderNodeHeight: function(){
 		for(var i=0, v, n; (v=this.views[i]); i++){
 			n = v.headerContentNode.firstChild;
-			if(n)
+			if(n) {
 				n.style.height = "";
+			}
 		}
 	},
 
@@ -165,24 +167,26 @@ dojo.declare('dojox.grid.views', null, {
 		// find the client
 		var c = (w <= 0 ? len : this.findClient());
 		// layout views
+		
 		var setPosition = function(v, l){
-			with(v.domNode.style){
-				if(!dojo._isBodyLtr()){
-					right = l + 'px';
-				}else{
-				 	left = l + 'px';
-				}
-				top = 0 + 'px';
+			var node = v.domNode;
+			var headerNode = v.headerNode;
+
+			if(!dojo._isBodyLtr()){
+				v.domNode.right = l + 'px';
+			}else{
+			 	v.domNode.left = l + 'px';
 			}
-			with(v.headerNode.style){
-				if(!dojo._isBodyLtr()){
-					right = l + 'px';
-				}else{
-					left = l + 'px';
-				}
-				top = 0;
+			v.domNode.top = 0 + 'px';
+
+			if(!dojo._isBodyLtr()){
+				v.headerNode.right = l + 'px';
+			}else{
+				v.headerNode.left = l + 'px';
 			}
-		}
+			v.headerNode.top = 0;
+		};
+
 		// for views left of the client
 		//BiDi TODO: The left and right should not appear in BIDI environment. Should be replaced with 
 		//leading and tailing concept.
