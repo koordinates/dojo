@@ -25,24 +25,24 @@ dojo.declare("dojox.grid.Builder",
 		}else{
 			html = [ '<td tabIndex="-1" role="wairole:gridcell"' ];
 		}
-		inCell.colSpan && html.push(' colspan="', inCell.colSpan, '"');
-		inCell.rowSpan && html.push(' rowspan="', inCell.rowSpan, '"');
+		if (inCell.colSpan) { html.push(' colspan="', inCell.colSpan, '"'); }
+		if (inCell.rowSpan) { html.push(' rowspan="', inCell.rowSpan, '"'); }
 		html.push(' class="dojoxGrid-cell ');
-		inCell.classes && html.push(inCell.classes, ' ');
-		inMoreClasses && html.push(inMoreClasses, ' ');
+		if (inCell.classes) { html.push(inCell.classes, ' '); }
+		if (inMoreClasses) { html.push(inMoreClasses, ' '); }
 		// result[0] => td opener, style
 		result.push(html.join(''));
 		// SLOT: result[1] => td classes 
 		result.push('');
 		html = ['" idx="', inCell.index, '" style="'];
 		html.push(inCell.styles, inMoreStyles||'');
-		inCell.unitWidth && html.push('width:', inCell.unitWidth, ';');
+		if (inCell.unitWidth) { html.push('width:', inCell.unitWidth, ';'); }
 		// result[2] => markup
 		result.push(html.join(''));
 		// SLOT: result[3] => td style 
 		result.push('');
 		html = [ '"' ];
-		inCell.attrs && html.push(" ", inCell.attrs);
+		if (inCell.attrs) { html.push(" ", inCell.attrs); }
 		html.push('>');
 		// result[4] => td postfix
 		result.push(html.join(''));
@@ -77,7 +77,7 @@ dojo.declare("dojox.grid.Builder",
 		while(n && (!this.isCellNode(n) || (dojox.grid.gridViewTag in n.offsetParent.parentNode && n.offsetParent.parentNode[dojox.grid.gridViewTag] != this.view.id)) && (n!=inTopNode)){
 			n = n.parentNode;
 		}
-		return n!=inTopNode ? n : null 
+		return n!=inTopNode ? n : null;
 	},
 	
 	// event decoration
@@ -148,9 +148,10 @@ dojo.declare("dojox.grid.Builder",
 	},
 	
 	domousedown: function(e){
-		if (e.cellNode)
+		if (e.cellNode) {
 			this.grid.onMouseDown(e);
-		this.grid.onMouseDownRow(e)
+		}
+		this.grid.onMouseDownRow(e);
 	}
 
 });
@@ -170,7 +171,10 @@ dojo.declare("dojox.grid.contentBuilder",
 		var defaultGet=this.grid.get, rows=this.view.structure.rows;
 		for(var j=0, row; (row=rows[j]); j++){
 			for(var i=0, cell; (cell=row[i]); i++){
-				cell.get = cell.get || (cell.value == undefined) && defaultGet;
+
+				// NOTE: Is null allowed?
+
+				cell.get = cell.get || ((cell.value === undefined || cell.value === null) && defaultGet);
 				cell.markup = this.generateCellMarkup(cell, cell.cellStyles, cell.cellClasses, false);
 			}
 		}
@@ -184,14 +188,14 @@ dojo.declare("dojox.grid.contentBuilder",
 			obr = v.onBeforeRow,
 			rows = v.structure.rows;
 
-		obr && obr(inRowIndex, rows);
+		if (obr) { obr(inRowIndex, rows); }
 		for(var j=0, row; (row=rows[j]); j++){
 			if(row.hidden || row.header){
 				continue;
 			}
 			html.push(!row.invisible ? '<tr>' : '<tr class="dojoxGrid-invisible">');
 			for(var i=0, cell, m, cc, cs; (cell=row[i]); i++){
-				m = cell.markup, cc = cell.customClasses = [], cs = cell.customStyles = [];
+				m = cell.markup; cc = cell.customClasses = []; cs = cell.customStyles = [];
 				// content (format can fill in cc and cs as side-effects)
 				m[5] = cell.format(inDataIndex);
 				// classes
@@ -209,7 +213,7 @@ dojo.declare("dojox.grid.contentBuilder",
 
 	decorateEvent: function(e){
 		e.rowNode = this.findRowTarget(e.target);
-		if(!e.rowNode){return false};
+		if(!e.rowNode){return false;}
 		e.rowIndex = e.rowNode[dojox.grid.rowIndexTag];
 		this.baseDecorateEvent(e);
 		e.cell = this.grid.getCell(e.cellIndex);
@@ -255,7 +259,7 @@ dojo.declare("dojox.grid.headerBuilder",
 				cell.customStyles = [];
 				markup = this.generateCellMarkup(cell, cell.headerStyles, cell.headerClasses, true);
 				// content
-				markup[5] = (inValue != undefined ? inValue : inGetValue(cell));
+				markup[5] = ((inValue !== undefined && inValue !== null) ? inValue : inGetValue(cell));
 				// styles
 				markup[3] = cell.customStyles.join(';');
 				// classes
@@ -270,16 +274,17 @@ dojo.declare("dojox.grid.headerBuilder",
 
 	// event helpers
 	getCellX: function(e){
-		var x = e.layerX;
-		if(dojo.isMoz){
-			var n = dojox.grid.ascendDom(e.target, dojox.grid.makeNotTagName("th"));
+		var n, x = e.layerX;
+		//if(dojo.isMoz){
+			n = dojox.grid.ascendDom(e.target, dojox.grid.makeNotTagName("th"));
 			x -= (n && n.offsetLeft) || 0;
 			var t = e.sourceView.getScrollbarWidth();
-			if(!dojo._isBodyLtr() && e.sourceView.headerNode.scrollLeft < t)
+			if(!dojo._isBodyLtr() && e.sourceView.headerNode.scrollLeft < t) {
 				x -= t;
+			}
 			//x -= getProp(ascendDom(e.target, mkNotTagName("td")), "offsetLeft") || 0;
-		}
-		var n = dojox.grid.ascendDom(e.target, function(){
+		//}
+		n = dojox.grid.ascendDom(e.target, function(){
 			if(!n || n == e.cellNode){
 				return false;
 			}
@@ -321,8 +326,7 @@ dojo.declare("dojox.grid.headerBuilder",
 		if(dojo._isBodyLtr()){
 			return (e.cellIndex>0) && (e.cellX < this.overResizeWidth) && this.prepareResize(e, -1);
 		}
-		var t = e.cellNode && (e.cellX < this.overResizeWidth);
-		return;
+		return e.cellNode && e.cellX < this.overResizeWidth;
 	},
 
 	overRightResizeArea: function(e){
@@ -339,8 +343,9 @@ dojo.declare("dojox.grid.headerBuilder",
 			c = 'not-allowed';
 		}
 		e.sourceView.headerNode.style.cursor = c || ''; //'default';
-		if (c)
+		if (c) {
 			dojo.stopEvent(e);
+		}
 	},
 
 	domousedown: function(e){
@@ -385,11 +390,11 @@ dojo.declare("dojox.grid.headerBuilder",
 	},
 
 	doResizeColumn: function(inDrag, inEvent){
-		var isLtr = dojo._isBodyLtr();
+		var w, isLtr = dojo._isBodyLtr();
 		if(isLtr){
-			var w = inDrag.w + inEvent.deltaX;
+			w = inDrag.w + inEvent.deltaX;
 		}else{
-			var w = inDrag.w - inEvent.deltaX;
+			w = inDrag.w - inEvent.deltaX;
 		}
 		if(w >= this.minColWidth){
 			for(var i=0, s, sw; (s=inDrag.spanners[i]); i++){
@@ -410,13 +415,13 @@ dojo.declare("dojox.grid.headerBuilder",
 		}
 		if(inDrag.view.flexCells && !inDrag.view.testFlexCells()){
 			var t = dojox.grid.findTable(inDrag.node);
-			t && (t.style.width = '');
+			if (t) { t.style.width = ''; }
 		}
 	},
 
 	endResizeColumn: function(inDrag){
 		this.bogusClickTime = new Date().getTime() + 30;
-		setTimeout(dojo.hitch(inDrag.view, "update"), 50);
+		window.setTimeout(dojo.hitch(inDrag.view, "update"), 50);
 	}
 
 });
@@ -438,18 +443,18 @@ dojo.declare("dojox.grid.tableMap",
 
 		//console.log('mapRows');
 		// # of rows
-		var rowCount = inRows.length;
+		var j, row, rowCount = inRows.length;
 		if(!rowCount){
 			return;
 		}
 		// map which columns and rows fill which cells
 		this.map = [ ];
-		for(var j=0, row; (row=inRows[j]); j++){
+		for(j=0; (row=inRows[j]); j++){
 			this.map[j] = [];
 		}
-		for(var j=0, row; (row=inRows[j]); j++){
+		for(j=0; (row=inRows[j]); j++){
 			for(var i=0, x=0, cell, colSpan, rowSpan; (cell=row[i]); i++){
-				while (this.map[j][x]){x++};
+				while (this.map[j][x]){x++;}
 				this.map[j][x] = { c: i, r: j };
 				rowSpan = cell.rowSpan || 1;
 				colSpan = cell.colSpan || 1;
@@ -493,17 +498,13 @@ dojo.declare("dojox.grid.tableMap",
 	},
 	
 	_findOverlappingNodes: function(inTable, inRow, inCol){
-		var nodes = [];
+		var j, row, nodes = [];
 		var m = this.getMapCoords(inRow, inCol);
-		//console.log("node j: %d, i: %d", m.j, m.i);
-		var row = this.map[m.j];
-		for(var j=0, row; (row=this.map[j]); j++){
+		row = this.map[m.j];
+		for(j=0; (row=this.map[j]); j++){
 			if(j == m.j){ continue; }
-			with(row[m.i]){
-				//console.log("overlaps: r: %d, c: %d", r, c);
-				var n = this.getNode(inTable, r, c);
-				if(n){ nodes.push(n); }
-			}
+			var n = this.getNode(inTable, row[m.i].r, row[m.i].c);
+			if(n){ row[m.i].nodes.push(n); }
 		}
 		//console.log(nodes);
 		return nodes;
