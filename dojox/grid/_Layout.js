@@ -20,11 +20,11 @@ dojo.declare("dojox.grid._Layout", null, {
 		var source_cells = this.structure[sourceViewIndex].cells[0];
 		var dest_cells = this.structure[destViewIndex].cells[0];
 
-		var cell = null;
+		var i, c, v, cell = null;
 		var cell_ri = 0;
 		var target_ri = 0;
 
-		for(var i=0, c; c=source_cells[i]; i++){
+		for(i=0, c; c=source_cells[i]; i++){
 			if(c.index == cellIndex){
 				cell_ri = i;
 				break;
@@ -50,10 +50,10 @@ dojo.declare("dojox.grid._Layout", null, {
 		}
 
 		this.cells = [];
-		var cellIndex = 0;
-		for(var i=0, v; v=this.structure[i]; i++){
+		cellIndex = 0;
+		for(i=0; v=this.structure[i]; i++){
 			for(var j=0, cs; cs=v.cells[j]; j++){
-				for(var k=0, c; c=cs[k]; k++){
+				for(var k=0; c=cs[k]; k++){
 					c.index = cellIndex;
 					this.cells.push(c);
 					if("_currentlySorted" in c){
@@ -180,7 +180,8 @@ dojo.declare("dojox.grid._Layout", null, {
 	setStructure: function(inStructure){
 		this.fieldIndex = 0;
 		this.cells = [];
-		var s = this.structure = [];
+		var i, s, st;
+		s = this.structure = [];
 
 		if(this.grid.rowSelector){
 			var sel = { type: dojox._scopeName + ".grid._RowSelector" };
@@ -191,7 +192,7 @@ dojo.declare("dojox.grid._Layout", null, {
 				if(width == "false"){
 					sel = null;
 				}else if(width != "true"){
-					sel['width'] = width;
+					sel.width = width;
 				}
 			}else{
 				if(!this.grid.rowSelector){
@@ -218,13 +219,15 @@ dojo.declare("dojox.grid._Layout", null, {
 		};
 
 		var isView = function(def){
-			return (def != null && dojo.isObject(def) &&
+			// NOTE: isObject allows null
+
+			return (dojo.isObject(def) && def &&
 					("cells" in def || "rows" in def || ("type" in def && !isCell(def))));
 		};
 
 		if(dojo.isArray(inStructure)){
 			var hasViews = false;
-			for(var i=0, st; (st=inStructure[i]); i++){
+			for(i=0; (st=inStructure[i]); i++){
 				if(isView(st)){
 					hasViews = true;
 					break;
@@ -233,7 +236,7 @@ dojo.declare("dojox.grid._Layout", null, {
 			if(!hasViews){
 				s.push(this.addViewDef({ cells: inStructure }));
 			}else{
-				for(var i=0, st; (st=inStructure[i]); i++){
+				for(i=0; (st=inStructure[i]); i++){
 					if(isRowDef(st)){
 						s.push(this.addViewDef({ cells: st }));
 					}else if(isView(st)){
