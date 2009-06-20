@@ -55,7 +55,7 @@ dojo.declare("dojox.grid.cell", null, {
 		if(this.commitOnBlur){
 			dojo.connect(inNode, "onblur", function(e){
 				// hack: if editor still thinks this editor is current some ms after it blurs, assume we've focused away from grid
-				setTimeout(dojo.hitch(this, "_onEditBlur", inRowIndex), 250);
+				window.setTimeout(dojo.hitch(this, "_onEditBlur", inRowIndex), 250);
 			});
 		}
 	}
