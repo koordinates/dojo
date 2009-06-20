@@ -31,10 +31,10 @@ dojo.declare('dojox.grid.scroller.base', null, {
 	init: function(inRowCount, inKeepRows, inRowsPerPage){
 		var len = arguments.length;
 
-		if (len >= 2) {
+		if (len == 3) {
 			this.rowsPerPage = inRowsPerPage;
 		}
-		if (len >= 1) {
+		if (len >= 2) {
 			this.keepRows = inKeepRows;
 		}
 		if (len) {
