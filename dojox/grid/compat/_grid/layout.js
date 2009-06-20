@@ -18,7 +18,7 @@ dojo.declare("dojox.grid.layout", null, {
 		this.fieldIndex = 0;
 		this.cells = [];
 		var s = this.structure = [];
-		for(var i=0, viewDef, rows; (viewDef=inStructure[i]); i++){
+		for(var i=0, viewDef; (viewDef=inStructure[i]); i++){
 			s.push(this.addViewDef(viewDef));
 		}
 		this.cellCount = this.cells.length;
@@ -54,8 +54,8 @@ dojo.declare("dojox.grid.layout", null, {
 		}
 		// fieldIndex progresses linearly from the last indexed field
 		// FIXME: support generating fieldIndex based a text field name (probably in Grid)
-		var fieldIndex = inDef.field != undefined ? inDef.field : (inDef.get ? -1 : this.fieldIndex);
-		if((inDef.field != undefined) || !inDef.get){
+		var fieldIndex = (inDef.field !== undefined && inDef.field !== null) ? inDef.field : (inDef.get ? -1 : this.fieldIndex);
+		if((inDef.field !== undefined && inDef.field !== null) || !inDef.get){
 			this.fieldIndex = (inDef.field > -1 ? inDef.field : this.fieldIndex) + 1; 
 		}
 		return new dojox.grid.cell(
