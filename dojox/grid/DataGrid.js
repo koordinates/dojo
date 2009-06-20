@@ -229,19 +229,19 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 	},
 
 	_fetch: function(start, isRender){
-		var start = start || 0;
+		start = start || 0;
 		if(this.store && !this._pending_requests[start]){
 			if(!this._isLoaded && !this._isLoading){
 				this._isLoading = true;
 				this.showMessage(this.loadingMessage);
 			}
 			this._pending_requests[start] = true;
-			//console.log("fetch: ", start);
+
 			try{
 				if(this.items){
 					var items = this.items;
 					var store = this.store;
-					this.rowsPerPage = items.length
+					this.rowsPerPage = items.length;
 					var req = {
 						start: start,
 						count: this.rowsPerPage,
@@ -384,7 +384,7 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 		if(count > 0){
 			this._requests++;
 			if(!this._requestsPending(row)){
-				setTimeout(dojo.hitch(this, "_fetch", row, false), 1);
+				window.setTimeout(dojo.hitch(this, "_fetch", row, false), 1);
 				//this.requestRows(row, count);
 			}
 		}
@@ -414,7 +414,7 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 		if(!c){
 			return null;
 		}else{
-			var desc = c["sortDesc"];
+			var desc = c.sortDesc;
 			var si = !(this.sortInfo>0);
 			if(typeof desc == "undefined"){
 				desc = si;
@@ -450,8 +450,10 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 	},
 
 	_copyAttr: function(idx, attr){
-		var row = {};
-		var backstop = {};
+		// NOTE: First two unused
+
+		//var row = {};
+		//var backstop = {};
 		var src = this.getItem(idx);
 		return this.store.getValue(src, attr);
 	},
@@ -492,8 +494,8 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 	},
 
 	doApplyEdit: function(inRowIndex, inDataAttr){
-		var cache = this._cache[inRowIndex];
-		/*if(cache){
+		/*var cache = this._cache[inRowIndex];
+		if(cache){
 			var data = this.getItem(inRowIndex);
 			if(this.store.getValue(data, inDataAttr) != cache){
 				this.update(cache, data, inRowIndex);
@@ -528,4 +530,4 @@ dojox.grid.DataGrid.markupFactory = function(props, node, ctor, cellFunc){
 			cellFunc(node, cellDef);
 		}
 	});
-}
+};
