@@ -36,9 +36,7 @@ dojox.grid.publicEvents = {
 		// 		customStyles to control row css classes and styles; both properties are strings.
 		//
 		// example: onStyleRow({ selected: true, over:true, odd:false })
-		with(inRow){
-			customClasses += (odd?" dojoxGrid-row-odd":"") + (selected?" dojoxGrid-row-selected":"") + (over?" dojoxGrid-row-over":"");
-		}
+		inRow.customClasses += (inRow.odd?" dojoxGrid-row-odd":"") + (inRow.selected?" dojoxGrid-row-selected":"") + (inRow.over?" dojoxGrid-row-over":"");
 		this.focus.styleRow(inRow);
 		this.edit.styleRow(inRow);
 	},
@@ -77,7 +75,7 @@ dojox.grid.publicEvents = {
 				}
 				break;
 			case dk.UP_ARROW:
-				if(!this.edit.isEditing() && this.focus.rowIndex != 0){
+				if(!this.edit.isEditing() && this.focus.rowIndex){
 					dojo.stopEvent(e);
 					this.focus.move(-1, 0);
 				}
@@ -89,7 +87,7 @@ dojox.grid.publicEvents = {
 				}
 				break;
 			case dk.PAGE_UP:
-				if(!this.edit.isEditing() && this.focus.rowIndex != 0){
+				if(!this.edit.isEditing() && this.focus.rowIndex){
 					dojo.stopEvent(e);
 					if(this.focus.rowIndex != this.scroller.firstVisibleRow+1){
 						this.focus.move(this.scroller.firstVisibleRow-this.focus.rowIndex, 0);
@@ -118,7 +116,14 @@ dojox.grid.publicEvents = {
 		//		Event fired when mouse is over the grid.
 		// e: Event
 		//		Decorated event object contains reference to grid, cell, and rowIndex
-		e.rowIndex == -1 ? this.onHeaderCellMouseOver(e) : this.onCellMouseOver(e);
+
+		// NOTE: Decorating event objects is not recommended
+
+		if (e.rowIndex == -1) {
+			this.onHeaderCellMouseOver(e);
+		} else {
+			this.onCellMouseOver(e);
+		}
 	},
 	
 	onMouseOut: function(e){
@@ -126,7 +131,11 @@ dojox.grid.publicEvents = {
 		//		Event fired when mouse moves out of the grid.
 		// e: Event
 		//		Decorated event object that contains reference to grid, cell, and rowIndex
-		e.rowIndex == -1 ? this.onHeaderCellMouseOut(e) : this.onCellMouseOut(e);
+		if (e.rowIndex == -1) {
+			this.onHeaderCellMouseOut(e);
+		} else {
+			this.onCellMouseOut(e);
+		}
 	},
 	
 	onMouseDown: function(e){
@@ -134,7 +143,11 @@ dojox.grid.publicEvents = {
 		//		Event fired when mouse is down inside grid.
 		// e: Event
 		//		Decorated event object that contains reference to grid, cell, and rowIndex
-		e.rowIndex == -1 ? this.onHeaderCellMouseDown(e) : this.onCellMouseDown(e);
+		if (e.rowIndex == -1) {
+			this.onHeaderCellMouseDown(e);
+		} else {
+			this.onCellMouseDown(e);
+		}
 	},
 	
 	onMouseOverRow: function(e){
@@ -144,7 +157,11 @@ dojox.grid.publicEvents = {
 		//		Decorated event object contains reference to grid, cell, and rowIndex
 		if(!this.rows.isOver(e.rowIndex)){
 			this.rows.setOverRow(e.rowIndex);
-			e.rowIndex == -1 ? this.onHeaderMouseOver(e) : this.onRowMouseOver(e);
+			if (e.rowIndex == -1) {
+				this.onHeaderMouseOver(e);
+			} else {
+				this.onRowMouseOver(e);
+			}
 		}
 	},
 	onMouseOutRow: function(e){
@@ -165,8 +182,9 @@ dojox.grid.publicEvents = {
 		//		Event fired when mouse is down inside grid row
 		// e: Event
 		//		Decorated event object that contains reference to grid, cell, and rowIndex
-		if(e.rowIndex != -1)
+		if(e.rowIndex != -1) {
 			this.onRowMouseDown(e);
+		}
 	},
 
 	// cell events
@@ -211,9 +229,9 @@ dojox.grid.publicEvents = {
 		//		Event fired when a cell is double-clicked.
 		// e: Event
 		//		Decorated event object contains reference to grid, cell, and rowIndex
-		if(dojo.isIE){
+		/*if(dojo.isIE){
 			this.edit.setEditCell(this._click[1].cell, this._click[1].rowIndex);
-		}else if(this._click[0].rowIndex != this._click[1].rowIndex){
+		}else*/ if(this._click[0].rowIndex != this._click[1].rowIndex){
 			this.edit.setEditCell(this._click[0].cell, this._click[0].rowIndex);
 		}else{
 			this.edit.setEditCell(e.cell, e.rowIndex);
@@ -444,4 +462,4 @@ dojox.grid.publicEvents = {
 	onSelectionChanged: function(){
 	}
 
-}
+};
