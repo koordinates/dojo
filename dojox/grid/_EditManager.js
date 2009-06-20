@@ -11,7 +11,7 @@ dojo.declare("dojox.grid._EditManager", null, {
 		this.grid = inGrid;
 		this.connections = [];
 		if(dojo.isIE){
-			this.connections.push(dojo.connect(document.body, "onfocus", dojo.hitch(this, "_boomerangFocus")));
+			this.connections.push(dojo.connect(dojo.body(), "onfocus", dojo.hitch(this, "_boomerangFocus")));
 		}
 	},
 	
@@ -55,7 +55,7 @@ dojo.declare("dojox.grid._EditManager", null, {
 	},
 
 	dispatchEvent: function(e){
-		var c = e.cell, ed = (c && c["editable"]) ? c : 0;
+		var c = e.cell, ed = (c && c.editable) ? c : 0;
 		return ed && ed.dispatchEvent(e.dispatch, e);
 	},
 
@@ -158,9 +158,9 @@ dojo.declare("dojox.grid._EditManager", null, {
 	},
 
 	_editorDo: function(inMethod){
-		var c = this.info.cell
+		var c = this.info.cell;
 		//c && c.editor && c.editor[inMethod](c, this.info.rowIndex);
-		c && c.editable && c[inMethod](this.info.rowIndex);
+		if (c && c.editable) { c[inMethod](this.info.rowIndex); }
 	},
 
 	editorApply: function(){
