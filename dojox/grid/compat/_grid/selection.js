@@ -84,7 +84,7 @@ dojo.declare("dojox.grid.selection",
 	},
 
 	beginUpdate: function(){
-		if(this.updating == 0){
+		if(!this.updating){
 			this.onChanging();
 		}
 		this.updating++;
@@ -92,7 +92,7 @@ dojo.declare("dojox.grid.selection",
 
 	endUpdate: function(){
 		this.updating--;
-		if(this.updating == 0){
+		if(!this.updating){
 			this.onChanged();
 		}
 	},
@@ -142,7 +142,7 @@ dojo.declare("dojox.grid.selection",
 	},
 
 	toggleSelect: function(inIndex){
-		this.setSelected(inIndex, !this.selected[inIndex])
+		this.setSelected(inIndex, !this.selected[inIndex]);
 	},
 
 	insert: function(inIndex){
@@ -192,7 +192,7 @@ dojo.declare("dojox.grid.selection",
 			}else if(inCtrlKey){
 				this.toggleSelect(inIndex);
 			}else{
-				this.addToSelection(inIndex)
+				this.addToSelection(inIndex);
 			}
 		}
 		this.endUpdate();
