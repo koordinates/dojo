@@ -18,8 +18,8 @@ dojo.provide("dojox.grid.util");
 		if(inHeight >= 0){
 			var s = inElement.style;
 			var v = inHeight + 'px';
-			if(inElement && s['height'] != v){
-				s['height'] = v;
+			if(inElement && s.height != v){
+				s.height = v;
 			}
 		}
 	};
@@ -33,11 +33,11 @@ dojo.provide("dojox.grid.util");
 		for (var i=0, l=evts.length; i<l; i++){
 			inObject.connect(inNode, 'on' + evts[i], inMethod);
 		}
-	},
+	};
 
 	dgu.removeNode = function(inNode){
 		inNode = dojo.byId(inNode);
-		inNode && inNode.parentNode && inNode.parentNode.removeChild(inNode);
+		if (inNode && inNode.parentNode) { inNode.parentNode.removeChild(inNode); }
 		return inNode;
 	};
 	
