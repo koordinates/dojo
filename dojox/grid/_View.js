@@ -386,12 +386,13 @@ dojo.require("dojo.dnd.Manager");
 				var w = c.style.width;
 
 				// NOTE: The realAttr method is not used to set expandos (won't read them back in broken MSHTML DOM's as they are not specified attributes.)
+				//       Should re-factor to eliminate expando
 
 				c.vIdx = vIdx;
 				if(w && w.slice(-1) == "%"){
 					hasPct = true;
 				}else if(w && w.slice(-2) == "px"){
-					return window.parseInt(w, 10);
+					return parseInt(w, 10);
 				}
 				return dojo.contentBox(c).w;
 			});
@@ -399,11 +400,11 @@ dojo.require("dojo.dnd.Manager");
 				dojo.forEach(this.grid.layout.cells, function(cell, idx){
 					if(cell.view == this){
 						var cellNode = cell.view.getHeaderCellNode(cell.index);
-						if(cellNode && dojo.hasAttr(cellNode, "vIdx")){
-							var vIdx = window.parseInt(dojo.realAttr(cellNode, "vIdx"));
+						if(cellNode && typeof cellNode.vIdx != 'undefined'){
+							var vIdx = cellNode.vIdx;
 							this.setColWidth(idx, fixedWidths[vIdx]);
 							cellNodes[vIdx].style.width = cell.unitWidth;
-							dojo.removeAttr(cellNode, "vIdx");
+							cellNode.vIdx = undefined;
 						}
 					}
 				}, this);
