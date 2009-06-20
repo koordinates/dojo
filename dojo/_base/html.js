@@ -1532,6 +1532,8 @@ dojo.byId = function(id, doc){
 
 	// NOTE: Does not support multiple sets (name must be a string)
 
+	// NOTE: Do NOT use to SET custom attributes (use expando properties when needed, practice should be deprecated.)
+
 	dojo.realAttr = (function() {
 		var nn, nameC, hasAttribute, doc, att, alias;
 
