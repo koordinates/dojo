@@ -16,8 +16,11 @@ dojo.declare('dojox.grid._RowSelector', dojox.grid._View, {
 		return this.viewWidth || this.defaultWidth;
 	},
 	buildRowContent: function(inRowIndex, inRowNode){
-		var w = this.contentNode.offsetWidth - this.padBorderWidth 
-		inRowNode.innerHTML = '<table class="dojoxGridRowbarTable" style="width:' + w + 'px;" border="0" cellspacing="0" cellpadding="0" role="'+(dojo.isFF<3 ? "wairole:" : "")+'presentation"><tr><td class="dojoxGridRowbarInner">&nbsp;</td></tr></table>';
+		var w = this.contentNode.offsetWidth - this.padBorderWidth;
+
+		// NOTE: Need feature detection for FF WAI collision
+
+		inRowNode.innerHTML = '<table class="dojoxGridRowbarTable" style="width:' + w + 'px;" border="0" cellspacing="0" cellpadding="0" role="presentation"><tr><td class="dojoxGridRowbarInner">&nbsp;</td></tr></table>';
 	},
 	renderHeader: function(){
 	},
