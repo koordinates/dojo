@@ -32,7 +32,7 @@ dojo.declare("dojox.grid.focus", null, {
 		return (this.rowIndex == this.grid.rowCount-1) && (this.cell.index == this.grid.layout.cellCount-1);
 	},
 	isFirstFocusCell: function(){
-		return (this.rowIndex == 0) && (this.cell.index == 0);
+		return !this.rowIndex && !this.cell.index;
 	},
 	isNoFocusCell: function(){
 		return (this.rowIndex < 0) || !this.cell;
@@ -44,8 +44,9 @@ dojo.declare("dojox.grid.focus", null, {
 			if (inBork){
 				this.scrollIntoView();
 				try{
-					if(!this.grid.edit.isEditing())
+					if(!this.grid.edit.isEditing()) {
 						dojox.grid.fire(n, "focus");
+					}
 				}catch(e){}
 			}
 		}
@@ -108,11 +109,11 @@ dojo.declare("dojox.grid.focus", null, {
 		}
 		// even if this cell isFocusCell, the document focus may need to be rejiggered
 		// call opera on delay to prevent keypress from altering focus
-		if(dojo.isOpera){
-			setTimeout(dojo.hitch(this.grid, 'onCellFocus', this.cell, this.rowIndex), 1);
-		}else{
-			this.grid.onCellFocus(this.cell, this.rowIndex);
-		}
+		//if(dojo.isOpera){
+			window.setTimeout(dojo.hitch(this.grid, 'onCellFocus', this.cell, this.rowIndex), 1);
+		//}else{
+		//	this.grid.onCellFocus(this.cell, this.rowIndex);
+		//}
 	},
 	next: function(){
 		// summary:
