@@ -5,7 +5,7 @@ dojo.mixin(dojox.grid,{
 	na: '...',
 
 	nop: function(){
-		// summary: a null function?
+		// summary: an empty function
 	},
 
 	getTdIndex: function(td){
@@ -25,12 +25,12 @@ dojo.mixin(dojox.grid,{
 	},
 	
 	findTable: function(node){
-		for (var n=node; n && n.tagName!='TABLE'; n=n.parentNode);
+		for (var n=node; n && n.tagName!='TABLE'; n=n.parentNode) {}
 		return n;
 	},
 	
 	ascendDom: function(inNode, inWhile){
-		for (var n=inNode; n && inWhile(n); n=n.parentNode);
+		for (var n=inNode; n && inWhile(n); n=n.parentNode) {}
 		return n;
 	},
 	
@@ -44,17 +44,12 @@ dojo.mixin(dojox.grid,{
 		return fn && (args ? fn.apply(ob, args) : ob[ev]());
 	},
 	
-	// from lib.js
 	setStyleText: function(inNode, inStyleText){
-		if(inNode.style.cssText == undefined){
-			inNode.setAttribute("style", inStyleText);
-		}else{
-			inNode.style.cssText = inStyleText;
-		}
+		dojo.realAttr(inNode, 'style', inStyleText);
 	},
 	
-	getStyleText: function(inNode, inStyleText){
-		return (inNode.style.cssText == undefined ? inNode.getAttribute("style") : inNode.style.cssText);
+	getStyleText: function(inNode){
+		return dojo.realAttr(inNode, 'style');
 	},
 	
 	setStyle: function(inElement, inStyle, inValue){
@@ -82,22 +77,24 @@ dojo.mixin(dojox.grid,{
 
 	removeNode: function(inNode){
 		inNode = dojo.byId(inNode);
-		inNode && inNode.parentNode && inNode.parentNode.removeChild(inNode);
+		if (inNode && inNode.parentNode) { inNode.parentNode.removeChild(inNode); }
 		return inNode;
 	},
 	
 	getScrollbarWidth: function(){
+		// NOTE: Vertical scrollbar
+
 		if(this._scrollBarWidth){
 			return this._scrollBarWidth;
 		}
 		this._scrollBarWidth = 18;
 		try{
-			var e = document.createElement("div");
-			e.style.cssText = "top:0;left:0;width:100px;height:100px;overflow:scroll;position:absolute;visibility:hidden;";
-			document.body.appendChild(e);
+			var e = dojo.doc.createElement("div");
+			dojo.realAttr(e, 'style', "top:0;left:0;width:100px;height:100px;overflow:scroll;position:absolute;visibility:hidden;border:none");
+			dojo.doc.body.appendChild(e);
 			this._scrollBarWidth = e.offsetWidth - e.clientWidth;
-			document.body.removeChild(e);
-			delete e;
+			dojo.doc.body.removeChild(e);
+			e = null;
 		}catch (ex){}
 		return this._scrollBarWidth;
 	},
@@ -112,9 +109,8 @@ dojo.mixin(dojox.grid,{
 	},
 	
 	getProp: function(name, create, context){
-		with(dojox.grid.getRef(name, create, context)){
-			return (obj)&&(prop)&&(prop in obj ? obj[prop] : (create ? obj[prop]={} : undefined));
-		}
+		var grid = dojox.grid.getRef(name, create, context);
+		return grid.obj && grid.prop && (grid.prop in grid.obj ? grid.obj[grid.prop] : (create ? grid.obj[grid.prop]={} : undefined));
 	},
 	
 	indexInParent: function(inNode){
@@ -133,12 +129,11 @@ dojo.mixin(dojox.grid,{
 		}
 		var filter = function(inW){
 			return inW.domNode && dojo.isDescendant(inW.domNode, inNode, true);
-		}
+		};
 		var ws = dijit.registry.filter(filter);
 		for(var i=0, w; (w=ws[i]); i++){
 			w.destroy();
 		}
-		delete ws;
 	},
 	
 	getTagName: function(inNodeOrId){
@@ -170,7 +165,7 @@ dojo.mixin(dojox.grid,{
 	},
 	
 	whenIdle: function(/*inContext, inMethod, args ...*/){
-		setTimeout(dojo.hitch.apply(dojo, arguments), 0);
+		window.setTimeout(dojo.hitch.apply(dojo, arguments), 0);
 	},
 	
 	arrayCompare: function(inA, inB){
@@ -199,22 +194,20 @@ dojo.mixin(dojox.grid,{
 	},
 	
 	initTextSizePoll: function(inInterval) {
-		var f = document.createElement("div");
-		with (f.style) {
-			top = "0px";
-			left = "0px";
-			position = "absolute";
-			visibility = "hidden";
-		}
+		var f = dojo.doc.createElement("div");
+		f.style.top = "0px";
+		f.style.left = "0px";
+		f.style.position = "absolute";
+		f.style.visibility = "hidden";
 		f.innerHTML = "TheQuickBrownFoxJumpedOverTheLazyDog";
-		document.body.appendChild(f);
+		dojo.body().appendChild(f);
 		var fw = f.offsetWidth;
 		var job = function() {
 			if (f.offsetWidth != fw) {
 				fw = f.offsetWidth;
 				dojox.grid.textSizeChanged();
 			}
-		}
+		};
 		window.setInterval(job, inInterval||200);
 		dojox.grid.initTextSizePoll = dojox.grid.nop;
 	},
@@ -239,12 +232,11 @@ dojox.grid.jobs = {
 		var job = function(){
 			delete dojox.grid.jobs.jobs[inName];
 			inJob();
-		}
-		dojox.grid.jobs.jobs[inName] = setTimeout(job, inDelay);
+		};
+		dojox.grid.jobs.jobs[inName] = window.setTimeout(job, inDelay);
 	},
 
 	cancelJob: function(inName){
 		dojox.grid.jobs.cancel(dojox.grid.jobs.jobs[inName]);
 	}
-
-}
+};
