@@ -29,13 +29,18 @@ dojo.declare('dojox.grid.scroller.base', null, {
 	pageTop: 0,
 	// init
 	init: function(inRowCount, inKeepRows, inRowsPerPage){
-		switch(arguments.length){
-			case 3: this.rowsPerPage = inRowsPerPage;
-			case 2: this.keepRows = inKeepRows;
-			case 1: this.rowCount = inRowCount;
+		var len = arguments.length;
+
+		if (len >= 2) {
+			this.rowsPerPage = inRowsPerPage;
+		}
+		if (len >= 1) {
+			this.keepRows = inKeepRows;
+		}
+		if (len) {
+			this.rowCount = inRowCount;			
 		}
 		this.defaultPageHeight = this.defaultRowHeight * this.rowsPerPage;
-		//this.defaultPageHeight = this.defaultRowHeight * Math.min(this.rowsPerPage, this.rowCount);
 		this.pageCount = Math.ceil(this.rowCount / this.rowsPerPage);
 		this.setKeepInfo(this.keepRows);
 		this.invalidate();
@@ -65,7 +70,7 @@ dojo.declare('dojox.grid.scroller.base', null, {
 		if(this.pageCount < oldPageCount){
 			for(var i=oldPageCount-1; i>=this.pageCount; i--){
 				this.height -= this.getPageHeight(i);
-				delete this.pageHeights[i]
+				delete this.pageHeights[i];
 			}
 		}else if(this.pageCount > oldPageCount){
 			this.height += this.defaultPageHeight * (this.pageCount - oldPageCount - 1) + this.calcLastPageHeight();
@@ -138,7 +143,7 @@ dojo.declare('dojox.grid.scroller.base', null, {
 			var h = (this.measurePage(inPageIndex))||(oh);
 			this.pageHeights[inPageIndex] = h;
 			if((h)&&(oh != h)){
-				this.updateContentHeight(h - oh)
+				this.updateContentHeight(h - oh);
 				this.repositionPages(inPageIndex);
 			}
 		}
@@ -153,7 +158,7 @@ dojo.declare('dojox.grid.scroller.base', null, {
 		}
 	},
 	createPageNode: function(){
-		var p = document.createElement('div');
+		var p = dojo.doc.createElement('div');
 		p.style.position = 'absolute';
 		//p.style.width = '100%';
 		p.style[dojo._isBodyLtr() ? "left" : "right"] = '0';
@@ -197,7 +202,7 @@ dojo.declare('dojox.grid.scroller.base', null, {
 			h = this.measurePage(inPageIndex) || h;
 			this.pageHeights[inPageIndex] = h;
 			if(h && (oh != h)){
-				this.updateContentHeight(h - oh)
+				this.updateContentHeight(h - oh);
 			}
 		}else{
 			this.positionPage(inPageIndex, inPos);
@@ -416,15 +421,16 @@ dojo.declare('dojox.grid.scroller', dojox.grid.scroller.base, {
 	},
 	findScrollTopForNodes: function(inRow, inNodes){
 		var rowPage = Math.floor(inRow / this.rowsPerPage);
-		var t = 0;
-		for(var i=0; i<rowPage; i++){
+		var i, t = 0;
+		for(i=0; i<rowPage; i++){
 			t += this.getPageHeight(i);
 		}
 		this.pageTop = t;
 		this.needPage(rowPage, this.pageTop);
 		var rows = dojox.grid.divkids(inNodes[rowPage]);
 		var r = inRow - this.rowsPerPage * rowPage;
-		for(var i=0,l=rows.length; i<l && i<r; i++){
+		var l=rows.length;
+		for(i=0; i<l && i<r; i++){
 			t += rows[i].offsetHeight;
 		}
 		return t;
@@ -495,12 +501,12 @@ dojo.declare('dojox.grid.scroller.columns', dojox.grid.scroller, {
 	},
 	// rendering implementation
 	renderPage: function(inPageIndex){
-		var nodes = [];
-		for(var i=0; i<this.colCount; i++){
+		var i, j, nodes = [];
+		for(i=0; i<this.colCount; i++){
 			nodes[i] = this.pageNodes[i][inPageIndex];
 		}
 		//this.renderRows(inPageIndex*this.rowsPerPage, this.rowsPerPage, nodes);
-		for(var i=0, j=inPageIndex*this.rowsPerPage; (i<this.rowsPerPage)&&(j<this.rowCount); i++, j++){
+		for(i=0, j=inPageIndex*this.rowsPerPage; (i<this.rowsPerPage)&&(j<this.rowCount); i++, j++){
 			this.renderRow(j, nodes);
 		}
 	}
