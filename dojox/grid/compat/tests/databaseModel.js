@@ -20,29 +20,33 @@ dojo.declare("dojox.grid.Sparse", null, {
 	},
 	set: function(inIndex, inValue) {
 		for (var i=0,l=this.indices.length; i<l; i++) {
-			if (this.indices[i] >= inIndex) 
+			if (this.indices[i] >= inIndex) {
 				break;
+			}
 		}
-		if (this.indices[i] != inIndex) 
+		if (this.indices[i] != inIndex) {
 			this.indices.splice(i, 0, inIndex);
+		}
 		this.values[inIndex] = inValue;
 	},
 	get: function(inIndex) {
 		return this.values[inIndex];
 	},
 	remove: function(inIndex) {
-		for (var i=0,l=this.indices.length; i<l; i++) 
+		for (var i=0,l=this.indices.length; i<l; i++) {
 			if (this.indices[i] == inIndex) {
 				this.indices.splice(i, 1);
 				break;
 			}
+		}
 		delete this.values[inIndex];
 	},
 	inorder: function(inFor) {
 		for (var i=0,l=this.indices.length, ix; i<l; i++) {
 			ix = this.indices[i];
-			if (inFor(this.values[ix], ix) === false)
+			if (inFor(this.values[ix], ix) === false) {
 				break;
+			}
 		}
 	}
 });
@@ -72,42 +76,51 @@ dojo.declare("dojox.grid.data.DbTable", dojox.grid.data.Dynamic, {
 	},
 	// row state information
 	getState: function(inRowIndex) {
-		for (var i=0, r={}, s; (s=this.stateNames[i]); i++)
+		for (var i=0, r={}, s; (s=this.stateNames[i]); i++) {
 			r[s] = this.states[s].get(inRowIndex);
+		}
 		return r;
 	},
 	setState: function(inRowIndex, inState, inValue) {
 		this.states[inState].set(inRowIndex, inValue||true);
 	},
 	clearState: function(inRowIndex, inState) {
+		var arg, i, l, s;
+
 		if (arguments.length == 1) {
-			for (var i=0, s; (s=this.stateNames[i]); i++)
+			for (i=0; (s=this.stateNames[i]); i++) {
 				this.states[s].remove(inRowIndex);
-		}	else {
-			for (var i=1, l=arguments.length, arg; (i<l) &&((arg=arguments[i])!=undefined); i++)
+			}
+		} else {
+			for (i=1, l=arguments.length; i<l && (arg=arguments[i])!==undefined && arg !== null; i++) {
 				this.states[arg].remove(inRowIndex);
+			}
 		}
 	},
 	setStateForIndexes: function(inRowIndexes, inState, inValue) {
-		for (var i=inRowIndexes.length-1, k; (i>=0) && ((k=inRowIndexes[i])!=undefined); i--)
+		for (var i=inRowIndexes.length-1, k; i>=0 && (k=inRowIndexes[i]) !== undefined && k !== null; i--) {
 			this.setState(k, inState, inValue);
+		}
 	},
 	clearStateForIndexes: function(inRowIndexes, inState) {
-		for (var i=inRowIndexes.length-1, k; (i>=0) && ((k=inRowIndexes[i])!=undefined); i--)
+		for (var i=inRowIndexes.length-1, k; i>=0 && (k=inRowIndexes[i]) !== undefined && k !== null; i--) {
 			this.clearState(k, inState);
+		}
 	},
 	//$ Return boolean stating whether or not an operation is in progress that may change row indexing.
 	isAddRemoving: function() {
-		return Boolean(this.states['inserting'].length() || this.states['removing'].length());
+		return Boolean(this.states.inserting.length() || this.states.removing.length());
 	},
 	isInflight: function() {
-		return Boolean(this.states['inflight'].length());
+		return Boolean(this.states.inflight.length());
 	},
 	//$ Return boolean stating if the model is currently undergoing any type of edit.
 	isEditing: function() {
-		for (var i=0, r={}, s; (s=this.stateNames[i]); i++)
-			if (this.states[s].length())
+		for (var i=0, s; (s=this.stateNames[i]); i++) {
+			if (this.states[s].length()) {
 				return true;
+			}
+		}
 	},
 	//$ Return true if ok to modify the given row. Override as needed, using model editing state information.
 	canModify: function(inRowIndex) {
@@ -118,11 +131,10 @@ dojo.declare("dojox.grid.data.DbTable", dojox.grid.data.Dynamic, {
 		var p = {
 			database: this.database || '',
 			table: this.table || ''
-		}
+		};
 		return dojo.mixin(p, inParams || {});
 	},
 	send: function(inAsync, inParams, inCallbacks) {
-		//console.log('send', inParams.command);
 		var p = this.getSendParams(inParams);
 		var d = dojo.xhrPost({
 			url: this.server,
@@ -135,18 +147,29 @@ dojo.declare("dojox.grid.data.DbTable", dojox.grid.data.Dynamic, {
 		return d;
 	},
 	_callback: function(cb, eb, data) {
-		try{ cb && cb(data); } 
-		catch(e){ eb && eb(data, e); }
+
+		// NOTE: Why try-catch?
+
+		try{
+			if (cb) {
+				cb(data);
+			}
+		} catch(e){
+			if (eb) {
+				eb(data, e);
+			}
+		}
 	},
 	receive: function(inCallbacks, inData) {
-		inCallbacks && this._callback(inCallbacks.callback, inCallbacks.errback, inData);
+		if (inCallbacks) { this._callback(inCallbacks.callback, inCallbacks.errback, inData); }
 	},
 	receiveError: function(inCallbacks, inErr) {
-		this._callback(inCallbacks.errback, null, inErr)
+		this._callback(inCallbacks.errback, null, inErr);
 	},
 	encodeRow: function(inParams, inRow, inPrefix) {
-		for (var i=0, l=inRow.length; i < l; i++)
+		for (var i=0, l=inRow.length; i < l; i++) {
 			inParams['_' + (inPrefix ? inPrefix : '') + i] = (inRow[i] ? inRow[i] : '');
+		}
 	},
 	measure: function() {
 		this.send(true, { command: 'info' }, { callback: dojo.hitch(this, this.callbacks.info) });
@@ -173,10 +196,11 @@ dojo.declare("dojox.grid.data.DbTable", dojox.grid.data.Dynamic, {
 		var params = { 
 			command: 'delete',
 			count: inRows.length
-		}	
+		};
 		var pk = this.getPkIndex();
-		if (pk < 0)
+		if (pk < 0) {
 			return;
+		}
 		for (var i=0; i < inRows.length; i++)	{
 			params['_' + i] = inRows[i][pk];
 		}	
@@ -190,35 +214,40 @@ dojo.declare("dojox.grid.data.DbTable", dojox.grid.data.Dynamic, {
 	},
 	// primary key from fields
 	getPkIndex: function() {
-		for (var i=0, l=this.fields.count(), f; (i<l) && (f=this.fields.get(i)); i++)
-			if (f.Key = 'PRI')
+		for (var i=0, l=this.fields.count(), f; (i<l) && (f=this.fields.get(i)); i++) {
+			if (f.Key == 'PRI') {
 				return i;
+			}
+		}
 		return -1;		
 	},
 	// model implementations
 	update: function(inOldData, inNewData, inRowIndex) {
 		var cbs = this.getUpdateCallbacks(inRowIndex);
-		if (this.getState(inRowIndex).inserting)
+		if (this.getState(inRowIndex).inserting) {
 			this.commitInsert(inRowIndex, inNewData, cbs);
-		else
+		} else {
 			this.commitEdit(this.cache[inRowIndex] || inOldData, inNewData, inRowIndex, cbs);
+		}
 		// set push data immediately to model	so reflectd while committing
 		this.setRow(inNewData, inRowIndex);
 	},
 	insert: function(inData, inRowIndex) {
 		this.setState(inRowIndex, 'inserting', true);
-		if (!this.delayedInsertCommit)
+		if (!this.delayedInsertCommit) {
 			this.commitInsert(inRowIndex, inData, this.getUpdateCallbacks(inRowIndex));
+		}
 		return this.inherited(arguments);
 	},
 	remove: function(inRowIndexes) {
 		var rows = [];
-		for (var i=0, r=0, indexes=[]; (r=inRowIndexes[i]) !== undefined; i++)
+		for (var i=0, r=0, indexes=[]; (r=inRowIndexes[i]) !== undefined && r !== null; i++) {
 			if (!this.getState(r).inserting) {
 				rows.push(this.getRow(r));
 				indexes.push(r);
 				this.setState(r, 'removing');
 			}
+		}
 		var cbs = {
 			callback: dojo.hitch(this, this.callbacks.remove, indexes),
 			errback: dojo.hitch(this, this.callbacks.removeError, indexes)
@@ -229,14 +258,16 @@ dojo.declare("dojox.grid.data.DbTable", dojox.grid.data.Dynamic, {
 	cancelModifyRow: function(inRowIndex) {
 		if (this.isDelayedInsert(inRowIndex)) {
 			this.removeInsert(inRowIndex);
-		} else
+		} else {
 			this.finishUpdate(inRowIndex);
+		}
 	},	
 	finishUpdate: function(inRowIndex, inData) {
 		this.clearState(inRowIndex);
 		var d = (inData&&inData[0]) || this.cache[inRowIndex];
-		if (d)
+		if (d) {
 			this.setRow(d, inRowIndex);
+		}
 		delete this.cache[inRowIndex];
 	},
 	isDelayedInsert: function(inRowIndex) {
@@ -254,7 +285,7 @@ dojo.declare("dojox.grid.data.DbTable", dojox.grid.data.Dynamic, {
 			desc: (this.sortDesc ? "true" : ''),
 			offset: inRowIndex, 
 			limit: inCount
-		}
+		};
 		this.send(true, params, {callback: dojo.hitch(this, this.callbacks.rows, inRowIndex)});
 	},
 	// sorting
@@ -283,17 +314,19 @@ dojo.declare("dojox.grid.data.DbTable", dojox.grid.data.Dynamic, {
 				this.update(cache, data, inRowIndex);
 			}	
 		}
-		if (!m)
+		if (!m) {
 			this.cancelModifyRow(inRowIndex);
+		}
 	},
 	// server callbacks (called with this == model)
 	callbacks: {
 		update: function(inRowIndex, inData) {
 			console.log('received update', arguments);
-			if (inData.error)
-				this.updateError(inData)
-			else
+			if (inData.error) {
+				this.updateError(inData);
+			} else {
 				this.finishUpdate(inRowIndex, inData);
+			}
 		},
 		updateError: function(inRowIndex) {
 			this.clearState(inRowIndex, 'inflight');
@@ -305,12 +338,16 @@ dojo.declare("dojox.grid.data.DbTable", dojox.grid.data.Dynamic, {
 		},
 		removeError: function(inRowIndexes) {
 			this.clearStateForIndexes(inRowIndexes);
-			alert('Removal error. Please refresh.');
+
+			// NOTE: Should not use alert
+
+			window.alert('Removal error. Please refresh.');
 		},
 		rows: function(inRowIndex, inData) {
 			//this.beginUpdate();
-			for (var i=0, l=inData.length; i<l; i++)
+			for (var i=0, l=inData.length; i<l; i++) {
 				this.setRow(inData[i], inRowIndex + i);
+			}
 			//this.endUpdate();
 			//this.allChange();
 		},
