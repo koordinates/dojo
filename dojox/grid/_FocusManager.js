@@ -52,7 +52,7 @@ dojo.declare("dojox.grid._FocusManager", null, {
 	},
 	isFirstFocusCell: function(){
 		if(this.cell){
-			return (this.rowIndex == 0) && (this.cell.index == 0);
+			return (this.rowIndex === 0) && (this.cell.index === 0);
 		}
 		return false;
 	},
@@ -196,8 +196,11 @@ dojo.declare("dojox.grid._FocusManager", null, {
 				info.s.scrollLeft = info.n.offsetLeft + info.n.offsetWidth - info.sr.w;
 			}else if(info.n.offsetLeft < info.sr.l){
 				info.s.scrollLeft = info.n.offsetLeft;
-			}else if(dojo.isIE <= 7 && cell && cell.view.headerNode){
+			}else if(info.s.scrollLeft && cell && cell.view.headerNode){
 				// Trac 7158: scroll dojoxGridHeader for IE7 and lower
+
+				// NOTE: Needs review
+
 				cell.view.headerNode.scrollLeft = info.s.scrollLeft;
 			}
 		}
@@ -232,11 +235,11 @@ dojo.declare("dojox.grid._FocusManager", null, {
 		}
 		// even if this cell isFocusCell, the document focus may need to be rejiggered
 		// call opera on delay to prevent keypress from altering focus
-		if(dojo.isOpera){
-			setTimeout(dojo.hitch(this.grid, 'onCellFocus', this.cell, this.rowIndex), 1);
-		}else{
-			this.grid.onCellFocus(this.cell, this.rowIndex);
-		}
+		//if(dojo.isOpera){
+			window.setTimeout(dojo.hitch(this.grid, 'onCellFocus', this.cell, this.rowIndex), 1);
+		//}else{
+		//	this.grid.onCellFocus(this.cell, this.rowIndex);
+		//}
 	},
 	next: function(){
 		// summary:
@@ -349,7 +352,7 @@ dojo.declare("dojox.grid._FocusManager", null, {
 		}
 	},
 	nextKey: function(e) {
-		var isEmpty = this.grid.rowCount == 0;
+		var isEmpty = this.grid.rowCount === 0;
 		if(e.target === this.grid.domNode){
 			this.focusHeader();
 			dojo.stopEvent(e);
