@@ -23,7 +23,7 @@ dojo.requireLocalization("dijit", "loading");
 	var jobs = {
 		cancel: function(inHandle){
 			if(inHandle){
-				clearTimeout(inHandle);
+				window.clearTimeout(inHandle);
 			}
 		},
 
@@ -34,8 +34,8 @@ dojo.requireLocalization("dijit", "loading");
 			var job = function(){
 				delete jobs.jobs[inName];
 				inJob();
-			}
-			jobs.jobs[inName] = setTimeout(job, inDelay);
+			};
+			jobs.jobs[inName] = window.setTimeout(job, inDelay);
 		},
 
 		cancelJob: function(inName){
@@ -397,7 +397,7 @@ dojo.requireLocalization("dijit", "loading");
 				}else if (ah == "true"){
 					ah = true;
 				}else{
-					ah = window.parseInt(ah, 10);
+					ah = parseInt(ah, 10);
 				}
 			}
 			if(typeof ah == "number"){
@@ -428,7 +428,7 @@ dojo.requireLocalization("dijit", "loading");
 		},
 
 		_getRowCountAttr: function(){
-			return this.updating && this.invalidated && this.invalidated.rowCount != undefined ?
+			return this.updating && this.invalidated && this.invalidated.rowCount !== undefined && this.invalidated.rowCount !== null ?
 				this.invalidated.rowCount : this.rowCount;
 		},
 		
@@ -442,7 +442,7 @@ dojo.requireLocalization("dijit", "loading");
 		},
 
 		textSizeChanged: function(){
-			setTimeout(dojo.hitch(this, "_textSizeChanged"), 1);
+			window.setTimeout(dojo.hitch(this, "_textSizeChanged"), 1);
 		},
 
 		_textSizeChanged: function(){
@@ -459,7 +459,7 @@ dojo.requireLocalization("dijit", "loading");
 		},
 
 		renderOnIdle: function() {
-			setTimeout(dojo.hitch(this, "render"), 1);
+			window.setTimeout(dojo.hitch(this, "render"), 1);
 		},
 
 		createManagers: function(){
@@ -572,7 +572,7 @@ dojo.requireLocalization("dijit", "loading");
 									}
 								}, this);
 							}
-							var checked = dojo.filter(self.layout.cells, function(c){
+							checked = dojo.filter(self.layout.cells, function(c){
 								if(c.menuItems.length > 1){
 									dojo.forEach(c.menuItems, "item.attr('disabled', false);");
 								}else{
@@ -690,18 +690,18 @@ dojo.requireLocalization("dijit", "loading");
 			}
 			// useful measurement
 			var padBorder = this._getPadBorder();
-			var hh = 0;
+			var h, hh = 0;
 			// grid height
 			if(this._autoHeight){
 				this.domNode.style.height = 'auto';
 				this.viewsNode.style.height = '';
 			}else if(typeof this.autoHeight == "number"){
-				var h = hh = this._getHeaderHeight();
+				h = hh = this._getHeaderHeight();
 				h += (this.scroller.averageRowHeight * this.autoHeight);
 				this.domNode.style.height = h + "px";
 			}else if(this.flex > 0){
 			}else if(this.domNode.clientHeight <= padBorder.h){
-				if(pn == document.body){
+				if(pn == dojo.body()){
 					this.domNode.style.height = this.defaultHeight;
 				}else if(this.height){
 					this.domNode.style.height = this.height;
@@ -718,12 +718,12 @@ dojo.requireLocalization("dijit", "loading");
 				this.height = this.domNode.style.height;
 				delete this.fitTo;
 			}else if(this.fitTo == "parent"){
-				var h = dojo._getContentBox(pn).h;
+				h = dojo._getContentBox(pn).h;
 				dojo.marginBox(this.domNode, { h: Math.max(0, h) });
 			}
 
-			var h = dojo._getContentBox(this.domNode).h;
-			if(h == 0 && !this._autoHeight){
+			h = dojo._getContentBox(this.domNode).h;
+			if(!h && !this._autoHeight){
 				// We need to hide the header, since the Grid is essentially hidden.
 				this.viewsHeaderNode.style.display = "none";
 			}else{
@@ -748,8 +748,9 @@ dojo.requireLocalization("dijit", "loading");
 			var w = this.autoWidth ? 0 : this.domNode.clientWidth || (this.domNode.offsetWidth - this._getPadBorder().w),
 				vw = this.views.arrange(1, w);
 			this.views.onEach("adaptWidth");
-			if (this.autoWidth)
+			if (this.autoWidth) {
 				this.domNode.style.width = vw + "px";
+			}
 		},
 
 		adaptHeight: function(inHeaderHeight){
@@ -867,11 +868,13 @@ dojo.requireLocalization("dijit", "loading");
 			var i = this.invalidated, r;
 			if(i.all){
 				this.update();
-			}else if(i.rowCount != undefined){
+			}else if(i.rowCount !== undefined && i.rowCount !== null){
 				this.updateRowCount(i.rowCount);
 			}else{
 				for(r in i){
-					this.updateRow(Number(r));
+					if (dojo.isOwnProperty(r, i)) {
+						this.updateRow(Number(r));
+					}
 				}
 			}
 			this.invalidated = null;
@@ -921,14 +924,15 @@ dojo.requireLocalization("dijit", "loading");
 			//		Index of the starting row to render
 			// howMany: Integer
 			//		How many rows to update.
+			var i;
 			startIndex = Number(startIndex);
 			howMany = Number(howMany);
 			if(this.updating){
-				for(var i=0; i<howMany; i++){
+				for(i=0; i<howMany; i++){
 					this.invalidated[i+startIndex]=true;
 				}
 			}else{
-				for(var i=0; i<howMany; i++){
+				for(i=0; i<howMany; i++){
 					this.views.updateRow(i+startIndex);
 				}
 				this.scroller.rowHeightChanged(startIndex);
@@ -981,7 +985,7 @@ dojo.requireLocalization("dijit", "loading");
 
 		// scrollRedrawThreshold: int
 		//	pixel distance a user must scroll vertically to trigger grid scrolling.
-		scrollRedrawThreshold: (dojo.isIE ? 100 : 50),
+		scrollRedrawThreshold: 50,
 
 		// scroll methods
 		scrollTo: function(inTop){
@@ -1071,14 +1075,14 @@ dojo.requireLocalization("dijit", "loading");
 		getSortAsc: function(inSortInfo){
 			// summary:
 			//		Returns true if grid is sorted in an ascending direction.
-			inSortInfo = inSortInfo == undefined ? this.sortInfo : inSortInfo;
+			inSortInfo = inSortInfo === undefined ? this.sortInfo : inSortInfo;
 			return Boolean(inSortInfo > 0); // Boolean
 		},
 
 		getSortIndex: function(inSortInfo){
 			// summary:
 			//		Returns the index of the column on which the grid is sorted
-			inSortInfo = inSortInfo == undefined ? this.sortInfo : inSortInfo;
+			inSortInfo = inSortInfo === undefined ? this.sortInfo : inSortInfo;
 			return Math.abs(inSortInfo) - 1; // Integer
 		},
 
@@ -1090,7 +1094,7 @@ dojo.requireLocalization("dijit", "loading");
 			// inAsc: Boolean
 			// 		If true, sort the grid in ascending order, otherwise in descending order
 			var si = inIndex +1;
-			if(inAsc != undefined){
+			if(inAsc !== undefined){
 				si *= (inAsc ? 1 : -1);
 			} else if(this.getSortIndex() == inIndex){
 				si = -this.sortInfo;
@@ -1125,11 +1129,11 @@ dojo.requireLocalization("dijit", "loading");
 		},
 
 		dispatchContentEvent: function(e){
-			this.edit.dispatchEvent(e) || e.sourceView.dispatchContentEvent(e) || this._dispatch(e.dispatch, e);
+			if (!this.edit.dispatchEvent(e) && !e.sourceView.dispatchContentEvent(e)) { this._dispatch(e.dispatch, e); }
 		},
 
 		dispatchHeaderEvent: function(e){
-			e.sourceView.dispatchHeaderEvent(e) || this._dispatch('doheader' + e.type, e);
+			if (!e.sourceView.dispatchHeaderEvent(e)) { this._dispatch('doheader' + e.type, e); }
 		},
 
 		dokeydown: function(e){
@@ -1222,10 +1226,10 @@ dojo.requireLocalization("dijit", "loading");
 		var widthFromAttr = function(n){
 			var w = d.attr(n, "width")||"auto";
 			if((w != "auto")&&(w.slice(-2) != "em")&&(w.slice(-1) != "%")){
-				w = parseInt(w)+"px";
+				w = parseInt(w, 10)+"px";
 			}
 			return w;
-		}
+		};
 		// if(!props.store){ console.debug("no store!"); }
 		// if a structure isn't referenced, do we have enough
 		// data to try to build one automatically?
@@ -1237,7 +1241,7 @@ dojo.requireLocalization("dijit", "loading");
 				var sv = d.attr(cg, "span");
 				var v = {
 					noscroll: (d.attr(cg, "noscroll") == "true") ? true : false,
-					__span: (!!sv ? parseInt(sv) : 1),
+					__span: (!!sv ? parseInt(sv, 10) : 1),
 					cells: []
 				};
 				if(d.hasAttr(cg, "width")){
@@ -1276,7 +1280,10 @@ dojo.requireLocalization("dijit", "loading");
 						viewIdx++;
 						// move to allocating things into the next view
 						lastViewIdx += cView.__span;
-						var lastView = cView;
+
+						// NOTE: Unused
+
+						//var lastView = cView;
 						cView = props.structure[viewIdx];
 					}
 
@@ -1320,5 +1327,5 @@ dojo.requireLocalization("dijit", "loading");
 		}
 
 		return new ctor(props, node);
-	}
+	};
 })();
