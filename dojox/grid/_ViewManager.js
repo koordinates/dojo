@@ -71,22 +71,22 @@ dojo.declare('dojox.grid._ViewManager', null, {
 	},
 
 	normalizeRowNodeHeights: function(inRowNodes){
-		var h = 0; 
-		for(var i=0, n, o; (n=inRowNodes[i]); i++){
+		var i, n, h = 0; 
+		for(i=0; (n=inRowNodes[i]); i++){
 			h = Math.max(h, dojo.marginBox(n.firstChild).h);
 		}
 		h = (h >= 0 ? h : 0);
 		//
 		//
-		for(var i=0, n; (n=inRowNodes[i]); i++){
+		for(i=0, n; (n=inRowNodes[i]); i++){
 			dojo.marginBox(n.firstChild, {h:h});
 		}
-		//
-		//console.log('normalizeRowNodeHeights ', h);
-		//
 		// querying the height here seems to help scroller measure the page on IE
+
+		// NOTE: Duplication
+
 		if(inRowNodes&&inRowNodes[0]&&inRowNodes[0].parentNode){
-			inRowNodes[0].parentNode.offsetHeight;
+			(inRowNodes[0].parentNode.offsetHeight);
 		}
 	},
 	
@@ -178,7 +178,7 @@ dojo.declare('dojox.grid._ViewManager', null, {
 			}
 			ds.top = 0 + 'px';
 			hs.top = 0;
-		}
+		};
 		// for views left of the client
 		//BiDi TODO: The left and right should not appear in BIDI environment. Should be replaced with 
 		//leading and tailing concept.
@@ -255,10 +255,8 @@ dojo.declare('dojox.grid._ViewManager', null, {
 	setScrollTop: function(inTop){
 		var top = inTop;
 		for(var i=0, v; v=this.views[i]; i++){
-			top = v.setScrollTop(inTop);
-			// Work around IE not firing scroll events that cause header offset
-			// issues to occur.
-			if(dojo.isIE && v.headerNode && v.scrollboxNode){
+			top = v.setScrollTop(inTop);			
+			if(v.headerNode && v.scrollboxNode){
 				v.headerNode.scrollLeft = v.scrollboxNode.scrollLeft;
 			}
 		}
