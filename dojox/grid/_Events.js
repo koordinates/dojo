@@ -49,14 +49,14 @@ dojo.declare("dojox.grid._Events", null, {
 		if(e.altKey || e.metaKey){
 			return;
 		}
-		var dk = dojo.keys;
+		var colIdx, dk = dojo.keys;
 		switch(e.keyCode){
 			case dk.ESCAPE:
 				this.edit.cancel();
 				break;
 			case dk.ENTER:
 				if(!this.edit.isEditing()){
-					var colIdx = this.focus.getHeaderIndex();
+					colIdx = this.focus.getHeaderIndex();
 					if(colIdx >= 0) {
 						this.setSortIndex(colIdx);
 						break;
@@ -80,7 +80,7 @@ dojo.declare("dojox.grid._Events", null, {
 				break;
 			case dk.SPACE:
 				if(!this.edit.isEditing()){
-					var colIdx = this.focus.getHeaderIndex();
+					colIdx = this.focus.getHeaderIndex();
 					if(colIdx >= 0) {
 						this.setSortIndex(colIdx);
 						break;
@@ -103,7 +103,7 @@ dojo.declare("dojox.grid._Events", null, {
 				}
 				break;
 			case dk.UP_ARROW:
-				if(!this.edit.isEditing() && this.focus.rowIndex != 0){
+				if(!this.edit.isEditing() && this.focus.rowIndex !== 0){
 					dojo.stopEvent(e);
 					this.focus.move(-1, 0);
 				}
@@ -115,7 +115,7 @@ dojo.declare("dojox.grid._Events", null, {
 				}
 				break;
 			case dk.PAGE_UP:
-				if(!this.edit.isEditing() && this.focus.rowIndex != 0){
+				if(!this.edit.isEditing() && this.focus.rowIndex !== 0){
 					dojo.stopEvent(e);
 					if(this.focus.rowIndex != this.scroller.firstVisibleRow+1){
 						this.focus.move(this.scroller.firstVisibleRow-this.focus.rowIndex, 0);
@@ -144,7 +144,7 @@ dojo.declare("dojox.grid._Events", null, {
 		//		Event fired when mouse is over the grid.
 		// e: Event
 		//		Decorated event object contains reference to grid, cell, and rowIndex
-		e.rowIndex == -1 ? this.onHeaderCellMouseOver(e) : this.onCellMouseOver(e);
+		if (e.rowIndex == -1) { this.onHeaderCellMouseOver(e); } else { this.onCellMouseOver(e); }
 	},
 	
 	onMouseOut: function(e){
@@ -152,7 +152,7 @@ dojo.declare("dojox.grid._Events", null, {
 		//		Event fired when mouse moves out of the grid.
 		// e: Event
 		//		Decorated event object that contains reference to grid, cell, and rowIndex
-		e.rowIndex == -1 ? this.onHeaderCellMouseOut(e) : this.onCellMouseOut(e);
+		if (e.rowIndex == -1) { this.onHeaderCellMouseOut(e); } else { this.onCellMouseOut(e); }
 	},
 	
 	onMouseDown: function(e){
@@ -160,7 +160,7 @@ dojo.declare("dojox.grid._Events", null, {
 		//		Event fired when mouse is down inside grid.
 		// e: Event
 		//		Decorated event object that contains reference to grid, cell, and rowIndex
-		e.rowIndex == -1 ? this.onHeaderCellMouseDown(e) : this.onCellMouseDown(e);
+		if (e.rowIndex == -1) { this.onHeaderCellMouseDown(e); } else { this.onCellMouseDown(e); }
 	},
 	
 	onMouseOverRow: function(e){
@@ -170,7 +170,7 @@ dojo.declare("dojox.grid._Events", null, {
 		//		Decorated event object contains reference to grid, cell, and rowIndex
 		if(!this.rows.isOver(e.rowIndex)){
 			this.rows.setOverRow(e.rowIndex);
-			e.rowIndex == -1 ? this.onHeaderMouseOver(e) : this.onRowMouseOver(e);
+			if (e.rowIndex == -1) { this.onHeaderMouseOver(e); } else { this.onRowMouseOver(e); }
 		}
 	},
 	onMouseOutRow: function(e){
@@ -191,8 +191,9 @@ dojo.declare("dojox.grid._Events", null, {
 		//		Event fired when mouse is down inside grid row
 		// e: Event
 		//		Decorated event object that contains reference to grid, cell, and rowIndex
-		if(e.rowIndex != -1)
+		if(e.rowIndex != -1) {
 			this.onRowMouseDown(e);
+		}
 	},
 
 	// cell events
@@ -241,9 +242,9 @@ dojo.declare("dojox.grid._Events", null, {
 		//		Event fired when a cell is double-clicked.
 		// e: Event
 		//		Decorated event object contains reference to grid, cell, and rowIndex
-		if(dojo.isIE){
+		/* f(dojo.isIE){
 			this.edit.setEditCell(this._click[1].cell, this._click[1].rowIndex);
-		}else if(this._click[0].rowIndex != this._click[1].rowIndex){
+		}else*/ if(this._click[0].rowIndex != this._click[1].rowIndex){
 			this.edit.setEditCell(this._click[0].cell, this._click[0].rowIndex);
 		}else{
 			this.edit.setEditCell(e.cell, e.rowIndex);
