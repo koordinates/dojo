@@ -108,7 +108,7 @@ dojo.declare("dojox.layout.ResizeHandle",
 		}
 		
 		if(this.constrainMax){
-			this.maxSize = { w: this.maxWidth, h: this.maxHeight }
+			this.maxSize = { w: this.maxWidth, h: this.maxHeight };
 		}
 		
 		// should we modify the css for the cursor hover to n-resize nw-resize and w-resize?
@@ -160,10 +160,10 @@ dojo.declare("dojox.layout.ResizeHandle",
 			var max, val;
 			if(mb.w > mb.h){
 				max = "w";
-				val = mb.w / mb.h
+				val = mb.w / mb.h;
 			}else{
 				max = "h";
-				val = mb.h / mb.w
+				val = mb.h / mb.w;
 			}
 			this._aspect = { prop: max };
 			this._aspect[max] = val;
@@ -194,12 +194,15 @@ dojo.declare("dojox.layout.ResizeHandle",
 		
 		// On IE, if you move the mouse above/to the left of the object being resized,
 		// sometimes clientX/Y aren't set, apparently.  Just ignore the event.
-		try{
+
+		// NOTE: Confused and such logic belongs in the core event module
+
+		//try{
 			if(!e.clientX  || !e.clientY){ return false; }
-		}catch(e){
+		//}catch(e2){
 			// sometimes you get an exception accessing above fields...
-			return false;
-		}
+		//	return false;
+		//}
 		this._activeResizeLastEvent = e; 
 
 		var dx = this.startPoint.x - e.clientX,
