@@ -28,25 +28,25 @@ dojo.require("dojox.uuid.generateRandomUuid");
 	function _createPart(/* dojox.io.__xhrContentArgs */args, /* String */boundary){
 		//	summary
 		//		Assemble an array of boundary parts based on the passed values in args.
-		if(!args["name"] && !args["content"]){
+		if(!args.name && !args.content){
 			throw new Error("Each part of a multi-part request requires 'name' and 'content'.");
 		}
 
 		var tmp = [];
 		tmp.push(
 			"--" + boundary,
-			 "Content-Disposition: form-data; name=\"" + args.name + "\"" + (args["filename"] ? "; filename=\"" + args.filename + "\"" : "")
+			 "Content-Disposition: form-data; name=\"" + args.name + "\"" + (args.filename ? "; filename=\"" + args.filename + "\"" : "")
 		);
 
-		if(args["contentType"]){
+		if(args.contentType){
 			var ct = "Content-Type: " + args.contentType;
-			if(args["charset"]){
+			if(args.charset){
 				ct += "; Charset=" + args.charset;
 			}
 			tmp.push(ct);
 		}
 
-		if(args["contentTransferEncoding"]){
+		if(args.contentTransferEncoding){
 			tmp.push("Content-Transfer-Encoding: " + args.contentTransferEncoding);
 		}
 		tmp.push("", args.content);
@@ -57,11 +57,12 @@ dojo.require("dojox.uuid.generateRandomUuid");
 		//	summary
 		//		Assemble an array of boundary parts based on the passed FORM node.
 		var o=dojo.formToObject(node), parts=[];
+		var fn = function(item){
+			parts = parts.concat(_createPart({ name: p, content: item }, boundary));
+		};
 		for(var p in o){
 			if(dojo.isArray(o[p])){
-				dojo.forEach(o[p], function(item){
-					parts = parts.concat(_createPart({ name: p, content: item }, boundary));
-				});
+				dojo.forEach(o[p], fn);
 			} else {
 				parts = parts.concat(_createPart({ name: p, content: o[p] }, boundary));
 			}
@@ -119,23 +120,23 @@ dojo.require("dojox.uuid.generateRandomUuid");
 	}
 	=====*/
 	dojox.io.xhrMultiPart = function(/* dojox.io.__xhrMultiArgs */args){
-		if(!args["file"] && !args["content"] && !args["form"]){
+		if(!args.file && !args.content && !args.form){
 			throw new Error("content, file or form must be provided to dojox.io.xhrMultiPart's arguments");
 		}
 
 		// unique guid as a boundary value for multipart posts
 		var boundary=dojox.uuid.generateRandomUuid(), tmp=[], out="";
-		if(args["file"] || args["content"]){
-			var v = args["file"] || args["content"];
+		if(args.file || args.content){
+			var v = args.file || args.content;
 			dojo.forEach((dojo.isArray(v) ? v : [v]), function(item){
 				tmp = tmp.concat(_createPart(item, boundary));
 			});
 		}
-		else if(args["form"]){
-			if(dojo.query("input[type=file]", args["form"]).length){
+		else if(args.form){
+			if(dojo.query("input[type=file]", args.form).length){
 				throw new Error("dojox.io.xhrMultiPart cannot post files that are values of an INPUT TYPE=FILE.  Use dojo.io.iframe.send() instead.");
 			}
-			tmp = _partsFromNode(args["form"], boundary);
+			tmp = _partsFromNode(args.form, boundary);
 		}
 
 		if(tmp.length){
@@ -149,5 +150,5 @@ dojo.require("dojox.uuid.generateRandomUuid");
 			contentType: "multipart/form-data; boundary=" + boundary,
 			postData: out
 		}));	//	dojo.Deferred
-	}
+	};
 })();
