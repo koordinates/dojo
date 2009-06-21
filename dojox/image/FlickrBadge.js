@@ -65,7 +65,7 @@ dojo.declare("dojox.image.FlickrBadge", dojox.image.Badge, {
 				userid: this.userid
 			};
 			if(this.setid){
-				query["setid"] = this.setid;
+				query.setid = this.setid;
 			}
 			if(this.tags){
 				query.tags = this.tags;
