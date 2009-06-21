@@ -19,7 +19,7 @@ dojo.require("dojox.highlight._base");
 		begin: '"', end: '"'
 	};
 	
-	var dh = dojox.highlight, dhc = dh.constants;
+	var dh = dojox.highlight;
 	dh.languages.xml = {
 		defaultMode: {
 			contains: ['pi', 'comment', 'cdata', 'tag']
