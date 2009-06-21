@@ -22,6 +22,6 @@ dojo.provide("dojox.lang.aspect.counter");
 		// summary:
 		//		Returns an object, which can be used to count calls to methods.
 	
-		return new Counter;	// Object
+		return new Counter();	// Object
 	};
 })();
