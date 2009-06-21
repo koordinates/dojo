@@ -98,20 +98,22 @@ dojo.require("dojo._base.xhr");
 			csXhrSupport ? plainXhr : function(){
 				var normalXhrObj = dojo._xhrObj;
 				// we will just substitute this in temporarily so we can use XDomainRequest instead of XMLHttpRequest
-				dojo._xhrObj = function(){
-					
+				dojo._xhrObj = function(){				
+
+					// NOTE: What is this constructor?
+
 					var xdr = new XDomainRequest();
 					xdr.readyState = 1;
 					xdr.setRequestHeader = function(){}; // just absorb them, we can't set headers :/
 					xdr.getResponseHeader = function(header){ // this is the only header we can access 
 						return header == "Content-Type" ? xdr.contentType : null;
-					}
+					};
 					// adapt the xdr handlers to xhr
 					function handler(status, readyState){
 						return function(){							
 							xdr.readyState = readyState;
 							xdr.status = status;
-						}
+						};
 					}
 					xdr.onload = handler(200, 4);
 					xdr.onprogress = handler(200, 3);
@@ -152,9 +154,12 @@ dojo.require("dojo._base.xhr");
 				method = "POST";
 			
 			}
-			for(var i in args.headers){
-				var parameterName = i.match(/^X-/) ? i.substring(2).replace(/-/g,'_').toLowerCase() : ("http-" + i);
-				parameters[parameterName] = args.headers[i];
+			var headers = args.headers;
+			for(var i in headers){
+				if (dojo.isOwnProperty(headers, i)) {
+					var parameterName = i.match(/^X-/) ? i.substring(2).replace(/-/g,'_').toLowerCase() : ("http-" + i);
+					parameters[parameterName] = args.headers[i];
+				}
 			}
 			args.query = dojo.objectToQuery(parameters);
 			dojo._ioAddQueryToUrl(args);
