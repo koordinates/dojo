@@ -55,20 +55,23 @@ dojox.io.windowName = {
 		// |	};
 		// |	</script></html>
 		args.url += (args.url.match(/\?/) ? '&' : '?') + "windowname=" + (args.authElement ? "auth" : true); // indicate our desire for window.name communication
-		var authElement = args.authElement;
+		var dfd, authElement = args.authElement;
 		var cleanup = function(result){
-			try{
+			//try{
 				// we have to do this to stop the wait cursor in FF 
 				var innerDoc = dfd.ioArgs.frame.contentWindow.document;
-				innerDoc.write(" ");
-				innerDoc.close();
-			}catch(e){}
+				if (innerDoc && dojo.isHostMethod(innerDoc, 'write')) {
+					innerDoc.open();
+					innerDoc.write(" ");
+					innerDoc.close();
+				}
+			//}catch(e2){}
 			(authElement || dojo.body()).removeChild(dfd.ioArgs.outerFrame); // clean up
 			return result;
-		}
-		var dfd = dojo._ioSetArgs(args,cleanup,cleanup,cleanup);
+		};
+		dfd = dojo._ioSetArgs(args,cleanup,cleanup,cleanup);
 		if(args.timeout){
-			setTimeout(function(){
+			window.setTimeout(function(){
 					if(dfd.fired == -1){
 						dfd.callback(new Error("Timeout"));
 					}
@@ -92,18 +95,21 @@ dojox.io.windowName = {
 
 		var ioArgs = dfd.ioArgs;
 		var frameNum = dojox.io.windowName._frameNum++;
-		var sameDomainUrl = (dojo.config["dojoCallbackUrl"]||dojo.moduleUrl("dojo", "resources/blank.html")) + "#" + frameNum;
+		var sameDomainUrl = (dojo.config.dojoCallbackUrl||dojo.moduleUrl("dojo", "resources/blank.html")) + "#" + frameNum;
 		var frameName = new dojo._Url(window.location, sameDomainUrl);
 		var doc = dojo.doc;
 		var frameContainer = authTarget || dojo.body();
 		function styleFrame(frame){
 			frame.style.width="100%";
 			frame.style.height="100%";
-			frame.style.border="0px";
+			frame.style.border="0";
 		}
-		if(dojo.isMoz && ![].reduce){
+		//if(dojo.isMoz && ![].reduce){
 			// FF2 allows unsafe sibling frame modification,
 			// the fix for this is to create nested frames with getters and setters to protect access
+
+			// NOTE: How so?
+
 			var outerFrame = doc.createElement("iframe");
 			styleFrame(outerFrame);
 			if(!authTarget){
@@ -113,18 +119,24 @@ dojox.io.windowName = {
 			
 			var firstWindow = outerFrame.contentWindow;
 			doc = firstWindow.document;
+			doc.open();
 			doc.write("<html><body margin='0px'><iframe style='width:100%;height:100%;border:0px' name='protectedFrame'></iframe></body></html>");
 			doc.close();
 			var secondWindow = firstWindow[0]; 
 			firstWindow.__defineGetter__(0,function(){});
 			firstWindow.__defineGetter__("protectedFrame",function(){});
 			doc = secondWindow.document;
+			doc.open();
 			doc.write("<html><body margin='0px'></body></html>");
 			doc.close();
 			frameContainer = doc.body;
-		}
+		//}
 
-		var frame = ioArgs.frame = frame = doc.createElement(dojo.isIE ? '<iframe name="' + frameName + '" onload="dojox.io.windowName['+frameNum+']()">' : 'iframe');
+		// NOTE: IFRAME onload hack needs review
+		//       The name property should work if set after the append
+
+		//var frame = ioArgs.frame = frame = doc.createElement(dojo.isIE ? '<iframe name="' + frameName + '" onload="dojox.io.windowName['+frameNum+']()">' : 'iframe');
+		var frame = ioArgs.frame = doc.createElement('iframe');
 		styleFrame(frame);
 		ioArgs.outerFrame = outerFrame = outerFrame || frame;
 		if(!authTarget){
@@ -143,7 +155,7 @@ dojox.io.windowName = {
 		}
 		dojox.io.windowName[frameNum] = frame.onload = function(){
 			try{
-				if(!dojo.isMoz && frame.contentWindow.location =='about:blank'){
+				if(frame.contentWindow.location =='about:blank'){
 					// opera and safari will do an onload for about:blank first, we can ignore this first onload
 					return;
 				}
@@ -169,7 +181,7 @@ dojox.io.windowName = {
 					getData();
 				}
 			}
-			catch(e){
+			catch(e2){
 			}
 			
 		};
@@ -189,15 +201,17 @@ dojox.io.windowName = {
 			dojo.body().appendChild(form);
 			var query = dojo.queryToObject(ioArgs.query);
 			for(var i in query){
-				var values = query[i];
-				values = values instanceof Array ? values : [values];
-				for(var j = 0; j < values.length; j++){
-					// create hidden inputs for all the parameters
-					var input = doc.createElement("input");
-					input.type = 'hidden';
-					input.name = i;
-					input.value = values[j];
-					form.appendChild(input);
+				if (dojo.isOwnProperty(query, i)) {
+					var values = query[i];
+					values = values instanceof Array ? values : [values];
+					for(var j = 0; j < values.length; j++){
+						// create hidden inputs for all the parameters
+						var input = doc.createElement("input");
+						input.type = 'hidden';
+						input.name = i;
+						input.value = values[j];
+						form.appendChild(input);
+					}
 				}
 			}
 			form.method = 'POST';
@@ -209,10 +223,12 @@ dojox.io.windowName = {
 		}else{
 			throw new Error("Method " + method + " not supported with the windowName transport");
 		}
-		if(frame.contentWindow){
-			frame.contentWindow.name = frameName; // IE likes it afterwards
-		}
+
+		frame.name = frameName; // NOTE: IE should like this just as well after the append
+
+		//if(frame.contentWindow){
+		//	frame.contentWindow.name = frameName; // IE likes it afterwards
+		//}
 	},
-	_frameNum: 0 
-	
-}
+	_frameNum: 0	
+};
