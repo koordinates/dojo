@@ -3,6 +3,10 @@ dojo.provide("dojox.io.proxy.xip");
 dojo.require("dojo.io.iframe");
 dojo.require("dojox.data.dom");
 
+// NOTE: Where does global djConfig come from?
+
+var djConfig;
+
 dojox.io.proxy.xip = {
 	//summary: Object that implements the iframe handling for XMLHttpRequest
 	//IFrame Proxying.
@@ -41,7 +45,7 @@ dojox.io.proxy.xip = {
 	together.
 	*/
 
-	xipClientUrl: ((dojo.config || djConfig)["xipClientUrl"]) || dojo.moduleUrl("dojox.io.proxy", "xip_client.html"),
+	xipClientUrl: ((dojo.config || djConfig || {}).xipClientUrl) || dojo.moduleUrl("dojox.io.proxy", "xip_client.html"),
 
 
 	//MSIE has the lowest limit for URLs with fragment identifiers,
@@ -51,8 +55,6 @@ dojox.io.proxy.xip = {
 	_callbackName: (dojox._scopeName || "dojox") + ".io.proxy.xip.fragmentReceived",
 	_state: {},
 	_stateIdCounter: 0,
-	_isWebKit: navigator.userAgent.indexOf("WebKit") != -1,
-
 
 	send: function(/*Object*/facade){
 		//summary: starts the xdomain request using the provided facade.
@@ -70,7 +72,7 @@ dojox.io.proxy.xip = {
 		if(colonIndex == -1 || slashIndex < colonIndex){
 			//No colon or we are starting with a / before a colon, so we need to make a full URL.
 			var loc = window.location.href;
-			if(slashIndex == 0){
+			if(!slashIndex){
 				//Have a full path, just need the domain.
 				url = loc.substring(0, loc.indexOf("/", 9)) + url; //Using 9 to get past http(s)://
 			}else{
@@ -81,8 +83,11 @@ dojox.io.proxy.xip = {
 
 		//Set up an HTML5 messaging listener if postMessage exists.
 		//As of this writing, this is only useful to get Opera 9.25+ to work.
-		if(typeof document.postMessage != "undefined"){
-			document.addEventListener("message", dojo.hitch(this, this.fragmentReceivedEvent), false);
+
+		// NOTE: How so?
+
+		if(typeof dojo.doc.postMessage != "undefined"){
+			dojo.doc.addEventListener("message", dojo.hitch(this, this.fragmentReceivedEvent), false);
 		}
 
 		//Now that we did first time init, always use the realSend method.
@@ -95,8 +100,8 @@ dojox.io.proxy.xip = {
 		var stateId = "XhrIframeProxy" + (this._stateIdCounter++);
 		facade._stateId = stateId;
 
-		var frameUrl = facade._ifpServerUrl + "#0:init:id=" + stateId + "&client=" 
-			+ encodeURIComponent(this.fullXipClientUrl) + "&callback=" + encodeURIComponent(this._callbackName);
+		var frameUrl = facade._ifpServerUrl + "#0:init:id=" + stateId + "&client=" +
+			encodeURIComponent(this.fullXipClientUrl) + "&callback=" + encodeURIComponent(this._callbackName);
 
 		this._state[stateId] = {
 			facade: facade,
@@ -137,9 +142,8 @@ dojox.io.proxy.xip = {
 		var facade = state.facade;
 
 		facade._setResponseHeaders(response.responseHeaders);
-		if(response.status == 0 || response.status){
-			facade.status = parseInt(response.status, 10);
-		}
+
+		facade.status = parseInt(response.status, 10) || 0;
 		if(response.statusText){
 			facade.statusText = response.statusText;
 		}
@@ -150,7 +154,7 @@ dojox.io.proxy.xip = {
 			var contentType = facade.getResponseHeader("Content-Type");
 			if(contentType){
 				var mimeType = contentType.split(";")[0];
-				if(mimeType.indexOf("application/xml") == 0 || mimeType.indexOf("text/xml") == 0){
+				if(!mimeType.indexOf("application/xml") || !mimeType.indexOf("text/xml")){
 					facade.responseXML = dojox.data.dom.createDocument(response.responseText, contentType);
 				}
 			}
@@ -165,8 +169,11 @@ dojox.io.proxy.xip = {
 		var facade = state.facade;
 
 		var reqHeaders = [];
-		for(var param in facade._requestHeaders){
-			reqHeaders.push(param + ": " + facade._requestHeaders[param]);
+		var facadeReqHeaders = facade._requestHeaders;
+		for(var param in facadeReqHeaders){
+			if (dojo.isOwnProperty(facadeReqHeaders, param)) {
+				reqHeaders.push(param + ": " + facadeReqHeaders[param]);
+			}
 		}
 
 		var requestData = {
@@ -212,15 +219,17 @@ dojox.io.proxy.xip = {
 
 			state.requestData = encodedData || "";
 
+			// Incomplete duplication
+
 			//Get a handle to the server iframe.
-			state.serverWindow = frames[state.stateId];
+			state.serverWindow = window.frames[state.stateId];
 			if (!state.serverWindow){
-				state.serverWindow = document.getElementById(state.stateId).contentWindow;
+				state.serverWindow = dojo.doc.getElementById(state.stateId).contentWindow;
 			}
 
 			//Make sure we have contentWindow, but only do this for non-postMessage
 			//browsers (right now just opera is postMessage).
-			if(typeof document.postMessage == "undefined"){
+			if(typeof dojo.doc.postMessage == "undefined"){
 				if(state.serverWindow.contentWindow){
 					state.serverWindow = state.serverWindow.contentWindow;
 				}
@@ -268,7 +277,7 @@ dojox.io.proxy.xip = {
 			var cmd = "part";
 			if(state.partIndex + 1 == state.requestParts.length){
 				cmd = "end";
-			}else if (state.partIndex == 0){
+			}else if (!state.partIndex){
 				cmd = "start";
 			}
 			
@@ -282,10 +291,13 @@ dojox.io.proxy.xip = {
 		var state = this._state[stateId];
 
 		//Safari won't let us replace across domains.
-		if(this._isWebKit){
-			state.serverWindow.location = serverUrl;
-		}else{
+
+		// NOTE: Needs review
+
+		try {
 			state.serverWindow.location.replace(serverUrl);
+		} catch(e) {
+			state.serverWindow.location.href = serverUrl;
 		}
 	},
 
@@ -353,7 +365,7 @@ dojox.io.proxy.xip = {
 		}
 		return {command: command, message: encodedMessage, config: config};
 	}
-}
+};
 
 //Replace the normal XHR factory with the proxy one.
 dojox.io.proxy.xip._xhrObjOld = dojo._xhrObj;
@@ -385,7 +397,7 @@ dojox.io.proxy.xip.XhrIframeFacade = function(ifpServerUrl){
 	
 	this._ifpServerUrl = ifpServerUrl;
 	this._stateId = null;
-}
+};
 
 dojo.extend(dojox.io.proxy.xip.XhrIframeFacade, {
 	//The open method does not properly reset since Dojo does not reuse XHR objects.
