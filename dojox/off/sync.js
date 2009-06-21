@@ -426,9 +426,9 @@ dojo.declare("dojox.off.sync.ActionLog", null, {
 			//	tasks, etc.; and the final argument is the document that was created. 
 			
 			if(this.isReplaying){
-				throw "Programming error: you can not call "
-						+ "dojox.off.sync.actions.add() while "
-						+ "we are replaying an action log";
+				throw "Programming error: you can not call " +
+						"dojox.off.sync.actions.add() while " +
+						"we are replaying an action log";
 			}
 			
 			this.entries.push(action);
@@ -622,8 +622,9 @@ dojo.declare("dojox.off.sync.ActionLog", null, {
 			for(var i = 0; i < this.entries.length; i++){
 				results += "{";
 				for(var j in this.entries[i]){
-					results += j + ": \"" + this.entries[i][j] + "\"";
-					results += ", ";
+					if (dojo.isOwnProperty(this.entries[i], j)) {
+						results += j + ": \"" + this.entries[i][j] + "\"" + ", ";
+					}
 				}
 				results += "}, ";
 			}
@@ -639,9 +640,7 @@ dojo.declare("dojox.off.sync.ActionLog", null, {
 			}
 			
 			try{
-				var self = this;
 				var resultsHandler = function(status, key, message){
-					//console.debug("resultsHandler, status="+status+", key="+key+", message="+message);
 					if(status == dojox.storage.FAILED){
 						dojox.off.onFrameworkEvent("save", 
 											{status: dojox.storage.FAILED,
