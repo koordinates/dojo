@@ -31,7 +31,7 @@ doh.register("dojox.json.tests.ref", [
 		var schemas = {
 			"/dog/":{prototype:{barks:true},properties:{aTime:{format:'date-time'}}},
 			"/cat/":{prototype:{meows:true}}
-		}
+		};
 		var testObj = dojox.json.ref.fromJson(testStr,{
 			schemas:schemas
 		});
