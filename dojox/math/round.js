@@ -43,11 +43,14 @@ dojox.math.round = function(/*Number*/value, /*Number?*/places, /*Number?*/incre
 	var factor = 10 / (increment || 10);
 	var delta = Math.pow(10, -15 + wholeFigs);
 	return (factor * (+value + (value > 0 ? delta : -delta))).toFixed(places) / factor; // Number
-}
+};
 
-if((0.9).toFixed() == 0){
+if((0.9).toFixed() === 0){
 	// (isIE) toFixed() bug workaround: Rounding fails on IE when most significant digit
 	// is just after the rounding place and is >=5
+
+	// NOTE: Review this
+
 	(function(){
 		var round = dojox.math.round;
 		dojox.math.round = function(v, p, m){
@@ -56,6 +59,6 @@ if((0.9).toFixed() == 0){
 				d = 0;
 			}
 			return round(v, p, m) + (v > 0 ? d : -d);
-		}
+		};
 	})();
 }
