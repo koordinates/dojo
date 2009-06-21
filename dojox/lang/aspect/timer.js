@@ -5,7 +5,7 @@ dojo.provide("dojox.lang.aspect.timer");
 		uniqueNumber = 0;
 	
 	var Timer = function(name){
-		this.name = name || ("DojoAopTimer #" + ++uniqueNumber);
+		this.name = name || ("DojoAopTimer #" + (++uniqueNumber));
 		this.inCall = 0;
 	};
 	dojo.extend(Timer, {
