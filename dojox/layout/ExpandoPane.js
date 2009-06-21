@@ -112,7 +112,7 @@ dojo.declare("dojox.layout.ExpandoPane",
 	_afterResize: function(e){
 		var tmp = this._currentSize;						// the old size
 		this._currentSize = dojo.marginBox(this.domNode);	// the new size
-		var n = this._currentSize[(this._isHorizontal ? "h" : "w")] 
+		var n = this._currentSize[(this._isHorizontal ? "h" : "w")];
 		if(n > this._titleHeight){
 			if(!this._showing){	
 				this._showing = !this._showing; 
@@ -171,10 +171,10 @@ dojo.declare("dojox.layout.ExpandoPane",
 		// summary: Toggle this pane's visibility
 		if(this._showing){
 			this._hideWrapper();
-			this._showAnim && this._showAnim.stop();
+			if (this._showAnim) { this._showAnim.stop(); }
 			this._hideAnim.play();
 		}else{
-			this._hideAnim && this._hideAnim.stop();
+			if (this._hideAnim) { this._hideAnim.stop(); }
 			this._showAnim.play();
 		}
 		this._showing = !this._showing;
@@ -195,12 +195,12 @@ dojo.declare("dojox.layout.ExpandoPane",
 		dojo.style(this.cwrapper, { opacity: 0, visibility:"visible" });
 		dojo.fadeIn({ node:this.cwrapper, duration:227 }).play(1);
 		dojo.removeClass(this.domNode, "dojoxExpandoClosed");
-		setTimeout(dojo.hitch(this._container, "layout"), 15);
+		window.setTimeout(dojo.hitch(this._container, "layout"), 15);
 	},
 	
 	_hideEnd: function(){
 		// summary: Callback for the hide animation - "close"
-		setTimeout(dojo.hitch(this._container, "layout"), 15);
+		window.setTimeout(dojo.hitch(this._container, "layout"), 15);
 	},
 	
 	resize: function(/* Object? */psize){
