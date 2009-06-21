@@ -18,7 +18,7 @@ dojo.provide("dojox.lang.aspect.cflow");
 		//		a RegExp object or an array of strings and RegExp objects.
 		//		If it is omitted, any name will satisfy the criteria.
 	
-		if(arguments.length > 1 && !(method instanceof Array)){
+		if(arguments.length > 1 && !(dojo.isArray(method))){
 			method = [method];
 		}
 	
@@ -31,6 +31,9 @@ dojo.provide("dojox.lang.aspect.cflow");
 			var n = c.joinPoint.targetName;
 			for(var j = method.length - 1; j >= 0; --j){
 				var m = method[j];
+
+				// NOTE: Need dojo.isRegExp
+
 				if(m instanceof RegExp){
 					if(m.test(n)){ return true; }
 				}else{
