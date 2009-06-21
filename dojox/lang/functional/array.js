@@ -42,9 +42,11 @@ dojo.require("dojox.lang.functional.lambda");
 			}else{
 				// object/dictionary
 				for(i in a){
-					if(!(i in empty)){
-						v = a[i];
-						if(f.call(o, v, i, a)){ t.push(v); }
+					if (dojo.isOwnProperty(a, i)) {
+						if(!(i in empty)){
+							v = a[i];
+							if(f.call(o, v, i, a)){ t.push(v); }
+						}
 					}
 				}
 			}
@@ -57,15 +59,17 @@ dojo.require("dojox.lang.functional.lambda");
 			var i, n;
 			if(d.isArray(a)){
 				// array
-				for(i = 0, n = a.length; i < n; f.call(o, a[i], i, a), ++i);
+				for(i = 0, n = a.length; i < n; f.call(o, a[i], i, a), ++i) {}
 			}else if(typeof a.hasNext == "function" && typeof a.next == "function"){
 				// iterator
-				for(i = 0; a.hasNext(); f.call(o, a.next(), i++, a));
+				for(i = 0; a.hasNext(); f.call(o, a.next(), i++, a)) {}
 			}else{
 				// object/dictionary
 				for(i in a){
-					if(!(i in empty)){
-						f.call(o, a[i], i, a);
+					if (dojo.isOwnProperty(a, i)) {
+						if(!(i in empty)){
+							f.call(o, a[i], i, a);
+						}
 					}
 				}
 			}
@@ -80,17 +84,19 @@ dojo.require("dojox.lang.functional.lambda");
 			if(d.isArray(a)){
 				// array
 				t = new Array(n = a.length);
-				for(i = 0; i < n; t[i] = f.call(o, a[i], i, a), ++i);
+				for(i = 0; i < n; t[i] = f.call(o, a[i], i, a), ++i) {}
 			}else if(typeof a.hasNext == "function" && typeof a.next == "function"){
 				// iterator
 				t = [];
-				for(i = 0; a.hasNext(); t.push(f.call(o, a.next(), i++, a)));
+				for(i = 0; a.hasNext(); t.push(f.call(o, a.next(), i++, a))) {}
 			}else{
 				// object/dictionary
 				t = [];
 				for(i in a){
-					if(!(i in empty)){
-						t.push(f.call(o, a[i], i, a));
+					if (dojo.isOwnProperty(a, i)) {
+						if(!(i in empty)){
+							t.push(f.call(o, a[i], i, a));
+						}
 					}
 				}
 			}
@@ -119,9 +125,11 @@ dojo.require("dojox.lang.functional.lambda");
 			}else{
 				// object/dictionary
 				for(i in a){
-					if(!(i in empty)){
-						if(!f.call(o, a[i], i, a)){
-							return false;	// Boolean
+					if (dojo.isOwnProperty(a, i)) {
+						if(!(i in empty)){
+							if(!f.call(o, a[i], i, a)){
+								return false;	// Boolean
+							}
 						}
 					}
 				}
@@ -151,9 +159,11 @@ dojo.require("dojox.lang.functional.lambda");
 			}else{
 				// object/dictionary
 				for(i in a){
-					if(!(i in empty)){
-						if(f.call(o, a[i], i, a)){
-							return true;	// Boolean
+					if (dojo.isOwnProperty(a, i)) {
+						if(!(i in empty)){
+							if(f.call(o, a[i], i, a)){
+								return true;	// Boolean
+							}
 						}
 					}
 				}
