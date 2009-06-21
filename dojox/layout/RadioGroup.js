@@ -36,12 +36,12 @@ dojo.declare("dojox.layout.RadioGroup",
 	
 	// templateString: String
 	//	the template for our container
-	templateString: '<div class="dojoxRadioGroup">'
-			+' 	<div dojoAttachPoint="buttonHolder" style="display:none;">'
-			+'		<table class="dojoxRadioButtons"><tbody><tr class="dojoxRadioButtonRow" dojoAttachPoint="buttonNode"></tr></tbody></table>'
-			+'	</div>'
-			+'	<div class="dojoxRadioView" dojoAttachPoint="containerNode"></div>'
-			+'</div>',
+	templateString: '<div class="dojoxRadioGroup">' +
+			' 	<div dojoAttachPoint="buttonHolder" style="display:none;">' +
+			'		<table class="dojoxRadioButtons"><tbody><tr class="dojoxRadioButtonRow" dojoAttachPoint="buttonNode"></tr></tbody></table>' +
+			'	</div>' +
+			'	<div class="dojoxRadioView" dojoAttachPoint="containerNode"></div>' +
+			'</div>',
 
 	startup: function(){
 		// summary: scan the container for children, and make "tab buttons" for them
@@ -209,7 +209,7 @@ dojo.declare("dojox.layout.RadioGroupSlide",
 
 		dojo.style(page.domNode,{
 			zIndex: this.zTop, display:"" 
-		})
+		});
 
 		if(this._anim && this._anim.status()=="playing"){
 			this._anim.gotoPercent(100,true);
@@ -294,4 +294,4 @@ dojo.extend(dijit._Widget,{
 	//		to "random", or specify one of "top", "left", "right", "bottom"
 	//		to slideFrom top, left, right, or bottom.
 	slideFrom: "random"	
-})
+});
