@@ -14,7 +14,7 @@ dojo.provide("dojox.highlight._base");
 	};
 =====*/
 
-;(function(){
+(function(){
 	var dh = dojox.highlight,
 		C_NUMBER_RE = '\\b(0x[A-Za-z0-9]+|\\d+(\\.\\d+)?)';
 	
@@ -94,14 +94,20 @@ dojo.provide("dojox.highlight._base");
 
 	function buildKeywordGroups(mode){
 		if(!mode.keywordGroups){
-			for(var key in mode.keywords){
-				var kw = mode.keywords[key];
-    			if(kw instanceof Object){  // dojo.isObject?
-					mode.keywordGroups = mode.keywords;
-				}else{ 
-					mode.keywordGroups = {keyword: mode.keywords};
+			var keywords = mode.keywords;
+			for(var key in keywords){
+				if (dojo.isOwnProperty(keywords, key)) {
+					var kw = keywords[key];
+
+					// NOTE: isObject allows null
+
+		    			if(dojo.isObject(kw) && kw){
+						mode.keywordGroups = keywords;
+					}else{ 
+						mode.keywordGroups = {keyword: keywords};
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}
@@ -214,7 +220,11 @@ dojo.provide("dojox.highlight._base");
 			}
 			if(mode.illegal){ terminators[mode.illegal] = 1; }
 			var t = [];
-			for(i in terminators){ t.push(i); }
+			for(i in terminators){
+				if (dojo.isOwnProperty(terminators, i)) {
+					t.push(i);
+				}
+			}
 			mode.terminatorsRe = this.langRe("(" + t.join("|") + ")");
 		},
 
@@ -245,8 +255,11 @@ dojo.provide("dojox.highlight._base");
 		keywordMatch: function(mode, match){
 			var matchStr = match[0];
 			if(this.lang.case_insensitive){ matchStr = matchStr.toLowerCase(); }
-			for(var className in mode.keywordGroups){
-				if(matchStr in mode.keywordGroups[className]){ return className; }
+			var keywordGroups = mode.keywordGroups;
+			for(var className in keywordGroups){
+				if (dojo.isOwnProperty(keywordGroups, className)) {
+					if(matchStr in keywordGroups[className]){ return className; }
+				}
 			}
 			return "";
 		},
@@ -257,7 +270,11 @@ dojo.provide("dojox.highlight._base");
 				lexemes[lexeme] = 1;
 			});
 			var t = [];
-			for(var i in lexemes){ t.push(i); }
+			for(var i in lexemes){
+				if (dojo.isOwnProperty(lexemes, i)) {
+					t.push(i);
+				}
+			}
 			mode.lexemsRe = this.langRe("(" + t.join("|") + ")", true);
 		},
 	
@@ -351,7 +368,7 @@ dojo.provide("dojox.highlight._base");
 	function replaceText(node, className, text){
 		if(String(node.tagName).toLowerCase() == "code" && String(node.parentNode.tagName).toLowerCase() == "pre"){
 			// See these 4 lines? This is IE's notion of "node.innerHTML = text". Love this browser :-/
-			var container = document.createElement('div'),
+			var container = dojo.doc.createElement('div'),
 				environment = node.parentNode.parentNode;
 			container.innerHTML = '<pre><code class="' + className + '">' + text + '</code></pre>';
 			environment.replaceChild(container.firstChild, node.parentNode);
@@ -371,16 +388,19 @@ dojo.provide("dojox.highlight._base");
 	}
 
 	function highlightStringAuto(str){
-		var result = "", langName = "", bestRelevance = 2,
+		var result = "", langName = "",
 			textBlock = str;
-		for(var key in dh.languages){
-			if(!dh.languages[key].defaultMode){ continue; }	// skip internal members
-			var highlight = new Highlighter(key, textBlock),
-				relevance = highlight.keywordCount + highlight.relevance, relevanceMax = 0;
-			if(!result || relevance > relevanceMax){
-				relevanceMax = relevance;
-				result = highlight.result;
-				langName = highlight.langName;
+		var languages = dh.languages;
+		for(var key in languages){
+			if (dojo.isOwnProperty(languages, key)) {
+				if(!dh.languages[key].defaultMode){ continue; }	// skip internal members
+				var highlight = new Highlighter(key, textBlock),
+					relevance = highlight.keywordCount + highlight.relevance, relevanceMax = 0;
+				if(!result || relevance > relevanceMax){
+					relevanceMax = relevance;
+					result = highlight.result;
+					langName = highlight.langName;
+				}
 			}
 		}
 		return {result:result, langName:langName};
