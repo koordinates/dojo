@@ -26,10 +26,9 @@ dojo.declare("dojox.image.Magnifier",
 		dojo.addClass(this.glassNode,"glassNode");
 		dojo.body().appendChild(this.glassNode);
 
-		with(this.glassNode.style){
-			height = this.glassSize + "px";
-			width = this.glassSize + "px";
-		}
+		
+		this.glassNode.style.height = this.glassSize + "px";
+		this.glassNode.style.width = this.glassSize + "px";		
 		
 		this.surface = dojox.gfx.createSurface(this.surfaceNode, this.glassSize, this.glassSize);
 		this.img = this.surface.createImage({
