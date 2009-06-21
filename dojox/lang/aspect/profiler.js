@@ -1,8 +1,7 @@
 dojo.provide("dojox.lang.aspect.profiler");
 
 (function(){
-	var aop = dojox.lang.aspect,
-		uniqueNumber = 0;
+	var aop = dojox.lang.aspect;
 	
 	var Profiler = function(title){
 		this.args = title ? [title] : [];
