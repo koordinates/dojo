@@ -92,15 +92,15 @@ dojox.off.files = {
 		//		A URL of a file to cache or an Array of Strings of files to
 		//		cache
 		
-		//console.debug("dojox.off.files.cache, urlOrList="+urlOrList);
+		var url;
 		
 		if(dojo.isString(urlOrList)){
-			var url = this._trimAnchor(urlOrList+"");
+			url = this._trimAnchor(urlOrList+"");
 			if(!this.isAvailable(url)){ 
 				this.listOfURLs.push(url); 
 			}
 		}else if(urlOrList instanceof dojo._Url){
-			var url = this._trimAnchor(urlOrList.uri);
+			url = this._trimAnchor(urlOrList.uri);
 			if(!this.isAvailable(url)){ 
 				this.listOfURLs.push(url); 
 			}
@@ -182,8 +182,8 @@ dojox.off.files = {
 				this._getVersionInfo(function(oldVersion, newVersion, justDebugged){
 					//console.warn("getVersionInfo, oldVersion="+oldVersion+", newVersion="+newVersion
 					//				+ ", justDebugged="+justDebugged+", isDebug="+dojo.config.isDebug);
-					if(dojo.config.isDebug || !newVersion || justDebugged 
-							|| !oldVersion || oldVersion != newVersion){
+					if(dojo.config.isDebug || !newVersion || justDebugged || 
+							!oldVersion || oldVersion != newVersion){
 						console.warn("Refreshing offline file list");
 						this._doRefresh(callback, newVersion);
 					}else{
@@ -233,42 +233,34 @@ dojox.off.files = {
 		
 		dojo.query("script").forEach(function(i){
 			try{
-				handleUrl(i.getAttribute("src"));
-			}catch(exp){
-				//console.debug("dojox.off.files.slurp 'script' error: " 
-				//				+ exp.message||exp);
+				handleUrl(i.src);
+			}catch(exp){				
 			}
 		});
 		
 		dojo.query("link").forEach(function(i){
 			try{
-				if(!i.getAttribute("rel")
-					|| i.getAttribute("rel").toLowerCase() != "stylesheet"){
+				if(!i.rel ||
+					i.rel.toLowerCase() != "stylesheet"){
 					return;
 				}
 			
-				handleUrl(i.getAttribute("href"));
+				handleUrl(i.href);
 			}catch(exp){
-				//console.debug("dojox.off.files.slurp 'link' error: " 
-				//				+ exp.message||exp);
 			}
 		});
 		
 		dojo.query("img").forEach(function(i){
 			try{
-				handleUrl(i.getAttribute("src"));
+				handleUrl(i.src);
 			}catch(exp){
-				//console.debug("dojox.off.files.slurp 'img' error: " 
-				//				+ exp.message||exp);
 			}
 		});
 		
 		dojo.query("a").forEach(function(i){
 			try{
-				handleUrl(i.getAttribute("href"));
+				handleUrl(i.href);
 			}catch(exp){
-				//console.debug("dojox.off.files.slurp 'a' error: " 
-				//				+ exp.message||exp);
 			}
 		});
 		
@@ -277,6 +269,10 @@ dojox.off.files = {
 		// parse our style sheets for inline URLs and imports
 		dojo.forEach(document.styleSheets, function(sheet){
 			try{
+
+				// NOTE: Yet another duplication of this logic :(
+				// NOTE: Does not need try-catch
+
 				if(sheet.cssRules){ // Firefox
 					dojo.forEach(sheet.cssRules, function(rule){
 						var text = rule.cssText;
@@ -287,7 +283,7 @@ dojox.off.files = {
 							}
 							
 							for(var i = 1; i < matches.length; i++){
-								handleUrl(matches[i])
+								handleUrl(matches[i]);
 							}
 						}
 					});
@@ -297,6 +293,9 @@ dojox.off.files = {
 					// unfortunately, using RegExp.exec seems to be flakey
 					// for looping across multiple lines on IE using the
 					// global flag, so we have to simulate it
+
+					// NOTE: Flakey in what way?
+
 					var lines = text.split(/\f|\r|\n/);
 					for(var i = 0; i < lines.length; i++){
 						matches = lines[i].match(/url\(\s*([^\) ]*)\s*\)/i);
@@ -305,9 +304,7 @@ dojox.off.files = {
 						}
 					}
 				}
-			}catch(exp){
-				//console.debug("dojox.off.files.slurp stylesheet parse error: " 
-				//				+ exp.message||exp);
+			}catch(exp){				
 			}
 		});
 		
@@ -334,23 +331,23 @@ dojox.off.files = {
 		}
 		
 		// scheme relative with port specified -- brad.com:8080
-		if(!url.scheme && url.host && url.port
-				&& window.location.hostname == url.host
-				&& window.location.port == url.port){
+		if(!url.scheme && url.host && url.port &&
+				window.location.hostname == url.host &&
+				window.location.port == url.port){
 			return true;
 		}
 		
 		// scheme relative with no-port specified -- brad.com
-		if(!url.scheme && url.host && !url.port
-			&& window.location.hostname == url.host
-			&& window.location.port == 80){
+		if(!url.scheme && url.host && !url.port &&
+			window.location.hostname == url.host &&
+			window.location.port == 80){
 			return true;
 		}
 		
 		// else we have everything
-		return  window.location.protocol == (url.scheme + ":")
-				&& window.location.hostname == url.host
-				&& (window.location.port == url.port || !window.location.port && !url.port);
+		return window.location.protocol == (url.scheme + ":") &&
+				window.location.hostname == url.host &&
+				(window.location.port == url.port || !window.location.port && !url.port);
 	},
 	
 	_trimAnchor: function(url){
@@ -368,8 +365,7 @@ dojox.off.files = {
 			throw "Google Gears must be allowed to run";
 		}
 		
-		var storeName = "dot_store_" 
-							+ window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
+		var storeName = "dot_store_" + window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
 							
 		// clip at 64 characters, the max length of a resource store name
 		if(storeName.length >= 64){
@@ -429,7 +425,6 @@ dojox.off.files = {
 				timeout: 5 * 1000,
 				handleAs: "javascript",
 				error: function(err){
-					//console.warn("dojox.off.files._getVersionInfo, err=",err);
 					dojox.storage.remove("oldVersion", dojox.off.STORAGE_NAMESPACE);
 					dojox.storage.remove("justDebugged", dojox.off.STORAGE_NAMESPACE);
 					callback(oldVersion, newVersion, justDebugged);
@@ -447,4 +442,4 @@ dojox.off.files = {
 				}
 		});
 	}
-}
+};
