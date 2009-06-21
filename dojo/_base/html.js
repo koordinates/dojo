@@ -207,7 +207,7 @@ dojo.byId = function(id, doc){
 	};
 
 	// Box functions will assume this model.
-	// BORDER_BOX will be set if the primary document is in quirks mode.
+	// BORDER_BOX will be set if the primary document is in IE quirks mode.
 	
 	// can be either:
 	//	"border-box"
@@ -217,7 +217,7 @@ dojo.byId = function(id, doc){
 	//       should be deprecated
 
 	dojo.boxModel = "content-box";
-	if (document.documentElement.clientWidth === 0) {
+	if (window.document.documentElement.clientWidth === 0) {
 		// client code may have to adjust if compatMode varies across iframes
 		dojo.boxModel =  "border-box";
 	}
@@ -1526,13 +1526,14 @@ dojo.byId = function(id, doc){
 		node.removeAttribute(name);
 	};
 
-	// For use with XML elements and custom HTML DOM attributes (e.g. djconfig)
-	// Also used by query module, regardless of DOM as it needs attributes rather than properties
+	// For use with XML elements
+	// Also used by query module, regardless of DOM type as it needs attributes rather than properties
 	// Returns a string or null
 
 	// NOTE: Does not support multiple sets (name must be a string)
 
-	// NOTE: Do NOT use to SET custom attributes (use expando properties when needed, practice should be deprecated.)
+	// NOTE: Do NOT use with custom HTML attributes
+	//       Faster and simpler to use host implemented get/setAttribute to get and set custom attributes
 
 	dojo.realAttr = (function() {
 		var nn, nameC, hasAttribute, doc, att, alias;
