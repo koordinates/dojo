@@ -372,8 +372,8 @@ dojo.mixin(dojox.off, {
 		// were we able to initialize storage? if
 		// not, then this is a core operation, and
 		// let's indicate we will need to fail fast
-		if(!dojox.storage.manager.isAvailable()
-			&& dojox.storage.manager.isInitialized()){
+		if(!dojox.storage.manager.isAvailable() &&
+			dojox.storage.manager.isInitialized()){
 			this.coreOpFailed = true;
 			this.enabled = false;
 		}
@@ -501,8 +501,11 @@ dojo.mixin(dojox.off, {
 		// right now we just scan the SCRIPT tags attached to this
 		// page and see if there is one for _base/_loader/bootstrap.js
 		var isOptimizedBuild = true;
+
+		// NOTE: Remove query
+
 		dojo.forEach(dojo.query("script"), function(i){
-			var src = i.getAttribute("src");
+			var src = i.src;
 			if(!src){ return; }
 			
 			if(src.indexOf("_base/_loader/bootstrap.js") != -1){
