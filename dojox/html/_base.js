@@ -14,9 +14,9 @@ dojo.require("dojo.html");
 
 (function() {
 
-	if(dojo.isIE){
+	//if(dojo.isIE){
 		var alphaImageLoader = /(AlphaImageLoader\([^)]*?src=(['"]))(?![a-z]+:|\/)([^\r\n;}]+?)(\2[^)]*\)\s*[;}]?)/g;
-	}
+	//}
 
 	// css at-rules must be set before any css declarations according to CSS spec
 	// match:
@@ -185,6 +185,8 @@ dojo.require("dojo.html");
 		referencePath: ".",
 		renderStyles: false, 
 
+		// NOTE: What sets this flag?
+
 		executeScripts: false,
 		scriptHasHooks: false,
 		scriptHookReplacement: null,
@@ -198,16 +200,20 @@ dojo.require("dojo.html");
 			for(var i = 0, e = styles.length; i < e; i++){
 				cssText = styles[i]; att = styles.attributes[i];
 				st = doc.createElement('style');
-				st.setAttribute("type", "text/css"); // this is required in CSS spec!
+				st.type = "text/css"; // this is required in CSS spec!
 
 				for(var x in att){
-					st.setAttribute(x, att[x]);
+					if (dojo.isOwnProperty(att, x)) {
+						dojo.realAttr(st, x, att[x]);
+					}
 				}
 
 				this._styleNodes.push(st);
 				head.appendChild(st); // must insert into DOM before setting cssText
 
-				if(st.styleSheet){ // IE
+				// Should be centralized
+
+				if(dojo.isHostObjectProperty(st, 'styleSheet')){ // IE
 					st.styleSheet.cssText = cssText;
 				}else{ // w3c
 					st.appendChild(doc.createTextNode(cssText));
@@ -231,8 +237,7 @@ dojo.require("dojo.html");
 			//		to add handling for adjustPaths, renderStyles on the html string content before it is set
 			this.inherited("onBegin", arguments);
 			
-			var cont = this.content, 
-				node = this.node; 
+			var cont = this.content; 
 				
 			var styles = this._styles;// init vars
 
