@@ -57,7 +57,7 @@ dojo.provide("dojox.lang.aspect");
 			
 			var self = arguments.callee,	// the join point
 				advices = self.advices,		// list of advices for this joinpoint
-				ret, i, a, e, t;
+				ret, i, a, t;
 
 			// push context
 			if(context){ contextStack.push(context); }
@@ -182,13 +182,16 @@ dojo.provide("dojox.lang.aspect");
 		}
 
 		var methods = [];
-		if(!(method instanceof Array)){
+		if(!dojo.isArray(method)){
 			method = [method];
 		}
 		
 		// identify advised methods
 		for(var j = 0; j < method.length; ++j){
 			var t = method[j];
+
+			// NOTE: Need dojo.isRegExp
+
 			if(t instanceof RegExp){
 				for(var i in obj){
 					if(d.isFunction(obj[i]) && t.test(i)){
@@ -253,7 +256,7 @@ dojo.provide("dojox.lang.aspect");
 				x.target = o.target || o;
 				x.targetName = name;
 				x._listeners = o._listeners || [];
-				x.advices = new Advice;
+				x.advices = new Advice();
 				t = x.advices;
 			}
 			// attach advices
@@ -276,29 +279,31 @@ dojo.provide("dojox.lang.aspect");
 		if(!handle){ return; }
 		var obj = handle[0], methods = handle[1];
 		for(var name in methods){
-			var o = obj[name], t = o.advices, ao = methods[name];
-			for(var i = ao.length - 1; i >= 0; --i){
-				t.remove(ao[i]);
-			}
-			if(t.isEmpty()){
-				// check if we can remove all stubs
-				var empty = true, ls = o._listeners;
-				if(ls.length){
-					for(i in ls){
-						if(!(i in ap)){
-							empty = false;
-							break;
+			if (dojo.isOwnProperty(methods, name)) {
+				var o = obj[name], t = o.advices, ao = methods[name];
+				for(var i = ao.length - 1; i >= 0; --i){
+					t.remove(ao[i]);
+				}
+				if(t.isEmpty()){
+					// check if we can remove all stubs
+					var empty = true, ls = o._listeners;
+					if(ls.length){
+						for(i in ls){
+							if(dojo.isOwnProperty(ls, i) && !(i in ap)){
+								empty = false;
+								break;
+							}
 						}
 					}
-				}
-				if(empty){
-					// revert to the original method
-					obj[name] = o.target;
-				}else{
-					// replace with the dojo.connect() stub
-					var x = obj[name] = d._listener.getDispatcher();
-					x.target = o.target;
-					x._listeners = ls;
+					if(empty){
+						// revert to the original method
+						obj[name] = o.target;
+					}else{
+						// replace with the dojo.connect() stub
+						var x = obj[name] = d._listener.getDispatcher();
+						x.target = o.target;
+						x._listeners = ls;
+					}
 				}
 			}
 		}
