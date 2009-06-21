@@ -21,7 +21,7 @@ window.onload = function(){
 		// convert to boolean
 		hasOfflineCache = (hasOfflineCache == "true") ? true : false;
 	}
-	if(hasOfflineCache == true){
+	if(hasOfflineCache){
 		// delete the download and install steps
 		var downloadStep = document.getElementById("dot-download-step");
 		var installStep = document.getElementById("dot-install-step");
@@ -34,10 +34,10 @@ window.onload = function(){
 	if(matches && matches.length > 0){
 		var runLink = decodeURIComponent(matches[1]);
 		var runLinkElem = document.getElementById("dot-learn-how-run-link");
-		runLinkElem.setAttribute("href", runLink);
+		runLinkElem.href = runLink;
 		
 		var runLinkText = decodeURIComponent(matches[2]);
 		runLinkElem.innerHTML = "";
 		runLinkElem.appendChild(document.createTextNode(runLinkText));
 	}
-}
+};
