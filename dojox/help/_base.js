@@ -21,14 +21,14 @@ dojox.help = {
 		// maxResults:
 		//		The maximum number of results.
 		maxResults = maxResults || 20;
-		var namespaces = [];
+		var i, namespace, namespaces = [];
 		var roots = {};
 		var root;
 		if(searchIn){
 			if(!dojo.isArray(searchIn)){
 				searchIn = [searchIn];
 			}
-			for(var i = 0, namespace; namespace = searchIn[i]; i++){
+			for(i = 0; namespace = searchIn[i]; i++){
 				root = namespace;
 				if(dojo.isString(namespace)){
 					namespace = dojo.getObject(namespace);
@@ -58,16 +58,17 @@ dojox.help = {
 		}
 
 		var searchForLower = searchFor.toLowerCase();
-		var found = [];
+		var name, found = [];
+		var fn = function(item){
+			// Return true if we find a namespace below
+			// the current namespace
+			item = item.__name__ || "";
+			return !name.indexOf(item + ".");
+		};
 		out:
-		for(var i = 0, namespace; namespace = namespaces[i]; i++){
-			var name = namespace.__name__ || "";
-			var shorter = dojo.some(namespaces, function(item){
-				// Return true if we find a namespace below
-				// the current namespace
-				item = item.__name__ || "";
-				return (name.indexOf(item + ".") == 0);
-			});
+		for(i = 0; namespace = namespaces[i]; i++){
+			name = namespace.__name__ || "";
+			var shorter = dojo.some(namespaces, fn);
 			if(name && !shorter){
 				root = name.split(".")[0];
 				var names = [];
@@ -81,7 +82,7 @@ dojox.help = {
 					names = dojox.help._names[root];
 				}
 				for(var j = 0, variable; variable = names[j]; j++){
-					if((name == "window" || variable.indexOf(name + ".") == 0) && variable.toLowerCase().indexOf(searchForLower) != -1){
+					if((name == "window" || !variable.indexOf(name + ".")) && variable.toLowerCase().indexOf(searchForLower) != -1){
 						if(variable.slice(-10) == ".prototype"){ continue; }
 						var obj = dojo.getObject(variable);
 						if(obj){
@@ -96,9 +97,6 @@ dojox.help = {
 		}
 
 		dojox.help._displayLocated(found);
-		if(!+dojo.isFF){
-			return "";
-		}
 	},
 	refresh: function(/*String?*/ namespace, /*Boolean?*/ recursive){
 		// summary:
@@ -147,28 +145,22 @@ dojox.help = {
 					dojox.help.noConflict();
 					require.apply(dojo, arguments);
 					if(dojox.help._timer){
-						clearTimeout(dojox.help._timer);
+						window.clearTimeout(dojox.help._timer);
 					}
-					dojox.help._timer = setTimeout(function(){
+					dojox.help._timer = window.setTimeout(function(){
 						dojo.addOnLoad(function(){
 							dojox.help.refresh();
 							dojox.help._timer = false;
 						});
 					}, 500);
-				}
+				};
 			})(dojo.require);
 
 			dojox.help._recurse();
 		});
 	},
 	_noConflict: function(item){
-		if(item instanceof String){
-			return item.toString();
-		}else if(item instanceof Number){
-			return +item;
-		}else if(item instanceof Boolean){
-			return (item == true);
-		}else if(dojo.isObject(item)){
+		if(dojo.isObject(item) && item){ // NOTE: isObject allows null
 			delete item.__name__;
 			delete item.help;
 		}
@@ -254,9 +246,6 @@ dojox.help = {
 				}
 			});
 		}
-		if(!+dojo.isFF){
-			return "";
-		}
 	},
 	_parse: function(data){
 		delete this.__searching__;
@@ -316,9 +305,9 @@ dojox.help = {
 			this.__searching__ = true;
 			dojox.help._toStrings[dojox.help._stripPrototype(this.__name__)[0]] = this;
 			if(dojox.help._toStringTimer){
-				clearTimeout(dojox.help._toStringTimer);
+				window.clearTimeout(dojox.help._toStringTimer);
 			}
-			dojox.help._toStringTimer = setTimeout(function(){ dojox.help.__toString(); }, 50);
+			dojox.help._toStringTimer = window.setTimeout(function(){ dojox.help.__toString(); }, 50);
 		}
 
 		if(!first || !this.__searching__){
@@ -327,11 +316,10 @@ dojox.help = {
 
 		var message = "function Loading info for " + this.__name__ + "... (watch console for result) {}";
 
-		if(!+dojo.isFF){
-			this.__output__ = true;
-			return message;
-		}
-
+		
+		this.__output__ = true;
+		return message;
+		
 		return {
 			toString: dojo.hitch(this, function(){
 				// Detect if this was called by Firebug
@@ -342,28 +330,32 @@ dojox.help = {
 	},
 	__toString: function(){
 		if(dojox.help._toStringTimer){
-			clearTimeout(dojox.help._toStringTimer);
+			window.clearTimeout(dojox.help._toStringTimer);
 		}
 
 		var names = [];
+		var fn = function(datas){
+			for(var i = 0, data; data = datas[i]; i++){
+				var fn = dojox.help._toStrings[data.name];
+				if(fn){
+					dojox.help._parse.call(fn, [data]);
+					delete dojox.help._toStrings[data.name];
+				}
+			}
+		};
 		dojox.help.noConflict(dojox.help._toStrings);
-		for(var name in dojox.help._toStrings){
-			names.push(name);
+		var toStrings = dojox.help._toStrings;
+		for(var name in toStrings){
+			if (dojo.isOwnProperty(toStrings, name)) {
+				names.push(name);
+			}
 		}
 		while(names.length){
 			dojox.help._rpc.batch(dojox.help._addVersion({
 				names: names.splice(-50, 50),
 				exact: true,
 				attributes: ["parameters"]
-			})).addCallback(this, function(datas){
-				for(var i = 0, data; data = datas[i]; i++){
-					var fn = dojox.help._toStrings[data.name];
-					if(fn){
-						dojox.help._parse.call(fn, [data]);
-						delete dojox.help._toStrings[data.name];
-					}
-				}
-			});
+			})).addCallback(this, fn);
 		}
 	},
 	_overrides: [],
@@ -374,12 +366,12 @@ dojox.help = {
 			recursive = true;
 		}
 
-		var items = [];
+		var ns, i, item, items = [];
 
 		if(namespace && dojo.isString(namespace)){
 			dojox.help.__recurse(dojo.getObject(namespace), namespace, namespace, items, recursive);
 		}else{
-			for(var i = 0, ns; ns = dojox.help._namespaces[i]; i++){
+			for(i = 0; ns = dojox.help._namespaces[i]; i++){
 				if(window[ns]){
 					dojox.help._recursions.push([window[ns], ns, ns]);
 					window[ns].__name__ = ns;
@@ -395,75 +387,84 @@ dojox.help = {
 			dojox.help.__recurse(recursion[0], recursion[1], recursion[2], items, recursive);
 		}
 
-		for(var i = 0, item; item = items[i]; i++){
+		for(i = 0; item = items[i]; i++){
 			delete item.__seen__;
 		}
 	},
 	__recurse: function(namespace, root, name, items, recursive){
 		for(var key in namespace){
-			if(key.match(/([^\w_.$]|__[\w_.$]+__)/)){
-				continue;
-			}
-
-			var item = namespace[key];
-			if(typeof item == "undefined"
-				|| item === document
-				|| item === window
-				|| item === dojox.help._toString
-				|| item === dojox.help._help
-				|| item === null
-				|| item.tagName
-				|| item.__seen__
-			) {
-				continue;
-			}
-
-			var isFunction = dojo.isFunction(item);
-			var isObject = dojo.isObject(item) && !dojo.isArray(item) && !item.nodeType;
-
-			var itemName = (name) ? (name + "." + key) : key;
-
-			if(itemName == "dojo._blockAsync"){
-				continue;
-			}
-
-			if(!item.__name__){
-				var parent = null;
-				if(dojo.isString(item)){
-					parent = String;
-				}else if(typeof item == "number"){
-					parent = Number;
-				}else if(typeof item == "boolean"){
-					parent = Boolean;
+			if (dojo.isOwnProperty(namespace, key)) {
+				if(key.match(/([^\w_.$]|__[\w_.$]+__)/)){
+					continue;
 				}
-				if(parent){
-					item = namespace[key] = new parent(item);
+
+				// NOTE: What is allowed for these?
+
+				var item = namespace[key];
+				if(typeof item == "undefined" ||
+					item === dojo.doc ||
+					item === window ||
+					item === dojox.help._toString ||
+					item === dojox.help._help ||
+					item === null ||
+					item.tagName ||
+					item.__seen__
+				) {
+					continue;
 				}
-			}
 
-			item.__seen__ = true;
-			item.__name__ = itemName;
-			(dojox.help._names[root] = dojox.help._names[root] || []).push(itemName);
-			items.push(item);
-			if(!isFunction){
-				dojox.help._overrides.push([namespace, key]);
-			}
+				var isFunction = dojo.isFunction(item);
 
-			if((isFunction || isObject) && recursive){
-				dojox.help._recursions.push([item, root, itemName]);
-			}
+				// NOTE: isObject allows null
 
-			if(isFunction){
-				if(!item.__source__){
-					item.__source__ = item.toString().replace(/^function\b ?/, "function " + itemName);
+				// NOTE: Should not need to discriminate between Object objects, Arrays and host objects
+
+				var isObject = item && dojo.isObject(item) && !dojo.isArray(item) && !item.nodeType;
+
+				var itemName = (name) ? (name + "." + key) : key;
+
+				if(itemName == "dojo._blockAsync"){
+					continue;
 				}
-				if(item.toString === Function.prototype.toString){
-					item.toString = dojox.help._toString;
-				}
-			}
 
-			if(!item.help){
-				item.help = dojox.help._help;
+				if(!item.__name__){
+					var parent = null;
+					if(dojo.isString(item)){
+						parent = String;
+					}else if(typeof item == "number"){
+						parent = Number;
+					}else if(typeof item == "boolean"){
+						parent = Boolean;
+					}
+					if(parent){
+						item = namespace[key] = new parent(item);
+					}
+				}
+
+				item.__seen__ = true;
+				item.__name__ = itemName;
+				(dojox.help._names[root] = dojox.help._names[root] || []).push(itemName);
+				items.push(item);
+				if(!isFunction){
+					dojox.help._overrides.push([namespace, key]);
+				}
+
+				if((isFunction || isObject) && recursive){
+					dojox.help._recursions.push([item, root, itemName]);
+				}
+
+				if(isFunction){
+					if(!item.__source__){
+						item.__source__ = item.toString().replace(/^function\b ?/, "function " + itemName);
+					}
+					if(item.toString === Function.prototype.toString){
+						item.toString = dojox.help._toString;
+					}
+				}
+
+				if(!item.help){
+					item.help = dojox.help._help;
+				}
 			}
 		}
 	}
