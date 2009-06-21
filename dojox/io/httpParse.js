@@ -15,8 +15,15 @@ dojox.io.httpParse = function(/*String*/httpStream, /*String?*/topHeaders,/*Bool
 	//		 
 	var xhrs=[];
 	var streamLength = httpStream.length;
+	var headerStr, headers;
+	var getHeaderStr = function(){ 
+		return headerStr;
+	};
+	var getHeader = function(name){
+		return headers[name];
+	};
 	do{
-		var headers = {};
+		headers = {};
 		var httpParts = httpStream.match(/(\n*[^\n]+)/);
 		if(!httpParts){ 
 			return null;
@@ -29,7 +36,7 @@ dojox.io.httpParse = function(/*String*/httpStream, /*String?*/topHeaders,/*Bool
 		var headerFollowingChar = httpStream.substring(0,1);
 		httpStream = httpStream.substring(1);
 		headerParts = (topHeaders || "") + headerParts;
-		var headerStr = headerParts;
+		headerStr = headerParts;
 		headerParts = headerParts.match(/[^:\n]+:[^\n]+\n/g); // parse the containing and contained response headers with the contained taking precedence (by going last)
 		for(var j = 0; j < headerParts.length; j++){
 			var colonIndex = headerParts[j].indexOf(':');
@@ -41,12 +48,8 @@ dojox.io.httpParse = function(/*String*/httpStream, /*String?*/topHeaders,/*Bool
 			status : parseInt(httpParts[1],10),
 			statusText : httpParts[2],
 			readyState : 3, // leave it at 3 until we get a full body
-			getAllResponseHeaders : function(){ 
-				return headerStr;
-			},
-			getResponseHeader : function(name){
-				return headers[name];
-			}
+			getAllResponseHeaders : getHeaderStr,
+			getResponseHeader : getHeader
 		}; 
 		var contentLength = headers['Content-Length'];
 		var content; 
@@ -72,4 +75,4 @@ dojox.io.httpParse = function(/*String*/httpStream, /*String?*/topHeaders,/*Bool
 		xhr._lastIndex = streamLength - httpStream.length; // need to pick up from where we left on streaming connections 
 	}while(httpStream);
 	return xhrs;
-}
+};
