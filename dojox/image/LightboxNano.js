@@ -1,17 +1,20 @@
 dojo.provide("dojox.image.LightboxNano");
 dojo.require("dojo.fx");
 
-(function(d){
+(function() {
 
 var getViewport = function(){
 		//	summary: Returns the dimensions and scroll position of the viewable area of a browser window
-		var scrollRoot = (d.doc.compatMode == "BackCompat") ? d.body() : d.doc.documentElement,
+
+		// NOTE: Duplication and calling method marked private
+
+		var scrollRoot = dojo.doc.documentElement.clientWidth ? dojo.doc.documentElement : dojo.body(),
 			scroll = dojo._docScroll();
 		return { w: scrollRoot.clientWidth, h: scrollRoot.clientHeight, l: scroll.x, t: scroll.y };
 	},
 	abs = "absolute";
 
-d.declare("dojox.image.LightboxNano", null, {
+dojo.declare("dojox.image.LightboxNano", null, {
 	//	summary:
 	//		A simple "nano" version of the lightbox. 
 	//
@@ -46,28 +49,30 @@ d.declare("dojox.image.LightboxNano", null, {
 		// summary: Initializes the DOM node and connect onload event
 		var _this = this;
 
-		d.mixin(_this, p);
+		dojo.mixin(_this, p);
 		n = dojo.byId(n);
 
 		if(!/a/i.test(n.tagName)){
-			var a = d.create("a", { href: _this.href, "class": n.className }, n, "after");
+			var a = dojo.create("a", { href: _this.href, "class": n.className }, n, "after");
 			n.className = "";
 			a.appendChild(n);
 			n = a;
 		}
 
-		d.style(n, {
+		dojo.style(n, {
 			display: "block",
 			position: "relative"
 		});
 		_this._createDiv("dojoxEnlarge", n);
 
 		_this._node = n;
-		d.setSelectable(n, false);
-		_this._onClickEvt = d.connect(n, "onclick", _this, "_load");
+		dojo.setSelectable(n, false);
+		_this._onClickEvt = dojo.connect(n, "onclick", _this, "_load");
+	
+		var preloadedImage;	
 
-		setTimeout(function(){
-			(new Image()).src = _this.href;
+		window.setTimeout(function(){
+			preloadedImage = (new Image()).src = _this.href;
 			_this._hideLoading();
 		}, _this.preloadDelay);
 	},
@@ -76,30 +81,30 @@ d.declare("dojox.image.LightboxNano", null, {
 		// summary: Destroys the LightboxNano and it's DOM node
 		var a = this._connects || [];
 		a.push(this._onClickEvt);
-		d.forEach(a, d.disconnect);
-		d.destroy(this._node);
+		dojo.forEach(a, dojo.disconnect);
+		dojo.destroy(this._node);
 	},
 
 	_createDiv: function(/*String*/cssClass, /*DomNode*/refNode, /*boolean*/display){
 		// summary: Creates a div for the enlarge icon and loading indicator layers
-		return d.create("div", { "class": cssClass, style: { position: abs, display: display ? "" : "none" } }, refNode); // DomNode
+		return dojo.create("div", { "class": cssClass, style: { position: abs, display: display ? "" : "none" } }, refNode); // DomNode
 	},
 	
 	_load: function(/*Event*/e){
 		// summary: Creates the large image and begins to show it
 		var _this = this;
 
-		d.stopEvent(e);
+		dojo.stopEvent(e);
 
 		if(!_this._loading){
 			_this._loading = true;
 			_this._reset();
 
-			var n = d.query("img", _this._node)[0],
-				a = d._abs(n, true),
-				c = d.contentBox(n),
-				b = d._getBorderExtents(n),
-				i = _this._img = d.create("img", {
+			var n = dojo.query("img", _this._node)[0],
+				a = dojo._abs(n, true),
+				c = dojo.contentBox(n),
+				b = dojo._getBorderExtents(n),
+				i = _this._img = dojo.create("img", {
 					style: {
 						visibility: "hidden",
 						cursor: "pointer",
@@ -108,15 +113,15 @@ d.declare("dojox.image.LightboxNano", null, {
 						left: 0,
 						zIndex: 9999999
 					}
-				}, d.body()),
+				}, dojo.body()),
 				ln = _this._loadingNode;
 
-			if(ln == null){
-				_this._loadingNode = ln = _this._createDiv("dojoxLoading", _this._node, true)
-				var l = d.marginBox(ln);
-				d.style(ln, {
-					left: parseInt((c.w - l.w) / 2) + "px",
-					top: parseInt((c.h - l.h) / 2) + "px"
+			if(!ln){
+				_this._loadingNode = ln = _this._createDiv("dojoxLoading", _this._node, true);
+				var l = dojo.marginBox(ln);
+				dojo.style(ln, {
+					left: ((c.w - l.w) / 2) + "px",
+					top: ((c.h - l.h) / 2) + "px"
 				});
 			}
 
@@ -124,7 +129,7 @@ d.declare("dojox.image.LightboxNano", null, {
 			c.y = a.y - 10 + b.t;
 			_this._start = c;
 
-			_this._connects = [d.connect(i, "onload", _this, "_show")];
+			_this._connects = [dojo.connect(i, "onload", _this, "_show")];
 
 			i.src = _this.href;
 		}
@@ -133,7 +138,7 @@ d.declare("dojox.image.LightboxNano", null, {
 	_hideLoading: function(){
 		// summary: Hides the animated loading indicator
 		if(this._loadingNode){
-			d.style(this._loadingNode, "display", "none");
+			dojo.style(this._loadingNode, "display", "none");
 		}
 		this._loadingNode = false;
 	},
@@ -144,34 +149,33 @@ d.declare("dojox.image.LightboxNano", null, {
 			vp = getViewport(),
 			w = _this._img.width,
 			h = _this._img.height,
-			vpw = parseInt((vp.w - 20) * 0.9),
-			vph = parseInt((vp.h - 20) * 0.9),
-			dd = d.doc,
-			bg = _this._bg = d.create("div", {
+			vpw = parseInt((vp.w - 20) * 0.9, 10),
+			vph = parseInt((vp.h - 20) * 0.9, 10),
+			dd = dojo.doc,
+			bg = _this._bg = dojo.create("div", {
 				style: {
 					backgroundColor: "#000",
 					opacity: 0.0,
 					position: abs,
 					zIndex: 9999998
 				}
-			}, d.body()),
-			ln = _this._loadingNode;
+			}, dojo.body());
 
 		if(_this._loadingNode){
 			_this._hideLoading();
 		}
-		d.style(_this._img, {
+		dojo.style(_this._img, {
 			border: "10px solid #fff",
 			visibility: "visible"
 		});
-		d.style(_this._node, "visibility", "hidden");
+		dojo.style(_this._node, "visibility", "hidden");
 
 		_this._loading = false;
 
 		_this._connects = _this._connects.concat([
-			d.connect(dd, "onmousedown", _this, "_hide"),
-			d.connect(dd, "onkeypress", _this, "_key"),
-			d.connect(window, "onresize", _this, "_sizeBg")
+			dojo.connect(dd, "onmousedown", _this, "_hide"),
+			dojo.connect(dd, "onkeypress", _this, "_key"),
+			dojo.connect(window, "onresize", _this, "_sizeBg")
 		]);
 
 		if(w > vpw){
@@ -192,7 +196,7 @@ d.declare("dojox.image.LightboxNano", null, {
 
 		_this._sizeBg();
 
-		d.fx.combine([
+		dojo.fx.combine([
 			_this._anim(_this._img, _this._coords(_this._start, _this._end)),
 			_this._anim(bg, { opacity: 0.5 })
 		]).play();
@@ -200,8 +204,11 @@ d.declare("dojox.image.LightboxNano", null, {
 
 	_sizeBg: function(){
 		// summary: Resize the background to fill the page
-		var dd = d.doc.documentElement;
-		d.style(this._bg, {
+
+		// NOTE: Duplication (core window module needs method to get scroll dimensions)
+
+		var dd = dojo.doc.documentElement.clientWidth ? dojo.doc.documentElement : dojo.body();
+		dojo.style(this._bg, {
 			top: 0,
 			left: 0,
 			width: dd.scrollWidth + "px",
@@ -211,7 +218,7 @@ d.declare("dojox.image.LightboxNano", null, {
 
 	_key: function(/*Event*/e){
 		// summary: A key was pressed, so hide the lightbox
-		d.stopEvent(e);
+		dojo.stopEvent(e);
 		this._hide();
 	},
 
@@ -228,9 +235,9 @@ d.declare("dojox.image.LightboxNano", null, {
 	_hide: function(){
 		// summary: Closes the lightbox
 		var _this = this;
-		d.forEach(_this._connects, d.disconnect);
+		dojo.forEach(_this._connects, dojo.disconnect);
 		_this._connects = [];
-		d.fx.combine([
+		dojo.fx.combine([
 			_this._anim(_this._img, _this._coords(_this._end, _this._start), "_reset"),
 			_this._anim(_this._bg, {opacity:0})
 		]).play();
@@ -238,9 +245,9 @@ d.declare("dojox.image.LightboxNano", null, {
 
 	_reset: function(){
 		// summary: Destroys the lightbox
-		d.style(this._node, "visibility", "visible");
-		d.forEach([this._img, this._bg], function(n){
-			d.destroy(n);
+		dojo.style(this._node, "visibility", "visible");
+		dojo.forEach([this._img, this._bg], function(n){
+			dojo.destroy(n);
 			n = null;
 		});
 		this._node.focus();
@@ -248,13 +255,13 @@ d.declare("dojox.image.LightboxNano", null, {
 
 	_anim: function(node, args, onEnd){
 		// summary: Creates the lightbox open/close and background fadein/out animations
-		return d.animateProperty({
+		return dojo.animateProperty({
 			node: node,
 			duration: this.duration,
 			properties: args,
-			onEnd: onEnd ? d.hitch(this, onEnd) : null
+			onEnd: onEnd ? dojo.hitch(this, onEnd) : null
 		}); // object
 	}
 });
 
-})(dojo);
+})();
