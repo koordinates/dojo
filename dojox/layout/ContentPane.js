@@ -197,13 +197,13 @@ dojo.declare("dojox.layout.ContentPane", dijit.layout.ContentPane, {
 					var errMess = this.onContentError(e);
 					try{
 						this.containerNode.innerHTML = errMess;
-					}catch(e){
-						console.error('Fatal '+this.id+' could not change content due to '+e.message, e);
+					}catch(e2){
+						console.error('Fatal '+this.id+' could not change content due to '+e2.message, e2);
 					}
 				})/*,
 				_onError */
 			});
-		};
+		}
 
 		// stash the params for the contentSetter to allow inheritance to work for _setContent
 		this._contentSetterParams = {
