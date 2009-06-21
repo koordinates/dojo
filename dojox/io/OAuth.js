@@ -1,7 +1,7 @@
 dojo.provide("dojox.io.OAuth");
 dojo.require("dojox.encoding.digests.SHA1");
 
-dojox.io.OAuth = new (function(){
+dojox.io.OAuth = (function(){
 	//	summary:
 	//		Helper singleton for signing any kind of Ajax request using the OAuth 1.0 protocol.
 	//	description:
@@ -29,23 +29,25 @@ dojox.io.OAuth = new (function(){
 			.replace(/\)/g, "%29");
 	};
 
-	var decode = this.decode = function(str){
+	// NOTE: Unused
+
+	/*var decode = this.decode = function(str){
 		//	summary:
 		//		Break apart the passed string and decode.
 		//		Some special cases are handled.
 		var a=[], list=str.split("&");
 		for(var i=0, l=list.length; i<l; i++){
 			var item=list[i];
-			if(list[i]==""){ continue; }	//	skip this one.
-			if(list[i].indexOf("=")>-1){
-				var tmp=list[i].split("=");
+			if(!item){ continue; }	//	skip this one.
+			if(item.indexOf("=")>-1){
+				var tmp=item.split("=");
 				a.push([ decodeURIComponent(tmp[0]), decodeURIComponent(tmp[1]) ]);
 			} else {
-				a.push([ decodeURIComponent(list[i]), null ]);
+				a.push([ decodeURIComponent(item), null ]);
 			}
 		}
 		return a;
-	};
+	};*/
 
 	function parseUrl(url){
 		//	summary:
@@ -108,9 +110,9 @@ dojox.io.OAuth = new (function(){
 	function key(args){
 		//	summary:
 		//		return the key used to sign a message based on the token object.
-		return encode(args.consumer.secret) 
-			+ "&" 
-			+ (args.token && args.token.secret ? encode(args.token.secret) : "");
+		return encode(args.consumer.secret) +
+			"&" +
+			(args.token && args.token.secret ? encode(args.token.secret) : "");
 	}
 
 	function addOAuth(/* dojo.__XhrArgs */args, /* dojox.io.__OAuthArgs */oaa){
@@ -122,7 +124,7 @@ dojox.io.OAuth = new (function(){
 			oauth_signature_method: oaa.sig_method || "HMAC-SHA1",
 			oauth_timestamp: timestamp(),
 			oauth_version: "1.0"
-		}
+		};
 		if(oaa.token){
 			o.oauth_token = oaa.token.key;
 		}
@@ -149,11 +151,15 @@ dojox.io.OAuth = new (function(){
 		if(args.content){ miArgs.push(args.content); }
 
 		//	pull anything off the query string
-		var map = parseUrl(args.url);
+		var p, map = parseUrl(args.url);
 		if(map.query){ 
 			var tmp = dojo.queryToObject(map.query);
 			//	re-encode the values.  sigh
-			for(var p in tmp){ tmp[p] = encodeURIComponent(tmp[p]); }
+			for(p in tmp){
+				if (dojo.isOwnProperty(tmp, p)) {
+					tmp[p] = encodeURIComponent(tmp[p]);
+				}
+			}
 			miArgs.push(tmp);
 		}
 		args._url = map.url;
@@ -162,14 +168,16 @@ dojox.io.OAuth = new (function(){
 		var a = [];
 		for(var i=0, l=miArgs.length; i<l; i++){
 			var item=miArgs[i];
-			for(var p in item){
-				if(dojo.isArray(item[p])){
-					//	handle multiple values
-					for(var j=0, jl=item.length; j<jl; j++){
-						a.push([ p, item[j] ]);
+			for(p in item){
+				if (dojo.isOwnProperty(item, p)) {
+					if(dojo.isArray(item[p])){
+						//	handle multiple values
+						for(var j=0, jl=item.length; j<jl; j++){
+							a.push([ p, item[j] ]);
+						}
+					} else {
+						a.push([ p, item[p] ]);
 					}
-				} else {
-					a.push([ p, item[p] ]);
 				}
 			}
 		}
@@ -199,10 +207,9 @@ dojox.io.OAuth = new (function(){
 			return encode(item[0]) + "%3D" + encode(item[1]||"");
 		}).join("%26");
 
-		var baseString = method.toUpperCase()
-			+ "&" + encode(args._url) 
-			+ "&" + s;
-		return baseString;
+		return method.toUpperCase() +
+			"&" + encode(args._url) +
+			"&" + s;
 	}
 
 	function sign(method, args, oaa){
@@ -210,7 +217,7 @@ dojox.io.OAuth = new (function(){
 		var k = key(oaa),
 			message = baseString(method, args, oaa),
 			s = signature(message, k, oaa.sig_method || "HMAC-SHA1");
-		args.content["oauth_signature"] = s;
+		args.content.oauth_signature = s;
 		return args;
 	}
 	
