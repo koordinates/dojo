@@ -11,11 +11,12 @@ dojo.provide("dojox.html.styles");
 	//			Now the class myStyle can be assigned to a node's className
 	
 (function(){
+
+	// NOTE: Needs review
 	
 	var dynamicStyleMap = {};
 	var pageStyleSheets = {};
 	var titledSheets = [];
-	var styleIndicies = [];
 	
 	dojox.html.insertCssRule = function(/*String*/selector, /*String*/declaration, /*String*/styleSheetName){
 		// summary:
@@ -41,20 +42,21 @@ dojo.provide("dojox.html.styles");
 		//
 		var ss = dojox.html.getDynamicStyleSheet(styleSheetName);
 		var styleText = selector + " {" + declaration + "}";
-		console.log("insertRule:", styleText)
-		if(dojo.isIE){
-			// Note: check for if(ss.cssText) does not work
+		console.log("insertRule:", styleText);
+
+		// Replace these
+
+		if(typeof ss.cssText == 'string'){
 			ss.cssText+=styleText;
-			console.log("ss.cssText:", ss.cssText)
-		}else if(ss.sheet){
+			console.log("ss.cssText:", ss.cssText);
+		}else if(dojo.isHostObjectProperty(ss, 'sheet') && dojo.isHostMethod(ss.sheet, 'insertRule')){
 			ss.sheet.insertRule(styleText, ss._indicies.length);
 		}else{
 			ss.appendChild(dojo.doc.createTextNode(styleText));
 		}
 		ss._indicies.push(selector+" "+declaration);
-		return selector; // String 
-	
-	}
+		return selector; // String 	
+	};
 	
 	dojox.html.removeCssRule = function(/*String*/selector, /*String*/declaration, /*String*/styleSheetName){
 		// summary:
@@ -66,15 +68,17 @@ dojo.provide("dojox.html.styles");
 		var ss;
 		var index=-1;
 		for(var nm in dynamicStyleMap){
-			if(styleSheetName && styleSheetName!=nm) {continue;}
-			ss = dynamicStyleMap[nm];
-			for(var i=0;i<ss._indicies.length;i++){
-				if(selector+" "+declaration == ss._indicies[i]){
-					index = i;
-					break;
+			if (dojo.isOwnProperty(dynamicStyleMap, nm)) {
+				if(styleSheetName && styleSheetName!=nm) {continue;}
+				ss = dynamicStyleMap[nm];
+				for(var i=0;i<ss._indicies.length;i++){
+					if(selector+" "+declaration == ss._indicies[i]){
+						index = i;
+						break;
+					}
 				}
+				if(index>-1) { break; }
 			}
-			if(index>-1) { break; }
 		}
 		if(!ss){
 			console.log("No dynamic style sheet has been created from which to remove a rule.");
@@ -86,21 +90,19 @@ dojo.provide("dojox.html.styles");
 		}
 		
 		ss._indicies.splice(index, 1);
+
+		// NOTE: Replace these
 		
-		
-		
-		if(dojo.isIE){ 
-			// Note: check for if(ss.removeRule) does not work
+		if(dojo.isHostMethod(ss, 'removeRule')){ 
 			ss.removeRule(index);
-		}else if(ss.sheet){
+		}else if(dojo.isHostObjectProperty(ss, 'sheet') && dojo.isHostMethod(ss.sheet, 'deleteRule')){
 			ss.sheet.deleteRule(index);
-		}else if(document.styleSheets[0]){
-			console.log("what browser hath useth thith?")
-			//
+		}else if(dojo.doc.styleSheets[0]){
+			console.log("Unexpected browser");
 		}
 		return true; //Boolean
 		
-	}
+	};
 	
 	/* TODO
 	dojox.html.modifyCssRule = function(selector, declaration, styleSheetName){
@@ -150,7 +152,7 @@ dojo.provide("dojox.html.styles");
 			}
 		}
 		return false; //StyleSheet or false
-	}
+	};
 	
 	dojox.html.getDynamicStyleSheet = function(/*String*/styleSheetName){
 		// summary:
@@ -182,7 +184,7 @@ dojo.provide("dojox.html.styles");
 		
 		
 		return dynamicStyleMap[styleSheetName]; //StyleSheet
-	}
+	};
 
 	dojox.html.enableStyleSheet = function(/*String*/styleSheetName){
 		// summary:
@@ -197,7 +199,7 @@ dojo.provide("dojox.html.styles");
 				ss.disabled = false; 
 			}
 		}
-	}
+	};
 
 	dojox.html.disableStyleSheet = function(styleSheetName){
 		// summary:
@@ -212,7 +214,7 @@ dojo.provide("dojox.html.styles");
 				ss.disabled = true; 
 			}
 		}
-	}
+	};
 	
 	dojox.html.activeStyleSheet = function(/*?String*/title){
 		// summary:
@@ -228,17 +230,16 @@ dojo.provide("dojox.html.styles");
 			//console.log("sheets:", sheets);
 			dojo.forEach(sheets, function(s){
 				s.disabled = (s.title == title) ? false : true;
-				//console.log("SWITCHED:", s.title, s.disabled, s.id);
 			});
 		}else{
 			for(var i=0; i<sheets.length;i++){
-				if(sheets[i].disabled == false){
+				if(!sheets[i].disabled){
 					return sheets[i];
 				}
 			}
 		}
 		return true; //StyleSheet or Boolean - FIXME - doesn't make a lot of sense
-	}
+	};
 	
 	dojox.html.getPreferredStyleSheet = function(){
 		// summary
@@ -246,10 +247,7 @@ dojo.provide("dojox.html.styles");
 		//	on document launch.
 		
 		//TODO
-	}
-	
-	
-	
+	};
 	
 	dojox.html.getToggledStyleSheets = function(){
 		// summary:
@@ -274,8 +272,7 @@ dojo.provide("dojox.html.styles");
 			}
 		}
 		return titledSheets; //Array
-	}
-	
+	};
 	
 	dojox.html.getStyleSheets = function(){
 		// summary:
@@ -293,13 +290,11 @@ dojo.provide("dojox.html.styles");
 		var sheets = dojo.doc.styleSheets;
 		//console.log("styleSheets:", sheets);
 		dojo.forEach(sheets, function(n){
-			var s = (n.sheet) ? n.sheet : n;
+			var s = n.sheet ? n.sheet : n;
 			var name = s.title || s.href;
-			if(dojo.isIE){
+			if(typeof s.cssText == 'string' && dojo.isHostObjectProperty(s, 'imports')){
 				// IE attaches a style sheet for VML - do not include this
-				if(s.cssText.indexOf("#default#VML")==-1){
-					
-					
+				if(s.cssText.indexOf("#default#VML")==-1){					
 					if(s.href){
 						// linked		
 						pageStyleSheets[name] = s;
@@ -327,17 +322,10 @@ dojo.provide("dojox.html.styles");
 						pageStyleSheets[r.href].id = s.ownerNode.id;
 					}
 				});
-			
 			}
-			
 		});
-		
-		//console.log("pageStyleSheets:", pageStyleSheets);
-		
-		
+
 		pageStyleSheets.collected = true;
 		return pageStyleSheets; //Object
-	}
-	
-
+	};
 })();
