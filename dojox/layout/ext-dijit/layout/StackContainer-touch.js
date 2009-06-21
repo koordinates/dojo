@@ -21,9 +21,9 @@ dojo.connect(dijit.layout.StackContainer.prototype, "postCreate", function(){
 								if(this.axis == "Y"){ delta *= -1;}
 								delete this.touchPosition;
 								if(delta > 0){
-									!this.selectedChildWidget.isLastChild && this.forward();
+									if (!this.selectedChildWidget.isLastChild) { this.forward(); }
 								}else{
-									!this.selectedChildWidget.isFirstChild && this.back();
+									if (!this.selectedChildWidget.isFirstChild) { this.back(); }
 								}
 							}
 						}
