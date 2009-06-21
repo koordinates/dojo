@@ -131,16 +131,17 @@ dojo.declare("dojox.image.ThumbnailPicker",
 		//open the link
 		if(this.useHyperlink){
 			dojo.subscribe(this.getClickTopicName(), this, function(packet){
-				var index = packet.index;
 				var url = this.imageStore.getValue(packet.data,this.linkAttr);
 				
 				//If the data item doesn't contain a URL, do nothing
 				if(!url){return;}
 				
+				// NOTE: Does not necessarily open a new window
+
 				if(this.hyperlinkTarget == "new"){
 					window.open(url);
 				}else{
-					window.location = url;
+					window.location.href = url;
 				}
 			});
 		}
@@ -164,8 +165,7 @@ dojo.declare("dojox.image.ThumbnailPicker",
 		dojo.addClass(this.thumbsNode, "thumb"+classExt);
 		dojo.addClass(this.outerNode, "thumb"+classExt);
 	
-		this.navNextImg.setAttribute("src", this._blankGif);
-		this.navPrevImg.setAttribute("src", this._blankGif);
+		this.navNextImg.src = this.navPrevImg.src = this._blankGif;
 		
 		this.connect(this.navPrev, "onclick", "_prev");
 		this.connect(this.navNext, "onclick", "_next");
@@ -263,8 +263,8 @@ dojo.declare("dojox.image.ThumbnailPicker",
 		var size = this.isHorizontal ? "offsetWidth" : "offsetHeight";
 		var scrollAttr = this.isHorizontal ? "scrollLeft" : "scrollTop";
 		var offset = img[pos] - this.thumbsNode[pos];
-		return (offset >= this.thumbScroller[scrollAttr]
-			&& offset + img[size] <= this.thumbScroller[scrollAttr] + this._scrollerSize);	
+		return (offset >= this.thumbScroller[scrollAttr] &&
+			offset + img[size] <= this.thumbScroller[scrollAttr] + this._scrollerSize);	
 	},
 	
 	_next: function() {
@@ -275,7 +275,7 @@ dojo.declare("dojox.image.ThumbnailPicker",
 		var firstThumb = this._thumbs[this._thumbIndex];
 		var origOffset = firstThumb[pos] - baseOffset;
 	
-		var index = -1, img;
+		var img;
 	
 		for(var i = this._thumbIndex + 1; i < this._thumbs.length; i++){
 			img = this._thumbs[i];
@@ -288,14 +288,13 @@ dojo.declare("dojox.image.ThumbnailPicker",
 
 	_prev: function(){
 		// summary: Displays the next page of images
-		if(this.thumbScroller[this.isHorizontal ? "scrollLeft" : "scrollTop"] == 0){return;}
+		if(!this.thumbScroller[this.isHorizontal ? "scrollLeft" : "scrollTop"]){return;}
 		var pos = this.isHorizontal ? "offsetLeft" : "offsetTop";
-		var size = this.isHorizontal ? "offsetWidth" : "offsetHeight";
 	
 		var firstThumb = this._thumbs[this._thumbIndex];
 		var origOffset = firstThumb[pos] - this.thumbsNode[pos];
 	
-		var index = -1, img;
+		var img;
 	
 		for(var i = this._thumbIndex - 1; i > -1; i--) {
 			img = this._thumbs[i];
@@ -440,9 +439,9 @@ dojo.declare("dojox.image.ThumbnailPicker",
 
 	_loadImage: function(data, index, callback){	
 		var url = this.imageStore.getValue(data,this.imageThumbAttr);
-		var img = document.createElement("img");
-		var imgContainer = document.createElement("div");
-		imgContainer.setAttribute("id","img_" + this.widgetid+"_"+index);
+		var img = dojo.doc.createElement("img");
+		var imgContainer = dojo.doc.createElement("div");
+		imgContainer.id = "img_" + this.widgetid+"_"+index;
 		imgContainer.appendChild(img);
 		img._index = index;
 		img._data = data;
@@ -450,8 +449,8 @@ dojo.declare("dojox.image.ThumbnailPicker",
 		this._thumbs[index] = imgContainer;
 		var loadingDiv;
 		if(this.useLoadNotifier){
-			loadingDiv = document.createElement("div");
-			loadingDiv.setAttribute("id","loadingDiv_" + this.widgetid+"_"+index);
+			loadingDiv = dojo.doc.createElement("div");
+			loadingDiv.id = "loadingDiv_" + this.widgetid+"_"+index;
 	
 			//If this widget was previously told that the main image for this
 			//thumb has been loaded, make the loading indicator transparent.
@@ -503,9 +502,9 @@ dojo.declare("dojox.image.ThumbnailPicker",
 			return false;
 		});
 		dojo.addClass(img, "imageGalleryThumb");
-		img.setAttribute("src", url);
+		img.src = url;
 		var title = this.imageStore.getValue(data, this.titleAttr);
-		if(title){ img.setAttribute("title",title); }
+		if(title){ img.title = title; }
 		this._updateNavControls();
 	
 	},
@@ -513,7 +512,7 @@ dojo.declare("dojox.image.ThumbnailPicker",
 	_updateNavControls: function(){
 		// summary: Updates the navigation controls to hide/show them when at
 		//	the first or last images.
-		var cells = [];
+
 		var change = function(node, add){
 			var fn = add ? "addClass" : "removeClass";
 			dojo[fn](node,"enabled");
@@ -524,7 +523,6 @@ dojo.declare("dojox.image.ThumbnailPicker",
 		var size = this.isHorizontal ? "offsetWidth" : "offsetHeight";
 		change(this.navPrev, (this.thumbScroller[pos] > 0));
 		
-		var last = this._thumbs[this._thumbs.length - 1];
 		var addClass = (this.thumbScroller[pos] + this._scrollerSize < this.thumbsNode[size]);
 		change(this.navNext, addClass);
 	}
