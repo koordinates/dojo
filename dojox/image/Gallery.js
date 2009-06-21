@@ -67,7 +67,7 @@ dojo.declare("dojox.image.Gallery",
 	postCreate: function(){
 		// summary: Initializes the widget, creates the ThumbnailPicker and SlideShow widgets
 		this.widgetid = this.id;
-		this.inherited(arguments)
+		this.inherited(arguments);
 		
 		this.thumbPicker = new dojox.image.ThumbnailPicker({
 			linkAttr: this.linkAttr,
