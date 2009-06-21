@@ -44,12 +44,15 @@ dojox.json.schema.mustBeValid = function(result){
 	if(!result.valid){
 		throw new Error(dojo.map(result.errors,function(error){return error.property + ' ' + error.message;}).join(","));
 	}	
-}
+};
 dojox.json.schema._validate = function(/*Any*/instance,/*Object*/schema,/*Boolean*/ _changing){
 	
-	var errors = [];
-		// validate a value against a property definition
-	function checkProp(value, schema, path,i){
+	var checkObj, errors = [];
+
+	// validate a value against a property definition
+
+	var checkProp = function(value, schema, path,i){
+		var l;
 		if(typeof schema != 'object'){
 			return null;
 		}			
@@ -60,8 +63,8 @@ dojox.json.schema._validate = function(/*Any*/instance,/*Object*/schema,/*Boolea
 		if(_changing && schema.readonly){
 			addError("is a readonly field, it can not be changed");
 		}
-		if(schema instanceof Array){
-			if(!(value instanceof Array)){
+		if(dojo.isArray(schema)){
+			if(!dojo.isArray(value)){
 				return [{property:path,message:"An array tuple is required"}];
 			}
 			for(i =0; i < schema.length; i++){
@@ -77,11 +80,11 @@ dojox.json.schema._validate = function(/*Any*/instance,/*Object*/schema,/*Boolea
 			if(type){
 				if(typeof type == 'string' && type != 'any' && 
 						(type == 'null' ? value !== null : typeof value != type) && 
-						!(value instanceof Array && type == 'array') &&
+						!(dojo.isArray(value) && type == 'array') &&
 						!(type == 'integer' && value%1===0)){
 					return [{property:path,message:(typeof value) + " value found, but a " + type + " is required"}];
 				}
-				if(type instanceof Array){
+				if(dojo.isArray(type)){
 					var unionErrors=[];
 					for(var j = 0; j < type.length; j++){ // a union type 
 						if(!(unionErrors=checkType(type[j],value)).length){
@@ -107,7 +110,7 @@ dojox.json.schema._validate = function(/*Any*/instance,/*Object*/schema,/*Boolea
 				if(schema.disallow && !checkType(schema.disallow,value).length){
 					addError(" disallowed value was matched");
 				}
-				if(value instanceof Array){
+				if(dojo.isArray(value)){
 					if(schema.items){
 						for(i=0,l=value.length; i<l; i++){
 							errors.concat(checkProp(value[i],schema.items,path,i));
@@ -159,12 +162,14 @@ dojox.json.schema._validate = function(/*Any*/instance,/*Object*/schema,/*Boolea
 			}
 		}
 		return null;
-	}
+	};
+
 	// validate an object against a schema
-	function checkObj(instance,objTypeDef,path,additionalProp){
+
+	checkObj = function(instance,objTypeDef,path,additionalProp){
 	
 		if(typeof objTypeDef =='object'){
-			if(typeof instance != 'object' || instance instanceof Array){
+			if(typeof instance != 'object' || dojo.isArray(instance)){
 				errors.push({property:path,message:"an object is required"});
 			}
 			
@@ -177,24 +182,26 @@ dojox.json.schema._validate = function(/*Any*/instance,/*Object*/schema,/*Boolea
 			}
 		}
 		for(i in instance){
-			if(instance.hasOwnProperty(i) && (i.charAt(0) != '_' || i.charAt(0) != '_') && objTypeDef && !objTypeDef[i] && additionalProp===false){
-				errors.push({property:path,message:(typeof value) + "The property " + i +
-						" is not defined in the schema and the schema does not allow additional properties"});
-			}
-			var requires = objTypeDef && objTypeDef[i] && objTypeDef[i].requires;
-			if(requires && !(requires in instance)){
-				errors.push({property:path,message:"the presence of the property " + i + " requires that " + requires + " also be present"});
-			}
-			value = instance[i];
-			if(objTypeDef && typeof objTypeDef == 'object' && !(i in objTypeDef)){
-				checkProp(value,additionalProp,path,i); 
-			}
-			if(!_changing && value && value.$schema){
-				errors = errors.concat(checkProp(value,value.$schema,path,i));
+			if (dojo.isOwnProperty(instance, i)) {
+				if((i.charAt(0) != '_' || i.charAt(0) != '_') && objTypeDef && !objTypeDef[i] && additionalProp===false){
+					errors.push({property:path,message:(typeof value) + "The property " + i +
+							" is not defined in the schema and the schema does not allow additional properties"});
+				}
+				var requires = objTypeDef && objTypeDef[i] && objTypeDef[i].requires;
+				if(requires && !(requires in instance)){
+					errors.push({property:path,message:"the presence of the property " + i + " requires that " + requires + " also be present"});
+				}
+				value = instance[i];
+				if(objTypeDef && typeof objTypeDef == 'object' && !(i in objTypeDef)){
+					checkProp(value,additionalProp,path,i); 
+				}
+				if(!_changing && value && value.$schema){
+					errors = errors.concat(checkProp(value,value.$schema,path,i));
+				}
 			}
 		}
 		return errors;
-	}
+	};
 	if(schema){
 		checkProp(instance,schema,'','');
 	}
