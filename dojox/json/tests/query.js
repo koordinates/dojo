@@ -328,7 +328,7 @@ doh.register("dojox.json.tests.query",
 			name: "safeEval: Illegal Eval 2",
 			runTest: function(t) {
 				try { 
-					var result = dojo.toJson(dojox.json.query("$.store.book[?(new Danger)]",dojox.json.tests.testData ));
+					dojo.toJson(dojox.json.query("$.store.book[?(new Danger)]",dojox.json.tests.testData ));
 					console.log("Illegal eval permitted");
 					doh.e("Illegal eval was permitted");
 				} catch(e) {
@@ -340,7 +340,7 @@ doh.register("dojox.json.tests.query",
 			name: "safeEval: Illegal Eval 3",
 			runTest: function(t) {
 				try { 
-					var result = dojo.toJson(dojox.json.query("$.store.book[?(@+=2)]",dojox.json.tests.testData));
+					dojo.toJson(dojox.json.query("$.store.book[?(@+=2)]",dojox.json.tests.testData));
 					console.log("Illegal eval permitted");
 					doh.e("Illegal eval was permitted");
 				} catch(e) {
@@ -359,9 +359,8 @@ function performanceTest(){
 	}
 	var now = new Date().getTime();
 	var results = dojox.jsonPath.query(data,"$[?(@.foo<0.01)]");
-	alert("JSONPath" + (new Date().getTime()-now) + " " + results.length);
+	window.alert("JSONPath" + (new Date().getTime()-now) + " " + results.length);
 	now = new Date().getTime();
 	results = dojox.json.query("$[?(@.foo<0.01)]",data);
-	alert("JSONQuery" + (new Date().getTime()-now) + " " + results.length);
+	window.alert("JSONQuery" + (new Date().getTime()-now) + " " + results.length);
 }
-
