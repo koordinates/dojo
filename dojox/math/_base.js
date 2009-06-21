@@ -31,7 +31,7 @@ dojo.mixin(dojox.math, {
 	permutations: function(/* Number */n, /* Number */k){
 		//	summary
 		//	TODO
-		if(n==0 || k==0){ 
+		if(!n || !k){ 
 			return 1; 	// Number
 		}
 		return this.factorial(n) / this.factorial(n-k);
@@ -40,7 +40,7 @@ dojo.mixin(dojox.math, {
 	combinations: function(/* Number */n, /* Number */r){
 		//	summary
 		//	TODO
-		if(n==0 || r==0){ 
+		if(!n || !r){ 
 			return 1; 	//	Number
 		}
 		return this.factorial(n) / (this.factorial(n-r) * this.factorial(r));	// Number
@@ -87,7 +87,8 @@ dojo.mixin(dojox.math, {
 		//	summary
 		//	Create a range of numbers based on the parameters.
 		if(arguments.length<2){
-			b=a,a=0;
+			b=a;
+			a=0;
 		}
 		var range=[], s=step||1, i;
 		if(s>0){
