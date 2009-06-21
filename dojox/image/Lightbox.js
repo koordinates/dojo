@@ -266,7 +266,7 @@ dojo.declare("dojox.image.LightboxDialog",
 				if(_t._imgError){ dojo.disconnect(_t._imgError); }
 			});
 			
-			// listen for 404's:
+			// listen for errors:
 			_t._imgError = dojo.connect(_t.imgNode, "onerror", _t, function(){
 				dojo.disconnect(_t._imgError);
 				// trigger the above onload with a new src:
@@ -277,7 +277,7 @@ dojo.declare("dojox.image.LightboxDialog",
 
 			// onload doesn't fire in IE if you connect before you set the src. 
 			// hack to re-set the src after onload connection made:
-			if(dojo.isIE){ _t.imgNode.src = _t.imgNode.src; }
+			_t.imgNode.src = _t.imgNode.src;
 
 		}else{
 			// do it quickly. kind of a hack, but image is ready now
@@ -300,7 +300,7 @@ dojo.declare("dojox.image.LightboxDialog",
 	_prevImage: function(){
 		// summary: Load previous image in group
 		if(this.inGroup){ 
-			if(this._positionIndex == 0){
+			if(!this._positionIndex){
 				this._positionIndex = this.inGroup.length - 1;
 			}else{
 				this._positionIndex--;
@@ -387,7 +387,7 @@ dojo.declare("dojox.image.LightboxDialog",
 				this._groups[g] = [];
 			}
 			this._groups[g].push(child); 
-		}else{ this._groups["XnoGroupX"].push(child); }
+		}else{ this._groups.XnoGroupX.push(child); }
 	},
 
 	_handleKey: function(/* Event */e){
@@ -395,7 +395,7 @@ dojo.declare("dojox.image.LightboxDialog",
 		if(!this.open){ return; }
 
 		var dk = dojo.keys;
-		var key = (e.charCode == dk.SPACE ? dk.SPACE : e.keyCode);
+		var key = e.keyCode;
 		switch(key){
 			
 			case dk.ESCAPE: 
