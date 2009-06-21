@@ -36,7 +36,7 @@ dojo.require("dojox.lang.functional.lambda");
 			// summary: executes a provided function once per array element.
 			if(typeof a == "string"){ a = a.split(""); }
 			o = o || d.global; f = df.lambda(f);
-			for(var i = a.length - 1; i >= 0; f.call(o, a[i], i, a), --i);
+			for(var i = a.length - 1; i >= 0; f.call(o, a[i], i, a), --i) {}
 		},
 		mapRev: function(/*Array|String*/ a, /*Function|String|Array*/ f, /*Object?*/ o){
 			// summary: creates a new array with the results of calling 
@@ -44,7 +44,7 @@ dojo.require("dojox.lang.functional.lambda");
 			if(typeof a == "string"){ a = a.split(""); }
 			o = o || d.global; f = df.lambda(f);
 			var n = a.length, t = new Array(n), i = n - 1, j = 0;
-			for(; i >= 0; t[j++] = f.call(o, a[i], i, a), --i);
+			for(; i >= 0; t[j++] = f.call(o, a[i], i, a), --i) {}
 			return t;	// Array
 		},
 		everyRev: function(/*Array|String*/ a, /*Function|String|Array*/ f, /*Object?*/ o){
