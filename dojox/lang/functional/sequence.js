@@ -22,7 +22,7 @@ dojo.require("dojox.lang.functional.lambda");
 			o = o || d.global; f = df.lambda(f);
 			var t = new Array(n), i = 1;
 			t[0] = z;
-			for(; i < n; t[i] = z = f.call(o, z), ++i);
+			for(; i < n; t[i] = z = f.call(o, z), ++i) {}
 			return t;	// Array
 		},
 		until: function(/*Function|String|Array*/ pr, /*Function|String|Array*/ f, /*Object*/ z, /*Object?*/ o){
@@ -30,7 +30,7 @@ dojo.require("dojox.lang.functional.lambda");
 			//	a seed value Z until the predicate is satisfied.
 			o = o || d.global; f = df.lambda(f); pr = df.lambda(pr);
 			var t = [];
-			for(; !pr.call(o, z); t.push(z), z = f.call(o, z));
+			for(; !pr.call(o, z); t.push(z), z = f.call(o, z)) {}
 			return t;	// Array
 		}
 	});
