@@ -17,7 +17,7 @@ dojo.provide("dojox.lang.oo.Filter");
 		//		a function to handle the name filtering,
 		//		or an object with exec() method
 		this.bag = bag;
-		this.filter = typeof filter == "object" ?
+		this.filter = (typeof filter == "object" && filter) ?
 			function(){ return filter.exec.apply(filter, arguments); } : filter;
 	};
 
@@ -26,7 +26,7 @@ dojo.provide("dojox.lang.oo.Filter");
 		this.map = map;
 	};
 	MapFilter.prototype.exec = function(name){
-		return this.map.hasOwnProperty(name) ? this.map[name] : name;
+		return dojo.isOwnProperty(this.map, name) ? this.map[name] : name;
 	};
 
 	oo.filter = function(bag, map){
