@@ -19,7 +19,7 @@ dojox.lang.oo.rearrange = function(bag, map){
 	//		the original object
 
 	for(var name in map){
-		if(map.hasOwnProperty(name) && name in bag){
+		if(dojo.isOwnProperty(map, name) && name in bag){
 			var newName = map[name], temp = bag[name];
 			if(!(delete bag[name])){
 				// can't delete => hide it
