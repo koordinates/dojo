@@ -114,11 +114,11 @@ dojo.declare("dojox.image.SlideShow",
 	postCreate: function(){
 		// summary: Initilizes the widget, sets up listeners and shows the first image
 		this.inherited(arguments);
-		var img = document.createElement("img");
+		var img = dojo.doc.createElement("img");
 
 		// FIXME: should API be to normalize an image to fit in the specified height/width?
-		img.setAttribute("width", this.imageWidth);
-		img.setAttribute("height", this.imageHeight);
+		img.width = this.imageWidth;
+		img.height = this.imageHeight;
 
 		if(this.hasNav){
 			dojo.connect(this.outerNode, "onmouseover", this, function(evt){
@@ -133,8 +133,7 @@ dojo.declare("dojox.image.SlideShow",
 		
 		this.outerNode.style.width = this.imageWidth + "px";
 
-		img.setAttribute("src", this._blankGif);
-		var _this = this;
+		img.src = this._blankGif;
 		
 		this.largeNode.appendChild(img);
 		this._tmpImage = this._currentImage = img;
@@ -266,7 +265,7 @@ dojo.declare("dojox.image.SlideShow",
 			}else{
 				var idx = this.imageIndex;
 				var handle = dojo.subscribe(this.getShowTopicName(), dojo.hitch(this,function(info){
-					setTimeout(dojo.hitch(this,function(){
+					window.setTimeout(dojo.hitch(this,function(){
 					if(info.index == idx){
 						var success = this.showNextImage(true, true);
 						if(!success){
@@ -408,6 +407,47 @@ dojo.declare("dojox.image.SlideShow",
 		if(this.images[index] || !this._request) { return; }
 		
 		var pageStart = index - (index % this.pageSize);
+		var _this = this;
+
+		var loadIt = function(item){			
+			var url = _this.imageStore.getValue(item, _this.imageLargeAttr);
+			var img = new Image();	// when creating img with "createElement" IE doesnt has width and height, so use the Image object
+			var div = dojo.doc.createElement("div");
+			div._img = img;
+
+			var link = _this.imageStore.getValue(item,_this.linkAttr);
+			if(!link || _this.noLink){ 
+				div.appendChild(img); 
+			}else{
+				var a = dojo.doc.createElement("a");
+				a.href = link;
+				a.target = "_blank";
+				div.appendChild(a);
+				a.appendChild(img);
+			}
+
+			div.id = _this.id + "_imageDiv" + index;
+			dojo.connect(img, "onload", function(){
+				_this._fitImage(img);
+				div.width = _this.imageWidth;
+				div.height = _this.imageHeight;
+				
+				dojo.publish(_this.getLoadTopicName(), [index]);
+				window.setTimeout(_this._loadNextImage, 1);	// make a short timeout to prevent IE6/7 stack overflow at line 0 ~ still occuring though for first image 
+				if(callbackFn){ callbackFn(); }
+			});
+			_this.hiddenNode.appendChild(div);
+
+			var titleDiv = dojo.doc.createElement("div");
+			dojo.addClass(titleDiv, "slideShowTitle");
+			div.appendChild(titleDiv);
+		
+			_this.images[index] = div;
+			img.src = url;
+			
+			var title = _this.imageStore.getValue(item, _this.titleAttr);
+			if(title){ img.title = title; }
+		};
 
 		this._request.start = pageStart;		
 
@@ -416,54 +456,14 @@ dojo.declare("dojox.image.SlideShow",
 			if(items && items.length > diff){
 				loadIt(items[diff]);
 			}else{ /* Squelch - console.log("Got an empty set of items"); */ }
-		}
+		};
 
-		var _this = this;	
-		var loadIt = function(item){			
-			var url = _this.imageStore.getValue(item, _this.imageLargeAttr);
-			var img = new Image();	// when creating img with "createElement" IE doesnt has width and height, so use the Image object
-			var div = document.createElement("div");
-			div._img = img;
-
-			var link = _this.imageStore.getValue(item,_this.linkAttr);
-			if(!link || _this.noLink){ 
-				div.appendChild(img); 
-			}else{
-				var a = document.createElement("a");
-				a.setAttribute("href", link);
-				a.setAttribute("target","_blank");
-				div.appendChild(a);
-				a.appendChild(img);
-			}
-
-			div.setAttribute("id",_this.id + "_imageDiv" + index);
-			dojo.connect(img, "onload", function(){
-				_this._fitImage(img);
-				div.setAttribute("width", _this.imageWidth);
-				div.setAttribute("height", _this.imageHeight);				
-				
-				dojo.publish(_this.getLoadTopicName(), [index]);
-				setTimeout(_this._loadNextImage, 1);	// make a short timeout to prevent IE6/7 stack overflow at line 0 ~ still occuring though for first image 
-				if(callbackFn){ callbackFn(); }
-			});
-			_this.hiddenNode.appendChild(div);
-
-			var titleDiv = document.createElement("div");
-			dojo.addClass(titleDiv, "slideShowTitle");
-			div.appendChild(titleDiv);
-		
-			_this.images[index] = div;
-			img.setAttribute("src", url);
-			
-			var title = _this.imageStore.getValue(item, _this.titleAttr);
-			if(title){ img.setAttribute("title", title); } 
-		}
 		this.imageStore.fetch(this._request);
 	},
 
 	_stop: function(){
 		// summary: Stops a running slide show.
-		if(this._slideId){ clearTimeout(this._slideId); }
+		if(this._slideId){ window.clearTimeout(this._slideId); }
 		this._slideId = null;
 		this._timerCancelled = true;
 		dojo.removeClass(this.domNode,"slideShowPaused");
@@ -484,7 +484,7 @@ dojo.declare("dojox.image.SlideShow",
 	_startTimer: function(){
 		// summary: Starts a timeout to show the next image when a slide show is active
 		var id = this.id;
-		this._slideId = setTimeout(function(){
+		this._slideId = window.setTimeout(function(){
 			dijit.byId(id).showNextImage(true);
 		}, this.slideshowInterval * 1000);
 	},
@@ -560,7 +560,10 @@ dojo.declare("dojox.image.SlideShow",
 		if(this._navShowing && !force){return;}
 		dojo.style(this.navNode, "marginTop", "0px");
 		dojo.style(this.navPlay, "marginLeft", "0px");
-		var wrapperSize = dojo.marginBox(this.outerNode);
+
+		// NOTE: Unused
+
+		//var wrapperSize = dojo.marginBox(this.outerNode);
 		
 		var margin = this._currentImage.height - this.navPlay._size.h - 10 + this._getTopPadding();
 		
@@ -613,12 +616,11 @@ dojo.declare("dojox.image.SlideShow",
 		var m = { x: e.pageX, y: e.pageY };
 		var bb = dojo._getBorderBox(element);
 		var absl = dojo.coords(element, true);
-		var left = absl.x;
+		var left = absl.x, top = absl.y;
 
-		return (m.x >= left
-			&& m.x <= (left + bb.w)
-			&& m.y >= absl.y
-			&& m.y <= (top + bb.h)
-		);	//	boolean
+		return (m.x >= left &&
+			m.x <= (left + bb.w) &&
+			m.y >= absl.y &&
+			m.y <= (top + bb.h));	//	boolean
 	}
 });
