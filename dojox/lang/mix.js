@@ -4,8 +4,6 @@ dojo.provide("dojox.lang.mix");
 // it will be split later on individual files,
 // and mixed with OO package
 
-// TODO: do we need to use hasOwnProperty() everywhere?
-
 (function(){
 	var empty = {}, mix = dojox.lang.mix;
 	
@@ -27,7 +25,7 @@ dojo.provide("dojox.lang.mix");
 					}
 				}else{
 					for(i in remove){
-						if(remove.hasOwnProperty(i)){
+						if(dojo.isOwnProperty(remove, i)){
 							delete props[i];
 						}
 					}
@@ -37,7 +35,7 @@ dojo.provide("dojox.lang.mix");
 			// rename properties
 			if(rename){
 				for(i in rename){
-					if(rename.hasOwnProperty(i) && props.hasOwnProperty(i)){
+					if(dojo.isOwnProperty(rename, i) && dojo.isOwnProperty(props, i)){
 						t = props[i];
 						delete props[i];
 						props[rename[i]] = t;
@@ -73,8 +71,8 @@ dojo.provide("dojox.lang.mix");
 			// name: String: an input name
 			// returns: String: can be the same name, new name,
 			// or an empty string (when it should be deleted
-			if(this.skip.hasOwnProperty(name)){ return ""; }
-			return this.rename.hasOwnProperty(name) ? this.rename[name] : name;
+			if(dojo.isOwnProperty(this.skip, name)){ return ""; }
+			return dojo.isOwnProperty(this.rename, name) ? this.rename[name] : name;
 		}
 	});
 	
@@ -143,7 +141,7 @@ dojo.provide("dojox.lang.mix");
 		//	- undecorated "destroy" can be treated as chainBefore
 
 		var dcr = null, flt = null, i, l = arguments.length, name, prop, targetName;
-		for(i = 1, l; i < l; ++i){
+		for(i = 1; i < l; ++i){
 			source = arguments[i];
 			if(source instanceof Decorator){
 				// use the instance of decorator as a default processor
@@ -156,7 +154,7 @@ dojo.provide("dojox.lang.mix");
 				source = flt.value;
 			}
 			for(name in source){
-				if(source.hasOwnProperty(name)){
+				if(dojo.isOwnProperty(source, name)){
 					prop = source[name];
 					targetName = flt ? flt.filter(name) : name;
 					if(!targetName){
@@ -381,7 +379,7 @@ dojo.provide("dojox.lang.mix");
 				} :
 				function(){
 					after.call(this);
-				}
+				};
 		})
 	});
 
