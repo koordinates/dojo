@@ -20,12 +20,12 @@ dojo.provide("dojox.lang.functional.lambda");
 (function(){
 	var df = dojox.lang.functional, lcache = {};
 
-	// split() is augmented on IE6 to ensure the uniform behavior
+	// split() is augmented to ensure the uniform behavior
 	var split = "ab".split(/a*/).length > 1 ? String.prototype.split :
 			function(sep){
 				 var r = this.split.call(this, sep),
 					 m = sep.exec(this);
-				 if(m && m.index == 0){ r.unshift(""); }
+				 if(m && !m.index){ r.unshift(""); }
 				 return r;
 			};
 			
@@ -116,10 +116,11 @@ dojo.provide("dojox.lang.functional.lambda");
 			//		representation (a text snippet, an array, or a function) to
 			//		a function object.
 			if(typeof s == "function"){ return s; }
-			if(s instanceof Array){ return compose(s); }
+			if(dojo.isArray(s)){ return compose(s); }
 			if(s in lcache){ return lcache[s]; }
 			s = lambda(s);
-			return lcache[s] = new Function(s.args, "return (" + s.body + ");");	// Function
+			lcache[s] = new Function(s.args, "return (" + s.body + ");");	// Function
+			return lcache[s];
 		},
 		clearLambdaCache: function(){
 			// summary:
