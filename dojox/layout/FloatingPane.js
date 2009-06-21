@@ -81,7 +81,7 @@ dojo.declare("dojox.layout.FloatingPane",
 	
 		this.setTitle(this.title);
 		this.inherited(arguments);
-		var move = new dojo.dnd.Moveable(this.domNode,{ handle: this.focusNode });
+		(new dojo.dnd.Moveable(this.domNode,{ handle: this.focusNode }));
 		//this._listener = dojo.subscribe("/dnd/move/start",this,"bringToTop"); 
 
 		if(!this.dockable){ this.dockNode.style.display = "none"; } 
@@ -142,7 +142,7 @@ dojo.declare("dojox.layout.FloatingPane",
 					tmpId = tmpName;
 					tmpNode = dojo.byId(tmpName); 
 				}else{
-					tmpNode = document.createElement('div');
+					tmpNode = dojo.doc.createElement('div');
 					dojo.body().appendChild(tmpNode);
 					dojo.addClass(tmpNode,"dojoxFloatingDockDefault");
 					tmpId = 'dojoxGlobalFloatingDock';
@@ -200,7 +200,7 @@ dojo.declare("dojox.layout.FloatingPane",
 
 	show: function(/* Function? */callback){
 		// summary: Show the FloatingPane
-		var anim = dojo.fadeIn({node:this.domNode, duration:this.duration,
+		dojo.fadeIn({node:this.domNode, duration:this.duration,
 			beforeBegin: dojo.hitch(this,function(){
 				this.domNode.style.display = ""; 
 				this.domNode.style.visibility = "visible";
@@ -227,7 +227,7 @@ dojo.declare("dojox.layout.FloatingPane",
 		this._naturalState = dojo.coords(this.domNode);
 		if(this._isDocked){
 			this.show();
-			setTimeout(dojo.hitch(this,"maximize"),this.duration);
+			window.setTimeout(dojo.hitch(this,"maximize"),this.duration);
 		}
 		dojo.addClass(this.focusNode,"floatingPaneMaximized");
 		this.resize(dijit.getViewport());
@@ -322,7 +322,7 @@ dojo.declare("dojox.layout.Dock",
 	addNode: function(refNode){
 		// summary: Instert a dockNode refernce into the dock
 		
-		var div = document.createElement('li');
+		var div = dojo.doc.createElement('li');
 		this.containerNode.appendChild(div);
 		var node = new dojox.layout._DockNode({ title: refNode.title, paneRef: refNode },div);
 		node.startup();
@@ -348,7 +348,7 @@ dojo.declare("dojox.layout.Dock",
 		if(!this._inPositioning){	
 			if(this.autoPosition == "south"){
 				// Give some time for scrollbars to appear/disappear
-				setTimeout(dojo.hitch(this, function() {
+				window.setTimeout(dojo.hitch(this, function() {
 					this._inPositiononing = true;
 					var viewport = dijit.getViewport();
 					var s = this.domNode.style;
