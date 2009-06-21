@@ -2,18 +2,20 @@ dojo.provide("dojox.math.curves");
 
 dojo.mixin(dojox.math.curves, {
 	Line:function (start, end) {
+		var i;
+
 		this.start = start;
 		this.end = end;
 		this.dimensions = start.length;
-		for (var i = 0; i < start.length; i++) {
+		for (i = 0; i < start.length; i++) {
 			start[i] = Number(start[i]);
 		}
-		for (var i = 0; i < end.length; i++) {
+		for (i = 0; i < end.length; i++) {
 			end[i] = Number(end[i]);
 		}
 		this.getValue = function (n) {
 			var retVal = new Array(this.dimensions);
-			for (var i = 0; i < this.dimensions; i++) {
+			for (i = 0; i < this.dimensions; i++) {
 				retVal[i] = ((this.end[i] - this.start[i]) * n) + this.start[i];
 			}
 			return retVal;
@@ -29,7 +31,7 @@ dojo.mixin(dojox.math.curves, {
 				return this.p[0];
 			}
 			var retVal = new Array(this.p[0].length);
-			for (var k = 0; j < this.p[0].length; k++) {
+			for (var k = 0; k < this.p[0].length; k++) {
 				retVal[k] = 0;
 			}
 			for (var j = 0; j < this.p[0].length; j++) {
@@ -132,6 +134,17 @@ dojo.mixin(dojox.math.curves, {
 		var weights = [];
 		var ranges = [];
 		var totalWeight = 0;
+
+		function computeRanges() {
+			var start = 0;
+			for (var i = 0; i < weights.length; i++) {
+				var end = start + weights[i] / totalWeight;
+				var len = end - start;
+				ranges[i] = [start, end, len];
+				start = end;
+			}
+		}
+
 		this.add = function (curve, weight) {
 			if (weight < 0) {
 				console.error("dojox.math.curves.Path.add: weight cannot be less than 0");
@@ -174,16 +187,7 @@ dojo.mixin(dojox.math.curves, {
 				value = dojox.math.points.translate(value, curves[j].getValue(1));
 			}
 			return value;
-		};
-		function computeRanges() {
-			var start = 0;
-			for (var i = 0; i < weights.length; i++) {
-				var end = start + weights[i] / totalWeight;
-				var len = end - start;
-				ranges[i] = [start, end, len];
-				start = end;
-			}
-		}
+		};		
 		return this;
 	}
 });
