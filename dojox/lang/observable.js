@@ -29,7 +29,7 @@ dojox.lang.observable = function(/*Object*/wrapped,/*function*/onRead,/*function
 	//		See dojox.lang.makeObservable.onInvoke
 	
 	return dojox.lang.makeObservable(onRead,onWrite,onInvoke)(wrapped);
-}
+};
 dojox.lang.makeObservable = function(/*function*/onRead,/*function*/onWrite,/*function*/onInvoke,/*Object*/hiddenFunctions){
 		
 	// 	summary:
@@ -108,7 +108,9 @@ dojox.lang.makeObservable = function(/*function*/onRead,/*function*/onWrite,/*fu
 			// create the class
 			var props = [], i, l;
 			for(i in hiddenFunctions){
-				props.push(i);
+				if (dojo.isOwnProperty(hiddenFunctions, i)) {
+					props.push(i);
+				}
 			}
 			var vbReservedWords = {type:1,event:1};
 			// find the unique signature for the class so we can reuse it if possible
@@ -168,8 +170,8 @@ dojox.lang.makeObservable = function(/*function*/onRead,/*function*/onWrite,/*fu
 				try {
 				var val = wrapped[prop];
 				}
-				catch(e){
-					console.log("error ",prop,e);
+				catch(e2){
+					console.log("error ",prop,e2);
 				}
 				if(typeof val == 'function' || hiddenFunctions[prop]){ // we can make a delegate function here
 					newObj[prop] = makeInvoker(newObj,wrapped,prop);
@@ -185,18 +187,20 @@ dojox.lang.makeObservable = function(/*function*/onRead,/*function*/onWrite,/*fu
 			var newObj = wrapped instanceof Array ? [] : {};
 			newObj.data__ = wrapped;
 			for(var i in wrapped){
-				if(i.charAt(0) != '_'){
-					if(typeof wrapped[i] == 'function'){
-						newObj[i] = makeInvoker(newObj,wrapped,i); // TODO: setup getters and setters so we can detect when this changes
-					}else if(typeof wrapped[i] != 'object'){
-						(function(i){
-							newObj.__defineGetter__(i,function(){
-								return onRead(wrapped,i);
-							});
-							newObj.__defineSetter__(i,function(value){
-								return onWrite(wrapped,i,value);
-							});
-						})(i);
+				if (dojo.isOwnProperty(wrapped, i)) {
+					if(i.charAt(0) != '_'){
+						if(typeof wrapped[i] == 'function'){
+							newObj[i] = makeInvoker(newObj,wrapped,i); // TODO: setup getters and setters so we can detect when this changes
+						}else if(typeof wrapped[i] != 'object'){
+							(function(i){
+								newObj.__defineGetter__(i,function(){
+									return onRead(wrapped,i);
+								});
+								newObj.__defineSetter__(i,function(value){
+									return onWrite(wrapped,i,value);
+								});
+							})(i);
+						}
 					}
 				}
 			}
@@ -209,7 +213,7 @@ dojox.lang.makeObservable = function(/*function*/onRead,/*function*/onWrite,/*fu
 	}
 };
 if(!{}.__defineGetter__){
-	if(dojo.isIE){
+	//if(dojo.isIE){
 		// to setup the crazy lettable hack we need to
 		// introduce vb script eval
 		// the only way that seems to work for adding a VBScript to the page is with a document.write
@@ -217,12 +221,18 @@ if(!{}.__defineGetter__){
 		// the iframe also provides a good hiding place for all the global variables that we must
 		// create in order for JScript and VBScript to interact.
 		var frame;
-		if(document.body){ // if the DOM is ready we can add it
-			frame = document.createElement("iframe");
-			document.body.appendChild(frame);
-		}else{ // other we have to write it out
-			document.write("<iframe id='dj_vb_eval_frame'></iframe>");
-			frame = document.getElementById("dj_vb_eval_frame");
+
+		// NOTE: Whatever this is supposed to be, it is wrong (don't need VBScript)
+
+		if(dojo.body()){ // if the DOM is ready we can add it
+			frame = dojo.doc.createElement("iframe");
+			dojo.body().appendChild(frame);
+		}else{ // otherwise we have to write it out
+
+			// NOTE: No we do not (defer it until load)
+
+			dojo.doc.write("<iframe id='dj_vb_eval_frame'></iframe>");
+			frame = dojo.doc.getElementById("dj_vb_eval_frame");
 		}
 		frame.style.display="none";
 		var doc = frame.contentWindow.document;
@@ -242,9 +252,9 @@ if(!{}.__defineGetter__){
 			'</script>' +
 			'</head><body>vb-eval</body></html>');
 		doc.close();
-	}else{
-		throw new Error("This browser does not support getters and setters");
-	}
+	//}else{
+	//	throw new Error("This browser does not support getters and setters");
+	//}
 }
 
 dojox.lang.ReadOnlyProxy =
