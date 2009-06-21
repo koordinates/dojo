@@ -5,7 +5,7 @@ dojo.provide("dojox.lang.aspect.memoizerGuard");
 		reset = function(/*String|Array?*/ method){
 			var that = aop.getContext().instance, t;
 			if(!(t = that.__memoizerCache)){ return; }
-			if(arguments.length == 0){
+			if(!arguments.length){
 				delete that.__memoizerCache;
 			}else if(dojo.isArray(method)){
 				dojo.forEach(method, function(m){ delete t[m]; });
