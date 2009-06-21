@@ -9,10 +9,11 @@ dojo.provide("dojox.lang.aspect.memoizer");
 			if((t = that.__memoizerCache) && (t = t[self.targetName]) && (key in t)){
 				return t[key];
 			}
-			var ret = aop.proceed.apply(null, arguments);
+			ret = aop.proceed.apply(null, arguments);
 			if(!(t = that.__memoizerCache)){ t = that.__memoizerCache = {}; }
 			if(!(u = t[self.targetName])){ u = t[self.targetName] = {}; }
-			return u[key] = ret;
+			u[key] = ret;
+			return ret;
 		}
 	};
 
@@ -24,10 +25,11 @@ dojo.provide("dojox.lang.aspect.memoizer");
 				if((t = that.__memoizerCache) && (t = t[self.targetName]) && (key in t)){
 					return t[key];
 				}
-				var ret = aop.proceed.apply(null, arguments);
+				ret = aop.proceed.apply(null, arguments);
 				if(!(t = that.__memoizerCache)){ t = that.__memoizerCache = {}; }
 				if(!(u = t[self.targetName])){ u = t[self.targetName] = {}; }
-				return u[key] = ret;
+				u[key] = ret;
+				return ret;
 			}
 		};
 	};
@@ -40,6 +42,6 @@ dojo.provide("dojox.lang.aspect.memoizer");
 		//		the function, which takes method's arguments and returns a key,
 		//		which can be used to index the result.
 
-		return arguments.length == 0 ? memoize1 : memoizeN(keyMaker);	// Object
+		return !arguments.length ? memoize1 : memoizeN(keyMaker);	// Object
 	};
 })();
