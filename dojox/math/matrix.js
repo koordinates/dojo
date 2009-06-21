@@ -26,7 +26,7 @@ dojo.mixin(dojox.math.matrix, {
 	product: function(/* Array... */){
 		//	summary
 		//	Return the product of N matrices
-		if (arguments.length==0){
+		if (!arguments.length){
 			console.warn("can't multiply 0 matrices!");
 			return 1;
 		}
@@ -39,18 +39,18 @@ dojo.mixin(dojox.math.matrix, {
 	sum: function(/* Array... */){
 		//	summary
 		//	Return the sum of N matrices
-		if(arguments.length==0){
+		if(!arguments.length){
 			console.warn("can't sum 0 matrices!");
 			return 0;	//	Number
 		}
 		var m=this.copy(arguments[0]);
 		var rows=m.length;
-		if(rows==0){
+		if(!rows){
 			console.warn("can't deal with matrices of 0 rows!");
 			return 0;
 		}
 		var cols=m[0].length;
-		if(cols==0){
+		if(!cols){
 			console.warn("can't deal with matrices of 0 cols!");
 			return 0;
 		}
@@ -75,7 +75,7 @@ dojo.mixin(dojox.math.matrix, {
 			return [[1/a[0][0]]];	//	Array
 		}
 		var tms=a.length, m=this.create(tms, tms), mm=this.adjoint(a), det=this.determinant(a), dd=0;
-		if(det==0){
+		if(!det){
 			console.warn("Determinant Equals 0, Not Invertible.");
 			return [[0]];
 		}else{
@@ -118,7 +118,7 @@ dojo.mixin(dojox.math.matrix, {
 			}
 			v=1;
 			var stop_loop=0;
-			while((m[col][col] == 0) && !stop_loop){
+			while(!m[col][col] && !stop_loop){
 				if (col+v>=tms){
 					this.iDF=0;
 					stop_loop=1;
@@ -133,14 +133,17 @@ dojo.mixin(dojox.math.matrix, {
 				}
 			}
 			for(var row=col+1; row<tms; row++){
+
+				// NOTE: Allow NaN?
+
 				if(typeof m[row][col]!="number"){
 					console.warn("non-numeric entry found in a numeric matrix: m[" + row + "][" + col + "]=" + m[row][col]);
 				}
 				if(typeof m[col][row]!="number"){
 					console.warn("non-numeric entry found in a numeric matrix: m[" + col + "][" + row + "]=" + m[col][row]);
 				}
-				if(m[col][col]!=0){
-					var f1=(-1)* m[row][col]/m[col][col];
+				if(m[col][col]){
+					f1=(-1) * m[row][col]/m[col][col];
 					for (var i=col; i<tms; i++){
 						m[row][i]=f1*m[col][i]+m[row][i];
 					}
