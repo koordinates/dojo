@@ -2,7 +2,7 @@ dojo.provide("dojox.image._base");
 // dojo . require("dijit._Widget");
 
 // summary: Core Image-related functionality 
-;(function(d){
+
 	
 	var cacheNode;
 	dojox.image.preload = function(/* Array */urls){
@@ -22,14 +22,14 @@ dojo.provide("dojox.image._base");
 		//	|	};	
 		
 		if(!cacheNode){ 
-			cacheNode = d.create("div", {
+			cacheNode = dojo.create("div", {
 				style:{ position:"absolute", top:"-9999px", display:"none" }
-			}, d.body());
+			}, dojo.body());
 		}
 
 		// place them in the hidden cachenode
-		d.forEach(urls, function(url){
-			d.create("img", { src: url }, cacheNode);
+		dojo.forEach(urls, function(url){
+			dojo.create("img", { src: url }, cacheNode);
 		});
 	
 	};
@@ -42,10 +42,10 @@ dojo.provide("dojox.image._base");
 			preloadImages: []
 		})
 	=====*/
-	if(d.config.preloadImages){
-		d.addOnLoad(function(){
-			dojox.image.preload(d.config.preloadImages);
-		})
+	if(dojo.config.preloadImages){
+		dojo.addOnLoad(function(){
+			dojox.image.preload(dojo.config.preloadImages);
+		});
 	}
 	
 //	dojo.declare("dojox.image.Image", dijit._Widget, {
@@ -86,11 +86,11 @@ dojo.provide("dojox.image._base");
 //			//	dijit.byId("bar").crossFade("/images/newImage.png");
 //			//
 //			
-//			d.fadeOut({
+//			dojo.fadeOut({
 //				node: this.domNode,
-//				onEnd: d.hitch(this, function(){
+//				onEnd: dojo.hitch(this, function(){
 //					this.attr('src', newSrc);
-//					d.fadeIn({
+//					dojo.fadeIn({
 //						node: this.domNode,
 //						delay: 75
 //					}).play();
@@ -103,10 +103,8 @@ dojo.provide("dojox.image._base");
 //		buildRendering: function(){
 //			// override buildrendering to create a real "img" instead of a div
 //			// when no srcNodeRef is passed. also wire up single onload.
-//			this.domNode = this.srcNodeRef || d.create('img');
+//			this.domNode = this.srcNodeRef || dojo.create('img');
 //			this.connect(this.domNode, "onload", "_onload");
 //		}
 //			
 //	});
-		
-})(dojo);
