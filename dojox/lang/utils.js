@@ -11,7 +11,7 @@ dojo.provide("dojox.lang.utils");
 			return o;
 		}
 		return dojo.delegate(o);
-	}
+	};
 	
 	dojo.mixin(du, {
 		coerceType: function(target, source){
@@ -30,7 +30,7 @@ dojo.provide("dojox.lang.utils");
 			// conv: Boolean?: force conversion to the original type
 			if(!source){ return target; }
 			for(var x in target){
-				if(x in source && !(x in empty)){
+				if(dojo.isOwnProperty(target, x) && x in source && !(x in empty)){
 					var t = target[x];
 					if(t && typeof t == "object"){
 						du.updateWithObject(t, source[x], conv);
@@ -50,7 +50,7 @@ dojo.provide("dojox.lang.utils");
 			// conv: Boolean?: force conversion to the original type
 			if(!source || !pattern){ return target; }
 			for(var x in pattern){
-				if(x in source && !(x in empty)){
+				if(dojo.isOwnProperty(pattern, x) &&x in source && !(x in empty)){
 					target[x] = conv ? du.coerceType(pattern[x], source[x]) : clone(source[x]);
 				}
 			}
