@@ -140,7 +140,7 @@ dojo.declare("dojox.layout.dnd.PlottedDnd", [dojo.dnd.Source], {
 			
 	onMouseDown: function(/*Event*/e) {
 		// summary: Event processor for onmousedown.	
-		if(this.current == null){
+		if(this.current === null){
 			this.selection = {};
 		}else{
 			if(this.current == this.anchor){
@@ -159,13 +159,13 @@ dojo.declare("dojox.layout.dnd.PlottedDnd", [dojo.dnd.Source], {
 			this._drop.style.height = this.current.coords.mh + "px";
 			
 			if(this.isOffset){
-				if(this.offsetDrag.x == 0 && this.offsetDrag.y == 0){
+				if(!this.offsetDrag.x && !this.offsetDrag.y){
 					var NoOffsetDrag = true;
 					var coords = dojo.coords(this._getChildByEvent(e));
 					this.offsetDrag.x = coords.x - e.pageX;
 					this.offsetDrag.y = coords.y - e.clientY;
 				}
-				if(this.offsetDrag.y < 16 && this.current != null){ 
+				if(this.offsetDrag.y < 16 && this.current !== null){ 
 					this.offsetDrag.y = this.GC_OFFSET_Y;
 				}
 
@@ -197,8 +197,8 @@ dojo.declare("dojox.layout.dnd.PlottedDnd", [dojo.dnd.Source], {
 		// summary: Event processor for onmouseup.	
 		dojox.layout.dnd.PlottedDnd.superclass.onMouseUp.call(this,e);
 		this.containerSource = false;
-		if (!dojo.isIE && this.mouseDown){
-			this.setDndItemSelectable(e.target,true);
+		if (this.mouseDown){
+			this.setDndItemSelectable(e.target, true);
 		}
 		var m = dojo.dnd.manager();
 		m.OFFSET_X = this.GC_OFFSET_X;
@@ -210,7 +210,7 @@ dojo.declare("dojox.layout.dnd.PlottedDnd", [dojo.dnd.Source], {
 		var m = dojo.dnd.manager();
 		if(this.isDragging) {
 			var before = false;
-			if(this.current != null || (this.current == null && !this.dropObject)){
+			if(this.current !== null || !this.dropObject){
 				if(this.isAccepted(m.nodes[0]) || this.containerSource){
 					before = this.setIndicatorPosition(e);
 				}
@@ -266,7 +266,7 @@ dojo.declare("dojox.layout.dnd.PlottedDnd", [dojo.dnd.Source], {
 			}
 			before = this.horizontal ? 
 				(e.pageX - this.current.coords.xy.x) < this.current.coords.w :
-				(e.pageY - this.current.coords.xy.y) < this.current.coords.h
+				(e.pageY - this.current.coords.xy.y) < this.current.coords.h;
 			this.insertDashedZone(before);	
 		}else{
 			if(!this.dropObject /*|| dojo.isIE*/){ this.insertDashedZone(false); }
@@ -280,8 +280,9 @@ dojo.declare("dojox.layout.dnd.PlottedDnd", [dojo.dnd.Source], {
 		dojox.layout.dnd.PlottedDnd.superclass.onOverEvent.call(this);
 		if (this.isDragging) {
 			var m = dojo.dnd.manager();
-			if (!this.current && !this.dropObject && this.getSelectedNodes()[0] && this.isAccepted(m.nodes[0]))
+			if (!this.current && !this.dropObject && this.getSelectedNodes()[0] && this.isAccepted(m.nodes[0])) {
 				this.insertDashedZone(false);
+			}
 		}
 	},
 	
@@ -289,17 +290,17 @@ dojo.declare("dojox.layout.dnd.PlottedDnd", [dojo.dnd.Source], {
 		this._over = false;
 		this.containerSource = false;
 		dojox.layout.dnd.PlottedDnd.superclass.onOutEvent.call(this);
-		if (this.dropObject) this.deleteDashedZone();
+		if (this.dropObject) { this.deleteDashedZone(); }
 	},
 	
 	deleteDashedZone: function() {
 		// summary: hide the dashed zone
 		this._drop.style.display = "none";
-			var next = this._drop.nextSibling;
-			while (next != null) {
-				next.coords.xy.y -= parseInt(this._drop.style.height);
-				next = next.nextSibling;
-			}
+		var next = this._drop.nextSibling;
+		while (next) {
+			next.coords.xy.y -= parseInt(this._drop.style.height, 10);
+			next = next.nextSibling;
+		}
 		delete this.dropObject;
 	},
 	
@@ -320,8 +321,8 @@ dojo.declare("dojox.layout.dnd.PlottedDnd", [dojo.dnd.Source], {
 			dojo.place(this._drop, this.current, before ? "before" : "after");
 			if(!this.firstIndicator){
 				var next = this._drop.nextSibling;
-				while(next != null){
-					next.coords.xy.y += parseInt(this._drop.style.height);
+				while(next){
+					next.coords.xy.y += parseInt(this._drop.style.height, 10);
 					next = next.nextSibling;
 				}
 			}else{
@@ -345,14 +346,15 @@ dojo.declare("dojox.layout.dnd.PlottedDnd", [dojo.dnd.Source], {
 		var _widget = dijit.byId(data[0].getAttribute("widgetId"));
 		if (_widget) {
 			dojox.layout.dnd._setGcDndHandle(_widget, this.withHandles, this.handleClasses);
-			if(this.hideSource)
+			if(this.hideSource) {
 				dojo.style(_widget.domNode, "display", "");
+			}
 		}
 	},
 	
 	_checkAutoScroll: function(e){
 		if(this._timer){
-			clearTimeout(this._timer);
+			window.clearTimeout(this._timer);
 		}
 		this._stopAutoScroll();
 		var node = this.dom, 
@@ -372,14 +374,14 @@ dojo.declare("dojox.layout.dnd.PlottedDnd", [dojo.dnd.Source], {
 	_autoScrollUp: function(node){
 		if( this.autoScrollActive && node.scrollTop > 0) {
 			node.scrollTop -= 30;
-			this._timer = setTimeout(dojo.hitch(this,"_autoScrollUp",node), 100);
+			this._timer = window.setTimeout(dojo.hitch(this,"_autoScrollUp",node), 100);
 		}
 	},
 
 	_autoScrollDown: function(node){
 		if( this.autoScrollActive && (node.scrollTop < (node.scrollHeight-node.clientHeight))){
 			node.scrollTop += 30;
-			this._timer = setTimeout(dojo.hitch(this, "_autoScrollDown",node), 100);
+			this._timer = window.setTimeout(dojo.hitch(this, "_autoScrollDown",node), 100);
 		}
 	},
 
@@ -422,7 +424,7 @@ dojox.layout.dnd._setGcDndHandle = function(service,withHandles,handleClasses, f
 				_hasHandle = true;
 				if(handleClasses[i] != cls){
 					var _gripNode = dojo.query("." + cls, service.domNode);
-					if(_gripNode.length == 0){ 
+					if(!_gripNode.length){ 
 						dojo.removeClass(service.domNode, cls);
 					}else{				
 						_gripNode.removeClass(cls);
@@ -463,7 +465,7 @@ dojo.declare("dojox.layout.dnd.DropIndicator", null, {
 				border:"1px dashed #F60",
 				margin:"2px",
 				height: h
-			})
+			});
 		}
 		this.node = el;
 		return el;
@@ -496,20 +498,22 @@ dojo.extend(dojo.dnd.Manager, {
 	}
 });
 
-if(dojo.isIE){
-	dojox.layout.dnd.handdleIE = [
+(function() {
+
+	// NOTE: Detect selectstart event support
+
+	var IEonselectstart;
+
+	dojox.layout.dnd.handleIE = [
 		dojo.subscribe("/dnd/start", null, function(){
-			IEonselectstart = document.body.onselectstart;
-			document.body.onselectstart = function(){ return false; };
+			IEonselectstart = dojo.body().onselectstart;
+			dojo.body().onselectstart = function(){ return false; };
 		}),
 		dojo.subscribe("/dnd/cancel", null, function(){
-			document.body.onselectstart = IEonselectstart;
+			dojo.body().onselectstart = IEonselectstart;
 		}),
 		dojo.subscribe("/dnd/drop", null, function(){
-			document.body.onselectstart = IEonselectstart;
+			dojo.body().onselectstart = IEonselectstart;
 		})
 	];
-	dojo.addOnWindowUnload(function(){
-		dojo.forEach(dojox.layout.dnd.handdleIE, dojo.unsubscribe);
-	});
-}
+})();
