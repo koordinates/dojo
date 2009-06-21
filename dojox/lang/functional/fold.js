@@ -32,14 +32,14 @@ dojo.require("dojox.lang.functional.lambda");
 			var i, n;
 			if(d.isArray(a)){
 				// array
-				for(i = 0, n = a.length; i < n; z = f.call(o, z, a[i], i, a), ++i);
+				for(i = 0, n = a.length; i < n; z = f.call(o, z, a[i], i, a), ++i) {}
 			}else if(typeof a.hasNext == "function" && typeof a.next == "function"){
 				// iterator
-				for(i = 0; a.hasNext(); z = f.call(o, z, a.next(), i++, a));
+				for(i = 0; a.hasNext(); z = f.call(o, z, a.next(), i++, a)) {}
 			}else{
 				// object/dictionary
 				for(i in a){
-					if(!(i in empty)){
+					if(dojo.isOwnProperty(a, i) && !(i in empty)){
 						z = f.call(o, z, a[i], i, a);
 					}
 				}
@@ -55,18 +55,18 @@ dojo.require("dojox.lang.functional.lambda");
 			if(d.isArray(a)){
 				// array
 				z = a[0];
-				for(i = 1, n = a.length; i < n; z = f.call(o, z, a[i], i, a), ++i);
+				for(i = 1, n = a.length; i < n; z = f.call(o, z, a[i], i, a), ++i) {}
 			}else if(typeof a.hasNext == "function" && typeof a.next == "function"){
 				// iterator
 				if(a.hasNext()){
 					z = a.next();
-					for(i = 1; a.hasNext(); z = f.call(o, z, a.next(), i++, a));
+					for(i = 1; a.hasNext(); z = f.call(o, z, a.next(), i++, a)) {}
 				}
 			}else{
 				// object/dictionary
 				var first = true;
 				for(i in a){
-					if(!(i in empty)){
+					if(dojo.isOwnProperty(a, i) && !(i in empty)){
 						if(first){
 							z = a[i];
 							first = false;
@@ -84,7 +84,7 @@ dojo.require("dojox.lang.functional.lambda");
 			//	value.
 			if(typeof a == "string"){ a = a.split(""); }
 			o = o || d.global; f = df.lambda(f);
-			for(var i = a.length; i > 0; --i, z = f.call(o, z, a[i], i, a));
+			for(var i = a.length; i > 0; --i, z = f.call(o, z, a[i], i, a)) {}
 			return z;	// Object
 		},
 		foldr1: function(/*Array|String*/ a, /*Function|String|Array*/ f, /*Object?*/ o){
@@ -93,7 +93,7 @@ dojo.require("dojox.lang.functional.lambda");
 			if(typeof a == "string"){ a = a.split(""); }
 			o = o || d.global; f = df.lambda(f);
 			var n = a.length, z = a[n - 1], i = n - 1;
-			for(; i > 0; --i, z = f.call(o, z, a[i], i, a));
+			for(; i > 0; --i, z = f.call(o, z, a[i], i, a)) {}
 			return z;	// Object
 		},
 		// JS 1.8 standard array functions, which can take a lambda as a parameter.
@@ -113,7 +113,7 @@ dojo.require("dojox.lang.functional.lambda");
 			// summary: builds an array by unfolding a value
 			o = o || d.global; f = df.lambda(f); g = df.lambda(g); pr = df.lambda(pr);
 			var t = [];
-			for(; !pr.call(o, z); t.push(f.call(o, z)), z = g.call(o, z));
+			for(; !pr.call(o, z); t.push(f.call(o, z)), z = g.call(o, z)) {}
 			return t;	// Array
 		}
 	});
