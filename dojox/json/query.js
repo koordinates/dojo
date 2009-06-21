@@ -12,13 +12,13 @@ dojo.provide("dojox.json.query");
 	  	}
 		return results;
 	}
-	function expand(obj,name){
+	function expand(obj, name){
 		// handles ..name, .*, [*], [val1,val2], [val]
 		// name can be a property to search for, undefined for full recursive, or an array for picking by index
 		var results = [];
 		function walk(obj){
 			if(name){
-				if(name===true && !(obj instanceof Array)){
+				if(name===true && !dojo.isArray(obj)){
 					//recursive object search
 					results.push(obj);
 				}else if(obj[name]){
@@ -27,17 +27,18 @@ dojo.provide("dojox.json.query");
 				}
 			}
 			for(var i in obj){
-				var val = obj[i];
-				if(!name){
-					// if we don't have a name we are just getting all the properties values (.* or [*])
-					results.push(val);
-				}else if(val && typeof val == 'object'){
-					
-					walk(val);
+				if (dojo.isOwnProperty(obj, i)) {
+					var val = obj[i];
+					if(!name){
+						// if we don't have a name we are just getting all the properties values (.* or [*])
+						results.push(val);
+					}else if(val && typeof val == 'object'){
+						walk(val);
+					}
 				}
 			}
 		}
-		if(name instanceof Array){
+		if(dojo.isArray(name)){
 			// this is called when multiple items are in the brackets: [3,4,5]
 			if(name.length==1){
 				// this can happen as a result of the parser becoming confused about commas 
@@ -248,13 +249,16 @@ dojo.provide("dojox.json.query");
 			//restore the strings
 			return a == ']' ? ']' : str[a];
 		});
+
 		// create a function within this scope (so it can use expand and slice)
 		
-		var executor = eval("1&&function($,$1,$2,$3,$4,$5,$6,$7,$8,$9){var $obj=$;return " + query + "}");
-		for(var i = 0;i<arguments.length-1;i++){
-			arguments[i] = arguments[i+1];
-		}
-		return obj ? executor.apply(this,arguments) : executor;
+		var executor = function($,$1,$2,$3,$4,$5,$6,$7,$8,$9){
+			var $obj=$;
+			return eval(query);
+		};
+		var args = Array.prototype.slice.call(arguments, 0);
+		args.shift();
+		return obj ? executor.apply(this, args) : executor;
 	};
 	
 })();
