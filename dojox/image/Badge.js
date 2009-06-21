@@ -79,12 +79,11 @@ dojo.declare("dojox.image.Badge", [dijit._Widget, dijit._Templated], {
 				dojo.addClass(n, this.baseClass + "Image");
 				
 			}, this);
-		;
 		
 		var l = this._nl.length;
 		while(this.threads--){
 			var s = Math.floor(Math.random() * l);
-			setTimeout(dojo.hitch(this,"_enbiggen", { target: this._nl[s] }), this.delay * this.threads);
+			window.setTimeout(dojo.hitch(this,"_enbiggen", { target: this._nl[s] }), this.delay * this.threads);
 		}
 		
 	},
@@ -152,7 +151,6 @@ dojo.declare("dojox.image.Badge", [dijit._Widget, dijit._Templated], {
 		//		determine if they need loaded or not
 
 		var idx = info.io;
-		var nodes = [];
 
 		var isLeft = (props.left >= 0);
 		var isUp = (props.top >= 0);
@@ -176,7 +174,7 @@ dojo.declare("dojox.image.Badge", [dijit._Widget, dijit._Templated], {
 			}
 		},this);
 		
-		setTimeout(dojo.hitch(this, "_disenbiggen", info, props), this.delay * 1.25);
+		window.setTimeout(dojo.hitch(this, "_disenbiggen", info, props), this.delay * 1.25);
 
 	},
 	
@@ -207,11 +205,10 @@ dojo.declare("dojox.image.Badge", [dijit._Widget, dijit._Templated], {
 		var bc = this.baseClass; 
 		dojo.removeClass(info.n, bc + "Top");
 		var ns = this._nl.filter(function(n){
-			return !dojo.hasClass(n, bc + "Seen")
+			return !dojo.hasClass(n, bc + "Seen");
 		});
 		var c = ns[Math.floor(Math.random() * ns.length)];
-		setTimeout(dojo.hitch(this,"_enbiggen", { target: c }), this.delay / 2)
-
+		window.setTimeout(dojo.hitch(this,"_enbiggen", { target: c }), this.delay / 2);
 	}
 	
 });
