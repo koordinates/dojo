@@ -8,7 +8,9 @@ dojo.require("dojox.highlight.languages.pygments._html");
 		ht = dhl.pygments._html.tags;
 	
 	for(var key in ht){
-		tags.push(key);
+		if (dojo.isOwnProperty(ht, key)) {
+			tags.push(key);
+		}
 	}
 	tags = "\\b(" + tags.join("|") + ")\\b";
 	
