@@ -4,6 +4,9 @@ dojo.provide("dojox.html.metrics");
 	var dhm = dojox.html.metrics;
 
 	//	derived from Morris John's emResized measurer
+
+	// NOTE: Should be deprecated
+
 	dhm.getFontMeasurements = function(){
 		//	summary
 		//	Returns an object that has pixel equivilents of standard font size values.
@@ -12,11 +15,11 @@ dojo.provide("dojox.html.metrics");
 			'small':0, 'medium':0, 'large':0, 'x-large':0, 'xx-large':0
 		};
 	
-		if(dojo.isIE){
+		//if(dojo.isIE){
 			//	we do a font-size fix if and only if one isn't applied already.
 			//	NOTE: If someone set the fontSize on the HTML Element, this will kill it.
-			dojo.doc.documentElement.style.fontSize="100%";
-		}
+			//dojo.doc.documentElement.style.fontSize="100%";
+		//}
 	
 		//	set up the measuring node.
 		var div=dojo.doc.createElement("div");
@@ -36,8 +39,10 @@ dojo.provide("dojox.html.metrics");
 	
 		//	do the measurements.
 		for(var p in heights){
-			ds.fontSize = p;
-			heights[p] = Math.round(div.offsetHeight * 12/16) * 16/12 / 1000;
+			if (dojo.isOwnProperty(heights, p)) {
+				ds.fontSize = p;
+				heights[p] = Math.round(div.offsetHeight * 12/16) * 16/12 / 1000;
+			}
 		}
 		
 		dojo.body().removeChild(div);
@@ -75,8 +80,10 @@ dojo.provide("dojox.html.metrics");
 		// set new style
 		if(arguments.length > 1 && style){
 			for(var i in style){
-				if(i in empty){ continue; }
-				m.style[i] = style[i];
+				if (dojo.isOwnProperty(style, i)) {
+					if(i in empty){ continue; }
+					m.style[i] = style[i];
+				}
 			}
 		}
 		// set classes
@@ -95,39 +102,43 @@ dojo.provide("dojox.html.metrics");
 	dhm._fontResizeNode = null;
 
 	dhm.initOnFontResize = function(interval){
+		// NOTE: Should not need an IFRAME for this
+
 		var f = dhm._fontResizeNode = dojo.doc.createElement("iframe");
 		var fs = f.style;
 		fs.position = "absolute";
 		fs.width = "5em";
 		fs.height = "10em";
 		fs.top = "-10000px";
-		f.src = dojo.config["dojoBlankHtmlUrl"] || dojo.moduleUrl("dojo", "resources/blank.html");
+		f.src = dojo.config.dojoBlankHtmlUrl || dojo.moduleUrl("dojo", "resources/blank.html");
 		dojo.body().appendChild(f);
 
-		if(dojo.isIE){
-			f.onreadystatechange = function(){
-				if(f.contentWindow.document.readyState == "complete"){
-                    f.onresize = f.contentWindow.parent[dojox._scopeName].html.metrics._fontresize;
-				}
-			};
-		}else{
-			f.onload = function(){
-                f.contentWindow.onresize = f.contentWindow.parent[dojox._scopeName].html.metrics._fontresize;
-			};
-		}
+		// NOTE: Detect event support
+
+		//if(dojo.isIE){
+		f.onreadystatechange = function(){
+			if(f.contentWindow.document.readyState == "complete"){
+              			f.onresize = f.contentWindow.parent[dojox._scopeName].html.metrics._fontresize;
+			}
+		};
+		//}else{
+		f.onload = function(){
+                	f.contentWindow.onresize = f.contentWindow.parent[dojox._scopeName].html.metrics._fontresize;
+		};
+		//}
 		dhm.initOnFontResize = function(){};
 	};
 
 	dhm.onFontResize = function(){};
 	dhm._fontresize = function(){
 		dhm.onFontResize();
-	}
+	};
 
 	dojo.addOnUnload(function(){
 		// destroy our font resize iframe if we have one
 		var f = dhm._fontResizeNode;
 		if(f){
-			if(dojo.isIE && f.onresize){
+			if(f.onresize){
 				f.onresize = null;
 			}else if(f.contentWindow && f.contentWindow.onresize){
 				f.contentWindow.onresize = null;
@@ -138,16 +149,16 @@ dojo.provide("dojox.html.metrics");
 
 	dojo.addOnLoad(function(){
 		// getScrollbar metrics node
-		try{
+		//try{
+			// NOTE: Duplication and shouldn't need it
+
 			var n=dojo.doc.createElement("div");
 			n.style.cssText = "top:0;left:0;width:100px;height:100px;overflow:scroll;position:absolute;visibility:hidden;";
 			dojo.body().appendChild(n);
 			scroll.w = n.offsetWidth - n.clientWidth;
 			scroll.h = n.offsetHeight - n.clientHeight;
 			dojo.body().removeChild(n);
-			//console.log("Scroll bar dimensions: ", scroll);
-			delete n;
-		}catch(e){}
+		//}catch(e){}
 
 		// text size poll setup
 		if("fontSizeWatch" in dojo.config && !!dojo.config.fontSizeWatch){
