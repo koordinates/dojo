@@ -69,6 +69,6 @@ dojo.require("dojox.lang.oo.general");
 					newValue.call(this);
 				}
 				return ret;
-			} : function(){ newValue.call(this); }
+			} : function(){ newValue.call(this); };
 	});
 })();
