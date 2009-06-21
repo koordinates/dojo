@@ -80,6 +80,6 @@ dojo.require("dojo.io.iframe");
 		}else{
 			return oldCanAttach.apply(this, arguments);
 		}
-	}
+	};
 })();
 
