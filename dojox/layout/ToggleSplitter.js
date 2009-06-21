@@ -173,8 +173,8 @@ dojo.declare("dojox.layout.ToggleSplitter", [ dijit.layout._Splitter ],
 		var styleProps = {}, 
 			dim = this.horizontal ? "height" : "width";
 			
-		styleProps["overflow"] = (open) ? paneStyle["overflow"] : "hidden";
-		styleProps["visibility"] = (open) ? paneStyle["visibility"] : "hidden";
+		styleProps.overflow = (open) ? paneStyle.overflow : "hidden";
+		styleProps.visibility = (open) ? paneStyle.visibility : "hidden";
 
 		// use the inline width/height style value, in preference to the computedStyle
 		// for the open width/height
