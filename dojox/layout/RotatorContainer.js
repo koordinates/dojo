@@ -166,7 +166,7 @@ dojo.declare("dojox.layout.RotatorContainer",
 		// check if we should start automatically
 		if(this.autoStart){
 			// start playing
-			setTimeout(dojo.hitch(this, "_play"), 10);
+			window.setTimeout(dojo.hitch(this, "_play"), 10);
 		}else{
 			// update the pagers with the initial state
 			this._updatePager();
@@ -217,16 +217,17 @@ dojo.declare("dojox.layout.RotatorContainer",
 		// if we were playing, resume playback in 200ms
 		// we need to wait because we may be moused over again right away
 		if(this._playing){
-			clearTimeout(this._timer);
-			//var self = this;
-			//this._timer = setTimeout(function(){self._play(true);}, 200);
-			this._timer = setTimeout(dojo.hitch(this,"_play",true),200);
+			window.clearTimeout(this._timer);
+
+			// NOTE: Should have a hitch + timeout wrapper
+			
+			this._timer = window.setTimeout(dojo.hitch(this,"_play",true),200);
 		}
 	},
 
 	_resetTimer: function(){
 		// summary: Resets the timer used to start the next transition.
-		clearTimeout(this._timer);
+		window.clearTimeout(this._timer);
 		this._timer = null;
 	},
 
@@ -262,11 +263,11 @@ dojo.declare("dojox.layout.RotatorContainer",
 		if(skip !== true && this.cycles>0){
 			this.cycles--;
 		}
-		if(this.cycles==0){
+		if(!this.cycles){
 			this._pause();
 		}else if((!this.suspendOnHover || !this._over) && this.transitionDelay){
 			// check if current pane has a delay
-			this._timer = setTimeout(dojo.hitch(this, "_cycle"), this.selectedChildWidget.domNode.getAttribute("transitionDelay") || this.transitionDelay);
+			this._timer = window.setTimeout(dojo.hitch(this, "_cycle"), this.selectedChildWidget.domNode.getAttribute("transitionDelay") || this.transitionDelay);
 		}
 		this._updatePager();
 	},
@@ -294,8 +295,9 @@ dojo.declare("dojox.layout.RotatorContainer",
 
 		// check if we have anything to transition
 		if(prev && this.transitionDuration){
-			switch(this.transition){
-				case "fade": this._fade(next, prev); return;
+			if(this.transition){
+				this._fade(next, prev);
+				return;
 			}
 		}
 
@@ -325,8 +327,8 @@ dojo.declare("dojox.layout.RotatorContainer",
 		// create the crossfade animation
 		var args = { duration:this.transitionDuration };
 		var anim = dojo.fx.combine([
-			dojo["fadeOut"](dojo.mixin({node:prev.domNode},args)),
-			dojo["fadeIn"](dojo.mixin({node:next.domNode},args))
+			dojo.fadeOut(dojo.mixin({node:prev.domNode},args)),
+			dojo.fadeIn(dojo.mixin({node:next.domNode},args))
 		]);
 
 		this.connect(anim, "onEnd", dojo.hitch(this,function(){
