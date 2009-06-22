@@ -23,11 +23,11 @@ dojo.require("dojox.sketch.Anchor");
 		this.anchors.control=new ta.Anchor(this, "control");
 		this.anchors.end=new ta.Anchor(this, "end");
 	};
-	ta.LeadAnnotation.prototype=new ta.Annotation;
+	ta.LeadAnnotation.prototype=new ta.Annotation();
 	var p=ta.LeadAnnotation.prototype;
 	p.constructor=ta.LeadAnnotation;
 
-	p.type=function(){ return 'Lead'; }
+	p.type=function(){ return 'Lead'; };
 	p.getType=function(){ return ta.LeadAnnotation; };
 
 	p._pos=function(){
@@ -40,7 +40,7 @@ dojo.require("dojox.sketch.Anchor");
 			} else { 
 				y=this.end.y+offset+this.textYOffset; 
 			}
-		} else if(slope==0){
+		} else if(!slope){
 			x=this.end.x+offset;
 			y=this.end.y+this.textYOffset;
 		} else {
@@ -137,24 +137,23 @@ dojo.require("dojox.sketch.Anchor");
 				x:this.textPosition.x, 
 				y:this.textPosition.y, 
 				text:this.property('label') 
-			})
-			.setFill(this.property('fill'));
+			}).setFill(this.property('fill'));
 		this.zoom();
 	};
 	p.serialize=function(){
 		var stroke=this.property('stroke');
-		return '<g '+this.writeCommonAttrs()+'>'
-			+ '<path style="stroke:'+stroke.color+';stroke-width:'+stroke.width+';fill:none;" d="'
-			+ "M"+this.start.x+","+this.start.y+" "
-			+ "Q"+this.control.x+","+this.control.y+" "
-			+ this.end.x+","+this.end.y
-			+ '" />'
-			+ '<text style="fill:'+stroke.color+';text-anchor:'+this.textAlign+'" font-weight="bold" '
-			+ 'x="' + this.textPosition.x + '" '
-			+ 'y="' + this.textPosition.y + '">'
-			+ this.property('label')
-			+ '</text>'
-			+ '</g>';
+		return '<g '+this.writeCommonAttrs()+'>' +
+			'<path style="stroke:'+stroke.color+';stroke-width:'+stroke.width+';fill:none;" d="' +
+			"M"+this.start.x+","+this.start.y+" " +
+			"Q"+this.control.x+","+this.control.y+" " +
+			this.end.x+","+this.end.y +
+			'" />' +
+			'<text style="fill:'+stroke.color+';text-anchor:'+this.textAlign+'" font-weight="bold" ' +
+			'x="' + this.textPosition.x + '" ' +
+			'y="' + this.textPosition.y + '">' +
+			this.property('label') +
+			'</text>' +
+			'</g>';
 	};
 
 	ta.Annotation.register("Lead");
