@@ -38,6 +38,20 @@ dojo.isDate = function(/*anything*/ it) {
 	return false;
 };
 
+dojo.isRegExp = function(/*anything*/ it) {
+	//	summary:
+	//		Return true if it is a Date
+
+	var t = Object.prototype.toString.call(it);
+	switch (t) {
+	case '[object RegExp]':
+		return true;
+	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
+		return dojo.isObject(it) && it && dojo.isFunction(it.test) && !dojo.isOwnProperty(it, 'test') && dojo.isObject(it) && it && dojo.isFunction(it.exec) && !dojo.isOwnProperty(it, 'exec');
+	}
+	return false;
+};
+
 /*=====
 dojo.isFunction = function(it){
 	// summary: Return true if it is a Function
