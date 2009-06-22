@@ -7,7 +7,7 @@ dojox.data.tests.stores.JsonRestStore.error = function(t, d, errData){
 	//  summary:
 	//		The error callback function to be used for all of the tests.
 	d.errback(errData);	
-}
+};
 var testServices = new dojox.rpc.Service(dojo.moduleUrl("dojox.rpc.tests.resources", "test.smd"));
 var jsonStore = new dojox.data.JsonRestStore({service:testServices.jsonRestStore});
 
@@ -86,7 +86,11 @@ doh.register("dojox.data.tests.stores.JsonRestStore",
 				var d = new doh.Deferred();
 				jsonStore.fetch({query:"obj1", 
 					onComplete: function(item, request){
-						var now = new Date().getTime();
+
+						// NOTE: Unused
+
+						//var now = new Date().getTime();
+
 						var testArray = item.testArray;
 						var newObject = {"name":"new object"};
 						testArray.push(newObject);
@@ -213,8 +217,8 @@ doh.register("dojox.data.tests.stores.JsonRestStore",
 			var readApi = new dojo.data.api.Read();
 			var passed = true;
 
-			for(i in readApi){
-				if(i.toString().charAt(0) !== '_')
+			for(var i in readApi){
+				if(dojo.isOwnProperty(readApi, i) && i.toString().charAt(0) !== '_')
 				{
 					var member = readApi[i];
 					//Check that all the 'Read' defined functions exist on the test store.
