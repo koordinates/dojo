@@ -25,18 +25,18 @@ dojo.require("dojox.xml.DomParser");
 			var fromText=from.shapeText;
 			var toText=to.shapeText;
 			
-			if(fromText.length==0&&toText.length==0){
+			if(!fromText.length && !toText.length){
 				//	nothing to reapply?
 				return;
 			}
-			if(fromText.length==0){
+			if(!fromText.length){
 				//	We are creating.
 				var o=dojox.xml.DomParser.parse(toText).documentElement;
 				var a=this.figure._loadAnnotation(o);
-				if(a) this.figure._add(a);
+				if(a) { this.figure._add(a); }
 				return;
 			}
-			if(toText.length==0){
+			if(!toText.length){
 				//	we are deleting.
 				var ann=this.figure.get(from.shapeId);
 				this.figure._delete([ann],true);
