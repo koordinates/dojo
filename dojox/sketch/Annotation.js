@@ -118,16 +118,16 @@ dojo.require("dojox.sketch._Plugin");
 	p.onPropertyChange=function(name,oldvalue){};
 	p.onCreate=function(){
 		this.figure.history.add(ta.CommandTypes.Create,this);
-	}
+	};
 	p.onDblClick=function(e){
-		var l=prompt('Set new text:',this.property('label'));
+		var l=window.prompt('Set new text:',this.property('label'));
 		if(l!==false){
 			this.beginEdit(ta.CommandTypes.Modify);
 			this.property('label',l);
 			this.draw();
 			this.endEdit();
 		}
-	}
+	};
 	p.initialize=function(){ };
 	p.destroy=function(){ };
 	p.draw=function(){ };
@@ -153,7 +153,7 @@ dojo.require("dojox.sketch._Plugin");
 		},
 		dx:function(p1, p2, dy){
 			var s=this.slope(p1,p2);
-			if(s==0){ return s; }
+			if(!s){ return s; }
 			return dy/s; 
 		},
 		dy:function(p1, p2, dx){ 
@@ -204,8 +204,10 @@ dojo.require("dojox.sketch._Plugin");
 				this.boundingBox=null;
 			}
 		}
-		for(var p in this.anchors){ 
-			this.anchors[p][method](); 
+		for(var p in this.anchors){
+			if (dojo.isOwnProperty(this.anchors, p)) {
+				this.anchors[p][method]();
+			}
 		}
 	};
 	p.zoom=function(pct){
@@ -217,7 +219,9 @@ dojo.require("dojox.sketch._Plugin");
 		}
 		
 		for(var n in this.anchors){
-			this.anchors[n].zoom(pct);
+			if (dojo.isOwnProperty(this.anchors, n)) {
+				this.anchors[n].zoom(pct);
+			}
 		}
 		
 		//In VML, path are always the same width no matter scaling factors,
@@ -232,9 +236,9 @@ dojo.require("dojox.sketch._Plugin");
 		}
 	};
 	p.writeCommonAttrs=function(){
-		return 'id="' + this.id + '" dojoxsketch:type="' + this.type() + '"'
-			+ ' transform="translate('+ this.transform.dx + "," + this.transform.dy + ')"'
-			+ (this.data?(' ><![CDATA[data:'+dojo.toJson(this.data)+']]'):'');
+		return 'id="' + this.id + '" dojoxsketch:type="' + this.type() + '"' +
+			' transform="translate('+ this.transform.dx + "," + this.transform.dy + ')"' +
+			(this.data?(' ><![CDATA[data:'+dojo.toJson(this.data)+']]'):'');
 	};
 	p.readCommonAttrs=function(obj){
 		var i=0,cs=obj.childNodes,c;
