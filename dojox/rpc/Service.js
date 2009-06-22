@@ -26,18 +26,20 @@ dojo.declare("dojox.rpc.Service", null, {
 		var url;
 		var self = this;
 		function processSmd(smd){
-			smd._baseUrl = new dojo._Url(location.href,url || '.') + '';
+			smd._baseUrl = new dojo._Url(window.location.href,url || '.') + '';
 			self._smd = smd;
 
 			//generate the methods
  			for(var serviceName in self._smd.services){
-				var pieces = serviceName.split("."); // handle "namespaced" services by breaking apart by .
-				var current = self;
-				for(var i=0; i< pieces.length-1; i++){
-					// create or reuse each object as we go down the chain
-					current = current[pieces[i]] || (current[pieces[i]] = {});
+				if (dojo.isOwnProperty(self._smd.services, serviceName)) {
+					var pieces = serviceName.split("."); // handle "namespaced" services by breaking apart by .
+					var current = self;
+					for(var i=0; i< pieces.length-1; i++){
+						// create or reuse each object as we go down the chain
+						current = current[pieces[i]] || (current[pieces[i]] = {});
+					}
+					current[pieces[pieces.length-1]]=	self._generateService(serviceName, self._smd.services[serviceName]);
 				}
-				current[pieces[pieces.length-1]]=	self._generateService(serviceName, self._smd.services[serviceName]);
  			}
 		}
 		if(smd){
@@ -105,15 +107,16 @@ dojo.declare("dojox.rpc.Service", null, {
 			if(method.strictParameters||smd.strictParameters){
 				//remove any properties that were not defined
 				for(i in args){
-					var found=false;
-					for(var j=0; j<parameters.length;j++){
-						if(parameters[i].name==i){ found=true; }
+					if (dojo.isOwnProperty(args, i)) {
+						var found=false;
+						for(var j=0; j<parameters.length;j++){
+							if(parameters[i].name==i){ found=true; }
+						}
+						if(!found){
+							delete args[i];
+						}
 					}
-					if(!found){
-						delete args[i];
-					}
-				}
-				
+				}				
 			}
 			// setting default values
 			for(i=0; i< parameters.length; i++){
@@ -251,7 +254,9 @@ dojox.rpc.envelopeRegistry.register(
 				}
 			}else{
 				for(i in data){
-					target += '/' + i + '/' + data[i];
+					if (dojo.isOwnProperty(data, i)) {
+						target += '/' + i + '/' + data[i];
+					}
 				}
 			}
 
