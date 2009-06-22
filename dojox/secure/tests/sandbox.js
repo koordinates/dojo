@@ -1,18 +1,20 @@
 dojo.provide("dojox.secure.tests.secure");
 dojo.require("dojox.secure.secure");
 
+var bad, container;
+
 doh.register("dojox.secure.tests.secure.good", 
 	[
 		function setup(){
-			var div = document.createElement("div");
-			document.body.appendChild(div);
+			var div = dojo.doc.createElement("div");
+			dojo.body().appendChild(div);
 			div.innerHTML = "Sandboxed div:";
 			div.style.position = "absolute";
 			div.style.top = "100px";
 			div.style.left = "100px";
 			div.style.backgroundColor = "red";
 			div.style.color = "white";
-			container = document.createElement("div");
+			container = dojo.doc.createElement("div");
 			container.style.backgroundColor = "cyan";
 			container.style.color = "black";
 			div.appendChild(container);			
