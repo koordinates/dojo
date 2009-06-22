@@ -40,7 +40,7 @@ dojo.require("dojox.rpc.Rest");
 				var dirty = dirtyObjects[i];
 				var object = dirty.object;
 				var old = dirty.old;
-				var append = false;
+
 				if(!(kwArgs.service && (object || old) && 
 						(object || old).__id.indexOf(kwArgs.service.servicePath)) && dirty.save){
 					delete object.__isDirty;
@@ -74,7 +74,11 @@ dojo.require("dojox.rpc.Rest");
 			dojo.connect(kwArgs,"onError",function(){
 				var postCommitDirtyObjects = dirtyObjects;
 				dirtyObjects = savingObjects;
-				var numDirty = 0; // make sure this does't do anything if it is called again
+
+				// NOTE: Unused
+
+				//var numDirty = 0; // make sure this does't do anything if it is called again
+
 				jr.revert(); // revert if there was an error
 				dirtyObjects = postCommitDirtyObjects;
 			});
@@ -82,7 +86,6 @@ dojo.require("dojox.rpc.Rest");
 			return actions;
 		},
 		sendToServer: function(actions, kwArgs){
-			var xhrSendId;
 			var plainXhr = dojo.xhr;
 			var left = actions.length;// this is how many changes are remaining to be received from the server
 			var i, contentLocation;
@@ -93,7 +96,7 @@ dojo.require("dojox.rpc.Rest");
 				// keep the transaction open as we send requests
 				args.headers = args.headers || {};
 				// the last one should commit the transaction
-				args.headers['Transaction'] = actions.length - 1 == i ? "commit" : "open";
+				args.headers.Transaction = actions.length - 1 == i ? "commit" : "open";
 				if(conflictDateHeader && timeStamp){
 					args.headers[conflictDateHeader] = timeStamp; 
 				}
@@ -101,8 +104,41 @@ dojo.require("dojox.rpc.Rest");
 					args.headers['Content-ID'] = '<' + contentLocation + '>';
 				}
 				return plainXhr.apply(dojo,arguments);
-			};			
-			for(i =0; i < actions.length;i++){ // iterate through the actions to execute
+			};
+
+			var add = function(object, dfd, service){
+				dfd.addCallback(function(value){
+					try{
+						// Implements id assignment per the HTTP specification
+						var newId = dfd.ioArgs.xhr && dfd.ioArgs.xhr.getResponseHeader("Location");
+						//TODO: match URLs if the servicePath is relative...
+						if(newId){
+							// if the path starts in the middle of an absolute URL for Location, we will use the just the path part 
+							var startIndex = newId.match(/(^\w+:\/\/)/) && newId.indexOf(service.servicePath);
+							newId = startIndex > 0 ? newId.substring(startIndex) : (service.servicePath + newId).
+									// now do simple relative URL resolution in case of a relative URL. 
+									replace(/^(.*\/)?(\w+:\/\/)|[^\/\.]+\/\.\.\/|^.*\/(\/)/,'$2$3');
+							object.__id = newId;
+							Rest._index[newId] = object;
+						}
+							value = resolveJson(service, dfd, value, object && object.__id);
+					}catch(e){}
+					if(!(--left)){
+						if(kwArgs.onComplete){
+							kwArgs.onComplete.call(kwArgs.scope);
+						}
+					}
+					return value;
+				});
+			};
+
+			var cb = function(value){
+				// on an error we want to revert, first we want to separate any changes that were made since the commit
+				left = -1; // first make sure that success isn't called
+				kwArgs.onError.call(kwArgs.scope, value);
+			};
+		
+			for(i = 0; i < actions.length;i++){ // iterate through the actions to execute
 				var action = actions[i];
 				dojox.rpc.JsonRest._contentId = action.content && action.content.__id; // this is used by OfflineRest
 				var isPost = action.method == 'post';
@@ -116,41 +152,12 @@ dojo.require("dojox.rpc.Rest");
 				var serviceAndId = jr.getServiceAndId(action.target.__id);
 				var service = serviceAndId.service; 
 				var dfd = action.deferred = service[action.method](
-									serviceAndId.id.replace(/#/,''), // if we are using references, we need eliminate #
-									dojox.json.ref.toJson(action.content, false, service.servicePath, true)
-								);
-				(function(object, dfd, service){
-					dfd.addCallback(function(value){
-						try{
-							// Implements id assignment per the HTTP specification
-							var newId = dfd.ioArgs.xhr && dfd.ioArgs.xhr.getResponseHeader("Location");
-							//TODO: match URLs if the servicePath is relative...
-							if(newId){
-								// if the path starts in the middle of an absolute URL for Location, we will use the just the path part 
-								var startIndex = newId.match(/(^\w+:\/\/)/) && newId.indexOf(service.servicePath);
-								newId = startIndex > 0 ? newId.substring(startIndex) : (service.servicePath + newId).
-										// now do simple relative URL resolution in case of a relative URL. 
-										replace(/^(.*\/)?(\w+:\/\/)|[^\/\.]+\/\.\.\/|^.*\/(\/)/,'$2$3');
-								object.__id = newId;
-								Rest._index[newId] = object;
-							}
-							value = resolveJson(service, dfd, value, object && object.__id);
-						}catch(e){}
-						if(!(--left)){
-							if(kwArgs.onComplete){
-								kwArgs.onComplete.call(kwArgs.scope);
-							}
-						}
-						return value;
-					});
-				})(action.content, dfd, service);
+					serviceAndId.id.replace(/#/,''), // if we are using references, we need eliminate #
+					dojox.json.ref.toJson(action.content, false, service.servicePath, true)
+				);
+				add(action.content, dfd, service);
 								
-				dfd.addErrback(function(value){
-					
-					// on an error we want to revert, first we want to separate any changes that were made since the commit
-					left = -1; // first make sure that success isn't called
-					kwArgs.onError.call(kwArgs.scope, value);
-				});
+				dfd.addErrback(cb);
 			}
 			// revert back to the normal XHR handler
 			dojo.xhr = plainXhr;
@@ -173,12 +180,12 @@ dojo.require("dojox.rpc.Rest");
 					if(object && old){
 						// changed
 						for(var j in old){
-							if(old.hasOwnProperty(j)){
+							if(dojo.isOwnProperty(old, j)){
 								object[j] = old[j];
 							}
 						}
 						for(j in object){
-							if(!old.hasOwnProperty(j)){
+							if(dojo.isOwnProperty(object, j) && !dojo.isOwnProperty(old, j)){
 								delete object[j];
 							}
 						}
@@ -212,9 +219,9 @@ dojo.require("dojox.rpc.Rest");
 					return;
 				}
 			}
-			var old = object instanceof Array ? [] : {};
+			var old = dojo.isArray(object) ? [] : {};
 			for(i in object){
-				if(object.hasOwnProperty(i)){
+				if(dojo.isOwnProperty(object, i)){
 					old[i] = object[i];
 				}
 			}
@@ -252,9 +259,11 @@ dojo.require("dojox.rpc.Rest");
 						addDefaults(schema['extends']);
 						properties = schema.properties;
 						for(var i in properties){
-							var propDef = properties[i]; 
-							if(propDef && (typeof propDef == 'object') && ("default" in propDef)){
-								self[i] = propDef["default"];
+							if (dojo.isOwnProperty(properties, i)) {
+								var propDef = properties[i]; 
+								if(propDef && (typeof propDef == 'object') && ("default" in propDef)){
+									self[i] = propDef['default'];
+								}
 							}
 						}
 					}
