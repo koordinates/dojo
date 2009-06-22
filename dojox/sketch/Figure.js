@@ -30,7 +30,7 @@ dojo.require("dojox.sketch.UndoStack");
 
 		//	what is selected.
 		this.selected=[];
-		this.hasSelections=function(){ return this.selected.length>0 };
+		this.hasSelections=function(){ return this.selected.length>0; };
 		this.isSelected=function(obj){
 			for(var i=0; i<self.selected.length; i++){
 				if(self.selected[i]==obj){ return true; }
@@ -181,7 +181,7 @@ dojo.require("dojox.sketch.UndoStack");
 					y:Math.min(self._start.y,self._absEnd.y),
 					width:Math.abs(self._start.x-self._absEnd.x),
 					height:Math.abs(self._start.y-self._absEnd.y)
-				}
+				};
 				if(rect.width && rect.height){
 					self._ctool.onMouseMove(e,rect);
 				}
@@ -224,7 +224,7 @@ dojo.require("dojox.sketch.UndoStack");
 		arr.splice(0,arr.length);
 	};
 	p.onDblClickShape=function(shape,e){
-		if(shape['onDblClick']){
+		if(shape.onDblClick){
 			shape.onDblClick(e);
 		}
 	};
@@ -332,16 +332,18 @@ dojo.require("dojox.sketch.UndoStack");
 	};
 	p._keyFromEvt=function(e){
 		var key=e.target.id+"";
-		if(key.length==0){
+		if(!key.length){
 			//	ancestor tree until you get to the end (meaning this.surface)
 			var p=e.target.parentNode;
 			var node=this.surface.getEventSource();
-			while(p && p.id.length==0 && p!=node){
+			while(p && !p.id.length && p!=node){
 				p=p.parentNode;
 			}
-			key=p.id;
+			if (p) {
+				key=p.id;
+			}
 		}
-		return key;
+		return key || ''; // NOTE: Issues with empty key handling in _get
 	};
 	p._fromEvt=function(e){
 		return this._get(this._keyFromEvt(e));
@@ -378,11 +380,11 @@ dojo.require("dojox.sketch.UndoStack");
 		//	convert an existing annotation to a different kind of annotation
 		var ctor=t+"Annotation";
 		if(!ta[ctor]){ return; }
-		var type=ann.type(), id=ann.id, label=ann.label, mode=ann.mode, tokenId=ann.tokenId;
+		var type=ann.type(), id=ann.id, label=ann.label, mode=ann.mode;
 		var start, end, control, transform;
 		switch(type){
 			case "Preexisting":
-			case "Lead":{
+			case "Lead":
 				transform={dx:ann.transform.dx, dy:ann.transform.dy };
 				start={x:ann.start.x, y:ann.start.y};
 				end={x:ann.end.x, y:ann.end.y };
@@ -390,23 +392,19 @@ dojo.require("dojox.sketch.UndoStack");
 				var cy=end.y-((end.y-start.y)/2);
 				control={x:cx, y:cy};
 				break;
-			}
 			case "SingleArrow":
-			case "DoubleArrow":{
+			case "DoubleArrow":
 				transform={dx:ann.transform.dx, dy:ann.transform.dy };
 				start={x:ann.start.x, y:ann.start.y};
 				end={x:ann.end.x, y:ann.end.y };
 				control={x:ann.control.x, y:ann.control.y};
 				break;
-			}
-			case "Underline":{
+			case "Underline":
 				transform={dx:ann.transform.dx, dy:ann.transform.dy };
 				start={x:ann.start.x, y:ann.start.y};
 				control={x:start.x+50, y:start.y+50 };
 				end={x:start.x+100, y:start.y+100 };
 				break;
-			}
-			case "Brace":{ }
 		}
 		var n=new ta[ctor](this, id);
 
@@ -493,13 +491,13 @@ dojo.require("dojox.sketch.UndoStack");
 		}
 	};
 	p.serialize=function(){
-		var s='<svg xmlns="http://www.w3.org/2000/svg" '
-			+ 'xmlns:xlink="http://www.w3.org/1999/xlink" '
-			+ 'xmlns:dojoxsketch="http://dojotoolkit.org/dojox/sketch" '
-			+ 'width="' + this.size.w + '" height="' + this.size.h + '">'
-			+ '<g>'
-			+ '<image xlink:href="' + this.imageSrc + '" x="0" y="0" width="' 
-			+ this.size.w + '" height="' + this.size.h + '" />';
+		var s='<svg xmlns="http://www.w3.org/2000/svg" ' +
+			'xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+			'xmlns:dojoxsketch="http://dojotoolkit.org/dojox/sketch" ' +
+			'width="' + this.size.w + '" height="' + this.size.h + '">' +
+			'<g>' +
+			'<image xlink:href="' + this.imageSrc + '" x="0" y="0" width="' +
+			this.size.w + '" height="' + this.size.h + '" />';
 		for(var i=0; i<this.shapes.length; i++){ s+= this.shapes[i].serialize(); }
 		s += '</g></svg>';
 		return s;
