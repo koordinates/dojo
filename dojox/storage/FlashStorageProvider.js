@@ -20,7 +20,7 @@ dojo.declare("dojox.storage.FlashStorageProvider", dojox.storage.Provider, {
 		
 		initialize: function(){
 		  //console.debug("FlashStorageProvider.initialize");
-			if(dojo.config["disableFlashStorage"] == true){
+			if(dojo.config.disableFlashStorage){
 				return;
 			}
 			
@@ -65,14 +65,14 @@ dojo.declare("dojox.storage.FlashStorageProvider", dojox.storage.Provider, {
 		
 		flush: function(namespace){
 			//FIXME: is this test necessary?  Just use !namespace
-			if(namespace == null || typeof namespace == "undefined"){
+			if(namespace === null || typeof namespace == "undefined"){
 				namespace = dojox.storage.DEFAULT_NAMESPACE;		
 			}
 			dojox.flash.comm.flush(namespace);
 		},
 
 		isAvailable: function(){
-			return (this._available = !dojo.config["disableFlashStorage"]);
+			return (this._available = !dojo.config.disableFlashStorage);
 		},
 
 		put: function(key, value, resultsHandler, namespace){
@@ -102,8 +102,8 @@ dojo.declare("dojox.storage.FlashStorageProvider", dojox.storage.Provider, {
 		},
 
 		putMultiple: function(keys, values, resultsHandler, namespace){
-			if(!this.isValidKeyArray(keys) || ! values instanceof Array 
-			    || keys.length != values.length){
+			if(!this.isValidKeyArray(keys) || ! dojo.isArray(values) ||
+			    keys.length != values.length){
 				throw new Error("Invalid arguments: keys = [" + keys + "], values = [" + values + "]");
 			}
 			
@@ -149,7 +149,7 @@ dojo.declare("dojox.storage.FlashStorageProvider", dojox.storage.Provider, {
 			
 			var results = dojox.flash.comm.get(key, namespace);
 
-			if(results == ""){
+			if(!results){
 				return null;
 			}
 		
@@ -158,7 +158,7 @@ dojo.declare("dojox.storage.FlashStorageProvider", dojox.storage.Provider, {
 
 		getMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
 			if(!this.isValidKeyArray(keys)){
-				throw new ("Invalid key array given: " + keys);
+				throw new Error("Invalid key array given: " + keys);
 			}
 			
 			if(!namespace){
@@ -174,9 +174,9 @@ dojo.declare("dojox.storage.FlashStorageProvider", dojox.storage.Provider, {
 			var results = eval("(" + metaResults + ")");
 			
 			//	destringify each entry back into a real JS object
-			//FIXME: use dojo.map
+
 			for(var i = 0; i < results.length; i++){
-				results[i] = (results[i] == "") ? null : this._destringify(results[i]);
+				results[i] = (!results[i]) ? null : this._destringify(results[i]);
 			}
 			
 			return results;		
@@ -207,7 +207,7 @@ dojo.declare("dojox.storage.FlashStorageProvider", dojox.storage.Provider, {
 			var results = dojox.flash.comm.getKeys(namespace);
 			
 			// Flash incorrectly returns an empty string as "null"
-			if(results == null || results == "null"){
+			if(results === null || results == "null"){
 			  results = "";
 			}
 			
@@ -221,7 +221,7 @@ dojo.declare("dojox.storage.FlashStorageProvider", dojox.storage.Provider, {
 			var results = dojox.flash.comm.getNamespaces();
 			
 			// Flash incorrectly returns an empty string as "null"
-			if(results == null || results == "null"){
+			if(results === null || results == "null"){
 			  results = dojox.storage.DEFAULT_NAMESPACE;
 			}
 			
