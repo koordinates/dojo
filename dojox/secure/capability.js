@@ -65,15 +65,17 @@ dojox.secure.capability = {
 			block.replace(/#\d/g,function(b) { // graft in the outer references from the inner scopes
 				var refs = blocks[b.substring(1)];
 				for (var i in refs) {
-					if(i == badThis) {
-						throw i;
-					}
-					if(i == 'this' && refs[':method'] && refs['this'] == 1) {
-						// if we are in an object literal the function may be a bindable method, this must only be in the local scope
-						i = badThis;
-					}
-					if(i != ':method'){
-						outerRefs[i] = 2; // the reference is more than just local
+					if (dojo.isOwnProperty(refs, i)) {
+						if(i == badThis) {
+							throw i;
+						}
+						if(i == 'this' && refs[':method'] && refs['this'] == 1) {
+							// if we are in an object literal the function may be a bindable method, this must only be in the local scope
+							i = badThis;
+						}
+						if(i != ':method'){
+							outerRefs[i] = 2; // the reference is more than just local
+						}
 					}
 				}
 			});
@@ -116,7 +118,7 @@ dojox.secure.capability = {
 		}	
 		do {
 			// get all the blocks, starting with inside and moving out, capturing the parameters of functions and catchs as variables along the way
-			newScript = script.replace(/((function|catch)(\s+[_\w\$]+)?\s*\(([^\)]*)\)\s*)?{([^{}]*)}/g, parseBlock); 
+			newScript = script.replace(/((function|catch)(\s+[_\w\$]+)?\s*\(([^\)]*)\)\s*)?\{([^\{\}]*)\}/g, parseBlock); 
 		}
 		while(newScript != script && (script = newScript)); // keep going until we can't find anymore blocks
 		parseBlock(0,0,0,0,0,script); //findOuterRefs(script); // find the references in the outside scope
