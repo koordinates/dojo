@@ -4,34 +4,8 @@ dojo.require("dojox.secure.capability");
 dojo.require("dojo.NodeList-fx");
 
 (function() {
-	var oldTimeout = setTimeout;
-	var oldInterval = setInterval;
-	if({}.__proto__){
-		// mozilla has unsafe methods on array	
-		var fixMozArrayFunction = function (name) {
-			var method = Array.prototype[name];
-			if(method && !method.fixed){
-				(Array.prototype[name] = function () {
-					if (this == window) {
-						throw new TypeError("Called with wrong this");
-					}
-					return method.apply(this, arguments);
-				}).fixed = true;
-			}
-		};
-		// these are not safe in mozilla
-		fixMozArrayFunction('concat');
-		fixMozArrayFunction('reverse');
-		fixMozArrayFunction('sort');
-		fixMozArrayFunction("slice");
-		fixMozArrayFunction("forEach");
-		fixMozArrayFunction("filter");
-		fixMozArrayFunction("reduce");
-		fixMozArrayFunction("reduceRight");
-		fixMozArrayFunction("every");
-		fixMozArrayFunction("map");
-		fixMozArrayFunction("some");
-	}
+	var oldTimeout = window.setTimeout;
+	var oldInterval = window.setInterval;
 	var xhrGet = function(){
 		return dojo.xhrGet.apply(dojo,arguments);
 	};
@@ -62,9 +36,11 @@ dojo.require("dojo.NodeList-fx");
 										"setTimeout","setInterval","clearTimeout","clearInterval", // we make these safe below
 										"dojo","get","set","forEach","load","evaluate"];
 	   	for(var i in dojo){
-	   		safeCalls.push(i); // add the safe dojo functions to as available global top level functions
-	    	imports.push("var " + i + "=dojo." + i); // add to the list of imports
-	    }
+			if (dojo.isOwnProperty(dojo, i)) {
+	   			safeCalls.push(i); // add the safe dojo functions to as available global top level functions
+	    			imports.push("var " + i + "=dojo." + i); // add to the list of imports
+			}
+	    	}
 		// open the dojo namespace (namespaces are pretty silly in an environment where you can't set globals)
 	   	eval(imports.join(";")); 
 		function get(obj,prop) {
@@ -117,7 +93,9 @@ dojo.require("dojo.NodeList-fx");
 			else {
 				// for each an object
 				for (i in obj) {
-					fun.call(obj, get(obj,i), i, obj);
+					if (dojo.isOwnProperty(obj, i)) {
+						fun.call(obj, get(obj,i), i, obj);
+					}
 				}
 			}
 		}
@@ -159,6 +137,7 @@ dojo.require("dojo.NodeList-fx");
 			// |	var driveFast(50); // this will throw an error, the method can be used with an object that is not an instance of FastCar
 			var proto,superConstructor,ourConstructor;
 			var arg;
+			var F = function() {};
 			for (var i = 0, l = arguments.length; typeof (arg = arguments[i]) == 'function' && i < l; i++) {
 				// go through each superclass argument
 				if(proto) { // we have a prototype now, we must mixin now
@@ -167,34 +146,35 @@ dojo.require("dojo.NodeList-fx");
 				else {
 					// this is the first argument, so we can define the prototype ourselves
 					// link up the prototype chain to the superclass's prototype, so we are a subtype
-					superConstructor = arg;
-					var F = function() {};
+					superConstructor = arg;					
 					F.prototype = arg.prototype;
-					proto = new F;
+					proto = new F();
 				}
 			}
+			var fn = function() {
+				if(this instanceof Class){
+					return arguments.callee.__rawMethod__.apply(this,arguments);
+				}
+				throw new Error("Method called on wrong object");	
+			};
 	
 			if(arg) { // the next object should be the properties
 				// apply binding checking on all the functions
 				for (var j in arg) {
-					// TODO: check on non-enumerables?
-					var value = arg[j];
-					if(typeof value == 'function') {
-						arg[j] = function() {
-							if(this instanceof Class){
-								return arguments.callee.__rawMethod__.apply(this,arguments);
-							}
-							throw new Error("Method called on wrong object");	
-						};
-						arg[j].__rawMethod__ = value; // may want to use this for reconstruction and toString,valueOf
+					if (dojo.isOwnProperty(arg, j)) {
+						var value = arg[j];
+						if(typeof value == 'function') {
+							arg[j] = fn;
+							arg[j].__rawMethod__ = value; // may want to use this for reconstruction and toString,valueOf
+						}
 					}
 				}
-				if(arg.hasOwnProperty('constructor')) {
+				if(dojo.isOwnProperty(arg, 'constructor')) {
 					ourConstructor = arg.constructor;
 				}
 			}
 			proto = proto ? mixin(proto,arg) : arg; // if there is no proto yet, we can use the provided object
-			function Class() {
+			function Class2() {
 				// the super class may not have been constructed using the same technique, we will just call the constructor 
 				if(superConstructor){
 					superConstructor.apply(this,arguments);
@@ -203,8 +183,8 @@ dojo.require("dojo.NodeList-fx");
 					ourConstructor.apply(this,arguments);
 				}
 			}
-			mixin(Class,arguments[i]); // the optional second object adds properties to the class
-			proto.constructor = Class; 
+			mixin(Class2,arguments[i]); // the optional second object adds properties to the class
+			proto.constructor = Class2; 
 			Class.prototype = proto;
 			return Class;
 		}
@@ -233,7 +213,7 @@ dojo.require("dojo.NodeList-fx");
 				throw new Error("Access denied to cross-site requests");
 			}
 			return xhrGet({url:(new dojo._Url(wrap.rootUrl,url))+'',secure:true}); 
-		}  
+		};
 		wrap.evaluate = function(script){
 			//if(!alreadyValidated) {
 			dojox.secure.capability.validate(script,safeCalls, // the safe dojo library and standard operators
@@ -241,7 +221,7 @@ dojo.require("dojo.NodeList-fx");
 		
 			//}
 			if(script.match(/^\s*[\[\{]/)) {
-				var result = eval('(' + script + ')');
+				/* var result = */ eval('(' + script + ')');
 				// TODO: call render on result?
 			}
 			else {
@@ -293,7 +273,6 @@ dojox.secure._safeDojoFunctions = function(element,wrap) {
 	var safeFunctions = ["mixin","require","isString","isArray","isFunction","isObject","isArrayLike","isAlien",
 	"hitch","delegate","partial","trim","disconnect","subscribe","unsubscribe","Deferred","toJson","style","attr"];
 	//var domFunctions = ["clone","byId"];
-	var doc = element.ownerDocument;
 	var unwrap = dojox.secure.unwrap;
 	dojo.NodeList.prototype.addContent.safetyCheck = function(content){
 		wrap.safeHTML(content);
@@ -315,12 +294,13 @@ dojox.secure._safeDojoFunctions = function(element,wrap) {
 		},
 		connect: function(el,event) {
 			var obj = el;
-			arguments[0] = unwrap(el);
-			if(obj!=arguments[0] && event.substring(0,2) != 'on'){ 
+			var args = Array.prototype.slice.call(arguments, 0);
+			args[0] = unwrap(el);
+			if(obj!=args[0] && event.substring(0,2) != 'on'){ 
 				// it is probably an element, and it doesn't look like an event handler, probably not safe
 				throw new Error("Invalid event name for element");				
 			}
-			return dojo.connect.apply(dojo,arguments);
+			return dojo.connect.apply(dojo,args);
 		},
 		body : function() {
 			return element;
