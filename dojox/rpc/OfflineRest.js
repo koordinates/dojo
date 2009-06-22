@@ -11,15 +11,9 @@ dojo.require("dojox.storage");
 	var Rest = dojox.rpc.Rest;
 	var namespace = "dojox_rpc_OfflineRest";
 	var loaded;
-	var index = Rest._index;	
-	dojox.storage.manager.addOnLoad(function(){
-		// now that we are loaded we need to save everything in the index
-		loaded = dojox.storage.manager.available;
-		for(var i in index){
-			saveObject(index[i], i);
-		}
-	});
-	var dontSave;
+	var index = Rest._index;
+	var dontSave, defaultChange, defaultGet;
+
 	function getStorageKey(key){
 		// returns a key that is safe to use in storage
 		return key.replace(/[^0-9A-Za-z_]/g,'_');
@@ -35,32 +29,68 @@ dojo.require("dojox.storage");
 					namespace);
 		}
 	}
+
+	dojox.storage.manager.addOnLoad(function(){
+		// now that we are loaded we need to save everything in the index
+		loaded = dojox.storage.manager.available;
+		for(var i in index){
+			if (dojo.isOwnProperty(index, i)) {
+				saveObject(index[i], i);
+			}
+		}
+	});
 	function isNetworkError(error){
 		//	determine if the error was a network error and should be saved offline
 		// 	or if it was a server error and not a result of offline-ness
 		return error instanceof Error && (error.status == 503 || error.status > 12000 ||  !error.status); // TODO: Make the right error determination
 	}
+
+	function commitDirty(dirtyId, dirty){
+		var dirtyItem = dirty[dirtyId];
+		var serviceAndId = dojox.rpc.JsonRest.getServiceAndId(dirtyItem.id);
+		var deferred = defaultChange(dirtyItem.method,serviceAndId.service,serviceAndId.id,dirtyItem.content);
+		// add it to our list of dirty objects		
+		dirty[dirtyId] = dirtyItem;
+		dojox.storage.put("dirty",dirty,function(){},namespace);
+		deferred.addBoth(function(result){
+			if (isNetworkError(result)){
+				// if a network error (offlineness) was the problem, we leave it 
+				// dirty, and return to indicate successfulness
+				return null;
+			}
+			// it was successful or the server rejected it, we remove it from the dirty list 
+			var dirty = dojox.storage.get("dirty",namespace) || {};
+			delete dirty[dirtyId];
+			dojox.storage.put("dirty",dirty,function(){},namespace);
+			return result;
+		});
+		return deferred;
+	}
+
 	function sendChanges(){
 		// periodical try to save our dirty data
 		if(loaded){
 			var dirty = dojox.storage.get("dirty",namespace);
 			if(dirty){
 				for (var dirtyId in dirty){
-					commitDirty(dirtyId,dirty);
+					if (dojo.isOwnProperty(dirty, dirtyId)) {
+						commitDirty(dirtyId,dirty);
+					}
 				}
 			}
 		}
 	}
+
 	var OfflineRest;
 	function sync(){
 		OfflineRest.sendChanges();
 		OfflineRest.downloadChanges();
 	} 
-	var syncId = setInterval(sync,15000);
-	dojo.connect(document, "ononline", sync);
+	var syncId = window.setInterval(sync,15000);
+	dojo.connect(dojo.doc, "ononline", sync);
 	OfflineRest = dojox.rpc.OfflineRest = {
 		turnOffAutoSync: function(){
-			clearInterval(syncId);
+			window.clearInterval(syncId);
 		},
 		sync: sync,
 		sendChanges: sendChanges,
@@ -85,7 +115,7 @@ dojo.require("dojox.storage");
 		}
 	};
 	OfflineRest.stores = [];
-	var defaultGet = Rest._get;
+	defaultGet = Rest._get;
 	Rest._get = function(service, id){
 		// We specifically do NOT want the paging information to be used by the default handler,
 		// this is because online apps want to minimize the data transfer,
@@ -96,7 +126,7 @@ dojo.require("dojox.storage");
 			//	we want to make sure we save the changes first, so that we get up-to-date
 			//	information from the server
 			sendChanges();
-			if(window.navigator && navigator.onLine===false){
+			if(window.navigator && window.navigator.onLine===false){
 				// we force an error if we are offline in firefox, otherwise it will silently load it from the cache
 				throw new Error();
 			}
@@ -124,9 +154,11 @@ dojo.require("dojox.storage");
 						
 						loadedObjects[id] = result;
 						for(var i in result){
-							var val = result[i]; // resolve references if we can
-							if (val && val.$ref){
-								result[i] = byId(val.$ref,val);
+							if (dojo.isOwnPropert(result, i)) {
+								var val = result[i]; // resolve references if we can
+								if (val && val.$ref){
+									result[i] = byId(val.$ref,val);
+								}
 							}
 						}
 						if (result instanceof Array){
@@ -170,7 +202,7 @@ dojo.require("dojox.storage");
 	};
 	//FIXME: Should we make changes after a commit to see if the server rejected the change
 	// or should we come up with a revert mechanism? 
-	var defaultChange = Rest._change;
+	defaultChange = Rest._change;
 	Rest._change = function(method,service,id,serializedContent){
 		if(!loaded){
 			return defaultChange.apply(this,arguments);
@@ -200,7 +232,7 @@ dojo.require("dojox.storage");
 		else{
 			dirtyId = 0;
 			for (var i in dirty){
-				if(!isNaN(parseInt(i))){
+				if(!isNaN(parseInt(i, 10))){
 					dirtyId = i;
 				}
 			} // get the last dirtyId to make a unique id for non-idempotent methods
@@ -209,28 +241,7 @@ dojo.require("dojox.storage");
 		dirty[dirtyId] = {method:method,id:absoluteId,content:serializedContent};
 		return commitDirty(dirtyId,dirty);
 	};
-	function commitDirty(dirtyId, dirty){
-		var dirtyItem = dirty[dirtyId];
-		var serviceAndId = dojox.rpc.JsonRest.getServiceAndId(dirtyItem.id);
-		var deferred = defaultChange(dirtyItem.method,serviceAndId.service,serviceAndId.id,dirtyItem.content);
-		// add it to our list of dirty objects		
-		dirty[dirtyId] = dirtyItem;
-		dojox.storage.put("dirty",dirty,function(){},namespace);
-		deferred.addBoth(function(result){
-			if (isNetworkError(result)){
-				// if a network error (offlineness) was the problem, we leave it 
-				// dirty, and return to indicate successfulness
-				return null;
-			}
-			// it was successful or the server rejected it, we remove it from the dirty list 
-			var dirty = dojox.storage.get("dirty",namespace) || {};
-			delete dirty[dirtyId];
-			dojox.storage.put("dirty",dirty,function(){},namespace);
-			return result;
-		});
-		return deferred;
-	}
-		
+			
 	dojo.connect(index,"onLoad",saveObject);
 	dojo.connect(index,"onUpdate",saveObject);
 	
