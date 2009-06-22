@@ -1,22 +1,24 @@
 dojo.provide("dojox.secure.tests.DOM");
 dojo.require("dojox.secure.DOM");
 
+var bad, securedDoc, securedElement;
+
 doh.register("dojox.secure.tests.DOM.good", 
 	[
 		function setup(){
-			var div = document.createElement("div");
-			document.body.appendChild(div);
+			var div = dojo.doc.createElement("div");
+			dojo.body().appendChild(div);
 			div.innerHTML = "Sandboxed div:";
 			div.style.position = "absolute";
 			div.style.top = "100px";
 			div.style.left = "100px";
 			div.style.backgroundColor = "red";
 			div.style.color = "white";
-			var container = document.createElement("div");
+			var container = dojo.doc.createElement("div");
 			container.style.backgroundColor = "cyan";
 			container.style.color = "black";
 			div.appendChild(container);
-			wrap = dojox.secure.DOM(container);
+			var wrap = dojox.secure.DOM(container);
 			securedElement = wrap(container);
 			console.log("securedElement",securedElement);
 			securedDoc = securedElement.ownerDocument;
@@ -49,7 +51,7 @@ doh.register("dojox.secure.tests.DOM.good",
 		},*/
 		function addOnclickHandler(t){
 			securedElement.addEventListener("click",function(event) {
-				alert('proper click handler');	
+				window.alert('proper click handler');	
 			});
 			
 		}
@@ -113,13 +115,13 @@ doh.register("dojox.secure.tests.DOM.bad",
 					securedElement.innerHTML = '<input style=\'-moz-binding: url("http://www.mozilla.org/xbl/htmlBindings.xml#checkbox");\'>';
 				}catch(e){}
 				
-				t.f(securedElement.innerHTML.match(/mozilla/))
+				t.f(securedElement.innerHTML.match(/mozilla/));
 			}
 				
 		},
 		function cssExpression2(t) {
 			if (dojo.isIE) {
-				securedElement.style.left = 'expression(alert("hello"), 0)';
+				securedElement.style.left = 'expression(window.alert("hello"), 0)';
 				t.f(securedElement.style.left.match(/alert/));
 			}
 			else {
@@ -139,41 +141,41 @@ doh.register("dojox.secure.tests.DOM.bad",
 			}
 		},
 		/*violater(function addStyleTag(t) {
-			securedElement.innerHTML = "<style>div {color:expression(alert(\"hello\")}</style><div>test</div>";		
+			securedElement.innerHTML = "<style>div {color:expression(window.alert(\"hello\")}</style><div>test</div>";		
 		}),
 		violater(function addStyleTag2(t) {
 			securedElement.innerHTML = "<style>@import 'unsafe.css'</style><div>unsafe css</div>";		
 		}),*/
 		function addJavaScriptHref(t) {
-			securedElement.innerHTML = "<a href='javascript:alert(3)'>illegal link</a>";		
+			securedElement.innerHTML = "<a href='javascript:window.alert(3)'>illegal link</a>";		
 		},
 		/*violater(function addNullCharSrc(t) {
-			securedElement.innerHTML = "<a href='java&#65533;script:alert(3)'>illegal link</a>";		
+			securedElement.innerHTML = "<a href='java&#65533;script:window.alert(3)'>illegal link</a>";		
 		}),*/
 		function addOnclickHandler(t) {
 			try{
-				securedElement.innerHTML = "<div onclick='alert(4)'>illegal link</div>";
+				securedElement.innerHTML = "<div onclick='window.alert(4)'>illegal link</div>";
 			}catch(e){}
 			
 			t.f(securedElement.innerHTML.match(/alert/));
 		},
 		function confusingHTML(t) {
 			try {
-				securedElement.innerHTML = '<div x="\"><img onload=alert(42)src=http://json.org/img/json160.gif>"></div>';
+				securedElement.innerHTML = '<div x="\"><img onload=window.alert(42)src=http://json.org/img/json160.gif>"></div>';
 			}catch(e){}
 			
 			t.f(securedElement.innerHTML.match(/alert/));
 		},
 		function confusingHTML2(t) {
 			try {
-				securedElement.innerHTML = '<iframe/src="javascript:alert(42)"></iframe>';
+				securedElement.innerHTML = '<iframe/src="javascript:window.alert(42)"></iframe>';
 			}catch(e){}
 			
 			t.f(securedElement.innerHTML.match(/alert/));
 		},
 		function confusingHTML2(t) {
 			try{
-				securedElement.innerHTML = '<iframe/ "onload=alert(/XSS/)></iframe>';
+				securedElement.innerHTML = '<iframe/ "onload=window.alert(/XSS/)></iframe>';
 			}catch(e){}
 			
 			t.f(securedElement.innerHTML.match(/alert/));
