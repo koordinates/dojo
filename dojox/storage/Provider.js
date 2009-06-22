@@ -317,7 +317,7 @@ dojo.declare("dojox.storage.Provider", null, {
 			return false;
 		}
 			
-		return /^[0-9A-Za-z_]*$/.test(keyName);
+		return (/^[0-9A-Za-z_]*$/).test(keyName);
 	},
 	
 	getResourceList: function(){ /* Array[] */
