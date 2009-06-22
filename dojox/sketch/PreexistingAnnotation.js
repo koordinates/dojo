@@ -22,11 +22,11 @@ dojo.require("dojox.sketch.Anchor");
 		this.anchors.start=new ta.Anchor(this, "start");
 		this.anchors.end=new ta.Anchor(this, "end");
 	};
-	ta.PreexistingAnnotation.prototype=new ta.Annotation;
+	ta.PreexistingAnnotation.prototype=new ta.Annotation();
 	var p=ta.PreexistingAnnotation.prototype;
 	p.constructor=ta.PreexistingAnnotation;
 
-	p.type=function(){ return 'Preexisting' };
+	p.type=function(){ return 'Preexisting'; };
 	p.getType=function(){ return ta.PreexistingAnnotation; };
 
 	p._pos=function(){
@@ -144,21 +144,21 @@ dojo.require("dojox.sketch.Anchor");
 	};
 	p.serialize=function(){
 		var s=this.property('stroke');
-		return '<g '+this.writeCommonAttrs()+'>'
-			+ '<rect style="stroke:'+s.color+';stroke-width:1;fill:none;" '
-			+ 'x="' + this.start.x + '" '
-			+ 'width="' + (this.end.x-this.start.x) + '" '
-			+ 'y="' + this.start.y + '" '
-			+ 'height="' + (this.end.y-this.start.y) + '" '
-			+ 'rx="' + this.radius + '" '
-			+ 'ry="' + this.radius + '" '
-			+ ' />'
-			+ '<text style="fill:'+s.color+';text-anchor:'+this.textAlign+'" font-weight="bold" '
-			+ 'x="' + this.textPosition.x + '" '
-			+ 'y="' + this.textPosition.y + '">'
-			+ this.property('label')
-			+ '</text>'
-			+ '</g>';
+		return '<g '+this.writeCommonAttrs()+'>' +
+			'<rect style="stroke:'+s.color+';stroke-width:1;fill:none;" ' +
+			'x="' + this.start.x + '" ' +
+			'width="' + (this.end.x-this.start.x) + '" ' +
+			'y="' + this.start.y + '" ' +
+			'height="' + (this.end.y-this.start.y) + '" ' +
+			'rx="' + this.radius + '" ' +
+			'ry="' + this.radius + '" ' +
+			' />' +
+			'<text style="fill:'+s.color+';text-anchor:'+this.textAlign+'" font-weight="bold" ' +
+			'x="' + this.textPosition.x + '" ' +
+			'y="' + this.textPosition.y + '">' +
+			this.property('label') +
+			'</text>' +
+			'</g>';
 	};
 
 	ta.Annotation.register("Preexisting");
