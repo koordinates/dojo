@@ -21,7 +21,7 @@ dojo.declare("dojox.sketch.ButtonGroup", null, {
 	_resetGroup: function(p){
 		var cs=this._children;
 		dojo.forEach(cs,function(c){
-			if(p!=c && c['attr']){
+			if(p!=c && c.attr){
 				c.attr('checked',false);
 			}
 		});
@@ -33,7 +33,7 @@ dojo.declare("dojox.sketch.Toolbar", dijit.Toolbar, {
 	plugins: null,
 	postCreate: function(){
 		this.inherited(arguments);
-		this.shapeGroup=new dojox.sketch.ButtonGroup;
+		this.shapeGroup=new dojox.sketch.ButtonGroup();
 
 		this.connect(this.figure,'onLoad','reset');
 		if(!this.plugins){
@@ -72,7 +72,7 @@ dojo.declare("dojox.sketch.Toolbar", dijit.Toolbar, {
 		this._defaultTool.activate();
 	},
 	_setShape: function(s){
-		if(!this.figure.surface) return;
+		if(!this.figure.surface) { return; }
 		//	now do the action.
 		if(this.figure.hasSelections()){
 			for(var i=0; i<this.figure.selected.length; i++){
