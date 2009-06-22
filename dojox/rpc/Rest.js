@@ -48,7 +48,7 @@ dojo.provide("dojox.rpc.Rest");
 			if(range){
 				// try to record the total number of items from the range header
 				range = deferred.ioArgs.xhr && deferred.ioArgs.xhr.getResponseHeader("Content-Range");
-				deferred.fullLength = range && (range=range.match(/\/(.*)/)) && parseInt(range[1]);
+				deferred.fullLength = range && (range=range.match(/\/(.*)/)) && parseInt(range[1], 10);
 			}
 			return result;
 		});
@@ -77,7 +77,10 @@ dojo.provide("dojox.rpc.Rest");
 		// the default XHR args creator:
 		service._getRequest = getRequest || function(id, args){
 			var request = {
-				url: path + (dojo.isObject(id) ? '?' + dojo.objectToQuery(id) : id == null ? "" : id), 
+
+				// NOTE: isObject allows null
+
+				url: path + ((dojo.isObject(id) && id) ? '?' + dojo.objectToQuery(id) : (id === null || id === undefined) ? "" : id), 
 				handleAs: isJson ? 'json' : 'text', 
 				contentType: isJson ? 'application/json' : 'text/plain',
 				sync: dojox.rpc._sync,
