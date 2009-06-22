@@ -1,4 +1,4 @@
-dojo.provide("dojox.rpc.tests.Geonames");
+﻿dojo.provide("dojox.rpc.tests.Geonames");
 dojo.require("dojo.io.script");
 dojo.require("dojox.rpc.Service");
 
@@ -45,7 +45,7 @@ dojox.rpc.tests._testMethod = function(method){
                 }
 
                 return d;
-        }
+        };
 };
 
 doh.register("dojox.rpc.tests.geonames", 
