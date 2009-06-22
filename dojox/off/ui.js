@@ -98,10 +98,10 @@ dojo.mixin(dojox.off.ui, {
 		//console.debug("dojox.off.ui._initialize");
 		
 		// make sure our app name is correct
-		if(this._validateAppName(this.appName) == false){
-			alert("You must set dojox.off.ui.appName; it can only contain "
-					+ "letters, numbers, and spaces; right now it "
-					+ "is incorrectly set to '" + dojox.off.ui.appName + "'");
+		if(!this._validateAppName(this.appName)){
+			window.alert("You must set dojox.off.ui.appName; it can only contain " +
+					"letters, numbers, and spaces; right now it " +
+					"is incorrectly set to '" + dojox.off.ui.appName + "'");
 			dojox.off.enabled = false;
 			return;
 		}
@@ -140,8 +140,8 @@ dojo.mixin(dojox.off.ui, {
 			error:		function(err){
 				dojox.off.enabled = false;
 				err = err.message||err;
-				alert("Error loading the Dojo Offline Widget from "
-						+ this.htmlTemplatePath + ": " + err);
+				window.alert("Error loading the Dojo Offline Widget from " +
+						this.htmlTemplatePath + ": " + err);
 			},
 			load:		dojo.hitch(this, this._templateLoaded)	 
 		});
@@ -216,7 +216,7 @@ dojo.mixin(dojox.off.ui, {
 		var titleText = dojo.byId("dot-widget-title-text");
 		
 		if(onlineImg && offlineImg){
-			if(dojox.off.isOnline == true){
+			if(dojox.off.isOnline){
 				onlineImg.style.display = "inline";
 				offlineImg.style.display = "none";
 			}else{
@@ -244,11 +244,11 @@ dojo.mixin(dojox.off.ui, {
 			// can customize itself and display itself
 			// correctly based on framework settings
 			var dojoPath = dojo.config.baseRelativePath;
-			this.learnHowPath += "?appName=" + encodeURIComponent(this.appName)
-									+ "&hasOfflineCache=" + dojox.off.hasOfflineCache
-									+ "&runLink=" + encodeURIComponent(this.runLink)
-									+ "&runLinkText=" + encodeURIComponent(this.runLinkText)
-									+ "&baseRelativePath=" + encodeURIComponent(dojoPath);
+			this.learnHowPath += "?appName=" + encodeURIComponent(this.appName) +
+				"&hasOfflineCache=" + dojox.off.hasOfflineCache +
+				"&runLink=" + encodeURIComponent(this.runLink) +
+				"&runLinkText=" + encodeURIComponent(this.runLinkText) +
+				"&baseRelativePath=" + encodeURIComponent(dojoPath);
 			
 			// cache our Learn How JavaScript page and
 			// the HTML version with full query parameters
@@ -257,14 +257,14 @@ dojo.mixin(dojox.off.ui, {
 			dojox.off.files.cache(this.learnHowPath);
 		}
 		
-		learnHow.setAttribute("href", this.learnHowPath);
+		learnHow.href = this.learnHowPath;
 		
 		var appName = dojo.byId("dot-widget-learn-how-app-name");
 		
 		if(!appName){ return; }
 		
 		appName.innerHTML = "";
-		appName.appendChild(document.createTextNode(this.appName));
+		appName.appendChild(dojo.doc.createTextNode(this.appName));
 	},
 	
 	_validateAppName: function(appName){
@@ -317,7 +317,7 @@ dojo.mixin(dojox.off.ui, {
 			while(syncMessage.firstChild){
 				syncMessage.removeChild(syncMessage.firstChild);
 			}
-			syncMessage.appendChild(document.createTextNode(message));
+			syncMessage.appendChild(dojo.doc.createTextNode(message));
 		}
 	},
 	
@@ -367,21 +367,21 @@ dojo.mixin(dojox.off.ui, {
 			html += "</li>";	
 		}
 		html += "</ul>\n";
-		html += "<a href='javascript:window.close()' "
-				 + "style='text-align: right; padding-right: 2em;'>"
-				 + "Close Window"
-				 + "</a>\n";
+		html += "<a href='javascript:window.close()' " +
+				 "style='text-align: right; padding-right: 2em;'>" +
+				 "Close Window" +
+				 "</a>\n";
 		html += "</body></html>";
 		
 		// open a popup window with this message
-		var windowParams = "height=400,width=600,resizable=true,"
-							+ "scrollbars=true,toolbar=no,menubar=no,"
-							+ "location=no,directories=no,dependent=yes";
+		var windowParams = "height=400,width=600,resizable=true," +
+							"scrollbars=true,toolbar=no,menubar=no," +
+							"location=no,directories=no,dependent=yes";
 
 		var popup = window.open("", "SyncDetails", windowParams);
 		
 		if(!popup){ // aggressive popup blocker
-			alert("Please allow popup windows for this domain; can't display sync details window");
+			window.alert("Please allow popup windows for this domain; can't display sync details window");
 			return;
 		}
 		
@@ -412,7 +412,7 @@ dojo.mixin(dojox.off.ui, {
 		var appName = dojo.byId("dot-widget-browser-restart-app-name");
 		if(appName){
 			appName.innerHTML = "";
-			appName.appendChild(document.createTextNode(this.appName));
+			appName.appendChild(dojo.doc.createTextNode(this.appName));
 		}
 		
 		var status = dojo.byId("dot-sync-status");
@@ -464,10 +464,10 @@ dojo.mixin(dojox.off.ui, {
 		var checkmark = dojo.byId("dot-success-checkmark");
 		var details = dojo.byId("dot-sync-details");
 		
-		if(dojox.off.sync.successful == true){
+		if(dojox.off.sync.successful){
 			this._setSyncMessage("Sync Successful");
 			if(checkmark){ checkmark.style.display = "inline"; }
-		}else if(dojox.off.sync.cancelled == true){
+		}else if(dojox.off.sync.cancelled){
 			this._setSyncMessage("Sync Cancelled");
 			
 			if(checkmark){ checkmark.style.display = "none"; }
@@ -490,8 +490,8 @@ dojo.mixin(dojox.off.ui, {
 	_onFrameworkEvent: function(type, saveData){
 		if(type == "save"){
 			if(saveData.status == dojox.storage.FAILED && !saveData.isCoreSave){
-				alert("Please increase the amount of local storage available "
-						+ "to this application");
+				window.alert("Please increase the amount of local storage available " +
+						"to this application");
 				if(dojox.storage.hasSettingsUI()){
 					dojox.storage.showSettingsUI();
 				}		
@@ -503,7 +503,7 @@ dojo.mixin(dojox.off.ui, {
 			console.log("Application does not have permission to use Dojo Offline");
 		
 			if(!this._userInformed){
-				alert("This application will not work if Google Gears is not allowed to run");
+				window.alert("This application will not work if Google Gears is not allowed to run");
 				this._userInformed = true;
 			}
 		}else if(type == "offlineCacheInstalled"){
@@ -512,8 +512,8 @@ dojo.mixin(dojox.off.ui, {
 		
 			// check to see if we need a browser restart
 			// to be able to use this web app offline
-			if(dojox.off.hasOfflineCache == true
-				&& dojox.off.browserRestart == true){
+			if(dojox.off.hasOfflineCache &&
+				dojox.off.browserRestart){
 				this._needsBrowserRestart();
 				return;
 			}else{
@@ -565,8 +565,8 @@ dojo.mixin(dojox.off.ui, {
 				break;
 				
 			default:
-				dojo.warn("Programming error: "
-							+ "Unknown sync type in dojox.off.ui: " + type);
+				dojo.warn("Programming error: " +
+					"Unknown sync type in dojox.off.ui: " + type);
 				break;
 		}
 	},
@@ -601,11 +601,13 @@ dojo.mixin(dojox.off.ui, {
 			// synchronize, but pause for a few seconds
 			// so that the user can orient themselves
 			if(dojox.off.sync.autoSync){
-				if(dojo.isAIR){
-					window.setTimeout(function(){dojox.off.sync.synchronize();}, 1000);
-				}else{
-					window.setTimeout(dojox._scopeName + ".off.sync.synchronize()", 1000);
-				}
+
+				// NOTE: Duplication
+
+				var scope = window[dojox._scopeName];
+				var fn = function(){ scope.off.sync.synchronize();};
+				fn.toString = function() { return dojox._scopeName + ".off.sync.synchronize()"; };
+				window.setTimeout(fn, 1000);
 			}
 		}
 	}
