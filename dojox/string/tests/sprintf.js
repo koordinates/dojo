@@ -117,8 +117,8 @@ tests.register("dojox.string.tests.sprintf", [
 			error = false;
 			try {
 				sprintf("%c", 0x200000);
-			}catch(e){
-				t.is("invalid character code passed to %c in sprintf", e.message);
+			}catch(e2){
+				t.is("invalid character code passed to %c in sprintf", e2.message);
 				error = true;
 			}
 			t.t(error);
@@ -127,7 +127,7 @@ tests.register("dojox.string.tests.sprintf", [
 	{
 		name: "Mapping",
 		runTest: function(t){
-			var sprintf = dojox.string.sprintf;
+			var error, sprintf = dojox.string.sprintf;
 
 			// %1$s format
 			t.is("%1$", sprintf("%1$"));
@@ -157,11 +157,11 @@ tests.register("dojox.string.tests.sprintf", [
 				crevace: "Pocket"
 			}));
 
-			var error = false;
+			error = false;
 			try {
 				sprintf("%(foo)s", 42);
-			}catch(e){
-				t.is("format requires a mapping", e.message);
+			}catch(e2){
+				t.is("format requires a mapping", e2.message);
 				error = true;
 			}
 			t.t(error);
@@ -169,8 +169,8 @@ tests.register("dojox.string.tests.sprintf", [
 			error = false;
 			try {
 				sprintf("%(foo)s %(bar)s", "foo", 42);
-			}catch(e){
-				t.is("format requires a mapping", e.message);
+			}catch(e3){
+				t.is("format requires a mapping", e3.message);
 				error = true;
 			}
 			t.t(error);
@@ -180,8 +180,8 @@ tests.register("dojox.string.tests.sprintf", [
 				sprintf("%(foo)*s", {
 					foo: "Hot Pocket"
 				});
-			}catch(e){
-				t.is("* width not supported in mapped formats", e.message);
+			}catch(e4){
+				t.is("* width not supported in mapped formats", e4.message);
 				error = true;
 			}
 			t.t(error);
@@ -209,8 +209,8 @@ tests.register("dojox.string.tests.sprintf", [
 			error = false;
 			try {
 				sprintf("%10.*f", "foo", 42);
-			}catch(e){
-				t.is("format argument 'foo' not a float; parseFloat returned NaN", e.message);
+			}catch(e2){
+				t.is("format argument 'foo' not a float; parseFloat returned NaN", e2.message);
 				error = true;
 			}
 			t.t(error);
@@ -261,8 +261,8 @@ tests.register("dojox.string.tests.sprintf", [
 			error = false;
 			try {
 				sprintf("%c");
-			}catch(e){
-				t.is("got 0 printf arguments, insufficient for '%c'", e.message);
+			}catch(e2){
+				t.is("got 0 printf arguments, insufficient for '%c'", e2.message);
 				error = true;
 			}
 			t.t(error);
