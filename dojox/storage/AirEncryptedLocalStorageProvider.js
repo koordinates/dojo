@@ -2,14 +2,14 @@ dojo.provide("dojox.storage.AirEncryptedLocalStorageProvider");
 dojo.require("dojox.storage.manager");
 dojo.require("dojox.storage.Provider");
 
-if (dojo.isAIR) {
+if (dojo.isHostObjectProperty(window, 'runtime') && dojo.isHostObjectProperty(window.runtime, 'flash')) {
 	(function(){
-		
+		var air;		
 		if (!air) {
-			var air = {};
+			air = {};
 		}
 		air.ByteArray = window.runtime.flash.utils.ByteArray;
-		air.EncryptedLocalStore = window.runtime.flash.data.EncryptedLocalStore,
+		air.EncryptedLocalStore = window.runtime.flash.data.EncryptedLocalStore;
 
 		// summary: 
 		//		Storage provider that uses features in the Adobe AIR runtime to achieve
@@ -40,11 +40,11 @@ if (dojo.isAIR) {
 			},
 			
 			put: function(key, value, resultsHandler, namespace){
-				if(this.isValidKey(key) == false){
+				if(!this.isValidKey(key)){
 					throw new Error("Invalid key given: " + key);
 				}
 				namespace = namespace||this.DEFAULT_NAMESPACE;
-				if(this.isValidKey(namespace) == false){
+				if(!this.isValidKey(namespace)){
 					throw new Error("Invalid namespace given: " + namespace);
 				}
 				
@@ -72,7 +72,7 @@ if (dojo.isAIR) {
 			},
 			
 			get: function(key, namespace){
-				if(this.isValidKey(key) == false){
+				if(!this.isValidKey(key)){
 					throw new Error("Invalid key given: " + key);
 				}
 				namespace = namespace||this.DEFAULT_NAMESPACE;
@@ -92,7 +92,7 @@ if (dojo.isAIR) {
 
 			getKeys: function(namespace){
 				namespace = namespace||this.DEFAULT_NAMESPACE;
-				if(this.isValidKey(namespace) == false){
+				if(!this.isValidKey(namespace)){
 					throw new Error("Invalid namespace given: " + namespace);
 				}
 
@@ -107,7 +107,7 @@ if (dojo.isAIR) {
 			},
 			
 			clear: function(namespace){
-				if(this.isValidKey(namespace) == false){
+				if(!this.isValidKey(namespace)){
 					throw new Error("Invalid namespace given: " + namespace);
 				}
 				var namespaces = this._getItem("namespaces")||'|';
@@ -134,17 +134,17 @@ if (dojo.isAIR) {
 			},
 			
 			putMultiple: function(keys, values, resultsHandler, namespace) {
- 				if(this.isValidKeyArray(keys) === false 
-						|| ! values instanceof Array 
-						|| keys.length != values.length){
+ 				if(this.isValidKeyArray(keys) === false ||
+						!dojo.isArray(values) ||
+						keys.length != values.length){
 					throw new Error("Invalid arguments: keys = [" + keys + "], values = [" + values + "]");
 				}
 				
-				if(namespace == null || typeof namespace == "undefined"){
+				if(namespace === null || typeof namespace == "undefined"){
 					namespace = this.DEFAULT_NAMESPACE;		
 				}
 	
-				if(this.isValidKey(namespace) == false){
+				if(!this.isValidKey(namespace)){
 					throw new Error("Invalid namespace given: " + namespace);
 				}
 	
@@ -174,11 +174,11 @@ if (dojo.isAIR) {
 					throw new Error("Invalid key array given: " + keys);
 				}
 				
-				if(namespace == null || typeof namespace == "undefined"){
+				if(namespace === null || typeof namespace == "undefined"){
 					namespace = this.DEFAULT_NAMESPACE;		
 				}
 				
-				if(this.isValidKey(namespace) == false){
+				if(!this.isValidKey(namespace)){
 					throw new Error("Invalid namespace given: " + namespace);
 				}
 		
