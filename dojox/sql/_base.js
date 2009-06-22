@@ -46,8 +46,8 @@ dojo.mixin(dojox.sql, {
 		}
 		
 		if(!this.dbName){
-			this.dbName = "dot_store_" 
-				+ window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
+			this.dbName = "dot_store_" +
+				window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
 			// database names in Gears are limited to 64 characters long
 			if(this.dbName.length > 63){
 			  this.dbName = this.dbName.substring(0, 63);
@@ -73,7 +73,6 @@ dojo.mixin(dojox.sql, {
 		// database -- just don't close it on this platform
 		// since we are running into a Gears bug; the Gears team
 		// said it's ok to not close a database connection
-		//if(dojo.isIE){ return; }
 		
 		if(!this._dbOpen && (!dbName || dbName == this.dbName)){
 			return;
@@ -160,20 +159,19 @@ dojo.mixin(dojox.sql, {
 		
 			return rs;
 		}catch(exp){
-			exp = exp.message||exp;
+			var exp2 = exp.message||exp;
 			
-			console.debug("SQL Exception: " + exp);
+			console.debug("SQL Exception: " + exp2);
 			
 			if(this._autoClose){
 				try{ 
 					this.close(); 
 				}catch(e){
-					console.debug("Error closing database: " 
-									+ e.message||e);
+					console.debug("Error closing database: " + e.message||e);
 				}
 			}
 		
-			throw exp;
+			throw exp2;
 		}
 		
 		return null;
@@ -231,11 +229,11 @@ dojo.mixin(dojox.sql, {
 	},
 
 	_needsEncrypt: function(sql){
-		return /encrypt\([^\)]*\)/i.test(sql);
+		return (/encrypt\([^\)]*\)/i).test(sql);
 	},
 
 	_needsDecrypt: function(sql){
-		return /decrypt\([^\)]*\)/i.test(sql);
+		return (/decrypt\([^\)]*\)/i).test(sql);
 	}
 });
 
@@ -275,7 +273,7 @@ dojo.declare("dojox.sql._SQLCrypto", null, {
 			}
 		
 			// was there an error during SQL execution?
-			if(exp != null){
+			if(exp){
 				if(dojox.sql._autoClose){
 					try{ dojox.sql.close(); }catch(e){}
 				}
@@ -334,7 +332,7 @@ dojo.declare("dojox.sql._SQLCrypto", null, {
 		}
 	
 		// was there an error during SQL execution?
-		if(exp != null){
+		if(exp){
 			if(dojox.sql._autoClose){
 				try{ dojox.sql.close(); }catch(e){}
 			}
@@ -388,8 +386,8 @@ dojo.declare("dojox.sql._SQLCrypto", null, {
 					this._finalArgs[paramIndex] = results;
 					this._finishedCrypto++;
 					// are we done with all encryption?
-					if(this._finishedCrypto >= this._totalCrypto
-						&& this._finishedSpawningCrypto){
+					if(this._finishedCrypto >= this._totalCrypto &&
+						this._finishedSpawningCrypto){
 						callback(this._finalArgs);
 					}
 				}));
@@ -440,7 +438,7 @@ dojo.declare("dojox.sql._SQLCrypto", null, {
 		// then replace with just the question marks in the
 		// middle
 		var matches = sql.match(/ENCRYPT\([^\)]*\)/ig);
-		if(matches != null){
+		if(matches){
 			for(var i = 0; i < matches.length; i++){
 				var encryptStatement = matches[i];
 				var encryptValue = encryptStatement.match(/ENCRYPT\(([^\)]*)\)/i)[1];
@@ -452,7 +450,7 @@ dojo.declare("dojox.sql._SQLCrypto", null, {
 		// then replace with just the column names
 		// in the middle
 		matches = sql.match(/DECRYPT\([^\)]*\)/ig);
-		if(matches != null){
+		if(matches){
 			for(i = 0; i < matches.length; i++){
 				var decryptStatement = matches[i];
 				var decryptValue = decryptStatement.match(/DECRYPT\(([^\)]*)\)/i)[1];
@@ -470,7 +468,7 @@ dojo.declare("dojox.sql._SQLCrypto", null, {
 		var matches;
 		var currentParam = 0;
 		var results = [];
-		while((matches = tester.exec(sql)) != null){
+		while(matches = tester.exec(sql)){
 			var currentMatch = RegExp.lastMatch+"";
 
 			// are we a literal string? then ignore it
@@ -502,7 +500,7 @@ dojo.declare("dojox.sql._SQLCrypto", null, {
 			var tester = /DECRYPT\((?:\s*\w*\s*\,?)*\)/ig;
 			var matches = tester.exec(sql);
 			while(matches){
-				var lastMatch = new String(RegExp.lastMatch);
+				var lastMatch = String(RegExp.lastMatch);
 				var columnNames = lastMatch.replace(/DECRYPT\(/i, "");
 				columnNames = columnNames.replace(/\)/, "");
 				columnNames = columnNames.split(/\s*,\s*/);
@@ -513,25 +511,22 @@ dojo.declare("dojox.sql._SQLCrypto", null, {
 					results[column] = true;
 				});
 				
-				matches = tester.exec(sql)
+				matches = tester.exec(sql);
 			}
 		}
 
 		return results;
 	},
 
-	_decryptSingleColumn: function(columnName, columnValue, password, currentRowIndex,
-											callback){
-		//console.debug("decryptSingleColumn, columnName="+columnName+", columnValue="+columnValue+", currentRowIndex="+currentRowIndex)
+	_decryptSingleColumn: function(columnName, columnValue, password, currentRowIndex, callback){
 		dojox.sql._crypto.decrypt(columnValue, password, dojo.hitch(this, function(results){
 			// set the new decrypted value
 			this._finalResultSet[currentRowIndex][columnName] = results;
 			this._finishedCrypto++;
 			
 			// are we done with all encryption?
-			if(this._finishedCrypto >= this._totalCrypto
-				&& this._finishedSpawningCrypto){
-				//console.debug("done with all decrypts");
+			if(this._finishedCrypto >= this._totalCrypto &&
+				this._finishedSpawningCrypto){
 				callback(this._finalResultSet);
 			}
 		}));
