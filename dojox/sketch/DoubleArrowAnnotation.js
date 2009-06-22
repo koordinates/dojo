@@ -30,7 +30,7 @@ dojo.require("dojox.sketch.Anchor");
 		this.anchors.control=new ta.Anchor(this, "control");
 		this.anchors.end=new ta.Anchor(this, "end");
 	};
-	ta.DoubleArrowAnnotation.prototype=new ta.Annotation;
+	ta.DoubleArrowAnnotation.prototype=new ta.Annotation();
 	var p=ta.DoubleArrowAnnotation.prototype;
 	p.constructor=ta.DoubleArrowAnnotation;
 
@@ -55,16 +55,16 @@ dojo.require("dojox.sketch.Anchor");
 		if(this.control.y<this.end.y){ offset*=-1; }
 		else { offset+=this.textYOffset; }
 		var ab={
-			x:((this.control.x-this.start.x)*.5)+this.start.x, 
-			y:((this.control.y-this.start.y)*.5)+this.start.y
+			x:((this.control.x-this.start.x)*0.5)+this.start.x, 
+			y:((this.control.y-this.start.y)*0.5)+this.start.y
 		};
 		var bc={
-			x:((this.end.x-this.control.x)*.5)+this.control.x, 
-			y:((this.end.y-this.control.y)*.5)+this.control.y
+			x:((this.end.x-this.control.x)*0.5)+this.control.x, 
+			y:((this.end.y-this.control.y)*0.5)+this.control.y
 		};
 		this.textPosition={
-			x:((bc.x-ab.x)*.5)+ab.x, 
-			y:(((bc.y-ab.y)*.5)+ab.y)+offset
+			x:((bc.x-ab.x)*0.5)+ab.x, 
+			y:(((bc.y-ab.y)*0.5)+ab.y)+offset
 		};
 	};
 	
@@ -105,7 +105,11 @@ dojo.require("dojox.sketch.Anchor");
 	};
 	p.initialize=function(obj){
 		//	create, based on passed DOM node if available.
-		var font=(ta.Annotation.labelFont)?ta.Annotation.labelFont:{family:"Times", size:"16px"};
+
+		// NOTE: Unused
+
+		//var font=(ta.Annotation.labelFont)?ta.Annotation.labelFont:{family:"Times", size:"16px"};
+
 		this.apply(obj);
 
 		//	calculate the other positions
@@ -124,7 +128,7 @@ dojo.require("dojox.sketch.Anchor");
 		this.shape.getEventSource().setAttribute("id", this.id);
 		//if(this.transform.dx||this.transform.dy){ this.shape.setTransform(this.transform); }
 
-		this.pathShape=this.shape.createPath("M"+this.start.x+" "+this.start.y+"Q"+this.control.x+" "+this.control.y+" "+this.end.x+" "+this.end.y + " l0,0")
+		this.pathShape=this.shape.createPath("M"+this.start.x+" "+this.start.y+"Q"+this.control.x+" "+this.control.y+" "+this.end.x+" "+this.end.y + " l0,0");
 			//.setStroke(this.property('stroke'));
 		
 		this.startArrowGroup=this.shape.createGroup().setTransform({ dx:this.start.x, dy:this.start.y });
@@ -168,7 +172,7 @@ dojo.require("dojox.sketch.Anchor");
 		var endRot=dojox.gfx.matrix.rotateAt(rot, this.end.x, this.end.y);
 
 		this.shape.setTransform(this.transform);
-		this.pathShape.setShape("M"+this.start.x+" "+this.start.y+" Q"+this.control.x+" "+this.control.y+" "+this.end.x+" "+this.end.y + " l0,0")
+		this.pathShape.setShape("M"+this.start.x+" "+this.start.y+" Q"+this.control.x+" "+this.control.y+" "+this.end.x+" "+this.end.y + " l0,0");
 			//.setStroke(this.property('stroke'));
 		this.startArrowGroup.setTransform({ dx:this.start.x, dy:this.start.y }).applyTransform(startRot);
 		this.startArrow.setFill(this.property('fill'));
@@ -206,28 +210,28 @@ dojo.require("dojox.sketch.Anchor");
 
 	p.serialize=function(){
 		var s=this.property('stroke');
-		return '<g '+this.writeCommonAttrs()+'>'
-			+ '<path style="stroke:'+s.color+';stroke-width:'+s.width+';fill:none;" d="'
-			+ "M"+this.start.x+","+this.start.y+" "
-			+ "Q"+this.control.x+","+this.control.y+" "
-			+ this.end.x+","+this.end.y
-			+ '" />'
-			+ '<g transform="translate(' + this.start.x + "," + this.start.y + ") "
-			+ 'rotate(' + (Math.round((this.startRotation*(180/Math.PI))*Math.pow(10,4))/Math.pow(10,4)) + ')">'
-			+ '<path style="fill:'+s.color+';" d="M0,0 l20,-5, -3,5, 3,5 Z" />'
-			+ '</g>'
-			+ '<g transform="rotate('
-			+ (Math.round((this.endRotation*(180/Math.PI))*Math.pow(10,4))/Math.pow(10,4))
-			+ ", "+this.end.x+", "+this.end.y
-			+ ')">'
-			+ '<path style="fill:'+s.color+';" d="M'+this.end.x+","+this.end.y+' l-20,-5, 3,5, -3,5 Z" />'
-			+ '</g>'
-			+ '<text style="fill:'+s.color+';text-anchor:'+this.textAlign+'" font-weight="bold" '
-			+ 'x="' + this.textPosition.x + '" '
-			+ 'y="' + this.textPosition.y + '">'
-			+ this.property('label')
-			+ '</text>'
-			+ '</g>';
+		return '<g '+this.writeCommonAttrs()+'>' +
+			'<path style="stroke:'+s.color+';stroke-width:'+s.width+';fill:none;" d="' +
+			"M"+this.start.x+","+this.start.y+" " +
+			"Q"+this.control.x+","+this.control.y+" " +
+			this.end.x+","+this.end.y +
+			'" />' +
+			'<g transform="translate(' + this.start.x + "," + this.start.y + ") " +
+			'rotate(' + (Math.round((this.startRotation*(180/Math.PI))*Math.pow(10,4))/Math.pow(10,4)) + ')">' +
+			'<path style="fill:'+s.color+';" d="M0,0 l20,-5, -3,5, 3,5 Z" />' +
+			'</g>' +
+			'<g transform="rotate(' +
+			(Math.round((this.endRotation*(180/Math.PI))*Math.pow(10,4))/Math.pow(10,4)) +
+			", "+this.end.x+", "+this.end.y +
+			')">' +
+			'<path style="fill:'+s.color+';" d="M'+this.end.x+","+this.end.y+' l-20,-5, 3,5, -3,5 Z" />' +
+			'</g>' +
+			'<text style="fill:'+s.color+';text-anchor:'+this.textAlign+'" font-weight="bold" ' +
+			'x="' + this.textPosition.x + '" ' +
+			'y="' + this.textPosition.y + '">' +
+			this.property('label') +
+			'</text>' +
+			'</g>';
 	};
 
 	ta.Annotation.register("DoubleArrow");
