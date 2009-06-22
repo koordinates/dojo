@@ -27,7 +27,7 @@ dojo.declare("dojox.storage.WhatWGStorageProvider", [ dojox.storage.Provider ], 
 	_storageEventListener: null,
 	
 	initialize: function(){
-		if(dojo.config["disableWhatWGStorage"] == true){
+		if(dojo.config.disableWhatWGStorage){
 			return;
 		}
 		
@@ -53,7 +53,7 @@ dojo.declare("dojox.storage.WhatWGStorageProvider", [ dojox.storage.Provider ], 
 	},
 
 	put: function(key, value, resultsHandler, namespace){
-		if(this.isValidKey(key) == false){
+		if(!this.isValidKey(key)){
 			throw new Error("Invalid key given: " + key);
 		}
 		namespace = namespace||this.DEFAULT_NAMESPACE;
@@ -101,7 +101,7 @@ dojo.declare("dojox.storage.WhatWGStorageProvider", [ dojox.storage.Provider ], 
 	},
 
 	get: function(key, namespace){
-		if(this.isValidKey(key) == false){
+		if(!this.isValidKey(key)){
 			throw new Error("Invalid key given: " + key);
 		}
 		namespace = namespace||this.DEFAULT_NAMESPACE;
@@ -119,7 +119,7 @@ dojo.declare("dojox.storage.WhatWGStorageProvider", [ dojox.storage.Provider ], 
 		var myStorage = globalStorage[this._domain];
 		var results = myStorage.getItem(key);
 		
-		if(results == null || results == ""){
+		if(!results){
 			return null;
 		}
 		
@@ -147,7 +147,7 @@ dojo.declare("dojox.storage.WhatWGStorageProvider", [ dojox.storage.Provider ], 
 		var tester = /^__([^_]*)_/;
 		for(var i = 0; i < myStorage.length; i++){
 			var currentKey = myStorage.key(i);
-			if(tester.test(currentKey) == true){
+			if(tester.test(currentKey)){
 				var currentNS = currentKey.match(tester)[1];
 				// have we seen this namespace before?
 				if(typeof found[currentNS] == "undefined"){
@@ -163,7 +163,7 @@ dojo.declare("dojox.storage.WhatWGStorageProvider", [ dojox.storage.Provider ], 
 	getKeys: function(namespace){
 		namespace = namespace||this.DEFAULT_NAMESPACE;
 		
-		if(this.isValidKey(namespace) == false){
+		if(!this.isValidKey(namespace)){
 			throw new Error("Invalid namespace given: " + namespace);
 		}
 		
@@ -183,7 +183,7 @@ dojo.declare("dojox.storage.WhatWGStorageProvider", [ dojox.storage.Provider ], 
 		var keysArray = [];
 		for(var i = 0; i < myStorage.length; i++){
 			var currentKey = myStorage.key(i);
-			if(namespaceTester.test(currentKey) == true){
+			if(namespaceTester.test(currentKey)){
 				// strip off the namespace portion
 				currentKey = currentKey.match(namespaceTester)[1];
 				keysArray.push(currentKey);
@@ -196,7 +196,7 @@ dojo.declare("dojox.storage.WhatWGStorageProvider", [ dojox.storage.Provider ], 
 	clear: function(namespace){
 		namespace = namespace||this.DEFAULT_NAMESPACE;
 		
-		if(this.isValidKey(namespace) == false){
+		if(!this.isValidKey(namespace)){
 			throw new Error("Invalid namespace given: " + namespace);
 		}
 		
@@ -215,7 +215,7 @@ dojo.declare("dojox.storage.WhatWGStorageProvider", [ dojox.storage.Provider ], 
 		var myStorage = globalStorage[this._domain];
 		var keys = [];
 		for(var i = 0; i < myStorage.length; i++){
-			if(namespaceTester.test(myStorage.key(i)) == true){
+			if(namespaceTester.test(myStorage.key(i))){
 				keys[keys.length] = myStorage.key(i);
 			}
 		}
@@ -254,7 +254,7 @@ dojo.declare("dojox.storage.WhatWGStorageProvider", [ dojox.storage.Provider ], 
 	getFullKey: function(key, namespace){
 		namespace = namespace||this.DEFAULT_NAMESPACE;
 		
-		if(this.isValidKey(namespace) == false){
+		if(!this.isValidKey(namespace)){
 			throw new Error("Invalid namespace given: " + namespace);
 		}
 		
