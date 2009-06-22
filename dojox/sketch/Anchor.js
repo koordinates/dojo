@@ -13,8 +13,8 @@ dojo.require("dojox.gfx");
 
 		this.id=id;
 		this._key="anchor-" + ta.Anchor.count++;
-		this.shape=null;
-		this.isControl=(isControl!=null)?isControl:true;
+		this.shape=null;		
+		this.isControl=(typeof isControl == 'undefined')?true:isControl;
 
 		this.beginEdit=function(){
 			this.annotation.beginEdit(ta.CommandTypes.Modify);
@@ -25,10 +25,10 @@ dojo.require("dojox.gfx");
 		this.zoom=function(pct){
 			if(this.shape){
 				var rs=Math.floor(size/pct);
-				var width=dojox.gfx.renderer=='vml'?1:1/pct
+				var width=dojox.gfx.renderer=='vml'?1:1/pct;
 				this.shape.setShape({ x:an[id].x-rs, y:an[id].y-rs, width:rs*2, height:rs*2 }).setStroke({ color:"black", width:width }); //For IE, maybe we need Math.ceil(1/pct)||1
 			}
-		}
+		};
 		/*this.doChange=function(pt){
 			if(this.isControl){
 				this.shape.applyTransform(pt);
