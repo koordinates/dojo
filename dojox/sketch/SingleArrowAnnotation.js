@@ -27,7 +27,7 @@ dojo.require("dojox.sketch.Anchor");
 		this.anchors.control=new ta.Anchor(this, "control");
 		this.anchors.end=new ta.Anchor(this, "end");
 	};
-	ta.SingleArrowAnnotation.prototype=new ta.Annotation;
+	ta.SingleArrowAnnotation.prototype=new ta.Annotation();
 	var p=ta.SingleArrowAnnotation.prototype;
 	p.constructor=ta.SingleArrowAnnotation;
 
@@ -50,7 +50,7 @@ dojo.require("dojox.sketch.Anchor");
 			x=this.end.x+this.calculate.dx(this.control, this.end, offset);
 			if(this.control.y>this.end.y){ y=this.end.y-offset; }
 			else{ y=this.end.y+offset+this.textYOffset; }
-		} else if(slope==0){
+		} else if(!slope){
 			x=this.end.x+offset;
 			y=this.end.y+this.textYOffset;
 		} else {
@@ -109,23 +109,29 @@ dojo.require("dojox.sketch.Anchor");
 	};
 	p.initialize=function(obj){
 		//	create, based on passed DOM node if available.
-		var font=(ta.Annotation.labelFont)?ta.Annotation.labelFont:{family:"Times", size:"16px"};
+
+		// NOTE: Unused
+
+		//var font=(ta.Annotation.labelFont)?ta.Annotation.labelFont:{family:"Times", size:"16px"};
+
 		this.apply(obj);
 
 		//	calculate the other positions
 		this._rot();
 		this._pos();
 
+		// NOTE: Unused
+
 		//	rotation matrix
-		var rot=this.rotation;
-		var tRot=dojox.gfx.matrix.rotate(rot);
+		//var rot=this.rotation;
+		//var tRot=dojox.gfx.matrix.rotate(rot);
 
 		//	draw the shapes
 		this.shape=this.figure.group.createGroup();
 		this.shape.getEventSource().setAttribute("id", this.id);
 		//if(this.transform.dx||this.transform.dy){ this.shape.setTransform(this.transform); }
 
-		this.pathShape=this.shape.createPath("M"+this.start.x+","+this.start.y+" Q"+this.control.x+","+this.control.y+" "+this.end.x+","+this.end.y+" l0,0")
+		this.pathShape=this.shape.createPath("M"+this.start.x+","+this.start.y+" Q"+this.control.x+","+this.control.y+" "+this.end.x+","+this.end.y+" l0,0");
 			//.setStroke(this.property('stroke'));
 
 		this.arrowheadGroup=this.shape.createGroup();//.setTransform({ dx:this.start.x, dy:this.start.y }).applyTransform(tRot);
@@ -136,7 +142,7 @@ dojo.require("dojox.sketch.Anchor");
 				y:this.textPosition.y, 
 				text:this.property('label'), 
 				align:this.textAlign
-			})
+			});
 			//.setFont(font)
 			//.setFill(this.property('fill'));
 		this.labelShape.getEventSource().setAttribute('id',this.id+"-labelShape");
@@ -163,7 +169,7 @@ dojo.require("dojox.sketch.Anchor");
 		var tRot=dojox.gfx.matrix.rotate(rot);
 
 		this.shape.setTransform(this.transform);
-		this.pathShape.setShape("M"+this.start.x+","+this.start.y+" Q"+this.control.x+","+this.control.y+" "+this.end.x+","+this.end.y+" l0,0")
+		this.pathShape.setShape("M"+this.start.x+","+this.start.y+" Q"+this.control.x+","+this.control.y+" "+this.end.x+","+this.end.y+" l0,0");
 			//.setStroke(this.property('stroke'));
 
 		this.arrowheadGroup.setTransform({dx:this.start.x,dy:this.start.y}).applyTransform(tRot);
@@ -204,22 +210,22 @@ dojo.require("dojox.sketch.Anchor");
 		var s=this.property('stroke');
 		var r=this.rotation*(180/Math.PI);
 		r=Math.round(r*Math.pow(10,4))/Math.pow(10,4);
-		return '<g '+this.writeCommonAttrs()+'>'
-			+ '<path style="stroke:'+s.color+';stroke-width:'+s.width+';fill:none;" d="'
-			+ "M"+this.start.x+","+this.start.y+" "
-			+ "Q"+this.control.x+","+this.control.y+" "
-			+ this.end.x+","+this.end.y
-			+ '" />'
-			+ '<g transform="translate(' + this.start.x + "," + this.start.y + ") "
-			+ 'rotate(' + r + ')">'
-			+ '<path style="fill:'+s.color+';" d="M0,0 l20,-5, -3,5, 3,5 Z" />'
-			+ '</g>'
-			+ '<text style="fill:'+s.color+';text-anchor:'+this.textAlign+'" font-weight="bold" '
-			+ 'x="' + this.textPosition.x + '" '
-			+ 'y="' + this.textPosition.y + '">'
-			+ this.property('label')
-			+ '</text>'
-			+ '</g>';
+		return '<g '+this.writeCommonAttrs()+'>' +
+			'<path style="stroke:'+s.color+';stroke-width:'+s.width+';fill:none;" d="' +
+			"M"+this.start.x+","+this.start.y+" " +
+			"Q"+this.control.x+","+this.control.y+" " +
+			this.end.x+","+this.end.y +
+			'" />' +
+			'<g transform="translate(' + this.start.x + "," + this.start.y + ") " +
+			'rotate(' + r + ')">' +
+			'<path style="fill:'+s.color+';" d="M0,0 l20,-5, -3,5, 3,5 Z" />' +
+			'</g>' +
+			'<text style="fill:'+s.color+';text-anchor:'+this.textAlign+'" font-weight="bold" ' +
+			'x="' + this.textPosition.x + '" ' +
+			'y="' + this.textPosition.y + '">' +
+			this.property('label') +
+			'</text>' +
+			'</g>';
 	};
 
 	ta.Annotation.register("SingleArrow");
