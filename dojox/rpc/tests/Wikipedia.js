@@ -23,7 +23,7 @@ dojox.rpc.tests.wikipediaService._query = function(q){
 		}
 
 		return d;
-	}
+	};
 };
 
 doh.register("dojox.rpc.tests.wikipedia", 
