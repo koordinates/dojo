@@ -33,7 +33,7 @@ if(dojo.gears.available){
 			
 			initialize: function(){
 				//console.debug("dojox.storage.GearsStorageProvider.initialize");
-				if(dojo.config["disableGearsStorage"] == true){
+				if(dojo.config.disableGearsStorage){
 					return;
 				}
 				
@@ -52,7 +52,8 @@ if(dojo.gears.available){
 			
 			isAvailable: function(){
 				// is Google Gears available and defined?
-				return this._available = dojo.gears.available;
+				this._available = dojo.gears.available;
+				return this._available;
 			},
 
 			put: function(key, value, resultsHandler, namespace){
@@ -77,11 +78,11 @@ if(dojo.gears.available){
 				
 				// try to store the value	
 				try{
-					dojox.sql("DELETE FROM " + this.TABLE_NAME
-								+ " WHERE namespace = ? AND key = ?",
+					dojox.sql("DELETE FROM " + this.TABLE_NAME +
+								" WHERE namespace = ? AND key = ?",
 								namespace, key);
-					dojox.sql("INSERT INTO " + this.TABLE_NAME
-								+ " VALUES (?, ?, ?)",
+					dojox.sql("INSERT INTO " + this.TABLE_NAME +
+								" VALUES (?, ?, ?)",
 								namespace, key, value);
 				}catch(e){
 					// indicate we failed
@@ -108,9 +109,9 @@ if(dojo.gears.available){
 				}
 				
 				// try to find this key in the database
-				var results = dojox.sql("SELECT * FROM " + this.TABLE_NAME
-											+ " WHERE namespace = ? AND "
-											+ " key = ?",
+				var results = dojox.sql("SELECT * FROM " + this.TABLE_NAME +
+											" WHERE namespace = ? AND " +
+											" key = ?",
 											namespace, key);
 				if(!results.length){
 					return null;
@@ -135,8 +136,8 @@ if(dojo.gears.available){
 				
 				var results = [ dojox.storage.DEFAULT_NAMESPACE ];
 				
-				var rs = dojox.sql("SELECT namespace FROM " + this.TABLE_NAME
-									+ " DESC GROUP BY namespace");
+				var rs = dojox.sql("SELECT namespace FROM " + this.TABLE_NAME +
+									" DESC GROUP BY namespace");
 				for(var i = 0; i < rs.length; i++){
 					if(rs[i].namespace != dojox.storage.DEFAULT_NAMESPACE){
 						results.push(rs[i].namespace);
@@ -154,8 +155,8 @@ if(dojo.gears.available){
 					throw new Error("Invalid namespace given: " + namespace);
 				}
 				
-				var rs = dojox.sql("SELECT key FROM " + this.TABLE_NAME
-									+ " WHERE namespace = ?",
+				var rs = dojox.sql("SELECT key FROM " + this.TABLE_NAME +
+									" WHERE namespace = ?",
 									namespace);
 				
 				var results = [];
@@ -174,8 +175,8 @@ if(dojo.gears.available){
 					throw new Error("Invalid namespace given: " + namespace);
 				}
 				
-				dojox.sql("DELETE FROM " + this.TABLE_NAME 
-							+ " WHERE namespace = ?",
+				dojox.sql("DELETE FROM " + this.TABLE_NAME +
+							" WHERE namespace = ?",
 							namespace);
 			},
 			
@@ -191,9 +192,9 @@ if(dojo.gears.available){
 					throw new Error("Invalid namespace given: " + key);
 				}
 				
-				dojox.sql("DELETE FROM " + this.TABLE_NAME 
-							+ " WHERE namespace = ? AND"
-							+ " key = ?",
+				dojox.sql("DELETE FROM " + this.TABLE_NAME +
+							" WHERE namespace = ? AND" +
+							" key = ?",
 							namespace,
 							key);
 			},
@@ -201,14 +202,14 @@ if(dojo.gears.available){
 			putMultiple: function(keys, values, resultsHandler, namespace) {
 				this._initStorage();
 				
- 				if(!this.isValidKeyArray(keys) 
-						|| ! values instanceof Array 
-						|| keys.length != values.length){
-					throw new Error("Invalid arguments: keys = [" 
-									+ keys + "], values = [" + values + "]");
+ 				if(!this.isValidKeyArray(keys) ||
+						 !dojo.isArray(values) ||
+						 keys.length != values.length){
+					throw new Error("Invalid arguments: keys = [" +
+									keys + "], values = [" + values + "]");
 				}
 				
-				if(namespace == null || typeof namespace == "undefined"){
+				if(namespace === null || typeof namespace == "undefined"){
 					namespace = dojox.storage.DEFAULT_NAMESPACE;		
 				}
 				if(!this.isValidKey(namespace)){
@@ -256,18 +257,18 @@ if(dojo.gears.available){
 				this._initStorage();
 
 				if(!this.isValidKeyArray(keys)){
-					throw new ("Invalid key array given: " + keys);
+					throw new Error("Invalid key array given: " + keys);
 				}
 				
-				if(namespace == null || typeof namespace == "undefined"){
+				if(namespace === null || typeof namespace == "undefined"){
 					namespace = dojox.storage.DEFAULT_NAMESPACE;		
 				}
 				if(!this.isValidKey(namespace)){
 					throw new Error("Invalid namespace given: " + namespace);
 				}
 		
-				var _stmt = "SELECT * FROM " + this.TABLE_NAME 
-					+ " WHERE namespace = ? AND "	+ " key = ?";
+				var _stmt = "SELECT * FROM " + this.TABLE_NAME +
+					" WHERE namespace = ? AND "	+ " key = ?";
 				
 				var results = [];
 				for(var i=0;i<keys.length;i++){
@@ -299,7 +300,7 @@ if(dojo.gears.available){
 					throw new Error("Invalid arguments: keys = [" + keys + "]");
 				}
 				
-				if(namespace == null || typeof namespace == "undefined"){
+				if(namespace === null || typeof namespace == "undefined"){
 					namespace = dojox.storage.DEFAULT_NAMESPACE;		
 				}
 				if(!this.isValidKey(namespace)){
@@ -308,8 +309,8 @@ if(dojo.gears.available){
 				
 				dojox.sql.open();
 				dojox.sql.db.execute("BEGIN TRANSACTION");
-				var _stmt = "DELETE FROM " + this.TABLE_NAME 
-										+ " WHERE namespace = ? AND key = ?";
+				var _stmt = "DELETE FROM " + this.TABLE_NAME +
+										" WHERE namespace = ? AND key = ?";
 
 				for(var i=0;i<keys.length;i++){
 					dojox.sql.db.execute( _stmt,
@@ -326,13 +327,11 @@ if(dojo.gears.available){
 			hasSettingsUI: function(){ return false; },
 			
 			showSettingsUI: function(){
-				throw new Error(this.declaredClass 
-									+ " does not support a storage settings user-interface");
+				throw new Error(this.declaredClass + " does not support a storage settings user-interface");
 			},
 			
 			hideSettingsUI: function(){
-				throw new Error(this.declaredClass 
-									+ " does not support a storage settings user-interface");
+				throw new Error(this.declaredClass + " does not support a storage settings user-interface");
 			},
 			
 			_initStorage: function(){
@@ -346,30 +345,27 @@ if(dojo.gears.available){
 				if (!google.gears.factory.hasPermission) {
 					var siteName = null;
 					var icon = null;
-					var msg = 'This site would like to use Google Gears to enable '
-										+ 'enhanced functionality.';
+					var msg = 'This site would like to use Google Gears to enable enhanced functionality.';
 					var allowed = google.gears.factory.getPermission(siteName, icon, msg);
 					if (!allowed) {
-						throw new Error('You must give permission to use Gears in order to '
-														+ 'store data');
+						throw new Error('You must give permission to use Gears in order to store data');
 					}
 				}
 				
 				// create the table that holds our data
 				try{
-					dojox.sql("CREATE TABLE IF NOT EXISTS " + this.TABLE_NAME + "( "
-								+ " namespace TEXT, "
-								+ " key TEXT, "
-								+ " value TEXT "
-								+ ")"
+					dojox.sql("CREATE TABLE IF NOT EXISTS " + this.TABLE_NAME + "( " +
+								" namespace TEXT, " +
+								" key TEXT, " +
+								" value TEXT " +
+								")"
 							);
-					dojox.sql("CREATE UNIQUE INDEX IF NOT EXISTS namespace_key_index" 
-								+ " ON " + this.TABLE_NAME
-								+ " (namespace, key)");
+					dojox.sql("CREATE UNIQUE INDEX IF NOT EXISTS namespace_key_index" +
+								" ON " + this.TABLE_NAME +
+								" (namespace, key)");
 				}catch(e){
 					console.debug("dojox.storage.GearsStorageProvider._createTables:", e);
-					throw new Error('Unable to create storage tables for Gears in '
-					                + 'Dojo Storage');
+					throw new Error('Unable to create storage tables for Gears in Dojo Storage');
 				}
 				
 				this._storageReady = true;
