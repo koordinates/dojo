@@ -2,7 +2,7 @@ dojo.provide("dojox.storage.manager");
 //dojo.require("dojo.AdapterRegistry");
 // FIXME: refactor this to use an AdapterRegistry
 
-dojox.storage.manager = new function(){
+dojox.storage.manager = function(){
 	// summary: A singleton class in charge of the dojox.storage system
 	// description:
 	//		Initializes the storage systems and figures out the best available 
@@ -80,7 +80,7 @@ dojox.storage.manager = new function(){
 		// a flag to force the storage manager to use a particular 
 		// storage provider type, such as 
 		// djConfig = {forceStorageProvider: "dojox.storage.WhatWGStorageProvider"};
-		var forceProvider = dojo.config["forceStorageProvider"] || false;
+		var forceProvider = dojo.config.forceStorageProvider || false;
 
 		// go through each provider, seeing if it can be used
 		var providerToUse;
@@ -163,9 +163,9 @@ dojox.storage.manager = new function(){
 		// Flash timing bug.
 		// Confirm that this is still needed with the newly refactored Dojo
 		// Flash. Used to be for Internet Explorer. -- Brad Neuberg
-		if(this.currentProvider != null
-			&& this.currentProvider.declaredClass == "dojox.storage.FlashStorageProvider" 
-			&& dojox.flash.ready == false){
+		if(this.currentProvider &&
+			this.currentProvider.declaredClass == "dojox.storage.FlashStorageProvider" &&
+			!dojox.flash.ready){
 			return false;
 		}else{
 			return this._initialized;
@@ -253,5 +253,5 @@ dojox.storage.manager = new function(){
 		});
 		
 		return results;
-	}
+	};
 };
