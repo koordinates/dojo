@@ -15,7 +15,7 @@ dojo.provide("dojox.rpc.Client");
 		// XHR request so that the server can order them.
 		headers["Seq-Id"] = dojox._reqSeqId = (dojox._reqSeqId||0)+1;
 		return dojo._defaultXhr.apply(dojo,arguments);
-	}
+	};
 })();
 // initiate the client id to a good random number
 dojox.rpc.Client.clientId = (Math.random() + '').substring(2,14);
