@@ -40,7 +40,6 @@ tests.register("dojox.xml.tests.parser",
 			t.assertTrue(parent === null);
 		},
 		function testParseEmpty(t){
-			var simpleXml;
 			var document = dojox.xml.parser.parse();
 			
 			t.assertTrue(typeof document != "undefined");
