@@ -1296,7 +1296,7 @@ dojo.byId = function(id, doc){
 		_evtHdlrMap[attrId][name] = dojo.connect(node, name, value);
 	};
 
-	// For use with HTML DOM elements only
+	// For use with HTML or XML DOM elements
 
 	dojo.hasAttr = (function() {
 		var attributeSpecified, value;
@@ -1315,6 +1315,7 @@ dojo.byId = function(id, doc){
 			};
 			if (attributesBad) {
 				return function(el, name) {
+					if (el.ownerDocument && typeof(el.ownerDocument.selectNodes) != 'undefined') { return attributeSpecified(el, name); } // XML document
 					name = name.toLowerCase();
 					var alias = attributeAliases[name];
 
