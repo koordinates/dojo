@@ -57,7 +57,11 @@ dojo.declare("dojox.timing.Sequence", null, {
 				this._defsResolved.push(cur);
 			}
 		}, this);
-		var last = defs[defs.length - 1];
+
+		// NOTE: Unused
+
+		//var last = defs[defs.length - 1];
+
 		if(doneFunction){
 			this._defsResolved.push({ func: doneFunction });
 		}
@@ -103,17 +107,17 @@ dojo.declare("dojox.timing.Sequence", null, {
 
 		if(cur.pauseAfter){
 			if(resolveAndCallFunc(cur.func) !== false){
-				setTimeout(dojo.hitch(this, "_go"), cur.pauseAfter);
+				window.setTimeout(dojo.hitch(this, "_go"), cur.pauseAfter);
 			}else{
 				this._goOnPause = cur.pauseAfter;
 			}
 		}else if(cur.pauseBefore){
 			var x = dojo.hitch(this,function(){
 				if(resolveAndCallFunc(cur.func) !== false){
-					this._go()
+					this._go();
 				}
 			});
-			setTimeout(x, cur.pauseBefore);
+			window.setTimeout(x, cur.pauseBefore);
 		}else{
 			if(resolveAndCallFunc(cur.func) !== false){
 				this._go();
@@ -125,7 +129,7 @@ dojo.declare("dojox.timing.Sequence", null, {
 		// summary: This method just provides a hook from the outside, so that
 		//		an interrupted sequence can be continued.
 		if(this._goOnPause){
-			setTimeout(dojo.hitch(this, "_go"), this._goOnPause);
+			window.setTimeout(dojo.hitch(this, "_go"), this._goOnPause);
 			this._goOnPause = 0; // reset it, so if the next one doesnt set it we dont use the old pause
 		}else{ this._go(); }
 	},
