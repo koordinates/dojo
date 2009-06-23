@@ -40,7 +40,10 @@ dojox.wire._getClass = function(/*String*/name){
 	//		A class name
 	//	returns:
 	//		A class
-	dojo["require"](name); // use dojo["require"] instead of dojo.require to avoid a build problem
+	dojo['require'](name); // use dojo["require"] instead of dojo.require to avoid a build problem
+
+	// NOTE: What build problem?
+
 	return dojo.getObject(name); //Function
 };
 
@@ -67,7 +70,7 @@ dojox.wire.create = function(/*Object*/args){
 		}
 	}else{
 		for(var key in args){
-			if(!args[key]){
+			if(!dojo.isOwnProperty(args, key) || !args[key]){
 				continue;
 			}
 			wireClass = dojox.wire._wireClasses[key];
