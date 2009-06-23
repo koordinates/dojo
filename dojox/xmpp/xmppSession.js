@@ -189,8 +189,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 			}
 			//console.log("Has connected/bind?", this.state, hasBindFeature, authMechanisms);
 			if (this.state == dojox.xmpp.xmpp.CONNECTED && hasBindFeature){
-				for(var i=0; i<authMechanisms.length; i++){
-					
+				for(i=0; i<authMechanisms.length; i++){					
 					if (authMechanisms[i]=="SUN-COMMS-CLIENT-PROXY-AUTH"){
 						dojox.xmpp.sasl.SunWebClientAuth(this);
 						break;
@@ -228,7 +227,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 			var message = {
 				from: msg.getAttribute('from'),
 				to: msg.getAttribute('to')
-			}
+			};
 
 			var chatState = null;
 				//console.log("chat child node ", msg.childNodes, msg.childNodes.length);
@@ -241,7 +240,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 							message.chatid = n.firstChild.nodeValue;
 							break;
 						case 'body':
-							if (!n.getAttribute('xmlns') || (n.getAttribute('xmlns')=="")){
+							if (!n.getAttribute('xmlns') || (!n.getAttribute('xmlns'))){
 								message.body = n.firstChild.nodeValue;
 							}
 							break;
@@ -266,7 +265,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 
 			var found = -1;
 			if (message.chatid){
-				for (var i=0; i< this.chatRegister.length; i++){
+				for (i=0; i< this.chatRegister.length; i++){
 					var ci = this.chatRegister[i];
 					////console.log("ci.chatid: ", ci.chatid, message.chatid);
 					if (ci && ci.chatid == message.chatid) {
@@ -275,8 +274,8 @@ dojo.extend(dojox.xmpp.xmppSession, {
 					}
 				}
 			} else {
-				for (var i=0; i< this.chatRegister.length; i++){
-					var ci = this.chatRegister[i];
+				for (i=0; i< this.chatRegister.length; i++){
+					ci = this.chatRegister[i];
 					if(ci){
 						if (ci.uid==this.getBareJid(message.from)){
 							found = i;
@@ -291,16 +290,16 @@ dojo.extend(dojox.xmpp.xmppSession, {
 
 				if (chat.firstMessage){
 					if (chatState == dojox.xmpp.chat.ACTIVE_STATE) {
-						chat.useChatState = (chatState != null) ? true : false;
+						chat.useChatState = (chatState !== null && chatState !== undefined) ? true : false;
 						chat.firstMessage = false;	
 					}
 				}
 			} 
 
-			if ((!message.body || message.body=="") && !message.xhtml) {return;}
+			if (!message.body && !message.xhtml) {return;}
 
 			if (found>-1){
-				var chat = this.chatRegister[found];
+				chat = this.chatRegister[found];
 				chat.recieveMessage(message);
 			}else{
 				var chatInstance = new dojox.xmpp.ChatService();
@@ -348,7 +347,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 				to: to || this.domain,
 				type: 'result',
 				from: this.jid + "/" + this.resource
-			}
+			};
 			this.dispatchPacket(dojox.xmpp.util.createElement("iq",req,true));
 		},
 
@@ -372,7 +371,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 									id: r.jid,
 									name: r.name,
 									groups:[]
-								}
+								};
 
 								for (var y=0;y<r.groups.length;y++){
 									rosterItem.groups.push(r.groups[y]);
@@ -399,7 +398,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 									r.substatus = dojox.xmpp.presence.SUBSCRIPTION_REQUEST_PENDING;
 								}
 					
-								for(var y=0;y<n.childNodes.length;y++){
+								for(y=0;y<n.childNodes.length;y++){
 									var groupNode = n.childNodes[y];
 									if ((groupNode.nodeName=='group')&&(groupNode.hasChildNodes())){
 										var gname = groupNode.firstChild.nodeValue;
@@ -451,10 +450,10 @@ dojo.extend(dojox.xmpp.xmppSession, {
 				show: dojox.xmpp.presence.STATUS_ONLINE,
 				priority: 5,
 				hasAvatar: false
-			}	
+			};
 
 			if(msg.getAttribute('type')=='unavailable'){
-				p.show=dojox.xmpp.presence.STATUS_OFFLINE
+				p.show=dojox.xmpp.presence.STATUS_OFFLINE;
 			}
 
 			for (var i=0; i<msg.childNodes.length;i++){
@@ -466,10 +465,10 @@ dojo.extend(dojox.xmpp.xmppSession, {
 							p[n.nodeName]=n.firstChild.nodeValue;
 							break;
 						case 'status':
-							p.priority=parseInt(n.firstChild.nodeValue);
+							p.priority=parseInt(n.firstChild.nodeValue, 10);
 							break;
 						case 'x':
-							if(n.firstChild && n.firstChild.firstChild &&  n.firstChild.firstChild.nodeValue != "") { 
+							if(n.firstChild && n.firstChild.firstChild && n.firstChild.firstChild.nodeValue) { 
 								p.avatarHash= n.firstChild.firstChild.nodeValue;
 								p.hasAvatar = true;
 							}
@@ -487,7 +486,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 				id: this.getNextIqId(),
 				from: this.jid + "/" + this.resource,
 				type: "get"
-			}
+			};
 			var req = new dojox.string.Builder(dojox.xmpp.util.createElement("iq",props,false));
 			req.append(dojox.xmpp.util.createElement("query",{xmlns: "jabber:iq:roster"},true));
 			req.append("</iq>");
@@ -516,7 +515,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 				status: dojox.xmpp.presence.SUBSCRIPTION_NONE,
 				substatus: dojox.xmpp.presence.SUBSCRIPTION_SUBSTATUS_NONE
 			//	displayToUser: false
-			}	
+			};
 
 			if (!re.name){
 				re.name = re.id;
@@ -556,7 +555,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 				xmlns: "jabber:client",
 				id: this.getNextIqId(),
 				type: "set"
-			}
+			};
 			var bindReq = new dojox.string.Builder(dojox.xmpp.util.createElement("iq", props, false));
 			bindReq.append(dojox.xmpp.util.createElement("bind", {xmlns: dojox.xmpp.xmpp.BIND_NS}, false));
 
@@ -613,7 +612,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 				type: 'set',
 				from: this.jid + '/' + this.resource,
 				to: service
-			}
+			};
 			var request = new dojox.string.Builder(dojox.xmpp.util.createElement("iq",req,false));
 			request.append(dojox.xmpp.util.createElement('query',{xmlns:'jabber:iq:search'},false));
 			request.append(dojox.xmpp.util.createElement(searchAttribute,{},false));
@@ -670,7 +669,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 				this.onLoginFailure(err);
 			}
 
-			return msg
+			return msg;
 		},
 
 		onSearchResults: function(results){
@@ -747,7 +746,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 			var err = {
 				stanzaType: msg.nodeName,
 				id: msg.getAttribute('id')
-			}
+			};
 	
 			for (var i=0; i<msg.childNodes.length; i++){
 				var n = msg.childNodes[i];
@@ -784,7 +783,7 @@ dojo.extend(dojox.xmpp.xmppSession, {
 				var textAttr={
 					xmlns: dojox.xmpp.xmpp.STANZA_NS,
 					"xml:lang":this.lang
-				}
+				};
 				request.append(dojox.xmpp.util.createElement('text',textAttr,false));
 				request.append(text).append("</text>");
 			}
