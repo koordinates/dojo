@@ -8,14 +8,13 @@ dojox.string.sprintf = function(/*String*/ format, /*mixed...*/ filler){
 	}
 	var formatter = new dojox.string.sprintf.Formatter(format);
 	return formatter.format.apply(formatter, args);
-}
+};
 
 dojox.string.sprintf.Formatter = function(/*String*/ format){
-	var tokens = [];
 	this._mapped = false;
 	this._format = format;
 	this._tokens = dojox.string.tokenize(format, this._re, this._parseDelim, this);
-}
+};
 dojo.extend(dojox.string.sprintf.Formatter, {
 	_re: /\%(?:\(([\w_]+)\)|([1-9]\d*)\$)?([0 +\-\#]*)(\*|\d+)?(\.)?(\*|\d+)?[hlL]?([\%scdeEfFgGiouxX])/g,
 	_parseDelim: function(mapping, intmapping, flags, minWidth, period, precision, specifier){
@@ -63,7 +62,7 @@ dojo.extend(dojox.string.sprintf.Formatter, {
 		c: {
 			setArg: function(token){
 				if(!isNaN(token.arg)){
-					var num = parseInt(token.arg);
+					var num = parseInt(token.arg, 10);
 					if(num < 0 || num > 127){
 						throw new Error("invalid character code passed to %c in sprintf");
 					}
@@ -119,7 +118,7 @@ dojo.extend(dojox.string.sprintf.Formatter, {
 					token.arg = filler[token.mapping];
 				}else{
 					if(token.intmapping){
-						var position = parseInt(token.intmapping) - 1;
+						position = parseInt(token.intmapping, 10) - 1;
 					}
 					if(position >= arguments.length){
 						throw new Error("got " + arguments.length + " printf arguments, insufficient for '" + this._format + "'");
@@ -152,15 +151,15 @@ dojo.extend(dojox.string.sprintf.Formatter, {
 								token.rightJustify = true;
 								token.zeroPad = false;
 								break;
-							case "\#":
+							case "#":
 								token.alternative = true;
 								break;
 							default:
-								throw Error("bad formatting flag '" + token.flags.charAt(fi) + "'");
+								throw new Error("bad formatting flag '" + token.flags.charAt(fi) + "'");
 						}
 					}
 
-					token.minWidth = (token._minWidth) ? parseInt(token._minWidth) : 0;
+					token.minWidth = (token._minWidth) ? parseInt(token._minWidth, 10) : 0;
 					token.maxWidth = -1;
 					token.toUpper = false;
 					token.isUnsigned = false;
@@ -169,7 +168,7 @@ dojo.extend(dojox.string.sprintf.Formatter, {
 					token.precision = 1;
 					if(token.period == '.'){
 						if(token._precision){
-							token.precision = parseInt(token._precision);
+							token.precision = parseInt(token._precision, 10);
 						}else{
 							token.precision = 0;
 						}
@@ -198,7 +197,7 @@ dojo.extend(dojox.string.sprintf.Formatter, {
 					if(this._mapped){
 						throw new Error("* width not supported in mapped formats");
 					}
-					token.minWidth = parseInt(arguments[position++]);
+					token.minWidth = parseInt(arguments[position++], 10);
 					if(isNaN(token.minWidth)){
 						throw new Error("the argument for * width at position " + position + " is not a number in " + this._format);
 					}
@@ -213,9 +212,9 @@ dojo.extend(dojox.string.sprintf.Formatter, {
 					if(this._mapped){
 						throw new Error("* precision not supported in mapped formats");
 					}
-					token.precision = parseInt(arguments[position++]);
+					token.precision = parseInt(arguments[position++], 10);
 					if(isNaN(token.precision)){
-						throw Error("the argument for * precision at position " + position + " is not a number in " + this._format);
+						throw new Error("the argument for * precision at position " + position + " is not a number in " + this._format);
 					}
 					// negative precision means unspecified
 					if (token.precision < 0) {
@@ -247,7 +246,7 @@ dojo.extend(dojox.string.sprintf.Formatter, {
 	_zeros10: '0000000000',
 	_spaces10: '          ',
 	formatInt: function(token) {
-		var i = parseInt(token.arg);
+		var i = parseInt(token.arg, 10);
 		if(!isFinite(i)){ // isNaN(f) || f == Number.POSITIVE_INFINITY || f == Number.NEGATIVE_INFINITY)
 			// allow this only if arg is number
 			if(typeof token.arg != "number"){
@@ -307,15 +306,16 @@ dojo.extend(dojox.string.sprintf.Formatter, {
 		}
 
 		switch(token.doubleNotation) {
-			case 'e': {
+			case 'e':
 				token.arg = f.toExponential(token.precision); 
 				break;
-			}
-			case 'f': {
+			case 'f':
 				token.arg = f.toFixed(token.precision); 
 				break;
-			}
-			case 'g': {
+			case 'g':
+
+				// NOTE: Review this
+
 				// C says use 'e' notation if exponent is < -4 or is >= prec
 				// ECMAScript for toPrecision says use exponential notation if exponent is >= prec,
 				// though step 17 of toPrecision indicates a test for < -6 to force exponential.
@@ -335,7 +335,6 @@ dojo.extend(dojox.string.sprintf.Formatter, {
 					token.arg = token.arg.replace(/\.0*e/, 'e').replace(/\.0$/,'');
 				}
 				break;
-			}
 			default: throw new Error("unexpected double notation '" + token.doubleNotation + "'");
 		}
 
