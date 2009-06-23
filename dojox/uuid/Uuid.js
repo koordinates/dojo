@@ -50,8 +50,8 @@ dojox.uuid.Uuid.compare = function(/*dojox.uuid.Uuid*/ uuidOne, /*dojox.uuid.Uui
 	//		array.sort(dojox.uuid.Uuid.compare);
 	var uuidStringOne = uuidOne.toString();
 	var uuidStringTwo = uuidTwo.toString();
-	if (uuidStringOne > uuidStringTwo) return 1;   // integer
-	if (uuidStringOne < uuidStringTwo) return -1;  // integer
+	if (uuidStringOne > uuidStringTwo) { return 1; }  // integer
+	if (uuidStringOne < uuidStringTwo) { return -1; } // integer
 	return 0; // integer (either 0, 1, or -1)
 };
 
@@ -92,7 +92,7 @@ dojox.uuid.Uuid.prototype.isEqual = function(/*dojox.uuid.Uuid*/ otherUuid){
 	// summary: 
 	//		Returns true if this UUID is equal to the otherUuid, or false otherwise.
 	// otherUuid: Any object that has toString() method that returns a 36-character string that conforms to the UUID spec.
-	return (this.compare(otherUuid) == 0); // boolean
+	return (!this.compare(otherUuid)); // boolean
 };
 
 dojox.uuid.Uuid.prototype.isValid = function(){
@@ -165,12 +165,11 @@ dojox.uuid.Uuid.prototype.getTimestamp = function(/*String?*/ returnType){
 	//		hexString = uuid.getTimestamp("hex"); // "1da86cdb4308fb0"
 	// exceptions: 
 	//		Throws an Error if this is not a version 1 UUID.
-	if(!returnType){returnType = null};
+	if(!returnType){returnType = null;}
 	switch(returnType){
 		case "string":
 		case String:
 			return this.getTimestamp(Date).toUTCString(); // String (e.g. "Mon, 16 Jan 2006 20:21:41 GMT")
-			break;
 		case "hex":
 			// Return a 15-character string of hex digits containing the 
 			// timestamp for this UUID, with the high-order bits first.
@@ -178,7 +177,6 @@ dojox.uuid.Uuid.prototype.getTimestamp = function(/*String?*/ returnType){
 				this._timestampAsHexString = dojox.uuid.getTimestamp(this, "hex");
 			}
 			return this._timestampAsHexString; // String (e.g. "1da86cdb4308fb0")
-			break;
 		case null: // no returnType was specified, so default to Date
 		case "date":
 		case Date:
@@ -187,10 +185,8 @@ dojox.uuid.Uuid.prototype.getTimestamp = function(/*String?*/ returnType){
 				this._timestampAsDate = dojox.uuid.getTimestamp(this, Date);
 			}
 			return this._timestampAsDate; // Date
-			break;
 		default:
 			// we got passed something other than a valid returnType
 			dojox.uuid.assert(false, "The getTimestamp() method dojox.uuid.Uuid was passed a bogus returnType: " + returnType);
-			break;
 	}
 };
