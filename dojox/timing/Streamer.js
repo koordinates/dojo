@@ -19,7 +19,10 @@ dojox.timing.Streamer = function(
 	//	interval: the interval in ms at which the output function is fired.
 	//	minimum: the minimum number of elements in the internal queue.
 
-	var self = this;
+	// NOTE: Unused
+
+	//var self = this;
+
 	var queue = [];
 
 	//	public properties
@@ -30,7 +33,10 @@ dojox.timing.Streamer = function(
 
 	//	more setup
 	var timer = new dojox.timing.Timer(this.interval);
-	var tick = function(){
+
+	// NOTE: Unused
+
+	/*var tick = function(){
 		self.onTick(self);
 
 		if(queue.length < self.minimumSize){
@@ -52,7 +58,7 @@ dojox.timing.Streamer = function(
 
 		//	call the output function.
 		self.outputFunction(obj);
-	};
+	};*/
 
 	this.setInterval = function(/* int */ms){
 		//	summary
