@@ -50,7 +50,7 @@ dojo.declare("dojox.wire.Wire", null, {
 					//We need to see if this is a pure function or an object constructor...
 					try{
 						var testObj = new convertObject();
-						if(testObj && !dojo.isFunction(testObj["convert"])){
+						if(testObj && !dojo.isFunction(testObj.convert)){
 							//Looks like a 'pure' function...
 							this.converter = {convert: convertObject};
 						}else{
@@ -59,9 +59,12 @@ dojo.declare("dojox.wire.Wire", null, {
 					}catch(e){
 						//Do if this fails.	
 					}
-				}else if(dojo.isObject(convertObject)){
+
+				// NOTE: isObject allows null
+
+				}else if(dojo.isObject(convertObject) && convertObject){
 					//It's an object, like a jsId ... see if it has a convert function
-					if(dojo.isFunction(convertObject["convert"])){
+					if(dojo.isFunction(convertObject.convert)){
 						this.converter = convertObject;
 					}
 				}
@@ -117,10 +120,12 @@ dojo.declare("dojox.wire.Wire", null, {
 		if(this.property){
 			var list = this.property.split('.');
 			for(var i in list){
-				if(!object){
-					return object; //anything (null, undefined, etc)
+				if (dojo.isOwnProperty(list, i)) {
+					if(!object){
+						return object; //anything (null, undefined, etc)
+					}
+					object = this._getPropertyValue(object, list[i]);
 				}
-				object = this._getPropertyValue(object, list[i]);
 			}
 		}
 
