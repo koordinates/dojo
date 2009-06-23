@@ -51,7 +51,7 @@ dojo.experimental("dojox.timing.ThreadPool");
 	};
 
 	//	TODO: allow for changing of maxThreads and tick interval
-	t.ThreadPool=new (function(/* Number */mxthrs, /* Number */intvl){
+	t.ThreadPool= (function(/* Number */mxthrs, /* Number */intvl){
 		var self=this;
 		var maxThreads=mxthrs;
 		var availableThreads=maxThreads;
@@ -60,7 +60,10 @@ dojo.experimental("dojox.timing.ThreadPool");
 		var queue=[];
 		var timers=new Array(maxThreads+1);
 		var timer=new dojox.timing.Timer();
-		var invoke=function(){
+
+		// NOTE: Unused
+
+		/*var invoke=function(){
 			var tracker=timers[0]={};
 			for(var i=0; i<timers.length; i++){
 				window.clearTimeout(timers[i]);
@@ -70,7 +73,7 @@ dojo.experimental("dojox.timing.ThreadPool");
 				timers[i]=window.setTimeout(thread.invoke,(fireInterval*i));
 			}
 			availableThreads=maxThreads-(i-1);
-		};
+		};*/
 
 		//	public methods
 		this.getMaxThreads=function(){ return maxThreads; };
@@ -78,7 +81,7 @@ dojo.experimental("dojox.timing.ThreadPool");
 		this.getTickInterval=function(){ return interval; };
 		this.queueUserWorkItem=function(/* Function || dojox.timing.Thread */fn){
 			var item=fn;
-			if(item instanceof Function){
+			if(dojo.isFunction(item)){
 				item=new t.Thread(item);
 			}
 			var idx=queue.length;
@@ -96,9 +99,10 @@ dojo.experimental("dojox.timing.ThreadPool");
 			return true;
 		};
 		this.removeQueuedUserWorkItem=function(/* Function || dojox.timing.Thread */item){
-			if(item instanceof Function){
-				var idx=-1;
-				for(var i=0; i<queue.length; i++){
+			var i, idx;
+			if(dojo.isFunction(item)){
+				idx=-1;
+				for(i=0; i<queue.length; i++){
 					if(queue[i].func==item){
 						idx=i;
 						break;
@@ -111,8 +115,8 @@ dojo.experimental("dojox.timing.ThreadPool");
 				return false;
 			}
 
-			var idx=-1;
-			for(var i=0; i<queue.length; i++){
+			idx=-1;
+			for(i=0; i<queue.length; i++){
 				if(queue[i]==item){
 					idx=i;
 					break;
@@ -134,7 +138,9 @@ dojo.experimental("dojox.timing.ThreadPool");
 				}
 			}
 			for(var thread in timers[0]){
-				this.queueUserWorkItem(thread);
+				if (dojo.isOwnProperty(timers[0], thread)) {
+					this.queueUserWorkItem(thread);
+				}
 			}
 			timers[0]={};
 		};
