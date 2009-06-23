@@ -66,7 +66,7 @@ dojo.declare(
 			//		this needs to be done better, this is pretty simple and
 			//		surely not dummy proof
 			var file = path.substring(0, path.length-1)+".js";
-			var xhr = dojo.xhrGet({url:file, handleAs:"text"});
+			dojo.xhrGet({url:file, handleAs:"text"});
 			// Make loading synchronously, mainly so we can use it in doh.
 			var data = dojo._getText(file);
 			return this._getTestsFromString(data, true);
@@ -118,7 +118,7 @@ dojo.declare(
 					l = insideComments ? trim(l).substring(2, l.length) : l; // Remove the leading slashes.
 					l = trim(l).substring(3, l.length); // Remove the ">>>".
 					test.commands.push(trim(l));
-				}else if((!insideComments || l.match(/^\/\/\s+.*/)) && test.commands.length && test.expectedResult.length==0){
+				}else if((!insideComments || l.match(/^\/\/\s+.*/)) && test.commands.length && !test.expectedResult.length){
 					// Detect the lines after the ">>>"-lines, the exptected result.
 					l = insideComments ? trim(l).substring(3, l.length) : l; // Remove the leading slashes.
 					test.expectedResult.push(trim(l));
