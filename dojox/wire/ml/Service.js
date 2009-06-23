@@ -188,19 +188,24 @@ dojo.declare("dojox.wire.ml.RestHandler", null, {
 		}
 		if(query){
 			var queryString = "";
+
+			// NOTE: Duplication
+
 			for(var name in query){
-				var value = query[name];
-				if(value){
-					value = encodeURIComponent(value);
-					var variable = "{" + name + "}";
-					var index = url.indexOf(variable);
-					if(index >= 0){ // encode in path
-						url = url.substring(0, index) + value + url.substring(index + variable.length);
-					}else{ // encode as query string
-						if(queryString){
-							queryString += "&";
+				if (dojo.isOwnProperty(query, name)) {
+					var value = query[name];
+					if(value){
+						value = encodeURIComponent(value);
+						var variable = "{" + name + "}";
+						var index = url.indexOf(variable);
+						if(index >= 0){ // encode in path
+							url = url.substring(0, index) + value + url.substring(index + variable.length);
+						}else{ // encode as query string
+							if(queryString){
+								queryString += "&";
+							}
+							queryString += (encodeURIComponent(name) + "=" + value);
 						}
-						queryString += (name + "=" + value);
 					}
 				}
 			}
