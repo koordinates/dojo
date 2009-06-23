@@ -49,8 +49,10 @@ dojo.declare("dojox.wire.TextAdapter", dojox.wire.CompositeWire, {
 
 		var text = "";
 		for(var i in this.segments){
-			var segment = this.segments[i].getValue(object);
-			text = this._addSegment(text, segment);
+			if (dojo.isOwnProperty(this.segments, i)) {
+				var segment = this.segments[i].getValue(object);
+				text = this._addSegment(text, segment);
+			}
 		}
 		return text; //String
 	},
