@@ -1,6 +1,6 @@
 dojo.provide("dojox.xml.DomParser");
 
-dojox.xml.DomParser=new (function(){
+dojox.xml.DomParser= (function(){
 	/**********************************************************
 	 *	The DomParser is a close-to (but not entirely)
 	 *	conforming XML parser based on regular
@@ -42,33 +42,6 @@ dojox.xml.DomParser=new (function(){
 	var eapos=/\&apos;/g;
 	var eamp=/\&amp;/g;
 	var dNs="_def_";
-
-	//	create a root node.
-	function _doc(){
-		return new (function(){
-			var all={};
-			this.nodeType=nodeTypes.DOCUMENT;
-			this.nodeName="#document";
-			this.namespaces={};
-			this._nsPaths={};
-			this.childNodes=[];
-			this.documentElement=null;
-
-			//	any element with an ID attribute will be added to the internal hashtable.
-			this._add=function(obj){
-				if(typeof(obj.id)!="undefined"){ all[obj.id]=obj; }
-			};
-			this._remove=function(id){
-				if(all[id]){ delete all[id]; }
-			};
-
-			this.byId=this.getElementById=function(id){ return all[id]; };
-			this.byName=this.getElementsByTagName=byName;
-			this.byNameNS=this.getElementsByTagNameNS=byNameNS;
-			this.childrenByName=childrenByName;
-			this.childrenByNameNS=childrenByNameNS;
-		})();
-	}
 
 	//	functions attached to element nodes
 	function byName(name){
@@ -125,6 +98,37 @@ dojox.xml.DomParser=new (function(){
 		return a;
 	}
 
+
+	//	create a root node.
+
+	var Root = function(){
+			var all={};
+			this.nodeType=nodeTypes.DOCUMENT;
+			this.nodeName="#document";
+			this.namespaces={};
+			this._nsPaths={};
+			this.childNodes=[];
+			this.documentElement=null;
+
+			//	any element with an ID attribute will be added to the internal hashtable.
+			this._add=function(obj){
+				if(typeof(obj.id)!="undefined"){ all[obj.id]=obj; }
+			};
+			this._remove=function(id){
+				if(all[id]){ delete all[id]; }
+			};
+
+			this.byId=this.getElementById=function(id){ return all[id]; };
+			this.byName=this.getElementsByTagName=byName;
+			this.byNameNS=this.getElementsByTagNameNS=byNameNS;
+			this.childrenByName=childrenByName;
+			this.childrenByNameNS=childrenByNameNS;
+	};
+
+	function _doc(){
+		return new Root();
+	}
+
 	function _createTextNode(v){
 		return { 
 			nodeType:nodeTypes.TEXT,
@@ -144,8 +148,8 @@ dojox.xml.DomParser=new (function(){
 	}
 	function getAttrNS(name, ns){
 		for(var i=0; i<this.attributes.length; i++){
-			if(this.ownerDocument._nsPaths[ns]==this.attributes[i].namespace
-				&&this.attributes[i].localName==name
+			if(this.ownerDocument._nsPaths[ns]==this.attributes[i].namespace &&
+				this.attributes[i].localName==name
 			){
 				return this.attributes[i].nodeValue;
 			}
@@ -163,14 +167,14 @@ dojox.xml.DomParser=new (function(){
 			}
 		}
 		if(name=="id"){
-			if(old!=null){ this.ownerDocument._remove(old); }
+			if(old!==null){ this.ownerDocument._remove(old); }
 			this.ownerDocument._add(this);
 		}
 	}
 	function setAttrNS(name, val, ns){
 		for(var i=0; i<this.attributes.length; i++){
-			if(this.ownerDocument._nsPaths[ns]==this.attributes[i].namespace
-				&&this.attributes[i].localName==name
+			if(this.ownerDocument._nsPaths[ns]==this.attributes[i].namespace &&
+				this.attributes[i].localName==name
 			){
 				this.attributes[i].nodeValue=val;
 				return;
@@ -205,8 +209,8 @@ dojox.xml.DomParser=new (function(){
 	//	the main method.
 	this.parse=function(/* String */str){
 		var root=_doc();
-		if(str==null){ return root; }
-		if(str.length==0){ return root; }
+		if(!str){ return root; }
+		if(!str.length){ return root; }
 
 		//	preprocess custom entities
 		if(str.indexOf("<!ENTITY")>0){
@@ -214,7 +218,7 @@ dojox.xml.DomParser=new (function(){
 			if(reEntity.test(str)){
 				reEntity.lastIndex=0;
 				//	match entities
-				while((entity=reEntity.exec(str))!=null){
+				while(entity=reEntity.exec(str)){
 					eRe.push({ 
 						entity:"&"+entity[1].replace(trim,"")+";", 
 						expression:entity[2] 
@@ -229,17 +233,19 @@ dojox.xml.DomParser=new (function(){
 
 		//	pre-parse for CData, and tokenize.
 		var cdSections=[], cdata;
-		while((cdata=reCData.exec(str))!=null){ cdSections.push(cdata[1]); }
-		for(var i=0; i<cdSections.length; i++){ str=str.replace(cdSections[i], i); }
+		while(cdata=reCData.exec(str)){ cdSections.push(cdata[1]); }
+		for(i=0; i<cdSections.length; i++){
+			str=str.replace(cdSections[i], i);
+		}
 		
 		//	pre-parse for comments, and tokenize.
 		var comments=[], comment;
-		while((comment=reComments.exec(str))!=null){ comments.push(comment[1]); }
+		while(comment=reComments.exec(str)){ comments.push(comment[1]); }
 		for(i=0; i<comments.length; i++){ str=str.replace(comments[i], i); }
 
 		//	parse the document
 		var res, obj=root;
-		while((res=reTags.exec(str))!=null){
+		while(res=reTags.exec(str)){
 			//	closing tags.
 			if(res[2].charAt(0)=="/" && res[2].replace(trim, "").length>1){
 				if(obj.parentNode){
@@ -266,8 +272,8 @@ dojox.xml.DomParser=new (function(){
 				}
 				else if(res[1].charAt(0)=="!"){
 					//	CDATA; skip over any declaration elements.
-					if(res[1].indexOf("![CDATA[")==0){
-						var val=parseInt(res[1].replace("![CDATA[","").replace("]]",""));
+					if(!res[1].indexOf("![CDATA[")){
+						var val=parseInt(res[1].replace("![CDATA[","").replace("]]",""), 10);
 						obj.childNodes.push({ 
 							nodeType:nodeTypes.CDATA_SECTION, 
 							nodeName:"#cdata-section", 
@@ -276,7 +282,7 @@ dojox.xml.DomParser=new (function(){
 					}
 					//	Comments.
 					else if(res[1].substr(0,3)=="!--"){
-						var val=parseInt(res[1].replace("!--","").replace("--",""));
+						val=parseInt(res[1].replace("!--","").replace("--",""), 10);
 						obj.childNodes.push({ 
 							nodeType:nodeTypes.COMMENT, 
 							nodeName:"#comment", 
@@ -286,7 +292,7 @@ dojox.xml.DomParser=new (function(){
 				}
 				else {
 					//	Elements (with attribute and text)
-					var name=res[1].replace(trim,"");
+					name=res[1].replace(trim,"");
 					var o={ 
 						nodeType:nodeTypes.ELEMENT, 
 						nodeName:name, 
@@ -319,16 +325,16 @@ dojox.xml.DomParser=new (function(){
 
 					//	parse the attribute string.
 					var attr;
-					while((attr=reAttr.exec(res[2]))!=null){
+					while(attr=reAttr.exec(res[2])){
 						if(attr.length>0){
-							var name=attr[1].replace(trim,"");
-							var val=(attr[4]||attr[6]||"").replace(normalize," ")
+							name=attr[1].replace(trim,"");
+							val=(attr[4]||attr[6]||"").replace(normalize," ")
 								.replace(egt,">")
 								.replace(elt,"<")
 								.replace(eapos,"'")
 								.replace(equot,'"')
 								.replace(eamp,"&");
-							if(name.indexOf("xmlns")==0){
+							if(!name.indexOf("xmlns")){
 								if(name.indexOf(":")>0){
 									var ns=name.split(":");
 									root.namespaces[ns[1]]=val;
@@ -339,9 +345,9 @@ dojox.xml.DomParser=new (function(){
 								}
 							} else {
 								var ln=name;
-								var ns=dNs;
+								ns=dNs;
 								if(name.indexOf(":")>0){
-									var t=name.split(":");
+									t=name.split(":");
 									ln=t[1];
 									ns=t[0];
 								}
@@ -368,7 +374,7 @@ dojox.xml.DomParser=new (function(){
 							obj=o;
 						}
 					}
-					var text=res[3];
+					text=res[3];
 					if(text.length>0){
 						obj.childNodes.push(_createTextNode(text));
 					}
@@ -377,7 +383,7 @@ dojox.xml.DomParser=new (function(){
 		}
 
 		//	set the document element
-		for(var i=0; i<root.childNodes.length; i++){
+		for(i=0; i<root.childNodes.length; i++){
 			var e=root.childNodes[i];
 			if(e.nodeType==nodeTypes.ELEMENT){
 				root.documentElement=e;
