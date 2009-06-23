@@ -135,7 +135,10 @@ dojox.xml.widgetParser = function(){
 
 			var name = attr.name || attr.nodeName;
 			var value = attr.value || attr.nodeValue;
-			if (dojo.hasAttr(node, name)) {
+
+			// NOTE: hasAttr is only for HTML DOM nodes
+
+			if (dojo.realAttr(node, name) !== null) {
 				dojo.realAttr(newNode, name, value);
 			}
 		});
