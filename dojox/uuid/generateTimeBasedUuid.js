@@ -47,7 +47,7 @@ dojox.uuid.generateTimeBasedUuid.getNode = function(){
 };
 
 	
-dojox.uuid.generateTimeBasedUuid._generator = new function(){
+dojox.uuid.generateTimeBasedUuid._generator = function(){
 	// Number of hours between October 15, 1582 and January 1, 1970:
 	this.GREGORIAN_CHANGE_OFFSET_IN_HOURS = 3394248;
 	
@@ -86,7 +86,7 @@ dojox.uuid.generateTimeBasedUuid._generator = new function(){
 		// summary: 
 		//		Given a floating point number, this method returns an array which 
 		//		holds a 64-bit number broken into 4 16-bit elements.
-		var result = new Array(0, 0, 0, 0);
+		var result = [];
 		result[3] = x % 0x10000;
 		x -= result[3];
 		x /= 0x10000;
@@ -112,7 +112,7 @@ dojox.uuid.generateTimeBasedUuid._generator = new function(){
 		dojox.uuid.assert(arrayA.length == 4);
 		dojox.uuid.assert(arrayB.length == 4);
 	
-		var result = new Array(0, 0, 0, 0);
+		var result = [];
 		result[3] = arrayA[3] + arrayB[3];
 		result[2] = arrayA[2] + arrayB[2];
 		result[1] = arrayA[1] + arrayB[1];
@@ -142,7 +142,7 @@ dojox.uuid.generateTimeBasedUuid._generator = new function(){
 		if(arrayA[2] * arrayB[0] !== 0){ overflow = true; }
 		dojox.uuid.assert(!overflow);
 	
-		var result = new Array(0, 0, 0, 0);
+		var result = [];
 		result[0] += arrayA[0] * arrayB[3];
 		_carry(result);
 		result[0] += arrayA[1] * arrayB[2];
@@ -281,6 +281,5 @@ dojox.uuid.generateTimeBasedUuid._generator = new function(){
 					_uuidClockSeqString + hyphen + node;
 		resultUuid = resultUuid.toLowerCase();
 		return resultUuid; // String (a 36 character string, which will look something like "b4308fb0-86cd-11da-a72b-0800200c9a66")
-	}
-
+	};
 }();
