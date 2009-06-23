@@ -9,7 +9,7 @@ dojo.declare("dojox.xmpp.UserService", null, {
 		var req={
 			id: this.session.getNextIqId(),
 			type: 'get'
-		}
+		};
 		var request = new dojox.string.Builder(dojox.xmpp.util.createElement("iq",req,false));
 		request.append(dojox.xmpp.util.createElement("query",{xmlns:"jabber:iq:private"},false));
 		request.append(dojox.xmpp.util.createElement("sunmsgr",{xmlsns:'sun:xmpp:properties'},true));
@@ -23,17 +23,19 @@ dojo.declare("dojox.xmpp.UserService", null, {
 		var req={
 			id: this.session.getNextIqId(),
 			type: 'set'
-		}			
+		};
 		
 		var request = new dojox.string.Builder(dojox.xmpp.util.createElement("iq",req,false));
 		request.append(dojox.xmpp.util.createElement("query",{xmlns:"jabber:iq:private"},false));
 		request.append(dojox.xmpp.util.createElement("sunmsgr",{xmlsns:'sun:xmpp:properties'},false));
 
 		for (var key in props){
-			request.append(dojox.xmpp.util.createElement("property",{name: key},false));
-			request.append(dojox.xmpp.util.createElement("value",{},false));
-			request.append(props[key]);
-			request.append("</value></props>");
+			if (dojo.isOwnProperty(props, key)) {
+				request.append(dojox.xmpp.util.createElement("property",{name: key},false));
+				request.append(dojox.xmpp.util.createElement("value",{},false));
+				request.append(props[key]);
+				request.append("</value></props>");
+			}
 		}
 		
 		request.append("</sunmsgr></query></iq>");
