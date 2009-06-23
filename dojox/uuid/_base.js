@@ -43,7 +43,7 @@ dojox.uuid.generateNilUuid = function(){
 	//		RFC 4122: http://tools.ietf.org/html/rfc4122#section-4.1.7
 	// examples: 
 	//		var string = dojox.uuid.generateNilUuid();
-	return dojox.uuid.NIL_UUID;; // String
+	return dojox.uuid.NIL_UUID; // String
 };
 
 dojox.uuid.isValid = function(/*String*/ uuidString){
@@ -63,9 +63,11 @@ dojox.uuid.isValid = function(/*String*/ uuidString){
 			(arrayOfParts[4].length == 12));
 		var HEX_RADIX = 16;
 		for (var i in arrayOfParts) {
-			var part = arrayOfParts[i];
-			var integer = parseInt(part, HEX_RADIX);
-			valid = valid && isFinite(integer);
+			if (dojo.isOwnProperty(arrayOfParts, i)) {
+				var part = arrayOfParts[i];
+				var integer = parseInt(part, HEX_RADIX);
+				valid = valid && isFinite(integer);
+			}
 		}
 	}
 	return valid; // boolean
@@ -179,12 +181,11 @@ dojox.uuid.getTimestamp = function(/*String*/ uuidString, /*String?*/ returnType
 	dojox.uuid.assert(dojox.uuid.getVersion(uuidString) == dojox.uuid.version.TIME_BASED, errorMessage);
 	
 	uuidString = uuidString.toString();
-	if(!returnType){returnType = null};
+	if(!returnType){returnType = null;}
 	switch(returnType){
 		case "string":
 		case String:
 			return dojox.uuid.getTimestamp(uuidString, Date).toUTCString(); // String (e.g. "Mon, 16 Jan 2006 20:21:41 GMT")
-			break;
 		case "hex":
 			// Return a 15-character string of hex digits containing the 
 			// timestamp for this UUID, with the high-order bits first.
@@ -200,7 +201,6 @@ dojox.uuid.getTimestamp = function(/*String*/ uuidString, /*String?*/ returnType
 			var timestampAsHexString = hexTimeHigh + hexTimeMid + hexTimeLow;
 			dojox.uuid.assert(timestampAsHexString.length == 15);
 			return timestampAsHexString; // String (e.g. "1da86cdb4308fb0")
-			break;
 		case null: // no returnType was specified, so default to Date
 		case "date":
 		case Date:
@@ -232,10 +232,8 @@ dojox.uuid.getTimestamp = function(/*String*/ uuidString, /*String?*/ returnType
 		
 			var timestampAsDate = new Date(millisecondsSince1970);
 			return timestampAsDate; // Date
-			break;
 		default:
 			// we got passed something other than a valid returnType
 			dojox.uuid.assert(false, "dojox.uuid.getTimestamp was not passed a valid returnType: " + returnType);
-			break;
 	}
 };
