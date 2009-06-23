@@ -42,7 +42,7 @@ dojo.require("dojo.parser");
 	 * 
 	 */
 
-dojox.xml.widgetParser = new function(){
+dojox.xml.widgetParser = function(){
 	
 	var d = dojo;
 	
@@ -68,7 +68,7 @@ dojox.xml.widgetParser = new function(){
 		//small as possible
 		var ret = d.query('[dojoType]', htmlNode);
 		//remove the script tag and replace with new HTML block
-		dojo.query(">", htmlNode).place(script, "before")
+		dojo.query(">", htmlNode).place(script, "before");
 		script.parentNode.removeChild(script);
 		return ret;
 	};
@@ -122,41 +122,29 @@ dojox.xml.widgetParser = new function(){
 			 * dealing with this. Worst case scenario for now is that user has to use
 			 * html tag with dojoType for misbehaving widget.
 			 */
+
+			// NOTE: Duplication
+
 			newNode = newNode || dd.createElement((dojoType == "dijit.form.ComboBox") ? "select" : "div");
 			newNode.setAttribute("dojoType", dojoType);
 		}
 		
-		//	TODO:
-		//		we should probably set this up different, mixin a function
-		//		depending on if it is IE rather than checking every time here
-		//		the xmlns problem and the style problem are both IE specific
 		d.forEach(node.attributes, function(attr){
-			// NOTE: IE always iterates *all* properties!!!
+
+			// NOTE: xmlns problem?  Handle in realAttr...
+
 			var name = attr.name || attr.nodeName;
 			var value = attr.value || attr.nodeValue;
-			if(name.indexOf("xmlns") != 0){
-				// style=blah blah blah is a problem, in IE if you use
-				// setAttribute here you get all sorts of problems. Maybe it
-				// would be better to just create a giant string of HTML
-				// instead of an object graph, then set innerHTML on something
-				// to get the object graph? That might be cleaner...  that way
-				// is uses the browser HTML parsing exactly at is and won't
-				// cause any sort of issues. We could just special case style
-				// as well?
-				if(dojo.isIE && name == "style"){
-					newNode.style.setAttribute("cssText", value);
-				}else{
-					newNode.setAttribute(name, value);
-				}
+			if (dojo.hasAttr(node, name)) {
+				dojo.realAttr(newNode, name, value);
 			}
 		});
 		d.forEach(node.childNodes, function(cn){
 			var childNode = this.toHTML(cn);
+
+			// NOTE: Duplication
 			
-			// script tags in IE don't like appendChild, innerHTML or innerText
-			// so if we are creating one programatically set text instead
-			// could special case this for IE only
-			if(localName == "script"){
+			if(typeof newNode.text == 'string'){
 				newNode.text += childNode.nodeValue;
 			}else{
 				newNode.appendChild(childNode);
