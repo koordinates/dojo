@@ -47,17 +47,15 @@ dojox.string.Builder = function(/*String?*/str){
 				case 5: tmp=""+arguments[4]+tmp;
 				case 4: tmp=""+arguments[3]+tmp;
 				case 3: tmp=""+arguments[2]+tmp;
-				case 2: {
+				case 2:
 					b+=""+arguments[0]+arguments[1]+tmp;
 					break;
-				}
-				default: {
+				default:
 					var i=0;
 					while(i<arguments.length){
 						tmp += arguments[i++];
 					}
 					b += tmp;
-				}
 			}
 		} else {
 			b += s;
@@ -101,7 +99,7 @@ dojox.string.Builder = function(/*String?*/str){
 		//		Remove len characters starting at index start.  If len
 		//		is not provided, the end of the string is assumed.
 		if(len===undefined){ len = b.length; }
-		if(len == 0){ return this; }
+		if(!len){ return this; }
 		b = b.substr(0, start) + b.substr(start+len);
 		this.length = b.length;
 		return this;	//	dojox.string.Builder
@@ -110,7 +108,7 @@ dojox.string.Builder = function(/*String?*/str){
 	this.insert = function(/* Number */index, /* String */str){
 		//	summary: 
 		//		Insert string str starting at index.
-		if(index == 0){
+		if(!index){
 			b = str + b;
 		}else{
 			b = b.slice(0, index) + str + b.slice(index);
