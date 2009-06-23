@@ -22,7 +22,7 @@ dojox.validate.isIpAddress = function(/*String*/value, /*Object?*/flags) {
 
 	var re = new RegExp("^" + dojox.validate.regexp.ipAddress(flags) + "$", "i");
 	return re.test(value); // Boolean
-}
+};
 
 
 dojox.validate.isUrl = function(/*String*/value, /*Object?*/flags) {
@@ -37,7 +37,7 @@ dojox.validate.isUrl = function(/*String*/value, /*Object?*/flags) {
 
 	var re = new RegExp("^" + dojox.validate.regexp.url(flags) + "$", "i");
 	return re.test(value); // Boolean
-}
+};
 
 dojox.validate.isEmailAddress = function(/*String*/value, /*Object?*/flags) {
 	// summary: Checks if a string could be a valid email address
@@ -51,7 +51,7 @@ dojox.validate.isEmailAddress = function(/*String*/value, /*Object?*/flags) {
 
 	var re = new RegExp("^" + dojox.validate.regexp.emailAddress(flags) + "$", "i");
 	return re.test(value); // Boolean
-}
+};
 
 dojox.validate.isEmailAddressList = function(/*String*/value, /*Object?*/flags) {
 	// summary: Checks if a string could be a valid email address list.
@@ -66,7 +66,7 @@ dojox.validate.isEmailAddressList = function(/*String*/value, /*Object?*/flags) 
 
 	var re = new RegExp("^" + dojox.validate.regexp.emailAddressList(flags) + "$", "i");
 	return re.test(value); // Boolean
-}
+};
 
 dojox.validate.getEmailAddressList = function(/*String*/value, /*Object?*/flags) {
 	// summary: Check if value is an email address list. If an empty list
@@ -82,4 +82,4 @@ dojox.validate.getEmailAddressList = function(/*String*/value, /*Object?*/flags)
 		return value.split(new RegExp("\\s*[" + flags.listSeparator + "]\\s*")); // Array
 	}
 	return []; // Array
-}
+};
