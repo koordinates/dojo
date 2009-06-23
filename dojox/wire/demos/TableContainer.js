@@ -19,16 +19,18 @@ dojo.declare("dojox.wire.demos.TableContainer", [ dijit._Widget, dijit._Template
 		//	array:
 		//		Array of row values to add.
 		try{
-			var row = document.createElement("tr");
+			var row = dojo.doc.createElement("tr");
 			if((this.rowCount%2) === 0){
 				dojo.addClass(row, "alternate");
 			}
 			this.rowCount++;
 			for(var i in array){
-				var cell = document.createElement("td");
-				var text = document.createTextNode(array[i]);
-				cell.appendChild(text);
-				row.appendChild(cell);
+				if (dojo.isOwnProperty(array, i)) {
+					var cell = dojo.doc.createElement("td");
+					var text = dojo.doc.createTextNode(array[i]);
+					cell.appendChild(text);
+					row.appendChild(cell);
+				}
 				
 			}
 			this.tableContainer.appendChild(row);
@@ -50,14 +52,15 @@ dojo.declare("dojox.wire.demos.TableContainer", [ dijit._Widget, dijit._Template
 		//	summary:
 		//		Widget lifecycle function to handle generation of the header elements in the table.
 		var headers = this.headers.split(",");
-		var tr = document.createElement("tr");
-		for(i in headers){
-			
-			var header = headers[i];
-			var th = document.createElement("th");
-			var text = document.createTextNode(header);
-			th.appendChild(text);
-			tr.appendChild(th);
+		var tr = dojo.doc.createElement("tr");
+		for(var i in headers){
+			if (dojo.isOwnProperty(headers, i)) {
+				var header = headers[i];
+				var th = dojo.doc.createElement("th");
+				var text = dojo.doc.createTextNode(header);
+				th.appendChild(text);
+				tr.appendChild(th);
+			}
 		}
 		this.tableContainer.appendChild(tr);
 	}
