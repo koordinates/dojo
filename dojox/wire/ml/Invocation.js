@@ -40,8 +40,10 @@ dojo.declare("dojox.wire.ml.Invocation", dojox.wire.ml.Action, {
 		//		a widget or an DOM element with the dotted notation.
 		//		If 'parameters' are omitted, the arguments to this method are
 		//		passed as is.
+		var args;
+
 		if(this.topic){
-			var args = this._getParameters(arguments);
+			args = this._getParameters(arguments);
 			try{
 				dojo.publish(this.topic, args);
 				this.onComplete();
@@ -53,7 +55,7 @@ dojo.declare("dojox.wire.ml.Invocation", dojox.wire.ml.Action, {
 			if(!scope){
 				return; //undefined
 			}
-			var args = this._getParameters(arguments);
+			args = this._getParameters(arguments);
 			var func = scope[this.method];
 			if(!func){
 				func = scope.callMethod;
@@ -94,8 +96,8 @@ dojo.declare("dojox.wire.ml.Invocation", dojox.wire.ml.Action, {
 						this.onComplete(r);
 					}
 				}
-			}catch(e){
-				this.onError(e);
+			}catch(e2){
+				this.onError(e2);
 			}
 		}
 	},
@@ -159,7 +161,9 @@ dojo.declare("dojox.wire.ml.Invocation", dojox.wire.ml.Action, {
 			}
 		}else{
 			for(var i in list){
-				parameters.push(dojox.wire.ml._getValue(dojo.trim(list[i]), args));
+				if (dojo.isOwnProperty(list, i)) {
+					parameters.push(dojox.wire.ml._getValue(dojo.trim(list[i]), args));
+				}
 			}
 		}
 		return parameters; //Array
