@@ -47,7 +47,9 @@ dojo.declare("dojox.wire.CompositeWire", dojox.wire.Wire, {
 
 		var value = (dojo.isArray(this.children) ? [] : {}); // array or object
 		for(var c in this.children){
-			value[c] = this.children[c].getValue(object);
+			if (dojo.isOwnProperty(this.children, c)) {
+				value[c] = this.children[c].getValue(object);
+			}
 		}
 		return value;//Object||Array
 	},
@@ -70,7 +72,9 @@ dojo.declare("dojox.wire.CompositeWire", dojox.wire.Wire, {
 		}
 
 		for(var c in this.children){
-			this.children[c].setValue(value[c], object);
+			if (dojo.isOwnProperty(this.children, c)) {
+				this.children[c].setValue(value[c], object);
+			}
 		}
 		return object; //Object||Array
 	},
@@ -89,10 +93,12 @@ dojo.declare("dojox.wire.CompositeWire", dojox.wire.Wire, {
 		}
 
 		for(var c in children){
-			var child = children[c];
-			child.parent = this;
-			if(!dojox.wire.isWire(child)){
-				children[c] = dojox.wire.create(child);
+			if (dojo.isOwnProperty(children, c)) {
+				var child = children[c];
+				child.parent = this;
+				if(!dojox.wire.isWire(child)){
+					children[c] = dojox.wire.create(child);
+				}
 			}
 		}
 	}
