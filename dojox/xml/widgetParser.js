@@ -136,9 +136,7 @@ dojox.xml.widgetParser = function(){
 			var name = attr.name || attr.nodeName;
 			var value = attr.value || attr.nodeValue;
 
-			// NOTE: hasAttr is only for HTML DOM nodes
-
-			if (dojo.realAttr(node, name) !== null) {
+			if (dojo.hasAttr(node, name)) {
 				dojo.realAttr(newNode, name, value);
 			}
 		});
