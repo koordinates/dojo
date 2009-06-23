@@ -11,7 +11,7 @@ tests.register("dojox.wire.tests.programmatic.CompositeWire", [
 		var value = new dojox.wire.CompositeWire({object: source, children: children}).getValue();
 		t.assertEqual(source.a, value.x);
 		t.assertEqual(source.b, value.y);
-		new dojox.wire.CompositeWire({object: target, children: children}).setValue(value);
+		(new dojox.wire.CompositeWire({object: target, children: children}).setValue(value));
 		t.assertEqual(source.a, target.a);
 		t.assertEqual(source.b, target.b);
 
@@ -20,7 +20,7 @@ tests.register("dojox.wire.tests.programmatic.CompositeWire", [
 		value = new dojox.wire.CompositeWire({children: children}).getValue(source);
 		t.assertEqual(source.a, value.x);
 		t.assertEqual(source.b, value.y);
-		new dojox.wire.CompositeWire({children: children}).setValue(value, target);
+		(new dojox.wire.CompositeWire({children: children}).setValue(value, target));
 		t.assertEqual(source.a, target.a);
 		t.assertEqual(source.b, target.b);
 
@@ -30,7 +30,7 @@ tests.register("dojox.wire.tests.programmatic.CompositeWire", [
 		value = new dojox.wire.CompositeWire({object: source, children: children}).getValue();
 		t.assertEqual(source.a, value[0]);
 		t.assertEqual(source.b, value[1]);
-		new dojox.wire.CompositeWire({object: target, children: children}).setValue(value);
+		(new dojox.wire.CompositeWire({object: target, children: children}).setValue(value));
 		t.assertEqual(source.a, target.a);
 		t.assertEqual(source.b, target.b);
 
@@ -39,7 +39,7 @@ tests.register("dojox.wire.tests.programmatic.CompositeWire", [
 		value = new dojox.wire.CompositeWire({children: children}).getValue(source);
 		t.assertEqual(source.a, value[0]);
 		t.assertEqual(source.b, value[1]);
-		new dojox.wire.CompositeWire({children: children}).setValue(value, target);
+		(new dojox.wire.CompositeWire({children: children}).setValue(value, target));
 		t.assertEqual(source.a, target.a);
 		t.assertEqual(source.b, target.b);
 	}
