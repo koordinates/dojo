@@ -97,10 +97,12 @@ dojo.declare("dojox.wire.ml.Action", [dijit._Widget, dijit._Container], {
 		//		Otherwise, _run() method is called.
 		var children = this.getChildren();
 		for(var i in children){
-			var child = children[i];
-			if(child instanceof dojox.wire.ml.ActionFilter){
-				if(!child.filter.apply(child, arguments)){
-					return;
+			if (dojo.isOwnProperty(children, i)) {
+				var child = children[i];
+				if(child instanceof dojox.wire.ml.ActionFilter){
+					if(!child.filter.apply(child, arguments)){
+						return;
+					}
 				}
 			}
 		}
@@ -115,9 +117,11 @@ dojo.declare("dojox.wire.ml.Action", [dijit._Widget, dijit._Container], {
 		//		are called.
 		var children = this.getChildren();
 		for(var i in children){
-			var child = children[i];
-			if(child instanceof dojox.wire.ml.Action){
-				child.run.apply(child, arguments);
+			if (dojo.isOwnProperty(children, i)) {
+				var child = children[i];
+				if(child instanceof dojox.wire.ml.Action){
+					child.run.apply(child, arguments);
+				}
 			}
 		}
 	},
@@ -213,7 +217,7 @@ dojo.declare("dojox.wire.ml.ActionFilter", dijit._Widget, {
 			if(this.error){
 				dojox.wire.ml._setValue(this.error, this.message);
 			}else{
-				alert(this.message);
+				window.alert(this.message);
 			}
 		}
 		return false; //Boolean
