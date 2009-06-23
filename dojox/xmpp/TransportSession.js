@@ -72,7 +72,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 			this.matchTypeIdAttribute = {};
 			
 		
-			this.keepAliveTimer = setTimeout(dojo.hitch(this, "_keepAlive"), 10000);
+			this.keepAliveTimer = window.setTimeout(dojo.hitch(this, "_keepAlive"), 10000);
 			
 			if(this.useScriptSrcTransport){
 				dojo.connect(dojox.xmpp.TransportSession, 
@@ -83,7 +83,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 				for(var i = 0; i <= this.hold; i++) {
 					var iframe = dojo.io.iframe.create("xmpp-transport-" + i, dojox._scopeName + ".xmpp.TransportSession._iframeOnload("+i+");" );
 					this.transportIframes.push(iframe);
-					if(i ==0) {
+					if(!i) {
 						dojo.connect(iframe, "onload",  this, "_sendLogin");
 					}
 				}
@@ -129,7 +129,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 				return;
 			}
 			this._dispatchPacket();
-			this.keepAliveTimer = setTimeout(dojo.hitch(this, "_keepAlive"), 10000);
+			this.keepAliveTimer = window.setTimeout(dojo.hitch(this, "_keepAlive"), 10000);
 		},
 		
 		
@@ -155,7 +155,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 
 		//	this.sendXml(envelope,rid);
 			this.addToOutboundQueue(envelope.toString(), rid);
-			this.state=="Terminate";
+			this.state="Terminate";
 		},
 
 		dispatchPacket: function(msg, protocolMatchType, matchId, matchProperty){
@@ -185,32 +185,32 @@ dojo.extend(dojox.xmpp.TransportSession, {
 
 			this.deferredRequests[def.protocolMatchType + "-" +def.matchId]=def;
 			if(!this.dispatchTimer) {
-				this.dispatchTimer = setTimeout(dojo.hitch(this, "_dispatchPacket"), 600);
+				this.dispatchTimer = window.setTimeout(dojo.hitch(this, "_dispatchPacket"), 600);
 			}
 			return def;	
 		},
 	
 		_dispatchPacket: function(){
 			
-			clearTimeout(this.dispatchTimer);
+			window.clearTimeout(this.dispatchTimer);
 			delete this.dispatchTimer;
 			
 			if (!this.sid){
-				console.debug("TransportSession::dispatchPacket() No SID, packet dropped.")
+				console.debug("TransportSession::dispatchPacket() No SID, packet dropped.");
 				return;
 			}
 
 			if (!this.authId){
-				//FIXME according to original nodes, this should wait a little while and try
+				//FIXME according to original notes, this should wait a little while and try
 				//      again up to three times to see if we get this data.
-				console.debug("TransportSession::dispatchPacket() No authId, packet dropped [FIXME]")
+				console.debug("TransportSession::dispatchPacket() No authId, packet dropped [FIXME]");
 				return;
 			}
 
 		
 
 			//if there is a pending request with the server, don't poll
-			if (this.transmitState != "error" && (this.protocolPacketQueue.length == 0) && (this.outboundQueue.length > 0)) {
+			if (this.transmitState != "error" && (!this.protocolPacketQueue.length) && (this.outboundQueue.length > 0)) {
 				return;
 			}
 
@@ -220,7 +220,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 
 			var req = {
 				sid: this.sid
-			}
+			};
 
 			if (this.protocolPacketQueue.length > 0){
 				req.rid= this.rid++;
@@ -233,16 +233,14 @@ dojo.extend(dojox.xmpp.TransportSession, {
 				if(this.lastPollTime) {
 					var now = new Date().getTime();
 					if(now - this.lastPollTime < this.polling) {
-						//console.log("Waiting to poll ", this.polling - (now - this.lastPollTime)+10);
-						this.dispatchTimer = setTimeout(dojo.hitch(this, "_dispatchPacket"), this.polling - (now - this.lastPollTime)+10);
+						this.dispatchTimer = window.setTimeout(dojo.hitch(this, "_dispatchPacket"), this.polling - (now - this.lastPollTime)+10);
 						return;
 					}
 				
 				} 
 				req.rid= this.rid++;
 				this.lastPollTime = new Date().getTime();
-				var envelope = new dojox.string.Builder(dojox.xmpp.util.createElement("body", req, true));
-
+				envelope = new dojox.string.Builder(dojox.xmpp.util.createElement("body", req, true));
 			}
 
 		
@@ -263,7 +261,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 
 		removeFromOutboundQueue: function(rid){
 			for(var i=0; i<this.outboundQueue.length;i++){
-				if (rid == this.outboundQueue[i]["rid"]){
+				if (rid == this.outboundQueue[i].rid){
 					this.outboundQueue.splice(i, 1);
 					break;
 				}
@@ -345,7 +343,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 
 			if (this.outboundQueue.length<1){return;}
 
-			var expectedId = this.outboundQueue[0]["rid"];
+			var expectedId = this.outboundQueue[0].rid;
 			//console.log("expectedId", expectedId);
 			if (rid==expectedId){
 				this.removeFromOutboundQueue(rid);	
@@ -367,13 +365,13 @@ dojo.extend(dojox.xmpp.TransportSession, {
 		processInboundQueue: function(){
 			while (this.inboundQueue.length > 0) {
 				var item = this.inboundQueue.shift();
-				this.processDocument(item["doc"], item["rid"]);
+				this.processDocument(item.doc, item.rid);
 			}
 		},
 
 		addToInboundQueue: function(doc,rid){
 			for (var i=0; i<this.inboundQueue.length;i++){
-				if (rid < this.inboundQueue[i]["rid"]){continue;}
+				if (rid < this.inboundQueue[i].rid){continue;}
 				this.inboundQueue.splice(i,0,{doc: doc, rid: rid});	
 			}
 		},
@@ -385,7 +383,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 				var reasonNode = body.firstChild.firstChild;
 				var errorMessage = "";
 					if(reasonNode.nodeName == "conflict") {
-						errorMessage = "conflict"
+						errorMessage = "conflict";
 					}
 				this.setState("Terminate", errorMessage);
 	
@@ -400,8 +398,8 @@ dojo.extend(dojox.xmpp.TransportSession, {
 					throw new Error("No sid returned during xmpp session startup");
 				}
 
-				this.authId = body.getAttribute("authid");	
-				if (this.authId == "") {
+				this.authId = body.getAttribute("authid");
+				if (!this.authId) {
 					if (this.authRetries-- < 1) {
 						console.error("Unable to obtain Authorization ID");
 						this.terminateSession();	
@@ -409,10 +407,9 @@ dojo.extend(dojox.xmpp.TransportSession, {
 				}
 				this.wait= body.getAttribute("wait");	
 				if( body.getAttribute("polling")){
-					this.polling= parseInt(body.getAttribute("polling"))*1000;
+					this.polling= parseInt(body.getAttribute("polling"), 10)*1000;
 				}
-			
-				//console.log("Polling value ", this.polling);
+
 				this.inactivity = body.getAttribute("inactivity");	
 				this.setState("Ready");
 			}
@@ -468,12 +465,11 @@ dojo.extend(dojox.xmpp.TransportSession, {
 		},
 
 		processError: function(err, httpStatusCode,rid){
-			//console.log("Processing server error ", err, httpStatusCode,rid);
+			var errorMessage;
 			if(this.isTerminated()) {
 				return;
 			}
-			
-			
+						
 			if(httpStatusCode != 200) {
 				this.setState("Terminate", errorMessage);
 				return;
@@ -490,17 +486,16 @@ dojo.extend(dojox.xmpp.TransportSession, {
 			
 				if (err.firstChild.getAttribute("type")=='terminate'){
 					var reasonNode = err.firstChild.firstChild;
-					var errorMessage = "";
+					errorMessage = "";
 					if(reasonNode && reasonNode.nodeName == "conflict") {
-						errorMessage = "conflict"
+						errorMessage = "conflict";
 					}
 					this.setState("Terminate", errorMessage);
 					return;
 				}			
 			}
 			this.transmitState = "error";
-			setTimeout(dojo.hitch(this, function(){ this.dispatchPacket(); }), 200);	
-			//console.log("Error: ", arguments);
+			window.setTimeout(dojo.hitch(this, function(){ this.dispatchPacket(); }), 200);
 			return true;
 		},
 
