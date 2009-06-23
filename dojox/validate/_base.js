@@ -28,7 +28,7 @@ dojox.validate.isText = function(/*String*/value, /*Object?*/flags){
 	
 	return true; // Boolean
 
-}
+};
 
 dojox.validate._isInRangeCache = {};
 dojox.validate.isInRange = function(/*String*/value, /*Object?*/flags){
@@ -63,7 +63,7 @@ dojox.validate.isInRange = function(/*String*/value, /*Object?*/flags){
 	cache[cacheIdx] = !(value < min || value > max);
 	return cache[cacheIdx]; // Boolean
 
-}
+};
 
 dojox.validate.isNumberFormat = function(/* String */value, /* Object? */flags){
 	// summary: Validates any sort of number based format
@@ -105,7 +105,7 @@ dojox.validate.isNumberFormat = function(/* String */value, /* Object? */flags){
 
 	var re = new RegExp("^" + dojox.validate.regexp.numberFormat(flags) + "$", "i");
 	return re.test(value); // Boolean
-}
+};
 
 dojox.validate.isValidLuhn = function(/* String */value){
 	// summary: Validate a String value against the Luhn algorithm.
@@ -117,11 +117,11 @@ dojox.validate.isValidLuhn = function(/* String */value){
 	if(!dojo.isString(value)){
 		value = String(value);
 	}
-	value = value.replace(/[- ]/g,''); //ignore dashes and whitespaces
+	value = value.replace(/[\- ]/g,''); //ignore dashes and whitespaces
 	parity = value.length % 2;
 
 	for(var i = 0; i < value.length; i++){
-		curDigit = parseInt(value.charAt(i));
+		curDigit = parseInt(value.charAt(i), 10);
 		if(i % 2 == parity){
 			curDigit *= 2;
 		}
@@ -131,5 +131,5 @@ dojox.validate.isValidLuhn = function(/* String */value){
 		sum += curDigit;
 	}
 	return !(sum % 10); // Boolean
-}
+};
 
