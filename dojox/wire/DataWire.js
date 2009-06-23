@@ -56,9 +56,11 @@ dojo.declare("dojox.wire.DataWire", dojox.wire.Wire, {
 		var value = object;
 		var list = this.attribute.split('.');
 		for(var i in list){
-			value = this._getAttributeValue(value, list[i]);
-			if(!value){
-				return undefined; //undefined
+			if (dojo.isOwnProperty(list, i)) {
+				value = this._getAttributeValue(value, list[i]);
+				if(!value){
+					return undefined; //undefined
+				}
 			}
 		}
 		return value; //anything
