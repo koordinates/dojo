@@ -6,7 +6,7 @@ dojox.xmpp.util.xmlEncode = function(str) {
 		str = str.replace("&", "&amp;").replace(">", "&gt;").replace("<", "&lt;").replace("'", "&apos;").replace('"', "&quot;");
 	}
 	return str;
-}
+};
 
 dojox.xmpp.util.encodeJid = function(jid) {
 		var buffer = new dojox.string.Builder();
@@ -45,7 +45,7 @@ dojox.xmpp.util.encodeJid = function(jid) {
 			buffer.append(rep);
 		}
 		return buffer.toString();
-	}
+};
 
 dojox.xmpp.util.decodeJid = function(jid) {
 	
@@ -74,17 +74,18 @@ dojox.xmpp.util.decodeJid = function(jid) {
 	});
 	
 	return jid;
-}
-
+};
 
 dojox.xmpp.util.createElement = function(tag, attributes, terminal){
 	var elem = new dojox.string.Builder("<");
 	elem.append(tag + " ");
 
 	for (var attr in attributes){
-		elem.append(attr + '="');
-		elem.append(attributes[attr]);
-		elem.append('" ');
+		if (dojo.isOwnProperty(attributes, attr)) {
+			elem.append(attr + '="');
+			elem.append(attributes[attr]);
+			elem.append('" ');
+		}
 	}	
 	
 	if (terminal){
@@ -94,7 +95,7 @@ dojox.xmpp.util.createElement = function(tag, attributes, terminal){
 	}
 
 	return elem.toString();
-}
+};
 
 dojox.xmpp.util.stripHtml = function(str){
 	// summary
@@ -104,7 +105,7 @@ dojox.xmpp.util.stripHtml = function(str){
 	var re=/<[^>]*?>/gi;
 	for (var i=0; i<arguments.length; i++) {}
 	return str.replace(re, "");
-}
+};
 
 dojox.xmpp.util.decodeHtmlEntities = function(str){
 	// Summary: decodes HTML entities to js characters so the string can be 
@@ -112,14 +113,14 @@ dojox.xmpp.util.decodeHtmlEntities = function(str){
 	var ta = dojo.doc.createElement("textarea");
 	ta.innerHTML = str.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 	return ta.value;
-}
+};
 
 dojox.xmpp.util.htmlToPlain = function(str){
 	str = dojox.xmpp.util.decodeHtmlEntities(str);
 	str = str.replace(/<br\s*[i\/]{0,1}>/gi,"\n");
 	str = dojox.xmpp.util.stripHtml(str);
 	return str;
-}
+};
 
 dojox.xmpp.util.Base64 = {};
 dojox.xmpp.util.Base64.keylist = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -155,7 +156,7 @@ dojox.xmpp.util.Base64.encode = function(input){
 	} while (i < input.length);
 
 	return output;
-}
+};
 
 
 dojox.xmpp.util.Base64.decode = function(input){
@@ -189,4 +190,4 @@ dojox.xmpp.util.Base64.decode = function(input){
 	} while (i < input.length);
 
 	return output;
-}
+};
