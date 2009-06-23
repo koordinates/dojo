@@ -1,4 +1,4 @@
-dojo.provide("dojox.wire.demos.WidgetRepeater")
+dojo.provide("dojox.wire.demos.WidgetRepeater");
 		
 dojo.require("dojo.parser");
 dojo.require("dijit._Widget");
@@ -23,7 +23,7 @@ dojo.declare("dojox.wire.demos.WidgetRepeater", [ dijit._Widget, dijit._Template
 				this.widget = dojo.getObject(this.widget);
 			}
 			this.addChild(new this.widget(obj));
-			this.repeaterNode.appendChild(document.createElement("br"));
+			this.repeaterNode.appendChild(dojo.doc.createElement("br"));
 		}catch(e){ console.debug(e); }
 	}
 });
