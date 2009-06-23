@@ -77,8 +77,12 @@ dojo.declare("dojox.wire.TreeAdapter", dojox.wire.CompositeWire, {
 
 		var nodes = [];
 		for(var i in array){
-			for(var i2 in this.nodes){
-				nodes = nodes.concat(this._getNodes(array[i], this.nodes[i2]));
+			if (dojo.isOwnProperty(array, i)) {
+				for(var i2 in this.nodes){
+					if (dojo.isOwnProperty(this.nodes, i2)) {
+						nodes = nodes.concat(this._getNodes(array[i], this.nodes[i2]));
+					}
+				}
 			}
 		}
 		return nodes; //Array
@@ -106,21 +110,23 @@ dojo.declare("dojox.wire.TreeAdapter", dojox.wire.CompositeWire, {
 		}
 
 		for(var i in children){
-			var child = children[i];
-			if(child.node){
-				child.node.parent = this;
-				if(!dojox.wire.isWire(child.node)){
-					child.node = dojox.wire.create(child.node);
+			if (dojo.isOwnProperty(children, i)) {
+				var child = children[i];
+				if(child.node){
+					child.node.parent = this;
+					if(!dojox.wire.isWire(child.node)){
+						child.node = dojox.wire.create(child.node);
+					}
 				}
-			}
-			if(child.title){
-				child.title.parent = this;
-				if(!dojox.wire.isWire(child.title)){
-					child.title = dojox.wire.create(child.title);
+				if(child.title){
+					child.title.parent = this;
+					if(!dojox.wire.isWire(child.title)){
+						child.title = dojox.wire.create(child.title);
+					}
 				}
-			}
-			if(child.children){
-				this._initializeChildren(child.children);
+				if(child.children){
+					this._initializeChildren(child.children);
+				}
 			}
 		}
 	},
@@ -161,23 +167,27 @@ dojo.declare("dojox.wire.TreeAdapter", dojox.wire.CompositeWire, {
 
 		var nodes = [];
 		for(var i in array){
-			object = array[i];
-			var node = {};
-			if(child.title){
-				node.title = child.title.getValue(object);
-			}else{
-				node.title = object;
-			}
-			if(child.children){
-				var children = [];
-				for(var i2 in child.children){
-					children = children.concat(this._getNodes(object, child.children[i2]));
+			if (dojo.isOwnProperty(array, i)) {
+				object = array[i];
+				var node = {};
+				if(child.title){
+					node.title = child.title.getValue(object);
+				}else{
+					node.title = object;
 				}
-				if(children.length > 0){
-					node.children = children;
+				if(child.children){
+					var children = [];
+					for(var i2 in child.children){
+						if (dojo.isOwnProperty(child.children, i2)) {
+							children = children.concat(this._getNodes(object, child.children[i2]));
+						}
+					}
+					if(children.length > 0){
+						node.children = children;
+					}
 				}
+				nodes.push(node);
 			}
-			nodes.push(node);
 		}
 		return nodes; //Array
 	}
