@@ -4,7 +4,7 @@ dojox.xmpp.roster = {
 	ADDED: 101,
 	CHANGED: 102,
 	REMOVED: 103
-}
+};
 
 dojo.declare("dojox.xmpp.RosterService", null, {
 	constructor: function(xmppSession){
@@ -20,7 +20,7 @@ dojo.declare("dojox.xmpp.RosterService", null, {
 			id: iqId,
 			from: this.session.jid + "/" + this.session.resource,
 			type: "set"
-		}
+		};
 
 		var request = new dojox.string.Builder(dojox.xmpp.util.createElement("iq", req, false));
 		request.append(dojox.xmpp.util.createElement("query",{xmlns: 'jabber:iq:roster'},false));
@@ -57,7 +57,7 @@ dojo.declare("dojox.xmpp.RosterService", null, {
 			id: this.session.getNextIqId(),
 			from: this.session.jid + "/" + this.session.resource,
 			type: "set"
-		}
+		};
 
 		var request = new dojox.string.Builder(dojox.xmpp.util.createElement("iq", req, false));
 		request.append(dojox.xmpp.util.createElement("query",{xmlns: 'jabber:iq:roster'},false));
@@ -107,14 +107,13 @@ dojo.declare("dojox.xmpp.RosterService", null, {
 	},
 
 	addRosterItemToGroup: function(jid, group){
-		if (!jid) throw new Error("Roster::addRosterItemToGroup() JID is null or undefined");
-		if (!group) throw new Error("Roster::addRosterItemToGroup() group is null or undefined");
+		if (!jid) { throw new Error("Roster::addRosterItemToGroup() JID is null or undefined"); }
+		if (!group) { throw new Error("Roster::addRosterItemToGroup() group is null or undefined"); }
 
 		var index = this.session.getRosterIndex(jid);
 		if (index==-1){return;}
 
 		var item = this.session.roster[index];
-		var tgroups = [];
 
 		var found = false; 
 
@@ -165,8 +164,11 @@ dojo.declare("dojox.xmpp.RosterService", null, {
 	},
 
 	removeRosterItemFromGroup: function(jid, group){
-		if (!jid) throw new Error("Roster::addRosterItemToGroup() JID is null or undefined");
-		if (!group) throw new Error("Roster::addRosterItemToGroup() group is null or undefined");
+
+		// NOTE: Error messages are not accurate
+
+		if (!jid) { throw new Error("Roster::addRosterItemToGroup() JID is null or undefined"); }
+		if (!group) { throw new Error("Roster::addRosterItemToGroup() group is null or undefined"); }
 
 		var index = this.session.getRosterIndex(jid);
 		if (index==-1){return;}
@@ -180,7 +182,7 @@ dojo.declare("dojox.xmpp.RosterService", null, {
 			index = i;
 		} 	
 
-		if(found==true){
+		if(found){
 			item.groups.splice(index,1);
 			return this.updateRosterItem(jid, item.name, item.groups);
 		}		
@@ -189,8 +191,8 @@ dojo.declare("dojox.xmpp.RosterService", null, {
 	},
 	
 	rosterItemRenameGroup: function(jid, oldGroup, newGroup){
-		if (!jid) throw new Error("Roster::rosterItemRenameGroup() JID is null or undefined");
-		if (!newGroup) throw new Error("Roster::rosterItemRenameGroup() group is null or undefined");
+		if (!jid) { throw new Error("Roster::rosterItemRenameGroup() JID is null or undefined"); }
+		if (!newGroup) { throw new Error("Roster::rosterItemRenameGroup() group is null or undefined"); }
 	
 		var index = this.session.getRosterIndex(jid);
 		if (index==-1){return;}
@@ -205,7 +207,7 @@ dojo.declare("dojox.xmpp.RosterService", null, {
 			}
 		} 	
 
-		if(found==true){
+		if(found){
 			return this.updateRosterItem(jid, item.name, item.groups);
 		}		
 		
@@ -213,8 +215,8 @@ dojo.declare("dojox.xmpp.RosterService", null, {
 	},
 
 	renameRosterItem: function(jid,newName){
-		if (!jid) throw new Error("Roster::addRosterItemToGroup() JID is null or undefined");
-		if (!newName) throw new Error("Roster::addRosterItemToGroup() New Name is null or undefined");
+		if (!jid) { throw new Error("Roster::addRosterItemToGroup() JID is null or undefined"); }
+		if (!newName) { throw new Error("Roster::addRosterItemToGroup() New Name is null or undefined"); }
 
 		var index = this.session.getRosterIndex(jid);
 		if (index==-1){return;}
@@ -223,7 +225,7 @@ dojo.declare("dojox.xmpp.RosterService", null, {
 	},
 
 	removeRosterItem: function(jid){
-		if (!jid) throw new Error("Roster::addRosterItemToGroup() JID is null or undefined");
+		if (!jid) { throw new Error("Roster::addRosterItemToGroup() JID is null or undefined"); }
 		
 		var req={
 			id: this.session.getNextIqId(),
