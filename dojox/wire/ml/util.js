@@ -65,7 +65,7 @@ dojox.wire.ml._setValue = function(/*String*/target, /*anything*/value){
 		return; //undefined
 	}
 	var property = target.substring(i + 1);
-	var wire = new dojox.wire.Wire({object: object, property: property}).setValue(value);
+	(new dojox.wire.Wire({object: object, property: property}).setValue(value));
 };
 
 dojo.declare("dojox.wire.ml.XmlElement", null, {
@@ -186,9 +186,11 @@ dojo.declare("dojox.wire.ml.XmlElement", null, {
 			if(value){
 				if(dojo.isArray(value)){
 					for(i in value){
-						var e = value[i];
-						if(e.element){
-							this.element.insertBefore(e.element, nextChild);
+						if (dojo.isOwnProperty(value, i)) {
+							var e = value[i];
+							if(e.element){
+								this.element.insertBefore(e.element, nextChild);
+							}
 						}
 					}
 				}else if(value instanceof dojox.wire.ml.XmlElement){
