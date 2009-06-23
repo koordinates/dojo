@@ -8,7 +8,7 @@ dojox.xmpp.chat = {
 	INACTIVE_STATE: 'inactive',
 	PAUSED_STATE: 'paused',
 	GONE_STATE: 'gone'
-}
+};
 
 dojo.declare("dojox.xmpp.ChatService", null, {
 	state: "",
@@ -38,7 +38,7 @@ dojo.declare("dojox.xmpp.ChatService", null, {
 		if (this.uid){return;}	
 
 
-		if(!contact || contact==''){
+		if(!contact){
 			throw new Error("ChatService::invite() contact is NULL");
 		}
 
@@ -49,7 +49,7 @@ dojo.declare("dojox.xmpp.ChatService", null, {
 			to: this.uid,
 			from: this.session.jid + "/" + this.session.resource,
 			type: "chat"
-		}
+		};
 		var request = new dojox.string.Builder(dojox.xmpp.util.createElement("message", req, false));
 		request.append(dojox.xmpp.util.createElement("thread",{},false));	
 		request.append(this.chatid);
@@ -69,17 +69,17 @@ dojo.declare("dojox.xmpp.ChatService", null, {
 			return;
 		}
 
-		if ((!msg.body || msg.body=="") && !msg.xhtml){return;}
+		if (!msg.body && !msg.xhtml){return;}
 
 		var req = {
 			xmlns: "jabber:client",
 			to: this.uid,
 			from: this.session.jid + "/" + this.session.resource,
 			type: "chat"
-		}
+		};
 
 		var message = new dojox.string.Builder(dojox.xmpp.util.createElement("message",req,false));
-		var html = dojox.xmpp.util.createElement("html", { "xmlns":dojox.xmpp.xmpp.XHTML_IM_NS},false)
+		var html = dojox.xmpp.util.createElement("html", { "xmlns":dojox.xmpp.xmpp.XHTML_IM_NS},false);
 
 		var bodyTag = dojox.xmpp.util.createElement("body", {"xml:lang":this.session.lang, "xmlns":dojox.xmpp.xmpp.XHTML_BODY_NS}, false) + msg.body + "</body>";
 		var bodyPlainTag = dojox.xmpp.util.createElement("body", {}, false) + dojox.xmpp.util.stripHtml(msg.body) + "</body>";
@@ -93,7 +93,7 @@ dojo.declare("dojox.xmpp.ChatService", null, {
 			}
 		}
 */
-		if (message.subject && message.subject != ""){
+		if (message.subject){
 			message.append(dojox.xmpp.util.createElement("subject",{},false));
 			message.append(message.subject);
 			message.append("</subject>");
@@ -123,7 +123,7 @@ dojo.declare("dojox.xmpp.ChatService", null, {
 			to: this.uid,
 			from: this.session.jid + "/" + this.session.resource,
 			type: "chat"
-		}
+		};
 
 		var request = new dojox.string.Builder(dojox.xmpp.util.createElement("message",req,false));	
 		request.append(dojox.xmpp.util.createElement(state, {xmlns: dojox.xmpp.chat.CHAT_STATE_NS},true));
