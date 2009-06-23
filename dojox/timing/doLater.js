@@ -35,8 +35,8 @@ dojox.timing.doLater = function(/*anything*/conditional,/*Object ?*/context, /* 
 	interval = interval || 100;
 	context = context || dojo.global;
 	
-	setTimeout(function(){
+	window.setTimeout(function(){
 		callback.apply(context, args);
 	},interval);
 	return true; // Boolean
-}
+};
