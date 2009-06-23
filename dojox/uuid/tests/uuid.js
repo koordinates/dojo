@@ -42,7 +42,7 @@ dojox.uuid.tests.uuid.checkValidityOfUuidString = function(/*String*/uuidString)
 	doh.assertTrue(binaryString.length == 16); // section 3 has 16 bits
 	doh.assertTrue(binaryString.charAt(0) == '1'); // first bit of section 3 is 1
 	doh.assertTrue(binaryString.charAt(1) == '0'); // second bit of section 3 is 0
-}
+};
 
 dojox.uuid.tests.uuid.checkValidityOfTimeBasedUuidString = function(/*String*/uuidString){
 	// summary:
@@ -51,7 +51,7 @@ dojox.uuid.tests.uuid.checkValidityOfTimeBasedUuidString = function(/*String*/uu
 	var arrayOfParts = uuidString.split("-");
 	var section2 = arrayOfParts[2];
 	doh.assertTrue(section2.charAt(0) == "1"); // Section 2 starts with a 1
-}
+};
 
 dojox.uuid.tests.uuid.checkForPseudoNodeBitInTimeBasedUuidString = function(/*String*/uuidString){
 	// summary:
@@ -69,7 +69,7 @@ dojox.uuid.tests.uuid.checkForPseudoNodeBitInTimeBasedUuidString = function(/*St
 		firstBit = '0';
 	}
 	doh.assertTrue(firstBit == '1'); // first bit of section 4 is 1
-}
+};
 
 doh.register("dojox.uuid.tests.uuid", 
 	[
@@ -130,7 +130,7 @@ doh.register("dojox.uuid.tests.uuid",
 			doh.assertTrue(uuid.isValid());
 			doh.assertTrue(uuid.getVariant() == dojox.uuid.variant.DCE);
 			doh.assertTrue(uuid.getVersion() == dojox.uuid.version.RANDOM);
-			uuidToo = new dojox.uuid.Uuid(new String(randomUuidString));
+			uuidToo = new dojox.uuid.Uuid(String(randomUuidString));
 			doh.assertTrue(uuid.isEqual(uuidToo));	
 		
 			var timeBasedUuidString = "b4308fb0-86cd-11da-a72b-0800200c9a66";
@@ -141,7 +141,7 @@ doh.register("dojox.uuid.tests.uuid",
 			doh.assertTrue(uuid.getNode() == "0800200c9a66");
 			var timestamp = uuid.getTimestamp();
 			var date = uuid.getTimestamp(Date);
-			var dateString = uuid.getTimestamp(String);
+			//var dateString = uuid.getTimestamp(String);
 			var hexString = uuid.getTimestamp("hex");
 			var now = new Date();
 			doh.assertTrue(timestamp.valueOf() == date.valueOf());
@@ -157,62 +157,64 @@ doh.register("dojox.uuid.tests.uuid",
 			];
 			
 			for(var i in generators){
-				var generator = generators[i];
-				var uuidString = generator();
+				if (dojo.isOwnProperty(generators, i)) {
+					var generator = generators[i];
+					var uuidString = generator();
 
-				doh.assertTrue((typeof uuidString) == 'string');
-				dojox.uuid.tests.uuid.checkValidityOfUuidString(uuidString);
+					doh.assertTrue((typeof uuidString) == 'string');
+					dojox.uuid.tests.uuid.checkValidityOfUuidString(uuidString);
 
-				var uuid = new dojox.uuid.Uuid(uuidString);
-				if(generator != dojox.uuid.generateNilUuid){
-					doh.assertTrue(uuid.getVariant() == dojox.uuid.variant.DCE);
-				}
+					var uuid = new dojox.uuid.Uuid(uuidString);
+					if(generator != dojox.uuid.generateNilUuid){
+						doh.assertTrue(uuid.getVariant() == dojox.uuid.variant.DCE);
+					}
 
-				doh.assertTrue(uuid.isEqual(uuid));
-				doh.assertTrue(uuid.compare(uuid) == 0);
-				doh.assertTrue(dojox.uuid.Uuid.compare(uuid, uuid) == 0);
-				dojox.uuid.tests.uuid.checkValidityOfUuidString(uuid.toString());
-				doh.assertTrue(uuid.toString().length == 36);
+					doh.assertTrue(uuid.isEqual(uuid));
+					doh.assertTrue(!uuid.compare(uuid));
+					doh.assertTrue(!dojox.uuid.Uuid.compare(uuid, uuid));
+					dojox.uuid.tests.uuid.checkValidityOfUuidString(uuid.toString());
+					doh.assertTrue(uuid.toString().length == 36);
 		
-				if(generator != dojox.uuid.generateNilUuid){
-					var uuidStringOne = generator();
-					var uuidStringTwo = generator();
-					doh.assertTrue(uuidStringOne != uuidStringTwo);
+					if(generator != dojox.uuid.generateNilUuid){
+						var uuidStringOne = generator();
+						var uuidStringTwo = generator();
+						doh.assertTrue(uuidStringOne != uuidStringTwo);
 					
-					dojox.uuid.Uuid.setGenerator(generator);
-					var uuidOne = new dojox.uuid.Uuid();
-					var uuidTwo = new dojox.uuid.Uuid();
-					doh.assertTrue(generator === dojox.uuid.Uuid.getGenerator());
-					dojox.uuid.Uuid.setGenerator(null);
-					doh.assertTrue(uuidOne != uuidTwo);
-					doh.assertTrue(!uuidOne.isEqual(uuidTwo));
-					doh.assertTrue(!uuidTwo.isEqual(uuidOne));
+						dojox.uuid.Uuid.setGenerator(generator);
+						var uuidOne = new dojox.uuid.Uuid();
+						var uuidTwo = new dojox.uuid.Uuid();
+						doh.assertTrue(generator === dojox.uuid.Uuid.getGenerator());
+						dojox.uuid.Uuid.setGenerator(null);
+						doh.assertTrue(uuidOne != uuidTwo);
+						doh.assertTrue(!uuidOne.isEqual(uuidTwo));
+						doh.assertTrue(!uuidTwo.isEqual(uuidOne));
 					
-					var oneVsTwo = dojox.uuid.Uuid.compare(uuidOne, uuidTwo); // either 1 or -1
-					var twoVsOne = dojox.uuid.Uuid.compare(uuidTwo, uuidOne); // either -1 or 1
-					doh.assertTrue(oneVsTwo + twoVsOne == 0);
-					doh.assertTrue(oneVsTwo != 0);
-					doh.assertTrue(twoVsOne != 0);
-					
-					doh.assertTrue(!uuidTwo.isEqual(uuidOne));
-				}
+						var oneVsTwo = dojox.uuid.Uuid.compare(uuidOne, uuidTwo); // either 1 or -1
+						var twoVsOne = dojox.uuid.Uuid.compare(uuidTwo, uuidOne); // either -1 or 1
+						doh.assertTrue(oneVsTwo + twoVsOne === 0);
+						doh.assertTrue(!!oneVsTwo);
+						doh.assertTrue(!!twoVsOne);
+			
+						doh.assertTrue(!uuidTwo.isEqual(uuidOne));
+					}
 				
-				if(generator == dojox.uuid.generateRandomUuid){
-					doh.assertTrue(uuid.getVersion() == dojox.uuid.version.RANDOM);
-				}
+					if(generator == dojox.uuid.generateRandomUuid){
+						doh.assertTrue(uuid.getVersion() == dojox.uuid.version.RANDOM);
+					}
 				
-				if(generator == dojox.uuid.generateTimeBasedUuid){
-					dojox.uuid.tests.uuid.checkValidityOfTimeBasedUuidString(uuid.toString());
-					doh.assertTrue(uuid.getVersion() == dojox.uuid.version.TIME_BASED);
-					doh.assertTrue(dojo.isString(uuid.getNode()));
-					doh.assertTrue(uuid.getNode().length == 12);
-					var timestamp = uuid.getTimestamp();
-					var date = uuid.getTimestamp(Date);
-					var dateString = uuid.getTimestamp(String);
-					var hexString = uuid.getTimestamp("hex");
-					doh.assertTrue(date instanceof Date);
-					doh.assertTrue(timestamp.valueOf() == date.valueOf());
-					doh.assertTrue(hexString.length == 15);
+					if(generator == dojox.uuid.generateTimeBasedUuid){
+						dojox.uuid.tests.uuid.checkValidityOfTimeBasedUuidString(uuid.toString());
+						doh.assertTrue(uuid.getVersion() == dojox.uuid.version.TIME_BASED);
+						doh.assertTrue(dojo.isString(uuid.getNode()));
+						doh.assertTrue(uuid.getNode().length == 12);
+						var timestamp = uuid.getTimestamp();
+						var date = uuid.getTimestamp(Date);
+						//var dateString = uuid.getTimestamp(String);
+						var hexString = uuid.getTimestamp("hex");
+						doh.assertTrue(dojo.isDate(date));
+						doh.assertTrue(timestamp.valueOf() == date.valueOf());
+						doh.assertTrue(hexString.length == 15);
+					}
 				}
 			}
 		},
@@ -224,15 +226,18 @@ doh.register("dojox.uuid.tests.uuid",
 		},
 		
 		function test_uuid_timeBasedGenerator(){
-			var uuid;   // an instance of dojox.uuid.Uuid
-			var string; // a simple string literal
+			// NOTE: Unused
+
+			//var uuid;   // an instance of dojox.uuid.Uuid
+			//var string; // a simple string literal
+
 			var generator = dojox.uuid.generateTimeBasedUuid;
 
 			var string1 = generator();
 			var uuid2    = new dojox.uuid.Uuid(generator());
 			var string3 = generator("017bf397618a");         // hardwareNode
 			var string4 = generator("f17bf397618a");         // pseudoNode
-			var string5 = generator(new String("017BF397618A"));
+			var string5 = generator(String("017BF397618A"));
 			
 			dojox.uuid.generateTimeBasedUuid.setNode("017bf397618a");
 			var string6 = generator(); // the generated UUID has node == "017bf397618a"
@@ -273,11 +278,13 @@ doh.register("dojox.uuid.tests.uuid",
 		
 			var numberOfFailures = 0;
 			for(var i in uuidStrings){
-				var uuidString = uuidStrings[i];
-				try{
-					new dojox.uuid.Uuid(uuidString);
-				}catch (e){
-					++numberOfFailures;
+				if (dojo.isOwnProperty(uuidStrings, i)) {
+					var uuidString = uuidStrings[i];
+					try{
+						(new dojox.uuid.Uuid(uuidString));
+					}catch (e){
+						++numberOfFailures;
+					}
 				}
 			}
 			doh.assertTrue(numberOfFailures == uuidStrings.length);
