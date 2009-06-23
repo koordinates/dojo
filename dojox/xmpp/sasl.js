@@ -6,11 +6,11 @@ dojox.xmpp.sasl.SunWebClientAuth = function(session){
 	var attribs = {
 		xmlns: dojox.xmpp.sasl.saslNS,
 		mechanism: "SUN-COMMS-CLIENT-PROXY-AUTH"
-	}
+	};
 
 	var auth = dojox.xmpp.util.createElement("auth", attribs, true);
 	session.dispatchPacket(auth);
-}
+};
 
 dojox.xmpp.sasl.SaslPlain = function(session){
 	var attribs = {
@@ -31,4 +31,4 @@ dojox.xmpp.sasl.SaslPlain = function(session){
 	auth.append(token);
 	auth.append("</auth>");
 	session.dispatchPacket(auth.toString());
-}
+};
