@@ -39,7 +39,7 @@ dojo.experimental("dojox.string.BidiComplex");
 		var buf = '\u202A'/*LRE*/ + str;
 		var shift = 1;                                           
 		dojo.forEach(segmentsPointers, function(n){
-			if(n != null){
+			if(n !== null && n !== undefined){
 				var preStr = buf.substring(0, n + shift);
 				var postStr = buf.substring(n + shift, buf.length);
 				buf = preStr + '\u200E'/*LRM*/ + postStr;
@@ -57,20 +57,20 @@ dojo.experimental("dojox.string.BidiComplex");
 	};
 
 	dojox.string.BidiComplex._ceKeyDown = function(event){
-		var elem = dojo.isIE ? event.srcElement : event.target;        
+		var elem = event.target || event.srcElement;
 		_str0 = elem.value;
 	};
 				
 	dojox.string.BidiComplex._ceKeyUp = function(event){
 		var LRM = '\u200E';
-		var elem = dojo.isIE ? event.srcElement : event.target;
+		var elem = event.target || event.srcElement;
 
 		var str1 = elem.value;
 		var ieKey = event.keyCode;
 		
-		if((ieKey == dojo.keys.HOME)
-			|| (ieKey == dojo.keys.END)
-			|| (ieKey == dojo.keys.SHIFT)){
+		if((ieKey == dojo.keys.HOME) ||
+			(ieKey == dojo.keys.END) ||
+			(ieKey == dojo.keys.SHIFT)){
 			return;
 		}
 
@@ -82,12 +82,15 @@ dojo.experimental("dojox.string.BidiComplex");
 		}
 
 	//Jump over a cursor processing
-		if(dojo.isIE){
+
+		// NOTE: Needs review (logic belongs elsewhere)
+
+		/* if(dojo.isIE){
 			var cursorStart1 = cursorStart, cursorEnd1 = cursorEnd;
 
 			if(ieKey == dojo.keys.LEFT_ARROW){
-				if((str1.charAt(cursorEnd-1) == LRM)
-						&& (cursorStart == cursorEnd)){
+				if((str1.charAt(cursorEnd-1) == LRM) &&
+						(cursorStart == cursorEnd)){
 					dojox.string.BidiComplex._setSelectedRange(elem,cursorStart - 1, cursorEnd - 1);
 				}
 				return;
@@ -104,7 +107,7 @@ dojo.experimental("dojox.string.BidiComplex");
 				dojox.string.BidiComplex._setSelectedRange(elem, cursorStart1, cursorEnd1);                        
 				return;
 			}                   
-		}else{ //Firefox
+		}else{ //Firefox */
 			if(ieKey == dojo.keys.LEFT_ARROW){
 				if(str1.charAt(cursorEnd-1) == LRM){
 					dojox.string.BidiComplex._setSelectedRange(elem, cursorStart - 1, cursorEnd - 1);
@@ -117,7 +120,7 @@ dojo.experimental("dojox.string.BidiComplex");
 				}
 				return;
 			}
-		}
+		//}
 		
 		var str2 = dojox.string.BidiComplex.createDisplayString(str1, elem.alt);
 
@@ -148,9 +151,12 @@ dojo.experimental("dojox.string.BidiComplex");
 		// summary:
 		//		This function strips the unicode directional controls when the text copied to the Clipboard
 
-		if(text == null){
-			if(dojo.isIE){
-				var range = document.selection.createRange();
+		if(text === null || text === undefined){
+			// NOTE: Duplication (need common text range module)
+
+			var doc = dojo.doc;
+			if(dojo.isHostObjectProperty(doc, 'selection') && dojo.isHostMethod(doc.selection, 'createRange')){
+				var range = doc.selection.createRange();
 				text = range.text;
 			}else{
 				text = elem.value.substring(elem.selectionStart, elem.selectionEnd);
@@ -159,14 +165,17 @@ dojo.experimental("dojox.string.BidiComplex");
 
 		var textToClipboard = dojox.string.BidiComplex.stripSpecialCharacters(text);
 	
-		if(dojo.isIE){
+		if(dojo.isHostObjectProperty(window, 'clipboardData') && dojo.isHostMethod(window.clipboardData, 'setData')){
 			window.clipboardData.setData("Text", textToClipboard);
 		}
 		return true;
 	};
 
 	dojox.string.BidiComplex._ceCopyText = function(elem){
-		if(dojo.isIE){
+
+		// NOTE: Duplication
+
+		if(typeof elem.returnValue == 'boolean'){
 			elem.returnValue = false;
 		}
 		return dojox.string.BidiComplex._processCopy(elem, null, false);
@@ -179,9 +188,12 @@ dojo.experimental("dojox.string.BidiComplex");
 			return false;
 		}
 
-		if(dojo.isIE){
-	//		curPos = elem.selectionStart; 
-			document.selection.clear(); 
+		// NOTE: Duplication
+
+		var doc = dojo.doc;
+
+		if(dojo.isHostObjectProperty(doc, 'selection') && dojo.isHostMethod(doc.selection, 'clear')){
+			doc.selection.clear(); 
 		}else{
 			var curPos = elem.selectionStart;
 			elem.value = elem.value.substring(0, curPos) + elem.value.substring(elem.selectionEnd);
@@ -192,10 +204,13 @@ dojo.experimental("dojox.string.BidiComplex");
 	};
 
 	// is there dijit code to do this?
+
+	// NOTE: Sort of
+
 	dojox.string.BidiComplex._getCaretPos = function(event, elem){
-		if(dojo.isIE){
+		if(dojo.isHostObjectProperty(dojo.doc, 'selection') && dojo.isHostMethod(dojo.doc.selection, 'createRange')){
 			var position = 0,
-			range = document.selection.createRange().duplicate(),
+			range = dojo.doc.selection.createRange().duplicate(),
 			range2 = range.duplicate(),
 			rangeLength = range.text.length;
 
@@ -217,7 +232,7 @@ dojo.experimental("dojox.string.BidiComplex");
 
 	// is there dijit code to do this?
 	dojox.string.BidiComplex._setSelectedRange = function(elem,selectionStart,selectionEnd){
-		if(dojo.isIE){
+		if(dojo.isHostMethod(elem, 'createTextRange')){
 			var range = elem.createTextRange();
 			if(range){
 				if(elem.type == "textarea"){
@@ -283,7 +298,7 @@ dojo.experimental("dojox.string.BidiComplex");
 				});
 				break;
 			case "EMAIL":
-				var inQuotes = false; // FIXME: unused?
+				//var inQuotes = false; // FIXME: unused
 	
 				dojo.forEach(str, function(ch, i){     
 					if(ch== '\"'){
