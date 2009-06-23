@@ -87,7 +87,7 @@ dojo.declare("dojox.wire.ml.Transfer", dojox.wire.ml.Action, {
 		//		Which Wire arguments to build, "source" or "target"
 		//	returns:
 		//		Wire arguments object
-		var args = undefined;
+		var i, args = undefined;
 		if(which == "source"){
 			args = {
 				object: this.source,
@@ -110,7 +110,7 @@ dojo.declare("dojox.wire.ml.Transfer", dojox.wire.ml.Action, {
 				args.property = args.object.substring(9);
 				args.object = null;
 			}else{
-				var i = args.object.indexOf('.');
+				i = args.object.indexOf('.');
 				if(i < 0){
 					args.object = dojox.wire.ml._getValue(args.object);
 				}else{
@@ -124,13 +124,15 @@ dojo.declare("dojox.wire.ml.Transfer", dojox.wire.ml.Action, {
 		}
 		var childArgs = undefined;
 		var children = this.getChildren();
-		for(var i in children){
-			var child = children[i];
-			if(child instanceof dojox.wire.ml.ChildWire && child.which == which){
-				if(!childArgs){
-					childArgs = {};
+		for(i in children){
+			if (dojo.isOwnProperty(children, i)) {
+				var child = children[i];
+				if(child instanceof dojox.wire.ml.ChildWire && child.which == which){
+					if(!childArgs){
+						childArgs = {};
+					}
+					child._addWire(this, childArgs);
 				}
-				child._addWire(this, childArgs);
 			}
 		}
 		if(childArgs){ // make nested Wires
@@ -314,9 +316,11 @@ dojo.declare("dojox.wire.ml.NodeWire", [dojox.wire.ml.ChildWire, dijit._Containe
 		var childArgs = [];
 		var children = this.getChildren();
 		for(var i in children){
-			var child = children[i];
-			if(child instanceof dojox.wire.ml.NodeWire){
-				childArgs.push(child._getWires(parent));
+			if (dojo.isOwnProperty(children, i)) {
+				var child = children[i];
+				if(child instanceof dojox.wire.ml.NodeWire){
+					childArgs.push(child._getWires(parent));
+				}
 			}
 		}
 		if(childArgs.length > 0){
