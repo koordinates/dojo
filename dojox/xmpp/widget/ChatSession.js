@@ -29,7 +29,7 @@ dojo.declare("dojox.xmpp.widget.ChatSession",
 			
 			onKeyPress: function(e){
 				var key = e.keyCode || e.charCode;
-				if ((key == dojo.keys.ENTER) && (this.chatInput.value != "")){
+				if ((key == dojo.keys.ENTER) && this.chatInput.value){
 					this.instance.sendMessage({body: this.chatInput.value});
 					this.displayMessage( {body: this.chatInput.value}, "out");
 					this.chatInput.value = "";
