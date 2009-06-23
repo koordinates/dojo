@@ -21,7 +21,7 @@ dojox.xmpp.presence = {
 	STATUS_OFFLINE: 'offline',
 	
 	STATUS_INVISIBLE: 'invisible'
-}
+};
 
 dojo.declare("dojox.xmpp.PresenceService", null, {
 	constructor: function(xmppService){
@@ -76,7 +76,7 @@ dojo.declare("dojox.xmpp.PresenceService", null, {
 				this._setInvisible();
 				this.isInvisible = true;
 				return;
-			};
+			}
 
 			if(this.isInvisible) {
 				//console.log("was invisible, making visible");
@@ -183,26 +183,24 @@ dojo.declare("dojox.xmpp.PresenceService", null, {
 		
 		var req = new dojox.string.Builder(dojox.xmpp.util.createElement("iq",props,false));
 		req.append(dojox.xmpp.util.createElement("query",{xmlns: "jabber:iq:privacy"},false));
-		req.append(dojox.xmpp.util.createElement("list",{name: "iwcRestrictedContacts"},false))
+		req.append(dojox.xmpp.util.createElement("list",{name: "iwcRestrictedContacts"},false));
 		var count = 1;
 		for(var jid in this.restrictedContactjids) {
-			var item = this.restrictedContactjids[jid];
-			//console.log("restricted ", jid, item);
-			if(item.blocked || item.invisible) {
-				req.append(dojox.xmpp.util.createElement("item",{value:  dojox.xmpp.util.encodeJid(jid), action: "deny", order: count++},false));
-				if(item.blocked) {
-					req.append(dojox.xmpp.util.createElement("message",{},true));
+			if (dojo.isOwnProperty(this.restrictedContactjids, jid)) {
+				var item = this.restrictedContactjids[jid];
+				if(item.blocked || item.invisible) {
+					req.append(dojox.xmpp.util.createElement("item",{value:  dojox.xmpp.util.encodeJid(jid), action: "deny", order: count++},false));
+					if(item.blocked) {
+						req.append(dojox.xmpp.util.createElement("message",{},true));
+					}
+					if(item.invisible) {
+						req.append(dojox.xmpp.util.createElement("presence-out",{},true));
+					}
+					req.append("</item>");
+				} else {
+					delete this.restrictedContactjids[jid];
 				}
-				if(item.invisible) {
-					req.append(dojox.xmpp.util.createElement("presence-out",{},true));
-				}
-				req.append("</item>");
-			} else {
-				delete this.restrictedContactjids[jid];
 			}
-			
-		
-			
 		}
 				req.append("</list>");
 			req.append("</query>");
@@ -246,8 +244,8 @@ dojo.declare("dojox.xmpp.PresenceService", null, {
 		};
 		var req = new dojox.string.Builder(dojox.xmpp.util.createElement("iq",props,false));
 			req.append(dojox.xmpp.util.createElement("query",{xmlns: "jabber:iq:privacy"},false));
-				req.append(dojox.xmpp.util.createElement("list",{name: "invisible"},false))
-					req.append(dojox.xmpp.util.createElement("item",{action: "deny", order: "1"},false))
+				req.append(dojox.xmpp.util.createElement("list",{name: "invisible"},false));
+					req.append(dojox.xmpp.util.createElement("item",{action: "deny", order: "1"},false));
 						req.append(dojox.xmpp.util.createElement("presence-out",{},true));
 					req.append("</item>");
 				req.append("</list>");
