@@ -28,8 +28,8 @@ dojox.xml.parser.parse = function(/*String?*/ str, /*String?*/ mimetype){
 	var doc;
 
 	mimetype = mimetype || "text/xml";
-	if(str && dojo.trim(str) && "DOMParser" in dojo.global){
-		//Handle parsing the text on Mozilla based browsers etc..
+
+	if(str && dojo.trim(str) && typeof DOMParser != 'undefined'){
 		var parser = new DOMParser();
 		doc = parser.parseFromString(str, mimetype);
 		var de = doc.documentElement;
@@ -39,12 +39,15 @@ dojox.xml.parser.parse = function(/*String?*/ str, /*String?*/ mimetype){
 			if(!sourceText){
 				sourceText = sourceText.firstChild.data;
 			}
-        	throw new Error("Error parsing text " + nativeDoc.documentElement.firstChild.data + " \n" + sourceText);
+        	throw new Error("Error parsing text " + doc.documentElement.firstChild.data + " \n" + sourceText);
 		}
 		return doc;
 
-	}else if("ActiveXObject" in dojo.global){
+	}else if(dojo.isHostObjectProperty(window, 'ActiveXObject')){
 		//Handle IE.
+
+		// NOTE: Review this
+
 		var ms = function(n){ return "MSXML" + n + ".DOMDocument"; };
 		var dp = ["Microsoft.XMLDOM", ms(6), ms(4), ms(3), ms(2)];
 		dojo.some(dp, function(p){
@@ -84,7 +87,7 @@ dojox.xml.parser.parse = function(/*String?*/ str, /*String?*/ mimetype){
 		}
 	}
 	return null;	//	null
-}
+};
 
 dojox.xml.parser.textContent = function(/*Node*/node, /*String?*/text){
 	//	summary:
@@ -122,7 +125,7 @@ dojox.xml.parser.textContent = function(/*Node*/node, /*String?*/text){
 		}
 		return _result;	//	String
 	}
-}
+};
 
 dojox.xml.parser.replaceChildren = function(/*Element*/node, /*Node || Array*/ newChildren){
 	//	summary:
@@ -136,16 +139,16 @@ dojox.xml.parser.replaceChildren = function(/*Element*/node, /*Node || Array*/ n
 	//	newChildren:
 	//		The children to add to the node.  It can either be a single Node or an
 	//		array of Nodes.
-	var nodes = [];
+	//var nodes = [];
 
-	if(dojo.isIE){
-		dojo.forEach(node.childNodes, function(child){
-			nodes.push(child);
-		});
-	}
+	//if(dojo.isIE){
+	//	dojo.forEach(node.childNodes, function(child){
+	//		nodes.push(child);
+	//	});
+	//}
 
 	dojox.xml.parser.removeChildren(node);
-	dojo.forEach(nodes, dojo.destroy);
+	//dojo.forEach(nodes, dojo.destroy);
 
 	if(!dojo.isArray(newChildren)){
 		node.appendChild(newChildren);
@@ -154,7 +157,7 @@ dojox.xml.parser.replaceChildren = function(/*Element*/node, /*Node || Array*/ n
 			node.appendChild(child);
 		});
 	}
-}
+};
 
 dojox.xml.parser.removeChildren = function(/*Element*/node){
 	//	summary:
@@ -168,7 +171,7 @@ dojox.xml.parser.removeChildren = function(/*Element*/node){
 		node.removeChild(node.firstChild);
 	}
 	return count; // int
-}
+};
 
 
 dojox.xml.parser.innerXML = function(/*Node*/node){
@@ -184,4 +187,4 @@ dojox.xml.parser.innerXML = function(/*Node*/node){
 		return (new XMLSerializer()).serializeToString(node);	//	String
 	}
 	return null;
-}
+};
