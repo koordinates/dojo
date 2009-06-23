@@ -55,8 +55,10 @@ dojo.declare("dojox.wire.TableAdapter", dojox.wire.CompositeWire, {
 
 		var rows = [];
 		for(var i in array){
-			var row = this._getRow(array[i]);
-			rows.push(row);
+			if (dojo.isOwnProperty(array, i)) {
+				var row = this._getRow(array[i]);
+				rows.push(row);
+			}
 		}
 		return rows; //Array
 	},
@@ -77,7 +79,9 @@ dojo.declare("dojox.wire.TableAdapter", dojox.wire.CompositeWire, {
 		//		An array or object for a table row
 		var row = (dojo.isArray(this.columns) ? [] : {}); // array or object
 		for(var c in this.columns){
-			row[c] = this.columns[c].getValue(object);
+			if (dojo.isOwnProperty(this.columns, c)) {
+				row[c] = this.columns[c].getValue(object);
+			}
 		}
 		return row; //Array||Object
 	}
