@@ -12,7 +12,7 @@ dojox.validate.us.isState = function(/*String*/value, /*Object?*/flags){
 
 	var re = new RegExp("^" + dojox.validate.regexp.us.state(flags) + "$", "i");
 	return re.test(value); // Boolean
-}
+};
 
 dojox.validate.us.isPhoneNumber = function(/*String*/value){
 	// summary: Validates 10 US digit phone number for several common formats
@@ -36,7 +36,7 @@ dojox.validate.us.isPhoneNumber = function(/*String*/value){
 		]
 	};
 	return dojox.validate.isNumberFormat(value, flags); // Boolean
-}
+};
 
 dojox.validate.us.isSocialSecurityNumber = function(/*String*/value){
 	// summary: Validates social security number
@@ -48,7 +48,7 @@ dojox.validate.us.isSocialSecurityNumber = function(/*String*/value){
 		]
 	};
 	return dojox.validate.isNumberFormat(value, flags); // Boolean
-}
+};
 
 dojox.validate.us.isZipCode = function(/*String*/value){
 	// summary: Validates U.S. zip-code
@@ -61,4 +61,4 @@ dojox.validate.us.isZipCode = function(/*String*/value){
 		]
 	};
 	return dojox.validate.isNumberFormat(value, flags); // Boolean
-}
+};
