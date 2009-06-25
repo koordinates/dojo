@@ -71,12 +71,14 @@ if(typeof window != 'undefined' && window.document){
 
 	(function(){
 		var doc = window.document;
+		var isHostMethod = dojo.isHostMethod;
+		var isHostObjectProperty = dojo.isHostObjectProperty;
 
 		// We set browser versions and grab
 		// the URL we were loaded from here.
 
 		// grab the node we were loaded from
-		if(doc && doc.getElementsByTagName){
+		if(doc && isHostMethod(doc, 'getElementsByTagName')){
 			var m, src, scripts = doc.getElementsByTagName("script");
 			var rePkg = /dojo(\.xd)?\.js(\W|$)/i;
 
@@ -105,61 +107,102 @@ if(typeof window != 'undefined' && window.document){
 		dojo.baseUrl = dojo.config.baseUrl;
 
 		// fill in the rendering support information in dojo.render.*
-		var n = window.navigator;
-		var dua = n.userAgent,
+		var n = window.navigator,
+			de = doc.documentElement,
+			dua = n.userAgent,
 			dav = n.appVersion,
 			tv = parseFloat(dav);
 
-		if(window.opera && Object.prototype.toString.call(window.opera) == '[object Opera]'){
+		if(isHostObjectProperty(window, 'opera') && Object.prototype.toString.call(window.opera) == '[object Opera]'){
 			dojo.isOpera = tv;
-		} else if(dua.indexOf("AdobeAIR") >= 0){
-			dojo.isAIR = 1;
-		}
-		dojo.isKhtml = (dav.indexOf("Konqueror") >= 0) ? tv : 0;
-		dojo.isWebKit = parseFloat(dua.split("WebKit/")[1]) || undefined;
-		dojo.isChrome = parseFloat(dua.split("Chrome/")[1]) || undefined;
+		} else if (de) {
 
-		// safari detection derived from:
-		//		http://developer.apple.com/internet/safari/faq.html#anchor2
-		//		http://developer.apple.com/internet/safari/uamatrix.html
-		var index = Math.max(dav.indexOf("WebKit"), dav.indexOf("Safari"), 0);
-		if(index && !dojo.isChrome){
-			// try to grab the explicit Safari version first. If we don't get
-			// one, look for less than 419.3 as the indication that we're on something
-			// "Safari 2-ish".
-			dojo.isSafari = parseFloat(dav.split("Version/")[1]);
-			if(!dojo.isSafari || parseFloat(dav.substr(index + 7)) <= 419.3){
-				dojo.isSafari = 2;
+			// Konquerer
+
+			if (typeof de.style.KhtmlOpacity == 'string') {				
+				dojo.isKhtml = tv;
+
+			// Mozilla
+
+			} else if (typeof de.style.MozOpacity == 'string'){
+				dojo.isMozilla = dojo.isMoz = tv;
+				if (isHostMethod(doc, 'getBoxObjectFor')) {
+					dojo.isFF = isHostMethod(doc.documentElement, 'getBoundingClientRect') ? 3 : 2;
+				} else {
+					dojo.isFF = 4; // NOTE: Should be removed by then
+				}
+
+			// IE
+
+			} else if(isHostObjectProperty(doc, 'all') && isHostMethod(window, 'ActiveXObject') && isHostMethod(doc, 'attachEvent') && !isHostMethod(doc, 'addEventListener') && isHostObjectProperty(window, 'external')){
+				//In cases where the page has an HTTP header or META tag with
+				//X-UA-Compatible, then it is in emulation mode, for a previous
+				//version. Make sure isIE reflects the desired version.
+
+				if(typeof doc.documentMode == 'number'){
+					dojo.isIE = doc.documentMode;
+					dojo.isReallyIE8OrGreater = true;
+				} else if (typeof doc.compatMode == 'string') {
+					dojo.isIE = isHostMethod(window, 'XMLHttpRequest') ? 7 : 6;
+				} else {
+					dojo.isIE = 5;
+				}
+
+				//Workaround to get local file loads of dojo to work on IE 7
+				//by forcing to not use native xhr.
+				if(isHostMethod(window, 'ActiveXObject') && window.location.protocol == "file:"){
+					dojo.config.ieForceActiveXXhr=true;
+				}
+
+				// 	In Internet Explorer. readyState will not be achieved on init
+				// 	call, but dojo doesn't need it however, we'll include it
+				// 	because we don't know if there are other functions added that
+				// 	might.  Note that this has changed because the build process
+				// 	strips all comments -- including conditional ones.
+
+				if(!dojo.config.afterOnLoad && isHostMethod(doc, 'write')){
+					doc.write('<script defer src="//:" onreadystatechange="if(this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
+				}
+
+				// NOTE: Should be in VML module
+
+				if (isHostObjectProperty(doc, 'namespaces') && isHostMethod(window.document.namespaces, 'add')) {
+					doc.namespaces.add("v","urn:schemas-microsoft-com:vml");
+					if (isHostMethod(doc, 'createStyleSheet')) {
+						doc.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML); display:inline-block");
+					}
+				}
+
+			// Webkit
+			
+			} else if (typeof de.style.webkitOpacity == 'string' || typeof de.style.webkitTransition == 'string') {
+				dojo.isWebKit = parseFloat(dua.split("Webkit/")[1]) || 1;
+
+				// NOTE: Object inferences for AIR, Chrome and Safari?
+
+				dojo.isChrome = parseFloat(dua.split("Chrome/")[1]) || undefined;
+
+				var index = Math.max(dav.indexOf("WebKit"), dav.indexOf("Safari"), 0);
+				if(index && !dojo.isChrome){
+
+					// Try to grab the explicit Safari version first. If we don't get
+					// one, look for lack of hasOwnProperty
+
+					dojo.isSafari = parseFloat(dav.split("Version/")[1]);
+					if(!dojo.isSafari || !Object.prototype.hasOwnProperty){
+						dojo.isSafari = 2;
+					}
+				}
+				if(dua.indexOf("AdobeAIR") >= 0){
+					dojo.isAIR = 1;
+				}
+
+				// NOTE: Detect orientationchange event
+
+				if (typeof window.orientation == 'number') {
+					dojo.isIPhone = 1; // NOTE: Or the like?
+				}
 			}
-		}
-
-		if(dua.indexOf("Gecko") >= 0 && !dojo.isKhtml && !dojo.isWebKit){ dojo.isMozilla = dojo.isMoz = tv; }
-		if(dojo.isMoz){
-			//We really need to get away from this. Consider a sane isGecko approach for the future.
-			dojo.isFF = parseFloat(dua.split("Firefox/")[1] || dua.split("Minefield/")[1] || dua.split("Shiretoko/")[1]) || undefined;
-		}
-
-		// *** Want comditional compilation around this
-
-		if(typeof doc.all == 'object' && typeof window.ActiveXObject != 'undefined' && typeof window.external != 'undefined' && !dojo.isOpera){
-			//In cases where the page has an HTTP header or META tag with
-			//X-UA-Compatible, then it is in emulation mode, for a previous
-			//version. Make sure isIE reflects the desired version.
-
-			if(typeof doc.documentMode == 'number'){
-				dojo.isIE = doc.documentMode;
-				dojo.isReallyIE8OrGreater = true;
-			} else if (typeof doc.compatMode == 'string') {
-				dojo.isIE = typeof window.XMLHttpRequest == 'undefined' ? 6 : 7 ;
-			} else {
-				dojo.isIE = 5;
-			}			
-		}
-
-		//Workaround to get local file loads of dojo to work on IE 7
-		//by forcing to not use native xhr.
-		if(window.ActiveXObject && window.location.protocol == "file:"){
-			dojo.config.ieForceActiveXXhr=true;
 		}
 
 		var cm = doc.compatMode || '';
@@ -169,7 +212,7 @@ if(typeof window != 'undefined' && window.document){
 
 		dojo.isQuirks = !(/css/i.test(cm));
 
-		dojo.locale = (dojo.config.locale || (n.userLanguage || n.language) || (doc.documentElement && doc.documentElement.lang) || '').toLowerCase();
+		dojo.locale = (dojo.config.locale || (n.userLanguage || n.language) || (doc.documentElement && de.lang) || '').toLowerCase();
 
 		// These are in order of decreasing likelihood; this will change in time.
 
@@ -232,6 +275,31 @@ if(typeof window != 'undefined' && window.document){
 				break;
 			}
 		}
+
+		dojo._initFired = false;
+		dojo._loadInit = function(e){
+
+			// NOTE: What is this flag for?
+
+			dojo._initFired = true;
+
+			// allow multiple calls, only first one will take effect
+			// A bug in khtml calls events callbacks for document for events which are not supported
+			// for example a created contextmenu event calls DOMContentLoaded
+
+			var type = e && e.type ? e.type.toLowerCase() : "load";
+			if(!arguments.callee.initialized && (type == "domcontentloaded" || type == "load")){
+				arguments.callee.initialized = true;
+				if(dojo._khtmlTimer){
+					window.clearInterval(dojo._khtmlTimer);
+					delete dojo._khtmlTimer;
+				}
+
+				if(!dojo._inFlightCount){
+					dojo._modulesLoaded();
+				}
+			}
+		};
 
 		var emptyFunction = function() {};
 
@@ -301,8 +369,7 @@ if(typeof window != 'undefined' && window.document){
 			}
 		};
 		
-
-		// *** Odd name
+		// NOTE: Odd name
 		var _handleNodeEvent = function(/*String*/evtName, /*Function*/fp){
 			// summary:
 			//		non-destructively adds the specified function to the node's
@@ -395,91 +462,35 @@ if(typeof window != 'undefined' && window.document){
 				_handleNodeEvent("onbeforeunload", dojo.unloaded);
 			}
 		};
-
-		doc = null;
-	})();
-
-	dojo._initFired = false;
-	//	BEGIN DOMContentLoaded, from Dean Edwards (http://dean.edwards.name/weblog/2006/06/again/)
-	dojo._loadInit = function(e){
-		dojo._initFired = true;
-		// allow multiple calls, only first one will take effect
-		// A bug in khtml calls events callbacks for document for event which isnt supported
-		// for example a created contextmenu event calls DOMContentLoaded, workaround
-		var type = e && e.type ? e.type.toLowerCase() : "load";
-		if(arguments.callee.initialized || (type != "domcontentloaded" && type != "load")){ return; }
-		arguments.callee.initialized = true;
-		if(dojo._khtmlTimer){
-			window.clearInterval(dojo._khtmlTimer);
-			delete dojo._khtmlTimer;
-		}
-
-		if(!dojo._inFlightCount){
-			dojo._modulesLoaded();
-		}
-	};
-
-	if(!dojo.config.afterOnLoad){
-		// DOMContentLoaded
-		if(window.document.addEventListener){
-			// NOTE: 
-			//		due to a threading issue in Firefox 2.0, we can't enable
-			//		DOMContentLoaded on that platform. For more information, see:
-			//		http://trac.dojotoolkit.org/ticket/1704
-
-			if(dojo.config.syncXhrForModules === false && dojo.config.enableMozDomContentLoaded !== false){
-				window.document.addEventListener("DOMContentLoaded", dojo._loadInit, null);
-			}
-		}
-
-		if (window.addEventListener) {
-			window.addEventListener("load", dojo._loadInit, null);
-		}
-
-		if(!dojo.isIE && typeof window.document.readyState == 'string' && window.setInterval){
-			dojo._khtmlTimer = window.setInterval(function(){
-				if(/loaded|complete/i.test(window.document.readyState)){
-					dojo._loadInit(); // call the onload handler
-				}
-			}, 10);
-		}
-	}
-
-	if(dojo.isIE){
-		// 	for Internet Explorer. readyState will not be achieved on init
-		// 	call, but dojo doesn't need it however, we'll include it
-		// 	because we don't know if there are other functions added that
-		// 	might.  Note that this has changed because the build process
-		// 	strips all comments -- including conditional ones.
-
 		if(!dojo.config.afterOnLoad){
-			window.document.write('<script defer src="//:" onreadystatechange="if(this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
-		}
+			// DOMContentLoaded
+			if(isHostMethod(doc, 'addEventListener')){
+				// NOTE: 
+				//		due to a threading issue in Firefox 2.0, we can't enable
+				//		DOMContentLoaded on that platform. For more information, see:
+				//		http://trac.dojotoolkit.org/ticket/1704
 
-		// *** Should be in VML module?
+				if(dojo.config.syncXhrForModules !== false && dojo.config.enableMozDomContentLoaded !== false){
+					doc.addEventListener("DOMContentLoaded", dojo._loadInit, false);
+				}
+			}
 
-		//try{
-		if (window.document.namespaces && window.document.namespaces.add) {
-			window.document.namespaces.add("v","urn:schemas-microsoft-com:vml");
-			if (window.document.createStyleSheet) {
-				window.document.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML); display:inline-block");
+			if (isHostMethod(window, 'addEventListener')) {
+				window.addEventListener("load", dojo._loadInit, false);
+			}
+
+			if(!dojo.isIE && typeof doc.readyState == 'string' && isHostMethod(window, 'setInterval')){
+				dojo._khtmlTimer = window.setInterval(function(){
+					if(/loaded|complete/i.test(window.document.readyState)){
+						dojo._loadInit(); // call the onload handler
+					}
+				}, 10);
 			}
 		}
-		//}catch(e){}
-	}
 
-	/*
-	OpenAjax.subscribe("OpenAjax", "onload", function(){
-		if(dojo._inFlightCount == 0){
-			dojo._modulesLoaded();
-		}
-	});
-
-	OpenAjax.subscribe("OpenAjax", "onunload", function(){
-		dojo.unloaded();
-	});
-	*/
-} //if (typeof window != 'undefined')
+		doc = de = null;
+	})();
+}
 
 //Register any module paths set up in djConfig. Need to do this
 //in the hostenvs since hostenv_browser can read djConfig from a
