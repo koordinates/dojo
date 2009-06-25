@@ -265,7 +265,7 @@ dojo.extend(dojo.Deferred, {
 				this.silentlyCancelled = true;
 			}
 			if(this.fired == -1){
-				if(!(err instanceof Error)){
+				if(!dojo.isError(err)){
 					var res = err;
 					var msg = "Deferred Cancelled";
 					if(err && err.toString){
@@ -288,7 +288,7 @@ dojo.extend(dojo.Deferred, {
 	_resback: function(res){
 		// summary:
 		//		The private primitive that means either callback or errback
-		this.fired = ((res instanceof Error) ? 1 : 0);
+		this.fired = dojo.isError(res) ? 1 : 0;
 		this.results[this.fired] = res;
 		this._fire();
 	},
@@ -319,7 +319,7 @@ dojo.extend(dojo.Deferred, {
 		//	summary: 
 		//		Begin the callback sequence with an error result.
 		this._check();
-		if(!(res instanceof Error)){
+		if(!dojo.isError(res)){
 			res = new Error(res);
 		}
 		this._resback(res);
@@ -361,6 +361,7 @@ dojo.extend(dojo.Deferred, {
 		// summary: 
 		//		Used internally to exhaust the callback sequence when a result
 		//		is available.
+		var f;
 		var chain = this.chain;
 		var fired = this.fired;
 		var res = this.results[fired];
@@ -373,7 +374,7 @@ dojo.extend(dojo.Deferred, {
 			if(typeof ret != "undefined"){
 				res = ret;
 			}
-			fired = ((res instanceof Error) ? 1 : 0);
+			fired = dojo.isError(res) ? 1 : 0;
 			if(res instanceof dojo.Deferred){
 				cb = function(res){
 					self._resback(res);
@@ -396,7 +397,7 @@ dojo.extend(dojo.Deferred, {
 			(!this.paused)
 		){
 			// Array
-			var f = chain.shift()[fired];
+			f = chain.shift()[fired];
 			if(!f){ continue; }
 			if(dojo.config.debugAtAllCosts){
 				func.call(this);
