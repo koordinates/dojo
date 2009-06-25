@@ -1857,7 +1857,7 @@ dojo._xdInitExtraLocales = function(){
 
 	var extra = dojo.config.extraLocale;
 	if(extra){
-		if(!extra instanceof Array){
+		if(!dojo.isArray(extra)){
 			extra = [extra];
 		}
 
@@ -1972,7 +1972,7 @@ dojo._xdUnpackDependency = function(/*Array*/dep){
 			//We only need the first one.
 			if(newDeps){
 				for(var i = 0; i < newDeps.length; i++){
-					if(newDeps[i] instanceof Array){
+					if(dojo.isArray(newDeps[i])){
 						newDeps[i] = {name: newDeps[i][0], content: null};
 					}else{
 						newDeps[i] = {name: newDeps[i], content: null};
