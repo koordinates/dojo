@@ -8,66 +8,67 @@ dojo.isString = function(/*anything*/ it){
 	return typeof it == "string"; // Boolean
 };
 
-// NOTE: Do not pass host objects
+(function() {
+	var isOwnProperty = dojo.isOwnProperty;
 
-dojo.isArray = function(/*anything*/ it){
-	//	summary:
-	//		Return true if it is an Array
+	// NOTE: Do not pass host objects
 
-	var t = Object.prototype.toString.call(it), isOwnProperty = dojo.isOwnProperty;
-	switch (t) {
-	case '[object Array]':
-		return true;
-	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
-		return !!(dojo.isObject(it) && it && typeof it.length == 'number' && isFinite(it.length) && dojo.isFunction(it.splice) && dojo.isFunction(it.reverse) && !isOwnProperty(it, 'splice') && !isOwnProperty(it, 'reverse') && !isOwnProperty(it, 'length'));
-	}
-	return false;
-};
+	dojo.isArray = function(/*anything*/ it){
+		//	summary:
+		//		Return true if it is an Array
 
-dojo.isDate = function(/*anything*/ it) {
-	//	summary:
-	//		Return true if it is a Date
+		switch (Object.prototype.toString.call(it)) {
+		case '[object Array]':
+			return true;
+		case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
+			return !!(dojo.isObject(it) && it && typeof it.length == 'number' && isFinite(it.length) && dojo.isFunction(it.splice) && dojo.isFunction(it.reverse) && !isOwnProperty(it, 'splice') && !isOwnProperty(it, 'reverse') && !isOwnProperty(it, 'length'));
+		}
+		return false;
+	};
 
-	var t = Object.prototype.toString.call(it);
-	switch (t) {
-	case '[object Date]':
-		return true;
-	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
-		return !!(dojo.isObject(it) && it && dojo.isFunction(it.getTime) && !dojo.isOwnProperty(it, 'getTime'));
-	}
-	return false;
-};
+	dojo.isDate = function(/*anything*/ it) {
+		//	summary:
+		//		Return true if it is a Date
 
-dojo.isError = function(/*anything*/ it) {
-	//	summary:
-	//		Return true if it is an Error
+		switch (Object.prototype.toString.call(it)) {
+		case '[object Date]':
+			return true;
+		case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
+			return !!(dojo.isObject(it) && it && dojo.isFunction(it.getTime) && !isOwnProperty(it, 'getTime'));
+		}
+		return false;
+	};
 
-	var t = Object.prototype.toString.call(it);
-	switch (t) {
-	case '[object Error]':
-		return true;
-	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
+	dojo.isError = function(/*anything*/ it) {
+		//	summary:
+		//		Return true if it is an Error
 
-		// FIXME: Need tests for Error objects
+		switch (Object.prototype.toString.call(it)) {
+		case '[object Error]':
+			return true;
+		case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
 
-		return !!(dojo.isObject(it) && it);
-	}
-	return false;
-};
+			// FIXME: Need tests for Error objects
 
-dojo.isRegExp = function(/*anything*/ it) {
-	//	summary:
-	//		Return true if it is a RegExp
+			return !!(dojo.isObject(it) && it);
+		}
+		return false;
+	};
 
-	var t = Object.prototype.toString.call(it);
-	switch (t) {
-	case '[object RegExp]':
-		return true;
-	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
-		return dojo.isObject(it) && it && dojo.isFunction(it.test) && !dojo.isOwnProperty(it, 'test') && dojo.isObject(it) && it && dojo.isFunction(it.exec) && !dojo.isOwnProperty(it, 'exec');
-	}
-	return false;
-};
+	dojo.isRegExp = function(/*anything*/ it) {
+		//	summary:
+		//		Return true if it is a RegExp
+
+		switch (Object.prototype.toString.call(it)) {
+		case '[object RegExp]':
+			return true;
+		case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
+			return dojo.isObject(it) && it && dojo.isFunction(it.test) && !dojo.isOwnProperty(it, 'test') && dojo.isObject(it) && it && dojo.isFunction(it.exec) && !isOwnProperty(it, 'exec');
+		}
+		return false;
+	};
+
+})();
 
 /*=====
 dojo.isFunction = function(it){
