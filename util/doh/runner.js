@@ -1,8 +1,11 @@
 // package system gunk. 
+
+var GLOBAL = this.window || this;
+
 try{
 	dojo.provide("doh.runner");
 }catch(e){
-	if(!this["doh"]){
+	if(!this.doh){
 		doh = {};
 	}
 }
@@ -28,7 +31,7 @@ doh.hitch = function(/*Object*/thisObject, /*Function|String*/method /*, ...*/){
 		}
 		return fcn.apply(thisObject, ta); // Function
 	};
-}
+};
 
 doh._mixin = function(/*Object*/ obj, /*Object*/ props){
 	// summary:
@@ -46,16 +49,18 @@ doh._mixin = function(/*Object*/ obj, /*Object*/ props){
 		}
 	}
 	// IE doesn't recognize custom toStrings in for..in
-	if(	this["document"] 
-		&& document.all
-		&& (typeof props["toString"] == "function")
-		&& (props["toString"] != obj["toString"])
-		&& (props["toString"] != tobj["toString"])
+
+	// NOTE: Incomplete and duplication (intentional?)
+
+	if(	this.document &&
+		(typeof props.toString == "function") &&
+		(props.toString != obj.toString) &&
+		(props.toString != tobj.toString)
 	){
 		obj.toString = props.toString;
 	}
 	return obj; // Object
-}
+};
 
 doh.mixin = function(/*Object*/obj, /*Object...*/props){
 	// summary:	Adds all properties and methods of props to obj. 
@@ -63,7 +68,7 @@ doh.mixin = function(/*Object*/obj, /*Object...*/props){
 		doh._mixin(obj, arguments[i]);
 	}
 	return obj; // Object
-}
+};
 
 doh.extend = function(/*Object*/ constructor, /*Object...*/ props){
 	// summary:
@@ -74,7 +79,7 @@ doh.extend = function(/*Object*/ constructor, /*Object...*/ props){
 		doh._mixin(constructor.prototype, arguments[i]);
 	}
 	return constructor; // Object
-}
+};
 
 
 doh._line = "------------------------------------------------------------";
@@ -98,7 +103,7 @@ doh.debug = function(){
 	//		or logging facility is available in this environment
 
 	// YOUR TEST RUNNER NEEDS TO IMPLEMENT THIS
-}
+};
 
 doh._AssertFailure = function(msg, hint){
 	// idea for this as way of dis-ambiguating error types is from JUM. 
@@ -108,11 +113,11 @@ doh._AssertFailure = function(msg, hint){
 		return new doh._AssertFailure(msg);
 	}
 	if(hint){
-		msg = (new String(msg||""))+" with hint: \n\t\t"+(new String(hint)+"\n");
+		msg = (String(msg||""))+" with hint: \n\t\t"+(String(hint)+"\n");
 	}
-	this.message = new String(msg||"");
+	this.message = String(msg||"");
 	return this;
-}
+};
 doh._AssertFailure.prototype = new Error();
 doh._AssertFailure.prototype.constructor = doh._AssertFailure;
 doh._AssertFailure.prototype.name = "doh._AssertFailure";
@@ -188,7 +193,7 @@ doh.extend(doh.Deferred, {
 			if(this.fired == -1){
 				this.errback(new Error("Deferred(unfired)"));
 			}
-		}else if(this.fired == 0 &&
+		}else if(!this.fired &&
 					(this.results[0] instanceof doh.Deferred)){
 			this.results[0].cancel();
 		}
@@ -201,7 +206,7 @@ doh.extend(doh.Deferred, {
 
 	_unpause: function(){
 		this.paused--;
-		if ((this.paused == 0) && (this.fired >= 0)) {
+		if (!this.paused && this.fired >= 0) {
 			this._fire();
 		}
 	},
@@ -212,7 +217,7 @@ doh.extend(doh.Deferred, {
 	},
 
 	_resback: function(res){
-		this.fired = ((res instanceof Error) ? 1 : 0);
+		this.fired = dojo.isError(res) ? 1 : 0;
 		this.results[this.fired] = res;
 		this._fire();
 	},
@@ -234,7 +239,7 @@ doh.extend(doh.Deferred, {
 
 	errback: function(res){
 		this._check();
-		if(!(res instanceof Error)){
+		if(!dojo.isError(res)){
 			res = new Error(res);
 		}
 		this._resback(res);
@@ -278,20 +283,21 @@ doh.extend(doh.Deferred, {
 		var res = this.results[fired];
 		var self = this;
 		var cb = null;
-		while(chain.length > 0 && this.paused == 0){
+		var fn = function(res){
+			self._continue(res);
+		};
+		while(chain.length > 0 && !this.paused){
 			// Array
 			var pair = chain.shift();
 			var f = pair[fired];
-			if(f == null){
+			if(f === null || f === undefined){
 				continue;
 			}
 			try {
 				res = f(res);
-				fired = ((res instanceof Error) ? 1 : 0);
+				fired = dojo.isError(res) ? 1 : 0;
 				if(res instanceof doh.Deferred){
-					cb = function(res){
-						self._continue(res);
-					};
+					cb = fn;
 					this._pause();
 				}
 			}catch(err){
@@ -325,7 +331,7 @@ doh._init = function(){
 	this._errorCount = 0;
 	this._failureCount = 0;
 	this.debug(this._testCount, "tests to run in", this._groupCount, "groups");
-}
+};
 
 // doh._urls = [];
 doh._groups = {};
@@ -347,27 +353,27 @@ doh.registerTestNs = function(/*String*/ group, /*Object*/ ns){
 			this.registerTest(group, ns[x]);
 		}
 	}
-}
+};
 
 doh._testRegistered = function(group, fixture){
 	// slot to be filled in
-}
+};
 
 doh._groupStarted = function(group){
 	// slot to be filled in
-}
+};
 
 doh._groupFinished = function(group, success){
 	// slot to be filled in
-}
+};
 
 doh._testStarted = function(group, fixture){
 	// slot to be filled in
-}
+};
 
 doh._testFinished = function(group, fixture, success){
 	// slot to be filled in
-}
+};
 
 doh.registerGroup = function(	/*String*/ group, 
 								/*Array||Function||Object*/ tests, 
@@ -399,7 +405,7 @@ doh.registerGroup = function(	/*String*/ group,
 	if(tearDown){
 		this._groups[group].tearDown = tearDown;
 	}
-}
+};
 
 doh._getTestObj = function(group, test){
 	var tObj = test;
@@ -408,14 +414,14 @@ doh._getTestObj = function(group, test){
 			return this.registerUrl(group, test);
 		}else{
 			tObj = {
-				name: test.replace("/\s/g", "_") // FIXME: bad escapement
+				name: test.replace(/\s/g, "_")
 			};
 			tObj.runTest = new Function("t", test);
 		}
 	}else if(typeof test == "function"){
 		// if we didn't get a fixture, wrap the function
 		tObj = { "runTest": test };
-		if(test["name"]){
+		if(test.name){
 			tObj.name = test.name;
 		}else{
 			try{
@@ -431,7 +437,7 @@ doh._getTestObj = function(group, test){
 		// FIXME: try harder to get the test name here
 	}
 	return tObj;
-}
+};
 
 doh.registerTest = function(/*String*/ group, /*Function||Object*/ test){
 	// summary:
@@ -455,7 +461,7 @@ doh.registerTest = function(/*String*/ group, /*Function||Object*/ test){
 	this._testCount++;
 	this._testRegistered(group, tObj);
 	return tObj;
-}
+};
 
 doh.registerTests = function(/*String*/ group, /*Array*/ testArr){
 	// summary:
@@ -465,7 +471,7 @@ doh.registerTests = function(/*String*/ group, /*Array*/ testArr){
 	for(var x=0; x<testArr.length; x++){
 		this.registerTest(group, testArr[x]);
 	}
-}
+};
 
 // FIXME: move implementation to _browserRunner?
 doh.registerUrl = function(	/*String*/ group, 
@@ -474,10 +480,10 @@ doh.registerUrl = function(	/*String*/ group,
 	this.debug("ERROR:");
 	this.debug("\tNO registerUrl() METHOD AVAILABLE.");
 	// this._urls.push(url);
-}
+};
 
 doh.registerString = function(group, str){
-}
+};
 
 // FIXME: remove the doh.add alias SRTL.
 doh.register = doh.add = function(groupOrNs, testOrNull){
@@ -526,7 +532,7 @@ doh.registerDocTests = function(module){
 			// running from doesn't include it), stub it out and log the error
 			console.debug(e);
 
-			doh.registerDocTests = function(){}
+			doh.registerDocTests = function(){};
 			return;
 		}
 		doh.registerDocTests = function(module){
@@ -539,6 +545,12 @@ doh.registerDocTests = function(module){
 			var docTests = docTest.getTests(module);
 			var len = docTests.length;
 			var tests = [];
+			var fn = function(test){ 
+				return function(t){
+					var r = docTest.runTest(test.commands, test.expectedResult);
+					t.assertTrue(r.success);
+				};
+			};
 			for (var i=0; i<len; i++){
 				var test = docTests[i];
 				// Extract comment on first line and add to test name.
@@ -548,18 +560,13 @@ doh.registerDocTests = function(module){
 					comment = ", "+parts[parts.length-1]; // Get all after the last //, so we dont get trapped by http:// or alikes :-).
 				}
 				tests.push({
-					runTest: (function(test){ 
-						return function(t){
-							var r = docTest.runTest(test.commands, test.expectedResult);
-							t.assertTrue(r.success);
-						}
-					})(test),
+					runTest: fn(test),
 					name:"Line "+test.line+comment
 				}
 				);
 			}
 			this.register("DocTests: "+module, tests);
-		}
+		};
 	}
 })();
 
@@ -571,12 +578,12 @@ doh.t = doh.assertTrue = function(/*Object*/ condition, /*String?*/ hint){
 	// summary:
 	//		is the passed item "truthy"?
 	if(arguments.length < 1){ 
-		throw new doh._AssertFailure("assertTrue failed because it was not passed at least 1 argument"); 
+		throw new doh._AssertFailure("assertTrue failed because it was not passed at least 1 argument");
 	} 
 	if(!eval(condition)){
 		throw new doh._AssertFailure("assertTrue('" + condition + "') failed", hint);
 	}
-}
+};
 
 doh.f = doh.assertFalse = function(/*Object*/ condition, /*String?*/ hint){
 	// summary:
@@ -587,7 +594,7 @@ doh.f = doh.assertFalse = function(/*Object*/ condition, /*String?*/ hint){
 	if(eval(condition)){
 		throw new doh._AssertFailure("assertFalse('" + condition + "') failed", hint);
 	}
-}
+};
 
 doh.e = doh.assertError = function(/*Error object*/expectedError, /*Object*/scope, /*String*/functionName, /*Array*/args, /*String?*/ hint){
 	//	summary:
@@ -605,8 +612,7 @@ doh.e = doh.assertError = function(/*Error object*/expectedError, /*Object*/scop
 		}
 	}
 	throw new doh._AssertFailure("assertError() failed:\n\texpected error\n\t\t"+expectedError+"\n\tbut no error caught\n\n", hint);
-}
-
+};
 
 doh.is = doh.assertEqual = function(/*Object*/ expected, /*Object*/ actual, /*String?*/ hint){
 	// summary:
@@ -633,7 +639,7 @@ doh.is = doh.assertEqual = function(/*Object*/ expected, /*Object*/ actual, /*St
 		return true;
 	}
 	throw new doh._AssertFailure("assertEqual() failed:\n\texpected\n\t\t"+expected+"\n\tbut got\n\t\t"+actual+"\n\n", hint);
-}
+};
 
 doh.isNot = doh.assertNotEqual = function(/*Object*/ notExpected, /*Object*/ actual, /*String?*/ hint){
 	// summary:
@@ -660,7 +666,7 @@ doh.isNot = doh.assertNotEqual = function(/*Object*/ notExpected, /*Object*/ act
         throw new doh._AssertFailure("assertNotEqual() failed: not expected |"+notExpected+"| but got |"+actual+"|", hint);
 	}
     return true;
-}
+};
 
 doh._arrayEq = function(expected, actual){
 	if(expected.length != actual.length){ return false; }
@@ -669,7 +675,7 @@ doh._arrayEq = function(expected, actual){
 		if(!doh.assertEqual(expected[x], actual[x])){ return false; }
 	}
 	return true;
-}
+};
 
 doh._objPropEq = function(expected, actual){
 	// Degenerate case: if they are both null, then their "properties" are equal.
@@ -680,8 +686,8 @@ doh._objPropEq = function(expected, actual){
 	if(expected === null || actual === null){
 		return false;
 	}
-	if(expected instanceof Date){
-		return actual instanceof Date && expected.getTime()==actual.getTime();
+	if(dojo.isDate(expected)){
+		return dojo.isDate(actual) && expected.getTime()==actual.getTime();
 	}
 	var x;
 	// Make sure ALL THE SAME properties are in both objects!
@@ -689,7 +695,7 @@ doh._objPropEq = function(expected, actual){
 		if(expected[x] === undefined){
 			return false;
 		}
-	};
+	}
 
 	for(x in expected){
 		if(!doh.assertEqual(expected[x], actual[x])){
@@ -697,17 +703,18 @@ doh._objPropEq = function(expected, actual){
 		}
 	}
 	return true;
-}
+};
 
 doh._isArray = function(it){
-	return (it && it instanceof Array || typeof it == "array" || 
-		(
-			!!doh.global["dojo"] &&
-			doh.global["dojo"]["NodeList"] !== undefined && 
-			it instanceof doh.global["dojo"]["NodeList"]
-		)
-	);
-}
+
+	// NOTE: do not pass host objects to isArray
+
+	return (
+			!!doh.global.dojo &&
+			doh.global.dojo.NodeList !== undefined && 
+			it instanceof doh.global.dojo.NodeList
+		) || dojo.isArray(it);
+};
 
 //
 // Runner-Wrapper
@@ -717,7 +724,7 @@ doh._setupGroupForRun = function(/*String*/ groupName, /*Integer*/ idx){
 	var tg = this._groups[groupName];
 	this.debug(this._line);
 	this.debug("GROUP", "\""+groupName+"\"", "has", tg.length, "test"+((tg.length > 1) ? "s" : "")+" to run");
-}
+};
 
 doh._handleFailure = function(groupName, fixture, e){
 	// this.debug("FAILED test:", fixture.name);
@@ -726,15 +733,15 @@ doh._handleFailure = function(groupName, fixture, e){
 	var out = "";
 	if(e instanceof this._AssertFailure){
 		this._failureCount++;
-		if(e["fileName"]){ out += e.fileName + ':'; }
-		if(e["lineNumber"]){ out += e.lineNumber + ' '; }
+		if(e.fileName){ out += e.fileName + ':'; }
+		if(e.lineNumber){ out += e.lineNumber + ' '; }
 		out += e+": "+e.message;
 		this.debug("\t_AssertFailure:", out);
 	}else{
 		this._errorCount++;
 	}
 	this.debug(e);
-	if(fixture.runTest["toSource"]){
+	if(fixture.runTest.toSource){
 		var ss = fixture.runTest.toSource();
 		this.debug("\tERROR IN:\n\t\t", ss);
 	}else{
@@ -746,14 +753,14 @@ doh._handleFailure = function(groupName, fixture, e){
 	}else if(e.javaException){
 		e.javaException.printStackTrace();
 	} 
-}
+};
 
-try{
-	setTimeout(function(){}, 0);
-}catch(e){
-	setTimeout = function(func){
+if (GLOBAL && GLOBAL.setTimeout) {
+	GLOBAL.setTimeout(function(){}, 0);
+} else {
+	GLOBAL.setTimeout = function(func){
 		return func();
-	}
+	};
 }
 
 doh._runFixture = function(groupName, fixture){
@@ -767,8 +774,8 @@ doh._runFixture = function(groupName, fixture){
 		// another test or group-level setUp function
 		fixture.group = tg; 
 		// only execute the parts of the fixture we've got
-		if(fixture["setUp"]){ fixture.setUp(this); }
-		if(fixture["runTest"]){  // should we error out of a fixture doesn't have a runTest?
+		if(fixture.setUp){ fixture.setUp(this); }
+		if(fixture.runTest){  // should we error out of a fixture doesn't have a runTest?
 			fixture.startTime = new Date();
 			var ret = fixture.runTest(this); 
 			fixture.endTime = new Date();
@@ -786,7 +793,7 @@ doh._runFixture = function(groupName, fixture){
 				});
 
 				var retEnd = function(){
-					if(fixture["tearDown"]){ fixture.tearDown(doh); }
+					if(fixture.tearDown){ fixture.tearDown(doh); }
 					tg.inFlight--;
 					if((!tg.inFlight)&&(tg.iterated)){
 						doh._groupFinished(groupName, !tg.failures);
@@ -795,16 +802,16 @@ doh._runFixture = function(groupName, fixture){
 					if(doh._paused){
 						doh.run();
 					}
-				}
+				};
 
-				var timer = setTimeout(function(){
+				var timer = GLOBAL.setTimeout(function(){
 					// ret.cancel();
 					// retEnd();
 					ret.errback(new Error("test timeout in "+fixture.name.toString()));
-				}, fixture["timeout"]||1000);
+				}, fixture.timeout||1000);
 
 				ret.addBoth(function(arg){
-					clearTimeout(timer);
+					GLOBAL.clearTimeout(timer);
 					retEnd();
 				});
 				if(ret.fired < 0){
@@ -813,7 +820,7 @@ doh._runFixture = function(groupName, fixture){
 				return ret;
 			}
 		}
-		if(fixture["tearDown"]){ fixture.tearDown(this); }
+		if(fixture.tearDown){ fixture.tearDown(this); }
 	}catch(e){
 		threw = true;
 		err = e;
@@ -822,7 +829,7 @@ doh._runFixture = function(groupName, fixture){
 		}
 	}
 	var d = new doh.Deferred();
-	setTimeout(this.hitch(this, function(){
+	GLOBAL.setTimeout(this.hitch(this, function(){
 		if(threw){
 			this._handleFailure(groupName, fixture, err);
 		}
@@ -831,7 +838,7 @@ doh._runFixture = function(groupName, fixture){
 		if((!tg.inFlight)&&(tg.iterated)){
 			doh._groupFinished(groupName, !tg.failures);
 		}else if(tg.inFlight > 0){
-			setTimeout(this.hitch(this, function(){
+			GLOBAL.setTimeout(this.hitch(this, function(){
 				doh.runGroup(groupName); // , idx);
 			}), 100);
 			this._paused = true;
@@ -842,7 +849,7 @@ doh._runFixture = function(groupName, fixture){
 	}), 30);
 	doh.pause();
 	return d;
-}
+};
 
 doh._testId = 0;
 doh.runGroup = function(/*String*/ groupName, /*Integer*/ idx){
@@ -862,8 +869,8 @@ doh.runGroup = function(/*String*/ groupName, /*Integer*/ idx){
 	if(tg.skip === true){ return; }
 	if(this._isArray(tg)){
 		if(idx<=tg.length){
-			if((!tg.inFlight)&&(tg.iterated == true)){
-				if(tg["tearDown"]){ tg.tearDown(this); }
+			if(!tg.inFlight&&tg.iterated){
+				if(tg.tearDown){ tg.tearDown(this); }
 				doh._groupFinished(groupName, !tg.failures);
 				return;
 			}
@@ -876,7 +883,7 @@ doh.runGroup = function(/*String*/ groupName, /*Integer*/ idx){
 		doh._groupStarted(groupName);
 		if(!idx){
 			this._setupGroupForRun(groupName, idx);
-			if(tg["setUp"]){ tg.setUp(this); }
+			if(tg.setUp){ tg.setUp(this); }
 		}
 		for(var y=(idx||0); y<tg.length; y++){
 			if(this._paused){
@@ -896,13 +903,13 @@ doh.runGroup = function(/*String*/ groupName, /*Integer*/ idx){
 		}
 		tg.iterated = true;
 		if(!tg.inFlight){
-			if(tg["tearDown"]){ tg.tearDown(this); }
+			if(tg.tearDown){ tg.tearDown(this); }
 			doh._groupFinished(groupName, !tg.failures);
 		}
 	}
-}
+};
 
-doh._onEnd = function(){}
+doh._onEnd = function(){};
 
 doh._report = function(){
 	// summary:
@@ -919,17 +926,17 @@ doh._report = function(){
 	this.debug("\t", this._testCount, "tests in", this._groupCount, "groups");
 	this.debug("\t", this._errorCount, "errors");
 	this.debug("\t", this._failureCount, "failures");
-}
+};
 
 doh.togglePaused = function(){
 	this[(this._paused) ? "run" : "pause"]();
-}
+};
 
 doh.pause = function(){
 	// summary:
 	//		halt test run. Can be resumed.
 	this._paused = true;
-}
+};
 
 doh.run = function(){
 	// summary:
@@ -966,9 +973,9 @@ doh.run = function(){
 	this._paused = false;
 	this._onEnd();
 	this._report();
-}
+};
 
-tests = doh;
+var tests = doh;
 
 (function(){
 	// scope protection
@@ -980,7 +987,7 @@ tests = doh;
 				rhino: ["doh._rhinoRunner"],
 				spidermonkey: ["doh._rhinoRunner"]
 			});
-			var _shouldRequire = dojo.isBrowser ? (dojo.global == dojo.global["parent"]) : true;
+			var _shouldRequire = dojo.isBrowser ? (dojo.global == dojo.global.parent) : true;
 			if(_shouldRequire){
 				if(dojo.isBrowser){
 					dojo.addOnLoad(function(){
@@ -992,7 +999,7 @@ tests = doh;
 						if(dojo.byId("testList")){
 							var _tm = ( (dojo.global.testModule && dojo.global.testModule.length) ? dojo.global.testModule : "dojo.tests.module");
 							dojo.forEach(_tm.split(","), dojo.require, dojo);
-							setTimeout(function(){
+							GLOBAL.setTimeout(function(){
 								doh.run();
 							}, 500);
 						}
@@ -1009,23 +1016,25 @@ tests = doh;
 				throw new Error();
 			}
 
-			if(this["document"]){
+			if(this.document){
 				// if we survived all of that, we're probably in a browser but
 				// don't have Dojo handy. Load _browserRunner.js using a
 				// document.write() call.
 
 				// find runner.js, load _browserRunner relative to it
-				var scripts = document.getElementsByTagName("script");
+				var scripts = dojo.doc.getElementsByTagName("script");
 				for(x=0; x<scripts.length; x++){
 					var s = scripts[x].src;
 					if(s && (s.substr(s.length - 9) == "runner.js")){
-						document.write("<scri"+"pt src='" + s.substr(0, s.length - 9)
-							+ "_browserRunner.js' type='text/javascript'></scr"+"ipt>");
+						dojo.doc.write("<script src='" + s.substr(0, s.length - 9) + "_browserRunner.js' type='text/javascript'></script>");
 					}
 				}
 			}
 		}
 	}catch(e){
+
+		// NOTE: print?
+
 		print("\n"+doh._line);
 		print("The Dojo Unit Test Harness, $Rev$");
 		print("Copyright (c) 2009, The Dojo Foundation, All Rights Reserved");
@@ -1052,7 +1061,7 @@ tests = doh;
 				}
 			}
 			if(dojoUrl.length){
-				if(!this["djConfig"]){
+				if(!this.djConfig){
 					djConfig = {};
 				}
 				djConfig.baseUrl = dojoUrl.split("dojo.js")[0];
@@ -1064,8 +1073,8 @@ tests = doh;
 			if(testModule.length){
 				dojo.forEach(testModule.split(","), dojo.require, dojo);
 			}
-		}catch(e){
-			print("An exception occurred: " + e);
+		}catch(e2){
+			print("An exception occurred: " + e2);
 		}
 
 		doh.run();
