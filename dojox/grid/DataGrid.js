@@ -474,7 +474,7 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 					inValue = isNaN(inValue) ? inValue : parseFloat(inValue);
 				}else if(typeof oldValue == 'boolean'){
 					inValue = inValue == 'true' ? true : inValue == 'false' ? false : inValue;
-				}else if(oldValue instanceof Date){
+				}else if(dojo.isDate(oldValue)){
 					var asDate = new Date(inValue);
 					inValue = isNaN(asDate.getTime()) ? inValue : asDate;
 				}
