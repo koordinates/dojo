@@ -19,7 +19,7 @@ dojo.isArray = function(/*anything*/ it){
 	case '[object Array]':
 		return true;
 	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
-		return dojo.isObject(it) && it && typeof it.length == 'number' && isFinite(it.length) && dojo.isFunction(it.splice) && dojo.isFunction(it.reverse) && !isOwnProperty(it, 'splice') && !isOwnProperty(it, 'reverse') && !isOwnProperty(it, 'length');
+		return !!(dojo.isObject(it) && it && typeof it.length == 'number' && isFinite(it.length) && dojo.isFunction(it.splice) && dojo.isFunction(it.reverse) && !isOwnProperty(it, 'splice') && !isOwnProperty(it, 'reverse') && !isOwnProperty(it, 'length'));
 	}
 	return false;
 };
@@ -33,14 +33,31 @@ dojo.isDate = function(/*anything*/ it) {
 	case '[object Date]':
 		return true;
 	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
-		return dojo.isObject(it) && it && dojo.isFunction(it.getTime) && !dojo.isOwnProperty(it, 'getTime');
+		return !!(dojo.isObject(it) && it && dojo.isFunction(it.getTime) && !dojo.isOwnProperty(it, 'getTime'));
+	}
+	return false;
+};
+
+dojo.isError = function(/*anything*/ it) {
+	//	summary:
+	//		Return true if it is an Error
+
+	var t = Object.prototype.toString.call(it);
+	switch (t) {
+	case '[object Error]':
+		return true;
+	case '[object Object]': // Cross-frame IE (duck typing not reliable, method should be deprecated)
+
+		// FIXME: Need tests for Error objects
+
+		return !!(dojo.isObject(it) && it);
 	}
 	return false;
 };
 
 dojo.isRegExp = function(/*anything*/ it) {
 	//	summary:
-	//		Return true if it is a Date
+	//		Return true if it is a RegExp
 
 	var t = Object.prototype.toString.call(it);
 	switch (t) {
