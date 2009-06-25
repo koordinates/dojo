@@ -7,7 +7,7 @@ dojo.require("dojox.dtl.utils.date");
 
 	dojo.mixin(ddfd, {
 		_toDate: function(value){
-			if(value instanceof Date){
+			if(dojo.isDate(value)){
 				return value;
 			}
 			value = new Date(value);
