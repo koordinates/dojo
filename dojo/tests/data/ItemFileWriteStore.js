@@ -64,16 +64,18 @@ doh.register("tests.data.ItemFileWriteStore",
 			doh.assertTrue(features["dojo.data.api.Identity"] !== null);
 			doh.assertTrue(features["dojo.data.api.Write"] !== null);
 			doh.assertTrue(features["dojo.data.api.Notification"] !== null);
-			doh.assertFalse(features["iggy"]);
+			doh.assertFalse(features.iggy);
 			
 			// and only the expected features:
 			var count = 0;
 			for(var i in features){
-				doh.assertTrue((i === "dojo.data.api.Read" || 
-					i === "dojo.data.api.Identity" || 
-					i === "dojo.data.api.Write" || 
-					i === "dojo.data.api.Notification"));
-				count++;
+				if (dojo.isOwnProperty(features, i)) {
+					doh.assertTrue((i === "dojo.data.api.Read" || 
+						i === "dojo.data.api.Identity" || 
+						i === "dojo.data.api.Write" || 
+						i === "dojo.data.api.Notification"));
+					count++;
+				}
 			}
 			doh.assertEqual(count, 4);
 		},
@@ -522,7 +524,7 @@ doh.register("tests.data.ItemFileWriteStore",
 
 				function gotItem(item){
 					var independenceDate = newStore.getValue(item,"independence"); 
-					doh.assertTrue(independenceDate instanceof Date);
+					doh.assertTrue(dojo.isDate(independenceDate));
 					doh.assertTrue(dojo.date.compare(new Date(1993,4,24), independenceDate, "date") === 0);
 					saveCompleteCallback();
 				}
@@ -772,13 +774,15 @@ doh.register("tests.data.ItemFileWriteStore",
 			var passed = true;
 
 			for(var functionName in readApi){
-				var member = readApi[functionName];
-				//Check that all the 'Read' defined functions exist on the test store.
-				if(typeof member === "function"){
-					var testStoreMember = testStore[functionName];
-					if(!(typeof testStoreMember === "function")){
-						passed = false;
-						break;
+				if (dojo.isOwnProperty(readApi, functionName)) {
+					var member = readApi[functionName];
+					//Check that all the 'Read' defined functions exist on the test store.
+					if(typeof member == "function"){
+						var testStoreMember = testStore[functionName];
+						if(!(typeof testStoreMember === "function")){
+							passed = false;
+							break;
+						}
 					}
 				}
 			}
@@ -794,13 +798,15 @@ doh.register("tests.data.ItemFileWriteStore",
 			var passed = true;
 
 			for(var functionName in writeApi){
-				var member = writeApi[functionName];
-				//Check that all the 'Write' defined functions exist on the test store.
-				if(typeof member === "function"){
-					var testStoreMember = testStore[functionName];
-					if(!(typeof testStoreMember === "function")){
-						passed = false;
-						break;
+				if (dojo.isOwnProperty(writeApi, functionName)) {
+					var member = writeApi[functionName];
+					//Check that all the 'Write' defined functions exist on the test store.
+					if(typeof member == "function"){
+						var testStoreMember = testStore[functionName];
+						if(!(typeof testStoreMember === "function")){
+							passed = false;
+							break;
+						}
 					}
 				}
 			}
@@ -816,13 +822,15 @@ doh.register("tests.data.ItemFileWriteStore",
 			var passed = true;
 
 			for(var functionName in api){
-				var member = api[functionName];
-				//Check that all the 'Write' defined functions exist on the test store.
-				if(typeof member === "function"){
-					var testStoreMember = testStore[functionName];
-					if(!(typeof testStoreMember === "function")){
-						passed = false;
-						break;
+				if (dojo.isOwnProperty(api, functionName)) {
+					var member = api[functionName];
+					//Check that all the 'Write' defined functions exist on the test store.
+					if(typeof member == "function"){
+						var testStoreMember = testStore[functionName];
+						if(!(typeof testStoreMember === "function")){
+							passed = false;
+							break;
+						}
 					}
 				}
 			}
@@ -1177,7 +1185,7 @@ doh.register("tests.data.ItemFileWriteStore",
 						console.log("MAP for Item 10 is: " + dojo.toJson(refMap));
 
 						//Assert there is no reference to item 10 in item 11's attribute 'friends'.
-						doh.assertTrue(!refMap["11"]["friends"]);
+						doh.assertTrue(!refMap["11"].friends);
 						store.setValues(item, "siblings", [0, 1, 2]);
 						//Assert there are no more references to 10 in 11.  Ergo, "11"  should be a 'undefined' attribute for the map of items referencing '10'..
 						doh.assertTrue(!refMap["11"]);
@@ -1283,7 +1291,7 @@ doh.register("tests.data.ItemFileWriteStore",
 				doh.assertTrue(item2[store._reverseRefMap] !== null);
 
 				//Assert there is a recorded reference to item 2 in item 1's attribute 'sibling'.
-				doh.assertTrue(item2[store._reverseRefMap][store.getIdentity(item1)]["siblings"]);
+				doh.assertTrue(item2[store._reverseRefMap][store.getIdentity(item1)].siblings);
 
 				deferred.callback(true);
 			}
@@ -1315,7 +1323,7 @@ doh.register("tests.data.ItemFileWriteStore",
 					var refs = newItem[store._reverseRefMap];
 
 					//Assert there is a reference from 10 to item 17, on attribute uncle
-					doh.assertTrue(refs["10"]["uncles"]);
+					doh.assertTrue(refs["10"].uncles);
 
 					console.log("State of map of item 17 after newItem: " + dojo.toJson(refs));
 				}catch(e){
@@ -1360,7 +1368,7 @@ doh.register("tests.data.ItemFileWriteStore",
 					var refs = item[store._reverseRefMap];
 					
 					//Assert there is a reference from 15 to item 10, on attribute friends
-					doh.assertTrue(refs["17"]["friends"]);
+					doh.assertTrue(refs["17"].friends);
 
 					console.log("State of reference map to item 10 after newItem: " + dojo.toJson(refs));
 				}catch(e){
