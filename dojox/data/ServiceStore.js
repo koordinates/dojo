@@ -132,7 +132,7 @@ dojo.declare("dojox.data.ServiceStore",
 			//		property to look up value for	
 	
 			var val = this.getValue(item,property);
-			return val instanceof Array ? val : val === undefined ? [] : [val];
+			return dojo.isArray(val) ? val : val === undefined ? [] : [val];
 		},
 
 		getAttributes: function(item){
@@ -180,7 +180,7 @@ dojo.declare("dojox.data.ServiceStore",
 		
 			// we have no way of determining if it belongs, we just have object returned from
 			// 	service queries
-			return (typeof item == 'object') && item && !(item instanceof Date); 
+			return typeof item == 'object' && item && !dojo.isDate(item); 
 		},
 
 		isItemLoaded: function(item){
@@ -213,7 +213,7 @@ dojo.declare("dojox.data.ServiceStore",
 				args.item._loadObject(function(result){
 					item = result; // in synchronous mode this can allow loadItem to return the value
 					delete item._loadObject;
-					var func = result instanceof Error ? args.onError : args.onItem;
+					var func = dojo.isError(result) ? args.onError : args.onItem;
 					if(func){
 						func.call(args.scope, result);				
 					}
