@@ -36,7 +36,7 @@ doh.register("dojox.json.tests.ref", [
 			schemas:schemas
 		});
 		t.t(testObj.barks);
-		t.t(testObj.aTime instanceof Date);
+		t.t(dojo.isDate(testObj.aTime));
 		t.t(testObj.eats.meows);
 	}
 	
