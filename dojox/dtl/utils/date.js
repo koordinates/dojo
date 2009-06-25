@@ -46,7 +46,7 @@ dojo.mixin(dojox.dtl.utils.date, {
 		//		as a nicely formatted string, e.g "10 minutes"
 		// description:
 		//		Adapted from http://blog.natbat.co.uk/archive/2003/Jun/14/time_since
-		if(!(d instanceof Date)){
+		if(!dojo.isDate(d)){
 			d = new Date(d.year, d.month, d.day);
 		}
 		if(!now){
