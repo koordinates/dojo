@@ -103,7 +103,7 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 			//Locale must match from start of string.
 			//Using ["indexOf"] so customBase builds do not see
 			//this as a dojo._base.array dependency.
-			if(!targetLocale["indexOf"](flatLocales[i])){
+			if(!targetLocale.indexOf(flatLocales[i])){
 				if(flatLocales[i].length > bestLocale.length){
 					bestLocale = flatLocales[i];
 				}
@@ -147,7 +147,11 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 					var Clazz = function(){};
 					Clazz.prototype = parent;
 					bundle[jsLoc] = new Clazz();
-					for(var j in hash){ bundle[jsLoc][j] = hash[j]; }
+					for(var j in hash){
+						if (dojo.isOwnProperty(hash, j)) {
+							bundle[jsLoc][j] = hash[j];
+						}
+					}
 				});
 			}else{
 				loaded = true;
@@ -183,7 +187,7 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 
 	var extra = dojo.config.extraLocale;
 	if(extra){
-		if(!extra instanceof Array){
+		if(!dojo.isArray(extra)){
 			extra = [extra];
 		}
 
