@@ -40,7 +40,7 @@ dojo.require("dojox.cometd._base");
  * average of the offsets received. By default this is over 10 messages, but this can
  * be changed with the dojox.cometd.timesync._window element.
  */
-dojox.cometd.timesync = new function(){
+dojox.cometd.timesync = function(){
 	this._window = 10;		// The window size for the sliding average of offset samples.
 	this._lags = [];		// The samples used to calculate the average lag.
 	this._offsets = [];		// The samples used to calculate the average offset.
@@ -53,14 +53,14 @@ dojox.cometd.timesync = new function(){
 		//	Calculate the current time on the server
 		// 
 		return new Date().getTime()+this.offset;
-	}
+	};
 	
 	this.getServerDate = function(){ // return: Date
 		// Summary:
 		//	Calculate the current time on the server
 		// 
 		return new Date(this.getServerTime());
-	}
+	};
 	
 	this.setTimeout = function(/*function*/call, /*long|Date*/atTimeOrDate){
 		// Summary:
@@ -71,14 +71,14 @@ dojox.cometd.timesync = new function(){
 		//	a long timestamp or a Date representing the server time at
 		//	which the timeout should occur.
 		
-		var ts = (atTimeOrDate instanceof Date) ? atTimeOrDate.getTime() : (0 + atTimeOrDate);
+		var ts = (dojo.isDate(atTimeOrDate)) ? atTimeOrDate.getTime() : (0 + atTimeOrDate);
 		var tc = ts - this.offset;
 		var interval = tc - new Date().getTime();
 		if(interval <= 0){
 			interval = 1;
 		}
-		return setTimeout(call,interval);
-	}
+		return window.setTimeout(call,interval);
+	};
 
 	this._in = function(/*Object*/msg){
 		// Summary:
@@ -89,7 +89,7 @@ dojox.cometd.timesync = new function(){
 		//	The incoming bayeux message
 		
 		var channel = msg.channel;
-		if(channel && channel.indexOf('/meta/') == 0){
+		if(channel && !channel.indexOf('/meta/')){
 			if(msg.ext && msg.ext.timesync){
 				var sync = msg.ext.timesync;
 				var now = new Date().getTime();
@@ -105,17 +105,20 @@ dojox.cometd.timesync = new function(){
 				this.samples++;
 				l=0;
 				o=0;
-				for(var i in this._offsets){
-					l+=this._lags[i];
-					o+=this._offsets[i];
+				var offsets = this._offsets;
+				for(var i in offsets){
+					if (dojo.isOwnProperty(offsets, i)) {
+						l+=this._lags[i];
+						o+=offsets[i];
+					}
 				}
-				this.offset = parseInt((o / this._offsets.length).toFixed());
-				this.lag = parseInt((l / this._lags.length).toFixed());
+				this.offset = parseInt((o / this._offsets.length).toFixed(), 10);
+				this.lag = parseInt((l / this._lags.length).toFixed(), 10);
 				
 			}
 		}
 		return msg;
-	}
+	};
 
 	this._out = function(msg){
 		// Summary:
@@ -126,7 +129,7 @@ dojox.cometd.timesync = new function(){
 		//	The outgoing bayeux message
 		
 		var channel = msg.channel;
-		if(channel && channel.indexOf('/meta/') == 0){
+		if(channel && !channel.indexOf('/meta/')){
 			var now = new Date().getTime();
 			if(!msg.ext){
 				msg.ext = {};
@@ -134,7 +137,7 @@ dojox.cometd.timesync = new function(){
 			msg.ext.timesync = {tc:now,l:this.lag,o:this.offset};
 		}
 		return msg;
-	}
+	};
 };
 
 dojox.cometd._extendInList.push(dojo.hitch(dojox.cometd.timesync, "_in"));
