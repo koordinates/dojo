@@ -8,14 +8,16 @@ dojo.back = {
 
 
 (function(){ 
-	var back = dojo.back;
+	var historyCounter, back = dojo.back;
 
 	// everyone deals with encoding the hash slightly differently
+
+	// NOTE: Review this
 
 	function getHash(){ 
 		var h = window.location.hash;
 		if(h.charAt(0) == "#"){ h = h.substring(1); }
-		return dojo.isMozilla ? h : decodeURIComponent(h); 
+		return decodeURIComponent(h); 
 	}
 	
 	function setHash(h){
@@ -41,7 +43,6 @@ dojo.back = {
 	var historyStack = [];
 	var moveForward = false;
 	var changingUrl = false;
-	var historyCounter;
 
 	function handleBackButton(){
 		//summary: private method. Do not call this directly.
@@ -50,15 +51,15 @@ dojo.back = {
 		var current = historyStack.pop();
 		if(!current){ return; }
 		var last = historyStack[historyStack.length-1];
-		if(!last && historyStack.length == 0){
+		if(!last && !historyStack.length){
 			last = initialState;
 		}
 		if(last){
-			if(last.kwArgs["back"]){
-				last.kwArgs["back"]();
-			}else if(last.kwArgs["backButton"]){
-				last.kwArgs["backButton"]();
-			}else if(last.kwArgs["handle"]){
+			if(last.kwArgs.back){
+				last.kwArgs.back();
+			}else if(last.kwArgs.backButton){
+				last.kwArgs.backButton();
+			}else if(last.kwArgs.handle){
 				last.kwArgs.handle("back");
 			}
 		}
@@ -71,11 +72,11 @@ dojo.back = {
 		//summary: private method. Do not call this directly.
 		var last = forwardStack.pop();
 		if(!last){ return; }
-		if(last.kwArgs["forward"]){
+		if(last.kwArgs.forward){
 			last.kwArgs.forward();
-		}else if(last.kwArgs["forwardButton"]){
+		}else if(last.kwArgs.forwardButton){
 			last.kwArgs.forwardButton();
-		}else if(last.kwArgs["handle"]){
+		}else if(last.kwArgs.handle){
 			last.kwArgs.handle("forward");
 		}
 		historyStack.push(last);
@@ -89,7 +90,6 @@ dojo.back = {
 	}
 
 	function getUrlQuery(url){
-		//summary: private method. Do not call this directly.
 		var segments = url.split("?");
 		if(segments.length < 2){
 			return null; //null
@@ -100,14 +100,11 @@ dojo.back = {
 	}
 	
 	function loadIframeHistory(){
-		//summary: private method. Do not call this directly.
-		var url = (dojo.config["dojoIframeHistoryUrl"] || dojo.moduleUrl("dojo", "resources/iframe_history.html")) + "?" + (new Date()).getTime();
+		var url = (dojo.config.dojoIframeHistoryUrl || dojo.moduleUrl("dojo", "resources/iframe_history.html")) + "?" + (new Date()).getTime();
 		moveForward = true;
-        if(historyIframe){
-		    dojo.isWebKit ? historyIframe.location = url : window.frames[historyIframe.name].location = url;
-        }else{
-            //console.warn("dojo.back: Not initialised. You need to call dojo.back.init() from a <script> block that lives inside the <body> tag.");
-        }
+        	if(historyIframe){
+			(window.frames[historyIframe.name] || historyIframe).location.href = url;
+	        }
 		return url; //String
 	}
 
@@ -141,22 +138,26 @@ dojo.back = {
 					return;
 				}
 			}
+
+			// NOTE: Review this
 			
-			if(dojo.isSafari && dojo.isSafari < 3){
+			if(typeof history != 'undefined' && history !== null && history.length){
 				var hisLen = history.length;
-				if(hisLen > historyCounter) handleForwardButton();
-				else if(hisLen < historyCounter) handleBackButton();
+				if(hisLen > historyCounter) { handleForwardButton(); }
+				else if(hisLen < historyCounter) { handleBackButton(); }
 			  historyCounter = hisLen;
 			}
 		}
-	};
+	}
 	
 	back.init = function(){
-		//summary: Initializes the undo stack. This must be called from a <script> 
-		//         block that lives inside the <body> tag to prevent bugs on IE.
+		//summary: Initializes the undo stack.
 		if(dojo.byId("dj_history")){ return; } // prevent reinit
-		var src = dojo.config["dojoIframeHistoryUrl"] || dojo.moduleUrl("dojo", "resources/iframe_history.html");
-		document.write('<iframe style="border:0;width:1px;height:1px;position:absolute;visibility:hidden;bottom:0;right:0;" name="dj_history" id="dj_history" src="' + src + '"></iframe>');
+		var src = dojo.config.dojoIframeHistoryUrl || dojo.moduleUrl("dojo", "resources/iframe_history.html");
+
+		// NOTE: Review this
+
+		window.document.write('<iframe style="border:0;width:1px;height:1px;position:absolute;visibility:hidden;bottom:0;right:0;" name="dj_history" id="dj_history" src="' + src + '"></iframe>');
 	};
 
 	back.setInitialState = function(/*Object*/args){
@@ -255,18 +256,18 @@ dojo.back = {
 		var hash = null;
 		var url = null;
 		if(!historyIframe){
-			if(dojo.config["useXDomain"] && !dojo.config["dojoIframeHistoryUrl"]){
-				console.warn("dojo.back: When using cross-domain Dojo builds,"
-					+ " please save iframe_history.html to your domain and set djConfig.dojoIframeHistoryUrl"
-					+ " to the path on your domain to iframe_history.html");
+			if(dojo.config.useXDomain && !dojo.config.dojoIframeHistoryUrl){
+				console.warn("dojo.back: When using cross-domain Dojo builds," +
+					" please save iframe_history.html to your domain and set djConfig.dojoIframeHistoryUrl" +
+					" to the path on your domain to iframe_history.html");
 			}
-			historyIframe = window.frames["dj_history"];
+			historyIframe = window.frames.dj_history;
 		}
 		if(!bookmarkAnchor){
 			bookmarkAnchor = dojo.create("a", {style: {display: "none"}}, dojo.body());
 		}
-		if(args["changeUrl"]){
-			hash = ""+ ((args["changeUrl"]!==true) ? args["changeUrl"] : (new Date()).getTime());
+		if(args.changeUrl){
+			hash = ""+ ((args.changeUrl!==true) ? args.changeUrl : (new Date()).getTime());
 			
 			//If the current hash matches the new one, just replace the history object with
 			//this new one. It doesn't make sense to track different state objects for the same
@@ -275,7 +276,7 @@ dojo.back = {
 			//and Safari, and there is no reliable way in those browsers to know if a #hash link
 			//has been clicked on multiple times. So making this the standard behavior in all browsers
 			//so that dojo.back's behavior is the same in all browsers.
-			if(historyStack.length == 0 && initialState.urlHash == hash){
+			if(!historyStack.length && initialState.urlHash == hash){
 				initialState = createState(url, args, hash);
 				return;
 			}else if(historyStack.length > 0 && historyStack[historyStack.length - 1].urlHash == hash){
@@ -284,44 +285,44 @@ dojo.back = {
 			}
 
 			changingUrl = true;
-			setTimeout(function() { 
+			window.setTimeout(function() { 
 					setHash(hash); 
 					changingUrl = false; 					
 				}, 1);
 			bookmarkAnchor.href = hash;
 			
-			if(dojo.isIE){
+			//if(dojo.isIE){
 				url = loadIframeHistory();
 
-				var oldCB = args["back"]||args["backButton"]||args["handle"];
+				var oldCB = args.back||args.backButton||args.handle;
 
 				//The function takes handleName as a parameter, in case the
 				//callback we are overriding was "handle". In that case,
 				//we will need to pass the handle name to handle.
 				var tcb = function(handleName){
-					if(getHash() != ""){
-						setTimeout(function() { setHash(hash); }, 1);
+					if(getHash()){
+						window.setTimeout(function() { setHash(hash); }, 1);
 					}
 					//Use apply to set "this" to args, and to try to avoid memory leaks.
 					oldCB.apply(this, [handleName]);
 				};
 		
 				//Set interceptor function in the right place.
-				if(args["back"]){
+				if(args.back){
 					args.back = tcb;
-				}else if(args["backButton"]){
+				}else if(args.backButton){
 					args.backButton = tcb;
-				}else if(args["handle"]){
+				}else if(args.handle){
 					args.handle = tcb;
 				}
 		
-				var oldFW = args["forward"]||args["forwardButton"]||args["handle"];
+				var oldFW = args.forward||args.forwardButton||args.handle;
 		
 				//The function takes handleName as a parameter, in case the
 				//callback we are overriding was "handle". In that case,
 				//we will need to pass the handle name to handle.
 				var tfw = function(handleName){
-					if(getHash() != ""){
+					if(getHash()){
 						setHash(hash);
 					}
 					if(oldFW){ // we might not actually have one
@@ -331,21 +332,21 @@ dojo.back = {
 				};
 
 				//Set interceptor function in the right place.
-				if(args["forward"]){
+				if(args.forward){
 					args.forward = tfw;
-				}else if(args["forwardButton"]){
+				}else if(args.forwardButton){
 					args.forwardButton = tfw;
-				}else if(args["handle"]){
+				}else if(args.handle){
 					args.handle = tfw;
 				}
 
-			}else if(!dojo.isIE){
-				// start the timer
-				if(!locationTimer){
-					locationTimer = setInterval(checkLocation, 200);
-				}
-				
-			}
+			//}else if(!dojo.isIE){
+			//	// start the timer
+			//	if(!locationTimer){
+			//		locationTimer = window.setInterval(checkLocation, 200);
+			//	}
+			//	
+			//}
 		}else{
 			url = loadIframeHistory();
 		}
@@ -357,8 +358,7 @@ dojo.back = {
 		//summary: 
 		//		private method. Do not call this directly.
 		var query = getUrlQuery(ifrLoc.href);
-		if(query == null){ 
-			// alert("iframeLoaded");
+		if(query === null){ 
 			// we hit the end of the history, so we should go back
 			if(historyStack.length == 1){
 				handleBackButton();
