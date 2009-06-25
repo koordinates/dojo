@@ -58,26 +58,6 @@ if(typeof dojo != "undefined"){
 			NodeList: Array
 		};
 
-		// define acme.isIE, acme.isSafari, acme.isOpera, etc.
-		var n = navigator;
-		var dua = n.userAgent;
-		var dav = n.appVersion;
-		var tv = parseFloat(dav);
-		acme.isOpera = (dua.indexOf("Opera") >= 0) ? tv: undefined;
-		acme.isKhtml = (dav.indexOf("Konqueror") >= 0) ? tv : undefined;
-		acme.isWebKit = parseFloat(dua.split("WebKit/")[1]) || undefined;
-		acme.isChrome = parseFloat(dua.split("Chrome/")[1]) || undefined;
-		var index = Math.max(dav.indexOf("WebKit"), dav.indexOf("Safari"), 0);
-		if(index && !acme.isChrome){
-			acme.isSafari = parseFloat(dav.split("Version/")[1]);
-			if(!acme.isSafari || parseFloat(dav.substr(index + 7)) <= 419.3){
-				acme.isSafari = 2;
-			}
-		}
-		if(document.all && !acme.isOpera){
-			acme.isIE = parseFloat(dav.split("MSIE ")[1]) || undefined;
-		}
-
 		Array._wrap = function(arr){ return arr; };
 	})();
 
@@ -140,7 +120,6 @@ if(typeof dojo != "undefined"){
 	var isString = 		d.isString;
 
 	var getDoc = function(){ return d.doc; };
-	var cssCaseBug = (d.isWebKit && ((getDoc().compatMode) == "BackCompat"));
 
 	////////////////////////////////////////////////////////////////////////
 	// Global utilities
@@ -1020,28 +999,26 @@ if(typeof dojo != "undefined"){
 						}
 					}
 				};
-			}else if(
-				ecs && 
-				// isAlien check. Workaround for Prototype.js being totally evil/dumb.
-				/\{\s*\[native code\]\s*\}/.test(String(ecs)) && 
-				query.classes.length &&
-				// WebKit bug where quirks-mode docs select by class w/o case sensitivity
-				!cssCaseBug
-			){
-				// it's a class-based query and we've got a fast way to run it.
-
-				// ignore class and ID filters since we will have handled both
-				filterFunc = getSimpleFilterFunc(query, { el: 1, classes: 1, id: 1 });
-				var classesString = query.classes.join(" ");
-				retFunc = function(root, arr){
-					var ret = getArr(0, arr), te, x=0;
-					var tret = root.getElementsByClassName(classesString);
-					while((te = tret[x++])){
-						if(filterFunc(te, root)){ ret.push(te); }
-					}
-					return ret;
-				};
-
+			//}else if(
+			//	ecs && 				
+			//	query.classes.length &&
+			//	// WebKit bug where quirks-mode docs select by class w/o case sensitivity
+			//	!cssCaseBug
+			//){
+			//	// it's a class-based query and we've got a fast way to run it.
+			//
+			//	// ignore class and ID filters since we will have handled both
+			//	filterFunc = getSimpleFilterFunc(query, { el: 1, classes: 1, id: 1 });
+			//	var classesString = query.classes.join(" ");
+			//	retFunc = function(root, arr){
+			//		var ret = getArr(0, arr), te, x=0;
+			//		var tret = root.getElementsByClassName(classesString);
+			//		while((te = tret[x++])){
+			//			if(filterFunc(te, root)){ ret.push(te); }
+			//		}
+			//		return ret;
+			//	};
+			//
 			}else if(!wildcardTag && !query.loops){
 				// it's tag only. Fast-path it.
 				retFunc = function(root, arr){
@@ -1217,7 +1194,9 @@ if(typeof dojo != "undefined"){
 			// IE's QSA impl sucks on pseudos
 			(query.indexOf(":") == -1) &&
 
-			(!(cssCaseBug && (query.indexOf(".") >= 0))) &&
+			// NOTE: Need feature test for class case-sensitivity problem
+
+			(query.indexOf(".") == -1) &&
 
 			// FIXME:
 			//		need to tighten up browser rules on ":contains" and "|=" to
