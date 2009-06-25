@@ -336,14 +336,12 @@ dojo.clone = function(/*anything*/ o){
 		return new Date(o.getTime());	// Date
 	}
 
-	// Object objects (specific to dojo.declare()'d classes)
-
-	var isOwnProperty = dojo.isOwnProperty;
+	// Object objects (specific to dojo declared classes)
 
 	if(typeof o == 'object' && o){
 		r = new o.constructor();
 		for(i in o){
-			if (isOwnProperty(o, i)) {
+			if(!(i in r) || r[i] != o[i]){
 				r[i] = dojo.clone(o[i]);
 			}
 		}
