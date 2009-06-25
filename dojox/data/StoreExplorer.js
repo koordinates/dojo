@@ -22,17 +22,17 @@ dojo.declare("dojox.data.StoreExplorer", dijit.layout.BorderContainer, {
 			button.onClick = action;
 			return button;
 		}
-		var queryText = contentPane.containerNode.appendChild(document.createElement("span"));
+		var queryText = contentPane.containerNode.appendChild(dojo.doc.createElement("span"));
 		queryText.innerHTML = "Enter query: &nbsp;";
 		queryText.id = "queryText";
-		var queryTextBox = contentPane.containerNode.appendChild(document.createElement("input"));
+		var queryTextBox = contentPane.containerNode.appendChild(dojo.doc.createElement("input"));
 		queryTextBox.type = "text";
 		queryTextBox.id = "queryTextBox";
 		addButton("Query",function(){
 			var query = queryTextBox.value;
 			self.setQuery(self.stringQueries ? query : dojo.fromJson(query));
 		});
-		contentPane.containerNode.appendChild(document.createElement("span")).innerHTML = "&nbsp;&nbsp;&nbsp;";
+		contentPane.containerNode.appendChild(dojo.doc.createElement("span")).innerHTML = "&nbsp;&nbsp;&nbsp;";
 		var createNewButton = addButton("Create New", dojo.hitch(this, "createNew"));
 		var deleteButton = addButton("Delete",function(){
 			var items = grid.selection.getSelected();
@@ -53,7 +53,7 @@ dojo.declare("dojox.data.StoreExplorer", dijit.layout.BorderContainer, {
 			self.store.revert();
 		});
 		addButton("Add Column", function(){
-			var columnName = prompt("Enter column name:","property");
+			var columnName = window.prompt("Enter column name:","property");
 			if(columnName){
 				self.gridLayout.push({
 						field: columnName, 
@@ -73,7 +73,7 @@ dojo.declare("dojox.data.StoreExplorer", dijit.layout.BorderContainer, {
         centerCP.attr("content", grid);
 		grid.canEdit = function(inCell, inRowIndex){
 			var value = this._copyAttr(inRowIndex, inCell.field);
-			return !(value && typeof value == 'object') || value instanceof Date; 
+			return !(value && typeof value == 'object') || dojo.isDate(value); 
 		};
 		
 		var trailingCP = new dijit.layout.ContentPane({
@@ -174,12 +174,12 @@ dojo.declare("dojox.data.StoreExplorer", dijit.layout.BorderContainer, {
 
 	},
 	createNew: function(){
-		var props = prompt("Enter any properties to put in the new item (in JSON literal form):","{ }");
+		var props = window.prompt("Enter any properties to put in the new item (in JSON literal form):","{ }");
 		if(props){
 			try{
 				this.store.newItem(dojo.fromJson(props));
         	}catch(e){
-        		alert(e);
+        		window.alert(e);
         	}       
 				
 		}
