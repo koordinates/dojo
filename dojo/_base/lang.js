@@ -314,31 +314,42 @@ dojo.clone = function(/*anything*/ o){
 	// summary:
 	//		Clones objects (including DOM nodes) and all children.
 	//		Warning: do not clone cyclic structures.
+	var i, r;
+
 	if(!o){ return o; }
+
+	// Check DOM node first
+
+	if(typeof o.nodeType == 'number' && dojo.isHostMethod(o, 'cloneNode')){
+		return o.cloneNode(true); // Node
+	}
+
 	if(dojo.isArray(o)){
-		var r = [];
-		for(var i = 0; i < o.length; ++i){
-			r.push(dojo.clone(o[i]));
+		r = [];
+		for(i = o.length;i--;){
+			r[i] = dojo.clone(o[i]);
 		}
 		return r; // Array
 	}
-	if(!dojo.isObject(o)){
-		return o;	/*anything*/
-	}
-	if(o.nodeType && o.cloneNode){ // isNode
-		return o.cloneNode(true); // Node
-	}
+
 	if(dojo.isDate(o)){
 		return new Date(o.getTime());	// Date
 	}
-	// Generic objects
-	r = new o.constructor(); // specific to dojo.declare()'d classes!
-	for(i in o){
-		if(!(i in r) || r[i] != o[i]){
-			r[i] = dojo.clone(o[i]);
+
+	// Object objects (specific to dojo.declare()'d classes)
+
+	var isOwnProperty = dojo.isOwnProperty;
+
+	if(typeof o == 'object' && o){
+		r = new o.constructor();
+		for(i in o){
+			if (isOwnProperty(o, i)) {
+				r[i] = dojo.clone(o[i]);
+			}
 		}
+		return r; // Object
 	}
-	return r; // Object
+	return o; // anything
 };
 
 /*=====
