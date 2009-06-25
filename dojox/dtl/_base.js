@@ -42,7 +42,7 @@ dojo.experimental("dojox.dtl");
 			return otherwise;
 		},
 		_normalize: function(value){
-			if(value instanceof Date){
+			if(dojo.isDate(value)){
 				value.year = value.getFullYear();
 				value.month = value.getMonth() + 1;
 				value.day = value.getDate();
@@ -67,7 +67,7 @@ dojo.experimental("dojox.dtl");
 	var split_re = /\s+/g;
 	var split = function(/*String|RegExp?*/ splitter, /*Integer?*/ limit){
 		splitter = splitter || split_re;
-		if(!(splitter instanceof RegExp)){
+		if(!dojo.isRegExp(splitter)){
 			splitter = new RegExp(splitter, "g");
 		}
 		if(!splitter.global){
@@ -427,10 +427,7 @@ dojo.experimental("dojox.dtl");
 							}else{
 								current = current.call(base);
 							}
-
-						// NOTE: Should not use instanceof
-
-						}else if(current instanceof Date){
+						}else if(dojo.isDate(current)){
 							current = dd._Context.prototype._normalize(current);
 						}
 					}else{
