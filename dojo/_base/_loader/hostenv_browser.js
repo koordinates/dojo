@@ -63,27 +63,21 @@ dojo = {
 }
 =====*/
 
-var dojo;
-
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 if(typeof window != 'undefined' && window.document){
-//>>excludeEnd("webkitMobile");
 	dojo.isBrowser = true;
 	dojo._name = "browser";
 
-
 	// attempt to figure out the path to dojo if it isn't set in the config
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-	(function(){
-		var d = dojo;
-//>>excludeEnd("webkitMobile");
 
-		// this is a scope protection closure. We set browser versions and grab
+	(function(){
+		var doc = window.document;
+
+		// We set browser versions and grab
 		// the URL we were loaded from here.
 
 		// grab the node we were loaded from
-		if(document && document.getElementsByTagName){
-			var m, src, scripts = document.getElementsByTagName("script");
+		if(doc && doc.getElementsByTagName){
+			var m, src, scripts = doc.getElementsByTagName("script");
 			var rePkg = /dojo(\.xd)?\.js(\W|$)/i;
 
 			for(var i = 0; i < scripts.length; i++){
@@ -91,8 +85,8 @@ if(typeof window != 'undefined' && window.document){
 
 				if(src && (m = src.match(rePkg))){
 					// find out where we came from
-					if(!d.config.baseUrl){
-						d.config.baseUrl = src.substring(0, m.index);
+					if(!dojo.config.baseUrl){
+						dojo.config.baseUrl = src.substring(0, m.index);
 					}
 					// and find out if we need to modify our behavior
 					var cfg = scripts[i].getAttribute("djConfig");
@@ -108,22 +102,22 @@ if(typeof window != 'undefined' && window.document){
 				}
 			}
 		}
-		d.baseUrl = d.config.baseUrl;
+		dojo.baseUrl = dojo.config.baseUrl;
 
 		// fill in the rendering support information in dojo.render.*
-		var n = navigator;
+		var n = window.navigator;
 		var dua = n.userAgent,
 			dav = n.appVersion,
 			tv = parseFloat(dav);
 
 		if(window.opera && Object.prototype.toString.call(window.opera) == '[object Opera]'){
-			d.isOpera = tv;
+			dojo.isOpera = tv;
 		} else if(dua.indexOf("AdobeAIR") >= 0){
-			d.isAIR = 1;
+			dojo.isAIR = 1;
 		}
-		d.isKhtml = (dav.indexOf("Konqueror") >= 0) ? tv : 0;
-		d.isWebKit = parseFloat(dua.split("WebKit/")[1]) || undefined;
-		d.isChrome = parseFloat(dua.split("Chrome/")[1]) || undefined;
+		dojo.isKhtml = (dav.indexOf("Konqueror") >= 0) ? tv : 0;
+		dojo.isWebKit = parseFloat(dua.split("WebKit/")[1]) || undefined;
+		dojo.isChrome = parseFloat(dua.split("Chrome/")[1]) || undefined;
 
 		// safari detection derived from:
 		//		http://developer.apple.com/internet/safari/faq.html#anchor2
@@ -133,33 +127,32 @@ if(typeof window != 'undefined' && window.document){
 			// try to grab the explicit Safari version first. If we don't get
 			// one, look for less than 419.3 as the indication that we're on something
 			// "Safari 2-ish".
-			d.isSafari = parseFloat(dav.split("Version/")[1]);
-			if(!d.isSafari || parseFloat(dav.substr(index + 7)) <= 419.3){
-				d.isSafari = 2;
+			dojo.isSafari = parseFloat(dav.split("Version/")[1]);
+			if(!dojo.isSafari || parseFloat(dav.substr(index + 7)) <= 419.3){
+				dojo.isSafari = 2;
 			}
 		}
 
-		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-		if(dua.indexOf("Gecko") >= 0 && !d.isKhtml && !d.isWebKit){ d.isMozilla = d.isMoz = tv; }
-		if(d.isMoz){
+		if(dua.indexOf("Gecko") >= 0 && !dojo.isKhtml && !dojo.isWebKit){ dojo.isMozilla = dojo.isMoz = tv; }
+		if(dojo.isMoz){
 			//We really need to get away from this. Consider a sane isGecko approach for the future.
-			d.isFF = parseFloat(dua.split("Firefox/")[1] || dua.split("Minefield/")[1] || dua.split("Shiretoko/")[1]) || undefined;
+			dojo.isFF = parseFloat(dua.split("Firefox/")[1] || dua.split("Minefield/")[1] || dua.split("Shiretoko/")[1]) || undefined;
 		}
 
 		// *** Want comditional compilation around this
 
-		if(typeof document.all == 'object' && typeof window.ActiveXObject != 'undefined' && typeof window.external != 'undefined' && !d.isOpera){
+		if(typeof doc.all == 'object' && typeof window.ActiveXObject != 'undefined' && typeof window.external != 'undefined' && !dojo.isOpera){
 			//In cases where the page has an HTTP header or META tag with
 			//X-UA-Compatible, then it is in emulation mode, for a previous
 			//version. Make sure isIE reflects the desired version.
 
-			if(typeof document.documentMode == 'number'){
-				d.isIE = document.documentMode;
-				d.isReallyIE8OrGreater = true;
-			} else if (typeof document.compatMode == 'string') {
-				d.isIE = typeof window.XMLHttpRequest == 'undefined' ? 6 : 7 ;
+			if(typeof doc.documentMode == 'number'){
+				dojo.isIE = doc.documentMode;
+				dojo.isReallyIE8OrGreater = true;
+			} else if (typeof doc.compatMode == 'string') {
+				dojo.isIE = typeof window.XMLHttpRequest == 'undefined' ? 6 : 7 ;
 			} else {
-				d.isIE = 5;
+				dojo.isIE = 5;
 			}			
 		}
 
@@ -168,48 +161,42 @@ if(typeof window != 'undefined' && window.document){
 		if(window.ActiveXObject && window.location.protocol == "file:"){
 			dojo.config.ieForceActiveXXhr=true;
 		}
-		//>>excludeEnd("webkitMobile");
 
-		var cm = document.compatMode || '';
+		var cm = doc.compatMode || '';
 
 		// This covers all quirks modes, so isn't very useful for inferences
 		// Should be deprecated
 
-		d.isQuirks = !(/css/i.test(cm));
+		dojo.isQuirks = !(/css/i.test(cm));
 
-		d.locale = (dojo.config.locale || (n.userLanguage || n.language) || (document.documentElement && document.documentElement.lang) || '').toLowerCase();
+		dojo.locale = (dojo.config.locale || (n.userLanguage || n.language) || (doc.documentElement && doc.documentElement.lang) || '').toLowerCase();
 
 		// These are in order of decreasing likelihood; this will change in time.
-		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-		d._XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
-		//>>excludeEnd("webkitMobile");
 
-		d._xhrObj = function(){
+		dojo._XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
+
+		dojo._xhrObj = function(){
 			// summary: 
 			//		does the work of portably generating a new XMLHTTPRequest object.
 			var http, last_e;
-			//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 			if(window.XMLHttpRequest && !dojo.config.ieForceActiveXXhr){
-			//>>excludeEnd("webkitMobile");
 				try{ http = new XMLHttpRequest(); }catch(e){}
-			//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 			}
-			if(!http && d.global.ActiveXObject){
+			if(!http && dojo.global.ActiveXObject){
 				for(var i=0; i<3; ++i){
-					var progid = d._XMLHTTP_PROGIDS[i];
+					var progid = dojo._XMLHTTP_PROGIDS[i];
 					try{
-						http = new d.global.ActiveXObject(progid);
+						http = new dojo.global.ActiveXObject(progid);
 					}catch(e2){
 						last_e = e2;
 					}
 
 					if(http){
-						d._XMLHTTP_PROGIDS = [progid];  // so faster next time
+						dojo._XMLHTTP_PROGIDS = [progid];  // so faster next time
 						break;
 					}
 				}
 			}
-			//>>excludeEnd("webkitMobile");
 
 			if(!http){
 				throw new Error("XMLHTTP not available: "+last_e);
@@ -218,12 +205,12 @@ if(typeof window != 'undefined' && window.document){
 			return http; // XMLHTTPRequest instance
 		};
 
-		d._isDocumentOk = function(http){
+		dojo._isDocumentOk = function(http){
 			var stat = http.status || 0;
 			return (stat >= 200 && stat < 300) || 	// Boolean
 				stat == 304 || 						// allow any 2XX response code
 				stat == 1223 || 						// get it out of the cache
-				(!stat && (location.protocol=="file:" || location.protocol=="chrome:") ); // Internet Explorer mangled the status code
+				(!stat && (window.location.protocol=="file:" || window.location.protocol=="chrome:") ); // Internet Explorer mangled the status code
 		};
 
 		//See if base tag is in use.
@@ -235,7 +222,7 @@ if(typeof window != 'undefined' && window.document){
 		//with XHR requests (hasBase is true, but the request is still made to document
 		//path, not base path).
 		var owloc = window.location.href;
-		var base = document.getElementsByTagName("base");
+		var base = doc.getElementsByTagName("base");
 		var hasBase;
 		var baseIndex = base.length;
 
@@ -248,7 +235,7 @@ if(typeof window != 'undefined' && window.document){
 
 		var emptyFunction = function() {};
 
-		d._getText = function(/*URI*/ uri, /*Boolean*/ fail_ok, /*Function*/ cb){
+		dojo._getText = function(/*URI*/ uri, /*Boolean*/ fail_ok, /*Function*/ cb){
 
 			// summary: Read the contents of the specified uri and return those contents.
 			// uri:
@@ -264,23 +251,22 @@ if(typeof window != 'undefined' && window.document){
 			// returns: The response text. null is returned when there is a
 			//		failure and failure is okay (an exception otherwise)
 
-			// NOTE: must be declared before scope switches ie. this._xhrObj()
 			var http = this._xhrObj();
-			var async = cb && !this.config.syncXhrForModules;
+			var async = cb && this.config.syncXhrForModules === false;
 
 			if(!hasBase && dojo._Url){
 				uri = (new dojo._Url(owloc, uri)).toString();
 			}
 
-			if(d.config.cacheBust){
-				uri += (uri.indexOf("?") == -1 ? "?" : "&") + String(d.config.cacheBust).replace(/\W+/g,"");
+			if(dojo.config.cacheBust){
+				uri += (uri.indexOf("?") == -1 ? "?" : "&") + String(dojo.config.cacheBust).replace(/\W+/g,"");
 			}
 
 			try {
 				if (async) {
 					http.onreadystatechange = function() {
 						if (http.readyState == 4) {
-							if (d._isDocumentOk(http)) {
+							if (dojo._isDocumentOk(http)) {
 								cb(http.responseText);
 								http.onreadystatechange = emptyFunction;
 							}
@@ -295,7 +281,7 @@ if(typeof window != 'undefined' && window.document){
 			}
 			try{
 				http.send(null);
-				if(!async && !d._isDocumentOk(http)){
+				if(!async && !dojo._isDocumentOk(http)){
 					var err = new Error("Unable to load "+uri+" status:"+ http.status);					
 					throw err;
 				}
@@ -331,9 +317,9 @@ if(typeof window != 'undefined' && window.document){
 		};
 
 
-		d._windowUnloaders = [];
+		dojo._windowUnloaders = [];
 		
-		d.windowUnloaded = function(){
+		dojo.windowUnloaded = function(){
 			// summary:
 			//		signal fired by impending window destruction. You may use
 			//		dojo.addOnWindowUnload() to register a listener for this
@@ -343,14 +329,14 @@ if(typeof window != 'undefined' && window.document){
 			//		dojo.addOnWindowUnload. This behavior started in Dojo 1.3.
 			//		Previous versions always triggered dojo.windowUnloaded. See
 			//		dojo.addOnWindowUnload for more info.
-			var mll = d._windowUnloaders;
+			var mll = dojo._windowUnloaders;
 			while(mll.length){
 				(mll.pop())();
 			}
 		};
 
 		var _onWindowUnloadAttached = 0;
-		d.addOnWindowUnload = function(/*Object?|Function?*/obj, /*String|Function?*/functionName){
+		dojo.addOnWindowUnload = function(/*Object?|Function?*/obj, /*String|Function?*/functionName){
 			// summary:
 			//		registers a function to be triggered when window.onunload
 			//		fires. 
@@ -370,15 +356,15 @@ if(typeof window != 'undefined' && window.document){
 			//	|	dojo.addOnWindowUnload(object, "functionName");
 			//	|	dojo.addOnWindowUnload(object, function(){ /* ... */});
 
-			d._onto(d._windowUnloaders, obj, functionName);
+			dojo._onto(dojo._windowUnloaders, obj, functionName);
 			if(!_onWindowUnloadAttached){
 				_onWindowUnloadAttached = 1;
-				_handleNodeEvent("onunload", d.windowUnloaded);
+				_handleNodeEvent("onunload", dojo.windowUnloaded);
 			}
 		};
 
 		var _onUnloadAttached = 0;
-		d.addOnUnload = function(/*Object?|Function?*/obj, /*String|Function?*/functionName){
+		dojo.addOnUnload = function(/*Object?|Function?*/obj, /*String|Function?*/functionName){
 			// summary:
 			//		registers a function to be triggered when the page unloads.
 			//	description:
@@ -403,16 +389,15 @@ if(typeof window != 'undefined' && window.document){
 			//	|	dojo.addOnUnload(object, "functionName")
 			//	|	dojo.addOnUnload(object, function(){ /* ... */});
 
-			d._onto(d._unloaders, obj, functionName);
+			dojo._onto(dojo._unloaders, obj, functionName);
 			if(!_onUnloadAttached){
 				_onUnloadAttached = 1;
 				_handleNodeEvent("onbeforeunload", dojo.unloaded);
 			}
 		};
 
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
+		doc = null;
 	})();
-//>>excludeEnd("webkitMobile");
 
 	dojo._initFired = false;
 	//	BEGIN DOMContentLoaded, from Dean Edwards (http://dean.edwards.name/weblog/2006/06/again/)
@@ -435,18 +420,15 @@ if(typeof window != 'undefined' && window.document){
 	};
 
 	if(!dojo.config.afterOnLoad){
-		//	START DOMContentLoaded
-		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-		if(document.addEventListener){
+		// DOMContentLoaded
+		if(window.document.addEventListener){
 			// NOTE: 
 			//		due to a threading issue in Firefox 2.0, we can't enable
 			//		DOMContentLoaded on that platform. For more information, see:
 			//		http://trac.dojotoolkit.org/ticket/1704
 
-			if(!dojo.config.syncXhrForModules && dojo.config.enableMozDomContentLoaded !== false){
-		//>>excludeEnd("webkitMobile");
-				document.addEventListener("DOMContentLoaded", dojo._loadInit, null);
-		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
+			if(dojo.config.syncXhrForModules === false && dojo.config.enableMozDomContentLoaded !== false){
+				window.document.addEventListener("DOMContentLoaded", dojo._loadInit, null);
 			}
 		}
 
@@ -454,22 +436,15 @@ if(typeof window != 'undefined' && window.document){
 			window.addEventListener("load", dojo._loadInit, null);
 		}
 
-		//>>excludeEnd("webkitMobile");
-	
-		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-
-		if(!dojo.isIE && typeof document.readyState == 'string' && window.setInterval){
+		if(!dojo.isIE && typeof window.document.readyState == 'string' && window.setInterval){
 			dojo._khtmlTimer = window.setInterval(function(){
-				if(/loaded|complete/i.test(document.readyState)){
+				if(/loaded|complete/i.test(window.document.readyState)){
 					dojo._loadInit(); // call the onload handler
 				}
 			}, 10);
 		}
-		//>>excludeEnd("webkitMobile");
-		//	END DOMContentLoaded
 	}
 
-	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 	if(dojo.isIE){
 		// 	for Internet Explorer. readyState will not be achieved on init
 		// 	call, but dojo doesn't need it however, we'll include it
@@ -478,22 +453,20 @@ if(typeof window != 'undefined' && window.document){
 		// 	strips all comments -- including conditional ones.
 
 		if(!dojo.config.afterOnLoad){
-			document.write('<script defer src="//:" onreadystatechange="if(this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
+			window.document.write('<script defer src="//:" onreadystatechange="if(this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
 		}
 
 		// *** Should be in VML module?
 
 		//try{
-		if (document.namespaces && document.namespaces.add) {
-			document.namespaces.add("v","urn:schemas-microsoft-com:vml");
-			if (document.createStyleSheet) {
-				document.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML); display:inline-block");
+		if (window.document.namespaces && window.document.namespaces.add) {
+			window.document.namespaces.add("v","urn:schemas-microsoft-com:vml");
+			if (window.document.createStyleSheet) {
+				window.document.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML); display:inline-block");
 			}
 		}
 		//}catch(e){}
 	}
-	//>>excludeEnd("webkitMobile");
-
 
 	/*
 	OpenAjax.subscribe("OpenAjax", "onload", function(){
@@ -506,14 +479,12 @@ if(typeof window != 'undefined' && window.document){
 		dojo.unloaded();
 	});
 	*/
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 } //if (typeof window != 'undefined')
 
 //Register any module paths set up in djConfig. Need to do this
 //in the hostenvs since hostenv_browser can read djConfig from a
 //script tag's attribute.
 (function(){
-//>>excludeEnd("webkitMobile");
 	var mp = dojo.config.modulePaths;
 	if(mp){
 		for(var param in mp){
@@ -522,9 +493,7 @@ if(typeof window != 'undefined' && window.document){
 			}
 		}
 	}
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 })();
-//>>excludeEnd("webkitMobile");
 
 //Load debug code if necessary.
 if(dojo.config.isDebug){
