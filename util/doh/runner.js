@@ -1022,11 +1022,11 @@ var tests = doh;
 				// document.write() call.
 
 				// find runner.js, load _browserRunner relative to it
-				var scripts = dojo.doc.getElementsByTagName("script");
+				var scripts = document.getElementsByTagName("script");
 				for(x=0; x<scripts.length; x++){
 					var s = scripts[x].src;
 					if(s && (s.substr(s.length - 9) == "runner.js")){
-						dojo.doc.write("<script src='" + s.substr(0, s.length - 9) + "_browserRunner.js' type='text/javascript'></script>");
+						document.write("<script src='" + s.substr(0, s.length - 9) + "_browserRunner.js' type='text/javascript'></script>");
 					}
 				}
 			}
