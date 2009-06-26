@@ -61,43 +61,36 @@ if(typeof dojo == "undefined"){
 		_scopeMapRev: {}
 	};
 
-	// Moved to global scope.
-	// Existing inside of the following function created potential scope problems for
-	// agents that could not use window.eval.  It is not a good idea to use window.eval
-	// as it is not reliable (or even featured) across all known supported platforms.
-	// The eval call should be removed and replaced with script and text injection.
-
-	dojo["eval"] = function(/*String*/ scriptFragment){
+	dojo["eval"] = function(){
 		//	summary: 
-		//		Perform an evaluation in the global scope. Use this rather than
+		//		Perform an evaluation in the (almost) global scope. Use this rather than
 		//		calling 'eval()' directly.
 		//	description: 
 		//		Placed in a separate function to minimize size of trapped
 		//		exceptions. Calling eval() directly from some other scope may
 		//		complicate tracebacks on some platforms.
 		//	returns:
-		//		The result of the evaluation. (return result of script fragment?)
-
-		// NOTE:
-		//	 - JSC eval() takes an optional second argument which can be 'unsafe'.
-		//	 - Mozilla/SpiderMonkey eval() takes an optional second argument which is the
-		//  	 scope object for new symbols.
-
-		//	see also:
-		// 		http://trac.dojotoolkit.org/ticket/744
+		//		The result of the evaluation (return result should be deprecated)
 
 		// FIXME: Should inject script element and text
+		//        (Should not be used when a return value is needed)
 		
-		return eval(scriptFragment); 	// Object
-
-		// Another alternative:
-		// https://developer.mozilla.org/En/Core_JavaScript_1.5_Reference/Functions_and_function_scope
-		// "On the other hand, a function defined by a Function constructor does not inherit any scope other than the global scope (which all functions inherit)"
-		// NOTE:
-		// Make sure script fragments have a return statement when a return
-		// value is needed (current unit tests don't do this)
-		//return (new Function(scriptFragment))();
+		return eval(arguments[0]); 	// Object
 	};
+
+	/*dojo["realEval"] = function(){
+		//	summary: 
+		//		Perform an evaluation in the (almost) global scope. Use this rather than
+		//		calling 'eval()' directly.
+		//	description: 
+		//		Placed in a separate function to minimize size of trapped
+		//		exceptions. Calling eval() directly from some other scope may
+		//		complicate tracebacks on some platforms.
+		//	returns:
+		//		The result of the evaluation.
+		
+		return eval(arguments[0]); 	// Object
+	};*/
 
 	// only try to load Dojo if we don't already have one. Dojo always follows
 	// a "first Dojo wins" policy.
@@ -397,27 +390,30 @@ var djConfig = {
 	// firebug stubs
 
 	if(typeof this.loadFirebugConsole == "undefined"){
-		this.console = this.console || {};
+		if (!dojo.isHostObjectProperty(this, 'console')) {
+			this.console = {};
+		}
 
-		//	Be careful to leave 'log' always at the end
-		// *** Why?
 		var cn = [
-			"assert", "count", "debug", "dir", "dirxml", "error", "group",
+			"log", "assert", "count", "debug", "dir", "dirxml", "error", "group",
 			"groupEnd", "info", "profile", "profileEnd", "time", "timeEnd",
-			"trace", "warn", "log" 
+			"trace", "warn" 
 		];
 		var i=0, tn;
 		var emptyFunction = function(){};
 		var logFunctionFactory = function(tcn){
 			return function() {
-				var a = Array.apply({}, arguments);
+				var a = Array.prototype.slice.call(arguments, 0);
 				a.unshift(tcn+":");
 				this.console.log(a.join(" "));
 			};
 		};
-		var logInConsole = typeof this.console.log != 'undefined';
-		while(tn=cn[i++]){
-			if(!this.console[tn]){
+		var logInConsole = dojo.isHostMethod(this.console, 'log');
+
+		i = cn.length;
+		while(i--){
+			tn=cn[i];
+			if(!dojo.isHostMethod(this.console, tn)){
 				this.console[tn] = logInConsole ? logFunctionFactory(tn) : emptyFunction;
 			}
 		}
@@ -425,7 +421,8 @@ var djConfig = {
 
 	dojo.isOwnProperty = isOwnProperty;
 
-	//Need placeholders for dijit and dojox for scoping code.
+	//Need placeholders for dijit and dojox for scoping code.S	
+
 	if(typeof this.dijit == "undefined"){
 		this.dijit = {_scopeName: "dijit"};
 	}
