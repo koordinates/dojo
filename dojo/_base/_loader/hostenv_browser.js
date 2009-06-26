@@ -575,9 +575,9 @@ if(typeof window != 'undefined' && window.document){
 
 		var configRequire = config.require;
 
-		for (i in configRequire) {
-			if (isOwnProperty(configRequire, i)) {
-				require(i);
+		for (var j in configRequire) {
+			if (isOwnProperty(configRequire, j)) {
+				require(j);
 			}
 		}
 
