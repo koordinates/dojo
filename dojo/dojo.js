@@ -70,27 +70,12 @@ if(typeof dojo == "undefined"){
 		//		exceptions. Calling eval() directly from some other scope may
 		//		complicate tracebacks on some platforms.
 		//	returns:
-		//		The result of the evaluation (return result should be deprecated)
-
-		// FIXME: Should inject script element and text
-		//        (Should not be used when a return value is needed)
-		
-		return eval(arguments[0]); 	// Object
+		//		The result of the evaluation
+		if (arguments.length == 1 || !arguments[1]) { 
+			return eval(arguments[0]);
+		}
+		return (new Function(arguments[0]))();
 	};
-
-	/*dojo["realEval"] = function(){
-		//	summary: 
-		//		Perform an evaluation in the (almost) global scope. Use this rather than
-		//		calling 'eval()' directly.
-		//	description: 
-		//		Placed in a separate function to minimize size of trapped
-		//		exceptions. Calling eval() directly from some other scope may
-		//		complicate tracebacks on some platforms.
-		//	returns:
-		//		The result of the evaluation.
-		
-		return eval(arguments[0]); 	// Object
-	};*/
 
 	// only try to load Dojo if we don't already have one. Dojo always follows
 	// a "first Dojo wins" policy.
@@ -374,7 +359,7 @@ var djConfig = {
 	// syncXhrForModules: Boolean
 	//              Used with same-domain loading only, forces synchronous XHR
 	//		Not recommended
-	syncXhrForModules: false
+	syncXhrForModules: true
 }
 =====*/
 
@@ -765,7 +750,6 @@ dojo.global = {
 		_loadNotifying: false
 	});
 
-
 	//>>excludeStart("xdomainExclude", fileName.indexOf("dojo.xd.js") != -1 && kwArgs.loader == "xdomain");
 	dojo._loadPath = function(/*String*/relpath, /*String?*/module, /*Function?*/cb){
 		// 	summary:
@@ -824,17 +808,16 @@ dojo.global = {
 				//it is most likely the i18n bundle stuff.
 				contents = that._scopePrefix + contents + that._scopeSuffix;
 			}
-			//if(dojo.isMoz){ contents += "\r\n//@ sourceURL=" + uri; } // debugging assist for Firebug
 			try {
-				var result = dojo['eval'](contents);
+				var result = dojo['eval'](contents, !cb);
 			} catch(e) {
-				console.log('oops ' + uri + ' ' + (e.description || e));
+				console.log('Load failed ' + uri + ' ' + (e.description || e));
 			}
 			if(cb){ cb(result); }
 		};
 		var result = this._getText(uri, true, finished);
 
-		return !!(result); // _getText now returns true for async requests (!dojo.config.syncXhrForModules)
+		return !!(result); // _getText now returns true for async requests (dojo.config.syncXhrForModules === false)
 	};
 	//>>excludeEnd("xdomainExclude");
 
@@ -847,7 +830,7 @@ dojo.global = {
 		}catch(e){
 			console.error("failed loading " + uri + " with error: " + e);
 		}
-		return !!(ok && (!this.config.syncXhrForModules || this._loadedModules[moduleName])); // Boolean
+		return !!(ok && (this.config.syncXhrForModules === false || this._loadedModules[moduleName])); // Boolean
 	};
 
 	dojo.loaded = function(){
@@ -1659,6 +1642,7 @@ dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDo
 	//		xd loading requires slightly different behavior from loadPath().
 	//description: Wanted to override getText(), but it is used by
 	//		the widget code in too many, synchronous ways right now.
+
 	if(this._loadedUrls[uri]){
 		return 1; //Boolean
 	}
@@ -1733,9 +1717,12 @@ dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDo
 			}else{
 				//Only do the scoping if no callback. If a callback is specified,
 				//it is most likely the i18n bundle stuff.
+
+				// NOTE: Review this
+
 				contents = this._scopePrefix + contents + this._scopeSuffix;
 			}
-			var value = dojo["eval"](contents+"\r\n//@ sourceURL="+uri);
+			var value = dojo["eval"](contents+"\r\n//@ sourceURL="+uri, !cb);
 			if(cb){
 				cb(value);
 			}
