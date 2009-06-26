@@ -124,7 +124,7 @@ if(typeof dojo == "undefined"){
 		//
 		// example:
 		//
-		// if (isHostMethod(document, 'getElementById')) {
+		// if (dojo.isHostMethod(document, 'getElementById')) {
 		//     anElement = document.getElementById(id);
 		// }
 
@@ -142,7 +142,7 @@ if(typeof dojo == "undefined"){
 		//
 		// example:
 		//
-		// if (isHostObjectProperty(document, 'all')) {
+		// if (dojo.isHostObjectProperty(document, 'all')) {
 		//     allElements = document.all;
 		// }
 
@@ -151,10 +151,16 @@ if(typeof dojo == "undefined"){
 			return !!(reFeaturedMethod.test(t) && o[p]); /* Boolean */
 		};
 
+		var getWin = function() { return (this.window || this); };
+
 		var getRootNode = function(){
+
 			// attempt to figure out the path to dojo if it isn't set in the config
-			if(this.document && this.document.getElementsByTagName){
-				var scripts = document.getElementsByTagName("script");
+
+			var doc = getWin().document;
+
+			if(doc && dojo.isHostMethod(doc, 'getElementsByTagName')){
+				var scripts = doc.getElementsByTagName("script");
 				var rePkg = /dojo\.js(\W|$)/i;
 				for(var i = 0; i < scripts.length; i++){
 					var src = scripts[i].src;
@@ -171,7 +177,7 @@ if(typeof dojo == "undefined"){
 		};
 
 		// we default to a browser environment if we can't figure it out
-		var root;
+		var root, doc = getWin().document;
 		var hostEnv = "browser";
 		var isRhino = false;
 		var isSpidermonkey = false;
@@ -219,7 +225,7 @@ if(typeof dojo == "undefined"){
 				// auto-detect the base path via an exception. Hack!
 				try{
 					throw new Error(""); 
-				}catch(e2){ 
+				}catch(e2){
 					root = String(e2.fileName || e2.sourceURL).split("dojo.js")[0];
 				}
 			}
@@ -228,7 +234,7 @@ if(typeof dojo == "undefined"){
 			}
 	
 			// attempt to figure out the path to dojo if it isn't set in the config
-			if(this.document && this.document.getElementsByTagName){
+			if(doc && dojo.isHostMethod(doc, 'getElementsByTagName')){
 				root = getRootNode().root;	
 				if(!this.djConfig){ this.djConfig = {}; }
 				this.djConfig.baseUrl = root;
@@ -246,13 +252,15 @@ if(typeof dojo == "undefined"){
 			var l = this.Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(this.Components.interfaces.mozIJSSubScriptLoader);
 			l.loadSubScript(envScript, this);
 		}else{
-			try{ // *** XML parse mode test
-				document.write("<script type='text/javascript' src='"+envScript+"'></script>");
+			try{ // NOTE: Use XML parse mode test
+				doc.write("<script type='text/javascript' src='"+envScript+"'></script>");
 			}catch(e3){
 				lastRoot = getRootNode().node;
-				// XML parse mode, no document.write
-				var head = document.getElementsByTagName("head")[0];
-				var script = document.createElement("script");
+
+				// XML parse mode or other environment without document.write
+
+				var head = doc.getElementsByTagName("head")[0];
+				var script = doc.createElement("script");
 				script.type = "text/javascript";
 				if(!lastRoot.nextSibling){
 					head.appendChild(script);
@@ -263,6 +271,8 @@ if(typeof dojo == "undefined"){
 				lastRoot = script;
 			}
 		}
+
+		doc = null; // Discard host object reference
 	})();
 }
 
@@ -274,7 +284,7 @@ if(typeof dojo == "undefined"){
 //		Setting any of these variables *after* the library has loaded does
 //		nothing at all.
 
-djConfig = {
+var djConfig = {
 	// summary:
 	//		Application code can set the global 'djConfig' prior to loading
 	//		the library to override certain global settings for how dojo works.
@@ -375,9 +385,7 @@ djConfig = {
 }
 =====*/
 
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 (function(){
-//>>excludeEnd("webkitMobile");
 
 	// for-in filter
 
@@ -417,8 +425,6 @@ djConfig = {
 
 	dojo.isOwnProperty = isOwnProperty;
 
-	var d = dojo;
-
 	//Need placeholders for dijit and dojox for scoping code.
 	if(typeof this.dijit == "undefined"){
 		this.dijit = {_scopeName: "dijit"};
@@ -427,23 +433,29 @@ djConfig = {
 		this.dojox = {_scopeName: "dojox"};
 	}
 	
-	if(!d._scopeArgs){
-		d._scopeArgs = [this.dojo, this.dijit, this.dojox];
+	if(!dojo._scopeArgs){
+		dojo._scopeArgs = [this.dojo, this.dijit, this.dojox];
 	}
 
 /*=====
 dojo.global = {
 	//	summary:
-	//		Alias for the global scope
-	//		(e.g. the window object in a browser).
+	//		Reference to the Global Object
+	//		(typically the window object in a browser).
 	//	description:
 	//		Refer to 'dojo.global' rather than referring to window to ensure your
 	//		code runs correctly in contexts other than web browsers (e.g. Rhino on a server).
 }
 =====*/
-	d.global = this;
+	dojo.global = this;
 
-	d.config =/*===== djConfig = =====*/{
+	// NOTE: The window object may not be the Global object
+
+	var getWin = function() {
+		return dojo.global.window || dojo.global;
+	};
+
+	dojo.config =/*===== djConfig = =====*/{
 		isDebug: false,
 		debugAtAllCosts: false
 	};
@@ -452,7 +464,7 @@ dojo.global = {
 	if(djConfig){
 		for(var opt in djConfig){
 			if (isOwnProperty(djConfig, opt)) {
-				d.config[opt] = djConfig[opt];
+				dojo.config[opt] = djConfig[opt];
 			}
 		}
 	}
@@ -463,7 +475,7 @@ dojo.global = {
 		// summary: the locale as defined by Dojo (read-only)
 	};
 =====*/
-	dojo.locale = d.config.locale;
+	dojo.locale = dojo.config.locale;
 
 	var rev = "$Rev: 16633 $".match(/\d+/); 
 
@@ -483,17 +495,15 @@ dojo.global = {
 		major: 1, minor: 3, patch: 0, flag: "dev",
 		revision: rev ? +rev[0] : NaN,
 		toString: function(){
-			var v = d.version;
+			var v = dojo.version;
 			return v.major + "." + v.minor + "." + v.patch + v.flag + " (" + v.revision + ")";	// String
 		}
 	};
 
-	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 	// Register with the OpenAjax hub
 	if(typeof this.OpenAjax != "undefined"){
-		this.OpenAjax.hub.registerLibrary(dojo._scopeName, "http://dojotoolkit.org", d.version.toString());
+		this.OpenAjax.hub.registerLibrary(dojo._scopeName, "http://dojotoolkit.org", dojo.version.toString());
 	}
-	//>>excludeEnd("webkitMobile");
 
 	// Test for enumeration bug in IE
 
@@ -584,13 +594,13 @@ dojo.global = {
 		//	|	console.log(flattened.braces);
 		if(!obj){ obj = {}; }
 		for(var i=1, l=arguments.length; i<l; i++){
-			d._mixin(obj, arguments[i]);
+			dojo._mixin(obj, arguments[i]);
 		}
 		return obj; // Object
 	};
 
 	dojo._getProp = function(/*Array*/parts, /*Boolean*/create, /*Object*/context){
-		var obj=context || d.global;
+		var obj=context || dojo.global;
 		for(var i=0, p; obj && (p=parts[i]); i++){
 			if(!i && this._scopeMap[p]){
 				p = this._scopeMap[p];
@@ -626,7 +636,7 @@ dojo.global = {
 		//	|	obj.parent.child.prop = "some value";
 		//		wheras with `dojo.setObject`, we can shorten that to:
 		//	|	dojo.setObject("parent.child.prop", "some value", obj);
-		var parts=name.split("."), p=parts.pop(), obj=d._getProp(parts, true, context);
+		var parts=name.split("."), p=parts.pop(), obj=dojo._getProp(parts, true, context);
 		return obj && p ? (obj[p]=value) : undefined; // Object
 	};
 
@@ -644,7 +654,7 @@ dojo.global = {
 		//	context:
 		//		Optional. Object to use as root of path. Defaults to
 		//		'dojo.global'. Null may be passed.
-		return d._getProp(name.split("."), create, context); // Object
+		return dojo._getProp(name.split("."), create, context); // Object
 	};
 
 	dojo.exists = function(/*String*/name, /*Object?*/obj){
@@ -671,7 +681,7 @@ dojo.global = {
 		//	|	// search from a particular scope
 		//	|	dojo.exists("bar", foo); // true
 		//	|	dojo.exists("bar.baz", foo); // false
-		return !!d.getObject(name, false, obj); // Boolean
+		return !!dojo.getObject(name, false, obj); // Boolean
 	};
 
 
@@ -715,21 +725,9 @@ dojo.global = {
 	=====*/
 
 	//Real functions declared in dojo._firebug.firebug.
-	d.deprecated = d.experimental = function(){};
+	dojo.deprecated = dojo.experimental = function(){};
 
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-})();
-//>>excludeEnd("webkitMobile");
-// vim:ai:ts=4:noet
-
-
-
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-(function(){
-	var d = dojo;
-//>>excludeEnd("webkitMobile");
-
-	d.mixin(d, {
+	dojo.mixin(dojo, {
 		_loadedModules: {},
 		_inFlightCount: 0,
 		_hasResource: {},
@@ -829,9 +827,9 @@ dojo.global = {
 				//it is most likely the i18n bundle stuff.
 				contents = that._scopePrefix + contents + that._scopeSuffix;
 			}
-			//if(d.isMoz){ contents += "\r\n//@ sourceURL=" + uri; } // debugging assist for Firebug
+			//if(dojo.isMoz){ contents += "\r\n//@ sourceURL=" + uri; } // debugging assist for Firebug
 			try {
-				var result = d['eval'](contents);
+				var result = dojo['eval'](contents);
 			} catch(e) {
 				console.log('oops ' + uri + ' ' + (e.description || e));
 			}
@@ -865,7 +863,7 @@ dojo.global = {
 		//		be constructed when this function	finishes runing.
 		this._loadNotifying = true;
 		this._postLoad = true;
-		var mll = d._loaders;
+		var mll = dojo._loaders;
 
 		//Clear listeners so new ones can be added
 		//For other xdomain package loads after the initial load.
@@ -880,8 +878,8 @@ dojo.global = {
 		//Make sure nothing else got added to the onload queue
 		//after this first run. If something did, and we are not waiting for any
 		//more inflight resources, run again.
-		if(d._postLoad && !d._inFlightCount && mll.length){
-			d._callLoaded();
+		if(dojo._postLoad && !dojo._inFlightCount && mll.length){
+			dojo._callLoaded();
 		}
 	};
 
@@ -891,13 +889,13 @@ dojo.global = {
 		//		dojo.addOnUnload() instead of doing a direct dojo.connect() to this 
 		//		method to perform page/application cleanup methods. See 
 		//		dojo.addOnUnload for more info.
-		var mll = d._unloaders;
+		var mll = dojo._unloaders;
 		while(mll.length){
 			(mll.pop())();
 		}
 	};
 
-	d._onto = function(arr, obj, fn){
+	dojo._onto = function(arr, obj, fn){
 		if(!fn){
 			arr.push(obj);
 		}else if(fn){
@@ -919,32 +917,32 @@ dojo.global = {
 		//	|	dojo.addOnLoad(object, "functionName");
 		//	|	dojo.addOnLoad(object, function(){ /* ... */});
 
-		d._onto(d._loaders, obj, functionName);
+		dojo._onto(dojo._loaders, obj, functionName);
 
 		//Added for xdomain loading. dojo.addOnLoad is used to
 		//indicate callbacks after doing some dojo.require() statements.
 		//In the xdomain case, if all the requires are loaded (after initial
 		//page load), then immediately call any listeners.
-		if(d._postLoad && !d._inFlightCount && !d._loadNotifying){
-			d._callLoaded();
+		if(dojo._postLoad && !dojo._inFlightCount && !dojo._loadNotifying){
+			dojo._callLoaded();
 		}
 	};
 
 	//Support calling dojo.addOnLoad via djConfig.addOnLoad. Support all the
 	//call permutations of dojo.addOnLoad. Mainly useful when dojo is added
 	//to the page after the page has loaded.
-	var dca = d.config.addOnLoad;
+	var dca = dojo.config.addOnLoad;
 	if(dca){
-		d.addOnLoad[Object.prototype.toString.call(dca) == '[object Array]' ? "apply" : "call"](d, dca);
+		dojo.addOnLoad[Object.prototype.toString.call(dca) == '[object Array]' ? "apply" : "call"](dojo, dca);
 	}
 
 	dojo._modulesLoaded = function(){
-		if(d._postLoad){ return; }
-		if(d._inFlightCount > 0){ 
+		if(dojo._postLoad){ return; }
+		if(dojo._inFlightCount > 0){ 
 			console.warn("files still in flight!");
 			return;
 		}
-		d._callLoaded();
+		dojo._callLoaded();
 	};
 
 	var reFeaturedMethod = new RegExp('^function|object$', 'i');
@@ -959,37 +957,38 @@ dojo.global = {
 
 	dojo.isHostMethod = isHostMethod;
 
-	if (isHostMethod(d.global, 'setTimeout')) {
+	if (isHostMethod(getWin(), 'setTimeout')) {
 		dojo._setMethodTimeout = function(methodName, delay) {
 			var scopeName = dojo._scopeName;
-			var space = d.global[scopeName];
+
+			// NOTE: Why use dojo.global here?
+
+			var space = dojo.global[scopeName];
 			var fn = function() {
 				return space[methodName]();
 			};
 			fn.toString = function() {
-				return scopeName + '._' + methodName + '();';
+				return 'dojo.global["' + scopeName + '"].' + methodName + '();';
 			};		
-			d.global.setTimeout(fn, delay);
+			getWin().setTimeout(fn, delay);
 		};
 	}
 
 	dojo._callLoaded = function(){
-		var canSetTimeout = !!dojo._setMethodTimeout;
-		var doc = d.global.document;
+		var doc = getWin().document;
 
 		// Make sure the parser has hit the opening body tag
-		// Non-browsers will skip this, as will some browsers
+		// Non-browsers will skip this...
+
+		// NOTE: ...as will some browsers
 		// in XML parse mode as document.body will be undefined
 		// (not good if XHTML is to be supported.)
+		// Review this
 
-		if (canSetTimeout && doc && doc.body === null) {
-			dojo._setMethodTimeout('callLoaded', 10);
-		}
-
-		if(canSetTimeout){
-			dojo._setMethodTimeout('loaded', 1);
-		}else{
-			d.loaded();
+		if (dojo._setMethodTimeout) {
+			dojo._setMethodTimeout((doc && doc.body === null) ? '_callLoaded' : 'loaded', 10);
+		} else {
+			dojo.loaded();
 		}
 	};
 
@@ -1136,7 +1135,7 @@ dojo.global = {
 
 		//Make sure we have a string.
 		resourceName = resourceName + "";
-		return (d._loadedModules[resourceName] = d.getObject(resourceName, true)); // Object
+		return (dojo._loadedModules[resourceName] = dojo.getObject(resourceName, true)); // Object
 	};
 
 	//Start of old bootstrap2:
@@ -1166,14 +1165,14 @@ dojo.global = {
 		//		|	});
 
 		var common = modMap.common || [];
-		var result = common.concat(modMap[d._name] || modMap["default"] || []);
+		var result = common.concat(modMap[dojo._name] || modMap["default"] || []);
 
 		for(var x=0; x<result.length; x++){
 			var curr = result[x];
 			if(curr.constructor == Array){
-				d._loadModule.apply(d, curr);
+				dojo._loadModule.apply(dojo, curr);
 			}else{
-				d._loadModule(curr);
+				dojo._loadModule(curr);
 			}
 		}
 	};
@@ -1188,11 +1187,11 @@ dojo.global = {
 			for(var i = 1; i < arguments.length; i++){ 
 				args.push(arguments[i]);
 			}
-			d.require.apply(d, args);
+			dojo.require.apply(dojo, args);
 		}
 	};
 
-	dojo.requireAfterIf = d.requireIf;
+	dojo.requireAfterIf = dojo.requireIf;
 
 	dojo.registerModulePath = function(/*String*/module, /*String*/prefix){
 		//	summary: 
@@ -1222,7 +1221,7 @@ dojo.global = {
 		//	|		dojo.require("foo.baz");
 		//	|		dojo.require("foo.thud.xyzzy");
 		//	|	</script>
-		d._modulePrefixes[module] = { name: module, value: prefix };
+		dojo._modulePrefixes[module] = { name: module, value: prefix };
 	};
 
 	dojo.requireLocalization = function(/*String*/moduleName, /*String*/bundleName, /*String?*/locale, /*String?*/availableFlatLocales){
@@ -1294,8 +1293,8 @@ dojo.global = {
 		//	|				...
 		//
 
-		d.require("dojo.i18n");
-		d.i18n._requireLocalization.apply(d.hostenv, arguments);
+		dojo.require("dojo.i18n");
+		dojo.i18n._requireLocalization.apply(dojo.hostenv, arguments);
 	};
 
 
@@ -1324,8 +1323,8 @@ dojo.global = {
 			// Safari doesn't support this.constructor so we have to be explicit
 			// FIXME: Tracked (and fixed) in Webkit bug 3537.
 			//		http://bugs.webkit.org/show_bug.cgi?id=3537
-			var relobj = new d._Url(_a[i]+"");
-			var uriobj = new d._Url(uri[0]+"");
+			var relobj = new dojo._Url(_a[i]+"");
+			var uriobj = new dojo._Url(uri[0]+"");
 
 			if(!relobj.path && !relobj.scheme && !relobj.authority && !relobj.query){
 				if(relobj.fragment != n){
@@ -1442,7 +1441,7 @@ dojo.global = {
 		//	|	var tmpltPath = dojo.moduleUrl("acme.widget","templates/template.html");
 		//	|	var dataPath = dojo.moduleUrl("acme.util","resources/data.json");
 
-		var loc = d._getModuleSymbols(module).join('/');
+		var loc = dojo._getModuleSymbols(module).join('/');
 		if(!loc){ return null; }
 		if(loc.lastIndexOf("/") != loc.length-1){
 			loc += "/";
@@ -1452,14 +1451,12 @@ dojo.global = {
 		//domain/xdomain) then don't add the baseUrl.
 		var colonIndex = loc.indexOf(":");
 		if(loc.charAt(0) != "/" && (colonIndex == -1 || colonIndex > loc.indexOf("/"))){
-			loc = d.baseUrl + loc;
+			loc = dojo.baseUrl + loc;
 		}
 
-		return new d._Url(loc, url); // String
+		return new dojo._Url(loc, url); // String
 	};
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 })();
-//>>excludeEnd("webkitMobile");
 
 // *** TODO: Exclude this if not cross-domain build
 
@@ -1636,7 +1633,7 @@ dojo._xdIsXDomainPath = function(/*string*/relpath) {
 		var url = this.baseUrl;
 		colonIndex = url.indexOf(":");
 		slashIndex = url.indexOf("/");
-		if(colonIndex > 0 && colonIndex < slashIndex && (!location.host || url.indexOf("http://" + location.host))){
+		if(colonIndex > 0 && colonIndex < slashIndex && (!window.location.host || url.indexOf("http://" + window.location.host))){
 			return true;
 		}
 	}
@@ -1709,11 +1706,15 @@ dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDo
 		xdUri = xdUri.replace("app:/", "/");
 
 		//Add to script src
-		var element = document.createElement("script");
+
+		// NOTE: Should this use dojo.global?
+
+		var doc = (dojo.global.window || dojo.global).document;
+		var element = doc.createElement("script");
 		element.type = "text/javascript";
 		element.src = xdUri;
 		if(!this._headElement){
-			this._headElement = document.getElementsByTagName("head")[0] || document.getElementsByTagName("html")[0];
+			this._headElement = doc.getElementsByTagName("head")[0] || doc.getElementsByTagName("html")[0];
 
 			//Head element may not exist, particularly in html
 			//html 4 or tag soup cases where the page does not
@@ -2079,7 +2080,10 @@ dojo._xdClearInterval = function(){
 	//summary: Internal xd loader function.
 	//Clears the interval timer used to check on the
 	//status of in-flight xd module resource requests.
-	clearInterval(this._xdTimer);
+	
+	// NOTE: What sets this interval (and using what object?)
+
+	(dojo.global.window || dojo.global).clearInterval(this._xdTimer);
 	this._xdTimer = 0;
 };
 
