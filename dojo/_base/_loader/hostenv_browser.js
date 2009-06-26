@@ -176,7 +176,7 @@ if(typeof window != 'undefined' && window.document){
 			// Webkit
 			
 			} else if (typeof de.style.webkitOpacity == 'string' || typeof de.style.webkitTransition == 'string') {
-				dojo.isWebKit = parseFloat(dua.split("Webkit/")[1]) || 1;
+				dojo.isWebKit = parseFloat(dua.split("WebKit/")[1]) || 1;
 
 				// NOTE: Object inferences for AIR, Chrome and Safari?
 
