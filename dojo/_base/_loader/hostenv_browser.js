@@ -70,7 +70,7 @@ if(typeof window != 'undefined' && window.document){
 	// attempt to figure out the path to dojo if it isn't set in the config
 
 	(function(){
-		var doc = window.document;
+		var i, doc = window.document;
 		var isHostMethod = dojo.isHostMethod;
 		var isHostObjectProperty = dojo.isHostObjectProperty;
 
@@ -82,7 +82,7 @@ if(typeof window != 'undefined' && window.document){
 			var m, src, scripts = doc.getElementsByTagName("script");
 			var rePkg = /dojo(\.xd)?\.js(\W|$)/i;
 
-			for(var i = 0; i < scripts.length; i++){
+			for(i = 0; i < scripts.length; i++){
 				src = scripts[i].src;
 
 				if(src && (m = src.match(rePkg))){
@@ -214,9 +214,7 @@ if(typeof window != 'undefined' && window.document){
 
 		dojo.locale = (dojo.config.locale || (n.userLanguage || n.language) || (doc.documentElement && de.lang) || '').toLowerCase();
 
-		// These are in order of decreasing likelihood; this will change in time.
-
-		dojo._XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
+		dojo._XMLHTTP_PROGIDS = ['Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.3.0', 'Msxml2.XMLHTTP.6.0'];
 
 		dojo._xhrObj = function(){
 			// summary: 
@@ -226,7 +224,7 @@ if(typeof window != 'undefined' && window.document){
 				try{ http = new XMLHttpRequest(); }catch(e){}
 			}
 			if(!http && dojo.global.ActiveXObject){
-				for(var i=0; i<3; ++i){
+				for(i=3; i--;){
 					var progid = dojo._XMLHTTP_PROGIDS[i];
 					try{
 						http = new dojo.global.ActiveXObject(progid);
