@@ -73,6 +73,12 @@ if(typeof window != 'undefined' && window.document){
 		var i, doc = window.document;
 		var isHostMethod = dojo.isHostMethod;
 		var isHostObjectProperty = dojo.isHostObjectProperty;
+		var isOwnProperty = dojo.isOwnProperty;
+		var config = dojo.config;
+		var require = function(name) {
+			dojo.require.call(dojo, name);
+		};
+		var provide = dojo.provide;
 
 		// We set browser versions and grab
 		// the URL we were loaded from here.
@@ -87,16 +93,16 @@ if(typeof window != 'undefined' && window.document){
 
 				if(src && (m = src.match(rePkg))){
 					// find out where we came from
-					if(!dojo.config.baseUrl){
-						dojo.config.baseUrl = src.substring(0, m.index);
+					if(!config.baseUrl){
+						config.baseUrl = src.substring(0, m.index);
 					}
 					// and find out if we need to modify our behavior
 					var cfg = scripts[i].getAttribute("djConfig");
 					if(cfg){
 						var cfgo = (new Function("return { "+cfg+" };"))();
 						for(var x in cfgo){
-							if (dojo.isOwnProperty(cfgo, x)) {
-								dojo.config[x] = cfgo[x];
+							if (isOwnProperty(cfgo, x)) {
+								config[x] = cfgo[x];
 							}
 						}
 					}
@@ -104,7 +110,7 @@ if(typeof window != 'undefined' && window.document){
 				}
 			}
 		}
-		dojo.baseUrl = dojo.config.baseUrl;
+		dojo.baseUrl = config.baseUrl;
 
 		// fill in the rendering support information in dojo.render.*
 		var n = window.navigator,
@@ -151,7 +157,7 @@ if(typeof window != 'undefined' && window.document){
 				//Workaround to get local file loads of dojo to work on IE 7
 				//by forcing to not use native xhr.
 				if(isHostMethod(window, 'ActiveXObject') && window.location.protocol == "file:"){
-					dojo.config.ieForceActiveXXhr=true;
+					config.ieForceActiveXXhr=true;
 				}
 
 				// 	In Internet Explorer. readyState will not be achieved on init
@@ -160,7 +166,7 @@ if(typeof window != 'undefined' && window.document){
 				// 	might.  Note that this has changed because the build process
 				// 	strips all comments -- including conditional ones.
 
-				if(!dojo.config.afterOnLoad && isHostMethod(doc, 'write')){
+				if(!config.afterOnLoad && isHostMethod(doc, 'write')){
 					doc.write('<script defer src="//:" onreadystatechange="if(this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
 				}
 
@@ -212,7 +218,7 @@ if(typeof window != 'undefined' && window.document){
 
 		dojo.isQuirks = !(/css/i.test(cm));
 
-		dojo.locale = (dojo.config.locale || (n.userLanguage || n.language) || (doc.documentElement && de.lang) || '').toLowerCase();
+		dojo.locale = (config.locale || (n.userLanguage || n.language) || (doc.documentElement && de.lang) || '').toLowerCase();
 
 		dojo._XMLHTTP_PROGIDS = ['Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.3.0', 'Msxml2.XMLHTTP.6.0'];
 
@@ -220,7 +226,7 @@ if(typeof window != 'undefined' && window.document){
 			// summary: 
 			//		does the work of portably generating a new XMLHTTPRequest object.
 			var http, last_e;
-			if(window.XMLHttpRequest && !dojo.config.ieForceActiveXXhr){
+			if(window.XMLHttpRequest && !config.ieForceActiveXXhr){
 				try{ http = new XMLHttpRequest(); }catch(e){}
 			}
 			if(!http && dojo.global.ActiveXObject){
@@ -312,7 +318,7 @@ if(typeof window != 'undefined' && window.document){
 			//		instead of throwing.
 			// cb:
 			//		Callback
-			//              Requests are asynchronous only in the event that cb is passed (and dojo.config.syncXhrForModules is false)
+			//              Requests are asynchronous only in the event that cb is passed (and config.syncXhrForModules is false)
 			//
 			// returns: The response text. null is returned when there is a
 			//		failure and failure is okay (an exception otherwise)
@@ -324,8 +330,8 @@ if(typeof window != 'undefined' && window.document){
 				uri = (new dojo._Url(owloc, uri)).toString();
 			}
 
-			if(dojo.config.cacheBust){
-				uri += (uri.indexOf("?") == -1 ? "?" : "&") + String(dojo.config.cacheBust).replace(/\W+/g,"");
+			if(config.cacheBust){
+				uri += (uri.indexOf("?") == -1 ? "?" : "&") + String(config.cacheBust).replace(/\W+/g,"");
 			}
 
 			try {
@@ -460,7 +466,7 @@ if(typeof window != 'undefined' && window.document){
 				_handleNodeEvent("onbeforeunload", dojo.unloaded);
 			}
 		};
-		if(!dojo.config.afterOnLoad){
+		if(!config.afterOnLoad){
 			// DOMContentLoaded
 			if(isHostMethod(doc, 'addEventListener')){
 				// NOTE: 
@@ -468,7 +474,7 @@ if(typeof window != 'undefined' && window.document){
 				//		DOMContentLoaded on that platform. For more information, see:
 				//		http://trac.dojotoolkit.org/ticket/1704
 
-				if(dojo.config.syncXhrForModules !== false && dojo.config.enableMozDomContentLoaded !== false){
+				if(config.syncXhrForModules !== false && config.enableMozDomContentLoaded !== false){
 					doc.addEventListener("DOMContentLoaded", dojo._loadInit, false);
 				}
 			}
@@ -486,96 +492,95 @@ if(typeof window != 'undefined' && window.document){
 			}
 		}
 
-		doc = de = null;
-	})();
-}
+		//Register any module paths set up in djConfig. Need to do this
+		//in the hostenvs since hostenv_browser can read djConfig from a
+		//script tag's attribute.
 
-//Register any module paths set up in djConfig. Need to do this
-//in the hostenvs since hostenv_browser can read djConfig from a
-//script tag's attribute.
-(function(){
-	var mp = dojo.config.modulePaths;
-	if(mp){
-		for(var param in mp){
-			if (dojo.isOwnProperty(mp, param)) {
-				dojo.registerModulePath(param, mp[param]);
+		var mp = config.modulePaths;
+		if(mp){
+			for(var param in mp){
+				if (isOwnProperty(mp, param)) {
+					dojo.registerModulePath(param, mp[param]);
+				}
 			}
 		}
-	}
-})();
 
-//Load debug code if necessary.
-if(dojo.config.isDebug){
-	dojo.require("dojo._firebug.firebug");
-}
+		//Load debug code if necessary.
 
-if(dojo.config.debugAtAllCosts){
-	dojo.config.useXDomain = true;
-	dojo.require("dojo._base._loader.loader_xd");
-	dojo.require("dojo._base._loader.loader_debug");
-	dojo.require("dojo.i18n");
-}
-
-dojo.provide("dojo._base"); // All environments
-dojo.provide("dojo._base.browser");
-
-dojo.require("dojo._base.lang");
-dojo.require("dojo._base.declare");
-dojo.require("dojo._base.Deferred");
-dojo.require("dojo._base.array");
-dojo.require("dojo._base.Color");
-dojo.require("dojo._base.window");
-
-// Delete unused files
-
-if (!dojo.config.noQuery) {
-	dojo.require("dojo._base.query");
-}
-if (!dojo.config.noJson) { // FIXME: XHR should not require JSON
-	dojo.require("dojo._base.json");
-	if (!dojo.config.noXhr) {
-		if (dojo.config.noQuery) {
-			throw new Error("XHR requires query"); // FIXME: XHR should not be tangled with query
+		if(config.isDebug){
+			require("dojo._firebug.firebug");
 		}
-		dojo.require("dojo._base.xhr");
-	}
-}
 
-if (!dojo.config.noHtml) {
-	dojo.require("dojo._base.html");
-}
-
-if (!dojo.config.noNodeList) {
-	dojo.require("dojo._base.NodeList");
-}
-
-if (!dojo.config.noConnect) {
-	dojo.require("dojo._base.connect");
-
-	if (!dojo.config.noFx) {
-		if (dojo.config.noHtml) {
-			throw new Error("FX requires HTML");
+		if(config.debugAtAllCosts){
+			config.useXDomain = true;
+			require("dojo._base._loader.loader_xd");
+			require("dojo._base._loader.loader_debug");
+			require("dojo.i18n");
 		}
-		if (dojo.config.noNodeList) {
-			throw new Error("FX requires NodeList"); // FIXME: FX should not require NodeList
+
+		provide("dojo._base"); // All environments
+		provide("dojo._base.browser");
+
+		require("dojo._base.lang");
+		require("dojo._base.declare");
+		require("dojo._base.Deferred");
+		require("dojo._base.array");
+		require("dojo._base.Color");
+		require("dojo._base.window");
+
+		// Delete unused files
+
+		if (!config.noQuery) {
+			require("dojo._base.query");
 		}
-		dojo.require("dojo._base.fx");
-	}
-	if (!dojo.config.noEvent) {
-		dojo.require("dojo._base.event");
-	}
+		if (!config.noJson) { // FIXME: XHR should not require JSON
+			require("dojo._base.json");
+			if (!config.noXhr) {
+				if (config.noQuery) {
+					throw new Error("XHR requires query"); // FIXME: XHR should not be tangled with query
+				}
+				require("dojo._base.xhr");
+			}
+		}
+
+		if (!config.noHtml) {
+			require("dojo._base.html");
+		}
+
+		if (!config.noNodeList) {
+			require("dojo._base.NodeList");
+		}
+
+		if (!config.noConnect) {
+			require("dojo._base.connect");
+
+			if (!config.noFx) {
+				if (config.noHtml) {
+					throw new Error("FX requires HTML");
+				}
+				if (config.noNodeList) {
+					throw new Error("FX requires NodeList"); // FIXME: FX should not require NodeList
+				}
+				require("dojo._base.fx");
+			}
+			if (!config.noEvent) {
+				require("dojo._base.event");
+			}
+		}
+
+		//Need this to be the last code segment in base, so do not place any
+		//requireIf calls in this file. Otherwise, due to how the build system
+		//puts all requireIf dependencies after the current file, the require calls
+		//could be called before all of base is defined.
+
+		var configRequire = config.require;
+
+		for (i in configRequire) {
+			if (isOwnProperty(configRequire, i)) {
+				require(i);
+			}
+		}
+
+		n = doc = de = null; // Discard host object references
+	})();
 }
-
-//Need this to be the last code segment in base, so do not place any
-//dojo.requireIf calls in this file. Otherwise, due to how the build system
-//puts all requireIf dependencies after the current file, the require calls
-//could be called before all of base is defined.
-
-(function() {
-	var i, require = dojo.config.require;
-	for (i in require) {
-		if (dojo.isOwnProperty(require, i)) {
-			dojo.require(i);
-		}
-	}
-})();
