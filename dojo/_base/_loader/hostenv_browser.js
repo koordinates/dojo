@@ -167,7 +167,10 @@ if(typeof window != 'undefined' && window.document){
 				// 	strips all comments -- including conditional ones.
 
 				if(!config.afterOnLoad && isHostMethod(doc, 'write')){
-					doc.write('<script defer src="//:" onreadystatechange="if(this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
+
+					// NOTE: Replace this with interval that watches for closing HTML tag
+
+					// doc.write('<script defer src="//:" onreadystatechange="if(this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
 				}
 
 				// NOTE: Should be in VML module
@@ -467,13 +470,7 @@ if(typeof window != 'undefined' && window.document){
 			}
 		};
 		if(!config.afterOnLoad){
-			// DOMContentLoaded
-			if(isHostMethod(doc, 'addEventListener')){
-				// NOTE: 
-				//		due to a threading issue in Firefox 2.0, we can't enable
-				//		DOMContentLoaded on that platform. For more information, see:
-				//		http://trac.dojotoolkit.org/ticket/1704
-
+			if(isHostMethod(doc, 'addEventListener')){				
 				if(config.syncXhrForModules !== false && config.enableMozDomContentLoaded !== false){
 					doc.addEventListener("DOMContentLoaded", dojo._loadInit, false);
 				}
@@ -527,8 +524,6 @@ if(typeof window != 'undefined' && window.document){
 		require("dojo._base.array");
 		require("dojo._base.Color");
 		require("dojo._base.window");
-
-		// Delete unused files
 
 		if (!config.noQuery) {
 			require("dojo._base.query");

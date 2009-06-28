@@ -219,10 +219,7 @@ if(typeof dojo == "undefined"){
 			}
 		}
 
-		// FIXME: should we be adding the lang stuff here so we can count on it
-		// before the bootstrap stuff?
-
-		var lastRoot, envScript = root+"_base/_loader/hostenv_"+hostEnv+".js";
+		var envScript = root+"_base/_loader/hostenv_"+hostEnv+".js";
 
 		if(isRhino || isSpidermonkey || (this.Jaxer && this.Jaxer.isOnServer)){
 			this.load(envScript);
@@ -233,20 +230,13 @@ if(typeof dojo == "undefined"){
 			try{ // NOTE: Use XML parse mode test
 				doc.write("<script type='text/javascript' src='"+envScript+"'></script>");
 			}catch(e3){
-				lastRoot = getRootNode().node;
-
 				// XML parse mode or other environment without document.write
 
-				var head = doc.getElementsByTagName("head")[0];
-				var script = doc.createElement("script");
-				script.type = "text/javascript";
-				if(!lastRoot.nextSibling){
-					head.appendChild(script);
-				}else{
-					lastRoot.parentNode.insertBefore(script, lastRoot.nextSibling);
-				}
-				script.src = envScript;
-				lastRoot = script;
+				// NOTE: XML parse mode won't work with these scripts
+				//       The HEAD element is not closed at this point,
+				//       so mutation is ill-advised
+
+				throw new Error('Failed to load environment');
 			}
 		}
 
@@ -501,9 +491,7 @@ dojo.global = {
 
 	dojo._mixin = function(/*Object*/ obj, /*Object*/ props){
 		// summary:
-		//		Adds all properties and methods of props to obj. This addition
-		//		is "prototype extension safe", so that instances of objects
-		//		will not pass along prototype defaults.
+		//		Adds all properties and methods of props to obj.
 		for(var x in props){
 			obj[x] = props[x];
 		}
@@ -771,9 +759,21 @@ dojo.global = {
 		// cb: 
 		//		a callback function to pass the result of evaluating the script
 
-		var uri = ((relpath.charAt(0) == '/' || relpath.match(/^\w+:/)) ? "" : this.baseUrl) + relpath;
+		var uri = (/^\w+:/.test(relpath) ? "" : this.baseUrl) + relpath;
+
 		try{
-			return module ? this._loadUriAndCheck(uri, module, cb) : this._loadUri(uri, cb); // Boolean
+			// NOTE: First branch should be removed
+
+			if (this.config.syncXhrForModules === false || this._postLoad) {
+				return module ? this._loadUriAndCheck(uri, module, cb) : this._loadUri(uri, cb); // Boolean
+			} else {
+
+				// NOTE: Like XD, can't signal whether file was found
+				//       Doesn't matter as failure should be immediately apparent
+
+				(this.global.window || this.global).document.write('<script type="text/javascript" src="' + uri + '"></script>');
+				return true;
+			}
 		}catch(e){
 			console.error(e);
 			return false; // Boolean
@@ -821,7 +821,8 @@ dojo.global = {
 	};
 	//>>excludeEnd("xdomainExclude");
 
-	// FIXME: probably need to add logging to this method
+	// FIXME: Add logging to this method
+
 	dojo._loadUriAndCheck = function(/*String*/uri, /*String*/moduleName, /*Function?*/cb){
 		// summary: calls loadUri then findModule and returns true if both succeed
 		var ok = false;
@@ -960,11 +961,6 @@ dojo.global = {
 		// Make sure the parser has hit the opening body tag
 		// Non-browsers will skip this...
 
-		// NOTE: ...as will some browsers
-		// in XML parse mode as document.body will be undefined
-		// (not good if XHTML is to be supported.)
-		// Review this
-
 		if (dojo._setMethodTimeout) {
 			dojo._setMethodTimeout((doc && doc.body === null) ? '_callLoaded' : 'loaded', 10);
 		} else {
@@ -1054,19 +1050,23 @@ dojo.global = {
 		//		|	var B = dojo.require("A.B");
 		//	   	|	...
 		//	returns: the required namespace object
+
+		var module, ok, relpath;
+
 		omitModuleCheck = this._global_omit_module_check || omitModuleCheck;
 
 		//Check if it is already loaded.
-		var module = this._loadedModules[moduleName];
+
+		module = this._loadedModules[moduleName];
 		if(module){
 			return module;
 		}
 
 		// convert periods to slashes
-		var relpath = this._getModuleSymbols(moduleName).join("/") + '.js';
 
-		var modArg = (!omitModuleCheck) ? moduleName : null;
-		var ok = this._loadPath(relpath, modArg);
+		relpath = this._getModuleSymbols(moduleName).join("/") + '.js';
+
+		ok = this._loadPath(relpath, omitModuleCheck ? null : moduleName);
 
 		if (!omitModuleCheck) {
 			if(!ok){
@@ -1273,10 +1273,15 @@ dojo.global = {
 		//	|				...
 		//
 
-		dojo.require("dojo.i18n");
-		dojo.i18n._requireLocalization.apply(dojo.hostenv, arguments);
-	};
+		// NOTE: Remove asynchronous option (syncXhrForModules === false) (will break this)
 
+		this.require("dojo.i18n");
+		var args = Array.prototype.slice.call(arguments, 0);
+		this._applyLocalization = function() {
+			dojo.i18n._requireLocalization.apply(dojo.hostenv, args);
+		};
+		(this.global.window || this.global).document.write('<script type="text/javascript"> dojo._applyLocalization(); delete dojo._applyLocalization; </script>');
+	};
 
 	var ore = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$");
 	var ire = new RegExp("^((([^\\[:]+):)?([^@]+)@)?(\\[([^\\]]+)\\]|([^\\[:]*))(:([0-9]+))?$");
@@ -1609,7 +1614,7 @@ dojo._xdIsXDomainPath = function(/*string*/relpath) {
 		//baseUrl, and therefore qualify as xdomain.
 		//Only treat it as xdomain if the page does not have a
 		//host (file:// url) or if the baseUrl does not match the
-		//current window's domain.
+		//current domain.
 		var url = this.baseUrl;
 		colonIndex = url.indexOf(":");
 		slashIndex = url.indexOf("/");
@@ -1625,15 +1630,14 @@ dojo._loadPath = function(/*String*/relpath, /*String?*/module, /*Function?*/cb)
 	//xd loading requires slightly different behavior from loadPath().
 
 	var currentIsXDomain = this._xdIsXDomainPath(relpath);
-    this._isXDomain |= currentIsXDomain;
+	this._isXDomain |= currentIsXDomain;
+	var uri = (/^\w+:/.test(relpath) ? "" : this.baseUrl) + relpath;
 
-	var uri = ((relpath.charAt(0) == '/' || relpath.match(/^\w+:/)) ? "" : this.baseUrl) + relpath;
-
-	try{
-		return ((!module || this._isXDomain) ? this._loadUri(uri, cb, currentIsXDomain, module) : this._loadUriAndCheck(uri, module, cb)); //Boolean
-	}catch(e){
-		console.error(e);
-		return false; //Boolean
+	if (currentIsXDomain || this._postLoad) {
+		return module ? this._loadUriAndCheck(uri, module, cb) : this._loadUri(uri, cb); // Boolean
+	} else {
+		(this.global.window || this.global).document.write('<script type="text/javascript" src="' + uri + '"></script>');
+		return true;
 	}
 };
 
@@ -1704,7 +1708,7 @@ dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDo
 		this._headElement.appendChild(element);
 	}else{
 		var contents = this._getText(uri, null, true);
-		if(!contents){ return 0; /*boolean*/}
+		if(!contents){ return false; /*boolean*/}
 		
 		//If this is not xdomain, or if loading a i18n resource bundle, then send it down
 		//the normal eval/callback path.
@@ -1722,7 +1726,7 @@ dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDo
 
 				contents = this._scopePrefix + contents + this._scopeSuffix;
 			}
-			var value = dojo["eval"](contents+"\r\n//@ sourceURL="+uri, !cb);
+			var value = dojo["eval"](contents, !cb);
 			if(cb){
 				cb(value);
 			}
@@ -1736,7 +1740,8 @@ dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDo
 	return true; //Boolean
 };
 
-dojo._xdResourceLoaded = function(/*Object*/res){
+
+dojo._xdResourceLoaded = function(/*Function*/res){
 	//summary: Internal xd loader function. Called by an xd module resource when
 	//it has been loaded via a script tag.
 	
