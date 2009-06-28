@@ -1747,15 +1747,11 @@ dojo.byId = function(id, doc){
 	}
 	=====*/
 
-	dojo.empty = function(node){
-		try {
-			byId(node).innerHTML = "";
-		} catch(e) {
-			node = byId(node);
-			for(var c; c = node.lastChild;){ // intentional assignment
-				node.removeChild(c);
-			}
-		}
+	dojo.empty = function(node){		
+		node = byId(node);
+		for(var c; c = node.lastChild;){ // intentional assignment
+			node.removeChild(c);
+		}		
 	};
 
 	/*=====

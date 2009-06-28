@@ -959,7 +959,7 @@ dojo.global = {
 		var doc = getWin().document;
 
 		// Make sure the parser has hit the opening body tag
-		// Non-browsers will skip this...
+		// Non-browsers will skip this.
 
 		if (dojo._setMethodTimeout) {
 			dojo._setMethodTimeout((doc && doc.body === null) ? '_callLoaded' : 'loaded', 10);

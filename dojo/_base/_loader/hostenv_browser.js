@@ -168,7 +168,7 @@ if(typeof window != 'undefined' && window.document){
 
 				if(!config.afterOnLoad && isHostMethod(doc, 'write')){
 
-					// NOTE: Replace this with interval that watches for closing HTML tag
+					// NOTE: Replace this with interval that watches for closing HTML tag					
 
 					// doc.write('<script defer src="//:" onreadystatechange="if(this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
 				}
@@ -478,6 +478,8 @@ if(typeof window != 'undefined' && window.document){
 
 			if (isHostMethod(window, 'addEventListener')) {
 				window.addEventListener("load", dojo._loadInit, false);
+			} else if (isHostMethod(window, 'attachEvent')) {
+				window.attachEvent("onload", dojo._loadInit);
 			}
 
 			if(!dojo.isIE && typeof doc.readyState == 'string' && isHostMethod(window, 'setInterval')){
