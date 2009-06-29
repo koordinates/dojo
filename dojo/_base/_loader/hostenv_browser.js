@@ -469,18 +469,17 @@ if(typeof window != 'undefined' && window.document){
 				_handleNodeEvent("onbeforeunload", dojo.unloaded);
 			}
 		};
+		if (isHostMethod(window, 'addEventListener')) {
+			window.addEventListener("load", dojo._loadInit, false);
+		} else if (isHostMethod(window, 'attachEvent')) {
+			window.attachEvent("onload", dojo._loadInit);
+		}
 		if(!config.afterOnLoad){
 			if(isHostMethod(doc, 'addEventListener')){				
 				if(config.syncXhrForModules !== false && config.enableMozDomContentLoaded !== false){
 					doc.addEventListener("DOMContentLoaded", dojo._loadInit, false);
 				}
-			}
-
-			if (isHostMethod(window, 'addEventListener')) {
-				window.addEventListener("load", dojo._loadInit, false);
-			} else if (isHostMethod(window, 'attachEvent')) {
-				window.attachEvent("onload", dojo._loadInit);
-			}
+			}			
 
 			if(!dojo.isIE && typeof doc.readyState == 'string' && isHostMethod(window, 'setInterval')){
 				dojo._khtmlTimer = window.setInterval(function(){
