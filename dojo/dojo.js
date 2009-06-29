@@ -66,9 +66,6 @@ if(typeof dojo == "undefined"){
 		//		Perform an evaluation in the (almost) global scope. Use this rather than
 		//		calling 'eval()' directly.
 		//	description: 
-		//		Placed in a separate function to minimize size of trapped
-		//		exceptions. Calling eval() directly from some other scope may
-		//		complicate tracebacks on some platforms.
 		//	returns:
 		//		The result of the evaluation
 		if (arguments.length == 1 || !arguments[1]) { 
@@ -929,17 +926,10 @@ dojo.global = {
 		dojo._callLoaded();
 	};
 
-	var reFeaturedMethod = new RegExp('^function|object$', 'i');
-
 	// Test for host object properties that are typically callable (e.g. document.getElementById) or known to be callable in some implementations (e.g. document.all in Safari)
 	// which may be of type function, object (IE and possibly others) or unknown (IE ActiveX methods)
 
-	var isHostMethod = function(o, m) {
-		var t = typeof o[m];
-		return !!((reFeaturedMethod.test(t) && o[m]) || t == 'unknown');
-	};
-
-	dojo.isHostMethod = isHostMethod;
+	var isHostMethod = dojo.isHostMethod;
 
 	if (isHostMethod(getWin(), 'setTimeout')) {
 		dojo._setMethodTimeout = function(methodName, delay) {
