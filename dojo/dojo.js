@@ -762,9 +762,12 @@ dojo.global = {
 		var uri = (/^\w+:/.test(relpath) ? "" : this.baseUrl) + relpath;
 
 		try{
-			// NOTE: First branch should be removed
+			// NOTE: The syncXhrForModules option will be removed
 
 			if (this.config.syncXhrForModules === false || this._postLoad) {
+
+				// NOTE: Replace with script injection (safe after load event has fired.)
+
 				return module ? this._loadUriAndCheck(uri, module, cb) : this._loadUri(uri, cb); // Boolean
 			} else {
 
@@ -1633,7 +1636,10 @@ dojo._loadPath = function(/*String*/relpath, /*String?*/module, /*Function?*/cb)
 	this._isXDomain |= currentIsXDomain;
 	var uri = (/^\w+:/.test(relpath) ? "" : this.baseUrl) + relpath;
 
-	if (currentIsXDomain || this._postLoad) {
+	if (this._postLoad) {
+
+		// NOTE: Replace with script injection (safe after load event has fired.)
+
 		return module ? this._loadUriAndCheck(uri, module, cb) : this._loadUri(uri, cb); // Boolean
 	} else {
 		(this.global.window || this.global).document.write('<script type="text/javascript" src="' + uri + '"></script>');
