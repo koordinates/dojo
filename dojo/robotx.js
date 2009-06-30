@@ -10,49 +10,43 @@ dojo.experimental("dojo.robotx");
 // have to wait for test page to load before testing!
 doh.robot._runsemaphore.lock.push("dojo.robotx.lock");
 
-var iframe = document.getElementById('robotapplication');
+var iframe = dojo._getWin().document.getElementById('robotapplication');
 
 var groupStarted=dojo.connect(doh, '_groupStarted', function(){
+	var doc = window.document;
 	dojo.disconnect(groupStarted);
-	if(!document.getElementById('robotconsole').childNodes.length){
-		document.body.removeChild(document.getElementById('robotconsole'));
+	if(!doc.getElementById('robotconsole').childNodes.length){
+		doc.removeChild(doc.getElementById('robotconsole'));
 		iframe.style.height="100%";
 	}
 	iframe.style.visibility="visible";
 });
 
 var onIframeLoad=function(){
-	//iframe = document.getElementById('robotapplication');
 	doh.robot._updateDocument();
 	onIframeLoad = null;
 	doh.run();
 };
 
-var iframeLoad=function(){
+doh.robot.iframeLoad=function(){
 	if(onIframeLoad){
 		onIframeLoad();
 	}
 	var unloadConnect = dojo.connect(dojo.body(), 'onunload', function(){
 		dojo.global = window;
-		dojo.doc = document;
+		dojo.doc = window.document;
 		dojo.disconnect(unloadConnect);
 	});
 };
 
 // write the firebug console to a place it will fit
+
 dojo.config.debugContainerId = "robotconsole";
-document.write('<div id="robotconsole" style="position:absolute;left:0px;top:75%;width:100%; height:25%;"></div>');
+window.document.write('<div id="robotconsole" style="position:absolute;left:0px;top:75%;width:100%;height:25%;"></div>');
 
 // write the iframe
-//document.writeln('<iframe id="robotapplication" style="visibility:hidden; border:0px none; padding:0px; margin:0px; position:absolute; left:0px; top:0px; width:100%; height:100%; z-index: 1;" src="'+dojo.config.robotURL+'" onload="iframeLoad();" ></iframe>');
-iframe = document.createElement('iframe');
-iframe.setAttribute("ALLOWTRANSPARENCY","true");
-dojo.style(iframe,{visibility:'hidden', border:'0px none', padding:'0px', margin:'0px', position:'absolute', left:'0px', top:'0px', width:'100%', height:'75%', zIndex:'1'});
-if(typeof iframe.attachEvent != 'undefined'){
-	iframe.attachEvent('onload', iframeLoad);
-}else{
-	dojo.connect(iframe, 'onload', iframeLoad);
-}
+
+window.document.write('<iframe id="robotapplication" style="visibility:hidden; border:0px none; padding:0px; margin:0px; position:absolute; left:0px; top:0px; width:100%; height:100%; z-index: 1;" src="'+dojo.config.robotURL+'" onload="doh.robot.iframeLoad();" ></iframe>');
 
 dojo.mixin(doh.robot,{
 	_updateDocument: function(){
@@ -74,14 +68,14 @@ dojo.mixin(doh.robot,{
 		//
 		iframe.src=url;
 		dojo.addOnLoad(function(){
-			dojo.style(document.body,{
+			dojo.style(window.document.body,{
 				width: '100%',
 				height: '100%'
 			});
-			document.body.appendChild(iframe);
-			var base=document.createElement('base');
+			window.document.body.appendChild(iframe);
+			var base=window.document.createElement('base');
 			base.href=url;
-			document.getElementsByTagName("head")[0].appendChild(base);
+			window.document.getElementsByTagName("head")[0].appendChild(base);
 		});
 	},
 
@@ -108,7 +102,9 @@ dojo.mixin(doh.robot,{
 		// create iframe event handler to track submit progress
 		onIframeLoad = function(){
 			onIframeLoad = null;
+
 			// set dojo.doc on every page change to point to the iframe doc so the robot works
+
 			doh.robot._updateDocument();
 			d.callback(true);
 		};
