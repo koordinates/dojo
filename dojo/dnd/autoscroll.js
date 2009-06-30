@@ -1,4 +1,5 @@
 dojo.provide("dojo.dnd.autoscroll");
+dojo.required("dojo.dnd");
 
 // DOCME: Requirements?
 
