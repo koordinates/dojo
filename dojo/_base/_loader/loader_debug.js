@@ -7,30 +7,31 @@ dojo.provide("dojo._base._loader.loader_debug");
 dojo.nonDebugProvide = dojo.provide;
 
 dojo.provide = function(resourceName){
-	var dbgQueue = dojo["_xdDebugQueue"];
-	if(dbgQueue && dbgQueue.length > 0 && resourceName == dbgQueue["currentResourceName"]){
-		//Set a timeout so the module can be executed into existence. Normally the
-		//dojo.provide call in a module is the first line. Don't want to risk attaching
-		//another script tag until the current one finishes executing.
-		if(dojo.isAIR){
-			window.setTimeout(function(){dojo._xdDebugFileLoaded(resourceName);}, 1);
-		}else{
-			window.setTimeout(dojo._scopeName + "._xdDebugFileLoaded('" + resourceName + "')", 1);
-		}
+	var dbgQueue = dojo._xdDebugQueue;
+	if(dbgQueue && dbgQueue.length > 0 && resourceName == dbgQueue.currentResourceName){
+
+		// Set a timeout so the module can be executed into existence. Normally the
+		// dojo.provide call in a module is the first line. Don't want to risk attaching
+		// another script tag until the current one finishes executing.
+
+		dojo._setMethodTimeout('_xdDebugFileLoaded', 1);
 	}
 
 	return dojo.nonDebugProvide.apply(dojo, arguments);
-}
+};
 
 dojo._xdDebugFileLoaded = function(resourceName){
-
 	if(!this._xdDebugScopeChecked){
-		//If using a scoped dojo, we need to expose dojo as a real global
-		//for the debugAtAllCosts stuff to work.
+
+		// If using a scoped dojo, we need to expose dojo as a real global
+		// for the debugAtAllCosts stuff to work.
+
+		var global = dojo.global;
+
 		if(dojo._scopeName != "dojo"){
-			window.dojo = window[dojo.config.scopeMap[0][1]];
-			window.dijit = window[dojo.config.scopeMap[1][1]];
-			window.dojox = window[dojo.config.scopeMap[2][1]];
+			global.dojo = global[dojo.config.scopeMap[0][1]];
+			global.dijit = global[dojo.config.scopeMap[1][1]];
+			global.dojox = global[dojo.config.scopeMap[2][1]];
 		}
 
 		this._xdDebugScopeChecked = true;
@@ -42,7 +43,7 @@ dojo._xdDebugFileLoaded = function(resourceName){
 		dbgQueue.shift();
 	}
 
-	if(dbgQueue.length == 0){
+	if(!dbgQueue.length){
 		//Check for more modules that need debug loading.
 		//dojo._xdWatchInFlight will add more things to the debug
 		//queue if they just recently loaded but it was not detected
@@ -50,7 +51,7 @@ dojo._xdDebugFileLoaded = function(resourceName){
 		dojo._xdWatchInFlight();
 	}
 
-	if(dbgQueue.length == 0){
+	if(!dbgQueue.length){
 		dbgQueue.currentResourceName = null;
 
 		//Make sure nothing else is in flight.
@@ -72,4 +73,4 @@ dojo._xdDebugFileLoaded = function(resourceName){
 			document.getElementsByTagName("head")[0].appendChild(element);
 		}
 	}
-}
+};
