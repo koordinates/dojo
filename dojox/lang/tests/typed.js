@@ -1,5 +1,5 @@
 dojo.provide("dojox.lang.tests.typed");
-dojo.typeCheckAllClasses = true;
+dojo.config.typeCheckAllClasses = true;
 dojo.require("dojox.lang.typed");
 (function(){
 	
@@ -13,11 +13,14 @@ dojo.require("dojox.lang.typed");
 			},
 			add: function(a, b){
 				return a + b;
+			},
+			withCallback: function(callback, param){
+				callback(param);
 			}
 	}));
 	var TypedClass = dojox.lang.tests.TypedClass;
 	TypedClass.properties = {
-		aString:{type:"string"}, 
+		aString:String, 
 		self: TypedClass, 
 		anInt: {type:"integer", maximum: 100, optional: true}
 	};
@@ -28,6 +31,11 @@ dojo.require("dojox.lang.typed");
 				{type:"number"}
 			],
 			returns: {type:"string"}
+		},
+		withCallback:{
+			parameters:[
+				{type:"function", parameters:[Number]}
+			]
 		}
 	}
 	var hasGetters = {}.__defineGetter__;
@@ -88,8 +96,16 @@ dojo.require("dojox.lang.typed");
 			mustThrow(function(){
 				typedInstance.add(22,33);
 			});
+			mustThrow(function(){
+				typedInstance.withCallback(22,33);
+			});
+			mustThrow(function(){
+				typedInstance.withCallback(function(){},"hi");
+			});
 			TypedClass.methods.add.returns.type = "number";
 			typedInstance.add(22,33);
+			typedInstance.withCallback(function(){},44);
+			
 		},
 		function typedDeclares(){
 			dojo.declare("dojox.lang.tests.AutoTypedClass", null, {
