@@ -1,4 +1,5 @@
 dojo.provide("dojo.fx.Toggler");
+dojo.required("dojo.fx");
 
 dojo.declare("dojo.fx.Toggler", null, {
 	// summary:

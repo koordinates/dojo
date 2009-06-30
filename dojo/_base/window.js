@@ -13,7 +13,7 @@ dojo.doc = {
 	// 	|	n.appendChild(dojo.doc.createElement('div'));
 }
 =====*/
-dojo.doc = window.document || null;
+dojo.doc = dojo._getWin().document || null;
 
 dojo.body = function(){
 	// summary:
@@ -34,6 +34,9 @@ dojo.setContext = function(/*Object*/globalObject, /*DocumentElement*/globalDocu
 	//		context (e.g., an iframe). The varibles dojo.global and dojo.doc
 	//		are modified as a result of calling this function and the result of
 	//		`dojo.body()` likewise differs.
+
+	// NOTE: Should not pass document (should be derived)
+
 	dojo.global = globalObject;
 	dojo.doc = globalDocument;
 };
@@ -74,7 +77,7 @@ dojo.withDoc = function(	/*DocumentElement*/documentObject,
 	//		be restored to its previous state.
 
 	var oldDoc = dojo.doc,
-		oldLtr = dojo._bodyLtr;
+	oldLtr = dojo._bodyLtr;
 
 	try{
 		dojo.doc = documentObject;
@@ -85,8 +88,8 @@ dojo.withDoc = function(	/*DocumentElement*/documentObject,
 		}
 
 		return callback.apply(thisObject, cbArguments || []);
-	}finally{
-		dojo.doc = oldDoc;
-		if(oldLtr !== undefined){ dojo._bodyLtr = oldLtr; }
+	}catch(e){		
 	}
+	dojo.doc = oldDoc;
+	if(oldLtr !== undefined){ dojo._bodyLtr = oldLtr; }
 };

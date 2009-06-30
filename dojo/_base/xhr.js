@@ -1,6 +1,6 @@
 dojo.provide("dojo._base.xhr");
-dojo.require("dojo._base.json");
-dojo.require("dojo._base.query");
+dojo.required("dojo._base.json");
+dojo.required("dojo._base.query");
 
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 (function(){

@@ -1,5 +1,5 @@
-dojo.require("dojo._base.lang");
 dojo.provide("dojo._base.array");
+dojo.required("dojo._base.lang");
 
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 (function(){

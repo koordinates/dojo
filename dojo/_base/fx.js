@@ -1,9 +1,7 @@
 dojo.provide("dojo._base.fx");
-if (!dojo.config.noColor) {
-	dojo.require("dojo._base.Color");
-}
-dojo.require("dojo._base.connect");
-dojo.require("dojo._base.html");
+dojo.required("dojo._base.Color");
+dojo.required("dojo._base.connect");
+dojo.required("dojo._base.html");
 
 /*
 	Animation package loosely based on Dan Pupius' work, contributed under CLA: 

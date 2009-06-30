@@ -1,11 +1,14 @@
 dojo.provide("dojo.html");
 
-// the parser might be needed..
-dojo.require("dojo.parser"); 
+// The parser might be needed.
+// NOTE: Rearrange
 
-(function(){ // private scope, sort of a namespace
+dojo.require("dojo.parser");
+
+(function(){
 
 	// idCounter is incremented with each instantiation to allow asignment of a unique id for tracking, logging purposes
+
 	var idCounter = 0; 
 
 	dojo.html._secureForInnerHtml = function(/*String*/ cont){

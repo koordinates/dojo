@@ -1,5 +1,5 @@
 dojo.provide("dojo._base.declare");
-dojo.require("dojo._base.lang");
+dojo.required("dojo._base.lang");
 
 // this file courtesy of the TurboAjax Group, licensed under a Dojo CLA
 

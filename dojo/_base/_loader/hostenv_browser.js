@@ -477,9 +477,9 @@ if ((dojo.global.window || dojo.global).document){
 			}
 		}
 
-		//Register any module paths set up in djConfig. Need to do this
-		//in the hostenvs since hostenv_browser can read djConfig from a
-		//script tag's attribute.
+		// Register any module paths set up in djConfig. Need to do this
+		// in the hostenvs since hostenv_browser can read djConfig from a
+		// SCRIPT element's attribute.
 
 		var mp = config.modulePaths;
 		if (mp){
@@ -490,7 +490,12 @@ if ((dojo.global.window || dojo.global).document){
 			}
 		}
 
-		//Load debug code if necessary.
+		if(
+			this.djConfig&&
+			(this.djConfig.forceXDomain || this.djConfig.useXDomain)
+		){
+			require("dojo._base._loader.loader_xd");
+		}
 
 		if (config.isDebug){
 			require("dojo._firebug.firebug");
@@ -503,6 +508,8 @@ if ((dojo.global.window || dojo.global).document){
 			require("dojo.i18n");
 		}
 
+		// NOTE: Provide for backward compatibility
+
 		provide("dojo._base"); // All environments
 		provide("dojo._base.browser");
 
@@ -510,51 +517,25 @@ if ((dojo.global.window || dojo.global).document){
 		require("dojo._base.declare");
 		require("dojo._base.Deferred");
 		require("dojo._base.array");
+
+		// NOTE: Beyond this point, should be added by higher-level modules
+		//       Current browser base is too large
+		//       Base FX now loaded by including/requiring core FX module
+
 		require("dojo._base.Color");
 		require("dojo._base.window");
+		require("dojo._base.NodeList");
+		require("dojo._base.query");
+		require("dojo._base.json");
+		require("dojo._base.xhr");
+		require("dojo._base.html");
+		require("dojo._base.connect");
+		require("dojo._base.event");
 
-		if (!config.noQuery) {
-			require("dojo._base.query");
-		}
-		if (!config.noJson) { // FIXME: XHR should not require JSON
-			require("dojo._base.json");
-			if (!config.noXhr) {
-				if (config.noQuery) {
-					throw new Error("XHR requires query"); // FIXME: XHR should not be tangled with query
-				}
-				require("dojo._base.xhr");
-			}
-		}
-
-		if (!config.noHtml) {
-			require("dojo._base.html");
-		}
-
-		if (!config.noNodeList) {
-			require("dojo._base.NodeList");
-		}
-
-		if (!config.noConnect) {
-			require("dojo._base.connect");
-
-			if (!config.noFx) {
-				if (config.noHtml) {
-					throw new Error("FX requires HTML");
-				}
-				if (config.noNodeList) {
-					throw new Error("FX requires NodeList"); // FIXME: FX should not require NodeList
-				}
-				require("dojo._base.fx");
-			}
-			if (!config.noEvent) {
-				require("dojo._base.event");
-			}
-		}
-
-		//Need this to be the last code segment in base, so do not place any
-		//requireIf calls in this file. Otherwise, due to how the build system
-		//puts all requireIf dependencies after the current file, the require calls
-		//could be called before all of base is defined.
+		// Need this to be the last code segment in base, so do not place any
+		// requireIf calls in this file. Otherwise, due to how the build system
+		// puts all requireIf dependencies after the current file, the require calls
+		// could be called before all of base is defined.
 
 		var configRequire = config.require;
 

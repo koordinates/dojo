@@ -1,6 +1,6 @@
 dojo.provide("dojo._base.Color");
-dojo.require("dojo._base.array");
-dojo.require("dojo._base.lang");
+dojo.required("dojo._base.array");
+dojo.required("dojo._base.lang");
 
 (function(){
 	

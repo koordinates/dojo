@@ -1,5 +1,5 @@
 dojo.provide("dojo._base.event");
-dojo.require("dojo._base.connect");
+dojo.required("dojo._base.connect");
 
 // this file courtesy of the TurboAjax Group, licensed under a Dojo CLA
 
@@ -375,9 +375,8 @@ dojo.require("dojo._base.connect");
 				// Base, we should convert back to something similar there.
 				var se = evt.srcElement, doc = (se && se.ownerDocument) || document;
 				var docBody = (doc.documentElement.clientWidth === 0) ? doc.body : doc.documentElement;
-				var offset = dojo._getIeDocumentElementOffset();
-				evt.pageX = evt.clientX + dojo._fixIeBiDiScrollLeft(docBody.scrollLeft || 0) - offset.x;
-				evt.pageY = evt.clientY + (docBody.scrollTop || 0) - offset.y;
+				evt.pageX = evt.clientX + (docBody.scrollLeft || 0) - (docBody.clientLeft || 0);
+				evt.pageY = evt.clientY + (docBody.scrollTop || 0) - (docBody.clientTop || 0);
 				if(evt.type == "mouseover"){ 
 					evt.relatedTarget = evt.fromElement;
 				}

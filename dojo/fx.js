@@ -1,4 +1,5 @@
 dojo.provide("dojo.fx");
+dojo.require("dojo._base.fx");
 dojo.require("dojo.fx.Toggler");
 
 /*=====

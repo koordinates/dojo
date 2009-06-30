@@ -26,58 +26,47 @@
 				-webkit-box-shadow: 0px 3px 7px #adadad;
 				-opera-border-radius: 10px;
 				border-radius: 10px;
-				/* -moz-box-sizing: border-box;
-				-opera-sizing: border-box;
-				-webkit-box-sizing: border-box;
-				-khtml-box-sizing: border-box;
-				box-sizing: border-box; */
 				overflow: hidden;
-				/* position: absolute; */
 			}
 		</style>
-		<script type="text/javascript">
-			var djConfig = {isDebug: true, noQuery: true, noEvent:true, noColor:true, noJson:true};
-		</script>
 		<script type="text/javascript" src="../dojo.js"></script>
-		<script type="text/javascript" src="../fx.js"></script>
 		<script type="text/javascript">
 			if (typeof dojo != 'undefined') {
-			//dojo.require("dojo.fx");
-			dojo.addOnLoad(function(){
-				if (dojo.byId && dojo.fx) {
-					dojo.byId("foo").style.height = "0px";
-				
-					var w1 = dojo.fx.wipeIn({
-						node: "foo",
-						duration: 500
-					});
-					var f1 = dojo.fadeOut({
-						node: "foo",
-						duration: 500
-					});
-					var a1 = dojo.fx.chain([w1, f1]);
+				dojo.require("dojo.fx");
+				dojo.addOnLoad(function(){
+					if (dojo.byId && dojo.fx) {
+						dojo.byId("foo").style.height = "0px";
+						var w1 = dojo.fx.wipeIn({
+							node: "foo",
+							duration: 500
+						});
+						var f1 = dojo.fadeOut({
+							node: "foo",
+							duration: 500
+						});
+						var a1 = dojo.fx.chain([w1, f1]);
 
-					dojo.byId("foo").style.height = "0px";
-					var w2 = dojo.fx.wipeIn({
-						node: "foo",
-						duration: 500
-					});
-					var f2 = dojo.fadeIn({
-						node: "foo",
-						duration: 1000
-					});
-					var a2 = dojo.fx.combine([w2, f2]);
+						dojo.byId("foo").style.height = "0px";
+						var w2 = dojo.fx.wipeIn({
+							node: "foo",
+							duration: 500
+						});
+						var f2 = dojo.fadeIn({
+							node: "foo",
+							duration: 1000
+						});
+						var a2 = dojo.fx.combine([w2, f2]);
 				
-					dojo.connect(a1, "onEnd", function(){
-						console.log("finish1");
-						a2.play();
-					});
-					dojo.connect(a2, "onEnd", function(){
-						console.log("finish2");
-					});
-					a1.play();
-				}
-			});
+						dojo.connect(a1, "onEnd", function(){
+							console.log("finish1");
+							a2.play();
+						});
+						dojo.connect(a2, "onEnd", function(){
+							console.log("finish2");
+						});
+						a1.play();
+					}
+				});
 			}
 		</script>
 	</head>

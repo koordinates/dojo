@@ -1,5 +1,5 @@
 dojo.provide("dojo._base.Deferred");
-dojo.require("dojo._base.lang");
+dojo.required("dojo._base.lang");
 
 dojo.Deferred = function(/*Function?*/ canceller){
 	// summary:

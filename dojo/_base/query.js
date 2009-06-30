@@ -1,9 +1,6 @@
-var acme;
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 if(typeof dojo != "undefined"){
-//>>excludeEnd("webkitMobile");
 	dojo.provide("dojo._base.query");
-	dojo.require("dojo._base.NodeList");
+	dojo.required("dojo._base.NodeList");
 
 //>>excludeStart("acmeExclude", fileName.indexOf("dojo") != -1);
 
