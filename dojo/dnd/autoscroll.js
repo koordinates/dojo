@@ -10,7 +10,7 @@ dojo.dnd.getViewport = function(){
 
 	// NOTE: Should go in window module
 
-	var fn, d = window.document, dd = d.documentElement;
+	var fn, d = dojo._getWin().document, dd = d.documentElement;
 
 	if (typeof d.clientWidth == 'number') {
 
@@ -32,12 +32,12 @@ dojo.dnd.getViewport = function(){
 			var container = dd.clientWidth ? dd : dojo.body();
 			return { w: container.clientWidth, h: container.clientHeight };
 		};
-	} else if (typeof window.innerWidth == 'number') {
+	} else if (typeof dojo._getWin().innerWidth == 'number') {
 
 		// Bad news here, includes scroll bars
 
 		fn = function() {
-			var w = dojo.global.window;
+			var w = dojo._getWin();
 			return { w: w.innerWidth, h: w.innerHeight };
 		};
 	} else {
@@ -71,7 +71,7 @@ dojo.dnd.autoScroll = function(e){
 
 	// FIXME: needs more docs!
 
-	var win = dojo.global.window;
+	var win = dojo._getWin();
 
 	// FIXME: mouse position logic
 
