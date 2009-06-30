@@ -1169,7 +1169,6 @@ if(
 		
 	//*************************************************************************************
 	
-	//window.onerror = onError;
 	
 	addEvent(window.document, "keydown", onKeyDown);
 	

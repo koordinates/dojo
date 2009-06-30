@@ -518,9 +518,8 @@ if ((dojo.global.window || dojo.global).document){
 		require("dojo._base.Deferred");
 		require("dojo._base.array");
 
-		// NOTE: Beyond this point, should be added by higher-level modules
+		// NOTE: Beyond this point, should be in higher level modules
 		//       Current browser base is too large
-		//       Base FX now loaded by including/requiring core FX module
 
 		require("dojo._base.Color");
 		require("dojo._base.window");
@@ -531,6 +530,7 @@ if ((dojo.global.window || dojo.global).document){
 		require("dojo._base.html");
 		require("dojo._base.connect");
 		require("dojo._base.event");
+		require("dojo._base.fx");
 
 		// Need this to be the last code segment in base, so do not place any
 		// requireIf calls in this file. Otherwise, due to how the build system

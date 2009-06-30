@@ -3,7 +3,7 @@
 
 /*=====
 dojo.tests = {
-	// summary: D.O.H. Test files for Dojo unit testing.
+	// summary: DOH Test files for Dojo unit testing.
 };
 =====*/
 
