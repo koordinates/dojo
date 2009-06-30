@@ -1,6 +1,6 @@
 dojo.provide("dojo.robot");
 dojo.experimental("dojo.robot");
-dojo.require("doh.robot");
+dojo.required("doh.robot");
 
 (function(){
 // users who use doh+dojo get the added convenience of dojo.mouseMoveAt,
