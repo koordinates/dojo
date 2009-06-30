@@ -304,19 +304,23 @@ if(typeof window != 'undefined'){
 
 } //if (typeof window != 'undefined')
 
-//Register any module paths set up in djConfig. Need to do this
-//in the hostenvs since hostenv_browser can read djConfig from a
-//script tag's attribute.
+// Register any module paths set up in djConfig. Need to do this
+// in the hostenvs since hostenv_browser can read djConfig from a
+// script tag's attribute.
+
 (function(){
 	var mp = dojo.config.modulePaths;
 	if(mp){
 		for(var param in mp){
-			dojo.registerModulePath(param, mp[param]);
+			if (dojo.isOwnProperty(param, mp)) {
+				dojo.registerModulePath(param, mp[param]);
+			}
 		}
 	}
 })();
 
-//Load debug code if necessary.
+// Load debug code if necessary.
+
 if(dojo.config.isDebug){
 	// logging stub for extension logging
 	console.log = function(m){
@@ -340,43 +344,12 @@ dojo.require("dojo._base.array");
 dojo.require("dojo._base.Color");
 dojo.require("dojo._base.window");
 
-if (dojo.isBrowser) { // *** Is any of this necessary in this environment?
-
-if (!dojo.config.noQuery) {
+if (dojo.isBrowser) {
 	dojo.require("dojo._base.query");
-}
-if (!dojo.config.noJson) { // FIXME: XHR should not require JSON
 	dojo.require("dojo._base.json");
-	if (!dojo.config.noXhr) {
-		if (dojo.config.noQuery) {
-			throw new Error("XHR requires query"); // FIXME: XHR should not be tangled with query
-		}
-		dojo.require("dojo._base.xhr");
-	}
-}
-
-if (!dojo.config.noHtml) {
+	dojo.require("dojo._base.xhr");
 	dojo.require("dojo._base.html");
-}
-
-if (!dojo.config.noNodeList) {
 	dojo.require("dojo._base.NodeList");
-}
-
-if (!dojo.config.noConnect) {
 	dojo.require("dojo._base.connect");
-
-	if (!dojo.config.noFx) {
-		if (dojo.config.noHtml) {
-			throw new Error("FX requires HTML");
-		}
-		if (dojo.config.noNodeList) {
-			throw new Error("FX requires NodeList"); // FIXME: FX should not require NodeList
-		}
-		dojo.require("dojo._base.fx");
-	}
-	if (!dojo.config.noEvent) {
-		dojo.require("dojo._base.event");
-	}
-}
+	dojo.require("dojo._base.event");
 }
