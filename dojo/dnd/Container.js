@@ -1,7 +1,7 @@
 dojo.provide("dojo.dnd.Container");
 
-dojo.require("dojo.dnd.common");
-dojo.require("dojo.parser");
+dojo.required("dojo.dnd.common");
+dojo.required("dojo.parser");
 
 /*
 	Container states:
