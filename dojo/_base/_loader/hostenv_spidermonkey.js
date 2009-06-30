@@ -55,26 +55,31 @@ dojo._spidermonkeyCurrentFile = function(depth){
     var fname = (typeof depth != 'undefined' && depth) ? matches[depth + 1] : matches[matches.length - 1];
     if(!fname){ 
 		throw new Error("could not find file name in stack string '" + s + "'");
-	}
-    //print("SpiderMonkeyRuntime got fname '" + fname + "' from stack string '" + s + "'");
+    }
+
     return fname;
 };
 
 dojo._loadUri = function(uri){
-	// spidermonkey load() evaluates the contents into the global scope (which
+
+	// Spidermonkey load() evaluates the contents into the global scope (which
 	// is what we want).
 	// TODO: load() does not return a useful value. 
 	// Perhaps it is returning the value of the last thing evaluated?
+
 	load(uri);
 	return 1;
 };
 
-//Register any module paths set up in djConfig. Need to do this
-//in the hostenvs since hostenv_browser can read djConfig from a
-//script tag's attribute.
+// Register any module paths set up in djConfig. Need to do this
+// in the hostenvs since hostenv_browser can read djConfig from a
+// script tag's attribute.
+
 if(dojo.config.modulePaths){
 	for(var param in dojo.config.modulePaths){
-		dojo.registerModulePath(param, dojo.config.modulePaths[param]);
+		if (dojo.isOwnProperty(dojo.config.modulePaths, param)) {
+			dojo.registerModulePath(param, dojo.config.modulePaths[param]);
+		}
 	}
 }
 
@@ -86,11 +91,5 @@ dojo.require("dojo._base.Deferred");
 dojo.require("dojo._base.array");
 dojo.require("dojo._base.Color");
 dojo.require("dojo._base.window");
-
-if (!dojo.config.noConnect) {
-	dojo.require("dojo._base.connect");
-}
-
-if (!dojo.config.noJson) {
-	dojo.require("dojo._base.json");
-}
+dojo.require("dojo._base.connect");
+dojo.require("dojo._base.json");
