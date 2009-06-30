@@ -189,6 +189,7 @@ dojo.global = {
 		// NOTE: In which environments is this possible?
 
 		if (this.Jaxer && this.Jaxer.isOnServer) {
+			var jaxerLoad = true;
 			this.load = this.Jaxer.load;
 		}
 
@@ -343,7 +344,7 @@ var djConfig = {
 
 		var done, envScript = root + "_base/_loader/hostenv_" + hostEnv + ".js";
 		
-		if (isHostMethod(this, 'load')){
+		if ((isRhino || isSpidermonkey || jaxerLoad) && isHostMethod(this, 'load')){
 			try {
 				this.load(envScript);
 				done = true;
@@ -1005,10 +1006,7 @@ var djConfig = {
 
 		//	summary: loads a Javascript module from the appropriate URI
 
-		module = this._loadedModules[moduleName];
-
-		if (!module) { throw new Error('Oops'); }
-		if (!module){
+		if (!this._loadedModules[moduleName]){
 			throw new Error('Missing dependency: ' + moduleName + '.');
 		}		
 	};
