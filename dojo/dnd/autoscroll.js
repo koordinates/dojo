@@ -1,5 +1,5 @@
 dojo.provide("dojo.dnd.autoscroll");
-dojo.required("dojo.dnd");
+dojo.required("dojo.dnd.common");
 
 // DOCME: Requirements?
 
@@ -7,7 +7,8 @@ dojo.dnd.getViewport = function(){
 	// summary: returns a viewport size (visible part of the window)
 
 	// TODO: Feature test for broken documentElement.clientHeight (as seen in Opera 8)
-	// NOTE: Are dojo.global and dojo.doc guaranteed set at this point?
+
+	// NOTE: Should go in window module
 
 	var fn, d = window.document, dd = d.documentElement;
 
