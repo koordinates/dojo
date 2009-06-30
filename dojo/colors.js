@@ -1,4 +1,5 @@
 dojo.provide("dojo.colors");
+dojo.required("dojo.Color");
 
 //TODO: this module appears to break naming conventions
 
