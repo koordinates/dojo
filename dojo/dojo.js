@@ -1001,13 +1001,15 @@ var djConfig = {
 		init();
 	};
 
-	dojo.required = function(/*String*/module, /*String*/fromModule) {
+	dojo.required = function(/*String*/moduleName) {
 
 		//	summary: loads a Javascript module from the appropriate URI
 
-		module = this._loadedModules[module];
+		module = this._loadedModules[moduleName];
+
+		if (!module) { throw new Error('Oops'); }
 		if (!module){
-			throw new Error(fromModule + ' is missing dependency: ' + module + '.');
+			throw new Error('Missing dependency: ' + moduleName + '.');
 		}		
 	};
 

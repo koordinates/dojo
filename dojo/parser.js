@@ -1,5 +1,5 @@
 dojo.provide("dojo.parser");
-dojo.require("dojo.date.stamp");
+dojo.required("dojo.date.stamp");
 
 dojo.parser = (function(){
 	// summary: The Dom/Widget parsing package
