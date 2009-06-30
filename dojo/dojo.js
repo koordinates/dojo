@@ -783,31 +783,7 @@ var djConfig = {
 		}
 	};
 
-	var getTextFinished = function(contents) {
-		dojo._loadedUrls[uri] = true;
-		dojo._loadedUrls.push(uri);
-		if(cb){
-			contents = '(' + contents + ')';
-		}else{
-
-			// Only do the scoping if no callback. If a callback is specified,
-			// it is most likely the i18n bundle stuff.
-
-			// NOTE: Review this
-
-			contents = dojo._scopePrefix + contents + dojo._scopeSuffix;
-		}
-
-		var result;
-
-		// NOTE: Second argument means return value will be ignored
-
-		result = dojoEval(contents, !cb);
-		
-		if(cb){
-			cb(result);
-		}
-	};
+	var dojoEval = dojo['eval'];
 
 	dojo._loadUri = function(/*String*/uri, /*Function?*/cb){
 		//	summary:
@@ -827,6 +803,32 @@ var djConfig = {
 			console.warn(uri + ' already loaded.');
 			return true; // Boolean
 		}
+
+		var getTextFinished = function(contents) {
+			dojo._loadedUrls[uri] = true;
+			dojo._loadedUrls.push(uri);
+			if(cb){
+				contents = '(' + contents + ')';
+			}else{
+
+				// Only do the scoping if no callback. If a callback is specified,
+				// it is most likely the i18n bundle stuff.
+
+				// NOTE: Review this
+
+				contents = dojo._scopePrefix + contents + dojo._scopeSuffix;
+			}
+
+			var result;
+
+			// NOTE: Second argument means return value will be ignored
+
+			result = dojoEval(contents, !cb);
+		
+			if(cb){
+				cb(result);
+			}
+		};
 
 		return !!(this._getText(uri, true, getTextFinished));
 	};
