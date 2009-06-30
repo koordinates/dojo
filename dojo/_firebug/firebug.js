@@ -461,6 +461,7 @@ if(
 		}
 		
 		var styleElement = _firebugDoc.createElement("link");
+
 		styleElement.href = dojo.moduleUrl("dojo._firebug", "firebug.css");
 		styleElement.rel = "stylesheet";
 		styleElement.type = "text/css";
@@ -471,11 +472,9 @@ if(
 		if(!styleParent){
 			styleParent = _firebugDoc.getElementsByTagName("html")[0];
 		}
-		//if(dojo.isIE){
-			window.setTimeout(function(){ styleParent.appendChild(styleElement); }, 0);
-		//}else{
-		//	styleParent.appendChild(styleElement);
-		//}
+
+		styleParent.appendChild(styleElement);
+		
 		
 		if(dojo.config.debugContainerId){
 			consoleFrame = _firebugDoc.getElementById(dojo.config.debugContainerId);
