@@ -63,42 +63,46 @@ dojo = {
 }
 =====*/
 
-if(typeof window != 'undefined' && window.document){
+if ((dojo.global.window || dojo.global).document){
 	dojo.isBrowser = true;
 	dojo._name = "browser";
 
-	// attempt to figure out the path to dojo if it isn't set in the config
-
 	(function(){
-		var i, doc = window.document;
+		var i, doc = this.window.document;
 		var isHostMethod = dojo.isHostMethod;
 		var isHostObjectProperty = dojo.isHostObjectProperty;
 		var isOwnProperty = dojo.isOwnProperty;
 		var config = dojo.config;
+		var provide = dojo.provide;
 		var require = function(name) {
 			dojo.require.call(dojo, name);
 		};
-		var provide = dojo.provide;
+
+		if (doc && isHostMethod(doc, 'write')) {
+			dojo._writeScript = function(uri) {
+				(this.global.window || this.global).document.write('<script type="text/javascript" src="' + uri + '"></script>');
+			};
+		}
 
 		// We set browser versions and grab
 		// the URL we were loaded from here.
 
 		// grab the node we were loaded from
-		if(doc && isHostMethod(doc, 'getElementsByTagName')){
+		if (doc && isHostMethod(doc, 'getElementsByTagName')){
 			var m, src, scripts = doc.getElementsByTagName("script");
 			var rePkg = /dojo(\.xd)?\.js(\W|$)/i;
 
 			for(i = 0; i < scripts.length; i++){
 				src = scripts[i].src;
 
-				if(src && (m = src.match(rePkg))){
+				if (src && (m = src.match(rePkg))){
 					// find out where we came from
-					if(!config.baseUrl){
+					if (!config.baseUrl){
 						config.baseUrl = src.substring(0, m.index);
 					}
 					// and find out if we need to modify our behavior
 					var cfg = scripts[i].getAttribute("djConfig");
-					if(cfg){
+					if (cfg){
 						var cfgo = (new Function("return { "+cfg+" };"))();
 						for(var x in cfgo){
 							if (isOwnProperty(cfgo, x)) {
@@ -119,7 +123,7 @@ if(typeof window != 'undefined' && window.document){
 			dav = n.appVersion,
 			tv = parseFloat(dav);
 
-		if(isHostObjectProperty(window, 'opera') && Object.prototype.toString.call(window.opera) == '[object Opera]'){
+		if (isHostObjectProperty(window, 'opera') && Object.prototype.toString.call(window.opera) == '[object Opera]'){
 			dojo.isOpera = tv;
 		} else if (de) {
 
@@ -140,12 +144,12 @@ if(typeof window != 'undefined' && window.document){
 
 			// IE
 
-			} else if(isHostObjectProperty(doc, 'all') && isHostMethod(window, 'ActiveXObject') && isHostMethod(doc, 'attachEvent') && !isHostMethod(doc, 'addEventListener') && isHostObjectProperty(window, 'external')){
+			} else if (isHostObjectProperty(doc, 'all') && isHostMethod(window, 'ActiveXObject') && isHostMethod(doc, 'attachEvent') && !isHostMethod(doc, 'addEventListener') && isHostObjectProperty(window, 'external')){
 				//In cases where the page has an HTTP header or META tag with
 				//X-UA-Compatible, then it is in emulation mode, for a previous
 				//version. Make sure isIE reflects the desired version.
 
-				if(typeof doc.documentMode == 'number'){
+				if (typeof doc.documentMode == 'number'){
 					dojo.isIE = doc.documentMode;
 					dojo.isReallyIE8OrGreater = true;
 				} else if (typeof doc.compatMode == 'string') {
@@ -156,7 +160,7 @@ if(typeof window != 'undefined' && window.document){
 
 				//Workaround to get local file loads of dojo to work on IE 7
 				//by forcing to not use native xhr.
-				if(isHostMethod(window, 'ActiveXObject') && window.location.protocol == "file:"){
+				if (isHostMethod(window, 'ActiveXObject') && window.location.protocol == "file:"){
 					config.ieForceActiveXXhr=true;
 				}
 
@@ -166,11 +170,11 @@ if(typeof window != 'undefined' && window.document){
 				// 	might.  Note that this has changed because the build process
 				// 	strips all comments -- including conditional ones.
 
-				if(!config.afterOnLoad && isHostMethod(doc, 'write')){
+				if (!config.afterOnLoad && isHostMethod(doc, 'write')){
 
 					// NOTE: Replace this with interval that watches for closing HTML tag					
 
-					// doc.write('<script defer src="//:" onreadystatechange="if(this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
+					// doc.write('<script defer src="//:" onreadystatechange="if (this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
 				}
 
 				// NOTE: Should be in VML module
@@ -192,17 +196,17 @@ if(typeof window != 'undefined' && window.document){
 				dojo.isChrome = parseFloat(dua.split("Chrome/")[1]) || undefined;
 
 				var index = Math.max(dav.indexOf("WebKit"), dav.indexOf("Safari"), 0);
-				if(index && !dojo.isChrome){
+				if (index && !dojo.isChrome){
 
 					// Try to grab the explicit Safari version first. If we don't get
 					// one, look for lack of hasOwnProperty
 
 					dojo.isSafari = parseFloat(dav.split("Version/")[1]);
-					if(!dojo.isSafari || !Object.prototype.hasOwnProperty){
+					if (!dojo.isSafari || !Object.prototype.hasOwnProperty){
 						dojo.isSafari = 2;
 					}
 				}
-				if(dua.indexOf("AdobeAIR") >= 0){
+				if (dua.indexOf("AdobeAIR") >= 0){
 					dojo.isAIR = 1;
 				}
 
@@ -229,10 +233,10 @@ if(typeof window != 'undefined' && window.document){
 			// summary: 
 			//		does the work of portably generating a new XMLHTTPRequest object.
 			var http, last_e;
-			if(window.XMLHttpRequest && !config.ieForceActiveXXhr){
+			if (window.XMLHttpRequest && !config.ieForceActiveXXhr){
 				try{ http = new XMLHttpRequest(); }catch(e){}
 			}
-			if(!http && dojo.global.ActiveXObject){
+			if (!http && dojo.global.ActiveXObject){
 				for(i=3; i--;){
 					var progid = dojo._XMLHTTP_PROGIDS[i];
 					try{
@@ -241,14 +245,14 @@ if(typeof window != 'undefined' && window.document){
 						last_e = e2;
 					}
 
-					if(http){
+					if (http){
 						dojo._XMLHTTP_PROGIDS = [progid];  // so faster next time
 						break;
 					}
 				}
 			}
 
-			if(!http){
+			if (!http){
 				throw new Error("XMLHTTP not available: "+last_e);
 			}
 
@@ -271,6 +275,7 @@ if(typeof window != 'undefined' && window.document){
 		//Opera still has problems, but perhaps a larger issue of base tag support
 		//with XHR requests (hasBase is true, but the request is still made to document
 		//path, not base path).
+
 		var owloc = window.location.href;
 		var base = doc.getElementsByTagName("base");
 		var hasBase;
@@ -284,6 +289,7 @@ if(typeof window != 'undefined' && window.document){
 		}
 
 		dojo._initFired = false;
+
 		dojo._loadInit = function(e){
 
 			// NOTE: What is this flag for?
@@ -295,20 +301,18 @@ if(typeof window != 'undefined' && window.document){
 			// for example a created contextmenu event calls DOMContentLoaded
 
 			var type = e && e.type ? e.type.toLowerCase() : "load";
-			if(!arguments.callee.initialized && (type == "domcontentloaded" || type == "load")){
+			if (!arguments.callee.initialized && (type == "domcontentloaded" || type == "load")){
 				arguments.callee.initialized = true;
-				if(dojo._khtmlTimer){
+				if (dojo._khtmlTimer){
 					window.clearInterval(dojo._khtmlTimer);
 					delete dojo._khtmlTimer;
 				}
 
-				if(!dojo._inFlightCount){
+				if (!dojo._inFlightCount){
 					dojo._modulesLoaded();
 				}
 			}
 		};
-
-		var emptyFunction = function() {};
 
 		dojo._getText = function(/*URI*/ uri, /*Boolean*/ fail_ok, /*Function*/ cb){
 
@@ -327,29 +331,29 @@ if(typeof window != 'undefined' && window.document){
 
 			var http = this._xhrObj();
 
-			if(!hasBase && dojo._Url){
+			if (!hasBase && dojo._Url){
 				uri = (new dojo._Url(owloc, uri)).toString();
 			}
 
-			if(config.cacheBust){
+			if (config.cacheBust){
 				uri += (uri.indexOf("?") == -1 ? "?" : "&") + String(config.cacheBust).replace(/\W+/g,"");
 			}
 
 			try {				
 				http.open('GET', uri, false);
 			}catch(e) {
-				if(fail_ok){ return null; } // null
+				if (fail_ok){ return null; } // null
 				// re-throw the exception
 				throw e;				
 			}
 			try{
 				http.send(null);
-				if(!dojo._isDocumentOk(http)){
+				if (!dojo._isDocumentOk(http)){
 					var err = new Error("Unable to load "+uri+" status:"+ http.status);					
 					throw err;
 				}
 			}catch(e3){
-				if(fail_ok){ return null; } // null
+				if (fail_ok){ return null; } // null
 				// re-throw the exception
 				throw e3;
 			}
@@ -414,7 +418,7 @@ if(typeof window != 'undefined' && window.document){
 			//	|	dojo.addOnWindowUnload(object, function(){ /* ... */});
 
 			dojo._onto(dojo._windowUnloaders, obj, functionName);
-			if(!_onWindowUnloadAttached){
+			if (!_onWindowUnloadAttached){
 				_onWindowUnloadAttached = 1;
 				_handleNodeEvent("onunload", dojo.windowUnloaded);
 			}
@@ -447,7 +451,7 @@ if(typeof window != 'undefined' && window.document){
 			//	|	dojo.addOnUnload(object, function(){ /* ... */});
 
 			dojo._onto(dojo._unloaders, obj, functionName);
-			if(!_onUnloadAttached){
+			if (!_onUnloadAttached){
 				_onUnloadAttached = 1;
 				_handleNodeEvent("onbeforeunload", dojo.unloaded);
 			}
@@ -457,16 +461,16 @@ if(typeof window != 'undefined' && window.document){
 		} else if (isHostMethod(window, 'attachEvent')) {
 			window.attachEvent("onload", dojo._loadInit);
 		}
-		if(!config.afterOnLoad){
-			if(isHostMethod(doc, 'addEventListener')){				
-				if(config.enableMozDomContentLoaded !== false){
+		if (!config.afterOnLoad){
+			if (isHostMethod(doc, 'addEventListener')){				
+				if (config.enableMozDomContentLoaded !== false){
 					doc.addEventListener("DOMContentLoaded", dojo._loadInit, false);
 				}
 			}			
 
-			if(!dojo.isIE && typeof doc.readyState == 'string' && isHostMethod(window, 'setInterval')){
+			if (!dojo.isIE && typeof doc.readyState == 'string' && isHostMethod(window, 'setInterval')){
 				dojo._khtmlTimer = window.setInterval(function(){
-					if(/loaded|complete/i.test(window.document.readyState)){
+					if (/loaded|complete/i.test(window.document.readyState)){
 						dojo._loadInit(); // call the onload handler
 					}
 				}, 10);
@@ -478,7 +482,7 @@ if(typeof window != 'undefined' && window.document){
 		//script tag's attribute.
 
 		var mp = config.modulePaths;
-		if(mp){
+		if (mp){
 			for(var param in mp){
 				if (isOwnProperty(mp, param)) {
 					dojo.registerModulePath(param, mp[param]);
@@ -488,11 +492,11 @@ if(typeof window != 'undefined' && window.document){
 
 		//Load debug code if necessary.
 
-		if(config.isDebug){
+		if (config.isDebug){
 			require("dojo._firebug.firebug");
 		}
 
-		if(config.debugAtAllCosts){
+		if (config.debugAtAllCosts){
 			config.useXDomain = true;
 			require("dojo._base._loader.loader_xd");
 			require("dojo._base._loader.loader_debug");

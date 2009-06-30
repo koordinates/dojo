@@ -1,5 +1,4 @@
 /*
-
  summary:
 		This is the "source loader" for Dojo. This dojo.js ensures that all
 		Base APIs are available once its execution is complete and attempts to
@@ -51,6 +50,9 @@
 
 var dojo;
 
+// Only try to load Dojo if we don't already have one. Dojo always follows
+// a "first Dojo wins" policy.
+
 if(typeof dojo == "undefined"){
 	dojo = {
 		_scopeName: "dojo",
@@ -73,9 +75,6 @@ if(typeof dojo == "undefined"){
 		}
 		return (new Function(arguments[0]))();
 	};
-
-	// only try to load Dojo if we don't already have one. Dojo always follows
-	// a "first Dojo wins" policy.
 
 	(function(){
 
@@ -126,50 +125,39 @@ if(typeof dojo == "undefined"){
 			return !!(reFeaturedMethod.test(t) && o[p]); /* Boolean */
 		};
 
-		var getWin = function() { return (this.window || this); };
-
-		// we default to a browser environment if we can't figure it out
-		var root;
-		var hostEnv = "browser";
-		var isRhino = false;
-		var isSpidermonkey = false;
-		var isFFExt = false;
-		var doc = getWin().document;
-
-		// NOTE: This is only used by browsers (move to browser environment module.)
-
-		if (doc && dojo.isHostMethod(doc, 'write')) {
-			dojo._writeScript = function(uri) {
-				(this.global.window || this.global).document.write('<script type="text/javascript" src="' + uri + '"></script>');
-			};
-		}
-
-		var getRootNode = function(){
-
-			// attempt to figure out the path to dojo if it isn't set in the config
-
-			var doc = getWin().document;
-
-			if(doc && dojo.isHostMethod(doc, 'getElementsByTagName')){
-				var scripts = doc.getElementsByTagName("script");
-				var rePkg = /dojo\.js(\W|$)/i;
-				for(var i = 0; i < scripts.length; i++){
-					var src = scripts[i].src;
-					if(!src){ continue; }
-					var m = src.match(rePkg);
-					if(m){
-						return { 
-							node: scripts[i], 
-							root: src.substring(0, m.index)
-						};
-					}
-				}
-			}
+		dojo._getWin = function() {
+			return dojo.global.window || dojo.global;
 		};
+
+		var root;
+
+		// Default to browser environment
+
+		var hostEnv = "browser";
+		var isRhino, isSpidermonkey, isFFExt;
+
+/*=====
+dojo.global = {
+	//	summary:
+	//		Reference to the Global Object
+	//		(typically the window object in a browser).
+	//	description:
+	//		Refer to 'dojo.global' rather than referring to window to ensure your
+	//		code runs correctly in contexts other than web browsers (e.g. Rhino on a server).
+}
+=====*/
+
+		dojo.global = this;
+
+		var getWin = dojo._getWin;
+		var isHostMethod = dojo.isHostMethod;
+		var isHostObjectProperty = dojo.isHostObjectProperty;
+		var win = getWin();
+		var doc = win.document;
 
 		if(
 			typeof this.load == "function" &&
-			(this.Packages == "function" || this.Packages == "object")
+			(this.Packages == "function" || typeof this.Packages == "object")
 		){
 			// Rhino environments make Java code available via the Packages
 			// object. Obviously, this check could be "juiced" if someone
@@ -180,76 +168,26 @@ if(typeof dojo == "undefined"){
 		}else if(typeof this.load == "function"){
 			// Spidermonkey has a very spartan environment. The only thing we
 			// can count on from it is a "load" function.
-			isSpidermonkey  = true;
+			isSpidermonkey = true;
 			hostEnv = "spidermonkey";
 		}else if(
-			"ChromeWindow" in this &&
-			window instanceof this.ChromeWindow &&
-			this.Components){
+			isHostObjectProperty(this, 'ChromeWindow') &&
+			win instanceof this.ChromeWindow &&
+			isHostObjectProperty(this, 'Components')){
 			try{
 				(this.Components.classes["@mozilla.org/moz/jssubscript-loader;1"]);
 				isFFExt = true;
 				hostEnv = "ff_ext";
 			}catch(e){
-				/* squelch Permission Denied error, which just means this is not an extension */
+				/* squelch Permission Denied error, which means this is not an extension */
 			}
 		}
+
+		// NOTE: In which environments is this possible?
 
 		if (this.Jaxer && this.Jaxer.isOnServer) {
 			this.load = this.Jaxer.load;
 		}
-		
-		if(this.djConfig && this.djConfig.baseUrl){
-			// if the user explicitly tells us where Dojo has been loaded from
-			// (or should be loaded from) via djConfig, skip the auto-detection
-			// routines.
-			root = this.djConfig.baseUrl;
-		}else{
-			root = "./";
-			if(isSpidermonkey){
-				// auto-detect the base path via an exception. Hack!
-				try{
-					throw new Error(""); 
-				}catch(e2){
-					root = String(e2.fileName || e2.sourceURL).split("dojo.js")[0];
-				}
-			}
-			if(!this.djConfig){
-				this.djConfig = { baseUrl: root };
-			}
-	
-			// attempt to figure out the path to dojo if it isn't set in the config
-			if(doc && dojo.isHostMethod(doc, 'getElementsByTagName')){
-				root = getRootNode().root;	
-				if(!this.djConfig){ this.djConfig = {}; }
-				this.djConfig.baseUrl = root;
-			}
-		}
-
-		var envScript = root + "_base/_loader/hostenv_" + hostEnv + ".js";
-
-		if(isRhino || isSpidermonkey || (this.Jaxer && this.Jaxer.isOnServer)){
-			this.load(envScript);
-		}else if(isFFExt){
-			var l = this.Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(this.Components.interfaces.mozIJSSubScriptLoader);
-			l.loadSubScript(envScript, this);
-		}else{
-			try{ // NOTE: Use XML parse mode test
-				doc.write("<script type='text/javascript' src='"+envScript+"'></script>");
-			}catch(e3){
-				// XML parse mode or other environment without document.write
-
-				// NOTE: XML parse mode won't work with these scripts
-				//       The HEAD element is not closed at this point,
-				//       so mutation is ill-advised
-
-				throw new Error('Failed to load environment');
-			}
-		}
-
-		doc = null; // Discard host object reference
-	})();
-}
 
 /*=====
 // note:
@@ -355,6 +293,87 @@ var djConfig = {
 	dojoBlankHtmlUrl: undefined
 }
 =====*/
+		
+		if(this.djConfig && this.djConfig.baseUrl){
+			// if the user explicitly tells us where Dojo has been loaded from
+			// (or should be loaded from) via djConfig, skip the auto-detection
+			// routines.
+			root = this.djConfig.baseUrl;
+		}else{
+			root = "./";
+			if(isSpidermonkey){
+
+				// Detect the base path via an exception.
+
+				try{
+					throw new Error(""); 
+				}catch(e2){
+					var uri = e2.fileName || e2.sourceURL;
+					if (typeof uri == 'string' && uri && uri.indexOf('dojo.js') != -1) {
+						root = uri.split("dojo.js")[0];
+					}
+				}
+			}
+
+			if (!this.djConfig) {
+				this.djConfig = {};
+			}
+
+	
+			// Attempt to figure out the path to dojo if it is not set in the config
+
+			if (doc && isHostMethod(doc, 'getElementsByTagName')){
+				var i, scripts = doc.getElementsByTagName("script");
+				var rePkg = /dojo\.js(\W|$)/i;
+
+				for(i = 0; i < scripts.length; i++){
+					var m, src = scripts[i].src;
+					if(src){
+						m = src.match(rePkg);
+						if(m){
+							root = this.djConfig.baseUrl = src.substring(0, m.index);
+						}
+					}
+				}
+			}			
+		}
+
+		var done, envScript = root + "_base/_loader/hostenv_" + hostEnv + ".js";
+		
+		if (isHostMethod(this, 'load')){
+			try {
+				this.load(envScript);
+				done = true;
+			} catch(e4) {
+			}
+		}
+		if(!done && isFFExt){
+			try {
+				var l = this.Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(this.Components.interfaces.mozIJSSubScriptLoader);
+				if (l && isHostMethod(l, 'loadSubScript')) {
+					l.loadSubScript(envScript, this);
+					done = true;
+				}
+			} catch(e5) {
+			}
+		}
+		if (!done) {
+			try{
+				doc.write("<script type='text/javascript' src='"+envScript+"'></script>");
+			}catch(e3){
+				// XML parse mode or other environment without document.write
+
+				// NOTE: XML parse mode won't work with these scripts
+				//       The HEAD element is not closed at this point,
+				//       so mutation is ill-advised
+
+				throw new Error('Failed to load environment');
+			}
+		}
+
+		win = doc = null; // Discard host object references
+	})();
+}
 
 (function(){
 
@@ -364,6 +383,8 @@ var djConfig = {
 		var prop = o.constructor.prototype[p];
 		return typeof prop == 'undefined' || prop !== o[p];
 	};
+
+	dojo.isOwnProperty = isOwnProperty;
 
 	// firebug stubs
 
@@ -397,9 +418,7 @@ var djConfig = {
 		}
 	}
 
-	dojo.isOwnProperty = isOwnProperty;
-
-	//Need placeholders for dijit and dojox for scoping code.S	
+	// Need placeholders for dijit and dojox for scoping code.
 
 	if(typeof this.dijit == "undefined"){
 		this.dijit = {_scopeName: "dijit"};
@@ -412,23 +431,6 @@ var djConfig = {
 		dojo._scopeArgs = [this.dojo, this.dijit, this.dojox];
 	}
 
-/*=====
-dojo.global = {
-	//	summary:
-	//		Reference to the Global Object
-	//		(typically the window object in a browser).
-	//	description:
-	//		Refer to 'dojo.global' rather than referring to window to ensure your
-	//		code runs correctly in contexts other than web browsers (e.g. Rhino on a server).
-}
-=====*/
-	dojo.global = this;
-
-	// NOTE: The window object may not be the Global object
-
-	var getWin = function() {
-		return dojo.global.window || dojo.global;
-	};
 
 	dojo.config =/*===== djConfig = =====*/{
 		isDebug: false,
@@ -816,8 +818,13 @@ dojo.global = {
 
 				contents = that._scopePrefix + contents + that._scopeSuffix;
 			}
+
+			var result, dojoEval = dojo['eval'];
 			try {
-				var result = dojo['eval'](contents, !cb);
+
+				// NOTE: Second argument mean return value will be ignored
+
+				result = dojoEval(contents, !cb);
 			} catch(e) {
 				console.log('Load failed ' + uri + ' ' + (e.description || e));
 			}
@@ -825,7 +832,7 @@ dojo.global = {
 		};
 		var result = this._getText(uri, true, finished);
 
-		return !!(result);
+		return !!result;
 	};
 	//>>excludeEnd("xdomainExclude");
 
@@ -936,6 +943,7 @@ dojo.global = {
 	// which may be of type function, object (IE and possibly others) or unknown (IE ActiveX methods)
 
 	var isHostMethod = dojo.isHostMethod;
+	var getWin = dojo._getWin;
 
 	if (isHostMethod(getWin(), 'setTimeout')) {
 		dojo._setMethodTimeout = function(methodName, delay) {
@@ -1457,103 +1465,109 @@ if(
 	(this.djConfig.forceXDomain || this.djConfig.useXDomain)
 ){
 
-dojo.provide("dojo._base._loader.loader_xd");
+	dojo.provide("dojo._base._loader.loader_xd");
 
-dojo._xdReset = function(){
-	//summary: Internal xd loader function. Resets the xd state.
+	dojo._xdReset = function(){
+		//summary: Internal xd loader function. Resets the xd state.
 
-	//This flag indicates where or not we have crossed into xdomain territory. Once any resource says
-	//it is cross domain, then the rest of the resources have to be treated as xdomain because we need
-	//to evaluate resources in order. If there is a xdomain resource followed by a xhr resource, we can't load
-	//the xhr resource until the one before it finishes loading. The text of the xhr resource will be converted
-	//to match the format for a xd resource and put in the xd load queue.
-	this._isXDomain = dojo.config.useXDomain || false;
+		//This flag indicates where or not we have crossed into cross-domain territory. Once any resource says
+		//is deemed to be cross-domain.
 
-	this._xdTimer = 0;
-	this._xdInFlight = {};
-	this._xdOrderedReqs = [];
-	this._xdDepMap = {};
-	this._xdContents = [];
-	this._xdDefList = [];
-};
+		this._isXDomain = dojo.config.useXDomain || false;
 
-//Call reset immediately to set the state.
-dojo._xdReset();
+		this._xdTimer = 0;
+		this._xdInFlight = {};
+		this._xdOrderedReqs = [];
+		this._xdDepMap = {};
+		this._xdContents = [];
+		this._xdDefList = [];
+	};
 
-dojo._xdCreateResource = function(/*String*/contents, /*String*/resourceName, /*String*/resourcePath){
-	//summary: Internal xd loader function. Creates an xd module source given an
-	//non-xd module contents.
+	//Call reset immediately to set the state.
+	dojo._xdReset();
 
-	//Remove comments. Not perfect, but good enough for dependency resolution.
-	var depContents = contents.replace(/(\/\*([\s\S]*?)\*\/|\/\/(.*)$)/mg , "");
+	dojo._xdCreateResource = function(/*String*/contents, /*String*/resourceName, /*String*/resourcePath){
+		//summary: Internal xd loader function. Creates an xd module source given an
+		//non-xd module contents.
 
-	//Find dependencies.
-	var deps = [];
-	var depRegExp = /dojo.(require|requireIf|provide|requireAfterIf|platformRequire|requireLocalization)\s*\(([\w\W]*?)\)/mg;
-	var done, match;
-	while(!done){
-		match = depRegExp.exec(depContents);
-		if (match) {
-			if(match[1] == "requireLocalization"){
-				//Need to load the local bundles asap, since they are not
-				//part of the list of modules watched for loading.
-				dojo["eval"](match[0]);
-			}else{
-				deps.push('"' + match[1] + '", ' + match[2]);
+		//Remove comments. Not perfect, but good enough for dependency resolution.
+		var depContents = contents.replace(/(\/\*([\s\S]*?)\*\/|\/\/(.*)$)/mg , "");
+
+		//Find dependencies.
+		var deps = [];
+		var depRegExp = /dojo.(require|requireIf|provide|requireAfterIf|platformRequire|requireLocalization)\s*\(([\w\W]*?)\)/mg;
+		var done, match;
+		while(!done){
+			match = depRegExp.exec(depContents);
+			if (match) {
+				if(match[1] == "requireLocalization"){
+					//Need to load the local bundles asap, since they are not
+					//part of the list of modules watched for loading.
+					dojo["eval"](match[0]);
+				}else{
+					deps.push('"' + match[1] + '", ' + match[2]);
+				}
+			} else {
+				done = true;
 			}
-		} else {
-			done = true;
 		}
-	}
 
-	//Create resource object and the call to _xdResourceLoaded.
-	var output = [];
-	output.push(dojo._scopeName + "._xdResourceLoaded(function(" + dojo._scopePrefixArgs + "){\n");
+		//Create resource object and the call to _xdResourceLoaded.
 
-	//See if there are any dojo.loadInit calls
-	var loadInitCalls = dojo._xdExtractLoadInits(contents);
-	if(loadInitCalls){
-		//Adjust fileContents since extractLoadInits removed something.
-		contents = loadInitCalls[0];
+		var output = [];
+		output.push(dojo._scopeName + "._xdResourceLoaded(function(" + dojo._scopePrefixArgs + "){\n");
+
+		//See if there are any dojo.loadInit calls
+
+		var loadInitCalls = dojo._xdExtractLoadInits(contents);
+		if(loadInitCalls){
+
+			//Adjust fileContents since extractLoadInits removed something.
+
+			contents = loadInitCalls[0];
 		
-		//Add any loadInit calls to the top of the xd file.
-		for(var i = 1; i < loadInitCalls.length; i++){
-			output.push(loadInitCalls[i] + ";\n");
-		}
-	}
+			//Add any loadInit calls to the top of the xd file.
 
-	output.push("return {");
-
-	//Add dependencies
-	if(deps.length > 0){
-		output.push("depends: [");
-		for(i = 0; i < deps.length; i++){
-			if(i > 0){
-				output.push(",\n");
+			for(var i = 1; i < loadInitCalls.length; i++){
+				output.push(loadInitCalls[i] + ";\n");
 			}
-			output.push("[" + deps[i] + "]");
 		}
-		output.push("],");
-	}
 
-	//Add the contents of the file inside a function.
-	//Pass in scope arguments so we can support multiple versions of the
-	//same module on a page.
-	output.push("\ndefineResource: function(" + dojo._scopePrefixArgs + "){");
+		output.push("return {");
 
-	//Don't put in the contents in the debugAtAllCosts case
-	//since the contents may have syntax errors. Let those
-	//get pushed up when the script tags are added to the page
-	//in the debugAtAllCosts case.
-	if(!dojo.config.debugAtAllCosts || resourceName == "dojo._base._loader.loader_debug"){
-		output.push(contents);
-	}
-	//Add isLocal property so we know if we have to do something different
-	//in debugAtAllCosts situations.
-	output.push("\n}, resourceName: '" + resourceName + "', resourcePath: '" + resourcePath + "'};});");
-	
-	return output.join(""); //String
-};
+		//Add dependencies
+
+		if(deps.length > 0){
+			output.push("depends: [");
+			for(i = 0; i < deps.length; i++){
+				if(i > 0){
+					output.push(",\n");
+				}
+				output.push("[" + deps[i] + "]");
+			}
+			output.push("],");
+		}
+
+		//Add the contents of the file inside a function.
+		//Pass in scope arguments so we can support multiple versions of the
+		//same module on a page.
+
+		output.push("\ndefineResource: function(" + dojo._scopePrefixArgs + "){");
+
+		//Don't put in the contents in the debugAtAllCosts case
+		//since the contents may have syntax errors. Let those
+		//get pushed up when the script tags are added to the page
+		//in the debugAtAllCosts case.
+
+		if(!dojo.config.debugAtAllCosts || resourceName == "dojo._base._loader.loader_debug"){
+			output.push(contents);
+		}
+		//Add isLocal property so we know if we have to do something different
+		//in debugAtAllCosts situations.
+		output.push("\n}, resourceName: '" + resourceName + "', resourcePath: '" + resourcePath + "'};});");
+
+		return output.join(""); //String
+	};
 
 dojo._xdExtractLoadInits = function(/*String*/fileContents){
 	//Extracts
@@ -1622,10 +1636,11 @@ dojo._xdIsXDomainPath = function(/*string*/relpath) {
 		//Only treat it as xdomain if the page does not have a
 		//host (file:// url) or if the baseUrl does not match the
 		//current domain.
-		var url = this.baseUrl;
+
+		var url = this.baseUrl, win = dojo.getWin();
 		colonIndex = url.indexOf(":");
 		slashIndex = url.indexOf("/");
-		if(colonIndex > 0 && colonIndex < slashIndex && (!window.location.host || url.indexOf("http://" + window.location.host))){
+		if(colonIndex > 0 && colonIndex < slashIndex && (!win.location.host || url.indexOf("http://" + win.location.host))){
 			return true;
 		}
 	}
@@ -1685,6 +1700,7 @@ dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDo
 		}
 
 		//Start timer
+
 		if(!this._xdTimer){
 			dojo._setMethodTimeout('_xdWatchInFlight', 100); // *** 100?
 		}
@@ -1692,7 +1708,9 @@ dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDo
 	}
 
 	if (currentIsXDomain){
+
 		//Fix name to be a .xd.fileextension name.
+
 		var lastIndex = uri.lastIndexOf('.');
 		if(lastIndex <= 0){
 			lastIndex = uri.length - 1;
@@ -1707,9 +1725,7 @@ dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDo
 
 		//Add to script src
 
-		// NOTE: Should this use dojo.global?
-
-		var doc = (dojo.global.window || dojo.global).document;
+		var doc = dojo._getWin().document;
 		var element = doc.createElement("script");
 		element.type = "text/javascript";
 		element.src = xdUri;
@@ -1727,6 +1743,7 @@ dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDo
 		
 		//If this is not xdomain, or if loading a i18n resource bundle, then send it down
 		//the normal eval/callback path.
+
 		if(this._isXDomain && uri.indexOf("/nls/") == -1 && module != "dojo.i18n"){
 			var res = this._xdCreateResource(contents, module, uri);
 			dojo["eval"](res);
@@ -1750,11 +1767,11 @@ dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDo
 
 	//These steps are done in the non-xd loader version of this function.
 	//Maintain these steps to fit in with the existing system.
+
 	this._loadedUrls[uri] = true;
 	this._loadedUrls.push(uri);
 	return true; //Boolean
 };
-
 
 dojo._xdResourceLoaded = function(/*Function*/res){
 	//summary: Internal xd loader function. Called by an xd module resource when
@@ -1796,6 +1813,7 @@ dojo._xdResourceLoaded = function(/*Function*/res){
 			//Call the dependency indicator to allow for the normal dojo setup.
 			//Only allow for one dot reference, for the i18n._preloadLocalizations calls
 			//(and maybe future, one-dot things).
+
 			var depType = dep[0];
 			var objPath = depType.split(".");
 			if(objPath.length == 2){
@@ -1808,6 +1826,7 @@ dojo._xdResourceLoaded = function(/*Function*/res){
 
 		//If loading the debugAtAllCosts module, eval it right away since we need
 		//its functions to properly load the other modules.
+
 		if(provideList.length == 1 && provideList[0] == "dojo._base._loader.loader_debug"){
 			res.defineResource(dojo);
 		}else{
@@ -1856,8 +1875,8 @@ dojo._xdLoadFlattenedBundle = function(/*String*/moduleName, /*String*/bundleNam
 	}
 };
 
-
 dojo._xdInitExtraLocales = function(){
+
 	// Simulate the extra locale work that dojo.requireLocalization does.
 
 	var extra = dojo.config.extraLocale;
@@ -2048,6 +2067,7 @@ dojo._xdEvalReqs = function(/*Array*/reqChain){
 			//END dojo._xdTraceReqs() inlining for small Safari 2.0 call stack
 
 			//Evaluate the resource.
+
 			var contents = this._xdContents[res.contentIndex];
 			if(!contents.isDefined){
 				var content = contents.content;
@@ -2076,95 +2096,101 @@ dojo._xdEvalReqs = function(/*Array*/reqChain){
 		}
 
 		//Done with that require. Remove it and go to the next one.
+
 		reqChain.pop();
 	}
 };
 
-dojo._xdClearInterval = function(){
-	//summary: Internal xd loader function.
-	//Clears the interval timer used to check on the
-	//status of in-flight xd module resource requests.
+	dojo._xdClearInterval = function(){
+		//summary: Internal xd loader function.
+		//Clears the interval timer used to check on the
+		//status of in-flight xd module resource requests.
 	
-	// NOTE: What sets this interval (and using what object?)
+		// NOTE: What sets this interval (and using what object?)
 
-	(dojo.global.window || dojo.global).clearInterval(this._xdTimer);
-	this._xdTimer = 0;
-};
+		(dojo.global.window || dojo.global).clearInterval(this._xdTimer);
+		this._xdTimer = 0;
+	};
 
-dojo._xdWatchInFlight = function(){
-	//summary: Internal xd loader function.
-	//Monitors in-flight requests for xd module resources.
+	dojo._xdWatchInFlight = function(){
+		//summary: Internal xd loader function.
+		//Monitors in-flight requests for xd module resources.
 
-	var noLoads = "";
-	var waitInterval = (dojo.config.xdWaitSeconds || 15) * 1000;
-	var expired = (this._xdStartTime + waitInterval) < (new Date()).getTime();
+		var noLoads = "";
+		var waitInterval = (dojo.config.xdWaitSeconds || 15) * 1000;
+		var expired = (this._xdStartTime + waitInterval) < (new Date()).getTime();
 
-	//If any xdInFlight are true, then still waiting for something to load.
-	//Come back later. If we timed out, report the things that did not load.
-	for(var param in this._xdInFlight){
-		if(this._xdInFlight[param] === true){
-			if(expired){
-				noLoads += param + " ";
+		//If any xdInFlight are true, then still waiting for something to load.
+		//Come back later. If we timed out, report the things that did not load.
+		for(var param in this._xdInFlight){
+			if(this._xdInFlight[param] === true){
+				if(expired){
+					noLoads += param + " ";
+				}else{
+					return;
+				}
+			}
+		}
+
+		//All done. Clean up and notify.
+
+		this._xdClearInterval();
+
+		if(expired){
+			throw new Error("Could not load cross-domain resources: " + noLoads);
+		}
+
+		this._xdWalkReqs();
+	
+		var defLength = this._xdDefList.length;
+		for(var i= 0; i < defLength; i++){
+			var content = dojo._xdDefList[i];
+			if(dojo.config.debugAtAllCosts && content.resourceName){
+				if(!this._xdDebugQueue){
+					this._xdDebugQueue = [];
+				}
+				this._xdDebugQueue.push({resourceName: content.resourceName, resourcePath: content.resourcePath});
 			}else{
-				return;
+				//Evaluate the resource to bring it into being.
+				//Pass in scope args to allow multiple versions of modules in a page.	
+				content.apply(dojo.global, dojo._scopeArgs);
 			}
 		}
-	}
 
-	//All done. Clean up and notify.
-	this._xdClearInterval();
+		//Evaluate any resources that were not evaled before.
+		//This normally shouldn't happen with proper dojo.provide and dojo.require
+		//usage, but providing it just in case. Note that these may not be executed
+		//in the original order that the developer intended.
 
-	if(expired){
-		throw "Could not load cross-domain resources: " + noLoads;
-	}
-
-	this._xdWalkReqs();
-	
-	var defLength = this._xdDefList.length;
-	for(var i= 0; i < defLength; i++){
-		var content = dojo._xdDefList[i];
-		if(dojo.config.debugAtAllCosts && content.resourceName){
-			if(!this._xdDebugQueue){
-				this._xdDebugQueue = [];
+		for(i = 0; i < this._xdContents.length; i++){
+			var current = this._xdContents[i];
+			if(current.content && !current.isDefined){
+				//Pass in scope args to allow multiple versions of modules in a page.	
+				current.content.apply(dojo.global, dojo._scopeArgs);
 			}
-			this._xdDebugQueue.push({resourceName: content.resourceName, resourcePath: content.resourcePath});
+		}
+
+		//Clean up for the next round of xd loading.
+		this._xdReset();
+
+		if(this._xdDebugQueue && this._xdDebugQueue.length > 0){
+			this._xdDebugFileLoaded();
 		}else{
-			//Evaluate the resource to bring it into being.
-			//Pass in scope args to allow multiple versions of modules in a page.	
-			content.apply(dojo.global, dojo._scopeArgs);
+			this._xdNotifyLoaded();
 		}
-	}
+	};
 
-	//Evaluate any resources that were not evaled before.
-	//This normally shouldn't happen with proper dojo.provide and dojo.require
-	//usage, but providing it just in case. Note that these may not be executed
-	//in the original order that the developer intended.
-	for(i = 0; i < this._xdContents.length; i++){
-		var current = this._xdContents[i];
-		if(current.content && !current.isDefined){
-			//Pass in scope args to allow multiple versions of modules in a page.	
-			current.content.apply(dojo.global, dojo._scopeArgs);
-		}
-	}
+     	dojo._xdNotifyLoaded = function(){
 
-	//Clean up for the next round of xd loading.
-	this._xdReset();
+		//Clear in-flight count so we will finally do finish work.
 
-	if(this._xdDebugQueue && this._xdDebugQueue.length > 0){
-		this._xdDebugFileLoaded();
-	}else{
-		this._xdNotifyLoaded();
-	}
-};
-
-dojo._xdNotifyLoaded = function(){
-	//Clear inflight count so we will finally do finish work.
-	this._inFlightCount = 0; 
+		this._inFlightCount = 0; 
 	
-	//Only trigger call loaded if dj_load_init has run. 
-	if(this._initFired && !this._loadNotifying){ 
-		this._callLoaded();
-	}
-};
+		//Only trigger call loaded if dj_load_init has run.
+
+		if(this._initFired && !this._loadNotifying){ 
+			this._callLoaded();
+		}
+	};
 
 }
