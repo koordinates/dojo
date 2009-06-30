@@ -1,7 +1,6 @@
 dojo.provide("dojo.dnd.move");
 
-dojo.require("dojo.dnd.Mover");
-dojo.require("dojo.dnd.Moveable");
+dojo.required("dojo.dnd.Moveable");
 
 dojo.declare("dojo.dnd.move.constrainedMoveable", dojo.dnd.Moveable, {
 	// object attributes (for markup)
