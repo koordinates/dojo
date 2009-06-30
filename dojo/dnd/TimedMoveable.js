@@ -1,6 +1,6 @@
 dojo.provide("dojo.dnd.TimedMoveable");
 
-dojo.require("dojo.dnd.Moveable");
+dojo.required("dojo.dnd.Moveable");
 
 (function(){
 	// precalculate long expressions

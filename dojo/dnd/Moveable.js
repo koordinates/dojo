@@ -1,6 +1,6 @@
 dojo.provide("dojo.dnd.Moveable");
 
-dojo.require("dojo.dnd.Mover");
+dojo.required("dojo.dnd.Mover");
 
 dojo.declare("dojo.dnd.Moveable", null, {
 	// object attributes (for markup)
