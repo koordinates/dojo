@@ -1,5 +1,6 @@
 dojo.provide("dojo.NodeList-html");
-dojo.require("dojo.html");
+dojo.required("dojo.html");
+dojo.required("dojo.NodeList");
 
 /*=====
 dojo["NodeList-html"] = {

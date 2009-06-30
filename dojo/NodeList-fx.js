@@ -1,5 +1,5 @@
 dojo.provide("dojo.NodeList-fx");
-dojo.require("dojo.fx");
+dojo.required("dojo.fx");
 
 /*=====
 dojo["NodeList-fx"] = {
