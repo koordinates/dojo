@@ -259,8 +259,6 @@ dojo.provide("dojo._base._loader.loader_xd");
 		}
 	};
 
-	var dojoEval = dojo['eval'];
-
 	var oldLoadUri = dojo._loadUri;
 
 	dojo._loadUri = function(/*String*/uri, /*Function?*/cb, /*boolean*/currentIsXDomain, /*String?*/module){
