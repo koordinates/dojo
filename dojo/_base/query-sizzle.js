@@ -14,7 +14,7 @@
 //This file gets copied to dojo/_base/query.js, so set the provide accordingly.
 if(typeof dojo != "undefined"){
 	dojo.provide("dojo._base.query");
-	dojo.require("dojo._base.NodeList");
+	dojo.required("dojo._base.NodeList");
 
 	//Start Dojo mappings.
 	dojo.query = function(/*String*/ query, /*String|DOMNode?*/ root, /*Function?*/listCtor){

@@ -491,8 +491,8 @@ if ((dojo.global.window || dojo.global).document){
 		}
 
 		if(
-			this.djConfig&&
-			(this.djConfig.forceXDomain || this.djConfig.useXDomain)
+			typeof djConfig != 'undefined' &&
+			(djConfig.forceXDomain || djConfig.useXDomain)
 		){
 			require("dojo._base._loader.loader_xd");
 		}

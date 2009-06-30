@@ -2,7 +2,7 @@ dojo.provide("dojo._base.html");
 
 // FIXME: need to add unit tests for all the semi-public methods
 
-if (typeof window.document.execCommand != 'undefined') {
+if (typeof dojo._getWin().document.execCommand != 'undefined') {
 	try {
 		window.document.execCommand("BackgroundImageCache", false, true);
 	} catch(e) {
