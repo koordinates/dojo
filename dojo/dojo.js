@@ -137,7 +137,7 @@ if(typeof dojo == "undefined"){
 		// Default to browser environment
 
 		var hostEnv = "browser";
-		var isRhino, isSpidermonkey, isFFExt;
+		var isRhino, isSpidermonkey, isFFExt, jaxerLoad;
 
 /*=====
 dojo.global = {
@@ -189,7 +189,7 @@ dojo.global = {
 		// NOTE: In which environments is this possible?
 
 		if (this.Jaxer && this.Jaxer.isOnServer) {
-			var jaxerLoad = true;
+			jaxerLoad = true;
 			this.load = this.Jaxer.load;
 		}
 
@@ -347,7 +347,7 @@ var djConfig = {
 		if ((isRhino || isSpidermonkey || jaxerLoad) && isHostMethod(this, 'load')){
 			try {
 				this.load(envScript);
-				done = true;
+				done = (isRhino && dojo.isRhino) || (isSpidermonkey && dojo.isSpidermonkey) || jaxerLoad;
 			} catch(e4) {
 			}
 		}
