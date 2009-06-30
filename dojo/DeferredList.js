@@ -1,4 +1,5 @@
 dojo.provide("dojo.DeferredList");
+dojo.required("dojo._base.Deferred");
 dojo.declare("dojo.DeferredList", dojo.Deferred, {
 	constructor: function(/*Array*/ list, /*Boolean?*/ fireOnOneCallback, /*Boolean?*/ fireOnOneErrback, /*Boolean?*/ consumeErrors, /*Function?*/ canceller){
 		// summary:
