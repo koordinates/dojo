@@ -1,8 +1,8 @@
 dojo.provide("dojo.date.locale");
 
-// Localization methods for Date.   Honor local customs using locale-dependent dojo.cldr data.
+// Localization methods for Date. Honor local customs using locale-dependent dojo.cldr data.
 
-dojo.require("dojo.date");
+dojo.required("dojo.date");
 dojo.require("dojo.cldr.supplemental");
 dojo.require("dojo.regexp");
 dojo.require("dojo.string");
@@ -10,6 +10,7 @@ dojo.require("dojo.i18n");
 
 // Load the bundles containing localization information for
 // names and formats
+
 dojo.requireLocalization("dojo.cldr", "gregorian");
 
 //NOTE: Everything in this module assumes Gregorian calendars.

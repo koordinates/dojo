@@ -1,9 +1,7 @@
 dojo.provide("dojo.html");
+dojo.required("dojo.parser");
 
-// The parser might be needed.
-// NOTE: Rearrange
 
-dojo.require("dojo.parser");
 
 (function(){
 

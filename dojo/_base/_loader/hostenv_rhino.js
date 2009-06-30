@@ -166,9 +166,7 @@ dojo._rhinoCurrentScriptViaJava = function(depth){
 	var fname = ((typeof depth != 'undefined')&&(depth)) ? matches[depth + 1] : matches[matches.length - 1];
 	fname = matches[3];
 	if(!fname){ fname = matches[1]; }
-	// print("got fname '" + fname + "' from stack string '" + s + "'");
 	if (!fname){ throw new Error("could not find js file in printStackTrace output: " + s); }
-	//print("Rhino getCurrentScriptURI returning '" + fname + "' from: " + s); 
 	return fname;
 };
 

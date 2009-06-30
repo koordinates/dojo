@@ -1,5 +1,5 @@
 dojo.provide("dojo.parser");
-dojo.required("dojo.date.stamp");
+dojo.required("dojo._base.query");
 
 dojo.parser = (function(){
 	// summary: The Dom/Widget parsing package
@@ -32,9 +32,9 @@ dojo.parser = (function(){
 		if(dojo.isString(value)){ return "string"; }
 		if(typeof value == "number"){ return "number"; }
 		if(typeof value == "boolean"){ return "boolean"; }
-		if(dojo.isFunction(value)){ return "function"; }
 		if(dojo.isArray(value)){ return "array"; } // typeof [] == "object"
 		if(dojo.isDate(value)) { return "date"; } // assume timestamp
+		if(dojo.isFunction(value)){ return "function"; }
 		if(value instanceof dojo._Url){ return "url"; }
 		return "object";
 	}
@@ -284,8 +284,8 @@ dojo.parser = (function(){
 	};
 })();
 
-//Register the parser callback. It should be the first callback
-//after the a11y test.
+// Register the parser callback. It should be the first callback
+// after the a11y test.
 
 (function(){
 	var parseRunner = function(){ 
@@ -295,6 +295,7 @@ dojo.parser = (function(){
 	};
 
 	// FIXME: need to clobber cross-dependency!!
+
 	if(dojo.exists("dijit.wai.onload") && (dijit.wai.onload === dojo._loaders[0])){
 		dojo._loaders.splice(1, 0, parseRunner);
 	}else{
