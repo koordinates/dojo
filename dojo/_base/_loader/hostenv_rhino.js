@@ -241,12 +241,15 @@ if(typeof this.setTimeout == "undefined" || typeof this.clearTimeout == "undefin
 	};
 }
 
-//Register any module paths set up in djConfig. Need to do this
-//in the hostenvs since hostenv_browser can read djConfig from a
-//script tag's attribute.
+// Register any module paths set up in djConfig. Need to do this
+// in the hostenvs since hostenv_browser can read djConfig from a
+// SCRIPT element's attribute.
+
 if(dojo.config.modulePaths){
 	for(var param in dojo.config.modulePaths){
-		dojo.registerModulePath(param, dojo.config.modulePaths[param]);
+		if (dojo.isOwnProperty(dojo.config.modulePaths, param)) {
+			dojo.registerModulePath(param, dojo.config.modulePaths[param]);
+		}
 	}
 }
 
@@ -258,11 +261,5 @@ dojo.require("dojo._base.Deferred");
 dojo.require("dojo._base.array");
 dojo.require("dojo._base.Color");
 dojo.require("dojo._base.window");
-
-if (!dojo.config.noConnect) {
-	dojo.require("dojo._base.connect");
-}
-
-if (!dojo.config.noJson) {
-	dojo.require("dojo._base.json");
-}
+dojo.require("dojo._base.connect");
+dojo.require("dojo._base.json");
