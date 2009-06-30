@@ -321,13 +321,11 @@ if(typeof window != 'undefined' && window.document){
 			//		instead of throwing.
 			// cb:
 			//		Callback
-			//              Requests are asynchronous only in the event that cb is passed (and config.syncXhrForModules is false)
 			//
 			// returns: The response text. null is returned when there is a
 			//		failure and failure is okay (an exception otherwise)
 
 			var http = this._xhrObj();
-			var async = cb && this.config.syncXhrForModules === false;
 
 			if(!hasBase && dojo._Url){
 				uri = (new dojo._Url(owloc, uri)).toString();
@@ -337,18 +335,8 @@ if(typeof window != 'undefined' && window.document){
 				uri += (uri.indexOf("?") == -1 ? "?" : "&") + String(config.cacheBust).replace(/\W+/g,"");
 			}
 
-			try {
-				if (async) {
-					http.onreadystatechange = function() {
-						if (http.readyState == 4) {
-							if (dojo._isDocumentOk(http)) {
-								cb(http.responseText);
-								http.onreadystatechange = emptyFunction;
-							}
-						}
-					};
-				}
-				http.open('GET', uri, async);
+			try {				
+				http.open('GET', uri, false);
 			}catch(e) {
 				if(fail_ok){ return null; } // null
 				// re-throw the exception
@@ -356,7 +344,7 @@ if(typeof window != 'undefined' && window.document){
 			}
 			try{
 				http.send(null);
-				if(!async && !dojo._isDocumentOk(http)){
+				if(!dojo._isDocumentOk(http)){
 					var err = new Error("Unable to load "+uri+" status:"+ http.status);					
 					throw err;
 				}
@@ -365,15 +353,10 @@ if(typeof window != 'undefined' && window.document){
 				// re-throw the exception
 				throw e3;
 			}
-
-			if (async) {
-				return true; // Boolean - indicates pending response
-			} else {
-				if (cb) {
-					cb(http.responseText);
-				}
-				return http.responseText;  // String
+			if (cb) {
+				cb(http.responseText);
 			}
+			return http.responseText;  // String
 		};
 		
 		// NOTE: Odd name
@@ -476,7 +459,7 @@ if(typeof window != 'undefined' && window.document){
 		}
 		if(!config.afterOnLoad){
 			if(isHostMethod(doc, 'addEventListener')){				
-				if(config.syncXhrForModules !== false && config.enableMozDomContentLoaded !== false){
+				if(config.enableMozDomContentLoaded !== false){
 					doc.addEventListener("DOMContentLoaded", dojo._loadInit, false);
 				}
 			}			

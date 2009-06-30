@@ -128,6 +128,22 @@ if(typeof dojo == "undefined"){
 
 		var getWin = function() { return (this.window || this); };
 
+		// we default to a browser environment if we can't figure it out
+		var root;
+		var hostEnv = "browser";
+		var isRhino = false;
+		var isSpidermonkey = false;
+		var isFFExt = false;
+		var doc = getWin().document;
+
+		// NOTE: This is only used by browsers (move to browser environment module.)
+
+		if (doc && dojo.isHostMethod(doc, 'write')) {
+			dojo._writeScript = function(uri) {
+				(this.global.window || this.global).document.write('<script type="text/javascript" src="' + uri + '"></script>');
+			};
+		}
+
 		var getRootNode = function(){
 
 			// attempt to figure out the path to dojo if it isn't set in the config
@@ -151,12 +167,6 @@ if(typeof dojo == "undefined"){
 			}
 		};
 
-		// we default to a browser environment if we can't figure it out
-		var root, doc = getWin().document;
-		var hostEnv = "browser";
-		var isRhino = false;
-		var isSpidermonkey = false;
-		var isFFExt = false;
 		if(
 			typeof this.load == "function" &&
 			(this.Packages == "function" || this.Packages == "object")
@@ -216,7 +226,7 @@ if(typeof dojo == "undefined"){
 			}
 		}
 
-		var envScript = root+"_base/_loader/hostenv_"+hostEnv+".js";
+		var envScript = root + "_base/_loader/hostenv_" + hostEnv + ".js";
 
 		if(isRhino || isSpidermonkey || (this.Jaxer && this.Jaxer.isOnServer)){
 			this.load(envScript);
@@ -342,11 +352,7 @@ var djConfig = {
 	//		does not need to be set, except when using cross-domain/CDN Dojo builds.
 	//		Save dojo/resources/blank.html to your domain and set `djConfig.dojoBlankHtmlUrl` 
 	//		to the path on your domain your copy of blank.html.
-	dojoBlankHtmlUrl: undefined,
-	// syncXhrForModules: Boolean
-	//              Used with same-domain loading only, forces synchronous XHR
-	//		Not recommended
-	syncXhrForModules: true
+	dojoBlankHtmlUrl: undefined
 }
 =====*/
 
@@ -758,25 +764,24 @@ dojo.global = {
 
 		var uri = (/^\w+:/.test(relpath) ? "" : this.baseUrl) + relpath;
 
-		try{
-			// NOTE: The syncXhrForModules option will be removed
+		if (this._postLoad || !dojo._writeScript) {
 
-			if (this.config.syncXhrForModules === false || this._postLoad) {
+			// NOTE: Replace with script injection (safe after load event has fired.)
 
-				// NOTE: Replace with script injection (safe after load event has fired.)
-
+			try{
 				return module ? this._loadUriAndCheck(uri, module, cb) : this._loadUri(uri, cb); // Boolean
-			} else {
-
-				// NOTE: Like XD, can't signal whether file was found
-				//       Doesn't matter as failure should be immediately apparent
-
-				(this.global.window || this.global).document.write('<script type="text/javascript" src="' + uri + '"></script>');
-				return true;
+			}catch(e){
+				console.error(e);
+				return false; // Boolean
 			}
-		}catch(e){
-			console.error(e);
-			return false; // Boolean
+
+		} else {
+
+			// NOTE: Like XD, can't signal whether file was found
+			//       Doesn't matter as failure should be immediately apparent
+
+			dojo._writeScript(uri);
+			return true;
 		}
 	};
 
@@ -806,6 +811,9 @@ dojo.global = {
 			}else{
 				//Only do the scoping if no callback. If a callback is specified,
 				//it is most likely the i18n bundle stuff.
+
+				// NOTE: Review this
+
 				contents = that._scopePrefix + contents + that._scopeSuffix;
 			}
 			try {
@@ -817,21 +825,19 @@ dojo.global = {
 		};
 		var result = this._getText(uri, true, finished);
 
-		return !!(result); // _getText now returns true for async requests (dojo.config.syncXhrForModules === false)
+		return !!(result);
 	};
 	//>>excludeEnd("xdomainExclude");
 
-	// FIXME: Add logging to this method
-
 	dojo._loadUriAndCheck = function(/*String*/uri, /*String*/moduleName, /*Function?*/cb){
-		// summary: calls loadUri then findModule and returns true if both succeed
+		// summary: calls loadUri and checks that it loaded synchronously
 		var ok = false;
 		try{
 			ok = this._loadUri(uri, cb);
 		}catch(e){
-			console.error("failed loading " + uri + " with error: " + e);
+			console.error("Failed loading " + uri + " with error: " + e);
 		}
-		return !!(ok && (this.config.syncXhrForModules === false || this._loadedModules[moduleName])); // Boolean
+		return !!(ok && this._loadedModules[moduleName]); // Boolean
 	};
 
 	dojo.loaded = function(){
@@ -1066,13 +1072,13 @@ dojo.global = {
 				throw new Error("Could not load '" + moduleName + "'; last tried '" + relpath + "'");
 			}
 
-			// check that the symbol was defined
-			// Don't bother if we're doing xdomain (asynchronous) loading.
-			if(!this._isXDomain && this.config.syncXhrForModules){
-				// pass in false so we can give better error
+			// Check that the symbol was defined
+			// Don't bother if we're doing xdomain (asynchronous) loading (or writing scripts during loading.)
+
+			if(!this._isXDomain && !this._writeScript){
 				module = this._loadedModules[moduleName];
 				if(!module){
-					throw new Error("symbol '" + moduleName + "' is not defined after loading '" + relpath + "'"); 
+					throw new Error("Symbol '" + moduleName + "' is not defined after loading '" + relpath + "'"); 
 				}
 			}
 		}
@@ -1266,14 +1272,22 @@ dojo.global = {
 		//	|				...
 		//
 
-		// NOTE: Remove asynchronous option (syncXhrForModules === false) (will break this)
-
 		this.require("dojo.i18n");
 		var args = Array.prototype.slice.call(arguments, 0);
 		this._applyLocalization = function() {
-			dojo.i18n._requireLocalization.apply(dojo.hostenv, args);
+			this.i18n._requireLocalization.apply(dojo.hostenv, args);
 		};
-		(this.global.window || this.global).document.write('<script type="text/javascript"> dojo._applyLocalization(); delete dojo._applyLocalization; </script>');
+		if (this.i18n && this.i18n._requireLocalization) {
+
+			// Environment loaded i18n module synchronously
+
+			dojo._applyLocalization();
+		} else {
+
+			// During loading, browsers use document.write, which loads modules in order, but asynchronously
+
+			(this.global.window || this.global).document.write('<script type="text/javascript"> dojo._applyLocalization(); delete dojo._applyLocalization; </script>');
+		}
 	};
 
 	var ore = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$");
@@ -1626,13 +1640,18 @@ dojo._loadPath = function(/*String*/relpath, /*String?*/module, /*Function?*/cb)
 	this._isXDomain |= currentIsXDomain;
 	var uri = (/^\w+:/.test(relpath) ? "" : this.baseUrl) + relpath;
 
-	if (this._postLoad) {
+	if (this._postLoad || !dojo._writeScript) {
 
 		// NOTE: Replace with script injection (safe after load event has fired.)
 
-		return module ? this._loadUriAndCheck(uri, module, cb) : this._loadUri(uri, cb); // Boolean
+		try {
+			return (module && !currentIsXDomain) ? this._loadUriAndCheck(uri, module, cb) : this._loadUri(uri, cb); // Boolean
+		} catch(e) {
+			console.error(e);
+			return false; // Boolean
+		}
 	} else {
-		(this.global.window || this.global).document.write('<script type="text/javascript" src="' + uri + '"></script>');
+		dojo._writeScript(uri);
 		return true;
 	}
 };

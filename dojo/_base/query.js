@@ -105,19 +105,14 @@ if(typeof dojo != "undefined"){
 	// Toolkit aliases
 	////////////////////////////////////////////////////////////////////////
 
-	// if you are extracing dojo.query for use in your own system, you will
+	// if you are extracting dojo.query for use in your own system, you will
 	// need to provide these methods and properties. No other porting should be
 	// necessary, save for configuring the system to use a class other than
 	// dojo.NodeList as the return instance instantiator
 	var trim = 			d.trim;
 	var each = 			d.forEach;
-	// 					d.isIE; // float
-	// 					d.isSafari; // float
-	// 					d.isOpera; // float
-	// 					d.isWebKit; // float
-	// 					d.doc ; // document element
-	var qlc = d._queryListCtor = 		d.NodeList;
-	var isString = 		d.isString;
+	var qlc = d._queryListCtor = 	d.NodeList;
+	var isString = 			d.isString;
 
 	var getDoc = function(){ return d.doc; };
 

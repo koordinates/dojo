@@ -129,7 +129,7 @@ dojo.declare("dojo.dnd.Source", dojo.dnd.Selector, {
 		}
 		for(var i = 0; i < nodes.length; ++i){
 			var type = source.getItem(nodes[i].id).type;
-			// type instanceof Array
+			// type is an Array (?)
 			var flag = false;
 			for(var j = 0; j < type.length; ++j){
 				if(type[j] in this.accept){
