@@ -63,7 +63,7 @@ dojo = {
 }
 =====*/
 
-if ((dojo.global.window || dojo.global).document){
+if ((dojo._getWin()).document){
 	dojo.isBrowser = true;
 	dojo._name = "browser";
 
