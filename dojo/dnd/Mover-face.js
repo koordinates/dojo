@@ -3,6 +3,7 @@ dojo.required("dojo.dnd.Mover");
 
 dojo.declare("dojo.dnd.Mover", null, {
 	constructor: function(node, e, host){
+
 		// summary: an object, which makes a node follow the mouse, 
 		//	used as a default mover, and as a base class for custom movers
 		// node: Node: a node (or node's id) to be moved
@@ -10,6 +11,7 @@ dojo.declare("dojo.dnd.Mover", null, {
 		//	only pageX and pageY properties are used
 		// host: Object?: object which implements the functionality of the move,
 		//	 and defines proper events (onMoveStart and onMoveStop)
+
 		this.node = dojo.byId(node);
 		this.marginBox = {l: e.pageX, t: e.pageY};
 		this.mouseButton = e.button;
