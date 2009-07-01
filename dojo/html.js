@@ -1,8 +1,6 @@
 dojo.provide("dojo.html");
 dojo.required("dojo.parser");
 
-
-
 (function(){
 
 	// idCounter is incremented with each instantiation to allow asignment of a unique id for tracking, logging purposes
