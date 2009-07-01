@@ -1,5 +1,4 @@
 dojo.provide("dojo.dnd.Mover");
-dojo.required("dojo.dnd.common");
 dojo.required("dojo.dnd.autoscroll");
 
 dojo.declare("dojo.dnd.Mover", null, {
