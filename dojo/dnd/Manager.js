@@ -1,6 +1,5 @@
 dojo.provide("dojo.dnd.Manager");
 
-dojo.required("dojo.dnd.common");
 dojo.required("dojo.dnd.autoscroll");
 dojo.required("dojo.dnd.Avatar");
 
