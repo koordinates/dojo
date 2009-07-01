@@ -1,6 +1,6 @@
 dojo.provide("dojo.jaxer");
 
-if(typeof print == "function"){
+if(typeof Jaxer != 'undefined' && typeof Jaxer.Log != 'undefined'){
 	console.debug = Jaxer.Log.debug;
 	console.warn = Jaxer.Log.warn;
 	console.error = Jaxer.Log.error;
@@ -8,4 +8,4 @@ if(typeof print == "function"){
 	console.log = Jaxer.Log.warn;
 }
 
-onserverload = dojo._loadInit;
+var onserverload = dojo._loadInit;
