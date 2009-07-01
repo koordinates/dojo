@@ -58,11 +58,11 @@
 						var a2 = dojo.fx.combine([w2, f2]);
 				
 						dojo.connect(a1, "onEnd", function(){
-							console.log("finish1");
+							console.log("Finished wipe in.");
 							a2.play();
 						});
 						dojo.connect(a2, "onEnd", function(){
-							console.log("finish2");
+							console.log("Finished fade in.");
 						});
 						a1.play();
 					}
