@@ -1,8 +1,6 @@
 dojo.provide("dojo.dnd.autoscroll");
 dojo.required("dojo.dnd.common");
 
-// DOCME: Requirements?
-
 dojo.dnd.getViewport = function(){
 	// summary: returns a viewport size (visible part of the window)
 
