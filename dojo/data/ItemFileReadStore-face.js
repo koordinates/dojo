@@ -39,11 +39,11 @@ dojo.declare("dojo.data.ItemFileReadStore", null,{
 		this._jsonFileUrl = keywordParameters.url;
 		this._jsonData = keywordParameters.data;
 		this._datatypeMap = keywordParameters.typeMap || {};
-		if(!this._datatypeMap['Date']){
+		if(!this._datatypeMap.Date){
 			//If no default mapping for dates, then set this as default.
 			//We use the dojo.date.stamp here because the ISO format is the 'dojo way'
 			//of generically representing dates.
-			this._datatypeMap['Date'] = {
+			this._datatypeMap.Date = {
 											type: Date,
 											deserialize: function(value){
 												return dojo.date.stamp.fromISOString(value);
@@ -250,9 +250,11 @@ dojo.declare("dojo.data.ItemFileReadStore", null,{
 				//same value for each item examined.  Much more efficient.
 				var regexpList = {};
 				for(key in requestArgs.query){
-					value = requestArgs.query[key];
-					if(typeof value === "string"){
-						regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+					if (dojo.isOwnProperty(requestArgs.query, key)) {
+						value = requestArgs.query[key];
+						if(typeof value === "string"){
+							regexpList[key] = dojo.data.util.filter.patternToRegExp(value, ignoreCase);
+						}
 					}
 				}
 
@@ -263,9 +265,11 @@ dojo.declare("dojo.data.ItemFileReadStore", null,{
 						match = false;
 					}else{
 						for(key in requestArgs.query) {
-							value = requestArgs.query[key];
-							if (!self._containsValue(candidateItem, key, value, regexpList[key])){
-								match = false;
+							if (dojo.isOwnProperty(requestArgs.query, key)) {
+								value = requestArgs.query[key];
+								if (!self._containsValue(candidateItem, key, value, regexpList[key])){
+									match = false;
+								}
 							}
 						}
 					}
@@ -452,19 +456,21 @@ dojo.declare("dojo.data.ItemFileReadStore", null,{
 		function addItemAndSubItemsToArrayOfAllItems(/* Item */ anItem){
 			self._arrayOfAllItems.push(anItem);
 			for(var attribute in anItem){
-				var valueForAttribute = anItem[attribute];
-				if(valueForAttribute){
-					if(dojo.isArray(valueForAttribute)){
-						var valueArray = valueForAttribute;
-						for(var k = 0; k < valueArray.length; ++k){
-							var singleValue = valueArray[k];
-							if(valueIsAnItem(singleValue)){
-								addItemAndSubItemsToArrayOfAllItems(singleValue);
+				if (dojo.isOwnProperty(anItem, attribute)) {
+					var valueForAttribute = anItem[attribute];
+					if(valueForAttribute){
+						if(dojo.isArray(valueForAttribute)){
+							var valueArray = valueForAttribute;
+							for(var k = 0; k < valueArray.length; ++k){
+								var singleValue = valueArray[k];
+								if(valueIsAnItem(singleValue)){
+									addItemAndSubItemsToArrayOfAllItems(singleValue);
+								}
 							}
-						}
-					}else{
-						if(valueIsAnItem(valueForAttribute)){
-							addItemAndSubItemsToArrayOfAllItems(valueForAttribute);
+						}else{
+							if(valueIsAnItem(valueForAttribute)){
+								addItemAndSubItemsToArrayOfAllItems(valueForAttribute);
+							}
 						}
 					}
 				}
@@ -506,18 +512,20 @@ dojo.declare("dojo.data.ItemFileReadStore", null,{
 		for(i = 0; i < this._arrayOfAllItems.length; ++i){
 			item = this._arrayOfAllItems[i];
 			for(key in item){
-				if (key !== this._rootItemPropName)
-				{
-					var value = item[key];
-					if(value !== null){
-						if(!dojo.isArray(value)){
-							item[key] = [value];
+				if (dojo.isOwnProperty(item, key)) {
+					if (key !== this._rootItemPropName)
+					{
+						var value = item[key];
+						if(value !== null){
+							if(!dojo.isArray(value)){
+								item[key] = [value];
+							}
+						}else{
+							item[key] = [null];
 						}
-					}else{
-						item[key] = [null];
 					}
+					allAttributeNames[key]=key;
 				}
-				allAttributeNames[key]=key;
 			}
 		}
 
@@ -587,40 +595,41 @@ dojo.declare("dojo.data.ItemFileReadStore", null,{
 		for(i = 0; i < this._arrayOfAllItems.length; ++i){
 			item = this._arrayOfAllItems[i]; // example: { name:['Kermit'], friends:[{_reference:{name:'Miss Piggy'}}] }
 			for(key in item){
-				arrayOfValues = item[key]; // example: [{_reference:{name:'Miss Piggy'}}]
-				for(var j = 0; j < arrayOfValues.length; ++j) {
-					value = arrayOfValues[j]; // example: {_reference:{name:'Miss Piggy'}}
-					if(value !== null && typeof value == "object"){
-						if(value._type && value._value){
-							var type = value._type; // examples: 'Date', 'Color', or 'ComplexNumber'
-							var mappingObj = this._datatypeMap[type]; // examples: Date, dojo.Color, foo.math.ComplexNumber, {type: dojo.Color, deserialize(value){ return new dojo.Color(value)}}
-							if(!mappingObj){ 
-								throw new Error("dojo.data.ItemFileReadStore: in the typeMap constructor arg, no object class was specified for the datatype '" + type + "'");
-							}else if(dojo.isFunction(mappingObj)){
-								arrayOfValues[j] = new mappingObj(value._value);
-							}else if(dojo.isFunction(mappingObj.deserialize)){
-								arrayOfValues[j] = mappingObj.deserialize(value._value);
-							}else{
-								throw new Error("dojo.data.ItemFileReadStore: Value provided in typeMap was neither a constructor, nor a an object with a deserialize function");
+				if (dojo.isOwnProperty(item, key)) {
+					arrayOfValues = item[key]; // example: [{_reference:{name:'Miss Piggy'}}]
+					for(var j = 0; j < arrayOfValues.length; ++j) {
+						value = arrayOfValues[j]; // example: {_reference:{name:'Miss Piggy'}}
+						if(value !== null && typeof value == "object"){
+							if(value._type && value._value){
+								var type = value._type; // examples: 'Date', 'Color', or 'ComplexNumber'
+								var MappingObj = this._datatypeMap[type]; // examples: Date, dojo.Color, foo.math.ComplexNumber, {type: dojo.Color, deserialize(value){ return new dojo.Color(value)}}
+								if(!MappingObj){ 
+									throw new Error("dojo.data.ItemFileReadStore: in the typeMap constructor arg, no object class was specified for the datatype '" + type + "'");
+								}else if(dojo.isFunction(MappingObj)){
+									arrayOfValues[j] = new MappingObj(value._value);
+								}else if(dojo.isFunction(MappingObj.deserialize)){
+									arrayOfValues[j] = MappingObj.deserialize(value._value);
+								}else{
+									throw new Error("dojo.data.ItemFileReadStore: Value provided in typeMap was neither a constructor, nor a an object with a deserialize function");
+								}
 							}
-						}
-						if(value._reference){
-							var referenceDescription = value._reference; // example: {name:'Miss Piggy'}
-							if(!dojo.isObject(referenceDescription)){
-								// example: 'Miss Piggy'
-								// from an item like: { name:['Kermit'], friends:[{_reference:'Miss Piggy'}]}
-								arrayOfValues[j] = this._itemsByIdentity[referenceDescription];
-							}else{
-								// example: {name:'Miss Piggy'}
-								// from an item like: { name:['Kermit'], friends:[{_reference:{name:'Miss Piggy'}}] }
-								for(var k = 0; k < this._arrayOfAllItems.length; ++k){
-									var candidateItem = this._arrayOfAllItems[k];
-									var found = true;
-									for(var refKey in referenceDescription){
-										if(candidateItem[refKey] != referenceDescription[refKey]){ 
-											found = false; 
+							if(value._reference){
+								var referenceDescription = value._reference; // example: {name:'Miss Piggy'}
+								if(!dojo.isObject(referenceDescription)){
+									// example: 'Miss Piggy'
+									// from an item like: { name:['Kermit'], friends:[{_reference:'Miss Piggy'}]}
+									arrayOfValues[j] = this._itemsByIdentity[referenceDescription];
+								}else{
+									// example: {name:'Miss Piggy'}
+									// from an item like: { name:['Kermit'], friends:[{_reference:{name:'Miss Piggy'}}] }
+									for(var k = 0; k < this._arrayOfAllItems.length; ++k){
+										var candidateItem = this._arrayOfAllItems[k];
+										var found = true;
+										for(var refKey in referenceDescription){
+											if(candidateItem[refKey] != referenceDescription[refKey]){ 
+												found = false; 
+											}
 										}
-									}
 									if(found){ 
 										arrayOfValues[j] = candidateItem; 
 									}
@@ -630,14 +639,15 @@ dojo.declare("dojo.data.ItemFileReadStore", null,{
 								var refItem = arrayOfValues[j];
 								if(this.isItem(refItem)){
 									this._addReferenceToMap(refItem, item, key);
+									}
 								}
-							}
-						}else if(this.isItem(value)){
-							//It's a child item (not one referenced through _reference).  
-							//We need to treat this as a referenced item, so it can be cleaned up
-							//in a write store easily.
-							if(this.referenceIntegrity){
-								this._addReferenceToMap(value, item, key);
+							}else if(this.isItem(value)){
+								//It's a child item (not one referenced through _reference).  
+								//We need to treat this as a referenced item, so it can be cleaned up
+								//in a write store easily.
+								if(this.referenceIntegrity){
+									this._addReferenceToMap(value, item, key);
+								}
 							}
 						}
 					}
