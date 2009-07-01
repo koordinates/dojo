@@ -33,38 +33,43 @@
 		<script type="text/javascript">
 			if (typeof dojo != 'undefined') {
 				dojo.require("dojo.fx");
+				dojo.require("dojo.fx.easing");
 				dojo.addOnLoad(function(){
-					if (dojo.byId && dojo.fx) {
-						dojo.byId("foo").style.height = "0px";
+					if (dojo.byId && dojo.fx) {						
 						var w1 = dojo.fx.wipeIn({
 							node: "foo",
-							duration: 500
+							duration: 500,
+							easing: dojo.fx.easing.quadIn
 						});
 						var f1 = dojo.fadeOut({
 							node: "foo",
-							duration: 500
+							duration: 1000,
+							easing: dojo.fx.easing.quadOut
 						});
 						var a1 = dojo.fx.chain([w1, f1]);
-
-						dojo.byId("foo").style.height = "0px";
+						
 						var w2 = dojo.fx.wipeIn({
 							node: "foo",
-							duration: 500
+							duration: 1000,
+							easing: dojo.fx.easing.quartIn
 						});
 						var f2 = dojo.fadeIn({
 							node: "foo",
-							duration: 1000
+							duration: 1000,
+							easing: dojo.fx.easing.quartIn
 						});
 						var a2 = dojo.fx.combine([w2, f2]);
 				
 						dojo.connect(a1, "onEnd", function(){
-							console.log("Finished wipe in.");
+							console.log("Finished wipe in, fade out chain.");
+							dojo.byId("foo").style.height = "0px";
 							a2.play();
 						});
 						dojo.connect(a2, "onEnd", function(){
-							console.log("Finished fade in.");
+							console.log("Finished wipe in, fade in combo.");
 						});
-						a1.play();
+						dojo.byId("foo").style.height = "0px";
+						a1.play();						
 					}
 				});
 			}

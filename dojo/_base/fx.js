@@ -1,4 +1,8 @@
 dojo.provide("dojo._base.fx");
+
+// These three are currently included automatically for browsers
+// If that changes in the future, exceptions are thrown to note the missing dependencies
+
 dojo.required("dojo._base.Color");
 dojo.required("dojo._base.connect");
 dojo.required("dojo._base.html");
@@ -9,7 +13,6 @@ dojo.required("dojo._base.html");
 */
 
 (function(){
-
 	var _mixin = dojo.mixin;
 	var byId = dojo.byId;
 	var isOwnProperty = dojo.isOwnProperty;
@@ -292,7 +295,7 @@ dojo.required("dojo._base.html");
 		
 		_clearTimer: function(){
 			// summary: Clear the play delay timer
-			window.clearTimeout(this._delayTimer);
+			dojo._getWin().clearTimeout(this._delayTimer);
 			delete this._delayTimer;
 		}
 		
@@ -305,13 +308,12 @@ dojo.required("dojo._base.html");
 		};
 
 	dojo._Animation.prototype._startTimer = function(){
-		// this._timer = setTimeout(dojo.hitch(this, "_cycle"), this.rate);
 		if(!this._timer){
 			this._timer = dojo.connect(runner, "run", this, "_cycle");
 			ctr++;
 		}
 		if(!timer){
-			timer = window.setInterval(dojo.hitch(runner, "run"), this.rate);
+			timer = dojo._getWin().setInterval(dojo.hitch(runner, "run"), this.rate);
 		}
 	};
 
@@ -322,20 +324,21 @@ dojo.required("dojo._base.html");
 			ctr--;
 		}
 		if(ctr <= 0){
-			window.clearInterval(timer);
+			dojo._getWin().clearInterval(timer);
 			timer = null;
 			ctr = 0;
 		}
 	};
 
-	var _makeFadeable = 
-		//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-		document.documentElement.currentStyle ? function(node){
-			if (node.currentStyle && !node.currentStyle.hasLayout) { node.style.zoom = 1; }
+	var _makeFadeable;
 
-		} : 
-		//>>excludeEnd("webkitMobile");
-		function(){};
+	if (dojo.isHostObjectProperty(dojo._getWin().document.documentElement, 'currentStyle')) {
+		_makeFadeable = function(node){
+			if (node.currentStyle && !node.currentStyle.hasLayout && typeof node.style.zoom != 'undefined') {
+				node.style.zoom = 1;
+			}
+		};
+	}
 
 	dojo._fade = function(/*Object*/ args){
 		//	summary: 
@@ -348,13 +351,15 @@ dojo.required("dojo._base.html");
 		 	props = fArgs.properties.opacity = {};
 		
 		props.start = !("start" in fArgs) ?
-			function(){ 
+			function(){
 				return +dojo.style(fArgs.node, "opacity")||0; 
 			} : fArgs.start;
 		props.end = fArgs.end;
 
 		var anim = dojo.animateProperty(fArgs);
-		dojo.connect(anim, "beforeBegin", dojo.partial(_makeFadeable, fArgs.node));
+		if (_makeFadeable) {
+			_makeFadeable(fArgs.node);
+		}
 
 		return anim; // dojo._Animation
 	};

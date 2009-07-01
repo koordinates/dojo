@@ -369,7 +369,7 @@ dojo.byId = function(id, doc){
         	      var o = el.style[s];
 	              if (o) { return parseFloat(o); }
         	      o = gcs(el).opacity;
-	              if (o !== null) { return parseFloat(o); }
+	              if (o !== undefined) { return parseFloat(o); }
         	      return 1;
 		};
 
