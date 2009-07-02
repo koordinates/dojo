@@ -366,10 +366,8 @@ dojo.byId = function(id, doc){
 	        var i, s, reOpacity = new RegExp('opacity=([^\\)]*)', 'i');
 
 		var fn = function(el) {
-        	      var o = el.style[s];
+        	      var o = el.style[s] || gcs(el)[s];
 	              if (o) { return parseFloat(o); }
-        	      o = gcs(el).opacity;
-	              if (o !== undefined) { return parseFloat(o); }
         	      return 1;
 		};
 
