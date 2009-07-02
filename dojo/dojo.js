@@ -783,6 +783,7 @@ var djConfig = {
 			return true;
 		}
 	};
+	//>>excludeEnd("xdomainExclude");
 
 	var dojoEval = dojo['eval'];
 
@@ -833,7 +834,6 @@ var djConfig = {
 
 		return !!(this._getText(uri, true, getTextFinished));
 	};
-	//>>excludeEnd("xdomainExclude");
 
 	dojo._loadUriAndCheck = function(/*String*/uri, /*String*/moduleName, /*Function?*/cb){
 
