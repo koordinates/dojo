@@ -415,7 +415,7 @@ dojo.byId = function(id, doc){
 	dojo._setOpacity = (function(el) { 
 	        var i, s, so;
 	        var reOpacity = new RegExp('alpha\\(opacity=[^\\)]+\\)', 'i');
-		var fn = function(el, o) { el.style[s] = o; };
+		var fn = function(el, o) { el.style[s] = String(Math.max(o, 0.0001)); };
 
 	        i = opacityStyles.length;
         	while (i--) {
