@@ -8,6 +8,7 @@ dojo.require("dijit.form._FormMixin");
 dojo.require("dijit._DialogMixin");
 dojo.require("dijit.DialogUnderlay");
 dojo.require("dijit.layout.ContentPane");
+dojo.require("dojo.i18n");
 dojo.requireLocalization("dijit", "common");
 dojo.require("dijit.Dialog-face");
 dojo.require("dijit.TooltipDialog");
