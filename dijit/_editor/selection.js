@@ -5,6 +5,8 @@ dojo.provide("dijit._editor.selection");
 //		sub-optimal in terms of runtime performance. We should investigate the
 //		size difference for differentiating at definition time.
 
+// NOTE: Redo
+
 dojo.mixin(dijit._editor.selection, {
 	getType: function(){
 		// summary: Get the selection type (like dojo.doc.select.type in IE).

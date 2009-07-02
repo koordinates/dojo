@@ -1,5 +1,7 @@
 dojo.provide("dijit._editor.range");
 
+// NOTE: Redo
+
 dijit.range={};
 
 dijit.range.getIndex=function(/*DomNode*/node, /*DomNode*/parent){
