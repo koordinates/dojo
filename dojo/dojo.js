@@ -48,7 +48,7 @@
 		The Dojo Team
 */
 
-var dojo;
+var dojo, djConfig;
 
 // Only try to load Dojo if we don't already have one. Dojo always follows
 // a "first Dojo wins" policy.
@@ -83,7 +83,7 @@ if(typeof dojo == "undefined"){
 
 		// Feature detection
 
-		var reFeaturedMethod = new RegExp('^function|object$', 'i');
+		var reFeaturedMethod = new RegExp('^(function|object)$', 'i');
 
 		// summary:
 		// Test for host object property referencing an object to be called
@@ -158,6 +158,8 @@ dojo.global = {
 		var win = getWin();
 		var doc = win.document;
 
+		// NOTE: Need build exclude directives for these checks
+
 		if(
 			typeof this.load == "function" &&
 			(this.Packages == "function" || typeof this.Packages == "object")
@@ -178,8 +180,7 @@ dojo.global = {
 			win instanceof this.ChromeWindow &&
 			isHostObjectProperty(this, 'Components')){
 			try{
-				(this.Components.classes["@mozilla.org/moz/jssubscript-loader;1"]);
-				isFFExt = true;
+				isFFExt = (this.Components.classes["@mozilla.org/moz/jssubscript-loader;1"]) || true;
 				hostEnv = "ff_ext";
 			}catch(e){
 				/* squelch Permission Denied error, which means this is not an extension */
@@ -1453,6 +1454,7 @@ var djConfig = {
 		
 		//If the path is an absolute path (starts with a / or is on another
 		//domain/xdomain) then don't add the baseUrl.
+
 		var colonIndex = loc.indexOf(":");
 		if(loc.charAt(0) != "/" && (colonIndex == -1 || colonIndex > loc.indexOf("/"))){
 			loc = dojo.baseUrl + loc;
