@@ -81,19 +81,10 @@ dojo.declare(
 
 		_setEncTypeAttr: function(/*String*/ value){
 			this.encType = value;
-			dojo.attr(this.domNode, "encType", value);
-			if(dojo.isIE){ this.domNode.encoding = value; }
+			dojo.attr(this.domNode, "enctype", value);
 		},
 
-		postCreate: function(){
-			// IE tries to hide encType
-			// TODO: this code should be in parser, not here.
-			if(dojo.isIE && this.srcNodeRef && this.srcNodeRef.attributes){
-				var item = this.srcNodeRef.attributes.getNamedItem('encType');
-				if(item && !item.specified && (typeof item.value == "string")){
-					this.attr('encType', item.value);
-				}
-			}
+		postCreate: function(){			
 			this.inherited(arguments);
 		},
 
@@ -109,7 +100,9 @@ dojo.declare(
 		},
 
 		_onReset: function(e){
+
 			// create fake event so we can know if preventDefault() is called
+
 			var faux = {
 				returnValue: true, // the IE way
 				preventDefault: function(){  // not IE
@@ -117,7 +110,9 @@ dojo.declare(
 						},
 				stopPropagation: function(){}, currentTarget: e.currentTarget, target: e.target
 			};
+
 			// if return value is not exactly false, and haven't called preventDefault(), then reset
+
 			if(!(this.onReset(faux) === false) && faux.returnValue){
 				this.reset();
 			}
@@ -127,7 +122,9 @@ dojo.declare(
 
 		_onSubmit: function(e){
 			var fp = dijit.form.Form.prototype;
+
 			// TODO: remove this if statement beginning with 2.0
+
 			if(this.execute != fp.execute || this.onExecute != fp.onExecute){
 				dojo.deprecated("dijit.form.Form:execute()/onExecute() are deprecated. Use onSubmit() instead.", "", "2.0");
 				this.onExecute();
@@ -138,7 +135,8 @@ dojo.declare(
 			}
 		},
 		
-		onSubmit: function(/*Event?*/e){ 
+		onSubmit: function(/*Event?*/e){
+
 			// summary:
 			//		Callback when user submits the form.
 			// description:
@@ -154,8 +152,10 @@ dojo.declare(
 		},
 
 		submit: function(){
+
 			// summary:
 			//		programmatically submit form if and only if the `onSubmit` returns true
+
 			if(!(this.onSubmit() === false)){
 				this.containerNode.submit();
 			}
