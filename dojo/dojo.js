@@ -1005,7 +1005,7 @@ var djConfig = {
 
 	dojo.required = function(/*String*/moduleName) {
 
-		//	summary: loads a Javascript module from the appropriate URI
+		//	summary: Throws an exception is the module has not been loaded and executed
 
 		if (!this._loadedModules[moduleName]){
 			throw new Error('Missing dependency: ' + moduleName + '.');
