@@ -104,16 +104,18 @@ dojo.declare(
 			// khtml 3.5.2 has selection* methods as does webkit nightlies from 2005-06-22
 			var pos = 0;
 
-			// NOTE: Text selection and range logic should be centralized
+			// NOTE: Should call functions in selection and range modules
 
 			if(typeof(element.selectionStart)=="number"){
-				// FIXME: this is totally borked on Moz < 1.3. Any recourse?
+
+				// FIXME: This is broken on Moz < 1.3. Any recourse?
+
 				pos = element.selectionStart;
 			}else if(dojo.doc.selection && dojo.isHostMethod(dojo.doc.selection, 'createRange')){
+
 				// in the case of a mouse click in a popup being handled,
 				// then the dojo.doc.selection is not the textarea, but the popup
-				// var r = dojo.doc.selection.createRange();
-				// hack to get IE 6 to play nice.
+
 				var tr = dojo.doc.selection.createRange().duplicate();
 				var ntr = element.createTextRange();
 				tr.move("character",0);
