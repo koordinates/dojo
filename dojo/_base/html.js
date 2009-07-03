@@ -1230,7 +1230,7 @@ dojo.byId = function(id, doc){
 		_attrId = dojo._scopeName + "attrid";
 	html = window.document.documentElement;
 	var attributesBad = !!(typeof html.getAttribute != 'undefined' && html.getAttribute('style') && typeof html.getAttribute('style') != 'string');
-	var attributeAliases = {'for':'htmlFor', accesskey:'accessKey', maxlength:'maxLength', 'class':'className', readonly:'readOnly', longdesc:'longDesc', tabindex:'tabIndex', rowspan:'rowSpan', colspan:'colSpan', codebase:'codeBase', ismap:'isMap', innerhtml:'innerHTML'}; // Last for backwards compatibility
+	var attributeAliases = {'for':'htmlFor', accesskey:'accessKey', maxlength:'maxLength', 'class':'className', readonly:'readOnly', longdesc:'longDesc', tabindex:'tabIndex', rowspan:'rowSpan', colspan:'colSpan', codebase:'codeBase', enctype:'encType', ismap:'isMap', innerhtml:'innerHTML'}; // Last for backwards compatibility
 
 	// Used by realAttr to fix broken attributes
 
@@ -1525,14 +1525,15 @@ dojo.byId = function(id, doc){
 		node.removeAttribute(name);
 	};
 
-	// For use with XML elements
-	// Also used by query module, regardless of DOM type as it needs attributes rather than properties
+	// Used to get/set HTML attributes (excluding custom)
+	// Can also be used for XML attributes (but better to use host implemented get/setAttribute)
+
 	// Returns a string or null
 
 	// NOTE: Does not support multiple sets (name must be a string)
 
 	// NOTE: Do NOT use with custom HTML attributes
-	//       Faster and simpler to use host implemented get/setAttribute to get and set custom attributes
+	//       Better to use host implemented get/setAttribute to get and set custom attributes
 
 	dojo.realAttr = (function() {
 		var nn, nameC, hasAttribute, doc, att, alias;
