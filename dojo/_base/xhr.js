@@ -2,19 +2,16 @@ dojo.provide("dojo._base.xhr");
 dojo.required("dojo._base.json");
 dojo.required("dojo._base.query");
 
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 (function(){
-//>>excludeEnd("webkitMobile");
-	var _d = dojo;
 	function setValue(/*Object*/obj, /*String*/name, /*String*/value){
 		//summary:
 		//		For the named property in object, set the value. If a value
 		//		already exists and it is a string, convert the value to be an
 		//		array of values.
 		var val = obj[name];
-		if(_d.isString(val)){
+		if(typeof val == 'string'){
 			obj[name] = [val, value];
-		}else if(_d.isArray(val)){
+		}else if(dojo.isArray(val)){
 			val.push(value);
 		}else{
 			obj[name] = value;
@@ -54,7 +51,7 @@ dojo.required("dojo._base.query");
 
 		var ret = {};
 		var exclude = "file|submit|image|reset|button|";
-		_d.forEach(dojo.byId(formNode).elements, function(item){
+		dojo.forEach(dojo.byId(formNode).elements, function(item){
 			var _in = item.name;
 			var type = (item.type||"").toLowerCase();
 			if(_in && type && exclude.indexOf(type) == -1 && !item.disabled){
@@ -62,7 +59,7 @@ dojo.required("dojo._base.query");
 					if(item.checked){ setValue(ret, _in, item.value); }
 				}else if(item.multiple){
 					ret[_in] = [];
-					_d.query("option", item).forEach(function(opt){
+					dojo.query("option", item).forEach(function(opt){
 						if(opt.selected){
 							setValue(ret, _in, opt.value);
 						}
@@ -97,20 +94,20 @@ dojo.required("dojo._base.query");
 		//	
 		//	|	"blah=blah&multi=thud&multi=thonk"
 
-		// FIXME: need to implement encodeAscii!!
-		var enc = encodeURIComponent;
 		var pairs = [];
 		var backstop = {};
 		for(var name in map){
-			var value = map[name];
-			if(value != backstop[name]){
-				var assign = enc(name) + "=";
-				if(_d.isArray(value)){
-					for(var i=0; i < value.length; i++){
-						pairs.push(assign + enc(value[i]));
+			if (dojo.isOwnProperty(map, name)) {
+				var value = map[name];
+				if(value != backstop[name]){
+					var assign = encodeURIComponent(name) + "=";
+					if(dojo.isArray(value)){
+						for(var i=0; i < value.length; i++){
+							pairs.push(assign + encodeURIComponent(value[i]));
+						}
+					}else{
+						pairs.push(assign + encodeURIComponent(value));
 					}
-				}else{
-					pairs.push(assign + enc(value));
 				}
 			}
 		}
@@ -121,14 +118,14 @@ dojo.required("dojo._base.query");
 		// summary:
 		//		Returns a URL-encoded string representing the form passed as either a
 		//		node or string ID identifying the form to serialize
-		return _d.objectToQuery(_d.formToObject(formNode)); // String
+		return dojo.objectToQuery(dojo.formToObject(formNode)); // String
 	};
 
 	dojo.formToJson = function(/*DOMNode||String*/ formNode, /*Boolean?*/prettyPrint){
 		// summary:
 		//		return a serialized JSON string from a form node or string
 		//		ID identifying the form to serialize
-		return _d.toJson(_d.formToObject(formNode), prettyPrint); // String
+		return dojo.toJson(dojo.formToObject(formNode), prettyPrint); // String
 	};
 
 	dojo.queryToObject = function(/*String*/ str){
@@ -155,15 +152,15 @@ dojo.required("dojo._base.query");
 		var ret = {};
 		var qp = str.split("&");
 		var dec = decodeURIComponent;
-		_d.forEach(qp, function(item){
+		dojo.forEach(qp, function(item){
 			if(item.length){
 				var parts = item.split("=");
 				var name = dec(parts.shift());
 				var val = dec(parts.join("="));
-				if(_d.isString(ret[name])){
+				if(typeof ret[name] == 'string'){
 					ret[name] = [ret[name]];
 				}
-				if(_d.isArray(ret[name])){
+				if(dojo.isArray(ret[name])){
 					ret[name].push(val);
 				}else{
 					ret[name] = val;
@@ -204,7 +201,7 @@ dojo.required("dojo._base.query");
 	dojo._contentHandlers = {
 		text: function(xhr){ return xhr.responseText; },
 		json: function(xhr){
-			return _d.fromJson(xhr.responseText || null);
+			return dojo.fromJson(xhr.responseText || null);
 		},
 		"json-comment-filtered": function(xhr){ 
 			// NOTE: the json-comment-filtered option was implemented to prevent
@@ -220,19 +217,20 @@ dojo.required("dojo._base.query");
 			if(cStartIdx == -1 || cEndIdx == -1){
 				throw new Error("JSON was not comment filtered");
 			}
-			return _d.fromJson(value.substring(cStartIdx+2, cEndIdx));
+			return dojo.fromJson(value.substring(cStartIdx+2, cEndIdx));
 		},
 		javascript: function(xhr){ 
-			// FIXME: try Moz and IE specific eval variants?
-			return _d.eval(xhr.responseText);
+			return dojo.eval(xhr.responseText);
 		},
 		xml: function(xhr){
 			var result = xhr.responseXML;
-			//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-			if(window.ActiveXObject && (!result || !result.documentElement)){
+
+			// NOTE: Why do this?
+
+			if(dojo.isHostObjectProperty(window, 'ActiveXObject') && (!result || !result.documentElement)){
 				var ms = function(n){ return "MSXML" + n + ".DOMDocument"; };
 				var dp = ["Microsoft.XMLDOM", ms(6), ms(4), ms(3), ms(2)];
-				_d.some(dp, function(p){
+				dojo.some(dp, function(p){
 					try{
 						var dom = new ActiveXObject(p);
 						dom.async = false;
@@ -242,13 +240,12 @@ dojo.required("dojo._base.query");
 					return true;
 				});
 			}
-			//>>excludeEnd("webkitMobile");
 			return result; // DOMDocument
 		}
 	};
 
 	dojo._contentHandlers["json-comment-optional"] = function(xhr){
-		var handlers = _d._contentHandlers;
+		var handlers = dojo._contentHandlers;
 		if(xhr.responseText && xhr.responseText.indexOf("\/*") != -1){
 			return handlers["json-comment-filtered"](xhr);
 		}else{
@@ -382,12 +379,12 @@ dojo.required("dojo._base.query");
 		//Get values from form if requestd.
 		var formObject = null;
 		if(args.form){ 
-			var form = _d.byId(args.form);
+			var form = dojo.byId(args.form);
 			//IE requires going through getAttributeNode instead of just getAttribute in some form cases, 
 			//so use it for all.  See #2844
 			var actnNode = form.getAttributeNode("action");
 			ioArgs.url = ioArgs.url || (actnNode ? actnNode.value : null); 
-			formObject = _d.formToObject(form);
+			formObject = dojo.formToObject(form);
 		}
 
 		// set up the query params
@@ -404,11 +401,11 @@ dojo.required("dojo._base.query");
 		if(args.preventCache){
 			miArgs.push({"dojo.preventCache": new Date().valueOf()});
 		}
-		ioArgs.query = _d.objectToQuery(_d.mixin.apply(null, miArgs));
+		ioArgs.query = dojo.objectToQuery(dojo.mixin.apply(null, miArgs));
 	
 		// .. and the real work of getting the deferred in order, etc.
 		ioArgs.handleAs = args.handleAs || "text";
-		var d = new _d.Deferred(canceller);
+		var d = new dojo.Deferred(canceller);
 		d.addCallbacks(okHandler, function(error){
 			return errHandler(error, d);
 		});
@@ -418,19 +415,19 @@ dojo.required("dojo._base.query");
 		//The callbacks will get the deferred result value as the
 		//first argument and the ioArgs object as the second argument.
 		var ld = args.load;
-		if(ld && _d.isFunction(ld)){
+		if(ld && typeof ld == 'function'){
 			d.addCallback(function(value){
 				return ld.call(args, value, ioArgs);
 			});
 		}
 		var err = args.error;
-		if(err && _d.isFunction(err)){
+		if(err && typeof err == 'function'){
 			d.addErrback(function(value){
 				return err.call(args, value, ioArgs);
 			});
 		}
 		var handle = args.handle;
-		if(handle && _d.isFunction(handle)){
+		if(handle && typeof handle == 'function'){
 			d.addBoth(function(value){
 				return handle.call(args, value, ioArgs);
 			});
@@ -462,7 +459,7 @@ dojo.required("dojo._base.query");
 	var _deferredOk = function(/*Deferred*/dfd){
 		//summary: okHandler function for dojo._ioSetArgs call.
 
-		var ret = _d._contentHandlers[dfd.ioArgs.handleAs](dfd.ioArgs.xhr);
+		var ret = dojo._contentHandlers[dfd.ioArgs.handleAs](dfd.ioArgs.xhr);
 		return ret === undefined ? null : ret;
 	};
 	var _deferError = function(/*Error*/error, /*Deferred*/dfd){
@@ -473,7 +470,7 @@ dojo.required("dojo._base.query");
 	};
 
 	// avoid setting a timer per request. It degrades performance on IE
-	// something fierece if we don't use unified loops.
+	// something fierce if we don't use unified loops.
 	var _inFlightIntvl = null;
 	var _inFlight = [];
 	var _watchInFlight = function(){
@@ -485,9 +482,14 @@ dojo.required("dojo._base.query");
 		// make sure sync calls stay thread safe, if this callback is called
 		// during a sync call and this results in another sync call before the
 		// first sync call ends the browser hangs
-		if(!_d._blockAsync){
+		if(!dojo._blockAsync){
+
 			// we need manual loop because we often modify _inFlight (and therefore 'i') while iterating
 			// note: the second clause is an assigment on purpose, lint may complain
+
+			// NOTE: Review this
+
+			var i, dfd, tif;
 
 			var func = function(){
 				if(!dfd || dfd.canceled || !tif.validCheck(dfd)){
@@ -508,8 +510,8 @@ dojo.required("dojo._base.query");
 				}
 			};
 
-			for(var i = 0, tif; i < _inFlight.length && (tif = _inFlight[i]); i++){
-				var dfd = tif.dfd;				
+			for(i = 0; i < _inFlight.length && (tif = _inFlight[i]); i++){
+				dfd = tif.dfd;				
 				if(dojo.config.debugAtAllCosts){
 					func.call(this);
 				}else{
@@ -523,7 +525,7 @@ dojo.required("dojo._base.query");
 		}
 
 		if(!_inFlight.length){
-			clearInterval(_inFlightIntvl);
+			dojo._getWin().clearInterval(_inFlightIntvl);
 			_inFlightIntvl = null;
 			return;
 		}
@@ -534,7 +536,7 @@ dojo.required("dojo._base.query");
 		//summary: Cancels all pending IO requests, regardless of IO type
 		//(xhr, script, iframe).
 		try{
-			_d.forEach(_inFlight, function(i){
+			dojo.forEach(_inFlight, function(i){
 				try{
 					i.dfd.cancel();
 				}catch(e){/*squelch*/}
@@ -544,13 +546,12 @@ dojo.required("dojo._base.query");
 
 	//Automatically call cancel all io calls on unload
 	//in IE for trac issue #2357.
-	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
-	if(_d.isIE){
-		_d.addOnWindowUnload(_d._ioCancelAll);
-	}
-	//>>excludeEnd("webkitMobile");
 
-	_d._ioWatch = function(/*Deferred*/dfd,
+	//if(_d.isIE){
+	//	_d.addOnWindowUnload(_d._ioCancelAll);
+	//}
+
+	dojo._ioWatch = function(/*Deferred*/dfd,
 		/*Function*/validCheck,
 		/*Function*/ioCheck,
 		/*Function*/resHandle){
@@ -572,7 +573,7 @@ dojo.required("dojo._base.query");
 		}
 		_inFlight.push({dfd: dfd, validCheck: validCheck, ioCheck: ioCheck, resHandle: resHandle});
 		if(!_inFlightIntvl){
-			_inFlightIntvl = setInterval(_watchInFlight, 50);
+			_inFlightIntvl = dojo._getWin().setInterval(_watchInFlight, 50);
 		}
 		// handle sync requests
 		//A weakness: async calls in flight
@@ -594,7 +595,7 @@ dojo.required("dojo._base.query");
 	};
 	var _resHandle = function(/*Deferred*/dfd){
 		var xhr = dfd.ioArgs.xhr;
-		if(_d._isDocumentOk(xhr)){
+		if(dojo._isDocumentOk(xhr)){
 			dfd.callback(dfd);
 		}else{
 			var err = new Error("Unable to load " + dfd.ioArgs.url + " status:" + xhr.status);
@@ -648,10 +649,10 @@ dojo.required("dojo._base.query");
 		//		If the request has an HTTP body, then pass true for hasBody.
 
 		//Make the Deferred object for this xhr request.
-		var dfd = _d._ioSetArgs(args, _deferredCancel, _deferredOk, _deferError);
+		var dfd = dojo._ioSetArgs(args, _deferredCancel, _deferredOk, _deferError);
 
 		//Pass the args to _xhrObj, to allow xhr iframe proxy interceptions.
-		dfd.ioArgs.xhr = _d._xhrObj(dfd.ioArgs.args);
+		dfd.ioArgs.xhr = dojo._xhrObj(dfd.ioArgs.args);
 
 		if(hasBody){
 			if("postData" in args){
@@ -660,7 +661,7 @@ dojo.required("dojo._base.query");
 				dfd.ioArgs.query = args.putData;
 			}
 		}else{
-			_d._ioAddQueryToUrl(dfd.ioArgs);
+			dojo._ioAddQueryToUrl(dfd.ioArgs);
 		}
 
 		// IE 6 is a steaming pile. It won't let you call apply() on the native function (xhr.open).
@@ -693,7 +694,7 @@ dojo.required("dojo._base.query");
 				dfd.cancel();
 			}
 		}
-		_d._ioWatch(dfd, _validCheck, _ioCheck, _resHandle);
+		dojo._ioWatch(dfd, _validCheck, _ioCheck, _resHandle);
 		xhr = null;
 		return dfd; // dojo.Deferred
 	};
@@ -701,7 +702,7 @@ dojo.required("dojo._base.query");
 	dojo.xhrGet = function(/*dojo.__XhrArgs*/ args){
 		//	summary: 
 		//		Sends an HTTP GET request to the server.
-		return _d.xhr("GET", args); // dojo.Deferred
+		return dojo.xhr("GET", args); // dojo.Deferred
 	};
 
 	dojo.rawXhrPost = dojo.xhrPost = function(/*dojo.__XhrArgs*/ args){
@@ -710,7 +711,7 @@ dojo.required("dojo._base.query");
 		//		listed for the dojo.__XhrArgs type, the following property is allowed:
 		//	postData:
 		//		String. Send raw data in the body of the POST request.
-		return _d.xhr("POST", args, true); // dojo.Deferred
+		return dojo.xhr("POST", args, true); // dojo.Deferred
 	};
 
 	dojo.rawXhrPut = dojo.xhrPut = function(/*dojo.__XhrArgs*/ args){
@@ -719,13 +720,13 @@ dojo.required("dojo._base.query");
 		//		listed for the dojo.__XhrArgs type, the following property is allowed:
 		//	putData:
 		//		String. Send raw data in the body of the PUT request.
-		return _d.xhr("PUT", args, true); // dojo.Deferred
+		return dojo.xhr("PUT", args, true); // dojo.Deferred
 	};
 
 	dojo.xhrDelete = function(/*dojo.__XhrArgs*/ args){
 		//	summary:
 		//		Sends an HTTP DELETE request to the server.
-		return _d.xhr("DELETE", args); //dojo.Deferred
+		return dojo.xhr("DELETE", args); //dojo.Deferred
 	};
 
 	/*
@@ -739,6 +740,4 @@ dojo.required("dojo._base.query");
 		throw new Error("dojo.wrapForm not yet implemented");
 	};
 	*/
-//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 })();
-//>>excludeEnd("webkitMobile");
