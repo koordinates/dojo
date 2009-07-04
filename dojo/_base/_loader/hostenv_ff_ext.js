@@ -20,7 +20,7 @@ if(typeof window != 'undefined'){
 		d.baseUrl = d.config.baseUrl;
 
 		// fill in the rendering support information in dojo.render.*
-		var n = navigator;
+		var n = dojo._getWin().navigator;
 		var dua = n.userAgent;
 		var dav = n.appVersion;
 		var tv = parseFloat(dav);
@@ -30,17 +30,21 @@ if(typeof window != 'undefined'){
 			d.isFF = parseFloat(dua.split("Firefox/")[1]) || undefined;
 		}
 
-		// FIXME
-		var cm = document.compatMode;
-		d.isQuirks = cm == "BackCompat" || cm == "QuirksMode";
+		var doc = dojo._getWin().document, de = doc.documentElement;
+		var cm = doc.compatMode || '';
 
-		// FIXME
-		// TODO: is the HTML LANG attribute relevant?
-		d.locale = dojo.config.locale || n.language.toLowerCase();
+		// This covers all quirks modes, so isn't very useful for inferences
+		// Should be deprecated
+
+		dojo.isQuirks = !(/css/i.test(cm));
+
+		dojo.locale = (dojo.config.locale || (n.userLanguage || n.language) || (doc.documentElement && de.lang) || '').toLowerCase();
 
 		d._xhrObj = function(){
 			return new XMLHttpRequest();
 		};
+
+		de = doc = n = null; // Discard host object references
 
 		// monkey-patch _loadUri to handle file://, chrome://, and resource:// url's
 		var oldLoadUri = d._loadUri;
@@ -68,12 +72,12 @@ if(typeof window != 'undefined'){
 			return (stat >= 200 && stat < 300) || 	// Boolean
 				stat == 304 || 						// allow any 2XX response code
 				stat == 1223 || 						// get it out of the cache
-				(!stat && (location.protocol=="file:" || location.protocol=="chrome:") );
+				(!stat && (dojo._getWin().location.protocol=="file:" || dojo._getWin().location.protocol=="chrome:") );
 		};
 
 		// FIXME: PORTME
 		// var owloc = window.location+"";
-		// var base = document.getElementsByTagName("base");
+		// var base = dojo._getWin().document.getElementsByTagName("base");
 		// var hasBase = (base && base.length > 0);
 		var hasBase = false;
 
@@ -173,9 +177,10 @@ if(typeof window != 'undefined'){
 		// XUL specific APIs
 		var contexts = [];
 		var current = null;
-		dojo._defaultContext = [ window, document ];
+		
+		dojo._defaultContext = [ dojo._getWin(), dojo._getWin().document ];
 
-		dojo.pushContext = function(/*Object|String?*/g, /*MDocumentElement?*/d){
+		dojo.pushContext = function(/*Object|String?*/g, /*Document?*/d){
 			//	summary:
 			//		causes subsequent calls to Dojo methods to assume the
 			//		passed object and, optionally, document as the default
@@ -209,8 +214,8 @@ if(typeof window != 'undefined'){
 				n = dojo._defaultContext;
 			}else{
 				n = [ g, d ];
-				if(!d && dojo.isString(g)){
-					var t = document.getElementById(g);
+				if(!d && typeof g == 'string'){
+					var t = dojo._getWin().document.getElementById(g);
 					if(t.contentDocument){
 						n = [t.contentWindow, t.contentDocument];
 					}
@@ -345,12 +350,12 @@ dojo.require("dojo._base.Color");
 dojo.require("dojo._base.window");
 
 if (dojo.isBrowser) {
-	require("dojo._base.NodeList");
-	require("dojo._base.query");
-	require("dojo._base.json");
-	require("dojo._base.xhr");
-	require("dojo._base.html");
-	require("dojo._base.connect");
-	require("dojo._base.event");
-	require("dojo._base.fx");
+	dojo.require("dojo._base.NodeList");
+	dojo.require("dojo._base.query");
+	dojo.require("dojo._base.json");
+	dojo.require("dojo._base.xhr");
+	dojo.require("dojo._base.html");
+	dojo.require("dojo._base.connect");
+	dojo.require("dojo._base.event");
+	dojo.require("dojo._base.fx");
 }
