@@ -56,7 +56,7 @@ dojo.declare("dojo.data.ItemFileWriteStore", dojo.data.ItemFileReadStore, {
 
 	_getIdentifierAttribute: function(){
 		var identifierAttribute = this.getFeatures()['dojo.data.api.Identity'];
-		// this._assert((identifierAttribute === Number) || (dojo.isString(identifierAttribute)));
+		// this._assert((identifierAttribute === Number) || (typeof identifierAttribute == 'string'));
 		return identifierAttribute;
 	},
 	
@@ -310,7 +310,7 @@ dojo.declare("dojo.data.ItemFileWriteStore", dojo.data.ItemFileReadStore, {
 		
 		// Check for valid arguments
 		this._assertIsItem(item);
-		this._assert(dojo.isString(attribute));
+		this._assert(typeof attribute == 'string');
 		this._assert(typeof newValueOrValues !== "undefined");
 
 		// Make sure the user isn't trying to change the item's identity
@@ -621,7 +621,10 @@ dojo.declare("dojo.data.ItemFileWriteStore", dojo.data.ItemFileReadStore, {
 		//	something:
 		//		The array or object to examine.
 		var empty = true;
-		if(dojo.isObject(something)){
+
+		// NOTE: isObject allows null
+
+		if(dojo.isObject(something) && something){
 			var i;
 			for(i in something){
 				if (dojo.isOwnProperty(something, i)) {
