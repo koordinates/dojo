@@ -1,10 +1,12 @@
+var acme;
+
 if(typeof dojo != "undefined"){
 	dojo.provide("dojo._base.query");
 	dojo.required("dojo._base.NodeList");
 
 //>>excludeStart("acmeExclude", fileName.indexOf("dojo") != -1);
 
-}else if(!this.acme && !this.queryPortability){
+}else if(!acme && !this.queryPortability){
 	// NOTE: 
 	//		the functions and properties are duplicates of things found
 	//		elsewhere in Dojo. They've been copied here to make query.js a
@@ -31,7 +33,7 @@ if(typeof dojo != "undefined"){
 				// 		and the array to a callback
 				if(!arr || !arr.length){ return; }
 				for(var i=0,l=arr.length; i<l; ++i){ 
-					callback.call(thisObject||window, arr[i], i, arr);
+					callback.call(thisObject||dojo.global, arr[i], i, arr);
 				}
 			},
 			byId: function(id, doc){
@@ -1453,14 +1455,13 @@ if(typeof dojo != "undefined"){
 		if(!query){
 			return new qlc();
 		}
-
 		if(query.constructor == qlc){
 			return query;
 		}
-		if(!isString(query)){
+		if(typeof query != 'string'){
 			return new qlc(query); // dojo.NodeList
 		}
-		if(isString(root)){
+		if(typeof root == 'string'){
 			root = d.byId(root);
 			if(!root){ return new qlc(); }
 		}
@@ -1524,11 +1525,11 @@ if(!dojo.query){
 				return query;
 			}
 
-			if(!dojo.isString(query)){
+			if(typeof query != 'string'){
 				return new d._queryListCtor(query); // dojo.NodeList
 			}
 
-			if(dojo.isString(root)){
+			if(typeof root == 'string'){
 				root = dojo.byId(root);
 				if(!root){ return new d._queryListCtor(); }
 			}
