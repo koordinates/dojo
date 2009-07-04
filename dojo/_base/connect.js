@@ -13,9 +13,7 @@ dojo._listener = {
 		//   not be in Array.prototype. This is the 'sparse array' trick
 		//   that keeps us safe from libs that take liberties with built-in 
 		//   objects
-		// - listener is invoked with current scope (this)
-
-		// *** Scope is the wrong word
+		// - listener is invoked with current context (this)
 
 		// In Rhino, using concat on a sparse Array results in a dense Array.
 		// IOW, if an array A has elements [0, 2, 4], then under Rhino, "concat [].A"
@@ -35,11 +33,14 @@ dojo._listener = {
 			}else{
 				lls = [];
 				for(var i in ls){
-					lls[i] = ls[i];
+					if (dojo.isOwnProperty(ls, i)) {
+						lls[i] = ls[i];
+					}
 				}
 			}
 
 			// invoke listeners after target function
+
 			for(i in lls){
 				if(!(i in ap)){
 					lls[i].apply(this, arguments);
@@ -186,15 +187,24 @@ dojo.connect = function(/*Object|null*/ obj,
 	//	|	dojo.connect("globalEvent", globalHandler); // same
 
 	// normalize arguments
+
 	var a=arguments, args=[], i=0;
+
 	// if a[0] is a String, obj was ommited
-	args.push(dojo.isString(a[0]) ? null : a[i++], a[i++]);
+
+	args.push(typeof a[0] == 'string' ? null : a[i++], a[i++]);
+
 	// if the arg-after-next is a String or Function, context was NOT omitted
+
 	var a1 = a[i+1];
-	args.push(dojo.isString(a1)||dojo.isFunction(a1) ? a[i++] : null, a[i++]);
+	args.push((typeof a1 == 'string'|| typeof a1 == 'function') ? a[i++] : null, a[i++]);
+
 	// absorb any additional arguments
+
 	for(var l=a.length; i<l; i++){	args.push(a[i]); }
+
 	// do the actual work
+
 	return dojo._connect.apply(this, args); /*Handle*/
 };
 
