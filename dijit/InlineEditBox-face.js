@@ -155,7 +155,7 @@ dojo.declare("dijit.InlineEditBox",
 		this._onMouseOut();
 
 		// Since FF gets upset if you move a node while in an event handler for that node...
-		setTimeout(dojo.hitch(this, "edit"), 0);
+		dojo._getWin().setTimeout(dojo.hitch(this, "edit"), 0);
 	},
 
 	edit: function(){
@@ -201,7 +201,7 @@ dojo.declare("dijit.InlineEditBox",
 		// Replace the display widget with edit widget, leaving them both displayed for a brief time so that
 		// focus can be shifted without incident.  (browser may needs some time to render the editor.)
 		this.domNode = ew.domNode;
-		setTimeout(function(){
+		dojo._getWin().setTimeout(function(){
 			ew.focus();
 			ew._resetValue = ew.getValue();
 		}, 100);
@@ -228,7 +228,7 @@ dojo.declare("dijit.InlineEditBox",
 		ews.display = "none";
 		// give the browser some time to render the display node and then shift focus to it
 		// and hide the edit widget before garbage collecting the edit widget
-		setTimeout(function(){
+		dojo._getWin().setTimeout(function(){
 			ew.destroy();
 			ew = null;
 			//if(dojo.isIE){
@@ -416,13 +416,13 @@ dojo.declare(
 				//	is already queued.
 				//	So we allow the browser time to unqueue the move-focus event 
 				//	before we do all the hide/show stuff.
-				setTimeout(dojo.hitch(this, "save", false), 0);
+				dojo._getWin().setTimeout(dojo.hitch(this, "save", false), 0);
 			}
 		}else{
 			var _this = this;
 			// Delay before calling getValue().
 			// The delay gives the browser a chance to update the native value.
-			setTimeout(
+			dojo._getWin().setTimeout(
 				function(){
 					_this._onChange(); // handle save button
 				}, 100);
