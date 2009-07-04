@@ -133,7 +133,7 @@ dojo.fx = {
 		//	|		dojo.fadeOut({ node:otherNode })
 		//	|	]).play();
 		//
-		return new _chain(animations) // dojo._Animation
+		return new _chain(animations); // dojo._Animation
 	};
 
 	var _combine = function(animations){
@@ -243,6 +243,8 @@ dojo.fx = {
 		//		it's natural height (with no scrollbar).
 		//		Node must have no margin/border/padding.
 		args.node = dojo.byId(args.node);
+		args.easing = typeof args.easing == 'string' ? dojo.fx.easing[args.easing + 'In'] : args.easing;
+
 		var node = args.node, s = node.style, o;
 
 		var anim = dojo.animateProperty(dojo.mixin({
@@ -283,7 +285,8 @@ dojo.fx = {
 		// summary:
 		//		Returns an animation that will shrink node defined in "args"
 		//		from it's current height to 1px, and then hide it.
-		var node = args.node = dojo.byId(args.node), s = node.style, o;
+		args.node = dojo.byId(args.node);
+		var node = args.node, s = node.style, o;
 		
 		var anim = dojo.animateProperty(dojo.mixin({
 			properties: {

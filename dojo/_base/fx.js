@@ -128,17 +128,7 @@ dojo.required("dojo._base.html");
 				if(dojo.config.debugAtAllCosts){
 					this[evt].apply(this, args||[]);
 				}else{
-					try{
-						this[evt].apply(this, args||[]);
-					}catch(e){
-						// squelch and log because we shouldn't allow exceptions in
-						// synthetic event handlers to cause the internal timer to run
-						// amuck, potentially pegging the CPU. I'm not a fan of this
-						// squelch, but hopefully logging will make it clear what's
-						// going on
-						console.error("exception in animation handler for:", evt);
-						console.error(e);
-					}
+					this[evt].apply(this, args||[]);
 				}
 			}
 			return this; // dojo._Animation
@@ -263,6 +253,7 @@ dojo.required("dojo._base.html");
 				_t._percent = step;
 	
 				// Perform easing
+
 				if(_t.easing){
 					step = _t.easing(step);
 				}
@@ -341,6 +332,7 @@ dojo.required("dojo._base.html");
 	}
 
 	dojo._fade = function(/*Object*/ args){
+
 		//	summary: 
 		//		Returns an animation that will fade the node defined by
 		//		args.node from the start to end values passed (args.start
@@ -538,6 +530,8 @@ dojo.required("dojo._base.html");
 		//	|	anim.play();
 		
 		args.node = byId(args.node);
+		args.easing = typeof args.easing == 'string' ? dojo.fx.easing[args.easing + (args.end ? 'In' : 'Out')] : args.easing;
+
 		if(!args.easing){ args.easing = dojo._defaultEasing; }
 
 		var anim = new dojo._Animation(args);
