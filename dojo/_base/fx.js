@@ -125,11 +125,7 @@ dojo.required("dojo._base.html");
 			//	args:
 			//		The arguments to pass to the event.
 			if(this[evt]){
-				if(dojo.config.debugAtAllCosts){
-					this[evt].apply(this, args||[]);
-				}else{
-					this[evt].apply(this, args||[]);
-				}
+				this[evt].apply(this, args||[]);
 			}
 			return this; // dojo._Animation
 		},
@@ -530,17 +526,10 @@ dojo.required("dojo._base.html");
 		//	|	anim.play();
 		
 		args.node = byId(args.node);
-		if (typeof args.easing == 'string' && args.easing) {
-			args.easingName = args.easing
-		}
-
-		// NOTE: Problem with named easing predicting which flavor to use (out or in)
-
-		args.easing = (args.easingName ? dojo.fx.easing[args.easingName + (/(Out|In)$/.test(args.easingName) ? '' : ((args.end == 1 || typeof args.end != 'number') ? 'In' : 'Out'))] : args.easing) || dojo._defaultEasing;
 
 		var anim = new dojo._Animation(args);
 		dojo.connect(anim, "beforeBegin", anim, function(){
-			var isColor, p, prop, pm = {}, properties = this.properties;
+			var start, end, isColor, p, prop, pm = {}, properties = this.properties;
 			for(p in properties){
 				if (isOwnProperty(properties, p)) {
 
@@ -577,9 +566,18 @@ dojo.required("dojo._base.html");
 					}else{
 						prop.start = (p == "opacity") ? +prop.start : parseFloat(prop.start);
 					}
-
+					start = prop.start;
+					end = prop.end;
 				}
 			}
+
+			if (typeof args.easing == 'string' && args.easing) {
+				args.easingName = args.easing;
+			}
+
+			// NOTE: Problem with named easing predicting which flavor to use (out or in)
+
+			this.easing = (args.easingName ? dojo.fx.easing[args.easingName + (/(Out|In)$/.test(args.easingName) ? '' : (end > start ? 'In' : 'Out'))] : args.easing) || dojo._defaultEasing;
 
 			this.curve = new PropLine(pm);
 		});
