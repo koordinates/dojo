@@ -54,7 +54,7 @@ dojo.toJson = function(/*Object*/ it, /*Boolean?*/ prettyPrint, /*String?*/ _ind
 	if(it === null){
 		return "null";
 	}
-	if(dojo.isString(it)){ 
+	if(typeof it == 'string'){ 
 		return dojo._escapeString(it); 
 	}
 	// recurse
@@ -65,7 +65,7 @@ dojo.toJson = function(/*Object*/ it, /*Boolean?*/ prettyPrint, /*String?*/ _ind
 	_indentStr = _indentStr || "";
 	var nextIndent = prettyPrint ? _indentStr + dojo.toJsonIndentStr : "";
 	var tf = it.__json__||it.json;
-	if(dojo.isFunction(tf)){
+	if(typeof tf == 'function'){
 		newObj = tf.call(it);
 		if(it !== newObj){
 			return recurse(newObj, prettyPrint, nextIndent);
@@ -109,23 +109,23 @@ dojo.toJson = function(/*Object*/ it, /*Boolean?*/ prettyPrint, /*String?*/ _ind
 	// generic object code path
 	var output = [], key;
 	for(key in it){
-		var keyStr, val;
-		if(typeof key == "number"){
-			keyStr = '"' + key + '"';
-		}else if(typeof key == "string"){
-			keyStr = dojo._escapeString(key);
-		}else{
-			// skip non-string or number keys
-			continue;
+		if (dojo.isOwnProperty(it, key)) {
+			var keyStr, val;
+			if(typeof key == "number"){
+				keyStr = '"' + key + '"';
+			}else if(typeof key == "string"){
+				keyStr = dojo._escapeString(key);
+			}else{
+				// skip non-string or number keys
+				continue;
+			}
+			val = recurse(it[key], prettyPrint, nextIndent);
+			if(typeof val != "string"){
+				// skip non-serializable values
+				continue;
+			}
+			output.push(newLine + nextIndent + keyStr + ":" + sep + val);
 		}
-		val = recurse(it[key], prettyPrint, nextIndent);
-		if(typeof val != "string"){
-			// skip non-serializable values
-			continue;
-		}
-		// FIXME: use += on Moz!!
-		//	 MOW NOTE: using += is a pain because you have to account for the dangling comma...
-		output.push(newLine + nextIndent + keyStr + ":" + sep + val);
 	}
 	return "{" + output.join("," + sep) + newLine + _indentStr + "}"; // String
 };
