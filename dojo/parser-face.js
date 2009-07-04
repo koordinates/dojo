@@ -29,12 +29,12 @@ dojo.parser = (function(){
 		// summary:
 		//		Returns name of type of given value.
 
-		if(dojo.isString(value)){ return "string"; }
+		if(typeof value == 'string'){ return "string"; }
 		if(typeof value == "number"){ return "number"; }
 		if(typeof value == "boolean"){ return "boolean"; }
+		if(typeof value == "function"){ return "function"; }
 		if(dojo.isArray(value)){ return "array"; } // typeof [] == "object"
 		if(dojo.isDate(value)) { return "date"; } // assume timestamp
-		if(dojo.isFunction(value)){ return "function"; }
 		if(value instanceof dojo._Url){ return "url"; }
 		return "object";
 	}
@@ -55,7 +55,8 @@ dojo.parser = (function(){
 						value = nameAnonFunc(new Function(value), this);
 					}
 					return dojo.getObject(value, false);
-				}catch(e){ return new Function(); }
+				}catch(e){}
+				return new Function();
 			case "array":
 				return value ? value.split(/\s*,\s*/) : [];
 			case "date":
@@ -63,10 +64,9 @@ dojo.parser = (function(){
 				case "":
 					return new Date("");	// the NaN of dates
 				case "now":
-					return new Date();	// current date
-				default:
-					return dojo.date.stamp.fromISOString(value);
+					return new Date();	// current date		
 				}
+				return dojo.date.stamp.fromISOString(value);
 			case "url":
 				return dojo.baseUrl + value;
 			default:
@@ -92,7 +92,7 @@ dojo.parser = (function(){
 		if(!instanceClasses[className]){
 			// get pointer to widget class
 			var cls = dojo.getObject(className);
-			if(!dojo.isFunction(cls)){
+			if(typeof cls != 'function'){
 				throw new Error("Could not load class '" + className +
 					"'. Did you spell the name correctly and use a full path, like 'dijit.form.Button'?");
 			}
@@ -265,7 +265,7 @@ dojo.parser = (function(){
 				!instance._started && 
 				(!instance.getParent || !instance.getParent())
 			){
-				window.alert('instance startup ' + instance.startup);
+				dojo.getWin().alert('instance startup ' + instance.startup);
 				instance.startup();
 			}
 		});
