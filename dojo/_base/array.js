@@ -5,10 +5,10 @@ dojo.required("dojo._base.lang");
 (function(){
 	var _getParts = function(arr, obj, cb){
 		return [ 
-			dojo.isString(arr) ? arr.split("") : arr, 
+			typeof arr == 'string' ? arr.split("") : arr, 
 			obj || dojo.global,
 			// FIXME: cache the anonymous functions we create here?
-			dojo.isString(cb) ? new Function("item", "index", "array", cb) : cb
+			typeof cb == 'string' ? new Function("item", "index", "array", cb) : cb
 		];
 	};
 
