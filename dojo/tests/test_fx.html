@@ -39,24 +39,24 @@
 						var w1 = dojo.fx.wipeIn({
 							node: "foo",
 							duration: 1000,
-							easing: 'sine'
+							easing: 'quad'
 						});
 						var f1 = dojo.fadeOut({
 							node: "foo",
 							duration: 1000,
-							easing: 'sine'
+							easing: 'quad'
 						});
 						var a1 = dojo.fx.chain([w1, f1]);
 						
 						var w2 = dojo.fx.wipeIn({
 							node: "foo",
 							duration: 1000,
-							easing: 'quad'
+							easing: 'quart'
 						});
 						var f2 = dojo.fadeIn({
 							node: "foo",
 							duration: 1000,
-							easing: 'quad'
+							easing: 'quart'
 						});
 						var a2 = dojo.fx.combine([w2, f2]);
 				
