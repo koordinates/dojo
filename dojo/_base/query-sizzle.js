@@ -27,42 +27,163 @@ if(typeof dojo != "undefined"){
 		if(query.constructor == listCtor){
 			return query;
 		}
-		if(!dojo.isString(query)){
+		if(typeof query != 'string'){
 			return new listCtor(query); // dojo.NodeList
 		}
-		if(dojo.isString(root)){
+		if(typeof root == 'string'){
 			root = dojo.byId(root);
 			if(!root){ return new listCtor(); }
 		}
 
 		return dojo.Sizzle(query, root, new listCtor());
-	}
+	};
 
 	dojo._filterQueryResult = function(nodeList, simpleFilter){
 		return dojo.Sizzle.filter(simpleFilter, nodeList);
+	};
+}
+
+// Main Sizzle code follows...
+// ns argument added for dojo
+
+(function(ns){
+
+var Expr;
+
+function dirCheck( dir, cur, doneName, checkSet, nodeCheck ) {
+	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+		var elem = checkSet[i];
+		if ( elem ) {
+			elem = elem[dir];
+			var match = false;
+
+			while ( elem && elem.nodeType ) {
+				if ( elem[doneName] ) {
+					match = checkSet[ elem[doneName] ];
+					break;
+				}
+
+				if ( elem.nodeType === 1 ) {
+					elem[doneName] = i;
+
+					if ( typeof cur !== "string" ) {
+						if ( elem === cur ) {
+							match = true;
+							break;
+						}
+
+					} else if ( Sizzle.filter( cur, [elem] ).length > 0 ) {
+						match = elem;
+						break;
+					}
+				}
+
+				elem = elem[dir];
+			}
+
+			checkSet[i] = match;
+		}
 	}
 }
 
-//Main Sizzle code follows...
-//ns argument, added for dojo, used at the end of the file.
-;(function(ns){
+function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck ) {
+	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+		var elem = checkSet[i];
+		if ( elem ) {
+			elem = elem[dir];
+			var match = false;
+
+			while ( elem && elem.nodeType ) {
+				var done = elem[doneName];
+				if ( done ) {
+					match = checkSet[ done ];
+					break;
+				}
+
+				// NOTE: Use ==
+
+				if ( elem.nodeType === 1 ) {
+					elem[doneName] = i;
+				}
+
+				if ( elem.nodeName === cur ) {
+					match = elem;
+					break;
+				}
+
+				elem = elem[dir];
+			}
+
+			checkSet[i] = match;
+		}
+	}
+}
+
+var toString = Object.prototype.toString;
+
+var makeArray = function(array, results) {
+	array = Array.prototype.slice.call( array );
+
+	if ( results ) {
+		results.push.apply( results, array );
+		return results;
+	}
+	
+	return array;
+};
+
+// Perform a simple check to determine if the browser is capable of
+// converting a NodeList to an array using builtin methods.
+try {
+	Array.prototype.slice.call( window.document.documentElement.childNodes );
+
+// Provide a fallback method if it does not work
+} catch(e){
+	makeArray = function(array, results) {
+		var i, l, ret = results || [];
+
+		if ( toString.call(array) === "[object Array]" ) {
+			Array.prototype.push.apply( ret, array );
+		} else {
+			if ( typeof array.length === "number" ) {
+				for ( i = 0, l = array.length; i < l; i++ ) {
+					ret.push( array[i] );
+				}
+			} else {
+				for ( i = 0; array[i]; i++ ) {
+					ret.push( array[i] );
+				}
+			}
+		}
+
+		return ret;
+	};
+}
+
+// NOTE: Use isHostMethod
+
+var contains = window.document.compareDocumentPosition ?  function(a, b){
+	return a.compareDocumentPosition(b) & 16;
+} : function(a, b){
+	return a !== b && (a.contains ? a.contains(b) : true);
+};
 
 var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|[^[\]]+)+\]|\\.|[^ >+~,(\[]+)+|[>+~])(\s*,\s*)?/g,
-	done = 0,
-	toString = Object.prototype.toString;
+	done = 0;
 
 var Sizzle = function(selector, context, results, seed) {
 	results = results || [];
-	context = context || document;
+	context = context || window.document;
 
-	if ( context.nodeType !== 1 && context.nodeType !== 9 )
+	if ( context.nodeType !== 1 && context.nodeType !== 9 ) {
 		return [];
+	}
 	
 	if ( !selector || typeof selector !== "string" ) {
 		return results;
 	}
 
-	var parts = [], m, set, checkSet, check, mode, extra, prune = true;
+	var i, l, parts = [], m, set, checkSet, check, mode, extra, prune = true;
 	
 	// Reset the position of the chunker regexp (start from head)
 	chunker.lastIndex = 0;
@@ -96,10 +217,11 @@ var Sizzle = function(selector, context, results, seed) {
 				var tmpSet = [];
 
 				selector = parts.shift();
-				if ( Expr.relative[ selector ] )
+				if ( Expr.relative[ selector ] ) {
 					selector += parts.shift();
+				}
 
-				for ( var i = 0, l = set.length; i < l; i++ ) {
+				for ( i = 0, l = set.length; i < l; i++ ) {
 					Sizzle( selector, set[i], tmpSet );
 				}
 
@@ -127,7 +249,7 @@ var Sizzle = function(selector, context, results, seed) {
 				pop = parts.pop();
 			}
 
-			if ( pop == null ) {
+			if ( pop === null || pop === undefined ) {
 				pop = context;
 			}
 
@@ -147,13 +269,13 @@ var Sizzle = function(selector, context, results, seed) {
 		if ( !prune ) {
 			results.push.apply( results, checkSet );
 		} else if ( context.nodeType === 1 ) {
-			for ( var i = 0; checkSet[i] != null; i++ ) {
+			for ( i = 0; checkSet[i] !== null && checkSet[i] !== undefined; i++ ) {
 				if ( checkSet[i] && (checkSet[i] === true || checkSet[i].nodeType === 1 && contains(context, checkSet[i])) ) {
 					results.push( set[i] );
 				}
 			}
 		} else {
-			for ( var i = 0; checkSet[i] != null; i++ ) {
+			for ( i = 0; checkSet[i] !== null && checkSet[i] !== undefined; i++ ) {
 				if ( checkSet[i] && checkSet[i].nodeType === 1 ) {
 					results.push( set[i] );
 				}
@@ -182,7 +304,7 @@ Sizzle.find = function(expr, context){
 	}
 
 	for ( var i = 0, l = Expr.order.length; i < l; i++ ) {
-		var type = Expr.order[i], match;
+		var type = Expr.order[i];
 		
 		if ( (match = Expr.match[ type ].exec( expr )) ) {
 			var left = RegExp.leftContext;
@@ -190,7 +312,7 @@ Sizzle.find = function(expr, context){
 			if ( left.substr( left.length - 1 ) !== "\\" ) {
 				match[1] = (match[1] || "").replace(/\\/g, "");
 				set = Expr.find[ type ]( match, context );
-				if ( set != null ) {
+				if ( set !== null && set !== undefined ) {
 					expr = expr.replace( Expr.match[ type ], "" );
 					break;
 				}
@@ -206,11 +328,11 @@ Sizzle.find = function(expr, context){
 };
 
 Sizzle.filter = function(expr, set, inplace, not){
-	var old = expr, result = [], curLoop = set, match, anyFound;
+	var i, old = expr, result = [], curLoop = set, match, anyFound;
 
 	while ( expr && set.length ) {
 		for ( var type in Expr.filter ) {
-			if ( (match = Expr.match[ type ].exec( expr )) != null ) {
+			if ( (match = Expr.match[ type ].exec( expr )) !== null ) {
 				var filter = Expr.filter[ type ], goodArray = null, goodPos = 0, found, item;
 				anyFound = false;
 
@@ -226,7 +348,7 @@ Sizzle.filter = function(expr, set, inplace, not){
 					} else if ( match[0] === true ) {
 						goodArray = [];
 						var last = null, elem;
-						for ( var i = 0; (elem = curLoop[i]) !== undefined; i++ ) {
+						for ( i = 0; (elem = curLoop[i]) !== undefined; i++ ) {
 							if ( elem && last !== elem ) {
 								goodArray.push( elem );
 								last = elem;
@@ -236,7 +358,7 @@ Sizzle.filter = function(expr, set, inplace, not){
 				}
 
 				if ( match ) {
-					for ( var i = 0; (item = curLoop[i]) !== undefined; i++ ) {
+					for ( i = 0; (item = curLoop[i]) !== undefined; i++ ) {
 						if ( item ) {
 							if ( goodArray && item != goodArray[goodPos] ) {
 								goodPos++;
@@ -245,7 +367,9 @@ Sizzle.filter = function(expr, set, inplace, not){
 							found = filter( item, match, goodPos, goodArray );
 							var pass = not ^ !!found;
 
-							if ( inplace && found != null ) {
+							// NOTE: Review this
+
+							if ( inplace && found !== null && found !== undefined) {
 								if ( pass ) {
 									anyFound = true;
 								} else {
@@ -279,7 +403,7 @@ Sizzle.filter = function(expr, set, inplace, not){
 
 		// Improper expression
 		if ( expr == old ) {
-			if ( anyFound == null ) {
+			if ( anyFound === null || anyFound === undefined) {
 				throw "Syntax error, unrecognized expression: " + expr;
 			} else {
 				break;
@@ -292,7 +416,7 @@ Sizzle.filter = function(expr, set, inplace, not){
 	return curLoop;
 };
 
-var Expr = Sizzle.selectors = {
+Expr = Sizzle.selectors = {
 	order: [ "ID", "NAME", "TAG" ],
 	match: {
 		ID: /#((?:[\w\u0128-\uFFFF_-]|\\.)+)/,
@@ -328,19 +452,21 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 		">": function(checkSet, part){
+			var elem, i, l;
+
 			if ( typeof part === "string" && !/\W/.test(part) ) {
 				part = part.toUpperCase();
 
-				for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-					var elem = checkSet[i];
+				for ( i = 0, l = checkSet.length; i < l; i++ ) {
+					elem = checkSet[i];
 					if ( elem ) {
 						var parent = elem.parentNode;
 						checkSet[i] = parent.nodeName === part ? parent : false;
 					}
 				}
 			} else {
-				for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-					var elem = checkSet[i];
+				for ( i = 0, l = checkSet.length; i < l; i++ ) {
+					elem = checkSet[i];
 					if ( elem ) {
 						checkSet[i] = typeof part === "string" ?
 							elem.parentNode :
@@ -354,20 +480,20 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 		"": function(checkSet, part){
-			var doneName = "done" + (done++), checkFn = dirCheck;
+			var nodeCheck, doneName = "done" + (done++), checkFn = dirCheck;
 
 			if ( !part.match(/\W/) ) {
-				var nodeCheck = part = part.toUpperCase();
+				nodeCheck = part = part.toUpperCase();
 				checkFn = dirNodeCheck;
 			}
 
 			checkFn("parentNode", part, doneName, checkSet, nodeCheck);
 		},
 		"~": function(checkSet, part){
-			var doneName = "done" + (done++), checkFn = dirCheck;
+			var nodeCheck, doneName = "done" + (done++), checkFn = dirCheck;
 
 			if ( typeof part === "string" && !part.match(/\W/) ) {
-				var nodeCheck = part = part.toUpperCase();
+				nodeCheck = part = part.toUpperCase();
 				checkFn = dirNodeCheck;
 			}
 
@@ -394,8 +520,9 @@ var Expr = Sizzle.selectors = {
 
 			for ( var i = 0; curLoop[i]; i++ ) {
 				if ( not ^ (" " + curLoop[i].className + " ").indexOf(match) >= 0 ) {
-					if ( !inplace )
+					if ( !inplace ) {
 						result.push( curLoop[i] );
+					}
 				} else if ( inplace ) {
 					curLoop[i] = false;
 				}
@@ -471,9 +598,11 @@ var Expr = Sizzle.selectors = {
 			return elem.checked === true;
 		},
 		selected: function(elem){
+
 			// Accessing this property makes selected-by-default
 			// options in Safari work properly
-			elem.parentNode.selectedIndex;
+
+			(elem.parentNode.selectedIndex);
 			return elem.selected === true;
 		},
 		parent: function(elem){
@@ -486,7 +615,7 @@ var Expr = Sizzle.selectors = {
 			return !!Sizzle( match[3], elem ).length;
 		},
 		header: function(elem){
-			return /h\d/i.test( elem.nodeName );
+			return (/h\d/i).test( elem.nodeName );
 		},
 		text: function(elem){
 			return "text" === elem.type;
@@ -516,7 +645,7 @@ var Expr = Sizzle.selectors = {
 			return "button" === elem.type || elem.nodeName.toUpperCase() === "BUTTON";
 		},
 		input: function(elem){
-			return /input|select|textarea|button/i.test(elem.nodeName);
+			return (/input|select|textarea|button/i).test(elem.nodeName);
 		}
 	},
 	setFilters: {
@@ -572,15 +701,15 @@ var Expr = Sizzle.selectors = {
 			} else if ( type == "nth" ) {
 				var add = false, first = match[2], last = match[3];
 
-				if ( first == 1 && last == 0 ) {
+				if ( first == 1 && !last ) {
 					return true;
 				}
 
-				if ( first == 0 ) {
+				if ( !first ) {
 					if ( elem.nodeIndex == last ) {
 						add = true;
 					}
-				} else if ( (elem.nodeIndex - last) % first == 0 && (elem.nodeIndex - last) / first >= 0 ) {
+				} else if ( !((elem.nodeIndex - last) % first) && (elem.nodeIndex - last) / first >= 0 ) {
 					add = true;
 				}
 
@@ -588,7 +717,7 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 		PSEUDO: function(elem, match, i, array){
-			var name = match[1], filter = Expr.filters[ name ];
+			var l, name = match[1], filter = Expr.filters[ name ];
 
 			if ( filter ) {
 				return filter( elem, i, match, array );
@@ -597,7 +726,7 @@ var Expr = Sizzle.selectors = {
 			} else if ( name === "not" ) {
 				var not = match[3];
 
-				for ( var i = 0, l = not.length; i < l; i++ ) {
+				for ( i = 0, l = not.length; i < l; i++ ) {
 					if ( not[i] === elem ) {
 						return false;
 					}
@@ -617,7 +746,7 @@ var Expr = Sizzle.selectors = {
 		},
 		ATTR: function(elem, match){
 			var result = elem[ match[1] ] || elem.getAttribute( match[1] ), value = result + "", type = match[2], check = match[4];
-			return result == null ?
+			return (result === null || result === undefined) ?
 				false :
 				type === "=" ?
 				value === check :
@@ -647,64 +776,25 @@ var Expr = Sizzle.selectors = {
 	}
 };
 
-for ( var type in Expr.match ) {
-	Expr.match[ type ] = RegExp( Expr.match[ type ].source + /(?![^\[]*\])(?![^\(]*\))/.source );
-}
-
-var makeArray = function(array, results) {
-	array = Array.prototype.slice.call( array );
-
-	if ( results ) {
-		results.push.apply( results, array );
-		return results;
-	}
-	
-	return array;
-};
-
-// Perform a simple check to determine if the browser is capable of
-// converting a NodeList to an array using builtin methods.
-try {
-	Array.prototype.slice.call( document.documentElement.childNodes );
-
-// Provide a fallback method if it does not work
-} catch(e){
-	makeArray = function(array, results) {
-		var ret = results || [];
-
-		if ( toString.call(array) === "[object Array]" ) {
-			Array.prototype.push.apply( ret, array );
-		} else {
-			if ( typeof array.length === "number" ) {
-				for ( var i = 0, l = array.length; i < l; i++ ) {
-					ret.push( array[i] );
-				}
-			} else {
-				for ( var i = 0; array[i]; i++ ) {
-					ret.push( array[i] );
-				}
-			}
-		}
-
-		return ret;
-	};
+for ( var type in Expr.match ) { 	// NOTE: Filter for-in
+	Expr.match[ type ] = new RegExp( Expr.match[ type ].source + (/(?![^\[]*\])(?![^\(]*\))/).source );
 }
 
 // Check to see if the browser returns elements by name when
 // querying by getElementById (and provide a workaround)
 (function(){
 	// We're going to inject a fake input element with a specified name
-	var form = document.createElement("form"),
-		id = "script" + (new Date).getTime();
+	var form = window.document.createElement("form"),
+		id = "script" + (new Date()).getTime();
 	form.innerHTML = "<input name='" + id + "'/>";
 
 	// Inject it into the root element, check its status, and remove it quickly
-	var root = document.documentElement;
+	var root = window.document.documentElement;
 	root.insertBefore( form, root.firstChild );
 
 	// The workaround has to do additional checks after a getElementById
 	// Which slows things down for other browsers (hence the branching)
-	if ( !!document.getElementById( id ) ) {
+	if ( !!window.document.getElementById( id ) ) {
 		Expr.find.ID = function(match, context){
 			if ( context.getElementById ) {
 				var m = context.getElementById(match[1]);
@@ -725,8 +815,11 @@ try {
 // when doing getElementsByTagName("*")
 (function(){
 	// Create a fake element
-	var div = document.createElement("div");
-	div.appendChild( document.createComment("") );
+
+	// NOTE: Missing feature detection
+
+	var div = window.document.createElement("div");
+	div.appendChild( window.document.createComment("") );
 
 	// Make sure no comments are found
 	if ( div.getElementsByTagName("*").length > 0 ) {
@@ -751,108 +844,40 @@ try {
 	}
 })();
 
-if ( document.querySelectorAll ) (function(){
-	var oldSizzle = Sizzle;
+if ( window.document.querySelectorAll ) {
+	(function(){
+		var oldSizzle = Sizzle;
 	
-	Sizzle = function(query, context, extra, seed){
-		context = context || document;
+		Sizzle = function(query, context, extra, seed){
+			context = context || window.document;
 
-		if ( !seed && context.nodeType === 9 ) {
-			try {
-				return makeArray( context.querySelectorAll(query), extra );
-			} catch(e){}
-		}
+			if ( !seed && context.nodeType === 9 ) {
+				try {
+					return makeArray( context.querySelectorAll(query), extra );
+				} catch(e){}
+			}
 		
-		return oldSizzle(query, context, extra, seed);
-	};
+			return oldSizzle(query, context, extra, seed);
+		};
 
-	Sizzle.find = oldSizzle.find;
-	Sizzle.filter = oldSizzle.filter;
-	Sizzle.selectors = oldSizzle.selectors;
-	Sizzle.matches = oldSizzle.matches;
-})();
+		Sizzle.find = oldSizzle.find;
+		Sizzle.filter = oldSizzle.filter;
+		Sizzle.selectors = oldSizzle.selectors;
+		Sizzle.matches = oldSizzle.matches;
+	})();
+}
 
-if ( document.documentElement.getElementsByClassName ) {
+// NOTE: Use isHostMethod for gEBCN
+
+if ( Expr && Expr.order && Expr.order.splice && Expr.find && window.document.documentElement && window.document.documentElement.getElementsByClassName) {
 	Expr.order.splice(1, 0, "CLASS");
 	Expr.find.CLASS = function(match, context) {
 		return context.getElementsByClassName(match[1]);
 	};
 }
 
-function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck ) {
-	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-		var elem = checkSet[i];
-		if ( elem ) {
-			elem = elem[dir];
-			var match = false;
-
-			while ( elem && elem.nodeType ) {
-				var done = elem[doneName];
-				if ( done ) {
-					match = checkSet[ done ];
-					break;
-				}
-
-				if ( elem.nodeType === 1 )
-					elem[doneName] = i;
-
-				if ( elem.nodeName === cur ) {
-					match = elem;
-					break;
-				}
-
-				elem = elem[dir];
-			}
-
-			checkSet[i] = match;
-		}
-	}
-}
-
-function dirCheck( dir, cur, doneName, checkSet, nodeCheck ) {
-	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-		var elem = checkSet[i];
-		if ( elem ) {
-			elem = elem[dir];
-			var match = false;
-
-			while ( elem && elem.nodeType ) {
-				if ( elem[doneName] ) {
-					match = checkSet[ elem[doneName] ];
-					break;
-				}
-
-				if ( elem.nodeType === 1 ) {
-					elem[doneName] = i;
-
-					if ( typeof cur !== "string" ) {
-						if ( elem === cur ) {
-							match = true;
-							break;
-						}
-
-					} else if ( Sizzle.filter( cur, [elem] ).length > 0 ) {
-						match = elem;
-						break;
-					}
-				}
-
-				elem = elem[dir];
-			}
-
-			checkSet[i] = match;
-		}
-	}
-}
-
-var contains = document.compareDocumentPosition ?  function(a, b){
-	return a.compareDocumentPosition(b) & 16;
-} : function(a, b){
-	return a !== b && (a.contains ? a.contains(b) : true);
-};
-
 // EXPOSE
 
-(ns || window).Sizzle = Sizzle;
+(ns || this).Sizzle = Sizzle;
 
-})(typeof dojo == "undefined" ? null : dojo);
+})(typeof dojo == "undefined" ? null : dojo, this);
