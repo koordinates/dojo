@@ -18,8 +18,10 @@ dojo.declare("dojo.rpc.RpcService", null, {
 		//		smdObject is accepts an smdObject directly.
 		//				
 		if(args){
+
 			//if the arg is a string, we assume it is a url to retrieve an smd definition from
-			if( (dojo.isString(args)) || (args instanceof dojo._Url)){
+
+			if( typeof args == 'string' || (args instanceof dojo._Url)){
 				if (args instanceof dojo._Url){
 					var url = args + "";
 				}else{
@@ -153,7 +155,7 @@ dojo.declare("dojo.rpc.RpcService", null, {
 					this[m.name] = this.generateMethod(	m.name,
 										m.parameters, 
 										m.url||m.serviceUrl||m.serviceURL);
-					if(!dojo.isFunction(this[m.name])){
+					if(typeof this[m.name] != 'function'){
 						throw new Error("RpcService: Failed to create" + m.name + "()");
 						/*console.log("RpcService: Failed to create", m.name, "()");*/
 					}
