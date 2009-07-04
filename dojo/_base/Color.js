@@ -3,10 +3,10 @@ dojo.required("dojo._base.array");
 dojo.required("dojo._base.lang");
 
 (function(){
-	
-	var d = dojo;
+
+	var Color, colorFromArray;
 		
-	dojo.Color = function(/*Array|String|Object*/ color){
+	Color = dojo.Color = function(/*Array|String|Object*/ color){
 		// summary:
 		//		Takes a named string, hex string, array of rgb or rgba values,
 		//		an object with r, g, b, and a properties, or another `dojo.Color` object
@@ -29,7 +29,7 @@ dojo.required("dojo._base.lang");
 	};
 
 	// FIXME: there's got to be a more space-efficient way to encode or discover these!!  Use hex?
-	dojo.Color.named = {
+	Color.named = {
 		black:      [0,0,0],
 		silver:     [192,192,192],
 		gray:       [128,128,128],
@@ -62,13 +62,13 @@ dojo.required("dojo._base.lang");
 			// example:
 			//	|	var c = new dojo.Color(); // no color
 			//	|	c.setColor("#ededed"); // greyish
-			if(d.isString(color)){
-				d.colorFromString(color, this);
-			}else if(d.isArray(color)){
-				d.colorFromArray(color, this);
+			if(typeof color == 'string'){
+				dojo.colorFromString(color, this);
+			}else if(dojo.isArray(color)){
+				colorFromArray(color, this);
 			}else{
 				this._set(color.r, color.g, color.b, color.a);
-				if(!(color instanceof d.Color)){ this.sanitize(); }
+				if(!(color instanceof dojo.Color)){ this.sanitize(); }
 			}
 			return this;	// dojo.Color
 		},
@@ -99,7 +99,7 @@ dojo.required("dojo._base.lang");
 			//
 			// example: 
 			// | 	console.log(new dojo.Color([0,0,0]).toHex()); // #000000
-			var arr = d.map(["r", "g", "b"], function(x){
+			var arr = dojo.map(["r", "g", "b"], function(x){
 				var s = this[x].toString(16);
 				return s.length < 2 ? "0" + s : s;
 			}, this);
@@ -129,8 +129,8 @@ dojo.required("dojo._base.lang");
 		// summary: 
 		//		Blend colors end and start with weight from 0 to 1, 0.5 being a 50/50 blend,
 		//		can reuse a previously allocated dojo.Color object for the result
-		var t = obj || new d.Color();
-		d.forEach(["r", "g", "b", "a"], function(x){
+		var t = obj || new dojo.Color();
+		dojo.forEach(["r", "g", "b", "a"], function(x){
 			t[x] = start[x] + (end[x] - start[x]) * weight;
 			if(x != "a"){ t[x] = Math.round(t[x]); }
 		});
@@ -140,7 +140,7 @@ dojo.required("dojo._base.lang");
 	dojo.colorFromRgb = function(/*String*/ color, /*dojo.Color?*/ obj){
 		// summary: get rgb(a) array from css-style color declarations
 		var m = color.toLowerCase().match(/^rgba?\(([\s\.,0-9]+)\)/);
-		return m && dojo.colorFromArray(m[1].split(/\s*,\s*/), obj);	// dojo.Color
+		return m && colorFromArray(m[1].split(/\s*,\s*/), obj);	// dojo.Color
 	};
 
 	dojo.colorFromHex = function(/*String*/ color, /*dojo.Color?*/ obj){
@@ -152,14 +152,14 @@ dojo.required("dojo._base.lang");
 		//
 		// example:
 		//	| var thing = dojo.colorFromHex("#000"); // black, shorthand
-		var t = obj || new d.Color(),
+		var t = obj || new dojo.Color(),
 			bits = (color.length == 4) ? 4 : 8,
 			mask = (1 << bits) - 1;
 		color = Number("0x" + color.substr(1));
 		if(isNaN(color)){
 			return null; // dojo.Color
 		}
-		d.forEach(["b", "g", "r"], function(x){
+		dojo.forEach(["b", "g", "r"], function(x){
 			var c = color & mask;
 			color >>= bits;
 			t[x] = bits == 4 ? 17 * c : c;
@@ -168,9 +168,9 @@ dojo.required("dojo._base.lang");
 		return t;	// dojo.Color
 	};
 
-	dojo.colorFromArray = function(/*Array*/ a, /*dojo.Color?*/ obj){
+	colorFromArray = dojo.colorFromArray = function(/*Array*/ a, /*dojo.Color?*/ obj){
 		// summary: builds a color from 1, 2, 3, or 4 element array
-		var t = obj || new d.Color();
+		var t = obj || new dojo.Color();
 		t._set(Number(a[0]), Number(a[1]), Number(a[2]), Number(a[3]));
 		if(isNaN(t.a)){ t.a = 1; }
 		return t.sanitize();	// dojo.Color
@@ -186,8 +186,8 @@ dojo.required("dojo._base.lang");
 		//		10, 50)"
 		//	returns:
 		//		a dojo.Color object. If obj is passed, it will be the return value.
-		var a = d.Color.named[str];
-		return a && d.colorFromArray(a, obj) || d.colorFromRgb(str, obj) || d.colorFromHex(str, obj);
+		var a = Color.named[str];
+		return a && colorFromArray(a, obj) || dojo.colorFromRgb(str, obj) || dojo.colorFromHex(str, obj);
 	};
 
 })();
