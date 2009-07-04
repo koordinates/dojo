@@ -1,6 +1,8 @@
 dojo.provide("dijit._editor.plugins.EnterKeyHandling");
+dojo.require('dijit._editor.range');
 
-// NOTE: No requirements?
+// NOTE: The require call normally would be bundled.  Not necessary in this case.
+// (previously waited until after initial load.)
 
 dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 	// summary:
@@ -71,13 +73,10 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 				}));
 			//}
 		}else if(this.blockNodeForEnter){
-			//add enter key handler
+
+			// Add enter key handler
 			// FIXME: need to port to the new event code!!
 
-			// NOTE: Should never require modules post load
-			//       Will use async XHR or inject SCRIPT element
-
-			dojo['require']('dijit._editor.range'); // Intentional (hide require from builder)
 			var h = dojo.hitch(this,this.handleEnterKey);
 			editor.addKeyHandler(13, 0, 0, h); //enter
 			editor.addKeyHandler(13, 0, 1, h); //shift+enter
