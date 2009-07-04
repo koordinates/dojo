@@ -89,7 +89,7 @@ dojo.mixin(dojo.declare, {
 	},
 	_extend: function(props){
 		var i, fn;
-		for(i in props){ if(dojo.isFunction(fn=props[i]) && !0[i]){fn.nom=i;fn.ctor=this;} }
+		for(i in props){ if(typeof (fn=props[i]) == 'function' && !0[i]){fn.nom=i;fn.ctor=this;} }
 		dojo.extend(this, props);
 	},
 	_makeCtor: function(){
@@ -110,7 +110,7 @@ dojo.mixin(dojo.declare, {
 
 				// allow any first argument w/ a "preamble" property to act as a
 				// class preamble (not exclusive of the prototype preamble)
-				if(/*dojo.isFunction*/((fn = a[0].preamble))){ 
+				if(((fn = a[0].preamble))){ 
 					a = fn.apply(this, a) || a; 
 				}
 			} 
@@ -157,7 +157,7 @@ dojo.mixin(dojo.declare, {
 		inherited: function(name, args, newArgs){
 			// optionalize name argument
 			var a = arguments;
-			if(!dojo.isString(a[0])){newArgs=args; args=name; name=args.callee.nom;}
+			if(typeof a[0] != 'string'){newArgs=args; args=name; name=args.callee.nom;}
 			a = newArgs||args;
 			var c = args.callee, p = this.constructor.prototype, fn, mp;
 			// if not an instance override
