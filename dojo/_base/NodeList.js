@@ -84,7 +84,7 @@ dojo.provide("dojo._base.NodeList");
 	var magicGuard = function(a){
 		//	summary:
 		//		the guard function for dojo.attr() and dojo.style()
-		return a.length == 1 && dojo.isString(a[0]);
+		return typeof a[0] == 'string' && a.length == 1;
 	};
 	
 	var orphan = function(node){
@@ -616,7 +616,7 @@ dojo.provide("dojo._base.NodeList");
 			//		|	dojo.query("*").filter("p").styles("backgroundColor", "yellow");
 
 			var a = arguments, items = this, start = 0;
-			if(dojo.isString(simpleFilter)){
+			if(typeof simpleFilter == 'string'){
 				items = dojo._filterQueryResult(this, a[0]);
 				if(a.length == 1){
 					// if we only got a string query, pass back the filtered results
@@ -670,7 +670,7 @@ dojo.provide("dojo._base.NodeList");
 			//		add a clone of a DOM node to the end of every element in
 			//		the list, removing it from its existing parent.
 			//	|	dojo.query(".note").addContent(dojo.byId("foo"));
-			var c = dojo.isString(content) ? 
+			var c = typeof content == 'string' ? 
 						dojo._toDom(content, this[0] && this[0].ownerDocument) : 
 						content, 
 					i, 
