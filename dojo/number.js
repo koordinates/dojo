@@ -194,7 +194,7 @@ dojo.number._formatAbsolute = function(/*Number*/value, /*String*/pattern, /*doj
 	var valueParts = String(Math.abs(value)).split(".");
 	var fractional = valueParts[1] || "";
 	if(options.places){
-		var comma = dojo.isString(options.places) && options.places.indexOf(",");
+		var comma = typeof options.places == 'string' && options.places.indexOf(",");
 		if(comma){
 			options.places = options.places.substring(comma+1);
 		}
