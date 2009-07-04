@@ -81,7 +81,7 @@
 										// Show
 
 										transitionIn(el, 'Pixelate', 1000, function() {
-											console.log('Chain complete');
+											console.log('Chain complete.');
 										});
 									});
 								});								
@@ -89,7 +89,7 @@
 
 								// Failed
 
-								console.log('DirectX not supported, falling back to standard FX');
+								console.log('DirectX is not supported, falling back to standard FX.');
 								
 								if (dojo.fadeIn) {
 									var f1 = dojo.fadeOut({
@@ -104,7 +104,7 @@
 									});
 									var a1 = dojo.fx.chain([f1, f2, f1, f2]);
 									dojo.connect(a1, "onEnd", function(){
-										console.log("Chain complete");
+										console.log("Chain complete.");
 									});
 
 									a1.play();
