@@ -110,7 +110,7 @@ dojo.required("dojo.html");
 				}
 
 				if(! (this.node || node)){
-					new Error(this.declaredClass + ": no node provided to " + this.id);
+					throw new Error(this.declaredClass + ": no node provided to " + this.id);
 				}
 			},
 			set: function(/* String|DomNode|NodeList? */ cont, /* Object? */ params){
@@ -188,7 +188,7 @@ dojo.required("dojo.html");
 				//		optionally pre-process html string content
 				var cont = this.content;
 	
-				if(dojo.isString(cont)){
+				if(typeof cont == 'string'){
 					if(this.cleanContent){
 						cont = dojo.html._secureForInnerHtml(cont);
 					}
@@ -235,16 +235,23 @@ dojo.required("dojo.html");
 			},
 			
 			_mixin: function(params){
+
 				// mix properties/methods into the instance
 				// TODO: the intention with tearDown is to put the Setter's state 
 				// back to that of the original constructor (vs. deleting/resetting everything regardless of ctor params)
 				// so we could do something here to move the original properties aside for later restoration
+
 				var empty = {}, key;
 				for(key in params){
-					if(key in empty){ continue; }
-					// TODO: here's our opportunity to mask the properties we dont consider configurable/overridable
-					// .. but history shows we'll almost always guess wrong
-					this[key] = params[key]; 
+					if (!(key in empty)) {
+
+						// TODO: here's our opportunity to mask the properties we don't consider configurable/overridable
+						// ... but history shows we'll almost always guess wrong
+
+						// NOTE: What does this mean?
+
+						this[key] = params[key];
+					}
 				}
 			},
 			_parse: function(){
