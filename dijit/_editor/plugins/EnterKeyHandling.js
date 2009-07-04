@@ -1,5 +1,7 @@
 dojo.provide("dijit._editor.plugins.EnterKeyHandling");
 
+// NOTE: No requirements?
+
 dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 	// summary:
 	//		This plugin tries to make all browsers have identical behavior
@@ -56,22 +58,26 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 		// Overrides _Plugin.setEditor().
 		this.editor = editor;
 		if(this.blockNodeForEnter == 'BR'){
-			if(dojo.isIE){
-				editor.contentDomPreFilters.push(dojo.hitch(this, "regularPsToSingleLinePs"));
-				editor.contentDomPostFilters.push(dojo.hitch(this, "singleLinePsToRegularPs"));
-				editor.onLoadDeferred.addCallback(dojo.hitch(this, "_fixNewLineBehaviorForIE"));
-			}else{
+			//if(dojo.isIE){
+			//	editor.contentDomPreFilters.push(dojo.hitch(this, "regularPsToSingleLinePs"));
+			//	editor.contentDomPostFilters.push(dojo.hitch(this, "singleLinePsToRegularPs"));
+			//	editor.onLoadDeferred.addCallback(dojo.hitch(this, "_fixNewLineBehaviorForIE"));
+			//}else{
 				editor.onLoadDeferred.addCallback(dojo.hitch(this,function(d){
 					try{
 						this.editor.document.execCommand("insertBrOnReturn", false, true);
 					}catch(e){}
 					return d;
 				}));
-			}
+			//}
 		}else if(this.blockNodeForEnter){
 			//add enter key handler
 			// FIXME: need to port to the new event code!!
-			dojo['require']('dijit._editor.range');
+
+			// NOTE: Should never require modules post load
+			//       Will use async XHR or inject SCRIPT element
+
+			dojo['require']('dijit._editor.range'); // Intentional (hide require from builder)
 			var h = dojo.hitch(this,this.handleEnterKey);
 			editor.addKeyHandler(13, 0, 0, h); //enter
 			editor.addKeyHandler(13, 0, 1, h); //shift+enter
@@ -107,34 +113,38 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 					var block = dojo.withGlobal(this.editor.window, 'getAncestorElement', dijit._editor.selection, [this.blockNodeForEnter]);
 					if(block){
 						block.innerHTML=this.bogusHtmlContent;
-						if(dojo.isIE){
+						if(dojo.isHostObjectProperty(this.editor, 'document') && dojo.isHostObjectProperty(this.editor.document, 'selection') && dojo.isHostMethod(this.editor.document.selection, 'createRange')){
+
 							//the following won't work, it will move the caret to the last list item in the previous list
-							/*var newrange = dijit.range.create();
+
+							/*
+							var newrange = dijit.range.create();
 							newrange.setStart(block.firstChild,0);
 							var selection = dijit.range.getSelection(this.editor.window)
 							selection.removeAllRanges();
-							selection.addRange(newrange);*/
+							selection.addRange(newrange);
+							*/
+
+							// NOTE: This logic should be in the selection and range modules
+
 							//move to the start by move backward one char
 							var r = this.editor.document.selection.createRange();
 							r.move('character',-1);
 							r.select();
 						}
 					}else{
-						alert('onKeyPressed: Can not find the new block node'); //FIXME
+						console.warn('onKeyPressed: Can not find the new block node'); //FIXME
 					}
 				}else{
-					
-					if(dojo.isMoz){
-						if(liparent.parentNode.parentNode.nodeName=='LI'){
-							liparent=liparent.parentNode.parentNode;
-						}
+					if(liparent.parentNode.parentNode.nodeName=='LI'){
+						liparent=liparent.parentNode.parentNode;
 					}
 					var fc=liparent.firstChild;
 					if(fc && fc.nodeType==1 && (fc.nodeName=='UL' || fc.nodeName=='OL')){
 						liparent.insertBefore(fc.ownerDocument.createTextNode('\xA0'),fc);
 						var newrange = dijit.range.create();
 						newrange.setStart(liparent.firstChild,0);
-						var selection = dijit.range.getSelection(this.editor.window,true)
+						var selection = dijit.range.getSelection(this.editor.window,true);
 						selection.removeAllRanges();
 						selection.addRange(newrange);
 					}
@@ -174,8 +184,8 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 		if(!this.blockNodeForEnter){ return true; }
 
 		var selection, range, newrange, doc=this.editor.document,br;
-		if(e.shiftKey  //shift+enter always generates <br>
-			|| this.blockNodeForEnter=='BR'){
+		if(e.shiftKey ||  //shift+enter always generates <br>
+			this.blockNodeForEnter=='BR'){
 			// TODO: above condition 'this.blockNodeForEnter=='BR'' is meaningless,
 			// onKeyPress --> handleEnterKey is only called when blockNodeForEnter != BR
 			var parent = dojo.withGlobal(this.editor.window, "getParentElement", dijit._editor.selection);
@@ -238,11 +248,11 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 
 		//if this is under a LI or the parent of the blockNode is LI, just let browser to handle it
 		if((this._checkListLater = (blockNode && (blockNode.nodeName == 'LI' || blockNode.parentNode.nodeName == 'LI')))){
+						
+			//press enter in middle of P may leave a trailing <br/>, let's remove it later
+
+			this._pressedEnterInBlock = blockNode;
 			
-		    if(dojo.isMoz){
-				//press enter in middle of P may leave a trailing <br/>, let's remove it later
-				this._pressedEnterInBlock = blockNode;
-			}
 			//if this li only contains spaces, set the content to empty so the browser will outdent this item
 			if(/^(?:\s|&nbsp;)$/.test(blockNode.innerHTML)){
 				blockNode.innerHTML='';
@@ -297,10 +307,8 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 			}
 			_letBrowserHandle = false;
 		}else{ //press enter in the middle of P
-			if(dojo.isMoz){
-				//press enter in middle of P may leave a trailing <br/>, let's remove it later
-				this._pressedEnterInBlock = block.blockNode;
-			}
+			//press enter in middle of P may leave a trailing <br/>, let's remove it later
+			this._pressedEnterInBlock = block.blockNode;
 		}
 		return _letBrowserHandle;
 	},
@@ -343,40 +351,36 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 
 				// DomNode Style  = insertCssText(String ".dojoMenu {color: green;}"[, DomDoc document, dojo.uri.Uri Url ])
 				if(!cssStr){
-					return null; //	HTMLStyleElement
+					return null; //	Object
 				}
-				if(!doc){ doc = document; }
-//					if(URI){// fix paths in cssStr
-//						cssStr = dojo.html.fixPathsInCssText(cssStr, URI);
-//					}
+				if(!doc){ doc = dojo.doc; }
 				var style = doc.createElement("style");
-				style.setAttribute("type", "text/css");
-				// IE is b0rken enough to require that we add the element to the doc
+				style.type = "text/css";
+
+				// IE requires that we add the element to the doc
 				// before changing it's properties
-				var head = doc.getElementsByTagName("head")[0];
-				if(!head){ // must have a head tag
-					console.debug("No head tag in document, aborting styles");
-					return null;	//	HTMLStyleElement
-				}else{
-					head.appendChild(style);
+
+				var head = doc.getElementsByTagName("head")[0];				
+				head.appendChild(style);
+
+				// NOTE: Duplication (belongs in HTML module)
+
+				var done = false;
+
+				if(dojo.isHostObjectProperty(style, 'styleSheet') && typeof style.styleSheet.cssText == 'string'){// IE					
+					try{
+						style.styleSheet.cssText = cssStr;
+					}catch(e){ console.debug(e); }
+					
+					done = true;
 				}
-				if(style.styleSheet){// IE
-					var setFunc = function(){
-						try{
-							style.styleSheet.cssText = cssStr;
-						}catch(e){ console.debug(e); }
-					};
-					if(style.styleSheet.disabled){
-						setTimeout(setFunc, 10);
-					}else{
-						setFunc();
-					}
-				}else{ // w3c
+				if (!done && style.canHaveChildren !== false) { // w3c
 					var cssText = doc.createTextNode(cssStr);
 					style.appendChild(cssText);
+					return style;	//	HTMLStyleElement
 				}
-				return style;	//	HTMLStyleElement
-			}
+				return null; // Object
+			};
 			insertCssText(lineFixingStyles, this.editor.document);
 			this.editor.document.__INSERTED_EDITIOR_NEWLINE_CSS = true;
 			// this.regularPsToSingleLinePs(this.editNode);
@@ -394,7 +398,7 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 		// tags:
 		//		private
 		function wrapLinesInPs(el){
-		  // move "lines" of top-level text nodes into ps
+			// move "lines" of top-level text nodes into ps
 			function wrapNodes(nodes){
 				// nodes are assumed to all be siblings
 				var newP = nodes[0].ownerDocument.createElement('p'); // FIXME: not very idiomatic
@@ -415,7 +419,11 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 					nodesInLine.push(currentNode);
 				}else{
 					// hit line delimiter; process nodesInLine if there are any
-					var nextCurrentNode = currentNode.nextSibling;
+
+					// NOTE: Unused
+
+					//var nextCurrentNode = currentNode.nextSibling;
+
 					if(nodesInLine.length){
 						wrapNodes(nodesInLine);
 						currentNodeIndex = (currentNodeIndex+1)-nodesInLine.length;
@@ -432,20 +440,22 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 
 		function splitP(el){
 			// split a paragraph into seperate paragraphs at BRs
-			var currentNode = null;
+			var newP, currentNode = null;
 			var trailingNodes = [];
 			var lastNodeIndex = el.childNodes.length-1;
+			var fn = function(node){
+				newP.appendChild(node);
+			};
+
 			for(var i=lastNodeIndex; i>=0; i--){
 				currentNode = el.childNodes[i];
 				if(currentNode.nodeName=="BR"){
-					var newP = currentNode.ownerDocument.createElement('p');
+					newP = currentNode.ownerDocument.createElement('p');
 					dojo.place(newP, el, "after");
-					if (trailingNodes.length==0 && i != lastNodeIndex) {
-						newP.innerHTML = "&nbsp;"
+					if (!trailingNodes.length && i != lastNodeIndex) {
+						newP.innerHTML = "&nbsp;";
 					}
-					dojo.forEach(trailingNodes, function(node){
-						newP.appendChild(node);
-					});
+					dojo.forEach(trailingNodes, fn);
 					dojo.destroy(currentNode);
 					trailingNodes = [];
 				}else{
@@ -549,7 +559,7 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 					deleteNode = node;
 					firstPInBlock = null;
 				}else{
-					if(firstPInBlock == null){
+					if(firstPInBlock === null){
 						firstPInBlock = node;
 					}else{
 						if( (!firstPInBlock.lastChild || firstPInBlock.lastChild.nodeName != 'BR') &&
