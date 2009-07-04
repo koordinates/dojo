@@ -344,7 +344,7 @@ dojo.required("dojo._base.html");
 		
 		props.start = !("start" in fArgs) ?
 			function(){
-				return +dojo.style(fArgs.node, "opacity")||0; 
+				return +dojo.style(fArgs.node, "opacity")||0;
 			} : fArgs.start;
 		props.end = fArgs.end;
 
@@ -530,33 +530,37 @@ dojo.required("dojo._base.html");
 		//	|	anim.play();
 		
 		args.node = byId(args.node);
-		args.easing = typeof args.easing == 'string' ? dojo.fx.easing[args.easing + (args.end ? 'In' : 'Out')] : args.easing;
+		if (typeof args.easing == 'string' && args.easing) {
+			args.easingName = args.easing
+		}
 
-		if(!args.easing){ args.easing = dojo._defaultEasing; }
+		// NOTE: Problem with named easing predicting which flavor to use (out or in)
+
+		args.easing = (args.easingName ? dojo.fx.easing[args.easingName + (/(Out|In)$/.test(args.easingName) ? '' : ((args.end == 1 || typeof args.end != 'number') ? 'In' : 'Out'))] : args.easing) || dojo._defaultEasing;
 
 		var anim = new dojo._Animation(args);
 		dojo.connect(anim, "beforeBegin", anim, function(){
 			var isColor, p, prop, pm = {}, properties = this.properties;
 			for(p in properties){
 				if (isOwnProperty(properties, p)) {
+
 					// Make shallow copy of properties into pm because we overwrite
 					// some values below. In particular if start/end are functions
 					// we don't want to overwrite them or the functions won't be
 					// called if the animation is reused.
+
 					if(p == "width" || p == "height"){
 						this.node.display = "block";
 					}
 					prop = this.properties[p];
 
-					// NOTE: isObject allows null
+					prop = pm[p] = _mixin({}, ((dojo.isObject(prop) && prop) ? prop: { end: prop }));
 
-					prop = pm[p] = _mixin({}, (dojo.isObject(prop) ? prop: { end: prop }));
-
-					if(dojo.isFunction(prop.start)){
+					if(typeof prop.start == 'function'){
 						prop.start = prop.start();
 					}
 
-					if(dojo.isFunction(prop.end)){
+					if(typeof prop.end == 'function'){
 						prop.end = prop.end();
 					}
 
@@ -573,6 +577,7 @@ dojo.required("dojo._base.html");
 					}else{
 						prop.start = (p == "opacity") ? +prop.start : parseFloat(prop.start);
 					}
+
 				}
 			}
 

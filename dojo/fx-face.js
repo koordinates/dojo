@@ -243,7 +243,6 @@ dojo.fx = {
 		//		it's natural height (with no scrollbar).
 		//		Node must have no margin/border/padding.
 		args.node = dojo.byId(args.node);
-		args.easing = typeof args.easing == 'string' ? dojo.fx.easing[args.easing + 'In'] : args.easing;
 
 		var node = args.node, s = node.style, o;
 
