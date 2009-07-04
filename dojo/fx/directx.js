@@ -15,8 +15,8 @@ dojo.required('dojo.fx');
           }
 
           duration = duration || 1000;
-          if (typeof el.filters != 'undefined') {
-            if (el.currentStyle && !el.currentStyle.hasLayout) { el.style.zoom = '1'; }
+          if (dojo.isHostObjectProperty(el, 'filters')) {
+            if (dojo.isHostObjectProperty(el, 'currentStyle') && !el.currentStyle.hasLayout) { el.style.zoom = '1'; }
             if (el.filters.length && (f = el.filters['DXImageTransform.Microsoft.' + name])) {
               f.duration = duration / 1000;
               if (params) { for (index in params) { if (isOwnProperty(params, index)) { f[index] = params[index]; } } }
@@ -30,24 +30,24 @@ dojo.required('dojo.fx');
                 el.style.filter += ((el.style.filter)?' ':'') + 'progid:DXImageTransform.Microsoft.' + name + '(duration=' + (duration / 1000) + p + ')';
               }
             }
-            if (el.filters['DXImageTransform.Microsoft.' + name]) { el.filters['DXImageTransform.Microsoft.' + name].apply(); }
-            return true;
+            if (el.filters['DXImageTransform.Microsoft.' + name]) {
+              el.filters['DXImageTransform.Microsoft.' + name].apply();
+              return true;
+            }            
           }
 	};
 
-	playFilter = dojo.fx.directx.playTransitionFilter = function(el, name) {
-          var f;
+	// NOTE: Never call playFilter without confirmation from applyFilter
 
+	playFilter = dojo.fx.directx.playTransitionFilter = function(el, name) {
           if (typeof el == 'string') {
             el = dojo.byId(el);
           }
 
-          if (typeof el.filters != 'undefined') {
-            f = el.filters['DXImageTransform.Microsoft.' + name];
-            if (f) {
-              if (f.status == 2) { f.stop(); }
-              f.play();
-            }
+          var f = el.filters['DXImageTransform.Microsoft.' + name];
+          if (f) {
+            if (f.status == 2) { f.stop(); }
+            f.play();
           }
         };
 
