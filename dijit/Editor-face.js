@@ -116,7 +116,9 @@ dojo.declare(
 			//		Used when creating an instance from
 			//		something already in this.plugins. Ensures that the new
 			//		instance is assigned to this.plugins at that index.
-			var args=dojo.isString(plugin)?{name:plugin}:plugin;
+
+			var args = typeof plugin == 'string' ? {name:plugin} : plugin;
+
 			if(!args.setEditor){
 				var o={"args":args,"plugin":null,"editor":this};
 				dojo.publish(dijit._scopeName + ".Editor.getPlugin",[o]);
@@ -138,7 +140,7 @@ dojo.declare(
 				this._plugins.push(plugin);
 			}
 			plugin.setEditor(this);
-			if(dojo.isFunction(plugin.setToolbar)){
+			if(typeof plugin.setToolbar == 'function'){
 				plugin.setToolbar(this.toolbar);
 			}
 		},
@@ -174,7 +176,7 @@ dojo.declare(
 			//		private
 			delete this._savedSelection; // new mouse position overrides old selection
 			if(e.target.tagName == "BODY"){
-				setTimeout(dojo.hitch(this, "placeCursorAtEnd"), 0);
+				dojo._getWin().setTimeout(dojo.hitch(this, "placeCursorAtEnd"), 0);
 			}
 			this.inherited(arguments);
 		},
@@ -222,9 +224,9 @@ dojo.declare(
 			}
 			if(this.editActionInterval>0){
 				if(this._editTimer){
-					clearTimeout(this._editTimer);
+					dojo._getWin().clearTimeout(this._editTimer);
 				}
-				this._editTimer = setTimeout(dojo.hitch(this, this.endEditing), this._editInterval);
+				this._editTimer = dojo._getWin().setTimeout(dojo.hitch(this, this.endEditing), this._editInterval);
 			}
 		},
 		_steps:[],
@@ -243,20 +245,8 @@ dojo.declare(
 					this._beginEditing();
 				}
 				try{
-					var r = this.inherited('execCommand', arguments);
-                    if(dojo.isWebKit && cmd=='paste' && !r){ //see #4598: safari does not support invoking paste from js
-						throw { code: 1011 }; // throw an object like Mozilla's error
-                    }
-				}catch(e){
-					//TODO: when else might we get an exception?  Do we need the Mozilla test below?
-					if(e.code == 1011 /* Mozilla: service denied */ && /copy|cut|paste/.test(cmd)){
-						// Warn user of platform limitation.  Cannot programmatically access clipboard. See ticket #4136
-						var sub = dojo.string.substitute,
-							accel = {cut:'X', copy:'C', paste:'V'},
-							isMac = navigator.userAgent.indexOf("Macintosh") != -1;
-						alert(sub(this.commands.systemShortcut,
-							[this.commands[cmd], sub(this.commands[isMac ? 'appleKey' : 'ctrlKey'], [accel[cmd]])]));
-					}
+					var r = this.inherited('execCommand', arguments);                    
+				}catch(e){					
 					r = false;
 				}
 				if(this.customUndo){
@@ -282,8 +272,7 @@ dojo.declare(
 			// summary:
 			//		Set focus inside the editor
 			var restore=0;
-			//console.log('focus',dijit._curFocus==this.editNode)
-			if(this._savedSelection && dojo.isIE){
+			if(this._savedSelection){
 				restore = dijit._curFocus!=this.editNode;
 			}
 		    this.inherited(arguments);
@@ -296,15 +285,18 @@ dojo.declare(
 			//		Selects the text specified in bookmark b
 			// tags:
 			//		private
+
 			var bookmark=b;
-			if(dojo.isIE){
-				if(dojo.isArray(b)){//IE CONTROL
-					bookmark=[];
-					dojo.forEach(b,function(n){
-						bookmark.push(dijit.range.getNode(n,this.editNode));
-					},this);
-				}
-			}else{//w3c range
+
+			if(dojo.isArray(b)){ // IE CONTROL
+				bookmark=[];
+				dojo.forEach(b,function(n){
+					bookmark.push(dijit.range.getNode(n,this.editNode));
+				},this);
+			}else{ // w3c range
+
+				// NOTE: The range module should be browser agnostic
+
 				var r=dijit.range.create();
 				r.setStart(dijit.range.getNode(b.startContainer,this.editNode),b.startOffset);
 				r.setEnd(dijit.range.getNode(b.endContainer,this.editNode),b.endOffset);
@@ -327,7 +319,7 @@ dojo.declare(
 			//		Handler for editor undo (ex: ctrl-z) operation
 			// tags:
 			//		private
-//			console.log('undo');
+
 			this.endEditing(true);
 			var s=this._steps.pop();
 			if(this._steps.length>0){
@@ -345,7 +337,6 @@ dojo.declare(
 			// tags:
 			//		private
 
-//			console.log('redo');
 			this.endEditing(true);
 			var s=this._undoedSteps.pop();
 			if(s && this._steps.length>0){
@@ -364,7 +355,7 @@ dojo.declare(
 			// tags:
 			//		private
 			if(this._editTimer){
-				clearTimeout(this._editTimer);
+				dojo._getWin().clearTimeout(this._editTimer);
 			}
 			if(this._inEditing){
 				this._endEditing(ignore_caret);
@@ -378,14 +369,13 @@ dojo.declare(
 			//		protected
 			var b=dojo.withGlobal(this.window,dijit.getBookmark);
 			var tmp=[];
-			if(dojo.isIE){
-				if(dojo.isArray(b)){//CONTROL
-					dojo.forEach(b,function(n){
-						tmp.push(dijit.range.getIndex(n,this.editNode).o);
-					},this);
-					b=tmp;
-				}
-			}else{//w3c range
+
+			if(dojo.isArray(b)){ // IE CONTROL
+				dojo.forEach(b,function(n){
+					tmp.push(dijit.range.getIndex(n,this.editNode).o);
+				},this);
+				b=tmp;
+			}else{ // w3c range
 				tmp=dijit.range.getIndex(b.startContainer,this.editNode).o;
 				b={startContainer:tmp,
 					startOffset:b.startOffset,
@@ -423,7 +413,7 @@ dojo.declare(
 
 			//We need to save selection if the user TAB away from this editor
 			//no need to call _saveSelection for IE, as that will be taken care of in onBeforeDeactivate
-			if(!dojo.isIE && !this.iframe && e.keyCode==dojo.keys.TAB && !this.tabIndent){
+			if(!this.iframe && e.keyCode==dojo.keys.TAB && !this.tabIndent){
 				this._saveSelection();
 			}
 			if(!this.customUndo){
@@ -456,22 +446,22 @@ dojo.declare(
 							this.endEditing();//end current typing step if any
 							if(e.keyCode == 88){
 								this.beginEditing('cut');
+
 								//use timeout to trigger after the cut is complete
-								setTimeout(dojo.hitch(this, this.endEditing), 1);
+
+								dojo._getWin().setTimeout(dojo.hitch(this, this.endEditing), 1);
 							}else{
 								this.beginEditing('paste');
 								//use timeout to trigger after the paste is complete
-								setTimeout(dojo.hitch(this, this.endEditing), 1);
+								dojo._getWin().setTimeout(dojo.hitch(this, this.endEditing), 1);
 							}
 							break;
-						}
-						//pass through
+						} //pass through
 					default:
 						if(!e.ctrlKey && !e.altKey && !e.metaKey && (e.keyCode<dojo.keys.F1 || e.keyCode>dojo.keys.F15)){
 							this.beginEditing();
 							break;
-						}
-						//pass through
+						} //pass through
 					case ks.ALT:
 						this.endEditing();
 						break;
@@ -533,8 +523,7 @@ dojo.declare(
 			// tags:
 			//		protected
 
-			//console.log('_onFocus');
-			setTimeout(dojo.hitch(this, "_restoreSelection"), 0); // needs input caret first
+			dojo._getWin().setTimeout(dojo.hitch(this, "_restoreSelection"), 0); // needs input caret first
 			this.inherited(arguments);
 		},
 
