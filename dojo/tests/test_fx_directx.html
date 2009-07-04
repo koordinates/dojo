@@ -59,7 +59,7 @@
 
 							// Hide
 
-							transitionOut(el, 'GradientWipe', 1000, function() {
+							transitionOut(el, 'GradientWipe', 1000, null, function() {
 
 								// Passed
 
@@ -67,20 +67,34 @@
 
 								// Show
 
-								transitionIn(el, 'Fade', 1000, function() {
+								transitionIn(el, 'Fade', 1000, null, function() {
 
 									console.log('Stretch');
 
 									// Hide
 
-									transitionOut(el, 'Stretch', 1000, function() {
+									transitionOut(el, 'Stretch', 1000, {StretchStyle:'PUSH'}, function() {
 
-										console.log('Pixelate');
+										console.log('Checkerboard');
 
 										// Show
 
-										transitionIn(el, 'Pixelate', 1000, function() {
-											console.log('Chain complete.');
+										transitionIn(el, 'Checkerboard', 1000, null, function() {
+
+											console.log('Iris');
+
+											// Hide
+
+											transitionOut(el, 'Iris', 1000, {IrisStyle:'STAR'}, function() {
+
+												console.log('Pixelate');
+
+												// Show
+
+												transitionIn(el, 'Pixelate', 1000, null, function() {
+													console.log('Chain complete.');
+												});
+											});
 										});
 									});
 								});								
@@ -101,7 +115,7 @@
 										duration: 1000,
 										easing: 'quad'
 									});
-									var a1 = dojo.fx.chain([f1, f2, f1, f2]);
+									var a1 = dojo.fx.chain([f1, f2, f1, f2, f1, f2]);
 									dojo.connect(a1, "onEnd", function(){
 										console.log("Chain complete.");
 									});

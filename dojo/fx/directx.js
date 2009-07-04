@@ -51,9 +51,9 @@ dojo.required('dojo.fx');
           }
         };
 
-	dojo._transition = function(el, name, duration, show, cbPass, cbFail) {
+	dojo._transition = function(el, name, duration, params, show, cbPass, cbFail) {
 		var cb, canDo;
-		if (applyFilter(el, name, duration)) {
+		if (applyFilter(el, name, duration, params)) {
 			canDo = true;
 		}
 
@@ -75,11 +75,11 @@ dojo.required('dojo.fx');
 		}
 	};
 
-	dojo.fx.directx.transitionIn = function(el, name, duration, cbPass, cbFail) {
-		dojo._transition(el, name, duration, true, cbPass, cbFail);
+	dojo.fx.directx.transitionIn = function(el, name, duration, params, cbPass, cbFail) {
+		dojo._transition(el, name, duration, params, true, cbPass, cbFail);
 	};
 
-	dojo.fx.directx.transitionOut = function(el, name, duration, cbPass, cbFail) {
-		dojo._transition(el, name, duration, false, cbPass, cbFail);
+	dojo.fx.directx.transitionOut = function(el, name, duration, params, cbPass, cbFail) {
+		dojo._transition(el, name, duration, params, false, cbPass, cbFail);
 	};
 })();
