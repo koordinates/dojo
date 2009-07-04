@@ -154,7 +154,7 @@ dojo.behavior = function(){
 			}
 			var cversion = [];
 			tBehavior.push(cversion);
-			if((dojo.isString(behavior))||(dojo.isFunction(behavior))){
+			if((typeof behavior == 'string')||(typeof behavior == 'function')){
 				behavior = { found: behavior };
 			}
 			forIn(behavior, function(rule, ruleName){
@@ -164,7 +164,7 @@ dojo.behavior = function(){
 	};
 
 	var _applyToNode = function(node, action, ruleSetName){
-		if(dojo.isString(action)){
+		if(typeof action == 'string'){
 			if(ruleSetName == "found"){
 				dojo.publish(action, [ node ]);
 			}else{
@@ -172,7 +172,7 @@ dojo.behavior = function(){
 					dojo.publish(action, arguments);
 				});
 			}
-		}else if(dojo.isFunction(action)){
+		}else if(typeof action == 'function'){
 			if(ruleSetName == "found"){
 				action(node);
 			}else{
@@ -216,15 +216,16 @@ dojo.behavior = function(){
 						}
 					}
 					// run through the versions, applying newer rules at each step
+					var fn = function(ruleSet, ruleSetName){
+						if(dojo.isArray(ruleSet)){
+							dojo.forEach(ruleSet, function(action){
+								_applyToNode(elem, action, ruleSetName);
+							});
+						}
+					};
 
-					for(var x=runFrom, tver; tver = tBehavior[x]; x++){
-						forIn(tver, function(ruleSet, ruleSetName){
-							if(dojo.isArray(ruleSet)){
-								dojo.forEach(ruleSet, function(action){
-									_applyToNode(elem, action, ruleSetName);
-								});
-							}
-						});
+					for(var x=runFrom, tver; tver = tBehavior[x]; x++){ // NOTE: Intentional assignment
+						forIn(tver, fn);
 					}
 
 					// ensure that re-application only adds new rules to the node
