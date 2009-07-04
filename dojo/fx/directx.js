@@ -51,34 +51,35 @@ dojo.required('dojo.fx');
           }
         };
 
-					dojo._transition = function(el, name, duration, show, cb) {
-						var canDo;
-						if (applyFilter(el, name, duration)) {
-							canDo = true;
-						} else {
-							console.warn('Could not apply filter.');
-						}
+	dojo._transition = function(el, name, duration, show, cbPass, cbFail) {
+		var cb, canDo;
+		if (applyFilter(el, name, duration)) {
+			canDo = true;
+		}
 
-						// Hide or show the element
+		if (canDo) {
 
-						el.style.visibility = show ? 'visible' : 'hidden';
+			// Hide or show the element
 
-						if (canDo) {
-							playFilter(el, name);
-						}
+			el.style.visibility = show ? 'visible' : 'hidden';
 
-						// Do callback as appropriate
+			playFilter(el, name);
+		}
 
-						if (cb) {
-							dojo._getWin().setTimeout(cb, canDo ? duration : 0);
-						}
-					};
+		// Do callback as appropriate
 
-					dojo.fx.directx.transitionIn = function(el, name, duration, cb) {
-						dojo._transition(el, name, duration, true, cb);
-					};
+		cb = canDo ? cbPass : cbFail;
 
-					dojo.fx.directx.transitionOut = function(el, name, duration, cb) {
-						dojo._transition(el, name, duration, false, cb);
-					};
+		if (cb) {
+			dojo._getWin().setTimeout(cb, canDo ? duration : 0);
+		}
+	};
+
+	dojo.fx.directx.transitionIn = function(el, name, duration, cbPass, cbFail) {
+		dojo._transition(el, name, duration, true, cbPass, cbFail);
+	};
+
+	dojo.fx.directx.transitionOut = function(el, name, duration, cbPass, cbFail) {
+		dojo._transition(el, name, duration, false, cbPass, cbFail);
+	};
 })();

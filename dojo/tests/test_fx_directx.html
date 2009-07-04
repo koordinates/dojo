@@ -41,6 +41,8 @@
 			if (typeof dojo != 'undefined') {
 				dojo.require("dojo.fx");
 				dojo.require("dojo.fx.directx");
+				dojo.require("dojo.fx.easing");
+
 				dojo.addOnLoad(function() {
 					var byId = dojo.byId;					
 
@@ -59,6 +61,8 @@
 							// Hide
 
 							transitionOut(el, 'GradientWipe', 1000, function() {
+
+								// Passed
 
 								console.log('Fade');
 
@@ -81,6 +85,30 @@
 										});
 									});
 								});								
+							}, function() {
+
+								// Failed
+
+								console.log('DirectX not supported, falling back to standard FX');
+								
+								if (dojo.fadeIn) {
+									var f1 = dojo.fadeOut({
+										node: el,
+										duration: 1000,
+										easing: 'quad'
+									});
+									var f2 = dojo.fadeIn({
+										node: el,
+										duration: 1000,
+										easing: 'quad'
+									});
+									var a1 = dojo.fx.chain([f1, f2, f1, f2]);
+									dojo.connect(a1, "onEnd", function(){
+										console.log("Chain complete.");
+									});
+
+									a1.play();
+								}
 							});
 						}
 					}
