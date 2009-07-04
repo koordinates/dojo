@@ -2,9 +2,9 @@ dojo.provide("dojo._base.html");
 
 // FIXME: need to add unit tests for all the semi-public methods
 
-if (typeof dojo._getWin().document.execCommand != 'undefined') {
+if (dojo.isHostMethod(dojo._getWin().document, 'execCommand')) {
 	try {
-		window.document.execCommand("BackgroundImageCache", false, true);
+		dojo._getWin().document.execCommand("BackgroundImageCache", false, true);
 	} catch(e) {
 	}
 }
@@ -75,7 +75,7 @@ dojo.byId = function(id, doc){
 		return false; // Boolean
 	};
 
-	var html = window.document.documentElement;
+	var html = dojo._getWin().document.documentElement;
 
 	dojo.setSelectable = (function() {
 		var i, style, selectStyles = ['MozUserSelect', 'KhtmlUserSelect', 'OUserSelect', 'userSelect'];
@@ -217,7 +217,7 @@ dojo.byId = function(id, doc){
 	//       should be deprecated
 
 	dojo.boxModel = "content-box";
-	if (window.document.documentElement.clientWidth === 0) {
+	if (dojo._getWin().document.documentElement.clientWidth === 0) {
 		// client code may have to adjust if compatMode varies across iframes
 		dojo.boxModel =  "border-box";
 	}
@@ -585,7 +585,7 @@ dojo.byId = function(id, doc){
 	var offsetIncludesBorder, scrollerOffsetSubtractsBorder;
 
 	dojo.addOnLoad(function() {
-		var doc = window.document;
+		var doc = dojo._getWin().document;
 		var body = doc.body;
 		var divInner = doc.createElement('div');
 		var divOuter = doc.createElement('div');
@@ -872,7 +872,7 @@ dojo.byId = function(id, doc){
 
 	var htmlOffsetsOrigin;
 
-	if (typeof window.document.documentElementgetBoundingClientRect != 'undefined') {
+	if (typeof dojo._getWin().document.documentElementgetBoundingClientRect != 'undefined') {
 	        (function(html) {
 			var m = dojo._getMarginExtents(html);
 			var rect = html.getBoundingClientRect();
@@ -886,7 +886,7 @@ dojo.byId = function(id, doc){
 					return { t: margins.t + borders.t, l: margins.l + borders.l };
 				};
 			}
-		})(window.document.documentElement);
+		})(dojo._getWin().document.documentElement);
 	}
 
 	var pxUnit = 'px';
@@ -1228,7 +1228,7 @@ dojo.byId = function(id, doc){
 
 	var _evtHdlrMap = {}, _ctr = 0,
 		_attrId = dojo._scopeName + "attrid";
-	html = window.document.documentElement;
+	html = dojo._getWin().document.documentElement;
 	var attributesBad = !!(typeof html.getAttribute != 'undefined' && html.getAttribute('style') && typeof html.getAttribute('style') != 'string');
 	var attributeAliases = {'for':'htmlFor', accesskey:'accessKey', maxlength:'maxLength', 'class':'className', readonly:'readOnly', longdesc:'longDesc', tabindex:'tabIndex', rowspan:'rowSpan', colspan:'colSpan', codebase:'codeBase', enctype:'encType', ismap:'isMap', innerhtml:'innerHTML'}; // Last for backwards compatibility
 
@@ -1722,7 +1722,7 @@ dojo.byId = function(id, doc){
 			refNode = byId(refNode);
 			doc = refNode.ownerDocument;
 		}
-		if(dojo.isString(tag)){
+		if(typeof tag == 'string'){
 			tag = doc.createElement(tag);
 		}
 		if(attrs){ dojo.attr(tag, attrs); }
