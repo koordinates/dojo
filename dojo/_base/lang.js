@@ -1,7 +1,5 @@
 dojo.provide("dojo._base.lang");
 
-// Crockford (ish) functions
-
 dojo.isString = function(/*anything*/ it){
 	//	summary:
 	//		Return true if it is a String
@@ -134,6 +132,10 @@ dojo._getHitchHandle = (function() {
 })();
 
 dojo._hitchArgs = function(thisObject, method /*,...*/){
+
+	// NOTE: Handle system is temporary
+	//       Will be used to test suspected hitch-induced memory leaks
+
 	var pre = Array.prototype.slice.call(arguments, 2);
 	var handle = dojo._getHitchHandle();
 
@@ -141,7 +143,7 @@ dojo._hitchArgs = function(thisObject, method /*,...*/){
 
 	// locate our method
 
-	var f = dojo.isString(method) ? thisObject[method] : method;
+	var f = typeof method == 'string' ? thisObject[method] : method;
 
 	// Should throw if can't locate?
 
@@ -281,7 +283,7 @@ dojo._toArray = (function(){
 	};
 
 	try {
-		fn(window.document.childNodes);
+		fn(dojo._getWin().document.childNodes);
 	} catch(e) {
 
 		// Fall back to slow version
