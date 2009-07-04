@@ -347,5 +347,5 @@ dojo.fx = {
 		dojo.connect(anim, "beforeBegin", anim, init);
 
 		return anim; // dojo._Animation
-	};
+	};					
 })();

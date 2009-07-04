@@ -128,6 +128,34 @@ if(typeof dojo == "undefined"){
 			return !!(reFeaturedMethod.test(t) && o[p]); /* Boolean */
 		};
 
+		// For application gateways to detect one or more API methods
+
+		dojo.areFeatures = function() {
+			var i = arguments.length;
+			while (i--) {
+				if (!dojo[arguments[i]]) {
+					return false
+				}
+			}
+			return true;
+		};
+
+		dojo.areNSFeatures = function(ns) {
+			ns = dojo[ns];
+			if (ns) {
+				var features = Array.prototype.slice(arguments, 1);
+				var i = features.length;
+				while (i--) {
+					if (!ns[features[i]]) {
+						return false
+					}
+				}
+				return true;
+			}
+			return false;
+		};
+
+
 		dojo._getWin = function() {
 			return dojo.global.window || dojo.global;
 		};

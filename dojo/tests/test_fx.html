@@ -2,6 +2,7 @@
 	"http://www.w3.org/TR/html4/strict.dtd">
 <html>
 	<head>
+		<title>Dojo Test - FX</title>
 		<style type="text/css">
 			@import "../resources/dojo.css";
 
@@ -29,13 +30,22 @@
 				overflow: hidden;
 			}
 		</style>
-		<script type="text/javascript" src="../dojo.js" djconfig="isDebug:true"></script>
+		<script type="text/javascript">
+			// Can also use djconfig attribute on Dojo script element
+			// (not recommended.)
+
+			var djConfig = { isDebug:true };
+		</script>
+		<script type="text/javascript" src="../dojo.js"></script>
 		<script type="text/javascript">
 			if (typeof dojo != 'undefined') {
 				dojo.require("dojo.fx");
 				dojo.require("dojo.fx.easing");
 				dojo.addOnLoad(function() {
-					if (dojo.byId && dojo.fx) {
+
+					// Gateway
+
+					if (dojo.areFeatures('byId') && dojo.areNSFeatures('fx', 'fadeIn', 'wipeIn')) {
 						var w1 = dojo.fx.wipeIn({
 							node: "foo",
 							duration: 1000,
