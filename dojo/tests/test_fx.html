@@ -19,8 +19,6 @@
 				background-color: white;
 				padding-left: 10px;
 				padding-right: 10px;
-				margin-left: 10px;
-				margin-bottom: 1em;
 				-o-border-radius: 10px;
 				-moz-border-radius: 12px;
 				-webkit-border-radius: 10px;
@@ -77,6 +75,16 @@
 						});
 						dojo.connect(a2, "onEnd", function(){
 							console.log("Finished wipe in, fade in combo.");
+
+							var a3 = dojo.fx.slideTo({ node: "foo", left: 300, duration: 300, easing: 'quart'});
+							dojo.connect(a3, "onEnd", function(){
+								a3 = dojo.fx.slideTo({ node: "foo", left: 150, duration: 600, easing: 'cosine'});
+								dojo.connect(a3, "onEnd", function(){
+									console.log("Finished slide.");
+								});
+								a3.play();
+							});
+							a3.play();
 						});
 						dojo.byId("foo").style.height = "0px";
 						a1.play();

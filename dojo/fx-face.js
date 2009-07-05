@@ -317,34 +317,19 @@ dojo.fx = {
 		// example:
 		//	|	dojo.fx.slideTo({ node: node, left:"40", top:"50", unit:"px" }).play()
 
-		var node = args.node = dojo.byId(args.node), 
-			top = null, left = null;
+		var node = args.node = dojo.byId(args.node);
 
-		var init = (function(n){
-			return function(){
-				var cs = dojo.getComputedStyle(n);
-				var pos = cs.position;
-				top = (pos == 'absolute' ? n.offsetTop : parseInt(cs.top, 10) || 0);
-				left = (pos == 'absolute' ? n.offsetLeft : parseInt(cs.left, 10) || 0);
-				if(pos != 'absolute' && pos != 'relative'){
-					var ret = dojo.coords(n, true);
-					top = ret.y;
-					left = ret.x;
-					n.style.position="absolute";
-					n.style.top=top+"px";
-					n.style.left=left+"px";
-				}
-			};
-		})(node);
-		init();
+		var properties = {};
+		if (typeof args.left == 'number') {
+			properties.left = args.left;
+		}
+		if (typeof args.top == 'number') {
+			properties.top = args.top;
+		}
 
 		var anim = dojo.animateProperty(dojo.mixin({
-			properties: {
-				top: args.top || 0,
-				left: args.left || 0
-			}
+			properties: properties
 		}, args));
-		dojo.connect(anim, "beforeBegin", anim, init);
 
 		return anim; // dojo._Animation
 	};					

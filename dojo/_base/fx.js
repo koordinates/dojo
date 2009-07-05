@@ -154,7 +154,7 @@ dojo.required("dojo._base.html");
 				_p = dojo.hitch(_t, "_play", gotoStart);
 				
 			if(de > 0){
-				_t._delayTimer = setTimeout(_p, de);
+				_t._delayTimer = dojo._getWin().setTimeout(_p, de);
 				return _t; // dojo._Animation
 			}
 			_p();
@@ -421,6 +421,9 @@ dojo.required("dojo._base.html");
 	};
 
 	function getStyle(node, style, isColor){
+
+		// NOTE: Need to check units here (don't do adjustments if not px)
+
 		if (/^(height|width)$/i.test(style)) {
 			style = style.toLowerCase();
 			var computedHeightOrWidth = dojo.getStylePixels(node, style);
@@ -440,6 +443,34 @@ dojo.required("dojo._base.html");
 				return offset;
 			}
 			return computedHeightOrWidth;
+		} else if (/^(top|left)$/i.test(style)) {
+			style = style.toLowerCase();
+			var cs = dojo.getComputedStyle(node);
+			var pos = cs.position;
+			if (!pos || pos == 'static') {
+
+				// NOTE: Must account for margins
+
+				var ret = dojo.coords(node, true);
+				node.style.position = "absolute";
+				node.style[style] = (style == 'top' ? ret.y : ret.x) + "px";
+			} else {
+				var topOrLeft = dojo.getStylePixels(node, style, cs);
+				offset = style == 'top' ? 'offsetTop' : 'offsetLeft';
+
+				if(isNaN(topOrLeft)){
+					var oldTopOrLeft = node[offset];
+
+					node.style[style] = oldTopOrLeft + 'px';
+
+					if (oldTopOrLeft != node[offset]) {
+						topOrLeft -= (node[offset] - oldTopOrLeft);
+					}
+					if (oldTopOrLeft != topOrLeft) {
+						node.style[style] = topOrLeft + 'px';
+					}
+				}
+			}
 		}
 		var v = dojo.style(node, style);
 		return (style == "opacity") ? +v : (isColor ? v : parseFloat(v));
@@ -637,42 +668,4 @@ dojo.required("dojo._base.html");
 			onEnd: onEnd 
 		}).play(delay||0);
 	};
-
-	// DirectX
-
-	// Returns true if successful
-
-	dojo.applyDirectXTransitionFilter = function(el, name, duration, params) {
-          var f, index, p;
-          duration = duration || 1000;
-          if (typeof el.filters != 'undefined') {
-            if (el.currentStyle && !el.currentStyle.hasLayout) { el.style.zoom = '1'; }
-            if (el.filters.length && (f = el.filters['DXImageTransform.Microsoft.' + name])) {
-              f.duration = duration / 1000;
-              if (params) { for (index in params) { if (isOwnProperty(params, index)) { f[index] = params[index]; } } }
-              if (f.status == 2) { f.stop(); }
-              f.enabled = true;
-            }
-            else {
-              if (typeof el.style.filter == 'string') {
-                p = '';
-                if (params) { for (index in params) { if (isOwnProperty(params, index)) { p += ',' + index + '=' + params[index]; } } }
-                el.style.filter += ((el.style.filter)?' ':'') + 'progid:DXImageTransform.Microsoft.' + name + '(duration=' + (duration / 1000) + p + ')';
-              }
-            }
-            if (el.filters['DXImageTransform.Microsoft.' + name]) { el.filters['DXImageTransform.Microsoft.' + name].apply(); }
-            return true;
-          }
-	};
-
-	dojo.playDirectXTransitionFilter = function(el, name) {
-          var f;
-          if (typeof el.filters != 'undefined') {
-            f = el.filters['DXImageTransform.Microsoft.' + name];
-            if (f) {
-              if (f.status == 2) { f.stop(); }
-              f.play();
-            }
-          }
-        };
 })();

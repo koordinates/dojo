@@ -1204,7 +1204,6 @@ dojo.byId = function(id, doc){
 		return ret; // Object
 	};
 
-	// FIXME: need a setter for coords or a moveTo!!
 	dojo.coords = function(/*DomNode|String*/node, /*Boolean?*/includeScroll){
 		//	summary:
 		//		Returns an object that measures margin box width/height and
