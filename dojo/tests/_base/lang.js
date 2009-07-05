@@ -68,7 +68,6 @@ tests.register("tests._base.lang",
 			t.assertFalse(dojo.isString(true));
 			t.assertFalse(dojo.isString(false));
 			t.assertTrue(dojo.isString("foo"));
-			t.assertTrue(dojo.isString(new String("foo")));
 			t.assertFalse(dojo.isString(null));
 			t.assertFalse(dojo.isString({}));
 			t.assertFalse(dojo.isString([]));
