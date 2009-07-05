@@ -315,9 +315,7 @@ dojo.fx = {
 		//		defined in args Object from its current position to
 		//		the position defined by (args.left, args.top).
 		// example:
-		//	|	dojo.fx.slideTo({ node: node, left:"40", top:"50", unit:"px" }).play()
-
-		var node = args.node = dojo.byId(args.node);
+		//	|	dojo.fx.slideTo({ node: node, left:40, top:50 }).play()
 
 		var properties = {};
 		if (typeof args.left == 'number') {
@@ -332,5 +330,28 @@ dojo.fx = {
 		}, args));
 
 		return anim; // dojo._Animation
-	};					
+	};
+
+	dojo.fx.sizeTo = function(/*Object?*/ args){
+		// summary:
+		//		Returns an animation that will size "node" 
+		//		defined in args Object from its current dimensions to
+		//		the dimensions defined by (args.left, args.top).
+		// example:
+		//	|	dojo.fx.sizeTo({ node: node, width:40, height:50 }).play()
+
+		var properties = {};
+		if (typeof args.width == 'number') {
+			properties.width = args.width;
+		}
+		if (typeof args.height == 'number') {
+			properties.height = args.height;
+		}
+
+		var anim = dojo.animateProperty(dojo.mixin({
+			properties: properties
+		}, args));
+
+		return anim; // dojo._Animation
+	};
 })();

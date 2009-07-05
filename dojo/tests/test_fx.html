@@ -76,15 +76,18 @@
 						dojo.connect(a2, "onEnd", function(){
 							console.log("Finished wipe in, fade in combo.");
 
-							var a3 = dojo.fx.slideTo({ node: "foo", left: 300, duration: 300, easing: 'quart'});
-							dojo.connect(a3, "onEnd", function(){
-								a3 = dojo.fx.slideTo({ node: "foo", left: 150, duration: 600, easing: 'cosine'});
+							var f3 = dojo.fx.slideTo({ node: "foo", left: 300, duration: 350, easing: 'quart'});
+							dojo.connect(f3, "onEnd", function(){
+								console.log("Finished slide.");
+								f3 = dojo.fx.slideTo({ node: "foo", left: 0, duration: 900, easing: 'cosine'});
+								var f4 = dojo.fx.sizeTo({ node: "foo", width: 600, duration: 900, easing: 'cosine'});
+								var a3 = dojo.fx.combine([f3, f4]);
 								dojo.connect(a3, "onEnd", function(){
-									console.log("Finished slide.");
+									console.log("Finished size and slide combo.");
 								});
 								a3.play();
 							});
-							a3.play();
+							f3.play();
 						});
 						dojo.byId("foo").style.height = "0px";
 						a1.play();

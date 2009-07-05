@@ -334,7 +334,6 @@ dojo.required("dojo._base.html");
 		//		args.node from the start to end values passed (args.start
 		//		args.end) (end is mandatory, start is optional)
 
-		args.node = byId(args.node);
 		var fArgs = _mixin({ properties: {} }, args),
 		 	props = fArgs.properties.opacity = {};
 		
