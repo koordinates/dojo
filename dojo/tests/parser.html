@@ -11,7 +11,7 @@
 			dojo.require("dojo.parser");
 			dojo.require("doh.runner");
 		</script>
-		<script type="text/javascript">
+		<script type="text/javascript">		
 			dojo.declare("tests.parser.Class1", null, {
 				constructor: function(args, node){
 					this.params = args;
@@ -193,6 +193,7 @@
 							t.is(1, obj.callCount2);
 						},
 						function testSubNodeParse(t){
+							//window.alert(dojo.exists("obj2"));
 							t.f(dojo.exists("obj2"));
 							var toParse = dojo.byId("toParse");
 							toParse.setAttribute("dojoType", toParse.getAttribute("type"));
@@ -253,7 +254,7 @@
 			</script>
 		</div>
 		<div>
-			<div dojoType="tests.parser.Class1" jsId="obj2" id="toParse">
+			<div type="tests.parser.Class1" jsId="obj2" id="toParse">
 			</div>
 		</div>
 		<div dojoType="tests.parser.Class2" jsId="obj3">
