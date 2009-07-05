@@ -643,7 +643,6 @@ var djConfig = {
 		//	|	obj.parent.child.prop = "some value";
 		//		wheras with `dojo.setObject`, we can shorten that to:
 		//	|	dojo.setObject("parent.child.prop", "some value", obj);
-		console.log(name);
 
 		var parts=name.split("."), p=parts.pop(), obj=dojo._getProp(parts, true, context);
 		return obj && p ? (obj[p]=value) : undefined; // Object
