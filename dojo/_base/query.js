@@ -519,7 +519,7 @@ if(typeof dojo != "undefined"){
 		"checked": function(name, condition){
 			return function(elem){
 				// FIXME: make this more portable!!
-				return !!d.attr(elem, "checked");
+				return d.realAttr(elem, "checked") !== null;
 			};
 		},
 		"first-child": function(){ return _lookLeft; },
@@ -628,11 +628,9 @@ if(typeof dojo != "undefined"){
 
 	var blank = "";
 	var _getAttr = function(elem, attr){
-
-		// TODO: Must update realAttr to handle broken attribute methods (IE < 8 and compatibility modes)
-
 		if(!elem){ return blank; }
-		return dojo.realAttr(elem, attr);
+		var value = dojo.realAttr(elem, attr);
+		return value;
 	};
 
 	var attrs = {

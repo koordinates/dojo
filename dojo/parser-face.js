@@ -283,7 +283,6 @@ dojo.parser = function(){
 		//		and instantiate them Searches for
 		//		dojoType="qualifieddojo.class.name"
 
-window.alert(qry);
 		var list = dojo.query(qry, rootNode);
 		// go build the object instances
 		var instances = this.instantiate(list);

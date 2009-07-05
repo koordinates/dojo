@@ -1315,13 +1315,17 @@ dojo.byId = function(id, doc){
 			if (attributesBad) {
 				return function(el, name) {
 					if (el.ownerDocument && typeof(el.ownerDocument.selectNodes) != 'undefined') { return attributeSpecified(el, name); } // XML document
-					name = name.toLowerCase();
+
+					var nameLower = name.toLowerCase();
 					var alias = attributeAliases[name];
 
-					if (alias && alias.toLowerCase() == name) {
+					if (alias && alias.toLowerCase() == nameLower) {
 						name = alias;
 					}
-					return attributeSpecified(el, name);
+
+					// NOTE: Broken MSHTML DOM is case-sensitive here with custom attributes
+
+					return attributeSpecified(el, name) || attributeSpecified(el, nameLower);
 	          		};
 			}
 			return attributeSpecified;
