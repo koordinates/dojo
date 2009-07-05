@@ -2,12 +2,12 @@
 
 var GLOBAL = this.window || this;
 
+// NOTE: What would throw an exception here?
+
 try{
 	dojo.provide("doh.runner");
 }catch(e){
-	if(!this.doh){
-		doh = {};
-	}
+	this.doh = {};
 }
 
 //
@@ -106,8 +106,7 @@ doh.debug = function(){
 };
 
 doh._AssertFailure = function(msg, hint){
-	// idea for this as way of dis-ambiguating error types is from JUM. 
-	// The JUM is dead! Long live the JUM!
+	// idea for this as way of dis-ambiguating error types is from JUM.
 
 	if(!(this instanceof doh._AssertFailure)){
 		return new doh._AssertFailure(msg);
@@ -430,7 +429,6 @@ doh._getTestObj = function(group, test){
 				if(0 <= ts.indexOf(fStr)){
 					tObj.name = ts.split(fStr)[1].split("(", 1)[0];
 				}
-				// doh.debug(tObj.runTest.toSource());
 			}catch(e){
 			}
 		}
@@ -479,7 +477,6 @@ doh.registerUrl = function(	/*String*/ group,
 								/*Integer*/ timeout){
 	this.debug("ERROR:");
 	this.debug("\tNO registerUrl() METHOD AVAILABLE.");
-	// this._urls.push(url);
 };
 
 doh.registerString = function(group, str){
@@ -509,7 +506,6 @@ doh.register = doh.add = function(groupOrNs, testOrNull){
 		}else{
 			this.registerTest(groupOrNs, testOrNull);
 		}
-		// this.registerTestNs(groupOrNs, testOrNull);
 		return;
 	}
 	if(doh._isArray(testOrNull)){
@@ -528,8 +524,10 @@ doh.registerDocTests = function(module){
 		try{
 			dojo.require("dojox.testing.DocTest");
 		}catch(e){
+
 			// if the DocTest module isn't available (e.g., the build we're
 			// running from doesn't include it), stub it out and log the error
+
 			console.debug(e);
 
 			doh.registerDocTests = function(){};
@@ -727,32 +725,32 @@ doh._setupGroupForRun = function(/*String*/ groupName, /*Integer*/ idx){
 };
 
 doh._handleFailure = function(groupName, fixture, e){
-	// this.debug("FAILED test:", fixture.name);
+
 	// mostly borrowed from JUM
+
 	this._groups[groupName].failures++;
-	var out = "";
+	//var out = "";
 	if(e instanceof this._AssertFailure){
 		this._failureCount++;
-		if(e.fileName){ out += e.fileName + ':'; }
-		if(e.lineNumber){ out += e.lineNumber + ' '; }
-		out += e+": "+e.message;
-		this.debug("\t_AssertFailure:", out);
+		//if(e.fileName){ out += e.fileName + ':'; }
+		//if(e.lineNumber){ out += e.lineNumber + ' '; }
+		//out += ' ' + e.message;
+		this.debug("\t_AssertFailure:", e.message);
 	}else{
 		this._errorCount++;
-	}
-	this.debug(e);
-	if(fixture.runTest.toSource){
-		var ss = fixture.runTest.toSource();
-		this.debug("\tERROR IN:\n\t\t", ss);
-	}else{
-		this.debug("\tERROR IN:\n\t\t", fixture.runTest);
-	}
+		if(fixture.runTest.toSource){
+			var ss = fixture.runTest.toSource();
+			this.debug("\tERROR IN:\n\t\t", ss);
+		}else{
+			this.debug("\tERROR IN:\n\t\t", fixture.runTest.toString());
+		}
 
-	if(e.rhinoException){
-		e.rhinoException.printStackTrace();
-	}else if(e.javaException){
-		e.javaException.printStackTrace();
-	} 
+		if(e.rhinoException){
+			e.rhinoException.printStackTrace();
+		}else if(e.javaException){
+			e.javaException.printStackTrace();
+		}
+	}
 };
 
 if (GLOBAL && GLOBAL.setTimeout) {

@@ -59,7 +59,10 @@ if(window["dojo"]){
 
 			msg = escapeXml(msg);
 
-			// workarounds for IE. Wheeee!!!
+			// workarounds for IE.
+
+			// NOTE: Review this
+
 			msg = msg.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;")
 				.replace(" ", "&nbsp;")
 				.replace("\n", "<br>&nbsp;");
@@ -75,7 +78,6 @@ if(window["dojo"]){
 			var logBody=byId("logBody");
 			var tn = document.createElement("div");
 			tn.innerHTML = msg;
-			//tn.id="logmsg_"+logBody.childNodes.length;
 			logBody.appendChild(tn);
 			_loggedMsgLen++;
 		}
@@ -216,6 +218,8 @@ if(window["dojo"]){
 		}else if(window["console"]){
 			if(console.debug){
 				doh.debug = function(){
+
+
 					sendToLogPane.call(window, arguments);
 					console.debug.apply(console, arguments);
 				};
