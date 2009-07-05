@@ -6,5 +6,4 @@ dojo.provide("dojo.NodeList-html");
 // showing its face.
 
 dojo.require("dojo.html");
-dojo.require("dojo.NodeList");
 dojo.require("dojo.NodeList-html-face");

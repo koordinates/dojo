@@ -523,11 +523,11 @@ if ((dojo._getWin()).document){
 
 		require("dojo._base.Color");
 		require("dojo._base.window");
+		require("dojo._base.html");
 		require("dojo._base.NodeList");
 		require("dojo._base.query");
 		require("dojo._base.json");
 		require("dojo._base.xhr");
-		require("dojo._base.html");
 		require("dojo._base.connect");
 		require("dojo._base.event");
 		require("dojo._base.fx");

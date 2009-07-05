@@ -134,7 +134,7 @@ if(typeof dojo == "undefined"){
 			var i = arguments.length;
 			while (i--) {
 				if (!dojo[arguments[i]]) {
-					return false
+					return false;
 				}
 			}
 			return true;
@@ -147,7 +147,7 @@ if(typeof dojo == "undefined"){
 				var i = features.length;
 				while (i--) {
 					if (!ns[features[i]]) {
-						return false
+						return false;
 					}
 				}
 				return true;
@@ -211,7 +211,7 @@ dojo.global = {
 				isFFExt = (this.Components.classes["@mozilla.org/moz/jssubscript-loader;1"]) || true;
 				hostEnv = "ff_ext";
 			}catch(e){
-				/* squelch Permission Denied error, which means this is not an extension */
+				// Permission denied if not plug-in
 			}
 		}
 
@@ -221,7 +221,6 @@ dojo.global = {
 			jaxerLoad = true;
 			this.load = this.Jaxer.load;
 		}
-
 /*=====
 // note:
 //		'djConfig' does not exist under 'dojo.*' so that it can be set before the

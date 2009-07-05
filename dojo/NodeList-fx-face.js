@@ -50,6 +50,18 @@ dojo.extend(dojo.NodeList, {
 		return this._anim(dojo.fx, "slideTo", args); // dojo._Animation
 	},
 
+	sizeTo: function(args){
+		//	summary:
+		//		size all elements of the node list to the specified dimensions.
+		//		Returns an instance of dojo._Animation
+		//	example:
+		//		|	Move all tables with class "blah" to 300/300:
+		//		|	dojo.query("table.blah").slideTo({
+		//		|		left: 40,
+		//		|		top: 50
+		//		|	}).play();
+		return this._anim(dojo.fx, "sizeTo", args); // dojo._Animation
+	},
 
 	fadeIn: function(args){
 		//	summary:

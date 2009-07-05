@@ -1,4 +1,5 @@
 dojo.provide("dojo._base.NodeList");
+dojo.required("dojo._base.html");
 
 (function(){
 	var ap = Array.prototype, aps = ap.slice, apc = ap.concat;
