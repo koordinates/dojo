@@ -429,7 +429,7 @@ dojo.required("dojo._base.html");
 			if (isNaN(computedHeightOrWidth)) {
 				var prop = style == 'height' ? 'offsetHeight' : 'offsetWidth';
 				var offset = node[prop];
-				node.style[style] = node[prop] + 'px';
+				node.style[style] = offset + 'px';
 
 				if (node[prop] != offset) {
 					offset -= (node[prop] - offset);
@@ -455,18 +455,16 @@ dojo.required("dojo._base.html");
 				node.style[style] = (style == 'top' ? ret.y : ret.x) + "px";
 			} else {
 				var topOrLeft = dojo.getStylePixels(node, style, cs);
-				offset = style == 'top' ? 'offsetTop' : 'offsetLeft';
+				prop = style == 'top' ? 'offsetTop' : 'offsetLeft';
 
 				if(isNaN(topOrLeft)){
-					var oldTopOrLeft = node[offset];
+					offset = node[prop];
 
-					node.style[style] = oldTopOrLeft + 'px';
+					node.style[style] = offset + 'px';
 
-					if (oldTopOrLeft != node[offset]) {
-						topOrLeft -= (node[offset] - oldTopOrLeft);
-					}
-					if (oldTopOrLeft != topOrLeft) {
-						node.style[style] = topOrLeft + 'px';
+					if (node[prop] != offset) {
+						offset -= (node[prop] - offset);					
+						node.style[style] = offset + 'px';
 					}
 				}
 			}
