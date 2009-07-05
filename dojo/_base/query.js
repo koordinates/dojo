@@ -630,6 +630,7 @@ if(typeof dojo != "undefined"){
 	var _getAttr = function(elem, attr){
 		if(!elem){ return blank; }
 		var value = dojo.realAttr(elem, attr);
+		console.log(attr + ' ' + value);
 		return value;
 	};
 

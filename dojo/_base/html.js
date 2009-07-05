@@ -1555,7 +1555,7 @@ dojo.byId = function(id, doc){
 						return node.getAttribute(name);
 					} // XML document in IE
 
-					if (hasAttribute(node, name)) {               
+					if (hasAttribute(node, name)) {
 						name = name.toLowerCase();
 						alias = attributeAliases[name];
 						if (!alias) {
@@ -1589,8 +1589,11 @@ dojo.byId = function(id, doc){
 						if (typeof val == 'boolean') {
 							return val?'':null;
                   				}
-						if (typeof val == 'undefined') {
-							return null;
+						if (typeof val == 'undefined') { // Custom attribute
+							val = node.getAttribute(name);
+							if (typeof val != 'string') {
+								return null;
+							}
 						}
 						return typeof val != 'string' && val !== null ? String(val) : val;
 					}

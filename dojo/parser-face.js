@@ -239,14 +239,16 @@ dojo.parser = function(){
 			if(!markupFactory && clazz.prototype){
 				markupFactory = clazz.prototype.markupFactory;
 			}
+
 			// create the instance
 
 			var instance = markupFactory ? markupFactory(params, node, clazz) : new clazz(params, node);
 			thelist.push(instance);
 
-			// map it to the JS namespace if that makes sense
+			// map it to the JS namespace
 
 			var jsname = node.getAttribute("jsId");
+
 			if(jsname){
 				dojo.setObject(jsname, instance);
 			}
