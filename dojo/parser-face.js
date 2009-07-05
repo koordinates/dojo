@@ -1,7 +1,7 @@
 dojo.provide("dojo.parser-face");
 dojo.required("dojo.parser");
 
-dojo.parser = (function(){
+dojo.parser = function(){
 	// summary: The Dom/Widget parsing package
 
 	var dtName = dojo._scopeName + "Type";
@@ -90,7 +90,9 @@ dojo.parser = (function(){
 		//			}
 
 		if(!instanceClasses[className]){
+
 			// get pointer to widget class
+
 			var cls = dojo.getObject(className);
 			if(typeof cls != 'function'){
 				throw new Error("Could not load class '" + className +
@@ -101,12 +103,10 @@ dojo.parser = (function(){
 			// get table of parameter names & types
 			var params = {}, dummyClass = {};
 			for(var name in proto){
-				if (dojo.isOwnProperty(proto, name)) {
-					if(name.charAt(0)=="_"){ continue; } 	// skip internal properties
-					if(name in dummyClass){ continue; }		// skip "constructor" and "toString"
-					var defVal = proto[name];
-					params[name]=val2type(defVal);
-				}
+				if(name.charAt(0)=="_"){ continue; } 	// skip internal properties
+				if(name in dummyClass){ continue; }		// skip "constructor" and "toString"
+				var defVal = proto[name];
+				params[name]=val2type(defVal);
 			}
 
 			instanceClasses[className] = { cls: cls, params: params };
@@ -144,7 +144,8 @@ dojo.parser = (function(){
 		//		exist.
 		var thelist = [];
 		mixin = mixin||{};
-		dojo.forEach(nodes, function(node){
+
+		dojo.forEach(nodes, function(node){			
 			if(!node){ return; }
 			var value, type = dtName in mixin?mixin[dtName]:node.getAttribute(dtName);
 			if(!type || !type.length){ return; }
@@ -172,6 +173,7 @@ dojo.parser = (function(){
 			for(var name in classParams){
 				if (dojo.isOwnProperty(classParams, name)) {
 					var isStyle = /^style$/i.test(name);
+					value = undefined;
 					if (name in mixin) {
 						value = mixin[name];
 					} else {
@@ -179,7 +181,7 @@ dojo.parser = (function(){
 
 							// Get property, with exception of style
 
-							value = [isStyle ? dojo.realAttr : dojo.attr](node, name);
+							value = (isStyle ? dojo.realAttr : dojo.attr)(node, name);
 
 							// Undefined result is an expando or missing attribute (e.g. onclick in FF)
 							// Try real getAttribute
@@ -189,14 +191,16 @@ dojo.parser = (function(){
 							}
 						}
 					}
-					expectedType = clsInfo.params[name];
+					if (value !== undefined) {
+						expectedType = clsInfo.params[name];
 
-					// Convert custom attributes as specified, making sure style is not
+						// Convert custom attributes as specified, making sure style is not
 
-					if (expectedType !== null && typeof value == 'string' && expectedType != 'string' && !isStyle) {
-						value = str2obj(value, expectedType);
+						if (expectedType !== null && typeof value == 'string' && expectedType != 'string' && !isStyle) {
+							value = str2obj(value, expectedType);
+						}
+						params[name] = value;
 					}
-					params[name] = value;
 				}
 			}
 
@@ -227,7 +231,7 @@ dojo.parser = (function(){
 						}
 					});
 				} else {
-					console.log('OOPS no orphan method ' + node.id);
+					console.log('No orphan method for ' + node.id);
 				}
 			}
 
@@ -236,10 +240,12 @@ dojo.parser = (function(){
 				markupFactory = clazz.prototype.markupFactory;
 			}
 			// create the instance
+
 			var instance = markupFactory ? markupFactory(params, node, clazz) : new clazz(params, node);
 			thelist.push(instance);
 
 			// map it to the JS namespace if that makes sense
+
 			var jsname = node.getAttribute("jsId");
 			if(jsname){
 				dojo.setObject(jsname, instance);
@@ -265,7 +271,6 @@ dojo.parser = (function(){
 				!instance._started && 
 				(!instance.getParent || !instance.getParent())
 			){
-				dojo.getWin().alert('instance startup ' + instance.startup);
 				instance.startup();
 			}
 		});
@@ -276,13 +281,19 @@ dojo.parser = (function(){
 		// summary:
 		//		Search specified node (or root node) recursively for class instances,
 		//		and instantiate them Searches for
-		//		dojoType="qualifiedojo.class.name"
+		//		dojoType="qualifieddojo.class.name"
+
+window.alert(qry);
 		var list = dojo.query(qry, rootNode);
 		// go build the object instances
 		var instances = this.instantiate(list);
 		return instances;
 	};
-})();
+};
+
+// NOTE: Odd structure
+
+dojo.parser.call(dojo.parser);
 
 // Register the parser callback. It should be the first callback
 // after the a11y test.

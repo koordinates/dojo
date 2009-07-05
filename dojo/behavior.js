@@ -37,8 +37,6 @@ dojo.behavior = function(){
 		}
 	}
 
-	// FIXME: need a better test so we don't exclude nightly Safari's!
-	this._behaviors = {};
 	this.add = function(/* Object */behaviorObj){
 		//	summary:
 		//		Add the specified behavior to the list of behaviors, ignoring existing
@@ -236,4 +234,9 @@ dojo.behavior = function(){
 	};
 };
 
+dojo.behavior._behaviors = {};
+
+// NOTE: This is an odd structure
+
+dojo.behavior.call(dojo.behavior);
 dojo.addOnLoad(dojo.behavior, "apply");

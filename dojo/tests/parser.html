@@ -10,7 +10,8 @@
 		<script type="text/javascript">
 			dojo.require("dojo.parser");
 			dojo.require("doh.runner");
-
+		</script>
+		<script type="text/javascript">
 			dojo.declare("tests.parser.Class1", null, {
 				constructor: function(args, node){
 					this.params = args;
@@ -77,7 +78,7 @@
 					thinger: 1
 				}
 			};
-
+			
 			dojo.addOnLoad(function(){
 				doh.register("t",
 					[
@@ -252,7 +253,7 @@
 			</script>
 		</div>
 		<div>
-			<div type="tests.parser.Class1" jsId="obj2" id="toParse">
+			<div dojoType="tests.parser.Class1" jsId="obj2" id="toParse">
 			</div>
 		</div>
 		<div dojoType="tests.parser.Class2" jsId="obj3">
