@@ -48,7 +48,7 @@ dojo.isString = function(/*anything*/ it){
 
 			// FIXME: Need tests for Error objects
 
-			return !!(dojo.isObject(it) && it);
+			return false;
 		}
 		return false;
 	};
