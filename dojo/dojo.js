@@ -143,7 +143,8 @@ if(typeof dojo == "undefined"){
 		dojo.areNSFeatures = function(ns) {
 			ns = dojo[ns];
 			if (ns) {
-				var features = Array.prototype.slice(arguments, 1);
+				var features = Array.prototype.slice.call(arguments, 1);
+				console.debug(ns);
 				var i = features.length;
 				while (i--) {
 					if (!ns[features[i]]) {
@@ -607,8 +608,9 @@ var djConfig = {
 	};
 
 	dojo._getProp = function(/*Array*/parts, /*Boolean*/create, /*Object*/context){
-		var obj=context || dojo.global;
-		for(var i=0, p; obj && (p=parts[i]); i++){
+		var obj = context || dojo.global;
+
+		for(var i = 0, p; obj && (p=parts[i]); i++){
 			if(!i && this._scopeMap[p]){
 				p = this._scopeMap[p];
 			}
@@ -689,6 +691,7 @@ var djConfig = {
 		//	|	// search from a particular scope
 		//	|	dojo.exists("bar", foo); // true
 		//	|	dojo.exists("bar.baz", foo); // false
+
 		return !!dojo.getObject(name, false, obj); // Boolean
 	};
 
@@ -808,7 +811,7 @@ var djConfig = {
 			// NOTE: Like XD, can't signal whether file was found
 			//       Doesn't matter as failure should be immediately apparent
 
-			this._writeScript(uri);
+			this._writeScript(uri);			
 			return true;
 		}
 	};
@@ -1099,7 +1102,7 @@ var djConfig = {
 
 		relpath = this._getModuleSymbols(moduleName).join("/") + '.js';
 
-		ok = this._loadPath(relpath, omitModuleCheck ? null : moduleName);
+		ok = this._loadPath(relpath, omitModuleCheck ? null : moduleName, null);
 
 		if (!omitModuleCheck) {
 			if(!ok){

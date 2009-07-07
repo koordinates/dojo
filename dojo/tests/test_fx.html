@@ -43,7 +43,7 @@
 
 					// Gateway
 
-					if (dojo.areFeatures('byId') && dojo.areNSFeatures('fx', 'fadeIn', 'wipeIn')) {
+					if (dojo.areFeatures('byId', 'fx', 'fadeIn') && dojo.areNSFeatures('fx', 'wipeIn')) {
 						var w1 = dojo.fx.wipeIn({
 							node: "foo",
 							duration: 1000,
