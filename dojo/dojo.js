@@ -155,7 +155,6 @@ if(typeof dojo == "undefined"){
 			return false;
 		};
 
-
 		dojo._getWin = function() {
 			return dojo.global.window || dojo.global;
 		};
@@ -196,11 +195,16 @@ dojo.global = {
 			// object. Obviously, this check could be "juiced" if someone
 			// creates a "Packages" object and a "load" function, but we've
 			// never seen this happen in the wild yet.
+
 			isRhino = true;
 			hostEnv = "rhino";
 		}else if(typeof this.load == "function"){
+
 			// Spidermonkey has a very spartan environment. The only thing we
 			// can count on from it is a "load" function.
+
+			// NOTE: Need real test for this environment
+
 			isSpidermonkey = true;
 			hostEnv = "spidermonkey";
 		}else if(
@@ -278,8 +282,7 @@ var djConfig = {
 	//		The directory in which `dojo.js` is located. Under normal
 	//		conditions, Dojo auto-detects the correct location from which it
 	//		was loaded. You may need to manually configure `baseUrl` in cases
-	//		where you have renamed `dojo.js` or in which `<base>` tags confuse
-	//		some browsers (e.g. IE 6). The variable `dojo.baseUrl` is assigned
+	//		where you have renamed `dojo.js`, the variable `dojo.baseUrl` is assigned
 	//		either the value of `djConfig.baseUrl` if one is provided or the
 	//		auto-detected root if not. Other modules are located relative to
 	//		this path. The path should end in a slash.
@@ -325,14 +328,17 @@ var djConfig = {
 	dojoBlankHtmlUrl: undefined
 }
 =====*/
+
+		djConfig = djConfig || {};
+
+		var i, l, m, rePkg, src, scripts;
 		
-		if(this.djConfig && this.djConfig.baseUrl){
+		if(djConfig.baseUrl){
 			// if the user explicitly tells us where Dojo has been loaded from
 			// (or should be loaded from) via djConfig, skip the auto-detection
 			// routines.
-			root = this.djConfig.baseUrl;
+			root = djConfig.baseUrl;
 		}else{
-			root = "./";
 			if(isSpidermonkey){
 
 				// Detect the base path via an exception.
@@ -345,29 +351,35 @@ var djConfig = {
 						root = uri.split("dojo.js")[0];
 					}
 				}
-			}
+			} else if (doc && isHostMethod(doc, 'getElementsByTagName')){
 
-			if (!this.djConfig) {
-				this.djConfig = {};
-			}
+				// Detect Dojo path
 
-	
-			// Attempt to figure out the path to dojo if it is not set in the config
+				scripts = doc.getElementsByTagName("script");
+				l = scripts.length;
+				rePkg = /^(.*)(\\|\/)dojo\.js\W*$/i;
 
-			if (doc && isHostMethod(doc, 'getElementsByTagName')){
-				var i, scripts = doc.getElementsByTagName("script");
-				var rePkg = /dojo\.js(\W|$)/i;
-
-				for(i = 0; i < scripts.length; i++){
-					var m, src = scripts[i].src;
+				for(i = 0; !root && i < l; i++){
+					src = scripts[i].src;
 					if(src){
 						m = src.match(rePkg);
 						if(m){
-							root = this.djConfig.baseUrl = src.substring(0, m.index);
+							root = m[1] + m[2];
 						}
 					}
 				}
-			}			
+			}
+
+			// If all else fails, use document path
+
+			if (!root) {
+				console.warn('Could not determine base path (using document path.)');
+				root = "./";
+			}
+
+			// Used by moduleUrls and _loadPath method for relative paths
+
+			dojo.baseUrl = root;
 		}
 
 		var done, envScript = root + "_base/_loader/hostenv_" + hostEnv + ".js";
@@ -376,30 +388,30 @@ var djConfig = {
 			try {
 				this.load(envScript);
 				done = (isRhino && dojo.isRhino) || (isSpidermonkey && dojo.isSpidermonkey) || jaxerLoad;
-			} catch(e4) {
+			} catch(e3) {
 			}
 		}
 		if(!done && isFFExt){
 			try {
-				var l = this.Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(this.Components.interfaces.mozIJSSubScriptLoader);
-				if (l && isHostMethod(l, 'loadSubScript')) {
-					l.loadSubScript(envScript, this);
-					done = true;
+				var loader = this.Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(this.Components.interfaces.mozIJSSubScriptLoader);
+				if (loader && isHostMethod(loader, 'loadSubScript')) {
+					loader.loadSubScript(envScript, this);
+					done = dojo.isFFExt;
 				}
-			} catch(e5) {
+			} catch(e4) {
 			}
 		}
 		if (!done) {
 			try{
 				doc.write("<script type='text/javascript' src='"+envScript+"'></script>");
-			}catch(e3){
+			}catch(e5){
 				// XML parse mode or other environment without document.write
 
 				// NOTE: XML parse mode won't work with these scripts
 				//       The HEAD element is not closed at this point,
 				//       so mutation is ill-advised
 
-				throw new Error('Failed to load environment');
+				throw new Error('Failed to load environment (' + (e5.description || e5) + ')');
 			}
 		}
 
@@ -734,7 +746,8 @@ var djConfig = {
 		}
 	=====*/
 
-	//Real functions declared in dojo._firebug.firebug.
+	// Stubs for functions declared in dojo._firebug.firebug.
+
 	dojo.deprecated = dojo.experimental = function(){};
 
 	dojo.mixin(dojo, {
@@ -771,13 +784,12 @@ var djConfig = {
 		//		FloatingPane.js and undo/browser.js
 		_postLoad: false,
 		
-		//Egad! Lots of test files push on this directly instead of using dojo.addOnLoad.
+		// NOTE: Lots of test files push on this directly instead of using dojo.addOnLoad.
+
 		_loaders: [],
 		_unloaders: [],
 		_loadNotifying: false
 	});
-
-	//>>excludeStart("xdomainExclude", fileName.indexOf("dojo.xd.js") != -1 && kwArgs.loader == "xdomain");
 
 	dojo._protocolPattern = /^\w+:/;
 
@@ -801,7 +813,16 @@ var djConfig = {
 		// cb: 
 		//		a callback function to pass the result of evaluating the script
 
-		var uri = (this._protocolPattern.test(relpath) ? "" : this.baseUrl) + relpath;
+		// NOTE: The relpath argument is supposed to be a relative path. (?)
+
+		var absolute = this._protocolPattern.test(relpath) || relpath.charAt(0) == "/";
+		var uri = relpath;
+
+		if (!absolute) {
+			uri = this.baseUrl + uri;
+		} else {
+			console.warn('Path should be relative: ' + relpath + '.');
+		}
 
 		if (this._postLoad || !this._writeScript) {
 			return module ? this._loadUriAndCheck(uri, module, cb) : this._loadUri(uri, cb); // Boolean
@@ -814,7 +835,6 @@ var djConfig = {
 			return true;
 		}
 	};
-	//>>excludeEnd("xdomainExclude");
 
 	var dojoEval = dojo['eval'];
 
@@ -870,7 +890,7 @@ var djConfig = {
 
 		// summary: calls loadUri and checks that it loaded synchronously
 
-		console.warn('Synchronous download should be avoided.');
+		console.warn('Synchronous downloads should be avoided.');
 		
 		return !!(this._loadUri(uri, cb) && this._loadedModules[moduleName]); // Boolean
 	};
@@ -938,9 +958,9 @@ var djConfig = {
 		dojo._onto(dojo._loaders, obj, functionName);
 	};
 
-	//Support calling dojo.addOnLoad via djConfig.addOnLoad. Support all the
-	//call permutations of dojo.addOnLoad. Mainly useful when dojo is added
-	//to the page after the page has loaded.
+	// Support calling dojo.addOnLoad via djConfig.addOnLoad. Support all the
+	// call permutations of dojo.addOnLoad. Mainly useful when dojo is added
+	// to the page after the page has loaded.
 
 	var dca = dojo.config.addOnLoad;
 	if(dca){
@@ -1477,19 +1497,21 @@ var djConfig = {
 		//	|	var dataPath = dojo.moduleUrl("acme.util","resources/data.json");
 
 		var loc = dojo._getModuleSymbols(module).join('/');
-		if(!loc){ return null; }
-		if(loc.lastIndexOf("/") != loc.length-1){
-			loc += "/";
-		}
+
+		if(loc){
+			if (loc.lastIndexOf("/") != loc.length - 1){
+				loc += "/";
+			}
 		
-		//If the path is an absolute path (starts with a / or is on another
-		//domain/xdomain) then don't add the baseUrl.
+			// Add base to relative path
 
-		var colonIndex = loc.indexOf(":");
-		if(loc.charAt(0) != "/" && (colonIndex == -1 || colonIndex > loc.indexOf("/"))){
-			loc = dojo.baseUrl + loc;
+			if (!dojo._protocolPattern.test(loc) && loc.charAt(0) != "/"){
+				loc = dojo.baseUrl + loc;
+			}
+
+			return new dojo._Url(loc, url); // String
 		}
 
-		return new dojo._Url(loc, url); // String
+		return null;
 	};
 })();
