@@ -1,7 +1,9 @@
 // a host environment specifically built for Mozilla extensions, but derived
 // from the browser host environment
+
 if(typeof window != 'undefined'){
 	dojo.isBrowser = true;
+	dojo.isFFExt = true;
 	dojo._name = "browser";
 
 
