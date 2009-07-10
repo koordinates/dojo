@@ -144,7 +144,6 @@ if(typeof dojo == "undefined"){
 			ns = dojo[ns];
 			if (ns) {
 				var features = Array.prototype.slice.call(arguments, 1);
-				console.debug(ns);
 				var i = features.length;
 				while (i--) {
 					if (!ns[features[i]]) {
