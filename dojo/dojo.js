@@ -31,7 +31,8 @@
 				- create more fluid UI transitions with Dojo's robust and
 				  battle-tested animation facilities
 
- NOTE:
+		NOTE:
+
 		If you are reading this file, you have received a "source" build of
 		Dojo. Unless you are a Dojo developer, it is very unlikely that this is
 		what you want. While functionally identical to builds, source versions
@@ -48,190 +49,14 @@
 		The Dojo Team
 */
 
-var dojo, djConfig;
+/*
+note:
+	'djConfig' does not exist under 'dojo.*' so that it can be set before the
+	'dojo' variable exists.
 
-// Only try to load Dojo if we don't already have one. Dojo always follows
-// a "first Dojo wins" policy.
-
-if(typeof dojo == "undefined"){
-	dojo = {
-		_scopeName: "dojo",
-		_scopePrefix: "",
-		_scopePrefixArgs: "",
-		_scopeSuffix: "",
-		_scopeMap: {},
-		_scopeMapRev: {}
-	};
-
-	dojo["eval"] = function(){
-		//	summary: 
-		//		Perform an evaluation in the (almost) global scope. Use this rather than
-		//		calling 'eval()' directly.
-		//	description: 
-		//	returns:
-		//		The result of the evaluation
-		if (arguments.length == 1 || !arguments[1]) { 
-			return eval(arguments[0]);
-		}
-
-		// NOTE: Script injection here if post load
-
-		return (new Function(arguments[0]))();
-	};
-
-	(function(){
-
-		// Feature detection
-
-		var reFeaturedMethod = new RegExp('^(function|object)$', 'i');
-
-		// summary:
-		// Test for host object property referencing an object to be called
-		//
-		// description:
-		// If the referenced object will not be called, use isHostObjectProperty
-		// Allowed properties may be of type function, object (IE and possibly others) or unknown (IE ActiveX methods)
-		// Object types exclude null.
-		//
-		// Does NOT assert that an arbitrary property is callable
-		// Pass only names of properties universally implemented as methods
-		// This does NOT include properties that are methods in some browsers but not others
-		// This test will not discriminate between such implementations and
-		// applications should never call such objects
-		//
-		// example:
-		//
-		// if (dojo.isHostMethod(document, 'getElementById')) {
-		//     anElement = document.getElementById(id);
-		// }
-
-		dojo.isHostMethod = function(/* Host object */ o, /* String */ m) {
-			var t = typeof o[m];
-			return !!((reFeaturedMethod.test(t) && o[m]) || t == 'unknown'); /* Boolean */
-		};
-
-		// summary:
-		// Test for host object property that will be evaluated (e.g. assigned, type converted)
-		//
-		// description:
-		// Similar to isHostMethod, but does not allow unknown types, which are known to throw errors when evaluated
-		// If the property will be called, use isHostMethod
-		//
-		// example:
-		//
-		// if (dojo.isHostObjectProperty(document, 'all')) {
-		//     allElements = document.all;
-		// }
-
-		dojo.isHostObjectProperty = function(/* Host object */ o, /* String */ p) {
-			var t = typeof o[p];
-			return !!(reFeaturedMethod.test(t) && o[p]); /* Boolean */
-		};
-
-		// For application gateways to detect one or more API methods
-
-		dojo.areFeatures = function() {
-			var i = arguments.length;
-			while (i--) {
-				if (!dojo[arguments[i]]) {
-					return false;
-				}
-			}
-			return true;
-		};
-
-		dojo.areNSFeatures = function(ns) {
-			ns = dojo[ns];
-			if (ns) {
-				var features = Array.prototype.slice.call(arguments, 1);
-				var i = features.length;
-				while (i--) {
-					if (!ns[features[i]]) {
-						return false;
-					}
-				}
-				return true;
-			}
-			return false;
-		};
-
-		dojo._getWin = function() {
-			return dojo.global.window || dojo.global;
-		};
-
-		var root;
-
-		// Default to browser environment
-
-		var hostEnv = "browser";
-		var isRhino, isSpidermonkey, isFFExt, jaxerLoad;
-
-/*=====
-dojo.global = {
-	//	summary:
-	//		Reference to the Global Object
-	//		(typically the window object in a browser).
-	//	description:
-	//		Refer to 'dojo.global' rather than referring to window to ensure your
-	//		code runs correctly in contexts other than web browsers (e.g. Rhino on a server).
-}
-=====*/
-
-		dojo.global = this;
-
-		var getWin = dojo._getWin;
-		var isHostMethod = dojo.isHostMethod;
-		var isHostObjectProperty = dojo.isHostObjectProperty;
-		var win = getWin();
-		var doc = win.document;
-
-		// NOTE: Need build exclude directives for these checks
-
-		if(
-			typeof this.load == "function" &&
-			(this.Packages == "function" || typeof this.Packages == "object")
-		){
-			// Rhino environments make Java code available via the Packages
-			// object. Obviously, this check could be "juiced" if someone
-			// creates a "Packages" object and a "load" function, but we've
-			// never seen this happen in the wild yet.
-
-			isRhino = true;
-			hostEnv = "rhino";
-		}else if(typeof this.load == "function"){
-
-			// Spidermonkey has a very spartan environment. The only thing we
-			// can count on from it is a "load" function.
-
-			// NOTE: Need real test for this environment
-
-			isSpidermonkey = true;
-			hostEnv = "spidermonkey";
-		}else if(
-			isHostObjectProperty(this, 'ChromeWindow') &&
-			win instanceof this.ChromeWindow &&
-			isHostObjectProperty(this, 'Components')){
-			try{
-				isFFExt = (this.Components.classes["@mozilla.org/moz/jssubscript-loader;1"]) || true;
-				hostEnv = "ff_ext";
-			}catch(e){
-				// Permission denied if not plug-in
-			}
-		}
-
-		// NOTE: In which environments is this possible?
-
-		if (this.Jaxer && this.Jaxer.isOnServer) {
-			jaxerLoad = true;
-			this.load = this.Jaxer.load;
-		}
-/*=====
-// note:
-//		'djConfig' does not exist under 'dojo.*' so that it can be set before the
-//		'dojo' variable exists.
-// note:
-//		Setting any of these variables *after* the library has loaded does
-//		nothing at all.
+note:
+	Setting any of these variables *after* the library has loaded does
+	nothing at all.
 
 var djConfig = {
 	// summary:
@@ -327,62 +152,260 @@ var djConfig = {
 	//		to the path on your domain your copy of blank.html.
 	dojoBlankHtmlUrl: undefined
 }
-=====*/
+*/
 
-		djConfig = djConfig || {};
+var dojo, djConfig;
 
-		var i, l, m, rePkg, src, scripts;
-		
-		if(djConfig.baseUrl){
-			// if the user explicitly tells us where Dojo has been loaded from
-			// (or should be loaded from) via djConfig, skip the auto-detection
-			// routines.
-			root = djConfig.baseUrl;
-		}else{
-			if(isSpidermonkey){
+// Only try to load Dojo if we don't already have one. Dojo always follows
+// a "first Dojo wins" policy.
 
-				// Detect the base path via an exception.
+if(typeof dojo == "undefined"){
+	dojo = {
+		_scopeName: "dojo",
+		_scopePrefix: "",
+		_scopePrefixArgs: "",
+		_scopeSuffix: "",
+		_scopeMap: {},
+		_scopeMapRev: {}
+	};
 
-				try{
-					throw new Error(""); 
-				}catch(e2){
-					var uri = e2.fileName || e2.sourceURL;
-					if (typeof uri == 'string' && uri && uri.indexOf('dojo.js') != -1) {
-						root = uri.split("dojo.js")[0];
-					}
-				}
-			} else if (doc && isHostMethod(doc, 'getElementsByTagName')){
-
-				// Detect Dojo path
-
-				scripts = doc.getElementsByTagName("script");
-				l = scripts.length;
-				rePkg = /^(.*)(\\|\/)dojo\.js\W*$/i;
-
-				for(i = 0; !root && i < l; i++){
-					src = scripts[i].src;
-					if(src){
-						m = src.match(rePkg);
-						if(m){
-							root = m[1] + m[2];
-						}
-					}
-				}
-			}
-
-			// If all else fails, use document path
-
-			if (!root) {
-				console.warn('Could not determine base path (using document path.)');
-				root = "./";
-			}
-
-			// Used by moduleUrls and _loadPath method for relative paths
-
-			dojo.baseUrl = root;
+	dojo["eval"] = function(){
+		//	summary: 
+		//		Perform an evaluation in the (almost) global scope. Use this rather than
+		//		calling 'eval()' directly.
+		//	description: 
+		//	returns:
+		//		The result of the evaluation
+		if (arguments.length == 1 || !arguments[1]) { 
+			return eval(arguments[0]);
 		}
 
-		var done, envScript = root + "_base/_loader/hostenv_" + hostEnv + ".js";
+		// NOTE: Script injection here if post load
+
+		return (new Function(arguments[0]))();
+	};
+
+	// for-in filter
+
+	dojo.isOwnProperty = function(o, p) {
+		var prop = o.constructor.prototype[p];
+		return typeof prop == 'undefined' || prop !== o[p];
+	};
+
+	/*=====
+	dojo.global = {
+		//	summary:
+		//		Reference to the Global Object
+		//		(typically the window object in a browser).
+		//	description:
+		//		Refer to 'dojo.global' rather than referring to window to ensure your
+		//		code runs correctly in contexts other than web browsers (e.g. Rhino on a server).
+	}
+	=====*/
+
+	dojo.global = this;
+
+	dojo.config = {};
+
+	(function(){
+
+		// Feature detection
+
+		var reFeaturedMethod = new RegExp('^(function|object)$', 'i');
+
+		// summary:
+		// Test for host object property referencing an object to be called
+		//
+		// description:
+		// If the referenced object will not be called, use isHostObjectProperty
+		// Allowed properties may be of type function, object (IE and possibly others) or unknown (IE ActiveX methods)
+		// Object types exclude null.
+		//
+		// Does NOT assert that an arbitrary property is callable
+		// Pass only names of properties universally implemented as methods
+		// This does NOT include properties that are methods in some browsers but not others
+		// This test will not discriminate between such implementations and
+		// applications should never call such objects
+		//
+		// example:
+		//
+		// if (dojo.isHostMethod(document, 'getElementById')) {
+		//     anElement = document.getElementById(id);
+		// }
+
+		dojo.isHostMethod = function(/* Host object */ o, /* String */ m) {
+			var t = typeof o[m];
+			return !!((reFeaturedMethod.test(t) && o[m]) || t == 'unknown'); /* Boolean */
+		};
+
+		// summary:
+		// Test for host object property that will be evaluated (e.g. assigned, type converted)
+		//
+		// description:
+		// Similar to isHostMethod, but does not allow unknown types, which are known to throw errors when evaluated
+		// If the property will be called, use isHostMethod
+		//
+		// example:
+		//
+		// if (dojo.isHostObjectProperty(document, 'all')) {
+		//     allElements = document.all;
+		// }
+
+		dojo.isHostObjectProperty = function(/* Host object */ o, /* String */ p) {
+			var t = typeof o[p];
+			return !!(reFeaturedMethod.test(t) && o[p]); /* Boolean */
+		};
+
+		// For application gateways to detect one or more API methods
+
+		dojo.areFeatures = function() {
+			var i = arguments.length;
+			while (i--) {
+				if (!dojo[arguments[i]]) {
+					return false;
+				}
+			}
+			return true;
+		};
+
+		dojo.areNSFeatures = function(ns) {
+			ns = dojo[ns];
+			if (ns) {
+				var features = Array.prototype.slice.call(arguments, 1);
+				var i = features.length;
+				while (i--) {
+					if (!ns[features[i]]) {
+						return false;
+					}
+				}
+				return true;
+			}
+			return false;
+		};
+
+		dojo._getWin = function() {
+			return dojo.global.window || dojo.global;
+		};
+
+		var hostEnv, isRhino, isSpidermonkey, isFFExt, jaxerLoad;
+		var getWin = dojo._getWin;
+		var isHostMethod = dojo.isHostMethod;
+		var isHostObjectProperty = dojo.isHostObjectProperty;
+		var win = getWin();
+		var doc = win.document;
+
+		// NOTE: Need build exclude directives for these checks
+
+		if(
+			typeof this.load == "function" &&
+			(this.Packages == "function" || typeof this.Packages == "object")
+		){
+			// Rhino environments make Java code available via the Packages
+			// object. Obviously, this check could be "juiced" if someone
+			// creates a "Packages" object and a "load" function, but we've
+			// never seen this happen in the wild yet.
+
+			isRhino = true;
+			hostEnv = "rhino";
+		}else if(typeof this.load == "function"){
+
+			// Spidermonkey has a very spartan environment. The only thing we
+			// can count on from it is a "load" function.
+
+			// NOTE: Need real test for this environment
+
+			isSpidermonkey = true;
+			hostEnv = "spidermonkey";
+		}else if(
+			isHostObjectProperty(this, 'ChromeWindow') &&
+			win instanceof this.ChromeWindow &&
+			isHostObjectProperty(this, 'Components')){
+			try {
+				isFFExt = (this.Components.classes["@mozilla.org/moz/jssubscript-loader;1"]) || true;
+				hostEnv = "ff_ext";
+			} catch(e) {
+				// Permission denied if not plug-in
+			}
+		}
+
+		// All else fails, assume browser
+
+		if (!hostEnv) {
+			hostEnv = "browser";
+		}
+
+		// NOTE: In which environments is this possible?
+
+		if (this.Jaxer && this.Jaxer.isOnServer) {
+			jaxerLoad = true;
+			this.load = this.Jaxer.load;
+		}
+
+		// NOTE: Clean up variable names
+
+		var cfg, cfgo, config, i, l, m, rePkg, src, scripts, scriptPath, x;
+		var isOwnProperty = dojo.isOwnProperty;
+
+		dojo.config = config = djConfig || {};
+
+		if (!config.baseUrl && isSpidermonkey){
+
+			// Detect the base path via an exception.
+
+			try{
+				throw new Error(""); 
+			} catch(e2) {
+				var uri = e2.fileName || e2.sourceURL;
+				if (typeof uri == 'string' && uri && uri.indexOf('dojo.js') != -1) {
+					config.baseUrl = uri.split("dojo.js")[0];
+				}
+			}
+		}
+
+		if (doc && isHostMethod(doc, 'getElementsByTagName')){
+
+			// For browsers and browser extensions
+			// Detect Dojo path (if not already specified) and parse djConfig attribute if present
+
+			scripts = doc.getElementsByTagName("script");
+			l = scripts.length;
+			rePkg = /^(.*)(\\|\/)dojo\.js\W*$/i;
+
+			// First match wins
+
+			for(i = 0; !scriptPath && i < l; i++){
+				src = scripts[i].src;
+				if(src){
+					m = src.match(rePkg);
+					if(m){
+						cfg = scripts[i].getAttribute("djConfig");
+						if (cfg) {
+
+							// NOTE: Attribute overrides declared djConfig object
+
+							cfgo = (new Function("return { " + cfg + " };"))();
+							for (x in cfgo){
+								if (isOwnProperty(cfgo, x)) {
+									config[x] = cfgo[x];
+								}
+							}
+						}
+						scriptPath = m[1] + m[2];
+					}						
+				}
+			}
+
+			// Use indicated base or fall back to script path
+			
+			dojo.baseUrl = config.baseUrl || scriptPath;
+
+			if (!dojo.baseUrl) {
+				console.warn('Could not determine base path (using document path.)');
+				dojo.baseUrl = "./";
+			}
+		}
+
+		var done, envScript = dojo.baseUrl + "_base/_loader/hostenv_" + hostEnv + ".js";
 		
 		if ((isRhino || isSpidermonkey || jaxerLoad) && isHostMethod(this, 'load')){
 			try {
@@ -403,7 +426,7 @@ var djConfig = {
 		}
 		if (!done) {
 			try{
-				doc.write("<script type='text/javascript' src='"+envScript+"'></script>");
+				doc.write("<script type='text/javascript' src='" + envScript + "'></script>");
 			}catch(e5){
 				// XML parse mode or other environment without document.write
 
@@ -415,20 +438,14 @@ var djConfig = {
 			}
 		}
 
-		win = doc = null; // Discard host object references
+		// Discard host object references
+
+		win = scripts = doc = null;
 	})();
 }
 
 (function(){
-
-	// for-in filter
-
-	var isOwnProperty = function(o, p) {
-		var prop = o.constructor.prototype[p];
-		return typeof prop == 'undefined' || prop !== o[p];
-	};
-
-	dojo.isOwnProperty = isOwnProperty;
+	var isOwnProperty = dojo.isOwnProperty;
 
 	// firebug stubs
 
@@ -462,7 +479,7 @@ var djConfig = {
 		}
 	}
 
-	// Need placeholders for dijit and dojox for scoping code.
+	// Create placeholders for dijit and dojox for scoping code.
 
 	if(typeof this.dijit == "undefined"){
 		this.dijit = {_scopeName: "dijit"};
@@ -470,24 +487,11 @@ var djConfig = {
 	if(typeof this.dojox == "undefined"){
 		this.dojox = {_scopeName: "dojox"};
 	}
+
+	// NOTE: Review this
 	
 	if(!dojo._scopeArgs){
 		dojo._scopeArgs = [this.dojo, this.dijit, this.dojox];
-	}
-
-
-	dojo.config =/*===== djConfig = =====*/{
-		isDebug: false,
-		debugAtAllCosts: false
-	};
-
-	var djConfig = this.djConfig;
-	if(djConfig){
-		for(var opt in djConfig){
-			if (isOwnProperty(djConfig, opt)) {
-				dojo.config[opt] = djConfig[opt];
-			}
-		}
 	}
 
 /*=====
@@ -794,6 +798,7 @@ var djConfig = {
 	dojo._protocolPattern = /^\w+:/;
 
 	dojo._loadPath = function(/*String*/relpath, /*String?*/module, /*Function?*/cb){
+
 		// 	summary:
 		//		Load a Javascript module given a relative path
 		//
@@ -1107,11 +1112,11 @@ var djConfig = {
 
 		var module, ok, relpath;
 
-		omitModuleCheck = this._global_omit_module_check || omitModuleCheck;
+		omitModuleCheck = dojo._global_omit_module_check || omitModuleCheck;
 
 		// Check if it is already loaded.
 
-		module = this._loadedModules[moduleName];
+		module = dojo._loadedModules[moduleName];
 		if (module){
 			console.warn(moduleName + ' is already loaded.');
 			return module;
@@ -1119,9 +1124,9 @@ var djConfig = {
 
 		// convert periods to slashes
 
-		relpath = this._getModuleSymbols(moduleName).join("/") + '.js';
+		relpath = dojo._getModuleSymbols(moduleName).join("/") + '.js';
 
-		ok = this._loadPath(relpath, omitModuleCheck ? null : moduleName, null);
+		ok = dojo._loadPath(relpath, omitModuleCheck ? null : moduleName, null);
 
 		if (!omitModuleCheck) {
 			if(!ok){
@@ -1131,8 +1136,8 @@ var djConfig = {
 			// Check that the symbol was defined
 			// Don't bother if we're doing xdomain (asynchronous) loading (or writing scripts during loading.)
 
-			if(!this._isXDomain && !this._writeScript){
-				module = this._loadedModules[moduleName];
+			if(!dojo._isXDomain && !dojo._writeScript){
+				module = dojo._loadedModules[moduleName];
 				if(!module){
 					throw new Error("Symbol '" + moduleName + "' failed to load from '" + relpath + "'"); 
 				}
@@ -1173,8 +1178,6 @@ var djConfig = {
 		return (dojo._loadedModules[resourceName] = dojo.getObject(resourceName, true)); // Object
 	};
 
-	//Start of old bootstrap2:
-
 	dojo.platformRequire = function(/*Object*/modMap){
 		//	summary:
 		//		require one or more modules based on which host environment
@@ -1202,9 +1205,9 @@ var djConfig = {
 		var common = modMap.common || [];
 		var result = common.concat(modMap[dojo._name] || modMap["default"] || []);
 
-		for(var x=0; x<result.length; x++){
+		for(var x = 0; x<result.length; x++){
 			var curr = result[x];
-			if(curr.constructor == Array){
+			if(dojo.isArray(curr)){
 				dojo._loadModule.apply(dojo, curr);
 			}else{
 				dojo._loadModule(curr);
@@ -1213,18 +1216,20 @@ var djConfig = {
 	};
 
 	dojo.requireIf = function(/*Boolean*/ condition, /*String*/ resourceName){
+
 		// summary:
 		//		If the condition is true then call dojo.require() for the specified
 		//		resource
+
 		if(condition === true){
+
 			// FIXME: why do we support chained require()'s here? does the build system?
-			var args = [];
-			for(var i = 1; i < arguments.length; i++){ 
-				args.push(arguments[i]);
-			}
-			dojo.require.apply(dojo, args);
+			
+			dojo.require.apply(dojo, Array.prototype.slice.call(arguments, 1));
 		}
 	};
+
+	// NOTE: Is this for compatibility with old versions?
 
 	dojo.requireAfterIf = dojo.requireIf;
 

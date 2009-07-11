@@ -68,15 +68,14 @@ if ((dojo._getWin()).document){
 	dojo._name = "browser";
 
 	(function(){
-		var i, doc = this.window.document;
+		var i, doc = (dojo._getWin()).document;
 		var isHostMethod = dojo.isHostMethod;
 		var isHostObjectProperty = dojo.isHostObjectProperty;
 		var isOwnProperty = dojo.isOwnProperty;
 		var config = dojo.config;
 		var provide = dojo.provide;
-		var require = function(name) {
-			dojo.require.call(dojo, name);
-		};
+		var require = dojo.require;
+		var requireIf = dojo.requireIf;
 
 		if (doc && isHostMethod(doc, 'write')) {
 			dojo._writeScript = function(uri) {
@@ -84,39 +83,11 @@ if ((dojo._getWin()).document){
 			};
 		}
 
-		// We set browser versions and grab
-		// the URL we were loaded from here.
+		// Browser detection (all flags are deprecated)
+		// All tests are aimed at compatibility with existing supported browsers and installations
 
-		// grab the node we were loaded from
-		if (doc && isHostMethod(doc, 'getElementsByTagName')){
-			var m, src, scripts = doc.getElementsByTagName("script");
-			var rePkg = /dojo(\.xd)?\.js(\W|$)/i;
+		// NOTE: Fix unqualified references to window object
 
-			for(i = 0; i < scripts.length; i++){
-				src = scripts[i].src;
-
-				if (src && (m = src.match(rePkg))){
-					// find out where we came from
-					if (!config.baseUrl){
-						config.baseUrl = src.substring(0, m.index);
-					}
-					// and find out if we need to modify our behavior
-					var cfg = scripts[i].getAttribute("djConfig");
-					if (cfg){
-						var cfgo = (new Function("return { "+cfg+" };"))();
-						for(var x in cfgo){
-							if (isOwnProperty(cfgo, x)) {
-								config[x] = cfgo[x];
-							}
-						}
-					}
-					break; // "first Dojo wins"
-				}
-			}
-		}
-		dojo.baseUrl = config.baseUrl;
-
-		// fill in the rendering support information in dojo.render.*
 		var n = window.navigator,
 			de = doc.documentElement,
 			dua = n.userAgent,
@@ -145,9 +116,10 @@ if ((dojo._getWin()).document){
 			// IE
 
 			} else if (isHostObjectProperty(doc, 'all') && isHostMethod(window, 'ActiveXObject') && isHostMethod(doc, 'attachEvent') && !isHostMethod(doc, 'addEventListener') && isHostObjectProperty(window, 'external')){
-				//In cases where the page has an HTTP header or META tag with
-				//X-UA-Compatible, then it is in emulation mode, for a previous
-				//version. Make sure isIE reflects the desired version.
+
+				// In cases where the page has an HTTP header or META tag with
+				// X-UA-Compatible, then it is in emulation mode, for a previous
+				// version. Make sure isIE reflects the desired version.
 
 				if (typeof doc.documentMode == 'number'){
 					dojo.isIE = doc.documentMode;
@@ -158,17 +130,18 @@ if ((dojo._getWin()).document){
 					dojo.isIE = 5;
 				}
 
-				//Workaround to get local file loads of dojo to work on IE 7
-				//by forcing to not use native xhr.
+				// Workaround to get local file loads of dojo to work on IE 7
+				// by forcing to not use native xhr.
+
 				if (isHostMethod(window, 'ActiveXObject') && window.location.protocol == "file:"){
 					config.ieForceActiveXXhr=true;
 				}
 
-				// 	In Internet Explorer. readyState will not be achieved on init
-				// 	call, but dojo doesn't need it however, we'll include it
-				// 	because we don't know if there are other functions added that
-				// 	might.  Note that this has changed because the build process
-				// 	strips all comments -- including conditional ones.
+				// In Internet Explorer. readyState will not be achieved on init
+				// call, but dojo doesn't need it however, we'll include it
+				// because we don't know if there are other functions added that
+				// might.  Note that this has changed because the build process
+				// strips all comments -- including conditional ones.
 
 				if (!config.afterOnLoad && isHostMethod(doc, 'write')){
 
@@ -477,9 +450,7 @@ if ((dojo._getWin()).document){
 			}
 		}
 
-		// Register any module paths set up in djConfig. Need to do this
-		// in the hostenvs since hostenv_browser can read djConfig from a
-		// SCRIPT element's attribute.
+		// Register any module paths set up in djConfig.
 
 		var mp = config.modulePaths;
 		if (mp){
@@ -490,10 +461,7 @@ if ((dojo._getWin()).document){
 			}
 		}
 
-		if(
-			typeof djConfig != 'undefined' &&
-			(djConfig.forceXDomain || djConfig.useXDomain)
-		){
+		if(config.forceXDomain || config.useXDomain){
 			require("dojo._base._loader.loader_xd");
 		}
 
@@ -521,16 +489,19 @@ if ((dojo._getWin()).document){
 		// NOTE: Beyond this point, should be in higher level modules
 		//       Current browser base is too large
 
-		require("dojo._base.Color");
-		require("dojo._base.window");
-		require("dojo._base.html");
-		require("dojo._base.NodeList");
-		require("dojo._base.query");
-		require("dojo._base.json");
-		require("dojo._base.xhr");
-		require("dojo._base.connect");
-		require("dojo._base.event");
-		require("dojo._base.fx");
+		// NOTE: Core files should use the required method
+		//       to make certain missing dependencies fail immediately
+
+		requireIf(!config.skipColor, "dojo._base.Color");
+		requireIf(!config.skipWindow, "dojo._base.window");
+		requireIf(!config.skipHtml, "dojo._base.html");
+		requireIf(!config.skipNodeList, "dojo._base.NodeList");
+		requireIf(!config.skipQuery, "dojo._base.query");
+		requireIf(!config.skipJson, "dojo._base.json");
+		requireIf(!config.skipXhr, "dojo._base.xhr");
+		requireIf(!config.skipConnect, "dojo._base.connect");
+		requireIf(!config.skipEvent, "dojo._base.event");
+		requireIf(!config.skipFx, "dojo._base.fx");
 
 		// Need this to be the last code segment in base, so do not place any
 		// requireIf calls in this file. Otherwise, due to how the build system

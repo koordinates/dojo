@@ -1,17 +1,15 @@
 // a host environment specifically built for Mozilla extensions, but derived
 // from the browser host environment
 
-if(typeof window != 'undefined'){
+if(typeof dojo.global.window != 'undefined'){
 	dojo.isBrowser = true;
-	dojo.isFFExt = true;
 	dojo._name = "browser";
-
 
 	// FIXME: PORTME
 	//	http://developer.mozilla.org/en/mozIJSSubScriptLoader
 
-
 	// attempt to figure out the path to dojo if it isn't set in the config
+
 	(function(){
 		var d = dojo;
 		// this is a scope protection closure. We set browser versions and grab
@@ -69,6 +67,7 @@ if(typeof window != 'undefined'){
 		};
 
 		// FIXME: PORTME
+
 		d._isDocumentOk = function(http){
 			var stat = http.status || 0;
 			return (stat >= 200 && stat < 300) || 	// Boolean
@@ -81,6 +80,7 @@ if(typeof window != 'undefined'){
 		// var owloc = window.location+"";
 		// var base = dojo._getWin().document.getElementsByTagName("base");
 		// var hasBase = (base && base.length > 0);
+
 		var hasBase = false;
 
 		d._getText = function(/*URI*/ uri, /*Boolean*/ fail_ok){
@@ -149,6 +149,7 @@ if(typeof window != 'undefined'){
 		d._windowUnloaders = [];
 		
 		// FIXME: PORTME
+
 		d.windowUnloaded = function(){
 			// summary:
 			//		signal fired by impending window destruction. You may use
@@ -161,6 +162,7 @@ if(typeof window != 'undefined'){
 		};
 
 		// FIXME: PORTME
+
 		d.addOnWindowUnload = function(/*Object?*/obj, /*String|Function?*/functionName){
 			// summary:
 			//		registers a function to be triggered when window.onunload fires.
@@ -183,6 +185,7 @@ if(typeof window != 'undefined'){
 		dojo._defaultContext = [ dojo._getWin(), dojo._getWin().document ];
 
 		dojo.pushContext = function(/*Object|String?*/g, /*Document?*/d){
+
 			//	summary:
 			//		causes subsequent calls to Dojo methods to assume the
 			//		passed object and, optionally, document as the default
@@ -209,6 +212,7 @@ if(typeof window != 'undefined'){
 			//		search for a context and document.
 			//	d:
 			//		The document element to execute subsequent code with.
+
 			var old = [dojo.global, dojo.doc];
 			contexts.push(old);
 			var n;
@@ -245,6 +249,7 @@ if(typeof window != 'undefined'){
 		// FIXME: 
 		//		don't really like the current arguments and order to
 		//		_inContext, so don't make it public until it's right!
+
 		dojo._inContext = function(g, d, f){
 			var a = dojo._toArray(arguments);
 			f = a.pop();
@@ -260,12 +265,14 @@ if(typeof window != 'undefined'){
 	})();
 
 	dojo._initFired = false;
-	//	BEGIN DOMContentLoaded, from Dean Edwards (http://dean.edwards.name/weblog/2006/06/again/)
+
 	dojo._loadInit = function(e){
 		dojo._initFired = true;
+
 		// allow multiple calls, only first one will take effect
 		// A bug in khtml calls events callbacks for document for event which isnt supported
 		// for example a created contextmenu event calls DOMContentLoaded, workaround
+
 		var type = (e && e.type) ? e.type.toLowerCase() : "load";
 		if(arguments.callee.initialized || (type != "domcontentloaded" && type != "load")){ return; }
 		arguments.callee.initialized = true;
@@ -289,8 +296,10 @@ if(typeof window != 'undefined'){
 				oldHandler.apply(_w, arguments);
 			};
 		};
+
 		// FIXME: PORT
 		// FIXME: dojo.unloaded requires dojo scope, so using anon function wrapper.
+
 		_handleNodeEvent("onbeforeunload", function() { dojo.unloaded(); });
 		_handleNodeEvent("onunload", function() { dojo.windowUnloaded(); });
 	})();
@@ -302,10 +311,10 @@ if(typeof window != 'undefined'){
 	// 		all iframes (in addition to window navigations). We only want
 	// 		Dojo's to fire once..but we might care if pages navigate. We'll
 	// 		probably need an extension-specific API
+
 	if(!dojo.config.afterOnLoad){
-		window.addEventListener("DOMContentLoaded",function(e){ 
+		dojo._getWin().addEventListener("DOMContentLoaded",function(e){ 
 			dojo._loadInit(e);
-			// console.log("DOM content loaded", e);
 		}, false);
 	}
 
@@ -342,22 +351,31 @@ if(dojo.config.isDebug){
 	// FIXME: what about the rest of the console.* methods? And is there any way to reach into firebug and log into it directly?
 }
 
+dojo.isFFExt = true;
+
 dojo.provide("dojo._base");
 
-dojo.require("dojo._base.lang");
-dojo.require("dojo._base.declare");
-dojo.require("dojo._base.Deferred");
-dojo.require("dojo._base.array");
-dojo.require("dojo._base.Color");
-dojo.require("dojo._base.window");
+(function() {
+	var require = dojo.require;
+	var requireIf = dojo.requireIf;
 
-if (dojo.isBrowser) {
-	dojo.require("dojo._base.html");
-	dojo.require("dojo._base.NodeList");
-	dojo.require("dojo._base.query");
-	dojo.require("dojo._base.json");
-	dojo.require("dojo._base.xhr");
-	dojo.require("dojo._base.connect");
-	dojo.require("dojo._base.event");
-	dojo.require("dojo._base.fx");
-}
+	require("dojo._base.lang");
+	require("dojo._base.declare");
+	require("dojo._base.Deferred");
+	require("dojo._base.array");
+	require("dojo._base.Color");
+	require("dojo._base.window");
+
+	if (dojo.isBrowser) {
+		requireIf(!djConfig.skipColor, "dojo._base.Color");
+		requireIf(!djConfig.skipWindow, "dojo._base.window");
+		requireIf(!djConfig.skipHtml, "dojo._base.html");
+		requireIf(!djConfig.skipNodeList, "dojo._base.NodeList");
+		requireIf(!djConfig.skipQuery, "dojo._base.query");
+		requireIf(!djConfig.skipJson, "dojo._base.json");
+		requireIf(!djConfig.skipXhr, "dojo._base.xhr");
+		requireIf(!djConfig.skipConnect, "dojo._base.connect");
+		requireIf(!djConfig.skipEvent, "dojo._base.event");
+		requireIf(!djConfig.skipFx, "dojo._base.fx");
+	}
+})();
