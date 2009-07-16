@@ -1335,9 +1335,9 @@ dojo.byId = function(id, doc){
 					if (value) {
 
 						// NOTE: Broken MSHTML DOM is case-sensitive here with custom attributes
-						// NOTE: enctype attribute is never specified
+						// NOTE: enctype and value attributes never specified
 
-						return value.specified || nameLower == 'enctype';
+						return value.specified || nameLower == 'enctype' || nameLower == 'value';
 					}
 					return false;
 	          		};
