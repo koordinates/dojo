@@ -1231,7 +1231,7 @@ dojo.byId = function(id, doc){
 		_attrId = dojo._scopeName + "attrid";
 	html = dojo._getWin().document.documentElement;
 	var attributesBad = !!(typeof html.getAttribute != 'undefined' && html.getAttribute('style') && typeof html.getAttribute('style') != 'string');
-	var attributeAliases = {'for':'htmlFor', accesskey:'accessKey', codebase:'codeBase', frameborder:'frameBorder', framespacing:'frameSpacing', nowrap:'noWrap', maxlength:'maxLength', 'class':'className', readonly:'readOnly', longdesc:'longDesc', tabindex:'tabIndex', rowspan:'rowSpan', colspan:'colSpan', enctype:'encType', ismap:'isMap', usemap:'useMap', cellpadding:'cellPadding', cellspacing:'cellSpacing', innerhtml:'innerHTML'}; // Last for backwards compatibility
+	var attributeAliases = {'for':'htmlFor', accesskey:'accessKey', codebase:'codeBase', frameborder:'frameBorder', framespacing:'frameSpacing', nowrap:'noWrap', maxlength:'maxLength', 'class':'className', readonly:'readOnly', longdesc:'longDesc', tabindex:'tabIndex', rowspan:'rowSpan', colspan:'colSpan', ismap:'isMap', usemap:'useMap', cellpadding:'cellPadding', cellspacing:'cellSpacing', innerhtml:'innerHTML'}; // Last for backwards compatibility
 
 	// Used by realAttr to fix broken attributes
 
@@ -1332,9 +1332,8 @@ dojo.byId = function(id, doc){
 					if (value) {
 
 						// NOTE: Broken MSHTML DOM is case-sensitive here with custom attributes
-						// NOTE: Broken MSHTML DOM omits enctype property
 
-						return value.specified || nameLower == 'enctype';
+						return value.specified;
 					}
 	          		};
 			}
@@ -1542,16 +1541,14 @@ dojo.byId = function(id, doc){
 
 	// Used to get/set HTML attributes (excluding custom)
 	// Can also be used for XML attributes (but better to use host implemented get/setAttribute)
+	// Better to use host implemented get/setAttribute to get and set custom attributes
 
 	// Returns a string or null
 
 	// NOTE: Does not support multiple sets (name must be a string)
 
-	// NOTE: Do NOT use with custom HTML attributes
-	//       Better to use host implemented get/setAttribute to get and set custom attributes
-
 	dojo.realAttr = (function() {
-		var nn, nameC, hasAttribute, doc, att, alias;
+		var alias, doc, hasAttribute, key, nameLower, nn, val;
 
 		if (attributesBad) {
 			hasAttribute = dojo.hasAttr;
@@ -1564,6 +1561,23 @@ dojo.byId = function(id, doc){
 
 				doc = node.ownerDocument;
 
+				// Convert name to lower
+
+				nameLower = name.toLowerCase();
+
+				// Find alias
+
+				alias = attributeAliases[nameLower];
+
+				// Camelize if necessary
+				// Aliases are never hyphenated
+
+				key = alias || (nameLower.indexOf('-') == -1 && nameLower) || camelize(nameLower);
+
+				// Get node name for special cases
+
+				nn = node.tagName.toLowerCase();
+
 				if (arguments.length == 2) {
 
 					// Getter
@@ -1575,51 +1589,37 @@ dojo.byId = function(id, doc){
 					}
 
 					if (hasAttribute(node, name)) {
-
-						// Convert name to lower
-
-						name = name.toLowerCase();
-
-						// Find alias
-
-						alias = attributeAliases[name];
-
 						if (name == 'style') {
 							return node.style.cssText;
 						}
-						if (reURI.test(name)) {
-							return node.getAttribute(name, 2);
+						if (reURI.test(nameLower)) {
+							return node.getAttribute(nameLower, 2);
 						}
-						if (reEvent.test(name) && node[name]) {
-							att = node[name].toString();
-							if (att) {
-								att = att.replace(reNewLine, '');
-								if (reFunction.test(att)) { return att.replace(reFunction, '$1'); }
+						if (reEvent.test(nameLower) && node[nameLower]) {
+							val = node[nameLower].toString();
+							if (val) {
+								val = val.replace(reNewLine, '');
+								if (reFunction.test(val)) {
+									return val.replace(reFunction, '$1');
+								}
 							}
 							return null;
 						}
-						nn = node.tagName.toLowerCase();
-						if (nn == 'select' && name == 'type') {
+						if (nn == 'select' && nameLower == 'type') {
 							return null;
 						}
 						if (nn == 'form' && typeof node.getAttributeNode != 'undefined') {
-							att = node.getAttributeNode(name);
+							att = node.getAttributeNode(nameLower);
 							return (att && att.nodeValue) ? att.nodeValue : null;
 						}
-
-						// Camelize if necessary
-						// Aliases are never hyphenated
-
-        	        			nameC = alias || (name.indexOf('-') == -1 && name) || camelize(name);
-
-                				if (typeof node[nameC] == 'unknown') {
-							return '[unknown]';
-						}
-						var val = node[nameC];
+						val = node[key];
 						if (typeof val == 'boolean') {
-							return val?'':null;
+							return val ? '' : null;
                   				}
-						if (typeof val == 'undefined') { // Custom attribute
+						if (typeof val == 'undefined') {
+
+							// Custom attribute (case sensitive)
+
 							val = node.getAttribute(name);
 							if (typeof val != 'string') {
 								return null;
@@ -1641,9 +1641,8 @@ dojo.byId = function(id, doc){
 
 					// Broken by design MSHTML DOM (IE < 8 and compatibility modes)
 
-					name = name.toLowerCase();
 				        nn = node.tagName.toLowerCase();
-					switch(name) {
+					switch(nameLower) {
 					case 'style':
 						node.style.cssText = value;
 						break;
@@ -1656,7 +1655,7 @@ dojo.byId = function(id, doc){
 
 						// HTML attributes are case insensitive
 
-						node[name] = value ? value.toLowerCase() == name : false;
+						node[key] = value ? value.toLowerCase() == nameLower : false;
 						break;
 					case 'type':
 						if (nn != 'select') {
@@ -1667,15 +1666,20 @@ dojo.byId = function(id, doc){
 						}
 						break;
 					default:
-						if (reEvent.test(name)) {
-							node[name] = new Function(value);
+						if (reEvent.test(nameLower)) {
+							node[nameLower] = new Function(value);
+						} else if (typeof node[key] == 'undefined') {
+
+							// No defined property
+							// Custom attribute (case sensitive)
+
+							node.setAttribute(name, value);
 						} else {
 
-							// Camelize if necessary
-							// Aliases are never hyphenated
+							// Set property
 
-							node[attributeAliases[name] || (name.indexOf() == -1 && name) || camelize(name)] = value;
-						}					
+							node[key] = value;
+						}
 					}
 				}
 			};
