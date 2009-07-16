@@ -1321,8 +1321,11 @@ dojo.byId = function(id, doc){
 					}
 
 					nameLower = name.toLowerCase();
-					alias = attributeAliases[nameLower];
 
+					// NOTE: encType is a non-standard alias found only in broken MSHTML DOM's
+
+					alias = nameLower == 'enctype' ? 'encType' : attributeAliases[nameLower];
+					
 					if (alias && alias.toLowerCase() == nameLower) {
 						name = alias;
 					}
@@ -1332,9 +1335,11 @@ dojo.byId = function(id, doc){
 					if (value) {
 
 						// NOTE: Broken MSHTML DOM is case-sensitive here with custom attributes
+						// NOTE: enctype attribute is never specified
 
-						return value.specified;
+						return value.specified || nameLower == 'enctype';
 					}
+					return false;
 	          		};
 			}
 			return attributeSpecified;
@@ -1525,18 +1530,23 @@ dojo.byId = function(id, doc){
 		//
 		// name: the name of the attribute to remove
 
+		var nameLower;
+
 		if (typeof node == 'string') {
 			node = byId(node);
 		}
 		if (attributesBad) {
-			name = name.toLowerCase();
-			var alias = attributeAliases[name];
+			nameLower = name.toLowerCase();
 
-			if (alias && alias.toLowerCase() == name) {
+			// NOTE: encType is a non-standard alias found only in broken MSHTML DOM's
+
+			var alias = nameLower == 'enctype' ? 'encType' : attributeAliases[nameLower];
+
+			if (alias && alias.toLowerCase() == nameLower) {
 				name = alias;
 			}
 		}
-		node.removeAttribute(name);
+		node.removeAttribute(name);		
 	};
 
 	// Used to get/set HTML attributes (excluding custom)
@@ -1567,7 +1577,9 @@ dojo.byId = function(id, doc){
 
 				// Find alias
 
-				alias = attributeAliases[nameLower];
+				// NOTE: encType is a non-standard alias found only in broken MSHTML DOM's
+
+				alias = nameLower == 'enctype' ? 'encType' : attributeAliases[nameLower];
 
 				// Camelize if necessary
 				// Aliases are never hyphenated
@@ -1609,8 +1621,8 @@ dojo.byId = function(id, doc){
 							return null;
 						}
 						if (nn == 'form' && typeof node.getAttributeNode != 'undefined') {
-							att = node.getAttributeNode(nameLower);
-							return (att && att.nodeValue) ? att.nodeValue : null;
+							val = node.getAttributeNode(name) || node.getAttributeNode(nameLower);
+							return (val && val.nodeValue) ? val.nodeValue : null;
 						}
 						val = node[key];
 						if (typeof val == 'boolean') {
@@ -1691,7 +1703,7 @@ dojo.byId = function(id, doc){
 				if (arguments.length == 2) { // Getter
 					return node.getAttribute(name); // String
 				}
-				node.setAttribute(node, name, value);
+				node.setAttribute(name, value);
 			};
 		}		
 	})();
