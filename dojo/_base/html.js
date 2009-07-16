@@ -1543,7 +1543,7 @@ dojo.byId = function(id, doc){
 		//
 		// name: the name of the attribute to remove
 
-		var nameLower;
+		var alias, nameLower;
 
 		if (typeof node == 'string') {
 			node = byId(node);
@@ -1551,9 +1551,9 @@ dojo.byId = function(id, doc){
 		if (attributesBad) {
 			nameLower = name.toLowerCase();
 
-			// NOTE: encType is a non-standard alias found only in broken MSHTML DOM's
+			// NOTE: encType alias does not apply here
 
-			var alias = attributeAliases[nameLower];
+			alias = attributeAliases[nameLower];
 
 			if (alias && alias.toLowerCase() == nameLower) {
 				name = alias;
@@ -1562,7 +1562,7 @@ dojo.byId = function(id, doc){
 		node.removeAttribute(name);		
 	};
 
-	// Used to get/set HTML attributes (excluding custom)
+	// Used to get/set HTML attributes
 	// Can also be used for XML attributes (but better to use host implemented get/setAttribute)
 	// Better to use host implemented get/setAttribute to get and set custom attributes
 
