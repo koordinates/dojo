@@ -1629,28 +1629,26 @@ dojo.byId = function(id, doc){
 								}
 							}
 							return null;
-						}
-						if (nn == 'select' && nameLower == 'type') {
-							return null;
-						}
+						}						
 						if (nn == 'form' && typeof node.getAttributeNode != 'undefined') {
 							val = node.getAttributeNode(name) || node.getAttributeNode(nameLower);
-							return (val && val.nodeValue) ? val.nodeValue : null;
+							return val ? val.nodeValue : null;
 						}
 						val = node[key];
-						if (typeof val == 'boolean') {
-							return val ? '' : null;
-                  				}
-						if (typeof val == 'undefined') {
+						switch(typeof val) {
+						case 'boolean':
+							return val ? '' : null;						
+						case 'undefined':
 
 							// Custom attribute (case sensitive)
 
 							val = node.getAttribute(name);
-							if (typeof val != 'string') {
-								return null;
-							}
+							return typeof val == 'string' ? val : null;
+						case 'string':
+							return val;
+						default:
+							return val === null ? null : String(val);
 						}
-						return typeof val != 'string' && val !== null ? String(val) : val;
 					}
 					return null;
 				}
