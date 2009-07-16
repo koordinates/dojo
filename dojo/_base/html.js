@@ -1345,7 +1345,7 @@ dojo.byId = function(id, doc){
 							switch(nameLower) {
 							case 'enctype':
 							case 'value':
-								re = new RegExp(name + '=([\'"])?\\w+\\1?', 'i');
+								re = new RegExp('^[^>]*\\s+' + name + '=([\'"])?\\w+\\1?', 'i');
 								return re.test(el.outerHTML);
 							default:
 								return false;
@@ -1553,7 +1553,7 @@ dojo.byId = function(id, doc){
 
 			// NOTE: encType is a non-standard alias found only in broken MSHTML DOM's
 
-			var alias = nameLower == 'enctype' ? 'encType' : attributeAliases[nameLower];
+			var alias = attributeAliases[nameLower];
 
 			if (alias && alias.toLowerCase() == nameLower) {
 				name = alias;
