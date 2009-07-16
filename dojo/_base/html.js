@@ -309,12 +309,12 @@ dojo.byId = function(id, doc){
 
 	var px;
 
-	if(typeof html.runtimeStyle == 'undefined'){
+	if (typeof html.runtimeStyle == 'undefined') {
 		px = function(element, value){
 			return parseFloat(value); 
 		};
-	}else{
-		px = function(element, avalue, nohack){
+	} else {
+		px = function(element, avalue, nohack) {
 			if (avalue) {
 				if(/px$/i.test(avalue)){
 					return parseFloat(avalue);
@@ -1231,7 +1231,7 @@ dojo.byId = function(id, doc){
 		_attrId = dojo._scopeName + "attrid";
 	html = dojo._getWin().document.documentElement;
 	var attributesBad = !!(typeof html.getAttribute != 'undefined' && html.getAttribute('style') && typeof html.getAttribute('style') != 'string');
-	var attributeAliases = {'for':'htmlFor', accesskey:'accessKey', maxlength:'maxLength', 'class':'className', readonly:'readOnly', longdesc:'longDesc', tabindex:'tabIndex', rowspan:'rowSpan', colspan:'colSpan', codebase:'codeBase', enctype:'encType', ismap:'isMap', innerhtml:'innerHTML'}; // Last for backwards compatibility
+	var attributeAliases = {'for':'htmlFor', accesskey:'accessKey', codebase:'codeBase', frameborder:'frameBorder', framespacing:'frameSpacing', nowrap:'noWrap', maxlength:'maxLength', 'class':'className', readonly:'readOnly', longdesc:'longDesc', tabindex:'tabIndex', rowspan:'rowSpan', colspan:'colSpan', enctype:'encType', ismap:'isMap', usemap:'useMap', cellpadding:'cellPadding', cellspacing:'cellSpacing', innerhtml:'innerHTML'}; // Last for backwards compatibility
 
 	// Used by realAttr to fix broken attributes
 
@@ -1239,7 +1239,7 @@ dojo.byId = function(id, doc){
             var reEvent = new RegExp('^on');
             var reNewLine = new RegExp('[\\n\\r]', 'g');
             var reFunction = new RegExp('^function anonymous\\(\\) *{(.*)}$');
-            var reURI = new RegExp('(href|src|data)');
+            var reURI = new RegExp('^(href|src|data)$');
 	}
 
 	var reCamel = new RegExp('([^-]*)-(.)(.*)');
@@ -1298,34 +1298,44 @@ dojo.byId = function(id, doc){
 	// For use with HTML or XML DOM elements
 
 	dojo.hasAttr = (function() {
-		var attributeSpecified, value;
+		var alias, attributeSpecified, nameLower, value;
+
 		if (typeof html.hasAttribute != 'undefined') {
 			return function(el, name) {
 				return el.hasAttribute(name);
 			};
 		}
-		if (typeof html.attributes != 'undefined') {
+		if (dojo.isHostObjectProperty(html, 'attributes')) {
 			attributeSpecified = function(el, name) {
 				value = el.attributes[name];
 
-				// Value workaround moved from parser.js (?)
-
-				return !!((value && value.specified) || name == 'value');
+				return !!((value && value.specified));
 			};
 			if (attributesBad) {
 				return function(el, name) {
-					if (el.ownerDocument && typeof(el.ownerDocument.selectNodes) != 'undefined') { return attributeSpecified(el, name); } // XML document
 
-					var nameLower = name.toLowerCase();
-					var alias = attributeAliases[name];
+					// MSXML document
+
+					if (el.ownerDocument && typeof el.ownerDocument.selectNodes != 'undefined') {
+						return attributeSpecified(el, name);
+					}
+
+					nameLower = name.toLowerCase();
+					alias = attributeAliases[nameLower];
 
 					if (alias && alias.toLowerCase() == nameLower) {
 						name = alias;
 					}
 
-					// NOTE: Broken MSHTML DOM is case-sensitive here with custom attributes
+					value = el.attributes[name] || el.attributes[nameLower];
 
-					return attributeSpecified(el, name) || attributeSpecified(el, nameLower);
+					if (value) {
+
+						// NOTE: Broken MSHTML DOM is case-sensitive here with custom attributes
+						// NOTE: Broken MSHTML DOM omits enctype property
+
+						return value.specified || nameLower == 'enctype';
+					}
 	          		};
 			}
 			return attributeSpecified;
@@ -1509,12 +1519,12 @@ dojo.byId = function(id, doc){
 	// For use with HTML DOM elements only
 
 	dojo.removeAttr = function(/*DomNode|String*/node, /*String*/name){
-		//summary: Removes an attribute from an HTML element.
+
+		// summary: Removes an attribute from an HTML element.
 		//
-		//node: id or reference to the element to remove the attribute from
+		// node: id or reference to the element to remove the attribute from
 		//
-		//name: the name of the attribute to remove
-		//
+		// name: the name of the attribute to remove
 
 		if (typeof node == 'string') {
 			node = byId(node);
@@ -1549,43 +1559,63 @@ dojo.byId = function(id, doc){
 				if (typeof node == 'string') {
 					node = byId(node);
 				}
-				if (arguments.length == 2) { // Getter
-					doc = node.ownerDocument;
-	        	      		if (typeof(doc.selectNodes) != 'undefined') {
+
+				// Find owner document
+
+				doc = node.ownerDocument;
+
+				if (arguments.length == 2) {
+
+					// Getter
+
+					// MSXML document
+
+	        	      		if (doc && typeof doc.selectNodes != 'undefined') {
 						return node.getAttribute(name);
-					} // XML document in IE
+					}
 
 					if (hasAttribute(node, name)) {
+
+						// Convert name to lower
+
 						name = name.toLowerCase();
+
+						// Find alias
+
 						alias = attributeAliases[name];
-						if (!alias) {
-							if (name == 'style') { return node.style.cssText; }
-							if (reURI.test(name)) { return node.getAttribute(name, 2); }
-							if (reEvent.test(name) && node[name]) {
-								att = node[name].toString();
-								if (att) {
-									att = att.replace(reNewLine, '');
-									if (reFunction.test(att)) { return att.replace(reFunction, '$1'); }
-								}
-								return null;
-							}
-							nn = node.tagName.toLowerCase();
-							if (nn == 'select' && name == 'type') {
-								return null;
-							}
-							if (nn == 'form' && typeof node.getAttributeNode != 'undefined') {
-								att = node.getAttributeNode(name);
-								return (att && att.nodeValue) ? att.nodeValue : null;
-							}
+
+						if (name == 'style') {
+							return node.style.cssText;
 						}
-        	        			nameC = camelize(alias || name);
+						if (reURI.test(name)) {
+							return node.getAttribute(name, 2);
+						}
+						if (reEvent.test(name) && node[name]) {
+							att = node[name].toString();
+							if (att) {
+								att = att.replace(reNewLine, '');
+								if (reFunction.test(att)) { return att.replace(reFunction, '$1'); }
+							}
+							return null;
+						}
+						nn = node.tagName.toLowerCase();
+						if (nn == 'select' && name == 'type') {
+							return null;
+						}
+						if (nn == 'form' && typeof node.getAttributeNode != 'undefined') {
+							att = node.getAttributeNode(name);
+							return (att && att.nodeValue) ? att.nodeValue : null;
+						}
+
+						// Camelize if necessary
+						// Aliases are never hyphenated
+
+        	        			nameC = alias || (name.indexOf('-') == -1 && name) || camelize(name);
+
                 				if (typeof node[nameC] == 'unknown') {
 							return '[unknown]';
 						}
 						var val = node[nameC];
-	                  			if (name == 'longdesc') {
-							return node.getAttribute(name, 2);
-						}
 						if (typeof val == 'boolean') {
 							return val?'':null;
                   				}
@@ -1602,18 +1632,17 @@ dojo.byId = function(id, doc){
 
 				// Setter
 
-				doc = node.ownerDocument;
-
-				// Check for XML document
-
 				if (doc && typeof(doc.selectNodes) != 'undefined') {
+
+					// MSXML document
+
 					node.setAttribute(name, value);
 				} else {
 
 					// Broken by design MSHTML DOM (IE < 8 and compatibility modes)
 
 					name = name.toLowerCase();
-				        nn = node.tagName;
+				        nn = node.tagName.toLowerCase();
 					switch(name) {
 					case 'style':
 						node.style.cssText = value;
@@ -1624,12 +1653,15 @@ dojo.byId = function(id, doc){
 					case 'multiple':
 					case 'readonly':
 					case 'ismap':
-						node[name] = !name || value.toLowerCase() == name; // HTML attributes are case insensitive
+
+						// HTML attributes are case insensitive
+
+						node[name] = value ? value.toLowerCase() == name : false;
 						break;
 					case 'type':
 						if (nn != 'select') {
-							// no such attribute, but there is a property
-							// NOTE: warn here?
+
+							// No such attribute, but there is a property
 
 							node.type = value;
 						}
@@ -1638,7 +1670,11 @@ dojo.byId = function(id, doc){
 						if (reEvent.test(name)) {
 							node[name] = new Function(value);
 						} else {
-							node[camelize(attributeAliases[name] || name)] = value;
+
+							// Camelize if necessary
+							// Aliases are never hyphenated
+
+							node[attributeAliases[name] || (name.indexOf() == -1 && name) || camelize(name)] = value;
 						}					
 					}
 				}
