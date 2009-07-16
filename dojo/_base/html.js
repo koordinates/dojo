@@ -1330,11 +1330,12 @@ dojo.byId = function(id, doc){
 						name = alias;
 					}
 
+					// NOTE: Broken MSHTML DOM is case-sensitive here with custom attributes
+
 					value = el.attributes[name] || el.attributes[nameLower];
 
 					if (value) {
 
-						// NOTE: Broken MSHTML DOM is case-sensitive here with custom attributes
 						// NOTE: enctype and value attributes never specified
 
 						if (value.specified) {
@@ -1344,10 +1345,7 @@ dojo.byId = function(id, doc){
 							switch(nameLower) {
 							case 'enctype':
 							case 'value':
-
-								// NOTE: regexp is placeholder (needs backward reference for quotes)
-
-								re = new RegExp(name + '=[\'"]', 'i');
+								re = new RegExp(name + '=([\'"])?\\w+\\1?', 'i');
 								return re.test(el.outerHTML);
 							default:
 								return false;
