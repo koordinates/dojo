@@ -1298,7 +1298,7 @@ dojo.byId = function(id, doc){
 	// For use with HTML or XML DOM elements
 
 	dojo.hasAttr = (function() {
-		var alias, attributeSpecified, nameLower, value;
+		var alias, attributeSpecified, nameLower, re, value;
 
 		if (typeof html.hasAttribute != 'undefined') {
 			return function(el, name) {
@@ -1337,7 +1337,22 @@ dojo.byId = function(id, doc){
 						// NOTE: Broken MSHTML DOM is case-sensitive here with custom attributes
 						// NOTE: enctype and value attributes never specified
 
-						return value.specified || nameLower == 'enctype' || nameLower == 'value';
+						if (value.specified) {
+							return true;
+						}
+						if (typeof el.outerHTML == 'string') {
+							switch(nameLower) {
+							case 'enctype':
+							case 'value':
+
+								// NOTE: regexp is placeholder (needs backward reference for quotes)
+
+								re = new RegExp(name + '=[\'"]', 'i');
+								return re.test(el.outerHTML);
+							default:
+								return false;
+							}
+						}
 					}
 					return false;
 	          		};
