@@ -1715,7 +1715,8 @@ dojo.byId = function(id, doc){
 		}		
 	})();
 	
-	dojo.create = function(tag, attrs, refNode, pos){
+	dojo.create = function(tag, attrs, refNode, pos) {
+
 		// summary: Create an element, allowing for optional attribute decoration
 		//		and placement. 
 		//
@@ -1798,7 +1799,7 @@ dojo.byId = function(id, doc){
 	};
 	
 	/*=====
-	dojo.empty = function(node){
+	dojo.empty = function(node) {
 			//	summary:
 			//		safely removes all children of the node.
 			//	node: DOMNode|String
@@ -1813,11 +1814,13 @@ dojo.byId = function(id, doc){
 	}
 	=====*/
 
-	dojo.empty = function(node){		
-		node = byId(node);
-		for(var c; c = node.lastChild;){ // intentional assignment
-			node.removeChild(c);
-		}		
+	dojo.empty = function(node) {
+		if (typeof node == 'string') {
+			node = byId(node);
+		}
+		while (node.lastChild) {
+			node.removeChild(node.lastChild);
+		}
 	};
 
 	/*=====
@@ -1873,27 +1876,24 @@ dojo.byId = function(id, doc){
 		}
 	}
 
-	dojo._toDom = function(frag, doc){
+	dojo._toDom = function(frag, doc) {
+
 		// summary converts HTML string into DOM nodes.
 
 		doc = doc || dojo.doc;
 		var masterId = doc[masterName];
-		if(!masterId){
+		if (!masterId) {
 			doc[masterName] = masterId = ++masterNum + "";
 			masterNode[masterId] = doc.createElement("div");
 		}
 
-		// make sure the frag is a string.
-		// (Should fail immediately if not)
-		//frag += ""
-
 		// find the starting tag, and get node wrapper
-		var match = frag.match(reTag);
+
+		var wrap, tag, master, i, match = frag.match(reTag);
 
 		if (match) {
-			var tag = match[1].toLowerCase(),
-			master = masterNode[masterId],
-			wrap, i, fc, df;
+			tag = match[1].toLowerCase();
+			master = masterNode[masterId];
 			if(tagWrap[tag]){
 				wrap = tagWrap[tag];
 				master.innerHTML = wrap.pre + frag + wrap.post;
@@ -1901,19 +1901,21 @@ dojo.byId = function(id, doc){
 					master = master.firstChild;
 				}
 			}		
-		}else{
+		} else {
 			master.innerHTML = frag;
 		}
 
 		// one node shortcut => return the node itself
-		if(master.childNodes.length == 1){
+
+		if (master.childNodes.length == 1) {
 			return master.removeChild(master.firstChild); // DOMNode
 		}
 		
 		// return multiple nodes as a document fragment
-		df = doc.createDocumentFragment();
-		while(fc = master.firstChild){ // intentional assignment
-			df.appendChild(fc);
+
+		var df = doc.createDocumentFragment();
+		while (master.firstChild) {
+			df.appendChild(master.firstChild);
 		}
 		return df; // DOMNode
 	};
