@@ -403,6 +403,7 @@ dojo.declare("dojo.data.api.Read", null, {
 		//		and then when the user presses the "Next Page" button...
 		//		|	fetchArgs.start += 20;
 		//		|	store.fetch(fetchArgs);  // get the next 20 items
+
 		var request = null; 
 		throw new Error('Unimplemented API: dojo.data.api.Read.fetch');
 		return request; // an object conforming to the dojo.data.api.Request API
