@@ -10,6 +10,7 @@ dojo.require("dojo.data.api.Notification");
 
 // First, make sure ItemFileWriteStore can still pass all the same unit tests 
 // that we use for its superclass, ItemFileReadStore:
+
 tests.data.readOnlyItemFileTestTemplates.registerTestsForDatastore("dojo.data.ItemFileWriteStore");
 
 tests.data.ItemFileWriteStore.getTestData = function(name){
