@@ -20,7 +20,7 @@ dojo.parser = function(){
 		var name;
 		do{
 			name = "__" + _anonCtr++;
-		}while(name in nso);
+		} while(name in nso);
 		nso[name] = anonFuncPtr;
 		return name; // String
 	};

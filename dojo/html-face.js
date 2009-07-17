@@ -111,7 +111,7 @@ dojo.required("dojo.html");
 
 				node = this.node = dojo.byId( this.node || node );
 	
-				if(!this.id){
+				if (!this.id) {
 					this.id = [
 						"Setter",
 						(node) ? node.id || node.tagName : "", 
@@ -119,7 +119,7 @@ dojo.required("dojo.html");
 					].join("_");
 				}
 
-				if(! (this.node || node)){
+				if (!node) {
 					throw new Error(this.declaredClass + ": no node provided to " + this.id);
 				}
 			},
@@ -129,27 +129,33 @@ dojo.required("dojo.html");
 				//	cont:
 				//		An html string, node or enumerable list of nodes for insertion into the dom
 				//		If not provided, the object's content property will be used
-				if(undefined !== cont){
+
+				if (undefined !== cont) {
 					this.content = cont;
 				}
+
 				// in the re-use scenario, set needs to be able to mixin new configuration
-				if(params){
+
+				if (params) {
 					this._mixin(params);
 				}
 
+				//window.alert('Beginning');
 				this.onBegin();
+				//window.alert('Begun');
 				this.setContent();
 				this.onEnd();
 
 				return this.node;
 			},
 			setContent: function(){
+
 				// summary:
 				//		sets the content on the node 
 
 				var node = this.node; 
 				if(!node) {
-					console.error("setContent given no node");
+					throw new Error("setContent given no node");
 				}
 				try{
 					node = dojo.html._setNodeContent(node, this.content);
@@ -158,6 +164,7 @@ dojo.required("dojo.html");
 					// like for instance if domNode is a UL and we try append a DIV
 	
 					// FIXME: need to allow the user to provide a content error message string
+
 					var errMess = this.onContentError(e); 
 					try{
 						node.innerHTML = errMess;

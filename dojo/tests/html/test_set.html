@@ -253,7 +253,7 @@
 
 							dojo.query(".zork").html("<li dojoType='dojo.html.test.ParserInstantiateTester'>1</li><li dojoType='dojo.html.test.ParserInstantiateTester'>2</li><li dojoType='dojo.html.test.ParserInstantiateTester'>3</li>", 
 							{ 
-								parseContent: true, 
+								parseContent: true,
 								onBegin: function() {
 									this.content = this.content.replace(/([0-9])/g, "MOOO");
 									this.inherited("onBegin", arguments);
@@ -261,7 +261,7 @@
 							}).removeClass("notdone").addClass("done");
 							
 							var liNodes = dojo.query(".zork > li");
-							
+
 							// test to make sure three li's were added to class="zork" node (3x 3 set li's)
 							t.assertEqual(9, liNodes.length);
 

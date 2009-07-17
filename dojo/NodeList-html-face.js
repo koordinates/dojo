@@ -27,9 +27,12 @@ dojo.extend(dojo.NodeList, {
 		//	| 	}
 		//	| }).removeClass("notdone").addClass("done");
 
-		var dhs = new dojo.html._ContentSetter(params || {});
+		// NOTE: Must seed content setter with first node (else constructor throws)
+
+		var dhs = new dojo.html._ContentSetter(params || {}, this[0]);
+
 		this.forEach(function(elm){
-			dhs.node = elm; 
+			dhs.node = elm;
 			dhs.set(content);
 			dhs.tearDown();
 		});
