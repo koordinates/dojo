@@ -1485,8 +1485,8 @@ dojo.byId = function(id, doc){
 
 					// Convert hyphenated attribute names to camel-case (e.g. http-equiv => httpEquiv)
 
-					if (name.indexOf('-') != -1) {
-						name = camelize(name);
+					if (x.indexOf('-') != -1) {
+						x = camelize(x);
 					}
 
 					// Only detours (exits execution context) for special cases
