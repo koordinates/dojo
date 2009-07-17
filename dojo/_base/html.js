@@ -1342,14 +1342,8 @@ dojo.byId = function(id, doc){
 							return true;
 						}
 						if (/^(enctype|value)$/.test(nameLower) && typeof el.outerHTML == 'string') {
-							switch(nameLower) {
-							case 'enctype':
-							case 'value':
-								re = new RegExp('^[^>]*\\s+' + name + '=([\'"])?\\w+\\1?', 'i');
-								return re.test(el.outerHTML);
-							default:
-								return false;
-							}
+							re = new RegExp('^[^>]*\\s+' + name + '=([\'"])?\\w+\\1?', 'i');
+							return re.test(el.outerHTML);							
 						}
 					}
 					return false;
