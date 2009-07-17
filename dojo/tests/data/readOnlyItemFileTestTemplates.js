@@ -4,13 +4,13 @@ dojo.require("dojo.data.api.Identity");
 dojo.require("dojo.date");
 dojo.require("dojo.date.stamp");
 
-
 tests.data.readOnlyItemFileTestTemplates.registerTestsForDatastore = function(/* String */ datastoreClassName){
 	// summary:
 	//		Given the name of a datastore class to use, this function creates
 	//		a set of unit tests for that datastore, and registers the new test
 	//		group with the doh test framework.  The new unit tests are based
 	//		on a set of "template" unit tests.
+
 	var datastoreClass = dojo.getObject(datastoreClassName);
 	var testTemplates = tests.data.readOnlyItemFileTestTemplates.testTemplates;
 	var testsForDatastore = [];
@@ -231,6 +231,7 @@ tests.data.readOnlyItemFileTestTemplates.testTemplates = [
 		runTest: function(datastore, t){
 			//	summary: 
 			//		Simple test of the fetchItemByIdentity function of the store.
+
 			var store = new datastore(tests.data.readOnlyItemFileTestTemplates.getTestData("countries"));
 
 			var d = new doh.Deferred();
@@ -460,6 +461,7 @@ tests.data.readOnlyItemFileTestTemplates.testTemplates = [
 			//		Simple test of the #4691 bug
 			//	description:
 			//		Simple test of the #4691 bug
+
 			var store = new datastore(tests.data.readOnlyItemFileTestTemplates.getTestData("countries_withoutid"));
 
 			var d = new doh.Deferred();
