@@ -30,6 +30,7 @@ dojo.required("dojo.html");
 	dojo.html._emptyNode = dojo.empty;
 
 	dojo.html._setNodeContent = function(/* DomNode */ node, /* String|DomNode|NodeList */ cont, /* Boolean? */ shouldEmptyFirst){
+
 		// summary:
 		//		inserts the given content into the given node
 		//		overlaps similiar functionality in dijit.layout.ContentPane._setContent
@@ -41,23 +42,31 @@ dojo.required("dojo.html");
 		// shouldEmptyFirst
 		//		if shouldEmptyFirst is true, the node will first be emptied of all content before the new content is inserted
 		//		defaults to false
-		if(shouldEmptyFirst){
+
+		if (shouldEmptyFirst) {
 			dojo.html._emptyNode(node); 
 		}
 
-		if(typeof cont == "string"){
-			node = dojo._toDom(cont);
-		}else{// DomNode or NodeList
-			if(cont.nodeType){ // domNode (htmlNode 1 or textNode 3)
-				node.appendChild(cont);
-			}else{// nodelist or array such as dojo.Nodelist
-				dojo.forEach(cont, function(n){
-					node.appendChild(n.cloneNode(true));
-				});
-			}
+		if (typeof cont == "string") {
+			cont = dojo._toDom(cont);
 		}
-		// return DomNode
-		return node;
+
+		// DomNode or NodeList
+
+		if (typeof cont.nodeType == 'number') {
+
+			// DomNode
+
+			node.appendChild(cont);
+		} else {
+
+			// Nodelist or array such as dojo.Nodelist
+
+			dojo.forEach(cont, function(n){
+				node.appendChild(n.cloneNode(true));
+			});
+		}
+		return node; // DomNode
 	};
 
 	// we wrap up the content-setting operation in a object
@@ -99,6 +108,7 @@ dojo.required("dojo.html");
 
 				// give precedence to params.node vs. the node argument
 				// and ensure its a node, not an id string
+
 				node = this.node = dojo.byId( this.node || node );
 	
 				if(!this.id){
@@ -207,12 +217,16 @@ dojo.required("dojo.html");
 			},
 	
 			onEnd: function(){
+
 				// summary
 				//		Called after set(), when the new content has been pushed into the node
 				//		It provides an opportunity for post-processing before handing back the node to the caller
 				//		This default implementation checks a parseContent flag to optionally run the dojo parser over the new content
-				if(this.parseContent){
+
+				if (this.parseContent) {
+
 					// populates this.parseResults if you need those..
+
 					this._parse();
 				}
 				return this.node; /* DomNode */
@@ -255,23 +269,28 @@ dojo.required("dojo.html");
 				}
 			},
 			_parse: function(){
+
 				// summary: 
 				//		runs the dojo parser over the node contents, storing any results in this.parseResults
 				//		Any errors resulting from parsing are passed to _onError for handling
 
 				var rootNode = this.node;
 				try{
+
 					// store the results (widgets, whatever) for potential retrieval
+
 					this.parseResults = dojo.parser.parse(rootNode, true);
 				}catch(e){
-					this._onError('Content', e, "Error parsing in _ContentSetter#"+this.id);
+					this._onError('Content', e, "Error parsing in _ContentSetter#" + this.id);
 				}
 			},
   
 			_onError: function(type, err, consoleText){
+
 				// summary:
 				//		shows user the string that is returned by on[type]Error
 				//		overide/implement on[type]Error and return your own string to customize
+
 				var errText = this['on' + type + 'Error'].call(this, err);
 				if(consoleText){
 					console.error(consoleText, err);
@@ -309,11 +328,15 @@ dojo.required("dojo.html");
 			cont = "";
 		}	
 		if(!params){
+
 			// simple and fast
+
 			return dojo.html._setNodeContent(node, cont, true);
 		}else{ 
+
 			// more options but slower
 			// note the arguments are reversed in order, to match the convention for instantiation via the parser
+
 			var op = new dojo.html._ContentSetter(dojo.mixin( 
 					params, 
 					{ content: cont, node: node } 

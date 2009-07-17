@@ -1891,16 +1891,19 @@ dojo.byId = function(id, doc){
 
 		var wrap, tag, master, i, match = frag.match(reTag);
 
+		master = masterNode[masterId];
+
 		if (match) {
 			tag = match[1].toLowerCase();
-			master = masterNode[masterId];
 			if(tagWrap[tag]){
 				wrap = tagWrap[tag];
 				master.innerHTML = wrap.pre + frag + wrap.post;
 				for(i = wrap.length; i; --i){
 					master = master.firstChild;
 				}
-			}		
+			} else {
+				master.innerHTML = frag;
+			}
 		} else {
 			master.innerHTML = frag;
 		}

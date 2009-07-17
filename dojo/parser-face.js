@@ -143,10 +143,11 @@ dojo.parser = function(){
 		//		Values in the mixin will override values in the node, if they
 		//		exist.
 		var thelist = [];
-		mixin = mixin||{};
+		mixin = mixin || {};
 
-		dojo.forEach(nodes, function(node){			
+		dojo.forEach(nodes, function(node) {
 			if(!node){ return; }
+
 			var value, type = dtName in mixin?mixin[dtName]:node.getAttribute(dtName);
 			if(!type || !type.length){ return; }
 			var clsInfo = getClassInfo(type),
@@ -210,9 +211,10 @@ dojo.parser = function(){
 			// <script type="dojo/method"> tags (with no event) are executed after instantiation
 			// <script type="dojo/connect" event="foo"> tags are dojo.connected after instantiation
 			// note: dojo/* script tags cannot exist in self closing widgets, like <input />
+
 			if(!ps){
 				var connects = [],	// functions to connect after instantiation
-					calls = [];		// functions to call after instantiation
+					calls = [];	// functions to call after instantiation
 
 				var query = dojo.query("> script[type^='dojo/']", node);
 				if (query.orphan) {
@@ -249,12 +251,12 @@ dojo.parser = function(){
 
 			var jsname = node.getAttribute("jsId");
 
-			if(jsname){
+			if (jsname) {
 				dojo.setObject(jsname, instance);
 			}
 
 			// process connections and startup functions
-			if(!ps){
+			if (!ps) {
 				dojo.forEach(connects, function(connect){
 					dojo.connect(instance, connect.event, null, connect.func);
 				});
@@ -286,7 +288,9 @@ dojo.parser = function(){
 		//		dojoType="qualifieddojo.class.name"
 
 		var list = dojo.query(qry, rootNode);
+
 		// go build the object instances
+
 		var instances = this.instantiate(list);
 		return instances;
 	};

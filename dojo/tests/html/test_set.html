@@ -5,11 +5,8 @@
 	<title>dojo.html.set test</title>
 
 	<script src='../../dojo.js' djConfig='isDebug:true, parseOnLoad:false'></script>
-	<script src='../../html.js'></script>
-	<script src='../../../util/doh/runner.js'></script>
 	<script>
 		dojo.require('doh.runner');
-		dojo.require('dojo.html');
 		dojo.require('dojo.NodeList-html');
 
 		/* test goals
@@ -94,8 +91,7 @@
 								{	
 									postscript: function() {
 										this.set();
-
-										t.assertTrue(typeof ifrs != "undefined" && ifrs.declaredClass=="dojo.html.test.SimpleThing");
+										t.assertTrue(typeof ifrs != "undefined" && ifrs.declaredClass == "dojo.html.test.SimpleThing");
 										t.assertTrue(this.parseResults.length > 0);
 									},
 									parseContent: true
