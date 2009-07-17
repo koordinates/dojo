@@ -1617,19 +1617,9 @@ dojo.byId = function(id, doc){
 						if (name == 'style') {
 							return node.style.cssText;
 						}
-						if (reURI.test(nameLower)) {
-							return node.getAttribute(nameLower, 2);
-						}
-						if (reEvent.test(nameLower) && node[nameLower]) {
-							val = node[nameLower].toString();
-							if (val) {
-								val = val.replace(reNewLine, '');
-								if (reFunction.test(val)) {
-									return val.replace(reFunction, '$1');
-								}
-							}
-							return null;
-						}						
+
+						// NOTE: In case of form elements named with standard property names (e.g. action.)
+
 						if (nn == 'form' && typeof node.getAttributeNode != 'undefined') {
 							val = node.getAttributeNode(name) || node.getAttributeNode(nameLower);
 							return val ? val.nodeValue : null;
@@ -1645,7 +1635,21 @@ dojo.byId = function(id, doc){
 							val = node.getAttribute(name);
 							return typeof val == 'string' ? val : null;
 						case 'string':
+							if (reURI.test(nameLower)) {
+								return node.getAttribute(nameLower, 2);
+							}						
 							return val;
+						case 'function':
+							if (reEvent.test(nameLower)) {
+								val = node[nameLower].toString();
+								if (val) {
+									val = val.replace(reNewLine, '');
+									if (reFunction.test(val)) {
+										return val.replace(reFunction, '$1');
+									}
+								}
+							}
+							return null;
 						default:
 							return val === null ? null : String(val);
 						}
