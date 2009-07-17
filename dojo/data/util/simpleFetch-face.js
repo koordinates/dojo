@@ -28,6 +28,7 @@ dojo.data.util.simpleFetch.fetch = function(/* Object? */ request){
 	//		that as the request object to the handler.
 	//
 	//		For more information on this specific function, see dojo.data.api.Read.fetch()
+
 	request = request || {};
 	if(!request.store){
 		request.store = this;
