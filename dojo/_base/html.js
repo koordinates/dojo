@@ -417,6 +417,7 @@ dojo.byId = function(id, doc){
 	        var reOpacity = new RegExp('alpha\\(opacity=[^\\)]+\\)', 'i');
 		var fn = function(el, o) {
 			el.style[s] = String(o ? Math.max(o, 0.0001) : 0);
+			return o; // Backward compatibility
 		};
 
 	        i = opacityStyles.length;
@@ -436,6 +437,7 @@ dojo.byId = function(id, doc){
 	            else {
         	      so.filter = so.filter.replace(reOpacity, (o >= 0.9999)?'':'alpha(opacity=' + (o * 100) + ')');
 	            }
+                    return o; // Backward compatibility
         	  };
 	        }
 	})(html);
@@ -475,6 +477,7 @@ dojo.byId = function(id, doc){
 	dojo.style = function(	/*DomNode|String*/ node, 
 				/*String?|Object?*/ style, 
 				/*String?*/ value){
+
 		//	summary:
 		//		Accesses styles on a node. If 2 arguments are
 		//		passed, acts as a getter. If 3 arguments are passed, acts
