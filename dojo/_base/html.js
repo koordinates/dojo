@@ -275,9 +275,11 @@ dojo.byId = function(id, doc){
 	// Because 'document' is the 'parentNode' of 'body'
 	// it is frequently sent to this function even 
 	// though it is not Element.
+
 	var gcs;
 		
-	if (typeof html.ownerDocument != 'undefined' && typeof html.ownerDocument.DefaultView != 'undefined'){
+	if (typeof html.ownerDocument != 'undefined' && typeof html.ownerDocument.defaultView != 'undefined'){
+
 		gcs = function(/*DomNode*/node){
 			var cs;
 			if(node.nodeType == 1){
@@ -719,7 +721,7 @@ dojo.byId = function(id, doc){
 		//		Normally application code will not need to invoke this
 		//		directly, and will use the ...box... functions instead.
 		var 
-			s = computedStyle||gcs(n),
+			s = computedStyle || gcs(n),
 			l = px(n, s.marginLeft) || 0,
 			t = px(n, s.marginTop) || 0;
 
@@ -731,6 +733,7 @@ dojo.byId = function(id, doc){
 
 			// FIXED: Likely not valid at this time
 			//        Need feature test in any event
+
 		return { 
 			l: l,
 			t: t,
