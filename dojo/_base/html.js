@@ -1311,17 +1311,26 @@ dojo.byId = function(id, doc){
 
 		if (typeof html.hasAttribute != 'undefined') {
 			return function(el, name) {
+				if (typeof el == 'string') {
+					el = dojo.byId(el);
+				}
 				return el.hasAttribute(name);
 			};
 		}
 		if (dojo.isHostObjectProperty(html, 'attributes')) {
 			attributeSpecified = function(el, name) {
+				if (typeof el == 'string') {
+					el = dojo.byId(el);
+				}
 				value = el.attributes[name];
 
 				return !!((value && value.specified));
 			};
 			if (attributesBad) {
 				return function(el, name) {
+					if (typeof el == 'string') {
+						el = dojo.byId(el);
+					}
 
 					// MSXML document
 
