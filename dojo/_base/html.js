@@ -1322,7 +1322,7 @@ dojo.byId = function(id, doc){
 
 					nameLower = name.toLowerCase();
 
-					// NOTE: encType is a non-standard alias found only in broken MSHTML DOM's
+					// NOTE: encType is a non-standard alias found only in broken MSHTML DOM's (only applies to attributes collection)
 
 					alias = nameLower == 'enctype' ? 'encType' : attributeAliases[nameLower];
 					
@@ -1341,7 +1341,7 @@ dojo.byId = function(id, doc){
 						if (value.specified) {
 							return true;
 						}
-						if (typeof el.outerHTML == 'string') {
+						if (/^(enctype|value)$/.test(nameLower) && typeof el.outerHTML == 'string') {
 							switch(nameLower) {
 							case 'enctype':
 							case 'value':
@@ -1590,9 +1590,7 @@ dojo.byId = function(id, doc){
 
 				// Find alias
 
-				// NOTE: encType is a non-standard alias found only in broken MSHTML DOM's
-
-				alias = nameLower == 'enctype' ? 'encType' : attributeAliases[nameLower];
+				alias = attributeAliases[nameLower];
 
 				// Camelize if necessary
 				// Aliases are never hyphenated
