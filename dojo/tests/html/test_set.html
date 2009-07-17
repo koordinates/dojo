@@ -4,10 +4,12 @@
 <head>
 	<title>dojo.html.set test</title>
 
-	<script src='../../dojo.js' djConfig='isDebug:true, parseOnLoad:false'></script>
-	<script>
+	<script type="text/javascript" src='../../dojo.js' djConfig='isDebug:true, parseOnLoad:false'></script>
+	<script type="text/javascript">
 		dojo.require('doh.runner');
 		dojo.require('dojo.NodeList-html');
+	</script>
+	<script type="text/javascript">
 
 		/* test goals
 		 * injecting content as string, node, nodelist. 
@@ -16,7 +18,8 @@
 		 * parsing resulting content
 		 
 		 * cleanup when setting content
-		*/
+		 */
+
 		dojo.declare("dojo.html.test.SimpleThing", null, {
 			constructor: function(params, node) {
 				node.setAttribute("test", "ok");
@@ -28,19 +31,18 @@
 				node.setAttribute("test", "ok");
 			}
 		});
+
 		dojo.declare("dojo.html.test.DeclarativeContentSetter", dojo.html._ContentSetter, {
 			postscript: function() {
 				this.set();
 			}
 		});
 		
-		
 		dojo.addOnLoad(function(){
 
 			function ieTrimSpaceBetweenTags(str){
 				return str.replace(/(<[a-z]*[^>]*>)\s*/ig, "$1");
 			}
-
 
 			targetNode = null; 
 			
@@ -306,6 +308,7 @@
 							console.log("fromMarkup: " + this.name);
 
 							dojo.parser.parse("markupSetContentOp");
+
 							t.assertTrue(dojo.byId("markupPane").innerHTML == "markupSetContentOp: new node content");
 						},
 						tearDown: function(){
