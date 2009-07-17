@@ -644,7 +644,7 @@ dojo.byId = function(id, doc){
 		//		The w/h are used for calculating boxes.
 		//		Normally application code will not need to invoke this
 		//		directly, and will use the ...box... functions instead.
-		var s = computedStyle||gcs(n),
+		var s = computedStyle || gcs(n),
 			l = px(n, s.paddingLeft) || 0,
 			t = px(n, s.paddingTop) || 0;
 
@@ -700,6 +700,7 @@ dojo.byId = function(id, doc){
 			s = computedStyle||gcs(n), 
 			p = dojo._getPadExtents(n, s),
 			b = dojo._getBorderExtents(n, s);
+
 		return { 
 			l: p.l + b.l,
 			t: p.t + b.t,
@@ -785,7 +786,8 @@ dojo.byId = function(id, doc){
 		};
 	};
 	
-	dojo._getContentBox = function(node, computedStyle, ignorePadding){
+	dojo._getContentBox = function(node, computedStyle, ignorePadding) {
+
 		// summary:
 		//		Returns an object that encodes the width, height, left and top
 		//		positions of the node's content box, irrespective of the
@@ -798,13 +800,14 @@ dojo.byId = function(id, doc){
 		left = top = paddingHeight = paddingWidth = 0;
 
 		if (!ignorePadding) {
-			 style = node.style;
+			style = node.style;
 
 			// Preserve inline styles
 
-			var paddingStyle = style.padding;
 			var paddingLeftStyle = style.paddingLeft;
 			var paddingTopStyle = style.paddingTop;
+			var paddingRightStyle = style.paddingRight;
+			var paddingBottomStyle = style.paddingBottom;
 
 			// Measure left and top padding
 
@@ -814,7 +817,7 @@ dojo.byId = function(id, doc){
 
 			// Measure padding width and height
 
-			style.padding = '0';
+			style.paddingRight = style.paddingBottom = '0';
 			paddingWidth = ow - node.offsetWidth;
 			paddingHeight = oh - node.offsetHeight;
 
@@ -822,7 +825,8 @@ dojo.byId = function(id, doc){
 
 			style.paddingLeft = paddingLeftStyle;
 			style.paddingTop = paddingTopStyle;
-			style.paddingStyle = paddingStyle;
+			style.paddingRight = paddingRightStyle;
+			style.paddingBottom = paddingBottomStyle;
 		}
 
 		return { 
@@ -904,8 +908,6 @@ dojo.byId = function(id, doc){
 		var borderBoxCheck, style = node.style, offsetWidth = node.offsetWidth, offsetHeight = node.offsetHeight;
 		var borderStyle = style.border, paddingStyle = style.padding;
 		var deltaHeight, deltaWidth;
-
-
 
 		// TODO: configuration setting to disable box model check
 
@@ -1045,6 +1047,7 @@ dojo.byId = function(id, doc){
 		//		update/set the content box for node. Box is an object in the
 		//		above format. All properties are optional if passed.
 		var n = byId(node), s = gcs(n), b = box;
+
 		return !b ? dojo._getContentBox(n, s) : dojo._setContentSize(n, b.w, b.h, s); // Object
 	};
 	
