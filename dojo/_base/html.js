@@ -1823,6 +1823,13 @@ dojo.byId = function(id, doc){
 		}
 	};
 
+	dojo.destroy = function(node) {
+		if (typeof node == 'string') {
+			node = byId(node);
+		}
+		node.parentNode.removeChild(node);
+	};
+
 	/*=====
 	dojo._toDom = function(frag, doc){
 			//	summary:
