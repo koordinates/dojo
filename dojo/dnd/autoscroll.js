@@ -101,7 +101,7 @@ dojo.dnd.autoScrollNodes = function(e){
 	for(var n = e.target; n;){
 		if(n.nodeType == 1 && (n.tagName.toLowerCase() in dojo.dnd._validNodes)){
 			var s = dojo.getComputedStyle(n);
-			if(s.overflow.toLowerCase() in dojo.dnd._validOverflow){
+			if(s.overflow && s.overflow.toLowerCase() in dojo.dnd._validOverflow){
 				var b = dojo._getContentBox(n, s), t = dojo._abs(n, true);
 
 				// FIXME: mouse position logic
