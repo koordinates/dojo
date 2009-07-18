@@ -1827,7 +1827,11 @@ dojo.byId = function(id, doc){
 		if (typeof node == 'string') {
 			node = byId(node);
 		}
-		node.parentNode.removeChild(node);
+		if (node.parentNode) { // Backward compatibility
+			node.parentNode.removeChild(node);
+		} else {
+			console.warn('Unnecessary call to destroy method');
+		}
 	};
 
 	/*=====
