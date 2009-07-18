@@ -1,4 +1,5 @@
 dojo.provide("dijit._DialogMixin");
+dojo.required('dijit._Widget');
 
 dojo.declare("dijit._DialogMixin", null,
 	{
