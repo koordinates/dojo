@@ -1,13 +1,7 @@
 dojo.provide("tests._base._loader.loader");
 
 tests.register("tests._base._loader.loader", 
-	[
-		function baseUrl(t){
-			var originalBaseUrl = dojo.config["baseUrl"] || "./";
-
-			t.assertEqual(originalBaseUrl, dojo.baseUrl);
-		},
-		
+	[		
 		function modulePaths(t){
 			dojo.registerModulePath("mycoolmod", "../some/path/mycoolpath");
 			dojo.registerModulePath("mycoolmod.widget", "http://some.domain.com/another/path/mycoolpath/widget");
@@ -27,13 +21,18 @@ tests.register("tests._base._loader.loader",
 
 
 			var basePrefix = dojo.baseUrl;
-			//dojo._Uri will strip off "./" characters, so do the same here
-			if(basePrefix == "./"){
+
+			// dojo._Uri will strip off "./" characters, so do the same here
+
+			if (basePrefix == "./") {
 				basePrefix = "";
 			}
+
+			window.alert('tset');
 			
 			t.assertEqual(basePrefix + "some/path/mycoolpath/my/favorite.html",
 				dojo.moduleUrl("mycoolmod", "my/favorite.html").toString());
+
 			t.assertEqual(basePrefix + "some/path/mycoolpath/my/favorite.html",
 				dojo.moduleUrl("mycoolmod.my", "favorite.html").toString());
 
