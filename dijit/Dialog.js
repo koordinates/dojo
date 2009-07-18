@@ -1,5 +1,7 @@
 dojo.provide("dijit.Dialog");
 dojo.require("dojo.dnd.common");
+dojo.require("dojo.dnd.Mover");
+dojo.require("dojo.dnd.Moveable");
 dojo.require("dojo.dnd.move");
 dojo.require("dojo.dnd.TimedMoveable");
 dojo.require("dojo.fx");
