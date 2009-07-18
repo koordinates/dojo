@@ -17,7 +17,11 @@
 			dojo.require("doh.runner");
 
 			function getIframeDocument(/*DOMNode*/iframeNode){
+
 				//summary: Returns the document object associated with the iframe DOM Node argument.
+
+				// NOTE: Fix this (duplication as well)
+
 				var doc = iframeNode.contentDocument || // W3
 					(
 						(iframeNode.contentWindow)&&(iframeNode.contentWindow.document)
@@ -236,10 +240,7 @@
 							doh.f(dojo.hasAttr("div-no-tabindex", "tabindex"));
 							doh.is(null, dojo.attr("div-no-tabindex", "tabindex"));
 							doh.t(dojo.hasAttr("div-tabindex-minus-1", "tabindex"));
-							if(!dojo.isOpera){
-								// Opera (at least <= 9) does not support tabindex="-1"
-								doh.is(-1, dojo.attr("div-tabindex-minus-1", "tabindex"));
-							}
+							doh.is(-1, dojo.attr("div-tabindex-minus-1", "tabindex"));
 							doh.t(dojo.hasAttr("div-tabindex-0", "tabindex"));
 							doh.is(0, dojo.attr("div-tabindex-0", "tabindex"));
 							doh.is(1, dojo.attr("div-tabindex-1", "tabindex"));
@@ -364,12 +365,12 @@
 								style: {
 									opacity: 0.5,
 									width: "30px",
-									border: "1px solid black"
+									borderLeftWidth: "1px"
 								}
 							});
 							doh.is(0.5, dojo.style(node, "opacity"));
 							doh.is(30, dojo.style(node, "width"));
-							doh.is(1, dojo.style(node, "borderWidth"));
+							doh.is(1, dojo.style(node, "borderLeftWidth"));
 							dojo.attr(node, {
 								innerHTML: "howdy!"
 							});
