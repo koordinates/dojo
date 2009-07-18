@@ -4,8 +4,6 @@ dojo.require("dijit.form.Button");
 dojo.require("dijit.layout.LayoutContainer");
 dojo.require("dijit.layout.ContentPane");
 dojo.require("dojox.analytics.Urchin")
-dojo.require("demos.flashCards.src.MathFlashCard");
-dojo.require("demos.flashCards.src.Teacher");
 
 //global storage point for our fade animations
 
