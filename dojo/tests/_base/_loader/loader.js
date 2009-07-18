@@ -27,8 +27,6 @@ tests.register("tests._base._loader.loader",
 			if (basePrefix == "./") {
 				basePrefix = "";
 			}
-
-			window.alert('tset');
 			
 			t.assertEqual(basePrefix + "some/path/mycoolpath/my/favorite.html",
 				dojo.moduleUrl("mycoolmod", "my/favorite.html").toString());
