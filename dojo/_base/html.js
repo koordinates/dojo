@@ -442,10 +442,6 @@ dojo.byId = function(id, doc){
 	        }
 	})(html);
 
-	var _pixelNamesCache = {
-		left: true, top: true
-	};
-
 	var _toStyleValue = function(node, type, value){
 		type = type.toLowerCase(); // TODO: Document that lowercase is required
 
@@ -759,13 +755,16 @@ dojo.byId = function(id, doc){
 	// browser and browser mode.
 	
 	dojo._getMarginBox = function(/*DomNode*/node, /*Object*/computedStyle){
+
 		// summary:
-		//		returns an object that encodes the width, height, left and top
-		//		positions of the node's margin box.
+		//	returns an object that encodes the width, height, left and top
+		//	positions of the node's margin box.
+
 		var me = dojo._getMarginExtents(node, computedStyle);
 		var l = node.offsetLeft - me.l, t = node.offsetTop - me.t, p = node.parentNode;
 
-		if(scrollerOffsetSubtractsBorder){
+		if (scrollerOffsetSubtractsBorder) {
+
 			// If offsetParent has a computed overflow != visible, the offsetLeft is decreased
 			// by the parent's border.
 
@@ -777,8 +776,8 @@ dojo.byId = function(id, doc){
 					t += be.t;
 				}
 			}
-		} else if(offsetIncludesBorder){
-			if(p){
+		} else if(offsetIncludesBorder) {
+			if (p) {
 				be = dojo._getBorderExtents(p);
 				l -= be.l;
 				t -= be.t;
@@ -799,40 +798,17 @@ dojo.byId = function(id, doc){
 		//		positions of the node's content box, irrespective of the
 		//		current box model.
 
-		var ow = node.offsetWidth, oh = node.offsetHeight;
 		var cw = node.clientWidth, ch = node.clientHeight;
-		var left, top, paddingHeight, paddingWidth, style;
+		var pe, left, top, paddingHeight, paddingWidth;
 
-		left = top = paddingHeight = paddingWidth = 0;
-
-		if (!ignorePadding) {
-			style = node.style;
-
-			// Preserve inline styles
-
-			var paddingLeftStyle = style.paddingLeft;
-			var paddingTopStyle = style.paddingTop;
-			var paddingRightStyle = style.paddingRight;
-			var paddingBottomStyle = style.paddingBottom;
-
-			// Measure left and top padding
-
-			style.paddingLeft = style.paddingTop = '0';
-			left = ow - node.offsetWidth;
-			top = oh - node.offsetHeight;
-
-			// Measure padding width and height
-
-			style.paddingRight = style.paddingBottom = '0';
-			paddingWidth = ow - node.offsetWidth;
-			paddingHeight = oh - node.offsetHeight;
-
-			// Restore inline styles
-
-			style.paddingLeft = paddingLeftStyle;
-			style.paddingTop = paddingTopStyle;
-			style.paddingRight = paddingRightStyle;
-			style.paddingBottom = paddingBottomStyle;
+		if (ignorePadding) {
+			left = top = paddingHeight = paddingWidth = 0;
+		} else {
+			pe = dojo._getPadExtents(node, computedStyle);
+			left = pe.l;
+			top = pe.t;
+			paddingWidth = pe.w;
+			paddingHeight = pe.h;
 		}
 
 		return { 
