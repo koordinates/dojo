@@ -3,13 +3,14 @@ dojo.require("dojo.dnd.common");
 dojo.require("dojo.dnd.move");
 dojo.require("dojo.dnd.TimedMoveable");
 dojo.require("dojo.fx");
+dojo.require("dijit._base");
+dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
-dojo.require("dijit.form._FormMixin");
 dojo.require("dijit._DialogMixin");
+dojo.require("dijit.form._FormMixin");
 dojo.require("dijit.DialogUnderlay");
 dojo.require("dijit.layout.ContentPane");
 dojo.require("dojo.i18n");
 dojo.requireLocalization("dijit", "common");
 dojo.require("dijit.Dialog-face");
 dojo.require("dijit.TooltipDialog");
-
