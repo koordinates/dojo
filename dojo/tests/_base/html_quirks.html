@@ -60,8 +60,11 @@
 						}
 					]
 				);
-				if(dojo.isIE){ 
-					// IE collapses padding in quirks mode. We just report on it.
+				if(dojo.isIE){
+					// NOTE: Should use conditional comment for this (and adjust styles, not tests)
+
+					// IE uses odd box model in quirks mode. We just report on it.
+
 					doh.register("t", 
 						[
 							"t.is(120, dojo.marginBox('sq100margin10pad10').w);",
