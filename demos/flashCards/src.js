@@ -1,5 +1,4 @@
 dojo.require("dojo.parser");
-
 dojo.require("dijit.Dialog");
 dojo.require("dijit.form.Button");
 dojo.require("dijit.layout.LayoutContainer");
