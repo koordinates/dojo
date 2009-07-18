@@ -44,7 +44,7 @@ dojo.required("dojo.html");
 		//		defaults to false
 
 		if (shouldEmptyFirst) {
-			dojo.html._emptyNode(node); 
+			dojo.html._emptyNode(node);
 		}
 
 		if (typeof cont == "string") {
@@ -62,7 +62,7 @@ dojo.required("dojo.html");
 
 			// Nodelist or array such as dojo.Nodelist
 
-			dojo.forEach(cont, function(n){
+			dojo.forEach(cont, function(n) {
 				node.appendChild(n.cloneNode(true));
 			});
 		}
@@ -140,9 +140,7 @@ dojo.required("dojo.html");
 					this._mixin(params);
 				}
 
-				//window.alert('Beginning');
 				this.onBegin();
-				//window.alert('Begun');
 				this.setContent();
 				this.onEnd();
 
@@ -181,8 +179,9 @@ dojo.required("dojo.html");
 				//	cleanly empty out existing content
 
 				// destroy any widgets from a previous run
-				// NOTE: if you dont want this you'll need to empty 
+				// NOTE: if you don't want this you'll need to empty 
 				// the parseResults array property yourself to avoid bad things happenning
+
 				if(this.parseResults && this.parseResults.length) {
 					dojo.forEach(this.parseResults, function(w) {
 						if(w.destroy){
