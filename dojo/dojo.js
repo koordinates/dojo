@@ -543,18 +543,22 @@ if(typeof dojo == "undefined"){
 	})();
 
 	dojo._mixin = function(/*Object*/ obj, /*Object*/ props){
+
 		// summary:
 		//		Adds all properties and methods of props to obj.
-		for(var x in props){
-			obj[x] = props[x];
-		}
-		if (maskedDontEnumBleedsThrough) {
-			var index, val, names = ['constructor', 'toString', 'valueOf', 'toLocaleString', 'isPrototypeOf', 'propertyIsEnumerable', 'hasOwnProperty'];
-			for (index = names.length; index--;) {
-				if (isOwnProperty(props, names[index])) {
-					val = props[names[index]];
-					if(typeof val != "undefined"){
-						obj[names[index]] = val;
+
+		if (props) { // For backward compatibility
+			for(var x in props){
+				obj[x] = props[x];
+			}
+			if (maskedDontEnumBleedsThrough) {
+				var index, val, names = ['constructor', 'toString', 'valueOf', 'toLocaleString', 'isPrototypeOf', 'propertyIsEnumerable', 'hasOwnProperty'];
+				for (index = names.length; index--;) {
+					if (isOwnProperty(props, names[index])) {
+						val = props[names[index]];
+						if(typeof val != "undefined"){
+							obj[names[index]] = val;
+						}
 					}
 				}
 			}
@@ -615,8 +619,9 @@ if(typeof dojo == "undefined"){
 		//	|	console.log(flattened.name);
 		//	|	// will print "true"
 		//	|	console.log(flattened.braces);
-		if(!obj){ obj = {}; }
-		for(var i=1, l=arguments.length; i<l; i++){
+
+		if (!obj) { obj = {}; }
+		for(var i = 1, l = arguments.length; i < l; i++){
 			dojo._mixin(obj, arguments[i]);
 		}
 		return obj; // Object
