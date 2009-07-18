@@ -1349,8 +1349,6 @@ if(typeof dojo == "undefined"){
 			} else {
 
 				// NOTE: Should not get here under normal circumstances (require rules are followed)
-
-				//window.setTimeout(_applyLocalization, 0);
 			}
 		};
 
