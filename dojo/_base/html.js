@@ -783,7 +783,7 @@ dojo.byId = function(id, doc){
 				t -= be.t;
 			}
 		}
-		return { 
+		return {
 			l: l, 
 			t: t, 
 			w: node.offsetWidth + me.w, 
@@ -946,45 +946,16 @@ dojo.byId = function(id, doc){
 		widthPx = widthPx - marginWidth;
 		heightPx = heightPx - marginHeight;
 
-		// TODO: configuration setting to disable box model check
-
-		// Preserve inline styles
-
-		style.border = style.padding = '0';
-
-		// Check if borders or padding exists
-		// If not, box model doesn't matter
-
-		if (offsetWidth != node.offsetWidth || offsetHeight != node.offsetHeight) {
-			borderBoxCheck = true;
-			deltaWidth = offsetWidth - node.offsetWidth;
-			deltaHeight = offsetHeight - node.offsetHeight;
-		}
-
-		// Restore inline styles
-
-		style.border = borderStyle;
-		style.padding = paddingStyle;
-
-		oldWidthPx = widthPx;
-		oldHeightPx = heightPx;
-
-		widthPx = Math.max(widthPx - deltaWidth, 0);
-		heightPx = Math.max(heightPx - deltaHeight, 0);
-
 		style.left = leftPx + pxUnit;
 		style.top = topPx + pxUnit;
 		style.width = widthPx + pxUnit;
 		style.height = heightPx + pxUnit;
 
-		// If box model matters and border-box is in use
-
-		if (borderBoxCheck && node.offsetWidth == widthPx) {
-
-			// Adjust dimensions for border-box
-
-			style.width = Math.max(oldWidthPx + deltaWidth, 0) + pxUnit;
-			style.height = Math.max(oldHeightPx + deltaHeight, 0) + pxUnit;
+		if (node.offsetWidth != widthPx) {
+			style.width = (widthPx - (node.offsetWidth - widthPx)) + pxUnit;
+		}
+		if (node.offsetHeight != heightPx) {
+			style.height = (heightPx - (node.offsetHeight - heightPx)) + pxUnit;
 		}
 	};
 
