@@ -61,6 +61,7 @@ dojo.declare("dojo.dnd.Source", dojo.dnd.Selector, {
 	// summary: a Source object, which can be used as a DnD source, or a DnD target
 	
 	// object attributes (for markup)
+
 	isSource: true,
 	horizontal: false,
 	copyOnly: false,
@@ -73,6 +74,7 @@ dojo.declare("dojo.dnd.Source", dojo.dnd.Selector, {
 	accept: ["text"],
 	
 	constructor: function(/*DOMNode|String*/node, /*dojo.dnd.__SourceArgs?*/params){
+
 		// summary: 
 		//		a constructor of the Source
 		// node:
@@ -80,6 +82,7 @@ dojo.declare("dojo.dnd.Source", dojo.dnd.Selector, {
 		// params: 
 		//		any property of this class may be configured via the params
 		//		object which is mixed-in to the `dojo.dnd.Source` instance
+
 		dojo.mixin(this, dojo.mixin({}, params));
 		var type = this.accept;
 		if(type.length){
