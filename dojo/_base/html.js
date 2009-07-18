@@ -1064,18 +1064,22 @@ dojo.byId = function(id, doc){
 	// =============================
 	
 	var _sumAncestorProperties = function(node, prop){
-		if(!(node = (node||0).parentNode)){return 0;}
+		if(!node || !node.parentNode){
+			return 0;
+		}
+		node = node.parentNode;
 		var val, retVal = 0, _b = dojo.body();
-		while(node && node.style){
+		while (node && node.style) {
 			if(gcs(node).position == "fixed"){
 				return 0;
 			}
 			val = node[prop];
 			if(val){
-				retVal += val - 0;
-				// opera and khtml #body & #html has the same values, we only
-				// need one value
-				if(node == _b){ break; }
+
+				// NOTE: Stop just before body
+
+				if (node == _b) { break; }
+				retVal += val || 0;
 			}
 			node = node.parentNode;
 		}
@@ -1085,7 +1089,7 @@ dojo.byId = function(id, doc){
 	dojo._docScroll = function(){
 		var 
 			_b = dojo.body(),
-			_w = dojo.global,
+			_w = dojo._getWin(),
 			de = dojo.doc.documentElement;
 		return {
 			y: (_w.pageYOffset || de.scrollTop || _b.scrollTop || 0),
@@ -1094,7 +1098,9 @@ dojo.byId = function(id, doc){
 	};
 	
 	dojo._isBodyLtr = function(){
+
 		//FIXME: could check body attributes instead (or?) of computed style?  need to ignore case, accept empty values
+
 		if (typeof dojo._bodyLtr == 'undefined') {
 			var dir = gcs(dojo.body()).direction;
 			if (dir) {
@@ -1107,6 +1113,7 @@ dojo.byId = function(id, doc){
 	};
 	
 	dojo._fixBiDiScrollLeft = function(/*Integer*/ scrollLeft){
+
 		// In RTL direction, scrollLeft should be a negative value, but IE 
 		// returns a positive one. All codes using documentElement.scrollLeft
 		// must call this function to fix this error, otherwise the position
@@ -1134,7 +1141,10 @@ dojo.byId = function(id, doc){
 		//		viewport.
 
 		var client, cs, db = dojo.doc.body, dh = dojo.doc.documentElement, ret, scroll;
-		if(typeof node.getBoundingClientRect != 'undefined'){
+
+		// NOTE: Use one-off
+
+		if(dojo.isHostMethod(node, 'getBoundingClientRect')){
 
 			// IE6+, FF3+, super-modern WebKit, and Opera 9.6+ all take this branch
 
@@ -1144,7 +1154,7 @@ dojo.byId = function(id, doc){
 
 			var root = dh.clientWidth === 0 ? db : dh;
 
-			if(htmlOffsetsOrigin){
+			if (htmlOffsetsOrigin) {
 
 				// Subtract the document element margins
 
@@ -1155,6 +1165,12 @@ dojo.byId = function(id, doc){
 			} else {
 				ret.x -= root.clientLeft;
 				ret.y -= root.clientTop;
+			}
+
+			if (includeScroll) {
+				scroll = dojo._docScroll();
+				ret.x += scroll.x;
+				ret.y += scroll.y;
 			}
 		}else{
 
@@ -1176,41 +1192,27 @@ dojo.byId = function(id, doc){
 					ret.y += t || 0;
 
 					cs = gcs(curnode);
-					if(curnode != node){
+
+					// NOTE: Need to detect if offset includes border
+
+					if (curnode != node){
 						be = dojo._getBorderExtents(curnode, cs);					
 						ret.x += be.l || 0;
 						ret.y += be.t || 0;						
 					}
-					// static children in a static div in FF2 are affected by the div's border as well
-					// but offsetParent will skip this div!
-					if(false && cs.position=="static"){ // Disabled temporarily for testing
-						var parent=curnode.parentNode;
-						while(parent!=curnode.offsetParent){
-							var pcs=gcs(parent);
-							if(pcs.position=="static"){
-								be = dojo._getBorderExtents(parent, pcs);
-								ret.x += be.l || 0;
-								ret.y += be.t || 0;
-							}
-							parent=parent.parentNode;
-						}
-					}
 					curnode = curnode.offsetParent;
-				}while((curnode != dh) && curnode);
+				} while ((curnode != dh) && curnode);
 			}else {
-				ret.x += node.x || 0;
-				ret.y += node.y || 0;
+				ret.x += dojo.style(node, 'left') || 0;
+				ret.y += node.style(node, 'top') || 0;
+			}
+
+			if (!includeScroll) {
+				scroll = dojo._docScroll();
+				ret.x -= scroll.x;
+				ret.y -= scroll.y;
 			}
 		}
-		// account for document scrolling
-		// if offsetParent is used, ret value already includes scroll position
-		// so we may have to actually remove that value if !includeScroll
-		if(includeScroll){
-			scroll = dojo._docScroll();
-			ret.x += scroll.x;
-			ret.y += scroll.y;
-		}
-
 		return ret; // Object
 	};
 
