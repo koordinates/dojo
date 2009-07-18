@@ -1350,7 +1350,7 @@ if(typeof dojo == "undefined"){
 
 				// NOTE: Should not get here under normal circumstances (require rules are followed)
 
-				window.setTimeout(_applyLocalization, 0);
+				//window.setTimeout(_applyLocalization, 0);
 			}
 		};
 
