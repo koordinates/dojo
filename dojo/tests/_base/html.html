@@ -240,7 +240,7 @@
 						},
 						function getTabindexDiv(t){
 							doh.f(dojo.hasAttr("div-no-tabindex", "tabindex"));
-							doh.is(undefined, dojo.attr("div-no-tabindex", "tabindex"));
+							doh.is(null, dojo.realAttr("div-no-tabindex", "tabindex"));
 							doh.t(dojo.hasAttr("div-tabindex-minus-1", "tabindex"));
 							doh.is(-1, dojo.attr("div-tabindex-minus-1", "tabindex"));
 							doh.t(dojo.hasAttr("div-tabindex-0", "tabindex"));
@@ -249,7 +249,7 @@
 						},
 						function getTabindexInput(t){
 							doh.f(dojo.hasAttr("input-no-tabindex", "tabindex"));
-							doh.is(undefined, dojo.attr("input-no-tabindex", "tabindex"));
+							doh.is(null, dojo.realAttr("input-no-tabindex", "tabindex"));
 							doh.t(dojo.hasAttr("input-tabindex-minus-1", "tabindex"));
 							doh.is(-1, dojo.attr("input-tabindex-minus-1", "tabindex"));
 							doh.t(dojo.hasAttr("input-tabindex-0", "tabindex"));
