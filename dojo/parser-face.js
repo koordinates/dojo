@@ -101,6 +101,7 @@ dojo.parser = function(){
 			var proto = cls.prototype;
 	
 			// get table of parameter names & types
+
 			var params = {}, dummyClass = {};
 			for(var name in proto){
 				if(name.charAt(0)=="_"){ continue; } 	// skip internal properties
@@ -134,6 +135,7 @@ dojo.parser = function(){
 	};
 
 	this.instantiate = function(/* Array */nodes, /* Object? */mixin){
+
 		// summary:
 		//		Takes array of nodes, and turns them into class instances and
 		//		potentially calls a layout method to allow them to connect with
@@ -142,14 +144,15 @@ dojo.parser = function(){
 		//		An object that will be mixed in with each node in the array.
 		//		Values in the mixin will override values in the node, if they
 		//		exist.
+
 		var thelist = [];
 		mixin = mixin || {};
 
 		dojo.forEach(nodes, function(node) {
-			if(!node){ return; }
+			if (!node) { return; }
 
 			var value, type = dtName in mixin?mixin[dtName]:node.getAttribute(dtName);
-			if(!type || !type.length){ return; }
+			if (!type || !type.length) { return; }
 			var clsInfo = getClassInfo(type),
 				clazz = clsInfo.cls,
 				ps = clazz._noScript || clazz.prototype._noScript;
@@ -269,6 +272,7 @@ dojo.parser = function(){
 		// Call startup on each top level instance if it makes sense (as for
 		// widgets).  Parent widgets will recursively call startup on their
 		// (non-top level) children
+
 		dojo.forEach(thelist, function(instance){
 			if(	instance  && 
 				instance.startup &&
@@ -282,21 +286,23 @@ dojo.parser = function(){
 	};
 
 	this.parse = function(/*DomNode?*/ rootNode){
+
 		// summary:
-		//		Search specified node (or root node) recursively for class instances,
-		//		and instantiate them Searches for
-		//		dojoType="qualifieddojo.class.name"
+		//	Search specified node (or root node) recursively for class instances,
+		//	and instantiate them Searches for
+		//	dojoType="qualifieddojo.class.name"
 
 		var list = dojo.query(qry, rootNode);
 
 		// go build the object instances
 
 		var instances = this.instantiate(list);
+
 		return instances;
 	};
 };
 
-// NOTE: Odd structure
+// NOTE: Odd structure (use object literal)
 
 dojo.parser.call(dojo.parser);
 
