@@ -1022,16 +1022,20 @@ if(typeof dojo == "undefined"){
 	};
 
 	dojo._getModuleSymbols = function(/*String*/modulename){
+
 		// summary:
 		//		Converts a module name in dotted JS notation to an array
 		//		representing the path in the source tree
+
 		var syms = modulename.split(".");
 		for(var i = syms.length; i>0; i--){
 			var parentModule = syms.slice(0, i).join(".");
-			if((i==1) && !this._moduleHasPrefix(parentModule)){		
-				// Support default module directory (sibling of dojo) for top-level modules 
+			if ((i==1) && !this._moduleHasPrefix(parentModule)) {
+
+				// Support default module directory (sibling of dojo) for top-level modules
+
 				syms[0] = "../" + syms[0];
-			}else{
+			} else {
 				var parentModulePath = this._getModulePrefix(parentModule);
 				if(parentModulePath != parentModule){
 					syms.splice(0, i, parentModulePath);
@@ -1373,13 +1377,16 @@ if(typeof dojo == "undefined"){
 
 		var _a = arguments;
 		var uri = [_a[0]];
+
 		// resolve uri components relative to each other
+
 		for(var i = 1; i<_a.length; i++){
 			if(!_a[i]){ continue; }
 
 			// Safari doesn't support this.constructor so we have to be explicit
 			// FIXME: Tracked (and fixed) in Webkit bug 3537.
 			//		http://bugs.webkit.org/show_bug.cgi?id=3537
+
 			var relobj = new dojo._Url(_a[i]+"");
 			var uriobj = new dojo._Url(uri[0]+"");
 
@@ -1428,9 +1435,9 @@ if(typeof dojo == "undefined"){
 			uri = [];
 			if(relobj.scheme){
 				uri.push(relobj.scheme, ":");
-				//if (relobj.scheme == 'file') {
-				//	uri.push('//');
-				//}
+				if (relobj.scheme == 'file') {
+					uri.push('//');
+				}
 			}
 			if(relobj.authority){
 				uri.push("//", relobj.authority);
@@ -1510,7 +1517,6 @@ if(typeof dojo == "undefined"){
 			if (!dojo._protocolPattern.test(loc) && loc.charAt(0) != "/"){
 				loc = dojo.baseUrl + loc;
 			}
-
 			return new dojo._Url(loc, url); // String
 		}
 
