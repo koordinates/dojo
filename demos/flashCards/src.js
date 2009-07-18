@@ -9,9 +9,11 @@ dojo.require("demos.flashCards.src.MathFlashCard");
 dojo.require("demos.flashCards.src.Teacher");
 
 //global storage point for our fade animations
+
 var messageFadeEvent = null;
 
 //reset the score board
+
 var resetScore = function(){
 	var card = dijit.byId("card");
 	dojo.byId("remainingTd").innerHTML = card.numberProblems;
@@ -34,7 +36,8 @@ var indexSlow = 0;
 var countBad = 0;
 
 //start the flashcards, result of pressing "getStarted"
-var getStarted = function(){
+
+var getStarted = function() {
 	dijit.byId("teacher").speak("Hi student! Let's go. Just enter the correct results and press enter.");
 	
 	//call the card widgets getStarted() method
