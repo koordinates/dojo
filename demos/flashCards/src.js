@@ -184,12 +184,12 @@ dojo.addOnLoad(function(){
 	
 	dojo.parser.parse();
 	
-	setInterval(function(){
+	window.setInterval(function(){
 		dijit.byId("teacher").blink();
 	}, 2500);
 	
 	// stall this just a little
-	setTimeout(function(){
+	window.setTimeout(function(){
 		new dojox.analytics.Urchin({ 
 			acct: "UA-3572741-1", 
 			GAonLoad: function(){
