@@ -445,24 +445,29 @@ dojo.byId = function(id, doc){
 	var _pixelNamesCache = {
 		left: true, top: true
 	};
-	var _pixelRegExp = /^(margin|padding|width|height|max|min|offset)$/;  // |border
+
 	var _toStyleValue = function(node, type, value){
 		type = type.toLowerCase(); // TODO: Document that lowercase is required
 
-		if(value == "auto" && typeof node.offsetHeight == 'number'){
+		if (value == "auto" && typeof node.offsetHeight == 'number') {
+
 			// FIXME: Inconsistent across box models
 
 			if(type == "height"){ return node.offsetHeight; }
 			if(type == "width"){ return node.offsetWidth; }
 		}
-		if(type == "fontweight" && typeof value == 'number'){
+
+		if (type == "fontweight" && typeof value == 'number') {
 			return value >= 700 ? "bold" : "normal";
 		}
+		
+		var pixelValue = px(node, value);
 
-		if(!_pixelNamesCache[type]){
-			_pixelNamesCache[type] = _pixelRegExp.test(type);
+		if (isNaN(pixelValue)) {
+			return value;
+		} else {
+			return pixelValue;
 		}
-		return _pixelNamesCache[type] ? px(node, value) || 0 : value;
 	};
 
 	// TODO: Aliases should be deprecated, apps should pass 'float'
@@ -584,7 +589,7 @@ dojo.byId = function(id, doc){
 		// Get
 
 		s = gcs(n);
-		return (args == 1) ? s : _toStyleValue(n, style, s[style] || n.style[style]); /* CSS2Properties||String||Number */
+		return (args == 1) ? s : _toStyleValue(n, style, n.style[style] || s[style]); /* CSS2Properties||String||Number */
 	};
 
 	// Feature testing for box and positioning functions
