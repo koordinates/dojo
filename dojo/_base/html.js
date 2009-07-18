@@ -1352,7 +1352,11 @@ dojo.byId = function(id, doc){
 
 					// NOTE: Broken MSHTML DOM is case-sensitive here with custom attributes
 
-					value = el.attributes[name] || el.attributes[nameLower];
+					if (el.attributes) {
+						value = el.attributes[name] || el.attributes[nameLower];
+					} else {
+						console.warn('Element has no attributes.');
+					}
 
 					if (value) {
 
