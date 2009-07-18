@@ -1121,6 +1121,7 @@ dojo.byId = function(id, doc){
 	};
 
 	dojo._abs = function(/*DomNode*/node, /*Boolean?*/includeScroll){
+
 		//	summary:
 		//		Gets the position of the passed element relative to
 		//		the viewport (if includeScroll==false), or relative to the
@@ -1155,11 +1156,6 @@ dojo.byId = function(id, doc){
 				ret.x -= root.clientLeft;
 				ret.y -= root.clientTop;
 			}
-			if (includeScroll) {
-				scroll = dojo._docScroll();
-				ret.x += scroll.x;
-				ret.y += scroll.y;
-			}
 		}else{
 
 			// FF2 and Safari and others that do not feature getBoundingClientRect.
@@ -1168,7 +1164,7 @@ dojo.byId = function(id, doc){
 				x: 0,
 				y: 0
 			};
-			if(node.offsetParent){
+			if (node.offsetParent) {
 				ret.x -= _sumAncestorProperties(node, "scrollLeft");
 				ret.y -= _sumAncestorProperties(node, "scrollTop");
 				
