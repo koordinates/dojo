@@ -1338,29 +1338,23 @@ if(typeof dojo == "undefined"){
 		//	|				...
 		//
 
+		// NOTE: The require call does not belong here
+
 		this.require("dojo.i18n");
 		var args = Array.prototype.slice.call(arguments, 0);
-		this._applyLocalization = function() {
-			this.i18n._requireLocalization.apply(dojo.hostenv, args);
+
+		var _applyLocalization = function() {
+			if (dojo.i18n) {
+				dojo.i18n._requireLocalization.apply(dojo.hostenv, args);
+			} else {
+
+				// NOTE: Should not get here under normal circumstances (require rules are followed)
+
+				window.setTimeout(_applyLocalization, 0);
+			}
 		};
 
-		// Module loaded synchronously
-
-		if (this.i18n && this.i18n._requireLocalization) {
-
-			// Environment loaded i18n module synchronously
-
-			dojo._applyLocalization();
-		} else {
-
-			// Module loading asynchronously
-			// During loading, browsers use document.write, which loads modules in order, but asynchronously
-
-			var doc = this._getWin().document;
-			if (doc && this.isHostMethod(doc, 'write')) {
-				doc.write('<script type="text/javascript"> dojo._applyLocalization(); delete dojo._applyLocalization; </script>');
-			}
-		}
+		_applyLocalization();
 	};
 
 	var ore = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$");
