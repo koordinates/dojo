@@ -292,9 +292,10 @@ doh.extend(doh.Deferred, {
 			if(f === null || f === undefined){
 				continue;
 			}
+			
 			try {
 				res = f(res);
-				fired = dojo.isError(res) ? 1 : 0;
+				fired = dojo.isError(res) ? 1 : 0;			
 				if(res instanceof doh.Deferred){
 					cb = fn;
 					this._pause();
@@ -575,7 +576,7 @@ doh.registerDocTests = function(module){
 doh.t = doh.assertTrue = function(/*Object*/ condition, /*String?*/ hint){
 	// summary:
 	//		is the passed item "truthy"?
-	if(arguments.length < 1){ 
+	if(arguments.length < 1){
 		throw new doh._AssertFailure("assertTrue failed because it was not passed at least 1 argument");
 	} 
 	if(!eval(condition)){
@@ -729,7 +730,6 @@ doh._handleFailure = function(groupName, fixture, e){
 	// mostly borrowed from JUM
 
 	this._groups[groupName].failures++;
-	//var out = "";
 	if(e instanceof this._AssertFailure){
 		this._failureCount++;
 		//if(e.fileName){ out += e.fileName + ':'; }
@@ -766,22 +766,26 @@ doh._runFixture = function(groupName, fixture){
 	this._testStarted(groupName, fixture);
 	var threw = false;
 	var err = null;
+
 	// run it, catching exceptions and reporting them
 	try{
 		// let doh reference "this.group.thinger..." which can be set by
 		// another test or group-level setUp function
-		fixture.group = tg; 
+		fixture.group = tg;
+
 		// only execute the parts of the fixture we've got
+
 		if(fixture.setUp){ fixture.setUp(this); }
 		if(fixture.runTest){  // should we error out of a fixture doesn't have a runTest?
 			fixture.startTime = new Date();
 			var ret = fixture.runTest(this); 
 			fixture.endTime = new Date();
+
 			// if we get a deferred back from the test runner, we know we're
 			// gonna wait for an async result. It's up to the test code to trap
 			// errors and give us an errback or callback.
-			if(ret instanceof doh.Deferred){
 
+			if(ret instanceof doh.Deferred){
 				tg.inFlight++;
 				ret.groupName = groupName;
 				ret.fixture = fixture;
@@ -791,7 +795,9 @@ doh._runFixture = function(groupName, fixture){
 				});
 
 				var retEnd = function(){
-					if(fixture.tearDown){ fixture.tearDown(doh); }
+					if(fixture.tearDown){
+						fixture.tearDown(doh);
+					}
 					tg.inFlight--;
 					if((!tg.inFlight)&&(tg.iterated)){
 						doh._groupFinished(groupName, !tg.failures);
@@ -805,7 +811,7 @@ doh._runFixture = function(groupName, fixture){
 				var timer = GLOBAL.setTimeout(function(){
 					// ret.cancel();
 					// retEnd();
-					ret.errback(new Error("test timeout in "+fixture.name.toString()));
+					ret.errback(new Error("Test timeout in " + fixture.name.toString()));
 				}, fixture.timeout||1000);
 
 				ret.addBoth(function(arg){
@@ -861,7 +867,7 @@ doh.runGroup = function(/*String*/ groupName, /*Integer*/ idx){
 	// execution of the test until something external to us restarts it. This
 	// means we need to pickle off enough state to pick up where we left off.
 
-	// FIXME: need to make fixture execution async!!
+	// FIXME: need to make fixture execution async
 
 	var tg = this._groups[groupName];
 	if(tg.skip === true){ return; }
@@ -886,7 +892,6 @@ doh.runGroup = function(/*String*/ groupName, /*Integer*/ idx){
 		for(var y=(idx||0); y<tg.length; y++){
 			if(this._paused){
 				this._currentTest = y;
-				// this.debug("PAUSED at:", tg[y].name, this._currentGroup, this._currentTest);
 				return;
 			}
 			doh._runFixture(groupName, tg[y]);
@@ -895,7 +900,6 @@ doh.runGroup = function(/*String*/ groupName, /*Integer*/ idx){
 				if(this._currentTest == tg.length){
 					tg.iterated = true;
 				}
-				// this.debug("PAUSED at:", tg[y].name, this._currentGroup, this._currentTest);
 				return;
 			}
 		}
@@ -914,10 +918,6 @@ doh._report = function(){
 	//		a private method to be implemented/replaced by the "locally
 	//		appropriate" test runner
 
-	// this.debug("ERROR:");
-	// this.debug("\tNO REPORTING OUTPUT AVAILABLE.");
-	// this.debug("\tIMPLEMENT doh._report() IN YOUR TEST RUNNER");
-
 	this.debug(this._line);
 	this.debug("| TEST SUMMARY:");
 	this.debug(this._line);
@@ -933,13 +933,14 @@ doh.togglePaused = function(){
 doh.pause = function(){
 	// summary:
 	//		halt test run. Can be resumed.
+
 	this._paused = true;
 };
 
 doh.run = function(){
 	// summary:
 	//		begins or resumes the test process.
-	// this.debug("STARTING");
+
 	this._paused = false;
 	var cg = this._currentGroup;
 	var ct = this._currentTest;
