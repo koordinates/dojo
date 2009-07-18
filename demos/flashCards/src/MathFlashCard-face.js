@@ -1,7 +1,6 @@
 dojo.provide("demos.flashCards.src.MathFlashCard-face");
 dojo.required("demos.flashCards.src.MathFlashCard");
 
-
 dojo.declare("dojofun.widget.MathFlashCard",
 	[dijit._Widget, dijit._Templated],
 	{
@@ -80,7 +79,6 @@ dojo.declare("dojofun.widget.MathFlashCard",
 		},
 
 		listenForKeyEvents: function(){
-
 			this.onKeyDownEvent = this.connect(dojo.doc,"onkeydown", function(e){
 				var key = e.keyCode || e.charCode;
 				var k = dojo.keys;
