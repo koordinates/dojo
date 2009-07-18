@@ -225,13 +225,13 @@ dojo.parser = function(){
 						var event = script.getAttribute("event"),
 							type = script.getAttribute("type"),
 							nf = dojo.parser._functionFromScript(script);
-						if(event){
-							if(type == "dojo/connect"){
+						if (event) {
+							if (type == "dojo/connect") {
 								connects.push({event: event, func: nf});
-							}else{
+							} else {
 								params[event] = nf;
 							}
-							}else{
+						}else{
 							calls.push(nf);
 						}
 					});
@@ -248,6 +248,7 @@ dojo.parser = function(){
 			// create the instance
 
 			var instance = markupFactory ? markupFactory(params, node, clazz) : new clazz(params, node);
+
 			thelist.push(instance);
 
 			// map it to the JS namespace
