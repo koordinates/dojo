@@ -98,16 +98,17 @@
 						"doh.is(40, dojo._getPadBorderExtents(dojo.byId('sq100border10margin10pad10')).h);",
 
 						function coordsBasic(t){
-							var pos = dojo.coords("sq100", false);
-							// console.debug(pos);
+							var pos = dojo.coords("sq100", true);
 							doh.is(100, pos.x);
 							doh.is(100, pos.y);
 							doh.is(100, pos.w);
 							doh.is(100, pos.h);
 						},
 						function coordsMargin(t){
+
 							// coords is getting us the margin-box location, is
 							// this right?
+
 							var pos = dojo.coords("sq100margin10", false);
 							doh.is(260, pos.x);
 							doh.is(110, pos.y);
@@ -121,17 +122,18 @@
 						},
 						function sq100nopos(t){
 							var pos = dojo.coords("sq100nopos", false);
-							// console.debug(pos);
 							doh.is(0, pos.x);
 							doh.t(pos.y > 0);
+
 							// FIXME: the 'correct' w is not 100 on Safari WebKit (2.0.4 [419.3]), the right-margin extends to the document edge
-							// doh.is(100, pos.w);
+
+							doh.is(100, pos.w);
 							doh.is(100, pos.h);
 						},
 						function coordsScrolled(t) {
 							var s = document.createElement('div');
 							var c = document.createElement('div');
-							document.body.appendChild(s);
+							window.document.body.appendChild(s);
 							s.appendChild(c);
 							var x=257, y= 285;
 							with (s.style) {
