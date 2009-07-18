@@ -228,17 +228,19 @@
 							doh.is("div-no-tabindex", dojo.attr("div-no-tabindex", "id"));
 							var div = document.createElement("div");
 							doh.f(dojo.hasAttr(div, "id"));
-							doh.is(null, dojo.attr(div, "id"));
-							dojo.attr(div, "id", "attrId1");
+							doh.is('', dojo.attr(div, "id"));
+							doh.is(null, dojo.realAttr(div, "id"));
+							dojo.realAttr(div, "id", "attrId1");
 							doh.t(dojo.hasAttr(div, "id"));
 							doh.is("attrId1", dojo.attr(div, "id"));
 							dojo.removeAttr(div, "id");
 							doh.f(dojo.hasAttr(div, "id"));
-							doh.is(null, dojo.attr(div, "id"));
+							doh.is('', dojo.attr(div, "id"));
+							doh.is(null, dojo.realAttr(div, "id"));
 						},
 						function getTabindexDiv(t){
 							doh.f(dojo.hasAttr("div-no-tabindex", "tabindex"));
-							doh.is(null, dojo.attr("div-no-tabindex", "tabindex"));
+							doh.is(undefined, dojo.attr("div-no-tabindex", "tabindex"));
 							doh.t(dojo.hasAttr("div-tabindex-minus-1", "tabindex"));
 							doh.is(-1, dojo.attr("div-tabindex-minus-1", "tabindex"));
 							doh.t(dojo.hasAttr("div-tabindex-0", "tabindex"));
@@ -247,12 +249,9 @@
 						},
 						function getTabindexInput(t){
 							doh.f(dojo.hasAttr("input-no-tabindex", "tabindex"));
-							doh.is(null, dojo.attr("input-no-tabindex", "tabindex"));
+							doh.is(undefined, dojo.attr("input-no-tabindex", "tabindex"));
 							doh.t(dojo.hasAttr("input-tabindex-minus-1", "tabindex"));
-							if(!dojo.isOpera){
-								// Opera (at least <= 9) does not support tabindex="-1"
-								doh.is(-1, dojo.attr("input-tabindex-minus-1", "tabindex"));
-							}
+							doh.is(-1, dojo.attr("input-tabindex-minus-1", "tabindex"));
 							doh.t(dojo.hasAttr("input-tabindex-0", "tabindex"));
 							doh.is(0, dojo.attr("input-tabindex-0", "tabindex"));
 							doh.is(1, dojo.attr("input-tabindex-1", "tabindex"));
@@ -261,10 +260,7 @@
 							var div = document.createElement("div");
 							doh.is(null, dojo.attr(div, "tabindex"));
 							dojo.attr(div, "tabindex", -1);
-							if(!dojo.isOpera){
-								// Opera (at least <= 9) does not support tabindex="-1"
-								doh.is(-1, dojo.attr(div, "tabindex"));
-							}
+							doh.is(-1, dojo.attr(div, "tabindex"));
 							dojo.attr(div, "tabindex", 0);
 							doh.is(0, dojo.attr(div, "tabindex"));
 							dojo.attr(div, "tabindex", 1);
@@ -272,12 +268,9 @@
 						},
 						function setTabindexInput(t){
 							var input = document.createElement("input");
-							doh.is(null, dojo.attr(input, "tabindex"));
+							doh.is(null, dojo.realAttr(input, "tabindex"));
 							dojo.attr(input, "tabindex", -1);
-							if(!dojo.isOpera){
-								// Opera (at least <= 9) does not support tabindex="-1"
-								doh.is(-1, dojo.attr(input, "tabindex"));
-							}
+							doh.is(-1, dojo.attr(input, "tabindex"));
 							dojo.attr(input, "tabindex", 0);
 							doh.is(0, dojo.attr(input, "tabindex"));
 							dojo.attr(input, "tabindex", 1);
@@ -288,14 +281,14 @@
 							dojo.attr(div, "tabindex", 1);
 							doh.is(1, dojo.attr(div, "tabindex"));
 							dojo.removeAttr(div, "tabindex");
-							doh.is(null, dojo.attr(div, "tabindex"));
+							doh.is(null, dojo.realAttr(div, "tabindex"));
 						},
 						function removeTabindexFromInput(t){
 							var input = document.createElement("input");
 							dojo.attr(input, "tabindex", 1);
 							doh.is(1, dojo.attr(input, "tabindex"));
 							dojo.removeAttr(input, "tabindex");
-							doh.is(null, dojo.attr(input, "tabindex"));
+							doh.is(null, dojo.realAttr(input, "tabindex"));
 						},
 						function setReadonlyInput(t){
 							var input = document.createElement("input");
