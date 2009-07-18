@@ -474,8 +474,6 @@ dojo.byId = function(id, doc){
 
 	var _floatStyle = typeof html.style.styleFloat == 'string' ? "styleFloat" : "cssFloat",
 		_floatAliases = { "cssFloat": _floatStyle, "styleFloat": _floatStyle, "float": _floatStyle };
-
-	html = null;
 	
 	// public API
 	
@@ -1127,32 +1125,26 @@ dojo.byId = function(id, doc){
 		return scrollLeft; // Integer
 	};
 
-	dojo._abs = function(/*DomNode*/node, /*Boolean?*/includeScroll){
-
-		//	summary:
-		//		Gets the position of the passed element relative to
-		//		the viewport (if includeScroll==false), or relative to the
-		//		document root (if includeScroll==true).
-		//
-		//		Returns an object of the form:
-		//			{ x: 100, y: 300 }
-		//		if includeScroll is passed, the x and y values will include any
-		//		document offsets that may affect the position relative to the
-		//		viewport.
-
-		var client, cs, db = dojo.doc.body, dh = dojo.doc.documentElement, ret, scroll;
-
-		// NOTE: Use one-off
-
-		if(dojo.isHostMethod(node, 'getBoundingClientRect')){
-
+	if (dojo.isHostMethod(html, 'getBoundingClientRect')) {
+		dojo._abs = function(/*DomNode*/node, /*Boolean?*/includeScroll) {
+			//	summary:
+			//		Gets the position of the passed element relative to
+			//		the viewport (if includeScroll==false), or relative to the
+			//		document root (if includeScroll==true).
+			//
+			//		Returns an object of the form:
+			//			{ x: 100, y: 300 }
+			//		if includeScroll is passed, the x and y values will include any
+			//		document offsets that may affect the position relative to the
+			//		viewport.
 			// IE6+, FF3+, super-modern WebKit, and Opera 9.6+ all take this branch
+
+			var client, dh = dojo.doc.documentElement, ret, scroll;
 
 			client = node.getBoundingClientRect();
 			ret = { x: client.left, y: client.top };
-			cs = gcs(dh);
 
-			var root = dh.clientWidth === 0 ? db : dh;
+			var root = dh.clientWidth === 0 ? dojo.body() : dh;
 
 			if (htmlOffsetsOrigin) {
 
@@ -1172,9 +1164,14 @@ dojo.byId = function(id, doc){
 				ret.x += scroll.x;
 				ret.y += scroll.y;
 			}
-		}else{
+			return ret; // Object
+		};
+	} else {
+		dojo._abs = function(/*DomNode*/node, /*Boolean?*/includeScroll) {
 
 			// FF2 and Safari and others that do not feature getBoundingClientRect.
+
+			var cs, ret, scroll, dh = dojo.doc.documentElement;
 
 			ret = {
 				x: 0,
@@ -1212,9 +1209,11 @@ dojo.byId = function(id, doc){
 				ret.x -= scroll.x;
 				ret.y -= scroll.y;
 			}
-		}
-		return ret; // Object
-	};
+			return ret; // Object
+		};
+	}
+
+	html = null;
 
 	dojo.coords = function(/*DomNode|String*/node, /*Boolean?*/includeScroll){
 		//	summary:
