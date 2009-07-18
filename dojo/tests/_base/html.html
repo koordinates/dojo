@@ -258,7 +258,7 @@
 						},
 						function setTabindexDiv(t){
 							var div = document.createElement("div");
-							doh.is(null, dojo.attr(div, "tabindex"));
+							doh.is(null, dojo.realAttr(div, "tabindex"));
 							dojo.attr(div, "tabindex", -1);
 							doh.is(-1, dojo.attr(div, "tabindex"));
 							dojo.attr(div, "tabindex", 0);
@@ -377,34 +377,39 @@
 						},
 						function testLabelForAttr(t){
 							// create label with no for attribute make sure requesting
-							// it as for and html for returns null
+							// returns null
+
 							var label = document.createElement("label");
-							doh.is(null, dojo.attr(label, "for"));
-							doh.is(null, dojo.attr(label, "htmlFor"));
+							doh.is(null, dojo.realAttr(label, "for"));
+
 							// add a for attribute and test that can get by requesting for
+
 							dojo.attr(label, "for", "testId");
 							doh.is("testId", dojo.attr(label, "for"));
+
 							// add as htmlFor and make sure it is returned when requested as htmlFor
+
 							var label2 = document.createElement("label");
-							dojo.attr(label2, "htmlFor", "testId2");
-							doh.is("testId2", dojo.attr(label2, "htmlFor"));
+
 							// check than when requested as for or htmlFor attribute is found
+
 							doh.is(true, dojo.hasAttr(label, "for"));
-							doh.is(true, dojo.hasAttr(label2, "htmlfor"));
+
 							// test from markup
+
 							var labelNoFor = dojo.byId("label-no-for");
+
 							// make sure testing if has attribute using for or htmlFor 
 							// both return null when no value set
+
 							doh.is(false, dojo.hasAttr(labelNoFor, "for"));
-							doh.is(false, dojo.hasAttr(labelNoFor, "htmlFor"));
 							var labelWithFor = dojo.byId("label-with-for");
+
 							// when markup includes for make certain testing if has attribute
 							// using for or htmlFor returns true
+
 							doh.is(true, dojo.hasAttr(labelWithFor, "for"));
-							doh.is(true, dojo.hasAttr(labelWithFor, "htmlFor"));
-							// when markup include for attrib make sure can retrieve using for or htmlFor
 							doh.is("input-with-label", dojo.attr(labelWithFor, "for"));
-							doh.is("input-with-label", dojo.attr(labelWithFor, "htmlFor"));						
 						},
 						function attrInnerHtmlDiv(t){
 							var n = dojo.create("div", {
