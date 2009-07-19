@@ -44,15 +44,42 @@ dojo.byId = function(id, doc){
 	//	| }
 =====*/
 
-	dojo.byId = function(id, doc){
-		if(typeof id == 'string'){
-			var _d = doc || dojo.doc;
-			var te = _d.getElementById(id);
+if (dojo.isHostObjectProperty(dojo.doc, 'all')) {
 
-			return (te && te.id == id) ? te : null;                
+	// Slow branch deals with IE name/ID confusion
+	// Could use feature testing, but current penalty is minor
+
+	dojo.byId = function(id, doc) {
+		var te, all, len;
+		if (typeof id == 'string') {
+			te = (doc || dojo.doc).getElementById(id);
+			if (te) {
+				if (te.id == id) {
+					return te;
+				}
+				if (te.name == id) {
+					all = dojo.doc.all[id];
+					len = all.length;
+					while (len--) {
+						if (all[len].id == id) {
+							return all[len];
+						}
+					}
+					return null;
+				}
+			}
+			return null;
 		}
 		return id; // DomNode
 	};
+} else {
+	dojo.byId = function(id, doc) {
+		if(typeof id == 'string'){
+			return (doc || dojo.doc).getElementById(id);
+		}
+		return id; // DomNode
+	};
+}
 
 (function(){
 	var byId = dojo.byId;
@@ -937,7 +964,7 @@ dojo.byId = function(id, doc){
 		//		passthrough to dojo._setBox that handles box-model vagaries for
 		//		you.
 
-		var cs = computedStyle || gcs(node);
+		var cs = computedStyle || gcs(node), style = node.style;
 		var marginWidth = (px(node, cs.marginLeft) || 0) + (px(node, cs.marginRight) || 0);
 		var marginHeight = (px(node, cs.marginTop) || 0) + (px(node, cs.marginBottom) || 0);
 
