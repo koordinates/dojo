@@ -1,6 +1,7 @@
 dojo.provide("tests.data.ItemFileWriteStore");
 dojo.require("tests.data.readOnlyItemFileTestTemplates");
 
+dojo.require("dojo.data.ItemFileReadStore");
 dojo.require("dojo.data.ItemFileWriteStore");
 dojo.require("dojo.data.api.Read");
 dojo.require("dojo.data.api.Identity");
