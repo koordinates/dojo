@@ -7,7 +7,6 @@ dojo.require("dojo.data.api.Identity");
 dojo.require("dojo.data.api.Write");
 dojo.require("dojo.data.api.Notification");
 
-
 // First, make sure ItemFileWriteStore can still pass all the same unit tests 
 // that we use for its superclass, ItemFileReadStore:
 
@@ -874,7 +873,7 @@ doh.register("tests.data.ItemFileWriteStore",
 					for(var i = 0; i < itemsAgain.length; ++i){
 						var item = itemsAgain[i];
 						var id = store.getIdentity(item);
-						if(dojo.isOwnProperty(identitiesInUse, id)){
+						if(typeof identitiesInUse[id] != 'undefined' && dojo.isOwnProperty(identitiesInUse, id)){
 							// there should not already be an entry for this id
 							doh.assertTrue(false);
 						}else{
@@ -927,7 +926,7 @@ doh.register("tests.data.ItemFileWriteStore",
 					for(var i = 0; i < itemsAgain.length; ++i){
 						var item = itemsAgain[i];
 						var id = store.getIdentity(item);
-						if(dojo.isOwnProperty(identitiesInUse, id)){
+						if(typeof identitiesInUse[id] != 'undefined' && dojo.isOwnProperty(identitiesInUse, id)){
 							// there should not already be an entry for this id
 							doh.assertTrue(false);
 						}else{
