@@ -35,17 +35,13 @@
 							// test attr creation, no placement
 							var n = dojo.create('div', {
 								"class":"hasClass",
-								title:"foo",
-								style:"border:2px solid #ededed; padding:3px"
+								title:"foo"
 							});
 							// plain placement:
 							dojo.byId("holder1").appendChild(n);
 							
 							doh.t(dojo.hasClass(n, "hasClass"));
-							doh.is("foo", dojo.attr(n, "title"));
-							//FIXME: apparently attr(n, "style", "foo:bar; baz:bam;") doesn't work in IE?
-							// need to test further in attr or document.
-							//doh.is(3, dojo.style(n, "padding"));
+							doh.is("foo", dojo.attr(n, "title"));							
 						},
 						
 						function createPlace(t){
