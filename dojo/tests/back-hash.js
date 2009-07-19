@@ -20,7 +20,7 @@ dojo.require("dojo.back");
 			];
 			var b = dojo.back;
 			function verify(s){
-				dojo.back.setHash(s);
+				b.setHash(s);
 				t.is(s, dojo.back.getHash(s));
 			}
 			dojo.forEach(cases, verify);

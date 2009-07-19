@@ -1,10 +1,10 @@
-dojo.provide("tests.number");
+﻿dojo.provide("tests.number");
 
 dojo.require("dojo.number");
 
-/**
- * Refer to ICU4J's NumberFormatTest.expect(...) 
- */
+/*
+  Refer to ICU4J's NumberFormatTest.expect(...) 
+*/
 tests.number.check=function(t,options,sourceInput,expectResult){
 	tests.number.checkFormatParseCycle(t, t,options,sourceInput,expectResult,false);
 	tests.number.checkParse(t, t,options,expectResult,sourceInput);	
