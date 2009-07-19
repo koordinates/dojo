@@ -936,12 +936,8 @@ dojo.byId = function(id, doc){
 		//		you.
 
 		var cs = computedStyle || gcs(node);
-		var oldHeightPx, oldWidthPx;
 		var marginWidth = (px(node, cs.marginLeft) || 0) + (px(node, cs.marginRight) || 0);
 		var marginHeight = (px(node, cs.marginTop) || 0) + (px(node, cs.marginBottom) || 0);
-		var borderBoxCheck, style = node.style, offsetWidth = node.offsetWidth, offsetHeight = node.offsetHeight;
-		var borderStyle = style.border, paddingStyle = style.padding;
-		var deltaHeight = 0, deltaWidth = 0;
 
 		widthPx = widthPx - marginWidth;
 		heightPx = heightPx - marginHeight;
@@ -952,10 +948,10 @@ dojo.byId = function(id, doc){
 		style.height = heightPx + pxUnit;
 
 		if (node.offsetWidth != widthPx) {
-			style.width = (widthPx - (node.offsetWidth - widthPx)) + pxUnit;
+			style.width = Math.max(widthPx - (node.offsetWidth - widthPx), 0) + pxUnit;
 		}
 		if (node.offsetHeight != heightPx) {
-			style.height = (heightPx - (node.offsetHeight - heightPx)) + pxUnit;
+			style.height = Math.max(heightPx - (node.offsetHeight - heightPx), 0) + pxUnit;
 		}
 	};
 
