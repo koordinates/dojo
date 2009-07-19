@@ -492,14 +492,16 @@ if ((dojo._getWin()).document){
 		// NOTE: Core files should use the required method
 		//       to make certain missing dependencies fail immediately
 
+		// Loop through array of strings (baseBrowser in djConfig)
+
 		requireIf(!config.skipColor, "dojo._base.Color");
 		requireIf(!config.skipWindow, "dojo._base.window");
+		requireIf(!config.skipConnect, "dojo._base.connect");
 		requireIf(!config.skipHtml, "dojo._base.html");
 		requireIf(!config.skipNodeList, "dojo._base.NodeList");
 		requireIf(!config.skipQuery, "dojo._base.query");
 		requireIf(!config.skipJson, "dojo._base.json");
 		requireIf(!config.skipXhr, "dojo._base.xhr");
-		requireIf(!config.skipConnect, "dojo._base.connect");
 		requireIf(!config.skipEvent, "dojo._base.event");
 		requireIf(!config.skipFx, "dojo._base.fx");
 

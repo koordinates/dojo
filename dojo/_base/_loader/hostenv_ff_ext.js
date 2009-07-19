@@ -369,12 +369,12 @@ dojo.provide("dojo._base");
 	if (dojo.isBrowser) {
 		requireIf(!djConfig.skipColor, "dojo._base.Color");
 		requireIf(!djConfig.skipWindow, "dojo._base.window");
+		requireIf(!djConfig.skipConnect, "dojo._base.connect");
 		requireIf(!djConfig.skipHtml, "dojo._base.html");
 		requireIf(!djConfig.skipNodeList, "dojo._base.NodeList");
 		requireIf(!djConfig.skipQuery, "dojo._base.query");
 		requireIf(!djConfig.skipJson, "dojo._base.json");
 		requireIf(!djConfig.skipXhr, "dojo._base.xhr");
-		requireIf(!djConfig.skipConnect, "dojo._base.connect");
 		requireIf(!djConfig.skipEvent, "dojo._base.event");
 		requireIf(!djConfig.skipFx, "dojo._base.fx");
 	}
