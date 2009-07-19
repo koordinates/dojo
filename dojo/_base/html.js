@@ -887,6 +887,8 @@ dojo.byId = function(id, doc){
 		//		Sets the size of the node's contents, irrespective of
 		//		padding, or borders.
 
+		// NOTE: Broken as designed, unit tests missed this one
+
 		var borderBoxCheck, style = node.style, offsetWidth = node.offsetWidth, offsetHeight = node.offsetHeight;
 		var borderStyle = style.border, paddingStyle = style.padding;
 		var deltaHeight, deltaWidth;
