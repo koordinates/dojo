@@ -1,5 +1,6 @@
 dojo.provide("demos.fonts.src.news");
 dojo.require("demos.fonts.src.pie");
+dojo.require("dojo.date");
 dojo.require("dojo.date.locale");
 
 function init(){
