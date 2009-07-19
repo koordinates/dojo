@@ -1,13 +1,9 @@
 dojo.provide("dojox.grid._View");
-
-dojo.require("dijit._Widget");
-dojo.require("dijit._Templated");
+dojo.required("dojo.dnd.Source");
+dojo.required("dojo.dnd.Manager");
 dojo.require("dojox.grid._Builder");
 dojo.require("dojox.html.metrics");
 dojo.require("dojox.grid.util");
-
-dojo.require("dojo.dnd.Source");
-dojo.require("dojo.dnd.Manager");
 
 (function(){
 	// private
