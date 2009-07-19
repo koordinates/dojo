@@ -172,16 +172,16 @@ dojo.declare("dojox.widget.FisheyeList", [dijit._Widget, dijit._Templated, dijit
 		// in liberal trigger mode, activate menu whenever mouse is close
 		//
 		if(!this.conservativeTrigger){
-			this._onMouseMoveHandle = dojo.connect(document.documentElement, "onmousemove", this, "_onMouseMove");
+			this._onMouseMoveHandle = dojo.connect(dojo.doc.documentElement, "onmousemove", this, "_onMouseMove");
 		}
 		if (this.isFixed){
-			this._onScrollHandle = dojo.connect(document,"onscroll",this,"_onScroll");
+			this._onScrollHandle = dojo.connect(dojo.doc,"onscroll",this,"_onScroll");
 		}
 			
 		// Deactivate the menu if mouse is moved off screen (doesn't work for FF?)
-		this._onMouseOutHandle = dojo.connect(document.documentElement, "onmouseout", this, "_onBodyOut");
+		this._onMouseOutHandle = dojo.connect(dojo.doc.documentElement, "onmouseout", this, "_onBodyOut");
 		this._addChildHandle = dojo.connect(this, "addChild", this, "_initializePositioning");
-		this._onResizeHandle = dojo.connect(window,"onresize", this, "_initializePositioning");
+		this._onResizeHandle = dojo.connect(dojo._getWin(),"onresize", this, "_initializePositioning");
 	},
 	
 	_initializePositioning: function(){
@@ -233,7 +233,7 @@ dojo.declare("dojox.widget.FisheyeList", [dijit._Widget, dijit._Templated, dijit
 		//
 		// position the items
 		//
-		for(var i=0; i<this.children.length; i++){
+		for(i=0; i<this.children.length; i++){
 			var itm = this.children[i];
 			var elm = itm.domNode;
 			elm.style.left   = itm.posX + 'px';
@@ -266,11 +266,7 @@ dojo.declare("dojox.widget.FisheyeList", [dijit._Widget, dijit._Templated, dijit
 		var left = absolute.x;
 		var right = left + bb.w;
 
-		return (mouse.x >= left
-			&& mouse.x <= right
-			&& mouse.y >= top
-			&& mouse.y <= bottom
-		);	//	boolean
+		return (mouse.x >= left && mouse.x <= right && mouse.y >= top && mouse.y <= bottom);	//	boolean
 	},
 
 	_onBodyOut: function(/*Event*/ e){
@@ -304,7 +300,7 @@ dojo.declare("dojox.widget.FisheyeList", [dijit._Widget, dijit._Templated, dijit
 		if(this.conservativeTrigger){
 			// switch event handlers so that we handle mouse events from anywhere near
 			// the menu
-			this._onMouseMoveHandle = dojo.connect(document.documentElement, "onmousemove", this, "_onMouseMove");
+			this._onMouseMoveHandle = dojo.connect(dojo.doc.documentElement, "onmousemove", this, "_onMouseMove");
 
 			this.timerScale=0.0;
 
@@ -361,7 +357,7 @@ dojo.declare("dojox.widget.FisheyeList", [dijit._Widget, dijit._Templated, dijit
 			(1.0-this.timerScale)*this.itemWidth + this.timerScale*this.itemMaxWidth :
 			(1.0-this.timerScale)*this.itemHeight + this.timerScale*this.itemMaxHeight ;
 
-		var cen = ((pos - prx) / siz) - 0.5;
+		var cen2, cen = ((pos - prx) / siz) - 0.5;
 		var max_off_cen = (sim / siz) - 0.5;
 
 		if(max_off_cen > this.effectUnits){ max_off_cen = this.effectUnits; }
@@ -372,19 +368,19 @@ dojo.declare("dojox.widget.FisheyeList", [dijit._Widget, dijit._Templated, dijit
 		var off_weight = 0;
 
 		if(this.anchorEdge == this.EDGE.BOTTOM){
-			var cen2 = (y - this.proximityTop) / this.itemHeight;
+			cen2 = (y - this.proximityTop) / this.itemHeight;
 			off_weight = (cen2 > 0.5) ? 1 : y / (this.proximityTop + (this.itemHeight / 2));
 		}
 		if(this.anchorEdge == this.EDGE.TOP){
-			var cen2 = (y - this.proximityTop) / this.itemHeight;
+			cen2 = (y - this.proximityTop) / this.itemHeight;
 			off_weight = (cen2 < 0.5) ? 1 : (this.totalHeight - y) / (this.proximityBottom + (this.itemHeight / 2));
 		}
 		if(this.anchorEdge == this.EDGE.RIGHT){
-			var cen2 = (x - this.proximityLeft) / this.itemWidth;
+			cen2 = (x - this.proximityLeft) / this.itemWidth;
 			off_weight = (cen2 > 0.5) ? 1 : x / (this.proximityLeft + (this.itemWidth / 2));
 		}
 		if(this.anchorEdge == this.EDGE.LEFT){
-			var cen2 = (x - this.proximityLeft) / this.itemWidth;
+			cen2 = (x - this.proximityLeft) / this.itemWidth;
 			off_weight = (cen2 < 0.5) ? 1 : (this.totalWidth - x) / (this.proximityRight + (this.itemWidth / 2));
 		}
 		if(this.anchorEdge == this.EDGE.CENTER){
@@ -523,7 +519,7 @@ dojo.declare("dojox.widget.FisheyeList", [dijit._Widget, dijit._Templated, dijit
 
 		// position after
 		var apos = pos;
-		for(var i=p+1; i<this.itemCount; i++){
+		for(i=p+1; i<this.itemCount; i++){
 			apos += this.children[i-1].sizeMain;
 			if(this.isHorizontal){
 				this.children[i].domNode.style.left = apos + 'px';
@@ -586,7 +582,7 @@ dojo.declare("dojox.widget.FisheyeList", [dijit._Widget, dijit._Templated, dijit
 		this.timerScale += 0.2;
 		this._paint();
 		if(this.timerScale<1.0){
-			setTimeout(dojo.hitch(this, "_expandSlowly"), 10);
+			dojo._getWin().setTimeout(dojo.hitch(this, "_expandSlowly"), 10);
 		}
 	},
 
@@ -647,21 +643,23 @@ dojo.declare("dojox.widget.FisheyeListItem", [dijit._Widget, dijit._Templated, d
 
 	postCreate: function() {
 
+		var parent;
+
 		// set image
 
 		if ((this.iconSrc.toLowerCase().substring(this.iconSrc.length - 4)==".png") && typeof this.imgNode.style.filter == 'string') {
 
 			/* we set the id of the new fisheyeListItem to the id of the div defined in the HTML */
 
-			if(this._hasParent(this.imgNode) && this.id != ""){
-				var parent = this.imgNode.parentNode;
+			if(this._hasParent(this.imgNode) && this.id){
+				parent = this.imgNode.parentNode;
 				parent.id = this.id;
 			}
 			this.imgNode.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+this.iconSrc+"', sizingMethod='scale')";
 			this.imgNode.src = this._blankGif.toString();
 		} else {
-			if(this._hasParent(this.imgNode) && this.id != ""){
-				var parent = this.imgNode.parentNode;
+			if(this._hasParent(this.imgNode) && this.id){
+				parent = this.imgNode.parentNode;
 				parent.id = this.id;
 			}
 			this.imgNode.src = this.iconSrc;
@@ -670,7 +668,7 @@ dojo.declare("dojox.widget.FisheyeListItem", [dijit._Widget, dijit._Templated, d
 		// Label
 
 		if(this.lblNode){
-			this.lblNode.appendChild(document.createTextNode(this.label));
+			this.lblNode.appendChild(dojo.doc.createTextNode(this.label));
 		}
 		dojo.setSelectable(this.domNode, false);
 		this.startup();
@@ -686,7 +684,7 @@ dojo.declare("dojox.widget.FisheyeListItem", [dijit._Widget, dijit._Templated, d
 		if(!this.parent.isOver){
 			this.parent._setActive(e);
 		}
-		if(this.label != "" ){
+		if(this.label){
 			dojo.addClass(this.lblNode, "dojoxFishSelected");
 			this.parent._positionLabel(this);
 		}
