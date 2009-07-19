@@ -61,7 +61,8 @@ if (dojo.isHostObjectProperty(dojo.doc, 'all')) {
 					all = dojo.doc.all[id];
 					len = all.length;
 					while (len--) {
-						if (all[len].id == id) {
+						if (all[len] != te && all[len].id == id) {
+							console.warn('ID recycled as name: ' + id + '.');
 							return all[len];
 						}
 					}
