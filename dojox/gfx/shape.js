@@ -1,6 +1,6 @@
 dojo.provide("dojox.gfx.shape");
 
-dojo.require("dojox.gfx._base");
+dojo.required("dojox.gfx._base");
 
 dojo.declare("dojox.gfx.Shape", null, {
 	// summary: a Shape object, which knows how to apply

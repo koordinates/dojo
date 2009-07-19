@@ -1,6 +1,6 @@
 dojo.provide("dojox.gfx.utils");
 
-dojo.require("dojox.gfx");
+dojo.required("dojox.gfx");
 
 (function(){
 	var serialize = function(
