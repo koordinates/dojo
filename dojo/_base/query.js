@@ -584,7 +584,7 @@ if(typeof dojo != "undefined"){
 				if(pred > 0){
 					if(idx < 0){
 						idx = (idx % pred) && (pred + (idx % pred));
-					}else if(idx>0){
+					}else if(idx > 0){
 						if(idx >= pred){
 							lb = idx - idx % pred;
 						}
@@ -600,9 +600,13 @@ if(typeof dojo != "undefined"){
 					// idx has to be greater than 0 when pred is negative;
 					// shall we throw an error here?
 					if(idx > 0){
-						ub = idx;
+						ub = idx / pred;
 						idx = idx % pred;
-					}
+					}					
+					return function(elem){
+						var i = getNodeIndex(elem);
+						return (i <= ub);
+					};
 				}
 				condition = idx;				
 			}
