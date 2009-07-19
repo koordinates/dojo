@@ -10,24 +10,41 @@ dojo.back = {
 (function(){ 
 	var historyCounter, back = dojo.back;
 
-	// everyone deals with encoding the hash slightly differently
-
 	// NOTE: Review this
 
-	function getHash(){ 
+	var encodings = {};
+
+	function getHash() { 
 		var h = window.location.hash;
-		if(h.charAt(0) == "#"){ h = h.substring(1); }
-		return decodeURIComponent(h); 
+		if (h.charAt(0) == "#") {
+			h = h.substring(1);
+		}
+		return encodings[h] || decodeURIComponent(h);
 	}
 	
-	function setHash(h){
-		if(!h){ h = ""; }
-		window.location.hash = encodeURIComponent(h);
+	function setHash(h) {
+		if (!h) {
+			h = "";
+		}
+		var hEnc = encodeURIComponent(h);
+		window.location.hash = hEnc;
+		if (h.length != hEnc.length) {
+
+			// Encoded something
+			// Save answer for getHash
+
+			var hash = window.location.hash;
+			if (hash.charAt(0) == "#") {
+				hash = hash.substring(1);
+			}			
+			encodings[hash] = h;
+		}		
 		historyCounter = history.length;
 	}
 	
-	// if we're in the test for these methods, expose them on dojo.back. ok'd with alex.
-	if(dojo.exists("tests.back-hash")){
+	// If we're in the test for these methods, expose them on dojo.back. ok'd with alex.
+
+	if (dojo.exists("tests.back-hash")) {
 		back.getHash = getHash;
 		back.setHash = setHash;		
 	}
