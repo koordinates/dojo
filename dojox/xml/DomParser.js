@@ -1,6 +1,6 @@
 dojo.provide("dojox.xml.DomParser");
 
-dojox.xml.DomParser= (function(){
+dojox.xml.DomParser = function(){
 	/**********************************************************
 	 *	The DomParser is a close-to (but not entirely)
 	 *	conforming XML parser based on regular
@@ -392,4 +392,6 @@ dojox.xml.DomParser= (function(){
 		}
 		return root;
 	};
-})();
+};
+
+dojox.xml.DomParser = new dojox.xml.DomParser();
