@@ -605,7 +605,7 @@ if(typeof dojo != "undefined"){
 					}					
 					return function(elem){
 						var i = getNodeIndex(elem);
-						return (i <= ub);
+						return i <= ub;
 					};
 				}
 				condition = idx;				
