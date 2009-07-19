@@ -1,12 +1,12 @@
 dojo.require("dijit.layout.AccordionContainer");
 dojo.require("dojox.layout.ScrollPane");
-dojo.require("dojox.widget.FisheyeLite");
-dojo.require("dojo.NodeList-fx");
 dojo.require("dojo.fx");
 dojo.require("dojo.fx.easing");
+dojo.require("dojo.NodeList-fx");
+dojo.require("dojox.widget.FisheyeLite");
 dojo.require("dojox.analytics.Urchin");
 
-;(function(){
+(function(){
 	
 	window.show = function(id){
 		var contents = dojo.byId(id).innerHTML;
