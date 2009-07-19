@@ -40,9 +40,11 @@ dojo.declare("dojo.data.ItemFileReadStore", null,{
 		this._jsonData = keywordParameters.data;
 		this._datatypeMap = keywordParameters.typeMap || {};
 		if(!this._datatypeMap.Date){
+
 			//If no default mapping for dates, then set this as default.
 			//We use the dojo.date.stamp here because the ISO format is the 'dojo way'
 			//of generically representing dates.
+
 			this._datatypeMap.Date = {
 											type: Date,
 											deserialize: function(value){
