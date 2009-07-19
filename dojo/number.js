@@ -5,7 +5,6 @@ dojo.requireLocalization("dojo.cldr", "number");
 dojo.require("dojo.string");
 dojo.require("dojo.regexp");
 
-
 /*=====
 dojo.number = {
 	// summary: localized formatting and parsing routines for Number
@@ -140,8 +139,8 @@ dojo.number.round = function(/*Number*/value, /*Number?*/places, /*Number?*/incr
 	return (factor * +value).toFixed(places) / factor; // Number
 };
 
-if(!(0.9).toFixed()){
-	// (isIE) toFixed() bug workaround: Rounding fails on IE when most significant digit
+if((0.9).toFixed() == '0'){
+	// toFixed() bug workaround: Rounding fails on IE when most significant digit
 	// is just after the rounding place and is >=5
 	(function(){
 		var round = dojo.number.round;
