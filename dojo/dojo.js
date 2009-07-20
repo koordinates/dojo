@@ -886,7 +886,7 @@ if(typeof dojo == "undefined"){
 
 			// NOTE: Second argument means return value will be ignored
 
-			result = dojoEval(contents, !(cb || arguments[2]));
+			result = dojoEval(contents, !cb);
 		
 			if(cb){
 				cb(result);
