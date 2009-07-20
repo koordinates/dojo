@@ -1,9 +1,11 @@
 dojo.provide("demos.skew.src");
-	
+
+dojo.require("dijit._base");	
 dojo.require("demos.skew.src.Image");
-	
-dojo.require("dojo.NodeList-fx");
+
+dojo.require("dojo.fx");
 dojo.require("dojo.fx.easing");
+dojo.require("dojo.NodeList-fx");
 dojo.require("dojox.widget.Dialog");
 dojo.require("dojox.layout.RadioGroup");
 dojo.require("dojox.analytics.Urchin");
