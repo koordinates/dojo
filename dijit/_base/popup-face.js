@@ -229,7 +229,11 @@ dijit.popup.__OpenArgs = function(){
 			}
 		}
 	};
-}();
+};
+
+// NOTE: Odd structure
+
+dijit.popup = new dijit.popup();
 
 dijit._frames = function(){
 	// summary: cache of iframes
