@@ -96,13 +96,16 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 	//		not evaluate as valid JS, so we translate them to underscores.
 	
 	//Find the best-match locale to load if we have available flat locales.
+
 	var bestLocale = "";
 	if(availableFlatLocales){
 		var flatLocales = availableFlatLocales.split(",");
 		for(var i = 0; i < flatLocales.length; i++){
-			//Locale must match from start of string.
-			//Using ["indexOf"] so customBase builds do not see
-			//this as a dojo._base.array dependency.
+
+			// Locale must match from start of string.
+			// Using ["indexOf"] so customBase builds do not see
+			// this as a dojo._base.array dependency.
+
 			if(!targetLocale.indexOf(flatLocales[i])){
 				if(flatLocales[i].length > bestLocale.length){
 					bestLocale = flatLocales[i];
@@ -115,6 +118,7 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 	}
 
 	//See if the desired locale is already loaded.
+
 	var tempLocale = availableFlatLocales ? bestLocale : targetLocale;
 	var bundle = dojo._loadedModules[bundlePackage];
 	var localizedBundle = null;
@@ -142,7 +146,7 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 				if(loc != "ROOT"){module.push(loc);}
 				module.push(bundleName);
 				var filespec = module.join("/") + '.js';
-				loaded = dojo._loadPath(filespec, null, function(hash){
+				loaded = dojo._loadPath(filespec, null, function(hash) {
 					// Use singleton with prototype to point to parent bundle, then mix-in result from loadPath
 					var Clazz = function(){};
 					Clazz.prototype = parent;
@@ -152,7 +156,7 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 							bundle[jsLoc][j] = hash[j];
 						}
 					}
-				});
+				}, true);
 			}else{
 				loaded = true;
 			}

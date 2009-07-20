@@ -802,7 +802,7 @@ if(typeof dojo == "undefined"){
 
 	dojo._protocolPattern = /^\w+:/;
 
-	dojo._loadPath = function(/*String*/relpath, /*String?*/module, /*Function?*/cb){
+	dojo._loadPath = function(/*String*/relpath, /*String?*/module, /*Function?*/cb) {
 
 		// 	summary:
 		//		Load a Javascript module given a relative path
@@ -834,8 +834,8 @@ if(typeof dojo == "undefined"){
 			console.warn('Path should be relative: ' + relpath + '.');
 		}
 
-		if (this._postLoad || !this._writeScript) {
-			return module ? this._loadUriAndCheck(uri, module, cb) : this._loadUri(uri, cb); // Boolean
+		if (this._postLoad || !this._writeScript || arguments[3]) {
+			return module ? this._loadUriAndCheck(uri, module, cb) : this._loadUri(uri, cb, arguments[3]); // Boolean
 		} else {
 
 			// NOTE: Like XD, can't signal whether file was found
@@ -862,7 +862,7 @@ if(typeof dojo == "undefined"){
 		//		as an expression, typically used by the resource bundle loader to
 		//		load JSON-style resources
 
-		if(this._loadedUrls[uri]){
+		if (this._loadedUrls[uri]) {
 			console.warn(uri + ' already loaded.');
 			return true; // Boolean
 		}
@@ -870,9 +870,9 @@ if(typeof dojo == "undefined"){
 		var getTextFinished = function(contents) {
 			dojo._loadedUrls[uri] = true;
 			dojo._loadedUrls.push(uri);
-			if(cb){
+			if (cb) {
 				contents = '(' + contents + ')';
-			}else{
+			} else {
 
 				// Only do the scoping if no callback. If a callback is specified,
 				// it is most likely the i18n bundle stuff.
@@ -886,7 +886,7 @@ if(typeof dojo == "undefined"){
 
 			// NOTE: Second argument means return value will be ignored
 
-			result = dojoEval(contents, !cb);
+			result = dojoEval(contents, !(cb || arguments[2]));
 		
 			if(cb){
 				cb(result);
@@ -1127,8 +1127,13 @@ if(typeof dojo == "undefined"){
 
 		module = dojo._loadedModules[moduleName];
 		if (module){
-			console.warn(moduleName + ' is already loaded.');
-			return module;
+
+			// Email demo exposes issue here
+
+			if (typeof console != 'undefined') {
+				console.warn(moduleName + ' is already loaded.');
+				return module;
+			}
 		}
 
 		// convert periods to slashes
@@ -1351,6 +1356,7 @@ if(typeof dojo == "undefined"){
 			if (dojo.i18n) {
 				dojo.i18n._requireLocalization.apply(dojo.hostenv, args);
 			} else {
+				//throw new Error('Missing i18n: ' + args[0]);
 
 				// NOTE: Should not get here under normal circumstances (require rules are followed)
 			}
