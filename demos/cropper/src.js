@@ -4,7 +4,7 @@ dojo.require("demos.cropper.src.Preview");
 dojo.require("dojox.analytics.Urchin");
 dojo.require("demos.cropper.src.nav"); 
 
-;(function(d, $){
+(function(d, $){
 	
 	d.addOnLoad(function(){
 		
