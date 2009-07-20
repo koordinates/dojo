@@ -44,12 +44,13 @@
 			
 			
 			function sameBox(inBox1, inBox2) {
+				var res = true;
 				for (var i in inBox1)
 					if (inBox1[i] != inBox2[i]) {
 						console.log((arguments[2]||'box1') + '.' + i + ': ', inBox1[i], ' != ', (arguments[3]||'box2') + '.' + i + ': ', inBox2[i]);
-						return false;
+						res = false;
 					}	
-				return true;		
+				return res;
 			}
 			
 			function reciprocalMarginBoxTest(inNode, inBox) {
@@ -65,7 +66,7 @@
 			}
 			
 			function createStyledElement(inStyle, inParent, inElement, inNoDefault) {
-				inStyle = inStyle||{};
+				inStyle = inStyle || {};
 				if (!inNoDefault) {
 					for (var i in defaultStyles)
 						if (!inStyle[i])
@@ -104,6 +105,7 @@
 			}
 			
 			// args are (styles, parent, element name, no default)
+
 			function mixCreateElementArgs(inMix, inArgs) {
 				args = [{}];
 				if (inArgs&&inArgs[0])
