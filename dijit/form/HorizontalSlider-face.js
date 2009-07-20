@@ -237,7 +237,6 @@ dojo.declare(
 		//		Event handler for mousewheel where supported
 
 		dojo.stopEvent(evt);
-		dojo.stopPropagation(evt);
 
 		// NOTE: Duplication.  Mousewheel logic should be in event module
 
