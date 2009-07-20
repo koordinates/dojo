@@ -3,6 +3,8 @@ dojo.require("dojo.parser");
 
 // widgets
 dojo.require("dijit.dijit");
+dojo.require("dojo.dnd.common");
+dojo.require("dojo.dnd.Mover");
 dojo.require("dojox.grid.DataGrid");
 dojo.require("dijit.layout.BorderContainer");
 dojo.require("dijit.Tree");
