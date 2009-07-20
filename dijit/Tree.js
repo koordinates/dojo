@@ -1,5 +1,6 @@
 dojo.provide("dijit.Tree");
 dojo.require("dojo.fx");
+dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
 dojo.require("dijit._Container");
 dojo.require("dijit._Contained");
