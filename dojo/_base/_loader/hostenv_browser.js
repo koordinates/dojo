@@ -492,7 +492,7 @@ if ((dojo._getWin()).document){
 		// NOTE: Core files should use the required method
 		//       to make certain missing dependencies fail immediately
 
-		// Loop through array of strings (baseBrowser in djConfig)
+		// TODO: Loop through array of strings (baseBrowser in djConfig)
 
 		requireIf(!config.skipColor, "dojo._base.Color");
 		requireIf(!config.skipWindow, "dojo._base.window");
