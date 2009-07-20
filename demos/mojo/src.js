@@ -1,6 +1,8 @@
 dojo.provide("demos.mojo.src");
 
 // our core requirements:
+dojo.require("dojo.dnd.common");
+dojo.require("dojo.dnd.Mover");
 dojo.require("dojo.dnd.Moveable");
 dojo.require("dojo.fx");
 dojo.require("dojo.fx.easing");
