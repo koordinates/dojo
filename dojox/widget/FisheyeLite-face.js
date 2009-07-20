@@ -13,10 +13,9 @@ dojo.declare("dojox.widget.FisheyeLite",
 	// 		and natural page layout for rendering.
 	//
 	//		use position:absolute/relative nodes to prevent layout
-	//		changes, and use caution when seleting properties to
+	//		changes, and use caution when selecting properties to
 	//		scale. Negative scaling works, but some properties
-	//		react poorly to being set to negative values, IE being
-	//		particularly annoying in that regard.
+	//		react poorly to being set to negative values.
 	//
 	//		quirk: uses the domNode as the target of the animation
 	//		unless it finds a node class="fisheyeTarget" in the container
