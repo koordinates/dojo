@@ -1,7 +1,12 @@
 dojo.require("dojox.av.FLVideo");
-dojo.require("dijit.form.Button");
-dojo.require("dijit.form.HorizontalSlider"); 
+dojo.require("dojo.dnd.common");
+dojo.require("dojo.dnd.Container");
+dojo.require("dojo.dnd.Mover");
+dojo.require("dojo.dnd.Moveable");
+dojo.require("dojo.dnd.Selector");
 dojo.require("dojo.dnd.Source");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.form.HorizontalSlider");
 dojo.require("dojo.parser");
 dojo.require("dojox.analytics.Urchin");
 
@@ -26,9 +31,6 @@ var extended = {
 		
 	}
 };
-//dojo.extend(dojo.dnd.Source, extended);
-dojo.extend(dojo.dnd.Target, extended);
-//dojo.dnd.Target.prototype.onDropExternal = extended.onDropExternal;
 
 createRelated = function(items){
 	var txt = '<span class="relText">Related Items:</span>'
@@ -44,10 +46,14 @@ createRelated = function(items){
 	return txt;
 }
 
-
-
-
 dojo.addOnLoad(function(){
+
+
+	//dojo.extend(dojo.dnd.Source, extended);
+	dojo.extend(dojo.dnd.Target, extended);
+	//dojo.dnd.Target.prototype.onDropExternal = extended.onDropExternal;
+
+
 	libNode = dojo.byId("library"); //dojo.dnd.Source; jsId="dnd_library" within "libContainer"
 	lib = dnd_library;
 
