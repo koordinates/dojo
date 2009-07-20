@@ -100,10 +100,10 @@ dojo.declare(
 	isContainer: true,
 
 	postMixInProperties: function(){
-		this.inherited(arguments);
+		this.inherited(arguments);		
 		var messages = dojo.i18n.getLocalization("dijit", "loading", this.lang);
 		this.loadingMessage = dojo.string.substitute(this.loadingMessage, messages);
-		this.errorMessage = dojo.string.substitute(this.errorMessage, messages);
+		this.errorMessage = dojo.string.substitute(this.errorMessage, messages);		
 		
 		// Detect if we were initialized with data
 		if(!this.href && this.srcNodeRef && this.srcNodeRef.innerHTML){
@@ -139,9 +139,9 @@ dojo.declare(
 		//		See `dijit.layout._LayoutWidget.startup` for description.
 		//		Although ContentPane doesn't extend _LayoutWidget, it does implement
 		//		the same API.
-		if(this._started){ return; }
+		if (this._started){ return; }
 
-		if(this.isLoaded){
+		if (this.isLoaded){
 			dojo.forEach(this.getChildren(), function(child){
 				child.startup();
 			});
@@ -150,10 +150,11 @@ dojo.declare(
 			// initialization) then we need to do layout now... unless we are
 			// a child of a TabContainer etc. in which case wait until the TabContainer
 			// calls resize() on us.
-			if(this.doLayout){
+
+			if (this.doLayout){
 				this._checkIfSingleChild();
 			}
-			if(!this._singleChild || !dijit._Contained.prototype.getParent.call(this)){
+			if (!this._singleChild || !dijit._Contained.prototype.getParent.call(this)){
 				this._scheduleLayout();
 			}
 		}
