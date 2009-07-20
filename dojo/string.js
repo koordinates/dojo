@@ -105,10 +105,10 @@ dojo.string.substitute = function(	/*String*/		template,
 	//	|		}
 	//	|	);
 
-	thisObject = thisObject||dojo.global;
+	thisObject = thisObject||dojo.global;		
 	transform = (!transform) ? 
-					function(v){ return v; } : 
-					dojo.hitch(thisObject, transform);
+		function(v){ return v; } : 
+		dojo.hitch(thisObject, transform);
 
 	return template.replace(/\$\{([^\s\:\}]+)(?:\:([^\s\:\}]+))?\}/g, function(match, key, format){
 		var value = dojo.getObject(key, false, map);
