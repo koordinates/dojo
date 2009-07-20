@@ -8,3 +8,4 @@ dojo.require("dijit._Container");
 dojo.require("dojo.dnd.move");
 dojo.require("dijit.form.Button");
 dojo.require("dojo.number");
+dojo.require("dijit.form.HorizontalSlider-face");
