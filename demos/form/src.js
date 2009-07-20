@@ -1,6 +1,11 @@
 dojo.require("dojo.parser");
 dojo.require("dojo.data.ItemFileReadStore");
 
+dojo.require("dojo.dnd.common");
+dojo.require("dojo.dnd.Mover");
+dojo.require("dojo.dnd.Moveable");
+dojo.require("dijit._base");
+dojo.require("dijit._Widget");
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.ValidationTextBox");
 dojo.require("dijit.form.ComboBox");
