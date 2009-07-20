@@ -1,5 +1,5 @@
-dojo.provide("dojo.currency");
-dojo.required("dojo.currency-face");
+dojo.provide("dojo.currency-face");
+dojo.required("dojo.currency");
 
 /*=====
 dojo.currency = {
