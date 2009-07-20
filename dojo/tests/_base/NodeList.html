@@ -145,7 +145,6 @@
 
 						function splice(){
 							var pnl = new dojo.NodeList(t, t, c);
-							console.debug(pnl.splice(1));
 							/*
 							doh.is(2, pnl.splice(1).length);
 							doh.is(1, pnl.length);
@@ -372,6 +371,7 @@
 							var nl = dojo.query("button", tn).connect("onclick", function(){
 								ctr++;
 							});
+
 							nl[0].click();
 							doh.is(1, ctr);
 							nl[0].click();
