@@ -6,3 +6,4 @@ dojo.require("dojo.dnd.Source");
 dojo.require("dojox.grid._Events");
 dojo.require("dojox.grid._Grid");
 dojo.require("dojox.grid.DataSelection");
+dojo.require("dojox.grid.DataGrid-face");
