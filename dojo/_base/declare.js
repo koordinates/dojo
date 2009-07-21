@@ -53,7 +53,7 @@ dojo.declare = function(/*String*/ className, /*Function|Function[]*/ superclass
 	// construct intermediate classes for mixins
 	if(mixins){
 		dojo.forEach(mixins, function(m, i){
-			if(!m){ throw(className + ": mixin #" + i + " is null"); } // It's likely a required module is not loaded
+			if (!m) { throw new Error(className + ": mixin #" + i + " is null"); } // It's likely a required module is not loaded
 			superclass = dd._delegate(superclass, m);
 		});
 	}
@@ -165,13 +165,13 @@ dojo.mixin(dojo.declare, {
 				// start from memoized prototype, or
 				// find a prototype that has property 'name' == 'c'
 				mp = (c.ctor||0).superclass || this._findMethod(name, c, p, true);
-				if(!mp){throw(this.declaredClass + ': inherited method "' + name + '" mismatch');}
+				if (!mp) { throw new Error(this.declaredClass + ': inherited method "' + name + '" mismatch'); }
 				// find a prototype that has property 'name' != 'c'
 				p = this._findMethod(name, c, mp, false);
 			}
 			// we expect 'name' to be in prototype 'p'
 			fn = p && p[name];
-			if(!fn){throw(mp.declaredClass + ': inherited method "' + name + '" not found');}
+			if(!fn){throw new Error(mp.declaredClass + ': inherited method "' + name + '" not found');}
 			// if the function exists, invoke it in our scope
 			return fn.apply(this, a);
 		}
