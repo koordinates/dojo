@@ -903,7 +903,9 @@ if(typeof dojo == "undefined"){
 
 		// summary: calls loadUri and checks that it loaded synchronously
 
-		console.warn('Synchronous downloads should be avoided.');
+		if (typeof console != 'undefined') {
+			console.warn('Synchronous downloads should be avoided.');
+		}
 		
 		return !!(this._loadUri(uri, cb) && this._loadedModules[moduleName]); // Boolean
 	};
@@ -1356,7 +1358,9 @@ if(typeof dojo == "undefined"){
 
 			// Localization module not yet loaded
 
-			console.warn('Load i18n module before requiring localization bundles.');
+			if (typeof console != 'undefined') {
+				console.warn('Load i18n module before requiring localization bundles.');
+			}
 
 			// Last (undocumented) argument forces a synchronous transfer
 
