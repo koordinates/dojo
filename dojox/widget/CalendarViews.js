@@ -1,7 +1,7 @@
 dojo.provide("dojox.widget.CalendarViews");
 dojo.experimental("dojox.widget.CalendarViews");
 
-dojo.require("dojox.widget.Calendar");
+dojo.required("dojox.widget.Calendar");
 
 
 dojo.declare("dojox.widget._CalendarMonth", null, {
