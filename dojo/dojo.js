@@ -450,7 +450,7 @@ if(typeof dojo == "undefined"){
 (function(){
 	var isOwnProperty = dojo.isOwnProperty;
 
-	// firebug stubs
+	// Firebug stubs
 
 	if (typeof this.loadFirebugConsole == "undefined") {
 		if (!dojo.isHostObjectProperty(this, 'console')) {
@@ -476,11 +476,19 @@ if(typeof dojo == "undefined"){
 		i = cn.length;
 		while(i--){
 			tn=cn[i];
-			if(!dojo.isHostMethod(this.console, tn)){
+			if (!dojo.isHostMethod(this.console, tn)) {
 				this.console[tn] = logInConsole ? logFunctionFactory(tn) : emptyFunction;
 			}
 		}
 	}
+
+	// NOTE: Something is screwy here (how is console undefined in FF?)
+
+	var warn = function(message) {
+		if (typeof console != 'undefined') {
+			console.warn(message);
+		}
+	};
 
 	// Create placeholders for dijit and dojox for scoping code.
 
@@ -551,7 +559,7 @@ if(typeof dojo == "undefined"){
 		//		Adds all properties and methods of props to obj.
 
 		if (props) { // For backward compatibility
-			for(var x in props){
+			for (var x in props) {
 				obj[x] = props[x];
 			}
 			if (maskedDontEnumBleedsThrough) {
@@ -834,7 +842,7 @@ if(typeof dojo == "undefined"){
 		if (!absolute) {
 			uri = this.baseUrl + uri;
 		} else {
-			console.warn('Path should be relative: ' + relpath + '.');
+			warn('Path should be relative: ' + relpath + '.');
 		}
 
 		if (this._postLoad || !this._writeScript || arguments[3]) {
@@ -866,7 +874,7 @@ if(typeof dojo == "undefined"){
 		//		load JSON-style resources
 
 		if (this._loadedUrls[uri]) {
-			console.warn(uri + ' already loaded.');
+			warn(uri + ' already loaded.');
 			return true; // Boolean
 		}
 
@@ -903,9 +911,7 @@ if(typeof dojo == "undefined"){
 
 		// summary: calls loadUri and checks that it loaded synchronously
 
-		if (typeof console != 'undefined') {
-			console.warn('Synchronous downloads should be avoided.');
-		}
+		warn('Synchronous downloads should be avoided.');
 		
 		return !!(this._loadUri(uri, cb) && this._loadedModules[moduleName]); // Boolean
 	};
@@ -984,7 +990,7 @@ if(typeof dojo == "undefined"){
 
 	dojo._modulesLoaded = function(){
 		if(this._postLoad){
-			console.warn('Modules already loaded.');
+			warn('Modules already loaded.');
 		} else {			
 			this._callLoaded();
 		}
@@ -1136,7 +1142,7 @@ if(typeof dojo == "undefined"){
 			// Email demo exposes issue here
 
 			if (typeof console != 'undefined') {
-				console.warn(moduleName + ' is already loaded.');
+				warn(moduleName + ' is already loaded.');
 				return module;
 			}
 		}
@@ -1358,9 +1364,7 @@ if(typeof dojo == "undefined"){
 
 			// Localization module not yet loaded
 
-			if (typeof console != 'undefined') {
-				console.warn('Load i18n module before requiring localization bundles.');
-			}
+			warn('Load i18n module before requiring localization bundles.');			
 
 			// Last (undocumented) argument forces a synchronous transfer
 
