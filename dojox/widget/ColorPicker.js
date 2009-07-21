@@ -1,10 +1,14 @@
 dojo.provide("dojox.widget.ColorPicker");
 dojo.experimental("dojox.widget.ColorPicker");
+dojo.require("dijit._base");
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
 dojo.require("dijit.form._FormWidget");
 dojo.require("dojo.dnd.common");
 dojo.require("dojo.dnd.Mover");
 dojo.require("dojo.dnd.Moveable");
 dojo.require("dojo.dnd.move");
 dojo.require("dojo.fx");
+dojo.require("dojo.colors");
 dojo.require("dojox.color");
 dojo.require("dojox.widget.ColorPicker-face");
