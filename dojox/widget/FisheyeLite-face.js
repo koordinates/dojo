@@ -68,7 +68,7 @@ dojo.declare("dojox.widget.FisheyeLite",
 	constructor: function(props, node){
 		this.properties = props.properties || {
 			fontSize: 2.75
-		}
+		};
 	},
 	
 	postCreate: function(){
@@ -104,15 +104,21 @@ dojo.declare("dojox.widget.FisheyeLite",
 		// create two properties: objects, one for each "state"
 		var _in = {}, _out = {}, cs = dojo.getComputedStyle(this._target);
 		for(var p in this.properties){
-			var prop = this.properties[p],
-				deep = dojo.isObject(prop),
-				v = parseInt(cs[p])
-			;
-			// note: do not set negative scale for [a list of properties] for IE support
-			// note: filter:'s are your own issue, too ;)
-			// FIXME: this.unit here is bad, likely. d._toPixelValue ?
-			_out[p] = { end: v, unit:this.unit };
-			_in[p] = deep ? prop : { end: prop * v, unit:this.unit };
+			if (dojo.isOwnProperty(this.properties, p)) {
+
+				// NOTE: isObject allows null
+
+				var prop = this.properties[p],
+					deep = dojo.isObject(prop),
+					v = parseInt(cs[p], 10);
+
+				// note: do not set negative scale for [a list of properties] for IE support
+				// note: filter:'s are your own issue, too ;)
+				// FIXME: this.unit here is bad, likely. d._toPixelValue ?
+
+				_out[p] = { end: v, unit:this.unit };
+				_in[p] = deep ? prop : { end: prop * v, unit:this.unit };
+			}
 		}
 		
 		this._runningIn = dojo.animateProperty({
