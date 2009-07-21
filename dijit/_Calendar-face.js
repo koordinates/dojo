@@ -242,7 +242,7 @@ dojo.declare(
 			for(var node = evt.target; node && !node.dijitDateValue; node = node.parentNode);
 			if(node && !dojo.hasClass(node, "dijitCalendarDisabledDate")){
 				value = node.dijitDateValue;
-				value = dojo.date.adjustForUnderflowIfNeeded(new Date(value), node.dijitDayOfMonth);
+				value = dojo.date.adjustForUnderflowIfNeeded(new Date(value), node.dijitDateDayOfMonth);
 				this.attr('value', value);
 				this.onValueSelected(this.value);
 			}
