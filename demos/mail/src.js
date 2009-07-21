@@ -7,6 +7,7 @@ dojo.require("dojo.date.stamp");
 dojo.require("dijit.dijit");
 dojo.require("dijit.Declaration");
 dojo.require("dijit.form.Button");
+dojo.require("dijit._Contained");
 dojo.require("dijit.Menu");
 dojo.require("dijit.Tree");
 dojo.require("dijit.Tooltip");
