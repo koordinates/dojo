@@ -362,6 +362,9 @@ if(typeof dojo == "undefined"){
 			}
 		}
 
+		// NOTE: Need to call this from browser environment module
+		//       if SCRIPT element is not found
+
 		if (doc && isHostMethod(doc, 'getElementsByTagName')){
 
 			// For browsers and browser extensions
@@ -449,7 +452,7 @@ if(typeof dojo == "undefined"){
 
 	// firebug stubs
 
-	if(typeof this.loadFirebugConsole == "undefined"){
+	if (typeof this.loadFirebugConsole == "undefined") {
 		if (!dojo.isHostObjectProperty(this, 'console')) {
 			this.console = {};
 		}
@@ -459,12 +462,12 @@ if(typeof dojo == "undefined"){
 			"groupEnd", "info", "profile", "profileEnd", "time", "timeEnd",
 			"trace", "warn" 
 		];
-		var i=0, tn;
-		var emptyFunction = function(){};
+		var i = 0, tn;
+		var emptyFunction = function() {};
 		var logFunctionFactory = function(tcn){
 			return function() {
 				var a = Array.prototype.slice.call(arguments, 0);
-				a.unshift(tcn+":");
+				a.unshift(tcn + ":");
 				this.console.log(a.join(" "));
 			};
 		};
@@ -1136,11 +1139,13 @@ if(typeof dojo == "undefined"){
 			}
 		}
 
-		// convert periods to slashes
+		// Convert periods to slashes
 
 		relpath = dojo._getModuleSymbols(moduleName).join("/") + '.js';
 
-		ok = dojo._loadPath(relpath, omitModuleCheck ? null : moduleName, null);
+		// NOTE: Third (undocumented) argument to require indicates a synchronous transfer is required
+
+		ok = dojo._loadPath(relpath, omitModuleCheck ? null : moduleName, null, arguments[2]);
 
 		if (!omitModuleCheck) {
 			if(!ok){
@@ -1347,22 +1352,18 @@ if(typeof dojo == "undefined"){
 		//	|				...
 		//
 
-		// NOTE: The require call does not belong here
+		if (!dojo.i18n) {
 
-		this.require("dojo.i18n");
-		var args = Array.prototype.slice.call(arguments, 0);
+			// Localization module not yet loaded
 
-		var _applyLocalization = function() {
-			if (dojo.i18n) {
-				dojo.i18n._requireLocalization.apply(dojo.hostenv, args);
-			} else {
-				//throw new Error('Missing i18n: ' + args[0]);
+			console.warn('Load i18n module before requiring localization bundles.');
 
-				// NOTE: Should not get here under normal circumstances (require rules are followed)
-			}
-		};
+			// Last (undocumented) argument forces a synchronous transfer
 
-		_applyLocalization();
+			this.require("dojo.i18n", false, true);
+		}
+
+		dojo.i18n._requireLocalization.apply(dojo.hostenv, arguments);
 	};
 
 	var ore = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$");

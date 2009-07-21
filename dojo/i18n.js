@@ -117,13 +117,15 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 		}		
 	}
 
-	//See if the desired locale is already loaded.
+	// See if the desired locale is already loaded.
 
 	var tempLocale = availableFlatLocales ? bestLocale : targetLocale;
 	var bundle = dojo._loadedModules[bundlePackage];
 	var localizedBundle = null;
 	if(bundle){
-		if(dojo.config.localizationComplete && bundle._built){return;}
+		if (dojo.config.localizationComplete && bundle._built) {
+			return;
+		}
 		var jsLoc = tempLocale.replace(/-/g, '_');
 		var translationPackage = bundlePackage+"."+jsLoc;
 		localizedBundle = dojo._loadedModules[translationPackage];
@@ -140,7 +142,9 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 			var translationPackage = bundlePackage + "." + jsLoc;
 			var loaded = false;
 			if(!dojo._loadedModules[translationPackage]){
+
 				// Mark loaded whether it's found or not, so that further load attempts will not be made
+
 				dojo.provide(translationPackage);
 				var module = [modpath];
 				if(loc != "ROOT"){module.push(loc);}
