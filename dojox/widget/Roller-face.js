@@ -68,7 +68,7 @@ dojo.declare("dojox.widget.Roller", dijit._Widget, {
 	postCreate: function(){
 
 		// add some instance vars:
-		if(!this["items"]){ 
+		if (!this.items) { 
 			this.items = [];
 		}
 		
@@ -77,21 +77,29 @@ dojo.declare("dojox.widget.Roller", dijit._Widget, {
 		// find all the items in this list, and popuplate 
 		dojo.query(this.itemSelector, this.domNode).forEach(function(item, i){
 			this.items.push(item.innerHTML);
+
 			// reuse the first match, destroy the rest
-			if(i == 0){ 
+
+			if (!i) {
 				this._roller = item; 
 				this._idx = 0; 
-			}else{ dojo.destroy(item); }
+			} else {
+				dojo.destroy(item);
+			}
 		}, this);
 		
 		// handle the case where items[] were passed, and no srcNodeRef exists
+
 		if(!this._roller){
 			this._roller = dojo.create('li', null, this.domNode);
 		}
+
 		// stub out animation creation (for overloading maybe later)
+
 		this.makeAnims();
 		
 		// and start, if true:
+
 		if(this.autoStart){ this.start(); }
 		
 	},
@@ -115,7 +123,7 @@ dojo.declare("dojox.widget.Roller", dijit._Widget, {
 		// summary: setup the loop connection logic
 		var anim = this._anim;
 
-		this.connect(anim["out"], "onEnd", function(){
+		this.connect(anim.out, "onEnd", function(){
 			// onEnd of the `out` animation, select the next items and play `in` animation
 			this._set(this._idx + 1);
 			anim["in"].play(15);
@@ -123,7 +131,7 @@ dojo.declare("dojox.widget.Roller", dijit._Widget, {
 		
 		this.connect(anim["in"], "onEnd", function(){
 			// onEnd of the `in` animation, call `start` again after some delay:
-			this._timeout = setTimeout(dojo.hitch(this, "_run"), this.delay);
+			this._timeout = dojo._getWin().setTimeout(dojo.hitch(this, "_run"), this.delay);
 		});
 	},
 	
@@ -136,23 +144,27 @@ dojo.declare("dojox.widget.Roller", dijit._Widget, {
 	},
 	
 	_run: function(){
-		this._anim["out"].gotoPercent(0, true);
+		this._anim.out.gotoPercent(0, true);
 	},
 
 	stop: function(){
+
 		// summary: Stops the Roller from looping anymore.
+
 		this.rolling = false;
 
 		var m = this._anim, 
 			t = this._timeout;
 
-		if(t){ window.clearTimeout(t); }
+		if (t) { dojo._getWin().clearTimeout(t); }
 		m["in"].stop();
-		m["out"].stop();
+		m.out.stop();
 	},
 	
 	_set: function(i){
+
 		// summary: Set the Roller to some passed index. If beyond range, go to first.
+
 		var l = this.items.length - 1;
 		if(i < 0){ i = l; }
 		if(i > l){ i = 0; }
