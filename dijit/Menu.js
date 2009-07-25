@@ -298,6 +298,9 @@ dojo.declare("dijit.Menu",
 		if(this.contextMenuForWindow){
 			this.bindDomNode(dojo.body());
 		}else{
+			// TODO: should have _setTargetNodeIds() method to handle initialization and a possible
+			// later attr('targetNodeIds', ...) call.   There's also a problem that targetNodeIds[]
+			// gets stale after calls to bindDomNode()/unBindDomNode() as it still is just the original list (see #9610)
 			dojo.forEach(this.targetNodeIds, this.bindDomNode, this);
 		}
 		var k = dojo.keys, l = this.isLeftToRight();
@@ -396,7 +399,7 @@ dojo.declare("dijit.Menu",
 		// summary:
 		//		Detach menu from given node
 		var node = dojo.byId(nodeName);
-		if(node){
+		if(node && node[this.id]){
 			var bid = node[this.id]-1, b = this._bindings[bid];
 			dojo.forEach(b.connects, this.disconnect, this);
 			delete this._bindings[bid];
@@ -451,7 +454,7 @@ dojo.declare("dijit.Menu",
 		dojo.stopEvent(e);
 
 		// Get coordinates.
-		// if we are opening the menu with the mouse or on safari open
+		// If we are opening the menu with the mouse or on safari open
 		// the menu at the mouse cursor
 		// (Safari does not have a keyboard command to open the context menu
 		// and we don't currently have a reliable way to determine
@@ -467,8 +470,13 @@ dojo.declare("dijit.Menu",
 					ifc = dojo.coords(iframe),
 					scroll = dojo.withDoc(od, "_docScroll", dojo);
 
-				x += ifc.l + dojo.style(od.body, "marginLeft") - scroll.x;
-				y += ifc.t + dojo.style(od.body, "marginTop") - scroll.y;
+				var cs = dojo.getComputedStyle(iframe),
+					tp = dojo._toPixelValue,
+					left = tp(iframe, cs.paddingLeft) + tp(iframe, cs.borderLeft) + tp(iframe, cs.marginLeft),
+					top = tp(iframe, cs.paddingTop) + tp(iframe, cs.borderTop) + tp(iframe, cs.marginTop);
+
+				x += ifc.l + left - scroll.x;
+				y += ifc.t + top - scroll.y;
 			}
 		}else{
 			// otherwise open near e.target
@@ -505,7 +513,7 @@ dojo.declare("dijit.Menu",
 	},
 
 	uninitialize: function(){
- 		dojo.forEach(this.targetNodeIds, this.unBindDomNode, this);
+ 		dojo.forEach(this._bindings, function(b){ if(b){ this.unBindDomNode(b.node); } }, this);
  		this.inherited(arguments);
 	}
 }
