@@ -1,8 +1,8 @@
 dojo.provide("dojox.form.DropDownSelect");
 
-dojo.require("dojox.form._FormSelectWidget");
-dojo.require("dojox.form._HasDropDown");
-dojo.require("dijit.Menu");
+dojo.required("dojox.form._FormSelectWidget");
+dojo.required("dojox.form._HasDropDown");
+dojo.required("dijit.Menu");
 
 dojo.requireLocalization("dijit.form", "validate");
 
