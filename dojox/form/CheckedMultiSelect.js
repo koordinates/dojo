@@ -1,7 +1,7 @@
 dojo.provide("dojox.form.CheckedMultiSelect");
 
-dojo.require("dijit.form.CheckBox");
-dojo.require("dojox.form._FormSelectWidget");
+dojo.required("dijit.form.CheckBox");
+dojo.required("dojox.form._FormSelectWidget");
 
 dojo.declare("dojox.form._CheckedMultiSelectItem", 
 	[dijit._Widget, dijit._Templated],
