@@ -1,7 +1,7 @@
 dojo.provide("dojox.form.MultiComboBox");
 dojo.experimental("dojox.form.MultiComboBox"); 
-dojo.require("dijit.form.ComboBox");
-dojo.require("dijit.form.ValidationTextBox");
+dojo.required("dijit.form.ComboBox");
+dojo.required("dijit.form.ValidationTextBox");
 
 dojo.declare("dojox.form.MultiComboBox",
 	[dijit.form.ValidationTextBox, dijit.form.ComboBoxMixin],{
