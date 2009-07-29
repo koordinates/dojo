@@ -1027,20 +1027,15 @@ if(dojo.isIE || dojo.isOpera){
 	}
 
 	dojo._docScroll = function(){
-		var 
-			_b = d.body(),
-			_w = d.global,
-			de = d.doc.documentElement;
-		return {
-			y: (_w.pageYOffset || de.scrollTop || _b.scrollTop || 0),
-			x: (_w.pageXOffset || d._fixIeBiDiScrollLeft(de.scrollLeft) || _b.scrollLeft || 0)
-		};
+		var n = d.global;
+		return "pageXOffset" in n? { x:n.pageXOffset, y:n.pageYOffset } :
+			(n=d.doc.documentElement, n.clientHeight? { x:d._fixIeBiDiScrollLeft(n.scrollLeft), y:n.scrollTop } :
+			(n=d.body(), { x:n.scrollLeft||0, y:n.scrollTop||0 }));
 	};
 
 	dojo._isBodyLtr = function(){
-		//FIXME: could check html and body tags directly instead of computed style?  need to ignore case, accept empty values
-		return ("_bodyLtr" in d) ? d._bodyLtr :
-			d._bodyLtr = gcs(d.body()).direction == "ltr"; // Boolean 
+		return "_bodyLtr" in d? d._bodyLtr :
+			d._bodyLtr = (d.body().dir || d.doc.documentElement.dir || "ltr").toLowerCase() == "ltr"; // Boolean 
 	}
 
 	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
