@@ -1,9 +1,9 @@
 dojo.provide("dojox.form.FileUploader");
 dojo.experimental("dojox.form.FileUploader");
 
-dojo.require("dojox.embed.Flash");
-dojo.require("dojo.io.iframe");
-dojo.require("dojox.html.styles");
+dojo.required("dojox.embed.Flash");
+dojo.required("dojo.io.iframe");
+dojo.required("dojox.html.styles");
 
 dojo.declare("dojox.form.FileUploader", null, {
 	// summary: 

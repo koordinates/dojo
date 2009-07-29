@@ -1,8 +1,8 @@
 dojo.provide("dojox.form.FilePickerTextBox");
 
-dojo.require("dojox.widget.FilePicker");
-dojo.require("dijit.form.ValidationTextBox");
-dojo.require("dojox.form._HasDropDown");
+dojo.required("dojox.widget.FilePicker");
+dojo.required("dijit.form.ValidationTextBox");
+dojo.required("dojox.form._HasDropDown");
 
 dojo.declare(
 	"dojox.form.FilePickerTextBox",
