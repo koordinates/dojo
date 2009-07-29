@@ -1,7 +1,7 @@
 dojo.provide("dojox.form.FileInputAuto");
 
-dojo.require("dojox.form.FileInput");
-dojo.require("dojo.io.iframe"); 
+dojo.required("dojox.form.FileInput");
+dojo.required("dojo.io.iframe"); 
 
 dojo.declare("dojox.form.FileInputAuto",
 	dojox.form.FileInput,

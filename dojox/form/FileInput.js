@@ -1,8 +1,8 @@
 dojo.provide("dojox.form.FileInput");
 dojo.experimental("dojox.form.FileInput"); 
 
-dojo.require("dijit.form._FormWidget");
-dojo.require("dijit._Templated"); 
+dojo.required("dijit.form._FormWidget");
+dojo.required("dijit._Templated"); 
 
 dojo.declare("dojox.form.FileInput",
 	dijit.form._FormWidget,
