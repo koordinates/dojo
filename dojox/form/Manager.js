@@ -1,7 +1,7 @@
 dojo.provide("dojox.form.Manager");
-dojo.require("dijit._base");
-dojo.require("dijit._Widget");
-dojo.require("dijit._Templated");
+dojo.required("dijit._base");
+dojo.required("dijit._Widget");
+dojo.required("dijit._Templated");
 dojo.require("dojox.form.manager._Mixin");
 dojo.require("dojox.form.manager._NodeMixin");
 dojo.require("dojox.form.manager._FormMixin");
