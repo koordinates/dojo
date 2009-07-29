@@ -1,11 +1,10 @@
 dojo.provide("dojox.layout.FloatingPane");
 dojo.experimental("dojox.layout.FloatingPane"); 
 
-dojo.require("dojox.layout.ContentPane");
-dojo.require("dijit._Templated"); 
-dojo.require("dijit._Widget"); 
-dojo.require("dojo.dnd.Moveable");
-dojo.require("dojox.layout.ResizeHandle"); 
+dojo.required("dojox.layout.ContentPane");
+dojo.required("dijit._Templated");
+dojo.required("dojo.dnd.Moveable");
+dojo.required("dojox.layout.ResizeHandle"); 
 
 dojo.declare("dojox.layout.FloatingPane", 
 	[ dojox.layout.ContentPane, dijit._Templated ],

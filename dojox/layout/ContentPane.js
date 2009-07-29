@@ -1,7 +1,7 @@
 dojo.provide("dojox.layout.ContentPane");
 
-dojo.require("dijit.layout.ContentPane");
-dojo.require("dojox.html._base"); 
+dojo.required("dijit.layout.ContentPane");
+dojo.required("dojox.html._base"); 
 
 (function(){ // private scope, sort of a namespace
 

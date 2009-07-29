@@ -1,9 +1,9 @@
 dojo.provide("dojox.layout.ExpandoPane");
 dojo.experimental("dojox.layout.ExpandoPane"); // just to show it can be done?
 
-dojo.require("dijit.layout.ContentPane");
-dojo.require("dijit._Templated");
-dojo.require("dijit._Container");
+dojo.required("dijit._Templated");
+dojo.required("dijit._Container");
+dojo.required("dijit.layout.ContentPane");
 
 dojo.declare("dojox.layout.ExpandoPane",
 	[dijit.layout.ContentPane, dijit._Templated, dijit._Contained],
