@@ -1,12 +1,11 @@
 dojo.provide("dojox.layout.GridContainer");
 dojo.experimental("dojox.layout.GridContainer");
 
-dojo.require("dijit._base.focus");
-dojo.require("dijit._Templated");
-dojo.require("dijit._Container");
-dojo.require("dijit._Contained");
-dojo.require("dojo.dnd.move");
-dojo.require("dojox.layout.dnd.PlottedDnd");
+dojo.required("dijit._Templated");
+dojo.required("dijit._Container");
+dojo.required("dijit._Contained");
+dojo.required("dojo.dnd.move");
+dojo.required("dojox.layout.dnd.PlottedDnd");
 
 dojo.requireLocalization("dojox.layout", "GridContainer");
 
