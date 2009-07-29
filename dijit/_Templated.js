@@ -2,7 +2,6 @@ dojo.provide("dijit._Templated");
 dojo.required("dijit._Widget");
 dojo.require("dojo.string");
 dojo.require("dojo.parser");
-//dojo.require("dijit._Templated-face");
 
 dojo.declare("dijit._Templated",
 	null,
@@ -33,25 +32,36 @@ dojo.declare("dijit._Templated",
 		//		that its template is always re-built from a string
 		_skipNodeCache: false,
 
-		_stringRepl: function(tmpl){
+		_stringRepl: function(tmpl) {
+
 			// summary:
 			//		Does substitution of ${foo} type properties in template string
 			// tags:
 			//		private
+
 			var className = this.declaredClass, _this = this;
+
 			// Cache contains a string because we need to do property replacement
 			// do the property replacement
-			return dojo.string.substitute(tmpl, this, function(value, key){
-				if(key.charAt(0) == '!'){ value = dojo.getObject(key.substr(1), _this); }
-				if(typeof value == "undefined"){ throw new Error(className+" template:"+key); } // a debugging aide
-				if(!value){ return ""; }
 
-				// Substitution keys beginning with ! will skip the transform step,
-				// in case a user wishes to insert unescaped markup, e.g. ${!foo}
-				return key.charAt(0) == "!" ? value :
-					// Safer substitution, see heading "Attribute values" in
-					// http://www.w3.org/TR/REC-html40/appendix/notes.html#h-B.3.2
-					value.toString().replace(/"/g,"&quot;"); //TODO: add &amp? use encodeXML method?
+			return dojo.string.substitute(tmpl, this, function(value, key){
+				if (key.charAt(0) == '!') {
+					value = dojo.getObject(key.slice(1), _this);
+				}
+				if (typeof value == "undefined") {
+					throw new Error(className + " template:" + key + " is missing.");
+				}
+				if (value) {
+
+					// Substitution keys beginning with ! will skip the transform step,
+					// in case a user wishes to insert unescaped markup, e.g. ${!foo}
+
+					// NOTE: Duplication
+
+					return key.charAt(0) == "!" ? value :
+						value.toString().replace(/&/g,"&amp;").replace(/>/g,"&gt;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+				}
+				return "";
 			}, this);
 		},
 
