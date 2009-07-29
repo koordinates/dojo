@@ -1,6 +1,6 @@
 dojo.provide("dojox.form.BusyButton");
 
-dojo.require("dijit.form.Button");
+dojo.required("dijit.form.Button");
 
 dojo.requireLocalization("dijit", "loading");
 
