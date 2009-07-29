@@ -1,6 +1,6 @@
 dojo.provide("dojox.form.Rating");
 
-dojo.require("dijit.form._FormWidget");
+dojo.required("dijit.form._FormWidget");
 
 dojo.declare("dojox.form.Rating",
 	dijit.form._FormWidget,{
