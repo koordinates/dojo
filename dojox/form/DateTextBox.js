@@ -1,8 +1,8 @@
 dojo.provide("dojox.form.DateTextBox");
 
-dojo.require("dojox.widget.Calendar");
-dojo.require("dojox.widget.CalendarViews");
-dojo.require("dijit.form._DateTimeTextBox");
+dojo.required("dojox.widget.Calendar");
+dojo.required("dojox.widget.CalendarViews");
+dojo.required("dijit.form._DateTimeTextBox");
 
 dojo.declare(
 	"dojox.form.DateTextBox",
