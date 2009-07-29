@@ -41,14 +41,17 @@
 		<!-- do not use, only for dynamic themes -->
 		<script type="text/javascript" src="../../../dijit/tests/_testCommon.js"></script>
 
-		<script type="text/javascript" src="../../../dijit/form/ValidationTextBox.js"></script>
-		<script type="text/javascript" src="../../../dijit/form/_DateTimeTextBox.js"></script>
-		<script type="text/javascript" src="../../widget/Calendar.js"></script>
-		<script type="text/javascript" src="../DateTextBox.js"></script>
-
 		<script type="text/javascript">
-			dojo.require("dojox.form.DateTextBox");
+			dojo.require("dijit._base");
+			dojo.require("dijit._Widget");
+			dojo.require("dijit._Templated");
 			dojo.require("dijit.form.Form");
+			dojo.require("dijit.form.ValidationTextBox");
+			dojo.require("dijit.form._DateTimeTextBox");
+			dojo.require("dojox.widget.Calendar");
+			dojo.require("dojox.widget.CalendarViews");
+			dojo.require("dojox.form.DateTextBox");
+			dojo.require("dojo.date");
 			dojo.require("dojo.date.locale");
 			dojo.require("dojo.parser");	// scan page for widgets and instantiate them
 		</script>
