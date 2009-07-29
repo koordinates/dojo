@@ -1,7 +1,7 @@
 dojo.provide("dojox.fx._base");
 // summary: Experimental and extended Animations beyond Dojo Core / Base functionality. 
 //	Provides advanced Lines, Animations, and convenience aliases.
-dojo.require("dojo.fx"); 
+dojo.required("dojo.fx"); 
 
 dojo.mixin(dojox.fx, {
 
