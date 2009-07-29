@@ -1,4 +1,5 @@
 dojo.provide("dojox.json.ref");
+dojo.require("dojo.date");
 dojo.require("dojo.date.stamp");
 
 // summary:
@@ -64,13 +65,19 @@ dojox.json.ref = {
 				if(assignAbsoluteIds){
 					it.__id = id;
 				}
-				if(args.schemas && (!(it instanceof Array)) && // won't try on arrays to do prototypes, plus it messes with queries 
-		 					(val = id.match(/^(.+\/)[^\.\[]*$/))){ // if it has a direct table id (no paths)
-		 			schema = args.schemas[val[1]];
+				// won't try on arrays to do prototypes, plus it messes with queries 
+
+
+
+				if (args.schemas && !dojo.isArray(it)) { // if it has a direct table id (no paths)
+					val = id.match(/^(.+\/)[^\.\[]*$/);
+					if (val) {
+			 			schema = args.schemas[val[1]];	
+					}
 				} 
 				// if the id already exists in the system, we should use the existing object, and just 
 				// update it... as long as the object is compatible
-				if(index[id] && ((it instanceof Array) == (index[id] instanceof Array))){ 
+				if(index[id] && dojo.isArray(it) == dojo.isArray(index[id])){ 
 					target = index[id];
 					delete target.$ref; // remove this artifact
 					update = true;
@@ -89,72 +96,75 @@ dojox.json.ref = {
 			}
 			var properties = schema && schema.properties; 
 			var length = it.length;
+			var fn = function(t,a,b,c,d){
+				ref = ref && ref[b ? b.replace(/[\"\'\\]/,'') : d];
+			};
 			for(var i in it){
-				if(i==length){
-					break;		
-				}
-				if(it.hasOwnProperty(i)){
-					val=it[i];
-					var propertyDefinition = properties && properties[i];
-					if(propertyDefinition && propertyDefinition.format == 'date-time' && typeof val == 'string'){
-						val = dojo.date.stamp.fromISOString(val);
-					}else if((typeof val =='object') && val && !(val instanceof Date)){
-						ref=val.$ref;
-						if(ref){ // a reference was found
-							// make sure it is a safe reference
-							delete it[i];// remove the property so it doesn't resolve to itself in the case of id.propertyName lazy values
-							var path = ref.replace(/(#)([^\.\[])/,'$1.$2').match(/(^([^\[]*\/)?[^#\.\[]*)#?([\.\[].*)?/); // divide along the path
-							if((ref = (path[1]=='$' || path[1]=='this' || path[1]=='') ? root : index[(prefix + path[1]).replace(pathResolveRegex,'$2$3')])){  // a $ indicates to start with the root, otherwise start with an id
-								// if there is a path, we will iterate through the path references
-								if(path[3]){
-									path[3].replace(/(\[([^\]]+)\])|(\.?([^\.\[]+))/g,function(t,a,b,c,d){
-										ref = ref && ref[b ? b.replace(/[\"\'\\]/,'') : d];
-									});
-								}
-							}
-							if(ref){
-								// otherwise, no starting point was found (id not found), if stop is set, it does not exist, we have
-								// unloaded reference, if stop is not set, it may be in a part of the graph not walked yet,
-								// we will wait for the second loop
-								val = ref;
-							}else{
-								if(!stop){
-									var rewalking;
-									if(!rewalking){
-										reWalk.push(target); // we need to rewalk it to resolve references
+				if (dojo.isOwnProperty(it, i)) {
+					if(i==length){
+						break;		
+					}
+					if(it.hasOwnProperty(i)){
+						val=it[i];
+						var propertyDefinition = properties && properties[i];
+						if(propertyDefinition && propertyDefinition.format == 'date-time' && typeof val == 'string'){
+							val = dojo.date.stamp.fromISOString(val);
+						}else if((typeof val =='object') && val && !dojo.isDate(val)){
+							ref=val.$ref;
+							if(ref){ // a reference was found
+								// make sure it is a safe reference
+								delete it[i];// remove the property so it doesn't resolve to itself in the case of id.propertyName lazy values
+								var path = ref.replace(/(#)([^\.\[])/,'$1.$2').match(/(^([^\[]*\/)?[^#\.\[]*)#?([\.\[].*)?/); // divide along the path
+								if((ref = (path[1]=='$' || path[1]=='this' || path[1]==='') ? root : index[(prefix + path[1]).replace(pathResolveRegex,'$2$3')])){  // a $ indicates to start with the root, otherwise start with an id
+									// if there is a path, we will iterate through the path references
+									if(path[3]){
+										path[3].replace(/(\[([^\]]+)\])|(\.?([^\.\[]+))/g, fn);
 									}
-									rewalking = true; // we only want to add it once
-								}else{
-									val = walk(val, false, val.$ref, propertyDefinition);
-									// create a lazy loaded object
-									val._loadObject = args.loader;
 								}
-							}
-						}else{
-							if(!stop){ // if we are in stop, that means we are in the second loop, and we only need to check this current one,
-								// further walking may lead down circular loops
-								val = walk(
-									val,
-									reWalk==it,
-									id && addProp(id, i), // the default id to use
-									propertyDefinition, 
-									// if we have an existing object child, we want to 
-									// maintain it's identity, so we pass it as the default object
-									target != it && typeof target[i] == 'object' && target[i] 
-								);
+								if(ref){
+									// otherwise, no starting point was found (id not found), if stop is set, it does not exist, we have
+									// unloaded reference, if stop is not set, it may be in a part of the graph not walked yet,
+									// we will wait for the second loop
+									val = ref;
+								}else{
+									if(!stop){
+										var rewalking;
+										if(!rewalking){
+											reWalk.push(target); // we need to rewalk it to resolve references
+										}
+										rewalking = true; // we only want to add it once
+									}else{
+										val = walk(val, false, val.$ref, propertyDefinition);
+										// create a lazy loaded object
+										val._loadObject = args.loader;
+									}
+								}
+							}else{
+								if(!stop){ // if we are in stop, that means we are in the second loop, and we only need to check this current one,
+									// further walking may lead down circular loops
+									val = walk(
+										val,
+										reWalk==it,
+										id && addProp(id, i), // the default id to use
+										propertyDefinition, 
+										// if we have an existing object child, we want to 
+										// maintain it's identity, so we pass it as the default object
+										target != it && typeof target[i] == 'object' && target[i] 
+									);
+								}
 							}
 						}
-					}
-					it[i] = val;
-					if(target!=it && !target.__isDirty){// do updates if we are updating an existing object and it's not dirty				
-						var old = target[i];
-						target[i] = val; // only update if it changed
-						if(update && val !== old && // see if it is different 
-								!target._loadObject && // no updates if we are just lazy loading 
-								!(val instanceof Date && old instanceof Date && val.getTime() == old.getTime()) && // make sure it isn't an identical date
-								!(typeof val == 'function' && typeof old == 'function' && val.toString() == old.toString()) && // make sure it isn't an indentical function
-								index.onUpdate){
-							index.onUpdate(target,i,old,val); // call the listener for each update
+						it[i] = val;
+						if(target!=it && !target.__isDirty){// do updates if we are updating an existing object and it's not dirty				
+							var old = target[i];
+							target[i] = val; // only update if it changed
+							if(update && val !== old && // see if it is different 
+									!target._loadObject && // no updates if we are just lazy loading 
+									!(dojo.isDate(val) && dojo.isDate(old) && val.getTime() == old.getTime()) && // make sure it isn't an identical date
+									!(typeof val == 'function' && typeof old == 'function' && val.toString() == old.toString()) && // make sure it isn't an indentical function
+									index.onUpdate){
+								index.onUpdate(target,i,old,val); // call the listener for each update
+							}
 						}
 					}
 				}
@@ -163,12 +173,12 @@ dojox.json.ref = {
 			if(update){
 				// this means we are updating, we need to remove deleted
 				for(i in target){
-					if(!target.__isDirty && target.hasOwnProperty(i) && !it.hasOwnProperty(i) && i != '__id' && i != '__clientId' && !(target instanceof Array && isNaN(i))){
+					if(!target.__isDirty && dojo.isOwnProperty(target, i) && !dojo.isOwnProperty(it, i) && i != '__id' && i != '__clientId' && !(dojo.isArray(target) && isNaN(i))){
 						if(index.onUpdate && i != "_loadObject" && i != "_idAttr"){
 							index.onUpdate(target,i,target[i],undefined); // call the listener for each update
 						}
 						delete target[i];
-						while(target instanceof Array && target.length && target[target.length-1] === undefined){
+						while(dojo.isArray(target) && target.length && target[target.length-1] === undefined){
 							// shorten the target if necessary
 							target.length--;
 						}
@@ -200,11 +210,14 @@ dojox.json.ref = {
 	//
 	// return:
 	//		An object, the result of the evaluation
+
+		// NOTE: Unused function
+
 		function ref(target){ // support call styles references as well
 			return {$ref:target};
 		}
 		try{
-			var root = eval('(' + str + ')'); // do the eval
+			var root = dojo.eval('(' + str + ')');
 		}catch(e){
 			throw new SyntaxError("Invalid JSON string: " + e.message + " parsing: "+ str);
 		}		
@@ -240,8 +253,7 @@ dojox.json.ref = {
 		var generated = {};
 		function serialize(it,path,_indentStr){
 			if(typeof it == 'object' && it){
-				var value;
-				if(it instanceof Date){ // properly serialize dates
+				if(dojo.isDate(it)){ // properly serialize dates
 					return '"' + dojo.date.stamp.toISOString(it,{zulu:true}) + '"';
 				}
 				var id = it.__id;
@@ -274,7 +286,7 @@ dojox.json.ref = {
 				var newLine = prettyPrint ? "\n" : "";
 				var sep = prettyPrint ? " " : "";
 	
-				if(it instanceof Array){
+				if(dojo.isArray(it)){
 					var res = dojo.map(it, function(obj,i){
 						var val = serialize(obj, addProp(path, i), nextIndent);
 						if(typeof val != "string"){
@@ -316,7 +328,9 @@ dojox.json.ref = {
 		var json = serialize(it,'#','');
 		if(!indexSubObjects){
 			for(var i in generated)  {// cleanup the temporary path-generated ids
-				delete generated[i].__id;
+				if (dojo.isOwnProperty(generated, i)) {
+					delete generated[i].__id;
+				}
 			}
 		}
 		return json;
@@ -326,4 +340,4 @@ dojox.json.ref = {
 	},
 	_useRefs: false,
 	serializeFunctions: false
-}
+};
