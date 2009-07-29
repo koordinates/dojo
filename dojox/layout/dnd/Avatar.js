@@ -1,5 +1,5 @@
 dojo.provide("dojox.layout.dnd.Avatar");
-dojo.require("dojo.dnd.common");
+dojo.required("dojo.dnd.common");
 
 dojox.layout.dnd.Avatar = function(manager,opacity){
 	// summary: 

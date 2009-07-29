@@ -1,8 +1,8 @@
 dojo.provide("dojox.layout.dnd.PlottedDnd");
 
-dojo.require("dojo.dnd.Source");
-dojo.require("dojo.dnd.Manager");
-dojo.require("dojox.layout.dnd.Avatar");
+dojo.required("dojo.dnd.Source");
+dojo.required("dojo.dnd.Manager");
+dojo.required("dojox.layout.dnd.Avatar");
 
 dojo.declare("dojox.layout.dnd.PlottedDnd", [dojo.dnd.Source], {
 	// summary:
