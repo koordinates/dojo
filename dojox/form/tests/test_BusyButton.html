@@ -19,9 +19,13 @@
 		<!-- required: dojo.js -->
 		<script type="text/javascript" src="../../../dojo/dojo.js"
 			djConfig="parseOnLoad: true, isDebug: true"></script>
-		<script type="text/javascript" src="../BusyButton.js"></script>
 		<script type="text/javascript">
+			dojo.require("dijit._base");
+			dojo.require("dijit._Widget");
+			dojo.require("dijit._Templated");
 			dojo.require("dijit.Menu");
+			dojo.require("dijit.form.button");
+			dojo.require("dojox.form.BusyButton");
 			dojo.addOnLoad(function(){
 				dojo.connect(dijit.byId("buttonCancel"), "onClick", function(){
 					dijit.byId("button_noTimeout").cancel();
