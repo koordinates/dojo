@@ -12,9 +12,11 @@
 		@import "../resources/FileInput.css"; 
 	</style>
 	<script>
-		passthrough = function(msg){
-			//for catching messages from Flash
-			if(window.console){
+		passthrough = function(msg) {
+
+			// For catching messages from Flash
+
+			if (typeof console != 'undefined') {
 				console.log(msg);	
 			}
 		}
@@ -58,13 +60,17 @@
 	<script type="text/javascript" src="../../../dojo/dojo.js" 
     	djConfig="isDebug:true, parseOnLoad: true, debugAtAllCosts:false"></script>
 	<script type="text/javascript">
-		dojo.require("dojox.form.FileUploader");
-		dojo.require("dijit.form.Button"); 
+
 		dojo.require("dojo.parser");
-		
-		//using this early for the forceNoFlash test:
+		dojo.require("dojo.io.iframe");
+		dojo.require("dijit._base");
+		dojo.require("dijit._Widget");
+		dojo.require("dijit._Templated");
+		dojo.require("dijit.form.Button");
 		dojo.require("dojox.embed.Flash");
-		
+		dojo.require("dojox.html.styles");
+		dojo.require("dojox.form.FileUploader");
+				
 		var uploadUrl = "../resources/UploadFile.php";
 		
 		var rmFiles = "";
@@ -107,7 +113,6 @@
 			}
 			dojo.byId("uploadedFiles").value = "";
 			dojo.byId("fileToUpload").value = "";
-	
 			
 			var f0 = new dojox.form.FileUploader({
 				button:dijit.byId("btn0"), 
