@@ -1,6 +1,6 @@
 dojo.provide("dojox.form._FormSelectWidget");
 
-dojo.require("dijit.form._FormWidget");
+dojo.required("dijit.form._FormWidget");
 
 /*=====
 dojox.form.__SelectOption = function(){

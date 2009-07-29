@@ -1,6 +1,6 @@
 dojo.provide("dojox.form._HasDropDown");
 
-dojo.require("dijit._Widget");
+dojo.required("dijit._Widget");
 
 dojo.declare("dojox.form._HasDropDown",
 	null,
