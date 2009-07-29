@@ -6,14 +6,23 @@
 	    </script>
 	    <script type="text/javascript">
 			dojo.require("doh.runner");
-			dojo.require("dojox.form.DropDownStack");
-			dojo.require("dojox.form.RadioStack");
+		        dojo.require("dojo.parser");
+			dojo.require("dijit._base");
+			dojo.require("dijit._Widget");
+			dojo.require("dijit._Templated");
 			dojo.require("dijit.form.Button");
 			dojo.require("dijit.form.Form");
 			dojo.require("dijit.layout.StackContainer");
 			dojo.require("dijit.layout.ContentPane");
 			dojo.require("dijit.form.TextBox");
-	        dojo.require("dojo.parser");
+			dojo.require("dijit.form.CheckBox");
+			dojo.require("dojox.form._HasDropDown");
+			dojo.require("dojox.form._FormSelectWidget");
+			dojo.require("dojox.form._SelectStackMixin");
+			dojo.require("dojox.form.CheckedMultiSelect");
+			dojo.require("dojox.form.DropDownSelect");
+			dojo.require("dojox.form.DropDownStack");
+			dojo.require("dojox.form.RadioStack");
 			
 			dojo.addOnLoad(function(){
 				doh.register("tests",
