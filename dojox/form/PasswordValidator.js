@@ -1,17 +1,17 @@
 dojo.provide("dojox.form.PasswordValidator");
-
 dojo.required("dijit.form._FormWidget");
 dojo.required("dijit.form.ValidationTextBox");
-
 dojo.requireLocalization("dojox.form", "PasswordValidator");
 
 dojo.declare("dojox.form._ChildTextBox", dijit.form.ValidationTextBox, {
+
 	// summary:
 	//		A class that is shared between all our children - extends 
 	//		ValidationTextBox and provides some shared functionality
 	//
 	// containerWidget: widget
 	//		Our parent (the PasswordValidator)
+
 	containerWidget: null,
 	
 	// type: string
@@ -38,8 +38,6 @@ dojo.declare("dojox.form._ChildTextBox", dijit.form.ValidationTextBox, {
 		}
 	}
 });
-
-
 
 dojo.declare("dojox.form._OldPWBox", dojox.form._ChildTextBox, {
 	// summary:
@@ -95,7 +93,6 @@ dojo.declare("dojox.form._OldPWBox", dojox.form._ChildTextBox, {
 		this._setValueAttr(value, (this.isValid ? this.isValid() : true));
 	}
 });
-
 
 dojo.declare("dojox.form._NewPWBox", dojox.form._ChildTextBox, {
 	// summary:
