@@ -1,6 +1,5 @@
 dojo.provide("dojox.cometd._base");
-dojo.require("dojo.AdapterRegistry");
-
+dojo.required("dojo.AdapterRegistry");
 
 /*
  * this file defines Comet protocol client. Actual message transport is
