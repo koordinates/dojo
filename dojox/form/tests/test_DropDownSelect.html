@@ -15,10 +15,16 @@
 	    </script>
 	    <script type="text/javascript">
 			dojo.require("doh.runner");
-	        dojo.require("dojo.parser");
-			dojo.require("dojox.form.DropDownSelect");
+		        dojo.require("dojo.parser");
+			dojo.require("dijit._base");
+			dojo.require("dijit._Widget");
+			dojo.require("dijit._Templated");
 			dojo.require("dijit.form.Button");
 			dojo.require("dijit.form.Form");
+			dojo.require("dijit.Menu");
+			dojo.require("dojox.form._HasDropDown");
+			dojo.require("dojox.form._FormSelectWidget");
+			dojo.require("dojox.form.DropDownSelect");
 			
 			var numOptions = 0;
 			var numChanges = 0;
@@ -88,7 +94,7 @@
 				<option value="CA">California</option>
 			</select>
 		<hr>
-			<h4 class="testSubtitle">Rich Text (Need to use divs and spans - since browsers hack selects to pieces)</h4>
+			<h4 class="testSubtitle">Rich Text</h4>
 			<div jsId="s4" name="s4" value="AK" dojoType="dojox.form.DropDownSelect">
 				<span value="AL"><b>Alabama</b></span>
 				<span value="AK"><font color="red">A</font><font color="orange">l</font><font color="yellow">a</font><font color="green">s</font><font color="blue">k</font><font color="purple">a</font></span>
