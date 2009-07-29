@@ -1,7 +1,7 @@
 dojo.provide("dojox.form.PasswordValidator");
 
-dojo.require("dijit.form._FormWidget");
-dojo.require("dijit.form.ValidationTextBox");
+dojo.required("dijit.form._FormWidget");
+dojo.required("dijit.form.ValidationTextBox");
 
 dojo.requireLocalization("dojox.form", "PasswordValidator");
 
