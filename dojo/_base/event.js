@@ -253,13 +253,11 @@ dojo.required("dojo._base.connect");
 			// simulate a keypress event
 
 			var faux = del._synthesizeEvent(evt, {type: 'keypress', faux: true, charCode: c});
-			kp.call(evt.currentTarget, faux);
+			if (kp) { kp.call(evt.currentTarget, faux); }
 			if (typeof evt.cancelBubble != 'undefined') {
 				evt.cancelBubble = faux.cancelBubble;
 				evt.returnValue = faux.returnValue;
 			}
-
-			// Defined only in IE
 
 			if (_trySetKeyCode) {
 				_trySetKeyCode(evt, faux.keyCode);
