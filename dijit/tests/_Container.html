@@ -8,10 +8,13 @@
 	<script type="text/javascript" src="../../dojo/dojo.js" djConfig="isDebug: true, parseOnLoad: true"></script>
 	<script type="text/javascript">
 		dojo.require("doh.runner");
+		dojo.require("dojo.parser");
+		dojo.require("dijit._base");
 		dojo.require("dijit._Widget");
 		dojo.require("dijit._Container");
 		dojo.require("dijit._Contained");
-
+	</script>
+	<script type="text/javascript">
 		dojo.declare("dijit.TestContainer",
 			[dijit._Widget, dijit._Container], { }
 		);
@@ -19,8 +22,6 @@
 		dojo.declare("dijit.TestContained",
 			[dijit._Widget, dijit._Contained], {}
 		);
-
-		dojo.require("dojo.parser");
 
 		dojo.addOnLoad(function(){
 			doh.register("dijit._Container",
