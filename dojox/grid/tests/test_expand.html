@@ -31,9 +31,11 @@
 	<script type="text/javascript" src="../../../dojo/dojo.js" 
 		djConfig="isDebug:false, parseOnLoad: true"></script>
 	<script type="text/javascript">
+		dojo.require("dojo.parser");
+		dojo.require("dojo.dnd.common");
+		dojo.require("dojo.dnd.Mover");
 		dojo.require("dijit.dijit");
 		dojo.require("dojox.grid.DataGrid");
-		dojo.require("dojo.parser");
 	</script>
 	<script type="text/javascript">
 		// inRow is an array of subRows. we hide the summary subRow except for every nth row
