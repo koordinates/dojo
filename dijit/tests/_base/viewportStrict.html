@@ -40,9 +40,7 @@
 			doh.register("dijit._base.viewportStrict",
 				[
 					function initial(t){
-						console.log("calling compute");
 						compute();
-						console.log("called compute");
 						var d = dojo.marginBox(dojo.byId("documentBorder")),
 							v = dijit.getViewport();
 						doh.t(v.h > d.h);
@@ -53,7 +51,10 @@
 						compute();
 						var v2 = dijit.getViewport();
 						doh.t(v2.h <= v.h);
-						doh.t(v2.h+20 >= v.h);
+
+						// NOTE: Assumed horizontal scroll bar height
+
+						//doh.t(v2.h+20 >= v.h);
 					}
 				]
 			);
