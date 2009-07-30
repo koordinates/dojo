@@ -20,29 +20,29 @@
 	<script type="text/javascript" src="../_testCommon.js"></script>
 
 	<script type="text/javascript">
-		dojo.require("dijit.dijit"); // optimize: load dijit layer
-		dojo.require("dijit.layout.BorderContainer");
+	dojo.require("dijit.dijit"); // optimize: load dijit layer
+	dojo.require("dijit.layout.BorderContainer");
         dojo.require("dijit.layout.ContentPane");
 
-		var bc, cp1, cp2, cp3;
+	var bc, cp1, cp2, cp3;
         dojo.addOnLoad(function(){
                 bc = new dijit.layout.BorderContainer({style:'height:400px;width:500px;border:1px solid black'}, dojo.byId('main'));
                 
-				cp1 = new dijit.layout.ContentPane({region:'top',style:'height:100px;background-color:red',splitter:true});
-				cp1.domNode.innerHTML = "top pane";
-				bc.addChild(cp1);
+		cp1 = new dijit.layout.ContentPane({region:'top',style:'height:100px;background-color:red',splitter:true});
+		cp1.domNode.innerHTML = "top pane";
+		bc.addChild(cp1);
 
-				cp2 = new dijit.layout.ContentPane({region:'center',style:'background-color:green'});
-				cp2.domNode.innerHTML = "center pane";
-				bc.addChild(cp2);
+		cp2 = new dijit.layout.ContentPane({region:'center',style:'background-color:green'});
+		cp2.domNode.innerHTML = "center pane";
+		bc.addChild(cp2);
 
                 bc.startup();
         });
         
         function addLeftPane(){
-			cp3 = new dijit.layout.ContentPane({region:'left', splitter: true, style:'width: 100px;'});
-			cp3.domNode.innerHTML = "left pane";
-			bc.addChild(cp3);
+		cp3 = new dijit.layout.ContentPane({region:'left', splitter: true, style:'width: 100px;'});
+		cp3.domNode.innerHTML = "left pane";
+		bc.addChild(cp3);
         }
 	</script>
 </head>
