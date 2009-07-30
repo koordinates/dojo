@@ -1,6 +1,6 @@
 dojo.provide("dijit._tree.dndContainer");
-dojo.require("dojo.dnd.common");
-dojo.require("dojo.dnd.Container");
+dojo.required("dojo.dnd.common");
+dojo.required("dojo.dnd.Container");
 
 dojo.declare("dijit._tree.dndContainer",
 	null, 

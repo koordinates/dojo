@@ -1,7 +1,7 @@
 dojo.provide("dijit._tree.dndSource");
 
-dojo.require("dijit._tree.dndSelector");
-dojo.require("dojo.dnd.Manager");
+dojo.required("dijit._tree.dndSelector");
+dojo.required("dojo.dnd.Manager");
 
 /*=====
 dijit._tree.__SourceArgs = function(){
