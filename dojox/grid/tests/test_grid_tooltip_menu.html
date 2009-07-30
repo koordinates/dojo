@@ -30,13 +30,16 @@
 		djConfig="isDebug:false, parseOnLoad: true"></script>
 
 	<script type="text/javascript">
+		dojo.require("dojo.parser");
+		dojo.require("dojo.dnd.common");
+		dojo.require("dojo.dnd.Mover");
 		dojo.require("dijit.dijit");
 		dojo.require("dojox.grid.DataGrid");
+		dojo.require("dojo.data.ItemFileReadStore");
 		dojo.require("dojo.data.ItemFileWriteStore");
 		dojo.require("dijit.Tooltip");
 		dojo.require("dijit.Menu");
 		dojo.require("dijit.ColorPalette");
-		dojo.require("dojo.parser");
 	</script>
 	<script type="text/javascript" src="support/test_data.js"></script>
 	<script type="text/javascript">
