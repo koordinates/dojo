@@ -26,11 +26,13 @@
 	<script type="text/javascript" src="../../../dojo/dojo.js" 
 		djConfig="debugAtAllCosts: false, isDebug: false, parseOnLoad: true"></script>
 	<script type="text/javascript">
+		dojo.require("dojo.parser");
+		dojo.require("dojo.dnd.common");
+		dojo.require("dojo.dnd.Mover");
 		dojo.require("dijit.dijit");
 		dojo.require("dojo.data.ItemFileReadStore");
 		dojo.require("dojox.grid.DataGrid");
 //		dojo.require("dojox.grid._data.model");
-		dojo.require("dojo.parser");
 
 		var columnView =
 		{
