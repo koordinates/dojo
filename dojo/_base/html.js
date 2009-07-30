@@ -1824,6 +1824,11 @@ if (dojo.isHostObjectProperty(dojo.doc, 'all')) {
 		if (typeof node == 'string') {
 			node = byId(node);
 		}
+		if (!node) {
+			console.warn('Nothing to destroy: ' + node);
+			return;
+		}
+
 		if (node.parentNode) { // Backward compatibility
 			node.parentNode.removeChild(node);
 		} else {
