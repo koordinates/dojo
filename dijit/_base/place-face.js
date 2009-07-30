@@ -6,14 +6,19 @@ dojo.required("dijit._base.place");
 // NOTE: Duplicates logic from core drag and drop (should be in window?)
 
 dijit.getViewport = function(){
+
 	// summary:
 	//		Returns the dimensions and scroll position of the viewable area of a browser window
 
-	var scrollRoot = (dojo.doc.documentElement.clientWidth)? dojo.doc.documentElement : dojo.body();
+	var scrollRoot, de = dojo.doc.documentElement;
+	var body = dojo.body();
+	if (de.clientWidth) {
+		scrollRoot = dojo.isQuirks ? body : de;
+	} else {
+		scrollRoot = body;
+	}
 
-	// get scroll position
-
-	var scroll = dojo._docScroll(); // scrollRoot.scrollTop/Left should work
+	var scroll = dojo._docScroll();
 	return { w: scrollRoot.clientWidth, h: scrollRoot.clientHeight, l: scroll.x, t: scroll.y };
 };
 
