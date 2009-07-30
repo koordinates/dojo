@@ -43,8 +43,8 @@
 						console.log("called compute");
 						var d = dojo.marginBox(dojo.byId("documentBorder")),
 							v = dijit.getViewport();
-						doh.t(v.h > d.h);
 						console.log("v.h is " + v.h + " and d.h is " + d.h);
+						doh.t(v.h > d.h);
 					},
 					function expand(t){
 						var v = dijit.getViewport();
@@ -52,6 +52,7 @@
 						addText();
 						compute();
 						var v2 = dijit.getViewport();
+						console.log("v2.h is " + v2.h + " and v.h is " + v.h);
 						doh.t(v2.h <= v.h);
 						doh.t(v2.h+20 >= v.h);
 						console.log("end");
