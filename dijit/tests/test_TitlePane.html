@@ -20,11 +20,14 @@
 	<script type="text/javascript" src="_testCommon.js"></script>
 
 	<script language="JavaScript" type="text/javascript">
-		dojo.require("dijit.dijit"); // optimize: load dijit layer
-		dojo.require("dijit.TitlePane");
 		dojo.require("dojo.parser");	// scan page for widgets and instantiate them
+		dojo.require("dijit._base");
+		dojo.require("dijit._Widget");
+		dojo.require("dijit._Templated");
+		dojo.require("dijit.TitlePane");
 
 		// widgets used inside subpage loaded via href=
+
 		dojo.require("dijit.form.Button");
 		dojo.require("dijit.form.ComboBox");
 		dojo.require("dijit.layout.TabContainer");
@@ -33,6 +36,8 @@
 		function randomMessageId(){
 			return Math.floor(Math.random() * 3) + 3;
 		}
+	</script>
+	<script type="text/javascript">
 
 		dojo.declare("dijit.TestTitlePane", dijit.TitlePane, {
 			templateString: '<div class="dijitTitlePane">' +
