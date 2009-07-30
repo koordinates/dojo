@@ -371,7 +371,7 @@ dojo.required("dojo._base.connect");
 				// FIXME: scroll position query is duped from dojo.html to
 				// avoid dependency on that entire module. Now that HTML is in
 				// Base, we should convert back to something similar there.
-				var se = evt.srcElement, doc = (se && se.ownerDocument) || document;
+				var se = evt.srcElement, doc = (se && se.ownerDocument) || window.document;
 				var docBody = (doc.documentElement.clientWidth === 0) ? doc.body : doc.documentElement;
 				evt.pageX = evt.clientX + (docBody.scrollLeft || 0) - (docBody.clientLeft || 0);
 				evt.pageY = evt.clientY + (docBody.scrollTop || 0) - (docBody.clientTop || 0);
