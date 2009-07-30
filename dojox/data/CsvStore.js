@@ -1,7 +1,7 @@
 dojo.provide("dojox.data.CsvStore");
 
-dojo.require("dojo.data.util.filter");
-dojo.require("dojo.data.util.simpleFetch");
+dojo.required("dojo.data.util.filter");
+dojo.required("dojo.data.util.simpleFetch");
 
 dojo.declare("dojox.data.CsvStore", null, {
 	//	summary:
@@ -666,5 +666,7 @@ dojo.declare("dojox.data.CsvStore", null, {
 		}
 	}
 });
+
 //Mix in the simple fetch implementation to this class.
-dojo.extend(dojox.data.CsvStore,dojo.data.util.simpleFetch);
+
+dojo.extend(dojox.data.CsvStore, dojo.data.util.simpleFetch);
