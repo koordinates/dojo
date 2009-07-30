@@ -35,17 +35,18 @@
 		djConfig="parseOnLoad: true, isDebug: false"></script>
 
 	<script type="text/javascript">
+		dojo.require("dojo.parser");	// scan page for widgets and instantiate them
+		dojo.require("dojo.dnd.common");
+		dojo.require("dojo.dnd.Mover");
 		dojo.require("dijit.dijit");
 		dojo.require("dijit.layout.LayoutContainer");
 		dojo.require("dijit.layout.ContentPane");
 		dojo.require("dijit.layout.LinkPane");
 		dojo.require("dijit.layout.SplitContainer");
 		dojo.require("dijit.layout.TabContainer");
-		
 		dojo.require("dojox.grid.DataGrid");
-		dojo.require("dojo.data.ItemFileWriteStore");
-		
-		dojo.require("dojo.parser");	// scan page for widgets and instantiate them
+		dojo.require("dojo.data.ItemFileReadStore");
+		dojo.require("dojo.data.ItemFileWriteStore");		
 	</script>
 	<script type="text/javascript" src="support/test_data.js"></script>
 	<script type="text/javascript">
