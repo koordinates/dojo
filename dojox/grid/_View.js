@@ -139,7 +139,11 @@ dojo.require("dojox.grid.util");
 		},
 
 		getColumnsWidth: function(){
-			return this.headerContentNode.firstChild.offsetWidth; // Integer
+			if(this.headerContentNode && this.headerContentNode.firstChild){
+				return this.headerContentNode.firstChild.offsetWidth; // Integer
+			}
+			console.warn("Could not get columns width.");
+			return 0;
 		},
 
 		setColumnsWidth: function(width){
