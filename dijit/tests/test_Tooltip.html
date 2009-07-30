@@ -22,13 +22,13 @@
 	<script type="text/javascript" src="_testCommon.js"></script>
 
 	<script type="text/javascript">
-		dojo.require("dijit.dijit"); // optimize: load dijit layer
+		dojo.require("dijit._base");
+		dojo.require("dijit._Widget");
+		dojo.require("dijit._Templated");
 		dojo.require("dijit.Tooltip");
 		dojo.require("dijit.ColorPalette");
 		dojo.addOnLoad(function(){
-			console.log("on load func");
 			var tt = new dijit.Tooltip({label:"programmatically created tooltip", connectId:["programmaticTest"]});
-			console.log("created", tt, tt.id);
 		});
 	</script>
 </head>
