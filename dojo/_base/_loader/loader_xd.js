@@ -233,7 +233,7 @@ dojo.provide("dojo._base._loader.loader_xd");
 			// host (file:// url) or if the baseUrl does not match the
 			// current domain.
 
-			var url = this.baseUrl, win = dojo.getWin();
+			var url = this.baseUrl, win = dojo._getWin();
 			colonIndex = url.indexOf(":");
 			slashIndex = url.indexOf("/");
 			if(colonIndex > 0 && colonIndex < slashIndex && (!win.location.host || url.indexOf("http://" + win.location.host))){
