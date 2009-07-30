@@ -1983,6 +1983,12 @@ if (dojo.isHostObjectProperty(dojo.doc, 'all')) {
 		if (typeof node == 'string') {
 			node = byId(node);
 		}
+
+		if (!node) {
+			console.warn('Cannot add class to missing node: ' + node);
+			return;
+		}
+
 		if (!node.className) {
 			node.className = className;
 		}
