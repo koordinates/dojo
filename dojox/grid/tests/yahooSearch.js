@@ -49,14 +49,18 @@ var formatDate = function(inDatum, inRowIndex){
 var getImage = function(inRowIndex, inItem){
 	if(!inItem){ return '&nbsp;'; }
 	var thumb = getCellData(inItem, "Thumbnail");
-	var o = {
-		href: getCellData(inItem, "ClickUrl"),
-		src: thumb.Url,
-		width: thumb.Width,
-		height: thumb.Height
+	if (thumb) {
+		var o = {
+			href: getCellData(inItem, "ClickUrl"),
+			src: thumb.Url,
+			width: thumb.Width,
+			height: thumb.Height
+		}
+		return dojo.string.substitute(
+			'<a href="${href}" target="_blank"><img border=0 src="${src}" width="${width}" height="${height}"></a>', o);
 	}
-	return dojo.string.substitute(
-		'<a href="${href}" target="_blank"><img border=0 src="${src}" width="${width}" height="${height}"></a>', o);
+	console.warn("Could not get image.");
+	return '';
 };
 
 var getDimensions = function(inRowIndex, inItem){
