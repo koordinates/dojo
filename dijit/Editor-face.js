@@ -32,7 +32,7 @@ dojo.declare(
 			// tags:
 			//		private
 
-			if(!dojo.isArray(this.plugins)){
+			if (!dojo.isArray(this.plugins)) {
 				this.plugins=["undo","redo","|","cut","copy","paste","|","bold","italic","underline","strikethrough","|",
 				"insertOrderedList","insertUnorderedList","indent","outdent","|","justifyLeft","justifyRight","justifyCenter","justifyFull",
 				"dijit._editor.plugins.EnterKeyHandling" /*, "createLink"*/];
@@ -51,9 +51,10 @@ dojo.declare(
 			//see whether user clicks out of a focus editor, if so, save selection (focus will
 			//only lost after onmousedown event is fired, so we can obtain correct caret pos.)
 			//2) when user tabs away from the editor, which is handled in onKeyDown below.
-			//if(dojo.isIE){
+
+			if (this.events) {
 				this.events.push("onBeforeDeactivate");
-			//}
+			}
 		},
 
 		postCreate: function(){
