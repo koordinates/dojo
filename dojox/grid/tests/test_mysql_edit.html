@@ -19,10 +19,14 @@
 	<script type="text/javascript" src="../../../dojo/dojo.js" 
 		djConfig="isDebug:true, parseOnLoad: true"></script>
 	<script type="text/javascript">
+		dojo.require("dojo.parser");
+		dojo.require("dojo.dnd.common");
+		dojo.require("dojo.dnd.Mover");
+		dojo.require("dojo.dnd.Moveable");
 		dojo.require("dijit.dijit");
+		dojo.require("dojox.grid.compat.Grid");
 		dojo.require("dojox.grid.DataGrid");
 		dojo.require("dojox.data.QueryReadStore");
-		dojo.require("dojo.parser");
 	</script>
 	<script type="text/javascript">
 		dojo.declare("DbStore", dojox.data.QueryReadStore, {
