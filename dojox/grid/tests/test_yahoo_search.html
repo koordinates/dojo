@@ -99,7 +99,7 @@
 		
 		dojo.addOnLoad(function(){
 			dojo.byId('webRb').checked = "checked";
-			dojo.query("#searchInput").onkeypress(function(e){
+			dojo.query('#searchInput').onkeypress(function(e){
 				if(e.keyCode == dojo.keys.ENTER){ doSearch(); }
 			});
 		});
