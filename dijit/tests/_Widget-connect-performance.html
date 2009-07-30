@@ -8,8 +8,11 @@
 	<script type="text/javascript" src="../../dojo/dojo.js" djConfig="isDebug: true, parseOnLoad: true"></script>
 	<script type="text/javascript">
 		dojo.require("doh.runner");
+		dojo.require("dijit._base");
 		dojo.require("dijit._Widget");
 		dojo.require("dojo.parser");
+	</script>
+	<script type="text/javascript">
 
 		dojo.declare("dijit.MyWidget", dijit._Widget, {
 			_eventHandler: function(){}
