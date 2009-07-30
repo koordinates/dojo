@@ -16,8 +16,8 @@ dojo.required("dojo.robotx");
 	var groupStarted=dojo.connect(doh, '_groupStarted', function(){
 		var doc = window.document;
 		dojo.disconnect(groupStarted);
-		if(!doc.getElementById('robotconsole').childNodes.length){
-			doc.removeChild(doc.getElementById('robotconsole'));
+		if (!doc.getElementById('robotconsole').childNodes.length) {
+			doc.getElementById('robotconsole').parentNode.removeChild(doc.getElementById('robotconsole'));
 			iframe.style.height="100%";
 		}
 		iframe.style.visibility="visible";
@@ -45,7 +45,7 @@ dojo.required("dojo.robotx");
 	// write the firebug console to a place it will fit
 	// plus the iframe
 
-	dojo._getWin().document.write('<div id="robotconsole" style="position:absolute;left:0px;top:75%;width:100%;height:25%;"></div><iframe id="robotapplication" style="visibility:hidden; border:0px none; padding:0px; margin:0px; position:absolute; left:0px; top:0px; width:100%; height:100%; z-index: 1;" src="'+dojo.config.robotURL+'" onload="doh.robot.iframeLoad();" ></iframe>');
+	window.document.write('<div id="robotconsole" style="position:absolute;left:0px;top:75%;width:100%;height:25%;"></div><iframe id="robotapplication" style="visibility:hidden; border:0px none; padding:0px; margin:0px; position:absolute; left:0px; top:0px; width:100%; height:100%; z-index: 1;" src="'+dojo.config.robotURL+'" onload="doh.robot.iframeLoad();" ></iframe>');
 
 	dojo.mixin(doh.robot,{
 		_updateDocument: function(){
@@ -64,7 +64,9 @@ dojo.required("dojo.robotx");
 			// url:
 			//		URL to open. Any of the test's dojo.doc calls (e.g. dojo.byId()), and any dijit.registry calls (e.g. dijit.byId()) will point to elements and widgets inside this application.
 			//
-			iframe.src=url;
+
+			iframe = dojo._getWin().document.getElementById('robotapplication');
+			iframe.src = url;
 			dojo.addOnLoad(function(){
 				dojo.style(window.document.body,{
 					width: '100%',
