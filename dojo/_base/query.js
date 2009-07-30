@@ -633,8 +633,7 @@ if(typeof dojo != "undefined"){
 	var blank = "";
 	var _getAttr = function(elem, attr){
 		if(!elem){ return blank; }
-		var value = dojo.realAttr(elem, attr);
-		return value;
+		return dojo.realAttr(elem, attr);
 	};
 
 	var attrs = {
@@ -643,7 +642,8 @@ if(typeof dojo != "undefined"){
 				// E[foo*="bar"]
 				//		an E element whose "foo" attribute value contains
 				//		the substring "bar"
-				return (_getAttr(elem, attr).indexOf(value)>=0);
+				var att = _getAttr(elem, attr);
+				return !!(att && att.indexOf(value) != -1);
 			};
 		},
 		"^=": function(attr, value){
@@ -651,7 +651,8 @@ if(typeof dojo != "undefined"){
 			//		an E element whose "foo" attribute value begins exactly
 			//		with the string "bar"
 			return function(elem){
-				return (!_getAttr(elem, attr).indexOf(value));
+				var att = _getAttr(elem, attr);
+				return !!(att && !att.indexOf(value));
 			};
 		},
 		"$=": function(attr, value){
