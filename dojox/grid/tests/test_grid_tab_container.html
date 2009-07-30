@@ -31,6 +31,9 @@
 	<script type="text/javascript" src="../_testCommon.js"></script>
 
 	<script type="text/javascript">
+		dojo.require("dojo.parser");	// scan page for widgets and instantiate them
+		dojo.require("dojo.dnd.common");
+		dojo.require("dojo.dnd.Mover");
 		dojo.require("dijit.dijit"); // optimize: load dijit layer
 		dojo.require("dijit.layout.ContentPane");
 		dojo.require("dijit.layout.TabContainer");
@@ -38,9 +41,9 @@
 		dojo.require("dijit.Tooltip");
 		dojo.require("dijit.layout.LinkPane");
 		dojo.require("dijit.form.Button");
-		dojo.require("dojo.parser");	// scan page for widgets and instantiate them
-	
-	
+		dojo.require("dojo.data.ItemFileReadStore");
+		dojo.require("dojo.data.ItemFileWriteStore");
+		dojo.require("dojox.grid.DataGrid");
 	</script>
 	
 	<style type="text/css">
@@ -63,11 +66,6 @@
 			height: 30em;
 		}
 	</style>
-	<script type="text/javascript">
-		dojo.require("dojox.grid.DataGrid");
-		dojo.require("dojo.data.ItemFileWriteStore");
-		dojo.require("dojo.parser");
-	</script>
 	<script type="text/javascript" src="support/test_data.js"></script>
 	<script type="text/javascript">
 		var layout = [[
