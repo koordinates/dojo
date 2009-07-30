@@ -21,12 +21,14 @@
 		djConfig="debugAtAllCosts: false, isDebug:false, parseOnLoad: true">
 	</script>
 	<script type="text/javascript">
+		dojo.require("dojo.parser");
+		dojo.require("dojo.dnd.common");
+		dojo.require("dojo.dnd.Mover");
 		dojo.require("dijit.dijit");
 		dojo.require("dojox.grid.DataGrid");
 		dojo.require("dojo.io.script");
 		dojo.require("dojox.rpc.Service");
 		dojo.require("dojox.data.ServiceStore");
-		dojo.require("dojo.parser");
 	</script>
 	<script type="text/javascript" src="yahooSearch.js"></script>	
 	<script type="text/javascript">
