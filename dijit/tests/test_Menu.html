@@ -39,7 +39,10 @@
 	<script type="text/javascript" src="_testCommon.js"></script>
 
 	<script language="JavaScript" type="text/javascript">
-		dojo.require("dijit.dijit"); // optimize: load dijit layer
+		dojo.require("dojo.parser");	// scan page for widgets and instantiate them
+		dojo.require("dijit._base");
+		dojo.require("dijit._Widget");
+		dojo.require("dijit._Templated");
 		dojo.require("dijit.Menu");
 		dojo.require("dijit.MenuItem");
 		dojo.require("dijit.PopupMenuItem");
@@ -49,7 +52,6 @@
 		dojo.require("dijit.MenuSeparator");
 		dojo.require("dijit.ColorPalette");
 		dojo.require("dijit._Calendar");
-		dojo.require("dojo.parser");	// scan page for widgets and instantiate them
 	</script>
     
     <script language="Javascript" type="text/javascript">
