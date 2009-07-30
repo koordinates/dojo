@@ -1,7 +1,7 @@
 dojo.provide("dojox.layout.ToggleSplitter");
 dojo.experimental("dojox.layout.ToggleSplitter"); 
 
-dojo.require("dijit.layout.BorderContainer");
+dojo.required("dijit.layout.BorderContainer");
 
 dojo.declare("dojox.layout.ToggleSplitter", [ dijit.layout._Splitter ],
 {
