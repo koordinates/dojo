@@ -20,8 +20,12 @@
 	</style>
 	<script type="text/javascript" src="../../../dojo/dojo.js" djConfig="isDebug:false"></script>
 	<script type="text/javascript">
+		dojo.require("dojo.parser");
+		dojo.require("dojo.dnd.common");
+		dojo.require("dojo.dnd.Mover");
 		dojo.require("dijit.dijit"); // optimize: load dijit layer
 		dojo.require("dojox.grid.DataGrid");
+		dojo.require("dojo.data.ItemFileReadStore");
 		dojo.require("dojo.data.ItemFileWriteStore");
 	</script>
 	<script type="text/javascript" src="support/test_data.js"></script>
