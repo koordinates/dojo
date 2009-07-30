@@ -12,14 +12,6 @@
 	<!-- do not use! only for testing dynamic themes -->
 	<script type="text/javascript" src="../../../dijit/tests/_testCommon.js"></script>
 
-	<!-- for debugging: -->
-	<script type="text/javascript" src="../ToggleSplitter.js"></script>
-
-	<script type="text/javascript">
-		dojo.require("dojox.layout.ToggleSplitter");
-		dojo.require("dojo.parser");
-	</script>
-
 	<style type="text/css">
 		@import "../../../dojo/resources/dojo.css";
 		@import "../../../dijit/tests/css/dijitTests.css";
@@ -28,8 +20,12 @@
 	</style>
 	
 	<script type="text/javascript">
-		dojo.require("dijit.dijit"); // optimize: load dijit layer
+		dojo.require("dojo.parser");
+		dojo.require("dijit._base");
+		dojo.require("dijit._Widget");
+		dojo.require("dijit._Templated");
 		dojo.require("dijit.layout.BorderContainer");
+		dojo.require("dijit.layout.AccordionPane");
 		dojo.require("dijit.layout.AccordionContainer");
 		dojo.require("dijit.layout.ContentPane");
 		dojo.require("dojox.layout.ToggleSplitter");
