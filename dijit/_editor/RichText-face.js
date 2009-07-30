@@ -700,7 +700,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		this.disabled = value;
 		if(!this.isLoaded){ return; } // this method requires init to be complete
 		value = !!value;
-		if(dojo.isIE || dojo.isWebKit || dojo.isOpera){
+		//if(dojo.isIE || dojo.isWebKit || dojo.isOpera){
 			var preventIEfocus = (this.isLoaded || !this.focusOnLoad);
 			if(preventIEfocus){ this.editNode.unselectable = "on"; }
 			this.editNode.contentEditable = !value;
@@ -708,7 +708,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				var _this = this;
 				setTimeout(function(){ _this.editNode.unselectable = "off"; }, 0);
 			}
-		}else{ //moz
+		//}else{ //moz
 			if(value){
 				//AP: why isn't this set in the constructor, or put in mozSettingProps as a hash?
 				this._mozSettings=[false,this.blockNodeForEnter==='BR'];
@@ -730,7 +730,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 //				if(value){
 //					this.blur(); //to remove the blinking caret
 //				}
-		}
+		//}
 		this._disabledOK = true;
 	},
 
@@ -1002,8 +1002,6 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// tags:
 		//		protected
 
-		// console.info('_onBlur')
-
 		this.inherited(arguments);
 		var _c=this.getValue(true);
 		
@@ -1011,9 +1009,12 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			this.onChange(_c);
 			this.savedContent=_c;
 		}
-		if(dojo.isMoz && this.iframe){
-			var titleObj = dojo.isFF<3 ? this.iframe.contentDocument : this.iframe;
-			 titleObj.title = this._localizedIframeTitles.iframeEditTitle;
+		if(this.iframe){
+			var titleObj = this.iframe.contentDocument || this.iframe; // NOTE: Duplication
+
+			if (this._localizedIframeTitles) {
+				titleObj.title = this._localizedIframeTitles.iframeEditTitle;
+			}
 		} 
 
 	},
@@ -1038,7 +1039,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//		Remove focus from this instance.
 		// tags:
 		//		deprecated
-		if(!dojo.isIE && this.window.document.documentElement && this.window.document.documentElement.focus){
+		if(this.window.document.documentElement && this.window.document.documentElement.focus){
 			this.window.document.documentElement.focus();
 		}else if(dojo.doc.body.focus){
 			dojo.doc.body.focus();
