@@ -23,7 +23,10 @@
 	<script type="text/javascript" src="_testCommon.js"></script>
 
 	<script type="text/javascript">
-		dojo.require("dijit.dijit"); // optimize: load dijit layer
+		dojo.require("dojo.parser");
+		dojo.require("dijit._base");
+		dojo.require("dijit._Widget");
+		dojo.require("dijit._Templated");
 		dojo.require("dijit.form.Button");
 		dojo.require("dijit.ColorPalette");
 		dojo.require("dijit.TooltipDialog");
@@ -32,7 +35,6 @@
 		dojo.require("dijit.form.Button");
 		dojo.require("dijit.form.TextBox");
 		dojo.require("dijit.Menu");
-		dojo.require("dojo.parser");
 
 		<!-- programatic creation -->
 		function init(){
