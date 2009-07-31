@@ -1,8 +1,8 @@
 dojo.provide("dojox.gfx.canvas");
 
-dojo.require("dojox.gfx._base");
-dojo.require("dojox.gfx.shape");
-dojo.require("dojox.gfx.path");
+dojo.required("dojox.gfx._base");
+dojo.required("dojox.gfx.shape");
+dojo.required("dojox.gfx.path");
 dojo.require("dojox.gfx.arc");
 dojo.require("dojox.gfx.decompose");
 
