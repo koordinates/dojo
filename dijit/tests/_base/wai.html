@@ -159,8 +159,8 @@
 					function removeSingleReversedRoleMultiple(){
 						var div= document.createElement("div");
 						dijit.setWaiRole(div, "menuitem");
-						var curRole = dojo.attr(div, "role");
-						dojo.attr(div, "role", curRole += " contentinfo");
+						var curRole = dojo.realAttr(div, "role");
+						dojo.realAttr(div, "role", curRole += " contentinfo");
 						dijit.removeWaiRole(div, "menuitem");
 						doh.assertEqual("contentinfo", div.getAttribute("role"));
 					},
