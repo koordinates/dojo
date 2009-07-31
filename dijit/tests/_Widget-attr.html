@@ -110,8 +110,8 @@
 						var widget = new AttrMap({foo:"value1", bar:"value2", "class":"class2", style:"height: 123px"});
 						var wrapper = dojo.byId("attributeMapWrapper");
 						wrapper.appendChild(widget.domNode);
-						doh.is("value1", widget.domNode.getAttribute("foo"));
-						doh.is("value2", widget.buttonNode.getAttribute("bar"));
+						doh.is("value1", widget.attr('foo'));
+						doh.is("value2", widget.buttonNode.bar);
 						doh.assertTrue(dojo.hasClass(widget.domNode, "class1"));
 						doh.assertTrue(dojo.hasClass(widget.domNode, "class2"));
 						doh.is("123px", dojo.style(widget.domNode).height);
