@@ -7,12 +7,12 @@
 	@import "../../../dijit/tests/css/dijitTests.css";
 </style>
 <script type="text/javascript" src="../../../dojo/dojo.js" djConfig="isDebug: true"></script>
-<script type="text/javascript" src="../lighting.js"></script>
-<script type="text/javascript" src="../gradient.js"></script>
-<script type="text/javascript" src="../object.js"></script>
 <script type="text/javascript">
-
+dojo.require("dojox.gfx");
 dojo.require("dojox.gfx3d");
+dojo.require("dojox.gfx3d.object");
+dojo.require("dojox.gfx3d.lighting");
+dojo.require("dojox.gfx3d.gradient");
 
 makeObjects = function(){
 	var surface = dojox.gfx.createSurface("test", 500, 400);
