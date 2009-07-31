@@ -51,7 +51,7 @@ dojo.declare("dijit._Templated",
 				if (typeof value == "undefined") {
 					throw new Error(className + " template:" + key + " is missing.");
 				}
-				if (value) {
+				if (value !== null) {
 
 					// Substitution keys beginning with ! will skip the transform step,
 					// in case a user wishes to insert unescaped markup, e.g. ${!foo}

@@ -380,7 +380,9 @@ dojo.declare("dijit._Widget", null, {
 		this.buildRendering();
 
 		if(this.domNode){
+
 			// Copy attributes listed in attributeMap into the [newly created] DOM for the widget.
+
 			this._applyAttributes();
 
 			var source = this.srcNodeRef;
@@ -410,6 +412,7 @@ dojo.declare("dijit._Widget", null, {
 	},
 
 	_applyAttributes: function(){
+
 		// summary:
 		//		Step during widget creation to copy all widget attributes to the
 		//		DOM as per attributeMap and _setXXXAttr functions.
@@ -423,11 +426,13 @@ dojo.declare("dijit._Widget", null, {
 		//		functions that have been specified
 		// tags:
 		//		private
-		var condAttrApply = function(attr, scope){
+
+		var condAttrApply = function(attr, scope){			
 			if( (scope.params && attr in scope.params) || scope[attr]){
 				scope.attr(attr, scope[attr]);
 			}
 		};
+
 		for(var attr in this.attributeMap){
 			condAttrApply(attr, this);
 		}
