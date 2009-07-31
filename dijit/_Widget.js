@@ -703,10 +703,9 @@ dojo.declare("dijit._Widget", null, {
 					if(dojo.isFunction(value)){ // functions execute in the context of the widget
 						value = dojo.hitch(this, value);
 					}
-					if(/^on[A-Z][a-zA-Z]*$/.test(attr)){ // eg. onSubmit needs to be onsubmit
-						attr = attr.toLowerCase();
-					}
+					
 					dojo.attr(mapNode, attr, value);
+					
 					break;
 				case "innerHTML":
 					mapNode.innerHTML = value;
