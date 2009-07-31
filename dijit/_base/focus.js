@@ -65,7 +65,7 @@ dojo.mixin(dijit,
 				bookmark = range.getBookmark();
 			}
 		}else{
-			if(window.getSelection){
+			if(dojo._getWin().getSelection){
 				selection = dojo.global.getSelection();
 				if(selection){
 					range = selection.getRangeAt(0);
@@ -218,55 +218,46 @@ dojo.mixin(dijit,
 
 		dojo.connect(targetWindow.document, "onmousedown", function(evt){
 			dijit._justMouseDowned = true;
-			setTimeout(function(){ dijit._justMouseDowned = false; }, 0);
+			dojo._getWin().setTimeout(function(){ dijit._justMouseDowned = false; }, 0);
 			dijit._onTouchNode(effectiveNode||evt.target||evt.srcElement);
 		});
 
-		//dojo.connect(targetWindow, "onscroll", ???);
-
-		// Listen for blur and focus events on targetWindow's document.
-		// IIRC, I'm using attachEvent() rather than dojo.connect() because focus/blur events don't bubble
-		// through dojo.connect(), and also maybe to catch the focus events early, before onfocus handlers
-		// fire.
 		var doc = targetWindow.document;
-		if(doc){
-		var _focusOrBlurNode = function(evt) {
-			var target = effectiveNode || evt.target || evt.srcElement;
-			var eventType = /^focus|activate$/i.test(evt.type) ? 'Focus' : 'Blur';
+		if (doc) {
+			var _focusOrBlurNode = function(evt) {
+				var target = effectiveNode || evt.target || evt.srcElement;
+				var eventType = /^focus|activate$/i.test(evt.type) ? 'Focus' : 'Blur';
 
-			// Apparently can be document on activate event in IE (others?)
-			// Why are we attaching the listener to the document node?
+				// Apparently can be document on activate event in IE (others?)
+				// Why are we attaching the listener to the document node?
 
-			if(eventType == 'Blur' || target.nodeType == 1){
-				dijit['_on' + eventType + 'Node'](target);
-			}
-		};
-
-		// Why is this not using the events module?
-		// *** Capture on addEventListener branch?
-
-		var _attachListener;
-
-		if (dojo.isHostMethod(doc, 'attachEvent')) {
-			_attachDocListener = function(eventType, listener) {
-				doc.attachEvent('on' + eventType, listener);
+				if(eventType == 'Blur' || target.nodeType == 1){
+					dijit['_on' + eventType + 'Node'](target);
+				}
 			};
-		}else if (dojo.isHostMethod(doc, 'addEventListener')) {
-			_attachDocListener = function(eventType, listener) {
-				doc.addEventListener(eventType, listener, true);
-			};	
-		}
 
-		if(_attachDocListener){
-			if (typeof doc.documentElement.onactivate != 'undefined') {
-				_attachDocListener('activate', _focusOrBlurNode);
-				_attachDocListener('deactivate', _focusOrBlurNode);
-			}else {
-				_attachDocListener('focus', _focusOrBlurNode);
-				_attachDocListener('blur', _focusOrBlurNode);
+			if (dojo.isHostMethod(doc, 'attachEvent')) {
+				_attachDocListener = function(eventType, listener) {
+					doc.attachEvent('on' + eventType, listener);
+				};
+			}else if (dojo.isHostMethod(doc, 'addEventListener')) {
+				_attachDocListener = function(eventType, listener) {
+					doc.addEventListener(eventType, listener, false);
+				};	
 			}
-		}
-		doc = null;	// prevent memory leak (apparent circular reference via closure)
+
+			if (_attachDocListener) {
+				// NOTE: Use proper event detection
+
+				if (typeof doc.documentElement.onactivate != 'undefined') {
+					_attachDocListener('activate', _focusOrBlurNode);
+					_attachDocListener('deactivate', _focusOrBlurNode);
+				} else {
+					_attachDocListener('focus', _focusOrBlurNode);
+					_attachDocListener('blur', _focusOrBlurNode);
+				}
+			}
+			doc = null;	// prevent memory leak (apparent circular reference via closure)
 		}
 	},
 	_onBlurNode: function(/*DomNode*/ node){
@@ -286,9 +277,9 @@ dojo.mixin(dijit,
 
 		// if the blur event isn't followed by a focus event then mark all widgets as inactive.
 		if(dijit._clearActiveWidgetsTimer){
-			clearTimeout(dijit._clearActiveWidgetsTimer);
+			dojo._getWin().clearTimeout(dijit._clearActiveWidgetsTimer);
 		}
-		dijit._clearActiveWidgetsTimer = setTimeout(function(){
+		dijit._clearActiveWidgetsTimer = dojo._getWin().setTimeout(function(){
 			delete dijit._clearActiveWidgetsTimer;
 			dijit._setStack([]);
 			dijit._prevFocus = null;
@@ -301,7 +292,7 @@ dojo.mixin(dijit,
 
 		// ignore the recent blurNode event
 		if(dijit._clearActiveWidgetsTimer){
-			clearTimeout(dijit._clearActiveWidgetsTimer);
+			dojo._getWin().clearTimeout(dijit._clearActiveWidgetsTimer);
 			delete dijit._clearActiveWidgetsTimer;
 		}
 
@@ -406,4 +397,5 @@ dojo.mixin(dijit,
 });
 
 // register top window and all the iframes it contains
-dojo.addOnLoad(function(){dijit.registerWin(window); });
+
+dojo.addOnLoad(function(){dijit.registerWin(dojo._getWin()); });
