@@ -5,22 +5,40 @@ dojo.required("dijit._base.place");
 
 // NOTE: Duplicates logic from core drag and drop (should be in window?)
 
-dijit.getViewport = function(){
+dijit.getViewport = (function() {
 
 	// summary:
 	//		Returns the dimensions and scroll position of the viewable area of a browser window
 
-	var scrollRoot, de = dojo.doc.documentElement;
-	var body = dojo.body();
-	if (de.clientWidth) {
-		scrollRoot = dojo.isQuirks ? body : de;
-	} else {
-		scrollRoot = body;
+	var scroll, scrollRoot, docScroll = dojo._docScroll;
+	var windowHasInnerProperties;
+
+	function init() {
+		var de = dojo.doc.documentElement, body = dojo.body();
+		var documentHasClientProperties = typeof document.clientWidth == 'number';
+		var deHasClientProperties = typeof de.clientWidth == 'number';
+		var bodyHasClientProperties = typeof body.clientWidth == 'number';
+		var deRendered = deHasClientProperties && de.clientWidth;
+
+		windowHasInnerProperties = typeof dojo._getWin().innerWidth == 'number';
+	
+		if (documentHasClientProperties) {
+			scrollRoot = document;
+		} else if (deRendered) {
+			scrollRoot = (dojo.isQuirks && bodyHasClientProperties) ? body : de;
+		} else {
+			scrollRoot = body;
+		}
 	}
 
-	var scroll = dojo._docScroll();
-	return { w: scrollRoot.clientWidth, h: scrollRoot.clientHeight, l: scroll.x, t: scroll.y };
-};
+	return function() {
+		if (!scrollRoot) {
+			init();
+		}
+		scroll = docScroll();	
+		return { w: scrollRoot.clientWidth, h: (windowHasInnerProperties && scrollRoot.clientWidth == scrollRoot.scrollWidth) ? dojo._getWin().innerHeight : scrollRoot.clientHeight, l: scroll.x, t: scroll.y };
+	};
+})();
 
 /*=====
 dijit.__Position = function(){
