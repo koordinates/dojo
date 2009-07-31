@@ -11,7 +11,7 @@ dijit.typematic = {
 		this._timer = null;
 		this._callback(++this._count, this._node, this._evt);
 		this._currentTimeout = (this._currentTimeout < 0) ? this._initialDelay : ((this._subsequentDelay > 1) ? this._subsequentDelay : Math.round(this._currentTimeout * this._subsequentDelay));
-		this._timer = setTimeout(dojo.hitch(this, "_fireEventAndReload"), this._currentTimeout);
+		this._timer = dojo._getWin().setTimeout(dojo.hitch(this, "_fireEventAndReload"), this._currentTimeout);
 	},
 
 	trigger: function(/*Event*/ evt, /* Object */ _this, /*DOMNode*/ node, /* Function */ callback, /* Object */ obj, /* Number */ subsequentDelay, /* Number */ initialDelay){
@@ -59,7 +59,7 @@ dijit.typematic = {
 		// summary:
 		//	  Stop an ongoing timed, repeating callback sequence.
 		if(this._timer){
-			clearTimeout(this._timer);
+			dojo._getWin().clearTimeout(this._timer);
 			this._timer = null;
 		}
 		if(this._obj){
@@ -145,7 +145,7 @@ dijit.typematic = {
 				dojo.stopEvent(evt);
 				//if(dojo.isIE){
 					dijit.typematic.trigger(evt, _this, node, callback, node, subsequentDelay, initialDelay);
-					setTimeout(dojo.hitch(this, dijit.typematic.stop), 50);
+					dojo._getWin().setTimeout(dojo.hitch(this, dijit.typematic.stop), 50);
 				//}
 			})
 		];
