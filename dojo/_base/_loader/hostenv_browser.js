@@ -191,12 +191,11 @@ if ((dojo._getWin()).document){
 			}
 		}
 
-		var cm = doc.compatMode || '';
+		var cm = doc.compatMode;
 
 		// This covers all quirks modes, so isn't very useful for inferences
-		// Should be deprecated
 
-		dojo.isQuirks = !(/css/i.test(cm));
+		dojo.isQuirks = cm && !(/css/i.test(cm));
 
 		dojo.locale = (config.locale || (n.userLanguage || n.language) || (doc.documentElement && de.lang) || '').toLowerCase();
 
