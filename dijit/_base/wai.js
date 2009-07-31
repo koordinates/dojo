@@ -68,7 +68,6 @@ dojo.mixin(dijit,
 		// returns:
 		//		The non-XHTML role of elem or an empty string if elem
 		//		does not have a role.
-		console.log('*******');
 		return dojo.trim((elem.getAttribute("role") || "").replace(this._XhtmlRoles,"").replace("wairole:",""));
 	},
 
