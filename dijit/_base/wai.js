@@ -57,7 +57,8 @@ dojo.mixin(dijit,
 		//		True if elem has the specific non-XHTML role attribute and false if not.
 		// 		For backwards compatibility if role parameter not provided, 
 		// 		returns true if has non XHTML role 
-		var waiRole = this.getWaiRole(elem);		
+
+		var waiRole = this.getWaiRole(elem);
 		return role ? (waiRole.indexOf(role) > -1) : (waiRole.length > 0);
 	},
 
@@ -67,6 +68,7 @@ dojo.mixin(dijit,
 		// returns:
 		//		The non-XHTML role of elem or an empty string if elem
 		//		does not have a role.
+		console.log('*******');
 		return dojo.trim((elem.getAttribute("role") || "").replace(this._XhtmlRoles,"").replace("wairole:",""));
 	},
 
@@ -130,7 +132,7 @@ dojo.mixin(dijit,
 		if (dojo.isHostMethod(elem, 'hasAttributeNS')) {
 			val = elem.hasAttributeNS("http://www.w3.org/2005/07/aaa", state);
 		}
-		return val || dojo.hasAttr("aria-"+state);
+		return val || dojo.hasAttr(elem, "aria-" + state);
 	},
 
 	getWaiState: function(/*Element*/ elem, /*String*/ state){
