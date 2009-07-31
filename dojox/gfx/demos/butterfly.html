@@ -9,14 +9,19 @@
 </style>
 <script type="text/javascript" src="../../../dojo/dojo.js" djConfig="parseOnLoad: true"></script>
 <script type="text/javascript">
-
+dojo.require("dojo.parser"); // scan page for widgets
+dojo.require("dojo.dnd.common");
+dojo.require("dojo.dnd.Mover");
+dojo.require("dojo.dnd.Moveable");
+dojo.require("dijit._base");
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
 dojo.require("dijit.form.HorizontalSlider");
 dojo.require("dijit.form.HorizontalRule");
 dojo.require("dijit.form.HorizontalRuleLabels");
-
-dojo.require("dojo.parser"); // scan page for widgets
-
 dojo.require("dojox.gfx");
+</script>
+<script type="text/javscript">
 
 var rotation = 0, scaling = 1;
 var surface, g, m = dojox.gfx.matrix;
