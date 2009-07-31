@@ -1,6 +1,6 @@
 dojo.provide("dojox.gfx3d.object");
 
-dojo.require("dojox.gfx");
+dojo.required("dojox.gfx");
 dojo.require("dojox.gfx3d.lighting");
 dojo.require("dojox.gfx3d.scheduler");
 dojo.require("dojox.gfx3d.vector");
