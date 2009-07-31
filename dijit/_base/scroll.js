@@ -8,13 +8,6 @@ dijit.scrollIntoView = function(/* DomNode */node){
 	// summary:
 	//		Scroll the passed node into view, if it is not.
 
-	// dont like browser sniffs implementations but sometimes you have to use it
-	// It's not enough just to scroll the menu node into view if
-	// node.scrollIntoView hides part of the parent's scrollbar,
-	// so just manage the parent scrollbar ourselves
-
-	try{ // catch unexpected/unrecreatable errors (#7808) since we can recover using a semi-acceptable native method
-
 	node = dojo.byId(node);
 	var body = dojo.body();
 	var html = body.parentNode;
@@ -93,7 +86,9 @@ dijit.scrollIntoView = function(/* DomNode */node){
 			body._offsetStart.H = -scroll;
 		}
 	}
+
 	// eliminate offsetLeft/Top oddities by tweaking scroll for ease of computation
+
 	if(rtl && body._offsetStart && scrollRoot == html && html._scrolledAmount){
 		var ofs = body._offsetStart.H;
 		if(ofs < 0){
@@ -174,9 +169,5 @@ dijit.scrollIntoView = function(/* DomNode */node){
 		parent.removeAttribute('_offsetParent');
 		parent.removeAttribute('_parent');
 		parent = next;
-	}
-	}catch(error){
-		console.error('scrollIntoView: ' + error);
-		node.scrollIntoView(false);
 	}
 };
