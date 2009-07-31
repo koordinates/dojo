@@ -23,7 +23,7 @@ dijit.getViewport = (function() {
 		windowHasInnerProperties = typeof dojo._getWin().innerWidth == 'number';
 	
 		if (documentHasClientProperties) {
-			scrollRoot = document;
+			scrollRoot = dojo.doc;
 		} else if (deRendered) {
 			scrollRoot = (dojo.isQuirks && bodyHasClientProperties) ? body : de;
 		} else {
