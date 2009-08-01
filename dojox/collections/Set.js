@@ -3,7 +3,7 @@ dojo.require("dojox.collections.ArrayList");
 
 (function(){
 	var dxc=dojox.collections;
-	dxc.Set= (function(){
+	dxc.Set = function(){
 		function conv(arr){
 			if(arr.constructor==Array){
 				return new dojox.collections.ArrayList(arr);	//	dojox.collections.ArrayList
@@ -81,5 +81,6 @@ dojo.require("dojox.collections.ArrayList");
 			}
 			return true;	//	boolean
 		};
-	})();
+	};
+	dxc.Set = new dxc.Set();
 })();
