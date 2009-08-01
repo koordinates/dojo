@@ -1,7 +1,7 @@
 dojo.provide("dojox.data.XmlStore");
 dojo.provide("dojox.data.XmlItem");
-dojo.required("dojo.data.util.simpleFetch");
-dojo.required("dojo.data.util.filter");
+dojo.require("dojo.data.util.simpleFetch");
+dojo.require("dojo.data.util.filter");
 dojo.require("dojox.xml.parser");
 
 dojo.declare("dojox.data.XmlStore", null, {
