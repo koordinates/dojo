@@ -7,16 +7,16 @@
 	@import "../../../dijit/tests/css/dijitTests.css";
 </style>
 <!--
-The next line should include Microsoft's Silverligth.js, if you plan to use the silverlight backend
+The next line should include Microsoft's Silverlight.js, if you plan to use the silverlight backend
 <script type="text/javascript" src="Silverlight.js"></script>
 -->
 <script type="text/javascript" src="../../../dojo/dojo.js" djConfig="isDebug: true"></script>
-<script type="text/javascript" src="../Chart3D.js"></script>
-<script type="text/javascript" src="../plot3d/Base.js"></script>
-<script type="text/javascript" src="../plot3d/Bars.js"></script>
 <script type="text/javascript">
 
+dojo.require("dojox.gfx");
+dojo.require("dojox.gfx3d");
 dojo.require("dojox.charting.Chart3D");
+dojo.require("dojox.charting.plot3d.Base");
 dojo.require("dojox.charting.plot3d.Bars");
 
 makeObjects = function(){
