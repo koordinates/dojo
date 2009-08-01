@@ -1,6 +1,7 @@
 dojo.provide("dojox.fx.tests._base");
 
 dojo.require("dojox.fx._core");
+dojo.require("dojo.fx");
 dojo.require("dojox.fx");
 
 tests.register("dojox.fx.tests._base", [
