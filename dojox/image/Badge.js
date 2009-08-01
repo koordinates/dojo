@@ -1,9 +1,9 @@
 dojo.provide("dojox.image.Badge");
 dojo.experimental("dojox.image.Badge");
 
-dojo.require("dijit._Widget");
-dojo.require("dijit._Templated");
-dojo.require("dojo.fx.easing");
+dojo.required("dijit._Widget");
+dojo.required("dijit._Templated");
+dojo.required("dojo.fx.easing");
 
 dojo.declare("dojox.image.Badge", [dijit._Widget, dijit._Templated], {
 	// summary: A simple grid of Images that loops through thumbnails
