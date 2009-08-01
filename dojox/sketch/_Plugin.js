@@ -1,6 +1,5 @@
 dojo.provide("dojox.sketch._Plugin");
-//dojo.require("dojox.sketch");
-dojo.require("dijit.form.Button");
+dojo.required("dijit.form.Button");
 
 dojo.declare("dojox.sketch._Plugin", null, {
 	// summary

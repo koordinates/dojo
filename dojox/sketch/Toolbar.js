@@ -1,8 +1,8 @@
 dojo.provide("dojox.sketch.Toolbar");
 
-dojo.require("dojox.sketch.Annotation");
-dojo.require("dijit.Toolbar");
-dojo.require("dijit.form.Button");
+dojo.required("dojox.sketch.Annotation");
+dojo.required("dijit.Toolbar");
+dojo.required("dijit.form.Button");
 
 dojo.declare("dojox.sketch.ButtonGroup", null, {
 	constructor: function(){
