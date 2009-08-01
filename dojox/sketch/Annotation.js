@@ -1,6 +1,6 @@
 dojo.provide("dojox.sketch.Annotation");
-dojo.require("dojox.sketch.Anchor");
-dojo.require("dojox.sketch._Plugin");
+dojo.required("dojox.sketch.Anchor");
+dojo.required("dojox.sketch._Plugin");
 
 (function(){
 	var ta=dojox.sketch;
