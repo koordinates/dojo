@@ -9,6 +9,8 @@
 			html,body {
 				width: 100%;
 				height: 100%;
+				padding:0;
+				margin:0;
 				overflow: none;
 			}
 			
@@ -49,10 +51,11 @@
 			src="../../../dojo/dojo.js" djConfig="isDebug:true,parseOnLoad:true">
 		</script>
 		<script type="text/javascript">
-			
+			dojo.require('dijit._base');
 			dojo.require('dijit.layout.LayoutContainer');
 			dojo.require('dijit.layout.ContentPane');
 			dojo.require("dijit.layout.TabContainer");
+			dojo.require('dijit.form.ComboBox');
 			dojo.require("dijit.form.FilteringSelect");
 			dojo.require("dijit.Menu");
 			dojo.require("dijit.Dialog");
