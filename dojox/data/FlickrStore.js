@@ -1,9 +1,9 @@
 dojo.provide("dojox.data.FlickrStore");
 
-dojo.require("dojo.data.util.simpleFetch");
-dojo.require("dojo.io.script");
-dojo.require("dojo.date.stamp");
-dojo.require("dojo.AdapterRegistry");
+dojo.required("dojo.data.util.simpleFetch");
+dojo.required("dojo.io.script");
+dojo.required("dojo.date.stamp");
+dojo.required("dojo.AdapterRegistry");
 
 (function(){
 	var d = dojo;
