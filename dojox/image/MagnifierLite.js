@@ -3,7 +3,7 @@ dojo.experimental("dojox.image.MagnifierLite");
 
 // NOTE: Larger than Magnifier
 
-dojo.require("dijit._Widget");
+dojo.required("dijit._Widget");
 
 dojo.declare("dojox.image.MagnifierLite", dijit._Widget,
 	{
