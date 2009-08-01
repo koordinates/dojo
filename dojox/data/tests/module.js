@@ -1,6 +1,9 @@
 dojo.provide("dojox.data.tests.module");
 
 try{
+	dojo.require("dojo.data.util.simpleFetch");
+	dojo.require("dojo.io.script");
+	dojo.require("dojo.AdapterRegistry");
 	dojo.require("dojox.data.tests.ClientFilter");
 	dojo.require("dojox.data.tests.stores.CsvStore");
 	dojo.require("dojox.data.tests.stores.KeyValueStore");
