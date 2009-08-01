@@ -12,12 +12,14 @@
 	</style>
 	<script type="text/javascript" djConfig="parseOnLoad:true, isDebug:true" src="../../../dojo/dojo.js"></script>
 	<script type="text/javascript">
+		dojo.require("dijit._base");
+		dojo.require("dijit._Widget");
+		dojo.require("dijit._Templated");
 		dojo.require("dijit.form.Button");
-	
 		dojo.require("dojox.gfx");
 		dojo.require("dojox.gfx.move");
-		dojo.require("dijit._Widget"); dojo.require("dijit._Templated");
-		
+	</script>
+	<script type="text/javascript">
 		dojo.declare("demo.Tooltip",[dijit._Widget,dijit._Templated],{
 			
 			// attachId: String|DomNode?
