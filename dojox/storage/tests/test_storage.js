@@ -118,6 +118,7 @@ var TestStorage = {
 	
 	load: function(evt){
 		// cancel the button's default behavior
+
 		evt.preventDefault();
 		evt.stopPropagation();
 		
@@ -397,7 +398,7 @@ var TestStorage = {
 			window.alert("Unable to load testBook.txt: " + error);
 		}));
 		
-		if(!typeof evt != "undefined" && evt !== null){
+		if(evt && typeof evt.prevenDefault != 'undefined'){
 			evt.preventDefault();
 			evt.stopPropagation();
 		}
@@ -422,7 +423,7 @@ var TestStorage = {
 			window.alert("Unable to load testXML.xml: " + error);
 		}));
 		
-		if(!typeof evt != "undefined" && evt !== null){
+		if(evt && typeof evt.prevenDefault != 'undefined'){
 			evt.preventDefault();
 			evt.stopPropagation();
 		}
@@ -460,7 +461,7 @@ var TestStorage = {
 				dojox.storage.put(key, value, saveHandler, namespace);
 			}
 		}catch(exp){
-			window.alert(exp);
+			window.alert('Problem: ' + (exp.description || exp));
 		}
 	},
 	
