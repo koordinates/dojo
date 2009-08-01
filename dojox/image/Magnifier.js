@@ -1,7 +1,7 @@
 dojo.provide("dojox.image.Magnifier");
 
-dojo.require("dojox.gfx");
-dojo.require("dojox.image.MagnifierLite");
+dojo.required("dojox.gfx");
+dojo.required("dojox.image.MagnifierLite");
 
 dojo.declare("dojox.image.Magnifier",
 	[dojox.image.MagnifierLite],{
