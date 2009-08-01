@@ -1,7 +1,7 @@
 dojo.provide("dojox.storage.GearsStorageProvider");
-dojo.require("dojo.gears");
-dojo.require("dojox.storage.Provider");
-dojo.require("dojox.storage.manager");
+dojo.required("dojo.gears");
+dojo.required("dojox.storage.Provider");
+dojo.required("dojox.storage.manager");
 dojo.require("dojox.sql");
 
 if(dojo.gears.available){

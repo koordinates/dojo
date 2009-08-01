@@ -71,8 +71,6 @@ dojox.storage.manager = function(){
 		//		Autodetects the best possible persistent storage provider
 		//		available on this platform. 
 		
-		//console.debug("dojox.storage.manager.autodetect");
-		
 		if(this._initialized){ // already finished
 			return;
 		}
@@ -80,11 +78,13 @@ dojox.storage.manager = function(){
 		// a flag to force the storage manager to use a particular 
 		// storage provider type, such as 
 		// djConfig = {forceStorageProvider: "dojox.storage.WhatWGStorageProvider"};
+
 		var forceProvider = dojo.config.forceStorageProvider || false;
 
 		// go through each provider, seeing if it can be used
+
 		var providerToUse;
-		//FIXME: use dojo.some
+
 		for(var i = 0; i < this.providers.length; i++){
 			providerToUse = this.providers[i];
 			if(forceProvider && forceProvider == providerToUse.declaredClass){

@@ -1,8 +1,8 @@
 dojo.provide("dojox.storage.FlashStorageProvider");
 
 dojo.require("dojox.flash");
-dojo.require("dojox.storage.manager");
-dojo.require("dojox.storage.Provider");
+dojo.required("dojox.storage.manager");
+dojo.required("dojox.storage.Provider");
 
 // summary: 
 //		Storage provider that uses features in Flash to achieve permanent

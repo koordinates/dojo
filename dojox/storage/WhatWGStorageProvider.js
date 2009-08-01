@@ -1,6 +1,6 @@
 dojo.provide("dojox.storage.WhatWGStorageProvider");
-dojo.require("dojox.storage.Provider");
-dojo.require("dojox.storage.manager");
+dojo.required("dojox.storage.Provider");
+dojo.required("dojox.storage.manager");
 
 dojo.declare("dojox.storage.WhatWGStorageProvider", [ dojox.storage.Provider ], {
 	// summary:
