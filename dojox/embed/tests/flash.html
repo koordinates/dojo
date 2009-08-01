@@ -10,15 +10,6 @@
 		<script type="text/javascript">
 			dojo.require("dojox.embed.Flash");
 
-			/*******************************************************************
-				A note.
-
-				You *can* dojo.require dojox.embed.Flash on the fly (i.e.
-				after load), but if you do so, you *must* give Safari and IE
-				a little bit of time before you can start using any of the 
-				methods.  Quick tests showed that 200ms is more than enough,
-				but you should test intervals at your discretion.
-			********************************************************************/
 			var testMovieUrl=dojo.moduleUrl("dojox", "embed/tests/resources/hfp.swf"), movie;
 			var proxyMovieUrl=dojo.moduleUrl("dojox", "embed/tests/resources/TestFlash.swf"), proxy;
 
