@@ -1,6 +1,7 @@
 dojo.provide("dojox.dtl.tests.module");
 
 try{
+	dojo.require("dojo.date");
 	dojo.require("dojox.dtl.tests.text.filter");
 	dojo.require("dojox.dtl.tests.text.tag");
 	dojo.require("dojox.dtl.tests.dom.tag");
