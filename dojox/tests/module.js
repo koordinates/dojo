@@ -12,6 +12,8 @@ try{
 	dojo.require("dojox.highlight.tests.module");
 	dojo.require("dojox.json.tests.module");
 	dojo.require("dojox.lang.tests.main");
+	dojo.require("dojox.string.tests.string");
+	dojo.require("dojox.uuid.tests.uuid");
 	dojo.require("dojox.xml.tests.module");
 	dojo.require("dojox.math.tests.math");
 }catch(e){
