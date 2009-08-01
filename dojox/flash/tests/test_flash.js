@@ -1,7 +1,5 @@
 // TODO: FIXME: Refactor this to use D.O.H. instead of its own assertions
 
-dojo.require("dojox.flash");
-
 var flashLoaded = false;
 var pageLoaded = false;
 var testXML, testBook;
