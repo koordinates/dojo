@@ -1,8 +1,7 @@
 dojo.provide("dojox.image.Lightbox");
 dojo.experimental("dojox.image.Lightbox");
-
-dojo.require("dijit.Dialog"); 
-dojo.require("dojox.fx._base");
+dojo.required("dijit.Dialog"); 
+dojo.required("dojox.fx._base");
 
 dojo.declare("dojox.image.Lightbox",
 	dijit._Widget, {
