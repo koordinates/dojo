@@ -1,5 +1,5 @@
 dojo.provide("dojox.image.LightboxNano");
-dojo.require("dojo.fx");
+dojo.required("dojo.fx");
 
 (function() {
 
