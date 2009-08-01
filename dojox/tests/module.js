@@ -9,6 +9,7 @@ try{
 	dojo.require("dojox.fx.tests._base");
 	dojo.require("dojox.gfx.tests.module");
 	dojo.require("dojox.highlight.tests.module");
+	dojo.require("dojox.math.tests.math");
 }catch(e){
 	doh.debug(e);
 }
