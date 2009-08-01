@@ -150,15 +150,6 @@ if ((dojo._getWin()).document){
 					// doc.write('<script defer src="//:" onreadystatechange="if (this.readyState==\'complete\'){' + dojo._scopeName + '._loadInit();}"></script>');
 				}
 
-				// NOTE: Should be in VML module
-
-				if (isHostObjectProperty(doc, 'namespaces') && isHostMethod(window.document.namespaces, 'add')) {
-					doc.namespaces.add("v","urn:schemas-microsoft-com:vml");
-					if (isHostMethod(doc, 'createStyleSheet')) {
-						doc.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML); display:inline-block");
-					}
-				}
-
 			// Webkit
 			
 			} else if (typeof de.style.webkitOpacity == 'string' || typeof de.style.webkitTransition == 'string') {
