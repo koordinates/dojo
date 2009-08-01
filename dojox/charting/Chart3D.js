@@ -1,6 +1,6 @@
 dojo.provide("dojox.charting.Chart3D");
 
-dojo.require("dojox.gfx3d");
+dojo.required("dojox.gfx3d");
 
 (function(){
 	var observerVector = {x: 0, y: 0, z: 1}, v = dojox.gfx3d.vector, n = dojox.gfx.normalizedLength;
