@@ -27,22 +27,17 @@
 	<link rel="stylesheet" type="text/css" href="../resources/pygments/default.css">
 	
 	<script type="text/javascript" djConfig="parseOnLoad: true, isDebug: true" src="../../../dojo/dojo.js"></script>
-	<!--
-	<script type="text/javascript" src="../_base.js"></script>
-	<script type="text/javascript" src="../languages/pygments/xml.js"></script>
-	<script type="text/javascript" src="../languages/pygments/html.js"></script>
-	<script type="text/javascript" src="../languages/pygments/css.js"></script>
-	<script type="text/javascript" src="../languages/pygments/javascript.js"></script>
-	-->
 	
 	<script type="text/javascript">
 		dojo.require("dojox.highlight");
-		/*
+		dojo.require("dojox.highlight._base");
+		dojo.require("dojox.highlight.languages.pygments._html");
+
 		dojo.require("dojox.highlight.languages.pygments.xml");
 		dojo.require("dojox.highlight.languages.pygments.html");
 		dojo.require("dojox.highlight.languages.pygments.css");
 		dojo.require("dojox.highlight.languages.pygments.javascript");
-		*/
+		
 		dojo.require("dojox.highlight.languages.pygments._www");
 		dojo.require("dojo.parser");
 		
