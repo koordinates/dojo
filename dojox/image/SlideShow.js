@@ -7,10 +7,10 @@ dojo.provide("dojox.image.SlideShow");
 //
 //	TODO: more cleanups
 //
-dojo.require("dojo.string");
-dojo.require("dojo.fx");
-dojo.require("dijit._Widget");
-dojo.require("dijit._Templated");
+dojo.required("dojo.string");
+dojo.required("dojo.fx");
+dojo.required("dijit._Widget");
+dojo.required("dijit._Templated");
 
 dojo.declare("dojox.image.SlideShow",
 	[dijit._Widget, dijit._Templated],
