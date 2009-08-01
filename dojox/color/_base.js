@@ -1,5 +1,5 @@
 dojo.provide("dojox.color._base");
-dojo.require("dojo.colors");
+dojo.required("dojo.colors");
 
 //	alias all the dojo.Color mechanisms
 dojox.color.Color=dojo.Color;
