@@ -5,11 +5,13 @@ try{
 	dojo.require("dojox.collections.tests.collections");
 	dojo.require("dojox.color.tests.color");
 	dojo.require("dojox.date.tests.module");
+	dojo.require("dojox.dtl.tests.module");
 	dojo.require("dojox.encoding.tests.encoding");
 	dojo.require("dojox.fx.tests._base");
 	dojo.require("dojox.gfx.tests.module");
 	dojo.require("dojox.highlight.tests.module");
 	dojo.require("dojox.json.tests.module");
+	dojo.require("dojox.lang.tests.main");
 	dojo.require("dojox.xml.tests.module");
 	dojo.require("dojox.math.tests.math");
 }catch(e){
