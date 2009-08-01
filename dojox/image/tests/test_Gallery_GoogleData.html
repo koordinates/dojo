@@ -18,16 +18,17 @@
 	<!-- do not use! only for testing dynamic themes -->
 	<script type="text/javascript" src="../../../dijit/tests/_testCommon.js"></script>
 	
-	<!-- debugging includes -->
-	<script type="text/javascript" src="../ThumbnailPicker.js"></script>
-	<script type="text/javascript" src="../SlideShow.js"></script>
-	<script type="text/javascript" src="../Gallery.js"></script>
-	<script type="text/javascript" src="../../data/GoogleSearchStore.js"></script>
-
 	<script type="text/javascript">
+		dojo.require("dojo.parser");	// find widgets
+		dojo.require("dojo.fx");
+		dojo.require("dojo.fx.easing");
+		dojo.require("dijit._base");
+		dojo.require("dijit._Widget");
+		dojo.require("dijit._Templated");
+		dojo.require("dojox.image.SlideShow");
+		dojo.require("dojox.image.ThumbnailPicker");
 		dojo.require("dojox.image.Gallery");
 		dojo.require("dojox.data.GoogleSearchStore");
-		dojo.require("dojo.parser");	// find widgets
 
 		dojo.addOnLoad(function(){
 			var googleImageStore = new dojox.data.GoogleImageSearchStore();
