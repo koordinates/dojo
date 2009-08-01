@@ -1,4 +1,5 @@
 dojo.provide("dojox.color.tests.color");
+dojo.require("dojo.colors");
 dojo.require("dojox.color");
 
 try{
