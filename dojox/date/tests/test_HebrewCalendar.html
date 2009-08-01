@@ -18,15 +18,19 @@
 		<script type="text/javascript">
 
 			dojo.require("dojo.parser"); // scan page for widgets
-
 			dojo.require("dojo.cldr.supplemental");
 //			dojo.require("dojo.date");
 			dojo.require("dojo.date.locale");
+			dojo.require("dijit._base");
+			dojo.require("dijit._Widget");
+			dojo.require("dijit._Templated");
+			dojo.require("dijit._Calendar");
 			dojo.require("dojox.date.HebrewDate");
 			dojo.require("dojox.date.HebrewLocale");
 //			dojo.requireLocalization("dojo.cldr", "hebrew");
-			dojo.require("dijit._Calendar");
-
+		</script>
+<script type="text/javscript">
+window.alert('test');
 dojo.declare(
 	"dojox.date._HebrewCalendar",
 	[dijit._Widget, dijit._Templated],
@@ -331,7 +335,7 @@ dojo.declare(
 			#calendar5 .dijitCalendarSelectedYear { font-size: 1.5em }
 			#calendar5 .dijitCalendarMonth { font-family: serif; letter-spacing: 0.2em; font-size: 2em }
 		</style>
-		<script>
+		<script type="text/javascript">
 			dojo.declare("BigCalendar", dojox.date._HebrewCalendar, {
 				templatePath: "../../../dijit/tests/_altCalendar.html"
 			});
