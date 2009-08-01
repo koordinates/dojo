@@ -255,3 +255,4 @@ dojox.storage.manager = function(){
 		return results;
 	};
 };
+dojox.storage.manager = new dojox.storage.manager();

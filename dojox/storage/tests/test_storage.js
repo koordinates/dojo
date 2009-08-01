@@ -1,4 +1,4 @@
-dojo.require("dojox.storage");
+dojo.required("dojox.storage");
 
 var TestStorage = {
 	currentProvider: "default",

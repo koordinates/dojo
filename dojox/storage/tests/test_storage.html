@@ -20,7 +20,7 @@
 			//					};
 		-->
 
-		<script>
+		<script type="text/javascript">
 			// most storage providers have to be loaded when the page first loads;
 			// the code below is so that we can use the storage provider pulldown,
 			// select a provider, change the URL to force this provider, and then
@@ -50,9 +50,10 @@
 
 		<script type="text/javascript" 
 						src="../../../dojo/dojo.js"></script>
-	
+	<script type="text/javascript">
+	dojo.require("dojox.storage")
+	</script>
 	<script type="text/javascript" src="test_storage.js"></script>
-	
 	<style type="text/css">
 		h1 { margin: 0px auto 0px auto; padding-top: 0px auto 0px auto; clear: none; float: left; }
 		body { padding: 0.2em 1em 1em 1em; }
