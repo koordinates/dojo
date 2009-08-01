@@ -1,9 +1,9 @@
 dojo.provide("dojox.atom.tests.io.module");
+dojo.require("dojo.date");
+dojo.require("dojo.date.stamp");
 dojo.require("dojox.atom.io.model");
 dojo.require("dojox.atom.io.Connection");
 dojo.require("dojox.data.dom");
-dojo.require("dojo.date.stamp");
-dojo.require("dojo.date");
 
 doh.register("dojox.atom.tests.io.module", [
 	// Public utility functions
