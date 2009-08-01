@@ -1,6 +1,6 @@
 dojo.provide("dojox.data.FlickrRestStore");
 
-dojo.require("dojox.data.FlickrStore");
+dojo.required("dojox.data.FlickrStore");
 
 dojo.declare("dojox.data.FlickrRestStore",
 	dojox.data.FlickrStore, {
