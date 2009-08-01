@@ -14,8 +14,10 @@ dojo.required("dojox.gfx.arc");
 	vml.text_alignment = {start: "left", middle: "center", end: "right"};
 
 	vml._parseFloat = function(str) {
+
 		// summary: a helper function to parse VML-specific floating-point values
 		// str: String: a representation of a floating-point number
+
 		return str.match(/^\d+f$/i) ? parseInt(str, 10) / 65536 : parseFloat(str);	// Number
 	};
 
@@ -1043,8 +1045,10 @@ dojo.required("dojox.gfx.arc");
 			sh.Container._init.call(this);
 		},
 		add: function(shape){
+
 			// summary: adds a shape to a group/surface
 			// shape: dojox.gfx.Shape: an VML shape object
+
 			if(this != shape.getParent()){
 				this.rawNode.appendChild(shape.rawNode);
 				if(!shape.getParent()){

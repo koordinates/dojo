@@ -3,92 +3,68 @@ dojo.required("dojox.gfx");
 
 dojo.loadInit(function(){
 
-	// NOTE: Remove browser detection or replace
+	// Since loaderInit can be fired before any dojo.provide/require calls,
+	// make sure the dojox.gfx object exists and only run this logic if dojox.gfx.renderer
+	// has not been defined yet.
 
-	//Since loaderInit can be fired before any dojo.provide/require calls,
-	//make sure the dojox.gfx object exists and only run this logic if dojox.gfx.renderer
-	//has not been defined yet.
 	var gfx = dojo.getObject("dojox.gfx", true), sl, flag, match;
 	if(!gfx.renderer){
 		var renderers = (typeof dojo.config.gfxRenderer == "string" ?
 			dojo.config.gfxRenderer : "svg,vml,silverlight,canvas").split(",");
 
-		// mobile platform detection
-		// TODO: move to the base?
 
-		var ua = navigator.userAgent, iPhoneOsBuild = 0, androidVersion = 0;
-		if(dojo.isSafari >= 3){
-			// detect mobile version of WebKit starting with "version 3"
-
-			//	comprehensive iPhone test.  Have to figure out whether it's SVG or Canvas based on the build.
-			//	iPhone OS build numbers from en.wikipedia.org.
-			if(ua.indexOf("iPhone") >= 0 || ua.indexOf("iPod") >= 0){
-				//	grab the build out of this.  Expression is a little nasty because we want
-				//		to be sure we have the whole version string.
-				match = ua.match(/Version\/(\d(\.\d)?(\.\d)?)\sMobile\/([^\s]*)\s?/);
-				if(match){
-					//	grab the build out of the match.  Only use the first three because of specific builds.
-					iPhoneOsBuild = parseInt(match[4].substr(0,3), 16);
-				}
-			}
-		}
-		if(dojo.isWebKit){
-			// Android detection
-			if(!iPhoneOsBuild){
-				match = ua.match(/Android\s+(\d+\.\d+)/);
-				if(match){
-					androidVersion = parseFloat(match[1]);
-					// Android 1.0-1.1 doesn't support SVG but supports Canvas
-				}
-			}
-		}
-
-		for(var i = 0; i < renderers.length; ++i){
+		for(var i = 0; !dojox.gfx.renderer && i < renderers.length; ++i){
 			switch(renderers[i]){
 				case "svg":
-					//	iPhone OS builds greater than 5F1 should have SVG.
-					if(!dojo.isIE && (!iPhoneOsBuild || iPhoneOsBuild >= 0x5f1) && !androidVersion && !dojo.isAIR){
-						dojox.gfx.renderer = "svg";
+					if (dojo.isHostMethod(dojo.doc, 'createElementNS')) {
+						try {
+							var svg = dojo.doc.createElementNS("http://www.w3.org/2000/svg", 'svg');
+							if (/svg/i.test(svg.nodeName)) {
+								dojox.gfx.renderer = "svg";
+							}
+						} catch(e) {
+						}
 					}
 					break;
 				case "vml":
-					if(dojo.isIE){
-						dojox.gfx.renderer = "vml";
+					var doc = dojo.doc;
+					if (dojo.isHostObjectProperty(doc, 'namespaces') && dojo.isHostMethod(doc.namespaces, 'add')) {
+						doc.namespaces.add("v","urn:schemas-microsoft-com:vml");
+						if (dojo.isHostMethod(doc, 'createStyleSheet')) {
+							doc.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML); display:inline-block");
+							dojox.gfx.renderer = "vml";
+						}
 					}
+					doc = null;
 					break;
 				case "silverlight":
 					try{
-						if(window.ActiveXObject){
+						if(dojo.isHostObjectProperty(window, "ActiveXObject")){
 							sl = new window.ActiveXObject("AgControl.AgControl");
-							if(sl && sl.IsVersionSupported("1.0")){
-								flag = true;
-							}
+							flag = sl && sl.IsVersionSupported("1.0");
 						}else{
 
-							// *** Make sure it is enabled
+							// NOTE: Need plugins module
 							
-							if(navigator.plugins["Silverlight Plug-In"]){
-								flag = true;
-							}
+							flag = dojo.isHostObjectProperty(window, 'navigator') && dojo.isHostObjectProperty(window.navigator, 'plugins') && window.navigator.plugins["Silverlight Plug-In"];
 						}
 					}catch(e){
-						flag = false;
-					}finally{
-						sl = null;
 					}
-					if(flag){ dojox.gfx.renderer = "silverlight"; }
+					sl = null;					
+					if (flag) {
+						dojox.gfx.renderer = "silverlight";
+					}
 					break;
 				case "canvas":
-					//TODO: need more comprehensive test for Canvas
-					if(!dojo.isIE){
-						dojox.gfx.renderer = "canvas";
-					}
+					// TODO: need test for Canvas
+					
+					dojox.gfx.renderer = "canvas";
+					
 					break;
 			}
-			if(dojox.gfx.renderer){ break; }
 		}
-		if(dojo.config.isDebug){
-			console.log("gfx renderer = " + dojox.gfx.renderer);
+		if (dojo.config.isDebug) {
+			console.log("Renderer: " + dojox.gfx.renderer);
 		}
 	}
 });

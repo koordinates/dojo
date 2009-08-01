@@ -9,8 +9,10 @@ dojox.gfx.svg.xmlns = {
 };
 
 dojox.gfx.svg.getRef = function(name){
+
 	// summary: returns a DOM Node specified by the name argument or null
 	// name: String: an SVG external reference
+
 	if(!name || name == "none") { return null; }
 	if(name.match(/^url\(#.+\)$/)){
 		return dojo.byId(name.slice(5, -1));	// Node
