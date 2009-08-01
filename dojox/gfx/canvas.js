@@ -7,6 +7,7 @@ dojo.require("dojox.gfx.arc");
 dojo.require("dojox.gfx.decompose");
 
 dojo.experimental("dojox.gfx.canvas");
+console.warn("Canvas renderer doesn't implement event handling.");
 
 (function(){
 	var g = dojox.gfx, gs = g.shape, ga = g.arc,
