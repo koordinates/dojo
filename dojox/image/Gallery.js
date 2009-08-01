@@ -9,11 +9,11 @@ dojo.experimental("dojox.image.Gallery");
 //	TODO: Make public, document params and privitize non-API conformant methods.
 //	document topics.
 
-dojo.require("dojo.fx");
-dojo.require("dijit._Widget");
-dojo.require("dijit._Templated");
-dojo.require("dojox.image.ThumbnailPicker");
-dojo.require("dojox.image.SlideShow");
+dojo.required("dojo.fx");
+dojo.required("dijit._Widget");
+dojo.required("dijit._Templated");
+dojo.required("dojox.image.ThumbnailPicker");
+dojo.required("dojox.image.SlideShow");
 
 dojo.declare("dojox.image.Gallery",
 	[dijit._Widget, dijit._Templated],
