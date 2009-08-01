@@ -96,7 +96,8 @@ dojo.provide("dojox.highlight._base");
 		if(!mode.keywordGroups){
 			var keywords = mode.keywords;
 			for(var key in keywords){
-				if (dojo.isOwnProperty(keywords, key)) {
+				// NOTE: Missing constructor.prototype on this object (?)
+				//if (dojo.isOwnProperty(keywords, key)) {
 					var kw = keywords[key];
 
 					// NOTE: isObject allows null
@@ -107,7 +108,7 @@ dojo.provide("dojox.highlight._base");
 						mode.keywordGroups = {keyword: keywords};
 					}
 					break;
-				}
+				//}
 			}
 		}
 	}
