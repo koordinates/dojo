@@ -1,10 +1,10 @@
 dojo.provide("dojox.wire.ml.Action");
 dojo.provide("dojox.wire.ml.ActionFilter");
 
-dojo.require("dijit._Widget");
-dojo.require("dijit._Container");
-dojo.require("dojox.wire.Wire");
-dojo.require("dojox.wire.ml.util");
+dojo.required("dijit._Widget");
+dojo.required("dijit._Container");
+dojo.required("dojox.wire.Wire");
+dojo.required("dojox.wire.ml.util");
 
 dojo.declare("dojox.wire.ml.Action", [dijit._Widget, dijit._Container], {
 	//	summary:
