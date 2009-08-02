@@ -60,15 +60,15 @@
 							name: "nameSuffix",
 							runTest: function(t){
 								// set two cookies with the same suffix
-								dojo.cookie("user", "123", { expires: 10 });
+								dojo.cookie("auser", "123", { expires: 10 });
 								dojo.cookie("xuser", "abc", { expires: 10 });
-								t.is("123", dojo.cookie("user"));
+								t.is("123", dojo.cookie("auser"));
 								t.is("abc", dojo.cookie("xuser"));
 
 								// remove the cookie by setting it with a negative
 								// numerical expires. value doesn't really matter here
-								dojo.cookie("user", "-deleted-", { expires: -10 });
-								t.is(null, dojo.cookie("user"));
+								dojo.cookie("auser", "-deleted-", { expires: -10 });
+								t.is(null, dojo.cookie("auser"));
 								dojo.cookie("xuser", "-deleted-", { expires: -10 });
 								t.is(null, dojo.cookie("xuser"));
 							}
