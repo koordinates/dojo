@@ -508,7 +508,6 @@ dojo.experimental("dojox.dtl");
 		render: function(context, buffer){
 			var str = this.contents.resolve(context);
 			if(!str.safe){
-				console.log('escape ' + str);
 				str = dd._base.escape("" + str);
 			}
 			return buffer.concat(str);
