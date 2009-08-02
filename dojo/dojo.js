@@ -1451,7 +1451,7 @@ if(typeof dojo == "undefined"){
 			if(relobj.scheme){
 				uri.push(relobj.scheme, ":");
 				if (relobj.scheme == 'file') {
-					uri.push('//');
+					//uri.push('//');
 				}
 			}
 			if(relobj.authority){
