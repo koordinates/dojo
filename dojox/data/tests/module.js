@@ -1,6 +1,7 @@
 dojo.provide("dojox.data.tests.module");
 
 try{
+	dojo.require("dojo.date");
 	dojo.require("dojo.data.util.simpleFetch");
 	dojo.require("dojo.io.script");
 	dojo.require("dojo.AdapterRegistry");
@@ -22,7 +23,8 @@ try{
 	dojo.requireIf(dojo.isBrowser, "dojox.data.tests.stores.WikipediaStore");
 
 	//Load only if in a browser AND if the location is remote (not file.  As it needs a PHP server to work).
-	if(dojo.isBrowser){
+
+	if (dojo.isBrowser) {
 		if(window.location.protocol !== "file:"){
 			dojo.require("dojox.data.tests.stores.QueryReadStore");
 			dojo.require("dojox.data.tests.stores.SnapLogicStore");
