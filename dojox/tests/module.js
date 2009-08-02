@@ -13,6 +13,7 @@ try{
 	dojo.require("dojox.gfx.tests.module");
 	dojo.require("dojox.highlight.tests.module");
 	dojo.require("dojox.json.tests.module");
+	dojo.require("dojox.jsonPath.tests.module");
 	dojo.require("dojox.lang.tests.main");
 	dojo.require("dojox.string.tests.string");
 	dojo.require("dojox.uuid.tests.uuid");
