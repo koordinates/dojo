@@ -1,4 +1,5 @@
 dojo.provide("dojox.cometd.tests.all");
+dojo.require("dojo.AdapterRegistry");
 dojo.require("dojox.cometd._base");
 
 try{
