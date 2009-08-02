@@ -17,6 +17,8 @@ try{
 	dojo.require("dojox.jsonPath.tests.module");
 	dojo.require("dojox.lang.tests.main");
 	dojo.require("dojox.robot.tests.module");
+//	dojo.require("dojox.rpc.tests.module");
+	dojo.require("dojox.rpc.tests.libraryTests");
 	dojo.require("dojox.string.tests.string");
 	dojo.require("dojox.uuid.tests.uuid");
 	dojo.require("dojox.wire.tests.module");
