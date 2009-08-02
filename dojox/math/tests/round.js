@@ -1,5 +1,6 @@
 dojo.provide("dojox.math.tests.round");
 
+dojo.require("dojo.number");
 dojo.require("dojox.math.round");
 
 tests.register("dojox.math.tests.round", 
