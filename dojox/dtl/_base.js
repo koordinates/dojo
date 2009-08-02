@@ -508,6 +508,7 @@ dojo.experimental("dojox.dtl");
 		render: function(context, buffer){
 			var str = this.contents.resolve(context);
 			if(!str.safe){
+				console.log('escape ' + str);
 				str = dd._base.escape("" + str);
 			}
 			return buffer.concat(str);
@@ -684,7 +685,7 @@ dojo.experimental("dojox.dtl");
 
 	dd._base.safe = function(value){
 		if(typeof value == "string"){
-			value = String(value);
+			value = new String(value);
 		}
 		if(typeof value == "object"){
 			value.safe = true;
