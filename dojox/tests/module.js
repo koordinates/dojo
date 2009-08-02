@@ -20,6 +20,7 @@ try{
 	//dojo.require("dojox.rpc.tests.module");
 	dojo.require("dojox.rpc.tests.libraryTests");
 	dojo.require("dojox.string.tests.string");
+	dojo.require("dojox.testing.tests.module");
 	dojo.require("dojox.uuid.tests.uuid");
 	dojo.require("dojox.wire.tests.module");
 	dojo.require("dojox.xml.tests.module");
