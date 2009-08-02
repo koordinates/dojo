@@ -82,8 +82,8 @@ dojo.toJson = function(/*Object*/ it, /*Boolean?*/ prettyPrint, /*String?*/ _ind
 	var newLine = prettyPrint ? "\n" : "";
 
 	// array
-	if(dojo.isArray(it)){
-		var res = dojo.map(it, function(obj){
+	if (dojo.isArray(it)) {
+		var res = dojo.map(it, function(obj) {
 			var val = recurse(obj, prettyPrint, nextIndent);
 			if(typeof val != "string"){
 				val = "undefined";
@@ -99,7 +99,6 @@ dojo.toJson = function(/*Object*/ it, /*Boolean?*/ prettyPrint, /*String?*/ _ind
 		newObj = dojo.json.jsonRegistry.match(it);
 		return recurse(newObj, prettyPrint, nextIndent);
 	}catch(e){
-		// console.log(e);
 	}
 	// it's a function with no adapter, skip it
 	*/
