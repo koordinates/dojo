@@ -15,7 +15,8 @@ try{
 	dojo.require("dojox.highlight.tests.module");
 	dojo.require("dojox.json.tests.module");
 	dojo.require("dojox.jsonPath.tests.module");
-	dojo.require("dojox.lang.tests.main");
+	dojo.require("dojox.lang.tests.main"); 
+	dojo.require("dojox.math.tests.main");
 	dojo.require("dojox.robot.tests.module");
 	//dojo.require("dojox.rpc.tests.module");
 	dojo.require("dojox.rpc.tests.libraryTests");
@@ -24,7 +25,6 @@ try{
 	dojo.require("dojox.uuid.tests.uuid");
 	dojo.require("dojox.wire.tests.module");
 	dojo.require("dojox.xml.tests.module");
-	dojo.require("dojox.math.tests.math");
 }catch(e){
 	doh.debug(e);
 }
