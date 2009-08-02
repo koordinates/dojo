@@ -5,6 +5,7 @@ try{
 	dojo.require("dojox.atom.tests.io.module");
 	dojo.require("dojox.collections.tests.collections");
 	dojo.require("dojox.color.tests.color");
+	dojo.require("dojox.cometd.tests.all");
 	dojo.require("dojox.data.tests.module");
 	dojo.require("dojox.date.tests.module");
 	dojo.require("dojox.dtl.tests.module");
@@ -15,6 +16,7 @@ try{
 	dojo.require("dojox.json.tests.module");
 	dojo.require("dojox.jsonPath.tests.module");
 	dojo.require("dojox.lang.tests.main");
+	dojo.require("dojox.robot.tests.module");
 	dojo.require("dojox.string.tests.string");
 	dojo.require("dojox.uuid.tests.uuid");
 	dojo.require("dojox.wire.tests.module");
