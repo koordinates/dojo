@@ -36,33 +36,37 @@ dojox.jsonPath.query = function(/*Object*/obj, /*String*/expr, /*Object*/arg){
 			return expr.split(";");
 		},
 		asPaths: function(paths){
-			for (var j=0;j<paths.length;j++){
-			var p = "$";
-			var x= paths[j];
-			for (var i=1,n=x.length; i<n; i++) {
-				p += /^[0-9*]+$/.test(x[i]) ? ("["+x[i]+"]") : ("['"+x[i]+"']");
-			}
-			paths[j]=p;
-		  }
+			for (var j=0; j < paths.length; j++){
+				var p = "$";
+				var x = paths[j];
+				for (var i=1, n=x.length; i<n; i++) {
+					p += /^[0-9*]+$/.test(x[i]) ? ("[" + x[i] + "]") : ("['" + x[i] + "']");
+				}
+				paths[j] = p;
+                        }
 			return paths;
 		},
 		exec: function(locs, val, rb){
 			var path = ['$'];
 			var result=rb?val:[val];
 			var paths=[path];
+
 			function add(v, p, def){
-			  if (v && dojo.isOwnProperty(v, p) && P.resultType != "VALUE") { paths.push(path.concat([p])); }
-			  if (def) {
+			  if (v && dojo.isOwnProperty(v, p) && P.resultType != "VALUE") {
+				console.log('PATH ' + path + ' ' + p + ' ' + v[p]);				
+				paths.push(path.concat([p]));
+                          }
+                          if (def) {
 				result = v[p];
-		          }
-			  else if (v && dojo.isOwnProperty(v, p)) {
+		          } else if (v && typeof v[p] != 'undefined' && dojo.isOwnProperty(v, p)) {
 			        result.push(v[p]);
 			  }
 			}
 			function desc(v){
 				result.push(v);
+				console.log('Desc ' + path);
 				paths.push(path);
-				P.walk(v,function(i){
+				P.walk(v, function(i){
 					if (typeof v[i] ==='object')  {
 						var oldPath = path;
 						path = path.concat(i);
@@ -73,12 +77,12 @@ dojox.jsonPath.query = function(/*Object*/obj, /*String*/expr, /*Object*/arg){
 			}
 			function slice(loc, val){
 				if (dojo.isArray(val)){
-					var len=val.length, start=0, end=len, step=1;
+					var len = val.length, start=0, end = len, step=1;
 					loc.replace(/^(-?[0-9]*):(-?[0-9]*):?(-?[0-9]*)$/g, function($0,$1,$2,$3){start=parseInt($1||start, 10);end=parseInt($2||end, 10);step=parseInt($3||step, 10);});
 					start = (start < 0) ? Math.max(0,start+len) : Math.min(len,start);
 					end = (end < 0) ? Math.max(0,end+len) : Math.min(len,end);
-				  	for (var i=start; i<end; i+=step) {
-						add(val,i);
+				  	for (var i = start; i < end; i += step) {
+						add(val, i);
 					}
 				}
 			}
@@ -92,14 +96,14 @@ dojox.jsonPath.query = function(/*Object*/obj, /*String*/expr, /*Object*/arg){
 				}
 				else if (loc === "*"){
 					P.walk(val, rb && dojo.isArray(val) ? // if it is result based, there is no point to just return the same array
-					function(i){P.walk(val[i],function(j){ add(val[i],j); });} :
-					function(i){ add(val,i); });
+					function(i) { P.walk(val[i],function(j){ add(val[i],j); }); } :
+					function(i) { add(val,i); });
 				}
 				else if (loc === "..") {
 					desc(val);
 				}
 				else if (/,/.test(loc)){ // [name1,name2,...]
-					for (var s=loc.split(/'?,'?/),i=0,n=s.length; i<n; i++) {
+					for (var s = loc.split(/'?,'?/),i=0,n=s.length; i<n; i++) {
 						add(val,repStr(s[i]));
 					}
 				}
@@ -110,34 +114,46 @@ dojox.jsonPath.query = function(/*Object*/obj, /*String*/expr, /*Object*/arg){
 					slice(loc, val);
 				}
 				else {
-					loc=repStr(loc);
+					loc = repStr(loc);
 					if (rb && dojo.isArray(val) && !/^[0-9*]+$/.test(loc)) {
 						P.walk(val, function(i){ add(val[i], loc);});
 					}
-					else {
-						add(val,loc,rb);
+					else {					
+						add(val, loc, rb);
 					}
 				}
 
 			}
-			while (locs.length){
+			while (locs.length) {
+console.log('???');
+console.debug(path);
+console.debug(paths);
+console.debug(locs);
 				loc = locs.shift();
-				if ((val = result) === null || val===undefined) { return val; }
+				if ((val = result) === null || val === undefined) {
+					return val;
+				}
 				result = [];
 				var valPaths = paths;
 				paths = [];
 				if (rb) {
 					oper(val);
-				}
-				else {
-					P.walk(val,function(i){path=valPaths[i]||path;oper(val[i]);});
+				} else {
+					P.walk(val, function(i) {
+						console.log('VP ' + valPaths[i]);
+						path = valPaths[i] || path;
+						oper(val[i]);
+					});
 				}
 			}
 			if (P.resultType == "BOTH"){
+				console.debug(paths);
 				paths = P.asPaths(paths);
+				console.log('PATHS LENGTH: ' + paths.length);
+				console.debug(paths);
 				var newResult = [];
-				for (var i =0;i <paths.length;i++) {
-					newResult.push({path:paths[i],value:result[i]});
+				for (var i = 0;i < paths.length; i++) {
+					newResult.push({ path:paths[i], value:result[i] });
 				}
 				return newResult;
 			}
