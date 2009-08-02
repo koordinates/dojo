@@ -438,7 +438,7 @@ if(
 	
 	
 	function createFrame(){
-		if(consoleFrame){
+		if (consoleFrame){
 			return;
 		}
 		
@@ -463,6 +463,7 @@ if(
 		var styleElement = _firebugDoc.createElement("link");
 
 		styleElement.href = dojo.moduleUrl("dojo._firebug", "firebug.css");
+		styleElement.media = "all";
 		styleElement.rel = "stylesheet";
 		styleElement.type = "text/css";
 		var styleParent = _firebugDoc.getElementsByTagName("head");
@@ -474,8 +475,7 @@ if(
 		}
 
 		styleParent.appendChild(styleElement);
-		
-		
+				
 		if(dojo.config.debugContainerId){
 			consoleFrame = _firebugDoc.getElementById(dojo.config.debugContainerId);
 		}
