@@ -147,11 +147,12 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 
 				dojo.provide(translationPackage);
 				var module = [modpath];
-				if(loc != "ROOT"){module.push(loc);}
+				if(loc != "ROOT") { module.push(loc); }
 				module.push(bundleName);
 				var filespec = module.join("/") + '.js';
 				loaded = dojo._loadPath(filespec, null, function(hash) {
 					// Use singleton with prototype to point to parent bundle, then mix-in result from loadPath
+
 					var Clazz = function(){};
 					Clazz.prototype = parent;
 					bundle[jsLoc] = new Clazz();
@@ -164,6 +165,7 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 			}else{
 				loaded = true;
 			}
+
 			if(loaded && bundle[jsLoc]){
 				parent = bundle[jsLoc];
 			}else{
