@@ -11,12 +11,11 @@ The next line should include Microsoft's Silverligth.js, if you plan to use the 
 <script type="text/javascript" src="Silverlight.js"></script>
 -->
 <script type="text/javascript" src="../../../dojo/dojo.js" djConfig="isDebug: true"></script>
-<script type="text/javascript" src="../Chart3D.js"></script>
-<script type="text/javascript" src="../plot3d/Base.js"></script>
-<script type="text/javascript" src="../plot3d/Cylinders.js"></script>
 <script type="text/javascript">
-
+dojo.require("dojox.gfx");
+dojo.require("dojox.gfx3D");
 dojo.require("dojox.charting.Chart3D");
+dojo.require("dojox.charting.plot3d.Base");
 dojo.require("dojox.charting.plot3d.Cylinders");
 
 makeObjects = function(){
