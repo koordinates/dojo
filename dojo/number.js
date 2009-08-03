@@ -136,6 +136,8 @@ dojo.number.round = function(/*Number*/value, /*Number?*/places, /*Number?*/incr
 	//		>>> dojo.number.round(10.71, 0, 2.5)
 	//		10.75
 	var factor = 10 / (increment || 10);
+	console.log(factor + ' * ' + value);
+	console.log((factor * +value).toFixed(places));
 	return (factor * +value).toFixed(places) / factor; // Number
 };
 
