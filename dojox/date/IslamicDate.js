@@ -1,8 +1,8 @@
 dojo.provide("dojox.date.IslamicDate");
 dojo.experimental("dojox.date.IslamicDate");
 
-dojo.require("dojo.date.locale"); //TODO: move dependency to another module?
 dojo.require("dojo.date");
+dojo.require("dojo.date.locale");
 dojo.requireLocalization("dojo.cldr", "islamic");
 
 dojo.declare("dojox.date.IslamicDate", null, {
