@@ -1,5 +1,5 @@
 dojo.provide("dojox.charting.scaler.linear");
-dojo.require("dojox.charting.scaler.common");
+dojo.required("dojox.charting.scaler.common");
 
 (function(){
 	var deltaLimit = 3,	// pixels
