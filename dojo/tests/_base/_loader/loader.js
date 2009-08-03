@@ -27,10 +27,12 @@ tests.register("tests._base._loader.loader",
 			if (basePrefix == "./") {
 				basePrefix = "";
 			}
-			
+
+			t.assertEqual(basePrefix + "some/path/mycoolpath/my/favorite.html",
+				dojo.moduleUrl("mycoolmod", "my/favorite.html").toString());
 			t.assertEqual(basePrefix + "some/path/mycoolpath/my/favorite.html",
 				dojo.moduleUrl("mycoolmod.my", "favorite.html").toString());
-
+			
 			t.assertEqual("/some/path/mycoolpath2/my/favorite.html",
 				dojo.moduleUrl("mycoolmod2", "my/favorite.html").toString());
 			t.assertEqual("/some/path/mycoolpath2/my/favorite.html",
