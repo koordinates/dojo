@@ -11,16 +11,19 @@ The next line should include Microsoft's Silverligth.js, if you plan to use the 
 <script type="text/javascript" src="Silverlight.js"></script>
 -->
 <script type="text/javascript" src="../../../dojo/dojo.js" djConfig="isDebug: true"></script>
-<script type="text/javascript" src="../../lang/functional.js"></script>
-<script type="text/javascript" src="../../lang/functional/fold.js"></script>
-<script type="text/javascript" src="../../lang/utils.js"></script>
-<script type="text/javascript" src="../Theme.js"></script>
-<script type="text/javascript" src="../scaler/linear.js"></script>
-<script type="text/javascript" src="../Element.js"></script>
-<script type="text/javascript" src="../plot2d/Pie.js"></script>
-<script type="text/javascript" src="../Chart2D.js"></script>
 <script type="text/javascript">
-
+dojo.require("dojo.string");
+dojo.require("dojox.lang.functional");
+dojo.require("dojox.lang.functional.fold");
+dojo.require("dojox.lang.functional.reversed");
+dojo.require("dojox.lang.utils");
+dojo.require("dojox.gfx");
+dojo.require("dojox.charting.scaler.common");
+dojo.require("dojox.charting.scaler.linear");
+dojo.require("dojox.charting.plot2D.common");
+dojo.require("dojox.charting.plot2D.base");
+dojo.require("dojox.charting.axis2D.common");
+dojo.require("dojox.charting.axis2D.Base");
 dojo.require("dojox.charting.Chart2D");
 dojo.require("dojox.charting.themes.PlotKit.blue");
 dojo.require("dojox.charting.themes.PlotKit.green");
