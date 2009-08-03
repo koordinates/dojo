@@ -1,9 +1,9 @@
 dojo.provide("dojox.charting.Chart2D");
 
-dojo.require("dojox.gfx");
-dojo.require("dojox.lang.functional");
-dojo.require("dojox.lang.functional.fold");
-dojo.require("dojox.lang.functional.reversed");
+dojo.required("dojox.gfx");
+dojo.required("dojox.lang.functional");
+dojo.required("dojox.lang.functional.fold");
+dojo.required("dojox.lang.functional.reversed");
 
 dojo.require("dojox.charting.Theme");
 dojo.require("dojox.charting.Series");

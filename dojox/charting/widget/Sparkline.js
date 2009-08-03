@@ -1,7 +1,7 @@
 dojo.provide("dojox.charting.widget.Sparkline");
 
-dojo.require("dojox.charting.widget.Chart2D");
-dojo.require("dojox.charting.themes.ET.greys");
+dojo.required("dojox.charting.widget.Chart2D");
+dojo.required("dojox.charting.themes.ET.greys");
 
 (function(){
 

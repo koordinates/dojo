@@ -1,11 +1,11 @@
 dojo.provide("dojox.charting.plot2d.Default");
 
-dojo.require("dojox.charting.plot2d.common");
-dojo.require("dojox.charting.plot2d.Base");
+dojo.required("dojox.charting.plot2d.common");
+dojo.required("dojox.charting.plot2d.Base");
 
-dojo.require("dojox.lang.utils");
-dojo.require("dojox.lang.functional");
-dojo.require("dojox.lang.functional.reversed");
+dojo.required("dojox.lang.utils");
+dojo.required("dojox.lang.functional");
+dojo.required("dojox.lang.functional.reversed");
 
 (function(){
 	var df = dojox.lang.functional, du = dojox.lang.utils,

@@ -1,14 +1,14 @@
 dojo.provide("dojox.charting.axis2d.Default");
 
-dojo.require("dojox.charting.scaler.linear");
-dojo.require("dojox.charting.axis2d.common");
-dojo.require("dojox.charting.axis2d.Base");
+dojo.required("dojox.charting.scaler.linear");
+dojo.required("dojox.charting.axis2d.common");
+dojo.required("dojox.charting.axis2d.Base");
 
-dojo.require("dojo.colors");
-dojo.require("dojo.string");
-dojo.require("dojox.gfx");
-dojo.require("dojox.lang.functional");
-dojo.require("dojox.lang.utils");
+dojo.required("dojo.colors");
+dojo.required("dojo.string");
+dojo.required("dojox.gfx");
+dojo.required("dojox.lang.functional");
+dojo.required("dojox.lang.utils");
 
 (function(){
 	var dc = dojox.charting,
