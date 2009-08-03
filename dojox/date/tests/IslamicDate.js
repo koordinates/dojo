@@ -1,7 +1,6 @@
 dojo.provide("dojox.date.tests.IslamicDate");
-dojo.require("dojox.date.IslamicDate");
 dojo.require("dojo.date");
-
+dojo.require("dojox.date.IslamicDate");
 tests.register("dojox.date.tests.IslamicDate", 
 	[
 		{
