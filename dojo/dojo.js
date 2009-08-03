@@ -882,7 +882,7 @@ if(typeof dojo == "undefined"){
 			dojo._loadedUrls[uri] = true;
 			dojo._loadedUrls.push(uri);
 			if (cb) {
-				contents = '(' + contents + ')';
+				contents = '(' + (contents || '0') + ')';
 			} else {
 
 				// Only do the scoping if no callback. If a callback is specified,
@@ -1368,7 +1368,7 @@ if(typeof dojo == "undefined"){
 
 			// Last (undocumented) argument forces a synchronous transfer
 
-			this.require("dojo.i18n", false, true);
+			dojo.require("dojo.i18n", false, true);
 		}
 
 		dojo.i18n._requireLocalization.apply(dojo.hostenv, arguments);
@@ -1449,13 +1449,13 @@ if(typeof dojo == "undefined"){
 
 			uri = [];
 			if(relobj.scheme){
-				uri.push(relobj.scheme, ":");
-				if (relobj.scheme == 'file') {
-					//uri.push('//');
-				}
+				uri.push(relobj.scheme, ":");				
 			}
-			if(relobj.authority){
-				uri.push("//", relobj.authority);
+			if(relobj.authority || relobj.scheme == 'file'){
+				uri.push("//");
+			}
+			if (relobj.authority) {
+				uri.push(relobj.authority);
 			}
 			uri.push(relobj.path);
 			if(relobj.query){
