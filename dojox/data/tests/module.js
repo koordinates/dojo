@@ -22,7 +22,7 @@ try{
 	dojo.requireIf(dojo.isBrowser, "dojox.data.tests.stores.GoogleFeedStore");
 	dojo.requireIf(dojo.isBrowser, "dojox.data.tests.stores.WikipediaStore");
 
-	//Load only if in a browser AND if the location is remote (not file.  As it needs a PHP server to work).
+	// Load only if in a browser AND if the location is remote (not file.  As it needs a PHP server to work).
 
 	if (dojo.isBrowser) {
 		if(window.location.protocol !== "file:"){
@@ -33,7 +33,9 @@ try{
 	}
 	dojo.requireIf(dojo.isBrowser, "dojox.data.tests.stores.CssRuleStore");
 	dojo.requireIf(dojo.isBrowser, "dojox.data.tests.stores.CssClassStore");
+
 	dojo.requireIf(dojo.isBrowser, "dojox.data.tests.stores.AppStore");
+
 	dojo.requireIf(dojo.isBrowser, "dojox.data.tests.stores.OpenSearchStore");
 	dojo.requireIf(dojo.isBrowser, "dojox.data.tests.dom");
 }catch(e){
