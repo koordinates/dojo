@@ -1,8 +1,8 @@
 dojo.provide("dojox.tests.module");
 
 try{
-
 	dojo.require("dojox.atom.tests.io.module");
+	dojo.require("dojox.charting.tests.charting");
 	dojo.require("dojox.collections.tests.collections");
 	dojo.require("dojox.color.tests.color");
 	dojo.require("dojox.cometd.tests.all");
