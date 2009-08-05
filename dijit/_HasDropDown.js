@@ -55,7 +55,7 @@ dojo.declare("dijit._HasDropDown",
 		//		any dropdown taller than this will have scrollbars
 		maxHeight: 0,
 		
-		// position: [const] String[]
+		// dropDownPosition: [const] String[]
 		//		This variable controls the position of the drop down.
 		//		It's an array of strings with the following values:
 		//
@@ -69,7 +69,7 @@ dojo.declare("dijit._HasDropDown",
 		//		The list is positions is tried, in order, until a position is found where the drop down fits
 		//		within the viewport.
 		//
-		position: ["below","above"],
+		dropDownPosition: ["below","above"],
 		
 		//	_stopClickEvents: Boolean
 		//		When set to false, the click events will not be stopped, in
@@ -193,13 +193,13 @@ dojo.declare("dijit._HasDropDown",
 					"below" : "Down",
 					"left" : "Left",
 					"right" : "Right"
-			}[this.position[0]] || this.position[0]||"Down";
+			}[this.dropDownPosition[0]] || this.dropDownPosition[0]||"Down";
 			dojo.addClass(this._arrowWrapperNode||this._buttonNode, "dijit" + defaultPos + "ArrowButton");			
 		},
 		
 		postCreate: function(){
 			this._setupDropdown();
-			this.inherited("postCreate", arguments);
+			this.inherited(arguments);
 		},
 
 		destroyDescendants: function(){
@@ -207,7 +207,7 @@ dojo.declare("dijit._HasDropDown",
 				this.dropDown.destroyRecursive();
 				delete this.dropDown;
 			}
-			this.inherited("destroyDescendants", arguments);
+			this.inherited(arguments);
 		},
 
 		_onDropDownKeydown: function(/*Event*/ e){
@@ -251,7 +251,7 @@ dojo.declare("dijit._HasDropDown",
 
 			this.closeDropDown();
 			// don't focus on button.  the user has explicitly focused on something else.
-			this.inherited("_onBlur", arguments);
+			this.inherited(arguments);
 		},
 		
 		isLoaded: function(){
@@ -350,7 +350,7 @@ dojo.declare("dijit._HasDropDown",
 				parent: this,
 				popup: dropDown,
 				around: this._aroundNode,
-				orient: dijit.getPopupAroundAlignment((this.position && this.position.length) ? this.position : ["below"],this.isLeftToRight()),
+				orient: dijit.getPopupAroundAlignment((this.dropDownPosition && this.dropDownPosition.length) ? this.dropDownPosition : ["below"],this.isLeftToRight()),
 				onExecute: function(){
 					self.closeDropDown(true);
 				},
