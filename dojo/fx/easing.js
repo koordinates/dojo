@@ -1,5 +1,4 @@
 dojo.provide("dojo.fx.easing");
-dojo.required("dojo.fx");
 
 dojo.fx.easing = {
 	// summary: Collection of easing functions to use beyond the default dojo._defaultEasing

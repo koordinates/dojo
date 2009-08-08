@@ -490,6 +490,24 @@ if(typeof dojo == "undefined"){
 		}
 	};
 
+	dojo.warn = warn;
+
+	var log = function(message) {
+		if (dojo.config.isDebug) {
+			console.log(obj);
+		}
+	};
+
+	dojo.log = log;
+
+	var debug = function(obj) {
+		if (dojo.config.isDebug) {
+			console.debug(obj);
+		}
+	};
+
+	dojo.debug = debug;
+
 	// Create placeholders for dijit and dojox for scoping code.
 
 	if(typeof this.dijit == "undefined"){
@@ -935,6 +953,10 @@ if(typeof dojo == "undefined"){
 
 		this._loaders = [];
 
+		// Same for required callbacks
+
+		dojo._requiredCallbacks = {};
+
 		for(x = 0, len = mll.length; x < len; x++){
 			mll[x]();
 		}
@@ -949,9 +971,10 @@ if(typeof dojo == "undefined"){
 		//		method to perform page/application cleanup methods. See 
 		//		dojo.addOnUnload for more info.
 		var mll = dojo._unloaders;
-		while(mll.length){
-			(mll.pop())();
+		for (var i = mll.length; i--;) {
+			mll[i]();
 		}
+		dojo._unloaders = [];
 	};
 
 	dojo._onto = function(arr, obj, fn){
@@ -1059,6 +1082,8 @@ if(typeof dojo == "undefined"){
 
 	dojo._global_omit_module_check = false;
 
+	// NOTE: Deprecated
+
 	dojo.loadInit = function(/*Function*/init){
 
 		//	summary:
@@ -1075,16 +1100,70 @@ if(typeof dojo == "undefined"){
 		//		is allowed to be used. Avoid using this method. For a valid use case,
 		//		see the source for dojox.gfx.
 
+		warn('The loadInit method is deprecated.');
 		init();
 	};
 
-	dojo.required = function(/*String*/moduleName) {
+	// Stores functions called after specified modules are provided
+	// NOTE: Required callbacks, provided, etc. are new and untested
+
+	dojo._requiredCallbacks = {};
+
+	dojo._checkRequirements = function(/*Array*/modules) {
+		var len = modules.length, stillLoadingRequirements;
+		for (var i = len; !stillLoadingRequirements && i--;) {
+			if (!this._loadedModules[modules[i]]) {
+				stillLoadingRequirements = true;
+			}
+		}
+		return !stillLoadingRequirements; // Boolean
+	};
+
+	dojo.required = function(/*String|Array*/moduleName, /*Function?*/callback, fromModuleName) {
 
 		//	summary: Throws an exception is the module has not been loaded and executed
 
-		if (!this._loadedModules[moduleName]){
-			throw new Error('Missing dependency: ' + moduleName + '.');
-		}		
+		var ready = true;
+
+		var indeces = [], modules = (typeof moduleName == 'string') ? [moduleName] : moduleName;
+		var len = modules.length, remainingRequirements = len;
+		var requiredCallbacks = dojo._requiredCallbacks;
+
+		for (var i = len; i--;) {
+			if (!this._loadedModules[modules[i]]) {
+				ready = false;
+			}
+		}
+
+		var requiredCallback = function() {
+			remainingRequirements--;
+			if (remainingRequirements < 0) {
+				warn('Module requirements overloaded: ' +  moduleName);
+			} else if (!remainingRequirements) {
+
+				// All modules in bundle loaded
+
+				callback();				
+
+				for (var i = len; i--;) {
+					requiredCallbacks[modules[i]][indeces[i]] = null;
+				}
+			}
+		};
+
+		if (!dojo._checkRequirements(modules)) {
+			if (typeof callback == 'undefined') {
+				throw new Error('Missing dependency: ' + moduleName + '.');
+			} else {
+				for (i = len; i--;) {
+					if (!requiredCallbacks[modules[i]]) {
+						requiredCallbacks[modules[i]] = [];
+					}
+					indeces[i] = requiredCallbacks[modules[i]].length;
+					requiredCallbacks[modules[i]].push(requiredCallback);
+				}
+			}
+		}
 	};
 
 	dojo._loadModule = dojo.require = function(/*String*/moduleName, /*Boolean?*/omitModuleCheck){
@@ -1163,9 +1242,9 @@ if(typeof dojo == "undefined"){
 			// Check that the symbol was defined
 			// Don't bother if we're doing xdomain (asynchronous) loading (or writing scripts during loading.)
 
-			if(!dojo._isXDomain && !dojo._writeScript){
+			if (!dojo._isXDomain && !dojo._writeScript) {
 				module = dojo._loadedModules[moduleName];
-				if(!module){
+				if (!module) {
 					throw new Error("Symbol '" + moduleName + "' failed to load from '" + relpath + "'"); 
 				}
 			}
@@ -1174,7 +1253,8 @@ if(typeof dojo == "undefined"){
 		return module;
 	};
 
-	dojo.provide = function(/*String*/ resourceName){
+	dojo.provide = function(/*String*/ resourceName) {
+
 		//	summary:
 		//		Each javascript source file must have at least one
 		//		`dojo.provide()` call at the top of the file, corresponding to
@@ -1192,7 +1272,7 @@ if(typeof dojo == "undefined"){
 		//		`dojo.provide("dojox.data.FlickrStore")`, in addition to
 		//		registering that `FlickrStore.js` is a resource for the
 		//		`dojox.data` module, will ensure that the `dojox.data`
-		//		javascript object exists, so that calls like 
+		//		Object object exists, so that calls like 
 		//		`dojo.data.foo = function(){ ... }` don't fail.
 		//
 		//		In the case of a build where multiple javascript source files
@@ -1200,9 +1280,30 @@ if(typeof dojo == "undefined"){
 		//		file), that file may contain multiple dojo.provide() calls, to
 		//		note that it includes multiple resources.
 
-		//Make sure we have a string.
-		resourceName = resourceName + "";
+		if (dojo._loadedModules[resourceName]) {
+			throw new Error(resourceName + ' provided more than once.');
+		}		
+		
 		return (dojo._loadedModules[resourceName] = dojo.getObject(resourceName, true)); // Object
+	};
+
+	dojo.provided = function(/*String*/ resourceName) {
+		var i, cb, len, callbacks = dojo._requiredCallbacks[resourceName];
+
+		//window.alert('CB: ' + resourceName + ' ' + callbacks);
+
+		if (callbacks) {
+			len = callbacks.length;
+
+			//window.alert(len);
+
+			for (i = 0; i < len; i++) {
+				cb = callbacks[i];
+				if (cb) {
+					cb();
+				}
+			}
+		}		
 	};
 
 	dojo.platformRequire = function(/*Object*/modMap){
@@ -1232,11 +1333,11 @@ if(typeof dojo == "undefined"){
 		var common = modMap.common || [];
 		var result = common.concat(modMap[dojo._name] || modMap["default"] || []);
 
-		for(var x = 0; x<result.length; x++){
+		for (var x = 0; x < result.length; x++) {
 			var curr = result[x];
-			if(dojo.isArray(curr)){
+			if (dojo.isArray(curr)) {
 				dojo._loadModule.apply(dojo, curr);
-			}else{
+			} else {
 				dojo._loadModule(curr);
 			}
 		}

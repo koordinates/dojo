@@ -1,9 +1,8 @@
 dojo.provide('dojo.fx.directx');
-dojo.required('dojo.fx');
+dojo.require('dojo.fx');
 
 (function() {
 	var playFilter, applyFilter, isOwnProperty = dojo.isOwnProperty;
-	dojo.fx.directx = {};
 
 	// Returns true if successful
 
