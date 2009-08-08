@@ -1,6 +1,6 @@
 // util
 dojo.require("dojo.parser");
-
+dojo.require("dojo.i18n");
 // widgets
 dojo.require("dijit.dijit");
 dojo.require("dojo.dnd.common");
@@ -11,6 +11,7 @@ dojo.require("dijit.Tree");
 dojo.require("dijit.tree.ForestStoreModel");
 dojo.require("dijit.layout.ContentPane");
 dojo.require("dijit.form.Button");
+dojo.require("dijit.form.ComboBox");
 dojo.require("dijit.form.FilteringSelect");
 // dojo.require("dijit.Menu");
 
