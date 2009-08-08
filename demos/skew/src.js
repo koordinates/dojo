@@ -1,9 +1,9 @@
 dojo.provide("demos.skew.src");
 
+dojo.require("dojo.i18n");
 dojo.require("dijit._base");	
 dojo.require("demos.skew.src.Image");
 
-dojo.require("dojo.fx");
 dojo.require("dojo.fx.easing");
 dojo.require("dojo.NodeList-fx");
 dojo.require("dojox.widget.Dialog");
