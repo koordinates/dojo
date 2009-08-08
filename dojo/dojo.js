@@ -494,7 +494,7 @@ if(typeof dojo == "undefined"){
 
 	var log = function(message) {
 		if (dojo.config.isDebug) {
-			console.log(obj);
+			console.log(message);
 		}
 	};
 
