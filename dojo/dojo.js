@@ -1217,6 +1217,11 @@ if(typeof dojo == "undefined"){
 
 		var module, ok, relpath;
 
+		if (dojo._requiredModules[moduleName]) {
+			warn(moduleName + ' is already required.');
+			return;
+		}
+
 		dojo._requiredModules[moduleName] = true;
 
 		omitModuleCheck = dojo._global_omit_module_check || omitModuleCheck;
