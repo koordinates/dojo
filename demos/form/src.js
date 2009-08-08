@@ -1,4 +1,5 @@
 dojo.require("dojo.parser");
+dojo.require("dojo.i18n");
 dojo.require("dojo.data.ItemFileReadStore");
 
 dojo.require("dojo.dnd.common");
