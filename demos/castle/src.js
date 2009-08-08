@@ -1,3 +1,4 @@
+dojo.require("dojo.i18n");
 dojo.require("dijit._base");
 dojo.require("dijit.layout.ContentPane");
 dojo.require("dijit.layout.AccordionPane");
