@@ -4,6 +4,8 @@ dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
 dojo.require("dojo.fx");
 dojo.require("dojo.cookie");
+dojo.experimental("dojox.widget.UpgradeBar");
+
 
 dojo.declare("dojox.widget.UpgradeBar", [dijit._Widget, dijit._Templated], {
 	//	summary:
@@ -141,6 +143,10 @@ dojo.declare("dojox.widget.UpgradeBar", [dijit._Widget, dijit._Templated], {
 		// tags:
 		//		protected
 		//
+		if(dojo.cookie("disableUpgradeReminders")){
+			return;
+		}
+		
 		if(!this.domNode.parentNode){
 			document.body.appendChild(this.domNode);
 		}else{
@@ -150,9 +156,7 @@ dojo.declare("dojox.widget.UpgradeBar", [dijit._Widget, dijit._Templated], {
 		if(msg){
 			this.attr("message", msg);
 		}
-		if(!dojo.cookie("disableUpgradeReminders")){
-			this.show();
-		}
+		
 	},
 
 	show: function(){
