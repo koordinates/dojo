@@ -1163,8 +1163,14 @@ if(typeof dojo == "undefined"){
 					requiredCallbacks[modules[i]].push(requiredCallback);
 				}
 			}
+		} else {
+			if (callback) {
+				callback();
+			}
 		}
 	};
+
+	dojo._requiredModules = {};
 
 	dojo._loadModule = dojo.require = function(/*String*/moduleName, /*Boolean?*/omitModuleCheck){
 		//	summary:
@@ -1211,19 +1217,16 @@ if(typeof dojo == "undefined"){
 
 		var module, ok, relpath;
 
+		dojo._requiredModules[moduleName] = true;
+
 		omitModuleCheck = dojo._global_omit_module_check || omitModuleCheck;
 
 		// Check if it is already loaded.
 
 		module = dojo._loadedModules[moduleName];
-		if (module){
-
-			// Email demo exposes issue here
-
-			if (typeof console != 'undefined') {
-				warn(moduleName + ' is already loaded.');
-				return module;
-			}
+		if (module) {			
+			warn(moduleName + ' is already loaded.');
+			return module;
 		}
 
 		// Convert periods to slashes
@@ -1242,10 +1245,10 @@ if(typeof dojo == "undefined"){
 			// Check that the symbol was defined
 			// Don't bother if we're doing xdomain (asynchronous) loading (or writing scripts during loading.)
 
-			if (!dojo._isXDomain && !dojo._writeScript) {
+			if (!dojo._isXDomain && (!dojo._writeScript || dojo._postLoad)) {
 				module = dojo._loadedModules[moduleName];
 				if (!module) {
-					throw new Error("Symbol '" + moduleName + "' failed to load from '" + relpath + "'"); 
+					throw new Error("Symbol '" + moduleName + "' failed to load from '" + relpath + "'");
 				}
 			}
 		}
@@ -1281,7 +1284,7 @@ if(typeof dojo == "undefined"){
 		//		note that it includes multiple resources.
 
 		//if (dojo._loadedModules[resourceName]) {
-		//	throw new Error(resourceName + ' provided more than once.');
+			//throw new Error(resourceName + ' provided more than once.');
 		//}		
 		
 		return (dojo._loadedModules[resourceName] = dojo.getObject(resourceName, true)); // Object
@@ -1290,12 +1293,8 @@ if(typeof dojo == "undefined"){
 	dojo.provided = function(/*String*/ resourceName) {
 		var i, cb, len, callbacks = dojo._requiredCallbacks[resourceName];
 
-		//window.alert('CB: ' + resourceName + ' ' + callbacks);
-
 		if (callbacks) {
 			len = callbacks.length;
-
-			//window.alert(len);
 
 			for (i = 0; i < len; i++) {
 				cb = callbacks[i];
@@ -1461,17 +1460,16 @@ if(typeof dojo == "undefined"){
 		//	|				...
 		//
 
+		if (!dojo._requiredModules['dojo.i18n']) {
+			dojo.require('dojo.i18n');
+		}
+
 		if (!dojo.i18n) {
 
 			// Localization module not yet loaded
 
-			warn('Load i18n module before requiring localization bundles.');			
-
-			// Last (undocumented) argument forces a synchronous transfer
-
-			dojo.require("dojo.i18n", false, true);
+			throw new Error('Load i18n module before requiring localization bundles.');
 		}
-
 		dojo.i18n._requireLocalization.apply(dojo.hostenv, arguments);
 	};
 

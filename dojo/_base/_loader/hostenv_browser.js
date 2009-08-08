@@ -312,14 +312,18 @@ if ((dojo._getWin()).document){
 			try{
 				http.send(null);
 				if (!dojo._isDocumentOk(http)){
-					var err = new Error("Unable to load "+uri+" status:"+ http.status);					
-					throw err;
+					http = null;
+					throw new Error("Unable to load "+uri+" status:"+ http.status);
 				}
-			}catch(e3){
-				if (fail_ok){ return null; } // null
+			} catch(e3) {
+				if (fail_ok){
+					return null;
+				} // null
+			
 				// re-throw the exception
 				throw e3;
 			}
+			
 			if (cb) {
 				cb(http.responseText);
 			}
@@ -327,6 +331,7 @@ if ((dojo._getWin()).document){
 		};
 		
 		// NOTE: Odd name
+
 		var _handleNodeEvent = function(/*String*/evtName, /*Function*/fp){
 			// summary:
 			//		non-destructively adds the specified function to the node's

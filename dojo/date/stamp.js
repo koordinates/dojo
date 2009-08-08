@@ -1,5 +1,5 @@
 dojo.provide("dojo.date.stamp");
-dojo.required("dojo.date");
+dojo.require("dojo.date");
 
 // Methods to convert dates to or from a wire (string) format using well-known conventions
 

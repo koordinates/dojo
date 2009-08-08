@@ -150,7 +150,9 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 				if(loc != "ROOT") { module.push(loc); }
 				module.push(bundleName);
 				var filespec = module.join("/") + '.js';
+
 				loaded = dojo._loadPath(filespec, null, function(hash) {
+
 					// Use singleton with prototype to point to parent bundle, then mix-in result from loadPath
 
 					var Clazz = function(){};
@@ -162,6 +164,8 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 						}
 					}
 				}, true);
+				
+
 			}else{
 				loaded = true;
 			}
@@ -173,8 +177,10 @@ dojo.i18n._requireLocalization = function(/*String*/moduleName, /*String*/bundle
 			}
 			
 			if(availableFlatLocales){
+
 				//Stop the locale path searching if we know the availableFlatLocales, since
 				//the first call to this function will load the only bundle that is needed.
+
 				return true;
 			}
 		});
@@ -259,3 +265,5 @@ dojo.i18n._preloadLocalizations = function(/*String*/bundlePrefix, /*Array*/loca
 		preload(extra[i]);
 	}
 };
+
+dojo.provided('dojo.i18n');

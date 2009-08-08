@@ -1,9 +1,21 @@
 dojo.provide("dojo.number");
-
 dojo.require("dojo.i18n");
-dojo.requireLocalization("dojo.cldr", "number");
 dojo.require("dojo.string");
 dojo.require("dojo.regexp");
+
+//>>excludeStart("always", true);
+
+dojo.required('dojo.i18n', function() {
+
+//>>excludeEnd("always");
+
+	dojo.requireLocalization("dojo.cldr", "number");
+
+//>>excludeStart("always", true);
+
+});
+
+//>>excludeEnd("always");
 
 /*=====
 dojo.number = {

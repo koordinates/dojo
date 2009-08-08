@@ -337,3 +337,5 @@ dojo.date.difference = function(/*Date*/date1, /*Date?*/date2, /*String?*/interv
 	// Round for fractional values and DST leaps
 	return Math.round(delta); // Number (integer)
 };
+
+dojo.provided('dojo.date');
