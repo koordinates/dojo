@@ -6,8 +6,12 @@ dojo.require("dojox.rpc.Service");
 
 dojo.require("dojo.i18n");
 dojo.require("dijit._base");
+dojo.require("dojo.parser");
 dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
+dojo.require("dijit._Container");
+dojo.require("dijit.layout._LayoutWidget");
+dojo.require("dijit.form._FormWidget");
 dojo.require("dijit.Tree");
 dojo.require("dijit._Calendar");
 dojo.require("dijit.layout.BorderContainer");
