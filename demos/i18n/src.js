@@ -4,7 +4,10 @@ dojo.provide("demos.i18n.src");
 dojo.require("dojo.io.script");
 dojo.require("dojox.rpc.Service");
 
+dojo.require("dojo.i18n");
 dojo.require("dijit._base");
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
 dojo.require("dijit.Tree");
 dojo.require("dijit._Calendar");
 dojo.require("dijit.layout.BorderContainer");
