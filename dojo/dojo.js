@@ -1280,9 +1280,9 @@ if(typeof dojo == "undefined"){
 		//		file), that file may contain multiple dojo.provide() calls, to
 		//		note that it includes multiple resources.
 
-		if (dojo._loadedModules[resourceName]) {
-			throw new Error(resourceName + ' provided more than once.');
-		}		
+		//if (dojo._loadedModules[resourceName]) {
+		//	throw new Error(resourceName + ' provided more than once.');
+		//}		
 		
 		return (dojo._loadedModules[resourceName] = dojo.getObject(resourceName, true)); // Object
 	};
