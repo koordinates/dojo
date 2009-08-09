@@ -19,13 +19,27 @@
 	#bubbles, #area { top: 260px; }
 </style>
 <!--
-The next line should include Microsoft's Silverligth.js, if you plan to use the silverlight backend
+The next line should include Microsoft's Silverlight.js, if you plan to use the silverlight backend
 <script type="text/javascript" src="Silverlight.js"></script>
 -->
 <script type="text/javascript" src="../../../dojo/dojo.js" djConfig="isDebug: true"></script>
 <script type="text/javascript">
+	dojo.require("dojo.colors");
+	dojo.require("dojo.string");
+	dojo.require("dojox.gfx");
+	dojo.require("dojox.lang.functional");
+	dojo.require("dojox.lang.functional.fold");
+	dojo.require("dojox.lang.functional.reversed");
+	dojo.require("dojox.lang.utils");
+	dojo.require("dojox.charting.scaler.common");
+	dojo.require("dojox.charting.scaler.linear");
+	dojo.require("dojox.charting.plot2D.Base");
+	dojo.require("dojox.charting.plot2D.common");
+	dojo.require("dojox.charting.axis2D.Base");
+	dojo.require("dojox.charting.axis2D.common");
 	dojo.require("dojox.charting.Chart2D");
-
+</script>
+<script type="text/javascript">
 	var themes = [
 		"GreySkies",
 		"Adobebricks",
@@ -61,6 +75,9 @@ The next line should include Microsoft's Silverligth.js, if you plan to use the 
 	dojo.forEach(themes, function(item){
 		dojo.require("dojox.charting.themes."+item);
 	});
+
+</script>
+<script>
 	var charts = { bars: null, area: null, lines: null, bubbles: null }, current=dojox.charting.themes[themes[0]];
 
 	function update(){

@@ -1,6 +1,6 @@
 dojo.provide("dojox.charting.axis2d.Base");
 
-dojo.require("dojox.charting.Element");
+dojo.required("dojox.charting.Element");
 
 dojo.declare("dojox.charting.axis2d.Base", dojox.charting.Element, {
 	constructor: function(chart, kwArgs){

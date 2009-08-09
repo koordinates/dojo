@@ -1,7 +1,7 @@
 dojo.provide("dojox.charting.Theme");
-dojo.require("dojo.colors");
-dojo.require("dojox.color");
-dojo.require("dojox.color.Palette");
+dojo.required("dojo.colors");
+dojo.required("dojox.color");
+dojo.required("dojox.color.Palette");
 
 (function(){
 	var dxc=dojox.charting;

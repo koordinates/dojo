@@ -13,50 +13,61 @@
 .dojoxLegendText {vertical-align: text-top; padding-right: 10px}
 </style>
 <!--
-The next line should include Microsoft's Silverligth.js, if you plan to use the silverlight backend
+The next line should include Microsoft's Silverlight.js, if you plan to use the silverlight backend
 <script type="text/javascript" src="Silverlight.js"></script>
 -->
 <script type="text/javascript" src="../../../dojo/dojo.js" djConfig="isDebug: true"></script>
-<script type="text/javascript" src="../../../dojo/_base/connect.js"></script>
-<script type="text/javascript" src="../../../dojo/fx.js"></script>
-<script type="text/javascript" src="../../lang/functional.js"></script>
-<script type="text/javascript" src="../../lang/utils.js"></script>
-<script type="text/javascript" src="../../gfx/fx.js"></script>
-<script type="text/javascript" src="../Theme.js"></script>
-<script type="text/javascript" src="../scaler/primitive.js"></script>
-<script type="text/javascript" src="../scaler/linear.js"></script>
-<script type="text/javascript" src="../Element.js"></script>
-<script type="text/javascript" src="../axis2d/common.js"></script>
-<script type="text/javascript" src="../axis2d/Base.js"></script>
-<script type="text/javascript" src="../axis2d/Default.js"></script>
-<script type="text/javascript" src="../plot2d/common.js"></script>
-<script type="text/javascript" src="../plot2d/Base.js"></script>
-<script type="text/javascript" src="../plot2d/Default.js"></script>
-<script type="text/javascript" src="../plot2d/Lines.js"></script>
-<script type="text/javascript" src="../plot2d/Areas.js"></script>
-<script type="text/javascript" src="../plot2d/Markers.js"></script>
-<script type="text/javascript" src="../plot2d/MarkersOnly.js"></script>
-<script type="text/javascript" src="../plot2d/Scatter.js"></script>
-<script type="text/javascript" src="../plot2d/Stacked.js"></script>
-<script type="text/javascript" src="../plot2d/StackedLines.js"></script>
-<script type="text/javascript" src="../plot2d/StackedAreas.js"></script>
-<script type="text/javascript" src="../plot2d/Columns.js"></script>
-<script type="text/javascript" src="../plot2d/StackedColumns.js"></script>
-<script type="text/javascript" src="../plot2d/ClusteredColumns.js"></script>
-<script type="text/javascript" src="../plot2d/Bars.js"></script>
-<script type="text/javascript" src="../plot2d/StackedBars.js"></script>
-<script type="text/javascript" src="../plot2d/ClusteredBars.js"></script>
-<script type="text/javascript" src="../plot2d/Bubble.js"></script>
-<script type="text/javascript" src="../plot2d/Grid.js"></script>
-<script type="text/javascript" src="../plot2d/Pie.js"></script>
-<script type="text/javascript" src="../Chart2D.js"></script>
-<script type="text/javascript" src="../action2d/Highlight.js"></script>
-<script type="text/javascript" src="../action2d/Magnify.js"></script>
-<script type="text/javascript" src="../action2d/MoveSlice.js"></script>
-<script type="text/javascript" src="../action2d/Shake.js"></script>
-<script type="text/javascript" src="../action2d/Tooltip.js"></script>
-<script type="text/javascript" src="../widget/Legend.js"></script>
 <script type="text/javascript">
+
+dojo.require("dojo.colors");
+dojo.require("dojo.fx");
+dojo.require("dojo.fx.easing");
+
+dojo.require("dijit._base");
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
+
+dojo.require("dojox.gfx");
+dojo.require("dojox.color");
+dojo.require("dojox.color.Palette");
+
+dojo.require("dojox.lang.utils");
+dojo.require("dojox.lang.functional");
+dojo.require("dojox.lang.functional.fold");
+dojo.require("dojox.lang.functional.reversed");
+
+dojo.require("dojox.charting.Theme");
+dojo.require("dojox.charting.Element");
+dojo.require("dojox.charting.Series");
+dojo.require("dojox.charting.scaler.common");
+dojo.require("dojox.charting.scaler.linear");
+dojo.require("dojox.charting.scaler.primitive");
+
+dojo.require("dojox.charting.axis2D.common");
+dojo.require("dojox.charting.axis2D.Base");
+dojo.require("dojox.charting.axis2D.Default");
+
+dojo.require("dojox.charting.plot2D.common");
+dojo.require("dojox.charting.plot2D.base");
+dojo.require("dojox.charting.plot2D.Default");
+
+dojo.require("dojox.charting.plot2d.Lines");
+dojo.require("dojox.charting.plot2d.Areas");
+dojo.require("dojox.charting.plot2d.Markers");
+dojo.require("dojox.charting.plot2d.MarkersOnly");
+dojo.require("dojox.charting.plot2d.Scatter");
+dojo.require("dojox.charting.plot2d.Stacked");
+dojo.require("dojox.charting.plot2d.StackedLines");
+dojo.require("dojox.charting.plot2d.StackedAreas");
+dojo.require("dojox.charting.plot2d.Columns");
+dojo.require("dojox.charting.plot2d.StackedColumns");
+dojo.require("dojox.charting.plot2d.ClusteredColumns");
+dojo.require("dojox.charting.plot2d.Bars");
+dojo.require("dojox.charting.plot2d.StackedBars");
+dojo.require("dojox.charting.plot2d.ClusteredBars");
+dojo.require("dojox.charting.plot2d.Grid");
+dojo.require("dojox.charting.plot2d.Pie");
+dojo.require("dojox.charting.plot2d.Bubble");
 
 dojo.require("dojox.charting.Chart2D");
 dojo.require("dojox.charting.themes.PlotKit.green");
@@ -69,8 +80,8 @@ dojo.require("dojox.charting.action2d.Tooltip");
 
 dojo.require("dojox.charting.widget.Legend");
 
-dojo.require("dojo.colors");
-dojo.require("dojo.fx.easing");
+</script>
+<script type="text/javascript">
 
 var dc = dojox.charting;
 

@@ -1,6 +1,6 @@
 dojo.provide("dojox.charting.Series");
 
-dojo.require("dojox.charting.Element");
+dojo.required("dojox.charting.Element");
 
 dojo.declare("dojox.charting.Series", dojox.charting.Element, {
 	constructor: function(chart, data, kwArgs){

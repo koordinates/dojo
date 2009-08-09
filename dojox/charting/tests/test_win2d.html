@@ -7,30 +7,41 @@
 	@import "../../../dijit/themes/tundra/tundra.css";
 	@import "../../../dijit/tests/css/dijitTests.css";
 </style>
+<script type="text/javascript" src="../../../dojo/dojo.js" 
+	djConfig="isDebug: true, parseOnLoad: true"></script>
+
 <!--
-The next line should include Microsoft's Silverligth.js, if you plan to use the silverlight backend
+The next line should include Microsoft's Silverlight.js, if you plan to use the silverlight backend
 <script type="text/javascript" src="Silverlight.js"></script>
 -->
-<script type="text/javascript" src="../../../dojo/dojo.js" djConfig="isDebug: true, parseOnLoad: true"></script>
-<script type="text/javascript" src="../Theme.js"></script>
-<script type="text/javascript" src="../scaler/linear.js"></script>
-<script type="text/javascript" src="../axis2d/Default.js"></script>
-<script type="text/javascript" src="../plot2d/Default.js"></script>
-<script type="text/javascript" src="../plot2d/Grid.js"></script>
-<script type="text/javascript" src="../Chart2D.js"></script>
-<script type="text/javascript" src="../../lang/functional/object.js"></script>
 
 <script type="text/javascript">
-
+dojo.require("dojo.parser"); // scan page for widgets
+dojo.require("dojo.dnd.common");
+dojo.require("dojo.dnd.Mover");
+dojo.require("dojo.dnd.Moveable");
+dojo.require("dijit._base");
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
 dojo.require("dijit.form.HorizontalSlider");
 dojo.require("dijit.form.HorizontalRule");
 dojo.require("dijit.form.HorizontalRuleLabels");
-dojo.require("dojo.parser"); // scan page for widgets
-
+dojo.require("dojox.gfx");
+dojo.require("dojox.lang.utils");
+dojo.require("dojox.lang.functional");
+dojo.require("dojox.lang.functional.fold");
+dojo.require("dojox.lang.functional.object");
+dojo.require("dojox.lang.functional.reversed");
+dojo.require("dojox.charting.scaler.common");
+dojo.require("dojox.charting.scaler.linear");
+dojo.require("dojox.charting.axis2D.common");
+dojo.require("dojox.charting.axis2D.Base");
+dojo.require("dojox.charting.plot2D.common");
+dojo.require("dojox.charting.plot2D.Base");
 dojo.require("dojox.charting.Chart2D");
 dojo.require("dojox.charting.themes.PlotKit.orange");
-
-dojo.require("dojox.lang.functional.object");
+</script>
+<script type="text/javascript">
 
 var df = dojox.lang.functional;
 var chart, moveable, scaleX = 1, scaleY = 1, offsetX = 0, offsetY = 0;

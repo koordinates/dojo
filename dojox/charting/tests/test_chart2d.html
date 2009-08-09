@@ -39,7 +39,12 @@
 	<script type="text/javascript" src="../Chart2D.js"></script>
 	-->
 	<script type="text/javascript">
-
+		dojo.require("dojo.colors");
+		dojo.require("dojox.gfx");
+		dojo.require("dojox.lang.functional");
+		dojo.require("dojox.lang.functional.fold");
+		dojo.require("dojox.lang.functional.reversed");
+		dojo.require("dojox.charting.scaler.common");
 		dojo.require("dojox.charting.Chart2D");
 		dojo.require("dojox.charting.themes.Shrooms");
 		dojo.require("dojox.charting.themes.PlotKit.blue");
@@ -52,6 +57,8 @@
 
 		dojo.require("dojox.dtl");
 		dojo.require("dojox.dtl.Context");
+</script>
+<script>
 		charts = [
 			{
 				description: "Clustered columns with positive and negative values, readable theme.",
