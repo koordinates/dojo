@@ -3,7 +3,11 @@ dojo.require("dojo.data.util.filter");
 dojo.require("dojo.data.util.simpleFetch");
 dojo.require("dojo.date.stamp");
 
+//>>excludeStart("always", true);
+
 dojo.required('dojo.data.util.simpleFetch', function() {
+
+//>>excludeEnd("always");
 
 dojo.declare("dojo.data.ItemFileReadStore", null,{
 	//	summary:
@@ -844,4 +848,8 @@ dojo.extend(dojo.data.ItemFileReadStore,dojo.data.util.simpleFetch);
 
 dojo.provided('dojo.data.ItemFileReadStore');
 
+//>>excludeStart("always", true);
+
 });
+
+//>>excludeEnd("always");
