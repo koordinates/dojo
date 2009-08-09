@@ -172,7 +172,7 @@ dojo.declare("dijit.form.NumberTextBoxMixin",
 );
 
 dojo.declare("dijit.form.NumberTextBox",
-	[dijit.form.RangeBoundTextBox,dijit.form.NumberTextBoxMixin],
+	[dijit.form.RangeBoundTextBox, dijit.form.NumberTextBoxMixin],
 	{
 		// summary:
 		//		A validating, serializable, range-bound text box.
