@@ -410,7 +410,3 @@ dojo.declare(
 		}
 	}
 );
-
-// For back-compat.  TODO: remove in 2.0
-dojo.require("dijit.TooltipDialog");
-
