@@ -97,7 +97,9 @@ dojo.required("doh.robot", function() {
 			}
 		},delay,duration);
 	}
-	});
+	});	
 })();
+
+dojo.provided('dojo.robot');
 
 });
