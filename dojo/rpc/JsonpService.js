@@ -2,7 +2,11 @@ dojo.provide("dojo.rpc.JsonpService");
 dojo.require("dojo.rpc.RpcService");
 dojo.require("dojo.io.script");
 
+//>>excludeStart("always", true);
+
 dojo.required('dojo.rpc.RpcService', function() {
+
+//>>excludeEnd("always");
 
 dojo.declare("dojo.rpc.JsonpService", dojo.rpc.RpcService, {
 	// summary:
@@ -67,4 +71,8 @@ dojo.declare("dojo.rpc.JsonpService", dojo.rpc.RpcService, {
 	}
 });
 
+//>>excludeStart("always", true);
+
 });
+
+//>>excludeEnd("always");

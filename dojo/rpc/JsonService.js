@@ -1,7 +1,11 @@
 dojo.provide("dojo.rpc.JsonService");
 dojo.require("dojo.rpc.RpcService");
 
+//>>excludeStart("always", true);
+
 dojo.required('dojo.rpc.RpcService', function() {
+
+//>>excludeEnd("always");
 
 dojo.declare("dojo.rpc.JsonService", dojo.rpc.RpcService, {
 		bustCache: false,
@@ -82,4 +86,8 @@ dojo.declare("dojo.rpc.JsonService", dojo.rpc.RpcService, {
 	}
 );
 
+//>>excludeStart("always", true);
+
 });
+
+//>>excludeEnd("always");
