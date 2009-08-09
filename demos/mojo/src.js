@@ -1,17 +1,15 @@
 dojo.provide("demos.mojo.src");
 
-// our core requirements:
-dojo.require("dojo.dnd.common");
-dojo.require("dojo.dnd.Mover");
 dojo.require("dojo.dnd.Moveable");
-dojo.require("dojo.fx");
 dojo.require("dojo.fx.easing");
 dojo.require("dojox.widget.Roller");
 
-// tracking:
+// Tracking
+
 dojo.require("dojox.analytics.Urchin");
 
-// our custom code:
+// App code
+
 dojo.require("demos.mojo.src.drop"); // gravity code
 dojo.require("demos.mojo.src.download"); // download link code
 
@@ -21,9 +19,9 @@ dojo.require("demos.mojo.src.download"); // download link code
 	
 	dojo.addOnLoad(function(){
 		
-		if(dojo.isIE){
+		//if(dojo.isIE){
 			dojo.byId("logoImg").src = "images/logo.gif";
-		}
+		//}
 		nodes = dojo.query("#container > div");
 		// iterate over each div in the container
 		nodes.forEach(function(n){
@@ -40,10 +38,10 @@ dojo.require("demos.mojo.src.download"); // download link code
 					width:"1px", height:"1px",
 					top:"155px", left:"155px"
 				});
-				if(dojo.isIE){
+				//if(dojo.isIE){
 					// no png's for ie users
 					img.src = "images/shot3.gif";
-				}
+				//}
 			});
 		});
 		
