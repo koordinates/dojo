@@ -1,5 +1,7 @@
 dojo.provide("dojo.dnd.TimedMoveable");
-dojo.required("dojo.dnd.Moveable");
+dojo.require("dojo.dnd.Moveable");
+
+dojo.required("dojo.dnd.Moveable", function() {
 
 (function(){
 	// precalculate long expressions
@@ -60,3 +62,4 @@ dojo.required("dojo.dnd.Moveable");
 	});
 })();
 
+});
