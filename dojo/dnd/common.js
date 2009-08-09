@@ -1,7 +1,5 @@
 dojo.provide("dojo.dnd.common");
 
-dojo.dnd = dojo.dnd || {};
-
 dojo.dnd.getCopyKeyState = function(e) {
 	// summary: abstracts away the difference between selection on Mac and PC,
 	//	and returns the state of the "copy" key to be pressed.

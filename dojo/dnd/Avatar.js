@@ -1,6 +1,5 @@
 dojo.provide("dojo.dnd.Avatar");
-dojo.required("dojo.dnd.common");
-
+dojo.require("dojo.dnd.common");
 dojo.declare("dojo.dnd.Avatar", null, {
 	// summary: an object, which represents transferred DnD items visually
 	// manager: Object: a DnD manager object

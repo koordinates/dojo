@@ -1,5 +1,6 @@
 dojo.provide("dojo.dnd.Moveable");
-dojo.required("dojo.dnd.Mover");
+dojo.require("dojo.dnd.Mover");
+
 dojo.declare("dojo.dnd.Moveable", null, {
 
 	// object attributes (for markup)
@@ -137,3 +138,4 @@ dojo.declare("dojo.dnd.Moveable", null, {
 	}
 });
 
+dojo.provided("dojo.dnd.Moveable");
