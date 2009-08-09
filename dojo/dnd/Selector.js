@@ -288,4 +288,6 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 	}
 });
 
+dojo.provided("dojo.dnd.Selector");
+
 });

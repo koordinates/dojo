@@ -181,3 +181,5 @@ dojo.dnd.manager = function(){
 	}
 	return dojo.dnd._manager;	// Object
 };
+
+dojo.provided("dojo.dnd.Manager");
