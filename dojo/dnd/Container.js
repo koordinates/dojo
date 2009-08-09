@@ -338,3 +338,5 @@ dojo.dnd._defaultCreator = function(node){
 		return {node: n, data: data, type: type};
 	};
 };
+
+dojo.provided("dojo.dnd.Container");
