@@ -36,6 +36,7 @@ a:visited { color:#333; }
 	left:0;
 }
 #box2 {
+	z-index:1;
 	top:225px;
 	left:245px;
 }
