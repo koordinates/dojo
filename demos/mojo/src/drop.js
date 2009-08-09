@@ -1,7 +1,7 @@
 dojo.provide("demos.mojo.src.drop");
 
 // Adds gravity effect to mojoDemo
-dojo.require("dojo.fx");
+
 dojo.require("dojo.fx.easing");
 dojo.require("dijit._base.place");
 (function(){ 
