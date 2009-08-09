@@ -85,3 +85,5 @@ dojo.data.util.simpleFetch.fetch = function(/* Object? */ request){
 	this._fetchItems(request, _fetchHandler, _errorHandler);
 	return request;	// Object
 };
+
+dojo.provided('dojo.data.util.simpleFetch');
