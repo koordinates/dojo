@@ -22,7 +22,6 @@ a:visited { color:#333; }
 }
 
 #downloadDiv, #box1, #box2, #box3, #box4 {
-	z-index:10;
 	visibility:hidden;
 	position:absolute;
 	margin:0;
@@ -37,7 +36,6 @@ a:visited { color:#333; }
 	left:0;
 }
 #box2 {
-	z-index:12;
 	top:225px;
 	left:245px;
 }
@@ -46,7 +44,6 @@ a:visited { color:#333; }
 	left:430px;
 }
 #box4 {
-	z-index:12;
 	top:235px;
 	left:610px;
 }
@@ -62,7 +59,6 @@ h1.handle {
 	margin:1.6em 0pt 0pt;
 	font:20pt Arial,sans-serif;
 	cursor:move;
-	z-index:2;
 	color:#bababd;
 	font-style:italic;
 	font-size:1.7em;
@@ -70,7 +66,6 @@ h1.handle {
 
 p {
 	position:relative;
-	z-index:2;
 	color:#1a1917;
 	font-family: "Lucida Grande",Arial,sans-serif;
 	font-size:0.8em;
@@ -81,14 +76,12 @@ p {
 #container img {
 	position:absolute;
 	top:0; left:0;
-	z-index:1;
 }
 
 #header {
 	position:absolute;
 	top:200px;
 	left:-900px;
-	z-index:15;
 }
 
 #footer {
@@ -124,7 +117,6 @@ p {
 	height:45px;
 	width:300px;
 	cursor:pointer;
-	z-index:42;
 }
 
 #downloadForm { visibility: hidden; }
@@ -136,14 +128,17 @@ span.a11ytext { visibility:hidden; cursor:pointer; }
 .dijit_a11y span.a11ytext { visibility:visible !important; }
 
 #whyDojoRoll, #whyList, #whyList li {
-	z-index:43;
 	color:#333;
 	font-weight:bold;
 	list-style-type:none;
 	text-align:center;
 }
+
+#whyList {
+	text-align:left;
+}
+
 #whyDojoBox {
-	text-align:center;
 	width:300px;
 	height:2em;
 	position:relative;

@@ -1,5 +1,6 @@
 dojo.provide("demos.mojo.src.drop");
-// adds gravity effect to mojoDemo
+
+// Adds gravity effect to mojoDemo
 dojo.require("dojo.fx");
 dojo.require("dojo.fx.easing");
 dojo.require("dijit._base.place");
@@ -79,8 +80,7 @@ dojo.require("dijit._base.place");
 		// setup the "gravity toggler"
 		cb = dojo.byId("gravity");
 		cb.checked = false;
-		// FIXME: ie7 fires onchange after blur() ... ugh
-		dojo.connect(cb,"onchange",_toggleGravity);
+		dojo.connect(cb,"onclick",_toggleGravity);
 
 		// just in case, because our nodes are absolutely positioned:
 		dojo.connect(window,"onresize",mojo.drop,"_calcPositions");
