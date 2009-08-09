@@ -1153,7 +1153,7 @@ if(typeof dojo == "undefined"){
 
 		if (!dojo._checkRequirements(modules)) {
 			if (typeof callback == 'undefined') {
-				throw new Error('Missing dependency: ' + moduleName + '.');
+				throw new Error(((dojo._requiredModules[moduleName]) ? 'Late' : 'Missing') + ' dependency: ' + moduleName + '.');
 			} else {
 				for (i = len; i--;) {
 					if (!requiredCallbacks[modules[i]]) {
