@@ -17,7 +17,8 @@
 	
 		<script type="text/javascript">
 			dojo.require("dojo.i18n");
-			dojo.require("dojo.date");
+		</script>
+		<script type="text/javascript">
 			dojo.require("dojo.date.locale");
 			dojo.require("dojo.number");
 			dojo.require("dojo.string");
@@ -25,8 +26,9 @@
 			dojo.require("dijit._base");
 			dojo.require("dijit._Widget");
 			dojo.require("dijit.form.DateTextBox");
-</script><script type="text/javascript">
+
 			// load the resource bundle for HelloWorld
+
 			dojo.requireLocalization("demos.nihao", "helloworld");
 
 			var resourceBundle;
@@ -52,7 +54,7 @@
 			});
 
 			function localeChanged(){
-				open("demo.html?locale=" + dojo.byId("langList").value, "_self");
+				window.location.replace("demo.html?locale=" + dojo.byId("langList").value, "_self");
 			}
 		
 			function dateChanged(){
