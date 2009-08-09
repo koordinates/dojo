@@ -2,7 +2,7 @@ dojo.provide("dojo.dnd.Source");
 dojo.require("dojo.dnd.Selector");
 dojo.require("dojo.dnd.Manager");
 
-dojo.required(["dojo.dnd.Selector"], function() {
+dojo.required(["dojo.dnd.Selector", "dojo.dnd.Manager"], function() {
 
 /*
 	Container property:

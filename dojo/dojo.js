@@ -1109,16 +1109,6 @@ if(typeof dojo == "undefined"){
 
 	dojo._requiredCallbacks = {};
 
-	dojo._checkRequirements = function(/*Array*/modules) {
-		var len = modules.length, stillLoadingRequirements;
-		for (var i = len; !stillLoadingRequirements && i--;) {
-			if (!this._loadedModules[modules[i]]) {
-				stillLoadingRequirements = true;
-			}
-		}
-		return !stillLoadingRequirements; // Boolean
-	};
-
 	dojo.required = function(/*String|Array*/moduleName, /*Function?*/callback, fromModuleName) {
 
 		//	summary: Throws an exception is the module has not been loaded and executed
@@ -1132,6 +1122,8 @@ if(typeof dojo == "undefined"){
 		for (var i = len; i--;) {
 			if (!this._loadedModules[modules[i]]) {
 				ready = false;
+			} else {
+				remainingRequirements--;
 			}
 		}
 
@@ -1151,7 +1143,7 @@ if(typeof dojo == "undefined"){
 			}
 		};
 
-		if (!dojo._checkRequirements(modules)) {
+		if (!ready) {
 			if (typeof callback == 'undefined') {
 				throw new Error(((dojo._requiredModules[moduleName]) ? 'Late' : 'Missing') + ' dependency: ' + moduleName + '.');
 			} else {
