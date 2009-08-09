@@ -1,6 +1,10 @@
 dojo.provide("dojo.data.ItemFileWriteStore");
 
+//>>excludeStart("always", true);
+
 dojo.required("dojo.data.ItemFileReadStore", function() {
+
+//>>excludeEnd("always");
 
 dojo.declare("dojo.data.ItemFileWriteStore", dojo.data.ItemFileReadStore, {
 	constructor: function(/* object */ keywordParameters){
@@ -861,4 +865,8 @@ dojo.declare("dojo.data.ItemFileWriteStore", dojo.data.ItemFileReadStore, {
 	}
 });
 
+//>>excludeStart("always", true);
+
 });
+
+//>>excludeEnd("always");
