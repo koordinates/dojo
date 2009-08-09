@@ -1,4 +1,7 @@
 dojo.provide("dojox.charting.tests.Theme");
+dojo.require("dojo.colors");
+dojo.require("dojox.color");
+dojo.require("dojox.color.Palette");
 dojo.require("dojox.charting.Theme");
 dojo.require("dojox.charting.themes.PlotKit.blue");
 
