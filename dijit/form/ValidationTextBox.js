@@ -3,7 +3,7 @@ dojo.require("dojo.i18n");
 dojo.require("dijit.form.TextBox");
 dojo.require("dijit.Tooltip");
 
-dojo.required(["dojo.i18n", "dijit.form.TextBox"], function() {
+dojo.required(["dojo.i18n", "dijit.form.TextBox", "dijit.Tooltip"], function() {
 
 dojo.requireLocalization("dijit.form", "validate");
 

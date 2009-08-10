@@ -361,4 +361,6 @@ dojo.declare(
 //		is only room below (or above) the target node, but not both.
 dijit.Tooltip.defaultPosition = ["after", "before"];
 
+dojo.provided("dijit.Tooltip");
+
 });
