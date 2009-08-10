@@ -1109,6 +1109,17 @@ if(typeof dojo == "undefined"){
 
 	dojo._requiredCallbacks = {};
 
+	dojo._checkRequirements = function(modules) {
+		var ready = true;
+
+		for (var i = modules.length; i--;) {
+			if (!this._loadedModules[modules[i]]) {
+				ready = false;
+			}
+		}
+		return ready;
+	};
+
 	dojo.required = function(/*String|Array*/moduleName, /*Function?*/callback, fromModuleName) {
 
 		//	summary: Throws an exception is the module has not been loaded and executed
@@ -1116,22 +1127,11 @@ if(typeof dojo == "undefined"){
 		var ready = true;
 
 		var indeces = [], modules = (typeof moduleName == 'string') ? [moduleName] : moduleName;
-		var len = modules.length, remainingRequirements = len;
+		var len = modules.length;
 		var requiredCallbacks = dojo._requiredCallbacks;
 
-		for (var i = len; i--;) {
-			if (!this._loadedModules[modules[i]]) {
-				ready = false;
-			} else {
-				remainingRequirements--;
-			}
-		}
-
 		var requiredCallback = function() {
-			remainingRequirements--;
-			if (remainingRequirements < 0) {
-				warn('Module requirements overloaded: ' +  moduleName);
-			} else if (!remainingRequirements) {
+			if (dojo._checkRequirements(modules)) {
 
 				// All modules in bundle loaded
 
@@ -1143,7 +1143,7 @@ if(typeof dojo == "undefined"){
 			}
 		};
 
-		if (!ready) {
+		if (!dojo._checkRequirements(modules)) {
 			if (typeof callback == 'undefined') {
 				throw new Error(((dojo._requiredModules[moduleName]) ? 'Late' : 'Missing') + ' dependency: ' + moduleName + '.');
 			} else {
@@ -1163,6 +1163,7 @@ if(typeof dojo == "undefined"){
 	};
 
 	dojo._requiredModules = {};
+	dojo._providedModules = {};
 
 	dojo._loadModule = dojo.require = function(/*String*/moduleName, /*Boolean?*/omitModuleCheck){
 		//	summary:
@@ -1280,9 +1281,9 @@ if(typeof dojo == "undefined"){
 		//		file), that file may contain multiple dojo.provide() calls, to
 		//		note that it includes multiple resources.
 
-		//if (dojo._loadedModules[resourceName]) {
-			//throw new Error(resourceName + ' provided more than once.');
-		//}		
+		if (dojo._loadedModules[resourceName]) {
+			throw new Error(resourceName + ' provided more than once.');
+		}		
 		
 		return (dojo._loadedModules[resourceName] = dojo.getObject(resourceName, true)); // Object
 	};
@@ -1299,7 +1300,8 @@ if(typeof dojo == "undefined"){
 					cb();
 				}
 			}
-		}		
+		}
+		return (dojo._providedModules[resourceName] = dojo.getObject(resourceName, true)); // Object
 	};
 
 	dojo.platformRequire = function(/*Object*/modMap){
