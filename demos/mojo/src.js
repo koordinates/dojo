@@ -117,10 +117,12 @@ dojo.require("demos.mojo.src.download"); // download link code
 
 			// NOTE: These all use pixels for top and left
 
-			var t = dojo.getStylePixels(n, 'top');
-			var l = dojo.getStylePixels(n, 'left');
+			//var t = dojo.getStylePixels(n, 'top');
+			//var l = dojo.getStylePixels(n, 'left');
+			//window.alert(t + ' ' + l);
 
-			_coords = { t: t, l: l };
+//			_coords = { t: t, l: l };
+			_coords = dojo.coords(n);
 
 			// and "bring to top"
 			// and make it partially opaque
