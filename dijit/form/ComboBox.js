@@ -1215,4 +1215,6 @@ dojo.declare("dijit.form._ComboBoxDataStore", null, {
 
 dojo.extend(dijit.form._ComboBoxDataStore,dojo.data.util.simpleFetch);
 
+dojo.provided("dijit.form.ComboBox");
+
 });
