@@ -4,7 +4,7 @@ dojo.require("dijit._Widget");
 dojo.require("dijit.Editor");
 dojo.require("dijit.form.Button");
 
-dojo.required("dijit.form.Button", function() {
+dojo.required(["dijit._Widget", "dijit.form.Button"], function() {
 
 dojo.declare("dijit._editor._Plugin", null, {
 	// summary
@@ -184,5 +184,7 @@ dojo.declare("dijit._editor._Plugin", null, {
 		// console.debug("adding", this.button, "to:", toolbar);
 	}
 });
+
+dojo.provided("dijit._editor._Plugin");
 
 });

@@ -20,9 +20,9 @@
 		<script type="text/javascript" src="../_testCommon.js"></script>
 
 		<script type="text/javascript">
+			dojo.require("dojo.i18n");	// scan page for widgets and instantiate them
 			dojo.require("dijit.dijit"); // optimize: load dijit layer
 			dojo.require("dijit.form.ComboBox");
-			dojo.require("dojo.parser");	// scan page for widgets and instantiate them
 
 			dojo.addOnLoad(function(){
 				dojo.connect(dojo.byId("killit"), "onclick", function(){
