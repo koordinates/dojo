@@ -1,4 +1,5 @@
 dojo.provide("dijit.form.NumberTextBox");
+dojo.require("dojo.number");
 dojo.require("dijit.form.ValidationTextBox");
 
 dojo.required("dojo.number", function() {
