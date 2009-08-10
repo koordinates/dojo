@@ -12,7 +12,8 @@ dojo.declare("dojo.dnd.Mover", null, {
 		//	 and defines proper events (onMoveStart and onMoveStop)
 
 		this.node = dojo.byId(node);
-		this.marginBox = {l: e.pageX, t: e.pageY};
+		this.mouseCoords = {l: e.pageX, t: e.pageY};
+		this.marginBox = {};
 		this.mouseButton = e.button;
 		var h = this.host = host, d = node.ownerDocument, 
 			firstEvent = dojo.connect(d, "onmousemove", this, "onFirstMove");
@@ -35,7 +36,8 @@ dojo.declare("dojo.dnd.Mover", null, {
 		// e: Event: mouse event
 		dojo.dnd.autoScroll(e);
 		var m = this.marginBox;
-		this.host.onMove(this, {l: m.l + e.pageX, t: m.t + e.pageY});
+		var mc = this.mouseCoords;
+		this.host.onMove(this, {l: m.l + (e.pageX - mc.l), t: m.t + (e.pageY - mc.t)});
 		dojo.stopEvent(e);
 	},
 	onMouseUp: function(e){
@@ -56,18 +58,18 @@ dojo.declare("dojo.dnd.Mover", null, {
 		case "fixed":
 		case "relative":
 		case "absolute":
-			l = dojo._toPixelValue(s.left);
-			t = dojo._toPixelValue(s.top);
-			break;
-		default: // Static position
+			l = dojo.getStylePixels(this.node, 'left');
+			t = dojo.getStylePixels(this.node, 'top');
+		default:
 			this.node.style.position = "absolute"; // Make absolute
+		}
+		if (isNaN(t) || isNaN(l)) {
 			coords = dojo.coords(this.node, true);
 			l = coords.x;
 			t = coords.y;
-			break;
 		}
-		this.marginBox.l = l - this.marginBox.l;
-		this.marginBox.t = t - this.marginBox.t;
+		this.marginBox.l = l;
+		this.marginBox.t = t;
 		if(h && h.onFirstMove){
 			h.onFirstMove(this);
 		}
