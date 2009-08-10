@@ -136,3 +136,5 @@ dojo.date.stamp.toISOString = function(/*Date*/dateObject, /*dojo.date.stamp.__O
 	}
 	return formattedDate.join('T'); // String
 };
+
+dojo.provided("dojo.date.stamp");
