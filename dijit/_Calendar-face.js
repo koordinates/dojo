@@ -319,3 +319,5 @@ dojo.declare(
 		}
 	}
 );
+
+dojo.provided("dijit._Calendar");
