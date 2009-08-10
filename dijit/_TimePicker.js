@@ -1,8 +1,9 @@
 dojo.provide("dijit._TimePicker");
 dojo.require("dijit.form._FormWidget");
 dojo.require("dojo.date.locale");
+dojo.require("dojo.date.stamp");
 
-dojo.required("dijit.form._FormWidget", function() {
+dojo.required(["dojo.date.stamp", "dijit.form._FormWidget"], function() {
 
 /*=====
 dojo.declare(
