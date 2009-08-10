@@ -34,11 +34,6 @@
 			dojo.require("dijit._Calendar");
 
 			dojo.addOnLoad(function(){
-				//Need to declare BigCalendar here in an addOnLoad block so that it works
-				//with xdomain loading, where the dojo.require for dijit._Calendar 
-				//may load asynchronously. This also means we cannot have HTML
-				//markup in the body tag for BigCalendar, but instead inject it in this
-				//onload handler after BigCalendar is defined.
 				dojo.declare("BigCalendar", dijit._Calendar, {
 					templatePath: "../../dijit/tests/_altCalendar.html",
 					templateString: null,  /* need this for builds */
