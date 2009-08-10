@@ -1,6 +1,8 @@
 dojo.provide("dijit.form._FormWidget");
 
-dojo.required("dijit._Templated", function() {
+dojo.require("dijit._Templated");
+
+dojo.required(["dijit._Templated"], function() {
 
 dojo.declare("dijit.form._FormWidget", [dijit._Widget, dijit._Templated],
 	{
