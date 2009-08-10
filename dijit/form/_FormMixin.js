@@ -388,3 +388,4 @@ dojo.declare("dijit.form._FormMixin", null,
 			this.connectChildren();
 		}
 	});
+dojo.provided("dijit.form._FormMixin");

@@ -641,3 +641,5 @@ dojo.declare(
 		//		callback
 	}
 });
+
+dojo.provided("dijit.layout.ContentPane");

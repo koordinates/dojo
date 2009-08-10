@@ -75,3 +75,5 @@ dojo.declare("dijit._DialogMixin", null,
 		}
 	}
 );
+
+dojo.provided("dijit._DialogMixin");
