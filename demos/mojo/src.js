@@ -18,12 +18,10 @@ dojo.require("demos.mojo.src.download"); // download link code
 	var nodes, style = dojo.style;
 	
 	dojo.addOnLoad(function(){
-		
-		//if(dojo.isIE){
-			dojo.byId("logoImg").src = "images/logo.gif";
-		//}
 		nodes = dojo.query("#container > div");
+
 		// iterate over each div in the container
+
 		nodes.forEach(function(n){
 			// hide the node, first thing, and undo native-css hiding:
 			style(n, { opacity:0, visibility:"visible" });
@@ -38,10 +36,6 @@ dojo.require("demos.mojo.src.download"); // download link code
 					width:"1px", height:"1px",
 					top:"155px", left:"155px"
 				});
-				//if(dojo.isIE){
-					// no png's for ie users
-					img.src = "images/shot3.gif";
-				//}
 			});
 		});
 		
@@ -102,24 +96,35 @@ dojo.require("demos.mojo.src.download"); // download link code
 			})
 		}));
 		
-		// combine them all, and play a s single animation (with a
+		// combine them all, and play a single animation (with a
 		// setTimeout to give the broswer a second to be sane again)
+
 		var anim = dojo.fx.combine(_anims);
 		
 		var roller = new dojox.widget.RollerSlide({ delay:5000, autoStart:false },"whyList");
 		dojo.connect(anim,"onEnd", roller, "start");
 
-		setTimeout(dojo.hitch(anim,"play"), 15);
+		dojo._getWin().setTimeout(dojo.hitch(anim,"play"), 15);
 		
 		var _coords = null;
 		var _z = null;
 		
-		dojo.subscribe("/dnd/move/start",function(e){
+		dojo.subscribe("/dnd/move/start",function(e) {
+
 			// when drag starts, save the coords of the node we're pulling
+
 			var n = e.node;
-			_coords = dojo.coords(n);
+
+			// NOTE: These all use pixels for top and left
+
+			var t = dojo.getStylePixels(n, 'top');
+			var l = dojo.getStylePixels(n, 'left');
+
+			_coords = { t: t, l: l };
+
 			// and "bring to top"
 			// and make it partially opaque
+
 			_z = style(n, "zIndex");
 			style(n, { zIndex:888, opacity:0.65 });
 		});
