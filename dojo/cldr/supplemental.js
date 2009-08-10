@@ -70,3 +70,5 @@ dojo.cldr.supplemental.getWeekend = function(/*String?*/locale){
 	if(end === undefined){end=0;}
 	return {start:start, end:end}; /*Object {start,end}*/
 };
+
+dojo.provided("dojo.cldr.supplemental");
