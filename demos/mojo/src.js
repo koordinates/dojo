@@ -39,15 +39,14 @@ dojo.require("demos.mojo.src.download"); // download link code
 			});
 		});
 		
-		// dojo.fx.combine takes an array of animations:
 		var _anims = [];
 		var _delay = 1200;
 		
 		nodes.forEach(function(n){
-			// fade in the node, delayed 500ms
-			_anims.push(dojo.fadeIn({
+			var _nodeAnims = [];
+			_nodeAnims.push(dojo.fadeIn({
 				duration:850,
-				node: n, delay: _delay + 1200,
+				node: n,
 				properties: {
 					paddingTop: {
 						start:155, end:1, unit:"px"
@@ -59,9 +58,8 @@ dojo.require("demos.mojo.src.download"); // download link code
 			}))
 			
 			dojo.query("img", n).forEach(function(img){
-				_anims.push(dojo.animateProperty({
+				_nodeAnims.push(dojo.animateProperty({
 					duration:450,
-					delay: _delay + 1000,
 					node: img,
 					properties: {
 						width: 310, 
@@ -74,40 +72,37 @@ dojo.require("demos.mojo.src.download"); // download link code
 
 			_delay += 1500; // step up the delay base just a smidge
 
+			_anims.push(dojo.fx.combine(_nodeAnims));
+
 		});
 		
 		// add the header-in-animation to our _anims array
+
 		_anims.push(dojo.animateProperty({
 			node: "header",
 			properties: {
 				top: 5, 
 				left: 5
 			},
-			delay: _delay,
 			duration: 700
 		}));
 		
 		_anims.push(dojo.fadeIn({
 			node:"downloadButton",
 			duration:400,
-			delay:2000,
 			beforeBegin: dojo.partial(style, "downloadButton", { 
 				opacity:0, visibility:"visible" 
 			})
 		}));
 		
-		// combine them all, and play a single animation (with a
-		// setTimeout to give the broswer a second to be sane again)
-
-		var anim = dojo.fx.combine(_anims);
+		var anim = dojo.fx.chain(_anims);
 		
 		var roller = new dojox.widget.RollerSlide({ delay:5000, autoStart:false },"whyList");
 		dojo.connect(anim,"onEnd", roller, "start");
 
-		dojo._getWin().setTimeout(dojo.hitch(anim,"play"), 15);
+		anim.play();
 		
-		var _coords = null;
-		var _z = null;
+		var _coords, _z;
 		
 		dojo.subscribe("/dnd/move/start",function(e) {
 
