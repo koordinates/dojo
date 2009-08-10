@@ -1,5 +1,7 @@
 dojo.provide("dojo.data.ItemFileWriteStore");
 
+dojo.require("dojo.data.ItemFileReadStore");
+
 //>>excludeStart("always", true);
 
 dojo.required("dojo.data.ItemFileReadStore", function() {
