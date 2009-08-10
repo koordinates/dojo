@@ -1007,3 +1007,5 @@ dojo.declare("dijit._Widget", null, {
 });
 
 })();
+
+dojo.provided("dijit._Widget");
