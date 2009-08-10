@@ -512,4 +512,6 @@ dojo.declare("dijit.form.ToggleButton", dijit.form.Button, {
 	}
 });
 
+dojo.provided("dijit.form.Button");
+
 });
