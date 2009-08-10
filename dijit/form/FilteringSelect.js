@@ -1,8 +1,8 @@
 dojo.provide("dijit.form.FilteringSelect");
-dojo.require("dijit.form.MappedTextBox");
+dojo.require("dijit.form.ValidationTextBox");
 dojo.require("dijit.form.ComboBox");
 
-dojo.required("dijit.form.ComboBox", function() {
+dojo.required(["dijit.form.ComboBox", "dijit.form.ValidationTextBox"], function() {
 
 dojo.declare(
 	"dijit.form.FilteringSelect",

@@ -96,4 +96,6 @@ dojo.declare("dijit.form.SimpleTextarea",
 	}
 });
 
+dojo.provided("dijit.form.SimpleTextarea");
+
 });
