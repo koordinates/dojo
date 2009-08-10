@@ -3,13 +3,14 @@ dojo.require("dojo.i18n");
 dojo.require("dojo.dnd.TimedMoveable");
 dojo.require("dojo.fx");
 dojo.require("dijit._base");
+dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
 dojo.require("dijit._DialogMixin");
 dojo.require("dijit.form._FormMixin");
 dojo.require("dijit.DialogUnderlay");
 dojo.require("dijit.layout.ContentPane");
 
-dojo.required(["dijit.layout.ContentPane", "dijit._Templated", "dijit.form._FormMixin", "dijit._DialogMixin"], function() {
+dojo.required(["dojo.i18n", "dijit.layout.ContentPane", "dijit._Templated", "dijit.form._FormMixin", "dijit._DialogMixin"], function() {
 
 dojo.requireLocalization("dijit", "common");
 /*=====

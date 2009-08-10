@@ -20,10 +20,12 @@ doh.register("dojox.data.tests.stores.AppStore",
 
 			var d = new doh.Deferred();
 			function onComplete(items, request){
+				window.alert(items);
 				t.assertEqual(8, items.length);
 				d.callback(true);
 			}
 			function onError(error, request){
+				window.alert(error);
 				d.errback(error);
 			}
 			store.fetch({query:{title:"*"}, onComplete: onComplete, onError: onError});
