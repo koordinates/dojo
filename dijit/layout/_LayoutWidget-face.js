@@ -278,3 +278,5 @@ dijit.layout.marginBox2contentBox = function(/*DomNode*/ node, /*Object*/ mb){
 	};
 
 })();
+
+dojo.provided("dijit.layout._LayoutWidget");

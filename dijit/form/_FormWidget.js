@@ -1,5 +1,6 @@
 dojo.provide("dijit.form._FormWidget");
-dojo.required("dijit._Templated");
+
+dojo.required("dijit._Templated", function() {
 
 dojo.declare("dijit.form._FormWidget", [dijit._Widget, dijit._Templated],
 	{
@@ -490,4 +491,8 @@ dojo.declare("dijit.form._FormValueWidget", dijit.form._FormWidget,
 			}
 		};
 	})()
+});
+
+dojo.provided("dijit.form._FormWidget");
+
 });
