@@ -495,6 +495,8 @@ dojo.declare("dijit.Menu",
 }
 );
 
+dojo.provided("dijit.Menu");
+
 });
 
 dojo.require("dijit.MenuItem");
