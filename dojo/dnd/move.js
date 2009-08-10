@@ -215,4 +215,6 @@ dojo.dnd.constrainedMover = dojo.dnd.move.constrainedMover;
 dojo.dnd.boxConstrainedMover = dojo.dnd.move.boxConstrainedMover;
 dojo.dnd.parentConstrainedMover = dojo.dnd.move.parentConstrainedMover;
 
+dojo.provided("dojo.dnd.move");
+
 });
