@@ -71,3 +71,4 @@ dojo.declare("dijit._Contained",
 		}
 	);
 
+dojo.provided("dijit._Contained");

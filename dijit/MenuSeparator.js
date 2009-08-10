@@ -1,6 +1,8 @@
 dojo.provide("dijit.MenuSeparator");
-dojo.required("dijit._Templated");
-dojo.required("dijit._Contained");
+dojo.require("dijit._Templated");
+dojo.require("dijit._Contained");
+
+dojo.required(["dijit._Templated", "dijit._Contained"], function() {
 
 dojo.declare("dijit.MenuSeparator",
 		[dijit._Widget, dijit._Templated, dijit._Contained],
@@ -24,3 +26,4 @@ dojo.declare("dijit.MenuSeparator",
 		}
 	});
 
+});
