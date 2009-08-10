@@ -1124,8 +1124,6 @@ if(typeof dojo == "undefined"){
 
 		//	summary: Throws an exception is the module has not been loaded and executed
 
-		var ready = true;
-
 		var indeces = [], modules = (typeof moduleName == 'string') ? [moduleName] : moduleName;
 		var len = modules.length;
 		var requiredCallbacks = dojo._requiredCallbacks;
