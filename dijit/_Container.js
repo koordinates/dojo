@@ -142,3 +142,5 @@ dojo.declare("dijit._Container",
 		}
 	}
 );
+
+dojo.provided("dijit._Container");
