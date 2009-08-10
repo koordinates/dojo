@@ -31,6 +31,7 @@
 	<script type="text/javascript" src="../_testCommon.js"></script>
 
 	<script type="text/javascript">
+		dojo.require("dojo.i18n");
 		dojo.require("dijit.dijit"); // optimize: load dijit layer
 		dojo.require("dijit.layout.TabContainer");
 		dojo.require("dijit.TitlePane");
@@ -41,7 +42,6 @@
 			var p = document.createElement("p");
 			p.appendChild(document.createTextNode("Widgets loaded in " + elapsed + "ms"));
 			document.body.appendChild(p);
-			// dojo.parser.parse(dojo.body());
 		});
 		
 	</script>
