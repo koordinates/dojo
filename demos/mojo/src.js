@@ -40,7 +40,6 @@ dojo.require("demos.mojo.src.download"); // download link code
 		});
 		
 		var _anims = [];
-		var _delay = 1200;
 		
 		nodes.forEach(function(n){
 			var _nodeAnims = [];
@@ -69,8 +68,6 @@ dojo.require("demos.mojo.src.download"); // download link code
 					}
 				}));
 			});
-
-			_delay += 1500; // step up the delay base just a smidge
 
 			_anims.push(dojo.fx.combine(_nodeAnims));
 
