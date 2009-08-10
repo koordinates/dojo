@@ -299,3 +299,5 @@ dijit.selectInputText = function(/*DomNode*/element, /*Number?*/ start, /*Number
 		element.select();
 	}
 };
+
+dojo.provided("dijit.form.TextBox");

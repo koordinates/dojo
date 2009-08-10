@@ -1,5 +1,5 @@
 dojo.provide("dijit._Templated");
-dojo.required("dijit._Widget");
+dojo.require("dijit._Widget");
 dojo.require("dojo.string");
 dojo.require("dojo.parser");
 
@@ -289,12 +289,20 @@ if(dojo.isHostMethod(window, 'attachEvent') && !dojo.isHostMethod(window, 'addEv
 	});
 }
 
-// These arguments can be specified for widgets which are used in templates.
-// Since any widget can be specified as sub widgets in template, mix it
-// into the base widget class.  (This is a hack, but it's effective.)
-dojo.extend(dijit._Widget,{
-	dojoAttachEvent: "",
-	dojoAttachPoint: "",
-	waiRole: "",
-	waiState:""
+dojo.required("dijit._Widget", function() {
+
+	// These arguments can be specified for widgets which are used in templates.
+	// Since any widget can be specified as sub widgets in template, mix it
+	// into the base widget class.  (This is a hack, but it's effective.)
+
+	// NOTE: Review this
+
+	dojo.extend(dijit._Widget,{
+		dojoAttachEvent: "",
+		dojoAttachPoint: "",
+		waiRole: "",
+		waiState:""
+	});
+
+	dojo.provided("dijit._Templated");
 });

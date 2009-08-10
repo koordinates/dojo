@@ -1,7 +1,7 @@
 dojo.provide("dojo.colors");
 dojo.required("dojo._base.Color");
 
-//TODO: this module appears to break naming conventions
+// TODO: this module appears to break naming conventions
 
 /*=====
 dojo.colors = {
@@ -224,3 +224,5 @@ dojo.mixin(dojo.Color.named, {
 	whitesmoke:	[245,245,245],
 	yellowgreen:	[154,205,50]
 });
+
+dojo.provided("dojo.colors");

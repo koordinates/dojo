@@ -1,6 +1,8 @@
 dojo.provide("dijit.form.NumberTextBox");
 dojo.require("dijit.form.ValidationTextBox");
-dojo.required("dojo.number");
+
+dojo.required("dojo.number", function() {
+
 /*=====
 dojo.declare(
 	"dijit.form.NumberTextBox.__Constraints",
@@ -178,3 +180,7 @@ dojo.declare("dijit.form.NumberTextBox",
 		//		A validating, serializable, range-bound text box.
 	}
 );
+
+dojo.provided("dijit.form.NumberTextBox");
+
+});

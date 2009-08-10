@@ -2,7 +2,6 @@ dojo.provide("dojo.currency");
 dojo.require("dojo.i18n");
 dojo.require("dojo.number");
 dojo.require("dojo.cldr.monetary");
-
 //>>excludeStart("always", true);
 
 dojo.required('dojo.i18n', function() {
@@ -103,3 +102,5 @@ dojo.currency.parse = function(/*String*/expression, /*dojo.currency.__ParseOpti
 
 	return dojo.number.parse(expression, dojo.currency._mixInDefaults(options));
 };
+
+dojo.provided("dojo.currency");

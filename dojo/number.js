@@ -575,3 +575,5 @@ dojo.number._integerRegexp = function(/*dojo.number.__IntegerRegexpFlags?*/flags
 	// integer RE
 	return signRE + numberRE; // String
 };
+
+dojo.provided("dojo.number");
