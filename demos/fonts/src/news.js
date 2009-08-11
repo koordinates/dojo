@@ -1,6 +1,5 @@
 dojo.provide("demos.fonts.src.news");
 dojo.require("demos.fonts.src.pie");
-dojo.require("dojo.date");
 dojo.require("dojo.date.locale");
 
 function init(){
@@ -24,9 +23,9 @@ function init(){
 		"#181818"
 	);
 
-	if(dojo.isIE){
+	//if(dojo.isIE){
 		t.parentNode.style.textAlign = "left";
-	}
+	//}
 
 	var t = dojo.byId("subtitle"),
 		txt = t.innerHTML,
