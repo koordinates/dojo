@@ -437,3 +437,5 @@ dojo.provide("dojox.gfx.matrix");
 
 // propagate Matrix2D up
 dojox.gfx.Matrix2D = dojox.gfx.matrix.Matrix2D;
+
+dojo.provided("dojox.gfx.matrix");

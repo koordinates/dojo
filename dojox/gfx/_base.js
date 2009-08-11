@@ -294,3 +294,5 @@ dojo.mixin(dojox.gfx, {
 		return a && b && a == b;
 	}
 });
+
+dojo.provided("dojox.gfx._base");
