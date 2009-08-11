@@ -545,8 +545,9 @@ dojo.declare("dijit.layout._Splitter", [ dijit._Widget, dijit._Templated ],
 
 				if(resize || forceResize){
 					mb[dim] = boundChildSize;
-
-					childNode.style[dim == 'h' ? 'height' : 'width'] = boundChildSize + 'px';
+					// TODO: inefficient; we set the marginBox here and then immediately layoutFunc() needs to query it
+					dojo.marginBox(childNode, mb);
+					//childNode.style[dim == 'h' ? 'height' : 'width'] = boundChildSize + 'px';
 					layoutFunc(region);
 				}
 				splitterStyle[region] = factor * delta + splitterStart + (boundChildSize - childSize) + "px";
