@@ -2,7 +2,7 @@ dojo.provide("dijit.MenuBarItem");
 
 dojo.require("dijit.MenuItem");
 
-dojo.required("dijit.MenuItem", function() {
+dojo.required(["dijit.MenuItem"], function() {
 
 dojo.declare("dijit._MenuBarItemMixin", null, {
 	templatePath: dojo.moduleUrl("dijit", "templates/MenuBarItem.html"),

@@ -1109,11 +1109,12 @@ if(typeof dojo == "undefined"){
 
 	dojo._requiredCallbacks = {};
 
-	dojo._checkRequirements = function(modules) {
+	dojo._checkRequirements = function(modules, provided) {
 		var ready = true;
+		var checkModules = this[(provided ? '_provided' : '_loaded') + 'Modules'];
 
 		for (var i = modules.length; i--;) {
-			if (!this._loadedModules[modules[i]]) {
+			if (!checkModules[modules[i]]) {
 				ready = false;
 			}
 		}
@@ -1129,7 +1130,7 @@ if(typeof dojo == "undefined"){
 		var requiredCallbacks = dojo._requiredCallbacks;
 
 		var requiredCallback = function() {
-			if (dojo._checkRequirements(modules)) {
+			if (dojo._checkRequirements(modules, true)) {
 
 				// All modules in bundle loaded
 
@@ -1141,10 +1142,13 @@ if(typeof dojo == "undefined"){
 			}
 		};
 
-		if (!dojo._checkRequirements(modules)) {
-			if (typeof callback == 'undefined') {
+
+		if (typeof callback == 'undefined') {
+			if (!dojo._checkRequirements(modules)) {
 				throw new Error(((dojo._requiredModules[moduleName]) ? 'Late' : 'Missing') + ' dependency: ' + moduleName + '.');
-			} else {
+			}
+		} else {
+			if (!dojo._checkRequirements(modules, true)) {
 				for (i = len; i--;) {
 					if (!requiredCallbacks[modules[i]]) {
 						requiredCallbacks[modules[i]] = [];
@@ -1152,9 +1156,7 @@ if(typeof dojo == "undefined"){
 					indeces[i] = requiredCallbacks[modules[i]].length;
 					requiredCallbacks[modules[i]].push(requiredCallback);
 				}
-			}
-		} else {
-			if (callback) {
+			} else if (callback) {
 				callback();
 			}
 		}
@@ -1287,7 +1289,9 @@ if(typeof dojo == "undefined"){
 	};
 
 	dojo.provided = function(/*String*/ resourceName) {
-		var i, cb, len, callbacks = dojo._requiredCallbacks[resourceName];
+		var i, cb, len, result, callbacks = dojo._requiredCallbacks[resourceName];
+
+		result = dojo._providedModules[resourceName] = dojo.getObject(resourceName, true);
 
 		if (callbacks) {
 			len = callbacks.length;
@@ -1299,7 +1303,8 @@ if(typeof dojo == "undefined"){
 				}
 			}
 		}
-		return (dojo._providedModules[resourceName] = dojo.getObject(resourceName, true)); // Object
+
+		return result; // Object
 	};
 
 	dojo.platformRequire = function(/*Object*/modMap){
