@@ -87,4 +87,6 @@ dojo.declare(
 	}
 );
 
+dojo.provided("dijit.Declaration");
+
 });
