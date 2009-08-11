@@ -1,7 +1,8 @@
 dojo.provide('dojox.widget.gauge.AnalogArrowIndicator');
+dojo.experimental("dojox.widget.gauge.AnalogArrowIndicator");
 dojo.require('dojox.widget.AnalogGauge');
 
-dojo.experimental("dojox.widget.gauge.AnalogArrowIndicator");
+dojo.required('dojox.widget.AnalogGauge', function() {
 
 dojo.declare("dojox.widget.gauge.AnalogArrowIndicator",[dojox.widget.gauge.AnalogLineIndicator],{
 	_getShapes: function(){
@@ -34,4 +35,6 @@ dojo.declare("dojox.widget.gauge.AnalogArrowIndicator",[dojox.widget.gauge.Analo
 					.setFill(this.color);
 		return shapes;
 	}
+});
+
 });

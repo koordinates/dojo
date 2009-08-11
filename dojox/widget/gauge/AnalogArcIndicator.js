@@ -1,7 +1,8 @@
 dojo.provide('dojox.widget.gauge.AnalogArcIndicator');
+dojo.experimental("dojox.widget.gauge.AnalogArcIndicator");
 dojo.require('dojox.widget.AnalogGauge');
 
-dojo.experimental("dojox.widget.gauge.AnalogArcIndicator");
+dojo.required('dojox.widget.AnalogGauge', function() {
 
 dojo.declare("dojox.widget.gauge.AnalogArcIndicator",[dojox.widget.gauge.AnalogLineIndicator],{
 	_createArc: function(val){
@@ -63,4 +64,6 @@ dojo.declare("dojox.widget.gauge.AnalogArcIndicator",[dojox.widget.gauge.AnalogL
 			}
 		}
 	}
+});
+
 });
