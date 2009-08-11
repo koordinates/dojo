@@ -1236,4 +1236,6 @@ dojo.declare("dojox.widget.RollingList",
 	
 });
 
+dojo.provided("dojox.widget.RollingList");
+
 });
