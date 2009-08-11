@@ -1,9 +1,8 @@
 dojo.provide("dojox.dtl._base");
+dojo.experimental("dojox.dtl");
 
 dojo.require("dojox.string.Builder");
 dojo.require("dojox.string.tokenize");
-
-dojo.experimental("dojox.dtl");
 
 (function(){
 	var dd = dojox.dtl;
@@ -713,3 +712,5 @@ dojo.experimental("dojox.dtl");
 		"_base": ["escape", "safe"]
 	});
 })();
+
+dojo.provided("dojox.dtl._base");

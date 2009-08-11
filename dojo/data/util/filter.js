@@ -63,3 +63,5 @@ dojo.data.util.filter.patternToRegExp = function(/*String*/pattern, /*boolean?*/
 	}
 	
 };
+
+dojo.provided("dojo.data.util.filter");

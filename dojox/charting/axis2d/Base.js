@@ -1,6 +1,9 @@
 dojo.provide("dojox.charting.axis2d.Base");
 
-dojo.required("dojox.charting.Element");
+dojo.require("dojox.axis2d.common");
+dojo.require("dojox.charting.Element");
+
+dojo.required("dojox.charting.Element", function() {
 
 dojo.declare("dojox.charting.axis2d.Base", dojox.charting.Element, {
 	constructor: function(chart, kwArgs){
@@ -27,4 +30,8 @@ dojo.declare("dojox.charting.axis2d.Base", dojox.charting.Element, {
 	render: function(dim, offsets){
 		return this;
 	}
+});
+
+dojo.provided("dojox.charting.axis2d.Base");
+
 });

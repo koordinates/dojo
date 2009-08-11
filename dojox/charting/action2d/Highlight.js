@@ -2,8 +2,9 @@ dojo.provide("dojox.charting.action2d.Highlight");
 
 dojo.require("dojox.charting.action2d.Base");
 dojo.require("dojox.color");
+dojo.require("dojox.fx.easing");
 
-(function(){
+dojo.required("dojox.charting.action2d.Base", "dojox.color", "dojox.fx.easing", function(){
 	var DEFAULT_SATURATION  = 100,	// %
 		DEFAULT_LUMINOSITY1 = 75,	// %
 		DEFAULT_LUMINOSITY2 = 50,	// %
@@ -101,4 +102,6 @@ dojo.require("dojox.color");
 			anim.action.play();
 		}
 	});
-})();
+
+	dojo.provided("dojox.charting.action2d.Highlight");
+});

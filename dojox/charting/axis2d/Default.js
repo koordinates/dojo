@@ -1,16 +1,16 @@
 dojo.provide("dojox.charting.axis2d.Default");
 
-dojo.required("dojox.charting.scaler.linear");
-dojo.required("dojox.charting.axis2d.common");
-dojo.required("dojox.charting.axis2d.Base");
+dojo.require("dojox.charting.scaler.linear");
 
-dojo.required("dojo.colors");
-dojo.required("dojo.string");
-dojo.required("dojox.gfx");
-dojo.required("dojox.lang.functional");
-dojo.required("dojox.lang.utils");
+dojo.require("dojox.charting.axis2d.Base");
 
-(function(){
+dojo.require("dojo.colors");
+dojo.require("dojo.string");
+dojo.require("dojox.gfx");
+dojo.require("dojox.lang.functional");
+dojo.require("dojox.lang.utils");
+
+dojo.required(["dojox.lang.utils", "dojox.lang.functional", "dojox.charting.axis2d.Base", "dojox.charting.scaler.linear"], function() {
 	var dc = dojox.charting,
 		df = dojox.lang.functional,
 		du = dojox.lang.utils,
@@ -337,4 +337,5 @@ dojo.required("dojox.lang.utils");
 			return this;
 		}
 	});
-})();
+	dojo.provided("dojox.charting.axis2d.Default");
+});

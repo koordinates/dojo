@@ -1,8 +1,10 @@
 dojo.provide("dojox.charting.plot2d.Base");
 
-dojo.required("dojox.charting.scaler.primitive");
-dojo.required("dojox.charting.Element");
-dojo.required("dojox.charting.plot2d.common");
+dojo.require("dojox.charting.scaler.primitive");
+dojo.require("dojox.charting.Element");
+dojo.require("dojox.charting.plot2d.common");
+
+dojo.required(["dojox.charting.plot2d.common", "dojox.charting.scaler.primitive", "dojox.charting.Element"], function() {
 
 dojo.declare("dojox.charting.plot2d.Base", dojox.charting.Element, {
 	destroy: function(){
@@ -99,4 +101,8 @@ dojo.declare("dojox.charting.plot2d.Base", dojox.charting.Element, {
 			this.plotEvent(o);
 		});
 	}
+});
+
+dojo.provided("dojox.charting.plot2d.Base");
+
 });

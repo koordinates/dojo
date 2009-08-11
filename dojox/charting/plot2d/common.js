@@ -4,7 +4,7 @@ dojo.require("dojo.colors");
 dojo.require("dojox.gfx");
 dojo.require("dojox.lang.functional");
 
-(function(){
+dojo.required(["dojox.gfx", "dojox.lang.functional"], function() {
 	var df = dojox.lang.functional, dc = dojox.charting.plot2d.common;
 
 	dojo.mixin(dojox.charting.plot2d.common, {
@@ -196,4 +196,6 @@ dojo.require("dojox.lang.functional");
 			return p.join(" ");
 		}
 	});
-})();
+
+	dojo.provided("dojox.charting.plot2d.common");
+});

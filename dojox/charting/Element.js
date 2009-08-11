@@ -45,3 +45,5 @@ dojo.declare("dojox.charting.Element", null, {
 		this.purgeGroup();
 	}
 });
+
+dojo.provided("dojox.charting.Element");

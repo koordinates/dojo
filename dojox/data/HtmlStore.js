@@ -1,8 +1,10 @@
 dojo.provide("dojox.data.HtmlStore");
 
-dojo.required("dojox.xml.parser");
-dojo.required("dojo.data.util.simpleFetch");
-dojo.required("dojo.data.util.filter");
+dojo.require("dojox.xml.parser");
+dojo.require("dojo.data.util.simpleFetch");
+dojo.require("dojo.data.util.filter");
+
+dojo.required(["dojox.xml.parser", "dojo.data.util.simpleFetch", "dojo.data.util.filter"], function() {
 
 dojo.declare("dojox.data.HtmlStore", null, {
 	constructor: function(/*Object*/args){
@@ -527,4 +529,5 @@ dojo.declare("dojox.data.HtmlStore", null, {
 		}
 	}
 });
-dojo.extend(dojox.data.HtmlStore,dojo.data.util.simpleFetch);
+	dojo.extend(dojox.data.HtmlStore,dojo.data.util.simpleFetch);
+});

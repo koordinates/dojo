@@ -1,7 +1,7 @@
 dojo.provide("dojox.charting.themes.PlotKit.green");
 dojo.require("dojox.charting.Theme");
 
-(function(){
+dojo.required("dojox.charting.Theme", function(){
 	var dxc=dojox.charting;
 	dxc.themes.PlotKit.green=new dxc.Theme({
 		chart:{
@@ -36,4 +36,4 @@ dojo.require("dojox.charting.Theme");
 		colors:[]
 	});
 	dxc.themes.PlotKit.green.defineColors({ hue:82, saturation:60, low:40, high:88 });
-})();
+});

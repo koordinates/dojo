@@ -2,7 +2,7 @@ dojo.provide("dojox.charting.axis2d.common");
 
 dojo.require("dojox.gfx");
 
-(function(){
+dojo.required("dojox.gfx", function() {
 	var g = dojox.gfx;
 	
 	function clearNode(s){
@@ -68,4 +68,6 @@ dojo.require("dojox.gfx");
 			}
 		}
 	});
-})();
+
+	dojo.provided("dojox.charting.axis2d.common");
+});

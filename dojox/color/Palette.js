@@ -1,7 +1,7 @@
 dojo.provide("dojox.color.Palette");
-dojo.require("dojox.color");
+dojo.require("dojox.color._base");
 
-(function(){
+dojo.required('dojox.color._base', function(){
 	var dxc = dojox.color;
 	/***************************************************************
 	*	dojox.color.Palette
@@ -374,4 +374,6 @@ dojo.require("dojox.color");
 			throw new Error("dojox.color.Palette.generate: the specified generator ('" + type + "') does not exist.");
 		}
 	});
-})();
+
+	dojo.provided("dojox.color.Palette");
+});

@@ -1,10 +1,11 @@
 dojo.provide("dojox.charting.widget.Legend");
 
-dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
 
 dojo.require("dojox.lang.functional.array");
 dojo.require("dojox.lang.functional.fold");
+
+dojo.required("dijit._Templated", function() {
 
 dojo.declare("dojox.charting.widget.Legend", [dijit._Widget, dijit._Templated], {
 	// summary: A legend for a chart. A legend contains summary labels for 
@@ -156,4 +157,6 @@ dojo.declare("dojox.charting.widget.Legend", [dijit._Widget, dijit._Templated], 
 			surface.createLine({x1: 2, y1: mb.h - 2, x2: mb.w - 2, y2: 2}).setStroke("black");
 		}
 	}
+});
+
 });

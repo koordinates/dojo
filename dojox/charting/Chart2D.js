@@ -1,37 +1,39 @@
 dojo.provide("dojox.charting.Chart2D");
 
-dojo.required("dojox.gfx");
-dojo.required("dojox.lang.functional");
-dojo.required("dojox.lang.functional.fold");
-dojo.required("dojox.lang.functional.reversed");
+dojo.require("dojox.gfx");
+dojo.require("dojox.lang.functional");
+dojo.require("dojox.lang.functional.fold");
+dojo.require("dojox.lang.functional.reversed");
 
-dojo.required("dojox.charting.Theme");
-dojo.required("dojox.charting.Series");
+dojo.require("dojox.charting.Theme");
+dojo.require("dojox.charting.Series");
 
 // require all axes to support references by name
-dojo.required("dojox.charting.axis2d.Default");
+
+dojo.require("dojox.charting.axis2d.Default");
 
 // require all plots to support references by name
-dojo.required("dojox.charting.plot2d.Default");
-dojo.required("dojox.charting.plot2d.Lines");
-dojo.required("dojox.charting.plot2d.Areas");
-dojo.required("dojox.charting.plot2d.Markers");
-dojo.required("dojox.charting.plot2d.MarkersOnly");
-dojo.required("dojox.charting.plot2d.Scatter");
-dojo.required("dojox.charting.plot2d.Stacked");
-dojo.required("dojox.charting.plot2d.StackedLines");
-dojo.required("dojox.charting.plot2d.StackedAreas");
-dojo.required("dojox.charting.plot2d.Columns");
-dojo.required("dojox.charting.plot2d.StackedColumns");
-dojo.required("dojox.charting.plot2d.ClusteredColumns");
-dojo.required("dojox.charting.plot2d.Bars");
-dojo.required("dojox.charting.plot2d.StackedBars");
-dojo.required("dojox.charting.plot2d.ClusteredBars");
-dojo.required("dojox.charting.plot2d.Grid");
-dojo.required("dojox.charting.plot2d.Pie");
-dojo.required("dojox.charting.plot2d.Bubble");
 
-(function(){
+dojo.require("dojox.charting.plot2d.Default");
+dojo.require("dojox.charting.plot2d.Lines");
+dojo.require("dojox.charting.plot2d.Areas");
+dojo.require("dojox.charting.plot2d.Markers");
+dojo.require("dojox.charting.plot2d.MarkersOnly");
+dojo.require("dojox.charting.plot2d.Scatter");
+dojo.require("dojox.charting.plot2d.Stacked");
+dojo.require("dojox.charting.plot2d.StackedLines");
+dojo.require("dojox.charting.plot2d.StackedAreas");
+dojo.require("dojox.charting.plot2d.Columns");
+dojo.require("dojox.charting.plot2d.StackedColumns");
+dojo.require("dojox.charting.plot2d.ClusteredColumns");
+dojo.require("dojox.charting.plot2d.Bars");
+dojo.require("dojox.charting.plot2d.StackedBars");
+dojo.require("dojox.charting.plot2d.ClusteredBars");
+dojo.require("dojox.charting.plot2d.Grid");
+dojo.require("dojox.charting.plot2d.Pie");
+dojo.require("dojox.charting.plot2d.Bubble");
+
+dojo.required(['dojox.gfx', 'dojox.lang.functional', 'dojox.charting.Theme', 'dojox.charting.Series', 'dojox.charting.plot2d.Default', "dojox.charting.axis2d.Default"], function() {
 	var df = dojox.lang.functional, dc = dojox.charting,
 		clear = df.lambda("item.clear()"),
 		purge = df.lambda("item.purgeGroup()"),
@@ -489,4 +491,5 @@ dojo.required("dojox.charting.plot2d.Bubble");
 			}
 		}
 	});
-})();
+	dojo.provided("dojox.charting.Chart2D");
+});

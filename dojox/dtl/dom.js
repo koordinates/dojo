@@ -238,7 +238,7 @@ dojo.require("dojox.dtl.Context");
 					// Note: Why is this method detected here?
 					//       Should detect realAttr, which should be null when getAttribute is not featured
 
-					if(dojo.isHostMethod(node, 'getAttribute')){
+					if (dojo.isHostMethod(node, 'getAttribute')) {
 						value = dojo.realAttr(node, key) || value;
 
 						// NOTE: Re-factor
@@ -253,7 +253,7 @@ dojo.require("dojox.dtl.Context");
 						}
 					}
 
-					if(clear){
+					if (clear) {
 						// Clear out values that are different than will
 						// be used in plugins
 						dojo.removeAttr(node, clear);
@@ -479,13 +479,9 @@ dojo.require("dojox.dtl.Context");
 			if(this.onChangeAttribute && old != value){
 				this.onChangeAttribute(this._parent, key, old, value);
 			}
-			if(key == "style"){
-				//console.log(value);
-				this._parent.style.cssText = value;
-			}else{
-				dojo.realAttr(this._parent, key, value);
-				//console.log(this._parent, key, value);
-			}
+			
+			dojo.realAttr(this._parent, key, value);
+			
 			return this;
 		},
 		addEvent: function(context, type, fn, /*Array|Function*/ args){
@@ -984,8 +980,9 @@ dojo.require("dojox.dtl.Context");
 
 							// NOTE: Needs review
 							// NOTE: Previously used setAttribute (what is this value?)
-
-							dojo.realAttr(value, token[2], "");
+						console.log(this.setAttribute);
+							this.setAttribute(value, token[2]);
+							//dojo.realAttr(value, token[2], "");
 						}
 						nodelist.push(fn(null, new dd.Token(type, token[2] + " " + token[3])));
 					}else if(dojo.isString(token[3])){

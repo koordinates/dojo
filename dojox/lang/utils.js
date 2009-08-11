@@ -58,3 +58,5 @@ dojo.provide("dojox.lang.utils");
 		}
 	});
 })();
+
+dojo.provided("dojox.lang.utils");

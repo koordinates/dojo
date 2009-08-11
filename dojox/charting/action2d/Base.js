@@ -4,7 +4,7 @@ dojo.require("dojo.fx.easing");
 dojo.require("dojox.lang.functional.object");
 dojo.require("dojox.gfx.fx");
 
-(function(){
+dojo.required("dojox.gfx.fx", function(){
 	var DEFAULT_DURATION = 400,	// ms
 		DEFAULT_EASING   = dojo.fx.easing.backOut,
 		df = dojox.lang.functional;
@@ -51,4 +51,4 @@ dojo.require("dojox.gfx.fx");
 			this.anim = {};
 		}
 	});
-})();
+});

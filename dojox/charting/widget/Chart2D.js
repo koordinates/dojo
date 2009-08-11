@@ -11,7 +11,7 @@ dojo.require("dojox.charting.action2d.MoveSlice");
 dojo.require("dojox.charting.action2d.Shake");
 dojo.require("dojox.charting.action2d.Tooltip");
 
-(function(){
+dojo.required(["dijit._Widget", "dojox.lang.functional", "dojox.charting.Chart2D"], function(){
 	var collectParams, collectAxisParams, collectPlotParams,
 		collectActionParams, collectDataParams,
 		notNull = function(o){ return o; },
@@ -255,4 +255,4 @@ dojo.require("dojox.charting.action2d.Tooltip");
 		}
 		return null;
 	};
-})();
+});

@@ -1,5 +1,7 @@
 dojo.provide("dojox.color._base");
-dojo.required("dojo.colors");
+dojo.require("dojo.colors");
+
+dojo.required('dojo.colors', function() {
 
 //	alias all the dojo.Color mechanisms
 dojox.color.Color=dojo.Color;
@@ -223,4 +225,8 @@ dojo.extend(dojox.color.Color, {
 		}
 		return { h:h, s:Math.round(s*100), v:Math.round(max*100) };	//	Object
 	}
+});
+
+dojo.provided("dojox.color._base");
+
 });

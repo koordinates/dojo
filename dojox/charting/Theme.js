@@ -1,9 +1,9 @@
 dojo.provide("dojox.charting.Theme");
-dojo.required("dojo.colors");
-dojo.required("dojox.color");
-dojo.required("dojox.color.Palette");
 
-(function(){
+dojo.require("dojox.color._base");
+dojo.require("dojox.color.Palette");
+
+dojo.required(['dojox.color._base', 'dojox.color.Palette'], function(){
 	var dxc=dojox.charting;
 	//	TODO: Legend information
 
@@ -208,4 +208,6 @@ dojo.required("dojox.color.Palette");
 			this._current = {color: 0, marker: 0};
 		}
 	});
-})();
+
+	dojo.provided("dojox.charting.Theme");
+});

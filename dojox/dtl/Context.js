@@ -1,5 +1,8 @@
 dojo.provide("dojox.dtl.Context");
+
 dojo.require("dojox.dtl._base");
+
+dojo.required("dojox.dtl._base", function() {
 
 dojox.dtl.Context = dojo.extend(function(dict){
 	this._this = {};
@@ -67,4 +70,6 @@ dojox.dtl.Context = dojo.extend(function(dict){
 
 		return false;
 	}
+});
+
 });

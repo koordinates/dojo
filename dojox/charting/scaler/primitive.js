@@ -26,3 +26,5 @@ dojox.charting.scaler.primitive = {
 		return function(x){ return x / scale + offset; };	// Function
 	}
 };
+
+dojo.provided("dojox.charting.scaler.primitive");

@@ -51,4 +51,6 @@ dojo.provide("dojox.charting.scaler.common");
 			return def;
 		}
 	});
+
+	dojo.provided("dojox.charting.scaler.common");
 })();

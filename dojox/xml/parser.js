@@ -188,3 +188,5 @@ dojox.xml.parser.innerXML = function(/*Node*/node){
 	}
 	return null;
 };
+
+dojo.provided("dojox.xml.parser");

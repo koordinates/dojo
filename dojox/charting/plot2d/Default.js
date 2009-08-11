@@ -1,13 +1,12 @@
 dojo.provide("dojox.charting.plot2d.Default");
 
-dojo.required("dojox.charting.plot2d.common");
-dojo.required("dojox.charting.plot2d.Base");
+dojo.require("dojox.charting.plot2d.Base");
 
-dojo.required("dojox.lang.utils");
-dojo.required("dojox.lang.functional");
-dojo.required("dojox.lang.functional.reversed");
+dojo.require("dojox.lang.utils");
+dojo.require("dojox.lang.functional");
+dojo.require("dojox.lang.functional.reversed");
 
-(function(){
+dojo.required(['dojox.charting.plot2d.Base', 'dojox.lang.utils'], function() {
 	var df = dojox.lang.functional, du = dojox.lang.utils,
 		dc = dojox.charting.plot2d.common,
 		purgeGroup = df.lambda("item.purgeGroup()");
@@ -202,4 +201,6 @@ dojo.required("dojox.lang.functional.reversed");
 			return this;
 		}
 	});
-})();
+
+	dojo.provided("dojox.charting.plot2d.Default");
+});

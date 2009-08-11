@@ -1,7 +1,7 @@
 dojo.provide("dojox.charting.scaler.linear");
-dojo.required("dojox.charting.scaler.common");
+dojo.require("dojox.charting.scaler.common");
 
-(function(){
+dojo.required("dojox.charting.scaler.common", function(){
 	var deltaLimit = 3,	// pixels
 		dc = dojox.charting, dcs = dc.scaler, dcsc = dcs.common,
 		findString = dcsc.findString,
@@ -248,4 +248,6 @@ dojo.required("dojox.charting.scaler.common");
 			return function(x){ return x / scale + offset; };	// Function
 		}
 	});
-})();
+
+	dojo.provided("dojox.charting.scaler.linear");
+});
