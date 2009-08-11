@@ -425,4 +425,6 @@ dojo.declare(
 
 dojo.require("dijit.TooltipDialog");
 
+dojo.provided("dijit.Dialog");
+
 });
