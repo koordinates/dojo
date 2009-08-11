@@ -27,8 +27,8 @@
 		dojo.require("dojox.widget.RollingList");
 		dojo.require("dijit.form.Button");
 		dojo.require("dijit.form.TextBox");
-		dojo.require("dojo.parser");	// scan page for widgets and instantiate them
-		
+	</script>
+	<script type="text/javascript">
 		dojo.declare("dojox.widget.RollingStore", dojo.data.ItemFileWriteStore, {
 			getLabel: function(item){
 				return this.inherited(arguments) + " (" + this.getValue(item, "type") + ")";
