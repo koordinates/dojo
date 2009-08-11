@@ -332,4 +332,6 @@ dojo.declare("dijit.form._SliderMover",
 	}
 });
 
+dojo.provided("dijit.form.HorizontalSlider");
+
 });
