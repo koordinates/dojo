@@ -1,7 +1,9 @@
 dojo.provide("dojox.av.widget.PlayButton");
-dojo.require("dijit._Widget");
+
 dojo.require("dijit._Templated");
 dojo.require("dijit.form.Button");
+
+dojo.required(["dijit._Templated", "dijit.form.Button"], function() {
 
 dojo.declare("dojox.av.widget.PlayButton", [dijit._Widget, dijit._Templated], {
 	// summary:
@@ -72,4 +74,6 @@ dojo.declare("dojox.av.widget.PlayButton", [dijit._Widget, dijit._Templated], {
 		dojo.addClass(this.domNode, "Pause");
 		dojo.removeClass(this.domNode, "Play");
 	}
+});
+
 });

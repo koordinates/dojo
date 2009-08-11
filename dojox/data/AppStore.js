@@ -357,6 +357,7 @@ dojo.declare("dojox.data.AppStore",
 				items = arrayOfAllItems.slice(0,arrayOfAllItems.length); 
 			}
 		}
+		window.alert(fetchHandler);
 		try {
 			fetchHandler(items, request);
 		} catch(e){

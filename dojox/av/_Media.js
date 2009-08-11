@@ -326,3 +326,5 @@ dojo.declare("dojox.av._Media", null, {
 		
 	}
 });
+
+dojo.provided("dojox.av._Media");

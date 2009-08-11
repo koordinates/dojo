@@ -1,6 +1,8 @@
 dojo.provide("dojox.av.widget.ProgressSlider");
-dojo.require("dijit._Widget");
+
 dojo.require("dijit._Templated");
+
+dojo.required("dijit._Templated", function() {
 
 dojo.declare("dojox.av.widget.ProgressSlider", [dijit._Widget, dijit._Templated], {
 	// summary:
@@ -135,6 +137,7 @@ dojo.declare("dojox.av.widget.ProgressSlider", [dijit._Widget, dijit._Templated]
 		var dim = dojo.coords(this.domNode);
 		this.finalWidth = dim.w;	
 		
-	}
-	
+	}	
+});
+
 });

@@ -512,3 +512,5 @@ dojo.provide("dojox.embed.Flash");
 	};
 	dojox.embed.Flash.onInitialize();
 })();
+
+dojo.provided("dojox.embed.Flash");

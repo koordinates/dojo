@@ -1,7 +1,9 @@
 dojo.provide("dojox.av.widget.VolumeButton");
-dojo.require("dijit._Widget");
+
 dojo.require("dijit._Templated");
 dojo.require("dijit.form.Button");
+
+dojo.required("dijit._Templated", function() {
 
 dojo.declare("dojox.av.widget.VolumeButton", [dijit._Widget, dijit._Templated], {
 	// summary:
@@ -191,4 +193,6 @@ dojo.declare("dojox.av.widget.VolumeButton", [dijit._Widget, dijit._Templated], 
 		this.onHideVolume();
 		this._domCoords = null;
 	}
+});
+
 });
