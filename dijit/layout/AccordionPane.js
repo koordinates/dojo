@@ -20,4 +20,6 @@ dojo.declare("dijit.layout.AccordionPane", dijit.layout.ContentPane, {
 	}
 });
 
+dojo.provided("dijit.layout.AccordionPane");
+
 });
