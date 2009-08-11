@@ -61,6 +61,6 @@ dojo.declare("dijit.form.HorizontalRule", [dijit._Widget, dijit._Templated],
 	}
 });
 
-dojo.provide("dijit.form.HorizontalRule");
+dojo.provided("dijit.form.HorizontalRule");
 
 });
