@@ -1,6 +1,8 @@
 dojo.provide("dojox.grid.DataSelection");
 dojo.require("dojox.grid.Selection");
 
+dojo.required("dojox.grid.Selection", function() {
+
 dojo.declare("dojox.grid.DataSelection", dojox.grid.Selection, {
 	getFirstSelected: function(){
 		var idx = dojox.grid.Selection.prototype.getFirstSelected.call(this);
@@ -62,4 +64,8 @@ dojo.declare("dojox.grid.DataSelection", dojox.grid.Selection, {
 			this.inherited(arguments);
 		}
 	}
+});
+
+dojo.provided("dojox.grid.DataSelection");
+
 });

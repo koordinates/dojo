@@ -1,9 +1,11 @@
 dojo.provide("dojox.grid._Grid");
 
-dojo.required("dijit.dijit");
-dojo.required("dojox.grid._Events");
+dojo.require("dojo.i18n");
+dojo.require("dijit._base");
+dojo.require("dijit._Templated");
 dojo.require("dijit.Menu");
 dojo.require("dojox.html.metrics");
+dojo.require("dojox.grid._Events");
 dojo.require("dojox.grid.util");
 dojo.require("dojox.grid._Scroller");
 dojo.require("dojox.grid._Layout");
@@ -15,9 +17,10 @@ dojo.require("dojox.grid._EditManager");
 dojo.require("dojox.grid.Selection");
 dojo.require("dojox.grid._RowSelector");
 
-dojo.requireLocalization("dijit", "loading");
+dojo.required(["dojo.i18n", "dijit._Templated", "dojox.grid._Events"], function() {
 
-(function(){
+	dojo.requireLocalization("dijit", "loading");
+
 	var jobs = {
 		cancel: function(inHandle){
 			if(inHandle){
@@ -1326,4 +1329,5 @@ dojo.requireLocalization("dijit", "loading");
 
 		return new ctor(props, node);
 	};
-})();
+	dojo.provided("dojox.grid._Grid");
+});

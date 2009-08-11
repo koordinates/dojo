@@ -238,3 +238,5 @@ dojo.declare("dojox.grid.Selection", null, {
 		this._endUpdate();
 	}
 });
+
+dojo.provided('dojox.grid.Selection');

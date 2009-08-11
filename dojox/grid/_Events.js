@@ -481,3 +481,5 @@ dojo.declare("dojox.grid._Events", null, {
 	onSelectionChanged: function(){
 	}
 });
+
+dojo.provided("dojox.grid._Events");
