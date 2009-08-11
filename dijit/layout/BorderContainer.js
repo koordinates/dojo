@@ -224,7 +224,8 @@ dojo.declare(
 		// Ask browser for width/height of side panes.
 		// Would be nice to cache this but height can change according to width
 		// (because words wrap around).  I don't think width will ever change though
-		// (except when the user drags a splitter). 
+		// (except when the user drags a splitter).
+
 		if(this._top){
 			topStyle = layoutTopBottom && this._top.style;
 			topHeight = dojo.marginBox(this._top).h;
@@ -254,7 +255,7 @@ dojo.declare(
 		// Check for race condition where CSS hasn't finished loading, so
 		// the splitter width == the viewport width (#5824)
 		if(leftSplitterThickness > 50 || rightSplitterThickness > 50){
-			setTimeout(dojo.hitch(this, function(){
+			dojo._getWin().setTimeout(dojo.hitch(this, function(){
 				// Results are invalid.  Clear them out.
 				this._splitterThickness = {};
 				var splitters = this._splitters;
@@ -354,13 +355,13 @@ dojo.declare(
 				}
 			};
 
-			if(leftSplitter){ leftSplitter.style.height = sidebarHeight; }
-			if(rightSplitter){ rightSplitter.style.height = sidebarHeight; }
+			if(leftSplitter){ leftSplitter.style.height = Math.max(sidebarHeight, 0) + 'px'; }
+			if(rightSplitter){ rightSplitter.style.height = Math.max(sidebarHeight, 0) + 'px'; }
 			resizeWidget(this._leftWidget, {h: sidebarHeight}, dim.left);
 			resizeWidget(this._rightWidget, {h: sidebarHeight}, dim.right);
 
-			if(topSplitter){ topSplitter.style.width = sidebarWidth; }
-			if(bottomSplitter){ bottomSplitter.style.width = sidebarWidth; }
+			if(topSplitter){ topSplitter.style.width = Math.max(sidebarWidth, 0) + 'px'; }
+			if(bottomSplitter){ bottomSplitter.style.width = Math.max(sidebarWidth, 0) + 'px'; }
 			resizeWidget(this._topWidget, {w: sidebarWidth}, dim.top);
 			resizeWidget(this._bottomWidget, {w: sidebarWidth}, dim.bottom);
 
@@ -544,8 +545,8 @@ dojo.declare("dijit.layout._Splitter", [ dijit._Widget, dijit._Templated ],
 
 				if(resize || forceResize){
 					mb[dim] = boundChildSize;
-					// TODO: inefficient; we set the marginBox here and then immediately layoutFunc() needs to query it
-					dojo.marginBox(childNode, mb);
+
+					childNode.style[dim == 'h' ? 'height' : 'width'] = boundChildSize + 'px';
 					layoutFunc(region);
 				}
 				splitterStyle[region] = factor * delta + splitterStart + (boundChildSize - childSize) + "px";

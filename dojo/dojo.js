@@ -1291,6 +1291,10 @@ if(typeof dojo == "undefined"){
 	dojo.provided = function(/*String*/ resourceName) {
 		var i, cb, len, result, callbacks = dojo._requiredCallbacks[resourceName];
 
+		if (dojo._providedModules[resourceName]) {
+			throw new Error(resourceName + " provided more than once.");
+		}
+
 		result = dojo._providedModules[resourceName] = dojo.getObject(resourceName, true);
 
 		if (callbacks) {
