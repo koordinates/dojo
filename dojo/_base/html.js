@@ -972,16 +972,31 @@ if (dojo.isHostObjectProperty(dojo.doc, 'all')) {
 		widthPx = widthPx - marginWidth;
 		heightPx = heightPx - marginHeight;
 
-		style.left = leftPx + pxUnit;
-		style.top = topPx + pxUnit;
-		style.width = widthPx + pxUnit;
-		style.height = heightPx + pxUnit;
-
-		if (node.offsetWidth != widthPx) {
-			style.width = Math.max(widthPx - (node.offsetWidth - widthPx), 0) + pxUnit;
+		if (!isNaN(leftPx)) {
+			style.left = leftPx + pxUnit;
 		}
-		if (node.offsetHeight != heightPx) {
-			style.height = Math.max(heightPx - (node.offsetHeight - heightPx), 0) + pxUnit;
+		if (!isNaN(topPx)) {
+			style.top = topPx + pxUnit;
+		}
+		if (!isNaN(widthPx)) {
+			style.width = widthPx + pxUnit;
+		}
+
+		if (!isNaN(heightPx)) {
+			style.height = heightPx + pxUnit;
+		}
+
+		if (!isNaN(widthPx)) {
+			if (node.offsetWidth != widthPx) {
+				style.width = Math.max(widthPx - (node.offsetWidth - widthPx), 0) + pxUnit;
+			}
+
+		}
+
+		if (!isNaN(heightPx)) {
+			if (node.offsetHeight != heightPx) {
+				style.height = Math.max(heightPx - (node.offsetHeight - heightPx), 0) + pxUnit;
+			}
 		}
 	};
 
