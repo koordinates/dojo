@@ -93,3 +93,5 @@ dojo.extend(dojo.AdapterRegistry, {
 		return false;
 	}
 });
+
+dojo.provided("dojo.AdapterRegistry");
