@@ -2,7 +2,7 @@ dojo.provide("dojox.form.manager._ClassMixin");
 
 dojo.require("dojox.form.manager._Mixin");
 
-(function(){
+dojo.required("dojox.form.manager._Mixin", function(){
 	var fm = dojox.form.manager,
 		aa = fm.actionAdapter,
 		ia = fm.inspectorAdapter;
@@ -67,4 +67,6 @@ dojo.require("dojox.form.manager._Mixin");
 			return this;	// self
 		}
 	});
-})();
+
+	dojo.provided("dojox.form.manager._ClassMixin");
+});

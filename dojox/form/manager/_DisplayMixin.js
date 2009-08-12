@@ -59,3 +59,5 @@ dojo.declare("dojox.form.manager._DisplayMixin", null, {
 		return this.show(state, false);	// self
 	}
 });
+
+dojo.provided("dojox.form.manager._DisplayMixin");

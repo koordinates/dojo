@@ -361,3 +361,5 @@ dojo.declare("dojox.form._FormSelectWidget", dijit.form._FormValueWidget, {
 	}
 
 });
+
+dojo.provided("dojox.form._FormSelectWidget");

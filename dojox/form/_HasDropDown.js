@@ -1,6 +1,8 @@
 dojo.provide("dojox.form._HasDropDown");
 
-dojo.required("dijit._Widget");
+dojo.require("dijit._Widget");
+
+dojo.required("dijit._Widget", function() {
 
 dojo.declare("dojox.form._HasDropDown",
 	null,
@@ -282,3 +284,7 @@ dojo.declare("dojox.form._HasDropDown",
 		
 	}
 );
+
+dojo.provided("dojox.form._HasDropDown");
+
+});

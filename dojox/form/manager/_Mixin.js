@@ -2,7 +2,7 @@ dojo.provide("dojox.form.manager._Mixin");
 
 dojo.require("dijit._Widget");
 
-(function(){
+dojo.required("dijit._Widget", function() {
 	var fm = dojox.form.manager,
 
 		aa = fm.actionAdapter = function(action){
@@ -468,11 +468,14 @@ dojo.require("dijit._Widget");
 			return dojo.mixin(result, this.inspectAttachedPoints(inspector, state, defaultValue));	// Object
 		}
 	});
-})();
 
-// These arguments can be specified for widgets which are used in forms.
-// Since any widget can be specified as sub widgets, mix it into the base
-// widget class.  (This is a hack, but it's effective.)
-dojo.extend(dijit._Widget, {
-	observer: ""
+	// These arguments can be specified for widgets which are used in forms.
+	// Since any widget can be specified as sub widgets, mix it into the base
+	// widget class.  (This is a hack, but it's effective.)
+
+	dojo.extend(dijit._Widget, {
+		observer: ""
+	});
+
+	dojo.provided("dojox.form.manager._Mixin");
 });

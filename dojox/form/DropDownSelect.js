@@ -1,8 +1,10 @@
 dojo.provide("dojox.form.DropDownSelect");
 
-dojo.required("dojox.form._FormSelectWidget");
-dojo.required("dojox.form._HasDropDown");
-dojo.required("dijit.Menu");
+dojo.require("dojox.form._FormSelectWidget");
+dojo.require("dojox.form._HasDropDown");
+dojo.require("dijit.Menu");
+
+dojo.required(["dojo.i18n", "dijit.Menu", "dojox.form._FormSelectWidget", "dojox.form._HasDropDown"], function() {
 
 dojo.requireLocalization("dijit.form", "validate");
 
@@ -240,4 +242,6 @@ dojo.declare("dojox.form.DropDownSelect", [dojox.form._FormSelectWidget, dojox.f
 		}
 		this.inherited(arguments);
 	}
+});
+
 });
