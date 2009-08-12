@@ -4,11 +4,6 @@ dojo.provide("demos.i18n.src");
 dojo.require("dojo.io.script");
 dojo.require("dojox.rpc.Service");
 
-dojo.require("dojo.i18n");
-dojo.require("dijit._base");
-dojo.require("dojo.parser");
-dojo.require("dijit._Widget");
-dojo.require("dijit._Templated");
 dojo.require("dijit._Container");
 dojo.require("dijit.layout._LayoutWidget");
 dojo.require("dijit.form._FormWidget");
@@ -22,7 +17,6 @@ dojo.require("dijit.form.NumberSpinner");
 dojo.require("dijit.form.ComboBox");
 dojo.require("dijit.ColorPalette");
 dojo.require("dijit.Menu");
-dojo.require("dojo.parser");
 
 dojo.require("demos.i18n.model");
 
