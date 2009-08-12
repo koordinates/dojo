@@ -1,10 +1,9 @@
 dojo.provide("dojox.widget.FisheyeLite");
 dojo.experimental("dojox.widget.FisheyeLite");
-dojo.require("dijit._base");
 dojo.require("dijit._Widget");
 dojo.require("dojo.fx.easing");
 
-dojo.required(["dijit._Widget", "dojo.fx"], function() {
+dojo.required(["dijit._Widget", "dojo.fx.easing"], function() {
 
 dojo.declare("dojox.widget.FisheyeLite",
 	dijit._Widget,

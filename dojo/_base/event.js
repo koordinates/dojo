@@ -5,7 +5,7 @@ dojo.required("dojo._base.connect");
 
 (function(){
 	function testEvent(eventName) {
-		var el, doc = window.document, propertyName = 'on' + eventName;
+		var el, doc = dojo._getWin().document, propertyName = 'on' + eventName;
 
 		// If no property exists, try to create by setting the attribute
 
@@ -266,7 +266,7 @@ dojo.required("dojo._base.connect");
 	};
 
 	// IE event normalization
-	if (typeof window.attachEvent != 'undefined' && typeof window.document.addEventListener == 'undefined') {
+	if (typeof dojo._getWin().attachEvent != 'undefined' && typeof dojo._getWin().document.addEventListener == 'undefined') {
 		_trySetKeyCode = function(e, code){
 			try{
 				// squelch errors when keyCode is read-only
@@ -360,7 +360,7 @@ dojo.required("dojo._base.connect");
 				// evt: native event object
 				// sender: node to treat as "currentTarget"
 				if(!evt){
-					var w = sender && (sender.ownerDocument || sender.document || sender).parentWindow || window;
+					var w = sender && (sender.ownerDocument || sender.document || sender).parentWindow || dojo._getWin();
 					evt = w.event; 
 				}
 				if(!evt){return(evt);}
@@ -371,7 +371,7 @@ dojo.required("dojo._base.connect");
 				// FIXME: scroll position query is duped from dojo.html to
 				// avoid dependency on that entire module. Now that HTML is in
 				// Base, we should convert back to something similar there.
-				var se = evt.srcElement, doc = (se && se.ownerDocument) || window.document;
+				var se = evt.srcElement, doc = (se && se.ownerDocument) || dojo._getWin().document;
 				var docBody = (doc.documentElement.clientWidth === 0) ? doc.body : doc.documentElement;
 				evt.pageX = evt.clientX + (docBody.scrollLeft || 0) - (docBody.clientLeft || 0);
 				evt.pageY = evt.clientY + (docBody.scrollTop || 0) - (docBody.clientTop || 0);
@@ -424,7 +424,7 @@ dojo.required("dojo._base.connect");
 				
 		// override stopEvent for IE
 		dojo.stopEvent = function(evt){
-			evt = evt || window.event;
+			evt = evt || dojo._getWin().event;
 			del._stopPropagation.call(evt);
 			del._preventDefault.call(evt);
 		};
@@ -491,29 +491,35 @@ dojo.required("dojo._base.connect");
 	}
 })();
 
-// keep this out of the closure
-// closing over 'iel' or 'ieh' b0rks leak prevention
-// ls[i] is an index into the master handler array
 dojo._ieDispatcher = function(args, sender){
-		var ap=Array.prototype, h=dojo._ie_listener.handlers, c=args.callee, ls=c[dojo._ieListenersName], t=h[c.target];
-		// return value comes from original target function
-		var r = t && t.apply(sender, args);
-		// make local copy of listener array so it's immutable during processing
-		var lls = [].concat(ls);
-		// invoke listeners after target function
-		for(var i in lls){
-			if(!(i in ap)){
-				h[lls[i]].apply(sender, args);
-			}
+	var ap=Array.prototype, h=dojo._ie_listener.handlers, c=args.callee, ls=c[dojo._ieListenersName], t=h[c.target];
+
+	// return value comes from original target function
+
+	var r = t && t.apply(sender, args);
+
+	// make local copy of listener array so it's immutable during processing
+
+	var lls = [].concat(ls);
+
+	// invoke listeners after target function
+
+	for(var i in lls){
+		if(!(i in ap) && dojo.isOwnProperty(ap, i)){
+			h[lls[i]].apply(sender, args);
 		}
-		return r;
+	}
+	return r;
 };
+
 dojo._getIeDispatcher = function(){
+
 	// ensure the returned function closes over nothing ("new Function" apparently doesn't close)
+
 	return new Function(dojo._scopeName + "._ieDispatcher(arguments, this)"); // function
 };
 
-if (typeof window.attachEvent != 'undefined' && typeof window.document.addEventListener == 'undefined') {
+if (typeof dojo._getWin().attachEvent != 'undefined' && typeof dojo._getWin().document.addEventListener == 'undefined') {
 
 	// keep this out of the closure to reduce RAM allocation
 

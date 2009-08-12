@@ -338,3 +338,5 @@ dojo.declare("dojox.storage.Provider", null, {
 		return [];
 	}
 });
+
+dojo.provided("dojox.storage.Provider");

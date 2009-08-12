@@ -255,4 +255,9 @@ dojox.storage.manager = function(){
 		return results;
 	};
 };
+
+// NOTE: Odd structure
+
 dojox.storage.manager = new dojox.storage.manager();
+
+dojo.provided("dojox.storage.manager");

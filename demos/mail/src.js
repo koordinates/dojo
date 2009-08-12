@@ -1,13 +1,7 @@
-dojo.require("dojo.parser");
 dojo.require("dojo.data.ItemFileReadStore");
 dojo.require("dojo.data.ItemFileWriteStore");
-dojo.require("dojo.i18n");
-dojo.require("dojo.date");
 dojo.require("dojo.date.locale");
 dojo.require("dojo.date.stamp");
-dojo.require("dijit.dijit");
-dojo.require("dijit._Widget");
-dojo.require("dijit._Templated");
 dojo.require("dijit._Container");
 dojo.require("dijit._Contained");
 dojo.require("dijit.layout._LayoutWidget");
