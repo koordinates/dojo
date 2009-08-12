@@ -25,4 +25,6 @@ dojo.declare("dijit.form.VerticalRule", dijit.form.HorizontalRule,
 
 });
 
+dojo.provided("dijit.form.VerticalRule");
+
 });

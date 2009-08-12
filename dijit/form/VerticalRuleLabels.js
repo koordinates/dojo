@@ -1,8 +1,9 @@
 dojo.provide("dijit.form.VerticalRuleLabels");
 
+dojo.require("dijit.form.VerticalRule");
 dojo.require("dijit.form.HorizontalRuleLabels");
 
-dojo.required("dijit.form.HorizontalRuleLabels", function() {
+dojo.required(["dijit.form.HorizontalRuleLabels", "dijit.form.VerticalRule"], function() {
 
 dojo.declare("dijit.form.VerticalRuleLabels", dijit.form.HorizontalRuleLabels,
 {
