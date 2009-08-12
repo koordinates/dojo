@@ -7,16 +7,15 @@ dijit["dijit-all"] = {
 };
 =====*/
 
-dojo.require("dijit.dijit");
-
-dojo.require("dijit.ColorPalette");
 dojo.require("dijit.Declaration");
+
+// Dialog
 
 dojo.require("dijit.Dialog");
 dojo.require("dijit.DialogUnderlay");
 dojo.require("dijit.TooltipDialog");
 
-dojo.require("dijit.Editor");
+// Menu
 
 dojo.require("dijit.Menu");
 dojo.require("dijit.MenuItem");
@@ -26,12 +25,24 @@ dojo.require("dijit.MenuBarItem");
 dojo.require("dijit.PopupMenuBarItem");
 dojo.require("dijit.MenuSeparator");
 
-dojo.require("dijit.ProgressBar");
-dojo.require("dijit.TitlePane");
+// Toolbar
+
 dojo.require("dijit.Toolbar");
 dojo.require("dijit.Tooltip");
-dojo.require("dijit.Tree");
+
+// Edit
+
 dojo.require("dijit.InlineEditBox");
+dojo.require("dijit.Editor");
+
+// Misc
+
+dojo.require("dijit.ProgressBar");
+dojo.require("dijit.TitlePane");
+dojo.require("dijit.Tree");
+dojo.require("dijit.ColorPalette");
+
+// Form
 
 dojo.require("dijit.form.Button");
 dojo.require("dijit.form.CheckBox");
@@ -41,8 +52,11 @@ dojo.require("dijit.form.DateTextBox");
 dojo.require("dijit.form.FilteringSelect");
 dojo.require("dijit.form.NumberSpinner");
 dojo.require("dijit.form.NumberTextBox");
+dojo.require("dijit.form.SimpleTextarea");
+dojo.require("dijit.form.Textarea");
+dojo.require("dijit.form.TextBox");
+dojo.require("dijit.form.ValidationTextBox");
 
-// slider files
 dojo.require("dijit.form.HorizontalSlider");
 dojo.require("dijit.form.VerticalSlider");
 dojo.require("dijit.form.HorizontalRule");
@@ -50,19 +64,13 @@ dojo.require("dijit.form.VerticalRule");
 dojo.require("dijit.form.HorizontalRuleLabels");
 dojo.require("dijit.form.VerticalRuleLabels");
 
-dojo.require("dijit.form.SimpleTextarea");
-dojo.require("dijit.form.Textarea");
-dojo.require("dijit.form.TextBox");
-dojo.require("dijit.form.ValidationTextBox");
-dojo.require("dijit.form._FormWidget");
-dojo.require("dijit.form._Spinner");
+// Layout
 
 dojo.require("dijit.layout.AccordionContainer");
 dojo.require("dijit.layout.ContentPane");
 dojo.require("dijit.layout.BorderContainer");
-dojo.require("dijit.layout.LayoutContainer"); //deprecated
+dojo.require("dijit.layout.LayoutContainer"); // deprecated
 dojo.require("dijit.layout.LinkPane");
-dojo.require("dijit.layout.SplitContainer"); //deprecated
+dojo.require("dijit.layout.SplitContainer"); // deprecated
 dojo.require("dijit.layout.StackContainer");
 dojo.require("dijit.layout.TabContainer");
-dojo.require("dijit.layout._LayoutWidget");
