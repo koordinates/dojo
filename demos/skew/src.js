@@ -1,7 +1,5 @@
 dojo.provide("demos.skew.src");
 
-dojo.require("dojo.i18n");
-dojo.require("dijit._base");	
 dojo.require("demos.skew.src.Image");
 
 dojo.require("dojo.fx.easing");
