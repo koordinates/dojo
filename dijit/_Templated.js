@@ -111,7 +111,9 @@ dojo.declare("dijit._Templated",
 					parser._attrName = attr;
 				}
 
-				this._supportingWidgets = dijit.findWidgets(node)
+				this._supportingWidgets = dojo.filter(cw, function(w){
+					return(!w.getParent || !w.getParent());
+				});
 
 				this._attachTemplateNodes(cw, function(n,p){
 					return n[p];
