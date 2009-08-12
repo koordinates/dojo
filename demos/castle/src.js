@@ -1,10 +1,7 @@
-dojo.require("dojo.i18n");
-dojo.require("dijit._base");
 dojo.require("dijit.layout.ContentPane");
 dojo.require("dijit.layout.AccordionPane");
 dojo.require("dijit.layout.AccordionContainer");
 dojo.require("dojox.layout.ScrollPane");
-dojo.require("dojo.fx");
 dojo.require("dojo.fx.easing");
 dojo.require("dojo.NodeList-fx");
 dojo.require("dojox.widget.FisheyeLite");
