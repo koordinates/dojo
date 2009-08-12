@@ -16,15 +16,15 @@
 		<script type="text/javascript" src="../../dojo/dojo.js" charset="utf-8"></script>
 	
 		<script type="text/javascript">
-			dojo.require("dojo.i18n");
-		</script>
-		<script type="text/javascript">
 			dojo.require("dojo.number");
 			dojo.require("dijit.form.DateTextBox");
 
-			// load the resource bundle for HelloWorld
+			dojo.required("dojo.i18n", function() {
 
-			dojo.requireLocalization("demos.nihao", "helloworld");
+				// load the resource bundle for HelloWorld
+
+				dojo.requireLocalization("demos.nihao", "helloworld");
+			});
 
 			var resourceBundle;
 
