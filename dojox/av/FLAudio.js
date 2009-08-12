@@ -1,10 +1,13 @@
 dojo.provide("dojox.av.FLAudio");
 dojo.experimental("dojox.av.FLAudio");
+
+dojo.require("dijit._base");
 dojo.require("dijit._Widget");
 dojo.require("dojox.embed.Flash");
 dojo.require("dojox.av._Media");
 dojo.require("dojox.timing.doLater");
 
+dojo.required(["dijit._Widget", "dojox.av._Media"], function() {
 
 dojo.declare("dojox.av.FLAudio", null, {
 			 
@@ -344,6 +347,7 @@ dojo.declare("dojox.av.FLAudio", null, {
 			_url = loc+_url;
 		}
 		return _url;
-	}
-	
+	}	
+});
+
 });

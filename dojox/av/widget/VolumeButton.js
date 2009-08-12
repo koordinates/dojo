@@ -1,5 +1,6 @@
 dojo.provide("dojox.av.widget.VolumeButton");
 
+dojo.require("dijit._base");
 dojo.require("dijit._Templated");
 dojo.require("dijit.form.Button");
 

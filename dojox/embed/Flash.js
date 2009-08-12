@@ -263,14 +263,8 @@ dojo.provide("dojox.embed.Flash");
 		//
 		// File can only be run from a server, due to SWF dependency.
 
-		// NOTE: Flash can run locally
-
-		//if(window.location.href.toLowerCase().indexOf("file://")!=-1){
-		//	throw new Error("dojox.embed.Flash can't be run directly from a file. To instatiate the required SWF correctly it must be run from a server, like localHost.");
-		//}
 		this.available = dojox.embed.Flash.available;
 		this.minimumVersion = kwArgs.minimumVersion || minimumVersion;
-		//console.log("AVAILABLE:", this);
 		this.id = null;
 		this.movie = null;
 		this.domNode = null;
@@ -323,6 +317,7 @@ dojo.provide("dojox.embed.Flash");
 			//		Initialize (i.e. place and load) the movie based on kwArgs.
 			this.destroy();		//	ensure we are clean first.
 			node = dojo.byId(node || this.domNode);
+
 			if(!node){ throw new Error("dojox.embed.Flash: no domNode reference has been passed."); }
 			
 			// vars to help determine load status

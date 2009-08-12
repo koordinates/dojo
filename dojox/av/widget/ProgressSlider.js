@@ -1,5 +1,6 @@
 dojo.provide("dojox.av.widget.ProgressSlider");
 
+dojo.require("dijit._base");
 dojo.require("dijit._Templated");
 
 dojo.required("dijit._Templated", function() {
