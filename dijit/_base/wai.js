@@ -182,3 +182,5 @@ dojo.mixin(dijit,
 		elem.removeAttribute("aria-"+state);
 	}
 });
+
+dojo.provided("dijit._base.wai");

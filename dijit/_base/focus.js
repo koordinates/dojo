@@ -399,3 +399,5 @@ dojo.mixin(dijit,
 // register top window and all the iframes it contains
 
 dojo.addOnLoad(function(){dijit.registerWin(dojo._getWin()); });
+
+dojo.provided("dijit._base.focus");

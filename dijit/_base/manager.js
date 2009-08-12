@@ -297,3 +297,5 @@ dojo.mixin(dijit, {
 =====*/
 
 dijit.defaultDuration = dojo.config.defaultDuration || 200;
+
+dojo.provided("dijit._base.manager");

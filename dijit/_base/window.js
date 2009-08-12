@@ -20,3 +20,4 @@ dijit.getDocumentWindow = (function() {
 	};
 })();
 
+dojo.provided("dijit._base.window");

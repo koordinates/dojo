@@ -20,26 +20,23 @@
 	<script type="text/javascript" src="_testCommon.js"></script>
 
 	<script language="JavaScript" type="text/javascript">
-		dojo.require("dojo.parser");	// scan page for widgets and instantiate them
-		dojo.require("dijit._base");
-		dojo.require("dijit._Widget");
-		dojo.require("dijit._Templated");
 		dojo.require("dijit.ColorPalette");
 
 		var palette;
-		function init(){
-            var date0 = new Date();
-            palette = new dijit.ColorPalette({palette: "7x10", id: "progPalette"}, dojo.byId("programPalette"));
-            console.log("creation time: " + (new Date() - date0) );
-        }
 
-		dojo.addOnLoad(init);
+		function init(){
+			var date0 = new Date();
+			palette = new dijit.ColorPalette({palette: "7x10", id: "progPalette"}, dojo.byId("programPalette"));
+			console.log("creation time: " + (new Date() - date0) );
+		}
 
 		function setColor(color){
 			var theSpan = dojo.byId("outputSpan");
 			theSpan.style.color = color;
 			theSpan.innerHTML = color;
 		}
+
+		dojo.addOnLoad(init);
 	</script>
 </head>
 

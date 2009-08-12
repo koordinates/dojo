@@ -1,10 +1,13 @@
 dojo.provide("dijit.ColorPalette");
+
 dojo.require("dijit._Templated");
 dojo.require("dojo.colors");
 dojo.require("dojo.i18n");
 
 dojo.required(["dojo.i18n", "dojo.colors", "dijit._Templated"], function() {
+
 dojo.requireLocalization("dojo", "colors");
+
 dojo.declare("dijit.ColorPalette",
 	[dijit._Widget, dijit._Templated],
 	{

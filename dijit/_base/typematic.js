@@ -166,3 +166,5 @@ dijit.typematic = {
 			this.addMouseListener(mouseNode, _this, callback, subsequentDelay, initialDelay));
 	}
 };
+
+dojo.provided("dijit._base.typematic");

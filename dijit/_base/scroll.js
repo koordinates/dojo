@@ -171,3 +171,5 @@ dijit.scrollIntoView = function(/* DomNode */node){
 		parent = next;
 	}
 };
+
+dojo.provided("dijit._base.scroll");

@@ -11,33 +11,30 @@
 //		Simply doing a require on this module will
 //		establish this CSS.  Modified version of Morris' CSS hack.
 
-// *** Should be deprecated with browser-specific classes
+// NOTE: Should be deprecated with browser-specific classes
 
 dojo.provide("dijit._base.sniff");
 
-(function(){
-	
-	var d = dojo,
-		html = d.doc.documentElement,
-		ie = d.isIE,
-		opera = d.isOpera,
+(function() {	
+	var	html = dojo.doc.documentElement,
+		ie = dojo.isIE,
+		opera = dojo.isOpera,
 		maj = Math.floor,
-		ff = d.isFF,
-		boxModel = d.boxModel.replace(/-/,''),
+		ff = dojo.isFF,
+		boxModel = dojo.boxModel.replace(/-/,''),
 		classes = {
 			dj_ie: ie,
-//			dj_ie55: ie == 5.5,
+			dj_ie55: ie == 5.5,
 			dj_ie6: maj(ie) == 6,
 			dj_ie7: maj(ie) == 7,
-			dj_iequirks: ie && d.isQuirks,
-			// NOTE: Opera not supported by dijit
+			dj_iequirks: ie && dojo.isQuirks,
 			dj_opera: opera,
 			dj_opera8: maj(opera) == 8,
 			dj_opera9: maj(opera) == 9,
-			dj_khtml: d.isKhtml,
-			dj_webkit: d.isWebKit,
-			dj_safari: d.isSafari,
-			dj_gecko: d.isMozilla,
+			dj_khtml: dojo.isKhtml,
+			dj_webkit: dojo.isWebKit,
+			dj_safari: dojo.isSafari,
+			dj_gecko: dojo.isMozilla,
 			dj_ff2: maj(ff) == 2,
 			dj_ff3: maj(ff) == 3
 		}; // no dojo unsupported browsers
@@ -58,6 +55,7 @@ dojo.provide("dijit._base.sniff");
 	// If RTL mode then add dijitRtl flag plus repeat existing classes
 	// with -rtl extension
 	// (unshift is to make this code run after <body> node is loaded but before parser runs)
+
 	dojo._loaders.unshift(function(){
 		if(!dojo._isBodyLtr()){
 			html.className += " dijitRtl";
@@ -67,6 +65,7 @@ dojo.provide("dijit._base.sniff");
 				}
 			}
 		}
-	});
-	
+	});	
 })();
+
+dojo.provided("dijit._base.sniff");

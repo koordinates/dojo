@@ -1,5 +1,8 @@
 dojo.provide("dijit._Widget");
-dojo.required( "dijit._base" );
+
+dojo.require("dijit._base");
+
+dojo.required("dijit._base", function() {
 
 dojo.connect(dojo, "connect", 
 	function(/*Widget*/ widget, /*String*/ event){
@@ -9,8 +12,6 @@ dojo.connect(dojo, "connect",
 	});
 
 dijit._connectOnUseEventHandler = function(/*Event*/ event){};
-
-(function(){
 
 var _attrReg = {};
 var getAttrReg = function(dc){
@@ -1006,6 +1007,6 @@ dojo.declare("dijit._Widget", null, {
 
 });
 
-})();
-
 dojo.provided("dijit._Widget");
+
+});
