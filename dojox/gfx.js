@@ -1,9 +1,8 @@
 dojo.provide("dojox.gfx");
 
 dojo.require("dojox.gfx.matrix");
-dojo.require("dojox.gfx._base");
 
-dojo.required(["dojox.gfx._base", "dojox.gfx.matrix"], function() {
+dojo.required(["dojox.gfx.matrix"], function() {
 	var gfx = dojo.getObject("dojox.gfx", true), sl, flag, match;
 
 	var renderers = (typeof dojo.config.gfxRenderer == "string" ?
