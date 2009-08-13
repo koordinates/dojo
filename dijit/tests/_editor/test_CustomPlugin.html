@@ -57,9 +57,10 @@
 				_toggleSource: function(){
 					this.source = !this.source;
 					if(!this.sourceArea){
-						this.sourceArea = dojo.doc.createElement('textarea');
+						this.sourceArea = window.document.createElement('textarea');
+						this.sourceArea.readOnly = true;
 						this.sourceArea.style.position = 'absolute';
-						dojo.place(this.sourceArea, this.editor.domNode, "last");
+						dojo.place(this.sourceArea, this.editor.domNode, "after");
 					}
 					if(this.source){
 						this.sourceArea.value = this.editor.getValue();
@@ -67,9 +68,8 @@
 					}else{
 						this.editor.setValue(this.sourceArea.value);
 						this.sourceArea.style.top = "-999px";
-					}
-
-					this.editor.attr('disabled', this.source); // conditionally disable toolbar -- FIXME. Doesn't work.
+					}					
+					//this.editor.attr('disabled', this.source); // conditionally disable toolbar -- FIXME. Doesn't work.
 					this.button.attr('label', this.source ? "View WYSIWYG" : this.editor.commands[this.command]); // note: should be localized
 				}
 			}
@@ -86,7 +86,7 @@
 </head>
 <body class="tundra">
 	<div dojoType="dijit.Editor" id="editor1" extraPlugins="['MyPlugin']"><p>
-	This editor should have my custom plugin
+	This editor should have a custom plugin (View HTML Source)
 	</p></div>
 </body>
 </html>

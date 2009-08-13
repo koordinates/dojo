@@ -158,8 +158,6 @@ dojo.mixin(dijit,
 			var focusNode = (node.tagName.toLowerCase()=="iframe") ? node.contentWindow : node;
 			if(focusNode && focusNode.focus){
 				try{
-					// Gecko throws sometimes if setting focus is impossible,
-					// node not displayed or something like that
 					focusNode.focus();
 				}catch(e){/*quiet*/}
 			}			
