@@ -55,13 +55,14 @@ dojo.withGlobal = function(	/*Object*/globalObject,
 	//		When callback() returns or throws an error, the dojo.global
 	//		and dojo.doc will be restored to its previous state.
 
-	var oldGlob = dojo.global;
+	var result, oldGlob = dojo.global;
 	try{
 		dojo.global = globalObject;
-		return dojo.withDoc.call(null, globalObject.document, callback, thisObject, cbArguments);
-	}finally{
-		dojo.global = oldGlob;
+		result = dojo.withDoc.call(null, globalObject.document, callback, thisObject, cbArguments);
+	}catch(e){		
 	}
+	dojo.global = oldGlob;
+	return result;
 };
 
 dojo.withDoc = function(	/*DocumentElement*/documentObject, 
@@ -76,7 +77,7 @@ dojo.withDoc = function(	/*DocumentElement*/documentObject,
 	//		When callback() returns or throws an error, the dojo.doc will
 	//		be restored to its previous state.
 
-	var oldDoc = dojo.doc,
+	var result, oldDoc = dojo.doc,
 	oldLtr = dojo._bodyLtr;
 
 	try{
@@ -87,9 +88,10 @@ dojo.withDoc = function(	/*DocumentElement*/documentObject,
 			callback = thisObject[callback];
 		}
 
-		return callback.apply(thisObject, cbArguments || []);
+		result = callback.apply(thisObject, cbArguments || []);
 	}catch(e){		
 	}
 	dojo.doc = oldDoc;
 	if(oldLtr !== undefined){ dojo._bodyLtr = oldLtr; }
+	return result;
 };
