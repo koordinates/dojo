@@ -757,3 +757,5 @@ dojo.extend(dojox.gfx.Surface, dojox.gfx.shape.Creator);
 		return a && b && a.equals(b);
 	};
 })();
+
+dojo.provide("dojox.gfx.silverlight");

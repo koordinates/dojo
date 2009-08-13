@@ -2,7 +2,7 @@ dojo.provide("dojox.gfx.decompose");
 
 dojo.require("dojox.gfx.matrix");
 
-(function(){
+dojo.required("dojox.gfx.matrix", function(){
 	var m = dojox.gfx.matrix;
 
 	var eq = function(/* Number */ a, /* Number */ b){
@@ -140,4 +140,6 @@ dojo.require("dojox.gfx.matrix");
 		S.yy *= result.sy;
 		return dojo.mixin(result, {sx: S.xx, sy: S.yy});	// Object
 	};
-})();
+
+	dojo.provided("dojox.gfx.decompose");
+});

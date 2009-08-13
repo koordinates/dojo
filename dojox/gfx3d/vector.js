@@ -104,3 +104,5 @@ dojo.mixin(dojox.gfx3d.vector, {
 		return dojox.gfx3d.vector.crossProduct(u, v);
 	}
 });
+
+dojo.provided("dojox.gfx3d.vector");

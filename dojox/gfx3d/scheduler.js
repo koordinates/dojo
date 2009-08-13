@@ -1,6 +1,12 @@
 dojo.provide("dojox.gfx3d.scheduler");
+
+// NOTE: Why the alias?
+
 dojo.provide("dojox.gfx3d.drawer");
+
 dojo.require("dojox.gfx3d.vector");
+
+dojo.required("dojox.gfx3d.vector", function() {
 
 dojo.mixin(dojox.gfx3d.scheduler, {
 	zOrder: function(buffer, order){
@@ -119,4 +125,8 @@ dojo.mixin(dojox.gfx3d.drawer, {
 	}
 	// More aggrasive optimization may re-order the DOM nodes using the order 
 	// of objects, and only elements of todos call setShape.
+});
+
+dojo.provided("dojox.gfx3d.scheduler");
+
 });

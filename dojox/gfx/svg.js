@@ -641,3 +641,4 @@ dojo.extend(dojox.gfx.Group, dojox.gfx.shape.Creator);
 dojo.extend(dojox.gfx.Surface, dojox.gfx.svg.Container);
 dojo.extend(dojox.gfx.Surface, dojox.gfx.shape.Creator);
 
+dojo.provided("dojox.gfx.svg");

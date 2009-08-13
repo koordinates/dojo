@@ -1,8 +1,8 @@
 dojo.provide("dojox.gfx.utils");
 
-dojo.required("dojox.gfx");
+dojo.require("dojox.gfx");
 
-(function(){
+dojo.required("dojox.gfx", function(){
 	var serialize = function(
 			/* dojox.gfx.Surface || dojox.gfx.Shape */ object
 		){
@@ -92,4 +92,4 @@ dojo.required("dojox.gfx");
 			return deserialize(parent, dojo.fromJson(json));	// Array || dojox.gfx.Shape
 		}
 	});
-})();
+});

@@ -333,3 +333,5 @@ dojo.mixin(dojox.gfx3d.matrix, {
 
 // propagate matrix up
 dojox.gfx3d.Matrix3D = dojox.gfx3d.matrix.Matrix3D;
+
+dojo.provided("dojox.gfx3d.matrix");

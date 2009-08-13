@@ -3,7 +3,7 @@ dojo.provide("dojox.gfx3d.gradient");
 dojo.require("dojox.gfx3d.vector");
 dojo.require("dojox.gfx3d.matrix");
 
-(function(){
+dojo.required(["dojox.gfx3d.vector", "dojox.gfx3d.matrix"], function(){
 	var dist = function(a, b){ return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2)); };
 	var N = 32;
 
@@ -34,4 +34,6 @@ dojo.require("dojox.gfx3d.matrix");
 
 		return {type: "linear", x1: 0, y1: -r, x2: 0, y2: r, colors: colors};
 	};
-})();
+
+	dojo.provided("dojox.gfx3d.gradient");
+});

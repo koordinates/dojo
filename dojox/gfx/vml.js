@@ -1166,3 +1166,5 @@ dojo.required("dojox.gfx.arc");
 	dojo.extend(g.Surface, sh.Creator);
 
 })();
+
+dojo.provided("dojox.gfx.vml");

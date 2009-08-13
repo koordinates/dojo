@@ -1,7 +1,7 @@
 dojo.provide("dojox.gfx3d.lighting");
 dojo.require("dojox.gfx._base");
 
-(function(){
+dojo.required("dojox.gfx._base", function() {
 	var lite = dojox.gfx3d.lighting;
 
 	dojo.mixin(dojox.gfx3d.lighting, {
@@ -203,36 +203,38 @@ dojo.require("dojox.gfx._base");
 			return lite.fromStdColor(lite.saturateColor(color));
 		}
 	});
-})();
 
-// POV-Ray basic finishes
+	// POV-Ray basic finishes
 
-dojox.gfx3d.lighting.finish = {
+	dojox.gfx3d.lighting.finish = {
 
-	// Default
+		// Default
 	
-	defaults: {Ka: 0.1, Kd: 0.6, Ks: 0.0, roughness: 0.05},
+		defaults: {Ka: 0.1, Kd: 0.6, Ks: 0.0, roughness: 0.05},
 	
-	dull:     {Ka: 0.1, Kd: 0.6, Ks: 0.5, roughness: 0.15},
-	shiny:    {Ka: 0.1, Kd: 0.6, Ks: 1.0, roughness: 0.001},
-	glossy:   {Ka: 0.1, Kd: 0.6, Ks: 1.0, roughness: 0.0001},
+		dull:     {Ka: 0.1, Kd: 0.6, Ks: 0.5, roughness: 0.15},
+		shiny:    {Ka: 0.1, Kd: 0.6, Ks: 1.0, roughness: 0.001},
+		glossy:   {Ka: 0.1, Kd: 0.6, Ks: 1.0, roughness: 0.0001},
 	
-	phong_dull:   {Ka: 0.1, Kd: 0.6, Ks: 0.5, phong: 0.5, phong_size: 1},
-	phong_shiny:  {Ka: 0.1, Kd: 0.6, Ks: 1.0, phong: 1.0, phong_size: 200},
-	phong_glossy: {Ka: 0.1, Kd: 0.6, Ks: 1.0, phong: 1.0, phong_size: 300},
+		phong_dull:   {Ka: 0.1, Kd: 0.6, Ks: 0.5, phong: 0.5, phong_size: 1},
+		phong_shiny:  {Ka: 0.1, Kd: 0.6, Ks: 1.0, phong: 1.0, phong_size: 200},
+		phong_glossy: {Ka: 0.1, Kd: 0.6, Ks: 1.0, phong: 1.0, phong_size: 300},
 
-	luminous: {Ka: 1.0, Kd: 0.0, Ks: 0.0, roughness: 0.05},
+		luminous: {Ka: 1.0, Kd: 0.0, Ks: 0.0, roughness: 0.05},
 
-	// Metals
+		// Metals
 
-	// very soft and dull
-	metalA: {Ka: 0.35, Kd: 0.3, Ks: 0.8, roughness: 1/20},
-	// fairly soft and dull
-	metalB: {Ka: 0.30, Kd: 0.4, Ks: 0.7, roughness: 1/60},
-	// medium reflectivity, holds color well
-	metalC: {Ka: 0.25, Kd: 0.5, Ks: 0.8, roughness: 1/80},
-	// highly hard and polished, high reflectivity
-	metalD: {Ka: 0.15, Kd: 0.6, Ks: 0.8, roughness: 1/100},
-	// very highly polished and reflective
-	metalE: {Ka: 0.10, Kd: 0.7, Ks: 0.8, roughness: 1/120}
-};
+		// very soft and dull
+		metalA: {Ka: 0.35, Kd: 0.3, Ks: 0.8, roughness: 1/20},
+		// fairly soft and dull
+		metalB: {Ka: 0.30, Kd: 0.4, Ks: 0.7, roughness: 1/60},
+		// medium reflectivity, holds color well
+		metalC: {Ka: 0.25, Kd: 0.5, Ks: 0.8, roughness: 1/80},
+		// highly hard and polished, high reflectivity
+		metalD: {Ka: 0.15, Kd: 0.6, Ks: 0.8, roughness: 1/100},
+		// very highly polished and reflective
+		metalE: {Ka: 0.10, Kd: 0.7, Ks: 0.8, roughness: 1/120}
+	};
+
+	dojo.provided("dojox.gfx3d.lighting");
+});

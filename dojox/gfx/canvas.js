@@ -1,15 +1,16 @@
 dojo.provide("dojox.gfx.canvas");
+dojo.experimental("dojox.gfx.canvas");
 
 dojo.required("dojox.gfx._base");
 dojo.required("dojox.gfx.shape");
 dojo.required("dojox.gfx.path");
+
 dojo.require("dojox.gfx.arc");
 dojo.require("dojox.gfx.decompose");
 
-dojo.experimental("dojox.gfx.canvas");
-console.warn("Canvas renderer doesn't implement event handling.");
+console.warn("Canvas renderer does not implement event handling.");
 
-(function(){
+dojo.required(["dojox.gfx.arc", "dojox.gfx.decompose"], function() {
 	var g = dojox.gfx, gs = g.shape, ga = g.arc,
 		m = g.matrix, mp = m.multiplyPoint, pi = Math.PI, twoPI = 2 * pi, halfPI = pi /2;
 
@@ -683,4 +684,6 @@ console.warn("Canvas renderer doesn't implement event handling.");
 
 	dojo.extend(g.Surface, Container);
 	dojo.extend(g.Surface, gs.Creator);
+
+	dojo.provided("dojox.gfx.canvas");
 })();

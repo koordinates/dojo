@@ -4,17 +4,12 @@ dojo.require("dojox.gfx.matrix");
 dojo.require("dojox.gfx._base");
 
 dojo.required(["dojox.gfx._base", "dojox.gfx.matrix"], function() {
-
-
 	var gfx = dojo.getObject("dojox.gfx", true), sl, flag, match;
 
-	if(!gfx.renderer){
+	var renderers = (typeof dojo.config.gfxRenderer == "string" ?
+		dojo.config.gfxRenderer : "svg,vml,silverlight,canvas").split(",");
 
-		var renderers = (typeof dojo.config.gfxRenderer == "string" ?
-			dojo.config.gfxRenderer : "svg,vml,silverlight,canvas").split(",");
-
-
-		for(var i = 0; !dojox.gfx.renderer && i < renderers.length; ++i){
+	for(var i = 0; !dojox.gfx.renderer && i < renderers.length; ++i){
 			switch(renderers[i]){
 				case "svg":
 					if (dojo.isHostMethod(dojo.doc, 'createElementNS')) {
@@ -63,17 +58,17 @@ dojo.required(["dojox.gfx._base", "dojox.gfx.matrix"], function() {
 					
 					break;
 			}
-		}
-		if (dojo.config.isDebug) {
-			console.log("Renderer: " + dojox.gfx.renderer);
-		}
+	}
+
+	if (dojo.config.isDebug) {
+		console.log("Renderer: " + dojox.gfx.renderer);
 	}
 
 	dojo.require("dojox.gfx.shape");
 	dojo.require("dojox.gfx.path");
 	dojo.require("dojox.gfx.arc");
 
-	// include a renderer conditionally
+	// Include a renderer conditionally
 
 	// NOTE: Combine these four into one file, optinally exclude with builder
 
@@ -82,5 +77,7 @@ dojo.required(["dojox.gfx._base", "dojox.gfx.matrix"], function() {
 	dojo.requireIf(dojox.gfx.renderer == "silverlight", "dojox.gfx.silverlight");
 	dojo.requireIf(dojox.gfx.renderer == "canvas", "dojox.gfx.canvas");
 
-	dojo.provided("dojox.gfx");
+	dojo.required('dojox.gfx.' + dojox.gfx.renderer, function() {
+		dojo.provided("dojox.gfx");
+	});
 });
