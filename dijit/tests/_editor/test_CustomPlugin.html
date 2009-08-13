@@ -60,7 +60,7 @@
 						this.sourceArea = dojo.doc.createElement('textarea');
 						this.sourceArea.readOnly = true;
 						this.sourceArea.style.position = 'absolute';
-						dojo.place(this.sourceArea, this.editor.domNode, "after");
+						dojo.place(this.sourceArea, this.editor.domNode, "last");
 					}
 					if(this.source){
 						this.sourceArea.value = this.editor.getValue();
