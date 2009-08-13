@@ -796,9 +796,10 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			tabStop.tabIndex = -1;
 
 			if (typeof editNode.setActive != 'undefined') {
-				//this.editingArea.appendChild(tabStop);
-				//window.alert(this._onFocusFactory());
-				//this.iframe.onfocus = this._onFocusFactory();
+				this.editingArea.appendChild(tabStop);
+				if (this.iframe && this._onFocusFactory) {
+					this.iframe.onfocus = this._onFocusFactory();
+				}
 			}
 		//}
 		this.focusNode = this.editNode; // for InlineEditBox

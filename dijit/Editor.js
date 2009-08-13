@@ -250,6 +250,9 @@ dojo.declare(
 			//      Called by plugins, but not meant to be called by end users.
 			// tags:
 			//		protected
+
+			window.alert('test');
+
 			if(this.customUndo && (cmd=='undo' || cmd=='redo')){
 				return this[cmd]();
 			}else{

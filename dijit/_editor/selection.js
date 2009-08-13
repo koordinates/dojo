@@ -1,10 +1,5 @@
 dojo.provide("dijit._editor.selection");
 
-// FIXME:
-//		all of these methods branch internally for IE. This is probably
-//		sub-optimal in terms of runtime performance. We should investigate the
-//		size difference for differentiating at definition time.
-
 // NOTE: Redo
 
 dojo.mixin(dijit._editor.selection, {

@@ -5,7 +5,6 @@ dojo.provide("dijit._editor.range");
 dijit.range={};
 
 dijit.range.getIndex=function(/*DomNode*/node, /*DomNode*/parent){
-//	dojo.profile.start("dijit.range.getIndex");
 	var ret=[], retR=[];
 	var stop = parent;
 	var onode = node;
@@ -261,6 +260,7 @@ if(!dijit.range._w3c){
 			var parentNode = atmrange.parentElement();
 
 			var startnode, startOffset, lastNode;
+
 			if(parentNode.childNodes.length>0){
 				dojo.every(parentNode.childNodes, function(node,i){
 					var calOffset;

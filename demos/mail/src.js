@@ -17,7 +17,7 @@ dojo.require("dijit._Calendar");
 dojo.require("dijit.ColorPalette");
 dojo.require("dijit.Editor");
 dojo.require("dijit._editor.plugins.LinkDialog");
-dojo.require("dijit._editor.plugins.FontChoice");
+//dojo.require("dijit._editor.plugins.FontChoice");
 dojo.require("dijit.ProgressBar");
 dojo.require("dijit.form.CheckBox");
 dojo.require("dijit.form.Textarea");
