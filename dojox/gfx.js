@@ -1,8 +1,6 @@
 dojo.provide("dojox.gfx");
 
-dojo.require("dojox.gfx.matrix");
-
-dojo.required(["dojox.gfx.matrix"], function() {
+(function() {
 	var gfx = dojo.getObject("dojox.gfx", true), sl, flag, match;
 
 	var renderers = (typeof dojo.config.gfxRenderer == "string" ?
@@ -81,4 +79,4 @@ dojo.required(["dojox.gfx.matrix"], function() {
 			dojo.provided("dojox.gfx");
 		});
 	});
-});
+})();
