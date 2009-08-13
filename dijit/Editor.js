@@ -251,8 +251,6 @@ dojo.declare(
 			// tags:
 			//		protected
 
-			window.alert('test');
-
 			if(this.customUndo && (cmd=='undo' || cmd=='redo')){
 				return this[cmd]();
 			}else{
