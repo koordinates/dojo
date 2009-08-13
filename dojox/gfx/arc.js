@@ -2,7 +2,7 @@ dojo.provide("dojox.gfx.arc");
 
 dojo.require("dojox.gfx.matrix");
 
-(function(){
+dojo.required("dojox.gfx.matrix", function(){
 	var m = dojox.gfx.matrix,
 		unitArcAsBezier = function(alpha){
 			// summary: return a start point, 1st and 2nd control points, and an end point of
@@ -117,4 +117,6 @@ dojo.require("dojox.gfx.matrix");
 			return result;	// Object
 		}
 	});
-})();
+
+	dojo.provided("dojox.gfx.arc");
+});

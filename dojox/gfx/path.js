@@ -2,6 +2,8 @@ dojo.provide("dojox.gfx.path");
 
 dojo.require("dojox.gfx.shape");
 
+dojo.required("dojox.gfx.shape", function() {
+
 dojo.declare("dojox.gfx.path.Path", dojox.gfx.Shape, {
 	// summary: a generalized path shape
 
@@ -351,4 +353,8 @@ dojo.declare("dojox.gfx.path.TextPath", dojox.gfx.path.Path, {
 		this._setFont();
 		return this;	// self
 	}
+});
+
+dojo.provided("dojox.gfx.path");
+
 });

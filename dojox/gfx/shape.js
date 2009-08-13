@@ -1,6 +1,8 @@
 dojo.provide("dojox.gfx.shape");
 
-dojo.required("dojox.gfx._base");
+dojo.require("dojox.gfx._base");
+
+dojo.required("dojox.gfx._base", function() {
 
 dojo.declare("dojox.gfx.Shape", null, {
 	// summary: a Shape object, which knows how to apply
@@ -726,3 +728,7 @@ dojox.gfx.shape.Creator = {
 		return null;	// dojox.gfx.Shape
 	}
 };
+
+dojo.provided("dojox.gfx.shape");
+
+});

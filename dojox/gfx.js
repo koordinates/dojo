@@ -64,20 +64,22 @@ dojo.required(["dojox.gfx._base", "dojox.gfx.matrix"], function() {
 		console.log("Renderer: " + dojox.gfx.renderer);
 	}
 
-	dojo.require("dojox.gfx.shape");
 	dojo.require("dojox.gfx.path");
 	dojo.require("dojox.gfx.arc");
+
+	dojo.required(['dojox.gfx.path', 'dojox.gfx.arc'], function() {
 
 	// Include a renderer conditionally
 
 	// NOTE: Combine these four into one file, optinally exclude with builder
 
-	dojo.requireIf(dojox.gfx.renderer == "svg", "dojox.gfx.svg");
-	dojo.requireIf(dojox.gfx.renderer == "vml", "dojox.gfx.vml");
-	dojo.requireIf(dojox.gfx.renderer == "silverlight", "dojox.gfx.silverlight");
-	dojo.requireIf(dojox.gfx.renderer == "canvas", "dojox.gfx.canvas");
+		dojo.requireIf(dojox.gfx.renderer == "svg", "dojox.gfx.svg");
+		dojo.requireIf(dojox.gfx.renderer == "vml", "dojox.gfx.vml");
+		dojo.requireIf(dojox.gfx.renderer == "silverlight", "dojox.gfx.silverlight");
+		dojo.requireIf(dojox.gfx.renderer == "canvas", "dojox.gfx.canvas");
 
-	dojo.required('dojox.gfx.' + dojox.gfx.renderer, function() {
-		dojo.provided("dojox.gfx");
+		dojo.required("dojox.gfx." + dojox.gfx.renderer, function() {
+			dojo.provided("dojox.gfx");
+		});
 	});
 });
