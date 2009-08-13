@@ -13,6 +13,7 @@ dijit.range.getIndex=function(/*DomNode*/node, /*DomNode*/parent){
 	while(node != stop){
 		var i = 0;
 		pnode = node.parentNode;
+
 		while((n=pnode.childNodes[i++])){
 			if(n===node){
 				--i;
@@ -30,6 +31,7 @@ dijit.range.getIndex=function(/*DomNode*/node, /*DomNode*/parent){
 	//normalized() can not be called so often to prevent
 	//invalidating selection/range, so we have to detect
 	//here that any text nodes in a row
+
 	if(ret.length>0 && onode.nodeType==3){
 		n = onode.previousSibling;
 		while(n && n.nodeType==3){
@@ -42,7 +44,6 @@ dijit.range.getIndex=function(/*DomNode*/node, /*DomNode*/parent){
 			n = n.nextSibling;
 		}
 	}
-//	dojo.profile.end("dijit.range.getIndex");
 	return {o: ret, r:retR};
 }
 
@@ -51,7 +52,7 @@ dijit.range.getNode = function(/*Array*/index, /*DomNode*/parent){
 		return parent;
 	}
 	var node = parent;
-//	if(!node)debugger
+
 	dojo.every(index, function(i){
 		if(i>=0&&i< node.childNodes.length){
 			node = node.childNodes[i];

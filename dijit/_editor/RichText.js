@@ -257,7 +257,9 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				localhtml += "<"+format+"><li>content</li></"+format+"><br/>";
 			}
 		}
-		//queryCommandValue returns empty if we hide editNode, so move it out of screen temporary
+
+		// queryCommandValue returns empty if we hide editNode, so move it out of screen temporarily
+
 		var div = dojo.doc.createElement('div');
 		dojo.style(div, {
 			position: "absolute",
@@ -267,8 +269,8 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		div.innerHTML = localhtml;
 		var node = div.firstChild;
 		while(node){
-			dijit._editor.selection.selectElement(node.firstChild);
-			//dojo.withGlobal(this.window, "selectElement", dijit._editor.selection, [node.firstChild]);
+			//dijit._editor.selection.selectElement(node.firstChild);
+			dojo.withGlobal(this.window, dijit._editor.selection, 'selectElement', [node.firstChild]);
 			var nativename = node.tagName.toLowerCase();
 			try {
 				this._local2NativeFormatNames[nativename] = window.document.queryCommandValue("formatblock");
@@ -439,7 +441,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//}
 		
 		// TODO: this is a guess at the default line-height, kinda works
-		// *** Need more information
+
 		if(dn.nodeName == "LI"){
 			dn.lastChild.style.marginTop = "-1.2em";
 		}
@@ -518,33 +520,31 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		if(!this.iframe){
 			var ifr = (this.iframe = dojo.doc.createElement("iframe"));
 			ifr.id=this.id+"_iframe";
-			// this.iframe.src = "about:blank";
-			// dojo.doc.body.appendChild(this.iframe);
-			// console.debug(this.iframe.contentDocument.open());
-			// dojo.body().appendChild(this.iframe);
 			var ifrs = ifr.style;
-			// ifrs.border = "1px solid black";
 			ifrs.border = "none";
 			ifrs.lineHeight = "0"; // squash line height
 			ifrs.verticalAlign = "bottom";
-			// ifrs.scrolling = this.height ? "auto" : "vertical";
 			this.editorObject = this.iframe;
+
 			// get screen reader text for mozilla here, too
+
 			this._localizedIframeTitles = dojo.i18n.getLocalization("dijit.form", "Textarea");
+
 			// need to find any associated label element and update iframe document title
+
 			var label=dojo.query('label[for="'+this.id+'"]');
 			if(label.length){
 				this._localizedIframeTitles.iframeEditTitle = label[0].innerHTML + " " + this._localizedIframeTitles.iframeEditTitle;
 			}
 			ifr._loadFunc = function(win){}; // TODO: drawIframe should be refactored to use this event handler instead of janky setTimeout loops
 		}
-		// opera likes this to be outside the with block
-		//	this.iframe.src = "javascript:void(0)";//dojo.uri.dojoUri("src/widget/templates/richtextframe.html") + ((dojo.doc.domain != currentDomain) ? ("#"+dojo.doc.domain) : "");
 		this.iframe.style.width = this.inheritWidth ? this._oldWidth : "100%";
 
 		if(this._layoutMode){
+
 			// iframe should be 100% height, thus getting it's height from surrounding
 			// <div> (which has the correct height set by Editor
+
 			this.iframe.style.height = "100%";
 		}else{
 			if(this.height){
@@ -686,16 +686,19 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 	},
 
 	removeStyleSheet: function(/*dojo._Url*/ uri){
+
 		// summary:
 		//		remove an external stylesheet for the editing area
+
 		var url=uri.toString();
-		//if uri is relative, then convert it to absolute so that it can be resolved correctly in iframe
+
+		// if uri is relative, then convert it to absolute so that it can be resolved correctly in iframe
+
 		if(url.charAt(0) == '.' || (url.charAt(0) != '/' && !uri.host)){
 			url = (new dojo._Url(dojo.global.location, url)).toString();
 		}
 		var index = dojo.indexOf(this.editingAreaStyleSheets, url);
 		if(index == -1){
-//			console.debug("dijit._editor.RichText.removeStyleSheet: Style sheet "+url+" has not been applied");
 			return;
 		}
 		delete this.editingAreaStyleSheets[index];
@@ -1289,11 +1292,13 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			//	var selectionEndOffset = selectionRange.endOffset;
 
 			// select our link and unlink
+
 			var a = this._sCall("getAncestorElement", [ "a" ]);
 			this._sCall("selectElement", [ a ]);
 
 			returnValue = this.document.execCommand("unlink", false, null);
 		}else if((command == "hilitecolor")&&(dojo.isMoz)){
+
 			// mozilla doesn't support hilitecolor properly when useCSS is
 			// set to false (bugzilla #279330)
 
@@ -1398,7 +1403,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		if(this.disabled || !this._disabledOK){ return false; }
 		var r;
 		command = this._normalizeCommand(command);
-		if(dojo.isIE && command == "formatblock"){
+		if(this._native2LocalFormatNames){
 			r = this._native2LocalFormatNames[this.document.queryCommandValue(command)];
 		}else{
 			r = this.document.queryCommandValue(command);
@@ -1414,7 +1419,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//		current editor instance's window, with the passed args.
 		// tags:
 		//		private
-		return dojo.withGlobal(this.window, name, dijit._editor.selection, args);
+		return dojo.withGlobal(this.window, dijit._editor.selection, name, args);
 	},
 
 	// FIXME: this is a TON of code duplication. Why?
@@ -1467,7 +1472,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// cursor would be placed at the end of the closing tag of
 		//this.editNode.lastChild
 		var isvalid=false;
-		if(dojo.isMoz){
+		//if(dojo.isMoz){
 			var last=this.editNode.lastChild;
 			while(last){
 				if(last.nodeType == 3){
@@ -1487,10 +1492,10 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				}
 				last = last.previousSibling;
 			}
-		}else{
-			isvalid=true;
-			this._sCall("selectElementChildren", [ this.editNode ]);
-		}
+		//}else{
+		//	isvalid=true;
+		//	this._sCall("selectElementChildren", [ this.editNode ]);
+		//}
 		if(isvalid){
 			this._sCall("collapse", [ false ]);
 		}

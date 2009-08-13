@@ -512,26 +512,28 @@ dojo.declare(
 			// tags:
 			//		private
 			this._savedSelection=this._getBookmark();
-			//console.log('save selection',this._savedSelection,this);
 		},
 		_restoreSelection: function(){
+
 			// summary:
 			//		Re-select the text specified in _savedSelection attribute;
 			//		see _saveSelection().
 			// tags:
 			//		private
 			if(this._savedSelection){
-				//only restore the selection if the current range is collapsed
-    			//if not collapsed, then it means the editor does not lose 
-    			//selection and there is no need to restore it
-    			//if(dojo.withGlobal(this.window,'isCollapsed',dijit)){
-    				//console.log('_restoreSelection true')
+
+				// only restore the selection if the current range is collapsed
+    				// if not collapsed, then it means the editor does not lose 
+    				// selection and there is no need to restore it
+
+	    			if(dojo.withGlobal(this.window,'isCollapsed',dijit)){
 					this._moveToBookmark(this._savedSelection);
-				//}
-				delete this._savedSelection;
+					delete this._savedSelection;
+				}
 			}
 		},
 		_onFocus: function(){
+
 			// summary:
 			//		Called from focus manager when focus has moved into this editor
 			// tags:

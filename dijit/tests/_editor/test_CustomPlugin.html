@@ -57,7 +57,7 @@
 				_toggleSource: function(){
 					this.source = !this.source;
 					if(!this.sourceArea){
-						this.sourceArea = window.document.createElement('textarea');
+						this.sourceArea = dojo.doc.createElement('textarea');
 						this.sourceArea.readOnly = true;
 						this.sourceArea.style.position = 'absolute';
 						dojo.place(this.sourceArea, this.editor.domNode, "after");
