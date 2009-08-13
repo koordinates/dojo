@@ -9,7 +9,7 @@ dojo.require("dijit._editor.plugins.EnterKeyHandling");
 dojo.require("dijit._editor.range");
 dojo.require("dijit._Container");
 
-dojo.required(["dijit._editor.RichText"], function() {
+dojo.required(["dojo.i18n", "dijit._editor.RichText"], function() {
 
 dojo.requireLocalization("dijit._editor", "commands");
 

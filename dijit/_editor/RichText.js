@@ -246,6 +246,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//We can distinguish p and div if IE returns Normal, however, in order to detect that,
 		//we have to call this.document.selection.createRange().parentElement() or such, which
 		//could slow things down. Leave it as it is for now
+
 		var formats = ['div', 'p', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'ul', 'address'];
 		var localhtml = "", format, i=0;
 		while((format=formats[i++])){
@@ -267,14 +268,15 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		var node = div.firstChild;
 		while(node){
 			dijit._editor.selection.selectElement(node.firstChild);
-			dojo.withGlobal(this.window, "selectElement", dijit._editor.selection, [node.firstChild]);
+			//dojo.withGlobal(this.window, "selectElement", dijit._editor.selection, [node.firstChild]);
 			var nativename = node.tagName.toLowerCase();
-			this._local2NativeFormatNames[nativename] = document.queryCommandValue("formatblock");
-			//this.queryCommandValue("formatblock");
-			this._native2LocalFormatNames[this._local2NativeFormatNames[nativename]] = nativename;
+			try {
+				this._local2NativeFormatNames[nativename] = window.document.queryCommandValue("formatblock");
+				this._native2LocalFormatNames[this._local2NativeFormatNames[nativename]] = nativename;
+			} catch(e) {}
 			node = node.nextSibling.nextSibling;
 		}
-		dojo.body().removeChild(div);
+		dojo.doc.body.removeChild(div);
 	},
 
 	open: function(/*DomNode?*/ element){
@@ -786,18 +788,19 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			this.window.__registeredWindow = true;
 			dijit.registerIframe(this.iframe);
 		}
-		if(!dojo.isIE && (this.height || dojo.isMoz)){
-			this.editNode=this.document.body;
-		}else{
+		//if(!dojo.isIE && (this.height || dojo.isMoz)){
+		//	this.editNode=this.document.body;
+		//}else{
 			var editNode = this.editNode = this.document.body.firstChild;
 			var tabStop = this.tabStop = dojo.doc.createElement('div');
 			tabStop.tabIndex = -1;
 
 			if (typeof editNode.setActive != 'undefined') {
-				this.editingArea.appendChild(tabStop);
-				this.iframe.onfocus = this._onFocusFactory();
+				//this.editingArea.appendChild(tabStop);
+				//window.alert(this._onFocusFactory());
+				//this.iframe.onfocus = this._onFocusFactory();
 			}
-		}
+		//}
 		this.focusNode = this.editNode; // for InlineEditBox
 
 		this._preDomFilterContent(this.editNode);
@@ -805,11 +808,11 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		var events = this.events.concat(this.captureEvents);
 		dojo.forEach(events, this._connectEvent, this);
 
-		//if(dojo.isIE){ // IE contentEditable
-			// give the node Layout on IE
-			this.connect(this.document, "onmousedown", "_onIEMouseDown"); // #4996 fix focus
-			this.editNode.style.zoom = 1.0;
-		//}
+		// give the node Layout on IE
+		// this.connect(this.document, "onmousedown", "_onIEMouseDown"); // #4996 fix focus
+		if (typeof this.editNode.style.zoom == 'string') {
+			this.editNode.style.zoom = 1;
+		}
 
 		this.isLoaded = true;
 
@@ -819,7 +822,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			this.onLoadDeferred.callback(true);
 		}
 
-		this.onDisplayChanged(e);
+		this.onDisplayChanged();
 
 		if(this.focusOnLoad){
 			// after the document loads, then set focus after updateInterval expires so that 
