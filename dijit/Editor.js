@@ -251,23 +251,27 @@ dojo.declare(
 			// tags:
 			//		protected
 
+			var r;
+
 			if(this.customUndo && (cmd=='undo' || cmd=='redo')){
 				return this[cmd]();
-			}else{
-				if(this.customUndo){
-					this.endEditing();
-					this._beginEditing();
-				}
-				try{
-					var r = this.inherited('execCommand', arguments);                    
-				}catch(e){					
-					r = false;
-				}
-				if(this.customUndo){
-					this._endEditing();
-				}
-				return r;
 			}
+
+			if(this.customUndo){
+				this.endEditing();
+				this._beginEditing();
+			}
+
+			try{
+				r = this.inherited('execCommand', arguments);                    
+			}catch(e){					
+				r = false;
+			}
+
+			if(this.customUndo){
+				this._endEditing();
+			}
+			return r;		
 		},
 		queryCommandEnabled: function(cmd){
 			// summary:
@@ -381,15 +385,19 @@ dojo.declare(
 			//		Get the currently selected text
 			// tags:
 			//		protected
-			var b=dojo.withGlobal(this.window,dijit.getBookmark);
+
+			var b=dojo.withGlobal(this.window, dijit.getBookmark);
 			var tmp=[];
+
+
+			// NOTE: First branch is not taken by IE (string bookmark)
 
 			if(dojo.isArray(b)){ // IE CONTROL
 				dojo.forEach(b,function(n){
 					tmp.push(dijit.range.getIndex(n,this.editNode).o);
 				},this);
 				b=tmp;
-			}else{ // w3c range
+			}else if (b.startContainer) { // w3c range
 				tmp=dijit.range.getIndex(b.startContainer,this.editNode).o;
 				b={startContainer:tmp,
 					startOffset:b.startOffset,
