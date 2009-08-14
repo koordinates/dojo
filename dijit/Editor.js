@@ -260,6 +260,7 @@ dojo.declare(
 			}
 
 			try{
+				this.editNode.focus();
 				r = this.inherited('execCommand', arguments);                    
 			}catch(e){					
 				r = false;
