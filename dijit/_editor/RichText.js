@@ -1061,11 +1061,12 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// summary:
 		//		Move focus to this editor
 		
-		dijit.focus(this.iframe);
-		if (this.editNode && this.editNode.focus) {
-			this.editNode.focus();
+		if (this.iframe) {
+			dijit.focus(this.iframe);
+		} else {
+			dijit.focus(this.editNode);
 		}
-
+		
 		// editNode may be hidden in display:none div, lets just punt in this case
 		// this.editNode.focus(); -> causes IE to scroll always (strict and quirks mode) to the top the Iframe 
 		// if we fire the event manually and let the browser handle the focusing, the latest  
