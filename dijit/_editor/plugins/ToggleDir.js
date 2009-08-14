@@ -3,7 +3,7 @@ dojo.provide("dijit._editor.plugins.ToggleDir");
 dojo.experimental("dijit._editor.plugins.ToggleDir");
 dojo.require("dijit._editor._Plugin");
 
-dojo.requiref("dijit._editor._Plugin", function() {
+dojo.required("dijit._editor._Plugin", function() {
 
 dojo.declare("dijit._editor.plugins.ToggleDir",
 	dijit._editor._Plugin,
