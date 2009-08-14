@@ -6,7 +6,6 @@ dojo.require("dijit.Toolbar");
 dojo.require("dijit.ToolbarSeparator");
 dojo.require("dijit._editor._Plugin");
 dojo.require("dijit._editor.plugins.EnterKeyHandling");
-dojo.require("dijit._editor.range");
 dojo.require("dijit._Container");
 
 dojo.required(["dojo.i18n", "dijit._editor.RichText"], function() {
