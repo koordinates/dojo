@@ -31,7 +31,7 @@ if(!dojo.config.useXDomain || dojo.config.allowXdRichTextSave){
 			dojo.body().appendChild(savetextarea);
 		})();
 	}else{
-		//dojo.body() is not available before onLoad is fired
+		// body is not available before onLoad is fired
 		try {
 			dojo.doc.write('<textarea id="' + dijit._scopeName + '._editor.RichText.savedContent" ' +
 				'style="display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;"></textarea>');
@@ -199,9 +199,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			"\\": exec("insertunorderedlist")
 		};
 
-		//if(!dojo.isIE){
-			ctrlKeyHandlers.Z = exec("redo"); //FIXME: undo?
-		//}
+		ctrlKeyHandlers.Z = exec("undo");
 
 		for(var key in ctrlKeyHandlers){
 			if (dojo.isOwnProperty(ctrlKeyHandlers, key)) {
@@ -438,9 +436,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// tags:
 		//		private
 		var _cs = dojo.getComputedStyle(this.domNode);
-		//if(dojo.isIE || (!this.height && !dojo.isMoz)){
-			html="<div>"+html+"</div>";
-		//}
+		html="<div>"+html+"</div>";
 		var font = [ _cs.fontWeight, _cs.fontSize, _cs.fontFamily ].join(" ");
 		
 		// line height is tricky - applying a units value will mess things up.
@@ -448,7 +444,6 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		var lineHeight = _cs.lineHeight;
 		if(lineHeight.indexOf("px") >= 0){
 			lineHeight = parseFloat(lineHeight)/parseFloat(_cs.fontSize);
-			// console.debug(lineHeight);
 		}else if(lineHeight.indexOf("em")>=0){
 			lineHeight = parseFloat(lineHeight);
 		}else{
@@ -643,20 +638,17 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			this.window.__registeredWindow = true;
 			dijit.registerIframe(this.iframe);
 		}
-		//if(!dojo.isIE && (this.height || dojo.isMoz)){
-		//	this.editNode=this.document.body;
-		//}else{
-			var editNode = this.editNode = this.document.body.firstChild;
-			var tabStop = this.tabStop = dojo.doc.createElement('div');
-			tabStop.tabIndex = -1;
+		var editNode = this.editNode = this.document.body.firstChild;
+		var tabStop = this.tabStop = dojo.doc.createElement('div');
+		tabStop.tabIndex = -1;
 
-			if (typeof editNode.setActive != 'undefined') {
-				this.editingArea.appendChild(tabStop);
-				if (this.iframe && this._onFocusFactory) {
-					this.iframe.onfocus = this._onFocusFactory();
-				}
+		if (typeof editNode.setActive != 'undefined') {
+			this.editingArea.appendChild(tabStop);
+			if (this.iframe && this._onFocusFactory) {
+				this.iframe.onfocus = this._onFocusFactory();
 			}
-		//}
+		}
+
 		this.focusNode = this.editNode; // for InlineEditBox
 
 		this._preDomFilterContent(this.editNode);
@@ -969,7 +961,22 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//		This is fired if and only if the editor loses focus and
 		//		the content is changed.
 	},
+	_verifiedCommands: {},
+	_substituteCommand: function(command, substitute) {
+		if (this._verifiedCommands[command]) {
+			return this._verifiedCommands[command];
+		}
+		
+		try {
+			(this.document.queryCommandValue(command));
+			substitute = command;
+		} catch(e) {}
+
+		this._verifiedCommands[command] = substitute;
+		return substitute;
+	},
 	_normalizeCommand: function(/*String*/ cmd){
+
 		// summary:
 		//		Used as the advice function by dojo.connect to map our
 		//		normalized set of commands to those supported by the target
@@ -977,18 +984,19 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// tags:
 		//		private
 
-		var command = cmd.toLowerCase();
-		if(command == "formatblock"){
-			if(dojo.isSafari){ command = "heading"; }
-		}else if(command == "hilitecolor" && !dojo.isMoz){
-			command = "backcolor";
+		var substitute, command = cmd.toLowerCase();
+		switch(command) {
+		case "formatblock":
+			substitute = "heading";			
+		case "hilitecolor":
+			substitute = "backcolor";
 		}
-
-		return command;
+		return substitute ? this._substituteCommand(command, substitute) : command;
 	},
 
 	_qcaCache: {},
 	queryCommandAvailable: function(/*String*/ command){
+
 		// summary:
 		//		Tests whether a command is supported by the host. Clients
 		//		SHOULD check whether a command is supported before attempting
@@ -999,6 +1007,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//		private
 
 		// memoizing version. See _queryCommandAvailable for computing version
+
 		var ca = this._qcaCache[command];
 		if(ca !== undefined && ca !== null){ return ca; }
 		return (this._qcaCache[command] = this._queryCommandAvailable(command));
@@ -1092,6 +1101,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//focus() is required for IE to work
 		//In addition, focus() makes sure after the execution of
 		//the command, the editor receives the focus as expected
+
 		this.focus();
 
 		command = this._normalizeCommand(command);
@@ -1103,13 +1113,15 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				argument = '<'+argument+'>';
 			}
 		}
-		if(command == "inserthtml"){
-			//TODO: we shall probably call _preDomFilterContent here as well
+		if (command == "inserthtml") {
+
+			// TODO: we shall probably call _preDomFilterContent here as well
+
 			argument = this._preFilterContent(argument);
 			returnValue = true;
-			if(dojo.isIE){
+			if (this.document.selection) {
 				var insertRange = this.document.selection.createRange();
-				if(this.document.selection.type.toUpperCase()=='CONTROL'){
+				if(this.document.selection.type.toUpperCase() == 'CONTROL'){
 					var n=insertRange.item(0);
 					while(insertRange.length){
 						insertRange.remove(insertRange.item(0));
@@ -1119,31 +1131,20 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 					insertRange.pasteHTML(argument);
 				}
 				insertRange.select();
-				//insertRange.collapse(true);
-			}else if(dojo.isMoz && !argument.length){
-				//mozilla can not inserthtml an empty html to delete current selection
-				//so we delete the selection instead in this case
+			} else if (!argument.length) {
+
+				// Can not inserthtml an empty html to delete current selection
+				// so delete the selection instead in this case
+
 				this._sCall("remove"); // FIXME
-			}else{
+			} else {
 				returnValue = this.document.execCommand(command, false, argument);
 			}
-		}else if(
-			(command == "unlink")&&
-			(this.queryCommandEnabled("unlink"))&&
-			(dojo.isMoz || dojo.isWebKit)
-		){
+		} else if(
+			command == "unlink" &&
+			this.queryCommandEnabled("unlink"))
+		{
 			// fix up unlink in Mozilla to unlink the link and not just the selection
-
-			// grab selection
-			// Mozilla gets upset if we just store the range so we have to
-			// get the basic properties and recreate to save the selection
-			//	var selection = this.window.getSelection();
-
-			//	var selectionRange = selection.getRangeAt(0);
-			//	var selectionStartContainer = selectionRange.startContainer;
-			//	var selectionStartOffset = selectionRange.startOffset;
-			//	var selectionEndContainer = selectionRange.endContainer;
-			//	var selectionEndOffset = selectionRange.endOffset;
 
 			// select our link and unlink
 
@@ -1151,35 +1152,21 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			this._sCall("selectElement", [ a ]);
 
 			returnValue = this.document.execCommand("unlink", false, null);
-		}else if((command == "hilitecolor")&&(dojo.isMoz)){
+		} else if (command == "hilitecolor") {
 
 			// mozilla doesn't support hilitecolor properly when useCSS is
 			// set to false (bugzilla #279330)
 
-			this.document.execCommand("styleWithCSS", false, true);
+			try {
+				this.document.execCommand("styleWithCSS", false, true);
+			} catch(e) {}
 			returnValue = this.document.execCommand(command, false, argument);
-			this.document.execCommand("styleWithCSS", false, false);
-
-		}else if((dojo.isIE)&&( (command == "backcolor")||(command == "forecolor") )){
-			// Tested under IE 6 XP2, no problem here, comment out
-			// IE weirdly collapses ranges when we exec these commands, so prevent it
-			//	var tr = this.document.selection.createRange();
+			try {
+				this.document.execCommand("styleWithCSS", false, false);
+			} catch(e) {}
+		} else {
 			argument = arguments.length > 1 ? argument : null;
 			returnValue = this.document.execCommand(command, false, argument);
-
-			// timeout is workaround for weird IE behavior were the text
-			// selection gets correctly re-created, but subsequent input
-			// apparently isn't bound to it
-			//	setTimeout(function(){tr.select();}, 1);
-		}else{
-			argument = arguments.length > 1 ? argument : null;
-			//	if(dojo.isMoz){
-			//		this.document = this.iframe.contentWindow.document
-			//	}
-
-			if(argument || command!="createlink"){
-				returnValue = this.document.execCommand(command, false, argument);
-			}
 		}
 
 		this.onDisplayChanged();
