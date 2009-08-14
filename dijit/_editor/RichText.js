@@ -917,13 +917,10 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// summary:
 		//		Move focus to this editor
 
-		// NOTE: Focusing IFrame doesn't trigger restoration of selection
+		// NOTE: dijit.focus was screwing up the save/restore selection in IE
 
-		if (dojo.isIE || !this.iframe) {
-			dijit.focus(this.editNode);
-		} else {
-			dijit.focus(this.iframe);
-		}
+		this.iframe.contentWindow.focus();
+		this.editNode.focus();
 		
 		// editNode may be hidden in display:none div, lets just punt in this case
 		// this.editNode.focus(); -> causes IE to scroll always (strict and quirks mode) to the top the Iframe 
