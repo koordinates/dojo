@@ -917,8 +917,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// summary:
 		//		Move focus to this editor
 
-		// NOTE: Focusing IFrame doesn't work in IE
-		//       Default configuration shouldn't use IFrames
+		// NOTE: Focusing IFrame doesn't trigger restoration of selection
 
 		if (dojo.isIE || !this.iframe) {
 			dijit.focus(this.editNode);
