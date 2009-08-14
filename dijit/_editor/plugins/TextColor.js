@@ -2,7 +2,7 @@ dojo.provide("dijit._editor.plugins.TextColor");
 dojo.require("dijit._editor._Plugin");
 dojo.require("dijit.ColorPalette");
 
-dojo.required("dijit._editor._Plugin", function() {
+dojo.required(["dijit._editor._Plugin", "dijit.ColorPalette"], function() {
 
 dojo.declare("dijit._editor.plugins.TextColor",
 	dijit._editor._Plugin,
@@ -16,9 +16,10 @@ dojo.declare("dijit._editor.plugins.TextColor",
 		//		* hiliteColor - sets the background color
 
 		// Override _Plugin.buttonClass to use DropDownButton (with ColorPalette) to control this plugin
+
 		buttonClass: dijit.form.DropDownButton,
 
-//TODO: set initial focus/selection state?
+		//TODO: set initial focus/selection state?
 
 		constructor: function(){
 			this.dropDown = new dijit.ColorPalette();

@@ -356,4 +356,6 @@ dojo.declare("dijit.ColorPalette",
 	}
 });
 
+dojo.provided("dijit.ColorPalette");
+
 });

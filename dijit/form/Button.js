@@ -214,13 +214,14 @@ dojo.declare("dijit.form.DropDownButton", [dijit.form.Button, dijit._Container],
 	},
 
 	_onDropDownClick: function(/*Event*/ e){
+
 		// we want to prevent opening our menu in this situation
 		// and only do so if we have seen a keydown on this button;
 		// e.detail != 0 means that we were fired by mouse
 
 		// NOTE: Check event type, not detail
 
-		if(e.detail || this._seenKeydown){
+		if(e.detail || typeof e.detail == 'undefined' || this._seenKeydown){
 			this._onArrowClick(e);
 		}
 		this._seenKeydown = false;
