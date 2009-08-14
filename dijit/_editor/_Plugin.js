@@ -1,9 +1,8 @@
 dojo.provide("dijit._editor._Plugin");
 
-dojo.require("dijit.Editor");
 dojo.require("dijit.form.Button");
 
-dojo.required(["dijit._Widget", "dijit.form.Button"], function() {
+dojo.required(["dijit.form.Button"], function() {
 
 dojo.declare("dijit._editor._Plugin", null, {
 	// summary

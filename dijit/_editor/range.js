@@ -1,6 +1,6 @@
 dojo.provide("dijit._editor.range");
 
-// NOTE: Redo
+// NOTE: Redo and move to core
 
 dijit.range={};
 

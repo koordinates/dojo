@@ -1,6 +1,6 @@
 dojo.provide("dijit._editor.selection");
 
-// NOTE: Redo
+// NOTE: Redo and move to core
 
 dojo.mixin(dijit._editor.selection, {
 	getType: function(){
