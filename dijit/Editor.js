@@ -69,7 +69,6 @@ dojo.declare(
 		postCreate: function(){
 			//for custom undo/redo
 			if(this.customUndo){
-				dojo.require("dijit._editor.range");
 				this._steps=this._steps.slice(0);
 				this._undoedSteps=this._undoedSteps.slice(0);
 //				this.addKeyHandler('z',this.KEY_CTRL,this.undo);
@@ -79,7 +78,6 @@ dojo.declare(
 				this.plugins=this.plugins.concat(this.extraPlugins);
 			}
 
-//			try{
 			this.inherited(arguments);
 //			dijit.Editor.superclass.postCreate.apply(this, arguments);
 
@@ -92,8 +90,7 @@ dojo.declare(
 			}
 
 			dojo.forEach(this.plugins, this.addPlugin, this);
-			this.onNormalizedDisplayChanged(); //update toolbar button status
-//			}catch(e){ console.debug(e); }
+			this.onNormalizedDisplayChanged(); // Update toolbar button status
 
 			this.toolbar.startup();
 		},
@@ -161,7 +158,6 @@ dojo.declare(
 			//		Developers don't need to call this method.
 			// tags:
 			//		protected
-			//console.log('startup',arguments);
 		},
 		resize: function(size){
 			// summary:
@@ -180,10 +176,12 @@ dojo.declare(
 			this._layoutMode = true;
 		},
 		_onIEMouseDown: function(/*Event*/ e){
+
 			// summary:
 			//		IE only to prevent 2 clicks to focus
 			// tags:
 			//		private
+
 			delete this._savedSelection; // new mouse position overrides old selection
 			if(e.target.tagName == "BODY"){
 				dojo._getWin().setTimeout(dojo.hitch(this, "placeCursorAtEnd"), 0);
@@ -195,13 +193,15 @@ dojo.declare(
 			//		Called on IE right before focus is lost.   Saves the selected range.
 			// tags:
 			//		private
+
 			if(this.customUndo){
 				this.endEditing(true);
 			}
+
 			//in IE, the selection will be lost when other elements get focus,
 			//let's save focus before the editor is deactivated
+
 			this._saveSelection();
-	        //console.log('onBeforeDeactivate',this);
 		},
 
 		/* beginning of custom undo/redo support */
@@ -260,7 +260,7 @@ dojo.declare(
 			}
 
 			try{
-				this.editNode.focus();
+				this.focus();
 				r = this.inherited('execCommand', arguments);                    
 			}catch(e){					
 				r = false;
@@ -287,14 +287,15 @@ dojo.declare(
 		focus: function(){
 			// summary:
 			//		Set focus inside the editor
-			var restore=0;
-			if(this._savedSelection){
+
+			var restore;
+			if (this._savedSelection) {
 				restore = dijit._curFocus!=this.editNode;
 			}
-		    this.inherited(arguments);
-		    if(restore){
-		    	this._restoreSelection();
-		    }
+			this.inherited(arguments);
+			if (restore) {
+		    		this._restoreSelection();
+			}
 		},
 		_moveToBookmark: function(b){
 			// summary:
@@ -309,7 +310,7 @@ dojo.declare(
 				dojo.forEach(b,function(n){
 					bookmark.push(dijit.range.getNode(n,this.editNode));
 				},this);
-			}else{ // w3c range
+			}else if (b.startContainer) { // w3c range
 
 				// NOTE: The range module should be browser agnostic
 
@@ -386,9 +387,6 @@ dojo.declare(
 
 			var b=dojo.withGlobal(this.window, dijit.getBookmark);
 			var tmp=[];
-
-
-			// NOTE: First branch is not taken by IE (string bookmark)
 
 			if(dojo.isArray(b)){ // IE CONTROL
 				dojo.forEach(b,function(n){
@@ -509,15 +507,16 @@ dojo.declare(
 			// tags:
 			//		protected
 
-			//this._saveSelection();
 			this.inherited('_onBlur',arguments);
 			this.endEditing(true);
 		},
 		_saveSelection: function(){
+
 			// summary:
 			//		Save the currently selected text in _savedSelection attribute
 			// tags:
 			//		private
+
 			this._savedSelection=this._getBookmark();
 		},
 		_restoreSelection: function(){
@@ -530,7 +529,7 @@ dojo.declare(
 			if(this._savedSelection){
 
 				// only restore the selection if the current range is collapsed
-    				// if not collapsed, then it means the editor does not lose 
+    				// if not collapsed, then it means the editor did not lose 
     				// selection and there is no need to restore it
 
 	    			if(dojo.withGlobal(this.window,'isCollapsed',dijit)){
@@ -584,7 +583,6 @@ dojo.subscribe(dijit._scopeName + ".Editor.getPlugin",null,function(o){
 		case "|":
 			p = new _p({ button: new dijit.ToolbarSeparator() });
 	}
-//	console.log('name',name,p);
 	o.plugin=p;
 });
 

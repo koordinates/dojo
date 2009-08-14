@@ -662,20 +662,16 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//		A dojo.uri.Uri pointing to the url of the external css file
 		var url=uri.toString();
 
-		//if uri is relative, then convert it to absolute so that it can be resolved correctly in iframe
+		// if uri is relative, then convert it to absolute so that it can be resolved correctly in iframe
+
 		if(url.charAt(0) == '.' || (url.charAt(0) != '/' && !uri.host)){
 			url = (new dojo._Url(dojo.global.location, url)).toString();
 		}
 
 		if(dojo.indexOf(this.editingAreaStyleSheets, url) > -1){
-//			console.debug("dijit._editor.RichText.addStyleSheet: Style sheet "+url+" is already applied");
-			return;
-		}
-
-		this.editingAreaStyleSheets.push(url);
-		if(this.document.createStyleSheet){ //IE
-			this.document.createStyleSheet(url);
-		}else{ //other browser
+			console.warn('Style sheet already added: ' + url);
+		} else {
+			this.editingAreaStyleSheets.push(url);
 			var head = this.document.getElementsByTagName("head")[0];
 			var stylesheet = this.document.createElement("link");
 			stylesheet.rel="stylesheet";
@@ -690,19 +686,19 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// summary:
 		//		remove an external stylesheet for the editing area
 
-		var url=uri.toString();
+		var index, url=uri.toString();
 
 		// if uri is relative, then convert it to absolute so that it can be resolved correctly in iframe
 
-		if(url.charAt(0) == '.' || (url.charAt(0) != '/' && !uri.host)){
+		if (url.charAt(0) == '.' || (url.charAt(0) != '/' && !uri.host)) {
 			url = (new dojo._Url(dojo.global.location, url)).toString();
 		}
-		var index = dojo.indexOf(this.editingAreaStyleSheets, url);
-		if(index == -1){
-			return;
+
+		index = dojo.indexOf(this.editingAreaStyleSheets, url);
+		if (index != -1) {
+			delete this.editingAreaStyleSheets[index];
+			dojo.withGlobal(this.window, 'query', dojo, ['link:[href="' + url + '"]']).orphan();
 		}
-		delete this.editingAreaStyleSheets[index];
-		dojo.withGlobal(this.window,'query', dojo, ['link:[href="'+url+'"]']).orphan();
 	},
 
 	// disabled: Boolean
@@ -1039,7 +1035,6 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// tags:
 		//		protected
 
-		// console.info('_onFocus')
 		if(!this.disabled){
 			if(!this._disabledOK){
 				this.attr('disabled', false);
@@ -1064,18 +1059,19 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 	focus: function(){
 		// summary:
 		//		Move focus to this editor
-		if(!dojo.isIE){
-			dijit.focus(this.iframe);
-		}else if(this.editNode && this.editNode.focus){
-			// editNode may be hidden in display:none div, lets just punt in this case
-			//this.editNode.focus(); -> causes IE to scroll always (strict and quirks mode) to the top the Iframe 
-			// if we fire the event manually and let the browser handle the focusing, the latest  
-			// cursor position is focused like in FF                         
-			this.iframe.fireEvent('onfocus', document.createEventObject()); // createEventObject only in IE 
-		//	}else{
-		// 	// TODO: should we throw here?
-		//	console.debug("Have no idea how to focus into the editor!");
+		
+		if (this.editNode && this.editNode.focus) {
+			this.editNode.focus();
 		}
+
+		// editNode may be hidden in display:none div, lets just punt in this case
+		// this.editNode.focus(); -> causes IE to scroll always (strict and quirks mode) to the top the Iframe 
+		// if we fire the event manually and let the browser handle the focusing, the latest  
+		// cursor position is focused like in FF
+
+		// NOTE: Not working (shouldn't use IFrame-based editors)
+
+		//this.editNode.fireEvent('onfocus', document.createEventObject()); // createEventObject only in IE
 	},
 
 	// _lastUpdate: 0,

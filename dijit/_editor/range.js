@@ -59,7 +59,7 @@ dijit.range.getNode = function(/*Array*/index, /*DomNode*/parent){
 			node = node.childNodes[i];
 		}else{
 			node = null;
-			console.debug('Error: can not find node with index',index,'under parent node',parent );
+			console.debug('Can not find node with index',index,'under parent node',parent );
 			return false; //terminate dojo.every
 		}
 		return true; //carry on the every loop
@@ -408,9 +408,9 @@ if(!dijit.range._w3c){
 			startOffset, endContainter, endOffset, collapsed){
 			var start=dijit.range.ie.setEndPoint(range, startContainter, startOffset);
 
-			range.setEndPoint('StartToStart',start);
-			if(!collapsed){
-				var end=dijit.range.ie.setEndPoint(range, endContainter, endOffset);	
+			range.setEndPoint('StartToStart', start);
+			if (!collapsed) {
+				var end=dijit.range.ie.setEndPoint(range, endContainter, endOffset);
 			}
 			range.setEndPoint('EndToEnd',end||start);
 
@@ -487,13 +487,13 @@ dojo.declare("dijit.range.W3CRange",null, {
 		this[what](node.parentNode, index.pop()+ext);
 	},
 	_getIERange: function(){
-		var r=(this._body||this.endContainer.ownerDocument.body).createTextRange();
+		var r = (this._body || this.endContainer.ownerDocument.body).createTextRange();
 		dijit.range.ie.setRange(r, this.startContainer, this.startOffset, this.endContainer, this.endOffset, this.collapsed);
 		return r;
 	},
 	getBookmark: function(body){
-		this._getIERange();
-		return this._cachedBookmark;
+		return this._getIERange();
+		//return this._cachedBookmark;
 	},
 	_select: function(){
 		var r = this._getIERange();
