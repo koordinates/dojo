@@ -1061,6 +1061,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// summary:
 		//		Move focus to this editor
 		
+		dijit.focus(this.iframe);
 		if (this.editNode && this.editNode.focus) {
 			this.editNode.focus();
 		}
