@@ -1,5 +1,4 @@
 dojo.provide("dijit._editor.plugins.EnterKeyHandling");
-dojo.require('dijit._editor.range');
 
 // NOTE: The require call normally would be bundled.  Not necessary in this case.
 // (previously waited until after initial load.)
