@@ -10,9 +10,11 @@ dijit.range.getIndex=function(/*DomNode*/node, /*DomNode*/parent){
 	var onode = node;
 
 	var pnode, n;
-	while(node != stop){
+
+	while(node != stop && node.parentNode){
 		var i = 0;
 		pnode = node.parentNode;
+
 
 		while((n=pnode.childNodes[i++])){
 			if(n===node){
@@ -21,16 +23,16 @@ dijit.range.getIndex=function(/*DomNode*/node, /*DomNode*/parent){
 			}
 		}
 		if(i>=pnode.childNodes.length){
-			dojo.debug("Error finding index of a node in dijit.range.getIndex");
+			console.warn("Error finding index of a node in dijit.range.getIndex");
 		}
 		ret.unshift(i);
 		retR.unshift(i-pnode.childNodes.length);
 		node = pnode;
 	}
 
-	//normalized() can not be called so often to prevent
-	//invalidating selection/range, so we have to detect
-	//here that any text nodes in a row
+	// normalized() can not be called so often to prevent
+	// invalidating selection/range, so we have to detect
+	// here that any text nodes in a row
 
 	if(ret.length>0 && onode.nodeType==3){
 		n = onode.previousSibling;
