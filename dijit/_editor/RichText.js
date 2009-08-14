@@ -916,11 +916,14 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 	focus: function(){
 		// summary:
 		//		Move focus to this editor
-		
-		if (this.iframe) {
-			dijit.focus(this.iframe);
-		} else {
+
+		// NOTE: Focusing IFrame doesn't work in IE
+		//       Default configuration shouldn't use IFrames
+
+		if (dojo.isIE || !this.iframe) {
 			dijit.focus(this.editNode);
+		} else {
+			dijit.focus(this.iframe);
 		}
 		
 		// editNode may be hidden in display:none div, lets just punt in this case
