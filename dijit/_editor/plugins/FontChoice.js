@@ -51,15 +51,15 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 		_initButton: function(){
 			// Overrides _Plugin._initButton(), to initialize the FilteringSelect
 
-			//TODO: would be nice to be able to handle comma-separated font lists and search within them
+			// TODO: would be nice to be able to handle comma-separated font lists and search within them
 
 			var cmd = this.command;
 			var names = this.custom ||
 			{
-				fontName: this.generic ? ["serif", "sans-serif", "monospace", "cursive", "fantasy"] : // CSS font-family generics
+				fontName: this.generic ? ["serif", "sans-serif", "monospace", "cursive"] : // CSS font-family generics
 					["Arial", "Times New Roman", "Comic Sans MS", "Courier New"],
 				fontSize: [1,2,3,4,5,6,7], // sizes according to the old HTML FONT SIZE
-				formatBlock: ["p", "h1", "h2", "h3", "pre"]
+				formatBlock: ["address", "h1", "h2", "h3", "p", "pre", "ol", "ul"]
 			}[cmd];
 			this._availableValues = names; //store all possible values
 			var strings = dojo.i18n.getLocalization("dijit._editor", "FontChoice");
@@ -107,15 +107,19 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 			var _e = this.editor;
 			var _c = this.command;
 			if(!_e || !_e.isLoaded || !_c.length){ return; }
+
 			if(this.button){
 				var value;
 				try{
 					value = _e.queryCommandValue(_c) || "";
 				}catch(e){
-					//Firefox may throw error above if the editor is just loaded, ignore it
+					// Firefox may throw error above if the editor is just loaded, ignore it
+
 					value = "";
 				}
+
 				// strip off single quotes, if any
+
 				var quoted = dojo.isString(value) && value.match(/'([^']*)'/);
 				if(quoted){ value = quoted[1]; }
 
@@ -131,7 +135,6 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 						"Courier": "monospace",
 						"Courier New": "monospace",
 						"Papyrus": "fantasy"
-// 						,"????": "fantasy" TODO: IE doesn't map fantasy font-family?
 					};
 
 					value = map[value] || value;
@@ -141,8 +144,10 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 				}
 
 				this.updating = true;
-				//if the value is not a permitted value, just set empty string to prevent
-				//showing the warning icon
+
+				// if the value is not a permitted value, just set empty string to prevent
+				// showing the warning icon
+
 				this.button.attr('value', dojo.indexOf(this._availableValues,value)<0?"":value);
 				delete this.updating;
 			}

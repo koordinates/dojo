@@ -273,7 +273,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			dojo.withGlobal(this.window, dijit._editor.selection, 'selectElement', [node.firstChild]);
 			var nativename = node.tagName.toLowerCase();
 			try {
-				this._local2NativeFormatNames[nativename] = window.document.queryCommandValue("formatblock");
+				this._local2NativeFormatNames[nativename] = this.document.queryCommandValue("formatblock");
 				this._native2LocalFormatNames[this._local2NativeFormatNames[nativename]] = nativename;
 			} catch(e) {}
 			node = node.nextSibling.nextSibling;
@@ -1257,10 +1257,10 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		if(this.disabled || !this._disabledOK){ return false; }
 		var r;
 		command = this._normalizeCommand(command);
-		if(this._native2LocalFormatNames){
-			r = this._native2LocalFormatNames[this.document.queryCommandValue(command)];
-		}else{
-			r = this.document.queryCommandValue(command);
+		console.log(command);
+		r = this.document.queryCommandValue(command);
+		if(this._native2LocalFormatNames[r]){
+			r = this._native2LocalFormatNames[r];
 		}
 		return r;
 	},
