@@ -260,6 +260,7 @@ dojo.declare(
 			}
 
 			try{
+				this.focus();
 				r = this.inherited('execCommand', arguments);                    
 			}catch(e){					
 				r = false;
@@ -291,8 +292,8 @@ dojo.declare(
 			if (this._savedSelection) {
 				restore = dijit._curFocus!=this.editNode;
 			}
-			this.inherited(arguments);
-			if (restore) {
+			this.inherited(arguments);			
+			if (restore) {				
 		    		this._restoreSelection();
 			}
 		},
