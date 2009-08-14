@@ -851,6 +851,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			// FIXME: this is a poor-man's indent/outdent. It would be
 			// better if it added 4 "&nbsp;" chars in an undoable way.
 			// Unfortunately pasteHTML does not prove to be undoable
+
 			if(this.queryCommandEnabled((e.shiftKey ? "outdent" : "indent"))){
 				this.execCommand((e.shiftKey ? "outdent" : "indent"));
 			}			
@@ -1051,8 +1052,8 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//		deprecated
 		if(this.window.document.documentElement && this.window.document.documentElement.focus){
 			this.window.document.documentElement.focus();
-		}else if(dojo.doc.body.focus){
-			dojo.doc.body.focus();
+		}else if(this.window.document.body.focus){
+			this.window.document.body.focus();
 		}
 	},
 
@@ -1089,12 +1090,12 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		// var _t=new Date();
 		if(this._updateTimer){
-			clearTimeout(this._updateTimer);
+			window.clearTimeout(this._updateTimer);
 		}
 		if(!this._updateHandler){
 			this._updateHandler = dojo.hitch(this,"onNormalizedDisplayChanged");
 		}
-		this._updateTimer = setTimeout(this._updateHandler, this.updateInterval);
+		this._updateTimer = window.setTimeout(this._updateHandler, this.updateInterval);
 	},
 	onNormalizedDisplayChanged: function(){
 		// summary:

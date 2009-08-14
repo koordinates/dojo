@@ -42,7 +42,7 @@ dojo.declare(
 			//		private
 
 			if (!dojo.isArray(this.plugins)) {
-				this.plugins=["undo","redo","|","cut","copy","paste","|","bold","italic","underline","strikethrough","|",
+				this.plugins=["undo","redo","|","cut","copy","paste","delete","|","bold","italic","underline","strikethrough","|",
 				"insertOrderedList","insertUnorderedList","indent","outdent","|","justifyLeft","justifyRight","justifyCenter","justifyFull",
 				"dijit._editor.plugins.EnterKeyHandling" /*, "createLink"*/];
 			}
@@ -260,7 +260,6 @@ dojo.declare(
 			}
 
 			try{
-				this.focus();
 				r = this.inherited('execCommand', arguments);                    
 			}catch(e){					
 				r = false;
@@ -568,15 +567,16 @@ dojo.subscribe(dijit._scopeName + ".Editor.getPlugin",null,function(o){
 	var _p = dijit._editor._Plugin;
 	var name = args.name;
 	switch(name){
-		case "undo": case "redo": case "cut": case "copy": case "paste": case "insertOrderedList":
-		case "insertUnorderedList": case "indent": case "outdent": case "justifyCenter":
-		case "justifyFull": case "justifyLeft": case "justifyRight": case "delete":
+		case "undo": case "redo": case "cut": case "copy": case "paste":
+		case "indent": case "outdent": case "delete":
 		case "selectAll": case "removeFormat": case "unlink":
 		case "insertHorizontalRule":
 			p = new _p({ command: name });
 			break;
 
-		case "bold": case "italic": case "underline": case "strikethrough":
+		case "bold": case "italic": case "underline": case "strikethrough": case "insertUnorderedList": case "insertOrderedList":
+		case "justifyCenter":
+		case "justifyFull": case "justifyLeft": case "justifyRight":
 		case "subscript": case "superscript":
 			p = new _p({ buttonClass: dijit.form.ToggleButton, command: name });
 			break;

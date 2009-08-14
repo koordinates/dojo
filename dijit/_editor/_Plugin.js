@@ -106,7 +106,7 @@ dojo.declare("dijit._editor._Plugin", null, {
 	updateState: function(){
 		// summary:
 		//		This is called on meaningful events in the editor, such as arrow keys (but not simple typing of
-		//		alphanumeric keys).   It gives the plugin a chance to update the CSS of it's button.
+		//		alphanumeric keys). It gives the plugin a chance to update the CSS of it's button.
 		//
 		//		For example, the "bold" plugin will highlight/unhighlight the bold button depending on whether the
 		//		characters next to the caret are bold or not.
@@ -132,7 +132,7 @@ dojo.declare("dijit._editor._Plugin", null, {
 					}
 				}
 			}catch(e){
-				console.debug(e);
+					this.button.attr('disabled', true);
 			}
 		}
 	},
@@ -179,7 +179,6 @@ dojo.declare("dijit._editor._Plugin", null, {
 		if(this.button){
 			toolbar.addChild(this.button);
 		}
-		// console.debug("adding", this.button, "to:", toolbar);
 	}
 });
 
