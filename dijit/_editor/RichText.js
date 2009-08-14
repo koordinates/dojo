@@ -212,7 +212,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 	// events: [private] String[]
 	//		 events which should be connected to the underlying editing area
-	events: ["onKeyPress", "onKeyDown", "onKeyUp", "onClick"],
+	events: ["onKeyPress", "onKeyDown", "onKeyUp", "onClick", "onMouseUp"],
 
 	// captureEvents: [deprecated] String[]
 	//		 Events which should be connected to the underlying editing
