@@ -22,7 +22,7 @@
 <body class="tundra">
 	<div style="border: 1px dotted black;">
 		<div dojoType="dijit.Editor" 
-			extraPlugins="['|', 'formatBlock']">
+			extraPlugins="['|',{name:'dijit._editor.plugins.FontChoice', command:'fontName', generic:true},'fontSize','formatBlock']">
 			<ol>
 				<li>The fontChoice plugin</li>
 			</ol>

@@ -15,7 +15,6 @@ dijit.range.getIndex=function(/*DomNode*/node, /*DomNode*/parent){
 		var i = 0;
 		pnode = node.parentNode;
 
-
 		while((n=pnode.childNodes[i++])){
 			if(n===node){
 				--i;
