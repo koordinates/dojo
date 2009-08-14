@@ -1257,7 +1257,6 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		if(this.disabled || !this._disabledOK){ return false; }
 		var r;
 		command = this._normalizeCommand(command);
-		console.log(command);
 		r = this.document.queryCommandValue(command);
 		if(this._native2LocalFormatNames[r]){
 			r = this._native2LocalFormatNames[r];

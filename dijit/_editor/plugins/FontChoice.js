@@ -59,7 +59,7 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 				fontName: this.generic ? ["serif", "sans-serif", "monospace", "cursive"] : // CSS font-family generics
 					["Arial", "Times New Roman", "Comic Sans MS", "Courier New"],
 				fontSize: [1,2,3,4,5,6,7], // sizes according to the old HTML FONT SIZE
-				formatBlock: ["address", "h1", "h2", "h3", "p", "pre", "ol", "ul"]
+				formatBlock: ["address", "h1", "h2", "h3", "p", "pre"]
 			}[cmd];
 			this._availableValues = names; //store all possible values
 			var strings = dojo.i18n.getLocalization("dijit._editor", "FontChoice");
@@ -134,7 +134,8 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 						"Apple Chancery": "cursive",
 						"Courier": "monospace",
 						"Courier New": "monospace",
-						"Papyrus": "fantasy"
+						"Papyrus": "fantasy",
+						"tt": "monospace"
 					};
 
 					value = map[value] || value;
