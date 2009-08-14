@@ -1,9 +1,8 @@
 dojo.provide("dijit.Editor");
 
 dojo.require("dojo.i18n");
-dojo.require("dijit._editor.RichText");
 dojo.require("dijit.Toolbar");
-dojo.require("dijit.ToolbarSeparator");
+dojo.require("dijit._editor.RichText");
 dojo.require("dijit._editor._Plugin");
 dojo.require("dijit._editor.plugins.EnterKeyHandling");
 

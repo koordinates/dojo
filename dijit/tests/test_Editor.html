@@ -31,28 +31,28 @@
 <body class="tundra">
 	<div dojoType="dijit.Editor" id="automated" height="1.5em" plugins="[]" focusOnLoad="true" style="border:0px;"
 	>Automated Test - all check boxes should be checked<script type='dojo/method' event='onFocus'>
-			if(!document.getElementById('onFocusFired').checked){
-				document.getElementById('onFocusFired').checked=true;
-				document.getElementById('initialValueOK').checked = (dijit.byId('automated').getValue() == 'Automated Test - all check boxes should be checked');
+			if(!window.document.getElementById('onFocusFired').checked){
+				window.document.getElementById('onFocusFired').checked=true;
+				window.document.getElementById('initialValueOK').checked = (dijit.byId('automated').getValue() == 'Automated Test - all check boxes should be checked');
 				dijit.byId('automated').document.execCommand('selectall', false, false);
-				document.getElementById('onChangeOKnow').checked=true;
+				window.document.getElementById('onChangeOKnow').checked=true;
 				dijit.byId('automated').document.execCommand('underline', false, false);
-				setTimeout(dojo.hitch(dijit.byId('editor0'),"focus",0));
+				window.setTimeout(dojo.hitch(dijit.byId('editor0'),"focus",0));
 			}
 		</script
 		><script type='dojo/method' event='onBlur'>
-			if(!document.getElementById('onBlurFired').checked){
-				document.getElementById('onBlurFired').checked=true;
+			if(!window.document.getElementById('onBlurFired').checked){
+				window.document.getElementById('onBlurFired').checked=true;
 				dijit.byId('automated').attr('disabled', true);
-				setTimeout(function(){ try {
+				window.setTimeout(function(){ try {
 					dijit.byId('automated').document.execCommand('bold', false, false);
-					document.getElementById('disabledOK').checked = (dijit.byId('automated').document.queryCommandState('bold') == false);
+					window.document.getElementById('disabledOK').checked = (dijit.byId('automated').document.queryCommandState('bold') == false);
 				} catch(e) { document.getElementById('disabledOK').checked = true; }}, 0);
 			}
 		</script
 		><script type='dojo/method' event='onChange'>
-			if(document.getElementById('onChangeOKnow').checked && !document.getElementById('onChangeFired').checked){
-				document.getElementById('onChangeFired').checked=true;
+			if(window.document.getElementById('onChangeOKnow').checked && !document.getElementById('onChangeFired').checked){
+				window.document.getElementById('onChangeFired').checked=true;
 			}
 		</script
 	></div>

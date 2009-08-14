@@ -1,10 +1,6 @@
 dojo.provide("dijit._editor.plugins.LinkDialog");
-dojo.require("dojo.i18n");
-dojo.require("dojo.string");
-dojo.require("dijit._Templated");
 dojo.require("dijit._editor._Plugin");
 dojo.require("dijit.TooltipDialog");
-dojo.require("dijit.form.Button");
 dojo.require("dijit.form.ValidationTextBox");
 
 dojo.required(["dojo.i18n", "dijit._editor._Plugin"], function() {
