@@ -249,4 +249,6 @@ dojo.declare(
 	}
 );
 
+dojo.provided("dijit.form.FilteringSelect");
+
 });

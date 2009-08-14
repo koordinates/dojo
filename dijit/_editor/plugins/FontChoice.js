@@ -1,11 +1,10 @@
 dojo.provide("dijit._editor.plugins.FontChoice");
 dojo.require("dijit._editor._Plugin");
-dojo.require("dijit.form.ComboBox");
 dojo.require("dijit.form.FilteringSelect");
 dojo.require("dojo.data.ItemFileReadStore");
 dojo.require("dojo.i18n");
 
-dojo.required(["dojo.i18n", "dijit._editor._Plugin"], function() {
+dojo.required(["dojo.i18n", "dijit._editor._Plugin", "dijit.form.FilteringSelect"], function() {
 
 dojo.requireLocalization("dijit._editor", "FontChoice");
 
@@ -54,6 +53,7 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 			// Overrides _Plugin._initButton(), to initialize the FilteringSelect
 
 			//TODO: would be nice to be able to handle comma-separated font lists and search within them
+
 			var cmd = this.command;
 			var names = this.custom ||
 			{
@@ -80,6 +80,7 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 				}
 				return { label: label, name: name, value: value };
 			});
+
 			//items.push({label: "", name:"", value:""}); // FilteringSelect doesn't like unmatched blank strings
 
 			this.inherited(arguments,[{required:false, labelType: "html", labelAttr: "label", searchAttr: "name", store: new dojo.data.ItemFileReadStore(

@@ -11,7 +11,7 @@ dojo.require("dijit.form.HorizontalSlider");
 dojo.require("dijit.form.HorizontalRuleLabels");
 dojo.require("dijit.form.Textarea");
 dojo.require("dijit.Editor");
-//dojo.require("dijit._editor.plugins.FontChoice");
+dojo.require("dijit._editor.plugins.FontChoice");
 dojo.require("dijit.form.Button");
 
 // make dojo.toJson() print dates correctly (this feels a bit dirty)
