@@ -433,8 +433,9 @@ dojo.declare(
 			// tags:
 			//		private
 
-			//We need to save selection if the user TAB away from this editor
-			//no need to call _saveSelection for IE, as that will be taken care of in onBeforeDeactivate
+			// We need to save selection if the user TAB away from this editor
+			// no need to call _saveSelection for IE, as that will be taken care of in onBeforeDeactivate
+
 			if(!this.iframe && e.keyCode==dojo.keys.TAB && !this.tabIndent){
 				this._saveSelection();
 			}

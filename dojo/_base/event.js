@@ -252,15 +252,17 @@ dojo.required("dojo._base.connect");
 
 			// simulate a keypress event
 
-			var faux = del._synthesizeEvent(evt, {type: 'keypress', faux: true, charCode: c});
-			if (kp) { kp.call(evt.currentTarget, faux); }
-			if (typeof evt.cancelBubble != 'undefined') {
-				evt.cancelBubble = faux.cancelBubble;
-				evt.returnValue = faux.returnValue;
-			}
+			if (del._synthesizeEvent) {
+				var faux = del._synthesizeEvent(evt, {type: 'keypress', faux: true, charCode: c});
+				if (kp) { kp.call(evt.currentTarget, faux); }
+				if (typeof evt.cancelBubble != 'undefined') {
+					evt.cancelBubble = faux.cancelBubble;
+					evt.returnValue = faux.returnValue;
+				}
 
-			if (_trySetKeyCode) {
-				_trySetKeyCode(evt, faux.keyCode);
+				if (_trySetKeyCode) {
+					_trySetKeyCode(evt, faux.keyCode);
+				}
 			}
 		}
 	};

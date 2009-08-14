@@ -488,7 +488,6 @@ dojo.declare("dijit.form._FormValueWidget", dijit.form._FormWidget,
 			// NOTE: Will need de-bounce for all synthesized events
 
 			if(fn && e.keyCode == dojo.keys.ESCAPE && !e.ctrlKey && !e.altKey){
-				doc = dojo._getWin().document;
 				fn(e);
 			}
 		};
