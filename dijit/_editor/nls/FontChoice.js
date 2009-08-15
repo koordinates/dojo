@@ -10,10 +10,13 @@
 	fantasy: "fantasy",
 
 	p: "Paragraph",
-	h1: "Heading",
-	h2: "Subheading",
-	h3: "Sub-subheading",
+	h1: "Heading 1",
+	h2: "Heading 2",
+	h3: "Heading 3",
+	h4: "Heading 4",
+	h5: "Heading 5",
 	pre: "Pre-formatted",
+	address: "Address",
 
 	1: "xx-small",
 	2: "x-small",

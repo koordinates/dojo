@@ -59,7 +59,7 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 				fontName: this.generic ? ["serif", "sans-serif", "monospace", "cursive"] : // CSS font-family generics
 					["Arial", "Times New Roman", "Comic Sans MS", "Courier New"],
 				fontSize: [1,2,3,4,5,6,7], // sizes according to the old HTML FONT SIZE
-				formatBlock: ["address", "h1", "h2", "h3", "p", "pre"]
+				formatBlock: ["address", "h1", "h2", "h3", "h4", "h5", "p", "pre"]
 			}[cmd];
 			this._availableValues = names; //store all possible values
 			var strings = dojo.i18n.getLocalization("dijit._editor", "FontChoice");
@@ -71,7 +71,9 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 					label = "<div style='font-family: "+value+"'>" + name + "</div>";
 					break;
 				case "fontSize":
+
 					// we're stuck using the deprecated FONT tag to correspond with the size measurements used by the editor
+
 					label = "<font size="+value+"'>"+name+"</font>";
 					break;
 				case "formatBlock":
@@ -79,8 +81,6 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 				}
 				return { label: label, name: name, value: value };
 			});
-
-			//items.push({label: "", name:"", value:""}); // FilteringSelect doesn't like unmatched blank strings
 
 			this.inherited(arguments,[{required:false, labelType: "html", labelAttr: "label", searchAttr: "name", store: new dojo.data.ItemFileReadStore(
 					{ data: { identifier: "value", items: items } })}]);
@@ -100,6 +100,7 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 		},
 
 		updateState: function(){
+
 			// Overrides _Plugin.updateState().
 			// Set FilteringSelect to reflect font of text at current caret position.
 
@@ -142,6 +143,22 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 				}else if(_c == "fontSize" && value.indexOf && value.indexOf("px") != -1){
 					var pixels = parseInt(value, 10);
 					value = {10:1, 13:2, 16:3, 18:4, 24:5, 32:6, 48:7}[pixels] || value;
+				} else if (_c == 'formatBlock') {
+
+					// NOTE: Should use fetched map of localized names (broken at the moment)
+
+					map = {
+						"Address": "address",
+						"Heading 1": "h1",
+						"Heading 2": "h2",
+						"Heading 3": "h3",
+						"Heading 4": "h4",
+						"Heading 5": "h5",
+						"Normal": "p",
+						"Formatted": "pre"
+					};
+
+					value = map[value] || value;
 				}
 
 				this.updating = true;
@@ -159,8 +176,10 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 		},
 
 		setToolbar: function(){
+
 			// Overrides _Plugin.setToolbar().
 			// Called during initialization.  Adds FilteringSelect plus a label node (like "Font:") to Toolbar.
+
 			this.inherited(arguments);
 
 			var forRef = this.button;

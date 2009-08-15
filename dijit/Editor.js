@@ -43,7 +43,8 @@ dojo.declare(
 
 			if (!dojo.isArray(this.plugins)) {
 				this.plugins=["undo","redo","|","cut","copy","paste","delete","|","bold","italic","underline","strikethrough","|",
-				"insertOrderedList","insertUnorderedList","indent","outdent","|","justifyLeft","justifyRight","justifyCenter","justifyFull",
+				"insertOrderedList","insertUnorderedList","|","indent","outdent","|","justifyLeft","justifyRight","justifyCenter","justifyFull",
+				"|","subscript","superscript","|","insertHorizontalRule",
 				"dijit._editor.plugins.EnterKeyHandling" /*, "createLink"*/];
 			}
 
@@ -67,7 +68,9 @@ dojo.declare(
 		},
 
 		postCreate: function(){
+
 			//for custom undo/redo
+
 			if(this.customUndo){
 				this._steps=this._steps.slice(0);
 				this._undoedSteps=this._undoedSteps.slice(0);
@@ -79,12 +82,13 @@ dojo.declare(
 			}
 
 			this.inherited(arguments);
-//			dijit.Editor.superclass.postCreate.apply(this, arguments);
 
 			this.commands = dojo.i18n.getLocalization("dijit._editor", "commands", this.lang);
 
 			if(!this.toolbar){
+
 				// if we haven't been assigned a toolbar, create one
+
 				this.toolbar = new dijit.Toolbar({});
 				dojo.place(this.toolbar.domNode, this.editingArea, "before");
 			}

@@ -248,7 +248,9 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		var formats = ['div', 'p', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'ul', 'address'];
 		var localhtml = "", format, i=0;
 		while((format=formats[i++])){
+
 			//append a <br> after each element to separate the elements more reliably
+
 			if(format.charAt(1) != 'l'){
 				localhtml += "<"+format+"><span>content</span></"+format+"><br/>";
 			}else{
@@ -267,7 +269,6 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		div.innerHTML = localhtml;
 		var node = div.firstChild;
 		while(node){
-			//dijit._editor.selection.selectElement(node.firstChild);
 			dojo.withGlobal(this.window, dijit._editor.selection, 'selectElement', [node.firstChild]);
 			var nativename = node.tagName.toLowerCase();
 			try {
@@ -1048,12 +1049,13 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		command = this._normalizeCommand(command);
 
-		if(argument !== undefined){
-			if ((command == "formatblock") && dojo.isIE) {
-				argument = '<'+argument+'>';
+		if (command == "formatblock") {
+			try {
+				returnValue = this.document.execCommand(command, false, '<' + argument + '>');
+			} catch(e) {
+				returnValue = this.document.execCommand(command, false, argument);
 			}
-		}
-		if (command == "inserthtml") {
+		} else if (command == "inserthtml") {
 
 			// TODO: we shall probably call _preDomFilterContent here as well
 
@@ -1080,8 +1082,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			} else {
 				returnValue = this.document.execCommand(command, false, argument);
 			}
-		} else if(
-			command == "unlink" &&
+		} else if(command == "unlink" &&
 			this.queryCommandEnabled("unlink"))
 		{
 			// fix up unlink in Mozilla to unlink the link and not just the selection
@@ -1105,7 +1106,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				this.document.execCommand("styleWithCSS", false, false);
 			} catch(e) {}
 		} else {
-			argument = arguments.length > 1 ? argument : null;
+			argument = argument !== undefined ? argument : null;
 			returnValue = this.document.execCommand(command, false, argument);
 		}
 
