@@ -730,12 +730,16 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				// update iframe document title for screen reader
 				var titleObj = dojo.isFF<3 ? this.iframe.contentDocument : this.iframe;
 			 	titleObj.title = this._localizedIframeTitles.iframeFocusTitle;
+
 				// Place focus on the iframe. A subsequent tab or shift tab will put focus
 				// on the correct control.
+
 				this.iframe.focus();  // this.focus(); won't work
 				dojo.stopEvent(e);
 			}else if(e.keyCode == dojo.keys.TAB && e.shiftKey){
+
 				// if there is a toolbar, set focus to it, otherwise ignore
+
 				if(this.toolbar){
 					this.toolbar.focus();
 				}
@@ -1019,71 +1023,9 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// tags:
 		//		private
 
-		// NOTE: Needs review, remove sniffing
+		// NOTE: Deprecated
 
-		var ie = 1;
-		var mozilla = 1 << 1;
-		var webkit = 1 << 2;
-		var opera = 1 << 3;
-		var webkit420 = 1 << 4;
-
-		function isSupportedBy(browsers){
-			return {
-				ie: Boolean(browsers & ie),
-				mozilla: Boolean(browsers & mozilla),
-				webkit: Boolean(browsers & webkit),
-				webkit420: Boolean(browsers & webkit420),
-				opera: Boolean(browsers & opera)
-			};
-		}
-
-		var supportedBy = null;
-
-		switch(command.toLowerCase()){
-			case "bold": case "italic": case "underline":
-			case "subscript": case "superscript":
-			case "fontname": case "fontsize":
-			case "forecolor": case "hilitecolor":
-			case "justifycenter": case "justifyfull": case "justifyleft":
-			case "justifyright": case "delete": case "selectall": case "toggledir":
-				supportedBy = isSupportedBy(mozilla | ie | webkit | opera);
-				break;
-
-			case "createlink": case "unlink": case "removeformat":
-			case "inserthorizontalrule": case "insertimage":
-			case "insertorderedlist": case "insertunorderedlist":
-			case "indent": case "outdent": case "formatblock":
-			case "inserthtml": case "undo": case "redo": case "strikethrough": case "tabindent":
-				supportedBy = isSupportedBy(mozilla | ie | opera | webkit420);
-				break;
-
-			case "blockdirltr": case "blockdirrtl":
-			case "dirltr": case "dirrtl":
-			case "inlinedirltr": case "inlinedirrtl":
-				supportedBy = isSupportedBy(ie);
-				break;
-			case "cut": case "copy": case "paste":
-				supportedBy = isSupportedBy( ie | mozilla | webkit420);
-				break;
-
-			case "inserttable":
-				supportedBy = isSupportedBy(mozilla | ie);
-				break;
-
-			case "insertcell": case "insertcol": case "insertrow":
-			case "deletecells": case "deletecols": case "deleterows":
-			case "mergecells": case "splitcell":
-				supportedBy = isSupportedBy(ie | mozilla);
-				break;
-
-			default: return false;
-		}
-
-		return (dojo.isIE && supportedBy.ie) ||
-			(dojo.isMoz && supportedBy.mozilla) ||
-			(dojo.isWebKit && supportedBy.webkit) ||
-			(dojo.isWebKit > 420 && supportedBy.webkit420) ||
-			(dojo.isOpera && supportedBy.opera);  // Boolean return true if the command is supported, false otherwise
+		return true;
 	},
 
 	execCommand: function(/*String*/ command, argument){
@@ -1098,18 +1040,16 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		var returnValue;
 
-		//focus() is required for IE to work
-		//In addition, focus() makes sure after the execution of
-		//the command, the editor receives the focus as expected
+		// focus() is required for IE to work
+		// In addition, focus() makes sure after the execution of
+		// the command, the editor receives the focus as expected
 
 		this.focus();
 
 		command = this._normalizeCommand(command);
 
 		if(argument !== undefined){
-			if(command == "heading"){
-				throw new Error("unimplemented");
-			}else if((command == "formatblock") && dojo.isIE){
+			if ((command == "formatblock") && dojo.isIE) {
 				argument = '<'+argument+'>';
 			}
 		}
@@ -1180,41 +1120,14 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		//		protected
 		if(this.disabled || !this._disabledOK){ return false; }
 		command = this._normalizeCommand(command);
-		if(dojo.isMoz || dojo.isWebKit){
-			if(command == "unlink"){ // mozilla returns true always
-				// console.debug(this._sCall("hasAncestorElement", ['a']));
-				this._sCall("hasAncestorElement", ["a"]);
-			}else if(command == "inserttable"){
-				return true;
-			}
-		}
-		//see #4109
-		if(dojo.isWebKit){
-			if(command == "copy"){
-				command = "cut";
-			}else if(command == "paste"){
-				return true;
-			}
-		}
-		//should not allow user to indent neither a non-list node nor list item which is the first item in its parent 
-		if(command == 'indent'){
-			var li = this._sCall("getAncestorElement", ["li"]);
-			var n = li && li.previousSibling;
-			while(n){
-				if(n.nodeType == 1){
-				  return true;
-				}
-				n = n.previousSibling;
-			}
-			return false;
-		}else if(command == 'outdent'){
-			//should not allow user to outdent a non-list node
-			return this._sCall("hasAncestorElement", ["li"]);
+
+		if(command == "unlink"){ // mozilla always returns true
+			return !!this._sCall("hasAncestorElement", ["a"]);
+		}else if(command == "inserttable"){
+			//return true;
 		}
 
-		// return this.document.queryCommandEnabled(command);
-		var elem = dojo.isIE ? this.document.selection.createRange() : this.document;
-		return elem.queryCommandEnabled(command);
+		return ((this.document.selection && dojo.isHostMethod(this.document.selection, 'createRange')) ? this.document.selection.createRange() : this.document).queryCommandEnabled(command);
 	},
 
 	queryCommandState: function(command){
@@ -1225,13 +1138,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		if(this.disabled || !this._disabledOK){ return false; }
 		command = this._normalizeCommand(command);
-		// try{
-			//this.editNode.contentEditable = true;
-			return this.document.queryCommandState(command);
-		// }catch(e){
-		// 	console.debug(e);
-		// 	return false;
-		// }
+		return this.document.queryCommandState(command);
 	},
 
 	queryCommandValue: function(command){
@@ -1274,7 +1181,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		//see comments in placeCursorAtEnd
 		var isvalid=false;
-		if(dojo.isMoz){
+		//if(dojo.isMoz){
 			var first=this.editNode.firstChild;
 			while(first){
 				if(first.nodeType == 3){
@@ -1290,10 +1197,10 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				}
 				first = first.nextSibling;
 			}
-		}else{
-			isvalid=true;
-			this._sCall("selectElementChildren", [ this.editNode ]);
-		}
+		//}else{
+		//	isvalid=true;
+		//	this._sCall("selectElementChildren", [ this.editNode ]);
+		//}
 		if(isvalid){
 			this._sCall("collapse", [ true ]);
 		}

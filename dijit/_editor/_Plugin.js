@@ -120,14 +120,14 @@ dojo.declare("dijit._editor._Plugin", null, {
 		if(this.button){
 			try{
 				var enabled = _e.queryCommandEnabled(_c);
-				if(this.enabled!==enabled){
-					this.enabled=enabled;
+				if(this.enabled !== enabled){
+					this.enabled = enabled;
 					this.button.attr('disabled', !enabled);
 				}
 				if(typeof this.button.checked == 'boolean'){
-					var checked=_e.queryCommandState(_c);
-					if(this.checked!==checked){
-						this.checked=checked;
+					var checked = _e.queryCommandState(_c);
+					if(this.checked !== checked){
+						this.checked = checked;
 						this.button.attr('checked', _e.queryCommandState(_c));
 					}
 				}
