@@ -121,7 +121,7 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 			var _c = this.command;
 			if(!_e || !_e.isLoaded || !_c.length){ return; }
 
-			if(this.button){
+			if (this.button) {
 				var value;
 				try {
 					value = _e.queryCommandValue(_c) || "";
@@ -134,8 +134,12 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 
 				// Strip off single quotes, if any
 
-				var quoted = dojo.isString(value) && value.match(/'([^']*)'/);
-				if(quoted){ value = quoted[1]; }
+				if (typeof value == 'string') { // Font sizes can be numbers
+					var quoted = value.match(/'([^']*)'/);
+					if (quoted) {
+						value = quoted[1];
+					}
+				}
 
 				if (this.generic && _c == "fontName") {
 					value = this._fontMap[value] || value;
