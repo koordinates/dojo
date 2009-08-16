@@ -200,7 +200,7 @@ dojo.declare(
 
 			this.inherited(arguments);			
 			this.connect(this.textbox, "oninput", this._onInput);			
-			//this.connect(this.textbox, "onkeydown", this._onInput);
+			this.connect(this.textbox, "onkeydown", this._onInput);
 			this.connect(this.textbox, "onkeyup", this._onInput);
 			this.connect(this.textbox, "onpaste", this._onInput);
 			this.connect(this.textbox, "oncut", this._onInput);

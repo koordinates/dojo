@@ -577,13 +577,17 @@ if(typeof dojo == "undefined"){
 		//		Adds all properties and methods of props to obj.
 
 		if (props) { // For backward compatibility
+
+			// NOTE: Event module is using this to clone event objects (can't use isOwnProperty)
+
+			var hostObject = !props.constructor || !props.constructor.prototype;
 			for (var x in props) {
 				obj[x] = props[x];
 			}
 			if (maskedDontEnumBleedsThrough) {
 				var index, val, names = ['constructor', 'toString', 'valueOf', 'toLocaleString', 'isPrototypeOf', 'propertyIsEnumerable', 'hasOwnProperty'];
 				for (index = names.length; index--;) {
-					if (isOwnProperty(props, names[index])) {
+					if (hostObject || isOwnProperty(props, names[index])) {
 						val = props[names[index]];
 						if(typeof val != "undefined"){
 							obj[names[index]] = val;

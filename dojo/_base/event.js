@@ -17,9 +17,12 @@ dojo.required("dojo._base.connect");
 		return true;
 	}
 
+	dojo.eventSupported = testEvent;
+
 	var canDoMouseEnter = testEvent('mouseenter');
 
 	// DOM event listener machinery
+
 	var del = (dojo._event_listener = {
 		add: function(/*DOMNode*/node, /*String*/name, /*Function*/fp){
 			if(!node){return;} 
@@ -89,6 +92,7 @@ dojo.required("dojo._base.connect");
 		// For IE and Safari: some ctrl-key combinations (mostly w/punctuation) do not emit a char code in IE
 		// we map those virtual key codes to ascii here
 		// not valid for all (non-US) keyboards, so maybe we shouldn't bother
+
 		_punctMap: { 
 			106:42, 
 			111:47, 
@@ -221,24 +225,34 @@ dojo.required("dojo._base.connect");
 		SCROLL_LOCK: 145
 	};
 	
-	var listenersName, _trySetKeyCode, _stealthKeyDown = function(evt){
+	var listenersName, _trySetKeyCode;
+	var _stealthKeyDown = function(evt) {
+
 		// Some browsers don't fire keypress for most non-printable characters.
 		// other browsers do, we simulate it here.
+
 		var kp = evt.currentTarget.onkeypress;
+
 		// only works if kp exists and is a dispatcher
 
-		// Only considered in IE
+		if(listenersName && (!kp || !kp[listenersName])){
+			return;
+		}
 
-		if(listenersName && (!kp || !kp[listenersName])){ return; }
 		// munge key/charCode
+
 		var k=evt.keyCode;
+
 		// These are Windows Virtual Key Codes
 		// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/VirtualKeyCodes.asp
+
 		var unprintable = k!=13 && k!=32 && k!=27 && (k<48||k>90) && (k<96||k>111) && (k<186||k>192) && (k<219||k>222);
+
 		// synthesize keypress for most unprintables and CTRL-keys
-		if(unprintable||evt.ctrlKey){
+
+		if (unprintable || evt.ctrlKey) {
 			var c = unprintable ? 0 : k;
-			if(evt.ctrlKey){
+			if (evt.ctrlKey) {
 				if(k==3 || k==13){
 					return; // Will post CTRL-BREAK, CTRL-ENTER as keypress natively
 				}else if(c>95 && c<106){ 
@@ -254,6 +268,7 @@ dojo.required("dojo._base.connect");
 
 			if (del._synthesizeEvent) {
 				var faux = del._synthesizeEvent(evt, {type: 'keypress', faux: true, charCode: c});
+
 				if (kp) { kp.call(evt.currentTarget, faux); }
 				if (typeof evt.cancelBubble != 'undefined') {
 					evt.cancelBubble = faux.cancelBubble;
@@ -267,7 +282,18 @@ dojo.required("dojo._base.connect");
 		}
 	};
 
+	// NOTE: This stuff has got to go (augmenting host objects (especially event objects) is evil
+
+	del._synthesizeEvent = function(evt, props){
+		var faux = dojo.mixin({}, evt, props);
+		del._setKeyChar(faux);
+		faux.preventDefault = function(){ evt.preventDefault(); }; 
+		faux.stopPropagation = function(){ evt.stopPropagation(); }; 
+		return faux;
+	};
+
 	// IE event normalization
+
 	if (typeof dojo._getWin().attachEvent != 'undefined' && typeof dojo._getWin().document.addEventListener == 'undefined') {
 		_trySetKeyCode = function(e, code){
 			try{
@@ -407,17 +433,18 @@ dojo.required("dojo._base.connect");
 				return evt;
 			},
 			_stealthKeyDown: _stealthKeyDown,
-			// Called in Event scope
 			_stopPropagation: function(){
 				this.cancelBubble = true; 
 			},
 			_preventDefault: function(){
+
 				// Setting keyCode to 0 is the only way to prevent certain keypresses (namely
 				// ctrl-combinations that correspond to menu accelerator keys).
 				// Otoh, it prevents upstream listeners from getting this information
 				// Try to split the difference here by clobbering keyCode only for ctrl 
 				// combinations. If you still need to access the key upstream, bubbledKeyCode is
 				// provided as a workaround.
+
 				this.bubbledKeyCode = this.keyCode;
 				if(this.ctrlKey){_trySetKeyCode(this, 0);}
 				this.returnValue = false;
@@ -429,32 +456,21 @@ dojo.required("dojo._base.connect");
 			evt = evt || dojo._getWin().event;
 			del._stopPropagation.call(evt);
 			del._preventDefault.call(evt);
-		};
+		};		
 	} else {
-
-		del._synthesizeEvent = function(evt, props){
-			var faux = dojo.mixin({}, evt, props);
-			del._setKeyChar(faux);
-			// FIXME: would prefer to use dojo.hitch: dojo.hitch(evt, evt.preventDefault); 
-			// but it throws an error when preventDefault is invoked on Safari
-			// does Event.preventDefault not support "apply" on Safari?
-			faux.preventDefault = function(){ evt.preventDefault(); }; 
-			faux.stopPropagation = function(){ evt.stopPropagation(); }; 
-			return faux;
-		};
-
-
 		del._add = del.add;
 		del._remove = del.remove;
 
 		dojo.mixin(del, {
 			add: function(/*DOMNode*/node, /*String*/event, /*Function*/fp){
-				if(!node){return;} // undefined
+				if(!node){return;}
 				var handle = del._add(node, event, fp);
 				if(del._normalizeEventName(event) == "keypress"){
+
 					// we need to listen to onkeydown to synthesize
 					// keypress events that otherwise won't fire
 					// in Safari 3.1+: https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
+
 					handle._stealthKeyDownHandle = del._add(node, "keydown", _stealthKeyDown);
 				}
 				return handle; /*Handle*/
@@ -470,7 +486,7 @@ dojo.required("dojo._base.connect");
 			},
 			_fixEvent: function(evt, sender){
 				if(evt.faux){ return evt; }
-				if(evt.type == "keypress"){
+				if(evt.type == "keypress" && del._synthesizeEvent){
 					var c = evt.which;
 					if(c==3){
 						c=99; // Maps CTRL-BREAK to CTRL-c
