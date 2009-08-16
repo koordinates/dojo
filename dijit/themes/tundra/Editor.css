@@ -47,8 +47,8 @@
 .tundra .dijitEditorIconLeftToRight { background-position: -378px; }
 .tundra .dijitEditorIconListBulletIndent { background-position: -396px; }
 .tundra .dijitEditorIconListBulletOutdent { background-position: -414px; }
-.tundra .dijitEditorIconListNumIndent { background-position: -432px; }
-.tundra .dijitEditorIconListNumOutdent { background-position: -450px; }
+.tundra .dijitEditorIconListNumberedIndent { background-position: -432px; }
+.tundra .dijitEditorIconListNumberedOutdent { background-position: -450px; }
 .tundra .dijitEditorIconOutdent { background-position: -468px; }
 .tundra .dijitEditorIconPaste { background-position: -486px; }
 .tundra .dijitEditorIconRedo { background-position: -504px; }

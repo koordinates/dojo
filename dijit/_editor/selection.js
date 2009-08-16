@@ -29,17 +29,19 @@ dojo.mixin(dijit._editor.selection, {
 		}
 	},
 
-	getSelectedText: function(){
+	getSelectedText: function() {
+
 		// summary:
-		//		Return the text (no html tags) included in the current selection or null if no text is selected
-		if(dojo.doc.selection){ //IE
-			if(dijit._editor.selection.getType() == 'control'){
+		//	Returns the selected text or null if only controls are selected
+
+		if (dojo.doc.selection) { // IE
+			if(dijit._editor.selection.getType() == 'control') {
 				return null;
 			}
 			return dojo.doc.selection.createRange().text;
 		}else{
 			var selection = dojo.global.getSelection();
-			if(selection){
+			if (selection) {
 				return selection.toString();
 			}
 		}
@@ -48,8 +50,8 @@ dojo.mixin(dijit._editor.selection, {
 
 	getSelectedHtml: function(){
 		// summary:
-		//		Return the html of the current selection or null if unavailable
-		if(dojo.doc.selection){ //IE
+		//	Return the html of the current selection or null if unavailable
+		if(dojo.doc.selection){ // IE
 			if(dijit._editor.selection.getType() == 'control'){
 				return null;
 			}
@@ -213,23 +215,25 @@ dojo.mixin(dijit._editor.selection, {
 	},
 
 	selectElement: function(/*DomNode*/element,/*Boolean?*/nochangefocus){
+
 		// summary:
 		//		clear previous selection and select element (including all its children)
+
 		var range, _document = dojo.doc;
 		element = dojo.byId(element);
 		if(_document.selection && dojo.body().createTextRange){ // IE
 			try{
 				range = dojo.body().createControlRange();
 				range.addElement(element);
-				if(!nochangefocus){
+				if (!nochangefocus) { 
 					range.select();
 				}
 			}catch(e){
 				this.selectElementChildren(element,nochangefocus);
 			}
-		}else if(dojo.global.getSelection){
+		} else if (dojo.global.getSelection) {
 			var selection = dojo.global.getSelection();
-			// FIXME: does this work on Safari?
+
 			if(selection.removeAllRanges){ // Mozilla
 				range = _document.createRange();
 				range.selectNode(element);

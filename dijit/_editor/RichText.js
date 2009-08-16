@@ -233,51 +233,46 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		}
 		this._editorCommandsLocalized = true;
 
-		//in IE, names for blockformat is locale dependent, so we cache the values here
+		// in IE, names for blockformat is locale dependent, so we cache the values here
 
-		//if the normal way fails, we try the hard way to get the list
+		// if the normal way fails, we try the hard way to get the list
 
-		//do not use _cacheLocalBlockFormatNames here, as it will
-		//trigger security warning in IE7
+		// do not use _cacheLocalBlockFormatNames here, as it will
+		// trigger security warning in IE7
 
-		//put p after div, so if IE returns Normal, we show it as paragraph
-		//We can distinguish p and div if IE returns Normal, however, in order to detect that,
-		//we have to call this.document.selection.createRange().parentElement() or such, which
-		//could slow things down. Leave it as it is for now
-
-		var formats = ['div', 'p', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'ul', 'address'];
-		var localhtml = "", format, i=0;
+		var formats = ['p', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'ul', 'address'];
+		var localhtml = "", format, i = 0;
 		while((format=formats[i++])){
 
-			//append a <br> after each element to separate the elements more reliably
+			// append a <br> after each element to separate the elements more reliably
 
 			if(format.charAt(1) != 'l'){
-				localhtml += "<"+format+"><span>content</span></"+format+"><br/>";
+				localhtml += "<"+format+"><span>content</span></"+format+"><br>";
 			}else{
-				localhtml += "<"+format+"><li>content</li></"+format+"><br/>";
+				localhtml += "<"+format+"><li>content</li></"+format+"><br>";
 			}
 		}
 
 		// queryCommandValue returns empty if we hide editNode, so move it out of screen temporarily
 
-		var div = dojo.doc.createElement('div');
+		var div = this.document.createElement('div');
 		dojo.style(div, {
 			position: "absolute",
 			top: "-2000px"
 		});
-		dojo.doc.body.appendChild(div);
+		this.document.body.appendChild(div);
 		div.innerHTML = localhtml;
 		var node = div.firstChild;
 		while(node){
-			dojo.withGlobal(this.window, dijit._editor.selection, 'selectElement', [node.firstChild]);
+			dojo.withGlobal(this.window, dijit._editor.selection.selectElement, dijit._editor.selection, [node.firstChild]);
 			var nativename = node.tagName.toLowerCase();
 			try {
 				this._local2NativeFormatNames[nativename] = this.document.queryCommandValue("formatblock");
 				this._native2LocalFormatNames[this._local2NativeFormatNames[nativename]] = nativename;
-			} catch(e) {}
+			} catch(e) { }
 			node = node.nextSibling.nextSibling;
 		}
-		dojo.doc.body.removeChild(div);
+		this.document.body.removeChild(div);
 	},
 
 	open: function(/*DomNode?*/ element){

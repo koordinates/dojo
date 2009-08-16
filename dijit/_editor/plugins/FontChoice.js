@@ -98,7 +98,19 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 				this.editor.execCommand(this.editor._normalizeCommand(this.command), choice);
 			});
 		},
-
+		_fontMap: {
+			"Arial": "sans-serif",
+			"Helvetica": "sans-serif",
+			"Myriad": "sans-serif",
+			"Times": "serif",
+			"Times New Roman": "serif",
+			"Comic Sans MS": "cursive",
+			"Apple Chancery": "cursive",
+			"Courier": "monospace",
+			"Courier New": "monospace",
+			"Papyrus": "fantasy",
+			"tt": "monospace"
+		},
 		updateState: function(){
 
 			// Overrides _Plugin.updateState().
@@ -111,54 +123,25 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 
 			if(this.button){
 				var value;
-				try{
+				try {
 					value = _e.queryCommandValue(_c) || "";
-				}catch(e){
+				} catch(e) {
+
 					// Firefox may throw error above if the editor is just loaded, ignore it
 
 					value = "";
 				}
 
-				// strip off single quotes, if any
+				// Strip off single quotes, if any
 
 				var quoted = dojo.isString(value) && value.match(/'([^']*)'/);
 				if(quoted){ value = quoted[1]; }
 
-				if(this.generic && _c == "fontName"){
-					var map = {
-						"Arial": "sans-serif",
-						"Helvetica": "sans-serif",
-						"Myriad": "sans-serif",
-						"Times": "serif",
-						"Times New Roman": "serif",
-						"Comic Sans MS": "cursive",
-						"Apple Chancery": "cursive",
-						"Courier": "monospace",
-						"Courier New": "monospace",
-						"Papyrus": "fantasy",
-						"tt": "monospace"
-					};
-
-					value = map[value] || value;
-				}else if(_c == "fontSize" && value.indexOf && value.indexOf("px") != -1){
+				if (this.generic && _c == "fontName") {
+					value = this._fontMap[value] || value;
+				} else if (_c == "fontSize" && value.indexOf && value.indexOf("px") != -1) {
 					var pixels = parseInt(value, 10);
 					value = {10:1, 13:2, 16:3, 18:4, 24:5, 32:6, 48:7}[pixels] || value;
-				} else if (_c == 'formatBlock') {
-
-					// NOTE: Should use fetched map of localized names (broken at the moment)
-
-					map = {
-						"Address": "address",
-						"Heading 1": "h1",
-						"Heading 2": "h2",
-						"Heading 3": "h3",
-						"Heading 4": "h4",
-						"Heading 5": "h5",
-						"Normal": "p",
-						"Formatted": "pre"
-					};
-
-					value = map[value] || value;
 				}
 
 				this.updating = true;
