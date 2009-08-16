@@ -636,6 +636,8 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 			this.editingArea.appendChild(tabStop);
 			if (this.iframe && this._onFocusFactory) {
+				// NOTE: Problem with this (locks up IE on load)
+
 				//this.iframe.onfocus = this._onFocusFactory();
 			}
 		}
@@ -710,9 +712,12 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				// clicked instead of deleting the object. see #1069
 
 				dojo.stopEvent(e);
+
+				// NOTE: Problem here
+
 				this.execCommand("delete");
-			} else if ((65 <= e.keyCode&&e.keyCode <= 90) ||
-				(e.keyCode>=37&&e.keyCode<=40)) { // FIXME: get this (arrow keys) from connect() instead
+			} else if ((65 <= e.keyCode && e.keyCode <= 90) ||
+				(e.keyCode >= 37 && e.keyCode <= 40)) { // FIXME: get this (arrow keys) from connect() instead
 				this.onKeyPress(e);
 			}
 		} else if (!this.isTabIndent) {
