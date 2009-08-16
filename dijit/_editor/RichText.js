@@ -329,7 +329,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 				s.overflow = "hidden";
 			});
 
-			window.setTimeout(tmpFunc, 10);
+			dojo._getWin().setTimeout(tmpFunc, 10);
 			
 			// this.domNode.innerHTML = html;
 
@@ -373,7 +373,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 					}
 				}
 			}
-			this.connect(window, "onbeforeunload", "_saveContent");
+			this.connect(dojo._getWin(), "onbeforeunload", "_saveContent");
 		}
 
 		this.isClosed = false;		
@@ -549,41 +549,42 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		this.disabled = value;
 		if(!this.isLoaded){ return; } // this method requires init to be complete
 		value = !!value;
-		//if(dojo.isIE || dojo.isWebKit || dojo.isOpera){
-			var preventIEfocus = (this.isLoaded || !this.focusOnLoad);
-			if(preventIEfocus){ this.editNode.unselectable = "on"; }
-			this.editNode.contentEditable = !value;
-			if(preventIEfocus){
-				var _this = this;
-				setTimeout(function(){ _this.editNode.unselectable = "off"; }, 0);
-			}
-		//}else{ //moz
-			if(value){
-				//AP: why isn't this set in the constructor, or put in mozSettingProps as a hash?
-				this._mozSettings=[false,this.blockNodeForEnter==='BR'];
-			}
-			try{
-				this.document.designMode=(value?'off':'on');
-			}catch(e){ return; } // ! _disabledOK
-			if(!value && this._mozSettingProps){
-				var ps = this._mozSettingProps;
-				for(var n in ps){
-					if(ps.hasOwnProperty(n)){
-						try{
-							this.document.execCommand(n,false,ps[n]);
-						}catch(e2){}
-					}
+
+		var preventFocus = this.isLoaded || !this.focusOnLoad;
+		if (preventFocus) {
+			this.editNode.unselectable = "on";
+		}
+		this.editNode.contentEditable = !value;
+		if (preventFocus) {
+			var _this = this;
+			dojo._getWin().setTimeout(function(){ _this.editNode.unselectable = "off"; }, 0);
+		}
+
+		try {
+			this.document.designMode = value ? 'off' : 'on';
+		} catch(e) { return; }
+
+		// NOTE: Why set these here?
+
+		if (!value) {
+			var ps = this._mozSettingProps;
+			for(var n in ps){
+				if (dojo.isOwnProperty(ps, n)) {
+					try {
+						this.document.execCommand(n, false, ps[n]);
+					} catch(e2) {}
 				}
 			}
-//			this.document.execCommand('contentReadOnly', false, value);
-//				if(value){
-//					this.blur(); //to remove the blinking caret
-//				}
-		//}
+		}
+
+		// NOTE: This makes more sense here
+
+		// this.document.execCommand('contentReadOnly', false, value);
+
 		this._disabledOK = true;
 	},
 
-	onFocusFactory: function() {
+	_onFocusFactory: function() {
 		var id = this.id;
 
 		return function() {
@@ -592,7 +593,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 	},
 
 	_focusTimer: function(){
-		window.setTimeout(dojo.hitch(this, "focus"), this.updateInterval);
+		dojo._getWin().setTimeout(dojo.hitch(this, "focus"), this.updateInterval);
 	},
 
 	_connectEvent: function(item){
@@ -626,14 +627,16 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			this.window.__registeredWindow = true;
 			dijit.registerIframe(this.iframe);
 		}
-		var editNode = this.editNode = this.document.body.firstChild;
-		var tabStop = this.tabStop = dojo.doc.createElement('div');
-		tabStop.tabIndex = -1;
 
-		if (typeof editNode.setActive != 'undefined') {
+		var editNode = this.editNode = this.document.body.firstChild;
+
+		if (typeof this.editNode.setActive != 'undefined') {
+			var tabStop = this.tabStop = dojo.doc.createElement('div');
+			tabStop.tabIndex = -1;
+
 			this.editingArea.appendChild(tabStop);
 			if (this.iframe && this._onFocusFactory) {
-				this.iframe.onfocus = this._onFocusFactory();
+				//this.iframe.onfocus = this._onFocusFactory();
 			}
 		}
 
@@ -672,48 +675,47 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 	},
 
 	onKeyDown: function(/* Event */ e){
+
 		// summary:
 		//		Handler for onkeydown event
 		// tags:
 		//		protected
 
-		// we need this event at the moment to get the events from control keys
-		// such as the backspace. It might be possible to add this to Dojo, so that
-		// keyPress events can be emulated by the keyDown and keyUp detection.
+		// NOTE: Needs one off optimization
 		
-		if(e.keyCode === dojo.keys.TAB && this.isTabIndent ){
-			dojo.stopEvent(e); //prevent tab from moving focus out of editor
-
-			// FIXME: this is a poor-man's indent/outdent. It would be
-			// better if it added 4 "&nbsp;" chars in an undoable way.
-			// Unfortunately pasteHTML does not prove to be undoable
+		if (e.keyCode === dojo.keys.TAB && this.isTabIndent) {
+			dojo.stopEvent(e); // prevent tab from moving focus out of editor
 
 			if(this.queryCommandEnabled((e.shiftKey ? "outdent" : "indent"))){
 				this.execCommand((e.shiftKey ? "outdent" : "indent"));
 			}			
 		}
-		if(dojo.isIE){
-			if(e.keyCode == dojo.keys.TAB && !this.isTabIndent){
-				if(e.shiftKey && !e.ctrlKey && !e.altKey){
+		if (this.tabStop) {
+			if (e.keyCode == dojo.keys.TAB && !this.isTabIndent){
+				if (e.shiftKey && !e.ctrlKey && !e.altKey){
+
 					// focus the BODY so the browser will tab away from it instead
+
 					this.iframe.focus();
-				}else if(!e.shiftKey && !e.ctrlKey && !e.altKey){
+				} else if(!e.shiftKey && !e.ctrlKey && !e.altKey){
+
 					// focus the BODY so the browser will tab away from it instead
+
 					this.tabStop.focus();
 				}
-			}else if(e.keyCode === dojo.keys.BACKSPACE && this.document.selection.type === "Control"){
+			} else if (e.keyCode === dojo.keys.BACKSPACE && this.document.selection && this.document.selection.type === "Control"){
+
 				// IE has a bug where if a non-text object is selected in the editor,
 				// hitting backspace would act as if the browser's back button was
 				// clicked instead of deleting the object. see #1069
+
 				dojo.stopEvent(e);
 				this.execCommand("delete");
-			}else if((65 <= e.keyCode&&e.keyCode <= 90) ||
-				(e.keyCode>=37&&e.keyCode<=40) // FIXME: get this from connect() instead!
-			){ //arrow keys
-				e.charCode = e.keyCode;
+			} else if ((65 <= e.keyCode&&e.keyCode <= 90) ||
+				(e.keyCode>=37&&e.keyCode<=40)) { // FIXME: get this (arrow keys) from connect() instead
 				this.onKeyPress(e);
 			}
-		}else if(dojo.isMoz  && !this.isTabIndent){
+		} else if (!this.isTabIndent) {
 			if(e.keyCode == dojo.keys.TAB && !e.shiftKey && !e.ctrlKey && !e.altKey && this.iframe){
 
 				// update iframe document title for screen reader
@@ -732,7 +734,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 				// if there is a toolbar, set focus to it, otherwise ignore
 
-				if(this.toolbar){
+				if (this.toolbar) {
 					this.toolbar.focus();
 				}
 				dojo.stopEvent(e);
@@ -782,18 +784,16 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// tags:
 		//		protected
 
-		//console.debug("keyup char:", e.keyChar, e.ctrlKey);
 		var c = (e.keyChar && e.keyChar.toLowerCase()) || e.keyCode;
 		var handlers = this._keyHandlers[c];
-		//console.debug("handler:", handlers);
 		var args = arguments;
+
 		if(handlers){
 			dojo.forEach(handlers, function(h){
 				if((!!h.shift == !!e.shiftKey)&&(!!h.ctrl == !!e.ctrlKey)){
 					if(!h.handler.apply(this, args)){
 						e.preventDefault();
 					}
-					// break;
 				}
 			}, this);
 		}
@@ -802,7 +802,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		if(!this._onKeyHitch){
 			this._onKeyHitch=dojo.hitch(this, "onKeyPressed");
 		}
-		setTimeout(this._onKeyHitch, 1);
+		dojo._getWin().setTimeout(this._onKeyHitch, 1);
 		return true;
 	},
 
@@ -904,7 +904,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		// if we fire the event manually and let the browser handle the focusing, the latest  
 		// cursor position is focused like in FF
 
-		// NOTE: Not working (shouldn't use IFrame-based editors)
+		// NOTE: Not working in IE7
 
 		//this.editNode.fireEvent('onfocus', document.createEventObject()); // createEventObject only in IE
 	},
@@ -924,12 +924,12 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 		// var _t=new Date();
 		if(this._updateTimer){
-			window.clearTimeout(this._updateTimer);
+			dojo._getWin().clearTimeout(this._updateTimer);
 		}
 		if(!this._updateHandler){
 			this._updateHandler = dojo.hitch(this,"onNormalizedDisplayChanged");
 		}
-		this._updateTimer = window.setTimeout(this._updateHandler, this.updateInterval);
+		this._updateTimer = dojo._getWin().setTimeout(this._updateHandler, this.updateInterval);
 	},
 	onNormalizedDisplayChanged: function(){
 		// summary:
@@ -972,7 +972,8 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		var substitute, command = cmd.toLowerCase();
 		switch(command) {
 		case "formatblock":
-			substitute = "heading";			
+			substitute = "heading";
+			break;
 		case "hilitecolor":
 			substitute = "backcolor";
 		}
@@ -1080,11 +1081,11 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 
 			try {
 				this.document.execCommand("styleWithCSS", false, true);
-			} catch(e) {}
+			} catch(e2) {}
 			returnValue = this.document.execCommand(command, false, argument);
 			try {
 				this.document.execCommand("styleWithCSS", false, false);
-			} catch(e) {}
+			} catch(e3) {}
 		} else {
 			argument = argument !== undefined ? argument : null;
 			returnValue = this.document.execCommand(command, false, argument);
@@ -1469,7 +1470,7 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		this._content = this.getValue();
 		var changed = (this.savedContent != this._content);
 
-		if(this.interval){ clearInterval(this.interval); }
+		if(this.interval){ dojo._getWin().clearInterval(this.interval); }
 
 		if(this.textarea){
 			var s = this.textarea.style;
