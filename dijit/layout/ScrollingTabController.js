@@ -47,8 +47,6 @@ dojo.declare("dijit.layout.ScrollingTabController",
 		this.inherited(arguments);
 		var n = this.domNode;
 		
-		this._tabWidth = 0;
-
 		this.tabContainer = dijit.byId(this.containerId);
 		this.scrollNode = this.tablistWrapper;
 		this._initButtons();
@@ -101,8 +99,6 @@ dojo.declare("dijit.layout.ScrollingTabController",
 		// Tab button widths.
 		dojo.style(this.containerNode, "width", 
 			(dojo.style(this.containerNode, "width") + 200) + "px");
-
-		this._tabWidth = 0;
 	},
 	
 	onRemoveChild: function(page, insertIndex){
@@ -112,7 +108,6 @@ dojo.declare("dijit.layout.ScrollingTabController",
 		if(this.useMenu && page && page.id && this._menuChildren[page.id]){
 			this._menu.removeChild(this._menuChildren[page.id]);
 		}
-		this._tabWidth = 0;
 	},
 
 	_initButtons: function(){
@@ -157,16 +152,14 @@ dojo.declare("dijit.layout.ScrollingTabController",
 	},
 	
 	_getTabsWidth: function(){
-		var kids = this.getChildren();
-		if(kids != null && kids.length > 0 && this._tabWidth == 0){
-			var totalWidth = 0;
-			dojo.forEach(kids, function(child){
-				totalWidth += dojo.style(child.domNode, "width");
-			});
-			// Add some pixels for padding
-			this._tabWidth = totalWidth + (kids.length * 3);
+		var children = this.getChildren();
+		if(children.length){
+			var leftTab = children[this.isLeftToRight() ? 0 : children.length - 1].domNode,
+				rightTab = children[this.isLeftToRight() ? children.length - 1 : 0].domNode;
+			return rightTab.offsetLeft + dojo.style(rightTab, "width") - leftTab.offsetLeft;
+		}else{
+			return 0;
 		}
-		return this._tabWidth;
 	},
 	
 	_enableBtn: function(width){
@@ -197,8 +190,12 @@ dojo.declare("dijit.layout.ScrollingTabController",
 		
 		this._updateButtons(enable);
 		
-		// TODO: needs the same logic as smoothScroll() (to compute the new scrollLeft)
-		// but w/out the animation
+		// set proper scroll so that selected tab is visible
+		if(this._selectedTab){
+			var w = this.scrollNode,
+				sl = this._convertToScrollLeft(this._getScrollForSelectedTab());
+			w.scrollLeft = sl;
+		}
 	},
 
 	_updateButtons: function(enable){
@@ -266,20 +263,52 @@ dojo.declare("dijit.layout.ScrollingTabController",
 
 	_getScrollBounds: function(){
 		// summary:
-		//		Returns the minimum and maximum scroll setting
-		// TODO: what if tabwidth < scrollNode.width ?
+		//		Returns the minimum and maximum scroll setting to show the leftmost and rightmost
+		//		tabs (respectively)
 		var children = this.getChildren(),
-			scrollNodeWidth = dojo.style(this.scrollNode, "width");
-		
-		return {
-			min: this.isLeftToRight() ? 0 : children[children.length-1].domNode.offsetLeft,
-			max: this.isLeftToRight() ? 
-				(children[children.length-1].domNode.offsetLeft + dojo.style(children[children.length-1].domNode, "width")) - scrollNodeWidth :
-				dojo.style(this.containerNode, "width") - scrollNodeWidth
-		};
+			scrollNodeWidth = dojo.style(this.scrollNode, "width"),		// about 500px
+			containerWidth = dojo.style(this.containerNode, "width"),	// 50,000px
+			maxPossibleScroll = containerWidth - scrollNodeWidth,	// scrolling until right edge of containerNode visible
+			tabsWidth = this._getTabsWidth();
+
+		if(children.length && tabsWidth > scrollNodeWidth){
+			// Scrolling should happen
+			return {
+				min: this.isLeftToRight() ? 0 : children[children.length-1].domNode.offsetLeft,
+				max: this.isLeftToRight() ? 
+					(children[children.length-1].domNode.offsetLeft + dojo.style(children[children.length-1].domNode, "width")) - scrollNodeWidth :
+					maxPossibleScroll
+			};
+		}else{
+			// No scrolling needed, all tabs visible, we stay either scrolled to far left or far right (depending on dir)
+			var onlyScrollPosition = this.isLeftToRight() ? 0 : maxPossibleScroll;
+			return {
+				min: onlyScrollPosition,
+				max: onlyScrollPosition
+			};
+		}
 	},
 
-	// TODO: add _getScrollForTab(), to get scroll to center a tab
+	_getScrollForSelectedTab: function(){
+		// summary:
+		//		Returns the scroll value setting so that the selected tab
+		//		will appear in the center
+		var w = this.scrollNode,
+			n = this._selectedTab,
+			scrollNodeWidth = dojo.style(this.scrollNode, "width"),
+			scrollBounds = this._getScrollBounds();
+
+		// TODO: scroll minimal amount (to either right or left) so that
+		// selected tab is fully visible, and just return if it's already visible?
+		var pos = (n.offsetLeft + dojo.style(n, "width")/2) - scrollNodeWidth/2;
+		pos = Math.min(Math.max(pos, scrollBounds.min), scrollBounds.max);
+
+		// TODO:
+		// If scrolling close to the left side or right side, scroll
+		// all the way to the left or right.  See this._minScroll.
+		// (But need to make sure that doesn't scroll the tab out of view...)
+		return pos;
+	},
 
 	createSmoothScroll : function(x){
 		// summary: 
@@ -294,7 +323,6 @@ dojo.declare("dijit.layout.ScrollingTabController",
 
 		var w = this.scrollNode,
 			n = this._selectedTab,
-			scrollNodeWidth = dojo.style(this.scrollNode, "width"),
 			scrollBounds = this._getScrollBounds();
 
 		// Scroll to given x position, or so that tab is centered
@@ -302,8 +330,7 @@ dojo.declare("dijit.layout.ScrollingTabController",
 		// selected tab is fully visible, and just return if it's already visible?
 		var args = {
 			node: n, 
-			x: arguments.length > 0 ? x :
-				(n.offsetLeft + dojo.style(n, "width")/2) - scrollNodeWidth/2
+			x: arguments.length > 0 ? x : this._getScrollForSelectedTab()
 		};
 		args.x = Math.min(Math.max(args.x, scrollBounds.min), scrollBounds.max);
 
