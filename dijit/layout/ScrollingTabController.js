@@ -151,31 +151,42 @@ dojo.declare("dijit.layout.ScrollingTabController",
 	
 	_enableBtn: function(width){
 		// summary: 
-		//		Determines if the tabs are wider than the width of the TabContainer.
+		//		Determines if the tabs are wider than the width of the TabContainer, and
+		//		thus that we need to display left/right/menu navigation buttons.
 		var tabsWidth = this._getTabsWidth();
 		width = width || dojo.style(this.scrollNode, "width");
 		return tabsWidth > 0 && width < tabsWidth;
 	},
-	
+
 	resize: function(dim){
 		// summary: 
 		//		Hides or displays the buttons used to scroll the tab list and launch the menu
 		//		that selects tabs.
+
 		if(this.domNode.offsetWidth == 0){
 			return;
 		}
+		
+		// Set my height to be my natural height (tall enough for one row of tab labels),
+		// and my content-box width based on margin-box width specified in dim parameter.
+		// But first reset scrollNode.height in case it was set by layoutChildren() call
+		// in a previous run of this method.
+		this.scrollNode.style.height = "auto";
+		this._contentBox = dijit.layout.marginBox2contentBox(this.domNode, {h: 0, w: dim.w});
+		this._contentBox.h = this.scrollNode.offsetHeight;
+		dojo.contentBox(this.domNode, this._contentBox);
+	
+		// Show/hide the left/right/menu navigation buttons depending on whether or not they
+		// are needed.
+		var enable = this._enableBtn(this._contentBox.w);		
+		this._buttons.style("display", enable ? "" : "none");
 
-		dojo.marginBox(this.domNode, dim);
-		
-		var width = dojo.contentBox(this.domNode).w;
-
-		var enable = this._enableBtn(width);
-		var marginWidth = width - (enable ? this._btnWidth : 0);
-		
-		dojo.marginBox(this.scrollNode, {w: marginWidth});
-		var realWidth = dojo.contentBox(this.scrollNode).w;
-		
-		this._updateButtons(enable);
+		// Position and size the navigation buttons and the tablist
+		this._leftBtn.layoutAlign = "left";
+		this._rightBtn.layoutAlign = "right";
+		this._menuBtn.layoutAlign = this.isLeftToRight() ? "right" : "left";
+		dijit.layout.layoutChildren(this.domNode, this._contentBox,
+			[this._menuBtn, this._leftBtn, this._rightBtn, {domNode: this.scrollNode, layoutAlign: "client"}]);
 		
 		// set proper scroll so that selected tab is visible
 		if(this._selectedTab){
@@ -183,13 +194,11 @@ dojo.declare("dijit.layout.ScrollingTabController",
 				sl = this._convertToScrollLeft(this._getScrollForSelectedTab());
 			w.scrollLeft = sl;
 		}
-	},
-
-	_updateButtons: function(enable){
-		this._buttons.style("display", enable ? "" : "none");
+		
+		// Enable/disabled left right buttons depending on whether or not user can scroll to left or right
 		this._setButtonClass(this._getScroll());
+		
 	},
-	
 
 	_getScroll: function(){
 		// summary:
@@ -236,7 +245,9 @@ dojo.declare("dijit.layout.ScrollingTabController",
 					node.offsetLeft + dojo.style(node, "width")){
 
 					var anim = this.createSmoothScroll();
-					this.connect(anim, "onEnd", function(){
+					// use dojo.connect() rather than this.connect() because the animation will soon be
+					// garbage collected and there's no reason to leave a reference to the connection in this._connects[]
+					dojo.connect(anim, "onEnd", function(){
 						tab.onClick(null);
 					});
 					anim.play();
@@ -333,9 +344,6 @@ dojo.declare("dijit.layout.ScrollingTabController",
 				},
 				onAnimate: function(val){
 					w.scrollLeft = val;
-					
-					// Give IE6/7 a kick or the screen won't update
-					w.className = w.className;
 				}
 			});
 		this._anim = anim;
@@ -426,5 +434,3 @@ dojo.declare("dijit.layout._ScrollingTabControllerButton",
 		templatePath: dojo.moduleUrl("dijit.layout","templates/_ScrollingTabControllerButton.html")
 	}
 );
-
-
