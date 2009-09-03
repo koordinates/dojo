@@ -26,6 +26,7 @@ dojo.require("dojox.html.entities");
 		var closeTags = [];
 		var iTxt = "\t";
 		var textContent = "";
+		var inlineStyle = [];
 
 		// Check to see if we want to use spaces for indent instead
 		// of tab.
@@ -44,8 +45,39 @@ dojo.require("dojox.html.entities");
 
 		//Local alias to our entity encoder.
 		var encode = dojox.html.entities.encode;
+		var decode = dojox.html.entities.decode;
 
 		/** Define a bunch of formatters to format the output. **/
+
+		var isInlineFormat = function(tag){
+			// summary:
+			//		Function to determine if the current tag is an inline
+			//		element that does formatting, as we don't want to 
+			//		break/indent around it, as it can screw up text.
+			// tag:
+			//		The tag to examine
+			switch(tag){
+				case "a":
+				case "b":
+				case "strong":
+				case "s":
+				case "strike":
+				case "i":
+				case "u":
+				case "em":
+				case "sup":
+				case "sub":
+				case "span":
+				case "font":
+				case "big":
+				case "cite":
+				case "q":
+				case "small":
+					return true;
+				default:
+					return false;
+			}
+		};
 
 		var outerHTML =  function(node){
 			// summary:
@@ -79,7 +111,7 @@ dojo.require("dojox.html.entities");
 			//		insertion
 			// n:
 			//		The text node to process.
-			textContent += n.nodeValue;
+			textContent += encode(n.nodeValue);
 		};
 
 		var formatText = function(txt){
@@ -99,7 +131,6 @@ dojo.require("dojox.html.entities");
 			}
 			txt = _lines.join(" ");
 			txt = dojo.trim(txt);
-			txt = encode(txt, map);
 			if(txt !== ""){
 				var lines = [];
 				if(maxLineLength && maxLineLength > 0){
@@ -212,12 +243,6 @@ dojo.require("dojox.html.entities");
 		var openTag = function(node){
 			// summary:
 			//		Function to open a new tag for writing content.
-			if(textContent){
-				// Process any text content we have that occurred 
-				// before the open tag.
-				content.push(formatText(textContent));
-				textContent = "";
-			}
 
 			var name = node.nodeName.toLowerCase();
 			// Generate the outer node content (tag with attrs)
@@ -230,7 +255,7 @@ dojo.require("dojox.html.entities");
 
 			// Also thanks to IE, we need to check for quotes around 
 			// attributes and insert if missing.
-			tag = tag.replace(/=[^"']\S+(\s|>)/g, function(match){
+			tag = tag.replace(new RegExp("=[^\"']\\S+(\\s|>)", "g"), function(match){
 				var endChar = match.length - 1;
 				match = "=\"" + match.substring(1, endChar) + 
 					"\"" + match.charAt(endChar);
@@ -248,6 +273,15 @@ dojo.require("dojox.html.entities");
 				}
 				return match;
 			});
+
+			var inline = isInlineFormat(name);
+			inlineStyle.push(inline); 
+			if(textContent && !inline){
+				// Process any text content we have that occurred 
+				// before the open tag of a non-inline.
+				content.push(formatText(textContent));
+				textContent = "";
+			}
 			
 			// Determine if this has a closing tag or not!
 			if(nText.indexOf("</") != -1){
@@ -255,50 +289,86 @@ dojo.require("dojox.html.entities");
 			}else{
 				closeTags.push(false);
 			}
-			indent();
-			content.push(tag);
-			newline();
-			indentDepth++;
+
+			if(!inline){
+				indent();
+				content.push(tag);
+				newline();
+				indentDepth++;
+			}else{
+				textContent += tag;
+			}
+			
 		};
 		
 		var closeTag = function(){
 			// summary:
 			//		Function to close out a tag if necessary.
-			if(textContent){
+			var inline = inlineStyle.pop();
+			if(textContent && !inline){
 				// Process any text content we have that occurred 
 				// before the close tag.
-				content.push(formatText(textContent));
+				content.push(decode(formatText(textContent), map));
 				textContent = "";
 			}
-			indentDepth--;
 			var ct = closeTags.pop();
 			if(ct){
-				indent();
-				content.push("</" + ct + ">");
-				newline();
+				ct = "</" + ct + ">";
+				if(!inline){
+					indentDepth--;
+					indent();
+					content.push(ct);
+					newline();
+				}else{
+					textContent += ct;
+				}
+			}else{
+				indentDepth--;	
 			}
+		};
+
+		var processCommentNode = function(n){
+			// summary:
+			//		Function to handle processing a comment node.
+			// n:
+			//		The comment node to process.
+
+			//Make sure contents aren't double-encoded.
+			var commentText = decode(n.nodeValue, map);
+			console.log("Processing comment node: " + commentText);
+			indent();
+			content.push("<!--");
+			newline();
+			indentDepth++;
+			content.push(formatText(commentText));
+			indentDepth--;
+			indent();
+			content.push("-->");
+			newline();
 		};
 
 		var processNode = function(node) {
 			// summary:
 			//		Entrypoint for processing all the text!
 			var children = node.childNodes;
-			var checkParent = !dojo.isIE;
 			if(children){
 				var i;
 				for(i = 0; i < children.length; i++){
 					var n = children[i];
+					console.log("Node type: " + n.nodeType);
+
 					if(n.nodeType === 1){
-						if(checkParent && n.parentNode != node){
+						if(dojo.isIE && n.parentNode != node){
 							// IE is broken.  DOMs are supposed to be a tree.  
 							// But in the case of malformed HTML, IE generates a graph
 							// meaning one node ends up with multiple references 
 							// (multiple parents).  This is totally wrong and invalid, but
 							// such is what it is.  We have to keep track and check for 
-							// this because otherise the source output HTML will have dups.
+							// this because otherwise the source output HTML will have dups.
 							continue;
 						}
 
+						
 						//Process non-dup elements!
 						openTag(n);
 						if(n.tagName.toLowerCase() === "script"){
@@ -322,6 +392,8 @@ dojo.require("dojox.html.entities");
 						closeTag();
 					}else if(n.nodeType === 3 || n.nodeType === 4){
 						processTextNode(n);
+					}else if(n.nodeType === 8){
+						processCommentNode(n);
 					}
 				}
 			}
