@@ -11,11 +11,11 @@ dojo.require("dojox.grid._Builder");
 		generateHtml: function(){
 			var w = this.view.contentWidth || 0;
 			var selectedCount = this.view.grid.selection.getSelectedCount();
-			var checked = (selectedCount && selectedCount == this.view.grid.rowCount) ? 'checked="true" ':'';
+			var checked = (selectedCount && selectedCount == this.view.grid.rowCount) ? ' dijitCheckBoxChecked dijitChecked' : '';
 			return '<table style="width:' + w + 'px;" ' +
 				'border="0" cellspacing="0" cellpadding="0" ' +
-				'role="' + (dojo.isFF<3 ? "wairole:" : "") + 'presentation"><tr><th>' +
-				'<div><input type="'+ this.view.inputType + '" ' + checked + '/></div></th></tr></table>';
+				'role="' + (dojo.isFF<3 ? "wairole:" : "") + 'presentation"><tr><th style="text-align: center;">' +
+				'<div class="dojoxGridCheckSelector dijitReset dijitInline dijitCheckBox' + checked + '"></div></th></tr></table>';
 		},
 		doclick: function(e){
 			var selectedCount = this.view.grid.selection.getSelectedCount();
@@ -39,7 +39,7 @@ dojo.require("dojox.grid._Builder");
 			var w = this.view.contentWidth || 0;
 			return '<table class="dojoxGridRowbarTable" style="width:' + w + 'px;" border="0" ' + 
 				'cellspacing="0" cellpadding="0" role="'+(dojo.isFF<3 ? "wairole:" : "")+'presentation"><tr>' + 
-				'<td class="dojoxGridRowbarInner">' + this.getCellContent(inRowIndex) + '</td></tr></table>';
+				'<td  style="text-align: center;" class="dojoxGridRowbarInner">' + this.getCellContent(inRowIndex) + '</td></tr></table>';
 		},
 		getCellContent: function(inRowIndex){
 			return '&nbsp;';
@@ -79,8 +79,10 @@ dojo.require("dojox.grid._Builder");
 		dojox.grid._SelectorContentBuilder.call(this, view);
 	},dojox.grid._SelectorContentBuilder.prototype,{
 		getCellContent: function(rowIndex){
-			var checked = !!this.view.grid.selection.isSelected(rowIndex) ? ' checked="true" ':'';
-			return '<input type="' + this.view.inputType + '"' + checked + '/>';
+			var v = this.view;
+			var type = v.inputType == "checkbox" ? "CheckBox" : "Radio";
+			var checked = !!v.grid.selection.isSelected(rowIndex) ? ' dijit' + type + 'Checked dijitChecked' : '';
+			return '<div class="dojoxGridCheckSelector dijitReset dijitInline dijit' + type + checked + '"></div>';
 		}
 	});
 
@@ -104,7 +106,6 @@ dojo.require("dojox.grid._Builder");
 			}
 			this.connect(this.grid.selection, 'onSelected', 'onSelected');
 			this.connect(this.grid.selection, 'onDeselected', 'onDeselected');
-			this.connect(this.grid, 'onSelectionChanged', 'onSelectionChanged');
 		},
 		buildRendering: function(){
 			this.inherited(arguments);
@@ -145,13 +146,6 @@ dojo.require("dojox.grid._Builder");
 		},
 		onDeselected: function(inIndex){
 			this.grid.updateRow(inIndex);
-		},
-		onSelectionChanged: function(){
-			if(this._selectionChanging){ return; }
-			var input = dojo.query('input', this.headerNode)[0];
-			var g = this.grid;
-			var s = (g.rowCount && g.rowCount == g.selection.getSelectedCount());
-			g.allItemsSelected = input.checked = s||false;
 		}
 	});
 	if(!dojox.grid._View.prototype._headerBuilderClass &&
@@ -190,13 +184,33 @@ dojo.require("dojox.grid._Builder");
 			this.headerNode.style.visibility = "hidden";
 		},
 		
-		onSelectionChanged: function(){},
 		renderHeader: function(){}
 	});
 
 	dojo.declare("dojox.grid._CheckBoxSelector", dojox.grid._Selector, {
 		inputType: 'checkbox',
 		_headerBuilderClass: dojox.grid._InputSelectorHeaderBuilder,
-		_contentBuilderClass: dojox.grid._InputSelectorContentBuilder
+		_contentBuilderClass: dojox.grid._InputSelectorContentBuilder,
+		postCreate: function(){
+			this.inherited(arguments);
+			this.connect(this.grid, 'onSelectionChanged', 'onSelectionChanged');
+			this.connect(this.grid, 'updateRowCount', '_updateVisibility');
+		},
+		renderHeader: function(){
+			this.inherited(arguments);
+			this._updateVisibility(this.grid.rowCount);
+		},
+		_updateVisibility: function(rowCount){
+			this.headerNode.style.visibility = rowCount ? "" : "hidden";		
+		},
+		onSelectionChanged: function(){
+			if(this._selectionChanging){ return; }
+			var inputDiv = dojo.query('.dojoxGridCheckSelector', this.headerNode)[0];
+			var g = this.grid;
+			var s = (g.rowCount && g.rowCount == g.selection.getSelectedCount());
+			g.allItemsSelected = s||false;
+			dojo.toggleClass(inputDiv, "dijitChecked", g.allItemsSelected);
+			dojo.toggleClass(inputDiv, "dijitCheckBoxChecked", g.allItemsSelected);
+		}
 	});
 })();
