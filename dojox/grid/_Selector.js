@@ -11,21 +11,23 @@ dojo.require("dojox.grid._Builder");
 		generateHtml: function(){
 			var w = this.view.contentWidth || 0;
 			var selectedCount = this.view.grid.selection.getSelectedCount();
-			var checked = (selectedCount == this.view.grid.rowCount) ? 'checked="true" ':'';
+			var checked = (selectedCount && selectedCount == this.view.grid.rowCount) ? 'checked="true" ':'';
 			return '<table style="width:' + w + 'px;" ' +
 				'border="0" cellspacing="0" cellpadding="0" ' +
 				'role="' + (dojo.isFF<3 ? "wairole:" : "") + 'presentation"><tr><th>' +
 				'<div><input type="'+ this.view.inputType + '" ' + checked + '/></div></th></tr></table>';
 		},
 		doclick: function(e){
-			var input = dojo.query('input', this.view.headerNode)[0];
 			var selectedCount = this.view.grid.selection.getSelectedCount();
 
+			this.view._selectionChanging = true;
 			if(selectedCount==this.view.grid.rowCount){
 				this.view.grid.selection.deselectAll();
 			}else{
 				this.view.grid.selection.selectRange(0, this.view.grid.rowCount-1);
 			}
+			this.view._selectionChanging = false;
+			this.view.onSelectionChanged();
 			return true;
 		}
 	});
@@ -102,6 +104,7 @@ dojo.require("dojox.grid._Builder");
 			}
 			this.connect(this.grid.selection, 'onSelected', 'onSelected');
 			this.connect(this.grid.selection, 'onDeselected', 'onDeselected');
+			this.connect(this.grid, 'onSelectionChanged', 'onSelectionChanged');
 		},
 		buildRendering: function(){
 			this.inherited(arguments);
@@ -142,6 +145,13 @@ dojo.require("dojox.grid._Builder");
 		},
 		onDeselected: function(inIndex){
 			this.grid.updateRow(inIndex);
+		},
+		onSelectionChanged: function(){
+			if(this._selectionChanging){ return; }
+			var input = dojo.query('input', this.headerNode)[0];
+			var g = this.grid;
+			var s = (g.rowCount && g.rowCount == g.selection.getSelectedCount());
+			g.allItemsSelected = input.checked = s||false;
 		}
 	});
 	if(!dojox.grid._View.prototype._headerBuilderClass &&
@@ -179,7 +189,8 @@ dojo.require("dojox.grid._Builder");
 			this.inherited(arguments);
 			this.headerNode.style.visibility = "hidden";
 		},
-
+		
+		onSelectionChanged: function(){},
 		renderHeader: function(){}
 	});
 
