@@ -158,6 +158,10 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 		var idx = this._getItemIndex(item, true);
 
 		if(idx >= 0){
+			if (this.selection.isSelected(idx)) {
+				this.selection.deselect(idx);
+				this.selection.remove(idx);
+			}
 			var o = this._by_idx[idx];
 			this._by_idx.splice(idx, 1);
 			delete this._by_idty[o.idty];
@@ -283,6 +287,7 @@ dojo.declare("dojox.grid.DataGrid", dojox.grid._Grid, {
 			this._isLoaded = true;
 			this.showMessage(this.errorMessage);
 		}
+		this._pending_requests[req.start] = false;
 		this.onFetchError(err, req);
 	},
 
