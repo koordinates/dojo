@@ -69,29 +69,6 @@ dojo.declare("dijit._Container",
 			node.parentNode.removeChild(node);	// detach but don't destroy
 		},
 
-		_nextElement: function(node){
-			// summary:
-			//      Find the next (non-text, non-comment etc) node
-			// tags:
-			//      private
-			do{
-				node = node.nextSibling;
-			}while(node && node.nodeType != 1);
-			return node;
-		},
-
-		_firstElement: function(node){
-			// summary:
-			//      Find the first (non-text, non-comment etc) node
-			// tags:
-			//      private
-			node = node.firstChild;
-			if(node && node.nodeType != 1){
-				node = this._nextElement(node);
-			}
-			return node;
-		},
-
 		getChildren: function(){
 			// summary:
 			//		Returns array of children widgets.
@@ -103,7 +80,8 @@ dojo.declare("dijit._Container",
 		hasChildren: function(){
 			// summary:
 			//		Returns true if widget has children, i.e. if this.containerNode contains something.
-			return !!this._firstElement(this.containerNode); // Boolean
+			for(var node = this.containerNode.firstChild; node && node.nodeType != 1; node = node.nextSibling);
+			return !!node;	// Boolean
 		},
 
 		destroyDescendants: function(/*Boolean*/ preserveDom){
@@ -121,25 +99,20 @@ dojo.declare("dijit._Container",
 			//		if -1, get the previous sibling
 			// tags:
 			//      private
-			var node = child.domNode;
-			var which = (dir>0 ? "nextSibling" : "previousSibling");
+			var node = child.domNode,
+				which = (dir>0 ? "nextSibling" : "previousSibling");
 			do{
 				node = node[which];
 			}while(node && (node.nodeType != 1 || !dijit.byNode(node)));
-			return node ? dijit.byNode(node) : null;
+			return node && dijit.byNode(node);	// Widget
 		},
 		
 		getIndexOfChild: function(/*Widget*/ child){
 			// summary:
 			//		Gets the index of the child in this container or -1 if not found
-			var children = this.getChildren();
-			for(var i=0, c; c=children[i]; i++){
-				if(c == child){ 
-					return i; // int
-				}
-			}
-			return -1; // int
+			return dojo.indexOf(this.getChildren(), child);	// int
 		},
+
 		startup: function(){
 			// summary:
 			//		Called after all the widgets have been instantiated and their
@@ -156,6 +129,7 @@ dojo.declare("dijit._Container",
 
 			// Startup all children of this widget
 			dojo.forEach(this.getChildren(), function(child){ child.startup(); });
+
 			this.inherited(arguments);
 		}
 	}
