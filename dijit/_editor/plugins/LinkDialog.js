@@ -29,8 +29,9 @@ dojo.declare("dijit._editor.plugins.LinkDialog",dijit._editor._Plugin,{
 	useDefaultCommand: false,
 
 	// urlRegExp: [protected] String
-	//		Used for validating input as correct URL
-	urlRegExp: "((https?|ftps?)\\://|\./|/|)(((?:(?:[\\da-zA-Z](?:[-\\da-zA-Z]{0,61}[\\da-zA-Z])?)\\.)*(?:[a-zA-Z](?:[-\\da-zA-Z]{0,80}[\\da-zA-Z])?)\\.?)|(((\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])|(0[xX]0*[\\da-fA-F]?[\\da-fA-F]\\.){3}0[xX]0*[\\da-fA-F]?[\\da-fA-F]|(0+[0-3][0-7][0-7]\\.){3}0+[0-3][0-7][0-7]|(0|[1-9]\\d{0,8}|[1-3]\\d{9}|4[01]\\d{8}|42[0-8]\\d{7}|429[0-3]\\d{6}|4294[0-8]\\d{5}|42949[0-5]\\d{4}|429496[0-6]\\d{3}|4294967[01]\\d{2}|42949672[0-8]\\d|429496729[0-5])|0[xX]0*[\\da-fA-F]{1,8}|([\\da-fA-F]{1,4}\\:){7}[\\da-fA-F]{1,4}|([\\da-fA-F]{1,4}\\:){6}((\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])))(\\:\\d+)?(/(?:[^?#\\s/]+/)*(?:[^?#\\s/]+(?:\\?[^?#\\s/]*)?(?:#[A-Za-z][\\w.:-]*)?)?)?",
+	//		Used for validating input as correct URL.  While file:// urls are not terribly 
+	//		useful, they are technically valid.
+	urlRegExp: "((https?|ftps?|file)\\://|\./|/|)(/[a-zA-Z]{1,1}:/|)(((?:(?:[\\da-zA-Z](?:[-\\da-zA-Z]{0,61}[\\da-zA-Z])?)\\.)*(?:[a-zA-Z](?:[-\\da-zA-Z]{0,80}[\\da-zA-Z])?)\\.?)|(((\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])|(0[xX]0*[\\da-fA-F]?[\\da-fA-F]\\.){3}0[xX]0*[\\da-fA-F]?[\\da-fA-F]|(0+[0-3][0-7][0-7]\\.){3}0+[0-3][0-7][0-7]|(0|[1-9]\\d{0,8}|[1-3]\\d{9}|4[01]\\d{8}|42[0-8]\\d{7}|429[0-3]\\d{6}|4294[0-8]\\d{5}|42949[0-5]\\d{4}|429496[0-6]\\d{3}|4294967[01]\\d{2}|42949672[0-8]\\d|429496729[0-5])|0[xX]0*[\\da-fA-F]{1,8}|([\\da-fA-F]{1,4}\\:){7}[\\da-fA-F]{1,4}|([\\da-fA-F]{1,4}\\:){6}((\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])))(\\:\\d+)?(/(?:[^?#\\s/]+/)*(?:[^?#\\s/]+(?:\\?[^?#\\s/]*)?(?:#[A-Za-z][\\w.:-]*)?)?)?",
 
 	// htmlTemplate: [protected] String
 	//		String used for templating the HTML to insert at the desired point.
@@ -58,7 +59,7 @@ dojo.declare("dijit._editor.plugins.LinkDialog",dijit._editor._Plugin,{
 		"<label for='${id}_textInput'>${text}</label>",
 		"</td><td>",
 		"<input dojoType='dijit.form.ValidationTextBox' required='true' id='${id}_textInput' " +
-		"name='textInput'>",
+		"name='textInput' intermediateChanges='true'>",
 		"</td></tr><tr><td>",
 		"<label for='${id}_targetSelect'>${target}</label>",
 		"</td><td>",
@@ -98,23 +99,31 @@ dojo.declare("dijit._editor.plugins.LinkDialog",dijit._editor._Plugin,{
 			dojo.string.substitute(this.linkDialogTemplate, messages));
 		dropDown.startup();
 		this._urlInput = dijit.byId(this._uniqueId + "_urlInput");
+		this._textInput = dijit.byId(this._uniqueId + "_textInput");
+		this._setButton = dijit.byId(this._uniqueId + "_setButton");
 		this.connect(dijit.byId(this._uniqueId + "_cancelButton"), "onClick", function(){
 			this.dropDown.onCancel();
 		});
 		if(this._urlInput){
-			this.connect(this._urlInput, "onChange", "_checkAndFixUrl");
+			this.connect(this._urlInput, "onChange", "_checkAndFixInput");
+		}
+		if(this._textInput){
+			this.connect(this._textInput, "onChange", "_checkAndFixInput");
 		}
 		this.inherited(arguments);
 	},
 
-	_checkAndFixUrl: function(url){
+	_checkAndFixInput: function(){
 		// summary:
-	   	//		A function to listen for onChange events and test the url input content
-		//		for http/https/ftp and if not present, try and guess if the input url is
-		//		relative or not, and if not, append http:// to it.
+	   	//		A function to listen for onChange events and test the input contents 
+		//		for valid information, such as valid urls with http/https/ftp and if 
+		//		not present, try and guess if the input url is relative or not, and if 
+		//		not, append http:// to it.  Also validates other fields as determined by
+		//		the internal _isValid function.
 		var self = this;
-		var appendHttp = false;
+		var url = this._urlInput.attr("value");
 		var fixupUrl = function(url){
+			var appendHttp = false;
 			if(url && url.length > 7){
 				url = dojo.trim(url);
 				if(url.indexOf("/") > 0){
@@ -132,6 +141,11 @@ dojo.declare("dijit._editor.plugins.LinkDialog",dijit._editor._Plugin,{
 			if(appendHttp){
 				self._urlInput.attr("value", "http://" + url);
 			}
+			if(!self._isValid()){
+				self._setButton.attr("disabled", true);
+			}else{
+				self._setButton.attr("disabled", false);
+			}
 		};
 		if(this._delayedCheck){
 			clearTimeout(this._delayedCheck);
@@ -140,6 +154,15 @@ dojo.declare("dijit._editor.plugins.LinkDialog",dijit._editor._Plugin,{
 		this._delayedCheck = setTimeout(function(){
 			fixupUrl(url);
 		}, 250);
+	},
+
+	_isValid: function(){
+		// summary:
+		//		Internal function to allow validating of the inputs 
+		//		for a link to determine if set should be disabled or not
+		// tags:
+		//		protected
+		return this._urlInput.isValid() && this._textInput.isValid();
 	},
 
 	_setContent: function(staticPanel){
@@ -242,6 +265,7 @@ dojo.declare("dijit._editor.plugins.LinkDialog",dijit._editor._Plugin,{
 				"getAncestorElement", dijit._editor.selection, [this.tag]);
 		}
 		this.dropDown.reset();
+		this._setButton.attr("disabled", true);
 		this.dropDown.attr("value", this._getCurrentValues(a));
 	}
 });
@@ -266,8 +290,8 @@ dojo.declare("dijit._editor.plugins.ImgLinkDialog", [dijit._editor.plugins.LinkD
 		"</td></tr><tr><td>",
 		"<label for='${id}_textInput'>${text}</label>",
 		"</td><td>",
-		"<input dojoType='dijit.form.ValidationTextBox' required='true' id='${id}_textInput' " +
-		"name='textInput'>",
+		"<input dojoType='dijit.form.ValidationTextBox' required='false' id='${id}_textInput' " +
+		"name='textInput' intermediateChanges='true'>",
 		"</td></tr><tr><td>",
 		"</td><td>",
 		"</td></tr><tr><td colspan='2'>",
@@ -301,6 +325,14 @@ dojo.declare("dijit._editor.plugins.ImgLinkDialog", [dijit._editor.plugins.LinkD
 			text = dojo.withGlobal(this.editor.window, dijit._editor.selection.getSelectedText);
 		}
 		return {urlInput: url || '', textInput: text || ''}; //Object;
+	},
+
+	_isValid: function(){
+		// summary:
+		//		Over-ride for images.  You can have alt text of blank, it is valid.
+		// tags:
+		//		protected
+		return this._urlInput.isValid();
 	}
 });
 
