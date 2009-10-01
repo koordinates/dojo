@@ -380,8 +380,7 @@ dojo.require("dojo._base.array");
 			// 		that generated the current dojo.NodeList.
 			// description:
 			// 		Returns the `dojo.NodeList` that generated the current `dojo.NodeList`. If there
-			// 		is no parent dojo.NodeList, then an error is returned to indicate a bad chaining
-			// 		call.
+			// 		is no parent dojo.NodeList, an empty dojo.NodeList is returned.
 			// example:
 			//	|	dojo.query("a")
 			//	|		.filter(".disabled")
@@ -914,7 +913,6 @@ dojo.require("dojo._base.array");
 			//	|	var buttons = dojo.query("button").instantiate("dijit.form.Button", {showLabel: true});
 			var c = d.isFunction(declaredClass) ? declaredClass : d.getObject(declaredClass);
 			properties = properties || {};
-			var self = this;
 			return this.forEach(function(node){
 				new c(properties, node);
 			});	// dojo.NodeList
