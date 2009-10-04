@@ -1,8 +1,9 @@
 dojo.provide("dojox.widget.RollingList");
 dojo.experimental("dojox.widget.RollingList");
 
-dojo.require("dijit._Templated");
 dojo.require("dijit.layout.ContentPane");
+dojo.require("dijit._Templated");
+dojo.require("dijit._Contained");
 dojo.require("dijit.layout._LayoutWidget");
 dojo.require("dijit.Menu");
 dojo.require("dojox.html.metrics");
@@ -684,7 +685,7 @@ dojo.declare("dojox.widget.RollingList",
 		}
 	},
 	
-	addChild: function(/*Widget*/ widget, /*int?*/ insertIndex){
+	addChild: function(/*dijit._Widget*/ widget, /*int?*/ insertIndex){
 		// summary: adds a child to this rolling list - if passed an insertIndex,
 		//  then all children from that index on will be removed and destroyed
 		//  before adding the child.
@@ -736,7 +737,7 @@ dojo.declare("dojox.widget.RollingList",
 		});
 	},
 	
-	scrollIntoView: function(/* Widget */ childWidget){
+	scrollIntoView: function(/*dijit._Widget*/ childWidget){
 		// summary: scrolls the given widget into view
 		if(this._scrollingTimeout){ 
 			window.clearTimeout(this._scrollingTimeout);
