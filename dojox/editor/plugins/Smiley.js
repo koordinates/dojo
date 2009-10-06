@@ -9,14 +9,14 @@ dojo.require("dojox.editor.plugins._SmileyPalette");
 
 dojo.requireLocalization("dojox.editor.plugins", "Smiley");
 
-dojo.declare("dojox.editor.plugins.Smiley", dijit._editor._Plugin,{
+dojo.declare("dojox.editor.plugins.Smiley", dijit._editor._Plugin, {
 	// summary:
 	//		This plugin allows the user to select from emoticons or "smileys" 
 	//		to insert at the current cursor position.
 	//
 	// description:
 	//		The commands provided by this plugin are:
-	//		* insertEntity - inserts the selected HTML entity character
+	//		* smiley - inserts the selected emoticon
 
 	// iconClassPrefix: [const] String
 	//		The CSS class name for the button node is formed from `iconClassPrefix` and `command`
@@ -26,10 +26,10 @@ dojo.declare("dojox.editor.plugins.Smiley", dijit._editor._Plugin,{
 		// summary:
 		//		Over-ride for creation of the save button.
 		this.dropDown = new dojox.editor.plugins._SmileyPalette();
-		this.connect(this.dropDown, "onChange", function(entity){
+		this.connect(this.dropDown, "onChange", function(emoticon){
 			this.button.closeDropDown();
 			this.editor.focus();
-			this.editor.execCommand("inserthtml",entity); //TODO: add markup
+			this.editor.execCommand("inserthtml", emoticon);
 		});
 		var strings = dojo.i18n.getLocalization("dojox.editor.plugins", "Smiley");
 		this.button = new dijit.form.DropDownButton({
