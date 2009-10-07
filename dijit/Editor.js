@@ -173,7 +173,7 @@ dojo.declare(
 			}
 			/*
 			else{
-			 	// do nothing, the editor is already laid out correctly.   The user has probably specified
+				// do nothing, the editor is already laid out correctly.   The user has probably specified
 				// the height parameter, which was used to set a size on the iframe
 			}
 			*/
@@ -272,8 +272,9 @@ dojo.declare(
 					this.endEditing();
 					this._beginEditing();
 				}
+				var r;
 				try{
-					var r = this.inherited('execCommand', arguments);
+					r = this.inherited('execCommand', arguments);
 					if(dojo.isWebKit && cmd=='paste' && !r){ //see #4598: safari does not support invoking paste from js
 						throw { code: 1011 }; // throw an object like Mozilla's error
 					}
@@ -312,11 +313,13 @@ dojo.declare(
 			//		Selects the text specified in bookmark b
 			// tags:
 			//		private
-			var bookmark=b;
+			var bookmark = b.mark;
+			var mark = b.mark;
+			var col = b.isCollapsed;
 			if(dojo.isIE){
-				if(dojo.isArray(b)){//IE CONTROL
-					bookmark=[];
-					dojo.forEach(b,function(n){
+				if(dojo.isArray(mark)){//IE CONTROL
+					bookmark = [];
+					dojo.forEach(mark,function(n){
 						bookmark.push(dijit.range.getNode(n,this.editNode));
 					},this);
 				}
@@ -326,8 +329,9 @@ dojo.declare(
 				r.setEnd(dijit.range.getNode(b.endContainer,this.editNode),b.endOffset);
 				bookmark=r;
 			}
-			dojo.withGlobal(this.window,'moveToBookmark',dijit,[bookmark]);
+			dojo.withGlobal(this.window,'moveToBookmark',dijit,[{mark: bookmark, isCollapsed: col}]);
 		},
+
 		_changeToStep: function(from, to){
 			// summary:
 			//		Reverts editor to "to" setting, from the undo stack.
@@ -394,19 +398,22 @@ dojo.declare(
 			//		protected
 			var b=dojo.withGlobal(this.window,dijit.getBookmark);
 			var tmp=[];
-			if(dojo.isIE){
-				if(dojo.isArray(b)){//CONTROL
-					dojo.forEach(b,function(n){
-						tmp.push(dijit.range.getIndex(n,this.editNode).o);
-					},this);
-					b=tmp;
+			if(b.mark){
+				var mark = b.mark;
+				if(dojo.isIE){
+					if(dojo.isArray(mark)){//CONTROL
+						dojo.forEach(mark,function(n){
+							tmp.push(dijit.range.getIndex(n,this.editNode).o);
+						},this);
+						b.mark = tmp;
+					}
+				}else{//w3c range
+					tmp=dijit.range.getIndex(mark.startContainer,this.editNode).o;
+					b.mark ={startContainer:tmp,
+						startOffset:mark.startOffset,
+						endContainer:mark.endContainer===mark.startContainer?tmp:dijit.range.getIndex(mark.endContainer,this.editNode).o,
+						endOffset:mark.endOffset};
 				}
-			}else{//w3c range
-				tmp=dijit.range.getIndex(b.startContainer,this.editNode).o;
-				b={startContainer:tmp,
-					startOffset:b.startOffset,
-					endContainer:b.endContainer===b.startContainer?tmp:dijit.range.getIndex(b.endContainer,this.editNode).o,
-					endOffset:b.endOffset};
 			}
 			return b;
 		},
@@ -532,12 +539,11 @@ dojo.declare(
 			//		see _saveSelection().
 			// tags:
 			//		private
-			if(this._savedSelection){
-				//only restore the selection if the current range is collapsed
-    				//if not collapsed, then it means the editor does not lose 
-    				//selection and there is no need to restore it
-    				if(dojo.withGlobal(this.window,'isCollapsed',dijit)){
-    					//console.log('_restoreSelection true')
+			if(this._savedSelection){ 
+				// only restore the selection if the current range is collapsed
+				// if not collapsed, then it means the editor does not lose 
+				// selection and there is no need to restore it
+				if(dojo.withGlobal(this.window,'isCollapsed',dijit)){
 					this._moveToBookmark(this._savedSelection);
 				}
 				delete this._savedSelection;
