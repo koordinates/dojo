@@ -482,7 +482,10 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 		}else if(lineHeight.indexOf("em")>=0){
 			lineHeight = parseFloat(lineHeight);
 		}else{
-			lineHeight = "1.0";
+			// If we can't get a non-units value, just default
+			// it to the CSS spec default of 'normal'.  Seems to
+			// work better, esp on IE, than '1.0'
+			lineHeight = "normal";
 		}
 		var userStyle = "";
 		this.style.replace(/(^|;)(line-|font-?)[^;]+/g, function(match){ userStyle += match.replace(/^;/g,"") + ';'; });
@@ -696,13 +699,21 @@ dojo.declare("dijit._editor.RichText", dijit._Widget, {
 			this._webkitListener = this.connect(this.document, "onmouseup", "onDisplayChanged");
 		}
 
+		if(dojo.isIE){
+			// Try to make sure 'hidden' elements aren't visible in edit mode (like browsers other than IE
+			// do).  See #9103
+			try{
+				this.document.execCommand('RespectVisibilityInDesign', true, null);
+			}catch(e){/* squelch */}
+		}
+
 		this.isLoaded = true;
 
 		this.attr('disabled', this.disabled); // initialize content to editable (or not)
 
 		// Note that setValue() call will only work after isLoaded is set to true (above)
 		this.setValue(html);
-
+        
 		if(this.onLoadDeferred){
 			this.onLoadDeferred.callback(true);
 		}
