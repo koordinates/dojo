@@ -361,6 +361,9 @@ checkstyleUtil.makeSimpleFixes = function(contents){
 				.split("\tfor (").join("\tfor(")
 				.split("\tswitch (").join("\tswitch(");
 	
+	contents = checkstyleUtil.fixTrailingWhitespace(contents);
+	comments = checkstyleUtil.getComments(contents);
+	contents = checkstyleUtil.fixSpaceBeforeAndAfter(contents, "===", comments);
 	comments = checkstyleUtil.getComments(contents);
 	contents = checkstyleUtil.fixSpaceBeforeAndAfter(contents, "==", comments);
 	comments = checkstyleUtil.getComments(contents);
@@ -375,6 +378,29 @@ checkstyleUtil.insertChar = function(contents, ch, pos){
 }
 checkstyleUtil.deleteChar = function(contents, pos){
 	return contents.substring(0, pos) + contents.substring(pos + 1);
+}
+
+checkstyleUtil.fixTrailingWhitespace = function(contents) {
+	var idx = contents.indexOf("\n");
+	
+	while(idx > -1){
+		var search = idx - 1;
+		
+		while(search > -1 && (contents.charAt(search) == " " || contents.charAt(search) == "\t")){
+			search--;
+		}
+		
+		if(search < idx -1){
+			contents = contents.substring(0, search + 1)
+					+ contents.substring(idx, contents.length);
+			
+			idx = contents.indexOf("\n", search + 2);
+		}else{
+			idx = contents.indexOf("\n", idx + 1);
+		}
+	}
+
+	return contents;
 }
 
 checkstyleUtil.fixSpaceAfter = function(contents, token, comments){
@@ -393,18 +419,28 @@ checkstyleUtil.fixSpaceAfter = function(contents, token, comments){
 checkstyleUtil.fixSpaceBeforeAndAfter = function(contents, token, comments){
 	var idx = contents.indexOf(token);
 	var before, after;
+	var len = token.length;
 
 	while(idx > -1){
 		before = contents.charAt(idx - 1);
-		after = contents.charAt(idx + 2);
+		after = contents.charAt(idx + len);
 		if(!comments[idx]){
-			if(before != " " && before != "\t" && (token != "==" || before != "!")){
+			// Only insert a space before the token if:
+			// - char before is not a space or a tab
+			// - token is "==" and the char before is neither "!" or "="
+		
+			if(before != " " && before != "\t" && (token != "==" || (before != "!" && before != "="))){
 				contents = checkstyleUtil.insertChar(contents, " ", idx);
 				idx ++;
 			}
-			if((after != " " && contents.charCodeAt(idx + 2) != 13 
-					&& contents.charCodeAt(idx + 2) != 10)
-				&& 	(token != " == " || after != "=")){
+			
+			// Only insert a space after the token if:
+			// - char after is not a space
+			// - char after is not a new line
+			// - char after is not "="
+			if((after != " " && contents.charCodeAt(idx + len) != 13 
+					&& contents.charCodeAt(idx + len) != 10)
+					&& (token != "==" || after != "=")){
 				contents = contents = checkstyleUtil.insertChar(contents, " ", idx + token.length);
 				idx++;
 			}
