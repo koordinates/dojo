@@ -82,16 +82,16 @@
 </head>
 <body class="tundra">
 	<h1 class="title">Test dojox.grid.EnhancedGrid Phase 1 Features</h1>
-	<p>
+	<div>
 		<li><b>EnhancedGrid phase 1 provides the following features:</b></li>
 		<li>1. Nested Sorting</li>
 		<li>2. Built-in support for Indirect Selection (radio buttons and check boxes)</li>
 		<li>3. Declarative context menu</li>
 		<li>4. Selecting rows/columns via swipe</li>
 		<li>5. Drag-n-drop: columns,rows - MOVE</li>
-	</p>
+	</duv>
 	
-	<p>
+	<div>
 		<li><b>Keyboard support:</b></li>
 		<li>1. Use <b>TAB or SHIFT + TAB</b> to navigate keyboard focus among column headers, row headers and cell regions</li><br/>
 		<li>2. When focus is on column header:</li>
@@ -104,16 +104,16 @@
 			<li> - Use <b>SPACE</b> to choose a row</li>
 			<li> - Use <b>SHIFT + UP/DOWN</b> to select multiple rows</li>
 			<li> - Use <b>CTRL + UP/DOWN</b> to move rows</li>
-	</p>
+	</div>
 	
-	<p>	
+	<div>	
 		<li><b>Some known issues (plan to fix in phase 2):</b></li>
 		<li>EnhancedGrid doesn't support complicated layout(e.g. multiple rows in column header), TreeGrid(SubGrid).</li>
-	</p>
+	</div>
 	<!--span dojoType="dojox.data.CsvStore" 
 		jsId="csvStore1" url="support/music-for-demo.part.csv">
 	</span-->
-	<p>
+	<div>
 		<li>Multiple selection mode:</li>
 		<div id="grid1" dojoType="dojox.grid.EnhancedGrid" query="{ Track: '*' }" rowsPerPage="30" 
 			plugins='{nestedSorting: true, dnd: true, indirectSelection: true, menus:{headerMenu:"headerMenu", rowMenu:"rowMenu", cellMenu:"cellMenu", selectedRegionMenu:"selectedRegionMenu"}}'
@@ -147,18 +147,18 @@
 		<input type='button' value='Select All' onclick='dijit.byId("grid1").rowSelectCell.toggleAllSelection(true)'/>
 		&nbsp;&nbsp;
 		<input type='button' value='Deselect All' onclick='dijit.byId("grid1").rowSelectCell.toggleAllSelection(false)'/>
-	</p>
+	</div>
 	
 	<!-- Un-comment this block to see more usages
 	<div id="gridDiv"></div>
 	
-	<p>
+	<div>
 		<li>Single selection mode:</li>
 		<div id="grid2" dojoType="dojox.grid.EnhancedGrid" query="{ Track: '*' }" rowsPerPage="30" selectionMode="single"
 			plugins='{nestedSorting: true, dnd: true, indirectSelection: {name: "Selection", width:"60px", styles:"text-align: center;"}, menus:{headerMenu:"headerMenu", rowMenu:"rowMenu", cellMenu:"cellMenu", selectedRegionMenu:"selectedRegionMenu"}}'
 			store="csvStore1" structure="layout" rowSelector="20px"  
 		</div>
-	</p>
+	</div>
 	-->
 
 </body>

@@ -330,6 +330,13 @@ dojo.declare("dojox.grid._TreeView", [dojox.grid._View], {
 		if(index == -1){
 			return;
 		}
+		dojo.forEach(this.grid.layout.cells, function(cell){
+			if(typeof cell['openStates'] != 'undefined'){
+				if(identity in cell.openStates){
+					delete cell.openStates[identity];
+				}
+			}
+		});
 		if(typeof index == "string" && index.indexOf('/') > -1){
 			var path = new dojox.grid.TreePath(index, this.grid);
 			var ppath = path.parent();
