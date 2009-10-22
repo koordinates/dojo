@@ -57,15 +57,15 @@ dojox.io.windowName = {
 		args.url += (args.url.match(/\?/) ? '&' : '?') + "windowname=" + (args.authElement ? "auth" : true); // indicate our desire for window.name communication
 		var dfd, authElement = args.authElement;
 		var cleanup = function(result){
-			//try{
-				// we have to do this to stop the wait cursor in FF 
+			if (dfd.ioArgs.frame.contentWindow) {
+				// We have to do this to stop the wait cursor in FF
 				var innerDoc = dfd.ioArgs.frame.contentWindow.document;
 				if (innerDoc && dojo.isHostMethod(innerDoc, 'write')) {
 					innerDoc.open();
 					innerDoc.write(" ");
 					innerDoc.close();
 				}
-			//}catch(e2){}
+			}
 			(authElement || dojo.body()).removeChild(dfd.ioArgs.outerFrame); // clean up
 			return result;
 		};
@@ -104,34 +104,6 @@ dojox.io.windowName = {
 			frame.style.height="100%";
 			frame.style.border="0";
 		}
-		//if(dojo.isMoz && ![].reduce){
-			// FF2 allows unsafe sibling frame modification,
-			// the fix for this is to create nested frames with getters and setters to protect access
-
-			// NOTE: How so?
-
-			var outerFrame = doc.createElement("iframe");
-			styleFrame(outerFrame);
-			if(!authTarget){
-				outerFrame.style.display='none';
-			}
-			frameContainer.appendChild(outerFrame);
-			
-			var firstWindow = outerFrame.contentWindow;
-			doc = firstWindow.document;
-			doc.open();
-			doc.write("<html><body margin='0px'><iframe style='width:100%;height:100%;border:0px' name='protectedFrame'></iframe></body></html>");
-			doc.close();
-			var secondWindow = firstWindow[0]; 
-			firstWindow.__defineGetter__(0,function(){});
-			firstWindow.__defineGetter__("protectedFrame",function(){});
-			doc = secondWindow.document;
-			doc.open();
-			doc.write("<html><body margin='0px'></body></html>");
-			doc.close();
-			frameContainer = doc.body;
-		//}
-
 		// NOTE: IFRAME onload hack needs review
 		//       The name property should work if set after the append
 
@@ -185,7 +157,7 @@ dojox.io.windowName = {
 			}
 			
 		};
-		frame.name = frameName;
+		frame.name = frameName.toString();
 		if(method.match(/GET/i)){
 			// if it is a GET we can just the iframe our src url
 			dojo._ioAddQueryToUrl(ioArgs);
@@ -216,7 +188,7 @@ dojox.io.windowName = {
 			}
 			form.method = 'POST';
 			form.action = ioArgs.url;
-			form.target = frameName;// connect the form to the iframe
+			form.target = frameName.toString();// connect the form to the iframe
 			
 			form.submit();
 			form.parentNode.removeChild(form);
@@ -224,11 +196,11 @@ dojox.io.windowName = {
 			throw new Error("Method " + method + " not supported with the windowName transport");
 		}
 
-		frame.name = frameName; // NOTE: IE should like this just as well after the append
+		//frame.name = frameName.toString(); // NOTE: IE should like this just as well after the append
 
-		//if(frame.contentWindow){
-		//	frame.contentWindow.name = frameName; // IE likes it afterwards
-		//}
+		if(frame.contentWindow){
+			frame.contentWindow.name = frameName; // IE likes it afterwards
+		}
 	},
 	_frameNum: 0	
 };
