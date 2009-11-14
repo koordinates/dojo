@@ -4,8 +4,8 @@ dojo.require("dojo._base.lang");
 dojo.require("dojo._base.array");
 
 (function(){
-	var d = dojo, op = Object.prototype, mix = d._mixin, opts = op.toString,
-		xtor = new Function, counter = 0;
+	var d = dojo, mix = d._mixin, op = Object.prototype, opts = op.toString,
+		xtor = new Function, counter = 0, cname = "constructor";
 
 	function err(msg){ throw new Error("declare: " + msg); }
 
@@ -82,184 +82,11 @@ dojo.require("dojo._base.array");
 
 		return result;
 	}
-	
-	// find the next "inherited" method using available meta-information
-	function findNext(meta, cache, caller, name){
-		var bases = meta.bases, chains = meta.chains, opf = op[name], f, pos, base, proto;
-
-		if(!name){
-			err("can't deduce a name to call inherited()");
-		}
-
-		// error detection
-		if(chains && typeof chains[name] == "string"){
-			err("calling chained method with inherited: " + name);
-		}
-
-		// do we have a cache bust?
-		if(cache.c !== caller){
-			// find caller
-			cache.n = name;
-			for(pos = 0; base = bases[pos]; ++pos){	// intentional assignment
-				meta = base._meta;
-				proto = base.prototype;
-				if(meta){
-					if(proto.hasOwnProperty(name)){
-						f = proto[name];
-						if(f === caller){
-							break;
-						}
-					}
-					f = meta.hidden[name];
-					if(f === caller){
-						break;
-					}
-				}
-			}
-			pos = base ? pos : -1;
-		}else{
-			pos = cache.p;
-		}
-
-		// find next
-		while(base = bases[++pos]){	// intentional assignment
-			proto = base.prototype;
-			if(base._meta){
-				if(proto.hasOwnProperty(name)){
-					f = proto[name];
-					break;
-				}
-			}else{
-				f = proto[name];
-				if(f && f !== opf){
-					break;
-				}
-			}
-		}
-		cache.c = f = base && f;
-		cache.p = pos;
-
-		// return found method, or the underlying Object method
-		return f || name != "constructor" && opf;
-	}
-
-	// find the next "inherited" constructor using available meta-information
-	function findNextCtor(meta, cache, caller){
-		var bases = meta.bases, chains = meta.chains, f, pos, opf, base;
-
-		// error detection
-		if(!chains || chains.constructor != "manual"){
-			err("calling chained constructor with inherited");
-		}
-
-		// do we have a cache bust?
-		if(cache.c !== caller){
-			// find caller
-			cache.n = "";
-			for(pos = 0; base = bases[pos]; ++pos){	// intentional assignment
-				meta = base._meta;
-				if(meta && meta.ctor === caller){
-					break;
-				}
-			}
-		}else{
-			pos = cache.p;
-		}
-
-		// find next
-		while(base = bases[++pos]){	// intentional assignment
-			meta = base._meta;
-			if(meta){
-				f = meta.ctor;
-				if(f){
-					break;
-				}
-			}else{
-				f = base;
-				break;
-			}
-		}
-		cache.c = f = base && f;
-		cache.p = pos;
-
-		// return found method, or the underlying Object method
-		return f;
-	}
-
-	// implementation of getInherited()
-	function getInherited(args, a){
-		var name, caller, cache = this._inherited = this._inherited || {},
-			m, meta, base, f = 0;
-		// crack arguments
-		if(typeof args == "string"){
-			name = args;
-			args = a;
-		}
-		caller = args.callee;
-		name = name || caller.nom;
-		m = meta = this.constructor._meta;
-		if(name != "constructor"){
-			// break box
-			do{
-				if(cache.c !== caller){
-					base = meta.bases[0];
-					meta = base._meta;
-					if(meta && meta.hidden[name] !== caller){
-						break;	// use the default
-					}
-					cache.n = name;
-					cache.c = caller;
-					cache.p = 0;
-				}
-				base = meta.bases[++cache.p];
-				if(base){
-					meta = base.prototype; // meta is used as proto
-					if(!base._meta || meta.hasOwnProperty(name)){
-						f = meta[name];
-					}
-				}
-				if(f){
-					cache.c = f;
-					break;	// got it
-				}
-				--cache.p;
-			}while(0);
-			if(!f){
-				f = findNext(m, cache, caller, name);
-			}
-		}else{
-			// pseudo cycle with default exit clause
-			do{
-				if(cache.c !== caller){
-					base = meta.bases[0];
-					meta = base._meta;
-					if(meta && meta.ctor !== caller){
-						break;	// use the default
-					}
-					cache.n = "";
-					cache.c = caller;
-					cache.p = 0;
-				}
-				base = meta.bases[++cache.p];
-				meta = base && base._meta;
-				f = meta && meta.ctor;
-				if(f){
-					cache.c = f;
-					break;	// got it
-				}
-				--cache.p;
-			}while(0);
-			if(!f){
-				f = findNextCtor(m, cache, caller, name);
-			}
-		}
-		// do not call the inherited at the end of the chain
-		return f ? f.apply(this, a || args) : undefined;
-	}
 
 	function inherited(args, a, f){
-		var name, caller, cache = this._inherited = this._inherited || {},
-			m, meta, base;
+		var name, chains, bases, caller, meta, base, proto, opf, pos,
+			cache = this._inherited = this._inherited || {};
+
 		// crack arguments
 		if(typeof args == "string"){
 			name = args;
@@ -267,66 +94,108 @@ dojo.require("dojo._base.array");
 			a = f;
 		}
 		f = 0;
+
 		caller = args.callee;
 		name = name || caller.nom;
-		m = meta = this.constructor._meta;
-		if(name != "constructor"){
-			// break box
-			do{
-				if(cache.c !== caller){
-					base = meta.bases[0];
-					meta = base._meta;
-					if(meta && meta.hidden[name] !== caller){
-						break;	// use the default
-					}
-					cache.n = name;
-					cache.c = caller;
-					cache.p = 0;
-				}
-				base = meta.bases[++cache.p];
-				if(base){
-					meta = base.prototype; // meta is used as proto
-					if(!base._meta || meta.hasOwnProperty(name)){
-						f = meta[name];
-					}
-				}
-				if(f){
-					cache.c = f;
-					break;	// got it
-				}
-				--cache.p;
-			}while(0);
-			if(!f){
-				f = findNext(m, cache, caller, name);
-			}
-		}else{
-			// pseudo cycle with default exit clause
-			do{
-				if(cache.c !== caller){
-					base = meta.bases[0];
-					meta = base._meta;
-					if(meta && meta.ctor !== caller){
-						break;	// use the default
-					}
-					cache.n = "";
-					cache.c = caller;
-					cache.p = 0;
-				}
-				base = meta.bases[++cache.p];
-				meta = base && base._meta;
-				f = meta && meta.ctor;
-				if(f){
-					cache.c = f;
-					break;	// got it
-				}
-				--cache.p;
-			}while(0);
-			if(!f){
-				f = findNextCtor(m, cache, caller, name);
-			}
+		if(!name){
+			err("can't deduce a name to call inherited()");
 		}
-		// do not call the inherited at the end of the chain
-		return f ? f.apply(this, a || args) : undefined;
+
+		meta = this.constructor._meta;
+		bases = meta.bases;
+
+		pos = cache.p;
+		if(name != cname){
+			// method
+			if(cache.c !== caller){
+				// cache bust
+				pos = 0;
+				base = bases[0];
+				meta = base._meta;
+				if(meta.hidden[name] !== caller){
+					// error detection
+					chains = meta.chains;
+					if(chains && typeof chains[name] == "string"){
+						err("calling chained method with inherited: " + name);
+					}
+					// find caller
+					do{
+						meta = base._meta;
+						proto = base.prototype;
+						if(meta && (proto[name] === caller && proto.hasOwnProperty(name) || meta.hidden[name] === caller)){
+							break;
+						}
+					}while(base = bases[++pos]); // intentional assignment
+					pos = base ? pos : -1;
+				}
+			}
+			// find next
+			base = bases[++pos];
+			if(base){
+				proto = base.prototype;
+				if(!base._meta || proto.hasOwnProperty(name)){
+					f = proto[name];
+				}else{
+					opf = op[name];
+					do{
+						proto = base.prototype;
+						f = proto[name];
+						if(f && (base._meta && proto.hasOwnProperty(name) || f !==opf)){
+							break;
+						}
+					}while(base = bases[++pos]); // intentional assignment
+				}
+			}
+			f = base && f || op[name];
+		}else{
+			// constructor
+			if(cache.c !== caller){
+				// cache bust
+				pos = 0;
+				meta = bases[0]._meta;
+				if(meta && meta.ctor !== caller){
+					// error detection
+					chains = meta.chains;
+					if(!chains || chains.constructor !== "manual"){
+						err("calling chained constructor with inherited");
+					}
+					// find caller
+					while(base = bases[++pos]){ // intentional assignment
+						meta = base._meta;
+						if(meta && meta.ctor === caller){
+							break;
+						}
+					};
+					pos = base ? pos : -1;
+				}
+			}
+			// find next
+			while(base = bases[++pos]){	// intentional assignment
+				meta = base._meta;
+				f = meta ? meta.ctor : base;
+				if(f){
+					break;
+				}
+			}
+			f = base && f;
+		}
+
+		// cache the found super method
+		cache.c = f;
+		cache.p = pos;
+
+		// now we have the result
+		if(f){
+			return a === true ? f : f.apply(this, a || args);
+		}
+		// intentionally if a super method was not found
+	}
+
+	function getInherited(name, args){
+		if(typeof name == "string"){
+			return this.inherited(name, args, true);
+		}
+		return this.inherited(name, true);
 	}
 
 	// emulation of "instanceof"
@@ -346,7 +215,7 @@ dojo.require("dojo._base.array");
 		// add props adding metadata for incoming functions skipping a constructor
 		for(name in source){
 			t = source[name];
-			if((t !== op[name] || !(name in op)) && name != "constructor"){
+			if((t !== op[name] || !(name in op)) && name != cname){
 				if(opts.call(t) == "[object Function]"){
 					// non-trivial function method => attach its name
 					t.nom = name;
@@ -358,7 +227,7 @@ dojo.require("dojo._base.array");
 		for(; i < l; ++i){
 			name = d._extraNames[i];
 			t = source[name];
-			if((t !== op[name] || !(name in op)) && name != "constructor"){
+			if((t !== op[name] || !(name in op)) && name != cname){
 				if(opts.call(t) == "[object Function]"){
 					// non-trivial function method => attach its name
 					t.nom = name;
@@ -447,12 +316,10 @@ dojo.require("dojo._base.array");
 						t = f.apply(this, t) || t;
 					}
 				}
-				if(this.preamble){
+				f = this.preamble;
+				if(f){
 					// process the preamble of this class
-					f = this.preamble;
-					if(f){
-						f.apply(this, t);
-					}
+					f.apply(this, t);
 					// one pecularity of the preamble:
 					// it is called even if it is not needed,
 					// e.g., there is no constructor to call
@@ -498,21 +365,14 @@ dojo.require("dojo._base.array");
 
 	function chain(name, bases, reversed){
 		return function(){
-			var b, m, h, f, i = 0, l = bases.length, step = 1;
+			var b, m, f, i = 0, step = 1;
 			if(reversed){
-				i = l - 1;
-				step = l = -1;
+				i = bases.length - 1;
+				step = -1;
 			}
-			for(; i != l; i += step){
-				f = 0;
-				b = bases[i];
+			for(; b = bases[i]; i += step){ // intentional assignment
 				m = b._meta;
-				if(m){
-					h = m.hidden;
-					f = h.hasOwnProperty(name) && h[name];
-				}else{
-					f = b.prototype[name];
-				}
+				f = (m ? m.hidden : b.prototype)[name];
 				if(f){
 					f.apply(this, arguments);
 				}
@@ -571,7 +431,7 @@ dojo.require("dojo._base.array");
 		// add constructor
 		t = props.constructor;
 		if(t !== op.constructor){
-			t.nom = "constructor";
+			t.nom = cname;
 			proto.constructor = t;
 		}
 		xtor.prototype = 0;	// cleanup
@@ -588,7 +448,7 @@ dojo.require("dojo._base.array");
 		}
 
 		// build ctor
-		t = !chains || !chains.hasOwnProperty("constructor");
+		t = !chains || !chains.hasOwnProperty(cname);
 		bases[0] = ctor = (chains && chains.constructor === "manual") ? simpleConstructor(bases) :
 			(bases.length == 1 ? singleConstructor(props.constructor, t) : chainedConstructor(bases, t));
 
@@ -614,7 +474,7 @@ dojo.require("dojo._base.array");
 		// build chains and add them to the prototype
 		if(chains){
 			for(name in chains){
-				if(proto[name] && typeof chains[name] == "string" && name != "constructor"){
+				if(proto[name] && typeof chains[name] == "string" && name != cname){
 					t = proto[name] = chain(name, bases, chains[name] === "after");
 					t.nom = name;
 				}
@@ -921,11 +781,14 @@ dojo.require("dojo._base.array");
 		//	args: Arguments
 		//		The caller supply this argument, which should be the original
 		//		"arguments".
-		//	newArgs: Array?
-		//		If supplied, it will be used to call a super method. Otherwise
+		//	newArgs: Object?
+		//		If "true", the found function will be returned without
+		//		executing it.
+		//		If Array, it will be used to call a super method. Otherwise
 		//		"args" will be used.
 		//	returns:
-		//		Whatever is returned by a super method.
+		//		Whatever is returned by a super method, or a super method itself,
+		//		if "true" was specified as newArgs.
 		//	description:
 		//		This method is used inside method of classes produced with
 		//		dojo.declare to call a super method (next in the chain). It is
@@ -966,6 +829,18 @@ dojo.require("dojo._base.array");
 		//	|		console.log("This is a dynamically-added method.");
 		//	|		this.inherited("method3", arguments);
 		//	|	};
+		//	example:
+		//	|	var B = dojo.declare(A, {
+		//	|		method: function(a, b){
+		//	|			var super = this.inherited(arguments, true);
+		//	|			// ...
+		//	|			if(!super){
+		//	|				console.log("there is no super method");
+		//	|				return 0;
+		//	|			}
+		//	|			return super.apply(this, arguments);
+		//	|		}
+		//	|	});
 		return	{};	// Object
 	}
 	=====*/
@@ -985,9 +860,9 @@ dojo.require("dojo._base.array");
 		//	returns:
 		//		Returns a super method (Function) or "undefined".
 		//	description:
-		//		This method is complimentary to "this.inherited()". It uses the
-		//		same algorithm but instead of executing a super method, it
-		//		returns it, or "undefined" if not found.
+		//		This method is a convenience method for "this.inherited()".
+		//		It uses the same algorithm but instead of executing a super
+		//		method, it returns it, or "undefined" if not found.
 		//
 		//	example:
 		//	|	var B = dojo.declare(A, {
