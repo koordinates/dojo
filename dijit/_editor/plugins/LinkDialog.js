@@ -10,6 +10,7 @@ dojo.require("dijit.form.Select");
 dojo.require("dijit._editor.range");
 dojo.require("dojo.i18n");
 dojo.require("dojo.string");
+dojo.requireLocalization("dijit", "common");
 dojo.requireLocalization("dijit._editor", "LinkDialog");
 
 dojo.declare("dijit._editor.plugins.LinkDialog", dijit._editor._Plugin, {
@@ -71,7 +72,7 @@ dojo.declare("dijit._editor.plugins.LinkDialog", dijit._editor._Plugin, {
 		"</select>",
 		"</td></tr><tr><td colspan='2'>",
 		"<button dojoType='dijit.form.Button' type='submit' id='${id}_setButton'>${set}</button>",
-		"<button dojoType='dijit.form.Button' type='button' id='${id}_cancelButton'>${cancel}</button>",
+		"<button dojoType='dijit.form.Button' type='button' id='${id}_cancelButton'>${buttonCancel}</button>",
 		"</td></tr></table>"
 	].join(""),
 
@@ -79,7 +80,8 @@ dojo.declare("dijit._editor.plugins.LinkDialog", dijit._editor._Plugin, {
 		// Override _Plugin._initButton() to initialize DropDownButton and TooltipDialog.
 		var _this = this;
 		this.tag = this.command == 'insertImage' ? 'img' : 'a';
-		var messages = dojo.i18n.getLocalization("dijit._editor", "LinkDialog", this.lang);
+		var messages = dojo.mixin(dojo.i18n.getLocalization("dijit", "common", this.lang),
+			dojo.i18n.getLocalization("dijit._editor", "LinkDialog", this.lang));
 		var dropDown = (this.dropDown = new dijit.TooltipDialog({
 			title: messages[this.command + "Title"],
 			execute: dojo.hitch(this, "setValue"),
@@ -142,11 +144,7 @@ dojo.declare("dijit._editor.plugins.LinkDialog", dijit._editor._Plugin, {
 			if(appendHttp){
 				self._urlInput.attr("value", "http://" + url);
 			}
-			if(!self._isValid()){
-				self._setButton.attr("disabled", true);
-			}else{
-				self._setButton.attr("disabled", false);
-			}
+			self._setButton.attr("disabled", !self._isValid());
 		};
 		if(this._delayedCheck){
 			clearTimeout(this._delayedCheck);
@@ -347,7 +345,7 @@ dojo.declare("dijit._editor.plugins.ImgLinkDialog", [dijit._editor.plugins.LinkD
 		"</td><td>",
 		"</td></tr><tr><td colspan='2'>",
 		"<button dojoType='dijit.form.Button' type='submit' id='${id}_setButton'>${set}</button>",
-		"<button dojoType='dijit.form.Button' type='button' id='${id}_cancelButton'>${cancel}</button>",
+		"<button dojoType='dijit.form.Button' type='button' id='${id}_cancelButton'>${buttonCancel}</button>",
 		"</td></tr></table>"
 	].join(""),
 
