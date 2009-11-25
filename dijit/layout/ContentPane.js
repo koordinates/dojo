@@ -100,12 +100,13 @@ dojo.declare(
 
 	// isContainer: [protected] Boolean
 	//		Indicates that this widget acts as a "parent" to the descendant widgets.
-	//		This is here so child.getParent() finds me.   See also `isLayoutContainer`.
+	//		When the parent is started it will call startup() on the child widgets.
+	//		See also `isLayoutContainer`.
 	isContainer: true,
 
 	// isLayoutContainer: [protected] Boolean
-	//		Indicates that this widget is going to call resize() on it's
-	//		children widgets.
+	//		Indicates that this widget will call resize() on it's child widgets
+	//		when they become visible.
 	isLayoutContainer: true,
 
 	// onLoadDeferred: [readonly] dojo.Deferred
@@ -116,6 +117,13 @@ dojo.declare(
 	//
 	//		This is different than an onLoad() handler which gets called any time any href is loaded.
 	onLoadDeferred: null,
+
+	// Override _Widget's attributeMap because we don't want the title attribute (used to specify
+	// tab labels) to be copied to ContentPane.domNode... otherwise a tooltip shows up over the
+	// entire pane.
+	attributeMap: dojo.delegate(dijit._Widget.prototype.attributeMap, {
+		title: []
+	}),
 
 	postMixInProperties: function(){
 		this.inherited(arguments);
