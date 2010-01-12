@@ -255,15 +255,17 @@ dojo.declare("dijit.form.ComboButton", dijit.form.DropDownButton, {
 
 	baseClass: "dijitComboButton",
 
+	// Set classes like dijitButtonContentsHover or dijitArrowButtonActive depending on
+	// mouse action over specified node
+	cssStateNodes: {
+		"titleNode": "dijitButtonContents",
+		"_popupStateNode": "dijitDownArrowButton"
+	},
+
 	_focusedNode: null,
 
 	postCreate: function(){
 		this.inherited(arguments);
-
-		// Set classes like dijitButtonContentsHover or dijitArrowButtonActive depending on
-		// mouse action over specified node
-		this._trackMouseState(this.titleNode, "dijitButtonContents");
-		this._trackMouseState(this._popupStateNode, "dijitDownArrowButton");
 
 		var isIE = dojo.isIE;
 		if(isIE && (isIE < 8 || dojo.isQuirks)){ // fixed in IE8/strict
@@ -331,7 +333,6 @@ dojo.declare("dijit.form.ToggleButton", dijit.form.Button, {
 		this.checked = value;
 		dojo.attr(this.focusNode || this.domNode, "checked", value);
 		dijit.setWaiState(this.focusNode || this.domNode, "pressed", value);
-		this._setStateClass();
 		this._handleOnChange(value, priorityChange);
 	},
 
