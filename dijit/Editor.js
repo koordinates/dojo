@@ -1,5 +1,6 @@
 dojo.provide("dijit.Editor");
 dojo.require("dijit._editor.RichText");
+
 dojo.require("dijit.Toolbar");
 dojo.require("dijit.ToolbarSeparator");
 dojo.require("dijit._editor._Plugin");
@@ -97,6 +98,10 @@ dojo.declare(
 			dojo.forEach(this.plugins, this.addPlugin, this);
 			this.onNormalizedDisplayChanged(); //update toolbar button status
 //			}catch(e){ console.debug(e); }
+
+			dojo.addClass(this.iframe.parentNode, "dijitEditorIFrameContainer");
+			dojo.addClass(this.iframe, "dijitEditorIFrame");
+			dojo.attr(this.iframe, "allowTransparency", true);
 
 			this.toolbar.startup();
 		},
