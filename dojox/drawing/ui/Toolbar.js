@@ -58,12 +58,19 @@ dojo.declare("dojox.drawing.ui.Toolbar", [], {
 		
 		if(this.toolDrawing.ready){
 			this.makeButtons();
+			if(!this.strSelected && this.drawing.defaults.clickMode) { this.drawing.mouse.setCursor('default'); };
 		}else{
 			var c = dojo.connect(this.toolDrawing, "onSurfaceReady", this, function(){
 				//console.log("TB built")
 				dojo.disconnect(c);
 				this.drawing = dojox.drawing.getRegistered("drawing", dojo.attr(node, "drawingId")); // 
 				this.makeButtons();
+				if(!this.strSelected && this.drawing.defaults.clickMode) { 
+					var c = dojo.connect(this.drawing, "onSurfaceReady", this, function(){
+					dojo.disconnect(c);
+					this.drawing.mouse.setCursor('default'); 
+					});
+				};
 			});
 		}
 		
@@ -174,10 +181,12 @@ dojo.declare("dojox.drawing.ui.Toolbar", [], {
 	onRenderStencil: function(/* Object */stencil){
 		// summary:
 		//		Stencil render event.
-		if(!this.toolDrawing.defaults.clickMode){ 
+		if(this.drawing.defaults.clickMode){
+			this.drawing.mouse.setCursor("default");
 			this.selected && this.selected.deselect();
 			this.selected = null;
 		}
+
 	},
 	
 	addTool: function(){
@@ -198,6 +207,7 @@ dojo.declare("dojox.drawing.ui.Toolbar", [], {
 		// summary:
 		//		Tool click event. May be connected to.
 		//
+		if(this.drawing.defaults.clickMode) { this.drawing.mouse.setCursor("crosshair"); };
 		dojo.forEach(this.buttons, function(b){
 			if(b.id==button.id){
 				b.select();
