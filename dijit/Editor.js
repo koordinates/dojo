@@ -212,6 +212,7 @@ dojo.declare(
 
 			var outsideClientArea = this.document.body.componentFromPoint(e.x, e.y);
 			if(!outsideClientArea){
+				delete this._cursorToStart; // Remove the force to cursor to start position. 
 				delete this._savedSelection; // new mouse position overrides old selection
 				if(e.target.tagName == "BODY"){
 					setTimeout(dojo.hitch(this, "placeCursorAtEnd"), 0);
@@ -600,6 +601,8 @@ dojo.declare(
 			// tags:
 			//		private
 			if(this._savedSelection){
+				// Clear off cursor to start, we're deliberately going to a selection.
+				delete this._cursorToStart;
 				// only restore the selection if the current range is collapsed
 				// if not collapsed, then it means the editor does not lose
 				// selection and there is no need to restore it
