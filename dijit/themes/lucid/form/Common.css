@@ -1,14 +1,10 @@
 /* lucid/form/Common.css */
 
 /*========================= common css =========================*/
-.lucid .dijitValidationIcon {
-	display: none;	/* normal status, the validation will not occupy the width  */
-}
 
 /* 'dijitTextBox' refers to 'dijit(TextBox|DateTextBox|CurrencyTextBox|...)' */
 
 .lucid .dijitTextBoxError .dijitValidationIcon {
-	display: block;
 	background: transparent url('images/error.png') repeat-y top center;
 	border-left: 1px solid #d46464;
 	width: 4px;
@@ -55,6 +51,7 @@
 
 /* check status */
 .lucid .dijitTextBoxFocused {
+	border: 1px solid #769dc0;
 	background-color: #fff;
 	background-image: url('images/textBox_back_checked.png');
 }
