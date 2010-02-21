@@ -373,8 +373,9 @@ dojo.declare("dojox.form.FileUploader", [dijit._Widget, dijit._Templated, dijit.
 		//		changed to display:block. Note if the node is in
 		//		a widget that has an onShow event, this is
 		//		overridden.
-		//		
-		var hidden;
+		//
+		if(!node){ return null; }
+		var hidden = null;
 		var p = node.parentNode;
 		while(p.tagName.toLowerCase() != "body"){
 			var d = dojo.style(p, "display");
@@ -827,7 +828,7 @@ dojo.declare("dojox.form.FileUploader", [dijit._Widget, dijit._Templated, dijit.
 			var str = '';
 			dojo.forEach(this.fileList, function(d){
 				// have to use tables because of IE. Grumble.
-				str += '<table id="file_'+d.name+'" class="fileToUpload"><tr><td class="fileToUploadClose"></td><td class="fileToUploadName">'+d.name+'</td><td class="fileToUploadSize">'+Math.ceil(d.size*.001)+'kb</td></tr></table>'	
+				str += '<table id="file_'+d.name+'" class="fileToUpload"><tr><td class="fileToUploadClose"></td><td class="fileToUploadName">'+d.name+'</td><td class="fileToUploadSize">'+(d.size ? Math.ceil(d.size*.001) +"kb" : "")+'</td></tr></table>'	
 			}, this);
 			dojo.byId(this.fileListId).innerHTML = str;
 		}
@@ -854,7 +855,9 @@ dojo.declare("dojox.form.FileUploader", [dijit._Widget, dijit._Templated, dijit.
 		this._addToFileList();
 		this.onChange(dataArray);
 		if(this.uploadOnChange){
-			this._buildFileInput();
+			if(this.uploaderType == "html"){
+				this._buildFileInput();
+			}
 			this.upload();
 		}else if(this.uploaderType == "html" && this.selectMultipleFiles){
 			this._buildFileInput();
@@ -1173,6 +1176,7 @@ dojo.declare("dojox.form.FileUploader", [dijit._Widget, dijit._Templated, dijit.
 		});
 		
 		dojo.addClass(this._fileInput, "dijitFileInputReal");
+		console.warn("BUILD FI")
 		this._formNode.appendChild(this._fileInput);
 		var real = dojo.marginBox(this._fileInput);
 		dojo.style(this._fileInput, {
@@ -1234,7 +1238,13 @@ dojo.declare("dojox.form.FileUploader", [dijit._Widget, dijit._Templated, dijit.
 					this._displayProgress(false);
 				});
 			}
-			this.flashMovie.doUpload(this.postData);
+			
+			var o = {};
+			for(var nm in this.postData){
+				o[nm] = this.postData[nm];
+			}
+			console.warn("this.postData:", o)
+			this.flashMovie.doUpload(o);
 			
 		}catch(err){
 			this._error("FileUploader - Sorry, the SWF failed to initialize." + err);

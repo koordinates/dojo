@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="en">
 <head>
-    <title>Flash HTML</title>
+    <title>Test dojox.form.FileUploader - Form</title>
 	<style type="text/css">
 		@import "../../../dojo/resources/dojo.css";
 		@import "../../../dijit/themes/dijit.css";
@@ -70,7 +70,8 @@
 					showProgress:true,
 					fileListId:"fFiles",
 					tabIndex:5,
-					selectMultipleFiles:false,
+					selectMultipleFiles:true,
+					//uploadOnChange:true,
 					deferredUploading:false
 				},props), "btnF");
 				f.attr("disabled", dojo.byId("fGroup").value=="");
@@ -84,6 +85,7 @@
 					console.log("onChange.data:", dataArray);
 				});
 				dojo.connect(f, "onComplete", function(dataArray){
+					console.log("onComplete Data:", dataArray)
 					dojo.forEach(dataArray, function(d){
 						addThumb(d, "fThumbs");
 					});
