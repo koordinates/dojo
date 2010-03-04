@@ -326,6 +326,8 @@ DIV.dijitArrowButton {
 	float: right;
 }
 
+/* Spinner */
+
 .dijitSpinner .dijitInputLayoutContainer .dijitArrowButton {
 	border-style: solid;
 	border-width: 0 0 0 1px !important;
@@ -946,7 +948,7 @@ img.dijitColorPaletteUnder {
 .dijitCalendarContainer {
 	width: auto;	/* in case user has specified a width for the TABLE nodes, see #10553 */
 }
-.dijitCalendarContainer thead tr th, .dijitCalendarContainer thead tr td, .dijitCalendarContainer tbody tr td, .dijitCalendarContainer tfoot tr td {
+.dijitCalendarContainer th, .dijitCalendarContainer td {
 	padding: 0;
 }
 
@@ -973,7 +975,7 @@ img.dijitColorPaletteUnder {
 }
 
 .dijitCalendarIncrementControl,
-.dijitCalendarBodyContainer tbody tr td,
+.dijitCalendarBodyContainer td,
 .dijitCalendarDateTemplate,
 .dijitCalendarContainer .dijitInline {
 	cursor:pointer;
@@ -1051,7 +1053,7 @@ img.dijitColorPaletteUnder {
 }
 .dj_ff3 .dijit_a11y .dijitMenuItem td {
 	padding: none !important;
-	background:none ! important;
+	background:none !important;
 }
 .dijit_a11y .dijitMenuItemSelected .dijitMenuItemLabel {
 	border-width: 1px;
@@ -1131,16 +1133,16 @@ img.dijitColorPaletteUnder {
 	overflow: hidden;
 	border: 1px solid black;
 }
-.dijitTabContainer .nowrapTabStrip {
+.nowrapTabStrip {
 	width: 50000px;
 	display: block;
 	position: relative;
 }
-.dijitTabContainer .dijitTabListWrapper {
+.dijitTabListWrapper {
 	overflow: hidden;
 }
 
-.dijit_a11y .dijitTabContainer .tabStripButton img {
+.dijit_a11y .tabStripButton img {
 	/* hide the icons (or rather the empty space where they normally appear) because text will appear instead */
 	display: none;
 }
@@ -1233,12 +1235,12 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 }
 
 
-.dijitTab .dijitTabCloseButton {
+.dijitTabCloseButton {
 	margin-left: 1em;
 }
 
 /* images off, high-contrast mode styles */
-.dijitTab .dijitTabCloseText {
+.dijitTabCloseText {
 	display:none;
 }
 
@@ -1247,7 +1249,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 	margin: 0px 6px;
 }
 
-.dijit_a11y .dijitTab .dijitTabCloseIcon {
+.dijit_a11y .dijitTabCloseIcon {
 	display:none;
 }
 
@@ -1272,7 +1274,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 }
 
 /* InlineEditBox */
-.dijitInlineEditBoxDisplayMode{
+.dijitInlineEditBoxDisplayMode {
 	border: 1px solid transparent;	/* so keyline (border) on hover can appear without screen jump */
 }
 
@@ -1376,6 +1378,8 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 .dijit_a11y .dijitDialog .closeText {
 	display:inline;
 }
+
+/* Slider */
 
 .dijitSliderMoveable {
 	z-index:99;
@@ -1506,7 +1510,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 	text-align:center;
 }
 
-.dijitSlider .dijitSliderButton {
+.dijitSliderButton {
 	font-family:monospace;
 	margin:0;
 	padding:0;
@@ -1592,6 +1596,25 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 	margin-top:-.55em;
 }
 
+.dijit_a11y .dijitSliderReadOnly,
+.dijit_a11y .dijitSliderDisabled {
+	opacity:0.6;
+}
+.dj_ie .dijit_a11y .dijitSliderReadOnly .dijitSliderBar,
+.dj_ie .dijit_a11y .dijitSliderDisabled .dijitSliderBar {
+	filter: alpha(opacity=40);
+}
+
+/* + and - Slider buttons: override theme settings to display icons */
+.dijit_a11y .dijitSlider .dijitSliderButtonContainer DIV {
+	font-family: monospace; /* otherwise hyphen is larger and more vertically centered */
+	font-size: 1em;
+	line-height: 1em;
+	height: auto;
+	width: auto;
+	margin: 0px 4px;
+}
+
 /* Icon-only buttons (often in toolbars) still display the text in high-contrast mode */
 .dijit_a11y .dijitButtonContents .dijitButtonText,
 .dijit_a11y .dijitTab .tabLabel {
@@ -1601,6 +1624,7 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 	position: relative; /* workaround for IE7 distorted text on scroll */
 }
 
+/* TextArea, SimpleTextArea */
 .dijitTextArea {
 	width:100%;
 	overflow-y: auto;	/* w/out this IE's SimpleTextArea goes to overflow: scroll */
@@ -1611,17 +1635,10 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 .dj_ie .dijitTextAreaCols {
 	width:auto;
 }
-.dijitTextArea > DIV {
-	text-decoration:none;
-	overflow:auto;
-	min-height: 1.40em;
-}
 
-.dj_ie .dijitTextArea p {
-	margin-top:0;
-	margin-bottom:0;
-	line-height: normal !important;
-}
+/* Toolbar
+ * Note that other toolbar rules (for objects in toolbars) are scattered throughout this file.
+ */
 
 .dijitToolbarSeparator {
 	height: 18px;
@@ -1711,6 +1728,8 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 	position: relative;
 	overflow: hidden;
 }
+
+/* Spinner again: TODO: combine this with above spinner section */
 .dijitSpinnerButtonContainer {
 	float: right;
 	width: 18px;
@@ -1840,25 +1859,6 @@ div.dijitTabDisabled, .dj_ie div.dijitTabDisabled {
 .dj_webkit INPUT.dijitTextBoxDisabled,
 .dj_webkit TEXTAREA.dijitTextAreaDisabled {
 	color: #333; /* because WebKit lightens disabled input/textarea no matter what color you specify */
-}
-
-.dijit_a11y .dijitSliderReadOnly,
-.dijit_a11y .dijitSliderDisabled {
-	opacity:0.6;
-}
-.dj_ie .dijit_a11y .dijitSliderReadOnly .dijitSliderBar,
-.dj_ie .dijit_a11y .dijitSliderDisabled .dijitSliderBar {
-	filter: alpha(opacity=40);
-}
-
-/* + and - Slider buttons: undo themed image values */
-.dijit_a11y .dijitSlider .dijitSliderButtonContainer DIV {
-	font-family: monospace; /* hypen is larger and more vertically centered */
-	font-size: 1em;
-	line-height: 1em;
-	height: auto;
-	width: auto;
-	margin: 0px 4px;
 }
 
 /* Used in cases, such as FullScreen plugin, when we need to force stuff to static positioning. */
