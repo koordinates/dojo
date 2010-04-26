@@ -1,0 +1,10 @@
+/* claro/form/Common_rtl.css */
+.claro .dijitTextBoxRtlError .dijitValidationIcon {
+	border-left-width: 0px;
+	border-right-width: 1px;
+}
+
+.claro .dijitTextBoxRtl .dijitButtonWithArrow .dijitValidationIcon, 
+.claro .dijitTextBoxRtl .dijitButtonWithArrow .dijitValidationIconText {
+	left:20px;
+}

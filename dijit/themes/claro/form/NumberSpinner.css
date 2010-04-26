@@ -1,0 +1,87 @@
+/* NumberSpinner */
+
+/* the namespace is ".claro .dijitSpinner .dijitInputLayoutContainer" */
+
+/* button */
+.claro .dijitSpinner .dijitArrowButton {
+	background-color: #ebeef4;
+	background-image: url("images/formHighlight.png");
+	background-position:0px 0px;
+	background-repeat:repeat-x;
+
+	/* override rounded button corners from Button.css */
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+}
+
+/* up & down button icons */
+.claro .dijitSpinner .dijitArrowButtonImg {
+	border:solid 1px #fff;
+	background-image: url("images/commonFormArrows.png");
+	background-repeat: no-repeat;
+	height: 100%;
+
+	/* for up arrow */
+	background-position:-140px 50%;
+
+	/* override button.css (TODO: move to Common.css since ComboBox needs this too) */
+	display: block;
+}
+.claro .dijitSpinner .dijitDownArrowButton .dijitArrowButtonImg {
+	background-position:-35px;
+}
+
+/** hover & focused status **/
+
+.claro .dijitUpArrowButtonActive,
+.claro .dijitDownArrowButtonActive {
+	background-color:#abd6ff;
+}
+
+.claro .dijitSpinner .dijitUpArrowButtonHover,
+.claro .dijitSpinner .dijitDownArrowButtonHover,
+.claro .dijitSpinnerFocused .dijitArrowButton {
+	background-color: #a0d1ff;
+}
+
+.claro .dijitSpinner .dijitUpArrowButtonHover .dijitArrowButtonImg {
+	background-position:-175px;
+}
+.claro .dijitSpinner .dijitDownArrowButtonHover .dijitArrowButtonImg {
+	background-position:-70px;
+}
+
+.claro .dijitSpinnerFocused {
+	background-color: #fff;
+	background-image: none;
+}
+
+/* mouse down status */
+.claro .dijitSpinner .dijitDownArrowButtonActive,
+.claro .dijitSpinner .dijitUpArrowButtonActive {
+	background-color: #3299f9;
+	background-position:0px -178px;
+}
+.claro .dijitSpinner .dijitUpArrowButtonActive .dijitArrowButtonImg,
+.claro .dijitSpinner .dijitDownArrowButtonActive .dijitArrowButtonImg {
+	border-color:transparent;
+}
+.claro .dijitSpinner .dijitUpArrowButtonActive .dijitArrowButtonImg {
+	background-position:-174px;
+}
+.claro .dijitSpinner .dijitDownArrowButtonActive .dijitArrowButtonImg {
+	background-position:-69px;
+}
+
+/* disabled */
+
+.claro .dijitSpinnerDisabled .dijitArrowButtonImg {
+	background-color: #f1f1f1;
+}
+.claro .dijitSpinnerDisabled .dijitUpArrowButton .dijitArrowButtonImg {
+	background-position:-105px;
+}
+.claro .dijitSpinnerDisabled .dijitDownArrowButton .dijitArrowButtonImg {
+	background-position:0px;
+}
