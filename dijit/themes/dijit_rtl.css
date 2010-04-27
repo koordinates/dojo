@@ -1,0 +1,139 @@
+.dijitRtl .dijitPlaceHolder {
+	left: auto;
+	right: 0;
+}
+
+/* Menu */
+
+.dijitMenuItemRtl {
+	text-align: right;
+}
+
+/* Button */
+
+.dj_iequirks .dijitComboButtonRtl BUTTON {
+	/* workaround bug where label invisible (themeTesterQuirk.html?dir=rtl) */
+	float:left;
+}
+
+/* TextBox, ComboBox, Spinner */
+
+.dijitRtl .dijitButtonWithArrow .dijitArrowButton {
+	/* combobox and spinner: line between the input area and the drop down button */
+	border-right-width: 1px !important;
+	border-left-width: 0px !important;
+}
+
+.dijitRtl .dijit_a11y .dijitButtonWithArrow td.dijitArrowButton {
+	/* combobox and spinner: line between the input area and the drop down button */
+	border-right-width: medium !important;
+	border-right-style:outset !important;
+	border-left-width: 0px !important;
+}
+
+.dijitTextBoxRtl .dijitInputLayoutContainer .dijitArrowButton {
+	left:0;
+	right:auto;
+}
+
+.dijitTextBoxRtl .dijitArrowButton .dijitArrowButtonText {
+	margin: 0 3px 0 4px;
+}
+
+.dijitTextBoxRtl .dijitArrowButtonContainer, .dijitTextBoxRtl .dijitValidationContainer {
+	float: left;
+}
+
+.dijitTextBoxRtl .dijitValidationIcon, .dijitTextBoxRtl .dijitValidationIconText {
+	right:auto;
+	left:0;
+}
+
+.dijitTextBoxRtl .dijitButtonWithArrow .dijitValidationIcon, 
+.dijitTextBoxRtl .dijitButtonWithArrow .dijitValidationIconText {
+	right:auto;
+	left: 20px;
+}
+
+/* Calendar */
+
+.dijitCalendarRtl .dijitCalendarNextYear {
+	margin:0 0.55em 0 0;
+}
+
+.dijitCalendarRtl .dijitCalendarPreviousYear {
+	margin:0 0 0 0.55em;
+}
+
+
+/* Slider */
+
+.dijitSliderRtl .dijitSliderImageHandleV {
+	left:auto;
+	right:-6px;
+}
+
+.dj_ie .dijitSliderRtl .dijitSliderImageHandleV {
+	right:-10px;
+}
+
+.dijitSliderRtl .dijitSliderMoveableH {
+	right:auto;
+	left:0;
+}
+
+.dijitSliderRtl .dijitRuleContainerV {
+	float:right;
+}
+
+.dj_ie .dijitSliderRtl .dijitRuleContainerV {
+	text-align:right;
+}
+
+.dj_ie .dijitSliderRtl .dijitRuleLabelV {
+	text-align:left;
+}
+
+.dj_ie .dijitSliderRtl .dijitRuleLabelH {
+	zoom:1;
+}
+
+.dijitSliderRtl .dijitSliderProgressBarH {
+	/* workarounds for IE and FF */
+	float:right;
+	right:0;
+	left:auto;
+}
+
+/* ContentPane*/
+.dijitRtl .dijitContentPaneLoading, .dijitRtl .dijitContentPaneError {
+	background-position:right;
+	padding-right:25px;
+}
+
+/* TabContainer */
+
+.dijitTabRtl .dijitTabCloseButton {
+	margin-left: 0px;
+	margin-right: 1em;
+}
+
+/* TimePicker */
+.dj_ie .dijitTimePickerRtl .dijitTimePickerItem {
+	width:100%;
+}
+
+
+/* ColorPalette */
+.dijitColorPaletteRtl .dijitColorPaletteUnder {
+	/* needed in RTL mode when DropDownButton expands the ColorPalette beyond it's natural width */
+	left: auto;
+	right: 0;
+}
+
+/* Select */
+.dijitSelectRtl .dijitButtonNode {
+	text-align: right;
+}
+
+
