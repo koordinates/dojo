@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------------
+Mobile File Browsing - Dojo Mobile File Browser
+-------------------------------------------------------------------------------
+Authors: Michael Rheinheimer
+-------------------------------------------------------------------------------
+Demo description
+
+	A simple demonstration of building a Mobile File Browser, using parts from
+	dojo.data, dojox.mobile, and dijit's TreeModel
+	
+-------------------------------------------------------------------------------
+Dependencies:
+
+	Dojo
+	Dijit
+	Dojox
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+	Simply run the included demo.html
+	
+	To build, use the supplied demo.profile.js as your profileFile
+	
+-------------------------------------------------------------------------------
+@rank:1
